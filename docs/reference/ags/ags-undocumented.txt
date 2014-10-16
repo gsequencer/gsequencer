@@ -1,7 +1,7 @@
-36% symbol docs coverage.
-1089 symbols documented.
+38% symbol docs coverage.
+1153 symbols documented.
 523 symbols incomplete.
-1934 not documented.
+1866 not documented.
 
 
 AGS_ACCOUNTING_TABLE
@@ -883,18 +883,12 @@ ags_audio_preferences_samplerate_changed
 ags_audio_recall_change_state
 ags_audio_remove_recall (recall)
 ags_audio_set_recycling_new
-ags_audio_signal_copy_buffer_to_double_buffer
-ags_audio_signal_copy_double_buffer_to_buffer
-ags_audio_signal_morph_samplerate (samplerate, k_morph)
 ags_audio_signal_new_with_length
-ags_audio_signal_scale
-ags_audio_signal_tile
 ags_audio_unset_flags
 ags_autosave_thread_new
 ags_cartesian_new
 ags_change_tact_new
 ags_channel_add_recall (recall)
-ags_channel_done
 ags_channel_error_quark
 ags_channel_find_recall
 ags_channel_init_recall (stage)
@@ -909,7 +903,6 @@ ags_channel_safe_resize_audio_signal (size)
 ags_channel_set_recycling_new
 ags_clone_channel_new
 ags_clone_channel_run_new
-ags_combo_box_text_remove_all
 ags_config_get
 ags_config_load_defaults
 ags_config_load_from_file
@@ -944,7 +937,6 @@ ags_devout_note_offset_changed
 ags_devout_pcm_info (buffer_size_max)
 ags_devout_play_find_source (source)
 ags_devout_thread_new (Returns)
-ags_dial_new
 ags_drum_done_callback
 ags_drum_index0_callback
 ags_drum_index1_callback
@@ -975,16 +967,10 @@ ags_editor_machine_changed_callback
 ags_editor_parent_set_callback
 ags_editor_set_audio_channels_callback
 ags_editor_set_pads_callback
-ags_expander_add
 ags_expander_child_alloc
 ags_expander_child_find
-ags_expander_new
-ags_expander_remove
-ags_expander_set_add
 ags_expander_set_child_alloc
 ags_expander_set_child_find
-ags_expander_set_new
-ags_expander_set_remove
 ags_expander_set_set_flags
 ags_export_thread_new (devout, Returns)
 ags_export_window_export_callback
@@ -1216,8 +1202,6 @@ ags_gui_thread_new (Returns)
 ags_hindicator_new
 ags_history_new
 ags_htimebar_new
-ags_id_generator_create_uuid
-ags_indicator_new
 ags_inline_player_new
 ags_ipatch_read_audio_signal (Returns)
 ags_iterator_thread_children_ready
@@ -1231,12 +1215,7 @@ ags_ladspa_browser_plugin_effect_callback
 ags_ladspa_browser_plugin_filename_callback
 ags_ladspa_browser_preview_close_callback
 ags_ladspa_browser_preview_new
-ags_ladspa_manager_find_ladspa_plugin (Returns)
-ags_ladspa_manager_load_file
-ags_ladspa_plugin_alloc (Returns)
-ags_ladspa_plugin_free
 ags_ladspa_plugin_preferences_alloc
-ags_led_new
 ags_led_set_active
 ags_led_unset_active
 ags_libao_error_quark
@@ -1294,8 +1273,6 @@ ags_link_editor_destroy_callback
 ags_link_editor_parent_set_callback
 ags_link_editor_show_callback
 ags_list_duplicate_list
-ags_list_free_and_free_link
-ags_list_free_and_unref_link
 ags_listing_editor_add_children (listing_editor)
 ags_listing_editor_parent_set_callback
 ags_listing_editor_set_pads_callback
@@ -1428,11 +1405,6 @@ ags_navigation_update_time_string (time_string)
 ags_notation_find_region (use_selection_list)
 ags_notation_get_current
 ags_notation_insert_from_clipboard (content)
-ags_notation_remove_point_from_selection
-ags_note_edit_draw_notation
-ags_note_edit_draw_position
-ags_note_edit_draw_scroll
-ags_note_edit_draw_segment
 ags_note_edit_drawing_area_button_press_event
 ags_note_edit_drawing_area_button_release_event
 ags_note_edit_drawing_area_configure_event
@@ -1440,9 +1412,6 @@ ags_note_edit_drawing_area_expose_event
 ags_note_edit_drawing_area_motion_notify_event
 ags_note_edit_hscrollbar_value_changed
 ags_note_edit_new (Returns)
-ags_note_edit_reset_horizontally
-ags_note_edit_reset_vertically
-ags_note_edit_set_map_height
 ags_note_edit_vscrollbar_value_changed
 ags_notebook_add_child
 ags_notebook_add_tab
@@ -1465,10 +1434,8 @@ ags_oscillator_wave_callback
 ags_packable_pack (container)
 ags_pad_destroy_callback
 ags_pad_editor_destroy_callback
-ags_pad_editor_new
 ags_pad_editor_parent_set_callback
 ags_pad_editor_set_audio_channels_callback
-ags_pad_editor_set_channel
 ags_pad_editor_show_callback
 ags_pad_group_clicked_callback
 ags_pad_mute_clicked_callback
@@ -1478,7 +1445,7 @@ ags_pad_show_callback
 ags_pad_solo_clicked_callback
 ags_panel_input_line_map_recall
 ags_panel_parent_set_callback
-ags_parameter_grow
+ags_parameter_grow (type)
 ags_pattern_get_by_timestamp
 ags_pattern_set_dim (lenght)
 ags_peak_channel_retrieve_peak
@@ -1493,10 +1460,8 @@ ags_play_channel_run_master_new
 ags_play_channel_run_master_streamer_alloc
 ags_play_note_new
 ags_play_pattern_connect
-ags_playable_close
 ags_playable_error_quark
 ags_playable_iter_next (Returns)
-ags_playable_nth_level
 ags_playable_read_audio_signal (channels)
 ags_plugin_factory_add
 ags_plugin_factory_create
@@ -1555,7 +1520,6 @@ ags_property_editor_enable_callback
 ags_property_listing_editor_new
 ags_recall_add_child (recall)
 ags_recall_add_dependency (dependency)
-ags_recall_add_handler
 ags_recall_audio_new (audio)
 ags_recall_channel_find_channel (channel)
 ags_recall_channel_run_get_run_order
@@ -1565,35 +1529,29 @@ ags_recall_duplicate (Returns)
 ags_recall_factory_create (play_container)
 ags_recall_factory_get_instance
 ags_recall_factory_remove
-ags_recall_find_provider
-ags_recall_find_provider_with_recycling_container
+ags_recall_find_provider_with_recycling_container (recall)
 ags_recall_find_recycling_container (recall)
 ags_recall_find_template (recall)
-ags_recall_find_type (recall, type)
+ags_recall_find_type (recall)
 ags_recall_find_type_with_recycling_container (recall)
-ags_recall_handler_alloc
+ags_recall_handler_alloc (Returns)
 ags_recall_id_find_parent_recycling_container (parent_recycling_container)
-ags_recall_id_new (recycling)
+ags_recall_id_new (recycling, recycling)
 ags_recall_is_done (recalls, Returns)
-ags_recall_ladspa_load_ports (recall_ladspa)
-ags_recall_ladspa_new
 ags_recall_notify_dependency (dependency)
 ags_recall_recycling_dummy_new (recycling, child_type)
 ags_recall_recycling_get_child_source
 ags_recall_remove_child (recall)
 ags_recall_remove_dependency (template)
-ags_recall_remove_handler
 ags_recall_resolve_dependencies (reall)
 ags_recall_run_init
-ags_recall_run_inter
-ags_recall_run_post
-ags_recall_run_pre
+ags_recall_run_init_inter
+ags_recall_run_init_post
 ags_recall_set_devout_recursive
 ags_recall_set_effect
 ags_recall_template_find_provider
-ags_recall_template_find_type
+ags_recall_template_find_type (recall)
 ags_record_thread_new
-ags_recycling_container_insert
 ags_recycling_container_remove
 ags_recycling_container_replace
 ags_recycling_create_audio_signal_with_defaults (delay, attack, delay, attack)
@@ -1690,8 +1648,6 @@ ags_thread_next_parent_locked (thread, parent, Returns, thread, parent, Returns)
 ags_thread_next_sibling_locked (thread, Returns, thread, Returns)
 ags_thread_parental_is_locked (thread, parent, Returns, thread, parent, Returns)
 ags_thread_pool_new (Returns)
-ags_thread_pool_pull (Returns)
-ags_thread_pool_start
 ags_thread_remove_child
 ags_thread_resume
 ags_thread_run (thread, thread)
@@ -1739,7 +1695,7 @@ ags_tree_iterator_safe_iterate
 ags_tree_iterator_safe_iterate_nested
 ags_tree_iterator_set_inverse_mode
 ags_unref_audio_signal_new
-ags_vindicator_new
+ags_vindicator_new (Returns)
 ags_volume_channel_run_new (channel)
 ags_waveform_new
 ags_window_decrement_machine_counter
@@ -1830,16 +1786,12 @@ ags_clone_channel:Long_Description
 ags_clone_channel:Short_Description
 ags_clone_channel_run:Long_Description
 ags_clone_channel_run:Short_Description
-ags_combo_box_text:Long_Description
-ags_combo_box_text:Short_Description
 ags_config:Long_Description
 ags_config:Short_Description
 ags_container:Long_Description
 ags_container:Short_Description
 ags_countable:Long_Description
 ags_countable:Short_Description
-ags_dial:Long_Description
-ags_dial:Short_Description
 ags_down_mix:Long_Description
 ags_down_mix:Short_Description
 ags_drum_callbacks:Long_Description
@@ -1858,10 +1810,6 @@ ags_editor_callbacks:Long_Description
 ags_editor_callbacks:Short_Description
 ags_effect:Long_Description
 ags_effect:Short_Description
-ags_expander:Long_Description
-ags_expander:Short_Description
-ags_expander_set:Long_Description
-ags_expander_set:Short_Description
 ags_export_window_callbacks:Long_Description
 ags_export_window_callbacks:Short_Description
 ags_ffplayer_callbacks:Long_Description
@@ -1898,10 +1846,6 @@ ags_history:Long_Description
 ags_history:Short_Description
 ags_htimebar:Long_Description
 ags_htimebar:Short_Description
-ags_id_generator:Long_Description
-ags_id_generator:Short_Description
-ags_indicator:Long_Description
-ags_indicator:Short_Description
 ags_inline_player:Long_Description
 ags_inline_player:Short_Description
 ags_inline_player_callbacks:Long_Description
@@ -1910,8 +1854,6 @@ ags_iterator_thread:Long_Description
 ags_iterator_thread:Short_Description
 ags_ladspa_browser_callbacks:Long_Description
 ags_ladspa_browser_callbacks:Short_Description
-ags_led:Long_Description
-ags_led:Short_Description
 ags_libao:Long_Description
 ags_libao:Short_Description
 ags_line_callbacks:Long_Description
@@ -1926,8 +1868,6 @@ ags_link_collection_editor_callbacks:Long_Description
 ags_link_collection_editor_callbacks:Short_Description
 ags_link_editor_callbacks:Long_Description
 ags_link_editor_callbacks:Short_Description
-ags_list:Long_Description
-ags_list:Short_Description
 ags_listing_editor_callbacks:Long_Description
 ags_listing_editor_callbacks:Short_Description
 ags_log:Long_Description
@@ -1970,14 +1910,10 @@ ags_oscillator_callbacks:Long_Description
 ags_oscillator_callbacks:Short_Description
 ags_pad_callbacks:Long_Description
 ags_pad_callbacks:Short_Description
-ags_pad_editor:Long_Description
-ags_pad_editor:Short_Description
 ags_pad_editor_callbacks:Long_Description
 ags_pad_editor_callbacks:Short_Description
 ags_panel_callbacks:Long_Description
 ags_panel_callbacks:Short_Description
-ags_parameter:Long_Description
-ags_parameter:Short_Description
 ags_performance_preferences_callbacks:Long_Description
 ags_performance_preferences_callbacks:Short_Description
 ags_persistable:Long_Description
@@ -2062,8 +1998,6 @@ ags_task_thread:Long_Description
 ags_task_thread:Short_Description
 ags_thread-kthreads:Long_Description
 ags_thread-kthreads:Short_Description
-ags_thread_pool:Long_Description
-ags_thread_pool:Short_Description
 ags_timebar:Long_Description
 ags_timebar:Short_Description
 ags_timestamp_thread:Long_Description
@@ -2076,8 +2010,6 @@ ags_tree_iterator:Long_Description
 ags_tree_iterator:Short_Description
 ags_unref_audio_signal:Long_Description
 ags_unref_audio_signal:Short_Description
-ags_vindicator:Long_Description
-ags_vindicator:Short_Description
 ags_waveform:Long_Description
 ags_waveform:Short_Description
 ags_window_callbacks:Long_Description

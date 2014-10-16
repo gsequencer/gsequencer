@@ -37,6 +37,16 @@ void ags_indicator_size_request(GtkWidget *widget,
 void ags_indicator_size_allocate(GtkWidget *widget,
 				 GtkAllocation *allocation);
 
+/**
+ * SECTION:ags_indicator
+ * @short_description: A indicator widget
+ * @title: AgsIndicator
+ * @section_id:
+ * @include: ags/widget/ags_indicator.h
+ *
+ * #AgsIndicator is a widget representing a #GtkAdjustment.
+ */
+
 enum{
   PROP_0,
   PROP_ADJUSTMENT,
@@ -260,6 +270,16 @@ ags_indicator_size_allocate(GtkWidget *widget,
   //TODO:JK:
 }
 
+/**
+ * ags_indicator_new:
+ *
+ * Creates an #AgsIndicator. Note, use rather its implementation #AgsVIndicator or
+ * #AgsHIndicator.
+ *
+ * Returns: a new #AgsIndicator
+ *
+ * Since: 0.4
+ */
 AgsIndicator*
 ags_indicator_new()
 {

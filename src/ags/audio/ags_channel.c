@@ -1543,7 +1543,7 @@ ags_channel_recycling_changed(AgsChannel *channel,
 }
 
 /**
- * ags_channel_init_run:
+ * ags_channel_done:
  * @channel: an #AgsChannel
  * @recall_id: the current #AgsRecallID
  *

@@ -510,7 +510,7 @@ ags_recall_ladspa_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 
 /**
  * ags_recall_ladspa_load_ports:
- * @recall_ladspa an #AgsRecallLadspa
+ * @recall_ladspa: an #AgsRecallLadspa
  *
  * Set up LADSPA ports.
  *
@@ -679,7 +679,7 @@ ags_recall_ladpsa_find(GList *recall,
 }
 
 /**
- * ags_recall_id_new:
+ * ags_recall_ladspa_new:
  * @source: the source
  * @filename: the LADSPA plugin filename
  * @effect: effect's name

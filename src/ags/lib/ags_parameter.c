@@ -22,13 +22,38 @@
 #include <string.h>
 #include <gobject/gvaluecollector.h>
 
+/**
+ * SECTION:ags_parameter
+ * @short_description: Complete GParameter
+ * @title: AgsIdGenerator
+ * @section_id:
+ * @include: ags/lib/ags_parameter.h
+ *
+ * Functions completing #GParameter API.
+ */
+
 static GParamSpecPool *pspec_pool = NULL;
 
-//Thank you gimp
+/**
+ * ags_parameter_grow:
+ * @object_type: the #GType of the object's properties
+ * @params: the #GParameter array
+ * @n_params: location to store new size
+ * @...: a %NULL-terminated list of properties name and value
+ * 
+ * Grow parameter array of @object_type object. This function is mainly used to
+ * prepare a #GParameter array to instantiate a new #GObject by using g_object_newv().
+ *
+ * Returns: the resized GParameter array
+ *
+ * Since: 0.3
+ */
 GParameter*
 ags_parameter_grow(GType object_type,
 		   GParameter *params, guint *n_params, ...)
 {
+  //Thank you gimp
+
   GObjectClass *object_class;
   gchar *param_name;
   va_list ap;

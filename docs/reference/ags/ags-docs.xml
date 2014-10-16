@@ -17,14 +17,17 @@
   <xi:include href="xml/main.xml"/>
 
   <part id="util">
-    <title>Util - Helper functions</title>
+    <title>Library - Completion routines</title>
+
     <xi:include href="xml/ags_combo_box_text.xml"/>
-    <xi:include href="xml/ags_id_generator.xml"/>
     <xi:include href="xml/ags_list.xml"/>
-    <xi:include href="xml/ags_menu.xml"/>
-    <xi:include href="xml/ags_menu_item.xml"/>
-    <xi:include href="xml/ags_option_menu.xml"/>
     <xi:include href="xml/ags_parameter.xml"/>
+  </part>
+
+  <part id="util">
+    <title>Util - Helper functions</title>
+
+    <xi:include href="xml/ags_id_generator.xml"/>
   </part>
   
   <part id="object">
@@ -64,7 +67,6 @@
     <xi:include href="xml/ags_indicator.xml"/>
     <xi:include href="xml/ags_led.xml"/>
     <xi:include href="xml/ags_vindicator.xml"/>
-    <xi:include href="xml/ags_table.xml"/>
   </part>
   
   <part id="thread">
@@ -246,6 +248,8 @@
     <xi:include href="xml/ags_editor_callbacks.xml"/>
     <xi:include href="xml/ags_export_window.xml"/>
     <xi:include href="xml/ags_export_window_callbacks.xml"/>
+    <xi:include href="xml/ags_file_selection.xml"/>
+    <xi:include href="xml/ags_file_selection_callbacks.xml"/>
     <xi:include href="xml/ags_inline_player.xml"/>
     <xi:include href="xml/ags_ladspa_browser.xml"/>
     <xi:include href="xml/ags_ladspa_browser_callbacks.xml"/>
@@ -295,19 +299,19 @@
     <chapter id="editor">
       <title>Editor - Piano roll and its controls</title>
       
-      <xi:include href="xml/ags_machine_radio_button.xml"/>
+      <xi:include href="xml/ags_toolbar_mode_stock.xml"/>
+      <xi:include href="xml/ags_toolbar.xml"/>
+      <xi:include href="xml/ags_toolbar_callbacks.xml"/>
       <xi:include href="xml/ags_machine_selection.xml"/>
       <xi:include href="xml/ags_machine_selector.xml"/>
       <xi:include href="xml/ags_machine_selector_callbacks.xml"/>
+      <xi:include href="xml/ags_machine_radio_button.xml"/>
+      <xi:include href="xml/ags_notebook.xml"/>
+      <xi:include href="xml/ags_notebook_callbacks.xml"/>
       <xi:include href="xml/ags_meter.xml"/>
       <xi:include href="xml/ags_meter_callbacks.xml"/>
       <xi:include href="xml/ags_note_edit.xml"/>
       <xi:include href="xml/ags_note_edit_callbacks.xml"/>
-      <xi:include href="xml/ags_notebook.xml"/>
-      <xi:include href="xml/ags_notebook_callbacks.xml"/>
-      <xi:include href="xml/ags_toolbar.xml"/>
-      <xi:include href="xml/ags_toolbar_callbacks.xml"/>
-      <xi:include href="xml/ags_toolbar_mode_stock.xml"/>
       <xi:include href="xml/ags_sf2_chooser.xml"/>
       <xi:include href="xml/ags_sf2_chooser_callbacks.xml"/>
     </chapter>
@@ -315,6 +319,14 @@
     <chapter id="engines">
       <title>Engines - Composite widgets with audio set up</title>
 
+      <xi:include href="xml/ags_panel.xml"/>
+      <xi:include href="xml/ags_panel_callbacks.xml"/>
+      <xi:include href="xml/ags_panel_input_line.xml"/>
+      <xi:include href="xml/ags_panel_input_pad.xml"/>
+      <xi:include href="xml/ags_mixer.xml"/>
+      <xi:include href="xml/ags_mixer_callbacks.xml"/>
+      <xi:include href="xml/ags_mixer_input_line.xml"/>
+      <xi:include href="xml/ags_mixer_input_pad.xml"/>
       <xi:include href="xml/ags_drum.xml"/>
       <xi:include href="xml/ags_drum_callbacks.xml"/>
       <xi:include href="xml/ags_drum_input_line.xml"/>
@@ -325,41 +337,30 @@
       <xi:include href="xml/ags_drum_output_line_callbacks.xml"/>
       <xi:include href="xml/ags_drum_output_pad.xml"/>
       <xi:include href="xml/ags_drum_output_pad_callbacks.xml"/>
-      <xi:include href="xml/ags_ffplayer.xml"/>
-      <xi:include href="xml/ags_ffplayer_callbacks.xml"/>
       <xi:include href="xml/ags_matrix.xml"/>
       <xi:include href="xml/ags_matrix_callbacks.xml"/>
-      <xi:include href="xml/ags_mixer.xml"/>
-      <xi:include href="xml/ags_mixer_callbacks.xml"/>
-      <xi:include href="xml/ags_mixer_input_line.xml"/>
-      <xi:include href="xml/ags_mixer_input_pad.xml"/>
-      <xi:include href="xml/ags_oscillator.xml"/>
-      <xi:include href="xml/ags_oscillator_callbacks.xml"/>
-      <xi:include href="xml/ags_panel.xml"/>
-      <xi:include href="xml/ags_panel_callbacks.xml"/>
-      <xi:include href="xml/ags_panel_input_line.xml"/>
-      <xi:include href="xml/ags_panel_input_pad.xml"/>
       <xi:include href="xml/ags_synth.xml"/>
       <xi:include href="xml/ags_synth_callbacks.xml"/>
       <xi:include href="xml/ags_synth_input_line.xml"/>
       <xi:include href="xml/ags_synth_input_pad.xml"/>
+      <xi:include href="xml/ags_oscillator.xml"/>
+      <xi:include href="xml/ags_oscillator_callbacks.xml"/>
+      <xi:include href="xml/ags_ffplayer.xml"/>
+      <xi:include href="xml/ags_ffplayer_callbacks.xml"/>
     </chapter>
   </part>
   
   <part id="xml-io">
     <title>XML Input/Output - Persist project</title>
     
+    <xi:include href="xml/ags_file_stock.xml"/>
     <xi:include href="xml/ags_file.xml"/>
-    <xi:include href="xml/ags_file_gui.xml"/>
     <xi:include href="xml/ags_file_id_ref.xml"/>
-    <xi:include href="xml/ags_file_launch.xml"/>
     <xi:include href="xml/ags_file_link.xml"/>
     <xi:include href="xml/ags_file_lookup.xml"/>
-    <xi:include href="xml/ags_file_read.xml"/>
-    <xi:include href="xml/ags_file_selection.xml"/>
-    <xi:include href="xml/ags_file_selection_callbacks.xml"/>
+    <xi:include href="xml/ags_file_launch.xml"/>
+    <xi:include href="xml/ags_file_gui.xml"/>
     <xi:include href="xml/ags_file_sound.xml"/>
-    <xi:include href="xml/ags_file_stock.xml"/>
     <xi:include href="xml/ags_file_util.xml"/>
     <xi:include href="xml/ags_file_thread.xml"/>
   </part>

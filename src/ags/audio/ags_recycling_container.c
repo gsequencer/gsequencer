@@ -351,7 +351,7 @@ ags_recycling_container_remove(AgsRecyclingContainer *recycling_container,
 }
 
 /**
- * ags_recycling_container_add:
+ * ags_recycling_container_insert:
  * @recycling_container: the #AgsRecyclingContainer
  * @recycling: the #AgsRecycling to insert
  * @position: the index to insert at

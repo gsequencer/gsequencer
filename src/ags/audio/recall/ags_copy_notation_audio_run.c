@@ -56,7 +56,7 @@ void ags_copy_notation_audio_run_tic_alloc_input_callback(AgsDelayAudioRun *dela
 /**
  * SECTION:ags_copy_notation_audio_run
  * @short_description: copy notations
- * @title: AgsCopy_NotationAudioRun
+ * @title: AgsCopyNotationAudioRun
  * @section_id:
  * @include: ags/audio/recall/ags_copy_notation_audio_run.h
  *

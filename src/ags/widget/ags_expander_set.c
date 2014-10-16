@@ -58,6 +58,16 @@ void ags_expander_set_remove_child(AgsExpanderSet *expander_set,
 				   AgsExpanderSetChild *child,
 				   gboolean ghost);
 
+/**
+ * SECTION:ags_expander_set
+ * @short_description: A container
+ * @title: AgsExpanderSet
+ * @section_id:
+ * @include: ags/widget/ags_expander_set.h
+ *
+ * #AgsExpanderSet is a composite widget containing a #GtkTable.
+ */
+
 enum{
   PROP_0,
   PROP_GHOST,
@@ -394,6 +404,19 @@ ags_expander_set_remove_child(AgsExpanderSet *expander_set,
   free(child);
 }
 
+/**
+ * ags_expander_set_add:
+ * @expander_set: the #AgsExpanderSet
+ * @widget: the child #GtkWidget
+ * @x: x-position
+ * @y: y-position
+ * @width: allocation width
+ * @height: allocation height
+ *
+ * Adds a #GtkWidget to #AgsExpanderSet
+ *
+ * Since: 0.4
+ */
 void
 ags_expander_set_add(AgsExpanderSet *expander_set,
 		     GtkWidget *widget,
@@ -417,6 +440,15 @@ ags_expander_set_add(AgsExpanderSet *expander_set,
   }
 }
 
+/**
+ * ags_expander_set_remove:
+ * @expander_set: the #AgsExpanderSet
+ * @widget: the child #GtkWidget
+ *
+ * Removes a #GtkWidget of #AgsExpanderSet
+ *
+ * Since: 0.4
+ */
 void
 ags_expander_set_remove(AgsExpanderSet *expander_set,
 			GtkWidget *widget)
@@ -427,6 +459,17 @@ ags_expander_set_remove(AgsExpanderSet *expander_set,
 				FALSE);
 }
 
+/**
+ * ags_expander_set_new:
+ * @height: the table's height
+ * @width: the table's width
+ *
+ * Creates an #AgsExpanderSet
+ *
+ * Returns: a new #AgsExpanderSet
+ *
+ * Since: 0.4
+ */
 AgsExpanderSet*
 ags_expander_set_new(guint width, guint height)
 {

@@ -29,6 +29,16 @@ gboolean ags_vindicator_configure(GtkWidget *widget,
 
 void ags_vindicator_draw(AgsVIndicator *indicator);
 
+/**
+ * SECTION:ags_vindicator
+ * @short_description: A vertical indicator widget
+ * @title: AgsVindicator
+ * @section_id:
+ * @include: ags/widget/ags_vindicator.h
+ *
+ * #AgsVIndicator is a widget visualizing a #GtkAdjustment.
+ */
+
 static gpointer ags_vindicator_parent_class = NULL;
 
 GType
@@ -158,6 +168,13 @@ ags_vindicator_draw(AgsVIndicator *indicator)
   cairo_destroy(cr);
 }
 
+/**
+ * ags_vindicator_new:
+ *
+ * Creates an #AgsVIndicator.
+ *
+ * Since: 0.4
+ */
 AgsVIndicator*
 ags_vindicator_new()
 {

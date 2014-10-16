@@ -786,7 +786,7 @@ ags_audio_signal_copy_buffer_to_buffer(signed short *destination, guint dchannel
 }
 
 /**
- * ags_audio_signal_copy_buffer_to_buffer:
+ * ags_audio_signal_copy_buffer_to_double_buffer:
  * @destination: destination buffer
  * @dchannels: destination audio channels
  * @source: source buffer
@@ -811,7 +811,7 @@ ags_audio_signal_copy_buffer_to_double_buffer(double *destination, guint dchanne
 }
 
 /**
- * ags_audio_signal_copy_buffer_to_buffer:
+ * ags_audio_signal_copy_double_buffer_to_buffer:
  * @destination: destination buffer
  * @dchannels: destination audio channels
  * @source: source buffer
@@ -1019,7 +1019,7 @@ ags_audio_signal_get_by_recall_id(GList *list_audio_signal,
 }
 
 /**
- * ags_audio_signal_morph_samplerate:
+ * ags_audio_signal_tile:
  * @audio_signal: an #AgsAudioSignal
  * @template: the source #AgsAudioSignal
  * @length: new frame count
@@ -1178,7 +1178,7 @@ ags_audio_signal_tile(AgsAudioSignal *audio_signal,
 }
 
 /**
- * ags_audio_signal_morph_samplerate:
+ * ags_audio_signal_scale:
  * @audio_signal: an #AgsAudioSignal
  * @template: the source #AgsAudioSignal
  * @length: new frame count

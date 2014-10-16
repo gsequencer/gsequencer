@@ -287,7 +287,7 @@ ags_line_editor_show(GtkWidget *widget)
  * @line_editor: an #AgsLineEditor
  * @channel: the new #AgsChannel
  *
- * Is emitted as channel gets modified.
+ * Is called as channel gets modified.
  *
  * Since: 0.3
  */

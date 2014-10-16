@@ -18,6 +18,25 @@
 
 #include <ags/lib/ags_list.h>
 
+/**
+ * SECTION:ags_list
+ * @short_description: Complete GList
+ * @title: AgsIdGenerator
+ * @section_id:
+ * @include: ags/lib/ags_list.h
+ *
+ * Functions completing #GList API.
+ */
+
+/**
+ * ags_list_free_and_free_link:
+ * @list: the #GList
+ * 
+ * Free list and free data.
+ *
+ * Since: 0.3
+ * Deprecated: Use g_list_free_full() with g_free() instead
+ */
 void
 ags_list_free_and_free_link(GList *list)
 {
@@ -33,6 +52,16 @@ ags_list_free_and_free_link(GList *list)
   }
 }
 
+
+/**
+ * ags_list_free_and_unref_link:
+ * @list: the #GList
+ * 
+ * Free list and unref data.
+ *
+ * Since: 0.3
+ * Deprecated: Use g_list_free_full() with g_ojbect_unref() instead
+ */
 void
 ags_list_free_and_unref_link(GList *list)
 {
@@ -48,6 +77,16 @@ ags_list_free_and_unref_link(GList *list)
   }
 }
 
+/**
+ * ags_list_duplicat_list:
+ * @entry: the entry to prepend
+ * @target: location to store the #GList 
+ *
+ * ???
+ *
+ * Since: 0.3
+ * Deprecated: Ever used?
+ */
 void
 ags_list_duplicate_list(gpointer entry, gpointer target)
 {

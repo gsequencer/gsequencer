@@ -18,6 +18,24 @@
 
 #include "ags_combo_box_text.h"
 
+/**
+ * SECTION:ags_combo_box_text
+ * @short_description: Complete GtkComboBox
+ * @title: AgsIdGenerator
+ * @section_id:
+ * @include: ags/lib/ags_combo_box_text.h
+ *
+ * Functions completing #GtkComboBoxText API.
+ */
+
+/**
+ * ags_combo_box_text_remove_all:
+ * @combo_box: the #GtkComboBoxText
+ * 
+ * Emptys #GtkTreeModel of @combo_box.
+ *
+ * Since: 0.4
+ */
 void
 ags_combo_box_text_remove_all(GtkComboBoxText *combo_box){
   GtkTreeModel *model;

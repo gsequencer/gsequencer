@@ -963,7 +963,7 @@ ags_notation_add_point_to_selection(AgsNotation *notation,
 }
 
 /**
- * ags_notation_remove_point_to_selection:
+ * ags_notation_remove_point_from_selection:
  * @notation: an #AgsNotation
  * @x: offset
  * @y: tone

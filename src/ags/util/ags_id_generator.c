@@ -4,8 +4,27 @@
 
 #include <uuid/uuid.h>
 
+/**
+ * SECTION:ags_id_generator
+ * @short_description: UUID util functions
+ * @title: AgsIdGenerator
+ * @section_id:
+ * @include: ags/util/ags_id_generator.h
+ *
+ * Functions related to UUID.
+ */
+
 #define AGS_ID_GENERATOR_DEFAULT_UUID_LENGTH 36
 
+/**
+ * ags_id_generator_create_uuid:
+ *
+ * Creates an new string containing UUID. 
+ *
+ * Returns: a new string
+ *
+ * Since: 0.4
+ */
 gchar*
 ags_id_generator_create_uuid()
 {

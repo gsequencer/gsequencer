@@ -44,11 +44,11 @@ void* ags_thread_pool_creation_thread(void *ptr);
 void ags_thread_pool_real_start(AgsThreadPool *thread_pool);
 
 /**
- * SECTION:ags_thread
+ * SECTION:ags_thread_pool
  * @short_description: thread pool
  * @title: AgsThreadPool
  * @section_id:
- * @include: ags/thread/ags_thread.h
+ * @include: ags/thread/ags_thread_pool.h
  *
  * The #AgsThreadPool acts as preinstantiated threads store.
  * This can achieve enormeous performance.
@@ -370,7 +370,12 @@ ags_thread_pool_creation_thread(void *ptr)
  * ags_thread_pool_pull:
  * @thread_pool: the #AgsThreadPool
  *
- * Pull an #AgsReturnableThread.
+ * Pull a previously instantiated #AgsReturnableThread. Note this
+ * function may block until a new thread is available.
+ *
+ * Returns: a new #AgsThread
+ *
+ * Since: 0.4
  */    
 AgsThread*
 ags_thread_pool_pull(AgsThreadPool *thread_pool)
@@ -481,7 +486,7 @@ ags_thread_pool_real_start(AgsThreadPool *thread_pool)
 }
 
 /**
- * ags_thread_pool_new:
+ * ags_thread_pool_start:
  * @thread_pool: the #AgsThreadPool
  *
  * Start the thread pool.

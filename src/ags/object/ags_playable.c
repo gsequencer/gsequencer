@@ -150,7 +150,7 @@ ags_playable_level_count(AgsPlayable *playable)
 }
 
 /**
- * ags_playable_level_count:
+ * ags_playable_nth_level:
  * @playable: the #AgsPlayable
  * 
  * Retrieve the selected level.
@@ -403,7 +403,7 @@ ags_playable_seek(AgsPlayable *playable,
 }
 
 /**
- * ags_playable_flush:
+ * ags_playable_close:
  * @playable: an #AgsPlayable
  *
  * Close audio file.

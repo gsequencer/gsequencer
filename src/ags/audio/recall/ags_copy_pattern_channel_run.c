@@ -65,11 +65,11 @@ void ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *del
 /**
  * SECTION:ags_copy_pattern_channel_run
  * @short_description: copys pattern
- * @title: AgsCopy_PatternChannelRun
+ * @title: AgsCopyPatternChannelRun
  * @section_id:
  * @include: ags/audio/recall/ags_copy_pattern_channel_run.h
  *
- * The #AgsCopy_PatternChannelRun class copys pattern.
+ * The #AgsCopyPatternChannelRun class copys pattern.
  */
 
 static gpointer ags_copy_pattern_channel_run_parent_class = NULL;

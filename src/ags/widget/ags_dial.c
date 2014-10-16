@@ -51,6 +51,16 @@ gboolean ags_dial_motion_notify(GtkWidget *widget,
 void ags_dial_draw(AgsDial *dial);
 void* ags_dial_idle(void *dial0);
 
+/**
+ * SECTION:ags_dial
+ * @short_description: A dial widget
+ * @title: AgsDial
+ * @section_id:
+ * @include: ags/widget/ags_dial.h
+ *
+ * #AgsDial is a widget representing a #GtkAdjustment.
+ */
+
 enum{
   PROP_0,
   PROP_ADJUSTMENT,
@@ -748,6 +758,15 @@ ags_dial_idle(void *dial0)
   return(NULL);
 }
 
+/**
+ * ags_dial_new:
+ *
+ * Creates an #AgsDial
+ *
+ * Returns: a new #AgsDial
+ *
+ * Since: 0.4
+ */
 AgsDial*
 ags_dial_new()
 {

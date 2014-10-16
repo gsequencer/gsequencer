@@ -208,6 +208,15 @@ ags_note_edit_disconnect(AgsConnectable *connectable)
   //TODO:JK: implement me
 }
 
+/**
+ * ags_note_edit_set_map_height:
+ * @note_edit: the #AgsNoteEdit
+ * @map_height: the new height
+ *
+ * Set the map height in pixel.
+ *
+ * Since: 0.4
+ */
 void
 ags_note_edit_set_map_height(AgsNoteEdit *note_edit, guint map_height)
 {
@@ -222,6 +231,15 @@ ags_note_edit_set_map_height(AgsNoteEdit *note_edit, guint map_height)
   note_edit->flags &= (~AGS_NOTE_EDIT_RESETING_HORIZONTALLY);
 }
 
+/**
+ * ags_note_edit_reset_vertically:
+ * @note_edit: the #AgsNoteEdit
+ * @flags: the #AgsNoteEditResetFlags
+ *
+ * Reset @note_edit as configured vertically.
+ *
+ * Since: 0.4
+ */
 void
 ags_note_edit_reset_vertically(AgsNoteEdit *note_edit, guint flags)
 {
@@ -290,6 +308,15 @@ ags_note_edit_reset_vertically(AgsNoteEdit *note_edit, guint flags)
   }
 }
 
+/**
+ * ags_note_edit_reset_horizontally:
+ * @note_edit: the #AgsNoteEdit
+ * @flags: the #AgsNoteEditResetFlags
+ *
+ * Reset @note_edit as configured horizontally.
+ *
+ * Since: 0.4
+ */
 void
 ags_note_edit_reset_horizontally(AgsNoteEdit *note_edit, guint flags)
 {
@@ -406,6 +433,15 @@ ags_note_edit_reset_horizontally(AgsNoteEdit *note_edit, guint flags)
   }
 }
 
+/**
+ * ags_note_edit_draw_segment:
+ * @note_edit: the #AgsNoteEdit
+ * @cr: the #cairo_t surface
+ *
+ * Draws horizontal and vertical lines.
+ *
+ * Since: 0.4
+ */
 void
 ags_note_edit_draw_segment(AgsNoteEdit *note_edit, cairo_t *cr)
 {
@@ -473,6 +509,15 @@ ags_note_edit_draw_segment(AgsNoteEdit *note_edit, cairo_t *cr)
   }
 }
 
+/**
+ * ags_note_edit_draw_position:
+ * @note_edit: the #AgsNoteEdit
+ * @cr: the #cairo_t surface
+ *
+ * Draws the cursor.
+ *
+ * Since: 0.4
+ */
 void
 ags_note_edit_draw_position(AgsNoteEdit *note_edit, cairo_t *cr)
 {
@@ -539,6 +584,15 @@ ags_note_edit_draw_position(AgsNoteEdit *note_edit, cairo_t *cr)
   cairo_fill(cr);
 }
 
+/**
+ * ags_note_edit_draw_notation:
+ * @note_edit: the #AgsNoteEdit
+ * @cr: the #cairo_t surface
+ *
+ * Draw the #AgsNotation of selected #AgsMachine on @note_edit.
+ *
+ * Since: 0.4
+ */
 void
 ags_note_edit_draw_notation(AgsNoteEdit *note_edit, cairo_t *cr)
 {
@@ -768,6 +822,16 @@ ags_note_edit_draw_notation(AgsNoteEdit *note_edit, cairo_t *cr)
   }
 }
 
+/**
+ * ags_note_edit_draw_scroll:
+ * @note_edit: the #AgsNoteEdit
+ * @cr: the #cairo_t surface
+ * @position: the new position
+ *
+ * Change visible x-position of @note_edit.
+ *
+ * Since: 0.4
+ */
 void
 ags_note_edit_draw_scroll(AgsNoteEdit *note_edit, cairo_t *cr,
 			  gdouble position)

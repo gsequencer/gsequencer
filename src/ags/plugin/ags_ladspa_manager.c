@@ -121,6 +121,8 @@ ags_ladspa_manager_finalize(GObject *gobject)
  * 
  * Alloc the #AgsLadspaPlugin-struct
  *
+ * Returns: the #AgsLadspaPlugin-struct
+ *
  * Since: 0.4
  */
 AgsLadspaPlugin*
@@ -137,6 +139,14 @@ ags_ladspa_plugin_alloc()
   return(ladspa_plugin);
 }
 
+/**
+ * ags_ladspa_plugin_free:
+ * @ladspa_plugin: the #AgsLadspaPlugin-struct
+ * 
+ * Free the #AgsLadspaPlugin-struct
+ *
+ * Since: 0.4
+ */
 void
 ags_ladspa_plugin_free(AgsLadspaPlugin *ladspa_plugin)
 {
@@ -153,7 +163,7 @@ ags_ladspa_plugin_free(AgsLadspaPlugin *ladspa_plugin)
  * 
  * Retrieve all filenames
  *
- * Returns: an %NULL-terminated array of filenames
+ * Returns: a %NULL-terminated array of filenames
  *
  * Since: 0.4
  */
@@ -217,7 +227,7 @@ ags_ladspa_manager_find_ladspa_plugin(gchar *filename)
 }
 
 /**
- * ags_ladspa_manager_find_ladspa_plugin:
+ * ags_ladspa_manager_load_file:
  * @filename: the filename of the plugin
  *
  * Load @filename specified plugin.

@@ -58,6 +58,18 @@ void ags_expander_insert_child(AgsExpander *expander,
 void ags_expander_remove_child(AgsExpander *expander,
 			       AgsExpanderChild *child);
 
+/**
+ * SECTION:ags_expander
+ * @short_description: A expander widget
+ * @title: AgsExpander
+ * @section_id:
+ * @include: ags/widget/ags_expander.h
+ *
+ * #AgsExpander is a composite widget containing a #GtkTable. It
+ * is mainly used to layout childs in rows and columns that can
+ * be expanded.
+ */
+
 enum{
   PROP_0,
   PROP_WIDTH,
@@ -453,6 +465,19 @@ ags_expander_remove_child(AgsExpander *expander,
   free(child);
 }
 
+/**
+ * ags_expander_add:
+ * @expander: the #AgsExpander
+ * @widget: the child #GtkWidget
+ * @x: x-position
+ * @y: y-position
+ * @width: allocation width
+ * @height: allocation height
+ *
+ * Adds a #GtkWidget to #AgsExpander
+ *
+ * Since: 0.4
+ */
 void
 ags_expander_add(AgsExpander *expander,
 		 GtkWidget *widget,
@@ -473,6 +498,15 @@ ags_expander_add(AgsExpander *expander,
   }
 }
 
+/**
+ * ags_expander_remove:
+ * @expander: the #AgsExpander
+ * @widget: the child #GtkWidget
+ *
+ * Removes a #GtkWidget of #AgsExpander
+ *
+ * Since: 0.4
+ */
 void
 ags_expander_remove(AgsExpander *expander,
 		    GtkWidget *widget)
@@ -482,6 +516,17 @@ ags_expander_remove(AgsExpander *expander,
 						    widget));
 }
 
+/**
+ * ags_expander_new:
+ * @height: the table's height
+ * @width: the table's width
+ *
+ * Creates an #AgsExpander
+ *
+ * Returns: a new #AgsExpander
+ *
+ * Since: 0.4
+ */
 AgsExpander*
 ags_expander_new(guint width, guint height)
 {
