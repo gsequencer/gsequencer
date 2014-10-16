@@ -3348,8 +3348,8 @@ ags_file_write_recycling_list(AgsFile *file, xmlNode *parent, GList *recycling)
 
   while(list != NULL){
     ags_file_write_recycling(file,
-			  node,
-			  AGS_RECYCLING(list->data));
+			     node,
+			     AGS_RECYCLING(list->data));
     
     list = list->next;
   }

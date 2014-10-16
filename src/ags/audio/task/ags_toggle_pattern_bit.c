@@ -1,4 +1,4 @@
-p/* AGS - Advanced GTK Sequencer
+/* AGS - Advanced GTK Sequencer
  * Copyright (C) 2005-2011 Joël Krähemann
  *
  * This program is free software; you can redistribute it and/or modify
@@ -207,7 +207,7 @@ ags_toggle_pattern_bit_new(AgsPattern *pattern,
 			   guint bit)
 {
   AgsTogglePatternBit *toggle_pattern_bit;
-
+  
   toggle_pattern_bit = (AgsTogglePatternBit *) g_object_new(AGS_TYPE_TOGGLE_PATTERN_BIT,
 							    NULL);
 

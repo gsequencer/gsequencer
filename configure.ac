@@ -1,22 +1,14 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 AC_PREREQ([2.69])
-AC_INIT([ags],[0.4.0-beta],[weedlight@gmail.com])
-AM_INIT_AUTOMAKE([ags], [0.3.99-SNAPSHOT])
+AC_INIT([ags],[0.4.2],[weedlight@gmail.com])
+AM_INIT_AUTOMAKE([ags], [0.4.2])
 AC_CONFIG_SRCDIR([src])
 AC_CONFIG_HEADERS([config.h])
 
 # Checks for programs.
 AC_PROG_CC
 AC_PROG_RANLIB
-LT_INIT
-
-# check for gtk-doc
-m4_ifdef([GTK_DOC_CHECK], [
-GTK_DOC_CHECK([1.14],[--flavour no-tmpl])
-],[
-AM_CONDITIONAL([ENABLE_GTK_DOC], false)
-])
 AC_CONFIG_MACRO_DIR(m4)
 
 #AGS_WITH_XMLRPC_C

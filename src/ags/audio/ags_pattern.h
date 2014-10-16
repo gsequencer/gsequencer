@@ -19,13 +19,12 @@
 #ifndef __AGS_PATTERN_H__
 #define __AGS_PATTERN_H__
 
+#include <glib.h>
 #include <glib-object.h>
 
-#include <ags/audio/ags_channel.h>
-
 #define AGS_TYPE_PATTERN                (ags_pattern_get_type())
-#define AGS_PATTERN(obj)                ((AgsPattern*) G_TYPE_CHECK_INSTANCE_CAST(obj, AGS_TYPE_PATTERN, AgsPattern))
-#define AGS_PATTERN_CLASS(class)        ((AgsPatternClass*) G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_PATTERN, AgsPatternClass))
+#define AGS_PATTERN(obj)                (G_TYPE_CHECK_INSTANCE_CAST(obj, AGS_TYPE_PATTERN, AgsPattern))
+#define AGS_PATTERN_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_PATTERN, AgsPatternClass))
 #define AGS_IS_PATTERN(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_PATTERN))
 #define AGS_IS_PATTERN_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_PATTERN))
 #define AGS_PATTERN_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_PATTERN, AgsPatternClass))

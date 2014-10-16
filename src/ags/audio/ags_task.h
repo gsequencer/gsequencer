@@ -28,7 +28,7 @@
 #define AGS_TASK_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_TASK, AgsTaskClass))
 #define AGS_IS_TASK(obj)             (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_TASK))
 #define AGS_IS_TASK_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_TASK))
-#define AGS_TASK_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_TASK, AgsTaskClass))
+#define AGS_TASK_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_TASK, AgsTaskClass)))
 
 typedef struct _AgsTask AgsTask;
 typedef struct _AgsTaskClass AgsTaskClass;

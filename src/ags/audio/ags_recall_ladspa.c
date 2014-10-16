@@ -60,6 +60,8 @@ void ags_recall_ladspa_finalize(GObject *gobject);
 void ags_recall_ladspa_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
 xmlNode* ags_recall_ladspa_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
+void ags_recall_ladspa_load(AgsRecallLadspa *recall_ladspa);
+
 /**
  * SECTION:ags_recall_ladspa
  * @short_description: The object interfacing with LADSPA
@@ -537,6 +539,9 @@ ags_recall_ladspa_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 void
 ags_recall_ladspa_load(AgsRecallLadspa *recall_ladspa)
 {
+  AgsDevout *devout;
+  AgsLadspaPlugin *ladspa_plugin;
+
   void *plugin_so;
   LADSPA_Descriptor_Function ladspa_descriptor;
   LADSPA_Descriptor *plugin_descriptor;
@@ -552,7 +557,7 @@ ags_recall_ladspa_load(AgsRecallLadspa *recall_ladspa)
 							   "ladspa_descriptor\0");
 
     if(dlerror() == NULL && ladspa_descriptor){
-      devout = AGS_RECALL(gobject)->devout;
+      devout = AGS_RECALL(recall_ladspa)->devout;
 
       recall_ladspa->plugin_descriptor = 
 	plugin_descriptor = ladspa_descriptor(recall_ladspa->index);

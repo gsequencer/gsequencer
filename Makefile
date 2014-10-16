@@ -50,8 +50,6 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-build_triplet = x86_64-unknown-linux-gnu
-host_triplet = x86_64-unknown-linux-gnu
 bin_PROGRAMS = ags$(EXEEXT) agsclient$(EXEEXT) test$(EXEEXT)
 subdir = .
 DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
@@ -69,6 +67,7 @@ CONFIG_HEADER = config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 LIBRARIES = $(noinst_LIBRARIES)
+AR = ar
 ARFLAGS = cru
 libags_a_AR = $(AR) $(ARFLAGS)
 libags_a_LIBADD =
@@ -78,8 +77,7 @@ am_libags_a_OBJECTS = libags_a-ags_connectable.$(OBJEXT) \
 libags_a_OBJECTS = $(am_libags_a_OBJECTS)
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_ags_OBJECTS = ags-ags-scan.$(OBJEXT) \
-	ags-ags_plugin_factory.$(OBJEXT) \
+am_ags_OBJECTS = ags-ags_plugin_factory.$(OBJEXT) \
 	ags-ags_ladspa_manager.$(OBJEXT) ags-ags_file.$(OBJEXT) \
 	ags-ags_file_id_ref.$(OBJEXT) ags-ags_file_lookup.$(OBJEXT) \
 	ags-ags_file_launch.$(OBJEXT) ags-ags_file_util.$(OBJEXT) \
@@ -305,9 +303,8 @@ am_ags_OBJECTS = ags-ags-scan.$(OBJEXT) \
 	ags-ags_remote_task.$(OBJEXT)
 ags_OBJECTS = $(am_ags_OBJECTS)
 ags_DEPENDENCIES = libags.a
-ags_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
-	--mode=link $(CCLD) $(ags_CFLAGS) $(CFLAGS) $(ags_LDFLAGS) \
-	$(LDFLAGS) -o $@
+ags_LINK = $(CCLD) $(ags_CFLAGS) $(CFLAGS) $(ags_LDFLAGS) $(LDFLAGS) \
+	-o $@
 am_agsclient_OBJECTS = agsclient-ags_file_client.$(OBJEXT) \
 	agsclient-ags_client_menu_bar_callbacks.$(OBJEXT) \
 	agsclient-ags_client_window.$(OBJEXT) \
@@ -352,14 +349,12 @@ am_agsclient_OBJECTS = agsclient-ags_file_client.$(OBJEXT) \
 	agsclient-main.$(OBJEXT)
 agsclient_OBJECTS = $(am_agsclient_OBJECTS)
 agsclient_DEPENDENCIES = libags.a
-agsclient_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
-	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(agsclient_CFLAGS) \
-	$(CFLAGS) $(agsclient_LDFLAGS) $(LDFLAGS) -o $@
+agsclient_LINK = $(CCLD) $(agsclient_CFLAGS) $(CFLAGS) \
+	$(agsclient_LDFLAGS) $(LDFLAGS) -o $@
 am_test_OBJECTS = test-ags_test_thread.$(OBJEXT)
 test_OBJECTS = $(am_test_OBJECTS)
 test_LDADD = $(LDADD)
-test_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
-	--mode=link $(CCLD) $(test_CFLAGS) $(CFLAGS) $(test_LDFLAGS) \
+test_LINK = $(CCLD) $(test_CFLAGS) $(CFLAGS) $(test_LDFLAGS) \
 	$(LDFLAGS) -o $@
 DEFAULT_INCLUDES = -I.
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -367,13 +362,8 @@ am__depfiles_maybe = depfiles
 am__mv = mv -f
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
-LTCOMPILE = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
-	--mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
-	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
-LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
-	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
-	$(LDFLAGS) -o $@
+LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 SOURCES = $(libags_a_SOURCES) $(ags_SOURCES) $(agsclient_SOURCES) \
 	$(test_SOURCES)
 DIST_SOURCES = $(libags_a_SOURCES) $(ags_SOURCES) $(agsclient_SOURCES) \
@@ -440,7 +430,6 @@ am__distuninstallcheck_listfiles = $(distuninstallcheck_listfiles) \
 distcleancheck_listfiles = find . -type f -print
 ACLOCAL = ${SHELL} /home/h3lix/ags-code/missing --run aclocal-1.11
 AMTAR = $${TAR-tar}
-AR = ar
 AUTOCONF = ${SHELL} /home/h3lix/ags-code/missing --run autoconf
 AUTOHEADER = ${SHELL} /home/h3lix/ags-code/missing --run autoheader
 AUTOMAKE = ${SHELL} /home/h3lix/ags-code/missing --run automake-1.11
@@ -455,34 +444,23 @@ CPPFLAGS =
 CYGPATH_W = echo
 DEFS = -DHAVE_CONFIG_H
 DEPDIR = .deps
-DLLTOOL = false
-DSYMUTIL = 
-DUMPBIN = 
 ECHO_C = 
 ECHO_N = -n
 ECHO_T = 
 EGREP = /bin/grep -E
 EXEEXT = 
-FGREP = /bin/grep -F
 GDKPIXBUF_CFLAGS = -pthread -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  
 GDKPIXBUF_LIBS = -lgdk_pixbuf-2.0 -lgobject-2.0 -lglib-2.0  
 GOBJECT_CFLAGS = -pthread -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  
 GOBJECT_LIBS = -Wl,--export-dynamic -pthread -lgobject-2.0 -lgmodule-2.0 -lgthread-2.0 -lrt -lglib-2.0  
 GREP = /bin/grep
-GTKDOC_CHECK = /usr/bin/gtkdoc-check
-GTKDOC_DEPS_CFLAGS = 
-GTKDOC_DEPS_LIBS = 
-GTKDOC_MKPDF = /usr/bin/gtkdoc-mkpdf
-GTKDOC_REBASE = /usr/bin/gtkdoc-rebase
 GTK_CFLAGS = -pthread -I/usr/include/gtk-2.0 -I/usr/lib/x86_64-linux-gnu/gtk-2.0/include -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/pango-1.0 -I/usr/include/gio-unix-2.0/ -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12  
 GTK_LIBS = -lgtk-x11-2.0 -lgdk-x11-2.0 -latk-1.0 -lgio-2.0 -lpangoft2-1.0 -lpangocairo-1.0 -lgdk_pixbuf-2.0 -lcairo -lpango-1.0 -lfreetype -lfontconfig -lgobject-2.0 -lglib-2.0  
-HTML_DIR = ${datadir}/gtk-doc/html
 INSTALL = /usr/bin/install -c
 INSTALL_DATA = ${INSTALL} -m 644
 INSTALL_PROGRAM = ${INSTALL}
 INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
-LD = /usr/bin/ld -m elf_x86_64
 LDFLAGS = 
 LIBAO_CFLAGS =  
 LIBAO_LIBS = -lao  
@@ -492,71 +470,51 @@ LIBINSTPATCH_CFLAGS = -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I
 LIBINSTPATCH_LIBS = -linstpatch-1.0 -lgobject-2.0 -lsndfile -lglib-2.0  
 LIBOBJS = 
 LIBS = -lrt -lm -lfreetype -lfontconfig -ldl 
-LIBTOOL = $(SHELL) $(top_builddir)/libtool
 LIBXML2_CFLAGS = -I/usr/include/libxml2  
 LIBXML2_LIBS = -lxml2  
-LIPO = 
-LN_S = ln -s
 LTLIBOBJS = 
 MAKEINFO = ${SHELL} /home/h3lix/ags-code/missing --run makeinfo
-MANIFEST_TOOL = :
 MKDIR_P = /bin/mkdir -p
-NM = /usr/bin/nm -B
-NMEDIT = 
-OBJDUMP = objdump
 OBJEXT = o
-OTOOL = 
-OTOOL64 = 
 PACKAGE = ags
 PACKAGE_BUGREPORT = weedlight@gmail.com
 PACKAGE_NAME = ags
-PACKAGE_STRING = ags 0.4.0-beta
+PACKAGE_STRING = ags 0.4.2
 PACKAGE_TARNAME = ags
 PACKAGE_URL = 
-PACKAGE_VERSION = 0.4.0-beta
+PACKAGE_VERSION = 0.4.2
 PATH_SEPARATOR = :
 PKG_CONFIG = /usr/bin/pkg-config
 PKG_CONFIG_LIBDIR = 
 PKG_CONFIG_PATH = 
 RANLIB = ranlib
-SED = /bin/sed
 SET_MAKE = 
 SHELL = /bin/bash
 SNDFILE_CFLAGS =  
 SNDFILE_LIBS = -lsndfile  
-STRIP = strip
+STRIP = 
 UUID_CFLAGS = -I/usr/include/uuid  
 UUID_LIBS = -luuid  
-VERSION = 0.3.99-SNAPSHOT
+VERSION = 0.4.2
 abs_builddir = /home/h3lix/ags-code
 abs_srcdir = /home/h3lix/ags-code
 abs_top_builddir = /home/h3lix/ags-code
 abs_top_srcdir = /home/h3lix/ags-code
-ac_ct_AR = ar
 ac_ct_CC = gcc
-ac_ct_DUMPBIN = 
 am__include = include
 am__leading_dot = .
 am__quote = 
 am__tar = $${TAR-tar} chof - "$$tardir"
 am__untar = $${TAR-tar} xf -
 bindir = ${exec_prefix}/bin
-build = x86_64-unknown-linux-gnu
 build_alias = 
-build_cpu = x86_64
-build_os = linux-gnu
-build_vendor = unknown
 builddir = .
 datadir = ${datarootdir}
 datarootdir = ${prefix}/share
 docdir = ${datarootdir}/doc/${PACKAGE_TARNAME}
 dvidir = ${docdir}
 exec_prefix = ${prefix}
-host = x86_64-unknown-linux-gnu
 host_alias = 
-host_cpu = x86_64
-host_os = linux-gnu
-host_vendor = unknown
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
@@ -584,7 +542,7 @@ AUTOMAKE_OPTIONS = foreign
 SUBDIRS = src
 noinst_LIBRARIES = libags.a
 libags_a_SOURCES = ./src/ags-lib/object/ags_connectable.c ./src/ags-lib/object/ags_connectable.h ./src/ags-lib/object/ags_serializeable.c ./src/ags-lib/object/ags_serializeable.h ./src/ags-lib/lib/ags_math.c ./src/ags-lib/lib/ags_math.h
-ags_SOURCES = ags-scan.c ./src/ags/plugin/ags_plugin_factory.h \
+ags_SOURCES = ./src/ags/plugin/ags_plugin_factory.h \
 	./src/ags/plugin/ags_plugin_stock.h \
 	./src/ags/plugin/ags_plugin_factory.c \
 	./src/ags/plugin/ags_ladspa_manager.h \
@@ -1241,7 +1199,7 @@ all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 
 .SUFFIXES:
-.SUFFIXES: .c .lo .o .obj
+.SUFFIXES: .c .o .obj
 am--refresh: Makefile
 	@:
 $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
@@ -1307,7 +1265,7 @@ install-binPROGRAMS: $(bin_PROGRAMS)
 	fi; \
 	for p in $$list; do echo "$$p $$p"; done | \
 	sed 's/$(EXEEXT)$$//' | \
-	while read p p1; do if test -f $$p || test -f $$p1; \
+	while read p p1; do if test -f $$p; \
 	  then echo "$$p"; echo "$$p"; else :; fi; \
 	done | \
 	sed -e 'p;s,.*/,,;n;h' -e 's|.*|.|' \
@@ -1321,8 +1279,8 @@ install-binPROGRAMS: $(bin_PROGRAMS)
 	while read type dir files; do \
 	    if test "$$dir" = .; then dir=; else dir=/$$dir; fi; \
 	    test -z "$$files" || { \
-	    echo " $(INSTALL_PROGRAM_ENV) $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=install $(INSTALL_PROGRAM) $$files '$(DESTDIR)$(bindir)$$dir'"; \
-	    $(INSTALL_PROGRAM_ENV) $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=install $(INSTALL_PROGRAM) $$files "$(DESTDIR)$(bindir)$$dir" || exit $$?; \
+	      echo " $(INSTALL_PROGRAM_ENV) $(INSTALL_PROGRAM) $$files '$(DESTDIR)$(bindir)$$dir'"; \
+	      $(INSTALL_PROGRAM_ENV) $(INSTALL_PROGRAM) $$files "$(DESTDIR)$(bindir)$$dir" || exit $$?; \
 	    } \
 	; done
 
@@ -1337,13 +1295,7 @@ uninstall-binPROGRAMS:
 	cd "$(DESTDIR)$(bindir)" && rm -f $$files
 
 clean-binPROGRAMS:
-	@list='$(bin_PROGRAMS)'; test -n "$$list" || exit 0; \
-	echo " rm -f" $$list; \
-	rm -f $$list || exit $$?; \
-	test -n "$(EXEEXT)" || exit 0; \
-	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
-	echo " rm -f" $$list; \
-	rm -f $$list
+	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
 ags$(EXEEXT): $(ags_OBJECTS) $(ags_DEPENDENCIES) $(EXTRA_ags_DEPENDENCIES) 
 	@rm -f ags$(EXEEXT)
 	$(ags_LINK) $(ags_OBJECTS) $(ags_LDADD) $(LIBS)
@@ -1360,7 +1312,6 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-include ./$(DEPDIR)/ags-ags-scan.Po
 include ./$(DEPDIR)/ags-ags_add_audio.Po
 include ./$(DEPDIR)/ags-ags_add_audio_signal.Po
 include ./$(DEPDIR)/ags-ags_add_line_member.Po
@@ -1722,13 +1673,6 @@ include ./$(DEPDIR)/test-ags_test_thread.Po
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(COMPILE) -c `$(CYGPATH_W) '$<'`
 
-.c.lo:
-	$(LTCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-	$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Plo
-#	source='$<' object='$@' libtool=yes \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(LTCOMPILE) -c -o $@ $<
-
 libags_a-ags_connectable.o: ./src/ags-lib/object/ags_connectable.c
 	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -MT libags_a-ags_connectable.o -MD -MP -MF $(DEPDIR)/libags_a-ags_connectable.Tpo -c -o libags_a-ags_connectable.o `test -f './src/ags-lib/object/ags_connectable.c' || echo '$(srcdir)/'`./src/ags-lib/object/ags_connectable.c
 	$(am__mv) $(DEPDIR)/libags_a-ags_connectable.Tpo $(DEPDIR)/libags_a-ags_connectable.Po
@@ -1770,20 +1714,6 @@ libags_a-ags_math.obj: ./src/ags-lib/lib/ags_math.c
 #	source='./src/ags-lib/lib/ags_math.c' object='libags_a-ags_math.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -c -o libags_a-ags_math.obj `if test -f './src/ags-lib/lib/ags_math.c'; then $(CYGPATH_W) './src/ags-lib/lib/ags_math.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-lib/lib/ags_math.c'; fi`
-
-ags-ags-scan.o: ags-scan.c
-	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags-scan.o -MD -MP -MF $(DEPDIR)/ags-ags-scan.Tpo -c -o ags-ags-scan.o `test -f 'ags-scan.c' || echo '$(srcdir)/'`ags-scan.c
-	$(am__mv) $(DEPDIR)/ags-ags-scan.Tpo $(DEPDIR)/ags-ags-scan.Po
-#	source='ags-scan.c' object='ags-ags-scan.o' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags-scan.o `test -f 'ags-scan.c' || echo '$(srcdir)/'`ags-scan.c
-
-ags-ags-scan.obj: ags-scan.c
-	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags-scan.obj -MD -MP -MF $(DEPDIR)/ags-ags-scan.Tpo -c -o ags-ags-scan.obj `if test -f 'ags-scan.c'; then $(CYGPATH_W) 'ags-scan.c'; else $(CYGPATH_W) '$(srcdir)/ags-scan.c'; fi`
-	$(am__mv) $(DEPDIR)/ags-ags-scan.Tpo $(DEPDIR)/ags-ags-scan.Po
-#	source='ags-scan.c' object='ags-ags-scan.obj' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags-scan.obj `if test -f 'ags-scan.c'; then $(CYGPATH_W) 'ags-scan.c'; else $(CYGPATH_W) '$(srcdir)/ags-scan.c'; fi`
 
 ags-ags_plugin_factory.o: ./src/ags/plugin/ags_plugin_factory.c
 	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_plugin_factory.o -MD -MP -MF $(DEPDIR)/ags-ags_plugin_factory.Tpo -c -o ags-ags_plugin_factory.o `test -f './src/ags/plugin/ags_plugin_factory.c' || echo '$(srcdir)/'`./src/ags/plugin/ags_plugin_factory.c
@@ -6587,15 +6517,6 @@ test-ags_test_thread.obj: ./src/ags/test/ags_test_thread.c
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_CFLAGS) $(CFLAGS) -c -o test-ags_test_thread.obj `if test -f './src/ags/test/ags_test_thread.c'; then $(CYGPATH_W) './src/ags/test/ags_test_thread.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/test/ags_test_thread.c'; fi`
 
-mostlyclean-libtool:
-	-rm -f *.lo
-
-clean-libtool:
-	-rm -rf .libs _libs
-
-distclean-libtool:
-	-rm -f libtool config.lt
-
 # This directory's subdirectories are mostly independent; you can cd
 # into them and run `make' without going through this Makefile.
 # To change the values of `make' variables: instead of editing Makefiles,
@@ -6958,15 +6879,15 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-recursive
 
-clean-am: clean-binPROGRAMS clean-generic clean-libtool \
-	clean-noinstLIBRARIES mostlyclean-am
+clean-am: clean-binPROGRAMS clean-generic clean-noinstLIBRARIES \
+	mostlyclean-am
 
 distclean: distclean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -rf ./$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
-	distclean-hdr distclean-libtool distclean-tags
+	distclean-hdr distclean-tags
 
 dvi: dvi-recursive
 
@@ -7017,8 +6938,7 @@ maintainer-clean-am: distclean-am maintainer-clean-generic
 
 mostlyclean: mostlyclean-recursive
 
-mostlyclean-am: mostlyclean-compile mostlyclean-generic \
-	mostlyclean-libtool
+mostlyclean-am: mostlyclean-compile mostlyclean-generic
 
 pdf: pdf-recursive
 
@@ -7035,21 +6955,20 @@ uninstall-am: uninstall-binPROGRAMS
 
 .PHONY: $(RECURSIVE_CLEAN_TARGETS) $(RECURSIVE_TARGETS) CTAGS GTAGS \
 	all all-am am--refresh check check-am clean clean-binPROGRAMS \
-	clean-generic clean-libtool clean-noinstLIBRARIES ctags \
-	ctags-recursive dist dist-all dist-bzip2 dist-gzip dist-lzip \
-	dist-lzma dist-shar dist-tarZ dist-xz dist-zip distcheck \
-	distclean distclean-compile distclean-generic distclean-hdr \
-	distclean-libtool distclean-tags distcleancheck distdir \
-	distuninstallcheck dvi dvi-am html html-am info info-am \
-	install install-am install-binPROGRAMS install-data \
-	install-data-am install-dvi install-dvi-am install-exec \
-	install-exec-am install-html install-html-am install-info \
-	install-info-am install-man install-pdf install-pdf-am \
-	install-ps install-ps-am install-strip installcheck \
-	installcheck-am installdirs installdirs-am maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-compile \
-	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
-	tags tags-recursive uninstall uninstall-am \
+	clean-generic clean-noinstLIBRARIES ctags ctags-recursive dist \
+	dist-all dist-bzip2 dist-gzip dist-lzip dist-lzma dist-shar \
+	dist-tarZ dist-xz dist-zip distcheck distclean \
+	distclean-compile distclean-generic distclean-hdr \
+	distclean-tags distcleancheck distdir distuninstallcheck dvi \
+	dvi-am html html-am info info-am install install-am \
+	install-binPROGRAMS install-data install-data-am install-dvi \
+	install-dvi-am install-exec install-exec-am install-html \
+	install-html-am install-info install-info-am install-man \
+	install-pdf install-pdf-am install-ps install-ps-am \
+	install-strip installcheck installcheck-am installdirs \
+	installdirs-am maintainer-clean maintainer-clean-generic \
+	mostlyclean mostlyclean-compile mostlyclean-generic pdf pdf-am \
+	ps ps-am tags tags-recursive uninstall uninstall-am \
 	uninstall-binPROGRAMS
 
 
