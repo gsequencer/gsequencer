@@ -221,6 +221,8 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
 		   "recall-container\0", recall_container,
 		   NULL);
       AGS_RECALL(recall_ladspa)->flags |= AGS_RECALL_TEMPLATE;
+      ags_recall_ladspa_load(recall_ladspa);
+      recall_ladspa->plugin_descriptor->activate(recall_ladspa->ladspa_handle);
       ags_recall_ladspa_load_ports(recall_ladspa);
 
       recall_channel_run_dummy = ags_recall_channel_run_dummy_new(line_editor->channel,
@@ -249,6 +251,8 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
 		   "recall-container\0", recall_container,
 		   NULL);
       AGS_RECALL(recall_ladspa)->flags |= AGS_RECALL_TEMPLATE;
+      ags_recall_ladspa_load(recall_ladspa);
+      recall_ladspa->plugin_descriptor->activate(recall_ladspa->ladspa_handle);
       port = ags_recall_ladspa_load_ports(recall_ladspa);
 
       recall_channel_run_dummy = ags_recall_channel_run_dummy_new(line_editor->channel,

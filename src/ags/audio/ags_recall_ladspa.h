@@ -50,7 +50,7 @@ struct _AgsRecallLadspa
   guint input_port;
   guint output_port;
 
-  struct _LADSPA_Descriptor *ladspa_handle;
+  LADSPA_Handle ladspa_handle;
 };
 
 struct _AgsRecallLadspaClass

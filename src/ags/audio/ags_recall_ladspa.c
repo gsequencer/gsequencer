@@ -257,12 +257,10 @@ ags_recall_ladspa_set_property(GObject *gobject,
       }
 
       if(recall_ladspa->filename != NULL){
-	recall_ladspa->ladspa_handle->deactivate(recall_ladspa->ladspa_handle);
 	g_free(recall_ladspa->filename);
       }
 
       recall_ladspa->filename = g_strdup(filename);
-      ags_recall_ladspa_load(recall_ladspa);
     }
     break;
   case PROP_EFFECT:
@@ -284,12 +282,11 @@ ags_recall_ladspa_set_property(GObject *gobject,
       
       index = g_value_get_uint(value);
 
-      if(recall_ladspa->filename != NULL){
-	recall_ladspa->ladspa_handle->deactivate(recall_ladspa->ladspa_handle);
+      if(index == recall_ladspa->index){
+	return;
       }
 
       recall_ladspa->index = index;
-      ags_recall_ladspa_load(recall_ladspa);
     }
     break;
   default:
@@ -443,8 +440,8 @@ ags_recall_ladspa_finalize(GObject *gobject)
   recall_ladspa = AGS_RECALL_LADSPA(gobject);
 
   /* deactivate */
-  recall_ladspa->ladspa_handle->deactivate(recall_ladspa->ladspa_handle);
-  recall_ladspa->ladspa_handle->cleanup(recall_ladspa->ladspa_handle);
+  recall_ladspa->plugin_descriptor->deactivate(recall_ladspa->ladspa_handle);
+  recall_ladspa->plugin_descriptor->cleanup(recall_ladspa->ladspa_handle);
 
   /* call parent */
   G_OBJECT_CLASS(ags_recall_ladspa_parent_class)->finalize(gobject);
@@ -546,6 +543,12 @@ ags_recall_ladspa_load(AgsRecallLadspa *recall_ladspa)
   LADSPA_Descriptor_Function ladspa_descriptor;
   LADSPA_Descriptor *plugin_descriptor;
 
+  devout = AGS_RECALL(recall_ladspa)->devout;
+
+  if(devout == NULL){
+    return;
+  }
+
   /*  */
   ags_ladspa_manager_load_file(recall_ladspa->filename);
   ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(recall_ladspa->filename);
@@ -557,14 +560,14 @@ ags_recall_ladspa_load(AgsRecallLadspa *recall_ladspa)
 							   "ladspa_descriptor\0");
 
     if(dlerror() == NULL && ladspa_descriptor){
-      devout = AGS_RECALL(recall_ladspa)->devout;
-
       recall_ladspa->plugin_descriptor = 
 	plugin_descriptor = ladspa_descriptor(recall_ladspa->index);
 
       /* instantiate ladspa */
-      recall_ladspa->ladspa_handle = recall_ladspa->plugin_descriptor->instantiate(recall_ladspa->plugin_descriptor,
-										   devout->frequency);
+      recall_ladspa->ladspa_handle = (LADSPA_Handle) recall_ladspa->plugin_descriptor->instantiate(recall_ladspa->plugin_descriptor,
+												   (unsigned long) devout->frequency);
+
+      g_message("instantiate LADSPA handle\0");
     }
   }
 }
@@ -638,9 +641,9 @@ ags_recall_ladspa_load_ports(AgsRecallLadspa *recall_ladspa)
 	    current->port_value.ags_port_float = plugin_descriptor->PortRangeHints[i].LowerBound;
 
 	    g_message("connecting port: %d/%d\0", i, port_count);
-	    recall_ladspa->ladspa_handle->connect_port(recall_ladspa->ladspa_handle,
-						       i,
-						       &(current->port_value.ags_port_float));
+	    recall_ladspa->plugin_descriptor->connect_port(recall_ladspa->ladspa_handle,
+							   i,
+							   &(current->port_value.ags_port_float));
 
 	    port = g_list_prepend(port,
 				  current);
@@ -657,9 +660,6 @@ ags_recall_ladspa_load_ports(AgsRecallLadspa *recall_ladspa)
       AGS_RECALL(recall_ladspa)->port = g_list_reverse(port);
     }
   }
-
-  /* activate */
-  recall_ladspa->ladspa_handle->activate(recall_ladspa->ladspa_handle);
 
   return(AGS_RECALL(recall_ladspa)->port);
 }
@@ -761,9 +761,17 @@ ags_recall_ladspa_new(AgsChannel *source,
 		      gchar *effect,
 		      guint index)
 {
+  AgsDevout *devout;
   AgsRecallLadspa *recall_ladspa;
 
+  if(source != NULL){
+    devout = AGS_AUDIO(source->audio)->devout;
+  }else{
+    devout = NULL;
+  }
+
   recall_ladspa = (AgsRecallLadspa *) g_object_new(AGS_TYPE_RECALL_LADSPA,
+						   "devout\0", devout,
 						   "source\0", source,
 						   "filename\0", filename,
 						   "effect\0", effect,
