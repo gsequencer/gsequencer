@@ -189,12 +189,13 @@ am_ags_OBJECTS = ags-ags_plugin_factory.$(OBJEXT) \
 	ags-ags_play_channel.$(OBJEXT) ags-ags_channel.$(OBJEXT) \
 	ags-ags_recall_audio.$(OBJEXT) ags-ags_expander.$(OBJEXT) \
 	ags-ags_expander_set.$(OBJEXT) ags-ags_dial.$(OBJEXT) \
-	ags-ags_menu.$(OBJEXT) ags-ags_htimebar.$(OBJEXT) \
-	ags-ags_indicator.$(OBJEXT) ags-ags_vindicator.$(OBJEXT) \
-	ags-ags_timebar.$(OBJEXT) ags-ags_segment.$(OBJEXT) \
-	ags-ags_menu_item.$(OBJEXT) ags-ags_option_menu.$(OBJEXT) \
-	ags-ags_table.$(OBJEXT) ags-ags_led.$(OBJEXT) \
-	ags-ags_portlet.$(OBJEXT) ags-ags_stackable.$(OBJEXT) \
+	ags-ags_ruler.$(OBJEXT) ags-ags_menu.$(OBJEXT) \
+	ags-ags_htimebar.$(OBJEXT) ags-ags_indicator.$(OBJEXT) \
+	ags-ags_vindicator.$(OBJEXT) ags-ags_timebar.$(OBJEXT) \
+	ags-ags_segment.$(OBJEXT) ags-ags_menu_item.$(OBJEXT) \
+	ags-ags_option_menu.$(OBJEXT) ags-ags_table.$(OBJEXT) \
+	ags-ags_led.$(OBJEXT) ags-ags_portlet.$(OBJEXT) \
+	ags-ags_stackable.$(OBJEXT) \
 	ags-ags_dynamic_connectable.$(OBJEXT) \
 	ags-ags_countable.$(OBJEXT) ags-ags_main_loop.$(OBJEXT) \
 	ags-ags_applicable.$(OBJEXT) ags-ags_tree_iterator.$(OBJEXT) \
@@ -251,7 +252,6 @@ am_ags_OBJECTS = ags-ags_plugin_factory.$(OBJEXT) \
 	ags-ags_meter_callbacks.$(OBJEXT) \
 	ags-ags_file_selection_callbacks.$(OBJEXT) \
 	ags-ags_notebook.$(OBJEXT) ags-ags_toolbar_callbacks.$(OBJEXT) \
-	ags-ags_ruler_callbacks.$(OBJEXT) ags-ags_ruler.$(OBJEXT) \
 	ags-ags_meter.$(OBJEXT) ags-ags_sf2_chooser.$(OBJEXT) \
 	ags-ags_file_selection.$(OBJEXT) \
 	ags-ags_link_collection_editor.$(OBJEXT) \
@@ -829,7 +829,8 @@ ags_SOURCES = ./src/ags/plugin/ags_plugin_factory.h \
 	./src/ags/widget/ags_expander.c \
 	./src/ags/widget/ags_expander_set.h \
 	./src/ags/widget/ags_expander_set.c \
-	./src/ags/widget/ags_dial.c ./src/ags/widget/ags_menu.c \
+	./src/ags/widget/ags_dial.c ./src/ags/widget/ags_ruler.h \
+	./src/ags/widget/ags_ruler.c ./src/ags/widget/ags_menu.c \
 	./src/ags/widget/ags_menu_item.h \
 	./src/ags/widget/ags_option_menu.h \
 	./src/ags/widget/ags_htimebar.c ./src/ags/widget/ags_segment.h \
@@ -968,13 +969,10 @@ ags_SOURCES = ./src/ags/plugin/ags_plugin_factory.h \
 	./src/ags/X/editor/ags_inline_player_callbacks.h \
 	./src/ags/X/editor/ags_file_selection_callbacks.h \
 	./src/ags/X/editor/ags_toolbar_mode_stock.h \
-	./src/ags/X/editor/ags_ruler_callbacks.h \
 	./src/ags/X/editor/ags_notebook.c \
 	./src/ags/X/editor/ags_toolbar_callbacks.c \
 	./src/ags/X/editor/ags_sf2_chooser_callbacks.h \
-	./src/ags/X/editor/ags_ruler.h \
-	./src/ags/X/editor/ags_ruler_callbacks.c \
-	./src/ags/X/editor/ags_meter.h ./src/ags/X/editor/ags_ruler.c \
+	./src/ags/X/editor/ags_meter.h \
 	./src/ags/X/editor/ags_toolbar_callbacks.h \
 	./src/ags/X/editor/ags_meter.c \
 	./src/ags/X/editor/ags_file_selection.h \
@@ -1556,7 +1554,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_resize_editor.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_returnable_thread.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_ruler.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_ruler_callbacks.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_runnable.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_save_file.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_scroll_on_play.Po@am__quote@
@@ -3815,6 +3812,20 @@ ags-ags_dial.obj: ./src/ags/widget/ags_dial.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_dial.obj `if test -f './src/ags/widget/ags_dial.c'; then $(CYGPATH_W) './src/ags/widget/ags_dial.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/widget/ags_dial.c'; fi`
 
+ags-ags_ruler.o: ./src/ags/widget/ags_ruler.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_ruler.o -MD -MP -MF $(DEPDIR)/ags-ags_ruler.Tpo -c -o ags-ags_ruler.o `test -f './src/ags/widget/ags_ruler.c' || echo '$(srcdir)/'`./src/ags/widget/ags_ruler.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/ags-ags_ruler.Tpo $(DEPDIR)/ags-ags_ruler.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='./src/ags/widget/ags_ruler.c' object='ags-ags_ruler.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_ruler.o `test -f './src/ags/widget/ags_ruler.c' || echo '$(srcdir)/'`./src/ags/widget/ags_ruler.c
+
+ags-ags_ruler.obj: ./src/ags/widget/ags_ruler.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_ruler.obj -MD -MP -MF $(DEPDIR)/ags-ags_ruler.Tpo -c -o ags-ags_ruler.obj `if test -f './src/ags/widget/ags_ruler.c'; then $(CYGPATH_W) './src/ags/widget/ags_ruler.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/widget/ags_ruler.c'; fi`
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/ags-ags_ruler.Tpo $(DEPDIR)/ags-ags_ruler.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='./src/ags/widget/ags_ruler.c' object='ags-ags_ruler.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_ruler.obj `if test -f './src/ags/widget/ags_ruler.c'; then $(CYGPATH_W) './src/ags/widget/ags_ruler.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/widget/ags_ruler.c'; fi`
+
 ags-ags_menu.o: ./src/ags/widget/ags_menu.c
 @am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_menu.o -MD -MP -MF $(DEPDIR)/ags-ags_menu.Tpo -c -o ags-ags_menu.o `test -f './src/ags/widget/ags_menu.c' || echo '$(srcdir)/'`./src/ags/widget/ags_menu.c
 @am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/ags-ags_menu.Tpo $(DEPDIR)/ags-ags_menu.Po
@@ -4948,34 +4959,6 @@ ags-ags_toolbar_callbacks.obj: ./src/ags/X/editor/ags_toolbar_callbacks.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='./src/ags/X/editor/ags_toolbar_callbacks.c' object='ags-ags_toolbar_callbacks.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_toolbar_callbacks.obj `if test -f './src/ags/X/editor/ags_toolbar_callbacks.c'; then $(CYGPATH_W) './src/ags/X/editor/ags_toolbar_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/editor/ags_toolbar_callbacks.c'; fi`
-
-ags-ags_ruler_callbacks.o: ./src/ags/X/editor/ags_ruler_callbacks.c
-@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_ruler_callbacks.o -MD -MP -MF $(DEPDIR)/ags-ags_ruler_callbacks.Tpo -c -o ags-ags_ruler_callbacks.o `test -f './src/ags/X/editor/ags_ruler_callbacks.c' || echo '$(srcdir)/'`./src/ags/X/editor/ags_ruler_callbacks.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/ags-ags_ruler_callbacks.Tpo $(DEPDIR)/ags-ags_ruler_callbacks.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='./src/ags/X/editor/ags_ruler_callbacks.c' object='ags-ags_ruler_callbacks.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_ruler_callbacks.o `test -f './src/ags/X/editor/ags_ruler_callbacks.c' || echo '$(srcdir)/'`./src/ags/X/editor/ags_ruler_callbacks.c
-
-ags-ags_ruler_callbacks.obj: ./src/ags/X/editor/ags_ruler_callbacks.c
-@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_ruler_callbacks.obj -MD -MP -MF $(DEPDIR)/ags-ags_ruler_callbacks.Tpo -c -o ags-ags_ruler_callbacks.obj `if test -f './src/ags/X/editor/ags_ruler_callbacks.c'; then $(CYGPATH_W) './src/ags/X/editor/ags_ruler_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/editor/ags_ruler_callbacks.c'; fi`
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/ags-ags_ruler_callbacks.Tpo $(DEPDIR)/ags-ags_ruler_callbacks.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='./src/ags/X/editor/ags_ruler_callbacks.c' object='ags-ags_ruler_callbacks.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_ruler_callbacks.obj `if test -f './src/ags/X/editor/ags_ruler_callbacks.c'; then $(CYGPATH_W) './src/ags/X/editor/ags_ruler_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/editor/ags_ruler_callbacks.c'; fi`
-
-ags-ags_ruler.o: ./src/ags/X/editor/ags_ruler.c
-@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_ruler.o -MD -MP -MF $(DEPDIR)/ags-ags_ruler.Tpo -c -o ags-ags_ruler.o `test -f './src/ags/X/editor/ags_ruler.c' || echo '$(srcdir)/'`./src/ags/X/editor/ags_ruler.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/ags-ags_ruler.Tpo $(DEPDIR)/ags-ags_ruler.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='./src/ags/X/editor/ags_ruler.c' object='ags-ags_ruler.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_ruler.o `test -f './src/ags/X/editor/ags_ruler.c' || echo '$(srcdir)/'`./src/ags/X/editor/ags_ruler.c
-
-ags-ags_ruler.obj: ./src/ags/X/editor/ags_ruler.c
-@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_ruler.obj -MD -MP -MF $(DEPDIR)/ags-ags_ruler.Tpo -c -o ags-ags_ruler.obj `if test -f './src/ags/X/editor/ags_ruler.c'; then $(CYGPATH_W) './src/ags/X/editor/ags_ruler.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/editor/ags_ruler.c'; fi`
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/ags-ags_ruler.Tpo $(DEPDIR)/ags-ags_ruler.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='./src/ags/X/editor/ags_ruler.c' object='ags-ags_ruler.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_ruler.obj `if test -f './src/ags/X/editor/ags_ruler.c'; then $(CYGPATH_W) './src/ags/X/editor/ags_ruler.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/editor/ags_ruler.c'; fi`
 
 ags-ags_meter.o: ./src/ags/X/editor/ags_meter.c
 @am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_meter.o -MD -MP -MF $(DEPDIR)/ags-ags_meter.Tpo -c -o ags-ags_meter.o `test -f './src/ags/X/editor/ags_meter.c' || echo '$(srcdir)/'`./src/ags/X/editor/ags_meter.c

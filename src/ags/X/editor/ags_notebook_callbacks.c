@@ -18,8 +18,6 @@
 
 #include <ags/X/editor/ags_notebook_callbacks.h>
 
-#include <ags/X/editor/ags_ruler.h>
-
 void
 ags_notebook_machine_changed_callback(AgsEditor *editor, AgsMachine *machine,
 				      AgsNotebook *notebook)
@@ -34,14 +32,8 @@ ags_notebook_machine_changed_callback(AgsEditor *editor, AgsMachine *machine,
 			      0);
   }
   void ags_notebook_change_machine_grow(){
-    AgsRuler *ruler;
-
     for(; i < stop; i++){
-      ruler = ags_ruler_new();
       ags_notebook_add_tab((GtkNotebook *) notebook);
-
-      if(GTK_WIDGET_VISIBLE(GTK_WIDGET(notebook)))
-	ags_ruler_connect(ruler);
     }
   }
 

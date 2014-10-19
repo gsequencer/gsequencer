@@ -30,26 +30,32 @@
 #define AGS_IS_RULER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_RULER))
 #define AGS_RULER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_RULER, AgsRulerClass))
 
+#define AGS_RULER_DEFAULT_STEP (16)
+#define AGS_RULER_LARGE_STEP (8.0)
+#define AGS_RULER_SMALL_STEP (4.0)
+
 typedef struct _AgsRuler AgsRuler;
 typedef struct _AgsRulerClass AgsRulerClass;
 
 struct _AgsRuler
 {
-  GtkDrawingArea drawing_area;
+  GtkWidget widget;
 
-  /*
-  PangoLayout *layout;
+  guint flags;
 
-  char *font_name;
-  PangoFontDescription *font_desc;
+  guint font_size;
 
-  PangoContext *context;
-  */
+  GtkAdjustment *adjustment;
+
+  guint step;
+
+  gdouble precision;
+  gdouble scale_precision;
 };
 
 struct _AgsRulerClass
 {
-  GtkDrawingAreaClass drawing_area;
+  GtkWidgetClass widget;
 };
 
 GType ags_ruler_get_type();

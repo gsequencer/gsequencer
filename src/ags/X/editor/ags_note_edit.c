@@ -100,6 +100,14 @@ ags_note_edit_init(AgsNoteEdit *note_edit)
 {
   GtkAdjustment *adjustment;
 
+  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, 1.0, 1.0);
+
+  note_edit->ruler = ags_ruler_new();
+  gtk_table_attach(GTK_TABLE(note_edit), (GtkWidget *) note_edit->ruler,
+		   0, 1, 0, 1,
+		   GTK_FILL|GTK_EXPAND, GTK_FILL,
+		   0, 0);
+
   note_edit->drawing_area = (GtkDrawingArea *) gtk_drawing_area_new();
   gtk_widget_set_style((GtkWidget *) note_edit->drawing_area, note_edit_style);
   gtk_widget_set_events (GTK_WIDGET (note_edit->drawing_area), GDK_EXPOSURE_MASK
@@ -111,7 +119,7 @@ ags_note_edit_init(AgsNoteEdit *note_edit)
 			 );
 
   gtk_table_attach(GTK_TABLE(note_edit), (GtkWidget *) note_edit->drawing_area,
-		   0, 1, 0, 1,
+		   0, 1, 1, 2,
 		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
 		   0, 0);
 
@@ -160,14 +168,14 @@ ags_note_edit_init(AgsNoteEdit *note_edit)
   adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, 1.0, 1.0);
   note_edit->vscrollbar = (GtkVScrollbar *) gtk_vscrollbar_new(adjustment);
   gtk_table_attach(GTK_TABLE(note_edit), (GtkWidget *) note_edit->vscrollbar,
-		   1, 2, 0, 1,
+		   1, 2, 1, 2,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
   adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, 1.0, 1.0);
   note_edit->hscrollbar = (GtkHScrollbar *) gtk_hscrollbar_new(adjustment);
   gtk_table_attach(GTK_TABLE(note_edit), (GtkWidget *) note_edit->hscrollbar,
-		   0, 1, 1, 2,
+		   0, 1, 2, 3,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 }
@@ -321,31 +329,35 @@ void
 ags_note_edit_reset_horizontally(AgsNoteEdit *note_edit, guint flags)
 {
   AgsEditor *editor;
+  double tact_factor, zoom_factor;
+  double tact;
 
   editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(note_edit),
 						 AGS_TYPE_EDITOR);
 
+  zoom_factor = 0.25;
+
+  tact_factor = exp2(8.0 - (double) gtk_combo_box_get_active(editor->toolbar->zoom));
+  tact = exp2((double) gtk_combo_box_get_active(editor->toolbar->zoom) - 4.0);
+
+  if((AGS_NOTE_EDIT_RESET_WIDTH & flags) != 0){
+    note_edit->control_unit.control_width = (guint) (((double) note_edit->control_width * zoom_factor * tact));
+
+    note_edit->control_current.control_count = (guint) ((double) note_edit->control_unit.control_count * tact);
+    note_edit->control_current.control_width = (note_edit->control_width * zoom_factor * tact_factor * tact);
+
+    note_edit->map_width = (guint) ((double) note_edit->control_current.control_count * (double) note_edit->control_current.control_width);
+    /* reset ruler */
+    note_edit->ruler->precision = 1.0 / (4.0 * tact);
+    note_edit->ruler->scale_precision = note_edit->ruler->precision * 1.0 / tact;
+    gtk_widget_queue_draw(note_edit->ruler);
+  }
+
   if(editor->selected_machine != NULL){
     cairo_t *cr;
     gdouble value;
-    double tact_factor, zoom_factor;
-    double tact;
 
     value = GTK_RANGE(note_edit->hscrollbar)->adjustment->value;
-
-    zoom_factor = 0.25;
-
-    tact_factor = exp2(8.0 - (double) gtk_combo_box_get_active(editor->toolbar->zoom));
-    tact = exp2((double) gtk_combo_box_get_active(editor->toolbar->zoom) - 4.0);
-
-    if((AGS_NOTE_EDIT_RESET_WIDTH & flags) != 0){
-      note_edit->control_unit.control_width = (guint) (((double) note_edit->control_width * zoom_factor * tact));
-
-      note_edit->control_current.control_count = (guint) ((double) note_edit->control_unit.control_count * tact);
-      note_edit->control_current.control_width = (note_edit->control_width * zoom_factor * tact_factor * tact);
-
-      note_edit->map_width = (guint) ((double) note_edit->control_current.control_count * (double) note_edit->control_current.control_width);
-    }
 
     if((AGS_NOTE_EDIT_RESET_HSCROLLBAR & flags) != 0){
       GtkWidget *widget;
@@ -361,13 +373,22 @@ ags_note_edit_reset_horizontally(AgsNoteEdit *note_edit, guint flags)
 	gtk_adjustment_set_upper(adjustment,
 				 (gdouble) (note_edit->map_width - width));
 
-	if(adjustment->value > adjustment->upper)
+	if(adjustment->value > adjustment->upper){
 	  gtk_adjustment_set_value(adjustment, adjustment->upper);
+
+	  /* reset ruler */
+	  gtk_adjustment_set_value(note_edit->ruler->adjustment, adjustment->upper);
+	  gtk_widget_queue_draw(note_edit->ruler);
+	}
       }else{
 	width = note_edit->map_width;
 
 	gtk_adjustment_set_upper(adjustment, 0.0);
 	gtk_adjustment_set_value(adjustment, 0.0);
+	
+	/* reset ruler */
+	gtk_adjustment_set_value(note_edit->ruler->adjustment, 0.0);
+	gtk_widget_queue_draw(note_edit->ruler);
       }
 
       note_edit->width = width;

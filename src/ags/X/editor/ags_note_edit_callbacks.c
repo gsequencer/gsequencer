@@ -760,6 +760,11 @@ ags_note_edit_hscrollbar_value_changed(GtkRange *range, AgsNoteEdit *note_edit)
     return;
   }
 
+  /* reset ruler */
+  gtk_adjustment_set_value(note_edit->ruler->adjustment, range->adjustment->value);
+  gtk_widget_queue_draw(note_edit->ruler);
+
+  /* update note edit */
   note_edit->flags |= AGS_NOTE_EDIT_RESETING_HORIZONTALLY;
   ags_note_edit_reset_horizontally(note_edit, 0);
   note_edit->flags &= (~AGS_NOTE_EDIT_RESETING_HORIZONTALLY);

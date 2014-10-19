@@ -81,7 +81,6 @@ extern GtkStyle *matrix_style;
 extern GtkStyle *ffplayer_style;
 extern GtkStyle *editor_style;
 extern GtkStyle *notebook_style;
-extern GtkStyle *ruler_style;
 extern GtkStyle *meter_style;
 extern GtkStyle *note_edit_style;
 
@@ -382,26 +381,27 @@ ags_colors_alloc()
 
 
     /* ruler style */
-    ruler_style = gtk_style_new();
-    ruler_style->fg[0].red = 255 * (65535/255);
-    ruler_style->fg[0].green = 240 *(65535/255);
-    ruler_style->fg[0].blue = 200 * (65535/255);
-    ruler_style->fg[0].pixel = (gulong)(255*65536 + 240*256 + 200);
+    //TODO:JK: deprecated
+    //    ruler_style = gtk_style_new();
+    //    ruler_style->fg[0].red = 255 * (65535/255);
+    //    ruler_style->fg[0].green = 240 *(65535/255);
+    //    ruler_style->fg[0].blue = 200 * (65535/255);
+    //    ruler_style->fg[0].pixel = (gulong)(255*65536 + 240*256 + 200);
 
-    ruler_style->bg[0].red = 40 * (65535/255);
-    ruler_style->bg[0].green = 40 *(65535/255);
-    ruler_style->bg[0].blue = 40 * (65535/255);
-    ruler_style->bg[0].pixel = (gulong)(40*65536 + 40*256 + 40);
+    //    ruler_style->bg[0].red = 40 * (65535/255);
+    //    ruler_style->bg[0].green = 40 *(65535/255);
+    //    ruler_style->bg[0].blue = 40 * (65535/255);
+    //    ruler_style->bg[0].pixel = (gulong)(40*65536 + 40*256 + 40);
 
-    ruler_style->mid[0].red = 250 * (65535/255);
-    ruler_style->mid[0].green = 0 *(65535/255);
-    ruler_style->mid[0].blue = 250 * (65535/255);
-    ruler_style->mid[0].pixel = (gulong)(150*65536 + 150*256 + 250);
+    //    ruler_style->mid[0].red = 250 * (65535/255);
+    //    ruler_style->mid[0].green = 0 *(65535/255);
+    //    ruler_style->mid[0].blue = 250 * (65535/255);
+    //    ruler_style->mid[0].pixel = (gulong)(150*65536 + 150*256 + 250);
 
-    ruler_style->base[0].red = 250 * (65535/255);
-    ruler_style->base[0].green = 250 *(65535/255);
-    ruler_style->base[0].blue = 250 * (65535/255);
-    ruler_style->base[0].pixel = (gulong)(250*65536 + 250*256 + 250);
+    //    ruler_style->base[0].red = 250 * (65535/255);
+    //    ruler_style->base[0].green = 250 *(65535/255);
+    //    ruler_style->base[0].blue = 250 * (65535/255);
+    //    ruler_style->base[0].pixel = (gulong)(250*65536 + 250*256 + 250);
 
 
     /* meter style */

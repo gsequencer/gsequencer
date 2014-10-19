@@ -319,8 +319,6 @@ void
 ags_dial_show(GtkWidget *widget)
 {
   GTK_WIDGET_CLASS(ags_dial_parent_class)->show(widget);
-
-  //  ags_dial_draw(widget);
 }
 
 void
@@ -555,9 +553,6 @@ ags_dial_motion_notify(GtkWidget *widget,
 /**
  * ags_dial_draw:
  * @dial an #AgsDial
- * @r the radius as a guint
- * @scale_precision the scale's precision
- * @font_size the font size of the indicators
  *
  * draws the widget
  */

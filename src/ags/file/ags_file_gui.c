@@ -37,8 +37,6 @@
 #include <ags/file/ags_file_lookup.h>
 #include <ags/file/ags_file_launch.h>
 
-#include <ags/X/editor/ags_ruler.h>
-
 #define AGS_FILE_READ_EDITOR_PARAMETER_NAME "ags-file-read-editor-parameter-name\0"
 
 void ags_file_read_window_resolve_devout(AgsFileLookup *file_lookup,
@@ -2327,7 +2325,6 @@ ags_file_read_editor_launch(AgsFileLaunch *file_launch,
 			    AgsEditor *editor)
 {
   AgsMachine *machine;
-  AgsRuler *ruler;
   GList *list;
   guint tabs, pads;
   guint i;
@@ -2342,11 +2339,7 @@ ags_file_read_editor_launch(AgsFileLaunch *file_launch,
   tabs = machine->audio->audio_channels;
 
   for(i = 0; i < tabs; i++){
-    ruler = ags_ruler_new();
     ags_notebook_add_tab(editor->notebook);
-
-    if(GTK_WIDGET_VISIBLE(GTK_WIDGET(editor->notebook)))
-      ags_ruler_connect(ruler);
   }
 
   list = editor->notebook->tabs;
