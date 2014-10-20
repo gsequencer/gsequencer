@@ -66,6 +66,7 @@
     <xi:include href="xml/ags_expander_set.xml"/>
     <xi:include href="xml/ags_indicator.xml"/>
     <xi:include href="xml/ags_led.xml"/>
+    <xi:include href="xml/ags_ruler.xml"/>
     <xi:include href="xml/ags_vindicator.xml"/>
   </part>
   

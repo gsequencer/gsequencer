@@ -685,7 +685,7 @@ struct _AgsRecallAudioRunClass
 </MACRO>
 <MACRO>
 <NAME>AGS_TASK_GET_CLASS</NAME>
-#define AGS_TASK_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_TASK, AgsTaskClass))
+#define AGS_TASK_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_TASK, AgsTaskClass)))
 </MACRO>
 <ENUM>
 <NAME>AgsTaskFlags</NAME>
@@ -1589,11 +1589,11 @@ AgsRecallRecycling *recall_recycling
 </MACRO>
 <MACRO>
 <NAME>AGS_PATTERN</NAME>
-#define AGS_PATTERN(obj)                ((AgsPattern*) G_TYPE_CHECK_INSTANCE_CAST(obj, AGS_TYPE_PATTERN, AgsPattern))
+#define AGS_PATTERN(obj)                (G_TYPE_CHECK_INSTANCE_CAST(obj, AGS_TYPE_PATTERN, AgsPattern))
 </MACRO>
 <MACRO>
 <NAME>AGS_PATTERN_CLASS</NAME>
-#define AGS_PATTERN_CLASS(class)        ((AgsPatternClass*) G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_PATTERN, AgsPatternClass))
+#define AGS_PATTERN_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_PATTERN, AgsPatternClass))
 </MACRO>
 <MACRO>
 <NAME>AGS_IS_PATTERN</NAME>
@@ -2833,6 +2833,8 @@ struct _AgsRecallLadspa
   LADSPA_Descriptor *plugin_descriptor;
   guint input_port;
   guint output_port;
+
+  LADSPA_Handle ladspa_handle;
 };
 </STRUCT>
 <STRUCT>
@@ -5313,22 +5315,22 @@ AgsExportThread *export_thread, AgsDevout *devout, gchar *filename, guint tic, g
 </MACRO>
 <MACRO>
 <NAME>AGS_IS_TOGGLE_PATTERN_BIT</NAME>
-#define AGS_IS_TOGGLE_PATTERN_BIT(obj)             (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_TOGGLE_PATTERN_BIT))
+#define AGS_IS_TOGGLE_PATTERN_BIT(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_TOGGLE_PATTERN_BIT))
 </MACRO>
 <MACRO>
 <NAME>AGS_IS_TOGGLE_PATTERN_BIT_CLASS</NAME>
-#define AGS_IS_TOGGLE_PATTERN_BIT_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_TOGGLE_PATTERN_BIT))
+#define AGS_IS_TOGGLE_PATTERN_BIT_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_TOGGLE_PATTERN_BIT))
 </MACRO>
 <MACRO>
 <NAME>AGS_TOGGLE_PATTERN_BIT_GET_CLASS</NAME>
-#define AGS_TOGGLE_PATTERN_BIT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_TOGGLE_PATTERN_BIT, AgsTogglePatternBitClass))
+#define AGS_TOGGLE_PATTERN_BIT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_TOGGLE_PATTERN_BIT, AgsTogglePatternBitClass))
 </MACRO>
 <STRUCT>
 <NAME>AgsTogglePatternBit</NAME>
 struct _AgsTogglePatternBit
 {
   AgsTask task;
-
+  
   AgsPattern *pattern;
   guint line;
 
@@ -9780,6 +9782,78 @@ void
 guint row, guint columns, gboolean homogeneous 
 </FUNCTION>
 <MACRO>
+<NAME>AGS_TYPE_RULER</NAME>
+#define AGS_TYPE_RULER                (ags_ruler_get_type())
+</MACRO>
+<MACRO>
+<NAME>AGS_RULER</NAME>
+#define AGS_RULER(obj)                (G_TYPE_CHECK_INSTANCE_CAST(obj, AGS_TYPE_RULER, AgsRuler))
+</MACRO>
+<MACRO>
+<NAME>AGS_RULER_CLASS</NAME>
+#define AGS_RULER_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_RULER, AgsRulerClass))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_RULER</NAME>
+#define AGS_IS_RULER(obj)             (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_RULER))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_RULER_CLASS</NAME>
+#define AGS_IS_RULER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_RULER))
+</MACRO>
+<MACRO>
+<NAME>AGS_RULER_GET_CLASS</NAME>
+#define AGS_RULER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_RULER, AgsRulerClass))
+</MACRO>
+<MACRO>
+<NAME>AGS_RULER_DEFAULT_STEP</NAME>
+#define AGS_RULER_DEFAULT_STEP (16)
+</MACRO>
+<MACRO>
+<NAME>AGS_RULER_LARGE_STEP</NAME>
+#define AGS_RULER_LARGE_STEP (8.0)
+</MACRO>
+<MACRO>
+<NAME>AGS_RULER_SMALL_STEP</NAME>
+#define AGS_RULER_SMALL_STEP (6.0)
+</MACRO>
+<STRUCT>
+<NAME>AgsRuler</NAME>
+struct _AgsRuler
+{
+  GtkWidget widget;
+
+  guint flags;
+
+  guint font_size;
+
+  GtkAdjustment *adjustment;
+
+  guint step;
+
+  gdouble factor;
+  gdouble precision;
+  gdouble scale_precision;
+};
+</STRUCT>
+<STRUCT>
+<NAME>AgsRulerClass</NAME>
+struct _AgsRulerClass
+{
+  GtkWidgetClass widget;
+};
+</STRUCT>
+<FUNCTION>
+<NAME>ags_ruler_get_type</NAME>
+<RETURNS>GType  </RETURNS>
+ 
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_ruler_new</NAME>
+<RETURNS>AgsRuler * </RETURNS>
+ 
+</FUNCTION>
+<MACRO>
 <NAME>AGS_TYPE_HTIMEBAR</NAME>
 #define AGS_TYPE_HTIMEBAR                (ags_htimebar_get_type())
 </MACRO>
@@ -13199,16 +13273,6 @@ GType channel_type
 <RETURNS>void  </RETURNS>
 GtkDialog *dialog, gint response_id, gpointer user_data 
 </FUNCTION>
-<FUNCTION>
-<NAME>ags_ruler_expose_event</NAME>
-<RETURNS>gboolean  </RETURNS>
-GtkWidget *widget, GdkEventExpose *event, AgsRuler *ruler 
-</FUNCTION>
-<FUNCTION>
-<NAME>ags_ruler_configure_event</NAME>
-<RETURNS>gboolean  </RETURNS>
-GtkWidget *widget, GdkEventConfigure *event, AgsRuler *ruler 
-</FUNCTION>
 <MACRO>
 <NAME>AGS_TYPE_NOTE_EDIT</NAME>
 #define AGS_TYPE_NOTE_EDIT                (ags_note_edit_get_type())
@@ -13265,6 +13329,7 @@ struct _AgsNoteEdit
 
   guint flags;
 
+  AgsRuler *ruler;
   GtkDrawingArea *drawing_area;
 
   struct _AgsNoteEditControl{ // values retrieved by mouse pressed and released callback
@@ -13712,63 +13777,6 @@ AgsNotebook *notebook, GtkWidget *child
 <NAME>ags_file_selection_remove_callback</NAME>
 <RETURNS>void  </RETURNS>
 GtkButton *button, GtkTable *hbox 
-</FUNCTION>
-<MACRO>
-<NAME>AGS_TYPE_RULER</NAME>
-#define AGS_TYPE_RULER                (ags_ruler_get_type())
-</MACRO>
-<MACRO>
-<NAME>AGS_RULER</NAME>
-#define AGS_RULER(obj)                (G_TYPE_CHECK_INSTANCE_CAST(obj, AGS_TYPE_RULER, AgsRuler))
-</MACRO>
-<MACRO>
-<NAME>AGS_RULER_CLASS</NAME>
-#define AGS_RULER_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_RULER, AgsRulerClass))
-</MACRO>
-<MACRO>
-<NAME>AGS_IS_RULER</NAME>
-#define AGS_IS_RULER(obj)             (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_RULER))
-</MACRO>
-<MACRO>
-<NAME>AGS_IS_RULER_CLASS</NAME>
-#define AGS_IS_RULER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_RULER))
-</MACRO>
-<MACRO>
-<NAME>AGS_RULER_GET_CLASS</NAME>
-#define AGS_RULER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_RULER, AgsRulerClass))
-</MACRO>
-<STRUCT>
-<NAME>AgsRuler</NAME>
-struct _AgsRuler
-{
-  GtkDrawingArea drawing_area;
-
-  /*
-  PangoLayout *layout;
-
-  char *font_name;
-  PangoFontDescription *font_desc;
-
-  PangoContext *context;
-  */
-};
-</STRUCT>
-<STRUCT>
-<NAME>AgsRulerClass</NAME>
-struct _AgsRulerClass
-{
-  GtkDrawingAreaClass drawing_area;
-};
-</STRUCT>
-<FUNCTION>
-<NAME>ags_ruler_get_type</NAME>
-<RETURNS>GType  </RETURNS>
- 
-</FUNCTION>
-<FUNCTION>
-<NAME>ags_ruler_new</NAME>
-<RETURNS>AgsRuler * </RETURNS>
- 
 </FUNCTION>
 <MACRO>
 <NAME>AGS_TYPE_INLINE_PLAYER</NAME>

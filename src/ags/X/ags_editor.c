@@ -331,12 +331,13 @@ ags_editor_real_machine_changed(AgsEditor *editor, AgsMachine *machine)
 {
   guint pads;
 
+  editor->selected_machine = machine;
+
   if(machine == NULL ||
      editor->selected_machine == machine){
     return;
   }
 
-  editor->selected_machine = machine;
   editor->set_audio_channels_handler = g_signal_connect(machine->audio, "set-audio-channels\0",
 							G_CALLBACK(ags_editor_set_audio_channels_callback), editor);
   editor->set_pads_handler = g_signal_connect(machine->audio, "set-pads\0",

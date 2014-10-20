@@ -4626,6 +4626,9 @@ ags_returnable_thread_get_type
 <SECTION>
 <FILE>ags_ruler</FILE>
 <TITLE>AgsRuler</TITLE>
+AGS_RULER_DEFAULT_STEP
+AGS_RULER_LARGE_STEP
+AGS_RULER_SMALL_STEP
 AgsRuler
 AgsRulerClass
 ags_ruler_new
@@ -4637,12 +4640,6 @@ AGS_RULER_CLASS
 AGS_RULER_GET_CLASS
 AGS_TYPE_RULER
 ags_ruler_get_type
-</SECTION>
-
-<SECTION>
-<FILE>ags_ruler_callbacks</FILE>
-ags_ruler_configure_event
-ags_ruler_expose_event
 </SECTION>
 
 <SECTION>

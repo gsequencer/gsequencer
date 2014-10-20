@@ -1,7 +1,7 @@
-38% symbol docs coverage.
-1156 symbols documented.
-526 symbols incomplete.
-1863 not documented.
+39% symbol docs coverage.
+1173 symbols documented.
+525 symbols incomplete.
+1845 not documented.
 
 
 AGS_ACCOUNTING_TABLE
@@ -151,6 +151,9 @@ AGS_RECORD_THREAD_DEFAULT_DELAY
 AGS_RECYCLING_THREAD_DEFAULT_JIFFIE
 AGS_REGISTRY_DEFAULT_ID_LENGTH
 AGS_RETURNABLE_THREAD_DEFAULT_JIFFIE
+AGS_RULER_DEFAULT_STEP
+AGS_RULER_LARGE_STEP
+AGS_RULER_SMALL_STEP
 AGS_SEGMENT_FLAGS (<items>)
 AGS_SINGLE_THREAD_DEFAULT_GUI_JIFFIE
 AGS_TASK_THREAD_DEFAULT_JIFFIE
@@ -792,10 +795,6 @@ AgsSynthInputPadClass (<items>)
 AgsTable
 AgsTableClass (<items>)
 AgsTactable
-AgsTactable::change-bpm
-AgsTactable::change-notation-duration
-AgsTactable::change-sequencer-duration
-AgsTactable::change-tact
 AgsTactableInterface (<items>)
 AgsTask
 AgsTaskClass (<items>)
@@ -873,7 +872,7 @@ ags_async_queue_worker
 ags_audio_add_recall (recall)
 ags_audio_file_open (Returns)
 ags_audio_file_open_from_data (Returns)
-ags_audio_file_rw_open (create, Returns)
+ags_audio_file_rw_open (Returns)
 ags_audio_file_xml_new
 ags_audio_loop_new (Returns)
 ags_audio_preferences_audio_channels_changed
@@ -914,7 +913,6 @@ ags_context_alloc
 ags_copy_notation_audio_new (devout)
 ags_copy_notation_audio_run_new (count_beats_audio_run)
 ags_copy_pattern_channel_template_find_source_and_destination
-ags_count_beats_audio_run_new (delay_audio_run)
 ags_count_beats_audio_run_notation_loop
 ags_count_beats_audio_run_notation_start
 ags_count_beats_audio_run_notation_stop
@@ -1470,7 +1468,6 @@ ags_plugin_factory_list_by_name
 ags_plugin_factory_new
 ags_plugin_factory_new_from_file
 ags_plugin_factory_read_file
-ags_port_safe_write
 ags_portable_thread_add_child
 ags_portable_thread_children_is_locked
 ags_portable_thread_first (thread, Returns)
@@ -1509,9 +1506,6 @@ ags_portable_thread_unlock_sibling (thread)
 ags_portable_thread_wait_children (thread)
 ags_portable_thread_wait_parent (thread, parent)
 ags_portable_thread_wait_sibling (thread)
-ags_portlet_list_safe_properties
-ags_portlet_safe_get_property
-ags_portlet_safe_set_property
 ags_preferences_response_callback
 ags_property_collection_editor_add_collection_callback
 ags_property_collection_editor_new (child_type, child_parameter_count, child_parameter)
@@ -1574,9 +1568,6 @@ ags_remove_point_from_selection_new
 ags_remove_region_from_selection_new
 ags_returnable_thread_new (Returns)
 ags_returnable_thread_safe_run
-ags_ruler_configure_event
-ags_ruler_expose_event
-ags_ruler_new
 ags_runnable_run
 ags_runnable_stop
 ags_seekable_seek
@@ -1622,10 +1613,6 @@ ags_synth_update_callback
 ags_table_new
 ags_tact_combo_box_new
 ags_tact_menu_new
-ags_tactable_change_bpm
-ags_tactable_change_notation_duration
-ags_tactable_change_sequencer_duration
-ags_tactable_change_tact
 ags_task_thread_append_task (task_thread, task)
 ags_task_thread_append_tasks (task_thread, list)
 ags_task_thread_new
@@ -1956,10 +1943,6 @@ ags_remove_point_from_selection:Long_Description
 ags_remove_point_from_selection:Short_Description
 ags_remove_region_from_selection:Long_Description
 ags_remove_region_from_selection:Short_Description
-ags_ruler:Long_Description
-ags_ruler:Short_Description
-ags_ruler_callbacks:Long_Description
-ags_ruler_callbacks:Short_Description
 ags_runnable:Long_Description
 ags_runnable:Short_Description
 ags_seekable:Long_Description
@@ -1992,8 +1975,6 @@ ags_synths:Long_Description
 ags_synths:Short_Description
 ags_table:Long_Description
 ags_table:Short_Description
-ags_tactable:Long_Description
-ags_tactable:Short_Description
 ags_task_thread:Long_Description
 ags_task_thread:Short_Description
 ags_thread-kthreads:Long_Description
