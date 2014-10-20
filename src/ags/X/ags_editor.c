@@ -331,10 +331,13 @@ ags_editor_real_machine_changed(AgsEditor *editor, AgsMachine *machine)
 {
   guint pads;
 
+  if(editor->selected_machine == machine){
+    return;
+  }
+
   editor->selected_machine = machine;
 
-  if(machine == NULL ||
-     editor->selected_machine == machine){
+  if(machine == NULL){
     return;
   }
 
