@@ -43,6 +43,16 @@ gboolean ags_ruler_expose(GtkWidget *widget,
 
 void ags_ruler_draw(AgsRuler *ruler);
 
+/**
+ * SECTION:ags_ruler
+ * @short_description: A ruler widget
+ * @title: AgsRuler
+ * @section_id:
+ * @include: ags/widget/ags_ruler.h
+ *
+ * #AgsRuler is a widget representing a #GtkAdjustment.
+ */
+
 enum{
   PROP_0,
   PROP_ADJUSTMENT,
@@ -420,6 +430,15 @@ ags_ruler_draw(AgsRuler *ruler)
   cairo_destroy(cr);
 }
 
+/**
+ * ags_ruler_new:
+ *
+ * Creates an #AgsRuler
+ *
+ * Returns: a new #AgsRuler
+ *
+ * Since: 0.4
+ */
 AgsRuler*
 ags_ruler_new()
 {
