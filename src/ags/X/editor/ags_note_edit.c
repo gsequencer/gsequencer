@@ -348,8 +348,9 @@ ags_note_edit_reset_horizontally(AgsNoteEdit *note_edit, guint flags)
 
     note_edit->map_width = (guint) ((double) note_edit->control_current.control_count * (double) note_edit->control_current.control_width);
     /* reset ruler */
-    note_edit->ruler->precision = 1.0 / (4.0 * tact);
-    note_edit->ruler->scale_precision = note_edit->ruler->precision * 1.0 / tact;
+    note_edit->ruler->factor = tact_factor;
+    note_edit->ruler->precision = tact;
+    note_edit->ruler->scale_precision = 1.0 / tact;
     gtk_widget_queue_draw(note_edit->ruler);
   }
 

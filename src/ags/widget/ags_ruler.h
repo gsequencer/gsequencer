@@ -32,7 +32,7 @@
 
 #define AGS_RULER_DEFAULT_STEP (16)
 #define AGS_RULER_LARGE_STEP (8.0)
-#define AGS_RULER_SMALL_STEP (4.0)
+#define AGS_RULER_SMALL_STEP (6.0)
 
 typedef struct _AgsRuler AgsRuler;
 typedef struct _AgsRulerClass AgsRulerClass;
@@ -49,6 +49,7 @@ struct _AgsRuler
 
   guint step;
 
+  gdouble factor;
   gdouble precision;
   gdouble scale_precision;
 };

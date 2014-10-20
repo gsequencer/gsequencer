@@ -126,8 +126,10 @@ ags_ruler_init(AgsRuler *ruler)
   ruler->adjustment = NULL;
 
   ruler->step = AGS_RULER_DEFAULT_STEP;
-  ruler->precision = 0.25;
-  ruler->scale_precision = ruler->precision * 0.25;
+
+  ruler->factor = 16.0;
+  ruler->precision = 1.0;
+  ruler->scale_precision = 1.0;
 
   gtk_widget_set_size_request(ruler,
 			      20,
@@ -300,10 +302,15 @@ ags_ruler_draw(AgsRuler *ruler)
 {
   GtkWidget *widget;
   cairo_t *cr;
-
-  guint step, scale_step;
+  
+  gchar *str;
+  double tact_factor, zoom_factor;
+  double tact;
+  guint step;
   gdouble offset;
-  guint i, j;
+  guint i, j, k;
+  guint z;
+  gboolean omit_scales;
 
   widget = GTK_WIDGET(ruler);
 
@@ -314,8 +321,17 @@ ags_ruler_draw(AgsRuler *ruler)
   cairo_set_font_size(cr, (gdouble) ruler->font_size);
 
   /* draw ruler and scale */
-  step = ruler->step / ruler->precision;
-  scale_step = ruler->step / ruler->scale_precision;
+  zoom_factor = 0.25;
+
+  if(ruler->precision <= 1.0){
+    tact_factor = ruler->factor;
+  }else{
+    tact_factor = ruler->factor;
+  }
+
+  tact = ruler->precision;
+
+  step = (ruler->step * zoom_factor * tact_factor * tact);
 
   /* draw bg */
   cairo_set_source_rgba(cr, 0.0, 0.0, 0.125, 1.0);
@@ -333,54 +349,62 @@ ags_ruler_draw(AgsRuler *ruler)
 		       1.25);
 
   offset = ruler->adjustment->value;
-  j = 0;
 
-  for(i = 0; i < widget->allocation.width / step + 1; i++){
+  if(ruler->precision >= 1.0){
+    k = (guint) offset % (guint) (ruler->precision);
+  }
+
+  for(i = 0, z = 0; i < widget->allocation.width; ){
+    /* draw large step */
     cairo_move_to(cr,
-		  (double) (i * step),
+		  (double) (i),
 		  (double) (widget->allocation.height));
 
-    /* draw ruler */
-    if(((guint) (((1.0 / ruler->precision) * i * ruler->precision) + offset)) % (guint) (1.0 / ruler->precision) == 0){
-      gchar *str;
+    cairo_set_line_width(cr,
+			 1.75);
 
-      /* draw large step */
-      cairo_set_line_width(cr,
-			   1.75);
-
-      cairo_line_to(cr,
-		  (double) (i * step),
+    cairo_line_to(cr,
+		  (double) (i),
 		  (double) (widget->allocation.height - AGS_RULER_LARGE_STEP));
 
-      /* reset line width */
+    cairo_stroke(cr);
+
+    /* draw scale */
+    cairo_move_to(cr,
+		  (double) (i),
+		  (double) (widget->allocation.height - AGS_RULER_LARGE_STEP));
+
+    str = g_strdup_printf("%.2f\0",
+			  (offset + z) * ruler->scale_precision);
+
+    cairo_show_text(cr,
+		    str);
+    g_free(str);
+
+
+    i += step;
+    z++;
+
+    /* reset line width */
+    for(j = 1; i < widget->allocation.width && j < tact; j++){
+      /* draw large step */
+      cairo_move_to(cr,
+		    (double) (i + j * tact),
+		    (double) (widget->allocation.height));
+
       cairo_set_line_width(cr,
 			   1.25);
 
-      /* draw scale */
-      cairo_move_to(cr,
-		    (double) (i * step),
-		    (widget->allocation.height - AGS_RULER_LARGE_STEP));
-
-      if(ruler->precision < 1.0 ||
-	 j == 0){
-	j = ruler->scale_precision;
-
-	str = g_strdup_printf("%.2f\0",
-			      offset + ((4.0 / ruler->precision) * floor(ruler->adjustment->value + i) * ruler->scale_precision));
-	
-	cairo_show_text(cr,
-			str);
-	g_free(str);
-      }
-
-      j--;
-    }else{
-      /* draw small step */
       cairo_line_to(cr,
-		  (double) (i * step),
-		  (double) (widget->allocation.height - AGS_RULER_SMALL_STEP));
+		    (double) (i + j * tact),
+		    (double) (widget->allocation.height - AGS_RULER_SMALL_STEP));
+
+      cairo_stroke(cr);
+
+
+      i += step;
+      z++;
     }
-    cairo_stroke(cr);
   }
 
   cairo_destroy(cr);
