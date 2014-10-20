@@ -308,7 +308,7 @@ ags_ruler_draw(AgsRuler *ruler)
   double tact;
   guint step;
   gdouble offset;
-  guint i, j, k;
+  guint i, j;
   guint z;
   gboolean omit_scales;
 
@@ -350,11 +350,13 @@ ags_ruler_draw(AgsRuler *ruler)
 
   offset = ruler->adjustment->value;
 
-  if(ruler->precision >= 1.0){
-    k = (guint) offset % (guint) (ruler->precision);
+  i = ((guint) round((double) offset * step)) % step;
+
+  if(i != 0){
+    i = step - i;
   }
 
-  for(i = 0, z = 0; i < widget->allocation.width; ){
+  for(z = 0; i < widget->allocation.width; ){
     /* draw large step */
     cairo_move_to(cr,
 		  (double) (i),
@@ -375,7 +377,7 @@ ags_ruler_draw(AgsRuler *ruler)
 		  (double) (widget->allocation.height - AGS_RULER_LARGE_STEP));
 
     str = g_strdup_printf("%.2f\0",
-			  (offset + z) * ruler->scale_precision);
+			  (ceil(offset) + z) * ruler->scale_precision);
 
     cairo_show_text(cr,
 		    str);

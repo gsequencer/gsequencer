@@ -761,7 +761,8 @@ ags_note_edit_hscrollbar_value_changed(GtkRange *range, AgsNoteEdit *note_edit)
   }
 
   /* reset ruler */
-  gtk_adjustment_set_value(note_edit->ruler->adjustment, range->adjustment->value);
+  gtk_adjustment_set_value(note_edit->ruler->adjustment,
+			   GTK_RANGE(note_edit->hscrollbar)->adjustment->value / (double) note_edit->control_current.control_width);
   gtk_widget_queue_draw(note_edit->ruler);
 
   /* update note edit */

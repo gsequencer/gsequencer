@@ -351,6 +351,7 @@ ags_note_edit_reset_horizontally(AgsNoteEdit *note_edit, guint flags)
     note_edit->ruler->factor = tact_factor;
     note_edit->ruler->precision = tact;
     note_edit->ruler->scale_precision = 1.0 / tact;
+
     gtk_widget_queue_draw(note_edit->ruler);
   }
 
@@ -373,12 +374,14 @@ ags_note_edit_reset_horizontally(AgsNoteEdit *note_edit, guint flags)
 	//	gtk_adjustment_set_upper(adjustment, (double) (note_edit->map_width - width));
 	gtk_adjustment_set_upper(adjustment,
 				 (gdouble) (note_edit->map_width - width));
+	gtk_adjustment_set_upper(note_edit->ruler->adjustment,
+				 (gdouble) (note_edit->map_width - width) / note_edit->control_current.control_width);
 
 	if(adjustment->value > adjustment->upper){
 	  gtk_adjustment_set_value(adjustment, adjustment->upper);
 
 	  /* reset ruler */
-	  gtk_adjustment_set_value(note_edit->ruler->adjustment, adjustment->upper);
+	  gtk_adjustment_set_value(note_edit->ruler->adjustment, note_edit->ruler->adjustment->upper);
 	  gtk_widget_queue_draw(note_edit->ruler);
 	}
       }else{
@@ -388,6 +391,7 @@ ags_note_edit_reset_horizontally(AgsNoteEdit *note_edit, guint flags)
 	gtk_adjustment_set_value(adjustment, 0.0);
 	
 	/* reset ruler */
+	gtk_adjustment_set_upper(note_edit->ruler->adjustment, 0.0);
 	gtk_adjustment_set_value(note_edit->ruler->adjustment, 0.0);
 	gtk_widget_queue_draw(note_edit->ruler);
       }
