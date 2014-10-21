@@ -221,7 +221,8 @@ ags_synth_init(AgsSynth *synth)
 		   AGS_AUDIO_INPUT_HAS_RECYCLING |
 		   AGS_AUDIO_HAS_NOTATION);
 
-  AGS_MACHINE(synth)->flags |= AGS_MACHINE_IS_SYNTHESIZER;
+  //TODO:JK: uncomment me
+  //  AGS_MACHINE(synth)->flags |= AGS_MACHINE_IS_SYNTHESIZER;
 
   /* create widgets */
   synth->flags = 0;

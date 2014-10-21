@@ -238,6 +238,7 @@ ags_matrix_init(AgsMatrix *matrix)
   //  audio->audio_channels = 1;
 
   /*  */
+  //TODO:JK: uncomment me
   AGS_MACHINE(matrix)->flags |= AGS_MACHINE_IS_SEQUENCER;
   matrix->flags = 0;
 

@@ -57,7 +57,7 @@
 #define AGS_BUILD_ID "CEST 02-10-2014 19:36\0"
 #define AGS_EFFECTS_DEFAULT_VERSION "0.4.2\0"
 
-#define AGS_PRIORITY (0)
+#define AGS_PRIORITY (49)
 
 typedef struct _AgsMain AgsMain;
 typedef struct _AgsMainClass AgsMainClass;
