@@ -833,6 +833,15 @@ ags_count_beats_audio_run_done(AgsRecall *recall)
 		 AGS_RECALL(count_beats_audio_run)->recall_id);
 }
 
+/**
+ * ags_count_beats_audio_run_notation_start:
+ * @count_beats_audio_run: the #AgsCountBeatsAudioRun
+ * @run_order: the nth run order
+ *
+ * Emitted as notation starts playback.
+ *
+ * Since: 0.4
+ */
 void
 ags_count_beats_audio_run_notation_start(AgsCountBeatsAudioRun *count_beats_audio_run,
 					 guint run_order)
@@ -846,6 +855,15 @@ ags_count_beats_audio_run_notation_start(AgsCountBeatsAudioRun *count_beats_audi
   g_object_unref(G_OBJECT(count_beats_audio_run));
 }
 
+/**
+ * ags_count_beats_audio_run_notation_loop:
+ * @count_beats_audio_run: the #AgsCountBeatsAudioRun
+ * @run_order: the nth run order
+ *
+ * Emitted as notation loops playback.
+ *
+ * Since: 0.4
+ */
 void
 ags_count_beats_audio_run_notation_loop(AgsCountBeatsAudioRun *count_beats_audio_run,
 					guint run_order)
@@ -859,6 +877,15 @@ ags_count_beats_audio_run_notation_loop(AgsCountBeatsAudioRun *count_beats_audio
   g_object_unref(G_OBJECT(count_beats_audio_run));
 }
 
+/**
+ * ags_count_beats_audio_run_notation_stop:
+ * @count_beats_audio_run: the #AgsCountBeatsAudioRun
+ * @run_order: the nth run order
+ *
+ * Emitted as notation stops playback.
+ *
+ * Since: 0.4
+ */
 void
 ags_count_beats_audio_run_notation_stop(AgsCountBeatsAudioRun *count_beats_audio_run,
 					guint run_order)
@@ -872,6 +899,15 @@ ags_count_beats_audio_run_notation_stop(AgsCountBeatsAudioRun *count_beats_audio
   g_object_unref(G_OBJECT(count_beats_audio_run));
 }
 
+/**
+ * ags_count_beats_audio_run_notation_start:
+ * @count_beats_audio_run: the #AgsCountBeatsAudioRun
+ * @run_order: the nth run order
+ *
+ * Emitted as notation starts playback.
+ *
+ * Since: 0.4
+ */
 void
 ags_count_beats_audio_run_sequencer_start(AgsCountBeatsAudioRun *count_beats_audio_run,
 					  guint run_order)
@@ -885,6 +921,15 @@ ags_count_beats_audio_run_sequencer_start(AgsCountBeatsAudioRun *count_beats_aud
   g_object_unref(G_OBJECT(count_beats_audio_run));
 }
 
+/**
+ * ags_count_beats_audio_run_notation_loop:
+ * @count_beats_audio_run: the #AgsCountBeatsAudioRun
+ * @run_order: the nth run order
+ *
+ * Emitted as notation loops playback.
+ *
+ * Since: 0.4
+ */
 void
 ags_count_beats_audio_run_sequencer_loop(AgsCountBeatsAudioRun *count_beats_audio_run,
 					 guint run_order)
@@ -898,6 +943,15 @@ ags_count_beats_audio_run_sequencer_loop(AgsCountBeatsAudioRun *count_beats_audi
   g_object_unref(G_OBJECT(count_beats_audio_run));
 }
 
+/**
+ * ags_count_beats_audio_run_notation_stop:
+ * @count_beats_audio_run: the #AgsCountBeatsAudioRun
+ * @run_order: the nth run order
+ *
+ * Emitted as notation stops playback.
+ *
+ * Since: 0.4
+ */
 void
 ags_count_beats_audio_run_sequencer_stop(AgsCountBeatsAudioRun *count_beats_audio_run,
 					 guint run_order)
