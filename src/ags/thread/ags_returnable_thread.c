@@ -284,7 +284,7 @@ ags_returnable_thread_connect_safe_run(AgsReturnableThread *returnable_thread, A
  * ags_returnable_thread_disconnect_safe_run:
  * @returnable_thread: the thread to disconnect
  *
- * Disconnects @callback to @thread.
+ * Disconnects callback of @thread.
  *
  * Since: 0.4
  */

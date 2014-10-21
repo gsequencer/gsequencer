@@ -32,7 +32,7 @@ void ags_vindicator_draw(AgsVIndicator *indicator);
 /**
  * SECTION:ags_vindicator
  * @short_description: A vertical indicator widget
- * @title: AgsVindicator
+ * @title: AgsVIndicator
  * @section_id:
  * @include: ags/widget/ags_vindicator.h
  *
