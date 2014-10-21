@@ -53,6 +53,16 @@ void ags_stream_recycling_source_remove_audio_signal_callback(AgsRecycling *sour
 							      AgsAudioSignal *audio_signal,
 							      AgsStreamRecycling *stream_recycling);
 
+/**
+ * SECTION:ags_stream_recycling
+ * @short_description: streams recycling
+ * @title: AgsStreamRecycling
+ * @section_id:
+ * @include: ags/audio/recall/ags_stream_recycling.h
+ *
+ * The #AgsStreamRecycling streams the recycling with appropriate #AgsRecallID.
+ */
+
 static gpointer ags_stream_recycling_parent_class = NULL;
 static AgsConnectableInterface *ags_stream_recycling_parent_connectable_interface;
 static AgsDynamicConnectableInterface *ags_stream_recycling_parent_dynamic_connectable_interface;
@@ -242,6 +252,16 @@ ags_stream_recycling_source_remove_audio_signal_callback(AgsRecycling *source,
   g_object_unref(audio_signal);
 }
 
+/**
+ * ags_stream_recycling_new:
+ * @recycling: the #AgsRecycling
+ *
+ * Creates an #AgsStreamRecycling
+ *
+ * Returns: a new #AgsStreamRecycling
+ *
+ * Since: 0.4
+ */
 AgsStreamRecycling*
 ags_stream_recycling_new(AgsRecycling *recycling)
 {
