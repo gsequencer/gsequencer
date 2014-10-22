@@ -267,6 +267,13 @@ ags_count_beats_audio_run_class_init(AgsCountBeatsAudioRunClass *count_beats_aud
   gobject->finalize = ags_count_beats_audio_run_finalize;
 
   /* properties */
+  /**
+   * AgsCountBeatsAudioRun:delay-audio-run:
+   *
+   * The assigned #AgsDelayAudioRun dependency.
+   * 
+   * Since: 0.4.0
+   */
   param_spec = g_param_spec_object("delay-audio-run\0",
 				   "assigned AgsDelayAudioRun\0",
 				   "The AgsDelayAudioRun which emits sequencer_alloc_output sequencer_count signal\0",
@@ -276,6 +283,13 @@ ags_count_beats_audio_run_class_init(AgsCountBeatsAudioRunClass *count_beats_aud
 				  PROP_DELAY_AUDIO_RUN,
 				  param_spec);
   
+  /**
+   * AgsCountBeatsAudioRun:notation-counter:
+   *
+   * The notation counter.
+   * 
+   * Since: 0.4.0
+   */
   param_spec = g_param_spec_uint("notation-counter\0",
 				 "notation counter indicates offset\0",
 				 "The notation counter indicates the offset in the notation\0",
@@ -287,6 +301,13 @@ ags_count_beats_audio_run_class_init(AgsCountBeatsAudioRunClass *count_beats_aud
 				  PROP_NOTATION_COUNTER,
 				  param_spec);
 
+  /**
+   * AgsCountBeatsAudioRun:sequencer-counter:
+   *
+   * The sequencer counter.
+   * 
+   * Since: 0.4.0
+   */
   param_spec = g_param_spec_uint("sequencer-counter\0",
 				 "sequencer counter indicates offset\0",
 				 "The sequenecer counter indicates the offset in the sequencer\0",
@@ -316,6 +337,13 @@ ags_count_beats_audio_run_class_init(AgsCountBeatsAudioRunClass *count_beats_aud
   count_beats_audio_run->sequencer_stop = NULL;
 
   /* signals */
+  /**
+   * AgsCountBeatsAudioRun::notation-start:
+   * @count_beats_audio_run: the object
+   * @run_order: the nth run
+   *
+   * The ::notation-start signal is emited while starting notation playback.
+   */
   count_beats_audio_run_signals[NOTATION_START] =
     g_signal_new("notation-start\0",
 		 G_TYPE_FROM_CLASS(count_beats_audio_run),
@@ -326,6 +354,13 @@ ags_count_beats_audio_run_class_init(AgsCountBeatsAudioRunClass *count_beats_aud
 		 G_TYPE_NONE, 1,
 		 G_TYPE_UINT);
 
+  /**
+   * AgsCountBeatsAudioRun::notation-loop:
+   * @count_beats_audio_run: the object
+   * @run_order: the nth run
+   *
+   * The ::notation-loop signal is emited while looping notation playback.
+   */
   count_beats_audio_run_signals[NOTATION_LOOP] =
     g_signal_new("notation-loop\0",
 		 G_TYPE_FROM_CLASS(count_beats_audio_run),
@@ -336,6 +371,13 @@ ags_count_beats_audio_run_class_init(AgsCountBeatsAudioRunClass *count_beats_aud
 		 G_TYPE_NONE, 1,
 		 G_TYPE_UINT);
 
+  /**
+   * AgsCountBeatsAudioRun::notation-stop:
+   * @count_beats_audio_run: the object
+   * @run_order: the nth run
+   *
+   * The ::notation-loop signal is emited while stoping notation playback.
+   */
   count_beats_audio_run_signals[NOTATION_STOP] =
     g_signal_new("notation-stop\0",
 		 G_TYPE_FROM_CLASS(count_beats_audio_run),
@@ -346,6 +388,13 @@ ags_count_beats_audio_run_class_init(AgsCountBeatsAudioRunClass *count_beats_aud
 		 G_TYPE_NONE, 1,
 		 G_TYPE_UINT);
 
+  /**
+   * AgsCountBeatsAudioRun::sequencer-start:
+   * @count_beats_audio_run: the object
+   * @run_order: the nth run
+   *
+   * The ::sequencer-start signal is emited while starting sequencer playback.
+   */
   count_beats_audio_run_signals[SEQUENCER_START] =
     g_signal_new("sequencer-start\0",
 		 G_TYPE_FROM_CLASS(count_beats_audio_run),
@@ -356,6 +405,13 @@ ags_count_beats_audio_run_class_init(AgsCountBeatsAudioRunClass *count_beats_aud
 		 G_TYPE_NONE, 1,
 		 G_TYPE_UINT);
 
+  /**
+   * AgsCountBeatsAudioRun::sequencer-loop:
+   * @count_beats_audio_run: the object
+   * @run_order: the nth run
+   *
+   * The ::sequencer-loop signal is emited while looping sequencer playback.
+   */
   count_beats_audio_run_signals[SEQUENCER_LOOP] =
     g_signal_new("sequencer-loop\0",
 		 G_TYPE_FROM_CLASS(count_beats_audio_run),
@@ -366,6 +422,13 @@ ags_count_beats_audio_run_class_init(AgsCountBeatsAudioRunClass *count_beats_aud
 		 G_TYPE_NONE, 1,
 		 G_TYPE_UINT);
 
+  /**
+   * AgsCountBeatsAudioRun::sequencer-stop:
+   * @count_beats_audio_run: the object
+   * @run_order: the nth run
+   *
+   * The ::sequencer-loop signal is emited while stoping sequencer playback.
+   */
   count_beats_audio_run_signals[SEQUENCER_STOP] =
     g_signal_new("sequencer-stop\0",
 		 G_TYPE_FROM_CLASS(count_beats_audio_run),
