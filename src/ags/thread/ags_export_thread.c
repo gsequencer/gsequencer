@@ -306,9 +306,6 @@ ags_export_thread_stop(AgsThread *thread)
  *
  * Since: 0.4
  */
- *
- * Since: 0.4
- */
 AgsExportThread*
 ags_export_thread_new(GObject *devout, AgsAudioFile *audio_file)
 {

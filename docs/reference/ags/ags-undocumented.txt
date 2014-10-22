@@ -1,7 +1,7 @@
-39% symbol docs coverage.
-1179 symbols documented.
-525 symbols incomplete.
-1839 not documented.
+40% symbol docs coverage.
+1194 symbols documented.
+519 symbols incomplete.
+1824 not documented.
 
 
 AGS_ACCOUNTING_TABLE
@@ -854,10 +854,8 @@ ags_accounting_table_set_sanity
 ags_amplifier
 ags_append_audio_threaded_new
 ags_append_recall_new (devout_play)
-ags_apply_bpm_new
-ags_apply_sequencer_length_new
+ags_apply_sequencer_length_new (length)
 ags_apply_synth_new (start_channel, count, wave, attack, frame_count, frequency, phase, start, volume, loop_start, loop_end, start_channel, count, wave, attack, frame_count, frequency, phase, start, volume, loop_start, loop_end)
-ags_apply_tact_new
 ags_apply_wavetable_new
 ags_async_queue_add
 ags_async_queue_find_context
@@ -874,7 +872,6 @@ ags_audio_file_open (Returns)
 ags_audio_file_open_from_data (Returns)
 ags_audio_file_rw_open (Returns)
 ags_audio_file_xml_new
-ags_audio_loop_new (Returns)
 ags_audio_preferences_audio_channels_changed
 ags_audio_preferences_buffer_size_changed
 ags_audio_preferences_card_changed_callback
@@ -931,7 +928,6 @@ ags_devout_error_quark
 ags_devout_note_offset_changed
 ags_devout_pcm_info (buffer_size_max)
 ags_devout_play_find_source (source)
-ags_devout_thread_new (Returns)
 ags_drum_done_callback
 ags_drum_index0_callback
 ags_drum_index1_callback
@@ -967,7 +963,7 @@ ags_expander_child_find
 ags_expander_set_child_alloc
 ags_expander_set_child_find
 ags_expander_set_set_flags
-ags_export_thread_new (devout, Returns)
+ags_export_thread_new (devout)
 ags_export_window_export_callback
 ags_export_window_file_chooser_button_callback
 ags_export_window_new
@@ -1193,7 +1189,6 @@ ags_garbage_collector_remove
 ags_garbage_collector_run
 ags_generic_preferences_new
 ags_gui_task_thread_new
-ags_gui_thread_new (Returns)
 ags_hindicator_new
 ags_history_new
 ags_htimebar_new
@@ -1563,7 +1558,6 @@ ags_remote_task_launch_timed
 ags_remote_task_new
 ags_remove_point_from_selection_new
 ags_remove_region_from_selection_new
-ags_returnable_thread_new (Returns)
 ags_returnable_thread_safe_run
 ags_runnable_run
 ags_runnable_stop
@@ -1579,7 +1573,6 @@ ags_server_object_set_property
 ags_server_start
 ags_set_buffer_size_new (gobject)
 ags_set_devout_play_flags_new (play, devout_play_flags)
-ags_set_muted_new
 ags_set_samplerate_new (gobject)
 ags_sf2_chooser_completed
 ags_sf2_chooser_instrument_changed
@@ -1609,9 +1602,6 @@ ags_synth_update_callback
 ags_table_new
 ags_tact_combo_box_new
 ags_tact_menu_new
-ags_task_thread_append_task (task_thread, task)
-ags_task_thread_append_tasks (task_thread, list)
-ags_task_thread_new
 ags_thread_add_child (thread, child)
 ags_thread_children_is_locked (thread, Returns, thread, Returns)
 ags_thread_first (thread, Returns, thread, Returns)
@@ -1630,7 +1620,6 @@ ags_thread_next_children_locked (thread, Returns, thread, Returns)
 ags_thread_next_parent_locked (thread, parent, Returns, thread, parent, Returns)
 ags_thread_next_sibling_locked (thread, Returns, thread, Returns)
 ags_thread_parental_is_locked (thread, parent, Returns, thread, parent, Returns)
-ags_thread_pool_new (Returns)
 ags_thread_remove_child (thread, child)
 ags_thread_resume
 ags_thread_run (thread, thread)
@@ -1739,12 +1728,6 @@ ags_amplifier:Long_Description
 ags_amplifier:Short_Description
 ags_append_audio_threaded:Long_Description
 ags_append_audio_threaded:Short_Description
-ags_apply_bpm:Long_Description
-ags_apply_bpm:Short_Description
-ags_apply_sequencer_length:Long_Description
-ags_apply_sequencer_length:Short_Description
-ags_apply_tact:Long_Description
-ags_apply_tact:Short_Description
 ags_apply_wavetable:Long_Description
 ags_apply_wavetable:Short_Description
 ags_async_queue:Long_Description
@@ -1949,8 +1932,6 @@ ags_server:Long_Description
 ags_server:Short_Description
 ags_server_preferences_callbacks:Long_Description
 ags_server_preferences_callbacks:Short_Description
-ags_set_muted:Long_Description
-ags_set_muted:Short_Description
 ags_sf2_chooser:Long_Description
 ags_sf2_chooser:Short_Description
 ags_sf2_chooser_callbacks:Long_Description
@@ -1969,8 +1950,6 @@ ags_synths:Long_Description
 ags_synths:Short_Description
 ags_table:Long_Description
 ags_table:Short_Description
-ags_task_thread:Long_Description
-ags_task_thread:Short_Description
 ags_thread-kthreads:Long_Description
 ags_thread-kthreads:Short_Description
 ags_timebar:Long_Description
