@@ -900,11 +900,11 @@ ags_count_beats_audio_run_notation_stop(AgsCountBeatsAudioRun *count_beats_audio
 }
 
 /**
- * ags_count_beats_audio_run_notation_start:
+ * ags_count_beats_audio_run_sequencer_start:
  * @count_beats_audio_run: the #AgsCountBeatsAudioRun
  * @run_order: the nth run order
  *
- * Emitted as notation starts playback.
+ * Emitted as sequencer starts playback.
  *
  * Since: 0.4
  */
@@ -922,11 +922,11 @@ ags_count_beats_audio_run_sequencer_start(AgsCountBeatsAudioRun *count_beats_aud
 }
 
 /**
- * ags_count_beats_audio_run_notation_loop:
+ * ags_count_beats_audio_run_sequencer_loop:
  * @count_beats_audio_run: the #AgsCountBeatsAudioRun
  * @run_order: the nth run order
  *
- * Emitted as notation loops playback.
+ * Emitted as sequencer loops playback.
  *
  * Since: 0.4
  */
@@ -944,11 +944,11 @@ ags_count_beats_audio_run_sequencer_loop(AgsCountBeatsAudioRun *count_beats_audi
 }
 
 /**
- * ags_count_beats_audio_run_notation_stop:
+ * ags_count_beats_audio_run_sequencer_stop:
  * @count_beats_audio_run: the #AgsCountBeatsAudioRun
  * @run_order: the nth run order
  *
- * Emitted as notation stops playback.
+ * Emitted as sequencer stops playback.
  *
  * Since: 0.4
  */
