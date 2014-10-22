@@ -41,6 +41,16 @@ void ags_apply_sequencer_length_recall(AgsApplySequencerLength *apply_sequencer_
 void ags_apply_sequencer_length_channel(AgsApplySequencerLength *apply_sequencer_length, AgsChannel *channel);
 void ags_apply_sequencer_length_audio(AgsApplySequencerLength *apply_sequencer_length, AgsAudio *audio);
 
+/**
+ * SECTION:ags_apply_sequencer_length
+ * @short_description: apply sequencer length to delay audio
+ * @title: AgsApplySequencerLength
+ * @section_id:
+ * @include: ags/sequencer_length/task/ags_apply_sequencer_length.h
+ *
+ * The #AgsApplySequencerLength task applys sequencer length to #AgsDelayAudio.
+ */
+
 static gpointer ags_apply_sequencer_length_parent_class = NULL;
 static AgsConnectableInterface *ags_apply_sequencer_length_parent_connectable_interface;
 
@@ -241,6 +251,17 @@ ags_apply_sequencer_length_audio(AgsApplySequencerLength *apply_sequencer_length
   }
 }
 
+/**
+ * ags_apply_sequencer_length_new:
+ * @gobject: the #GObject
+ * @sequencer_length: the sequencer length to apply
+ *
+ * Creates an #AgsApplySequencerLength.
+ *
+ * Returns: an new #AgsApplySequencerLength.
+ *
+ * Since: 0.4
+ */
 AgsApplySequencerLength*
 ags_apply_sequencer_length_new(GObject *gobject,
 			       gdouble length)

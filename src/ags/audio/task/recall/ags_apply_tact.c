@@ -41,6 +41,16 @@ void ags_apply_tact_recall(AgsApplyTact *apply_tact, AgsRecall *recall);
 void ags_apply_tact_channel(AgsApplyTact *apply_tact, AgsChannel *channel);
 void ags_apply_tact_audio(AgsApplyTact *apply_tact, AgsAudio *audio);
 
+/**
+ * SECTION:ags_apply_tact
+ * @short_description: apply tact to delay audio
+ * @title: AgsApplyTact
+ * @section_id:
+ * @include: ags/tact/task/ags_apply_tact.h
+ *
+ * The #AgsApplyTact task applys tact to #AgsTactable.
+ */
+
 static gpointer ags_apply_tact_parent_class = NULL;
 static AgsConnectableInterface *ags_apply_tact_parent_connectable_interface;
 
@@ -241,6 +251,17 @@ ags_apply_tact_audio(AgsApplyTact *apply_tact, AgsAudio *audio)
   }
 }
 
+/**
+ * ags_apply_tact_new:
+ * @gobject: the #GObject
+ * @tact: the tact to apply
+ *
+ * Creates an #AgsApplyTact.
+ *
+ * Returns: an new #AgsApplyTact.
+ *
+ * Since: 0.4
+ */
 AgsApplyTact*
 ags_apply_tact_new(GObject *gobject,
 		   gdouble tact)
