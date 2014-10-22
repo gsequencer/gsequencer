@@ -70,9 +70,6 @@ AgsRecall* ags_loop_channel_run_duplicate(AgsRecall *recall,
 					  AgsRecallID *recall_id,
 					  guint *n_params, GParameter *parameter);
 
-void ags_loop_channel_run_sequencer_duration_changed_callback(AgsDelayAudio *delay_audio,
-							      AgsLoopChannelRun *loop_channel_run);
-
 void ags_loop_channel_run_start_callback(AgsCountBeatsAudioRun *count_beats_audio_run,
 					 guint run_order,
 					 AgsLoopChannelRun *loop_channel_run);

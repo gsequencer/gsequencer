@@ -298,8 +298,9 @@ ags_loop_channel_sequencer_duration_changed_callback(AgsDelayAudio *delay_audio,
   sequencer_duration = g_value_get_double(&value);
 
   /* resize audio signal */
-  ags_channel_safe_resize_audio_signal(AGS_RECALL_CHANNEL(loop_channel)->source,
-				       (guint) sequencer_duration);
+  //TODO:JK: make it advanced
+  //  ags_channel_safe_resize_audio_signal(AGS_RECALL_CHANNEL(loop_channel)->source,
+  //				       (guint) sequencer_duration);
 }
 
 /**

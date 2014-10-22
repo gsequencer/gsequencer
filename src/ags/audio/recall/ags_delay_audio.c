@@ -158,6 +158,13 @@ ags_delay_audio_class_init(AgsDelayAudioClass *delay_audio)
   gobject->finalize = ags_delay_audio_finalize;
 
   /* properties */
+  /**
+   * AgsDelayAudio:bpm:
+   *
+   * The beats per minute.
+   * 
+   * Since: 0.4
+   */
   param_spec = g_param_spec_object("bpm\0",
 				   "bpm of recall\0",
 				   "The recall's bpm\0",
@@ -167,6 +174,13 @@ ags_delay_audio_class_init(AgsDelayAudioClass *delay_audio)
 				  PROP_BPM,
 				  param_spec);
 
+  /**
+   * AgsDelayAudio:tact:
+   *
+   * The tact segmentation.
+   * 
+   * Since: 0.4
+   */
   param_spec = g_param_spec_object("tact\0",
 				   "tact of recall\0",
 				   "The recall's tact\0",
@@ -176,6 +190,13 @@ ags_delay_audio_class_init(AgsDelayAudioClass *delay_audio)
 				  PROP_TACT,
 				  param_spec);
 
+  /**
+   * AgsDelayAudio:sequencer-delay:
+   *
+   * The sequencer's delay.
+   * 
+   * Since: 0.4
+   */
   param_spec = g_param_spec_object("sequencer-delay\0",
 				   "sequencer-delay of recall\0",
 				   "The delay of the sequencer\0",
@@ -185,6 +206,13 @@ ags_delay_audio_class_init(AgsDelayAudioClass *delay_audio)
 				  PROP_SEQUENCER_DELAY,
 				  param_spec);
 
+  /**
+   * AgsDelayAudio:notation-delay:
+   *
+   * The notation's delay.
+   * 
+   * Since: 0.4
+   */
   param_spec = g_param_spec_object("notation-delay\0",
 				   "notation-delay of recall\0",
 				   "The delay of the notation\0",
@@ -194,6 +222,13 @@ ags_delay_audio_class_init(AgsDelayAudioClass *delay_audio)
 				  PROP_NOTATION_DELAY,
 				  param_spec);
 
+  /**
+   * AgsDelayAudio:sequencer-duration:
+   *
+   * The sequencer's duration.
+   * 
+   * Since: 0.4
+   */
   param_spec = g_param_spec_object("sequencer-duration\0",
 				   "sequencer-duration of recall\0",
 				   "The duration of the sequencer\0",
@@ -203,6 +238,13 @@ ags_delay_audio_class_init(AgsDelayAudioClass *delay_audio)
 				  PROP_SEQUENCER_DURATION,
 				  param_spec);
 
+  /**
+   * AgsDelayAudio:notation-duration:
+   *
+   * The notation's duration.
+   * 
+   * Since: 0.4
+   */
   param_spec = g_param_spec_object("notation-duration\0",
 				   "notation-duration of recall\0",
 				   "The duration of the notation\0",
@@ -214,6 +256,13 @@ ags_delay_audio_class_init(AgsDelayAudioClass *delay_audio)
 
 
   /* signals */
+  /**
+   * AgsDelayAudio::notation-duration-changed:
+   * @delay_audio: the object to resolve
+   *
+   * The ::notation-duration-changed signal notifies about changed duration
+   * of notation.
+   */
   delay_audio_signals[NOTATION_DURATION_CHANGED] = 
     g_signal_new("notation-duration-changed\0",
 		 G_TYPE_FROM_CLASS(delay_audio),
@@ -223,6 +272,13 @@ ags_delay_audio_class_init(AgsDelayAudioClass *delay_audio)
 		 g_cclosure_marshal_VOID__VOID,
 		 G_TYPE_NONE, 0);
 
+  /**
+   * AgsDelayAudio::sequencer-duration-changed:
+   * @delay_audio: the object to resolve
+   *
+   * The ::sequencer-duration-changed signal notifies about changed duration
+   * of sequencer.
+   */
   delay_audio_signals[SEQUENCER_DURATION_CHANGED] = 
     g_signal_new("sequencer-duration-changed\0",
 		 G_TYPE_FROM_CLASS(delay_audio),
@@ -806,6 +862,14 @@ ags_delay_audio_change_notation_duration(AgsTactable *tactable, gdouble duration
   ags_delay_audio_notation_duration_changed(delay_audio);
 }
 
+/**
+ * ags_delay_audio_new:
+ * @delay_audio: the #AgsDelayAudio
+ *
+ * Notation duration changed of #AgsDelayAudio
+ *
+ * Since: 0.4
+ */
 void
 ags_delay_audio_notation_duration_changed(AgsDelayAudio *delay_audio)
 {
@@ -817,6 +881,14 @@ ags_delay_audio_notation_duration_changed(AgsDelayAudio *delay_audio)
   g_object_unref((GObject *) delay_audio);
 }
 
+/**
+ * ags_delay_audio_new:
+ * @delay_audio: the #AgsDelayAudio
+ *
+ * Sequencer duration changed of #AgsDelayAudio
+ *
+ * Since: 0.4
+ */
 void
 ags_delay_audio_sequencer_duration_changed(AgsDelayAudio *delay_audio)
 {

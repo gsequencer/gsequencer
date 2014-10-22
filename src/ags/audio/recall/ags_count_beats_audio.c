@@ -133,6 +133,13 @@ ags_count_beats_audio_class_init(AgsCountBeatsAudioClass *count_beats_audio)
   gobject->finalize = ags_count_beats_audio_finalize;
 
   /* properties */
+  /**
+   * AgsCountBeatsAudio:loop:
+   *
+   * Count until loop-end and start at loop-start.
+   * 
+   * Since: 0.4
+   */
   param_spec = g_param_spec_object("loop\0",
 				   "loop playing\0",
 				   "Play in a endless loop\0",
@@ -142,6 +149,13 @@ ags_count_beats_audio_class_init(AgsCountBeatsAudioClass *count_beats_audio)
 				  PROP_LOOP,
 				  param_spec);
 
+  /**
+   * AgsCountBeatsAudio:loop:
+   *
+   * The notation's loop-start.
+   * 
+   * Since: 0.4
+   */
   param_spec = g_param_spec_object("notation_loop_start\0",
 				   "start beat of notation loop\0",
 				   "The start beat of the notation loop\0",
@@ -151,6 +165,13 @@ ags_count_beats_audio_class_init(AgsCountBeatsAudioClass *count_beats_audio)
 				  PROP_NOTATION_LOOP_START,
 				  param_spec);
 
+  /**
+   * AgsCountBeatsAudio:loop:
+   *
+   * The notation's loop-end.
+   * 
+   * Since: 0.4
+   */
   param_spec = g_param_spec_object("notation_loop_end\0",
 				   "end beat of notation loop\0",
 				   "The end beat of the notation loop\0",
@@ -160,6 +181,13 @@ ags_count_beats_audio_class_init(AgsCountBeatsAudioClass *count_beats_audio)
 				  PROP_NOTATION_LOOP_END,
 				  param_spec);
   
+  /**
+   * AgsCountBeatsAudio:loop:
+   *
+   * The sequencer's loop-start.
+   * 
+   * Since: 0.4
+   */
   param_spec = g_param_spec_object("sequencer_loop_start\0",
 				   "start beat of loop\0",
 				   "The start beat of the sequencer loop\0",
@@ -169,6 +197,13 @@ ags_count_beats_audio_class_init(AgsCountBeatsAudioClass *count_beats_audio)
 				  PROP_SEQUENCER_LOOP_START,
 				  param_spec);
 
+  /**
+   * AgsCountBeatsAudio:loop:
+   *
+   * The sequencer's loop-end.
+   * 
+   * Since: 0.4
+   */
   param_spec = g_param_spec_object("sequencer_loop_end\0",
 				   "end beat of sequencer loop\0",
 				   "The end beat of the sequencer loop\0",

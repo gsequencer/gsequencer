@@ -357,6 +357,9 @@ ags_recall_class_init(AgsRecallClass *recall)
   /**
    * AgsRecall::resolve-dependencies:
    * @recall: the object to resolve
+   *
+   * The ::resolve-dependencies signal notifies about resolving
+   * dependencies.
    */
   recall_signals[RESOLVE_DEPENDENCIES] =
     g_signal_new("resolve-dependencies\0",
@@ -370,6 +373,9 @@ ags_recall_class_init(AgsRecallClass *recall)
   /**
    * AgsRecall::run-init-pre:
    * @recall: the object to initialize
+   *
+   * The ::run-init-pre signal notifies about initializing
+   * stage 0.
    */
   recall_signals[RUN_INIT_PRE] =
     g_signal_new("run-init-pre\0",
@@ -383,6 +389,9 @@ ags_recall_class_init(AgsRecallClass *recall)
   /**
    * AgsRecall::run-init-inter:
    * @recall: the object to initialize
+   *
+   * The ::run-init-pre signal notifies about initializing
+   * stage 1.
    */
   recall_signals[RUN_INIT_INTER] =
     g_signal_new("run-init-inter\0",
@@ -396,6 +405,9 @@ ags_recall_class_init(AgsRecallClass *recall)
   /**
    * AgsRecall::run-init-post:
    * @recall: the object to initialize
+   *
+   * The ::run-init-pre signal notifies about initializing
+   * stage 2.
    */
   recall_signals[RUN_INIT_POST] =
     g_signal_new("run-init-post\0",
@@ -409,6 +421,9 @@ ags_recall_class_init(AgsRecallClass *recall)
   /**
    * AgsRecall::run-pre:
    * @recall: the object to play 
+   *
+   * The ::run-pre signal notifies about running
+   * stage 0.
    */
   recall_signals[RUN_PRE] =
     g_signal_new("run-pre\0",
@@ -422,6 +437,9 @@ ags_recall_class_init(AgsRecallClass *recall)
   /**
    * AgsRecall::run-inter:
    * @recall: the object to play
+   *
+   * The ::run-inter signal notifies about running
+   * stage 1.
    */
   recall_signals[RUN_INTER] =
     g_signal_new("run-inter\0",
@@ -435,6 +453,9 @@ ags_recall_class_init(AgsRecallClass *recall)
   /**
    * AgsRecall::run-post:
    * @recall: the object to play
+   *
+   * The ::run-post signal notifies about running
+   * stage 2.
    */
   recall_signals[RUN_POST] =
     g_signal_new("run-post\0",
@@ -448,6 +469,9 @@ ags_recall_class_init(AgsRecallClass *recall)
   /**
    * AgsRecall::stop-persistent:
    * @recall: the object stop playback
+   *
+   * The ::stop-persistent signal notifies about definitively
+   * stopping playback.
    */
   recall_signals[STOP_PERSISTENT] =
     g_signal_new("stop_persistent\0",
@@ -461,6 +485,8 @@ ags_recall_class_init(AgsRecallClass *recall)
   /**
    * AgsRecall::done:
    * @recall: the object to finish playback
+   *
+   * The ::done signal notifies about stopping playback.
    */
   recall_signals[DONE] =
     g_signal_new("done\0",
@@ -474,6 +500,8 @@ ags_recall_class_init(AgsRecallClass *recall)
   /**
    * AgsRecall::cancel:
    * @recall: the object to cancel playback
+   *
+   * The ::cancel signal notifies about cancelling playback.
    */
   recall_signals[CANCEL] =
     g_signal_new("cancel\0",
@@ -487,6 +515,8 @@ ags_recall_class_init(AgsRecallClass *recall)
   /**
    * AgsRecall::remove:
    * @recall: the object to remove of audio loop
+   *
+   * The ::remove signal notifies about removing.
    */
   recall_signals[REMOVE] =
     g_signal_new("remove\0",
@@ -503,6 +533,8 @@ ags_recall_class_init(AgsRecallClass *recall)
    * @recall_id: the assigned #AgsRecallID
    * @n_params: pointer to array length
    * @parameter: parameter array
+   *
+   * The ::duplicate signal notifies about instantiating.
    */
   recall_signals[DUPLICATE] =
     g_signal_new("duplicate\0",
@@ -520,6 +552,9 @@ ags_recall_class_init(AgsRecallClass *recall)
    * @recall: the object to notify
    * @dependency: the kind of dependency
    * @count: the reference count
+   *
+   * The ::notify-dependency signal notifies about dependencies
+   * added.
    */
   recall_signals[NOTIFY_DEPENDENCY] =
     g_signal_new("notify-dependency\0",
@@ -535,6 +570,9 @@ ags_recall_class_init(AgsRecallClass *recall)
    * AgsRecall::child-added:
    * @recall: the object to add the child
    * @child: the #AgsRecall to add
+   *
+   * The ::child-added signal notifies about children
+   * added.
    */
   recall_signals[CHILD_ADDED] =
     g_signal_new("child-added\0",
