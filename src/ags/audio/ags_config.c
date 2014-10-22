@@ -235,7 +235,7 @@ ags_config_load_from_file(AgsConfig *config, gchar *filename)
 }
 
 /**
- * ags_config_set:
+ * ags_config_save:
  * @config: the #AgsConfig
  *
  * Save configuration.

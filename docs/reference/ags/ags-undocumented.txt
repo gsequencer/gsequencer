@@ -1,7 +1,7 @@
-40% symbol docs coverage.
-1213 symbols documented.
+41% symbol docs coverage.
+1229 symbols documented.
 519 symbols incomplete.
-1805 not documented.
+1789 not documented.
 
 
 AGS_ACCOUNTING_TABLE
@@ -297,12 +297,6 @@ AgsCopyRecyclingClass (<items>)
 AgsCountBeatsAudio
 AgsCountBeatsAudioClass (<items>)
 AgsCountBeatsAudioRun
-AgsCountBeatsAudioRun::notation-loop
-AgsCountBeatsAudioRun::notation-start
-AgsCountBeatsAudioRun::notation-stop
-AgsCountBeatsAudioRun::sequencer-loop
-AgsCountBeatsAudioRun::sequencer-start
-AgsCountBeatsAudioRun::sequencer-stop
 AgsCountBeatsAudioRunClass (<items>)
 AgsCountable
 AgsCountableInterface (<items>)
@@ -865,7 +859,6 @@ ags_audio_remove_recall (recall)
 ags_audio_set_recycling_new
 ags_audio_signal_new_with_length
 ags_audio_unset_flags
-ags_autosave_thread_new
 ags_cartesian_new
 ags_change_tact_new
 ags_channel_add_recall (recall)
@@ -883,12 +876,7 @@ ags_channel_safe_resize_audio_signal (size)
 ags_channel_set_recycling_new
 ags_clone_channel_new
 ags_clone_channel_run_new
-ags_config_get
-ags_config_load_defaults
-ags_config_load_from_file
-ags_config_new
 ags_config_save
-ags_config_set
 ags_container_add_all
 ags_context_alloc
 ags_copy_notation_audio_new (devout)
@@ -1719,8 +1707,6 @@ ags_audio_preferences_callbacks:Long_Description
 ags_audio_preferences_callbacks:Short_Description
 ags_audio_set_recycling:Long_Description
 ags_audio_set_recycling:Short_Description
-ags_autosave_thread:Long_Description
-ags_autosave_thread:Short_Description
 ags_cartesian:Long_Description
 ags_cartesian:Short_Description
 ags_change_tact:Long_Description
@@ -1733,8 +1719,6 @@ ags_clone_channel:Long_Description
 ags_clone_channel:Short_Description
 ags_clone_channel_run:Long_Description
 ags_clone_channel_run:Short_Description
-ags_config:Long_Description
-ags_config:Short_Description
 ags_container:Long_Description
 ags_container:Short_Description
 ags_countable:Long_Description
