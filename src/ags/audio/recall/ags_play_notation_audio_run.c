@@ -183,7 +183,7 @@ ags_play_notation_audio_run_class_init(AgsPlayNotationAudioRunClass *play_notati
 
   param_spec = g_param_spec_object("count-beats-audio-run\0",
 				   "assigned AgsCountBeatsAudioRun\0",
-				   "the AgsCount_BeatsAudioRun which just counts\0",
+				   "the AgsCountBeatsAudioRun which just counts\0",
 				   AGS_TYPE_COUNT_BEATS_AUDIO_RUN,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

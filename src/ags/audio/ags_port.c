@@ -505,10 +505,10 @@ ags_port_real_safe_read(AgsPort *port, GValue *value)
   if(!port->port_value_is_pointer){
     if(port->port_value_type == G_TYPE_BOOLEAN){
       g_value_set_boolean(value, port->port_value.ags_port_boolean);
-    }else if(port->port_value_type == G_TYPE_INT){
-      g_value_set_int(value, port->port_value.ags_port_int);
-    }else if(port->port_value_type == G_TYPE_UINT){
-      g_value_set_uint(value, port->port_value.ags_port_uint);
+    }else if(port->port_value_type == G_TYPE_INT64){
+      g_value_set_int64(value, port->port_value.ags_port_int);
+    }else if(port->port_value_type == G_TYPE_UINT64){
+      g_value_set_uint64(value, port->port_value.ags_port_uint);
     }else if(port->port_value_type == G_TYPE_FLOAT){
       g_value_set_double(value, (gdouble) port->port_value.ags_port_float);
     }else if(port->port_value_type == G_TYPE_DOUBLE){
@@ -519,9 +519,9 @@ ags_port_real_safe_read(AgsPort *port, GValue *value)
 
     if(port->port_value_type == G_TYPE_BOOLEAN){
       memcpy(data, port->port_value.ags_port_boolean_ptr, overall_size);
-    }else if(port->port_value_type == G_TYPE_INT){
+    }else if(port->port_value_type == G_TYPE_INT64){
       memcpy(data, port->port_value.ags_port_int_ptr, overall_size);
-    }else if(port->port_value_type == G_TYPE_UINT){
+    }else if(port->port_value_type == G_TYPE_UINT64){
       memcpy(data, port->port_value.ags_port_uint_ptr, overall_size);
     }else if(port->port_value_type == G_TYPE_FLOAT){
       guint i;
