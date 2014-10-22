@@ -716,6 +716,12 @@ ags_line_member_real_change_port(AgsLineMember *line_member,
 
 	g_value_set_uint64(&value,
 			   ((guint *) port_data)[0]);
+      }else if(port->port_value_type == G_TYPE_FLOAT){
+	g_value_init(&value,
+		     G_TYPE_DOUBLE);
+
+	g_value_set_double(&value,
+			   ((gdouble *) port_data)[0]);
       }else if(port->port_value_type == G_TYPE_DOUBLE){
 	g_value_init(&value,
 		     G_TYPE_DOUBLE);
@@ -724,28 +730,26 @@ ags_line_member_real_change_port(AgsLineMember *line_member,
 			   ((gdouble *) port_data)[0]);
       }
     }else{
-      if(port->port_value_type == G_TYPE_BOOLEAN){
-	g_value_init(&value,
-		     G_TYPE_BOOLEAN);
-      }else if(port->port_value_type == G_TYPE_INT64){
-	g_value_init(&value,
-		     G_TYPE_INT64);
-      }else if(port->port_value_type == G_TYPE_UINT64){
-	g_value_init(&value,
-		     G_TYPE_UINT64);
-      }else if(port->port_value_type == G_TYPE_DOUBLE){
-	g_value_init(&value,
-		     G_TYPE_DOUBLE);
-      }else if(port->port_value_type == G_TYPE_POINTER){
-	g_value_init(&value,
-		     G_TYPE_POINTER);
-      }else if(port->port_value_type == G_TYPE_OBJECT){
+      if(port->port_value_type == G_TYPE_OBJECT){
 	g_value_init(&value,
 		     G_TYPE_OBJECT);
-      }
+	g_value_set_object(&value,
+			   port_data);
+      }else{
+	if(port->port_value_type == G_TYPE_BOOLEAN ||
+	   port->port_value_type == G_TYPE_INT64 ||
+	   port->port_value_type == G_TYPE_UINT64 ||
+	   port->port_value_type == G_TYPE_FLOAT ||
+	   port->port_value_type == G_TYPE_DOUBLE ||
+	   port->port_value_type == G_TYPE_POINTER){
+	  g_value_init(&value,
+		       G_TYPE_POINTER);
 
-      g_value_set_pointer(&value,
-			  port_data);
+	  g_value_set_pointer(&value,
+			      port_data);
+
+	}
+      }
     }
 
     ags_port_safe_write(line_member->port,

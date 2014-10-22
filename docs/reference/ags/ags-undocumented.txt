@@ -1,7 +1,7 @@
 40% symbol docs coverage.
-1194 symbols documented.
+1213 symbols documented.
 519 symbols incomplete.
-1824 not documented.
+1805 not documented.
 
 
 AGS_ACCOUNTING_TABLE
@@ -307,8 +307,6 @@ AgsCountBeatsAudioRunClass (<items>)
 AgsCountable
 AgsCountableInterface (<items>)
 AgsDelayAudio
-AgsDelayAudio::notation-duration-changed
-AgsDelayAudio::sequencer-duration-changed
 AgsDelayAudioClass (<items>)
 AgsDelayAudioRun
 AgsDelayAudioRun::notation-alloc-input
@@ -642,20 +640,6 @@ AgsPropertyEditorFlags (<items>)
 AgsPropertyListingEditor
 AgsPropertyListingEditorClass (<items>)
 AgsRecall
-AgsRecall::cancel
-AgsRecall::child-added
-AgsRecall::done
-AgsRecall::duplicate
-AgsRecall::notify-dependency
-AgsRecall::remove
-AgsRecall::resolve-dependencies
-AgsRecall::run-init-inter
-AgsRecall::run-init-post
-AgsRecall::run-init-pre
-AgsRecall::run-inter
-AgsRecall::run-post
-AgsRecall::run-pre
-AgsRecall::stop-persistent
 AgsRecallAudio
 AgsRecallAudioClass (<items>)
 AgsRecallAudioRun
@@ -910,9 +894,6 @@ ags_context_alloc
 ags_copy_notation_audio_new (devout)
 ags_copy_notation_audio_run_new (count_beats_audio_run)
 ags_copy_pattern_channel_template_find_source_and_destination
-ags_count_beats_audio_run_sequencer_loop
-ags_count_beats_audio_run_sequencer_start
-ags_count_beats_audio_run_sequencer_stop
 ags_countable_get_notation_counter
 ags_countable_get_sequencer_counter
 ags_default_log

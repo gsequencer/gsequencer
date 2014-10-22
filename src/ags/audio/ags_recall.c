@@ -390,7 +390,7 @@ ags_recall_class_init(AgsRecallClass *recall)
    * AgsRecall::run-init-inter:
    * @recall: the object to initialize
    *
-   * The ::run-init-pre signal notifies about initializing
+   * The ::run-init-inter signal notifies about initializing
    * stage 1.
    */
   recall_signals[RUN_INIT_INTER] =
@@ -406,7 +406,7 @@ ags_recall_class_init(AgsRecallClass *recall)
    * AgsRecall::run-init-post:
    * @recall: the object to initialize
    *
-   * The ::run-init-pre signal notifies about initializing
+   * The ::run-init-post signal notifies about initializing
    * stage 2.
    */
   recall_signals[RUN_INIT_POST] =
