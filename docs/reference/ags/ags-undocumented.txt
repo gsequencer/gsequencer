@@ -1,7 +1,7 @@
 41% symbol docs coverage.
-1229 symbols documented.
+1242 symbols documented.
 519 symbols incomplete.
-1789 not documented.
+1776 not documented.
 
 
 AGS_ACCOUNTING_TABLE
@@ -303,12 +303,6 @@ AgsCountableInterface (<items>)
 AgsDelayAudio
 AgsDelayAudioClass (<items>)
 AgsDelayAudioRun
-AgsDelayAudioRun::notation-alloc-input
-AgsDelayAudioRun::notation-alloc-output
-AgsDelayAudioRun::notation-count
-AgsDelayAudioRun::sequencer-alloc-input
-AgsDelayAudioRun::sequencer-alloc-output
-AgsDelayAudioRun::sequencer-count
 AgsDelayAudioRunClass (<items>)
 AgsDevout
 AgsDevoutClass (<items>)
@@ -876,7 +870,6 @@ ags_channel_safe_resize_audio_signal (size)
 ags_channel_set_recycling_new
 ags_clone_channel_new
 ags_clone_channel_run_new
-ags_config_save
 ags_container_add_all
 ags_context_alloc
 ags_copy_notation_audio_new (devout)
@@ -886,12 +879,6 @@ ags_countable_get_notation_counter
 ags_countable_get_sequencer_counter
 ags_default_log
 ags_delay_audio_notation_duration_changed
-ags_delay_audio_run_notation_alloc_input
-ags_delay_audio_run_notation_alloc_output
-ags_delay_audio_run_notation_count
-ags_delay_audio_run_sequencer_alloc_input
-ags_delay_audio_run_sequencer_alloc_output
-ags_delay_audio_run_sequencer_count
 ags_delay_audio_sequencer_duration_changed
 ags_devout_error_quark
 ags_devout_note_offset_changed

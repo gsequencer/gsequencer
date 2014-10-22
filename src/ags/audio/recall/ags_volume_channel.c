@@ -171,7 +171,7 @@ ags_volume_channel_init(AgsVolumeChannel *volume_channel)
 
   /* volume */
   volume_channel->volume = g_object_new(AGS_TYPE_PORT,
-					"plugin-name\0", g_strdup("ags-volume\0"),
+					"plugin-name\0", "ags-volume\0",
 					"specifier\0", "./volume[0]\0",
 					"control-port\0", "1/1\0",
 					"port-value-is-pointer\0", FALSE,

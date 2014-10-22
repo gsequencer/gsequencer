@@ -137,7 +137,6 @@ ags_volume_audio_signal_class_init(AgsVolumeAudioSignalClass *volume_audio_signa
   recall = (AgsRecallClass *) volume_audio_signal;
 
   recall->run_inter = ags_volume_audio_signal_run_inter;
-  recall->duplicate = ags_volume_audio_signal_duplicate;
 }
 
 void
@@ -230,8 +229,6 @@ ags_volume_audio_signal_run_inter(AgsRecall *recall)
     guint i;
     GValue value = {0,};
 
-    return;
-
     devout = AGS_DEVOUT(AGS_RECALL_AUDIO_SIGNAL(recall)->source->devout);
 
     volume_channel = AGS_VOLUME_CHANNEL(AGS_RECALL_CHANNEL_RUN(recall->parent->parent)->recall_channel);
@@ -249,22 +246,6 @@ ags_volume_audio_signal_run_inter(AgsRecall *recall)
   }else{
     ags_recall_done(recall);
   }
-}
-
-AgsRecall*
-ags_volume_audio_signal_duplicate(AgsRecall *recall,
-				  AgsRecallID *recall_id,
-				  guint *n_params, GParameter *parameter)
-{
-  AgsVolumeAudioSignal *volume_audio_signal, *copy;
-
-  volume_audio_signal = (AgsVolumeAudioSignal *) recall;
-
-  copy = (AgsVolumeAudioSignal *) AGS_RECALL_CLASS(ags_volume_audio_signal_parent_class)->duplicate(recall,
-												    recall_id,
-												    n_params, parameter);
-
-  return((AgsRecall *) copy);
 }
 
 /**

@@ -1973,7 +1973,7 @@ ags_recall_factory_create_volume(AgsAudio *audio,
 	/* AgsVolumeChannelRun */
 	volume_channel_run = (AgsVolumeChannelRun *) g_object_new(AGS_TYPE_VOLUME_CHANNEL_RUN,
 								  "devout\0", audio->devout,
-								  // "recall_channel\0", volume_channel,
+								  "recall-channel\0", volume_channel,
 								  "source\0", channel,
 								  "recall_container\0", play_container,
 								  NULL);
@@ -2029,7 +2029,7 @@ ags_recall_factory_create_volume(AgsAudio *audio,
 	/* AgsVolumeChannelRun */
 	volume_channel_run = (AgsVolumeChannelRun *) g_object_new(AGS_TYPE_VOLUME_CHANNEL_RUN,
 								  "devout\0", audio->devout,
-								  // "recall_channel\0", volume_channel,
+								  "recall_channel\0", volume_channel,
 								  "source\0", channel,
 								  "recall_container\0", recall_container,
 								  NULL);
