@@ -44,6 +44,16 @@ void ags_task_thread_run(AgsThread *thread);
 void ags_task_thread_append_task_queue(AgsReturnableThread *returnable_thread, gpointer data);
 void ags_task_thread_append_tasks_queue(AgsReturnableThread *returnable_thread, gpointer data);
 
+/**
+ * SECTION:ags_task_thread
+ * @short_description: task thread
+ * @title: AgsTaskThread
+ * @section_id:
+ * @include: ags/thread/ags_task_thread.h
+ *
+ * The #AgsTaskThread acts as task queue thread.
+ */
+
 static gpointer ags_task_thread_parent_class = NULL;
 static AgsConnectableInterface *ags_task_thread_parent_connectable_interface;
 
@@ -314,10 +324,12 @@ ags_task_thread_append_task_queue(AgsReturnableThread *returnable_thread, gpoint
 
 /**
  * ags_task_thread_append_task:
- * @task_thread an #AgsTaskThread
- * @task an #AgsTask
+ * @task_thread: an #AgsTaskThread
+ * @task: an #AgsTask
  *
  * Adds the task to @task_thread.
+ *
+ * Since: 0.4
  */
 void
 ags_task_thread_append_task(AgsTaskThread *task_thread, AgsTask *task)
@@ -389,11 +401,13 @@ ags_task_thread_append_tasks_queue(AgsReturnableThread *returnable_thread, gpoin
 
 /**
  * ags_task_thread_append_tasks:
- * @task_thread an #AgsTaskThread
- * @list a GList with #AgsTask as data
+ * @task_thread: an #AgsTaskThread
+ * @list: a GList with #AgsTask as data
  *
  * Concats the list with @task_thread's internal task list. Don't
  * free the list you pass. It will be freed for you.
+ *
+ * Since: 0.4
  */
 void
 ags_task_thread_append_tasks(AgsTaskThread *task_thread, GList *list)
@@ -427,10 +441,20 @@ ags_task_thread_append_tasks(AgsTaskThread *task_thread, GList *list)
   
   pthread_mutex_unlock(&(AGS_RETURNABLE_THREAD(thread)->reset_mutex));
 }
- 
+
+/**
+ * ags_task_thread_new:
+ * @devout: the #AgsDevout
+ *
+ * Create a new #AgsTaskThread.
+ *
+ * Returns: the new #AgsTaskThread
+ *
+ * Since: 0.4
+ */ 
 AgsTaskThread*
 ags_task_thread_new(GObject *devout)
- {
+{
   AgsTaskThread *task_thread;
 
   task_thread = (AgsTaskThread *) g_object_new(AGS_TYPE_TASK_THREAD,

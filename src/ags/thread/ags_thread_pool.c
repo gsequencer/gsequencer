@@ -510,6 +510,8 @@ ags_thread_pool_start(AgsThreadPool *thread_pool)
  *
  * Create a new #AgsThreadPool.
  *
+ * Returns: the new #AgsThreadPool
+ *
  * Since: 0.4
  */
 AgsThreadPool*

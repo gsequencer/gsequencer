@@ -302,6 +302,11 @@ ags_export_thread_stop(AgsThread *thread)
  *
  * Create a new #AgsExportThread.
  *
+ * Returns: the new #AgsExportThread
+ *
+ * Since: 0.4
+ */
+ *
  * Since: 0.4
  */
 AgsExportThread*

@@ -291,6 +291,8 @@ ags_devout_thread_stop(AgsThread *thread)
  *
  * Create a new #AgsDevoutThread.
  *
+ * Returns: the new #AgsDevoutThread
+ *
  * Since: 0.4
  */
 AgsDevoutThread*

@@ -1114,6 +1114,8 @@ ags_audio_loop_remove_recall(AgsAudioLoop *audio_loop, GObject *recall)
  *
  * Create a new #AgsAudioLoop.
  *
+ * Returns: the new #AgsAudioLoop
+ *
  * Since: 0.4
  */
 AgsAudioLoop*

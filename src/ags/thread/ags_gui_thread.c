@@ -325,6 +325,8 @@ ags_gui_thread_stop(AgsThread *thread)
  *
  * Create a new #AgsGuiThread.
  *
+ * Returns: the new #AgsGuiThread
+ *
  * Since: 0.4
  */
 AgsGuiThread*

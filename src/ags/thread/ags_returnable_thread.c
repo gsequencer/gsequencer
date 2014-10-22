@@ -301,6 +301,8 @@ ags_returnable_thread_disconnect_safe_run(AgsReturnableThread *returnable_thread
  *
  * Create a new #AgsReturnableThread.
  *
+ * Returns: the new #AgsReturnableThread
+ *
  * Since: 0.4
  */
 AgsReturnableThread*
