@@ -218,7 +218,7 @@ ags_play_channel_init(AgsPlayChannel *play_channel)
 					     "specifier\0", ags_play_channel_specifier[0],
 					     "control-port\0", ags_play_channel_control_port[0],
 					     "port-value-is-pointer\0", FALSE,
-					     "port-value-type\0", G_TYPE_UINT,
+					     "port-value-type\0", G_TYPE_UINT64,
 					     "port-value-size\0", sizeof(guint),
 					     "port-value-length\0", 1,
 					     NULL);

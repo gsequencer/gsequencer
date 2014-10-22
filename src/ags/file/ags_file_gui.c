@@ -1791,8 +1791,8 @@ ags_file_read_line_member(AgsFile *file, xmlNode *node, AgsLineMember **line_mem
 					       "reference\0", gobject,
 					       NULL);
   ags_file_add_lookup(file, (GObject *) file_lookup);
-  g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
-		   G_CALLBACK(ags_file_read_line_member_resolve_port), gobject);
+  g_signal_connect_after(G_OBJECT(file_lookup), "resolve\0",
+			 G_CALLBACK(ags_file_read_line_member_resolve_port), gobject);
 }
 
 void
@@ -1820,14 +1820,16 @@ ags_file_read_line_member_resolve_port(AgsFileLookup *file_lookup,
   xpath = (gchar *) xmlGetProp(file_lookup->node,
 			       "recall-port\0");
 
-  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_xpath(file_lookup->file, xpath);
+  if(xpath != NULL){
+    id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_xpath(file_lookup->file, xpath);
 
-  if(id_ref == NULL){
-    g_warning("couldn't find port\0");
-  }else{
-    g_object_set(G_OBJECT(line_member),
-		 "recall-port\0", (AgsPort *) id_ref->ref,
-		 NULL);
+    if(id_ref == NULL){
+      g_warning("couldn't find port\0");
+    }else{
+      g_object_set(G_OBJECT(line_member),
+		   "recall-port\0", (AgsPort *) id_ref->ref,
+		   NULL);
+    }
   }
 }
 
@@ -1968,8 +1970,8 @@ ags_file_write_line_member(AgsFile *file, xmlNode *parent, AgsLineMember *line_m
 					       "reference\0", line_member,
 					       NULL);
   ags_file_add_lookup(file, (GObject *) file_lookup);
-  g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
-		   G_CALLBACK(ags_file_write_line_member_resolve_port), line_member);
+  g_signal_connect_after(G_OBJECT(file_lookup), "resolve\0",
+			 G_CALLBACK(ags_file_write_line_member_resolve_port), line_member);
 
   xmlAddChild(parent,
 	      node);

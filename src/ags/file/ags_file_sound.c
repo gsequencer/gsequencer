@@ -66,16 +66,13 @@ void ags_file_read_recall_resolve_parameter(AgsFileLookup *file_lookup,
 					    AgsRecall *recall);
 void ags_file_read_recall_resolve_devout(AgsFileLookup *file_lookup,
 					 AgsRecall *recall);
-void ags_file_read_recall_port_list_resolved(AgsFileIdRef *file_id_ref,
+void ags_file_read_recall_port_list_resolved(AgsFileLookup *file_lookup,
 					     AgsRecall *recall);
 void ags_file_write_recall_resolve_devout(AgsFileLookup *file_lookup,
 					  AgsRecall *recall);
 
 void ags_file_read_port_resolve_port_value(AgsFileLookup *file_lookup,
 					   AgsPort *port);
-
-void ags_file_read_port_list_port_resolved(AgsFileIdRef *file_id_ref,
-					   GList *port_list);
 
 void ags_file_read_task_resolve_parameter(AgsFileLookup *file_lookup,
 					  AgsTask *task);
@@ -1587,15 +1584,15 @@ ags_file_read_recall(AgsFile *file, xmlNode *node, AgsRecall **recall)
   xmlNode *child;
   xmlChar *type_name;
   static gboolean recall_type_is_registered = FALSE;
+
+  if(!recall_type_is_registered){
+    ags_main_register_recall_type();
+
+    recall_type_is_registered = TRUE;
+  }
   
   if(*recall == NULL){
     GType type;
-
-    if(!recall_type_is_registered){
-      ags_main_register_recall_type();
-
-      recall_type_is_registered = TRUE;
-    }
 
     type_name = xmlGetProp(node,
 			   AGS_FILE_TYPE_PROP);
@@ -1749,12 +1746,12 @@ ags_file_read_recall(AgsFile *file, xmlNode *node, AgsRecall **recall)
 	/* resolve port */
 	file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
 						     "file\0", file,
-						     "node\0", node,
-						     "reference\0", gobject,
+						     "node\0", child,
+						     "reference\0", NULL,
 						     NULL);
 	ags_file_add_lookup(file, (GObject *) file_lookup);
-	g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
-			 G_CALLBACK(ags_file_read_recall_port_list_resolved), gobject);
+	g_signal_connect_after(G_OBJECT(file_lookup), "resolve\0",
+			       G_CALLBACK(ags_file_read_recall_port_list_resolved), gobject);
       }else if(!xmlStrncmp(child->name,
 			   "ags-parameter\0",
 			   13)){
@@ -1854,11 +1851,20 @@ ags_file_read_recall_resolve_devout(AgsFileLookup *file_lookup,
 }
 
 void
-ags_file_read_recall_port_list_resolved(AgsFileIdRef *file_id_ref,
+ags_file_read_recall_port_list_resolved(AgsFileLookup *file_lookup,
 					AgsRecall *recall)
 {
-  ags_plugin_set_ports(AGS_PLUGIN(recall),
-		       file_id_ref->ref);
+  AgsFileIdRef *id_ref;
+
+  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_node(file_lookup->file,
+							 file_lookup->node);
+  
+  if(id_ref == NULL){
+    g_warning("couldn't find port\0");
+  }else{
+    ags_plugin_set_ports(AGS_PLUGIN(recall),
+			 id_ref->ref);
+  }
 }
 
 xmlNode*
@@ -3099,18 +3105,6 @@ ags_file_read_port_list(AgsFile *file, xmlNode *node, GList **port)
     list = g_list_reverse(list);
   }
 
-  /* connect resolve */
-  iter = list;
-
-  while(iter != NULL){
-    port_id_ref = ags_file_find_id_ref_by_reference(file,
-						    iter->data);
-    g_signal_connect_after(G_OBJECT(port_id_ref), "resolved\0",
-			   G_CALLBACK(ags_file_read_port_list_port_resolved), list);
-
-    iter = iter->next;
-  }
-
   /* add id ref */
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
@@ -3123,27 +3117,6 @@ ags_file_read_port_list(AgsFile *file, xmlNode *node, GList **port)
 
   /* set return value */
   *port = list;
-}
-
-void
-ags_file_read_port_list_port_resolved(AgsFileIdRef *file_id_ref,
-				      GList *port_list)
-{
-  AgsFileIdRef *port_list_file_id_ref;
-  gint counter;
-
-  port_list_file_id_ref = ags_file_find_id_ref_by_reference(file_id_ref->file,
-							    port_list);
-
-  counter = GPOINTER_TO_INT(g_object_get_data(port_list_file_id_ref,
-					      AGS_FILE_READ_PORT_LIST_PORT_RESOLVED_COUNTER));
-  counter++;
-
-  g_object_set_data(port_list_file_id_ref,
-		    AGS_FILE_READ_PORT_LIST_PORT_RESOLVED_COUNTER,
-		    GINT_TO_POINTER(counter));
-
-  ags_file_id_ref_resolved(port_list_file_id_ref);
 }
 
 xmlNode*

@@ -440,7 +440,7 @@ ags_count_beats_audio_set_ports(AgsPlugin *plugin, GList *port)
   while(port != NULL){
     if(!strncmp(AGS_PORT(port->data)->specifier,
 		"./loop[0]\0",
-		8)){
+		9)){
       g_object_set(G_OBJECT(plugin),
 		   "loop\0", AGS_PORT(port->data),
 		   NULL);
