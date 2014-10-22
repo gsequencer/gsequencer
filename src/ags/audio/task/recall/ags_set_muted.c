@@ -46,7 +46,7 @@ void ags_set_muted_audio(AgsSetMuted *set_muted, AgsAudio *audio);
  * @short_description: set muted to delay audio
  * @title: AgsSetMuted
  * @section_id:
- * @include: ags/muted/task/ags_set_muted.h
+ * @include: ags/audio/task/recall/ags_set_muted.h
  *
  * The #AgsSetMuted task sets muted to #AgsMutable.
  */

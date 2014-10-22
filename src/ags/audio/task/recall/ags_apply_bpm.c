@@ -47,7 +47,7 @@ void ags_apply_bpm_devout(AgsApplyBpm *apply_bpm, AgsDevout *devout);
  * @short_description: apply bpm to delay audio
  * @title: AgsApplyBpm
  * @section_id:
- * @include: ags/bpm/task/ags_apply_bpm.h
+ * @include: ags/audio/task/recall/ags_apply_bpm.h
  *
  * The #AgsApplyBpm task applys bpm to #AgsDelayAudio.
  */

@@ -40,6 +40,16 @@ void ags_config_set_version(AgsConfig *config, gchar *version);
 gchar* ags_config_get_build_id(AgsConfig *config);
 void ags_config_set_build_id(AgsConfig *config, gchar *build_id);
 
+/**
+ * SECTION:ags_config
+ * @short_description: Config Advanced Gtk+ Sequencer
+ * @title: AgsConfig
+ * @section_id:
+ * @include: ags/audio/ags_config.h
+ *
+ * #AgsConfig provides configuration to Advanced Gtk+ Sequencer.
+ */
+
 static gpointer ags_config_parent_class = NULL;
 
 static const gchar *ags_config_thread = AGS_CONFIG_THREAD;
@@ -179,6 +189,15 @@ ags_config_set_build_id(AgsConfig *config, gchar *build_id)
 {
   config->build_id = build_id;
 }
+
+/**
+ * ags_config_load_defaults:
+ * @config: the #AgsConfig
+ *
+ * Load configuration from default values.
+ *
+ * Since: 0.4
+ */
 void
 ags_config_load_defaults(AgsConfig *config)
 {
@@ -193,6 +212,15 @@ ags_config_load_defaults(AgsConfig *config)
   ags_config_set(config, ags_config_devout, "alsa-handle\0", "hw:0,0\0");
 }
 
+/**
+ * ags_config_load_from_file:
+ * @config: the #AgsConfig
+ * @filename: the configuration file
+ *
+ * Load configuration from @filename.
+ *
+ * Since: 0.4
+ */
 void
 ags_config_load_from_file(AgsConfig *config, gchar *filename)
 {
@@ -206,6 +234,14 @@ ags_config_load_from_file(AgsConfig *config, gchar *filename)
 			    &error);
 }
 
+/**
+ * ags_config_set:
+ * @config: the #AgsConfig
+ *
+ * Save configuration.
+ *
+ * Since: 0.4
+ */
 void
 ags_config_save(AgsConfig *config)
 {
@@ -253,12 +289,35 @@ ags_config_save(AgsConfig *config)
   g_free(path);
 }
 
+/**
+ * ags_config_set:
+ * @config: the #AgsConfig
+ * @group: the config group identifier
+ * @key: the key of the property
+ * @value: the value to set
+ *
+ * Set config by @group and @key, applying @value.
+ *
+ * Since: 0.4
+ */
 void
 ags_config_set(AgsConfig *config, gchar *group, gchar *key, gchar *value)
 {
   g_key_file_set_value(config->key_file, group, key, value);
 }
 
+/**
+ * ags_config_get:
+ * @config: the #AgsConfig
+ * @group: the config group identifier
+ * @key: the key of the property
+ *
+ * Retrieve config by @group and @key.
+ *
+ * Returns: the property's value
+ *
+ * Since: 0.4
+ */
 gchar*
 ags_config_get(AgsConfig *config, gchar *group, gchar *key)
 {
@@ -272,6 +331,15 @@ ags_config_get(AgsConfig *config, gchar *group, gchar *key)
   return(str);
 }
 
+/**
+ * ags_config_new:
+ *
+ * Creates an #AgsConfig.
+ *
+ * Returns: a new #AgsConfig.
+ *
+ * Since: 0.4
+ */
 AgsConfig*
 ags_config_new()
 {

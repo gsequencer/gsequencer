@@ -46,7 +46,7 @@ void ags_apply_sequencer_length_audio(AgsApplySequencerLength *apply_sequencer_l
  * @short_description: apply sequencer length to delay audio
  * @title: AgsApplySequencerLength
  * @section_id:
- * @include: ags/sequencer_length/task/ags_apply_sequencer_length.h
+ * @include: ags/audio/task/recall/ags_apply_sequencer_length.h
  *
  * The #AgsApplySequencerLength task applys sequencer length to #AgsDelayAudio.
  */

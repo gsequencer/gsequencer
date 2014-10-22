@@ -49,6 +49,16 @@ void ags_autosave_thread_start(AgsThread *thread);
 void ags_autosave_thread_run(AgsThread *thread);
 void ags_autosave_thread_stop(AgsThread *thread);
 
+/**
+ * SECTION:ags_autosave_thread
+ * @short_description: auto safe
+ * @title: AgsAutosaveThread
+ * @section_id:
+ * @include: ags/thread/ags_autosave_thread.h
+ *
+ * The #AgsAutosaveThread performs auto-safe.
+ */
+
 enum{
   PROP_0,
   PROP_AGS_MAIN,
@@ -343,6 +353,17 @@ ags_autosave_thread_stop(AgsThread *thread)
   //TODO:JK: implement me
 }
 
+/**
+ * ags_autosave_thread_new:
+ * @devout: the #AgsDevout
+ * @ags_main: the #AgsMain
+ *
+ * Create a new #AgsAutosaveThread.
+ *
+ * Returns: the new #AgsAutosaveThread
+ *
+ * Since: 0.4
+ */
 AgsAutosaveThread*
 ags_autosave_thread_new(GObject *devout, AgsMain *ags_main)
 {

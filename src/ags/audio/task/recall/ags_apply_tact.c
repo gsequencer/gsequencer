@@ -46,7 +46,7 @@ void ags_apply_tact_audio(AgsApplyTact *apply_tact, AgsAudio *audio);
  * @short_description: apply tact to delay audio
  * @title: AgsApplyTact
  * @section_id:
- * @include: ags/tact/task/ags_apply_tact.h
+ * @include: ags/audio/task/recall/ags_apply_tact.h
  *
  * The #AgsApplyTact task applys tact to #AgsTactable.
  */
