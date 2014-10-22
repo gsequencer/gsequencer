@@ -291,8 +291,6 @@
     <xi:include href="xml/ags_property_editor_callbacks.xml"/>
     <xi:include href="xml/ags_property_listing_editor.xml"/>
     <xi:include href="xml/ags_resize_editor.xml"/>
-    <xi:include href="xml/ags_ruler.xml"/>
-    <xi:include href="xml/ags_ruler_callbacks.xml"/>
     <xi:include href="xml/ags_server_preferences.xml"/>
     <xi:include href="xml/ags_window.xml"/>
     <xi:include href="xml/ags_window_callbacks.xml"/>
