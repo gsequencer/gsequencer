@@ -1,7 +1,7 @@
 39% symbol docs coverage.
-1173 symbols documented.
+1179 symbols documented.
 525 symbols incomplete.
-1845 not documented.
+1839 not documented.
 
 
 AGS_ACCOUNTING_TABLE
@@ -913,9 +913,6 @@ ags_context_alloc
 ags_copy_notation_audio_new (devout)
 ags_copy_notation_audio_run_new (count_beats_audio_run)
 ags_copy_pattern_channel_template_find_source_and_destination
-ags_count_beats_audio_run_notation_loop
-ags_count_beats_audio_run_notation_start
-ags_count_beats_audio_run_notation_stop
 ags_count_beats_audio_run_sequencer_loop
 ags_count_beats_audio_run_sequencer_start
 ags_count_beats_audio_run_sequencer_stop
@@ -1600,7 +1597,6 @@ ags_stackable_pop
 ags_stackable_push
 ags_stream
 ags_stream_new
-ags_stream_recycling_new
 ags_synth_auto_update_callback
 ags_synth_input_line_map_recall
 ags_synth_lower_callback
@@ -1967,8 +1963,6 @@ ags_stackable:Long_Description
 ags_stackable:Short_Description
 ags_stream:Long_Description
 ags_stream:Short_Description
-ags_stream_recycling:Long_Description
-ags_stream_recycling:Short_Description
 ags_synth_callbacks:Long_Description
 ags_synth_callbacks:Short_Description
 ags_synths:Long_Description

@@ -40,7 +40,7 @@
 </MACRO>
 <MACRO>
 <NAME>AGS_PRIORITY</NAME>
-#define AGS_PRIORITY (0)
+#define AGS_PRIORITY (49)
 </MACRO>
 <ENUM>
 <NAME>AgsMainFlags</NAME>
