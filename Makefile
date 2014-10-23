@@ -99,8 +99,8 @@ am_ags_OBJECTS = ags-ags_plugin_factory.$(OBJEXT) \
 	ags-ags_set_samplerate.$(OBJEXT) ags-ags_save_file.$(OBJEXT) \
 	ags-ags_init_channel.$(OBJEXT) ags-ags_append_recall.$(OBJEXT) \
 	ags-ags_set_devout_play_flags.$(OBJEXT) \
-	ags-ags_link_channel.$(OBJEXT) ags-ags_add_recall.$(OBJEXT) \
-	ags-ags_add_line_member.$(OBJEXT) \
+	ags-ags_link_channel.$(OBJEXT) ags-ags_resize_audio.$(OBJEXT) \
+	ags-ags_add_recall.$(OBJEXT) ags-ags_add_line_member.$(OBJEXT) \
 	ags-ags_change_indicator.$(OBJEXT) \
 	ags-ags_toggle_led.$(OBJEXT) \
 	ags-ags_remove_region_from_selection.$(OBJEXT) \
@@ -600,6 +600,8 @@ ags_SOURCES = ./src/ags/plugin/ags_plugin_factory.h \
 	./src/ags/audio/task/ags_append_recall.c \
 	./src/ags/audio/task/ags_set_devout_play_flags.c \
 	./src/ags/audio/task/ags_link_channel.c \
+	./src/ags/audio/task/ags_resize_audio.h \
+	./src/ags/audio/task/ags_resize_audio.c \
 	./src/ags/audio/task/ags_add_audio.h \
 	./src/ags/audio/task/ags_add_recall.h \
 	./src/ags/audio/task/ags_add_recall.c \
@@ -1551,6 +1553,7 @@ include ./$(DEPDIR)/ags-ags_remove_note.Po
 include ./$(DEPDIR)/ags-ags_remove_point_from_selection.Po
 include ./$(DEPDIR)/ags-ags_remove_recall.Po
 include ./$(DEPDIR)/ags-ags_remove_region_from_selection.Po
+include ./$(DEPDIR)/ags-ags_resize_audio.Po
 include ./$(DEPDIR)/ags-ags_resize_editor.Po
 include ./$(DEPDIR)/ags-ags_returnable_thread.Po
 include ./$(DEPDIR)/ags-ags_ruler.Po
@@ -2187,6 +2190,20 @@ ags-ags_link_channel.obj: ./src/ags/audio/task/ags_link_channel.c
 #	source='./src/ags/audio/task/ags_link_channel.c' object='ags-ags_link_channel.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_link_channel.obj `if test -f './src/ags/audio/task/ags_link_channel.c'; then $(CYGPATH_W) './src/ags/audio/task/ags_link_channel.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/task/ags_link_channel.c'; fi`
+
+ags-ags_resize_audio.o: ./src/ags/audio/task/ags_resize_audio.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_resize_audio.o -MD -MP -MF $(DEPDIR)/ags-ags_resize_audio.Tpo -c -o ags-ags_resize_audio.o `test -f './src/ags/audio/task/ags_resize_audio.c' || echo '$(srcdir)/'`./src/ags/audio/task/ags_resize_audio.c
+	$(am__mv) $(DEPDIR)/ags-ags_resize_audio.Tpo $(DEPDIR)/ags-ags_resize_audio.Po
+#	source='./src/ags/audio/task/ags_resize_audio.c' object='ags-ags_resize_audio.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_resize_audio.o `test -f './src/ags/audio/task/ags_resize_audio.c' || echo '$(srcdir)/'`./src/ags/audio/task/ags_resize_audio.c
+
+ags-ags_resize_audio.obj: ./src/ags/audio/task/ags_resize_audio.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_resize_audio.obj -MD -MP -MF $(DEPDIR)/ags-ags_resize_audio.Tpo -c -o ags-ags_resize_audio.obj `if test -f './src/ags/audio/task/ags_resize_audio.c'; then $(CYGPATH_W) './src/ags/audio/task/ags_resize_audio.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/task/ags_resize_audio.c'; fi`
+	$(am__mv) $(DEPDIR)/ags-ags_resize_audio.Tpo $(DEPDIR)/ags-ags_resize_audio.Po
+#	source='./src/ags/audio/task/ags_resize_audio.c' object='ags-ags_resize_audio.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_resize_audio.obj `if test -f './src/ags/audio/task/ags_resize_audio.c'; then $(CYGPATH_W) './src/ags/audio/task/ags_resize_audio.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/task/ags_resize_audio.c'; fi`
 
 ags-ags_add_recall.o: ./src/ags/audio/task/ags_add_recall.c
 	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_add_recall.o -MD -MP -MF $(DEPDIR)/ags-ags_add_recall.Tpo -c -o ags-ags_add_recall.o `test -f './src/ags/audio/task/ags_add_recall.c' || echo '$(srcdir)/'`./src/ags/audio/task/ags_add_recall.c
