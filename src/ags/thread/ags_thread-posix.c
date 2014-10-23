@@ -1974,10 +1974,39 @@ ags_thread_loop(void *ptr)
 
   counter = 0;
 
-  clock_gettime(CLOCK_MONOTONIC, &time_prev);
+  clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &time_prev);
 
   while((AGS_THREAD_RUNNING & running) != 0){
     running = g_atomic_int_get(&(thread->flags));
+
+    if(thread->parent == NULL){
+      long time_spent;
+
+      static const long time_unit = NSEC_PER_SEC / AGS_THREAD_MAX_PRECISION;
+
+      clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &time_now);
+
+      if(time_now.tv_sec > time_prev.tv_sec){
+	time_spent = (time_now.tv_nsec);
+      }else{
+	time_spent = time_now.tv_nsec - time_prev.tv_nsec;
+      }
+
+      if(time_spent < time_unit){
+	struct timespec timed_sleep = {
+	  0,
+	  0,
+	};
+
+	if(time_spent < time_unit){
+	  timed_sleep.tv_nsec = time_unit - time_spent;
+
+	  nanosleep(&timed_sleep, NULL);
+	}
+      }
+
+      clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &time_prev);
+    }
 
     if(delay >= 1.0){
       counter++;
@@ -2009,33 +2038,6 @@ ags_thread_loop(void *ptr)
 
 	continue;
       }else{
-	if(thread->parent == NULL){
-	  long time_spent;
-
-	  clock_gettime(CLOCK_MONOTONIC, &time_now);
-
-	  if(time_now.tv_sec > time_prev.tv_sec){
-	    time_spent = NSEC_PER_SEC - (time_now.tv_nsec - time_prev.tv_nsec);
-	  }else{
-	    time_spent = (-time_now.tv_nsec + time_prev.tv_nsec);
-	  }
-
-	  if(time_spent < NSEC_PER_SEC){
-	    struct timespec timed_sleep = {
-	      0,
-	      0,
-	    };
-
-	    if(time_spent > 0){
-	      timed_sleep.tv_nsec = NSEC_PER_SEC - time_spent;
-
-	      nanosleep(&timed_sleep, NULL);
-	    }
-	  }
-
-	  clock_gettime(CLOCK_MONOTONIC, &time_prev);
-	}
-
 	counter = 0;
       }
     }else{
@@ -2066,33 +2068,6 @@ ags_thread_loop(void *ptr)
 
 	continue;
       }else{
-	if(thread->parent == NULL){
-	  long time_spent;
-
-	  clock_gettime(CLOCK_MONOTONIC, &time_now);
-
-	  if(time_now.tv_sec > time_prev.tv_sec){
-	    time_spent = NSEC_PER_SEC - (time_now.tv_nsec - time_prev.tv_nsec);
-	  }else{
-	    time_spent = (-time_now.tv_nsec + time_prev.tv_nsec);
-	  }
-
-	  if(time_spent < NSEC_PER_SEC){
-	    struct timespec timed_sleep = {
-	      0,
-	      0,
-	    };
-
-	    if(time_spent > 0){
-	      timed_sleep.tv_nsec = NSEC_PER_SEC - time_spent;
-	      
-	      nanosleep(&timed_sleep, NULL);
-	    }
-	  }
-
-	  clock_gettime(CLOCK_MONOTONIC, &time_prev);
-	}
-
 	counter = 0;
       }
     }

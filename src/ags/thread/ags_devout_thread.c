@@ -179,7 +179,8 @@ ags_devout_thread_start(AgsThread *thread)
 
   /*  */
   devout->flags |= (AGS_DEVOUT_BUFFER3 |
-		    AGS_DEVOUT_PLAY);
+		    AGS_DEVOUT_PLAY |
+		    AGS_DEVOUT_NONBLOCKING);
 
   /*  */
   devout_thread->error = NULL;
@@ -227,7 +228,7 @@ ags_devout_thread_run(AgsThread *thread)
 
   devout = AGS_DEVOUT(thread->devout);
 
-  delay = (long) floor(NSEC_PER_SEC / devout->frequency * devout->buffer_size);
+  //  delay = (long) floor(NSEC_PER_SEC / devout->frequency * devout->buffer_size);
 
   if((AGS_THREAD_INITIAL_RUN & (thread->flags)) != 0){
     //    time(&(devout_thread->time_val));
@@ -250,7 +251,7 @@ ags_devout_thread_run(AgsThread *thread)
 
     sdelay.tv_sec = 0;
     sdelay.tv_nsec = delay;
-    nanosleep(&sdelay, NULL);
+    //    nanosleep(&sdelay, NULL);
 
     //    time(&(devout_thread->time_val));
   }

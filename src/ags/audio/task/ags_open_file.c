@@ -233,6 +233,7 @@ ags_open_file_launch(AgsTask *task)
 	}
       }
 
+      //TODO:JK: add mutex
       ags_recycling_add_audio_signal(iter->first_recycling,
 				     AGS_AUDIO_SIGNAL(audio_signal->data));
 
