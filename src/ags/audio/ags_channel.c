@@ -919,170 +919,136 @@ void
 ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
 		     GError **error)
 {
-  //FIXME:JK: you shouldn't link AgsInput with own AgsRecycling
-  AgsChannel *output, *output_link;
-  AgsChannel *input, *input_link;
-  AgsRecycling *recycling;
+  AgsChannel *old_channel_link, *old_link_link;
+  AgsRecycling *first_recycling, *last_recycling;
+  GError *this_error;
 
-  if(channel == NULL){
-    if(link == NULL)
-      return;
-
-    channel = link;
-    link = NULL;
-  }
-
-  if(channel->link == link){
+  if(channel == NULL &&
+     link == NULL){
     return;
   }
 
-  if(AGS_IS_INPUT(channel)){
-    output = link;
-    input = channel;
-  }else{
-    output = channel;
-    input = link;
-  }
+  if(channel != NULL)
+    old_channel_link = channel->link;
+  else
+    old_channel_link = NULL;
 
-  /* check for AgsRecycling in input */
+  if(link != NULL)
+    old_link_link = link->link;
+  else
+    old_link_link = NULL;
 
   /* check for a loop */
-  if(link != NULL){
+  if(channel != NULL &&
+     link != NULL){
     AgsAudio *audio, *current_audio;
     AgsChannel *current_channel;
 
     audio = AGS_AUDIO(channel->audio);
 
-    current_channel = link;
-    current_audio = AGS_AUDIO(current_channel->audio);
+    if(AGS_IS_OUTPUT(channel)){
+      current_channel = channel->link;
+    }else{
+      if((AGS_AUDIO_ASYNC & (audio->flags)) != 0)
+	current_channel = ags_channel_nth(audio->output, link->audio_channel)->link;
+      else
+	current_channel = ags_channel_nth(audio->output, link->line)->link;
+    }
 
-    while(TRUE){
-      if(current_audio == audio){
-	if(link != NULL)
-	  g_set_error(error,
-		      AGS_CHANNEL_ERROR,
-		      AGS_CHANNEL_ERROR_LOOP_IN_LINK,
-		      "failed to link channel %u from %s with channel %u from %s\0",
-		      channel->line, G_OBJECT_TYPE_NAME(audio),
-		      link->line, G_OBJECT_TYPE_NAME(link->audio));
+    
+    if(current_channel != NULL){
+      current_audio = AGS_AUDIO(current_channel->audio);
+
+      //TODO:JK: buggy
+      while(FALSE){ // TRUE
+	if(current_audio == audio){
+	  //	  if(link != NULL)
+	    //	    g_set_error(error,
+	    //		AGS_CHANNEL_ERROR,
+	    //		AGS_CHANNEL_ERROR_LOOP_IN_LINK,
+	    //		"failed to link channel %u from %s with channel %u from %s\0",
+	    //		channel->line, G_OBJECT_TYPE_NAME(audio),
+	    //		link->line, G_OBJECT_TYPE_NAME(link->audio));
+	    //	  else
+	    //	    g_set_error(error,
+	    //		AGS_CHANNEL_ERROR,
+	    //		AGS_CHANNEL_ERROR_LOOP_IN_LINK,
+	    //		"failed to link channel %u from %s with channel %u from %s\0",
+	    //		channel->line, G_OBJECT_TYPE_NAME(audio),
+	    //		0, "NULL\0");
+
+	    //	  return;
+	}
+
+	if(current_channel->link == NULL)
+	  break;
+
+	current_audio = AGS_AUDIO(current_channel->link->audio);
+
+	if((AGS_AUDIO_ASYNC & (current_audio->flags)) != 0)
+	  current_channel = ags_channel_nth(current_audio->output, current_channel->audio_channel)->link;
 	else
-	  g_set_error(error,
-		      AGS_CHANNEL_ERROR,
-		      AGS_CHANNEL_ERROR_LOOP_IN_LINK,
-		      "failed to link channel %u from %s with channel %u from %s\0",
-		      channel->line, G_OBJECT_TYPE_NAME(audio),
-		      0, "NULL\0");
-
-	return;
-      }
-
-      if(current_channel->link == NULL)
-	break;
-
-      current_audio = AGS_AUDIO(current_channel->link->audio);
-
-      if((AGS_AUDIO_ASYNC & (current_audio->flags)) != 0)
-	current_channel = ags_channel_nth(current_audio->output, current_channel->audio_channel)->link;
-      else
-	current_channel = ags_channel_nth(current_audio->output, current_channel->line)->link;
-    }
-  }
-
-  /* link AgsInput */
-  if(input != NULL){
-    input_link = input->link;
-    input->link = output;
-  }else
-    input_link = NULL;
-
-  if(input_link != NULL){
-    input_link->link = NULL;
-  }
-
-  /* link AgsOutput */
-  if(output != NULL){
-    output_link = output->link;
-    output->link = input;
-  }else
-    output_link = NULL;
-
-  if(output_link != NULL){
-    output_link->link = NULL;
-  }
-
-  /* reset recycling */
-  if(input_link != NULL){
-    gboolean set_parent_to_null;
-
-    recycling = input_link->first_recycling;
-    set_parent_to_null = ((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (AGS_AUDIO(input_link->audio)->flags)) != 0) ? TRUE: FALSE;
-
-    while(recycling != input_link->last_recycling->next){
-      if(set_parent_to_null)
-	recycling->parent = NULL;
-      else
-	recycling->parent = output->first_recycling;
-
-      recycling = recycling->next;
-    }
-  }
-
-  if(output_link != NULL){
-    if((AGS_AUDIO_INPUT_HAS_RECYCLING & (AGS_AUDIO(output_link->audio)->flags)) != 0){
-      recycling = ags_recycling_new(AGS_AUDIO(output_link->audio)->devout);
-      recycling->channel = (GObject *) output_link;
-
-      ags_channel_set_recycling(output_link,
-				recycling, recycling,
-				TRUE, FALSE);
-    }else{
-      ags_channel_set_recycling(output_link,
-	 			NULL, NULL,
-				TRUE, FALSE);
-    }
-  }
-
-  if(input != NULL){
-    if(output != NULL){
-      if(input_link == NULL && (AGS_AUDIO_INPUT_HAS_RECYCLING & (AGS_AUDIO(input->audio)->flags)) != 0)
-	g_object_unref(G_OBJECT(input->first_recycling));
-
-      ags_channel_set_recycling(input,
-				output->first_recycling, output->last_recycling,
-				TRUE, FALSE);
-    }else{
-      if((AGS_AUDIO_INPUT_HAS_RECYCLING & (AGS_AUDIO(input->audio)->flags)) != 0){
-	recycling = ags_recycling_new(AGS_AUDIO(input->audio)->devout);
-	recycling->channel = (GObject *) input;
-
-	ags_channel_set_recycling(input,
-				  recycling, recycling,
-				  TRUE, FALSE);
-      }else{
-	ags_channel_set_recycling(input,
-				  NULL, NULL,
-				  TRUE, FALSE);
+	  current_channel = ags_channel_nth(current_audio->output, current_channel->line)->link;
       }
     }
+  }
+
+  /* set old input/output to NULL */
+  if(old_link_link != NULL &&
+     channel != NULL){
+    this_error = NULL;
+
+    g_message("a");
+    ags_channel_set_link(old_link_link,
+			 NULL,
+			 &this_error);
+  }
+
+  /* only as expected */
+  if(old_channel_link != NULL &&
+     link != NULL){
+    this_error = NULL;
+    
+    g_message("b");
+    ags_channel_set_link(old_channel_link,
+			 NULL,
+			 &this_error);
+  }
+
+  /* set link */
+  if(channel != NULL){
+    channel->link = link;
+  }  
+
+  if(link != NULL){
+    link->link = channel;
+  }
+
+  /* set recycling */
+  if(AGS_IS_OUTPUT(channel)){
+    first_recycling = channel->first_recycling;
+    last_recycling = channel->last_recycling;
+
+    ags_channel_set_recycling(link,
+			      first_recycling, last_recycling,
+			      TRUE, TRUE);
   }else{
-    gboolean set_parent_to_null;
-
-    recycling = output->first_recycling;
-    set_parent_to_null = ((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (AGS_AUDIO(output->audio)->flags)) != 0) ? TRUE: FALSE;
-
-    while(recycling != output->last_recycling->next){
-      if(set_parent_to_null)
-	recycling->parent = NULL;
-      else
-	recycling->parent = output->first_recycling;
-
-      recycling = recycling->next;
+    if(link != NULL){
+      first_recycling = link->first_recycling;
+      last_recycling = link->last_recycling;
+    }else{
+      first_recycling = NULL;
+      last_recycling = NULL;
     }
+
+    ags_channel_set_recycling(channel,
+			      first_recycling, last_recycling,
+			      TRUE, TRUE);
   }
 
-  /* reset recall_id */
-  ags_channel_recursive_reset_recall_ids(input, output,
-					 input_link, output_link);
+  /* reset recall id */
+  ags_channel_recursive_reset_recall_ids(channel, link,
+					 old_channel_link, old_link_link);
 }
 
 /**
@@ -1322,6 +1288,10 @@ ags_channel_set_recycling(AgsChannel *channel,
   }
 
   /* entry point */
+  if(channel == NULL){
+    return;
+  }
+
   audio = AGS_AUDIO(channel->audio);
 
   if(first_recycling == NULL && last_recycling != NULL)

@@ -1302,7 +1302,7 @@ ags_recall_real_run_init_inter(AgsRecall *recall)
 }
 
 /**
- * ags_recall_run_init_pre:
+ * ags_recall_run_init_inter:
  * @recall: an #AgsRecall
  *
  * Prepare for run, this is the inter stage within the preparation.
@@ -1341,7 +1341,7 @@ ags_recall_real_run_init_post(AgsRecall *recall)
 }
 
 /**
- * ags_recall_run_init_pre:
+ * ags_recall_run_init_post:
  * @recall: an #AgsRecall
  *
  * Prepare for run, this is the post stage within the preparation.
