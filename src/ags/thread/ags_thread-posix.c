@@ -31,7 +31,9 @@
 
 #include <ags/audio/ags_devout.h>
 
+#include <stdlib.h>
 #include <stdio.h>
+#include <unistd.h>
 #include <math.h>
 
 void ags_thread_class_init(AgsThreadClass *thread);
@@ -504,11 +506,23 @@ ags_thread_finalize(GObject *gobject)
 
   thread = AGS_THREAD(gobject);
 
+  pthread_detach(thread->thread);
+  pthread_attr_destroy(&(thread->thread_attr));
+
+  pthread_mutexattr_destroy(&(thread->mutexattr));
   pthread_mutex_destroy(&(thread->mutex));
   pthread_cond_destroy(&(thread->cond));
 
   pthread_mutex_destroy(&(thread->start_mutex));
   pthread_cond_destroy(&(thread->start_cond));
+
+  pthread_mutex_destroy(&(thread->timelock_mutex));
+  pthread_cond_destroy(&(thread->timelock_cond));
+
+  pthread_mutex_destroy(&(thread->greedy_mutex));
+  pthread_cond_destroy(&(thread->greedy_cond));
+
+  pthread_mutex_destroy(&(thread->suspend_mutex));
 
   if(thread->devout != NULL){
     g_object_unref(G_OBJECT(thread->devout));
@@ -2364,13 +2378,15 @@ ags_thread_loop(void *ptr)
   //  ags_async_queue_remove(async_queue,
   //			 AGS_STACKABLE(thread));
 
-  if((AGS_THREAD_UNREF_ON_EXIT & (g_atomic_int_get(&(thread->flags)))) != 0){
-    pthread_detach(pthread_self());
-  }
+  if((AGS_THREAD_UNREF_ON_EXIT & (g_atomic_int_get(&(thread->flags)))) != 0){    
+    g_object_unref(thread);
 
-  /* exit thread */
-  //  pthread_exit(NULL);
-  //  return(NULL);
+    /* exit thread */
+    pthread_exit(NULL);
+  }else{
+    /* exit thread */
+    pthread_exit(NULL);
+  }
 }
 
 /**

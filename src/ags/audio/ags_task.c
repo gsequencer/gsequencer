@@ -177,6 +177,8 @@ ags_task_finalize(GObject *gobject)
     g_free(task->name);
   }
 
+  pthread_cond_destroy(&(task->wait_sync_task_cond));
+
   G_OBJECT_CLASS(ags_task_parent_class)->finalize(gobject);
 }
 

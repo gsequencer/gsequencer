@@ -220,7 +220,8 @@ ags_stream_audio_signal_run_post(AgsRecall *recall)
     AGS_RECALL_AUDIO_SIGNAL(recall)->source->stream_current = AGS_RECALL_AUDIO_SIGNAL(recall)->source->stream_current->next;
   }else{
     ags_recall_done(recall);
-    g_object_unref(AGS_RECALL_AUDIO_SIGNAL(recall)->source);
+    ags_recycling_remove_audio_signal(AGS_RECALL_RECYCLING(recall->parent)->source,
+				      AGS_RECALL_AUDIO_SIGNAL(recall)->source);
   }
 
   /* call parent */

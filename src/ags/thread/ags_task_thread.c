@@ -318,7 +318,6 @@ ags_task_thread_append_task_queue(AgsReturnableThread *returnable_thread, gpoint
   pthread_mutex_unlock(&(task_thread->read_mutex));
 
   /*  */
-
   //  g_message("ags_task_thread_append_task_thread ------------------------- %d\0", devout->append_task_suspend);
 }
 

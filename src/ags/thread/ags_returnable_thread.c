@@ -22,6 +22,12 @@
 
 #include <ags/thread/ags_thread_pool.h>
 
+#include <pthread.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <errno.h>
+
 void ags_returnable_thread_class_init(AgsReturnableThreadClass *returnable_thread);
 void ags_returnable_thread_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_returnable_thread_init(AgsReturnableThread *returnable_thread);
@@ -140,6 +146,9 @@ ags_returnable_thread_init(AgsReturnableThread *returnable_thread)
   AgsThread *thread;
 
   thread = AGS_THREAD(returnable_thread);
+
+  pthread_attr_setdetachstate(&(thread->thread_attr),
+			      PTHREAD_CREATE_DETACHED);
 
   g_atomic_int_or(&(thread->flags),
 		  AGS_THREAD_UNREF_ON_EXIT);

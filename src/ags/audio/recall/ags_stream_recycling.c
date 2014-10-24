@@ -231,7 +231,7 @@ ags_stream_recycling_source_add_audio_signal_callback(AgsRecycling *source,
 						      AgsAudioSignal *audio_signal,
 						      AgsStreamRecycling *stream_recycling)
 {
-  g_object_ref(audio_signal);
+  //  g_object_ref(audio_signal);
 }
 
 void
@@ -248,8 +248,6 @@ ags_stream_recycling_source_remove_audio_signal_callback(AgsRecycling *source,
   //  unref_audio_signal = ags_unref_audio_signal_new(AGS_RECALL_AUDIO_SIGNAL(gobject)->source);
   //  ags_task_thread_append_task(task_thread,
   //			      unref_audio_signal);
-
-  g_object_unref(audio_signal);
 }
 
 /**
