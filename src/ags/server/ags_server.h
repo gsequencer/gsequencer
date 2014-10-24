@@ -18,7 +18,7 @@
 #include <xmlrpc-c/server_abyss.h>
 #endif
 
-#include "config.h"
+//#include "config.h"
 
 #include <ags/server/ags_registry.h>
 #include <ags/server/ags_remote_task.h>
