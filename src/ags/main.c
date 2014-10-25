@@ -709,6 +709,7 @@ ags_signal_cleanup()
 int
 main(int argc, char **argv)
 {
+  GMainLoop *main_loop;
   AgsMain *ags_main;
   AgsDevout *devout;
   AgsWindow *window;

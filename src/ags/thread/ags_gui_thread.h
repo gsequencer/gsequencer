@@ -42,14 +42,24 @@
 typedef struct _AgsGuiThread AgsGuiThread;
 typedef struct _AgsGuiThreadClass AgsGuiThreadClass;
 
+typedef enum{
+  AGS_GUI_THREAD_START  = 1,
+  AGS_GUI_THREAD_STOP   = 1 << 1,
+};
+
 struct _AgsGuiThread
 {
   AgsThread thread;
 
+  volatile guint flags;
+
+  pthread_mutex_t sync_mutex;
+  pthread_cond_t start;
+  pthread_cond_t stop;
+
   GMutex mutex;
   GCond cond;
-
-  AgsThread *gui_task_thread;
+  GThread *gui_thread;
 };
 
 struct _AgsGuiThreadClass
