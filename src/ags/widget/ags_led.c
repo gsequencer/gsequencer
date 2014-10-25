@@ -213,7 +213,9 @@ ags_led_set_active(AgsLed *led)
 {
   led->flags |= AGS_LED_ACTIVE;
 
-  ags_led_draw(led);
+  gtk_widget_queue_draw(led);
+
+  //  ags_led_draw(led);
 }
 
 void
@@ -221,7 +223,9 @@ ags_led_unset_active(AgsLed *led)
 {
   led->flags &= (~AGS_LED_ACTIVE);
 
-  ags_led_draw(led);
+  gtk_widget_queue_draw(led);
+
+  //  ags_led_draw(led);
 }
 
 /**

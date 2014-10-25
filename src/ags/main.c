@@ -931,8 +931,14 @@ main(int argc, char **argv)
       pth_join(AGS_AUDIO_LOOP(ags_main->main_loop)->gui_thread->thread,
 	       NULL);
 #else
-      pthread_join(AGS_AUDIO_LOOP(ags_main->main_loop)->gui_thread->thread,
-		   NULL);
+  main_loop = g_main_loop_new(NULL,
+			      FALSE);
+
+
+  g_main_loop_run(main_loop);
+
+  //      pthread_join(AGS_AUDIO_LOOP(ags_main->main_loop)->gui_thread->thread,
+  //		   NULL);
 #endif
     }
   }
