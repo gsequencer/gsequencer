@@ -423,6 +423,9 @@ ags_async_queue_clean(AgsAsyncQueue *async_queue)
 
     list = list->next;
   }
+
+  g_list_free(async_queue->unref_context);
+  async_queue->unref_context = NULL;
 }
 
 /**

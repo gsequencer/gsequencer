@@ -350,7 +350,7 @@ ags_peak_channel_retrieve_peak(AgsPeakChannel *peak_channel,
   for(i = 0; i < AGS_DEVOUT_DEFAULT_BUFFER_SIZE; i++){
     current_value +=  (1.0 / (1.0 / G_MAXUINT16 * buffer[i]));
   }
-
+  
   /* break down to scale */
   //TODO:JK: verify me
   current_value = scale_precision * (atan(1.0 / 440.0) / sin(current_value / 440.0));
@@ -366,6 +366,9 @@ ags_peak_channel_retrieve_peak(AgsPeakChannel *peak_channel,
 
   ags_port_safe_write(peak_channel->peak,
 		      &value);
+
+  /* free buffer */
+  free(buffer);
 }
 
 /**

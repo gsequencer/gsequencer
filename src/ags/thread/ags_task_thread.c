@@ -276,7 +276,8 @@ ags_task_thread_run(AgsThread *thread)
 
   pthread_mutex_lock(&(task_thread->read_mutex));
 
-  ags_list_free_and_unref_link(g_atomic_pointer_get(&(task_thread->exec)));
+  g_list_free_full(g_atomic_pointer_get(&(task_thread->exec)),
+		   g_object_unref);
   g_atomic_pointer_set(&(task_thread->exec),
 		       NULL);
 

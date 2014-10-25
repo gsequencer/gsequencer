@@ -507,11 +507,8 @@ ags_thread_finalize(GObject *gobject)
 
   thread = AGS_THREAD(gobject);
 
-  pthread_detach(thread->thread);
-
   pthread_attr_getstackaddr(&(thread->thread_attr),
 			    &stackaddr);
-  free(stackaddr);
 
   pthread_attr_destroy(&(thread->thread_attr));
 
@@ -536,6 +533,8 @@ ags_thread_finalize(GObject *gobject)
 
   /* call parent */
   G_OBJECT_CLASS(ags_thread_parent_class)->finalize(gobject);
+
+  free(stackaddr);
 }
 
 void
