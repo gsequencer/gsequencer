@@ -503,12 +503,15 @@ void
 ags_thread_finalize(GObject *gobject)
 {
   AgsThread *thread;
+  void *stackaddr;
 
   thread = AGS_THREAD(gobject);
 
   pthread_detach(thread->thread);
 
-  free(pthread_attr_get_stackaddr(&(thread->thread_attr)));
+  pthread_attr_getstackaddr(&(thread->thread_attr),
+			    &stackaddr);
+  free(stackaddr);
 
   pthread_attr_destroy(&(thread->thread_attr));
 
