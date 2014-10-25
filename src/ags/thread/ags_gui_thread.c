@@ -302,9 +302,11 @@ ags_gui_thread_internal_run(gpointer data)
     }
 
     /* */  
-    //    gdk_threads_leave();  
+    gdk_threads_enter();
 
     nanosleep(&timed_sleep, NULL);
+
+    gdk_threads_leave();  
 
     /*  */
     g_mutex_lock(&(gui_thread->mutex));
@@ -321,7 +323,6 @@ ags_gui_thread_internal_run(gpointer data)
 
     g_mutex_unlock(&(gui_thread->mutex));
 
-    //    gdk_threads_enter();
     //    gdk_flush();
 
     //    gdk_threads_enter();
