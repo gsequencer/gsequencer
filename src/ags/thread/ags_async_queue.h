@@ -81,6 +81,7 @@ struct _AgsAsyncQueue
   }lock;
 
   GList *context;
+  GList *unref_context;
 };
 
 struct _AgsAsyncQueueClass
@@ -133,6 +134,8 @@ void ags_async_queue_pop_context(AgsAsyncQueue *async_queue,
 				 AgsContext *context);
 
 void* ags_async_queue_worker(void *ptr);
+
+void ags_async_queue_clean(AgsAsyncQueue *async_queue);
 
 AgsAsyncQueue* ags_async_queue_new();
 

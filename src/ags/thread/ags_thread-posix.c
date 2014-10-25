@@ -507,6 +507,9 @@ ags_thread_finalize(GObject *gobject)
   thread = AGS_THREAD(gobject);
 
   pthread_detach(thread->thread);
+
+  free(pthread_attr_get_stackaddr(&(thread->thread_attr)));
+
   pthread_attr_destroy(&(thread->thread_attr));
 
   pthread_mutexattr_destroy(&(thread->mutexattr));
@@ -1951,6 +1954,8 @@ ags_thread_loop(void *ptr)
       ags_main_loop_set_last_sync(AGS_MAIN_LOOP(main_loop), current_tic);
       ags_main_loop_set_tic(AGS_MAIN_LOOP(main_loop), next_tic);
     }else{
+      ags_async_queue_clean(ags_main_loop_get_async_queue(main_loop));
+
       ags_thread_set_sync_all(main_loop, current_tic);
       pthread_mutex_unlock(&(main_loop->mutex));
 
@@ -2359,12 +2364,35 @@ ags_thread_loop(void *ptr)
   if(ags_thread_is_tree_ready(main_loop,
 			      current_tic) &&
      current_tic == ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop))){
+
+    ags_async_queue_clean(ags_main_loop_get_async_queue(AGS_MAIN_LOOP(main_loop)));
+
     ags_thread_set_sync_all(main_loop, current_tic);
+
+    if((AGS_THREAD_UNREF_ON_EXIT & (g_atomic_int_get(&(thread->flags)))) != 0){
+      AgsAsyncQueue *async_queue;
+
+      async_queue = ags_main_loop_get_async_queue(AGS_MAIN_LOOP(main_loop));
+
+      async_queue->unref_context = g_list_prepend(async_queue->unref_context,
+						  thread);
+    }
+
     pthread_mutex_unlock(&(main_loop->mutex));
 
     ags_main_loop_set_last_sync(AGS_MAIN_LOOP(main_loop), current_tic);
     ags_main_loop_set_tic(AGS_MAIN_LOOP(main_loop), next_tic);
   }else{
+
+    if((AGS_THREAD_UNREF_ON_EXIT & (g_atomic_int_get(&(thread->flags)))) != 0){
+      AgsAsyncQueue *async_queue;
+
+      async_queue = ags_main_loop_get_async_queue(AGS_MAIN_LOOP(main_loop));
+
+      async_queue->unref_context = g_list_prepend(async_queue->unref_context,
+						  thread);
+    }
+
     pthread_mutex_unlock(&(main_loop->mutex));
   }
 
@@ -2378,15 +2406,8 @@ ags_thread_loop(void *ptr)
   //  ags_async_queue_remove(async_queue,
   //			 AGS_STACKABLE(thread));
 
-  if((AGS_THREAD_UNREF_ON_EXIT & (g_atomic_int_get(&(thread->flags)))) != 0){    
-    g_object_unref(thread);
-
-    /* exit thread */
-    pthread_exit(NULL);
-  }else{
-    /* exit thread */
-    pthread_exit(NULL);
-  }
+  /* exit thread */
+  pthread_exit(NULL);
 }
 
 /**
