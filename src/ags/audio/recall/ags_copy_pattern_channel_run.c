@@ -452,7 +452,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 	 * if you need a valid reference to audio_signal you have to g_object_ref(audio_signal)
 	 */
 	//FIXME:JK:
-	
+		
 	recycling = recycling->next;
       }
     }

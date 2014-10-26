@@ -27,6 +27,7 @@
 #include <ags/audio/recall/ags_count_beats_audio.h>
 
 #include <ags/audio/task/ags_change_tact.h>
+#include <ags/audio/task/ags_display_tact.h>
 
 #include <ags/audio/task/recall/ags_apply_bpm.h>
 
@@ -361,11 +362,25 @@ void
 ags_navigation_tic_callback(AgsDevout *devout,
 			    AgsNavigation *navigation)
 {
-  AgsChangeTact *change_tact;
   AgsTaskThread *task_thread;
+  AgsChangeTact *change_tact;
+  AgsDisplayTact *display_tact;
+  GList *list;
+
+  task_thread = AGS_AUDIO_LOOP(AGS_MAIN(navigation->devout->ags_main)->main_loop)->task_thread;
+
+  list = NULL;
 
   change_tact = ags_change_tact_new(navigation);
-  task_thread = AGS_AUDIO_LOOP(AGS_MAIN(navigation->devout->ags_main)->main_loop)->task_thread;
-  ags_task_thread_append_task(task_thread,
-			      change_tact);
+  list = g_list_prepend(list,
+			change_tact);
+
+  display_tact = ags_display_tact_new(navigation);
+  list = g_list_prepend(list,
+			display_tact);
+
+  list = g_list_reverse(list);
+
+  ags_task_thread_append_tasks(task_thread,
+			       list);
 }
