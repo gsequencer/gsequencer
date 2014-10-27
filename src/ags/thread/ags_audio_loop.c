@@ -651,28 +651,6 @@ ags_audio_loop_run(AgsThread *thread)
     }
   }
 
-  if((AGS_AUDIO_LOOP_PLAY_RECALL & (audio_loop->flags)) == 0 &&
-     (AGS_AUDIO_LOOP_PLAY_CHANNEL & (audio_loop->flags)) == 0 &&
-     (AGS_AUDIO_LOOP_PLAY_AUDIO & (audio_loop->flags)) == 0){
-    AgsAsyncQueue *async_queue;
-
-    struct timespec delay = {
-      0,
-      NSEC_PER_SEC / AGS_AUDIO_LOOP_DEFAULT_JIFFIE,
-    };
-
-    //    nanosleep(&delay, NULL);
-  }else{
-    /*
-    struct timespec delay = {
-      0,
-      1.0 / 45.0 * NSEC_PER_SEC / 940,
-    };
-
-    nanosleep(&delay, NULL);
-    */
-  }
-
   /* decide if we stop */
   if(audio_loop->play_recall_ref == 0 &&
      audio_loop->play_channel_ref == 0 &&

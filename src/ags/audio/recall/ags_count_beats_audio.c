@@ -21,9 +21,11 @@
 
 #include <ags/main.h>
 
+#include <ags/object/ags_tactable.h>
 #include <ags/object/ags_plugin.h>
 
 void ags_count_beats_audio_class_init(AgsCountBeatsAudioClass *count_beats_audio);
+void ags_count_beats_audio_tactable_interface_init(AgsTactableInterface *tactable);
 void ags_count_beats_audio_init(AgsCountBeatsAudio *count_beats_audio);
 void ags_count_beats_audio_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_count_beats_audio_set_property(GObject *gobject,
@@ -36,6 +38,9 @@ void ags_count_beats_audio_get_property(GObject *gobject,
 					GParamSpec *param_spec);
 void ags_count_beats_audio_set_ports(AgsPlugin *plugin, GList *port);
 void ags_count_beats_audio_finalize(GObject *gobject);
+
+void ags_count_beats_audio_change_sequencer_duration(AgsTactable *tactable, gdouble duration);
+void ags_count_beats_audio_change_notation_duration(AgsTactable *tactable, gdouble duration);
 
 /**
  * SECTION:ags_count_beats_audio
@@ -92,6 +97,12 @@ ags_count_beats_audio_get_type()
       (GInstanceInitFunc) ags_count_beats_audio_init,
     };
     
+    static const GInterfaceInfo ags_tactable_interface_info = {
+      (GInterfaceInitFunc) ags_count_beats_audio_tactable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     static const GInterfaceInfo ags_plugin_interface_info = {
       (GInterfaceInitFunc) ags_count_beats_audio_plugin_interface_init,
       NULL, /* interface_finalize */
@@ -104,11 +115,24 @@ ags_count_beats_audio_get_type()
 							0);
 
     g_type_add_interface_static(ags_type_count_beats_audio,
+				AGS_TYPE_TACTABLE,
+				&ags_tactable_interface_info);
+
+    g_type_add_interface_static(ags_type_count_beats_audio,
 				AGS_TYPE_PLUGIN,
 				&ags_plugin_interface_info);
   }
 
   return(ags_type_count_beats_audio);
+}
+
+void
+ags_count_beats_audio_tactable_interface_init(AgsTactableInterface *tactable)
+{
+  tactable->change_sequencer_duration = ags_count_beats_audio_change_sequencer_duration;
+  tactable->change_notation_duration = ags_count_beats_audio_change_notation_duration;
+  tactable->change_tact = NULL;
+  tactable->change_bpm = NULL;
 }
 
 void
@@ -538,6 +562,34 @@ ags_count_beats_audio_finalize(GObject *gobject)
 
   /* call parent */
   G_OBJECT_CLASS(ags_count_beats_audio_parent_class)->finalize(gobject);
+}
+
+void
+ags_count_beats_audio_change_sequencer_duration(AgsTactable *tactable, gdouble duration)
+{
+  AgsCountBeatsAudio *count_beats_audio;
+  GValue value = {0,};
+  
+  count_beats_audio = AGS_COUNT_BEATS_AUDIO(tactable);
+
+  g_value_init(&value, G_TYPE_DOUBLE);
+  g_value_set_double(&value, duration);
+  ags_port_safe_write(count_beats_audio->sequencer_loop_end,
+		      &value);
+}
+
+void
+ags_count_beats_audio_change_notation_duration(AgsTactable *tactable, gdouble duration)
+{
+  AgsCountBeatsAudio *count_beats_audio;
+  GValue value = {0,};
+  
+  count_beats_audio = AGS_COUNT_BEATS_AUDIO(tactable);
+
+  g_value_init(&value, G_TYPE_DOUBLE);
+  g_value_set_double(&value, duration);
+  ags_port_safe_write(count_beats_audio->notation_loop_end,
+		      &value);
 }
 
 /**

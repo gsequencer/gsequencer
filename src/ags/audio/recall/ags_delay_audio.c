@@ -843,9 +843,9 @@ ags_delay_audio_change_sequencer_duration(AgsTactable *tactable, gdouble duratio
   delay_audio = AGS_DELAY_AUDIO(tactable);
 
   g_value_init(&value, G_TYPE_DOUBLE);
-
-  g_value_set_double(&value, duration);
-  ags_delay_audio_sequencer_duration_changed(delay_audio);
+  g_value_set_double(&value, duration * AGS_DEVOUT_DEFAULT_DELAY * AGS_DEVOUT_DEFAULT_SCALE);
+  ags_port_safe_write(delay_audio->sequencer_duration,
+		      &value);
 }
 
 void
@@ -857,9 +857,9 @@ ags_delay_audio_change_notation_duration(AgsTactable *tactable, gdouble duration
   delay_audio = AGS_DELAY_AUDIO(tactable);
 
   g_value_init(&value, G_TYPE_DOUBLE);
-
-  g_value_set_double(&value, duration);
-  ags_delay_audio_notation_duration_changed(delay_audio);
+  g_value_set_double(&value, duration * AGS_DEVOUT_DEFAULT_DELAY * AGS_DEVOUT_DEFAULT_SCALE);
+  ags_port_safe_write(delay_audio->notation_duration,
+		      &value);
 }
 
 /**

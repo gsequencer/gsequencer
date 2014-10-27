@@ -1003,6 +1003,11 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
 			 NULL,
 			 &this_error);
   }
+  
+  /* set link */
+  if(channel != NULL){
+    channel->link = link;
+  }  
 
   /* only as expected */
   if(old_channel_link != NULL &&
@@ -1014,11 +1019,6 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
 			 NULL,
 			 &this_error);
   }
-
-  /* set link */
-  if(channel != NULL){
-    channel->link = link;
-  }  
 
   if(link != NULL){
     link->link = channel;
