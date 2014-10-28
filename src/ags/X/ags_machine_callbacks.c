@@ -36,6 +36,7 @@
 #include <ags/X/editor/ags_file_selection.h>
 
 int ags_machine_popup_rename_response_callback(GtkWidget *widget, gint response, AgsMachine *machine);
+void ags_machine_start_failure_response(GtkWidget *dialog, AgsMachine *machine);
 
 #define AGS_RENAME_ENTRY "AgsRenameEntry"
 
@@ -455,6 +456,14 @@ ags_machine_start_failure_callback(AgsTask *task, GError *error,
 						       GTK_MESSAGE_ERROR,
 						       GTK_BUTTONS_CLOSE,
 						       error->message);
-  gtk_dialog_run(GTK_DIALOG(dialog));
-  gtk_widget_destroy(GTK_WIDGET(dialog));
+  g_signal_connect(dialog, "response\0",
+		   G_CALLBACK(ags_machine_start_failure_response), machine);
+  gtk_widget_show_all(dialog);
+}
+
+void
+ags_machine_start_failure_response(GtkWidget *dialog,
+				   AgsMachine *machine)
+{
+  gtk_widget_destroy(dialog);
 }

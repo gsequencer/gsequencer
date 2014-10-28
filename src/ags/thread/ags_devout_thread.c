@@ -167,17 +167,6 @@ ags_devout_thread_start(AgsThread *thread)
   devout = AGS_DEVOUT(thread->devout);
 
   /*  */
-  if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
-    pthread_mutex_lock(&(thread->start_mutex));
-
-    g_atomic_int_and(&(thread->flags),
-		     (~AGS_THREAD_INITIAL_RUN));
-    pthread_cond_broadcast(&(thread->start_cond));
-
-    pthread_mutex_unlock(&(thread->start_mutex));
-  }
-
-  /*  */
   devout->flags |= (AGS_DEVOUT_BUFFER3 |
 		    AGS_DEVOUT_PLAY |
 		    AGS_DEVOUT_NONBLOCKING);
@@ -188,22 +177,20 @@ ags_devout_thread_start(AgsThread *thread)
   if((AGS_DEVOUT_ALSA & (devout->flags)) != 0){
     if(devout->out.alsa.handle == NULL){
       ags_devout_alsa_init(devout,
-      			   devout_thread->error);
+      			   &(devout_thread->error));
       
-      devout->flags &= (~AGS_DEVOUT_START_PLAY);
+      if(devout_thread->error == NULL){
+	devout->flags &= (~AGS_DEVOUT_START_PLAY);
+      }else{
+	/* preserve AgsAudioLoop from playing */
+	
+	return;
+      }
+
 #ifdef AGS_DEBUG
       g_message("ags_devout_alsa_play\0");
 #endif
     }
-  }
-
-  if(devout_thread->error != NULL){
-    AgsAudioLoop *audio_loop;
-
-    /* preserve AgsAudioLoop from playing */
-    //TODO:JK: implement me
-
-    return;
   }
 
   memset(devout->buffer[0], 0, devout->dsp_channels * devout->buffer_size * sizeof(signed short));
@@ -243,17 +230,6 @@ ags_devout_thread_run(AgsThread *thread)
 
   if(error != NULL){
     //TODO:JK: implement me
-  }
-
-  if((AGS_DEVOUT_NONBLOCKING & (devout->flags)) != 0){
-    time_t new_time_val;
-    struct timespec sdelay;
-
-    sdelay.tv_sec = 0;
-    sdelay.tv_nsec = delay;
-    //    nanosleep(&sdelay, NULL);
-
-    //    time(&(devout_thread->time_val));
   }
 }
 

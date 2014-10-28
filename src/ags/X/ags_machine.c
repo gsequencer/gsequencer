@@ -784,8 +784,8 @@ ags_machine_set_run(AgsMachine *machine,
     /* create start task */
     if(list != NULL){
       start_devout = ags_start_devout_new(window->devout);
-      g_signal_connect(G_OBJECT(start_devout), "failure\0",
-		       G_CALLBACK(ags_machine_start_failure_callback), machine);
+      g_signal_connect_after(G_OBJECT(start_devout), "failure\0",
+			     G_CALLBACK(ags_machine_start_failure_callback), machine);
       list = g_list_prepend(list, start_devout);
 
       /* append AgsStartDevout */

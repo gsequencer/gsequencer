@@ -1058,6 +1058,11 @@ ags_devout_alsa_init(AgsDevout *devout,
   /* Open PCM device for playback. */
   if ((err = snd_pcm_open(&handle, devout->out.alsa.device, SND_PCM_STREAM_PLAYBACK, 0)) < 0) {
     printf("Playback open error: %s\n", snd_strerror(err));
+    g_set_error(error,
+		AGS_DEVOUT_ERROR,
+		AGS_DEVOUT_ERROR_LOCKED_SOUNDCARD,
+		"unable to open pcm device: %s\n\0",
+		snd_strerror(err));
     return;
   }
 
@@ -1111,7 +1116,8 @@ ags_devout_alsa_init(AgsDevout *devout,
 
   if (rrate != rate) {
     printf("Rate doesn't match (requested %iHz, get %iHz)\n", rate, err);
-    exit(-EINVAL);
+    //    exit(-EINVAL);
+    return;
   }
 
   /* set the buffer size */

@@ -170,31 +170,32 @@ ags_start_devout_launch(AgsTask *task)
   devout->flags |= (AGS_DEVOUT_START_PLAY |
 		    AGS_DEVOUT_PLAY);
 
+  error = devout_thread->error;
+  devout_thread->error = NULL;
+
   ags_thread_start(AGS_THREAD(devout_thread));
   
   if((AGS_THREAD_SINGLE_LOOP & (AGS_THREAD(devout_thread)->flags)) == 0){
-    pthread_mutex_lock(&(AGS_THREAD(devout_thread)->start_mutex));
+    if(devout_thread->error != NULL &&
+       error == NULL){
+      ags_task_failure(AGS_TASK(start_devout), devout_thread->error);
+    }else{
+      pthread_mutex_lock(&(AGS_THREAD(devout_thread)->start_mutex));
 
-    val = g_atomic_int_get(&(AGS_THREAD(devout_thread)->flags));
+      val = g_atomic_int_get(&(AGS_THREAD(devout_thread)->flags));
 
-    if((AGS_THREAD_INITIAL_RUN & val) != 0){
-      while((AGS_THREAD_INITIAL_RUN & val) != 0){
-	pthread_cond_wait(&(AGS_THREAD(devout_thread)->start_cond),
-			  &(AGS_THREAD(devout_thread)->start_mutex));
+      if((AGS_THREAD_INITIAL_RUN & val) != 0){
+	while((AGS_THREAD_INITIAL_RUN & val) != 0){
+	  pthread_cond_wait(&(AGS_THREAD(devout_thread)->start_cond),
+			    &(AGS_THREAD(devout_thread)->start_mutex));
 
-	val = g_atomic_int_get(&(AGS_THREAD(devout_thread)->flags));
+	  val = g_atomic_int_get(&(AGS_THREAD(devout_thread)->flags));
+	}
       }
-    }
     
-    //    ags_thread_unlock(AGS_THREAD(devout_thread));
-    pthread_mutex_unlock(&(AGS_THREAD(devout_thread)->start_mutex));
-    
-    if(devout_thread->error != NULL){
-      ags_task_failure(AGS_TASK(start_devout), error);
+      //    ags_thread_unlock(AGS_THREAD(devout_thread));
+      pthread_mutex_unlock(&(AGS_THREAD(devout_thread)->start_mutex));
     }
-  }else{
-    g_atomic_int_or(&(AGS_THREAD(devout_thread)->flags),
-		    AGS_THREAD_RUNNING);
   }
 }
 
