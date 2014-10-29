@@ -35,6 +35,8 @@ struct _AgsGenericPreferences
 {
   GtkVBox vbox;
 
+  GtkCheckButton *autosave_thread;
+
   GtkComboBox *audio_output_module;
 };
 
