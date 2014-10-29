@@ -498,6 +498,10 @@ ags_note_edit_draw_segment(AgsNoteEdit *note_edit, cairo_t *cr)
     i += note_edit->control_height;
   }
 
+  cairo_move_to(cr, 0.0, (double) i);
+  cairo_line_to(cr, (double) note_edit->width, (double) i);
+  cairo_stroke(cr);
+
   tact = exp2((double) gtk_combo_box_get_active(editor->toolbar->zoom) - 4.0);
 
   i = note_edit->control_current.x0;
