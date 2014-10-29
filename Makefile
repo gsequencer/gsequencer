@@ -206,6 +206,7 @@ am_ags_OBJECTS = ags-ags_plugin_factory.$(OBJEXT) \
 	ags-ags_packable.$(OBJEXT) ags-ags_preferences.$(OBJEXT) \
 	ags-ags_preferences_callbacks.$(OBJEXT) \
 	ags-ags_generic_preferences.$(OBJEXT) \
+	ags-ags_generic_preferences_callbacks.$(OBJEXT) \
 	ags-ags_audio_preferences.$(OBJEXT) \
 	ags-ags_audio_preferences_callbacks.$(OBJEXT) \
 	ags-ags_plugin_preferences.$(OBJEXT) \
@@ -880,6 +881,8 @@ ags_SOURCES = ./src/ags/plugin/ags_plugin_factory.h \
 	./src/ags/X/ags_preferences_callbacks.h \
 	./src/ags/X/ags_generic_preferences.c \
 	./src/ags/X/ags_generic_preferences.h \
+	./src/ags/X/ags_generic_preferences_callbacks.c \
+	./src/ags/X/ags_generic_preferences_callbacks.h \
 	./src/ags/X/ags_audio_preferences.c \
 	./src/ags/X/ags_audio_preferences.h \
 	./src/ags/X/ags_audio_preferences_callbacks.c \
@@ -1412,6 +1415,7 @@ include ./$(DEPDIR)/ags-ags_file_util.Po
 include ./$(DEPDIR)/ags-ags_free_selection.Po
 include ./$(DEPDIR)/ags-ags_garbage_collector.Po
 include ./$(DEPDIR)/ags-ags_generic_preferences.Po
+include ./$(DEPDIR)/ags-ags_generic_preferences_callbacks.Po
 include ./$(DEPDIR)/ags-ags_gui_task_thread.Po
 include ./$(DEPDIR)/ags-ags_gui_thread.Po
 include ./$(DEPDIR)/ags-ags_htimebar.Po
@@ -4252,6 +4256,20 @@ ags-ags_generic_preferences.obj: ./src/ags/X/ags_generic_preferences.c
 #	source='./src/ags/X/ags_generic_preferences.c' object='ags-ags_generic_preferences.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_generic_preferences.obj `if test -f './src/ags/X/ags_generic_preferences.c'; then $(CYGPATH_W) './src/ags/X/ags_generic_preferences.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/ags_generic_preferences.c'; fi`
+
+ags-ags_generic_preferences_callbacks.o: ./src/ags/X/ags_generic_preferences_callbacks.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_generic_preferences_callbacks.o -MD -MP -MF $(DEPDIR)/ags-ags_generic_preferences_callbacks.Tpo -c -o ags-ags_generic_preferences_callbacks.o `test -f './src/ags/X/ags_generic_preferences_callbacks.c' || echo '$(srcdir)/'`./src/ags/X/ags_generic_preferences_callbacks.c
+	$(am__mv) $(DEPDIR)/ags-ags_generic_preferences_callbacks.Tpo $(DEPDIR)/ags-ags_generic_preferences_callbacks.Po
+#	source='./src/ags/X/ags_generic_preferences_callbacks.c' object='ags-ags_generic_preferences_callbacks.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_generic_preferences_callbacks.o `test -f './src/ags/X/ags_generic_preferences_callbacks.c' || echo '$(srcdir)/'`./src/ags/X/ags_generic_preferences_callbacks.c
+
+ags-ags_generic_preferences_callbacks.obj: ./src/ags/X/ags_generic_preferences_callbacks.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_generic_preferences_callbacks.obj -MD -MP -MF $(DEPDIR)/ags-ags_generic_preferences_callbacks.Tpo -c -o ags-ags_generic_preferences_callbacks.obj `if test -f './src/ags/X/ags_generic_preferences_callbacks.c'; then $(CYGPATH_W) './src/ags/X/ags_generic_preferences_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/ags_generic_preferences_callbacks.c'; fi`
+	$(am__mv) $(DEPDIR)/ags-ags_generic_preferences_callbacks.Tpo $(DEPDIR)/ags-ags_generic_preferences_callbacks.Po
+#	source='./src/ags/X/ags_generic_preferences_callbacks.c' object='ags-ags_generic_preferences_callbacks.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_generic_preferences_callbacks.obj `if test -f './src/ags/X/ags_generic_preferences_callbacks.c'; then $(CYGPATH_W) './src/ags/X/ags_generic_preferences_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/ags_generic_preferences_callbacks.c'; fi`
 
 ags-ags_audio_preferences.o: ./src/ags/X/ags_audio_preferences.c
 	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_audio_preferences.o -MD -MP -MF $(DEPDIR)/ags-ags_audio_preferences.Tpo -c -o ags-ags_audio_preferences.o `test -f './src/ags/X/ags_audio_preferences.c' || echo '$(srcdir)/'`./src/ags/X/ags_audio_preferences.c

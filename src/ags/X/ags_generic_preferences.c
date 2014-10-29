@@ -17,6 +17,7 @@
  */
 
 #include <ags/X/ags_generic_preferences.h>
+#include <ags/X/ags_generic_preferences_callbacks.h>
 
 #include <ags-lib/object/ags_connectable.h>
 
@@ -126,6 +127,9 @@ ags_generic_preferences_connect(AgsConnectable *connectable)
   AgsGenericPreferences *generic_preferences;
 
   generic_preferences = AGS_GENERIC_PREFERENCES(connectable);
+
+  g_signal_connect_after(G_OBJECT(generic_preferences->autosave_thread), "clicked\0",
+			 G_CALLBACK(ags_generic_preferences_autosave_thread_clicked_callback), generic_preferences);
 }
 
 void
