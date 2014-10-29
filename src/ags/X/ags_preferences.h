@@ -21,6 +21,7 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/X/ags_generic_preferences.h>
 #include <ags/X/ags_audio_preferences.h>
 #include <ags/X/ags_performance_preferences.h>
 #include <ags/X/ags_server_preferences.h>
@@ -47,6 +48,7 @@ struct _AgsPreferences
 
   GtkWindow *window;
 
+  AgsGenericPreferences *generic_preferences;
   AgsAudioPreferences *audio_preferences;
   AgsPerformancePreferences *performance_preferences;
   AgsServerPreferences *server_preferences;

@@ -149,6 +149,11 @@ ags_preferences_init(AgsPreferences *preferences)
   gtk_container_add(GTK_CONTAINER(GTK_DIALOG(preferences)->vbox),
 		    GTK_WIDGET(notebook));
 
+  preferences->generic_preferences = ags_generic_preferences_new();
+  gtk_notebook_append_page(notebook,
+			   GTK_WIDGET(preferences->generic_preferences),
+			   gtk_label_new("generic\0"));
+
   preferences->audio_preferences = ags_audio_preferences_new();
   gtk_notebook_append_page(notebook,
 			   GTK_WIDGET(preferences->audio_preferences),
@@ -184,6 +189,7 @@ ags_preferences_connect(AgsConnectable *connectable)
 
   preferences = AGS_PREFERENCES(connectable);
 
+  ags_connectable_connect(preferences->generic_preferences);
   ags_connectable_connect(preferences->audio_preferences);
   ags_connectable_connect(preferences->performance_preferences);
   ags_connectable_connect(preferences->server_preferences);
@@ -205,6 +211,7 @@ ags_preferences_set_update(AgsApplicable *applicable, gboolean update)
 
   preferences = AGS_PREFERENCES(applicable);
 
+  ags_applicable_set_update(AGS_APPLICABLE(preferences->generic_preferences), update);
   ags_applicable_set_update(AGS_APPLICABLE(preferences->audio_preferences), update);
   ags_applicable_set_update(AGS_APPLICABLE(preferences->performance_preferences), update);
   ags_applicable_set_update(AGS_APPLICABLE(preferences->server_preferences), update);
@@ -217,6 +224,7 @@ ags_preferences_apply(AgsApplicable *applicable)
 
   preferences = AGS_PREFERENCES(applicable);
 
+  ags_applicable_apply(AGS_APPLICABLE(preferences->generic_preferences));
   ags_applicable_apply(AGS_APPLICABLE(preferences->audio_preferences));
   ags_applicable_apply(AGS_APPLICABLE(preferences->performance_preferences));
   ags_applicable_apply(AGS_APPLICABLE(preferences->server_preferences));
@@ -229,6 +237,7 @@ ags_preferences_reset(AgsApplicable *applicable)
 
   preferences = AGS_PREFERENCES(applicable);
 
+  ags_applicable_reset(AGS_APPLICABLE(preferences->generic_preferences));
   ags_applicable_reset(AGS_APPLICABLE(preferences->audio_preferences));
   ags_applicable_reset(AGS_APPLICABLE(preferences->performance_preferences));
   ags_applicable_reset(AGS_APPLICABLE(preferences->server_preferences));

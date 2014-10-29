@@ -113,7 +113,7 @@ ags_generic_preferences_connectable_interface_init(AgsConnectableInterface *conn
 void
 ags_generic_preferences_init(AgsGenericPreferences *generic_preferences)
 {
-  generic_preferences->autosave_thread = (GtkCheckButton *) gtk_check_button_new_with_label("Super Threaded\0");
+  generic_preferences->autosave_thread = (GtkCheckButton *) gtk_check_button_new_with_label("autosave thread\0");
   gtk_box_pack_start(GTK_BOX(generic_preferences),
 		     GTK_WIDGET(generic_preferences->autosave_thread),
 		     FALSE, FALSE,

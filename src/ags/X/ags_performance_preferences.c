@@ -119,6 +119,8 @@ ags_performance_preferences_init(AgsPerformancePreferences *performance_preferen
 		     GTK_WIDGET(performance_preferences->super_threaded),
 		     FALSE, FALSE,
 		     0);
+  gtk_widget_set_sensitive(performance_preferences->super_threaded,
+			   FALSE);
 }
 
 void

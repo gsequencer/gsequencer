@@ -129,6 +129,8 @@ ags_server_preferences_init(AgsServerPreferences *server_preferences)
 		   0, 1,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
+  gtk_widget_set_sensitive(server_preferences->start,
+			   FALSE);
 
   /* address */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
@@ -149,6 +151,8 @@ ags_server_preferences_init(AgsServerPreferences *server_preferences)
 		   1, 2,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
+  gtk_widget_set_sensitive(server_preferences->address,
+			   FALSE);
 
   /* port */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
@@ -169,6 +173,8 @@ ags_server_preferences_init(AgsServerPreferences *server_preferences)
 		   2, 3,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
+  gtk_widget_set_sensitive(server_preferences->port,
+			   FALSE);
 
   /* username */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
@@ -189,6 +195,8 @@ ags_server_preferences_init(AgsServerPreferences *server_preferences)
 		   3, 4,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
+  gtk_widget_set_sensitive(server_preferences->username,
+			   FALSE);
 
   /* password */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
@@ -210,6 +218,8 @@ ags_server_preferences_init(AgsServerPreferences *server_preferences)
 		   4, 5,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
+  gtk_widget_set_sensitive(server_preferences->password,
+			   FALSE);
 }
 
 void
