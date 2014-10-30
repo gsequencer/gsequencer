@@ -278,7 +278,55 @@ ags_audio_preferences_set_update(AgsApplicable *applicable, gboolean update)
 void
 ags_audio_preferences_apply(AgsApplicable *applicable)
 {
-  //TODO:JK: implement me
+  AgsPreferences *preferences;
+  AgsAudioPreferences *audio_preferences; 
+  AgsConfig *config;
+  GList *card_id, *card_name;
+  char *device;
+  gchar *str;
+  int card_num;
+  guint channels, channels_min, channels_max;
+  guint rate, rate_min, rate_max;
+  guint buffer_size, buffer_size_min, buffer_size_max;
+
+  audio_preferences = AGS_AUDIO_PREFERENCES(applicable);
+
+  preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
+							   AGS_TYPE_PREFERENCES);
+  config = AGS_CONFIG(AGS_MAIN(AGS_WINDOW(preferences->window)->ags_main)->config);
+
+  /* samplerate */
+  str = g_strdup_printf("%ull\0",
+			(guint) gtk_spin_button_get_value(audio_preferences->samplerate));
+  ags_config_set(config,
+		 AGS_CONFIG_DEVOUT,
+		 "samplerate\0",
+		 str);
+  g_free(str);
+
+  /* buffer size */
+  str = g_strdup_printf("%ull\0",
+			(guint) gtk_spin_button_get_value(audio_preferences->buffer_size));
+  ags_config_set(config,
+		 AGS_CONFIG_DEVOUT,
+		 "buffer-size\0",
+		 str);
+  g_free(str);
+
+  /* dsp channels */
+  str = g_strdup_printf("%ull\0",
+			(guint) gtk_spin_button_get_value(audio_preferences->audio_channels));
+  ags_config_set(config,
+		 AGS_CONFIG_DEVOUT,
+		 "dsp-channels\0",
+		 str);
+  g_free(str);
+
+  /* card */
+  ags_config_set(config,
+		 AGS_CONFIG_DEVOUT,
+		 "alsa-handle\0",
+		 gtk_combo_box_text_get_active_text(audio_preferences->card));
 }
 
 void
