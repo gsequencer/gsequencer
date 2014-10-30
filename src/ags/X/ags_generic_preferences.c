@@ -21,19 +21,22 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/object/ags_applicable.h>
+
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_preferences.h>
 
 void ags_generic_preferences_class_init(AgsGenericPreferencesClass *generic_preferences);
 void ags_generic_preferences_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_generic_preferences_applicable_interface_init(AgsApplicableInterface *applicable);
 void ags_generic_preferences_init(AgsGenericPreferences *generic_preferences);
 void ags_generic_preferences_connect(AgsConnectable *connectable);
 void ags_generic_preferences_disconnect(AgsConnectable *connectable);
+void ags_generic_preferences_set_update(AgsApplicable *applicable, gboolean update);
+void ags_generic_preferences_apply(AgsApplicable *applicable);
+void ags_generic_preferences_reset(AgsApplicable *applicable);
 static void ags_generic_preferences_finalize(GObject *gobject);
 void ags_generic_preferences_show(GtkWidget *widget);
-
-void ags_generic_preferences_reset(AgsGenericPreferences *generic_preferences);
-void* ags_generic_preferences_refresh(void *ptr);
 
 /**
  * SECTION:ags_generic_preferences
@@ -71,6 +74,12 @@ ags_generic_preferences_get_type(void)
       NULL, /* interface_data */
     };
     
+    static const GInterfaceInfo ags_applicable_interface_info = {
+      (GInterfaceInitFunc) ags_generic_preferences_applicable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_generic_preferences = g_type_register_static(GTK_TYPE_VBOX,
 							  "AgsGenericPreferences\0", &ags_generic_preferences_info,
 							  0);
@@ -78,6 +87,10 @@ ags_generic_preferences_get_type(void)
     g_type_add_interface_static(ags_type_generic_preferences,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_type_add_interface_static(ags_type_generic_preferences,
+				AGS_TYPE_APPLICABLE,
+				&ags_applicable_interface_info);
   }
 
   return(ags_type_generic_preferences);
@@ -112,6 +125,14 @@ ags_generic_preferences_connectable_interface_init(AgsConnectableInterface *conn
 }
 
 void
+ags_generic_preferences_applicable_interface_init(AgsApplicableInterface *applicable)
+{
+  applicable->set_update = ags_generic_preferences_set_update;
+  applicable->apply = ags_generic_preferences_apply;
+  applicable->reset = ags_generic_preferences_reset;
+}
+
+void
 ags_generic_preferences_init(AgsGenericPreferences *generic_preferences)
 {
   generic_preferences->autosave_thread = (GtkCheckButton *) gtk_check_button_new_with_label("autosave thread\0");
@@ -138,9 +159,28 @@ ags_generic_preferences_disconnect(AgsConnectable *connectable)
   /* empty */
 }
 
+void
+ags_generic_preferences_set_update(AgsApplicable *applicable, gboolean update)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_generic_preferences_apply(AgsApplicable *applicable)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_generic_preferences_reset(AgsApplicable *applicable)
+{
+  //TODO:JK: implement me
+}
+
 static void
 ags_generic_preferences_finalize(GObject *gobject)
 {
+  //TODO:JK: implement me
 }
 
 void
