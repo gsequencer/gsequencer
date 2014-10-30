@@ -181,7 +181,13 @@ ags_main_init(AgsMain *ags_main)
   ags_colors_alloc();
 
   ags_main->main_loop = NULL;
+
+  /* AgsAutosaveThread */
   ags_main->autosave_thread = NULL;
+  ags_main->autosave_thread = ags_autosave_thread_new(NULL, ags_main);
+  g_object_ref(G_OBJECT(ags_main->autosave_thread));
+  ags_connectable_connect(AGS_CONNECTABLE(ags_main->autosave_thread));
+  
   ags_main->thread_pool = ags_thread_pool_new(NULL);
   ags_main->server = NULL;
   ags_main->devout = NULL;
@@ -822,14 +828,29 @@ main(int argc, char **argv)
 
     ags_main = AGS_MAIN(file->ags_main);
 
+    uid = getuid();
+    pw = getpwuid(uid);
+  
+    wdir = g_strdup_printf("%s/%s\0",
+			   pw->pw_dir,
+			   AGS_DEFAULT_DIRECTORY);
+
+    config_file = g_strdup_printf("%s/%s\0",
+				  wdir,
+				  AGS_DEFAULT_CONFIG);
+
+    ags_config_load_from_file(ags_main->config,
+			      config_file);
+
+    g_free(wdir);
+    g_free(config_file);
+
 #ifdef _USE_PTH
     pth_join(AGS_AUDIO_LOOP(ags_main->main_loop)->gui_thread->thread,
 	     NULL);
 #else
-    g_message("joining\0");
     pthread_join(AGS_AUDIO_LOOP(ags_main->main_loop)->gui_thread->thread,
 		 NULL);
-    g_message("done\0");
 #endif
   }else{
     ags_main = ags_main_new();
@@ -861,6 +882,11 @@ main(int argc, char **argv)
       ags_main_add_devout(ags_main,
 			  devout);
 
+      /*  */
+      g_object_set(G_OBJECT(ags_main->autosave_thread),
+		   "devout\0", devout,
+		   NULL);
+
       /* AgsWindow */
       ags_main->window =
 	window = ags_window_new((GObject *) ags_main);
@@ -883,37 +909,22 @@ main(int argc, char **argv)
       g_object_ref(G_OBJECT(ags_main->main_loop));
       ags_connectable_connect(AGS_CONNECTABLE(ags_main->main_loop));
 
-      /* set appropriate freq of GUI thread*/
-      //TODO:JK: uncomment me
-      //      frame_clock = gdk_window_get_frame_clock(GTK_WIDGET(window)->window);
-      //      AGS_AUDIO_LOOP(ags_main->main_loop)->gui_thread->freq = MSEC_PER_SEC / gdk_frame_clock_get_frame_time(frame_clock);
-
       /* start thread tree */
       ags_thread_start(ags_main->main_loop);
 
       /* complete thread pool */
       ags_main->thread_pool->parent = AGS_THREAD(ags_main->main_loop);
       ags_thread_pool_start(ags_main->thread_pool);
-
-      /* AgsAutosaveThread */
-      //TODO:JK: uncomment me
-      ags_main->autosave_thread = NULL;
-      //      ags_main->autosave_thread = ags_autosave_thread_new(devout, ags_main);
-      //      g_object_ref(G_OBJECT(ags_main->autosave_thread));
-
-      //      ags_connectable_connect(AGS_CONNECTABLE(ags_main->autosave_thread));
-
-      //      ags_thread_start(ags_main->autosave_thread);
-
-      //TODO:JK: buggy
-      //      ags_config_load_defaults(ags_main->config);
-      //      ags_main_load_config(ags_main);
     }else{
       AgsSingleThread *single_thread;
 
       devout = ags_devout_new((GObject *) ags_main);
       ags_main_add_devout(ags_main,
 			  devout);
+
+      g_object_set(G_OBJECT(ags_main->autosave_thread),
+		   "devout\0", devout,
+		   NULL);
 
       /* threads */
       single_thread = ags_single_thread_new((GObject *) devout);
@@ -924,7 +935,6 @@ main(int argc, char **argv)
       g_object_set(G_OBJECT(window),
 		   "devout\0", devout,
 		   NULL);
-
       gtk_window_set_default_size((GtkWindow *) window, 500, 500);
       gtk_paned_set_position((GtkPaned *) window->paned, 300);
 
@@ -941,16 +951,6 @@ main(int argc, char **argv)
 
       /* start thread tree */
       ags_thread_start((AgsThread *) single_thread);
-
-      /* AgsAutosaveThread */
-      //TODO:JK: uncomment me
-      ags_main->autosave_thread = NULL;
-      //      ags_main->autosave_thread = ags_autosave_thread_new(devout, ags_main);
-      //      g_object_ref(G_OBJECT(ags_main->autosave_thread));
-
-      //      ags_connectable_connect(AGS_CONNECTABLE(ags_main->autosave_thread));
-
-      //      ags_thread_start(ags_main->autosave_thread);
     }
 
     uid = getuid();
@@ -968,7 +968,7 @@ main(int argc, char **argv)
 			      config_file);
 
     g_free(wdir);
-    g_free(filename);
+    g_free(config_file);
 
     if(!single_thread){
       /* join gui thread */
