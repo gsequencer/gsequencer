@@ -99,20 +99,13 @@ ags_menu_bar_open_ok_callback(GtkWidget *widget, AgsMenuBar *menu_bar)
 
   error = NULL;
 
-  g_shell_parse_argv(g_strdup_printf("./ags --filename %s\0",
-				     filename),
-		     NULL, &argv, NULL);
-  g_spawn_async(NULL,
-		argv,
-		NULL,
-		0,
-		NULL,
-		NULL,
-		NULL,
-		&error);
-  g_strfreev(argv);
+  g_spawn_command_line_async(g_strdup_printf("./ags --filename %s\0",
+					     filename),
+			     &error);
 
   gtk_widget_destroy(file_selection);
+
+  g_free(filename);
 }
 
 void

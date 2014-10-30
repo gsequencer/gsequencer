@@ -269,18 +269,9 @@ ags_preferences_apply(AgsApplicable *applicable)
   
   error = NULL;
 
-  g_shell_parse_argv(g_strdup_printf("./ags --filename %s\0",
-				     filename),
-		     NULL, &argv, NULL);
-  g_spawn_async(NULL,
-		argv,
-		NULL,
-		0,
-		NULL,
-		NULL,
-		NULL,
-		&error);
-  g_strfreev(argv);
+  g_spawn_command_line_async(g_strdup_printf("./ags --filename %s\0",
+					     filename),
+			     &error);
 
   ags_main_quit(AGS_MAIN(AGS_WINDOW(preferences->window)->ags_main));
 }
