@@ -19,9 +19,21 @@
 #include <ags/X/ags_preferences.h>
 #include <ags/X/ags_preferences_callbacks.h>
 
+#include <ags/main.h>
+
 #include <ags-lib/object/ags_connectable.h>
 
 #include <ags/object/ags_applicable.h>
+
+#include <ags/audio/ags_config.h>
+
+#include <ags/X/ags_window.h>
+
+#include <sys/types.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <pwd.h>
 
 void ags_preferences_class_init(AgsPreferencesClass *preferences);
 void ags_preferences_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -221,13 +233,56 @@ void
 ags_preferences_apply(AgsApplicable *applicable)
 {
   AgsPreferences *preferences;
+  AgsConfig *config;
+  AgsFile *file;
+  struct passwd *pw;
+  uid_t uid;
+  gchar *filename;
+  gchar **argv;
+  GError *error;
 
   preferences = AGS_PREFERENCES(applicable);
+
+  config = AGS_CONFIG(AGS_MAIN(AGS_WINDOW(preferences->window)->ags_main)->config);
 
   ags_applicable_apply(AGS_APPLICABLE(preferences->generic_preferences));
   ags_applicable_apply(AGS_APPLICABLE(preferences->audio_preferences));
   ags_applicable_apply(AGS_APPLICABLE(preferences->performance_preferences));
   ags_applicable_apply(AGS_APPLICABLE(preferences->server_preferences));
+
+  ags_config_save(config);
+
+  uid = getuid();
+  pw = getpwuid(uid);
+
+  filename = g_strdup_printf("%s/%s/%s\0",
+			     pw->pw_dir,
+			     AGS_DEFAULT_DIRECTORY,
+			     AGS_PREFERENCES_DEFAULT_FILENAME);
+    
+  file = (AgsFile *) g_object_new(AGS_TYPE_FILE,
+				  "main\0", AGS_MAIN(AGS_WINDOW(preferences->window)->ags_main),
+				  "filename\0", filename,
+				  NULL);
+  ags_file_write_concurrent(file);
+  g_object_unref(file);
+  
+  error = NULL;
+
+  g_shell_parse_argv(g_strdup_printf("./ags --filename %s\0",
+				     filename),
+		     NULL, &argv, NULL);
+  g_spawn_async(NULL,
+		argv,
+		NULL,
+		0,
+		NULL,
+		NULL,
+		NULL,
+		&error);
+  g_strfreev(argv);
+
+  ags_main_quit(AGS_MAIN(AGS_WINDOW(preferences->window)->ags_main));
 }
 
 void

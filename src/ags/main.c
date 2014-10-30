@@ -589,7 +589,8 @@ void
 ags_main_add_devout(AgsMain *ags_main,
 		    AgsDevout *devout)
 {
-  if(devout == NULL){
+  if(ags_main == NULL ||
+     devout == NULL){
     return;
   }
 
@@ -745,6 +746,10 @@ main(int argc, char **argv)
   struct sched_param param;
   struct rlimit rl;
   gchar *filename;
+
+  struct passwd *pw;
+  uid_t uid;
+  gchar *wdir, *config_file;
   int result;
   gboolean single_thread = FALSE;
   guint i;
@@ -832,7 +837,6 @@ main(int argc, char **argv)
     if(single_thread){
       ags_main->flags = AGS_MAIN_SINGLE_THREAD;
     }
-
 
     /* Declare ourself as a real time task */
     param.sched_priority = AGS_PRIORITY;
@@ -949,10 +953,22 @@ main(int argc, char **argv)
       //      ags_thread_start(ags_main->autosave_thread);
     }
 
-    ags_config_load_defaults(ags_main->config);
-    ags_config_load_from_file(ags_main->config,
-			      filename);
+    uid = getuid();
+    pw = getpwuid(uid);
+  
+    wdir = g_strdup_printf("%s/%s\0",
+			   pw->pw_dir,
+			   AGS_DEFAULT_DIRECTORY);
 
+    config_file = g_strdup_printf("%s/%s\0",
+				  wdir,
+				  AGS_DEFAULT_CONFIG);
+
+    ags_config_load_from_file(ags_main->config,
+			      config_file);
+
+    g_free(wdir);
+    g_free(filename);
 
     if(!single_thread){
       /* join gui thread */

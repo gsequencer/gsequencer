@@ -132,6 +132,8 @@ ags_config_init(AgsConfig *config)
   config->version = AGS_CONFIG_DEFAULT_VERSION;
   config->build_id = AGS_CONFIG_DEFAULT_BUILD_ID;
 
+  config->ags_main == NULL;
+
   config->key_file = g_key_file_new();
 }
 
@@ -234,14 +236,67 @@ ags_config_load_defaults(AgsConfig *config)
 void
 ags_config_load_from_file(AgsConfig *config, gchar *filename)
 {
-  GError *error;
+  GFile *file;
 
-  error = NULL;
+  file = g_file_new_for_path(filename);
 
-  g_key_file_load_from_file(config->key_file,
-			    filename,
-			    G_KEY_FILE_NONE,
-			    &error);
+  g_message("loading preferences for: %s\0", filename);
+
+  if(!g_file_query_exists(file,
+			  NULL)){
+    ags_config_load_defaults(config);
+  }else{
+    GKeyFile *key_file;
+    gchar **groups, **groups_start;
+    gchar **keys, **keys_start;
+    gchar *value;
+
+    GError *error;
+
+    error = NULL;
+    
+    key_file = g_key_file_new();
+    g_key_file_load_from_file(key_file,
+			      filename,
+			      G_KEY_FILE_NONE,
+			      &error);
+
+
+    groups =
+      groups_start = g_key_file_get_groups(key_file,
+					   NULL);
+
+    while(*groups != NULL){
+      keys =
+	keys_start = g_key_file_get_keys(key_file,
+					 *groups,
+					 NULL,
+					 NULL);
+
+      while(*keys != NULL){
+	value = g_key_file_get_value(key_file,
+				     *groups,
+				     *keys,
+				     NULL);
+
+	ags_config_set(config,
+		       *groups,
+		       *keys,
+		       value);
+	
+	keys++;
+      }
+
+      g_strfreev(keys_start);
+
+      groups++;
+    }
+
+    g_strfreev(groups_start);
+    g_key_file_unref(key_file);
+  }
+
+  g_object_unref(file);
 }
 
 /**
@@ -321,13 +376,20 @@ ags_config_set(AgsConfig *config, gchar *group, gchar *key, gchar *value)
 
   ags_main = config->ags_main;
 
+  g_key_file_set_value(config->key_file, group, key, value);
+
   if(!strncmp(group,
 	      ags_config_generic,
 	      8)){
     if(!strncmp(key,
 		"autosave-thread\0",
 		15)){
-      AgsAutosaveThread *autosave_thread;      
+      AgsAutosaveThread *autosave_thread;
+
+      if(ags_main == NULL ||
+	 ags_main->autosave_thread == NULL){
+	return;
+      }
       
       autosave_thread = ags_main->autosave_thread;
 
@@ -360,11 +422,12 @@ ags_config_set(AgsConfig *config, gchar *group, gchar *key, gchar *value)
 		    7)){
     AgsDevout *devout;
 
-    devout = ags_main->devout;
-
-    if(devout == NULL){
+    if(ags_main == NULL ||
+       ags_main->devout == NULL){
       return;
     }
+
+    devout = ags_main->devout->data;
 
     if(!strncmp(key,
 		"samplerate\0",
@@ -425,8 +488,6 @@ ags_config_set(AgsConfig *config, gchar *group, gchar *key, gchar *value)
 		   NULL);
     }
   }
-
-  g_key_file_set_value(config->key_file, group, key, value);
 }
 
 /**

@@ -330,8 +330,9 @@ ags_autosave_thread_run(AgsThread *thread)
     uid = getuid();
     pw = getpwuid(uid);
 
-    filename = g_strdup_printf("%s/%s\0",
+    filename = g_strdup_printf("%s/%s/%s\0",
 			       pw->pw_dir,
+			       AGS_DEFAULT_DIRECTORY,
 			       AGS_AUTOSAVE_THREAD_DEFAULT_FILENAME);
     
     file = (AgsFile *) g_object_new(AGS_TYPE_FILE,

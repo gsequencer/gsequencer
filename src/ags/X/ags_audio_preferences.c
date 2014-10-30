@@ -296,7 +296,7 @@ ags_audio_preferences_apply(AgsApplicable *applicable)
   config = AGS_CONFIG(AGS_MAIN(AGS_WINDOW(preferences->window)->ags_main)->config);
 
   /* samplerate */
-  str = g_strdup_printf("%ull\0",
+  str = g_strdup_printf("%u\0",
 			(guint) gtk_spin_button_get_value(audio_preferences->samplerate));
   ags_config_set(config,
 		 AGS_CONFIG_DEVOUT,
@@ -305,7 +305,7 @@ ags_audio_preferences_apply(AgsApplicable *applicable)
   g_free(str);
 
   /* buffer size */
-  str = g_strdup_printf("%ull\0",
+  str = g_strdup_printf("%u\0",
 			(guint) gtk_spin_button_get_value(audio_preferences->buffer_size));
   ags_config_set(config,
 		 AGS_CONFIG_DEVOUT,
@@ -314,7 +314,7 @@ ags_audio_preferences_apply(AgsApplicable *applicable)
   g_free(str);
 
   /* dsp channels */
-  str = g_strdup_printf("%ull\0",
+  str = g_strdup_printf("%u\0",
 			(guint) gtk_spin_button_get_value(audio_preferences->audio_channels));
   ags_config_set(config,
 		 AGS_CONFIG_DEVOUT,
