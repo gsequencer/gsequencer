@@ -19,11 +19,14 @@
 #include <ags/X/ags_server_preferences.h>
 #include <ags/X/ags_server_preferences_callbacks.h>
 
+#include <ags/main.h>
+
 #include <ags-lib/object/ags_connectable.h>
 
 #include <ags/object/ags_applicable.h>
 
 #include <ags/audio/ags_devout.h>
+#include <ags/audio/ags_config.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_preferences.h>

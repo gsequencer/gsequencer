@@ -19,9 +19,13 @@
 #include <ags/X/ags_generic_preferences.h>
 #include <ags/X/ags_generic_preferences_callbacks.h>
 
+#include <ags/main.h>
+
 #include <ags-lib/object/ags_connectable.h>
 
 #include <ags/object/ags_applicable.h>
+
+#include <ags/audio/ags_config.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_preferences.h>
@@ -168,13 +172,48 @@ ags_generic_preferences_set_update(AgsApplicable *applicable, gboolean update)
 void
 ags_generic_preferences_apply(AgsApplicable *applicable)
 {
-  //TODO:JK: implement me
+  AgsPreferences *preferences;
+  AgsGenericPreferences *generic_preferences; 
+  AgsConfig *config;
+ 
+  generic_preferences = AGS_GENERIC_PREFERENCES(applicable);
+
+  preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(generic_preferences),
+							   AGS_TYPE_PREFERENCES);
+  config = AGS_CONFIG(AGS_MAIN(AGS_WINDOW(preferences->window)->ags_main)->config);
+  
+  if(gtk_toggle_button_get_active(generic_preferences->autosave_thread)){
+    ags_config_set(config,
+		   AGS_CONFIG_GENERIC,
+		   "autosave-thread\0",
+		   "true\0");
+  }else{
+    ags_config_set(config,
+		   AGS_CONFIG_GENERIC,
+		   "autosave-thread\0",
+		   "false\0");
+  }
 }
 
 void
 ags_generic_preferences_reset(AgsApplicable *applicable)
 {
-  //TODO:JK: implement me
+  AgsPreferences *preferences;
+  AgsGenericPreferences *generic_preferences; 
+  AgsConfig *config;
+ 
+  generic_preferences = AGS_GENERIC_PREFERENCES(applicable);
+
+  preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(generic_preferences),
+							   AGS_TYPE_PREFERENCES);
+  config = AGS_CONFIG(AGS_MAIN(AGS_WINDOW(preferences->window)->ags_main)->config);
+  
+  gtk_toggle_button_set_active(generic_preferences->autosave_thread,
+			       ((!strncmp(ags_config_get(config,
+							 AGS_CONFIG_GENERIC,
+							 "autosave-thread\0"),
+					  "true\0",
+					  5)) ? TRUE: FALSE));
 }
 
 static void
