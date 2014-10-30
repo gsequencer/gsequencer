@@ -208,9 +208,6 @@ ags_main_init(AgsMain *ags_main)
   ags_main->config = ags_config_new();
   //TODO:JK: ugly
   ags_main->config->ags_main = ags_main;
-  ags_config_load_defaults(ags_main->config);
-  ags_config_load_from_file(ags_main->config,
-			    filename);
 
   g_free(filename);
   g_free(wdir);
@@ -952,9 +949,10 @@ main(int argc, char **argv)
       //      ags_thread_start(ags_main->autosave_thread);
     }
 
-    //TODO:JK: buggy
-    //    ags_config_load_defaults(ags_main->config);
-    //    ags_main_load_config(ags_main);
+    ags_config_load_defaults(ags_main->config);
+    ags_config_load_from_file(ags_main->config,
+			      filename);
+
 
     if(!single_thread){
       /* join gui thread */

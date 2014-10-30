@@ -22,6 +22,11 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/thread/ags_thread-posix.h>
+#include <ags/thread/ags_autosave_thread.h>
+
+#include <ags/audio/ags_devout.h>
+
 #include <sys/types.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -312,13 +317,27 @@ ags_config_save(AgsConfig *config)
 void
 ags_config_set(AgsConfig *config, gchar *group, gchar *key, gchar *value)
 {
+  AgsMain *ags_main;
+
+  ags_main = config->ags_main;
+
   if(!strncmp(group,
 	      ags_config_generic,
 	      8)){
     if(!strncmp(key,
 		"autosave-thread\0",
 		15)){
-      //TODO:JK: implement me
+      AgsAutosaveThread *autosave_thread;      
+      
+      autosave_thread = ags_main->autosave_thread;
+
+      if(!strncmp(value,
+		  "true\0",
+		  5)){
+	ags_thread_start(autosave_thread);
+      }else{
+	ags_thread_stop(autosave_thread);
+      }
     }
   }else if(!strncmp(group,
 		    ags_config_thread,
@@ -339,26 +358,71 @@ ags_config_set(AgsConfig *config, gchar *group, gchar *key, gchar *value)
   }else if(!strncmp(group,
 		    ags_config_devout,
 		    7)){
+    AgsDevout *devout;
+
+    devout = ags_main->devout;
+
+    if(devout == NULL){
+      return;
+    }
+
     if(!strncmp(key,
 		"samplerate\0",
-		10)){
-      //TODO:JK: implement me
+		10)){    
+      guint samplerate;
+
+      samplerate = strtoul(value,
+			   NULL,
+			   10);
+
+      g_object_set(G_OBJECT(devout),
+		   "frequency\0", samplerate,
+		   NULL);
     }else if(!strncmp(key,
 		      "buffer-size\0",
 		      11)){
-      //TODO:JK: implement me
+      guint buffer_size;
+    
+      buffer_size = strtoul(value,
+			    NULL,
+			    10);
+
+      g_object_set(G_OBJECT(devout),
+		   "buffer-size\0", buffer_size,
+		   NULL);
     }else if(!strncmp(key,
 		      "pcm-channels\0",
 		      12)){
-      //TODO:JK: implement me
+      guint pcm_channels;
+
+      pcm_channels = strtoul(value,
+			     NULL,
+			     10);
+      
+      g_object_set(G_OBJECT(devout),
+		   "pcm-channels\0", pcm_channels,
+		   NULL);
     }else if(!strncmp(key,
 		      "dsp-channels\0",
 		      12)){
-      //TODO:JK: implement me
+      guint dsp_channels;
+
+      dsp_channels = strtoul(value,
+			     NULL,
+			     10);
+      
+      g_object_set(G_OBJECT(devout),
+		   "dsp-channels\0", dsp_channels,
+		   NULL);
     }else if(!strncmp(key,
 		      "alsa-handle\0",
 		      11)){
-      //TODO:JK: implement me
+      gchar *alsa_handle;
+    
+      alsa_handle = value;
+      g_object_set(G_OBJECT(devout),
+		   "device\0", alsa_handle,
+		   NULL);
     }
   }
 
