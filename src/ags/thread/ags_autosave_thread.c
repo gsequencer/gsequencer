@@ -47,7 +47,6 @@ void ags_autosave_thread_finalize(GObject *gobject);
 
 void ags_autosave_thread_start(AgsThread *thread);
 void ags_autosave_thread_run(AgsThread *thread);
-void ags_autosave_thread_stop(AgsThread *thread);
 
 /**
  * SECTION:ags_autosave_thread
@@ -146,7 +145,6 @@ ags_autosave_thread_class_init(AgsAutosaveThreadClass *autosave_thread)
 
   thread->start = ags_autosave_thread_start;
   thread->run = ags_autosave_thread_run;
-  thread->stop = ags_autosave_thread_stop;
 }
 
 void
@@ -345,12 +343,6 @@ ags_autosave_thread_run(AgsThread *thread)
   }
 
   nanosleep(&delay, NULL);
-}
-
-void
-ags_autosave_thread_stop(AgsThread *thread)
-{
-  //TODO:JK: implement me
 }
 
 /**

@@ -54,6 +54,9 @@
 
 #include <gdk/gdk.h>
 
+#include <sys/types.h>
+#include <pwd.h>
+
 #include "config.h"
 
 void ags_main_class_init(AgsMainClass *ags_main);
@@ -148,7 +151,24 @@ ags_main_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_main_init(AgsMain *ags_main)
 {
+  GFile *file;
   struct sigaction sa;
+  struct passwd *pw;
+  uid_t uid;
+  gchar *wdir, *filename;
+    
+  uid = getuid();
+  pw = getpwuid(uid);
+  
+  wdir = g_strdup_printf("%s/%s\0",
+			 pw->pw_dir,
+			 AGS_DEFAULT_DIRECTORY);
+
+  file = g_file_new_for_path(wdir);
+
+  g_file_make_directory(file,
+			NULL,
+			NULL);
 
   ags_main->flags = 0;
 
@@ -181,7 +201,19 @@ ags_main_init(AgsMain *ags_main)
   sa.sa_handler = ags_thread_suspend_handler;
   sigaction(AGS_THREAD_SUSPEND_SIG, &sa, NULL);
   
+  filename = g_strdup_printf("%s/%s\0",
+			     wdir,
+			     AGS_DEFAULT_CONFIG);
+
   ags_main->config = ags_config_new();
+  //TODO:JK: ugly
+  ags_main->config->ags_main = ags_main;
+  ags_config_load_defaults(ags_main->config);
+  ags_config_load_from_file(ags_main->config,
+			    filename);
+
+  g_free(filename);
+  g_free(wdir);
 }
 
 void

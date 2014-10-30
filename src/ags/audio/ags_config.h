@@ -32,6 +32,7 @@
 #define AGS_CONFIG_DEFAULT_VERSION "0.4.2\0"
 #define AGS_CONFIG_DEFAULT_BUILD_ID "CEST 02-10-2014 19:36\0"
 
+#define AGS_CONFIG_GENERIC "generic\0"
 #define AGS_CONFIG_THREAD "thread\0"
 #define AGS_CONFIG_DEVOUT "device\0"
 
@@ -44,6 +45,8 @@ struct _AgsConfig
 
   guint version;
   gchar *build_id;
+  
+  GObject *ags_main;
 
   GKeyFile *key_file;
 };

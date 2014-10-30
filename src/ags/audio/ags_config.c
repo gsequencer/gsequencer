@@ -18,6 +18,8 @@
 
 #include <ags/audio/ags_config.h>
 
+#include <ags/main.h>
+
 #include <ags-lib/object/ags_connectable.h>
 
 #include <sys/types.h>
@@ -52,6 +54,7 @@ void ags_config_set_build_id(AgsConfig *config, gchar *build_id);
 
 static gpointer ags_config_parent_class = NULL;
 
+static const gchar *ags_config_generic = AGS_CONFIG_GENERIC;
 static const gchar *ags_config_thread = AGS_CONFIG_THREAD;
 static const gchar *ags_config_devout = AGS_CONFIG_DEVOUT;
 
@@ -201,6 +204,8 @@ ags_config_set_build_id(AgsConfig *config, gchar *build_id)
 void
 ags_config_load_defaults(AgsConfig *config)
 {
+  ags_config_set(config, ags_config_generic, "autosave-thread\0", "false\0");
+
   ags_config_set(config, ags_config_thread, "model\0", "multi-threaded\0");
   ags_config_set(config, ags_config_thread, "lock-global\0", "ags-thread\0");
   ags_config_set(config, ags_config_thread, "lock-parent\0", "ags-recycling-thread\0");
@@ -256,11 +261,15 @@ ags_config_save(AgsConfig *config)
   pw = getpwuid(uid);
 
   /* open conf dir */
-  path = g_strdup_printf("%s/.gsequencer\0", pw->pw_dir);
+  path = g_strdup_printf("%s/%s\0",
+			 pw->pw_dir,
+			 AGS_DEFAULT_DIRECTORY);
 
   if(!g_mkdir_with_parents(path,
 			   0755)){
-    filename = g_strdup_printf("%s/ags.conf", path);
+    filename = g_strdup_printf("%s/%s",
+			       path,
+			       AGS_DEFAULT_CONFIG);
 
     /* get content */
     error = NULL;
@@ -303,6 +312,56 @@ ags_config_save(AgsConfig *config)
 void
 ags_config_set(AgsConfig *config, gchar *group, gchar *key, gchar *value)
 {
+  if(!strncmp(group,
+	      ags_config_generic,
+	      8)){
+    if(!strncmp(key,
+		"autosave-thread\0",
+		15)){
+      //TODO:JK: implement me
+    }
+  }else if(!strncmp(group,
+		    ags_config_thread,
+		    7)){
+    if(!strncmp(key,
+		"model\0",
+		6)){
+      //TODO:JK: implement me
+    }else if(!strncmp(key,
+		      "lock-global\0",
+		      11)){
+      //TODO:JK: implement me
+    }else if(!strncmp(key,
+		      "lock-parent\0",
+		      11)){
+      //TODO:JK: implement me
+    }
+  }else if(!strncmp(group,
+		    ags_config_devout,
+		    7)){
+    if(!strncmp(key,
+		"samplerate\0",
+		10)){
+      //TODO:JK: implement me
+    }else if(!strncmp(key,
+		      "buffer-size\0",
+		      11)){
+      //TODO:JK: implement me
+    }else if(!strncmp(key,
+		      "pcm-channels\0",
+		      12)){
+      //TODO:JK: implement me
+    }else if(!strncmp(key,
+		      "dsp-channels\0",
+		      12)){
+      //TODO:JK: implement me
+    }else if(!strncmp(key,
+		      "alsa-handle\0",
+		      11)){
+      //TODO:JK: implement me
+    }
+  }
+
   g_key_file_set_value(config->key_file, group, key, value);
 }
 
