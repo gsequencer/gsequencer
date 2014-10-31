@@ -321,19 +321,23 @@ ags_autosave_thread_run(AgsThread *thread)
     autosave_thread->counter += 1;
   }else{
     AgsFile *file;
+    struct sysinfo s_info;
     struct passwd *pw;
     uid_t uid;
     gchar *filename;
 
     autosave_thread->counter = 0;
     
+    sysinfo(&s_info);
+
     uid = getuid();
     pw = getpwuid(uid);
 
-    filename = g_strdup_printf("%s/%s/%s\0",
+    filename = g_strdup_printf("%s/%s/%lu-%s\0",
 			       pw->pw_dir,
 			       AGS_DEFAULT_DIRECTORY,
-			       AGS_AUTOSAVE_THREAD_DEFAULT_FILENAME);
+			       AGS_AUTOSAVE_THREAD_DEFAULT_FILENAME,
+			       sysinfo.uptime);
     
     file = (AgsFile *) g_object_new(AGS_TYPE_FILE,
 				    "main\0", autosave_thread->ags_main,

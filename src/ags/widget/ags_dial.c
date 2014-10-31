@@ -591,19 +591,21 @@ ags_dial_draw(AgsDial *dial)
   button_width = dial->button_width;
   button_height = dial->button_height;
 
-  /* draw controller button down */
-  cairo_set_source_rgba (cr, 0.0, 0.0, 0.0, 1.0);
-  cairo_set_line_width(cr, 2.0);
+  if((AGS_DIAL_WITH_BUTTONS & (dial->flags)) != 0){
+    /* draw controller button down */
+    cairo_set_source_rgba (cr, 0.0, 0.0, 0.0, 1.0);
+    cairo_set_line_width(cr, 2.0);
 
-  cairo_rectangle(cr,
-		  1.0, (2.0 * radius) - button_height + outline_strength,
-		  button_width, button_height);
-  cairo_stroke(cr);
+    cairo_rectangle(cr,
+		    1.0, (2.0 * radius) - button_height + outline_strength,
+		    button_width, button_height);
+    cairo_stroke(cr);
 
-  cairo_move_to (cr,
-		 1.0 + 0.5 - te_down.width / 2.0 - te_down.x_bearing + button_width / 2.25,
-		 0.5 - te_down.height / 2.0 - te_down.y_bearing + (radius * 2.0) - button_height / 2.0 + outline_strength);
-  cairo_show_text (cr, "-\0");
+    cairo_move_to (cr,
+		   1.0 + 0.5 - te_down.width / 2.0 - te_down.x_bearing + button_width / 2.25,
+		   0.5 - te_down.height / 2.0 - te_down.y_bearing + (radius * 2.0) - button_height / 2.0 + outline_strength);
+    cairo_show_text (cr, "-\0");
+  }
 
   /* background */
   cairo_set_source_rgba(cr, 0.5, 0.3, 0.9, 1.0);
@@ -693,7 +695,6 @@ ags_dial_draw(AgsDial *dial)
   }
 
   /* draw value */
-
   if(dial->adjustment->upper >= 0.0 && dial->adjustment->lower >= 0.0){
     range = (dial->adjustment->upper - dial->adjustment->lower);
   }else if(dial->adjustment->upper < 0.0 && dial->adjustment->lower < 0.0){
@@ -721,21 +722,23 @@ ags_dial_draw(AgsDial *dial)
   cairo_stroke(cr);
 
 
-  /* draw controller button up */
-  cairo_set_source_rgba (cr, 0.0, 0.0, 0.0, 1.0);
-  cairo_set_line_width(cr, 2.0);
+  if((AGS_DIAL_WITH_BUTTONS & (dial->flags)) != 0){
+    /* draw controller button up */
+    cairo_set_source_rgba (cr, 0.0, 0.0, 0.0, 1.0);
+    cairo_set_line_width(cr, 2.0);
 
-  cairo_rectangle(cr,
-		  1.0 + (2.0 * radius) + button_width + margin_left + margin_right,
-		  (2.0 * radius) - button_height + outline_strength,
-		  button_width, button_height);
-  cairo_set_line_join(cr, CAIRO_LINE_JOIN_MITER);
-  cairo_stroke(cr);
+    cairo_rectangle(cr,
+		    1.0 + (2.0 * radius) + button_width + margin_left + margin_right,
+		    (2.0 * radius) - button_height + outline_strength,
+		    button_width, button_height);
+    cairo_set_line_join(cr, CAIRO_LINE_JOIN_MITER);
+    cairo_stroke(cr);
 
-  cairo_move_to (cr,
-		 1.0 + 0.5 - te_up.width / 2.0 - te_up.x_bearing + (radius * 2.0) + margin_left + margin_right + button_width + button_width / 2.25,
-		 0.5 - te_up.height / 2.0 - te_up.y_bearing + (radius * 2.0) - button_height / 2.0 + outline_strength);
-  cairo_show_text (cr, "+\0");
+    cairo_move_to (cr,
+		   1.0 + 0.5 - te_up.width / 2.0 - te_up.x_bearing + (radius * 2.0) + margin_left + margin_right + button_width + button_width / 2.25,
+		   0.5 - te_up.height / 2.0 - te_up.y_bearing + (radius * 2.0) - button_height / 2.0 + outline_strength);
+    cairo_show_text (cr, "+\0");
+  }
 
   cairo_destroy(cr);
 }
