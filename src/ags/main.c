@@ -749,9 +749,10 @@ main(int argc, char **argv)
   AgsDevout *devout;
   AgsWindow *window;
   AgsGuiThread *gui_thread;
+  GFile *autosave_file;
   struct sched_param param;
   struct rlimit rl;
-  gchar *filename;
+  gchar *filename, *autosave_filename;
 
   struct passwd *pw;
   uid_t uid;
@@ -763,7 +764,7 @@ main(int argc, char **argv)
   const char *error;
   const rlim_t kStackSize = 64L * 1024L * 1024L;   // min stack size = 64 Mb
 
-  mtrace();
+  //  mtrace();
   atexit(ags_signal_cleanup);
 
   result = getrlimit(RLIMIT_STACK, &rl);
@@ -987,7 +988,28 @@ main(int argc, char **argv)
     g_object_unref(ags_ladspa_manager_get_instance());
   }
 
-  muntrace();
+  uid = getuid();
+  pw = getpwuid(uid);
+  
+  autosave_filename = g_strdup_printf("%s/%s/%d-%s\0",
+				      pw->pw_dir,
+				      AGS_DEFAULT_DIRECTORY,
+				      getpid(),
+				      AGS_AUTOSAVE_THREAD_DEFAULT_FILENAME);
+  
+  autosave_file = g_file_new_for_path(autosave_filename);
+
+  if(g_file_query_exists(autosave_file,
+			 NULL)){
+    g_file_delete(autosave_file,
+		  NULL,
+		  NULL);
+  }
+
+  g_free(autosave_filename);
+  g_object_unref(autosave_file);
+
+  //  muntrace();
 
   return(0);
 }
