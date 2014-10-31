@@ -644,8 +644,10 @@ ags_note_edit_drawing_area_motion_notify_event (GtkWidget *widget, GdkEventMotio
 
     /* get drawable size and offset */
     if(x0 < x0_viewport){
-      x0 = 0;
-      width = x1_offset - x0_viewport;
+      //      x0 = 0;
+      //      width = x1_offset - x0_viewport;
+      x0 -= x0_viewport;
+      width = x1 - x0;
     }else{
       x0 -= x0_viewport;
       width = x1 - x0;
@@ -653,6 +655,8 @@ ags_note_edit_drawing_area_motion_notify_event (GtkWidget *widget, GdkEventMotio
 
     if(x1 > x1_viewport){
       width -= (x1 - x1_viewport);
+    }else{
+      width -= x0_viewport;
     }
 
     /* get real size and offset */
@@ -681,6 +685,8 @@ ags_note_edit_drawing_area_motion_notify_event (GtkWidget *widget, GdkEventMotio
 
     if(y1 > y1_viewport){
       height -= (y1 - y1_viewport);
+    }else{
+      height -= y0_viewport;
     }
 
     cairo_set_source_rgba(cr, 1.0, 0.0, 0.0, 0.3);
