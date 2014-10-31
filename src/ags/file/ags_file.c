@@ -964,7 +964,7 @@ ags_file_real_read_resolve(AgsFile *file)
 {
   GList *list;
 
-  list = file->lookup;
+  list = g_list_reverse(file->lookup);
 
   while(list != NULL){
     ags_file_lookup_resolve(AGS_FILE_LOOKUP(list->data));

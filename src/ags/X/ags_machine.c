@@ -264,9 +264,12 @@ ags_machine_set_property(GObject *gobject,
 			 const GValue *value,
 			 GParamSpec *param_spec)
 {
+  AgsWindow *window;
   AgsMachine *machine;
 
   machine = AGS_MACHINE(gobject);
+  window = gtk_widget_get_ancestor(machine,
+				   AGS_TYPE_WINDOW);
 
   switch(prop_id){
   case PROP_AUDIO:
@@ -281,6 +284,8 @@ ags_machine_set_property(GObject *gobject,
       if(machine->audio != NULL){
 	GList *pad;
 
+	ags_devout_remove_audio(window->devout,
+				machine->audio);
 	g_object_unref(G_OBJECT(machine->audio));
 
 	if(audio == NULL){

@@ -41,6 +41,7 @@ typedef struct _AgsNavigationClass AgsNavigationClass;
 
 typedef enum{
   AGS_NAVIGATION_BLOCK_TACT   = 1,
+  AGS_NAVIGATION_BLOCK_PLAY   = 1 << 1,
 }AgsNavigationFlags;
 
 struct _AgsNavigation

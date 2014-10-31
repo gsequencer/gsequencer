@@ -133,6 +133,10 @@ ags_navigation_play_callback(GtkWidget *widget,
   AgsMachine *machine;
   GList *machines, *machines_start;
 
+  if((AGS_NAVIGATION_BLOCK_PLAY & (navigation->flags)) != 0){
+    return;
+  }
+
   window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
   machines_start =
     machines = gtk_container_get_children(GTK_CONTAINER(window->machines));
@@ -181,6 +185,13 @@ ags_navigation_stop_callback(GtkWidget *widget,
   }
 
   g_list_free(machines_start);
+
+  /* toggle play button */
+  navigation->flags |= AGS_NAVIGATION_BLOCK_PLAY;
+  gtk_toggle_button_set_active(navigation->play,
+			       FALSE);
+
+  navigation->flags &= (~AGS_NAVIGATION_BLOCK_PLAY);
 }
 
 void

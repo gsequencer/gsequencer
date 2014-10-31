@@ -643,6 +643,8 @@ ags_file_util_write_value_resolve(AgsFileLookup *file_lookup,
   AgsFileIdRef *id_ref;
   gchar *id;
 
+  id_ref = NULL;
+
   if(G_VALUE_HOLDS(value, G_TYPE_OBJECT)){
     id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_reference(file_lookup->file, g_value_get_object(value));
   }else if(G_VALUE_HOLDS(value, G_TYPE_POINTER)){

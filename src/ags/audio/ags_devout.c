@@ -471,9 +471,9 @@ ags_devout_set_property(GObject *gobject,
       if((AGS_DEVOUT_LIBAO & (devout->flags)) != 0){
 	//TODO:JK: implement me
       }else if((AGS_DEVOUT_OSS & (devout->flags)) != 0){
-	devout->out.oss.device = device;
+	devout->out.oss.device = g_strdup(device);
       }else if((AGS_DEVOUT_ALSA & (devout->flags)) != 0){
-	devout->out.alsa.device = device;
+	devout->out.alsa.device = g_strdup(device);
       }
     }
     break;
@@ -961,6 +961,11 @@ ags_devout_pcm_info(char *card_id,
 void
 ags_devout_add_audio(AgsDevout *devout, GObject *audio)
 {
+  if(g_list_find(devout->audio,
+		 audio) != NULL){
+    return;
+  }
+
   g_object_ref(G_OBJECT(audio));
   devout->audio = g_list_prepend(devout->audio,
 				 audio);

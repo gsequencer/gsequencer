@@ -345,7 +345,7 @@ ags_file_write_devout(AgsFile *file, xmlNode *parent, AgsDevout *devout)
   /*  */  
   xmlNewProp(node,
 	     "delay-counter\0",
-	     g_strdup_printf("%ull\0", devout->delay_counter));
+	     g_strdup_printf("%u\0", devout->delay_counter));
 
   xmlNewProp(node,
 	     "device\0",
@@ -3103,6 +3103,9 @@ ags_file_read_port_list(AgsFile *file, xmlNode *node, GList **port)
 
   if(*port == NULL){
     list = g_list_reverse(list);
+    
+    /* set return value */
+    *port = list;
   }
 
   /* add id ref */
@@ -3112,11 +3115,8 @@ ags_file_read_port_list(AgsFile *file, xmlNode *node, GList **port)
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
-				   "reference\0", list,
+				   "reference\0", *port,
 				   NULL));
-
-  /* set return value */
-  *port = list;
 }
 
 xmlNode*
