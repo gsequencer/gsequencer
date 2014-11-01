@@ -1043,11 +1043,14 @@ ags_matrix_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
     gobject->selected = gobject->index[index];
   }
 
+  /*  */
   file_launch = g_object_new(AGS_TYPE_FILE_LAUNCH,
 			     "node\0", node,
 			     NULL);
   g_signal_connect(G_OBJECT(file_launch), "start\0",
 		   G_CALLBACK(ags_matrix_launch_task), gobject);
+  ags_file_add_launch(file,
+		      file_launch);
 }
 
 void
