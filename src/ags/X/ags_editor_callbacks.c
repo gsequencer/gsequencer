@@ -89,8 +89,6 @@ ags_editor_set_pads_callback(AgsAudio *audio,
 			     guint pads, guint pads_old,
 			     AgsEditor *editor)
 {
-  g_message("debug 0");
-
   if((AGS_AUDIO_NOTATION_DEFAULT & (audio->flags)) != 0){
     if(!g_type_is_a(channel_type, AGS_TYPE_INPUT)){
       return;
@@ -119,6 +117,10 @@ ags_editor_change_position_callback(AgsNavigation *navigation, gdouble tact,
   cairo_t *cr;
   gdouble loop_start, loop_end;
   gdouble position;
+
+  if(!gtk_toggle_button_get_active(navigation->scroll)){
+    return;
+  }
 
   loop_start = gtk_spin_button_get_value(navigation->loop_left_tact);
   loop_end = gtk_spin_button_get_value(navigation->loop_right_tact);

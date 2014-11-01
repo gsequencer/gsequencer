@@ -185,6 +185,8 @@ ags_scroll_on_play_launch(AgsTask *task)
   cairo_pop_group_to_source(cr);
   cairo_paint(cr);
 
+  cairo_destroy(cr);
+
   /* update tact */
   if(!gtk_toggle_button_get_active(window->navigation->loop) || tact + 1.0 < loop_end){
     gtk_spin_button_set_value(window->navigation->position_tact,
