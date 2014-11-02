@@ -214,7 +214,7 @@ ags_recall_dependency_resolve(AgsRecallDependency *recall_dependency, AgsRecallI
   }
 
   dependency = AGS_RECALL(recall_dependency->dependency);
-  recall_container = AGS_RECALL_CONTAINER(AGS_RECALL(recall_dependency->dependency)->container);
+  recall_container = AGS_RECALL_CONTAINER(dependency->container);
   
   if(AGS_IS_RECALL_AUDIO(dependency)){
     return((GObject *) recall_container->recall_audio);

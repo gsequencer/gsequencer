@@ -384,7 +384,7 @@ ags_matrix_add_default_recalls(AgsMachine *machine)
 
   if(list != NULL){
     play_delay_audio_run = AGS_DELAY_AUDIO_RUN(list->data);
-    AGS_RECALL(play_delay_audio_run)->flags |= AGS_RECALL_PERSISTENT;
+    //    AGS_RECALL(play_delay_audio_run)->flags |= AGS_RECALL_PERSISTENT;
   }
   
   /* ags-count-beats */

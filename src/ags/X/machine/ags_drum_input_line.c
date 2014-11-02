@@ -67,6 +67,12 @@ void ags_drum_input_line_init(AgsDrumInputLine *drum_input_line);
 void ags_drum_input_line_destroy(GtkObject *object);
 void ags_drum_input_line_connect(AgsConnectable *connectable);
 void ags_drum_input_line_disconnect(AgsConnectable *connectable);
+gchar* ags_drum_input_line_get_name(AgsPlugin *plugin);
+void ags_drum_input_line_set_name(AgsPlugin *plugin, gchar *name);
+gchar* ags_drum_input_line_get_xml_type(AgsPlugin *plugin);
+void ags_drum_input_line_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
+void ags_drum_input_line_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
+xmlNode* ags_drum_input_line_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
 void ags_drum_input_line_set_channel(AgsLine *line, AgsChannel *channel);
 void ags_drum_input_line_group_changed(AgsLine *line);
@@ -157,7 +163,10 @@ ags_drum_input_line_connectable_interface_init(AgsConnectableInterface *connecta
 void
 ags_drum_input_line_plugin_interface_init(AgsPluginInterface *plugin)
 {
-  /* empty */
+  plugin->get_name = ags_drum_input_line_get_name;
+  plugin->set_name = ags_drum_input_line_set_name;
+  plugin->get_xml_type = ags_drum_input_line_get_xml_type;
+  plugin->set_xml_type = ags_drum_input_line_set_xml_type;
 }
 
 void
@@ -269,6 +278,30 @@ ags_drum_input_line_disconnect(AgsConnectable *connectable)
   /* empty */
 }
 
+gchar*
+ags_drum_input_line_get_name(AgsPlugin *plugin)
+{
+  return(AGS_DRUM_INPUT_LINE(plugin)->name);
+}
+
+void
+ags_drum_input_line_set_name(AgsPlugin *plugin, gchar *name)
+{
+  AGS_DRUM_INPUT_LINE(plugin)->name = name;
+}
+
+gchar*
+ags_drum_input_line_get_xml_type(AgsPlugin *plugin)
+{
+  return(AGS_DRUM_INPUT_LINE(plugin)->xml_type);
+}
+
+void
+ags_drum_input_line_set_xml_type(AgsPlugin *plugin, gchar *xml_type)
+{
+  AGS_DRUM_INPUT_LINE(plugin)->xml_type = xml_type;
+}
+
 void
 ags_drum_input_line_set_channel(AgsLine *line, AgsChannel *channel)
 {
@@ -298,6 +331,8 @@ ags_drum_input_line_set_channel(AgsLine *line, AgsChannel *channel)
       ags_drum_input_line_map_recall(drum_input_line, 0);
       ags_line_find_port(line);
     }else{
+      line->flags &= (~AGS_LINE_PREMAPPED_RECALL);
+
       //TODO:JK: make it advanced
       /* reset edit button */
       if(line->channel->line == 0){

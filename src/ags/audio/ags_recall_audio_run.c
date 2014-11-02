@@ -331,7 +331,7 @@ ags_recall_audio_run_pack(AgsPackable *packable, GObject *container)
 
   /* set AgsRecallAudio */
   g_object_set(G_OBJECT(recall_audio_run),
-	       "recall_audio\0", recall_container->recall_audio,
+	       "recall-audio\0", recall_container->recall_audio,
 	       NULL);
 
   /* set in AgsRecallChannelRun */
@@ -342,7 +342,7 @@ ags_recall_audio_run_pack(AgsPackable *packable, GObject *container)
 
     while((list = ags_recall_find_recycling_container(list, recall_id->recycling_container)) != NULL){
       g_object_set(G_OBJECT(list->data),
-		   "recall_audio_run\0", AGS_RECALL_AUDIO_RUN(packable),
+		   "recall-audio-run\0", AGS_RECALL_AUDIO_RUN(packable),
 		   NULL);
 
       list= list->next;
@@ -350,7 +350,7 @@ ags_recall_audio_run_pack(AgsPackable *packable, GObject *container)
   }else if((AGS_RECALL_TEMPLATE & (AGS_RECALL(packable)->flags)) != 0){
     while((list = ags_recall_find_template(list)) != NULL){
       g_object_set(G_OBJECT(list->data),
-		   "recall_audio_run\0", AGS_RECALL_AUDIO_RUN(packable),
+		   "recall-audio-run\0", AGS_RECALL_AUDIO_RUN(packable),
 		   NULL);
 
       list= list->next;
@@ -358,7 +358,7 @@ ags_recall_audio_run_pack(AgsPackable *packable, GObject *container)
   }
 
   g_object_set(G_OBJECT(recall_container),
-	       "recall_audio_run\0", AGS_RECALL(packable),
+	       "recall-audio-run\0", AGS_RECALL(packable),
 	       NULL);
 
   return(FALSE);

@@ -29,6 +29,7 @@
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_recall_id.h>
+#include <ags/audio/ags_recall_container.h>
 
 #include <ags/audio/recall/ags_copy_pattern_audio.h>
 #include <ags/audio/recall/ags_copy_pattern_audio_run.h>
@@ -257,7 +258,7 @@ ags_copy_pattern_channel_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_c
   copy_pattern_channel_run = AGS_COPY_PATTERN_CHANNEL_RUN(dynamic_connectable);
 
   /* get AgsCopyPatternAudioRun */
-  copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(copy_pattern_channel_run->recall_channel_run.recall_audio_run);
+  copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(AGS_RECALL_CHANNEL_RUN(copy_pattern_channel_run)->recall_audio_run);
 
   /* disconnect sequencer_alloc in AgsDelayAudioRun */
   delay_audio_run = copy_pattern_audio_run->count_beats_audio_run->delay_audio_run;
@@ -276,8 +277,7 @@ ags_copy_pattern_channel_run_finalize(GObject *gobject)
 void
 ags_copy_pattern_channel_run_resolve_dependencies(AgsRecall *recall)
 {
-  //  g_message(" ----- resolving: copy_pattern_channel_run -----\n\0");
-  //TODO:JK: implement this function - see uncommented
+  //TODO:JK: implement me
 }
 
 void

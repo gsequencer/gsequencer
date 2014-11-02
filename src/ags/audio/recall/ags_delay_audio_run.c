@@ -27,6 +27,10 @@
 #include <ags/object/ags_dynamic_connectable.h>
 #include <ags/object/ags_plugin.h>
 
+#include <ags/file/ags_file_stock.h>
+#include <ags/file/ags_file_id_ref.h>
+#include <ags/file/ags_file_lookup.h>
+
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_recall_audio.h>
 #include <ags/audio/ags_recall_id.h>
@@ -44,6 +48,9 @@ void ags_delay_audio_run_disconnect(AgsConnectable *connectable);
 void ags_delay_audio_run_connect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 void ags_delay_audio_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 void ags_delay_audio_run_finalize(GObject *gobject);
+
+void ags_delay_audio_run_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
+xmlNode* ags_delay_audio_run_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
 void ags_delay_audio_run_run_init_pre(AgsRecall *recall);
 void ags_delay_audio_run_run_pre(AgsRecall *recall);
@@ -323,11 +330,16 @@ void
 ags_delay_audio_run_plugin_interface_init(AgsPluginInterface *plugin)
 {
   ags_delay_audio_run_parent_plugin_interface = g_type_interface_peek_parent(plugin);
+
+  plugin->read = ags_delay_audio_run_read;
+  plugin->write = ags_delay_audio_run_write;
 }
 
 void
 ags_delay_audio_run_init(AgsDelayAudioRun *delay_audio_run)
 {
+  AGS_RECALL(delay_audio_run)->flags |= AGS_RECALL_PERSISTENT;
+
   AGS_RECALL(delay_audio_run)->name = "ags-delay\0";
   AGS_RECALL(delay_audio_run)->version = AGS_EFFECTS_DEFAULT_VERSION;
   AGS_RECALL(delay_audio_run)->build_id = AGS_BUILD_ID;
@@ -371,6 +383,31 @@ void
 ags_delay_audio_run_finalize(GObject *gobject)
 {
   G_OBJECT_CLASS(ags_delay_audio_run_parent_class)->finalize(gobject);
+}
+
+void
+ags_delay_audio_run_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
+{
+  AgsFileLookup *file_lookup;
+  xmlNode *iter;
+
+  /* read parent */
+  ags_delay_audio_run_parent_plugin_interface->read(file, node, plugin);
+}
+
+xmlNode*
+ags_delay_audio_run_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
+{
+  AgsFileLookup *file_lookup;
+  xmlNode *node, *child;
+  xmlNode *dependency_node;
+  GList *list;
+  gchar *id;
+
+  /* write parent */
+  node = ags_delay_audio_run_parent_plugin_interface->write(file, parent, plugin);
+
+  return(node);
 }
 
 void

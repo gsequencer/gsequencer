@@ -24,8 +24,10 @@
 #include <ags/object/ags_plugin.h>
 
 #include <ags/file/ags_file.h>
+#include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>
 #include <ags/file/ags_file_lookup.h>
+#include <ags/file/ags_file_launch.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_input.h>
@@ -44,12 +46,19 @@
 
 void ags_panel_class_init(AgsPanelClass *panel);
 void ags_panel_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_panel_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_panel_init(AgsPanel *panel);
 static void ags_panel_finalize(GObject *gobject);
 void ags_panel_connect(AgsConnectable *connectable);
 void ags_panel_disconnect(AgsConnectable *connectable);
 void ags_panel_show(GtkWidget *widget);
 void ags_panel_add_default_recalls(AgsMachine *machine);
+gchar* ags_panel_get_name(AgsPlugin *plugin);
+void ags_panel_set_name(AgsPlugin *plugin, gchar *name);
+gchar* ags_panel_get_xml_type(AgsPlugin *plugin);
+void ags_panel_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
+void ags_panel_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
+xmlNode* ags_panel_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
 void ags_file_read_panel(AgsFile *file, xmlNode *node, AgsMachine *panel);
 xmlNode* ags_file_write_panel(AgsFile *file, xmlNode *parent, AgsMachine *panel);
@@ -99,6 +108,12 @@ ags_panel_get_type(void)
       NULL, /* interface_finalize */
       NULL, /* interface_data */
     };
+
+    static const GInterfaceInfo ags_plugin_interface_info = {
+      (GInterfaceInitFunc) ags_panel_plugin_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
     
     ags_type_panel = g_type_register_static(AGS_TYPE_MACHINE,
 					    "AgsPanel\0", &ags_panel_info,
@@ -107,6 +122,10 @@ ags_panel_get_type(void)
     g_type_add_interface_static(ags_type_panel,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_type_add_interface_static(ags_type_panel,
+				AGS_TYPE_PLUGIN,
+				&ags_plugin_interface_info);
   }
 
   return(ags_type_panel);
@@ -149,6 +168,17 @@ ags_panel_connectable_interface_init(AgsConnectableInterface *connectable)
 }
 
 void
+ags_panel_plugin_interface_init(AgsPluginInterface *plugin)
+{
+  plugin->get_name = ags_panel_get_name;
+  plugin->set_name = ags_panel_set_name;
+  plugin->get_xml_type = ags_panel_get_xml_type;
+  plugin->set_xml_type = ags_panel_set_xml_type;
+  plugin->read = ags_panel_read;
+  plugin->write = ags_panel_write;
+}
+
+void
 ags_panel_init(AgsPanel *panel)
 {
   g_signal_connect_after((GObject *) panel, "parent_set\0",
@@ -156,6 +186,9 @@ ags_panel_init(AgsPanel *panel)
 
   AGS_MACHINE(panel)->audio->flags |= (AGS_AUDIO_SYNC);
   AGS_MACHINE(panel)->input_pad_type = AGS_TYPE_PANEL_INPUT_PAD;
+
+  panel->name = NULL;
+  panel->xml_type = "ags-panel\0";
 
   panel->vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
   gtk_container_add((GtkContainer*) (gtk_bin_get_child((GtkContainer *) panel)), (GtkWidget *) panel->vbox);
@@ -216,6 +249,82 @@ void
 ags_panel_add_default_recalls(AgsMachine *machine)
 {
   //empty
+}
+
+gchar*
+ags_panel_get_name(AgsPlugin *plugin)
+{
+  return(AGS_PANEL(plugin)->name);
+}
+
+void
+ags_panel_set_name(AgsPlugin *plugin, gchar *name)
+{
+  AGS_PANEL(plugin)->name = name;
+}
+
+gchar*
+ags_panel_get_xml_type(AgsPlugin *plugin)
+{
+  return(AGS_PANEL(plugin)->xml_type);
+}
+
+void
+ags_panel_set_xml_type(AgsPlugin *plugin, gchar *xml_type)
+{
+  AGS_PANEL(plugin)->xml_type = xml_type;
+}
+
+void
+ags_panel_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
+{
+  AgsPanel *gobject;
+  AgsFileLaunch *file_launch;
+  GList *list;
+  guint64 length, index;
+
+  gobject = AGS_PANEL(plugin);
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->ags_main,
+				   "file\0", file,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference\0", gobject,
+				   NULL));
+}
+
+xmlNode*
+ags_panel_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
+{
+  AgsPanel *panel;
+  xmlNode *node;
+  GList *list;
+  gchar *id;
+  guint i;
+
+  panel = AGS_PANEL(plugin);
+
+  id = ags_id_generator_create_uuid();
+  
+  node = xmlNewNode(NULL,
+		    "ags-panel\0");
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->ags_main,
+				   "file\0", file,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
+				   "reference\0", panel,
+				   NULL));
+
+  xmlAddChild(parent,
+	      node);  
 }
 
 void

@@ -648,7 +648,7 @@ ags_recall_channel_run_pack(AgsPackable *packable, GObject *container)
       recall_audio_run = AGS_RECALL_AUDIO_RUN(list->data);
 
       g_object_set(G_OBJECT(packable),
-		   "recall_audio_run\0", recall_audio_run,
+		   "recall-audio-run\0", recall_audio_run,
 		   NULL);
     }
   }else if((AGS_RECALL_TEMPLATE & (AGS_RECALL(packable)->flags)) != 0){
@@ -658,7 +658,7 @@ ags_recall_channel_run_pack(AgsPackable *packable, GObject *container)
       recall_audio_run = AGS_RECALL_AUDIO_RUN(list->data);
 
       g_object_set(G_OBJECT(packable),
-		   "recall_audio_run\0", recall_audio_run,
+		   "recall-audio-run\0", recall_audio_run,
 		   NULL);
     }
   }
@@ -670,13 +670,15 @@ ags_recall_channel_run_pack(AgsPackable *packable, GObject *container)
     if((list = ags_recall_find_provider(list,
 					G_OBJECT(AGS_RECALL_CHANNEL_RUN(packable)->source))) != NULL){
       g_object_set(G_OBJECT(packable),
-		   "recall_channel\0", AGS_RECALL_CHANNEL(list->data),
+		   "recall-channel\0", AGS_RECALL_CHANNEL(list->data),
 		   NULL);
+
+      list = list->next;
     }
   }
 
   g_object_set(G_OBJECT(recall_container),
-	       "recall_channel_run\0", AGS_RECALL(packable),
+	       "recall-channel-run\0", AGS_RECALL(packable),
 	       NULL);
 
   return(FALSE);
@@ -823,14 +825,14 @@ ags_recall_channel_run_duplicate(AgsRecall *recall,
     copy->run_order = AGS_CHANNEL(recycling->channel)->audio_channel;
   }
 
+  ags_recall_channel_run_remap_child_source(copy,
+					    NULL, NULL,
+					    copy->source->first_recycling, copy->source->last_recycling);
+
   if(copy->destination != NULL){
     ags_recall_channel_run_remap_child_destination(copy,
 						   NULL, NULL,
 						   copy->destination->first_recycling, copy->destination->last_recycling);
-  }else{
-    ags_recall_channel_run_remap_child_source(copy,
-					      NULL, NULL,
-					      copy->source->first_recycling, copy->source->last_recycling);
   }
 
   return((AgsRecall *) copy);

@@ -39,6 +39,9 @@ struct _AgsPanel
 {
   AgsMachine machine;
 
+  gchar *name;
+  gchar *xml_type;
+
   GtkVBox *vbox;
 };
 

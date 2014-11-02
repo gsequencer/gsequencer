@@ -684,11 +684,14 @@ ags_count_beats_audio_run_get_sequencer_counter(AgsCountable *countable)
 void
 ags_count_beats_audio_run_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 {
+  AgsCountBeatsAudioRun *count_beats_audio_run;
   AgsFileLookup *file_lookup;
   xmlNode *iter;
 
   /* read parent */
   ags_count_beats_audio_run_parent_plugin_interface->read(file, node, plugin);
+
+  count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(plugin);
 
   /* read depenendency */
   iter = node->children;
@@ -1296,7 +1299,7 @@ ags_count_beats_audio_run_read_resolve_dependency(AgsFileLookup *file_lookup,
 
   if(AGS_IS_DELAY_AUDIO_RUN(id_ref->ref)){
     g_object_set(G_OBJECT(recall),
-		 "delay-audio-run\0", id_ref->ref,
+		 "delay-audio-run\0", AGS_DELAY_AUDIO_RUN(id_ref->ref),
 		 NULL);
   }
 }

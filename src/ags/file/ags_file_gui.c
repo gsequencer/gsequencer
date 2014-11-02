@@ -745,7 +745,7 @@ ags_file_write_machine(AgsFile *file, xmlNode *parent, AgsMachine *machine)
 
   xmlNewProp(node,
 	     AGS_FILE_FLAGS_PROP,
-	     g_strdup_printf("%x\0", machine->flags));
+	     g_strdup_printf("%x\0", ((~(AGS_MACHINE_BLOCK_PLAY | AGS_MACHINE_BLOCK_STOP)) & (machine->flags))));
 
   xmlNewProp(node,
 	     "file-input-flags\0",

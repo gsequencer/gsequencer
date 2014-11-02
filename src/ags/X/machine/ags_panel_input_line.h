@@ -38,6 +38,9 @@ typedef struct _AgsPanelInputLineClass AgsPanelInputLineClass;
 struct _AgsPanelInputLine
 {
   AgsLine line;
+
+  gchar *name;
+  gchar *xml_type;
 };
 
 struct _AgsPanelInputLineClass

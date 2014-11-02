@@ -20,6 +20,8 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/object/ags_plugin.h>
+
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recall_factory.h>
@@ -42,10 +44,15 @@
 
 void ags_panel_input_line_class_init(AgsPanelInputLineClass *panel_input_line);
 void ags_panel_input_line_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_panel_input_line_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_panel_input_line_init(AgsPanelInputLine *panel_input_line);
 void ags_panel_input_line_connect(AgsConnectable *connectable);
 void ags_panel_input_line_disconnect(AgsConnectable *connectable);
 void ags_panel_input_line_finalize(GObject *gobject);
+gchar* ags_panel_input_line_get_name(AgsPlugin *plugin);
+void ags_panel_input_line_set_name(AgsPlugin *plugin, gchar *name);
+gchar* ags_panel_input_line_get_xml_type(AgsPlugin *plugin);
+void ags_panel_input_line_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
 
 void ags_panel_input_line_show(GtkWidget *line);
 
@@ -89,6 +96,12 @@ ags_panel_input_line_get_type()
       NULL, /* interface_data */
     };
 
+    static const GInterfaceInfo ags_plugin_interface_info = {
+      (GInterfaceInitFunc) ags_panel_input_line_plugin_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_panel_input_line = g_type_register_static(AGS_TYPE_LINE,
 						       "AgsPanelInputLine\0", &ags_panel_input_line_info,
 						       0);
@@ -96,6 +109,10 @@ ags_panel_input_line_get_type()
     g_type_add_interface_static(ags_type_panel_input_line,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_type_add_interface_static(ags_type_panel_input_line,
+				AGS_TYPE_PLUGIN,
+				&ags_plugin_interface_info);
   }
 
   return(ags_type_panel_input_line);
@@ -133,6 +150,15 @@ ags_panel_input_line_connectable_interface_init(AgsConnectableInterface *connect
 
   connectable->connect = ags_panel_input_line_connect;
   connectable->disconnect = ags_panel_input_line_disconnect;
+}
+
+void
+ags_panel_input_line_plugin_interface_init(AgsPluginInterface *plugin)
+{
+  plugin->get_name = ags_panel_input_line_get_name;
+  plugin->set_name = ags_panel_input_line_set_name;
+  plugin->get_xml_type = ags_panel_input_line_get_xml_type;
+  plugin->set_xml_type = ags_panel_input_line_set_xml_type;
 }
 
 void
@@ -184,6 +210,30 @@ ags_panel_input_line_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_panel_input_line_parent_class)->finalize(gobject);
   
   /* empty */
+}
+
+gchar*
+ags_panel_input_line_get_name(AgsPlugin *plugin)
+{
+  return(AGS_PANEL_INPUT_LINE(plugin)->name);
+}
+
+void
+ags_panel_input_line_set_name(AgsPlugin *plugin, gchar *name)
+{
+  AGS_PANEL_INPUT_LINE(plugin)->name = name;
+}
+
+gchar*
+ags_panel_input_line_get_xml_type(AgsPlugin *plugin)
+{
+  return(AGS_PANEL_INPUT_LINE(plugin)->xml_type);
+}
+
+void
+ags_panel_input_line_set_xml_type(AgsPlugin *plugin, gchar *xml_type)
+{
+  AGS_PANEL_INPUT_LINE(plugin)->xml_type = xml_type;
 }
 
 void

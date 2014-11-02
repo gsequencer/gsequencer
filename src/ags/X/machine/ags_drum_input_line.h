@@ -38,6 +38,9 @@ typedef struct _AgsDrumInputLineClass AgsDrumInputLineClass;
 struct _AgsDrumInputLine
 {
   AgsLine line;
+
+  gchar *name;
+  gchar *xml_type;
 };
 
 struct _AgsDrumInputLineClass

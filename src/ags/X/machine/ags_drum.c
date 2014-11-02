@@ -88,7 +88,6 @@ void ags_drum_set_name(AgsPlugin *plugin, gchar *name);
 gchar* ags_drum_get_xml_type(AgsPlugin *plugin);
 void ags_drum_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
 void ags_drum_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
-void ags_drum_launch_task(AgsFileLaunch *file_launch, AgsDrum *drum);
 xmlNode* ags_drum_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
 void ags_drum_set_audio_channels(AgsAudio *audio,
@@ -238,7 +237,10 @@ ags_drum_init(AgsDrum *drum)
   AGS_MACHINE(drum)->output_pad_type = AGS_TYPE_DRUM_OUTPUT_PAD;
 
   drum->flags = 0;
-  
+
+  drum->name = NULL;
+  drum->xml_type = "ags-drum\0";
+
   /* create widgets */
   drum->vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
   gtk_container_add((GtkContainer*) gtk_bin_get_child((GtkBin *) drum), (GtkWidget *) drum->vbox);
@@ -522,7 +524,7 @@ ags_drum_add_default_recalls(AgsMachine *machine)
 
   if(list != NULL){
     play_delay_audio_run = AGS_DELAY_AUDIO_RUN(list->data);
-    AGS_RECALL(play_delay_audio_run)->flags |= AGS_RECALL_PERSISTENT;
+    //    AGS_RECALL(play_delay_audio_run)->flags |= AGS_RECALL_PERSISTENT;
   }
   
   /* ags-count-beats */
@@ -598,7 +600,6 @@ void
 ags_drum_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 {
   AgsDrum *gobject;
-  AgsFileLaunch *file_launch;
   GList *list;
   guint64 length, index;
 
@@ -654,22 +655,6 @@ ags_drum_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 				 TRUE);
     gobject->selected1 = gobject->index1[index];
   }
-
-  /*  */
-  file_launch = g_object_new(AGS_TYPE_FILE_LAUNCH,
-			     "node\0", node,
-			     "file\0", file,
-			     NULL);
-  g_signal_connect(G_OBJECT(file_launch), "start\0",
-		   G_CALLBACK(ags_drum_launch_task), gobject);
-  //  ags_file_add_launch(file,
-  //		      file_launch);
-}
-
-void
-ags_drum_launch_task(AgsFileLaunch *file_launch, AgsDrum *drum)
-{
-  //TODO:JK: implement me
 }
 
 xmlNode*

@@ -107,15 +107,17 @@ ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread)
 				   "reference\0", gobject,
 				   NULL));
 
-  gobject->flags = (guint) g_ascii_strtoull(xmlGetProp(node,
-						       AGS_FILE_FLAGS_PROP),
-					    NULL,
-					    16);
+  g_atomic_int_set(&(gobject->flags),
+		   ((~(AGS_THREAD_WAIT_0 |
+		       AGS_THREAD_WAIT_1 |
+		       AGS_THREAD_WAIT_2 |
+		       AGS_THREAD_RUNNING)) & (guint) g_ascii_strtoull(xmlGetProp(node,
+										  AGS_FILE_FLAGS_PROP),
+								       NULL,
+								       16)));
 
   /* start */
-  if((AGS_THREAD_RUNNING & (gobject->flags)) != 0){
-    gobject->flags &= (~AGS_THREAD_RUNNING);
-
+  if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(gobject->flags)))) != 0){
     //FIXME:JK: workaround file setting AGS_THREAD_RUNNING is just ignored
     if(AGS_IS_AUDIO_LOOP(gobject)){
       file_launch = (AgsFileLaunch *) g_object_new(AGS_TYPE_FILE_LAUNCH,

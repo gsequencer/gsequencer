@@ -265,41 +265,11 @@ ags_count_beats_audio_init(AgsCountBeatsAudio *count_beats_audio)
 
   port = g_list_prepend(port, count_beats_audio->loop);
 
-  /* notation-loop-start */
-  count_beats_audio->notation_loop_start = g_object_new(AGS_TYPE_PORT,
-							"plugin-name\0", ags_count_beats_audio_plugin_name,
-							"specifier\0", ags_count_beats_audio_specifier[1],
-							"control-port\0", ags_count_beats_audio_control_port[1],
-							"port-value-is-pointer\0", FALSE,
-							"port-value-type\0", G_TYPE_DOUBLE,
-							"port-value-size\0", sizeof(gdouble),
-							"port-value-length", 1,
-							NULL);
-
-  count_beats_audio->notation_loop_start->port_value.ags_port_double = 0.0;
-
-  port = g_list_prepend(port, count_beats_audio->notation_loop_start);
-
-  /* notation-loop-end */
-  count_beats_audio->notation_loop_end = g_object_new(AGS_TYPE_PORT,
-						      "plugin-name\0", ags_count_beats_audio_plugin_name,
-						      "specifier\0", ags_count_beats_audio_specifier[2],
-						      "control-port\0", ags_count_beats_audio_control_port[2],
-						      "port-value-is-pointer\0", FALSE,
-						      "port-value-type\0", G_TYPE_DOUBLE,
-						      "port-value-size\0", sizeof(gdouble),
-						      "port-value-length", 1,
-						      NULL);
-
-  count_beats_audio->notation_loop_end->port_value.ags_port_double = 64.0;
-
-  port = g_list_prepend(port, count_beats_audio->notation_loop_end);
-
   /* sequencer-loop-start  */
   count_beats_audio->sequencer_loop_start = g_object_new(AGS_TYPE_PORT,
 							 "plugin-name\0", ags_count_beats_audio_plugin_name,
-							 "specifier\0", ags_count_beats_audio_specifier[3],
-							 "control-port\0", ags_count_beats_audio_control_port[3],
+							 "specifier\0", ags_count_beats_audio_specifier[1],
+							 "control-port\0", ags_count_beats_audio_control_port[1],
 							 "port-value-is-pointer\0", FALSE,
 							 "port-value-type\0", G_TYPE_DOUBLE,
 							 "port-value-size\0", sizeof(gdouble),
@@ -310,11 +280,26 @@ ags_count_beats_audio_init(AgsCountBeatsAudio *count_beats_audio)
 
   port = g_list_prepend(port, count_beats_audio->sequencer_loop_start);
 
+  /* notation-loop-start */
+  count_beats_audio->notation_loop_start = g_object_new(AGS_TYPE_PORT,
+							"plugin-name\0", ags_count_beats_audio_plugin_name,
+							"specifier\0", ags_count_beats_audio_specifier[2],
+							"control-port\0", ags_count_beats_audio_control_port[2],
+							"port-value-is-pointer\0", FALSE,
+							"port-value-type\0", G_TYPE_DOUBLE,
+							"port-value-size\0", sizeof(gdouble),
+							"port-value-length", 1,
+							NULL);
+
+  count_beats_audio->notation_loop_start->port_value.ags_port_double = 0.0;
+
+  port = g_list_prepend(port, count_beats_audio->notation_loop_start);
+
   /* sequencer-loop-end */
   count_beats_audio->sequencer_loop_end = g_object_new(AGS_TYPE_PORT,
 						       "plugin-name\0", ags_count_beats_audio_plugin_name,
-						       "specifier\0", ags_count_beats_audio_specifier[4],
-						       "control-port\0", ags_count_beats_audio_control_port[4],
+						       "specifier\0", ags_count_beats_audio_specifier[3],
+						       "control-port\0", ags_count_beats_audio_control_port[3],
 						       "port-value-is-pointer\0", FALSE,
 						       "port-value-type\0", G_TYPE_DOUBLE,
 						       "port-value-size\0", sizeof(gdouble),
@@ -324,6 +309,21 @@ ags_count_beats_audio_init(AgsCountBeatsAudio *count_beats_audio)
   count_beats_audio->sequencer_loop_end->port_value.ags_port_double = 16.0;
 
   port = g_list_prepend(port, count_beats_audio->sequencer_loop_end);
+
+  /* notation-loop-end */
+  count_beats_audio->notation_loop_end = g_object_new(AGS_TYPE_PORT,
+						      "plugin-name\0", ags_count_beats_audio_plugin_name,
+						      "specifier\0", ags_count_beats_audio_specifier[4],
+						      "control-port\0", ags_count_beats_audio_control_port[4],
+						      "port-value-is-pointer\0", FALSE,
+						      "port-value-type\0", G_TYPE_DOUBLE,
+						      "port-value-size\0", sizeof(gdouble),
+						      "port-value-length", 1,
+						      NULL);
+
+  count_beats_audio->notation_loop_end->port_value.ags_port_double = 64.0;
+
+  port = g_list_prepend(port, count_beats_audio->notation_loop_end);
 
   /* port */
   AGS_RECALL(count_beats_audio)->port = port;

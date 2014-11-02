@@ -364,7 +364,7 @@ ags_copy_pattern_audio_run_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 	  if(dependency_node->type == XML_ELEMENT_NODE){
 	    if(!xmlStrncmp(dependency_node->name,
 			   "ags-dependency\0",
-			   15)){
+			   14)){
 	      file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
 							   "file\0", file,
 							   "node\0", dependency_node,
@@ -372,7 +372,7 @@ ags_copy_pattern_audio_run_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 							   NULL);
 	      ags_file_add_lookup(file, (GObject *) file_lookup);
 	      g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
-			       G_CALLBACK(ags_copy_pattern_audio_run_read_resolve_dependency), G_OBJECT(plugin));
+			       G_CALLBACK(ags_copy_pattern_audio_run_read_resolve_dependency), AGS_RECALL(plugin));
 	    }
 	  }
 	  
@@ -430,7 +430,7 @@ ags_copy_pattern_audio_run_write(AgsFile *file, xmlNode *parent, AgsPlugin *plug
 						 NULL);
     ags_file_add_lookup(file, (GObject *) file_lookup);
     g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
-		     G_CALLBACK(ags_copy_pattern_audio_run_write_resolve_dependency), G_OBJECT(plugin));
+		     G_CALLBACK(ags_copy_pattern_audio_run_write_resolve_dependency), AGS_RECALL(plugin));
 
     list = list->next;
   }
@@ -511,9 +511,9 @@ ags_copy_pattern_audio_run_resolve_dependencies(AgsRecall *recall)
 
     if(AGS_IS_COUNT_BEATS_AUDIO_RUN(recall_dependency->dependency)){
       if(((AGS_RECALL_INPUT_ORIENTATED & (recall->flags)) != 0 &&
-	  (AGS_RECALL_INPUT_ORIENTATED & (AGS_RECALL(recall_dependency->dependency)->flags)) != 0) ||
-	 ((AGS_RECALL_OUTPUT_ORIENTATED & (recall->flags)) != 0 &&
-	  (AGS_RECALL_OUTPUT_ORIENTATED & (AGS_RECALL(recall_dependency->dependency)->flags)) != 0)){
+      	  (AGS_RECALL_INPUT_ORIENTATED & (AGS_RECALL(recall_dependency->dependency)->flags)) != 0) ||
+      	 ((AGS_RECALL_OUTPUT_ORIENTATED & (recall->flags)) != 0 &&
+      	  (AGS_RECALL_OUTPUT_ORIENTATED & (AGS_RECALL(recall_dependency->dependency)->flags)) != 0)){
 	recall_id = recall->recall_id;
       }else{
 	recall_id = recall->recall_id->recycling_container->parent->recall_id;
@@ -563,7 +563,7 @@ ags_copy_pattern_audio_run_read_resolve_dependency(AgsFileLookup *file_lookup,
 
   if(AGS_IS_COUNT_BEATS_AUDIO_RUN(id_ref->ref)){
     g_object_set(G_OBJECT(recall),
-		 "count-beats-audio-run\0", id_ref->ref,
+		 "count-beats-audio-run\0", AGS_COUNT_BEATS_AUDIO_RUN(id_ref->ref),
 		 NULL);
   }
 }

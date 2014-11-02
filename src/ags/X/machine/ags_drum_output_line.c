@@ -21,6 +21,8 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/object/ags_plugin.h>
+
 #include <ags/audio/ags_recall_factory.h>
 
 #include <ags/audio/recall/ags_delay_audio.h>
@@ -37,10 +39,15 @@
 
 void ags_drum_output_line_class_init(AgsDrumOutputLineClass *drum_output_line);
 void ags_drum_output_line_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_drum_output_line_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_drum_output_line_init(AgsDrumOutputLine *drum_output_line);
 void ags_drum_output_line_destroy(GtkObject *object);
 void ags_drum_output_line_connect(AgsConnectable *connectable);
 void ags_drum_output_line_disconnect(AgsConnectable *connectable);
+gchar* ags_drum_output_line_get_name(AgsPlugin *plugin);
+void ags_drum_output_line_set_name(AgsPlugin *plugin, gchar *name);
+gchar* ags_drum_output_line_get_xml_type(AgsPlugin *plugin);
+void ags_drum_output_line_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
 
 void ags_drum_output_line_set_channel(AgsLine *line, AgsChannel *channel);
 
@@ -81,6 +88,12 @@ ags_drum_output_line_get_type()
       NULL, /* interface_data */
     };
 
+    static const GInterfaceInfo ags_plugin_interface_info = {
+      (GInterfaceInitFunc) ags_drum_output_line_plugin_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_drum_output_line = g_type_register_static(AGS_TYPE_LINE,
 						       "AgsDrumOutputLine\0", &ags_drum_output_line_info,
 						       0);
@@ -88,6 +101,10 @@ ags_drum_output_line_get_type()
     g_type_add_interface_static(ags_type_drum_output_line,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_type_add_interface_static(ags_type_drum_output_line,
+				AGS_TYPE_PLUGIN,
+				&ags_plugin_interface_info);
   }
 
   return(ags_type_drum_output_line);
@@ -116,10 +133,21 @@ ags_drum_output_line_connectable_interface_init(AgsConnectableInterface *connect
 }
 
 void
+ags_drum_output_line_plugin_interface_init(AgsPluginInterface *plugin)
+{
+  plugin->get_name = ags_drum_output_line_get_name;
+  plugin->set_name = ags_drum_output_line_set_name;
+  plugin->get_xml_type = ags_drum_output_line_get_xml_type;
+  plugin->set_xml_type = ags_drum_output_line_set_xml_type;
+}
+
+void
 ags_drum_output_line_init(AgsDrumOutputLine *drum_output_line)
 {
   g_signal_connect_after((GObject *) drum_output_line, "parent_set\0",
 			 G_CALLBACK(ags_drum_output_line_parent_set_callback), NULL);
+
+  drum_output_line->xml_type = "ags-drum-output-line\0";
 }
 
 void
@@ -149,6 +177,30 @@ ags_drum_output_line_disconnect(AgsConnectable *connectable)
   ags_drum_output_line_parent_connectable_interface->disconnect(connectable);
 
   /* empty */
+}
+
+gchar*
+ags_drum_output_line_get_name(AgsPlugin *plugin)
+{
+  return(AGS_DRUM_OUTPUT_LINE(plugin)->name);
+}
+
+void
+ags_drum_output_line_set_name(AgsPlugin *plugin, gchar *name)
+{
+  AGS_DRUM_OUTPUT_LINE(plugin)->name = name;
+}
+
+gchar*
+ags_drum_output_line_get_xml_type(AgsPlugin *plugin)
+{
+  return(AGS_DRUM_OUTPUT_LINE(plugin)->xml_type);
+}
+
+void
+ags_drum_output_line_set_xml_type(AgsPlugin *plugin, gchar *xml_type)
+{
+  AGS_DRUM_OUTPUT_LINE(plugin)->xml_type = xml_type;
 }
 
 void
@@ -186,6 +238,8 @@ ags_drum_output_line_set_channel(AgsLine *line, AgsChannel *channel)
     //    ags_audio_signal_stream_resize(audio_signal, stop);
     if((AGS_LINE_PREMAPPED_RECALL & (line->flags)) == 0){
       ags_drum_output_line_add_default_recall(AGS_DRUM_OUTPUT_LINE(line));
+    }else{
+      line->flags &= (~AGS_LINE_PREMAPPED_RECALL);
     }
   }
 }

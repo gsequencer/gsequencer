@@ -840,11 +840,17 @@ main(int argc, char **argv)
 				  wdir,
 				  AGS_DEFAULT_CONFIG);
 
-    ags_config_load_from_file(ags_main->config,
-			      config_file);
+    //    ags_config_load_from_file(ags_main->config,
+    //			      config_file);
 
     g_free(wdir);
     g_free(config_file);
+
+    ags_thread_start(ags_main->main_loop);
+
+    /* complete thread pool */
+    ags_main->thread_pool->parent = AGS_THREAD(ags_main->main_loop);
+    ags_thread_pool_start(ags_main->thread_pool);
 
 #ifdef _USE_PTH
     pth_join(AGS_AUDIO_LOOP(ags_main->main_loop)->gui_thread->thread,

@@ -998,7 +998,6 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
      channel != NULL){
     this_error = NULL;
 
-    g_message("a");
     ags_channel_set_link(old_link_link,
 			 NULL,
 			 &this_error);
@@ -1014,7 +1013,6 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
      link != NULL){
     this_error = NULL;
     
-    g_message("b");
     ags_channel_set_link(old_channel_link,
 			 NULL,
 			 &this_error);

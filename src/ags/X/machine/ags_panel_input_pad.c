@@ -20,6 +20,8 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/object/ags_plugin.h>
+
 #include <ags/X/ags_window.h>
 
 #include <ags/X/machine/ags_panel.h>
@@ -28,10 +30,15 @@
 
 void ags_panel_input_pad_class_init(AgsPanelInputPadClass *panel_input_pad);
 void ags_panel_input_pad_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_panel_input_pad_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_panel_input_pad_init(AgsPanelInputPad *panel_input_pad);
 void ags_panel_input_pad_connect(AgsConnectable *connectable);
 void ags_panel_input_pad_disconnect(AgsConnectable *connectable);
 void ags_panel_input_pad_finalize(GObject *gobject);
+gchar* ags_panel_input_pad_get_name(AgsPlugin *plugin);
+void ags_panel_input_pad_set_name(AgsPlugin *plugin, gchar *name);
+gchar* ags_panel_input_pad_get_xml_type(AgsPlugin *plugin);
+void ags_panel_input_pad_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
 
 void ags_panel_input_pad_show(GtkWidget *pad);
 
@@ -76,6 +83,12 @@ ags_panel_input_pad_get_type()
       NULL, /* interface_data */
     };
 
+    static const GInterfaceInfo ags_plugin_interface_info = {
+      (GInterfaceInitFunc) ags_panel_input_pad_plugin_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_panel_input_pad = g_type_register_static(AGS_TYPE_PAD,
 						     "AgsPanelInputPad\0", &ags_panel_input_pad_info,
 						     0);
@@ -83,6 +96,10 @@ ags_panel_input_pad_get_type()
     g_type_add_interface_static(ags_type_panel_input_pad,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_type_add_interface_static(ags_type_panel_input_pad,
+				AGS_TYPE_PLUGIN,
+				&ags_plugin_interface_info);
   }
 
   return(ags_type_panel_input_pad);
@@ -121,6 +138,15 @@ ags_panel_input_pad_connectable_interface_init(AgsConnectableInterface *connecta
 
   connectable->connect = ags_panel_input_pad_connect;
   connectable->disconnect = ags_panel_input_pad_disconnect;
+}
+
+void
+ags_panel_input_pad_plugin_interface_init(AgsPluginInterface *plugin)
+{
+  plugin->get_name = ags_panel_input_pad_get_name;
+  plugin->set_name = ags_panel_input_pad_set_name;
+  plugin->get_xml_type = ags_panel_input_pad_get_xml_type;
+  plugin->set_xml_type = ags_panel_input_pad_set_xml_type;
 }
 
 void
@@ -167,6 +193,30 @@ ags_panel_input_pad_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_panel_input_pad_parent_class)->finalize(gobject);
 
   /* empty */
+}
+
+gchar*
+ags_panel_input_pad_get_name(AgsPlugin *plugin)
+{
+  return(AGS_PANEL_INPUT_PAD(plugin)->name);
+}
+
+void
+ags_panel_input_pad_set_name(AgsPlugin *plugin, gchar *name)
+{
+  AGS_PANEL_INPUT_PAD(plugin)->name = name;
+}
+
+gchar*
+ags_panel_input_pad_get_xml_type(AgsPlugin *plugin)
+{
+  return(AGS_PANEL_INPUT_PAD(plugin)->xml_type);
+}
+
+void
+ags_panel_input_pad_set_xml_type(AgsPlugin *plugin, gchar *xml_type)
+{
+  AGS_PANEL_INPUT_PAD(plugin)->xml_type = xml_type;
 }
 
 void

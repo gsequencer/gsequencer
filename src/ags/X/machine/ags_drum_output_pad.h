@@ -44,6 +44,9 @@ struct _AgsDrumOutputPad
   AgsPad pad;
 
   guint flags;
+
+  gchar *name;
+  gchar *xml_type;
 };
 
 struct _AgsDrumOutputPadClass
