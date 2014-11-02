@@ -227,8 +227,13 @@ ags_play_notation_audio_run_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_play_notation_audio_run_init(AgsPlayNotationAudioRun *play_notation_audio_run)
 {
-  play_notation_audio_run->delay_audio_run = NULL;
+  AGS_RECALL(play_notation_audio_run)->name = "ags-play-notation\0";
+  AGS_RECALL(play_notation_audio_run)->version = AGS_EFFECTS_DEFAULT_VERSION;
+  AGS_RECALL(play_notation_audio_run)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(play_notation_audio_run)->xml_type = "ags-play-notation-audio-run\0";
+  AGS_RECALL(play_notation_audio_run)->port = NULL;
 
+  play_notation_audio_run->delay_audio_run = NULL;
   play_notation_audio_run->count_beats_audio_run = NULL;
 }
 

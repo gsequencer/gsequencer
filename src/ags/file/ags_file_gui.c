@@ -653,10 +653,11 @@ ags_file_read_machine_resolve_audio(AgsFileLookup *file_lookup,
 {
   AgsFileIdRef *id_ref;
   gchar *xpath;
+  xmlXPathContext *xpath_context;
+  xmlXPathObject *xpath_object;
 
   xpath = (gchar *) xmlGetProp(file_lookup->node,
 			       "audio\0");
-
   id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_xpath(file_lookup->file, xpath);
 
   g_object_set(G_OBJECT(machine),
@@ -1123,8 +1124,13 @@ ags_file_read_line_pad_resolve_channel(AgsFileLookup *file_lookup,
 
   /*  */
   if(xpath_object != NULL && xpath_object->nodesetval != NULL){
+    AgsFileIdRef *file_id_ref;
+
+    file_id_ref = ags_file_find_id_ref_by_node(file->id_refs,
+					       xpath_object->nodesetval->nodeTab[0]);
+
     g_object_set(G_OBJECT(pad),
-		 "channel\0", (AgsChannel *) xpath_object->nodesetval->nodeTab[0],
+		 "channel\0", (AgsChannel *) file_id_ref->ref,
 		 NULL);
   }
 }

@@ -55,7 +55,7 @@ enum{
 static gpointer ags_play_notation_audio_parent_class = NULL;
 static AgsPluginInterface *ags_play_notation_parent_plugin_interface;
 
-static const gchar *ags_play_notation_audio_plugin_name = "ags-play\0";
+static const gchar *ags_play_notation_audio_plugin_name = "ags-play-notation\0";
 static const gchar *ags_play_notation_audio_specifier[] = {
   "./notation[0]\0"
 };
