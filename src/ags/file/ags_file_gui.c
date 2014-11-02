@@ -991,7 +991,7 @@ ags_file_read_pad(AgsFile *file, xmlNode *node, AgsPad **pad)
 					       NULL);
   ags_file_add_lookup(file, (GObject *) file_lookup);
   g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
-			       G_CALLBACK(ags_file_read_window_resolve_devout), gobject);
+		   G_CALLBACK(ags_file_read_line_pad_resolve_channel), gobject);
 
   /* child elements */
   child = node->children;
