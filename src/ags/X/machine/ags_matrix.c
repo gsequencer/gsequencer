@@ -34,6 +34,9 @@
 #include <ags/file/ags_file_lookup.h>
 #include <ags/file/ags_file_launch.h>
 
+#include <ags/thread/ags_thread-posix.h>
+#include <ags/thread/ags_audio_loop.h>
+
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_input.h>
@@ -1046,6 +1049,7 @@ ags_matrix_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
   /*  */
   file_launch = g_object_new(AGS_TYPE_FILE_LAUNCH,
 			     "node\0", node,
+			     "file\0", file,
 			     NULL);
   g_signal_connect(G_OBJECT(file_launch), "start\0",
 		   G_CALLBACK(ags_matrix_launch_task), gobject);
@@ -1056,12 +1060,19 @@ ags_matrix_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 void
 ags_matrix_launch_task(AgsFileLaunch *file_launch, AgsMatrix *matrix)
 {
+  AgsMain *ags_main;
+  AgsAudioLoop *audio_loop;
   GtkTreeModel *model;
   GtkTreeIter iter;
   GList *list;
   gdouble length;
   gint history, i;
   gboolean valid;
+
+  ags_main = AGS_FILE(file_launch->file)->ags_main;
+  audio_loop = AGS_AUDIO_LOOP(ags_main->main_loop);
+  
+  pthread_mutex_lock(&(audio_loop->recall_mutex));
 
   /* length */
   length = (gdouble) g_ascii_strtod(xmlGetProp(file_launch->node,
@@ -1077,6 +1088,8 @@ ags_matrix_launch_task(AgsFileLaunch *file_launch, AgsMatrix *matrix)
     gtk_toggle_button_set_active(matrix->loop_button,
 				 TRUE);
   }
+
+  pthread_mutex_unlock(&(audio_loop->recall_mutex));
 }
 
 xmlNode*

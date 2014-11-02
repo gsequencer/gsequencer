@@ -254,6 +254,16 @@ ags_file_read_thread_start(AgsFileLaunch *file_launch, AgsThread *thread)
 {
   thread->flags &= (~AGS_THREAD_RUNNING);
   ags_thread_start(thread);
+
+  pthread_mutex_lock(&(thread->start_mutex));
+
+  while((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) == 0){
+    pthread_cond_wait(&(thread->start_cond),
+		      &(thread->start_mutex));
+    
+  }
+
+  pthread_mutex_unlock(&(thread->start_mutex));
 }
 
 xmlNode*

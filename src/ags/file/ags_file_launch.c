@@ -28,6 +28,7 @@ void ags_file_launch_get_property(GObject *gobject,
 				  guint prop_id,
 				  GValue *value,
 				  GParamSpec *param_spec);
+void ags_file_launch_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_file_launch
@@ -47,6 +48,8 @@ enum{
 enum{
   PROP_0,
   PROP_NODE,
+  PROP_FILE,
+  PROP_MAIN,
 };
 
 static gpointer ags_file_launch_parent_class = NULL;
@@ -93,6 +96,8 @@ ags_file_launch_class_init(AgsFileLaunchClass *file_launch)
   gobject->set_property = ags_file_launch_set_property;
   gobject->get_property = ags_file_launch_get_property;
 
+  gobject->finalize = ags_file_launch_finalize;
+
   /* properties */
   param_spec = g_param_spec_pointer("node\0",
 				    "the node\0",
@@ -100,6 +105,24 @@ ags_file_launch_class_init(AgsFileLaunchClass *file_launch)
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_NODE,
+				  param_spec);
+
+  param_spec = g_param_spec_object("file\0",
+				   "file assigned to\0",
+				   "The entire file assigned to\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FILE,
+				  param_spec);
+
+  param_spec = g_param_spec_object("main\0",
+				   "main access\0",
+				   "The main object to access the tree\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_MAIN,
 				  param_spec);
 
   /* AgsFileLaunchClass */
@@ -118,7 +141,9 @@ ags_file_launch_class_init(AgsFileLaunchClass *file_launch)
 void
 ags_file_launch_init(AgsFileLaunch *file_launch)
 {
+  file_launch->ags_main = NULL;
   file_launch->node = NULL;
+  file_launch->file = NULL;
 }
 
 void
@@ -139,6 +164,36 @@ ags_file_launch_set_property(GObject *gobject,
       node = (xmlNode *) g_value_get_pointer(value);
 
       file_launch->node = node;
+    }
+    break;
+  case PROP_FILE:
+    {
+      GObject *file;
+
+      file = (GObject *) g_value_get_object(value);
+
+      if(file_launch->file != NULL)
+	g_object_unref(file_launch->file);
+
+      if(file != NULL)
+	g_object_ref(file);
+
+      file_launch->file = file;
+    }
+    break;
+  case PROP_MAIN:
+    {
+      GObject *ags_main;
+
+      ags_main = (GObject *) g_value_get_object(value);
+
+      if(file_launch->ags_main != NULL)
+	g_object_unref(file_launch->ags_main);
+
+      if(ags_main != NULL)
+	g_object_ref(ags_main);
+
+      file_launch->ags_main = ags_main;
     }
     break;
   default:
@@ -163,6 +218,16 @@ ags_file_launch_get_property(GObject *gobject,
       g_value_set_pointer(value, file_launch->node);
     }
     break;
+  case PROP_FILE:
+    {
+      g_value_set_object(value, file_launch->file);
+    }
+    break;
+  case PROP_MAIN:
+    {
+      g_value_set_object(value, file_launch->ags_main);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -178,6 +243,24 @@ ags_file_launch_start(AgsFileLaunch *file_launch)
   g_signal_emit(G_OBJECT(file_launch),
 		file_launch_signals[START], 0);
   g_object_unref((GObject *) file_launch);
+}
+
+void
+ags_file_launch_finalize(GObject *gobject)
+{
+  AgsFileLaunch *file_launch;
+
+  file_launch = AGS_FILE_LAUNCH(gobject);
+
+  if(file_launch->file != NULL){
+    g_object_unref(file_launch->file);
+  }
+
+  if(file_launch->ags_main != NULL){
+    g_object_unref(file_launch->ags_main);
+  }
+
+  G_OBJECT_CLASS(ags_file_launch_parent_class)->finalize(gobject);
 }
 
 /**

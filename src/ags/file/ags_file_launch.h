@@ -38,7 +38,10 @@ struct _AgsFileLaunch
 {
   GObject object;
 
+  GObject *ags_main;
+
   xmlNode *node;
+  GObject *file;
 };
 
 struct _AgsFileLaunchClass

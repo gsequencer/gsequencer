@@ -989,7 +989,7 @@ ags_file_real_read_start(AgsFile *file)
 {
   GList *list;
 
-  list = file->launch;
+  list = g_list_reverse(file->launch);
 
   while(list != NULL){
     ags_file_launch_start(AGS_FILE_LAUNCH(list->data));

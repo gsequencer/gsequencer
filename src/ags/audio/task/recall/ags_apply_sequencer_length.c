@@ -35,11 +35,11 @@ void ags_apply_sequencer_length_connect(AgsConnectable *connectable);
 void ags_apply_sequencer_length_disconnect(AgsConnectable *connectable);
 void ags_apply_sequencer_length_finalize(GObject *gobject);
 
-void ags_apply_sequencer_length_launch(AgsTask *task);
-
 void ags_apply_sequencer_length_recall(AgsApplySequencerLength *apply_sequencer_length, AgsRecall *recall);
 void ags_apply_sequencer_length_channel(AgsApplySequencerLength *apply_sequencer_length, AgsChannel *channel);
 void ags_apply_sequencer_length_audio(AgsApplySequencerLength *apply_sequencer_length, AgsAudio *audio);
+
+void ags_apply_sequencer_length_launch(AgsTask *task);
 
 /**
  * SECTION:ags_apply_sequencer_length

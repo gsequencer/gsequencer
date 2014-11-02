@@ -34,6 +34,9 @@
 #include <ags/file/ags_file_lookup.h>
 #include <ags/file/ags_file_launch.h>
 
+#include <ags/thread/ags_thread-posix.h>
+#include <ags/thread/ags_audio_loop.h>
+
 #include <ags/widget/ags_led.h>
 
 #include <ags/X/machine/ags_drum_input_pad.h>
@@ -65,6 +68,8 @@
 #include <ags/audio/recall/ags_copy_pattern_audio_run.h>
 #include <ags/audio/recall/ags_copy_pattern_channel.h>
 #include <ags/audio/recall/ags_copy_pattern_channel_run.h>
+
+#include <ags/audio/task/recall/ags_apply_sequencer_length.h>
 
 #include <math.h>
 
@@ -637,6 +642,7 @@ ags_drum_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
   /*  */
   file_launch = g_object_new(AGS_TYPE_FILE_LAUNCH,
 			     "node\0", node,
+			     "file\0", file,
 			     NULL);
   g_signal_connect(G_OBJECT(file_launch), "start\0",
 		   G_CALLBACK(ags_drum_launch_task), gobject);
@@ -647,9 +653,16 @@ ags_drum_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 void
 ags_drum_launch_task(AgsFileLaunch *file_launch, AgsDrum *drum)
 {
+  AgsMain *ags_main;
+  AgsAudioLoop *audio_loop;
   GList *list;
   gdouble length;
   gint history, i;
+
+  ags_main = AGS_FILE(file_launch->file)->ags_main;
+  audio_loop = ags_main->main_loop;
+  
+  pthread_mutex_lock(&(audio_loop->recall_mutex));
 
   /* length */
   length = (gdouble) g_ascii_strtod(xmlGetProp(file_launch->node,
@@ -665,6 +678,8 @@ ags_drum_launch_task(AgsFileLaunch *file_launch, AgsDrum *drum)
     gtk_toggle_button_set_active(drum->loop_button,
 				 TRUE);
   }
+
+  pthread_mutex_unlock(&(audio_loop->recall_mutex));
 }
 
 xmlNode*

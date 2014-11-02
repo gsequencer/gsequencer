@@ -160,7 +160,7 @@ ags_file_id_ref_class_init(AgsFileIdRefClass *file_id_ref)
 void
 ags_file_id_ref_init(AgsFileIdRef *file_id_ref)
 {
-  file_id_ref->main = NULL;
+  file_id_ref->ags_main = NULL;
   file_id_ref->file = NULL;
 
   file_id_ref->node = NULL;
@@ -227,17 +227,17 @@ ags_file_id_ref_set_property(GObject *gobject,
     break;
   case PROP_MAIN:
     {
-      GObject *main;
+      GObject *ags_main;
 
-      main = (GObject *) g_value_get_object(value);
+      ags_main = (GObject *) g_value_get_object(value);
 
-      if(file_id_ref->main != NULL)
-	g_object_unref(file_id_ref->main);
+      if(file_id_ref->ags_main != NULL)
+	g_object_unref(file_id_ref->ags_main);
 
-      if(main != NULL)
-	g_object_ref(main);
+      if(ags_main != NULL)
+	g_object_ref(ags_main);
 
-      file_id_ref->main = main;
+      file_id_ref->ags_main = ags_main;
     }
     break;
   default:
@@ -279,7 +279,7 @@ ags_file_id_ref_get_property(GObject *gobject,
     break;
   case PROP_MAIN:
     {
-      g_value_set_object(value, file_id_ref->main);
+      g_value_set_object(value, file_id_ref->ags_main);
     }
     break;
   default:
@@ -307,8 +307,8 @@ ags_file_id_ref_finalize(GObject *gobject)
     g_object_unref(file_id_ref->file);
   }
 
-  if(file_id_ref->main != NULL){
-    g_object_unref(file_id_ref->main);
+  if(file_id_ref->ags_main != NULL){
+    g_object_unref(file_id_ref->ags_main);
   }
 
   G_OBJECT_CLASS(ags_file_id_ref_parent_class)->finalize(gobject);
