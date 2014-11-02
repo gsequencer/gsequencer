@@ -600,7 +600,7 @@ ags_drum_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
   AgsDrum *gobject;
   AgsFileLaunch *file_launch;
   GList *list;
-  guint64 index;
+  guint64 length, index;
 
   gobject = AGS_DRUM(plugin);
 
@@ -613,6 +613,22 @@ ags_drum_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 				   "reference\0", gobject,
 				   NULL));
 
+  /* length */
+  length = (gdouble) g_ascii_strtod(xmlGetProp(node,
+					       "length\0"),
+				    NULL);
+  gtk_spin_button_set_value(gobject->length_spin,
+			    length);
+
+  /* loop */
+  if(!g_strcmp0(xmlGetProp(node,
+			   "loop\0"),
+		AGS_FILE_TRUE)){
+    gtk_toggle_button_set_active(gobject->loop_button,
+				 TRUE);
+  }
+
+  /* index */
   index = g_ascii_strtoull(xmlGetProp(node,
 				      "bank-index-0\0"),
 			   NULL,
@@ -646,40 +662,14 @@ ags_drum_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 			     NULL);
   g_signal_connect(G_OBJECT(file_launch), "start\0",
 		   G_CALLBACK(ags_drum_launch_task), gobject);
-  ags_file_add_launch(file,
-		      file_launch);
+  //  ags_file_add_launch(file,
+  //		      file_launch);
 }
 
 void
 ags_drum_launch_task(AgsFileLaunch *file_launch, AgsDrum *drum)
 {
-  AgsMain *ags_main;
-  AgsAudioLoop *audio_loop;
-  GList *list;
-  gdouble length;
-  gint history, i;
-
-  ags_main = AGS_FILE(file_launch->file)->ags_main;
-  audio_loop = ags_main->main_loop;
-  
-  pthread_mutex_lock(&(audio_loop->recall_mutex));
-
-  /* length */
-  length = (gdouble) g_ascii_strtod(xmlGetProp(file_launch->node,
-					       "length\0"),
-				    NULL);
-  gtk_spin_button_set_value(drum->length_spin,
-			    length);
-
-  /* loop */
-  if(!g_strcmp0(xmlGetProp(file_launch->node,
-			   "loop\0"),
-		AGS_FILE_TRUE)){
-    gtk_toggle_button_set_active(drum->loop_button,
-				 TRUE);
-  }
-
-  pthread_mutex_unlock(&(audio_loop->recall_mutex));
+  //TODO:JK: implement me
 }
 
 xmlNode*

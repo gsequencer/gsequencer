@@ -2166,7 +2166,7 @@ ags_file_read_recall_container_resolve_parameter(AgsFileLookup *file_lookup,
     }
 
     g_object_set(gobject,
-		 "recall_container\0", recall_container,
+		 "recall-container\0", recall_container,
 		 NULL);
   }
 }
