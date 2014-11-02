@@ -840,8 +840,8 @@ main(int argc, char **argv)
 				  wdir,
 				  AGS_DEFAULT_CONFIG);
 
-    //    ags_config_load_from_file(ags_main->config,
-    //			      config_file);
+   ags_config_load_from_file(ags_main->config,
+			     config_file);
 
     g_free(wdir);
     g_free(config_file);

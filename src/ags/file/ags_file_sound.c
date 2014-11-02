@@ -2801,7 +2801,6 @@ ags_file_read_port(AgsFile *file, xmlNode *node, AgsPort **port)
 						NULL,
 						10);
 
-
   /* child elements */
   child = node->children;
 
@@ -2812,8 +2811,8 @@ ags_file_read_port(AgsFile *file, xmlNode *node, AgsPort **port)
 		     10)){
 	GValue *value;
 
-	//FIXME:JK: ugly
-	value = g_new0(GValue, 1);
+	//FIXME:JK: memory leak
+	value = (GValue *) g_new0(GValue, 1);
 	memset(value, 0, sizeof(GValue));
 	g_value_init(value,
 		     gobject->port_value_type);

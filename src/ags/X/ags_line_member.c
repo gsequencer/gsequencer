@@ -835,8 +835,8 @@ ags_line_member_find_port(AgsLineMember *line_member)
 #endif
 
       while(port != NULL){
-	if(!g_strcasecmp(AGS_PORT(port->data)->specifier,
-			 specifier)){
+	if(!g_strcmp0(AGS_PORT(port->data)->specifier,
+		      specifier)){
 	  return(AGS_PORT(port->data));
 	}
 

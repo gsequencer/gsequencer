@@ -3481,7 +3481,7 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
       /* recycling container */
       recycling_length = ags_recycling_position(channel->first_recycling, channel->last_recycling->next,
 						channel->last_recycling);
-      recycling_length++;
+      recycling_length += 1;
 
       recycling_container = (AgsRecyclingContainer *) g_object_new(AGS_TYPE_RECYCLING_CONTAINER,
 								   "length\0", recycling_length,
@@ -3582,7 +3582,7 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
       /* child recycling container */
       recycling_length = ags_recycling_position(input->first_recycling, last_input->last_recycling->next,
 						last_input->last_recycling);
-      recycling_length++;
+      recycling_length += 1;
 
       child_recycling_container = (AgsRecyclingContainer *) g_object_new(AGS_TYPE_RECYCLING_CONTAINER,
 									 "parent\0", audio_recall_id->recycling_container,
