@@ -713,11 +713,11 @@ ags_count_beats_audio_run_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 	      file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
 							   "file\0", file,
 							   "node\0", dependency_node,
-							   "reference\0", G_OBJECT(plugin),
+							   "reference\0", count_beats_audio_run,
 							   NULL);
 	      ags_file_add_lookup(file, (GObject *) file_lookup);
 	      g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
-			       G_CALLBACK(ags_count_beats_audio_run_read_resolve_dependency), G_OBJECT(plugin));
+			       G_CALLBACK(ags_count_beats_audio_run_read_resolve_dependency), count_beats_audio_run);
 	    }
 	  }
 	  
