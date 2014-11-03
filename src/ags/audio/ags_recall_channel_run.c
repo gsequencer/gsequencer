@@ -672,8 +672,6 @@ ags_recall_channel_run_pack(AgsPackable *packable, GObject *container)
       g_object_set(G_OBJECT(packable),
 		   "recall-channel\0", AGS_RECALL_CHANNEL(list->data),
 		   NULL);
-
-      list = list->next;
     }
   }
 
@@ -823,11 +821,11 @@ ags_recall_channel_run_duplicate(AgsRecall *recall,
     recycling = AGS_RECYCLING(recall_id->recycling);
 
     copy->run_order = AGS_CHANNEL(recycling->channel)->audio_channel;
-  }
 
-  ags_recall_channel_run_remap_child_source(copy,
-					    NULL, NULL,
-					    copy->source->first_recycling, copy->source->last_recycling);
+    ags_recall_channel_run_remap_child_source(copy,
+					      NULL, NULL,
+					      copy->source->first_recycling, copy->source->last_recycling);
+  }
 
   if(copy->destination != NULL){
     ags_recall_channel_run_remap_child_destination(copy,
