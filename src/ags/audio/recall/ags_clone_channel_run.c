@@ -184,10 +184,6 @@ ags_clone_channel_run_init(AgsCloneChannelRun *clone_channel_run)
 {
   AGS_RECALL(clone_channel_run)->flags |= AGS_RECALL_INPUT_ORIENTATED;
   AGS_RECALL(clone_channel_run)->child_type = G_TYPE_NONE;
-
-  clone_channel_run->flags = 0;
-
-  clone_channel_run->stream_channel_run = NULL;
 }
 
 void
@@ -262,13 +258,6 @@ ags_clone_channel_run_connect_dynamic(AgsDynamicConnectable *dynamic_connectable
 
   /* AgsCloneChannelRun */
   clone_channel_run = AGS_CLONE_CHANNEL_RUN(dynamic_connectable);
-
-  /* stream_channel_run */
-  gobject = G_OBJECT(clone_channel_run->stream_channel_run);
-
-  clone_channel_run->done_handler =
-    g_signal_connect(gobject, "done\0",
-		     G_CALLBACK(ags_clone_channel_run_stream_channel_done_callback), clone_channel_run);
 }
 
 void
@@ -285,11 +274,6 @@ ags_clone_channel_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connecta
 
   /* AgsCloneChannel */
   clone_channel = AGS_CLONE_CHANNEL(AGS_RECALL_CHANNEL_RUN(clone_channel_run)->recall_channel);
-
-  /* stream_channel_run */
-  gobject = G_OBJECT(clone_channel_run->stream_channel_run);
-
-  g_signal_handler_disconnect(gobject, clone_channel_run->done_handler);
 }
 
 void
@@ -332,12 +316,11 @@ ags_clone_channel_run_duplicate(AgsRecall *recall,
 }
 
 AgsCloneChannelRun*
-ags_clone_channel_run_new(AgsStreamChannelRun *stream_channel_run)
+ags_clone_channel_run_new()
 {
   AgsCloneChannelRun *clone_channel_run;
 
   clone_channel_run = (AgsCloneChannelRun *) g_object_new(AGS_TYPE_CLONE_CHANNEL_RUN,
-							  "stream_channel_run\0", stream_channel_run,
 							  NULL);
   
   return(clone_channel_run);

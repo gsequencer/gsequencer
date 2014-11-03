@@ -21,6 +21,9 @@
 
 #include <glib-object.h>
 
+#include <ags/audio/ags_devout.h>
+#include <ags/audio/ags_recall_channel.h>
+
 #define AGS_TYPE_CLONE_CHANNEL                (ags_clone_channel_get_type())
 #define AGS_CLONE_CHANNEL(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_CLONE_CHANNEL, AgsCloneChannel))
 #define AGS_CLONE_CHANNEL_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_CLONE_CHANNEL, AgsCloneChannel))

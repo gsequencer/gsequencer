@@ -28,8 +28,6 @@
 
 #include <alsa/asoundlib.h>
 
-#include <ao/ao.h>
-
 #include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_task_thread.h>
 #include <ags/thread/ags_devout_thread.h>
@@ -139,11 +137,6 @@ struct _AgsDevout
   guint tic_counter;
 
   union{
-    struct _AgsAO{
-      ao_device *device;
-      ao_sample_format *format;
-      int driver_ao;
-    }ao;
     struct _AgsOss{
       int device_fd;
       char *device;

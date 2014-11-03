@@ -18,8 +18,8 @@
 
 #include "ags_hindicator.h"
 
-void ags_hindicator_class_init(AgsHindicatorClass *indicator);
-void ags_hindicator_init(AgsHindicator *indicator);
+void ags_hindicator_class_init(AgsHIndicatorClass *indicator);
+void ags_hindicator_init(AgsHIndicator *indicator);
 void ags_hindicator_show(GtkWidget *widget);
 
 static gpointer ags_hindicator_parent_class = NULL;
@@ -31,19 +31,19 @@ ags_hindicator_get_type(void)
 
   if(!ags_type_hindicator){
     static const GTypeInfo ags_hindicator_info = {
-      sizeof(AgsHindicatorClass),
+      sizeof(AgsHIndicatorClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_hindicator_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof(AgsHindicator),
+      sizeof(AgsHIndicator),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_hindicator_init,
     };
 
     ags_type_hindicator = g_type_register_static(AGS_TYPE_INDICATOR,
-						 "AgsHindicator\0", &ags_hindicator_info,
+						 "AgsHIndicator\0", &ags_hindicator_info,
 						 0);
   }
 
@@ -51,7 +51,7 @@ ags_hindicator_get_type(void)
 }
 
 void
-ags_hindicator_class_init(AgsHindicatorClass *indicator)
+ags_hindicator_class_init(AgsHIndicatorClass *indicator)
 {
   GtkWidgetClass *widget;
 
@@ -59,19 +59,19 @@ ags_hindicator_class_init(AgsHindicatorClass *indicator)
 }
 
 void
-ags_hindicator_init(AgsHindicator *indicator)
+ags_hindicator_init(AgsHIndicator *indicator)
 {
   g_object_set(G_OBJECT(indicator),
 	       "app-paintable\0", TRUE,
 	       NULL);
 }
 
-AgsHindicator*
+AgsHIndicator*
 ags_hindicator_new()
 {
-  AgsHindicator *indicator;
+  AgsHIndicator *indicator;
 
-  indicator = (AgsHindicator *) g_object_new(AGS_TYPE_HINDICATOR,
+  indicator = (AgsHIndicator *) g_object_new(AGS_TYPE_HINDICATOR,
 					     NULL);
   
   return(indicator);

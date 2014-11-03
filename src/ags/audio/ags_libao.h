@@ -142,17 +142,6 @@ struct _AgsLibao
       ao_sample_format *format;
       int driver_ao;
     }ao;
-    struct _AgsOss{
-      int device_fd;
-      char *device;
-    }oss;
-    struct _AgsAlsa{
-      char *device;
-      int rc;
-      snd_pcm_t *handle;
-      snd_async_handler_t *ahandler;
-      snd_pcm_hw_params_t *params;
-    }alsa;
   }out;
 
   GObject *ags_main;

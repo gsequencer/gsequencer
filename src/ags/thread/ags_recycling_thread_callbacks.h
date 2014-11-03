@@ -20,6 +20,9 @@
 
 #include <glib-object.h>
 
-void ags_recycling_thread_iterate_callback(AgsRecyclingThread *thread);
+#include <ags/thread/ags_recycling_thread.h>
+
+void ags_recycling_thread_iterate_callback(AgsRecyclingThread *thread,
+					   gpointer user_data);
 
 #endif /* __AGS_RECYCLING_THREAD_CALLBACKS_H__ */

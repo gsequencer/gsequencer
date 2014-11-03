@@ -1,34 +1,49 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
+
 AC_PREREQ([2.69])
-AC_INIT([ags],[0.4.2],[weedlight@gmail.com])
-AM_INIT_AUTOMAKE([ags], [0.4.2])
-AC_CONFIG_SRCDIR([src])
+AC_INIT([ags], [0.4.2], [weedlight@gmail.com])
+AM_INIT_AUTOMAKE(ags, 0.4.2)
+AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADERS([config.h])
 
 # Checks for programs.
+AC_PROG_CXX
+AC_PROG_AWK
 AC_PROG_CC
+AC_PROG_CPP
+AC_PROG_INSTALL
+AC_PROG_LN_S
+AC_PROG_MAKE_SET
 AC_PROG_RANLIB
-AC_CONFIG_MACRO_DIR(m4)
-
-#AGS_WITH_XMLRPC_C
-AGS_DEBUG=1
+AC_PROG_MKDIR_P
+AC_PROG_YACC
 
 # Checks for libraries.
+# FIXME: Replace `main' with a function in `-lX11':
+AC_CHECK_LIB([X11], [main])
 # FIXME: Replace `main' with a function in `-ldl':
 AC_CHECK_LIB([dl], [main])
-# FIXME: Replace `main' with a function in `-lfontconfig':
-AC_CHECK_LIB([fontconfig], [main])
-# FIXME: Replace `main' with a function in `-lfreetype':
-AC_CHECK_LIB([freetype], [main])
 # FIXME: Replace `main' with a function in `-lm':
 AC_CHECK_LIB([m], [main])
 # FIXME: Replace `main' with a function in `-lrt':
 AC_CHECK_LIB([rt], [main])
 
-AC_CHECK_LIB([pthread], [pthread_suspend], AC_DEFINE([AGS_WITH_PTHREAD], [1], ["great!"]), AC_DEFINE([AGS_LINUX_SIGNALS], [1], ["YOUR CHANCE"]))
+# Checks for header files.
+AC_PATH_X
+AC_FUNC_ALLOCA
+AC_CHECK_HEADERS([argz.h fcntl.h float.h inttypes.h langinfo.h libintl.h limits.h locale.h malloc.h netinet/in.h stddef.h stdint.h stdio_ext.h stdlib.h string.h sys/ioctl.h sys/param.h sys/socket.h sys/time.h unistd.h wchar.h])
 
-# AC_ARG_ENABLE(sse, [AC_HELP_STRING([--enable-sse],[enable SSE optimizations])], enable_sse=$enableval, enable_sse=yes)
+# Checks for typedefs, structures, and compiler characteristics.
+AC_CHECK_HEADER_STDBOOL
+AC_C_INLINE
+AC_TYPE_PID_T
+AC_TYPE_SIZE_T
+AC_TYPE_UID_T
+AC_TYPE_UINT16_T
+AC_TYPE_UINT32_T
+AC_TYPE_UINT8_T
+AC_CHECK_TYPES([ptrdiff_t])
 
 PKG_CHECK_MODULES([UUID], [uuid >= 1.0.2])
 AC_SUBST(UUID_CFLAGS)
@@ -84,17 +99,14 @@ AC_SUBST(GTK_LIBS)
 
 #PKG_CHECK_MODULES([XMLRPC_SERVER_ABYSS], [xmlrpc_server_abyss >= 1.16.33])
 #AC_SUBST(XMLRPC_SERVER_ABYSS_CFLAGS)
-#AC_SUBST(XMLRPC_SERVER_ABYSS_LIBS)
-
-# Checks for header files.
-AC_CHECK_HEADERS([fcntl.h stdlib.h string.h sys/ioctl.h unistd.h])
-
-# Checks for typedefs, structures, and compiler characteristics.
+#AC_SUBST(XMLRPC_SERVER_ABYSS_LIBS)$
 
 # Checks for library functions.
+AM_GNU_GETTEXT
 AC_FUNC_MALLOC
+AC_FUNC_MBRTOWC
+AC_FUNC_MMAP
 AC_FUNC_REALLOC
-AC_CHECK_FUNCS([clock_gettime floor memset strtol strtoul])
+AC_CHECK_FUNCS([__argz_count __argz_next __argz_stringify atexit clock_gettime floor getcwd localeconv mblen mbrlen memchr mempcpy memset munmap nl_langinfo setlocale socket sqrt stpcpy strcasecmp strchr strcspn strdup strstr strtol strtoul])
 
-AC_CONFIG_FILES([Makefile])
-AC_OUTPUT
+AC_OUTPUT(Makefile)

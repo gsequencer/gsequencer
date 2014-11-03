@@ -584,7 +584,7 @@ ags_devout_get_property(GObject *gobject,
   case PROP_DEVICE:
     {
       if((AGS_DEVOUT_LIBAO & (devout->flags)) != 0){
-	g_value_set_string(value, ao_driver_info(devout->out.ao.driver_ao)->name);
+	//TODO:JK: implement me
       }else if((AGS_DEVOUT_OSS & (devout->flags)) != 0){
 	g_value_set_string(value, devout->out.oss.device);
       }else if((AGS_DEVOUT_ALSA & (devout->flags)) != 0){

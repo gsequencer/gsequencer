@@ -125,7 +125,8 @@ ags_soundcard_play_init(AgsSoundcard *soundcard,
   g_return_if_fail(AGS_IS_SOUNDCARD(soundcard));
   soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
   g_return_if_fail(soundcard_interface->play_init);
-  soundcard_interface->play_init(soundcard);
+  soundcard_interface->play_init(soundcard,
+				 error);
 }
 
 /**
@@ -159,9 +160,9 @@ ags_soundcard_stop(AgsSoundcard *soundcard)
 {
   AgsSoundcardInterface *soundcard_interface;
 
-  g_return_if_fail(AGS_IS_SOUNDCARD(soundcard), NULL);
+  g_return_if_fail(AGS_IS_SOUNDCARD(soundcard));
   soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
-  g_return_if_fail(soundcard_interface->stop, NULL);
+  g_return_if_fail(soundcard_interface->stop);
   soundcard_interface->stop(soundcard);
 }
 
@@ -196,6 +197,7 @@ ags_soundcard_offset_changed(AgsSoundcard *soundcard,
 
   g_return_if_fail(AGS_IS_SOUNDCARD(soundcard));
   soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
-  g_return_if_fail(soundcard_interface->note_offset);
-  soundcard_interface->offset_changed(soundcard, note_offset);
+  g_return_if_fail(soundcard_interface->offset_changed);
+  soundcard_interface->offset_changed(soundcard,
+				      note_offset);
 }

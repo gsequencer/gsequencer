@@ -91,6 +91,7 @@ ags_record_thread_class_init(AgsRecordThreadClass *record_thread)
 {
   GObjectClass *gobject;
   AgsThreadClass *thread;
+  GParamSpec *param_spec;
 
   ags_record_thread_parent_class = g_type_class_peek_parent(record_thread);
 
@@ -135,8 +136,6 @@ ags_record_thread_init(AgsRecordThread *record_thread)
   AgsThread *thread;
 
   thread = AGS_THREAD(record_thread);
-
-  record_thread->flags = 0;
 
   record_thread->registry = NULL;
 
@@ -193,7 +192,7 @@ ags_record_thread_get_property(GObject *gobject,
   record_thread = AGS_RECORD_THREAD(gobject);
 
   switch(prop_id){
-  case PROP_MAIN:
+  case PROP_REGISTRY:
     {
       g_value_set_object(value, record_thread->registry);
     }

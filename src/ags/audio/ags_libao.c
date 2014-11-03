@@ -297,9 +297,7 @@ ags_libao_init(AgsLibao *libao)
   libao->buffer_size = AGS_LIBAO_DEFAULT_BUFFER_SIZE;
   libao->frequency = AGS_LIBAO_DEFAULT_SAMPLERATE;
 
-  //  libao->out.oss.device = NULL;
-  libao->out.alsa.handle = NULL;
-  libao->out.alsa.device = g_strdup("hw:0\0");
+  //  libao->out.ao.device = NULL;
 
   /* buffer */
   libao->buffer = (signed short **) malloc(4 * sizeof(signed short*));
@@ -385,10 +383,6 @@ ags_libao_set_property(GObject *gobject,
 
       if((AGS_LIBAO_LIBAO & (libao->flags)) != 0){
 	//TODO:JK: implement me
-      }else if((AGS_LIBAO_OSS & (libao->flags)) != 0){
-	libao->out.oss.device = device;
-      }else if((AGS_LIBAO_ALSA & (libao->flags)) != 0){
-	libao->out.alsa.device = device;
       }
     }
     break;
@@ -505,10 +499,6 @@ ags_libao_get_property(GObject *gobject,
     {
       if((AGS_LIBAO_LIBAO & (libao->flags)) != 0){
 	g_value_set_string(value, ao_driver_info(libao->out.ao.driver_ao)->name);
-      }else if((AGS_LIBAO_OSS & (libao->flags)) != 0){
-	g_value_set_string(value, libao->out.oss.device);
-      }else if((AGS_LIBAO_ALSA & (libao->flags)) != 0){
-	g_value_set_string(value, libao->out.alsa.device);
       }
     }
     break;
