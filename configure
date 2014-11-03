@@ -5938,7 +5938,7 @@ _ACEOF
 
 fi
 
-for ac_header in argz.h fcntl.h float.h inttypes.h langinfo.h libintl.h limits.h locale.h malloc.h netinet/in.h stddef.h stdint.h stdio_ext.h stdlib.h string.h sys/ioctl.h sys/param.h sys/socket.h sys/time.h unistd.h wchar.h
+for ac_header in argz.h fcntl.h float.h inttypes.h langinfo.h libintl.h limits.h locale.h malloc.h netinet/in.h stddef.h stdint.h stdio_ext.h stdlib.h string.h sys/ioctl.h sys/param.h sys/socket.h sys/time.h unistd.h
 do :
   as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
 ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"
@@ -12402,43 +12402,6 @@ $as_echo "#define malloc rpl_malloc" >>confdefs.h
 
 fi
 
-
-
-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether mbrtowc and mbstate_t are properly declared" >&5
-$as_echo_n "checking whether mbrtowc and mbstate_t are properly declared... " >&6; }
-if ${ac_cv_func_mbrtowc+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#include <wchar.h>
-int
-main ()
-{
-wchar_t wc;
-	      char const s[] = "";
-	      size_t n = 1;
-	      mbstate_t state;
-	      return ! (sizeof state && (mbrtowc) (&wc, s, n, &state));
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_func_mbrtowc=yes
-else
-  ac_cv_func_mbrtowc=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_func_mbrtowc" >&5
-$as_echo "$ac_cv_func_mbrtowc" >&6; }
-  if test $ac_cv_func_mbrtowc = yes; then
-
-$as_echo "#define HAVE_MBRTOWC 1" >>confdefs.h
-
-  fi
 
 
 for ac_func in getpagesize

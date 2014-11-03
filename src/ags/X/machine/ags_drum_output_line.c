@@ -23,6 +23,11 @@
 
 #include <ags/object/ags_plugin.h>
 
+#include <ags/file/ags_file.h>
+#include <ags/file/ags_file_stock.h>
+#include <ags/file/ags_file_id_ref.h>
+#include <ags/file/ags_file_lookup.h>
+
 #include <ags/audio/ags_recall_factory.h>
 
 #include <ags/audio/recall/ags_delay_audio.h>
@@ -48,6 +53,8 @@ gchar* ags_drum_output_line_get_name(AgsPlugin *plugin);
 void ags_drum_output_line_set_name(AgsPlugin *plugin, gchar *name);
 gchar* ags_drum_output_line_get_xml_type(AgsPlugin *plugin);
 void ags_drum_output_line_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
+void ags_drum_output_line_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
+xmlNode* ags_drum_output_line_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
 void ags_drum_output_line_set_channel(AgsLine *line, AgsChannel *channel);
 
@@ -139,6 +146,8 @@ ags_drum_output_line_plugin_interface_init(AgsPluginInterface *plugin)
   plugin->set_name = ags_drum_output_line_set_name;
   plugin->get_xml_type = ags_drum_output_line_get_xml_type;
   plugin->set_xml_type = ags_drum_output_line_set_xml_type;
+  plugin->read = ags_drum_output_line_read;
+  plugin->write = ags_drum_output_line_write;
 }
 
 void
@@ -296,6 +305,52 @@ ags_drum_output_line_add_default_recall(AgsDrumOutputLine *drum_output_line)
 			     AGS_RECALL_FACTORY_RECALL | 
 			     AGS_RECALL_FACTORY_ADD),
 			    0);
+}
+
+void
+ags_drum_output_line_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
+{
+  AgsDrumOutputLine *gobject;
+
+  gobject = AGS_DRUM_OUTPUT_LINE(plugin);
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->ags_main,
+				   "file\0", file,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference\0", gobject,
+				   NULL));
+}
+
+xmlNode*
+ags_drum_output_line_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
+{
+  AgsDrumOutputLine *drum_output_line;
+  xmlNode *node;
+  gchar *id;
+
+  drum_output_line = AGS_DRUM_OUTPUT_LINE(plugin);
+
+  id = ags_id_generator_create_uuid();
+  
+  node = xmlNewNode(NULL,
+		    "ags-drum-output-line\0");
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->ags_main,
+				   "file\0", file,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
+				   "reference\0", drum_output_line,
+				   NULL));
+
+  return(node);
 }
 
 /**

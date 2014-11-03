@@ -23,6 +23,11 @@
 
 #include <ags/object/ags_plugin.h>
 
+#include <ags/file/ags_file.h>
+#include <ags/file/ags_file_stock.h>
+#include <ags/file/ags_file_id_ref.h>
+#include <ags/file/ags_file_lookup.h>
+
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_input.h>
@@ -167,6 +172,8 @@ ags_drum_input_line_plugin_interface_init(AgsPluginInterface *plugin)
   plugin->set_name = ags_drum_input_line_set_name;
   plugin->get_xml_type = ags_drum_input_line_get_xml_type;
   plugin->set_xml_type = ags_drum_input_line_set_xml_type;
+  plugin->read = ags_drum_input_line_read;
+  plugin->write = ags_drum_input_line_write;
 }
 
 void
@@ -545,6 +552,52 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
   g_object_set(G_OBJECT(play_channel_run),
 	       "stream-channel-run\0", stream_channel_run,
 	       NULL);
+}
+
+void
+ags_drum_input_line_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
+{
+  AgsDrumInputLine *gobject;
+
+  gobject = AGS_DRUM_INPUT_LINE(plugin);
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->ags_main,
+				   "file\0", file,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference\0", gobject,
+				   NULL));
+}
+
+xmlNode*
+ags_drum_input_line_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
+{
+  AgsDrumInputLine *drum_input_line;
+  xmlNode *node;
+  gchar *id;
+
+  drum_input_line = AGS_DRUM_INPUT_LINE(plugin);
+
+  id = ags_id_generator_create_uuid();
+  
+  node = xmlNewNode(NULL,
+		    "ags-drum-input-line\0");
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->ags_main,
+				   "file\0", file,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
+				   "reference\0", drum_input_line,
+				   NULL));
+
+  return(node);
 }
 
 /**

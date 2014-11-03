@@ -1620,7 +1620,8 @@ ags_audio_signal_scale(AgsAudioSignal *audio_signal,
   ags_audio_signal_stream_resize(audio_signal, length);
 
   /* create audio data */
-  j_stop = smallest_common_factor(audio_signal->resolution, template->resolution);
+  //TODO:JK: fix me
+  j_stop = audio_signal->resolution; // lcm(audio_signal->resolution, template->resolution);
 
   stream_template = NULL;
 
