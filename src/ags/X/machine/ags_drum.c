@@ -706,7 +706,9 @@ ags_drum_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 	     g_strdup_printf("%s\0", (gtk_toggle_button_get_active(drum->loop_button) ? AGS_FILE_TRUE: AGS_FILE_FALSE)));
 
   xmlAddChild(parent,
-	      node);  
+	      node);
+
+  return(node);
 }
 
 void

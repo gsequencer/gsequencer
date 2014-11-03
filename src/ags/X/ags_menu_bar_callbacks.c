@@ -164,7 +164,7 @@ ags_menu_bar_save_as_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 
     file = (AgsFile *) g_object_new(AGS_TYPE_FILE,
 				    "main\0", window->ags_main,
-				    "filename\0", g_strdup(filename),
+				    "filename\0", filename,
 				    NULL);
 
     save_file = ags_save_file_new(file);

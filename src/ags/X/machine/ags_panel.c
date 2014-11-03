@@ -324,7 +324,9 @@ ags_panel_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 				   NULL));
 
   xmlAddChild(parent,
-	      node);  
+	      node);
+
+  return(node);
 }
 
 void

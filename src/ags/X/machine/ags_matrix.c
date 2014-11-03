@@ -186,8 +186,6 @@ ags_matrix_class_init(AgsMatrixClass *matrix)
   machine = (AgsMachineClass *) matrix;
 
   machine->add_default_recalls = ags_matrix_add_default_recalls;
-  //  machine->read_file = ags_file_read_matrix;
-  //  machine->write_file = ags_file_write_matrix;
 }
 
 void
@@ -1123,7 +1121,9 @@ ags_matrix_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 	     g_strdup_printf("%s\0", (gtk_toggle_button_get_active(matrix->loop_button) ? AGS_FILE_TRUE: AGS_FILE_FALSE)));
 
   xmlAddChild(parent,
-	      node);  
+	      node);
+
+  return(node);
 }
 
 /**

@@ -575,7 +575,9 @@ ags_ffplayer_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
   }
 
   xmlAddChild(parent,
-	      node);  
+	      node);
+
+  return(node);
 }
 
 void

@@ -311,7 +311,6 @@ ags_file_set_property(GObject *gobject,
 	return;
       }
 
-      g_message(filename);
       file->filename = g_strdup(filename);
     }
     break;
