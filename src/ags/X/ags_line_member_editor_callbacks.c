@@ -129,8 +129,13 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
 	list_start =
 	  list = gtk_container_get_children(AGS_PAD(pad->data)->expander_set);
 
-	list = g_list_nth(list,
-			  AGS_AUDIO(line_editor->channel->audio)->audio_channels - line_editor->channel->audio_channel - 1);
+	while(list != NULL){
+	  if(AGS_LINE(list->data)->channel == line_editor->channel){
+	    break;
+	  }
+
+	  list = list->next;
+	}
 
 	if(list != NULL){
 	  line = AGS_LINE(list->data);
@@ -370,10 +375,10 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
   GList *control;
   GList *line_member;
   GList *children;
-  GList *play_ladspa, *recall_ladspa;
+  GList *play_ladspa, *play_ladspa_start, *recall_ladspa, *recall_ladspa_start;
   GList *port;
   GList *task;
-  GList *list;
+  GList *list, *list_start, *pad, *pad_start;
   guint index;
 
   if(button == NULL ||
@@ -392,10 +397,45 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
   line_member = gtk_container_get_children(GTK_CONTAINER(line_member_editor->line_member));
   task = NULL;
 
-  play_ladspa = ags_recall_template_find_type(line_editor->channel->play,
-					      AGS_TYPE_RECALL_LADSPA);
-  recall_ladspa = ags_recall_template_find_type(line_editor->channel->recall,
-						AGS_TYPE_RECALL_LADSPA);
+  line = NULL;
+
+  if(AGS_IS_OUTPUT(line_editor->channel)){
+    pad_start = 
+      pad = gtk_container_get_children(machine_editor->machine->output);
+  }else{
+    pad_start = 
+      pad = gtk_container_get_children(machine_editor->machine->input);
+  }
+
+  pad = g_list_nth(pad,
+		   line_editor->channel->pad);
+
+  if(pad != NULL){
+    list_start =
+      list = gtk_container_get_children(AGS_PAD(pad->data)->expander_set);
+
+    while(list != NULL){
+      if(AGS_LINE(list->data)->channel == line_editor->channel){
+	break;
+      }
+
+      list = list->next;
+    }
+
+    if(list != NULL){
+      line = AGS_LINE(list->data);
+      g_list_free(list_start);
+    }
+  }
+
+  g_list_free(pad_start);
+
+  play_ladspa = 
+    play_ladspa_start = ags_recall_template_find_type(line_editor->channel->play,
+						      AGS_TYPE_RECALL_LADSPA);
+  recall_ladspa = 
+    recall_ladspa_start = ags_recall_template_find_type(line_editor->channel->recall,
+							AGS_TYPE_RECALL_LADSPA);
 
   for(index = 0; line_member != NULL; index++){
 
@@ -434,33 +474,12 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
       task = g_list_prepend(task,
 			    remove_recall);
 
-      /*  */
-      line = NULL;
-
-      if(AGS_IS_OUTPUT(line_editor->channel)){
-	list = gtk_container_get_children(machine_editor->machine->output);
-      }else{
-	list = gtk_container_get_children(machine_editor->machine->input);
-      }
-
-      list = g_list_nth(list,
-			line_editor->channel->pad);
-
-      if(list != NULL){
-	list = g_list_nth(gtk_container_get_children(AGS_PAD(list->data)->expander_set),
-			  AGS_AUDIO(line_editor->channel->audio)->audio_channels - line_editor->channel->audio_channel - 1);
-
-	if(list != NULL){
-	  line = AGS_LINE(list->data);
-	}
-      }
-
       /* destroy line member editor entry */
       gtk_widget_destroy(GTK_WIDGET(line_member->data));
 
       /* destroy controls */
       if(line != NULL){
-	port = AGS_RECALL(g_list_nth(recall_ladspa,
+	port = AGS_RECALL(g_list_nth(play_ladspa,
 				     index)->data)->port;
 
 	while(port != NULL){
