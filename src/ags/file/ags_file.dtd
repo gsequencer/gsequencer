@@ -354,6 +354,7 @@
 <!ELEMENT ags-pattern (ags-timestamp,ags-pattern-data-list)>
 <!ATTLIST ags-pattern
 	  id               ID         #REQUIRED
+	  port             IDREF      #REQUIRED
 	  dim-1st-level    NMTOKEN    1
 	  dim-2nd-level    NMTOKEN    1
 	  length           NMTOKEN    32
@@ -384,6 +385,7 @@
 <!ELEMENT ags-notation (ags-timestamp, ags-note-list)>
 <!ATTLIST ags-notation
 	  id               ID         #REQUIRED
+	  port             IDREF      #REQUIRED
 	  flags            PCDATA     #REQUIRED
 	  audio-channel    NMTOKEN    #REQUIRED
 	  key              CDATA      "violine"
