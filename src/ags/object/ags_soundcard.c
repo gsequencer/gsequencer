@@ -201,3 +201,37 @@ ags_soundcard_offset_changed(AgsSoundcard *soundcard,
   soundcard_interface->offset_changed(soundcard,
 				      note_offset);
 }
+
+/**
+ * ags_soundcard_get_buffer:
+ * @soundcard an #AgsSoundcard
+ *
+ * Get current playback buffer. 
+ */
+void
+ags_soundcard_get_buffer(AgsSoundcard *soundcard)
+{
+  AgsSoundcardInterface *soundcard_interface;
+
+  g_return_if_fail(AGS_IS_SOUNDCARD(soundcard));
+  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
+  g_return_if_fail(soundcard_interface->get_buffer);
+  soundcard_interface->get_buffer(soundcard);
+}
+
+/**
+ * ags_soundcard_get_next_buffer:
+ * @soundcard an #AgsSoundcard
+ *
+ * Get future playback buffer.
+ */
+void
+ags_soundcard_get_next_buffer(AgsSoundcard *soundcard)
+{
+  AgsSoundcardInterface *soundcard_interface;
+
+  g_return_if_fail(AGS_IS_SOUNDCARD(soundcard));
+  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
+  g_return_if_fail(soundcard_interface->get_next_buffer);
+  soundcard_interface->get_next_buffer(soundcard);
+}
