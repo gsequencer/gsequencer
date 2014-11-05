@@ -69,6 +69,16 @@ void ags_file_read_recall_resolve_devout(AgsFileLookup *file_lookup,
 void ags_file_write_recall_resolve_devout(AgsFileLookup *file_lookup,
 					  AgsRecall *recall);
 
+void ags_file_read_pattern_resolve_port(AgsFileLookup *file_lookup,
+					AgsPattern *pattern);
+void ags_file_write_pattern_resolve_port(AgsFileLookup *file_lookup,
+					 AgsPattern *pattern);
+
+void ags_file_read_notation_resolve_port(AgsFileLookup *file_lookup,
+					 AgsNotation *notation);
+void ags_file_write_notation_resolve_port(AgsFileLookup *file_lookup,
+					  AgsNotation *notation);
+
 void ags_file_read_port_resolve_port_value(AgsFileLookup *file_lookup,
 					   AgsPort *port);
 
@@ -853,6 +863,7 @@ ags_file_write_audio(AgsFile *file, xmlNode *parent, AgsAudio *audio)
   g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
 		   G_CALLBACK(ags_file_write_audio_resolve_devout), audio);
 
+  /*  */
   xmlAddChild(parent,
 	      node);
 
@@ -3787,6 +3798,7 @@ void
 ags_file_read_pattern(AgsFile *file, xmlNode *node, AgsPattern **pattern)
 {
   AgsPattern *gobject;
+  AgsFileLookup *file_lookup;
   xmlNode *child;
   guint dim[3];
 
@@ -3825,6 +3837,16 @@ ags_file_read_pattern(AgsFile *file, xmlNode *node, AgsPattern **pattern)
 
   ags_pattern_set_dim((AgsPattern *) gobject, dim[0], dim[1], dim[2]);
 
+  /* port */
+  file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
+					       "file\0", file,
+					       "node\0", node,
+					       "reference\0", gobject,
+					       NULL);
+  ags_file_add_lookup(file, (GObject *) file_lookup);
+  g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
+		   G_CALLBACK(ags_file_read_pattern_resolve_port), gobject);
+
   /* child elements */
   child = node->children;
 
@@ -3850,9 +3872,29 @@ ags_file_read_pattern(AgsFile *file, xmlNode *node, AgsPattern **pattern)
   }
 }
 
+void
+ags_file_read_pattern_resolve_port(AgsFileLookup *file_lookup,
+				   AgsPattern *pattern)
+{
+  AgsFileIdRef *id_ref;
+  gchar *xpath;
+
+  xpath = (gchar *) xmlGetProp(file_lookup->node,
+			       "port\0");
+
+  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_xpath(file_lookup->file, xpath);
+
+  if(id_ref != NULL){
+    g_object_set(G_OBJECT(pattern),
+		 "port\0", (AgsPort *) id_ref->ref,
+		 NULL);
+  }
+}
+
 xmlNode*
 ags_file_write_pattern(AgsFile *file, xmlNode *parent, AgsPattern *pattern)
 {
+  AgsFileLookup *file_lookup;
   xmlNode *node, *child;
   xmlChar *content;
   gchar *id;
@@ -3889,6 +3931,17 @@ ags_file_write_pattern(AgsFile *file, xmlNode *parent, AgsPattern *pattern)
 	     g_strdup_printf("%d\0",
 			     pattern->dim[2]));
 
+  /* port */
+  file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
+					       "file\0", file,
+					       "node\0", node,
+					       "reference\0", pattern,
+					       NULL);
+  ags_file_add_lookup(file, (GObject *) file_lookup);
+  g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
+		   G_CALLBACK(ags_file_write_pattern_resolve_port), pattern);
+
+  /*  */
   xmlAddChild(parent,
 	      node);
 
@@ -3903,6 +3956,22 @@ ags_file_write_pattern(AgsFile *file, xmlNode *parent, AgsPattern *pattern)
 				   node,
 				   pattern,
 				   pattern->dim[2]);
+}
+
+void
+ags_file_write_pattern_resolve_port(AgsFileLookup *file_lookup,
+				    AgsPattern *pattern)
+{
+  AgsFileIdRef *id_ref;
+  gchar *id;
+
+  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_reference(file_lookup->file, pattern->port);
+
+  id = xmlGetProp(id_ref->node, AGS_FILE_ID_PROP);
+
+  xmlNewProp(file_lookup->node,
+	     "port\0",
+	     g_strdup_printf("xpath=//ags-port[@id='%s']\0", id));
 }
 
 void
@@ -4191,6 +4260,7 @@ void
 ags_file_read_notation(AgsFile *file, xmlNode *node, AgsNotation **notation)
 {
   AgsNotation *gobject;
+  AgsFileLookup *file_lookup;
   xmlNode *child;
   xmlChar *prop;
 
@@ -4252,6 +4322,16 @@ ags_file_read_notation(AgsFile *file, xmlNode *node, AgsNotation **notation)
 						 NULL);
   }
 
+  /* port */
+  file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
+					       "file\0", file,
+					       "node\0", node,
+					       "reference\0", gobject,
+					       NULL);
+  ags_file_add_lookup(file, (GObject *) file_lookup);
+  g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
+		   G_CALLBACK(ags_file_read_notation_resolve_port), gobject);
+
   /* child elements */
   child = node->children;
 
@@ -4276,9 +4356,29 @@ ags_file_read_notation(AgsFile *file, xmlNode *node, AgsNotation **notation)
   }
 }
 
+void
+ags_file_read_notation_resolve_port(AgsFileLookup *file_lookup,
+				    AgsNotation *notation)
+{
+  AgsFileIdRef *id_ref;
+  gchar *xpath;
+
+  xpath = (gchar *) xmlGetProp(file_lookup->node,
+			       "port\0");
+
+  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_xpath(file_lookup->file, xpath);
+
+  if(id_ref != NULL){
+    g_object_set(G_OBJECT(notation),
+		 "port\0", (AgsPort *) id_ref->ref,
+		 NULL);
+  }
+}
+
 xmlNode*
 ags_file_write_notation(AgsFile *file, xmlNode *parent, AgsNotation *notation)
 {
+  AgsFileLookup *file_lookup;
   xmlNode *node;
   gchar *id;
 
@@ -4335,6 +4435,17 @@ ags_file_write_notation(AgsFile *file, xmlNode *parent, AgsNotation *notation)
 	     "loop-end\0",
 	     g_strdup_printf("%f\0", notation->end_loop));
 
+  /* port */
+  file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
+					       "file\0", file,
+					       "node\0", node,
+					       "reference\0", notation,
+					       NULL);
+  ags_file_add_lookup(file, (GObject *) file_lookup);
+  g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
+		   G_CALLBACK(ags_file_write_notation_resolve_port), notation);
+
+  /*  */
   xmlAddChild(parent,
 	      node);
 
@@ -4346,6 +4457,22 @@ ags_file_write_notation(AgsFile *file, xmlNode *parent, AgsNotation *notation)
   ags_file_write_note_list(file,
 			   node,
 			   notation->notes);
+}
+
+void
+ags_file_write_notation_resolve_port(AgsFileLookup *file_lookup,
+				     AgsNotation *notation)
+{
+  AgsFileIdRef *id_ref;
+  gchar *id;
+
+  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_reference(file_lookup->file, notation->port);
+
+  id = xmlGetProp(id_ref->node, AGS_FILE_ID_PROP);
+
+  xmlNewProp(file_lookup->node,
+	     "port\0",
+	     g_strdup_printf("xpath=//ags-port[@id='%s']\0", id));
 }
 
 void
