@@ -819,6 +819,15 @@ main(int argc, char **argv)
     }
   }
 
+  /* Declare ourself as a real time task */
+  param.sched_priority = AGS_PRIORITY;
+
+  if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
+    perror("sched_setscheduler failed\0");
+  }
+
+  mlockall(MCL_CURRENT | MCL_FUTURE);
+
   if(filename != NULL){
     AgsFile *file;
 
@@ -865,15 +874,6 @@ main(int argc, char **argv)
     if(single_thread){
       ags_main->flags = AGS_MAIN_SINGLE_THREAD;
     }
-
-    /* Declare ourself as a real time task */
-    param.sched_priority = AGS_PRIORITY;
-
-    if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
-      perror("sched_setscheduler failed\0");
-    }
-
-    mlockall(MCL_CURRENT | MCL_FUTURE);
 
     if((AGS_MAIN_SINGLE_THREAD & (ags_main->flags)) == 0){
       //      GdkFrameClock *frame_clock;

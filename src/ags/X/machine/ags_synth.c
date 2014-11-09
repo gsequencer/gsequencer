@@ -297,7 +297,7 @@ ags_synth_init(AgsSynth *synth)
 
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "label\0", "loop end\0",
-				    "xalign\0", 0,
+				    "xalign\0", 0.0,
 				    NULL);
   gtk_table_attach(table,
 		   GTK_WIDGET(label),

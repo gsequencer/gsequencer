@@ -27,6 +27,7 @@
 #include <emmintrin.h>
 #include <stdlib.h>
 #include <math.h>
+#include <gmp.h>
 #include <string.h>
 
 /**
@@ -1621,7 +1622,20 @@ ags_audio_signal_scale(AgsAudioSignal *audio_signal,
 
   /* create audio data */
   //TODO:JK: fix me
-  j_stop = audio_signal->resolution; // lcm(audio_signal->resolution, template->resolution);
+  {
+    mpz_t rop;
+    mpz_t op1, op2;
+
+    mpz_init(rop);
+    mpz_init(op1);
+    mpz_init(op2);
+
+    mpz_set_ui(op1, audio_signal->resolution);
+    mpz_set_ui(op2, template->resolution);
+
+    mpz_lcm(rop, op1, op2);
+    j_stop = mpz_get_ui(rop);
+  }
 
   stream_template = NULL;
 
