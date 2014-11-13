@@ -592,13 +592,13 @@ ags_loop_channel_run_create_audio_signals(AgsLoopChannelRun *loop_channel_run)
   /* delay and attack */
   tic_counter_incr = devout->tic_counter + 1;
 
-  attack = 0;// devout->attack[((tic_counter_incr == AGS_NOTATION_TICS_PER_BEAT) ?
-  //		   0:
-  //			   tic_counter_incr)];
-  delay = 0; //devout->delay[((tic_counter_incr == AGS_NOTATION_TICS_PER_BEAT) ?
-  //		 0:
-  //			 tic_counter_incr)];
-
+  attack = devout->attack[((tic_counter_incr > AGS_DEVOUT_DEFAULT_PERIOD) ?
+			   0:
+    			   tic_counter_incr)];
+  delay = devout->delay[((tic_counter_incr > AGS_DEVOUT_DEFAULT_PERIOD) ?
+			 0:
+  			 tic_counter_incr)];
+  
   while(recycling != AGS_RECALL_CHANNEL_RUN(loop_channel_run)->source->last_recycling->next){
     audio_signal = ags_audio_signal_new((GObject *) devout,
 					(GObject *) recycling,

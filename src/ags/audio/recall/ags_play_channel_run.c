@@ -392,13 +392,13 @@ ags_play_channel_run_run_pre(AgsRecall *recall)
   recycling = source->first_recycling;
 
   tic_counter_incr = devout->tic_counter + 1;
-    
-  attack = devout->attack[((tic_counter_incr == AGS_NOTATION_TICS_PER_BEAT) ?
+
+  attack = devout->attack[((tic_counter_incr > AGS_DEVOUT_DEFAULT_PERIOD) ?
 			   0:
-			   tic_counter_incr)];
-  delay = devout->delay[((tic_counter_incr == AGS_NOTATION_TICS_PER_BEAT) ?
+    			   tic_counter_incr)];
+  delay = devout->delay[((tic_counter_incr > AGS_DEVOUT_DEFAULT_PERIOD) ?
 			 0:
-			 tic_counter_incr)];
+  			 tic_counter_incr)];
 
   if(recycling != NULL){
     while(recycling != source->last_recycling->next){    

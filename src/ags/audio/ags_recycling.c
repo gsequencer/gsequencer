@@ -386,10 +386,15 @@ ags_recycling_create_audio_signal_with_defaults(AgsRecycling *recycling,
 						guint delay, guint attack)
 {
   AgsAudioSignal *template;
+  guint buffer_size = AGS_DEVOUT_DEFAULT_BUFFER_SIZE;
 
   template = ags_audio_signal_get_template(recycling->audio_signal);
 
   audio_signal->devout = template->devout;
+
+  if(audio_signal->devout != NULL){
+    buffer_size = AGS_DEVOUT(audio_signal->devout)->buffer_size;
+  }
 
   audio_signal->recycling = (GObject *) recycling;
 
@@ -398,20 +403,20 @@ ags_recycling_create_audio_signal_with_defaults(AgsRecycling *recycling,
   audio_signal->resolution = template->resolution;
 
   audio_signal->last_frame = ((delay *
-			       AGS_DEVOUT_DEFAULT_BUFFER_SIZE +
+			       buffer_size +
 			       attack +
 			       template->last_frame) %
-			      AGS_DEVOUT_DEFAULT_BUFFER_SIZE);
+			      buffer_size);
   audio_signal->loop_start = ((delay *
-			       AGS_DEVOUT_DEFAULT_BUFFER_SIZE +
+			       buffer_size +
 			       attack +
 			       template->loop_start) %
-			      AGS_DEVOUT_DEFAULT_BUFFER_SIZE);
+			      buffer_size);
   audio_signal->loop_end = ((delay *
-			     AGS_DEVOUT_DEFAULT_BUFFER_SIZE +
+			     buffer_size +
 			     attack +
 			     template->loop_end) %
-			    AGS_DEVOUT_DEFAULT_BUFFER_SIZE);
+			    buffer_size);
 
   ags_audio_signal_stream_resize(audio_signal,
 				 template->length);

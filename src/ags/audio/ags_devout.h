@@ -58,6 +58,8 @@
 #define AGS_DEVOUT_DEFAULT_SCALE (1.0)
 #define AGS_DEVOUT_DEFAULT_DELAY (AGS_DEVOUT_DEFAULT_JIFFIE * (60.0 / AGS_DEVOUT_DEFAULT_BPM))
 
+#define AGS_DEVOUT_DEFAULT_PERIOD (1.0)
+
 typedef struct _AgsDevout AgsDevout;
 typedef struct _AgsDevoutClass AgsDevoutClass;
 typedef struct _AgsDevoutPlay AgsDevoutPlay;

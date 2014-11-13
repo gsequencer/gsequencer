@@ -675,14 +675,15 @@ ags_recall_ladspa_load_ports(AgsRecallLadspa *recall_ladspa)
  */
 void
 ags_recall_ladspa_short_to_float(signed short *buffer,
-				 float *destination)
+				 float *destination,
+				 guint buffer_size)
 {
   float *new_buffer;
   guint i;
 
   new_buffer = destination;
 
-  for(i = 0; i < AGS_DEVOUT_DEFAULT_BUFFER_SIZE; i++){
+  for(i = 0; i < buffer_size; i++){
     new_buffer[i] += buffer[i] / (G_MAXFLOAT / G_MAXINT16);
   }
 }
@@ -698,14 +699,15 @@ ags_recall_ladspa_short_to_float(signed short *buffer,
  */
 void
 ags_recall_ladspa_float_to_short(float *buffer,
-				 signed short *destination)
+				 signed short *destination,
+				 guint buffer_size)
 {
   signed short *new_buffer;
   guint i;
 
   new_buffer = destination;
 
-  for(i = 0; i < AGS_DEVOUT_DEFAULT_BUFFER_SIZE; i++){
+  for(i = 0; i < buffer_size; i++){
     new_buffer[i] += buffer[i] * (G_MAXFLOAT / G_MAXINT16);
   }
 }

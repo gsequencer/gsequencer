@@ -639,6 +639,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
   AgsNote *note;
   AgsRecycling *recycling;
   GList *list;
+  guint buffer_size;
   guint audio_channel;
   guint i;
   GValue value = {0,};
@@ -647,6 +648,12 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 
   audio = AGS_RECALL_AUDIO(play_notation_audio)->audio;
   devout = AGS_DEVOUT(audio->devout);
+
+  buffer_size = AGS_DEVOUT_DEFAULT_BUFFER_SIZE;
+
+  if(devout != NULL){
+    buffer_size = devout->buffer_size;
+  }
 
   g_value_init(&value, G_TYPE_POINTER);
   ags_port_safe_read(play_notation_audio->notation,
@@ -681,6 +688,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
     
     if(current_position != NULL){
       if(note->x[0] == play_notation_audio_run->count_beats_audio_run->notation_counter){
+
 	selected_channel = ags_channel_pad_nth(channel, note->y);
 	
 	/* recycling */
@@ -696,7 +704,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 					      (GObject *) AGS_RECALL(play_notation_audio_run)->recall_id);
 	  ags_recycling_create_audio_signal_with_frame_count(recycling,
 							     audio_signal,
-							     AGS_DEVOUT_DEFAULT_SAMPLERATE / AGS_DEVOUT_DEFAULT_JIFFIE * (note->x[1] - note->x[0]),
+							     buffer_size * (note->x[1] - note->x[0]),
 							     delay, attack);
 	  ags_audio_signal_connect(audio_signal);
 

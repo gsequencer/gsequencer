@@ -142,8 +142,19 @@ ags_recall_ladspa_run_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_recall_ladspa_run_init(AgsRecallLadspaRun *recall_ladspa_run)
 {
-  recall_ladspa_run->input = (LADSPA_Data *) malloc(AGS_DEVOUT_DEFAULT_BUFFER_SIZE * sizeof(LADSPA_Data));
-  recall_ladspa_run->output = (LADSPA_Data *) malloc(AGS_DEVOUT_DEFAULT_BUFFER_SIZE * sizeof(LADSPA_Data));
+  AgsDevout *devout;
+  guint buffer_size;
+
+  buffer_size = AGS_DEVOUT_DEFAULT_BUFFER_SIZE;
+
+  devout = AGS_RECALL(recall_ladspa_run)->parent->devout;
+
+  if(devout != NULL){
+    buffer_size = devout->buffer_size;
+  }
+
+  recall_ladspa_run->input = (LADSPA_Data *) malloc(buffer_size * sizeof(LADSPA_Data));
+  recall_ladspa_run->output = (LADSPA_Data *) malloc(buffer_size * sizeof(LADSPA_Data));
 }
 
 void
@@ -173,6 +184,8 @@ ags_recall_ladspa_run_run_pre(AgsRecall *recall)
   AgsRecallLadspa *recall_ladspa;
   AgsRecallLadspaRun *recall_ladspa_run;
   AgsAudioSignal *audio_signal;
+  AgsDevout *devout;
+  guint buffer_size;
   guint i;
 
   LADSPA_PortDescriptor *port_descriptor;
@@ -180,15 +193,24 @@ ags_recall_ladspa_run_run_pre(AgsRecall *recall)
   /* call parent */
   AGS_RECALL_CLASS(ags_recall_ladspa_run_parent_class)->run_pre(recall);
 
+  buffer_size = AGS_DEVOUT_DEFAULT_BUFFER_SIZE;
+
+  devout = AGS_RECALL(recall_ladspa_run)->parent->devout;
+
+  if(devout != NULL){
+    buffer_size = devout->buffer_size;
+  }
+
   /* set up buffer */
   recall_ladspa_run = AGS_RECALL_LADSPA_RUN(recall);
   audio_signal = AGS_RECALL_AUDIO_SIGNAL(recall_ladspa_run);
 
-  memset(recall_ladspa_run->output, 0, AGS_DEVOUT_DEFAULT_BUFFER_SIZE * sizeof(LADSPA_Data));
-  memset(recall_ladspa_run->input, 0, AGS_DEVOUT_DEFAULT_BUFFER_SIZE * sizeof(LADSPA_Data));
+  memset(recall_ladspa_run->output, 0, buffer_size * sizeof(LADSPA_Data));
+  memset(recall_ladspa_run->input, 0, buffer_size * sizeof(LADSPA_Data));
 
   ags_recall_ladspa_short_to_float(audio_signal->stream_current->data,
-				   recall_ladspa_run->input);
+				   recall_ladspa_run->input,
+				   buffer_size);
 
   /* can't be done in ags_recall_ladspa_run_run_init_inter since possebility of overlapping buffers */
   /* connect audio port */
@@ -211,21 +233,32 @@ ags_recall_ladspa_run_run_inter(AgsRecall *recall)
   AgsRecallLadspa *recall_ladspa;
   AgsRecallLadspaRun *recall_ladspa_run;
   AgsAudioSignal *audio_signal;
+  AgsDevout *devout;
+  guint buffer_size;
 
   /* call parent */
   AGS_RECALL_CLASS(ags_recall_ladspa_run_parent_class)->run_inter(recall);
+
+  buffer_size = AGS_DEVOUT_DEFAULT_BUFFER_SIZE;
+
+  devout = AGS_RECALL(recall_ladspa_run)->parent->devout;
+
+  if(devout != NULL){
+    buffer_size = devout->buffer_size;
+  }
 
   /* process data */
   recall_ladspa = AGS_RECALL_LADSPA(recall->parent);
   recall_ladspa_run = AGS_RECALL_LADSPA_RUN(recall);
 
-  recall_ladspa->plugin_descriptor->run_adding(recall_ladspa->ladspa_handle,
-					       AGS_DEVOUT_DEFAULT_BUFFER_SIZE);
+  recall_ladspa->plugin_descriptor->run(recall_ladspa->ladspa_handle,
+					buffer_size);
 
   /* copy data */
-  memset(audio_signal->stream_current->data, 0, AGS_DEVOUT_DEFAULT_BUFFER_SIZE * sizeof(LADSPA_Data));
+  memset(audio_signal->stream_current->data, 0, buffer_size * sizeof(LADSPA_Data));
   ags_recall_ladspa_float_to_short(recall_ladspa_run->output,
-				   audio_signal->stream_current->data);
+				   audio_signal->stream_current->data,
+				   buffer_size);
 }
 
 /**

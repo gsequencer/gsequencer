@@ -63,9 +63,11 @@ GType ags_recall_ladspa_get_type();
 GList* ags_recall_ladspa_load_ports(AgsRecallLadspa *recall_ladspa);
 
 void ags_recall_ladspa_short_to_float(signed short *buffer,
-				      float *destination);
+				      float *destination,
+				      guint buffer_size);
 void ags_recall_ladspa_float_to_short(float *buffer,
-				      signed short *destination);
+				      signed short *destination,
+				      guint buffer_size);
 
 GList* ags_recall_ladpsa_find(GList *recall,
 			      gchar *filename, gchar *effect);

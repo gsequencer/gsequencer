@@ -264,8 +264,12 @@ void
 ags_navigation_position_tact_callback(GtkWidget *widget,
 				      AgsNavigation *navigation)
 {
+  gdouble bpm;
+
+  bpm = navigation->bpm->adjustment->value;
   ags_navigation_change_position(navigation,
-				 gtk_spin_button_get_value(widget));
+				 gtk_spin_button_get_value(widget),
+				 bpm);
 }
 
 void

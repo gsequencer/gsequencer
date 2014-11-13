@@ -283,7 +283,7 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
     ags_audio_signal_copy_buffer_to_buffer(&(buffer0[audio_channel + source->attack * devout->pcm_channels]),
 					   devout->pcm_channels,
 					   (signed short *) stream->data, 1,
-					   AGS_DEVOUT_DEFAULT_BUFFER_SIZE - source->attack);
+					   devout->buffer_size - source->attack);
   }else{
     ags_audio_signal_copy_buffer_to_buffer(&(buffer0[audio_channel]), devout->pcm_channels,
 					   (signed short *) stream->data, 1,

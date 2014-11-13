@@ -405,14 +405,14 @@ ags_devout_init(AgsDevout *devout)
 
   default_tact_frames = (guint) (AGS_DEVOUT_DEFAULT_DELAY * AGS_DEVOUT_DEFAULT_BUFFER_SIZE);
 
-  for(i = 0; i < (int) ceil(2.0 / AGS_NOTATION_MINIMUM_NOTE_LENGTH); i++){
+  for(i = 0; i < (int) ceil(2.0 / AGS_DEVOUT_DEFAULT_PERIOD); i++){
     devout->attack[i] = 0;
     //    devout->attack[i] = (i * AGS_DEVOUT_DEFAULT_BUFFER_SIZE) % default_tact_frames;
     //    g_message("%d", devout->attack[i]);
   }
 
-  for(i = 0; i < (int) ceil(2.0 / AGS_NOTATION_MINIMUM_NOTE_LENGTH); i++){
-    devout->delay[i] = 0.0;
+  for(i = 0; i < (int) ceil(2.0 / AGS_DEVOUT_DEFAULT_PERIOD); i++){
+    devout->delay[i] = AGS_DEVOUT_DEFAULT_DELAY;
     //    devout->delay[i] = (default_tact_frames + devout->attack[i]) / AGS_DEVOUT_DEFAULT_BUFFER_SIZE;
     //    g_message("%f", devout->delay[i]);
   }
@@ -1136,7 +1136,7 @@ ags_devout_alsa_init(AgsDevout *devout,
   buffer_size = size;
 
   /* set the period time */
-  period_time = MSEC_PER_SEC / AGS_DEVOUT_DEFAULT_SAMPLERATE;
+  period_time = MSEC_PER_SEC / devout->frequency;
   dir = -1;
   err = snd_pcm_hw_params_set_period_time_near(handle, hwparams, &period_time, &dir);
   if (err < 0) {
@@ -1343,13 +1343,13 @@ ags_devout_alsa_play(AgsDevout *devout,
   devout->delay_counter += 1; //AGS_DEVOUT_DEFAULT_JIFFIE
 
   ///TODO:JK: fix me
-  if(devout->delay_counter >= AGS_DEVOUT_DEFAULT_DELAY){ //devout->delay[devout->tic_counter]
+  if(devout->delay_counter >= devout->delay[0]){ //TODO:JK: enhance me
     /* tic */
     ags_devout_tic(devout);
 
     devout->tic_counter += 1;
 
-    if(devout->tic_counter == AGS_NOTATION_TICS_PER_BEAT){
+    if(devout->tic_counter == AGS_DEVOUT_DEFAULT_PERIOD){
       devout->tic_counter = 0;
     }
 

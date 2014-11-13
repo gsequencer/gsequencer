@@ -25,6 +25,9 @@
 
 #include <ags/audio/ags_notation.h>
 
+#include <ags/X/ags_window.h>
+#include <ags/X/ags_navigation.h>
+
 #include <stdlib.h>
 
 void ags_export_window_class_init(AgsExportWindowClass *export_window);
@@ -173,6 +176,8 @@ ags_export_window_init(AgsExportWindow *export_window)
   GtkHBox *hbox;
   GtkTable *table;
   GtkLabel *label;
+  gchar *str;
+  gdouble bpm;
 
   export_window->flags = 0;
 
@@ -304,7 +309,10 @@ ags_export_window_init(AgsExportWindow *export_window)
 		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
 		   0, 0);
 
-  export_window->duration = gtk_label_new(ags_navigation_tact_to_time_string(0.0));
+  bpm = AGS_NAVIGATION(AGS_WINDOW(AGS_MAIN(export_window->ags_main)->window)->navigation)->bpm->adjustment->value;
+  str = ags_navigation_tact_to_time_string(0.0,
+					   bpm);
+  export_window->duration = gtk_label_new(str);
   gtk_box_pack_start(GTK_BOX(hbox),
 		     GTK_WIDGET(export_window->duration),
 		     FALSE, FALSE,

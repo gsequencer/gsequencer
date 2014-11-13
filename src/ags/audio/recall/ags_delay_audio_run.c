@@ -493,19 +493,21 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
     AgsDevout *devout;
     guint run_order;
     guint delay, attack;
+    guint tic_counter_incr;
 
     devout = AGS_DEVOUT(AGS_RECALL_AUDIO(delay_audio)->audio->devout);
 
     run_order = delay_audio_run->hide_ref_counter;
 
     /* delay and attack */
-    attack = devout->attack[((devout->tic_counter + 1 == AGS_NOTATION_TICS_PER_BEAT) ?
+    tic_counter_incr = devout->tic_counter + 1;
+
+    attack = devout->attack[((tic_counter_incr > AGS_DEVOUT_DEFAULT_PERIOD) ?
 			     0:
-			     devout->tic_counter + 1)];
-      
-    delay = devout->delay[((devout->tic_counter + 1 == AGS_NOTATION_TICS_PER_BEAT) ?
+			     tic_counter_incr)];
+    delay = devout->delay[((tic_counter_incr > AGS_DEVOUT_DEFAULT_PERIOD) ?
 			   0:
-			   devout->tic_counter + 1)];
+			   tic_counter_incr)];
 
     //    g_message("ags_delay_audio_run_run_pre@%llu: alloc notation[%u]\0",
     //	      delay_audio_run,
@@ -532,12 +534,14 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
     devout = AGS_DEVOUT(AGS_RECALL_AUDIO(delay_audio)->audio->devout);
 
     /* delay and attack */
-    attack = devout->attack[((devout->tic_counter + 1 == AGS_NOTATION_TICS_PER_BEAT) ?
+    tic_counter_incr = devout->tic_counter + 1;
+
+    attack = devout->attack[((tic_counter_incr > AGS_DEVOUT_DEFAULT_PERIOD) ?
 			     0:
-			     devout->tic_counter + 1)];
-    delay = devout->delay[((devout->tic_counter + 1 == AGS_NOTATION_TICS_PER_BEAT) ?
+			     tic_counter_incr)];
+    delay = devout->delay[((tic_counter_incr > AGS_DEVOUT_DEFAULT_PERIOD) ?
 			   0:
-			   devout->tic_counter + 1)];
+			   tic_counter_incr)];
 
     run_order = delay_audio_run->hide_ref_counter;
 

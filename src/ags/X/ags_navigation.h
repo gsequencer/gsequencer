@@ -88,15 +88,18 @@ struct _AgsNavigationClass
 
 GType ags_navigation_get_type(void);
 
-gchar* ags_navigation_tact_to_time_string(gdouble tact);
+gchar* ags_navigation_tact_to_time_string(gdouble tact,
+					  gdouble bpm);
 void ags_navigation_update_time_string(double tact,
-				       gchar *time_string);
+				       gchar *time_string,
+				       gdouble bpm);
 
 void ags_navigation_set_seeking_sensitive(AgsNavigation *navigation,
 					  gboolean enabled);
 
 void ags_navigation_change_position(AgsNavigation *navigation,
-				    gdouble tact);
+				    gdouble tact,
+				    gdouble bpm);
 
 AgsNavigation* ags_navigation_new();
 

@@ -217,6 +217,8 @@ ags_buffer_audio_signal_run_init_pre(AgsRecall *recall)
   AgsAudioSignal *destination;
   AgsBufferRecycling *buffer_recycling;
   AgsBufferAudioSignal *buffer_audio_signal;
+  guint attack, delay;
+  guint tic_counter_incr;
 
   buffer_audio_signal = AGS_BUFFER_AUDIO_SIGNAL(recall);
   buffer_recycling = AGS_BUFFER_RECYCLING(recall->parent);
@@ -226,14 +228,23 @@ ags_buffer_audio_signal_run_init_pre(AgsRecall *recall)
   //  recall->flags &= (~AGS_RECALL_PERSISTENT);
   recycling = AGS_RECALL_RECYCLING(buffer_recycling)->destination;
 
+  tic_counter_incr = devout->tic_counter + 1;
+
+  attack = devout->attack[((tic_counter_incr > AGS_DEVOUT_DEFAULT_PERIOD) ?
+			   0:
+    			   tic_counter_incr)];
+  delay = devout->delay[((tic_counter_incr > AGS_DEVOUT_DEFAULT_PERIOD) ?
+			 0:
+  			 tic_counter_incr)];
+
   /* create new audio signal */
   destination = ags_audio_signal_new((GObject *) devout,
 				     (GObject *) recycling,
 				     (GObject *) recall->recall_id->recycling_container->parent->recall_id);
   ags_recycling_create_audio_signal_with_frame_count(recycling,
 						     destination,
-						     AGS_DEVOUT_DEFAULT_SAMPLERATE / AGS_NOTATION_DEFAULT_JIFFIE + 2 * AGS_DEVOUT_DEFAULT_BUFFER_SIZE,
-						     0, 0);
+						     devout->frequency / delay + 2 * devout->buffer_size,
+						     delay, attack);
   ags_audio_signal_connect(destination);
   
   destination->stream_current = destination->stream_beginning;

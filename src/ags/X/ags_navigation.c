@@ -21,6 +21,8 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/object/ags_marshal.h>
+
 #include <ags/X/ags_editor.h>
 
 void ags_navigation_class_init(AgsNavigationClass *navigation);
@@ -41,7 +43,8 @@ void ags_navigation_destroy(GtkObject *object);
 void ags_navigation_show(GtkWidget *widget);
 
 void ags_navigation_real_change_position(AgsNavigation *navigation,
-					 gdouble tact);
+					 gdouble tact,
+					 gdouble bpm);
 
 /**
  * SECTION:ags_navigation
@@ -154,7 +157,7 @@ ags_navigation_class_init(AgsNavigationClass *navigation)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsNavigationClass, change_position),
 		 NULL, NULL,
-		 g_cclosure_marshal_VOID__DOUBLE,
+		 g_cclosure_user_marshal_VOID__DOUBLE_DOUBLE,
 		 G_TYPE_NONE, 1,
 		 G_TYPE_DOUBLE);
 }
@@ -424,7 +427,8 @@ ags_navigation_show(GtkWidget *widget)
 
 void
 ags_navigation_real_change_position(AgsNavigation *navigation,
-				    gdouble tact)
+				    gdouble tact,
+				    gdouble bpm)
 {
   gchar *timestr, *str;
 
@@ -432,7 +436,8 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
 	       "label\0", &str,
 	       NULL);
   ags_navigation_update_time_string(tact,
-  				    str);
+  				    str,
+				    bpm);
   //  g_object_set(navigation->duration_time,
   //	       "label\0", str,
   //	       NULL);
@@ -451,14 +456,15 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
  */
 void
 ags_navigation_change_position(AgsNavigation *navigation,
-			       gdouble tact)
+			       gdouble tact,
+			       gdouble bpm)
 {
   g_return_if_fail(AGS_IS_NAVIGATION(navigation));
 
   g_object_ref(G_OBJECT(navigation));
   g_signal_emit(G_OBJECT(navigation),
 		navigation_signals[CHANGE_POSITION], 0,
-		tact);
+		tact, bpm);
   g_object_unref(G_OBJECT(navigation));
 }
 
@@ -473,7 +479,8 @@ ags_navigation_change_position(AgsNavigation *navigation,
  * Since: 0.4 
  */
 gchar*
-ags_navigation_tact_to_time_string(gdouble tact)
+ags_navigation_tact_to_time_string(gdouble tact,
+				   gdouble bpm)
 {
   static gdouble delay_min, delay_sec, delay_hsec;
   static gboolean initialized = FALSE;
@@ -482,7 +489,7 @@ ags_navigation_tact_to_time_string(gdouble tact)
   guint min, sec, hsec;
 
   if(!initialized){
-    delay_min = AGS_DEVOUT_DEFAULT_BPM;
+    delay_min = bpm;
     delay_sec = delay_min / 60.0;
     delay_hsec = delay_sec / 100.0;
 
@@ -521,7 +528,8 @@ ags_navigation_tact_to_time_string(gdouble tact)
  */
 void
 ags_navigation_update_time_string(double tact,
-				  gchar *time_string)
+				  gchar *time_string,
+				  gdouble bpm)
 {
   static gdouble delay_min, delay_sec, delay_hsec;
   static gboolean initialized = FALSE;
@@ -530,7 +538,7 @@ ags_navigation_update_time_string(double tact,
   guint min, sec, hsec;
 
   if(!initialized){
-    delay_min = AGS_DEVOUT_DEFAULT_BPM;
+    delay_min = bpm;
     delay_sec = delay_min / 60.0;
     delay_hsec = delay_sec / 100.0;
 

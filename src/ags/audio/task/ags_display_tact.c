@@ -147,15 +147,19 @@ ags_display_tact_launch(AgsTask *task)
   AgsDisplayTact *display_tact;
   AgsNavigation *navigation;
   gchar *timestr;
+  gdouble bpm;
 
   display_tact = AGS_DISPLAY_TACT(task);
   
   navigation = AGS_NAVIGATION(display_tact->navigation);
 
+  bpm = navigation->bpm->adjustment->value;
+  
   gtk_adjustment_set_value(navigation->position_tact->adjustment,
 			   navigation->position_tact->adjustment->value + (exp2(-4.0)));
 
-  timestr = ags_navigation_tact_to_time_string(navigation->position_tact->adjustment->value);
+  timestr = ags_navigation_tact_to_time_string(navigation->position_tact->adjustment->value,
+					       bpm);
   gtk_label_set_text(navigation->duration_time, timestr);
 
   g_free(timestr);

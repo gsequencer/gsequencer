@@ -307,6 +307,7 @@ ags_peak_channel_retrieve_peak(AgsPeakChannel *peak_channel,
   AgsRecall *recall;
   AgsChannel *source;
   AgsRecycling *recycling;
+  AgsDevout *devout;
   GList *audio_signal;
   double *buffer;
   double current_value;
@@ -319,13 +320,14 @@ ags_peak_channel_retrieve_peak(AgsPeakChannel *peak_channel,
   }
 
   recall = (AgsRecall *) peak_channel;
+  devout = recall->devout;
 
   source = AGS_RECALL_CHANNEL(peak_channel)->source;
   recycling = source->first_recycling;
 
   /* initialize buffer */
-  buffer = (double *) malloc(AGS_DEVOUT_DEFAULT_BUFFER_SIZE * sizeof(double));
-  for(i = 0; i < AGS_DEVOUT_DEFAULT_BUFFER_SIZE; i++) buffer[i] = 0.0;
+  buffer = (double *) malloc(devout->buffer_size * sizeof(double));
+  for(i = 0; i < devout->buffer_size; i++) buffer[i] = 0.0;
 
   while(recycling != source->last_recycling->next){
     audio_signal = recycling->audio_signal;
@@ -335,7 +337,7 @@ ags_peak_channel_retrieve_peak(AgsPeakChannel *peak_channel,
 	/* copy buffer 1:1 */
 	ags_audio_signal_copy_buffer_to_double_buffer(buffer, 1,
 						      (signed short *) AGS_AUDIO_SIGNAL(audio_signal->data)->stream_current->data, 1,
-						      AGS_DEVOUT_DEFAULT_BUFFER_SIZE);
+						      devout->buffer_size);
       }
 
       audio_signal = audio_signal->next;
@@ -347,7 +349,7 @@ ags_peak_channel_retrieve_peak(AgsPeakChannel *peak_channel,
   /* calculate average value */
   current_value = 0.0;
 
-  for(i = 0; i < AGS_DEVOUT_DEFAULT_BUFFER_SIZE; i++){
+  for(i = 0; i < devout->buffer_size; i++){
     current_value +=  (1.0 / (1.0 / G_MAXUINT16 * buffer[i]));
   }
   

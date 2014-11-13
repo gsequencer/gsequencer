@@ -218,6 +218,8 @@ void
 ags_drum_output_line_set_channel(AgsLine *line, AgsChannel *channel)
 {
   AgsDrumOutputLine *drum_output_line;
+  guint attack, delay;
+  guint tic_counter_incr;
 
   AGS_LINE_CLASS(ags_drum_output_line_parent_class)->set_channel(line, channel);
 
@@ -234,7 +236,18 @@ ags_drum_output_line_set_channel(AgsLine *line, AgsChannel *channel)
 
     devout = AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout);
 
-    stop = (guint) ceil(16.0 * AGS_DEVOUT_DEFAULT_DELAY * exp2(8.0 - 4.0) + 1.0);
+    /* delay and attack */
+    tic_counter_incr = devout->tic_counter + 1;
+
+    attack = devout->attack[((tic_counter_incr > AGS_DEVOUT_DEFAULT_PERIOD) ?
+			     0:
+			     tic_counter_incr)];
+    delay = devout->delay[((tic_counter_incr > AGS_DEVOUT_DEFAULT_PERIOD) ?
+			   0:
+			   tic_counter_incr)];
+
+    /*  */
+    stop = (guint) ceil(16.0 * delay * exp2(8.0 - 4.0) + 1.0);
 
     audio_signal = ags_audio_signal_new(devout,
 					channel->first_recycling,
