@@ -138,7 +138,7 @@ struct _AgsDevout
   gdouble delay_counter; // next time attack changeing when delay_counter == delay
   guint tic_counter;
 
-  guint offset;
+  guint64 offset;
 
   union{
     struct _AgsOss{

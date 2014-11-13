@@ -825,22 +825,46 @@ ags_devout_pcm_info(AgsSoundcard *soundcard, gchar *card_id,
   snd_pcm_close(handle);
 }
 
-void
-ags_devout_offset_changed(AgsSoundcard *soundcard, guint note_offset)
-{
-  //TODO:JK: implement me
-}
-
 signed short*
 ags_devout_get_current_buffer(AgsSoundcard *soundcard)
 {
-  //TODO:JK: implement me
+  AgsDevout *devout;
+  signed short *buffer;
+
+  devout = AGS_DEVOUT(soundcard);
+
+  if((AGS_DEVOUT_BUFFER0 & (devout->flags)) != 0){
+    buffer = devout->buffer[0];
+  }else if((AGS_DEVOUT_BUFFER1 & (devout->flags)) != 0){
+    buffer = devout->buffer[1];
+  }else if((AGS_DEVOUT_BUFFER2 & (devout->flags)) != 0){
+    buffer = devout->buffer[2];
+  }else if((AGS_DEVOUT_BUFFER3 & (devout->flags)) != 0){
+    buffer = devout->buffer[3];
+  }
+
+  return(buffer);
 }
 
 signed short*
 ags_devout_get_next_buffer(AgsSoundcard *soundcard)
 {
-  //TODO:JK: implement me
+  AgsDevout *devout;
+  signed short *buffer;
+
+  devout = AGS_DEVOUT(soundcard);
+
+  if((AGS_DEVOUT_BUFFER0 & (devout->flags)) != 0){
+    buffer = devout->buffer[1];
+  }else if((AGS_DEVOUT_BUFFER1 & (devout->flags)) != 0){
+    buffer = devout->buffer[2];
+  }else if((AGS_DEVOUT_BUFFER2 & (devout->flags)) != 0){
+    buffer = devout->buffer[3];
+  }else if((AGS_DEVOUT_BUFFER3 & (devout->flags)) != 0){
+    buffer = devout->buffer[0];
+  }
+
+  return(buffer);
 }
 
 signed short*
@@ -848,6 +872,8 @@ ags_devout_get_nth_buffer(AgsSoundcard *soundcard,
 			  gint nth)
 {
   //TODO:JK: implement me
+
+  return(NULL);
 }
 
 /**

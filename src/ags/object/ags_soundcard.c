@@ -201,7 +201,7 @@ ags_soundcard_tic(AgsSoundcard *soundcard)
  */
 void
 ags_soundcard_offset_changed(AgsSoundcard *soundcard,
-			     guint note_offset)
+			     guint64 note_offset)
 {
   AgsSoundcardInterface *soundcard_interface;
 
