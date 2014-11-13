@@ -721,12 +721,7 @@ ags_note_edit_drawing_area_motion_notify_event (GtkWidget *widget, GdkEventMotio
 	ags_note_edit_draw_notation(note_edit, cr);
       }
 
-      if(AGS_IS_PANEL(machine)){
-      }else if(AGS_IS_MIXER(machine)){
-      }else if(AGS_IS_DRUM(machine)){
-	ags_note_edit_drawing_area_motion_notify_event_set_control();
-	ags_note_edit_drawing_area_motion_notify_event_draw_control(cr);
-      }else if(AGS_IS_MATRIX(machine)){
+      if(AGS_IS_SYNTH(machine)){
 	ags_note_edit_drawing_area_motion_notify_event_set_control();
 	ags_note_edit_drawing_area_motion_notify_event_draw_control(cr);
       }else if(AGS_IS_FFPLAYER(machine)){
