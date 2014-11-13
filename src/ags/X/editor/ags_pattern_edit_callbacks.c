@@ -85,6 +85,7 @@ ags_pattern_edit_drawing_area_configure_event(GtkWidget *widget, GdkEventConfigu
 gboolean
 ags_pattern_edit_drawing_area_button_press_event (GtkWidget *widget, GdkEventButton *event, AgsPatternEdit *pattern_edit)
 {
+  //TODO:JK: implement me
 
   return(TRUE);
 }
@@ -92,6 +93,7 @@ ags_pattern_edit_drawing_area_button_press_event (GtkWidget *widget, GdkEventBut
 gboolean
 ags_pattern_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButton *event, AgsPatternEdit *pattern_edit)
 {
+  //TODO:JK: implement me
 
   return(FALSE);
 }
@@ -99,6 +101,7 @@ ags_pattern_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventBu
 gboolean
 ags_pattern_edit_drawing_area_motion_notify_event (GtkWidget *widget, GdkEventMotion *event, AgsPatternEdit *pattern_edit)
 {
+  //TODO:JK: implement me
 
   return(FALSE);
 }
