@@ -384,6 +384,13 @@ ags_devout_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_devout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
 {
+  soundcard->list_cards = ags_devout_list_cards;
+  soundcard->pcm_info = ags_devout_pcm_info;
+  soundcard->tic = ags_devout_tic;
+  soundcard->offset_changed = ags_devout_offset_changed;
+  soundcard->get_current_buffer = ags_devout_get_current_buffer;
+  soundcard->get_next_buffer = ags_devout_get_next_buffer;
+  soundcard->nth_buffer = ags_devout_nth_buffer;
 }
 
 void
