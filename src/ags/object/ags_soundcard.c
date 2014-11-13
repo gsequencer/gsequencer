@@ -20,7 +20,7 @@
 
 #include <math.h>
 
-void ags_soundcard_base_init(AgsSoundcardInterface *interface);
+void ags_soundcard_class_init(AgsSoundcardInterface *interface);
 
 GType
 ags_soundcard_get_type()
@@ -28,20 +28,34 @@ ags_soundcard_get_type()
   static GType ags_type_soundcard = 0;
 
   if(!ags_type_soundcard){
-    static const GTypeInfo ags_soundcard_info = {
-      sizeof(AgsSoundcardInterface),
-      (GBaseInitFunc) ags_soundcard_base_init,
-      NULL, /* base_finalize */
-    };
-
-    ags_type_soundcard = g_type_register_static(G_TYPE_INTERFACE,
-						"AgsSoundcard\0", &ags_soundcard_info,
-						0);
+    ags_type_soundcard = g_type_register_static_simple(G_TYPE_INTERFACE,
+						       "AgsSoundcard\0",
+						       sizeof (AgsSoundcardInterface),
+						       (GClassInitFunc) ags_soundcard_class_init,
+						       0, NULL, 0);
   }
 
   return(ags_type_soundcard);
 }
 
+void
+ags_soundcard_class_init(AgsSoundcardInterface *interface)
+{
+  /**
+   * AgsSoundcard::change-sequencer-duration:
+   * @soundcard: the object
+   * @duration: new duration
+   *
+   * The ::tic signal notifies about tact processing.
+   */
+  g_signal_new("tic\0",
+	       G_TYPE_FROM_INTERFACE(interface),
+	       G_SIGNAL_RUN_LAST,
+	       G_STRUCT_OFFSET(AgsSoundcardInterface, tic),
+	       NULL, NULL,
+	       g_cclosure_marshal_VOID__VOID,
+	       G_TYPE_NONE, 0);
+}
 
 GQuark
 ags_soundcard_error_quark()
@@ -175,12 +189,8 @@ ags_soundcard_stop(AgsSoundcard *soundcard)
 void
 ags_soundcard_tic(AgsSoundcard *soundcard)
 {
-  AgsSoundcardInterface *soundcard_interface;
-
   g_return_if_fail(AGS_IS_SOUNDCARD(soundcard));
-  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
-  g_return_if_fail(soundcard_interface->tic);
-  soundcard_interface->tic(soundcard);
+  g_signal_emit_by_name(soundcard, "tic\0");
 }
 
 /**

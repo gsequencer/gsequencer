@@ -79,7 +79,8 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
   AgsMachine *machine;
   AgsDevout *devout;
   GList *machines_start;
-  guint delay;
+  guint delay, attack;
+  guint tic_counter_incr;
   gboolean success;
 
   window = AGS_MAIN(export_window->ags_main)->window;

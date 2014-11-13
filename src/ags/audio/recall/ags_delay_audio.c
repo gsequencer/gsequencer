@@ -846,7 +846,7 @@ ags_delay_audio_change_sequencer_duration(AgsTactable *tactable, gdouble duratio
   
   delay_audio = AGS_DELAY_AUDIO(tactable);
 
-  default_delay = AGS_DEVOUT_DEFAULT_DELAY;
+  delay = AGS_DEVOUT_DEFAULT_DELAY;
 
   devout = AGS_RECALL(delay_audio)->devout;
 
@@ -872,22 +872,30 @@ ags_delay_audio_change_notation_duration(AgsTactable *tactable, gdouble duration
 {
   AgsDevout *devout;
   AgsDelayAudio *delay_audio;
-  guint default_delay;
+  guint attack, delay;
+  guint tic_counter_incr;
 
   GValue value = {0,};
   
   delay_audio = AGS_DELAY_AUDIO(tactable);
 
-  default_delay = AGS_DEVOUT_DEFAULT_DELAY;
-
   devout = AGS_RECALL(delay_audio)->devout;
 
+  delay = AGS_DEVOUT_DEFAULT_DELAY;
+
   if(devout != NULL){
-    default_delay = devout->delay[0];
+    tic_counter_incr = devout->tic_counter + 1;
+
+    attack = devout->attack[((tic_counter_incr > AGS_DEVOUT_DEFAULT_PERIOD) ?
+			     0:
+			     tic_counter_incr)];
+    delay = devout->delay[((tic_counter_incr > AGS_DEVOUT_DEFAULT_PERIOD) ?
+			   0:
+			   tic_counter_incr)];
   }
 
   g_value_init(&value, G_TYPE_DOUBLE);
-  g_value_set_double(&value, duration * default_delay * AGS_DEVOUT_DEFAULT_SCALE);
+  g_value_set_double(&value, duration * delay * AGS_DEVOUT_DEFAULT_SCALE);
   ags_port_safe_write(delay_audio->notation_duration,
 		      &value);
 }

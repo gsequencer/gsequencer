@@ -530,6 +530,7 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
     AgsDevout *devout;
     guint run_order;
     guint delay, attack;
+    guint tic_counter_incr;
 
     devout = AGS_DEVOUT(AGS_RECALL_AUDIO(delay_audio)->audio->devout);
 

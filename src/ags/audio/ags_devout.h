@@ -138,6 +138,8 @@ struct _AgsDevout
   gdouble delay_counter; // next time attack changeing when delay_counter == delay
   guint tic_counter;
 
+  guint offset;
+
   union{
     struct _AgsOss{
       int device_fd;
@@ -228,14 +230,6 @@ AgsDevoutPlay* ags_devout_play_alloc();
 void ags_devout_play_free(AgsDevoutPlay *devout_play);
 AgsDevoutPlay* ags_devout_play_find_source(GList *devout_play,
 					   GObject *source);
-
-void ags_devout_list_cards(GList **card_id, GList **card_name);
-void ags_devout_pcm_info(char *card_id,
-			 guint *channels_min, guint *channels_max,
-			 guint *rate_min, guint *rate_max,
-			 guint *buffer_size_min, guint *buffer_size_max,
-			 GError **error);
-void ags_devout_tic(AgsDevout *devout);
 
 void ags_devout_note_offset_changed(AgsDevout *devout, guint note_offset);
 

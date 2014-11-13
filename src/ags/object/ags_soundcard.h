@@ -71,7 +71,9 @@ void ags_soundcard_pcm_info(AgsSoundcard *soundcard, gchar *card_id,
 void ags_soundcard_tic(AgsSoundcard *soundcard);
 void ags_soundcard_offset_changed(AgsSoundcard *soundcard, guint note_offset);
 
-signed short* ags_soundcard_get_buffer(AgsSoundcard *soundcard);
+signed short* ags_soundcard_get_current_buffer(AgsSoundcard *soundcard);
 signed short* ags_soundcard_get_next_buffer(AgsSoundcard *soundcard);
+signed short* ags_soundcard_get_nth_buffer(AgsSoundcard *soundcard,
+					   gint nth);
 
 #endif /*__AGS_SOUNDCARD_H__*/

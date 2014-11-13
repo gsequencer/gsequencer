@@ -128,12 +128,8 @@ ags_tactable_class_init(AgsTactableInterface *interface)
 void
 ags_tactable_change_sequencer_duration(AgsTactable *tactable, double duration)
 {
-  AgsTactableInterface *tactable_interface;
-
   g_return_if_fail(AGS_IS_TACTABLE(tactable));
-  tactable_interface = AGS_TACTABLE_GET_INTERFACE(tactable);
-  g_return_if_fail(tactable_interface->change_sequencer_duration);
-  tactable_interface->change_sequencer_duration(tactable, duration);
+  g_signal_emit_by_name(tactable, "change_sequencer_duration\0");
 }
 
 /**
@@ -146,12 +142,8 @@ ags_tactable_change_sequencer_duration(AgsTactable *tactable, double duration)
 void
 ags_tactable_change_notation_duration(AgsTactable *tactable, double duration)
 {
-  AgsTactableInterface *tactable_interface;
-
   g_return_if_fail(AGS_IS_TACTABLE(tactable));
-  tactable_interface = AGS_TACTABLE_GET_INTERFACE(tactable);
-  g_return_if_fail(tactable_interface->change_notation_duration);
-  tactable_interface->change_notation_duration(tactable, duration);
+  g_signal_emit_by_name(tactable, "change_notation_duration\0");
 }
 
 /**
@@ -164,12 +156,8 @@ ags_tactable_change_notation_duration(AgsTactable *tactable, double duration)
 void
 ags_tactable_change_tact(AgsTactable *tactable, double tact)
 {
-  AgsTactableInterface *tactable_interface;
-
   g_return_if_fail(AGS_IS_TACTABLE(tactable));
-  tactable_interface = AGS_TACTABLE_GET_INTERFACE(tactable);
-  g_return_if_fail(tactable_interface->change_tact);
-  tactable_interface->change_tact(tactable, tact);
+  g_signal_emit_by_name(tactable, "change_tact\0");
 }
 
 /**
@@ -182,10 +170,6 @@ ags_tactable_change_tact(AgsTactable *tactable, double tact)
 void
 ags_tactable_change_bpm(AgsTactable *tactable, double bpm)
 {
-  AgsTactableInterface *tactable_interface;
-
   g_return_if_fail(AGS_IS_TACTABLE(tactable));
-  tactable_interface = AGS_TACTABLE_GET_INTERFACE(tactable);
-  g_return_if_fail(tactable_interface->change_bpm);
-  tactable_interface->change_bpm(tactable, bpm);
+  g_signal_emit_by_name(tactable, "change_bpm\0");
 }
