@@ -68,7 +68,6 @@ void ags_devout_pcm_info(AgsSoundcard *soundcard, gchar *card_id,
 			 guint *rate_min, guint *rate_max,
 			 guint *buffer_size_min, guint *buffer_size_max,
 			 GError **error);
-void ags_devout_offset_changed(AgsSoundcard *soundcard, guint note_offset);
 signed short* ags_devout_get_current_buffer(AgsSoundcard *soundcard);
 signed short* ags_devout_get_next_buffer(AgsSoundcard *soundcard);
 signed short* ags_devout_get_nth_buffer(AgsSoundcard *soundcard,
@@ -386,11 +385,11 @@ ags_devout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
 {
   soundcard->list_cards = ags_devout_list_cards;
   soundcard->pcm_info = ags_devout_pcm_info;
-  soundcard->tic = ags_devout_tic;
-  soundcard->offset_changed = ags_devout_offset_changed;
+  soundcard->tic = NULL;
+  soundcard->offset_changed = NULL;
   soundcard->get_current_buffer = ags_devout_get_current_buffer;
   soundcard->get_next_buffer = ags_devout_get_next_buffer;
-  soundcard->nth_buffer = ags_devout_nth_buffer;
+  soundcard->get_nth_buffer = ags_devout_get_nth_buffer;
 }
 
 void

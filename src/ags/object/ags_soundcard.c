@@ -213,20 +213,20 @@ ags_soundcard_offset_changed(AgsSoundcard *soundcard,
 }
 
 /**
- * ags_soundcard_get_buffer:
+ * ags_soundcard_get_current_buffer:
  * @soundcard an #AgsSoundcard
  *
  * Get current playback buffer. 
  */
 signed short*
-ags_soundcard_get_buffer(AgsSoundcard *soundcard)
+ags_soundcard_get_current_buffer(AgsSoundcard *soundcard)
 {
   AgsSoundcardInterface *soundcard_interface;
 
   g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), NULL);
   soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
-  g_return_val_if_fail(soundcard_interface->get_buffer, NULL);
-  return(soundcard_interface->get_buffer(soundcard));
+  g_return_val_if_fail(soundcard_interface->get_current_buffer, NULL);
+  return(soundcard_interface->get_current_buffer(soundcard));
 }
 
 /**
@@ -244,4 +244,22 @@ ags_soundcard_get_next_buffer(AgsSoundcard *soundcard)
   soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
   g_return_val_if_fail(soundcard_interface->get_next_buffer, NULL);
   return(soundcard_interface->get_next_buffer(soundcard));
+}
+
+/**
+ * ags_soundcard_get_next_buffer:
+ * @soundcard an #AgsSoundcard
+ *
+ * Get future playback buffer.
+ */
+signed short*
+ags_soundcard_get_nth_buffer(AgsSoundcard *soundcard,
+			     guint64 nth)
+{
+  AgsSoundcardInterface *soundcard_interface;
+
+  g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), NULL);
+  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
+  g_return_val_if_fail(soundcard_interface->get_nth_buffer, NULL);
+  return(soundcard_interface->get_nth_buffer(soundcard, nth));
 }

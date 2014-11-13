@@ -54,8 +54,10 @@ struct _AgsSoundcardInterface
   void (*tic)(AgsSoundcard *soundcard);
   void (*offset_changed)(AgsSoundcard *soundcard, guint note_offset);
 
-  signed short* (*get_buffer)(AgsSoundcard *soundcard);
+  signed short* (*get_current_buffer)(AgsSoundcard *soundcard);
   signed short* (*get_next_buffer)(AgsSoundcard *soundcard);  
+  signed short* (*get_nth_buffer)(AgsSoundcard *soundcard,
+				  guint64 nth);
 };
 
 GType ags_soundcard_get_type();
@@ -74,6 +76,6 @@ void ags_soundcard_offset_changed(AgsSoundcard *soundcard, guint64 note_offset);
 signed short* ags_soundcard_get_current_buffer(AgsSoundcard *soundcard);
 signed short* ags_soundcard_get_next_buffer(AgsSoundcard *soundcard);
 signed short* ags_soundcard_get_nth_buffer(AgsSoundcard *soundcard,
-					   gint nth);
+					   guint64 nth);
 
 #endif /*__AGS_SOUNDCARD_H__*/
