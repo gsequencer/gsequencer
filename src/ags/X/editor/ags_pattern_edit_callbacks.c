@@ -496,7 +496,217 @@ ags_pattern_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventBu
 gboolean
 ags_pattern_edit_drawing_area_motion_notify_event (GtkWidget *widget, GdkEventMotion *event, AgsPatternEdit *pattern_edit)
 {
-  //TODO:JK: implement me
+  AgsMachine *machine;
+  AgsEditor *editor;
+  AgsNote *note, *note0;
+  double value[2];
+  double tact;
+  guint note_x1;
+  guint prev_x1;
+  void ags_pattern_edit_drawing_area_motion_notify_event_set_control(){
+    GList *list_notation;
+    guint note_x, note_y;
+    guint note_offset_x1;
+
+    if(pattern_edit->control.x0 >= pattern_edit->map_width)
+      pattern_edit->control.x0 = pattern_edit->map_width - 1;
+
+    note_offset_x1 = (guint) (ceil(pattern_edit->control.x1_offset / (double) (pattern_edit->control_current.control_width)));
+
+    if(pattern_edit->control.x1 >= pattern_edit->control_current.x0)
+      note_x = (guint) (ceil((double) (pattern_edit->control.x1 - pattern_edit->control_current.x0) / (double) (pattern_edit->control_current.control_width)));
+    else{
+      note_offset_x1 -= 1;
+      note_x = 0;
+    }
+
+    note_x1 = (note_x * tact) + (note_offset_x1 * tact);
+
+    list_notation = machine->audio->notation;
+
+    fprintf(stdout, "x0 = %llu\nx1 = %llu\ny  = %llu\n\n\0", (long long unsigned int) note->x[0], (long long unsigned int) note->x[1], (long long unsigned int) note->y);
+  }
+  void ags_pattern_edit_drawing_area_motion_notify_event_draw_control(cairo_t *cr){
+    guint x, y, width, height;
+
+    widget = (GtkWidget *) pattern_edit->drawing_area;
+
+    x = note->x[0] * pattern_edit->control_unit.control_width;
+    width = note_x1 * pattern_edit->control_unit.control_width;
+
+    if(x < pattern_edit->control.x1_offset){
+      if(width > pattern_edit->control.x1_offset){
+	width -= x;
+	x = 0;
+      }else{
+	return;
+      }
+    }else if(x < pattern_edit->control.x1_offset + widget->allocation.width){
+      width -= x;
+      x -= pattern_edit->control.x1_offset;
+    }else{
+      return;
+    }
+
+    if(x + width > widget->allocation.width)
+      width = widget->allocation.width - x;
+
+    y = note->y * pattern_edit->control_height;
+
+    if(y < pattern_edit->control.y1_offset){
+      if(y + pattern_edit->control_height - pattern_edit->control_margin_y < pattern_edit->control.y1_offset){
+	return;
+      }else{
+	if(y + pattern_edit->control_margin_y < pattern_edit->control.y1_offset){
+	  height = pattern_edit->control_height;
+	  y = y + pattern_edit->control_margin_y - pattern_edit->control.y1_offset;
+	}else{
+	  height = pattern_edit->y0;
+	  y -= pattern_edit->control.y1_offset;
+	}
+      }
+    }else if(y < pattern_edit->control.y1_offset + widget->allocation.height - pattern_edit->control_height){
+      height = pattern_edit->control_height - 2 * pattern_edit->control_margin_y;
+      y = y - pattern_edit->control.y1_offset + pattern_edit->control_margin_y;
+    }else{
+      if(y > pattern_edit->control.y1_offset + widget->allocation.height - pattern_edit->y1 + pattern_edit->control_margin_y){
+	return;
+      }else{
+	height = pattern_edit->y0;
+	y = y - pattern_edit->control.y1_offset + pattern_edit->control_margin_y;
+      }
+    }
+
+    cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
+    cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
+    cairo_fill(cr);
+  }
+  void ags_pattern_edit_drawing_area_motion_notify_event_draw_selection(cairo_t *cr){
+    GtkAllocation allocation;
+    guint x0_offset, x1_offset, y0_offset, y1_offset;
+    guint x0, x1, y0, y1, width, height;
+    guint x0_viewport, x1_viewport, y0_viewport, y1_viewport;
+
+    /* get viewport */
+    gtk_widget_get_allocation(widget, &allocation);
+
+    x0_viewport = pattern_edit->control.x1_offset;
+    x1_viewport = pattern_edit->control.x1_offset + allocation.width;
+
+    y0_viewport = pattern_edit->control.y1_offset;
+    y1_viewport = pattern_edit->control.y1_offset + allocation.height;
+
+    /* get real size and offset */
+    x0 = pattern_edit->control.x0_offset + pattern_edit->control.x0;
+    x1 = pattern_edit->control.x1_offset + pattern_edit->control.x1;
+
+    if(x0 > x1){
+      x0_offset = x1;
+      x1_offset = x0;
+
+      x1 = x0_offset;
+      x0 = x1_offset;
+    }else{
+      x0_offset = x0;
+      x1_offset = x1;
+    }
+
+    /* get drawable size and offset */
+    if(x0 < x0_viewport){
+      //      x0 = 0;
+      //      width = x1_offset - x0_viewport;
+      x0 -= x0_viewport;
+      width = x1 - x0;
+    }else{
+      x0 -= x0_viewport;
+      width = x1 - x0;
+    }
+
+    if(x1 > x1_viewport){
+      width -= (x1 - x1_viewport);
+    }else{
+      width -= x0_viewport;
+    }
+
+    /* get real size and offset */
+    y0 = pattern_edit->control.y0_offset + pattern_edit->control.y0;
+    y1 = pattern_edit->control.y1_offset + pattern_edit->control.y1;
+
+    if(y0 > y1){
+      y0_offset = y1;
+      y1_offset = y0;
+
+      y1 = y0_offset;
+      y0 = y1_offset;
+    }else{
+      y0_offset = y0;
+      y1_offset = y1;
+    }
+
+    /* get drawable size and offset */
+    if(y0 < y0_viewport){
+      y0 = 0;
+      height = y1_offset - y0_viewport;
+    }else{
+      y0 -= y0_viewport;
+      height = y1 - y0;
+    }
+
+    if(y1 > y1_viewport){
+      height -= (y1 - y1_viewport);
+    }else{
+      height -= y0_viewport;
+    }
+
+    cairo_set_source_rgba(cr, 1.0, 0.0, 0.0, 0.3);
+    cairo_rectangle(cr, (double) x0, (double) y0, (double) width, (double) height);
+    cairo_fill(cr);
+  }
+
+  editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(pattern_edit),
+						 AGS_TYPE_EDITOR);
+
+  if(editor->selected_machine != NULL){
+    cairo_t *cr;
+
+    prev_x1 = pattern_edit->control.x1;
+    pattern_edit->control.x1 = (guint) event->x;
+    pattern_edit->control.y1 = (guint) event->y;
+
+    machine = editor->selected_machine;
+    note = pattern_edit->control.note;
+
+    pattern_edit->control.x1_offset = (guint) round((double) pattern_edit->hscrollbar->scrollbar.range.adjustment->value);
+    pattern_edit->control.y1_offset = (guint) round((double) pattern_edit->vscrollbar->scrollbar.range.adjustment->value);
+
+    tact = exp2(8.0 - (double) gtk_combo_box_get_active(editor->toolbar->zoom));
+
+    cr = gdk_cairo_create(widget->window);
+    cairo_push_group(cr);
+
+    if((AGS_PATTERN_EDIT_ADDING_PATTERN & (pattern_edit->flags)) != 0){
+      if(prev_x1 > pattern_edit->control.x1){
+	ags_pattern_edit_draw_segment(pattern_edit, cr);
+	ags_pattern_edit_draw_pattern(pattern_edit, cr);
+      }
+
+      if(AGS_IS_SYNTH(machine)){
+	ags_pattern_edit_drawing_area_motion_notify_event_set_control();
+	ags_pattern_edit_drawing_area_motion_notify_event_draw_control(cr);
+      }else if(AGS_IS_FFPLAYER(machine)){
+	ags_pattern_edit_drawing_area_motion_notify_event_set_control();
+	ags_pattern_edit_drawing_area_motion_notify_event_draw_control(cr);
+      }
+    }else if((AGS_PATTERN_EDIT_SELECTING_PATTERNS & (pattern_edit->flags)) != 0){
+      ags_pattern_edit_draw_segment(pattern_edit, cr);
+      ags_pattern_edit_draw_pattern(pattern_edit, cr);
+
+      ags_pattern_edit_drawing_area_motion_notify_event_draw_selection(cr);
+    }
+    
+    cairo_pop_group_to_source(cr);
+    cairo_paint(cr);
+  }
 
   return(FALSE);
 }
