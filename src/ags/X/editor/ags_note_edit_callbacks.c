@@ -46,17 +46,7 @@ ags_note_edit_drawing_area_expose_event(GtkWidget *widget, GdkEventExpose *event
       cr = gdk_cairo_create(widget->window);
       cairo_push_group(cr);
 
-      if(AGS_IS_PANEL(machine)){
-      }else if(AGS_IS_MIXER(machine)){
-      }else if(AGS_IS_DRUM(machine)){
-	ags_meter_paint(editor->meter);
-	ags_note_edit_draw_segment(note_edit, cr);
-	ags_note_edit_draw_notation(note_edit, cr);
-      }else if(AGS_IS_MATRIX(machine)){
-	ags_meter_paint(editor->meter);
-	ags_note_edit_draw_segment(note_edit, cr);
-	ags_note_edit_draw_notation(note_edit, cr);
-      }else if(AGS_IS_SYNTH(machine)){
+      if(AGS_IS_SYNTH(machine)){
 	ags_meter_paint(editor->meter);
 	ags_note_edit_draw_segment(note_edit, cr);
 	ags_note_edit_draw_notation(note_edit, cr);
@@ -93,7 +83,7 @@ ags_note_edit_drawing_area_configure_event(GtkWidget *widget, GdkEventConfigure 
 }
 
 gboolean
-ags_note_edit_drawing_area_button_press_event (GtkWidget *widget, GdkEventButton *event, AgsNoteEdit *note_edit)
+ags_note_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventButton *event, AgsNoteEdit *note_edit)
 {
   AgsMachine *machine;
   AgsEditor *editor;
@@ -165,13 +155,7 @@ ags_note_edit_drawing_area_button_press_event (GtkWidget *widget, GdkEventButton
        (AGS_NOTE_EDIT_POSITION_CURSOR & (note_edit->flags)) != 0){
       tact = exp2(8.0 - (double) gtk_combo_box_get_active(editor->toolbar->zoom));
       
-      if(AGS_IS_PANEL(machine)){
-      }else if(AGS_IS_MIXER(machine)){
-      }else if(AGS_IS_DRUM(machine)){
-	ags_note_edit_drawing_area_button_press_event_set_control();
-      }else if(AGS_IS_MATRIX(machine)){
-	ags_note_edit_drawing_area_button_press_event_set_control();
-      }else if(AGS_IS_SYNTH(machine)){
+      if(AGS_IS_SYNTH(machine)){
 	ags_note_edit_drawing_area_button_press_event_set_control();
       }else if(AGS_IS_FFPLAYER(machine)){
 	ags_note_edit_drawing_area_button_press_event_set_control();
@@ -469,13 +453,7 @@ ags_note_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
       note_edit->selected_x = note_edit->control.note->x[0];
       note_edit->selected_y = note_edit->control.note->y;
 
-      if(AGS_IS_PANEL(machine)){
-      }else if(AGS_IS_MIXER(machine)){
-      }else if(AGS_IS_DRUM(machine)){
-	ags_note_edit_draw_position(note_edit, cr);
-      }else if(AGS_IS_MATRIX(machine)){
-	ags_note_edit_draw_position(note_edit, cr);
-      }else if(AGS_IS_FFPLAYER(machine)){
+      if(AGS_IS_FFPLAYER(machine)){
 	ags_note_edit_draw_position(note_edit, cr);
       }else if(AGS_IS_SYNTH(machine)){
 	ags_note_edit_draw_position(note_edit, cr);
@@ -486,15 +464,7 @@ ags_note_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
       ags_note_edit_draw_segment(note_edit, cr);
       ags_note_edit_draw_notation(note_edit, cr);
 
-      if(AGS_IS_PANEL(machine)){
-      }else if(AGS_IS_MIXER(machine)){
-      }else if(AGS_IS_DRUM(machine)){
-	ags_note_edit_drawing_area_button_release_event_set_control();
-	ags_note_edit_drawing_area_button_release_event_draw_control(cr);
-      }else if(AGS_IS_MATRIX(machine)){
-	ags_note_edit_drawing_area_button_release_event_set_control();
-	ags_note_edit_drawing_area_button_release_event_draw_control(cr);
-      }else if(AGS_IS_FFPLAYER(machine)){
+      if(AGS_IS_FFPLAYER(machine)){
 	ags_note_edit_drawing_area_button_release_event_set_control();
 	ags_note_edit_drawing_area_button_release_event_draw_control(cr);
       }else if(AGS_IS_SYNTH(machine)){

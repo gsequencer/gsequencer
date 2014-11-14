@@ -83,9 +83,84 @@ ags_pattern_edit_drawing_area_configure_event(GtkWidget *widget, GdkEventConfigu
 }
 
 gboolean
-ags_pattern_edit_drawing_area_button_press_event (GtkWidget *widget, GdkEventButton *event, AgsPatternEdit *pattern_edit)
+ags_pattern_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventButton *event, AgsPatternEdit *pattern_edit)
 {
-  //TODO:JK: implement me
+  AgsMachine *machine;
+  AgsEditor *editor;
+  double tact, zoom;
+
+  auto void ags_pattern_edit_drawing_area_button_press_event_set_control();
+
+  void ags_pattern_edit_drawing_area_button_press_event_set_control(){
+    AgsNote *note;
+    guint note_offset_x0, note_offset_y0;
+    guint note_x, note_y;
+
+    if(pattern_edit->control.y0 >= pattern_edit->map_height || pattern_edit->control.x0 >= pattern_edit->map_width)
+      return;
+
+    note_offset_x0 = (guint) (ceil((double) (pattern_edit->control.x0_offset) / (double) (pattern_edit->control_current.control_width)));
+
+    if(pattern_edit->control.x0 >= pattern_edit->control_current.x0)
+      note_x = (guint) (floor((double) (pattern_edit->control.x0 - pattern_edit->control_current.x0) / (double) (pattern_edit->control_current.control_width)));
+    else{
+      note_offset_x0 -= 1;
+      note_x = 0;
+    }
+
+    note_offset_y0 = (guint) ceil((double) (pattern_edit->control.y0_offset) / (double) (pattern_edit->control_height));
+
+    if(pattern_edit->control.y0 >= pattern_edit->y0)
+      note_y = (guint) floor((double) (pattern_edit->control.y0 - pattern_edit->y0) / (double) (pattern_edit->control_height));
+    else{
+      note_offset_y0 -= 1;
+      note_y = 0;
+    }
+
+    note = pattern_edit->control.note;
+    note->flags = AGS_NOTE_GUI;
+    note->x[0] = (note_x * tact) + (note_offset_x0 * tact);
+    note->x[1] = (guint) note->x[0] + 1;
+    note->y = note_y + note_offset_y0;
+  }
+
+  editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(pattern_edit),
+						 AGS_TYPE_EDITOR);
+
+  if(editor->selected_machine != NULL &&
+     event->button == 1 &&
+     (machine = editor->selected_machine) != NULL){
+    AgsToolbar *toolbar;
+
+    toolbar = editor->toolbar;
+
+    if(toolbar->selected_edit_mode == toolbar->position){
+      pattern_edit->flags |= AGS_PATTERN_EDIT_POSITION_CURSOR;
+    }else if(toolbar->selected_edit_mode == toolbar->edit){
+      pattern_edit->flags |= AGS_PATTERN_EDIT_ADDING_PATTERN;
+    }else if(toolbar->selected_edit_mode == toolbar->clear){
+      pattern_edit->flags |= AGS_PATTERN_EDIT_DELETING_PATTERN;
+    }else if(toolbar->selected_edit_mode == toolbar->select){
+      pattern_edit->flags |= AGS_PATTERN_EDIT_SELECTING_PATTERNS;
+    }
+
+    /* store the events position */
+    pattern_edit->control.x0_offset = (guint) round((double) GTK_RANGE(pattern_edit->hscrollbar)->adjustment->value);
+    pattern_edit->control.y0_offset = (guint) round((double) GTK_RANGE(pattern_edit->vscrollbar)->adjustment->value);
+
+    pattern_edit->control.x0 = (guint) event->x;
+    pattern_edit->control.y0 = (guint) event->y;
+
+    if((AGS_PATTERN_EDIT_ADDING_PATTERN & (pattern_edit->flags)) != 0 ||
+       (AGS_PATTERN_EDIT_POSITION_CURSOR & (pattern_edit->flags)) != 0){
+      tact = exp2(8.0 - (double) gtk_combo_box_get_active(editor->toolbar->zoom));
+      
+    }else if(AGS_IS_DRUM(machine)){
+      ags_pattern_edit_drawing_area_button_press_event_set_control();
+    }else if(AGS_IS_MATRIX(machine)){
+      ags_pattern_edit_drawing_area_button_press_event_set_control();
+    }
+  }
 
   return(TRUE);
 }
@@ -93,7 +168,327 @@ ags_pattern_edit_drawing_area_button_press_event (GtkWidget *widget, GdkEventBut
 gboolean
 ags_pattern_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButton *event, AgsPatternEdit *pattern_edit)
 {
-  //TODO:JK: implement me
+  AgsMachine *machine;
+  AgsEditor *editor;
+  AgsNote *note, *note0;
+  double tact;
+  
+  auto void ags_pattern_edit_drawing_area_button_release_event_set_control();
+  auto void ags_pattern_edit_drawing_area_button_release_event_draw_control(cairo_t *cr);
+  auto void ags_pattern_edit_drawing_area_button_release_event_delete_point();
+  auto void ags_pattern_edit_drawing_area_button_release_event_select_region();
+
+  void ags_pattern_edit_drawing_area_button_release_event_set_control(){
+    GList *list_notation;
+    guint note_x, note_y;
+    guint note_offset_x1;
+    gint history;
+    gint selected_channel;
+
+    if(pattern_edit->control.x0 >= pattern_edit->map_width)
+      pattern_edit->control.x0 = pattern_edit->map_width - 1;
+
+    note_offset_x1 = (guint) (ceil((double) (pattern_edit->control.x1_offset)  / (double) (pattern_edit->control_current.control_width)));
+
+    if(pattern_edit->control.x1 >= pattern_edit->control_current.x0)
+      note_x = (guint) (ceil((double) (pattern_edit->control.x1 - pattern_edit->control_current.x0) / (double) (pattern_edit->control_current.control_width)));
+    else{
+      note_offset_x1 -= 1;
+      note_x = 0;
+    }
+
+    note->x[1] = (note_x * tact) + (note_offset_x1 * tact);
+
+    list_notation = machine->audio->notation;
+    history = gtk_combo_box_get_active(editor->toolbar->mode);
+
+    switch(history){
+    case 0:
+      {
+	if(editor->notebook->tabs != NULL){
+	  list_notation = g_list_nth(list_notation,
+				     ags_notebook_next_active_tab(editor->notebook,
+								  0));
+
+	  note0 = ags_note_duplicate(note);
+
+	  ags_notation_add_note(AGS_NOTATION(list_notation->data), note0, FALSE);
+	}
+      }
+      break;
+    case 1:
+      {
+	gint i;
+
+	i = 0;
+
+	while((selected_channel = ags_notebook_next_active_tab(editor->notebook,
+							       i)) != -1){
+	  list_notation = g_list_nth(machine->audio->notation,
+				     selected_channel);
+
+	  note0 = ags_note_duplicate(note);
+
+	  ags_notation_add_note(AGS_NOTATION(list_notation->data), note0, FALSE);
+
+	  i++;
+	}
+      }
+      break;
+    case 2:
+      {
+	while(list_notation != NULL){
+	  note0 = ags_note_duplicate(note);
+
+	  ags_notation_add_note(AGS_NOTATION(list_notation->data), note0, FALSE);
+
+	  list_notation = list_notation->next;
+	}
+      }
+      break;
+    }
+
+    fprintf(stdout, "x0 = %llu\nx1 = %llu\ny  = %llu\n\n\0", (long long unsigned int) note->x[0], (long long unsigned int) note->x[1], (long long unsigned int) note->y);
+  }
+  void ags_pattern_edit_drawing_area_button_release_event_draw_control(cairo_t *cr){
+    guint x, y, width, height;
+
+    widget = (GtkWidget *) pattern_edit->drawing_area;
+    //    cr = gdk_cairo_create(widget->window);
+
+    x = note->x[0] * pattern_edit->control_unit.control_width;
+    width = note->x[1] * pattern_edit->control_unit.control_width;
+
+    if(x < pattern_edit->control.x1_offset){
+      if(width > pattern_edit->control.x1_offset){
+	width -= (guint) x;
+	x = 0;
+      }else{
+	return;
+      }
+    }else if(x < pattern_edit->control.x1_offset + widget->allocation.width){
+      width -= x;
+      x -= pattern_edit->control.x1_offset;
+    }else{
+      return;
+    }
+
+    if(x + width > widget->allocation.width)
+      width = widget->allocation.width - x;
+
+    y = note->y * pattern_edit->control_height;
+
+    if(y < pattern_edit->control.y1_offset){
+      if(y + pattern_edit->control_height - pattern_edit->control_margin_y < pattern_edit->control.y1_offset){
+	return;
+      }else{
+	if(y + pattern_edit->control_margin_y < pattern_edit->control.y1_offset){
+	  height = pattern_edit->control_height;
+	  y = y + pattern_edit->control_margin_y - pattern_edit->control.y1_offset;
+	}else{
+	  height = pattern_edit->y0;
+	  y -= pattern_edit->control.y1_offset;
+	}
+      }
+    }else if(y < pattern_edit->control.y1_offset + widget->allocation.height - pattern_edit->control_height){
+      height = pattern_edit->control_height - 2 * pattern_edit->control_margin_y;
+      y = y - pattern_edit->control.y1_offset + pattern_edit->control_margin_y;
+    }else{
+      if(y > pattern_edit->control.y1_offset + widget->allocation.height - pattern_edit->y1 + pattern_edit->control_margin_y){
+	return;
+      }else{
+	height = pattern_edit->y0;
+	y = y - pattern_edit->control.y1_offset + pattern_edit->control_margin_y;
+      }
+    }
+
+    cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
+    cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
+    cairo_fill(cr);
+  }
+  void ags_pattern_edit_drawing_area_button_release_event_delete_point(){
+    GList *list_notation;
+    guint x, y;
+    gint history;
+    gint selected_channel;
+
+    x = pattern_edit->control.x0_offset + pattern_edit->control.x0 - 1;
+    y = pattern_edit->control.y0_offset + pattern_edit->control.y0;
+
+    x = (guint) ceil((double) x / (double) (pattern_edit->control_unit.control_width));
+    y = (guint) floor((double) y / (double) (pattern_edit->control_height));
+
+    g_message("%d, %d\0", x, y);
+
+    /* select notes */
+    list_notation = machine->audio->notation;
+
+    history = gtk_combo_box_get_active(editor->toolbar->mode);
+
+    if(history == 0){
+      if(editor->notebook->tabs != NULL){
+	list_notation = g_list_nth(list_notation,
+				   ags_notebook_next_active_tab(editor->notebook,
+								0));
+
+	ags_notation_remove_note_at_position(AGS_NOTATION(list_notation->data),
+					     x, y);
+      }
+    }else if(history == 1){
+      gint i;
+
+      i = 0;
+
+      while((selected_channel = ags_notebook_next_active_tab(editor->notebook,
+							     i)) != -1){
+	list_notation = g_list_nth(machine->audio->notation,
+				   selected_channel);
+
+	ags_notation_remove_note_at_position(AGS_NOTATION(list_notation->data),
+					     x, y);
+
+	list_notation = list_notation->next;
+	i++;
+      }
+    }else if(history == 2){
+      while(list_notation != NULL){
+	ags_notation_remove_note_at_position(AGS_NOTATION(list_notation->data),
+					     x, y);
+
+	list_notation = list_notation->next;
+      }
+    }
+  }
+  void ags_pattern_edit_drawing_area_button_release_event_select_region(){
+    GList *list_notation;
+    guint x0, x1, y0, y1;
+
+    /* get real size and offset */
+    x0 = pattern_edit->control.x0_offset + pattern_edit->control.x0;
+    x1 = pattern_edit->control.x1_offset + pattern_edit->control.x1;
+
+    if(x0 > x1){
+      guint tmp;
+
+      tmp = x1;
+      x1 = x0;
+      x0 = tmp;
+    }
+
+    /* convert to region */
+    x0 = (guint) (floor((double) x0 / (double) (pattern_edit->control_current.control_width)) * tact);
+    x1 = (guint) (ceil((double) x1 / (double) (pattern_edit->control_current.control_width)) * tact);
+
+    /* get real size and offset */
+    y0 = pattern_edit->control.y0_offset + pattern_edit->control.y0;
+    y1 = pattern_edit->control.y1_offset + pattern_edit->control.y1;
+
+    if(y0 > y1){
+      guint tmp;
+
+      tmp = y1;
+      y1 = y0;
+      y0 = tmp;
+    }
+
+    /* convert to region */
+    y0 = (guint) floor((double) y0 / (double) (pattern_edit->control_height));
+    y1 = (guint) ceil((double) y1 / (double) (pattern_edit->control_height));
+
+    /* select notes */
+    list_notation = machine->audio->notation;
+
+    if(gtk_combo_box_get_active(editor->toolbar->mode) == 0){
+      if(editor->notebook->tabs != NULL){
+	list_notation = g_list_nth(list_notation,
+				   ags_notebook_next_active_tab(editor->notebook,
+				   0));
+
+	ags_notation_add_region_to_selection(AGS_NOTATION(list_notation->data),
+					     x0, y0,
+					     x1, y1,
+					     TRUE);
+      }
+    }else{
+      while(list_notation != NULL ){
+	ags_notation_add_region_to_selection(AGS_NOTATION(list_notation->data),
+					     x0, y0,
+					     x1, y1,
+					     TRUE);
+
+	list_notation = list_notation->next;
+      }
+    }
+
+  }
+
+  editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(pattern_edit),
+						 AGS_TYPE_EDITOR);
+
+  if(editor->selected_machine != NULL && event->button == 1){
+    cairo_t *cr;
+
+    pattern_edit->control.x1 = (guint) event->x;
+    pattern_edit->control.y1 = (guint) event->y;
+
+    machine = editor->selected_machine;
+    note = pattern_edit->control.note;
+
+    /* store the events position */
+    pattern_edit->control.x1_offset = (guint) round((double) pattern_edit->hscrollbar->scrollbar.range.adjustment->value);
+    pattern_edit->control.y1_offset = (guint) round((double) pattern_edit->vscrollbar->scrollbar.range.adjustment->value);
+
+    tact = exp2(8.0 - (double) gtk_combo_box_get_active(editor->toolbar->zoom));
+
+    cr = gdk_cairo_create(widget->window);
+    cairo_push_group(cr);
+
+    if((AGS_PATTERN_EDIT_POSITION_CURSOR & (pattern_edit->flags)) != 0){
+      pattern_edit->flags &= (~AGS_PATTERN_EDIT_POSITION_CURSOR);
+
+      ags_pattern_edit_draw_segment(pattern_edit, cr);
+      ags_pattern_edit_draw_pattern(pattern_edit, cr);
+
+      pattern_edit->selected_x = pattern_edit->control.note->x[0];
+      pattern_edit->selected_y = pattern_edit->control.note->y;
+
+      if(AGS_IS_DRUM(machine)){
+	ags_pattern_edit_draw_position(pattern_edit, cr);
+      }else if(AGS_IS_MATRIX(machine)){
+	ags_pattern_edit_draw_position(pattern_edit, cr);
+      }
+    }else if((AGS_PATTERN_EDIT_ADDING_PATTERN & (pattern_edit->flags)) != 0){
+      pattern_edit->flags &= (~AGS_PATTERN_EDIT_ADDING_PATTERN);
+
+      ags_pattern_edit_draw_segment(pattern_edit, cr);
+      ags_pattern_edit_draw_pattern(pattern_edit, cr);
+
+      if(AGS_IS_DRUM(machine)){
+	ags_pattern_edit_drawing_area_button_release_event_set_control();
+	ags_pattern_edit_drawing_area_button_release_event_draw_control(cr);
+      }else if(AGS_IS_MATRIX(machine)){
+	ags_pattern_edit_drawing_area_button_release_event_set_control();
+	ags_pattern_edit_drawing_area_button_release_event_draw_control(cr);
+      }
+    }else if((AGS_PATTERN_EDIT_DELETING_PATTERN & (pattern_edit->flags)) != 0){
+      pattern_edit->flags &= (~AGS_PATTERN_EDIT_DELETING_PATTERN);
+
+      ags_pattern_edit_drawing_area_button_release_event_delete_point();
+
+      ags_pattern_edit_draw_segment(pattern_edit, cr);
+      ags_pattern_edit_draw_pattern(pattern_edit, cr);
+    }else if((AGS_PATTERN_EDIT_SELECTING_PATTERNS & (pattern_edit->flags)) != 0){
+      pattern_edit->flags &= (~AGS_PATTERN_EDIT_SELECTING_PATTERNS);
+
+      ags_pattern_edit_drawing_area_button_release_event_select_region();
+
+      ags_pattern_edit_draw_segment(pattern_edit, cr);
+      ags_pattern_edit_draw_pattern(pattern_edit, cr);
+    }
+
+    cairo_pop_group_to_source(cr);
+    cairo_paint(cr);
+  }
 
   return(FALSE);
 }

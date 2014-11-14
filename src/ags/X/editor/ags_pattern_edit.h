@@ -26,6 +26,8 @@
 
 #include <ags/widget/ags_ruler.h>
 
+#include <ags/audio/ags_notation.h>
+
 #define AGS_TYPE_PATTERN_EDIT                (ags_pattern_edit_get_type())
 #define AGS_PATTERN_EDIT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PATTERN_EDIT, AgsPatternEdit))
 #define AGS_PATTERN_EDIT_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_PATTERN_EDIT, AgsPatternEditClass))
@@ -62,6 +64,20 @@ struct _AgsPatternEdit
 
   AgsRuler *ruler;
   GtkDrawingArea *drawing_area;
+
+  struct _AgsPatternEditControl{ // values retrieved by mouse pressed and released callback
+    AgsNote *note;
+
+    guint x0_offset;
+    guint y0_offset;
+    guint x0;
+    guint y0;
+
+    guint x1_offset;
+    guint y1_offset;
+    guint x1;
+    guint y1;
+  }control;
   
   guint width;
   guint height;
