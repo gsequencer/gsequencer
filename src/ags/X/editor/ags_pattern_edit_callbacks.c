@@ -520,7 +520,7 @@ ags_pattern_edit_drawing_area_motion_notify_event (GtkWidget *widget, GdkEventMo
       note_x = 0;
     }
 
-    note_x1 = (note_x * tact) + (note_offset_x1 * tact);
+    note_x1 = (note_x * tact) + (tact);
 
     list_notation = machine->audio->notation;
 
@@ -578,7 +578,7 @@ ags_pattern_edit_drawing_area_motion_notify_event (GtkWidget *widget, GdkEventMo
     }
 
     cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
-    cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
+    cairo_rectangle(cr, (double) x, (double) y, (double) x, (double) height);
     cairo_fill(cr);
   }
   void ags_pattern_edit_drawing_area_motion_notify_event_draw_selection(cairo_t *cr){
