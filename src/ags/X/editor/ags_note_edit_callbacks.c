@@ -46,12 +46,8 @@ ags_note_edit_drawing_area_expose_event(GtkWidget *widget, GdkEventExpose *event
       cr = gdk_cairo_create(widget->window);
       cairo_push_group(cr);
 
-      if(AGS_IS_SYNTH(machine)){
-	ags_meter_paint(editor->meter);
-	ags_note_edit_draw_segment(note_edit, cr);
-	ags_note_edit_draw_notation(note_edit, cr);
-      }else if(AGS_IS_FFPLAYER(machine)){
-	ags_meter_paint(editor->meter);
+      if(AGS_IS_SYNTH(machine) ||
+	 AGS_IS_FFPLAYER(machine)){
 	ags_note_edit_draw_segment(note_edit, cr);
 	ags_note_edit_draw_notation(note_edit, cr);
       }
@@ -71,13 +67,17 @@ ags_note_edit_drawing_area_expose_event(GtkWidget *widget, GdkEventExpose *event
 gboolean
 ags_note_edit_drawing_area_configure_event(GtkWidget *widget, GdkEventConfigure *event, AgsNoteEdit *note_edit)
 {
-  note_edit->flags |= AGS_NOTE_EDIT_RESETING_VERTICALLY;
-  ags_note_edit_reset_vertically(note_edit, AGS_NOTE_EDIT_RESET_VSCROLLBAR);
-  note_edit->flags &= (~AGS_NOTE_EDIT_RESETING_VERTICALLY);
+  if((AGS_NOTE_EDIT_RESETING_VERTICALLY & (note_edit->flags)) == 0){
+    note_edit->flags |= AGS_NOTE_EDIT_RESETING_VERTICALLY;
+    ags_note_edit_reset_vertically(note_edit, AGS_NOTE_EDIT_RESET_VSCROLLBAR);
+    note_edit->flags &= (~AGS_NOTE_EDIT_RESETING_VERTICALLY);
+  }
 
-  note_edit->flags |= AGS_NOTE_EDIT_RESETING_HORIZONTALLY;
-  ags_note_edit_reset_horizontally(note_edit, AGS_NOTE_EDIT_RESET_HSCROLLBAR);
-  note_edit->flags &= (~AGS_NOTE_EDIT_RESETING_HORIZONTALLY);  
+  if((AGS_NOTE_EDIT_RESETING_HORIZONTALLY & (note_edit->flags)) == 0){
+    note_edit->flags |= AGS_NOTE_EDIT_RESETING_HORIZONTALLY;
+    ags_note_edit_reset_horizontally(note_edit, AGS_NOTE_EDIT_RESET_HSCROLLBAR);
+    note_edit->flags &= (~AGS_NOTE_EDIT_RESETING_HORIZONTALLY);  
+  }
 
   return(FALSE);
 }
@@ -733,7 +733,7 @@ ags_note_edit_hscrollbar_value_changed(GtkRange *range, AgsNoteEdit *note_edit)
 
   /* reset ruler */
   gtk_adjustment_set_value(note_edit->ruler->adjustment,
-			   GTK_RANGE(note_edit->hscrollbar)->adjustment->value / (double) note_edit->control_current.control_width);
+  			   GTK_RANGE(note_edit->hscrollbar)->adjustment->value / (double) note_edit->control_current.control_width);
   gtk_widget_queue_draw(note_edit->ruler);
 
   /* update note edit */

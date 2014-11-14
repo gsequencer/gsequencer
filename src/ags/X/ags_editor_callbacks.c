@@ -21,14 +21,11 @@
 #include <ags/main.h>
 
 #include <ags/thread/ags_audio_loop.h>
-#include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_input.h>
-
-#include <ags/audio/task/ags_scroll_on_play.h>
 
 #include <ags/X/ags_window.h>
 
@@ -46,10 +43,6 @@ ags_editor_parent_set_callback(GtkWidget  *widget, GtkObject *old_parent, AgsEdi
 {
   if(old_parent != NULL)
     return;
-  
-  editor->edit.note_edit->flags |= AGS_NOTE_EDIT_RESETING_HORIZONTALLY;
-  ags_note_edit_reset_horizontally(editor->edit.note_edit, AGS_NOTE_EDIT_RESET_HSCROLLBAR);
-  editor->edit.note_edit->flags &= (~AGS_NOTE_EDIT_RESETING_HORIZONTALLY);
 }
 
 void

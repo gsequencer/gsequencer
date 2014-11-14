@@ -100,6 +100,8 @@ ags_note_edit_init(AgsNoteEdit *note_edit)
 {
   GtkAdjustment *adjustment;
 
+  note_edit->flags = 0;
+
   adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, 1.0, 1.0);
 
   note_edit->ruler = ags_ruler_new();
@@ -298,8 +300,6 @@ ags_note_edit_reset_vertically(AgsNoteEdit *note_edit, guint flags)
 
     /* refresh display */
     if(GTK_WIDGET_VISIBLE(editor)){
-      ags_meter_paint(editor->meter);
-
       cr = gdk_cairo_create(GTK_WIDGET(note_edit->drawing_area)->window);
       cairo_push_group(cr);
 

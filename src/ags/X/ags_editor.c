@@ -221,12 +221,7 @@ ags_editor_init(AgsEditor *editor)
 		   GTK_FILL|GTK_EXPAND, GTK_FILL,
 		   0, 0);
 
-  editor->meter = ags_meter_new();
-  gtk_table_attach(editor->table, (GtkWidget *) editor->meter,
-		   0, 1, 1, 2,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
-
+  editor->meter = NULL;
   editor->edit.note_edit = NULL;
 
   editor->tact_counter = 0;
@@ -350,16 +345,25 @@ ags_editor_real_machine_changed(AgsEditor *editor, AgsMachine *machine)
   }
 
   if((AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0){
+    editor->meter = ags_meter_new();
+    gtk_table_attach(editor->table, (GtkWidget *) editor->meter,
+		     0, 1, 1, 2,
+		     GTK_FILL, GTK_FILL,
+		     0, 0);
+    ags_connectable_connect(AGS_CONNECTABLE(editor->meter));
+    gtk_widget_show_all(editor->meter);
+
     editor->edit.note_edit = ags_note_edit_new();
     gtk_table_attach(table, (GtkWidget *) editor->edit.note_edit,
 		     1, 2, 1, 2,
 		     GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
 		     0, 0);
 
+    ags_connectable_connect(AGS_CONNECTABLE(editor->edit.note_edit));
+    gtk_widget_show_all(editor->edit.note_edit);
+
     ags_note_edit_set_map_height(editor->edit.note_edit,
 				 pads * editor->edit.note_edit->control_height);
-
-    ags_connectable_connect(AGS_CONNECTABLE(editor->edit.note_edit));
   }else if((AGS_MACHINE_IS_SEQUENCER & (machine->flags)) != 0){
     editor->edit.pattern_edit = ags_pattern_edit_new();
     gtk_table_attach(table, (GtkWidget *) editor->edit.pattern_edit,
@@ -367,10 +371,11 @@ ags_editor_real_machine_changed(AgsEditor *editor, AgsMachine *machine)
 		     GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
 		     0, 0);
 
-    ags_pattern_edit_set_map_height(editor->edit.pattern_edit,
-				    pads * editor->edit.pattern_edit->control_height);
-
     ags_connectable_connect(AGS_CONNECTABLE(editor->edit.pattern_edit));
+    gtk_widget_show_all(editor->edit.pattern_edit);
+    
+    ags_pattern_edit_set_map_height(editor->edit.pattern_edit,
+ 				    pads * editor->edit.pattern_edit->control_height);
   }else{
     editor->edit.automation_edit = ags_automation_edit_new();
     gtk_table_attach(table, (GtkWidget *) editor->edit.automation_edit,
@@ -378,10 +383,11 @@ ags_editor_real_machine_changed(AgsEditor *editor, AgsMachine *machine)
 		     GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
 		     0, 0);
 
-    ags_automation_edit_set_map_height(editor->edit.automation_edit,
-				       pads * editor->edit.automation_edit->control_height);
-
     ags_connectable_connect(AGS_CONNECTABLE(editor->edit.automation_edit));
+    gtk_widget_show_all(editor->edit.automation_edit);
+
+    ags_automation_edit_set_map_height(editor->edit.automation_edit,
+				       pads * editor->edit.automation_edit->control_height);    
   }
 }
 

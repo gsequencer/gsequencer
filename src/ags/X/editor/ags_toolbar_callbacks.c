@@ -315,10 +315,10 @@ ags_toolbar_zoom_callback(GtkComboBox *combo_box, AgsToolbar *toolbar)
   toolbar->zoom_history = history;
 
   if((AGS_EDITOR_TOOL_NOTE_EDIT & (editor->flags)) != 0){
-    editor->edit.note_edit->flags |= AGS_NOTE_EDIT_RESETING_HORIZONTALLY;
-    ags_note_edit_reset_horizontally(editor->edit.note_edit, AGS_NOTE_EDIT_RESET_HSCROLLBAR |
-				     AGS_NOTE_EDIT_RESET_WIDTH);
-    editor->edit.note_edit->flags &= (~AGS_NOTE_EDIT_RESETING_HORIZONTALLY);
+    //    editor->edit.note_edit->flags |= AGS_NOTE_EDIT_RESETING_HORIZONTALLY;
+    //    ags_note_edit_reset_horizontally(editor->edit.note_edit, AGS_NOTE_EDIT_RESET_HSCROLLBAR |
+    //				     AGS_NOTE_EDIT_RESET_WIDTH);
+    //    editor->edit.note_edit->flags &= (~AGS_NOTE_EDIT_RESETING_HORIZONTALLY);
   }else if((AGS_EDITOR_TOOL_PATTERN_EDIT & (editor->flags)) != 0){
     editor->edit.pattern_edit->flags |= AGS_NOTE_EDIT_RESETING_HORIZONTALLY;
     ags_note_edit_reset_horizontally(editor->edit.pattern_edit, AGS_NOTE_EDIT_RESET_HSCROLLBAR |

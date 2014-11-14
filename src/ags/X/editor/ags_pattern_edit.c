@@ -268,7 +268,7 @@ ags_pattern_edit_reset_vertically(AgsPatternEdit *pattern_edit, guint flags)
 
     /* refresh display */
     if(GTK_WIDGET_VISIBLE(editor)){
-      ags_meter_paint(editor->meter);
+      //      ags_meter_paint(editor->meter);
 
       cr = gdk_cairo_create(GTK_WIDGET(pattern_edit->drawing_area)->window);
       cairo_push_group(cr);
