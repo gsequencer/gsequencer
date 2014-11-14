@@ -23,20 +23,6 @@
 #include <math.h>
 
 gboolean
-ags_meter_destroy_callback(GtkObject *object, AgsMeter *meter)
-{
-  ags_meter_destroy(object);
-
-  return(FALSE);
-}
-
-void
-ags_meter_show_callback(GtkWidget *widget, AgsMeter *meter)
-{
-  ags_meter_show(widget);
-}
-
-gboolean
 ags_meter_expose_event(GtkWidget *widget, GdkEventExpose *event, AgsMeter *meter)
 {
   ags_meter_paint(meter);

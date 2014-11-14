@@ -1,5 +1,5 @@
 /* AGS - Advanced GTK Sequencer
- * Copyright (C) 2005-2011 Joël Krähemann
+ * Copyright (C) 2014 Joël Krähemann
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,16 +16,16 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef __AGS_METER_CALLBACKS_H__
-#define __AGS_METER_CALLBACKS_H__
+#ifndef __AGS_SOUNDSET_CALLBACKS_H__
+#define __AGS_SOUNDSET_CALLBACKS_H__
 
 #include <glib.h>
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include <ags/X/editor/ags_meter.h>
+#include <ags/X/editor/ags_soundset.h>
 
-gboolean ags_meter_expose_event(GtkWidget *widget, GdkEventExpose *event, AgsMeter *meter); 
-gboolean ags_meter_configure_event(GtkWidget *widget, GdkEventConfigure *event, AgsMeter *meter); 
+gboolean ags_soundset_expose_event(GtkWidget *widget, GdkEventExpose *event, AgsSoundset *soundset); 
+gboolean ags_soundset_configure_event(GtkWidget *widget, GdkEventConfigure *event, AgsSoundset *soundset); 
 
-#endif /*__AGS_METER_CALLBACKS_H__*/
+#endif /*__AGS_SOUNDSET_CALLBACKS_H__*/

@@ -47,11 +47,9 @@ ags_pattern_edit_drawing_area_expose_event(GtkWidget *widget, GdkEventExpose *ev
       cairo_push_group(cr);
 
       if(AGS_IS_DRUM(machine)){
-	ags_meter_paint(editor->meter);
 	ags_pattern_edit_draw_segment(pattern_edit, cr);
 	ags_pattern_edit_draw_pattern(pattern_edit, cr);
       }else if(AGS_IS_MATRIX(machine)){
-	ags_meter_paint(editor->meter);
 	ags_pattern_edit_draw_segment(pattern_edit, cr);
 	ags_pattern_edit_draw_pattern(pattern_edit, cr);
       }

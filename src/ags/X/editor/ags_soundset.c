@@ -1,5 +1,5 @@
 /* AGS - Advanced GTK Sequencer
- * Copyright (C) 2005-2011 Joël Krähemann
+ * Copyright (C) 2014 Joël Krähemann
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <ags/X/editor/ags_meter.h>
-#include <ags/X/editor/ags_meter_callbacks.h>
+#include <ags/X/editor/ags_soundset.h>
+#include <ags/X/editor/ags_soundset_callbacks.h>
 
 #include <ags-lib/object/ags_connectable.h>
 
@@ -25,85 +25,85 @@
 
 #include <math.h>
 
-void ags_meter_class_init(AgsMeterClass *meter);
-void ags_meter_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_meter_init(AgsMeter *meter);
-void ags_meter_connect(AgsConnectable *connectable);
-void ags_meter_disconnect(AgsConnectable *connectable);
-void ags_meter_destroy(GtkObject *object);
-void ags_meter_show(GtkWidget *widget);
+void ags_soundset_class_init(AgsSoundsetClass *soundset);
+void ags_soundset_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_soundset_init(AgsSoundset *soundset);
+void ags_soundset_connect(AgsConnectable *connectable);
+void ags_soundset_disconnect(AgsConnectable *connectable);
+void ags_soundset_destroy(GtkObject *object);
+void ags_soundset_show(GtkWidget *widget);
 
 /**
- * SECTION:ags_meter
+ * SECTION:ags_soundset
  * @short_description: piano widget
- * @title: AgsMeter
+ * @title: AgsSoundset
  * @section_id:
- * @include: ags/X/editor/ags_meter.h
+ * @include: ags/X/editor/ags_soundset.h
  *
- * The #AgsMeter draws you a piano.
+ * The #AgsSoundset draws you a piano.
  */
 
-GtkStyle *meter_style;
+GtkStyle *soundset_style;
 
 GType
-ags_meter_get_type(void)
+ags_soundset_get_type(void)
 {
-  static GType ags_type_meter = 0;
+  static GType ags_type_soundset = 0;
 
-  if (!ags_type_meter){
-    static const GTypeInfo ags_meter_info = {
-      sizeof (AgsMeterClass),
+  if (!ags_type_soundset){
+    static const GTypeInfo ags_soundset_info = {
+      sizeof (AgsSoundsetClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
-      (GClassInitFunc) ags_meter_class_init,
+      (GClassInitFunc) ags_soundset_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsMeter),
+      sizeof (AgsSoundset),
       0,    /* n_preallocs */
-      (GInstanceInitFunc) ags_meter_init,
+      (GInstanceInitFunc) ags_soundset_init,
     };
 
     static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_meter_connectable_interface_init,
+      (GInterfaceInitFunc) ags_soundset_connectable_interface_init,
       NULL, /* interface_finalize */
       NULL, /* interface_data */
     };
 
-    ags_type_meter = g_type_register_static(GTK_TYPE_DRAWING_AREA,
-					    "AgsMeter\0", &ags_meter_info,
-					    0);
+    ags_type_soundset = g_type_register_static(GTK_TYPE_DRAWING_AREA,
+					       "AgsSoundset\0", &ags_soundset_info,
+					       0);
     
-    g_type_add_interface_static(ags_type_meter,
+    g_type_add_interface_static(ags_type_soundset,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
   }
 
-  return (ags_type_meter);
+  return (ags_type_soundset);
 }
 
 void
-ags_meter_class_init(AgsMeterClass *meter)
+ags_soundset_class_init(AgsSoundsetClass *soundset)
 {
 }
 
 void
-ags_meter_connectable_interface_init(AgsConnectableInterface *connectable)
+ags_soundset_connectable_interface_init(AgsConnectableInterface *connectable)
 {
   connectable->is_ready = NULL;
   connectable->is_connected = NULL;
-  connectable->connect = ags_meter_connect;
-  connectable->disconnect = ags_meter_disconnect;
+  connectable->connect = ags_soundset_connect;
+  connectable->disconnect = ags_soundset_disconnect;
 }
 
 void
-ags_meter_init(AgsMeter *meter)
+ags_soundset_init(AgsSoundset *soundset)
 {
   GtkWidget *widget;
 
-  widget = (GtkWidget *) meter;
-  gtk_widget_set_style(widget, meter_style);
+  widget = (GtkWidget *) soundset;
+  gtk_widget_set_style(widget, soundset_style);
   gtk_widget_set_size_request(widget, 60, -1);
-  gtk_widget_set_events (GTK_WIDGET (meter), GDK_EXPOSURE_MASK
+  gtk_widget_set_events (GTK_WIDGET (soundset), GDK_EXPOSURE_MASK
                          | GDK_LEAVE_NOTIFY_MASK
                          | GDK_BUTTON_PRESS_MASK
 			 | GDK_BUTTON_RELEASE_MASK
@@ -111,27 +111,36 @@ ags_meter_init(AgsMeter *meter)
 }
 
 void
-ags_meter_connect(AgsConnectable *connectable)
+ags_soundset_connect(AgsConnectable *connectable)
 {
-  AgsMeter *meter;
+  AgsSoundset *soundset;
 
-  meter = AGS_METER(connectable);
+  soundset = AGS_SOUNDSET(connectable);
 
-  g_signal_connect((GObject *) meter, "expose_event\0",
-  		   G_CALLBACK(ags_meter_expose_event), (gpointer) meter);
+  g_signal_connect((GObject *) soundset, "expose_event\0",
+  		   G_CALLBACK(ags_soundset_expose_event), (gpointer) soundset);
 
-  g_signal_connect((GObject *) meter, "configure_event\0",
-  		   G_CALLBACK(ags_meter_configure_event), (gpointer) meter);
+  g_signal_connect((GObject *) soundset, "configure_event\0",
+  		   G_CALLBACK(ags_soundset_configure_event), (gpointer) soundset);
 }
 
 void
-ags_meter_disconnect(AgsConnectable *connectable)
+ags_soundset_disconnect(AgsConnectable *connectable)
 {
-  //TODO:JK: implement me
 }
 
 void
-ags_meter_paint(AgsMeter *meter)
+ags_soundset_destroy(GtkObject *object)
+{
+}
+
+void
+ags_soundset_show(GtkWidget *widget)
+{
+}
+
+void
+ags_soundset_paint(AgsSoundset *soundset)
 {
   AgsEditor *editor;
   GtkWidget *widget;
@@ -141,7 +150,7 @@ ags_meter_paint(AgsMeter *meter)
   guint i, i_stop, j, j0;
   guint border_top;
 
-  widget = (GtkWidget *) meter;
+  widget = (GtkWidget *) soundset;
   editor = (AgsEditor *) gtk_widget_get_ancestor(widget, AGS_TYPE_EDITOR);
 
   border_top = 24; // see ags_ruler.c
@@ -267,18 +276,18 @@ ags_meter_paint(AgsMeter *meter)
 }
 
 /**
- * ags_meter_new:
+ * ags_soundset_new:
  *
- * Create a new #AgsMeter.
+ * Create a new #AgsSoundset.
  *
  * Since: 0.4
  */
-AgsMeter*
-ags_meter_new()
+AgsSoundset*
+ags_soundset_new()
 {
-  AgsMeter *meter;
+  AgsSoundset *soundset;
 
-  meter = (AgsMeter *) g_object_new(AGS_TYPE_METER, NULL);
+  soundset = (AgsSoundset *) g_object_new(AGS_TYPE_SOUNDSET, NULL);
 
-  return(meter);
+  return(soundset);
 }

@@ -82,6 +82,7 @@ am_ags_OBJECTS = ags-ags_combo_box_text.$(OBJEXT) \
 	ags-ags_list.$(OBJEXT) ags-ags_container.$(OBJEXT) \
 	ags-ags_log.$(OBJEXT) ags-ags_parameter.$(OBJEXT) \
 	ags-ags_notebook_callbacks.$(OBJEXT) \
+	ags-ags_soundset_callbacks.$(OBJEXT) \
 	ags-ags_meter_callbacks.$(OBJEXT) \
 	ags-ags_toolbar_callbacks.$(OBJEXT) \
 	ags-ags_machine_selector.$(OBJEXT) \
@@ -95,9 +96,9 @@ am_ags_OBJECTS = ags-ags_combo_box_text.$(OBJEXT) \
 	ags-ags_pattern_edit_callbacks.$(OBJEXT) \
 	ags-ags_file_selection_callbacks.$(OBJEXT) \
 	ags-ags_machine_selection.$(OBJEXT) \
-	ags-ags_inline_player.$(OBJEXT) ags-ags_meter.$(OBJEXT) \
-	ags-ags_file_selection.$(OBJEXT) ags-ags_note_edit.$(OBJEXT) \
-	ags-ags_pattern_edit.$(OBJEXT) \
+	ags-ags_inline_player.$(OBJEXT) ags-ags_soundset.$(OBJEXT) \
+	ags-ags_meter.$(OBJEXT) ags-ags_file_selection.$(OBJEXT) \
+	ags-ags_note_edit.$(OBJEXT) ags-ags_pattern_edit.$(OBJEXT) \
 	ags-ags_automation_edit.$(OBJEXT) \
 	ags-ags_inline_player_callbacks.$(OBJEXT) \
 	ags-ags_toolbar.$(OBJEXT) ags-ags_plugin_preferences.$(OBJEXT) \
@@ -587,17 +588,20 @@ ags_SOURCES = src/ags/lib/ags_combo_box_text.c src/ags/lib/ags_list.c \
 	src/ags/lib/ags_container.h src/ags/lib/ags_combo_box_text.h \
 	src/ags/lib/ags_log.h src/ags/lib/ags_parameter.c \
 	src/ags/X/editor/ags_notebook_callbacks.c \
-	src/ags/X/editor/ags_meter.h src/ags/X/editor/ags_toolbar.h \
+	src/ags/X/editor/ags_soundset.h src/ags/X/editor/ags_meter.h \
+	src/ags/X/editor/ags_toolbar.h \
 	src/ags/X/editor/ags_machine_radio_button.h \
 	src/ags/X/editor/ags_file_selection_callbacks.h \
 	src/ags/X/editor/ags_notebook_callbacks.h \
 	src/ags/X/editor/ags_note_edit.h \
 	src/ags/X/editor/ags_automation_edit.h \
 	src/ags/X/editor/ags_pattern_edit.h \
+	src/ags/X/editor/ags_soundset_callbacks.c \
 	src/ags/X/editor/ags_meter_callbacks.c \
 	src/ags/X/editor/ags_notebook.h \
 	src/ags/X/editor/ags_sf2_chooser.h \
 	src/ags/X/editor/ags_toolbar_mode_stock.h \
+	src/ags/X/editor/ags_soundset_callbacks.h \
 	src/ags/X/editor/ags_meter_callbacks.h \
 	src/ags/X/editor/ags_toolbar_callbacks.c \
 	src/ags/X/editor/ags_machine_selector.c \
@@ -614,7 +618,7 @@ ags_SOURCES = src/ags/lib/ags_combo_box_text.c src/ags/lib/ags_list.c \
 	src/ags/X/editor/ags_machine_selection.c \
 	src/ags/X/editor/ags_inline_player_callbacks.h \
 	src/ags/X/editor/ags_inline_player.c \
-	src/ags/X/editor/ags_meter.c \
+	src/ags/X/editor/ags_soundset.c src/ags/X/editor/ags_meter.c \
 	src/ags/X/editor/ags_file_selection.h \
 	src/ags/X/editor/ags_inline_player.h \
 	src/ags/X/editor/ags_sf2_chooser_callbacks.h \
@@ -1519,6 +1523,8 @@ include ./$(DEPDIR)/ags-ags_sf2_chooser_callbacks.Po
 include ./$(DEPDIR)/ags-ags_single_thread.Po
 include ./$(DEPDIR)/ags-ags_sndfile.Po
 include ./$(DEPDIR)/ags-ags_soundcard.Po
+include ./$(DEPDIR)/ags-ags_soundset.Po
+include ./$(DEPDIR)/ags-ags_soundset_callbacks.Po
 include ./$(DEPDIR)/ags-ags_stackable.Po
 include ./$(DEPDIR)/ags-ags_start_devout.Po
 include ./$(DEPDIR)/ags-ags_stream.Po
@@ -1669,6 +1675,20 @@ ags-ags_notebook_callbacks.obj: src/ags/X/editor/ags_notebook_callbacks.c
 #	source='src/ags/X/editor/ags_notebook_callbacks.c' object='ags-ags_notebook_callbacks.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_notebook_callbacks.obj `if test -f 'src/ags/X/editor/ags_notebook_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_notebook_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_notebook_callbacks.c'; fi`
+
+ags-ags_soundset_callbacks.o: src/ags/X/editor/ags_soundset_callbacks.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_soundset_callbacks.o -MD -MP -MF $(DEPDIR)/ags-ags_soundset_callbacks.Tpo -c -o ags-ags_soundset_callbacks.o `test -f 'src/ags/X/editor/ags_soundset_callbacks.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_soundset_callbacks.c
+	$(am__mv) $(DEPDIR)/ags-ags_soundset_callbacks.Tpo $(DEPDIR)/ags-ags_soundset_callbacks.Po
+#	source='src/ags/X/editor/ags_soundset_callbacks.c' object='ags-ags_soundset_callbacks.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_soundset_callbacks.o `test -f 'src/ags/X/editor/ags_soundset_callbacks.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_soundset_callbacks.c
+
+ags-ags_soundset_callbacks.obj: src/ags/X/editor/ags_soundset_callbacks.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_soundset_callbacks.obj -MD -MP -MF $(DEPDIR)/ags-ags_soundset_callbacks.Tpo -c -o ags-ags_soundset_callbacks.obj `if test -f 'src/ags/X/editor/ags_soundset_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_soundset_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_soundset_callbacks.c'; fi`
+	$(am__mv) $(DEPDIR)/ags-ags_soundset_callbacks.Tpo $(DEPDIR)/ags-ags_soundset_callbacks.Po
+#	source='src/ags/X/editor/ags_soundset_callbacks.c' object='ags-ags_soundset_callbacks.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_soundset_callbacks.obj `if test -f 'src/ags/X/editor/ags_soundset_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_soundset_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_soundset_callbacks.c'; fi`
 
 ags-ags_meter_callbacks.o: src/ags/X/editor/ags_meter_callbacks.c
 	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_meter_callbacks.o -MD -MP -MF $(DEPDIR)/ags-ags_meter_callbacks.Tpo -c -o ags-ags_meter_callbacks.o `test -f 'src/ags/X/editor/ags_meter_callbacks.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_meter_callbacks.c
@@ -1865,6 +1885,20 @@ ags-ags_inline_player.obj: src/ags/X/editor/ags_inline_player.c
 #	source='src/ags/X/editor/ags_inline_player.c' object='ags-ags_inline_player.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_inline_player.obj `if test -f 'src/ags/X/editor/ags_inline_player.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_inline_player.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_inline_player.c'; fi`
+
+ags-ags_soundset.o: src/ags/X/editor/ags_soundset.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_soundset.o -MD -MP -MF $(DEPDIR)/ags-ags_soundset.Tpo -c -o ags-ags_soundset.o `test -f 'src/ags/X/editor/ags_soundset.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_soundset.c
+	$(am__mv) $(DEPDIR)/ags-ags_soundset.Tpo $(DEPDIR)/ags-ags_soundset.Po
+#	source='src/ags/X/editor/ags_soundset.c' object='ags-ags_soundset.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_soundset.o `test -f 'src/ags/X/editor/ags_soundset.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_soundset.c
+
+ags-ags_soundset.obj: src/ags/X/editor/ags_soundset.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_soundset.obj -MD -MP -MF $(DEPDIR)/ags-ags_soundset.Tpo -c -o ags-ags_soundset.obj `if test -f 'src/ags/X/editor/ags_soundset.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_soundset.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_soundset.c'; fi`
+	$(am__mv) $(DEPDIR)/ags-ags_soundset.Tpo $(DEPDIR)/ags-ags_soundset.Po
+#	source='src/ags/X/editor/ags_soundset.c' object='ags-ags_soundset.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_soundset.obj `if test -f 'src/ags/X/editor/ags_soundset.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_soundset.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_soundset.c'; fi`
 
 ags-ags_meter.o: src/ags/X/editor/ags_meter.c
 	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_meter.o -MD -MP -MF $(DEPDIR)/ags-ags_meter.Tpo -c -o ags-ags_meter.o `test -f 'src/ags/X/editor/ags_meter.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_meter.c

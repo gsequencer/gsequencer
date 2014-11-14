@@ -177,7 +177,30 @@ ags_pattern_edit_init(AgsPatternEdit *pattern_edit)
 void
 ags_pattern_edit_connect(AgsConnectable *connectable)
 {
-  //TODO:JK: implement me
+  AgsPatternEdit *pattern_edit;
+
+  pattern_edit = AGS_PATTERN_EDIT(connectable);
+
+  g_signal_connect_after((GObject *) pattern_edit->drawing_area, "expose_event\0",
+			 G_CALLBACK (ags_pattern_edit_drawing_area_expose_event), (gpointer) pattern_edit);
+
+  g_signal_connect_after((GObject *) pattern_edit->drawing_area, "configure_event\0",
+			 G_CALLBACK (ags_pattern_edit_drawing_area_configure_event), (gpointer) pattern_edit);
+
+  g_signal_connect((GObject *) pattern_edit->drawing_area, "button_press_event\0",
+		   G_CALLBACK (ags_pattern_edit_drawing_area_button_press_event), (gpointer) pattern_edit);
+
+  g_signal_connect((GObject *) pattern_edit->drawing_area, "button_release_event\0",
+		   G_CALLBACK (ags_pattern_edit_drawing_area_button_release_event), (gpointer) pattern_edit);
+
+  g_signal_connect((GObject *) pattern_edit->drawing_area, "motion_notify_event\0",
+		   G_CALLBACK (ags_pattern_edit_drawing_area_motion_notify_event), (gpointer) pattern_edit);
+
+  g_signal_connect_after((GObject *) pattern_edit->vscrollbar, "value-changed\0",
+			 G_CALLBACK (ags_pattern_edit_vscrollbar_value_changed), (gpointer) pattern_edit);
+
+  g_signal_connect_after((GObject *) pattern_edit->hscrollbar, "value-changed\0",
+			 G_CALLBACK (ags_pattern_edit_hscrollbar_value_changed), (gpointer) pattern_edit);
 }
 
 void

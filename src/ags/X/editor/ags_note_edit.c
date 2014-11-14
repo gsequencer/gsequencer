@@ -209,7 +209,6 @@ ags_note_edit_connect(AgsConnectable *connectable)
 
   g_signal_connect_after((GObject *) note_edit->hscrollbar, "value-changed\0",
 			 G_CALLBACK (ags_note_edit_hscrollbar_value_changed), (gpointer) note_edit);
-
 }
 
 void
