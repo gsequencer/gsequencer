@@ -30,8 +30,6 @@ void ags_soundset_connectable_interface_init(AgsConnectableInterface *connectabl
 void ags_soundset_init(AgsSoundset *soundset);
 void ags_soundset_connect(AgsConnectable *connectable);
 void ags_soundset_disconnect(AgsConnectable *connectable);
-void ags_soundset_destroy(GtkObject *object);
-void ags_soundset_show(GtkWidget *widget);
 
 /**
  * SECTION:ags_soundset
@@ -130,16 +128,6 @@ ags_soundset_disconnect(AgsConnectable *connectable)
 }
 
 void
-ags_soundset_destroy(GtkObject *object)
-{
-}
-
-void
-ags_soundset_show(GtkWidget *widget)
-{
-}
-
-void
 ags_soundset_paint(AgsSoundset *soundset)
 {
   AgsEditor *editor;
@@ -157,21 +145,21 @@ ags_soundset_paint(AgsSoundset *soundset)
 
   bitmap = 0x52a52a; // description of the keyboard
 
-  j = (guint) ceil(GTK_RANGE(editor->edit.note_edit->vscrollbar)->adjustment->value / (double) editor->edit.note_edit->control_height);
+  j = (guint) ceil(GTK_RANGE(editor->edit.pattern_edit->vscrollbar)->adjustment->value / (double) editor->edit.pattern_edit->control_height);
   j = j % 12;
 
-  y[0] = (guint) round(GTK_RANGE(editor->edit.note_edit->vscrollbar)->adjustment->value) % editor->edit.note_edit->control_height;
+  y[0] = (guint) round(GTK_RANGE(editor->edit.pattern_edit->vscrollbar)->adjustment->value) % editor->edit.pattern_edit->control_height;
 
   if(y[0] != 0){
-    y[0] = editor->edit.note_edit->control_height - y[0];
+    y[0] = editor->edit.pattern_edit->control_height - y[0];
   }
 
-  y[1] = ((guint) (widget->allocation.height - border_top) - y[0]) % editor->edit.note_edit->control_height;
-  i_stop = ((widget->allocation.height - border_top) - y[0] - y[1]) / editor->edit.note_edit->control_height;
+  y[1] = ((guint) (widget->allocation.height - border_top) - y[0]) % editor->edit.pattern_edit->control_height;
+  i_stop = ((widget->allocation.height - border_top) - y[0] - y[1]) / editor->edit.pattern_edit->control_height;
 
   cr = gdk_cairo_create(widget->window);
 
-  cairo_set_source_rgb(cr, 0.78, 0.8, 0.0);
+  cairo_set_source_rgb(cr, 0.88, 0.8, 0.0);
   cairo_rectangle(cr, 0.0, (double) border_top, (double) widget->allocation.width, (double) widget->allocation.height - border_top);
   cairo_fill(cr);
 
@@ -189,9 +177,9 @@ ags_soundset_paint(AgsSoundset *soundset)
 
       cairo_set_source_rgb(cr, 0.68, 0.68, 0.68);
 
-      if(y[0] > editor->edit.note_edit->control_height / 2){
-	cairo_move_to(cr, (double) widget->allocation.width, (double) (y[0] - editor->edit.note_edit->control_height / 2) + border_top);
-	cairo_line_to(cr, (double) widget->allocation.width, (double) (y[0] - editor->edit.note_edit->control_height / 2) + border_top);
+      if(y[0] > editor->edit.pattern_edit->control_height / 2){
+	cairo_move_to(cr, (double) widget->allocation.width, (double) (y[0] - editor->edit.pattern_edit->control_height / 2) + border_top);
+	cairo_line_to(cr, (double) widget->allocation.width, (double) (y[0] - editor->edit.pattern_edit->control_height / 2) + border_top);
 	cairo_stroke(cr);
       }
 
@@ -216,28 +204,28 @@ ags_soundset_paint(AgsSoundset *soundset)
       // draw semi tone key
       cairo_set_source_rgb(cr, 0.2, 0.2, 0.2);
 
-      cairo_rectangle(cr, 0.0, (double) (i * editor->edit.note_edit->control_height + y[0] + border_top), (double) widget->allocation.width, (double) editor->edit.note_edit->control_height);
+      cairo_rectangle(cr, 0.0, (double) (i * editor->edit.pattern_edit->control_height + y[0] + border_top), (double) widget->allocation.width, (double) editor->edit.pattern_edit->control_height);
       cairo_fill(cr); 	
 
       cairo_set_source_rgb(cr, 0.68, 0.68, 0.68);
 
-      cairo_move_to(cr, (double) widget->allocation.width, (double) (i * editor->edit.note_edit->control_height + y[0] + border_top + editor->edit.note_edit->control_height / 2));
-      cairo_line_to(cr, (double) widget->allocation.width, (double) (i * editor->edit.note_edit->control_height + y[0] + border_top + editor->edit.note_edit->control_height / 2));
+      cairo_move_to(cr, (double) widget->allocation.width, (double) (i * editor->edit.pattern_edit->control_height + y[0] + border_top + editor->edit.pattern_edit->control_height / 2));
+      cairo_line_to(cr, (double) widget->allocation.width, (double) (i * editor->edit.pattern_edit->control_height + y[0] + border_top + editor->edit.pattern_edit->control_height / 2));
       cairo_stroke(cr);
 
-      cairo_move_to(cr, (double) widget->allocation.width, (double) (i * editor->edit.note_edit->control_height + y[0] + border_top));
-      cairo_line_to(cr, (double) widget->allocation.width, (double) (i * editor->edit.note_edit->control_height + y[0] + border_top + editor->edit.note_edit->control_height));
+      cairo_move_to(cr, (double) widget->allocation.width, (double) (i * editor->edit.pattern_edit->control_height + y[0] + border_top));
+      cairo_line_to(cr, (double) widget->allocation.width, (double) (i * editor->edit.pattern_edit->control_height + y[0] + border_top + editor->edit.pattern_edit->control_height));
       cairo_stroke(cr);
     }else{
       // no semi tone key
       if(((1 << (j + 1)) & bitmap) == 0){
-	cairo_move_to(cr, 0.0, (double) (i * editor->edit.note_edit->control_height + y[0] + border_top + editor->edit.note_edit->control_height));
-	cairo_line_to(cr, (double) widget->allocation.width, (double) (i * editor->edit.note_edit->control_height + y[0] + border_top + editor->edit.note_edit->control_height));
+	cairo_move_to(cr, 0.0, (double) (i * editor->edit.pattern_edit->control_height + y[0] + border_top + editor->edit.pattern_edit->control_height));
+	cairo_line_to(cr, (double) widget->allocation.width, (double) (i * editor->edit.pattern_edit->control_height + y[0] + border_top + editor->edit.pattern_edit->control_height));
 	cairo_stroke(cr);
       }
 
-      cairo_move_to(cr, (double) widget->allocation.width, (double) (i * editor->edit.note_edit->control_height + y[0] + border_top));
-      cairo_line_to(cr, (double) widget->allocation.width, (double) (i * editor->edit.note_edit->control_height + y[0] + border_top + editor->edit.note_edit->control_height));
+      cairo_move_to(cr, (double) widget->allocation.width, (double) (i * editor->edit.pattern_edit->control_height + y[0] + border_top));
+      cairo_line_to(cr, (double) widget->allocation.width, (double) (i * editor->edit.pattern_edit->control_height + y[0] + border_top + editor->edit.pattern_edit->control_height));
       cairo_stroke(cr);
     }
 
@@ -258,9 +246,9 @@ ags_soundset_paint(AgsSoundset *soundset)
 
       cairo_set_source_rgb(cr, 0.68, 0.68, 0.68);
 
-      if(y[1] > editor->edit.note_edit->control_height / 2){
-	cairo_move_to(cr, (double) widget->allocation.width, (double) (widget->allocation.height - y[1] + editor->edit.note_edit->control_height / 2));
-	cairo_line_to(cr, (double) widget->allocation.width, (double) ((widget->allocation.height) - y[1] + editor->edit.note_edit->control_height / 2));
+      if(y[1] > editor->edit.pattern_edit->control_height / 2){
+	cairo_move_to(cr, (double) widget->allocation.width, (double) (widget->allocation.height - y[1] + editor->edit.pattern_edit->control_height / 2));
+	cairo_line_to(cr, (double) widget->allocation.width, (double) ((widget->allocation.height) - y[1] + editor->edit.pattern_edit->control_height / 2));
 	cairo_stroke(cr);
       }
 

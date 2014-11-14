@@ -359,7 +359,7 @@ ags_editor_real_machine_changed(AgsEditor *editor, AgsMachine *machine)
 		     0, 0);
 
     g_signal_connect(editor->edit.note_edit->vscrollbar, "value-changed\0",
-		     G_CALLBACK(ags_editor_note_edit_vscrollbar_value_changed_callback), editor);
+		     G_CALLBACK(ags_editor_edit_vscrollbar_value_changed_callback), editor);
     ags_connectable_connect(AGS_CONNECTABLE(editor->edit.note_edit));
     gtk_widget_show_all(editor->edit.note_edit);
 
@@ -380,6 +380,8 @@ ags_editor_real_machine_changed(AgsEditor *editor, AgsMachine *machine)
 		     GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
 		     0, 0);
 
+    g_signal_connect(editor->edit.pattern_edit->vscrollbar, "value-changed\0",
+		     G_CALLBACK(ags_editor_edit_vscrollbar_value_changed_callback), editor);
     ags_connectable_connect(AGS_CONNECTABLE(editor->edit.pattern_edit));
     gtk_widget_show_all(editor->edit.pattern_edit);
     

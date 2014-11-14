@@ -35,12 +35,12 @@ void ags_pattern_edit_paint(AgsPatternEdit *pattern_edit);
 
 /**
  * SECTION:ags_pattern_edit
- * @short_description: edit patterns
+ * @short_description: edit notes
  * @title: AgsPatternEdit
  * @section_id:
  * @include: ags/X/editor/ags_pattern_edit.h
  *
- * The #AgsPatternEdit lets you edit patterns.
+ * The #AgsPatternEdit lets you edit notes.
  */
 
 GtkStyle *pattern_edit_style;
@@ -100,6 +100,8 @@ ags_pattern_edit_init(AgsPatternEdit *pattern_edit)
 {
   GtkAdjustment *adjustment;
 
+  pattern_edit->flags = 0;
+
   adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, 1.0, 1.0);
 
   pattern_edit->ruler = ags_ruler_new();
@@ -117,11 +119,13 @@ ags_pattern_edit_init(AgsPatternEdit *pattern_edit)
 			| GDK_POINTER_MOTION_MASK
 			| GDK_POINTER_MOTION_HINT_MASK
 			);
-
+  
   gtk_table_attach(GTK_TABLE(pattern_edit), (GtkWidget *) pattern_edit->drawing_area,
 		   0, 1, 1, 2,
 		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
 		   0, 0);
+
+  pattern_edit->control.note = ags_note_new();
 
   pattern_edit->width = 0;
   pattern_edit->height = 0;
@@ -139,7 +143,7 @@ ags_pattern_edit_init(AgsPatternEdit *pattern_edit)
   pattern_edit->nth_y = 0;
   pattern_edit->stop_y = 0;
 
-  /* AgsNoteEditControlCurrent is used by ags_pattern_edit_draw_segment */
+  /* AgsPatternEditControlCurrent is used by ags_pattern_edit_draw_segment */
   pattern_edit->control_current.control_count = AGS_PATTERN_EDIT_MAX_CONTROLS;
   pattern_edit->control_current.control_width = 64;
 
@@ -148,7 +152,7 @@ ags_pattern_edit_init(AgsPatternEdit *pattern_edit)
 
   pattern_edit->control_current.nth_x = 0;
 
-  /* AgsNoteEditControlUnit is used by ags_pattern_edit_draw_notation */
+  /* AgsPatternEditControlUnit is used by ags_pattern_edit_draw_notation */
   pattern_edit->control_unit.control_count = 16 * AGS_PATTERN_EDIT_MAX_CONTROLS;
   pattern_edit->control_unit.control_width = 1 * 4;
 
@@ -157,6 +161,10 @@ ags_pattern_edit_init(AgsPatternEdit *pattern_edit)
 
   pattern_edit->control_unit.nth_x = 0;
   pattern_edit->control_unit.stop_x = 0;
+
+  /* offset for pasting from clipboard */
+  pattern_edit->selected_x = 0;
+  pattern_edit->selected_y = 0;
 
   /* GtkScrollbars */
   adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, 1.0, 1.0);
@@ -278,26 +286,24 @@ ags_pattern_edit_reset_vertically(AgsPatternEdit *pattern_edit, guint flags)
       pattern_edit->height = height;
     }
 
-    pattern_edit->y0 = ((guint) round((double) value)) % (pattern_edit->control_height + 2 * pattern_edit->control_margin_y);
+    pattern_edit->y0 = ((guint) round((double) value)) % pattern_edit->control_height;
 
     if(pattern_edit->y0 != 0){
-      pattern_edit->y0 = (pattern_edit->control_height + 2 * pattern_edit->control_margin_y) - pattern_edit->y0;
+      pattern_edit->y0 = pattern_edit->control_height - pattern_edit->y0;
     }
 
-    pattern_edit->y1 = (pattern_edit->height - pattern_edit->y0) % (pattern_edit->control_height + 2 * pattern_edit->control_margin_y);
+    pattern_edit->y1 = (pattern_edit->height - pattern_edit->y0) % pattern_edit->control_height;
 
-    pattern_edit->nth_y = (guint) ceil(round((double) value) / (double)(pattern_edit->control_height + 2.0 * pattern_edit->control_margin_y));
-    pattern_edit->stop_y = pattern_edit->nth_y + (pattern_edit->height - pattern_edit->y0 - pattern_edit->y1) / (pattern_edit->control_height + 2 * pattern_edit->control_margin_y);
+    pattern_edit->nth_y = (guint) ceil(round((double) value) / (double)(pattern_edit->control_height));
+    pattern_edit->stop_y = pattern_edit->nth_y + (pattern_edit->height - pattern_edit->y0 - pattern_edit->y1) / pattern_edit->control_height;
 
     /* refresh display */
     if(GTK_WIDGET_VISIBLE(editor)){
-      //      ags_meter_paint(editor->meter);
-
       cr = gdk_cairo_create(GTK_WIDGET(pattern_edit->drawing_area)->window);
       cairo_push_group(cr);
 
       ags_pattern_edit_draw_segment(pattern_edit, cr);
-      ags_pattern_edit_draw_pattern(pattern_edit, cr);
+      ags_pattern_edit_draw_notation(pattern_edit, cr);
 
       if(editor->toolbar->selected_edit_mode == editor->toolbar->position){
 	ags_pattern_edit_draw_position(pattern_edit, cr);
@@ -436,7 +442,7 @@ ags_pattern_edit_reset_horizontally(AgsPatternEdit *pattern_edit, guint flags)
       cairo_push_group(cr);
 
       ags_pattern_edit_draw_segment(pattern_edit, cr);
-      ags_pattern_edit_draw_pattern(pattern_edit, cr);
+      ags_pattern_edit_draw_notation(pattern_edit, cr);
 
       if(editor->toolbar->selected_edit_mode == editor->toolbar->position){
 	ags_pattern_edit_draw_position(pattern_edit, cr);
@@ -490,7 +496,7 @@ ags_pattern_edit_draw_segment(AgsPatternEdit *pattern_edit, cairo_t *cr)
     cairo_line_to(cr, (double) pattern_edit->width, (double) i);
     cairo_stroke(cr);
 
-    i += (pattern_edit->control_height + 2 * pattern_edit->control_margin_y);
+    i += pattern_edit->control_height;
   }
 
   cairo_move_to(cr, 0.0, (double) i);
@@ -552,7 +558,7 @@ ags_pattern_edit_draw_position(AgsPatternEdit *pattern_edit, cairo_t *cr)
   gint size_width, size_height;
 
   selected_x = pattern_edit->selected_x * pattern_edit->control_unit.control_width;
-  selected_y = pattern_edit->selected_y * (pattern_edit->control_height + 2 * pattern_edit->control_margin_y);
+  selected_y = pattern_edit->selected_y * pattern_edit->control_height;
 
   size_width = GTK_WIDGET(pattern_edit->drawing_area)->allocation.width;
   size_height = GTK_WIDGET(pattern_edit->drawing_area)->allocation.height;
@@ -585,9 +591,9 @@ ags_pattern_edit_draw_position(AgsPatternEdit *pattern_edit, cairo_t *cr)
 
   /* calculate vertically values */
   if(selected_y < y_offset[0]){
-    if(selected_y + pattern_edit->control_height + 2 * pattern_edit->control_margin_y > y_offset[0]){
+    if(selected_y + pattern_edit->control_height > y_offset[0]){
       y = 0;
-      height = selected_y + pattern_edit->control_height + 2 * pattern_edit->control_margin_y - y_offset[0];
+      height = selected_y + pattern_edit->control_height - y_offset[0];
     }else{
       return;
     }
@@ -596,10 +602,10 @@ ags_pattern_edit_draw_position(AgsPatternEdit *pattern_edit, cairo_t *cr)
   }else{
     y = selected_y - y_offset[0];
 
-    if(selected_y + pattern_edit->control_height + 2 * pattern_edit->control_margin_y < y_offset[1]){
-      height = pattern_edit->control_height + 2 * pattern_edit->control_margin_y;
+    if(selected_y + pattern_edit->control_height < y_offset[1]){
+      height = pattern_edit->control_height;
     }else{
-      height = y_offset[1] - (selected_y + pattern_edit->control_height + 2 * pattern_edit->control_margin_y);
+      height = y_offset[1] - (selected_y + pattern_edit->control_height);
     }
   }
 
@@ -610,16 +616,16 @@ ags_pattern_edit_draw_position(AgsPatternEdit *pattern_edit, cairo_t *cr)
 }
 
 /**
- * ags_pattern_edit_draw_pattern:
+ * ags_pattern_edit_draw_notation:
  * @pattern_edit: the #AgsPatternEdit
  * @cr: the #cairo_t surface
  *
- * Draw the #AgsPattern of selected #AgsMachine on @pattern_edit.
+ * Draw the #AgsNotation of selected #AgsMachine on @pattern_edit.
  *
  * Since: 0.4
  */
 void
-ags_pattern_edit_draw_pattern(AgsPatternEdit *pattern_edit, cairo_t *cr)
+ags_pattern_edit_draw_notation(AgsPatternEdit *pattern_edit, cairo_t *cr)
 {
   AgsMachine *machine;
   AgsEditor *editor;
@@ -642,7 +648,7 @@ ags_pattern_edit_draw_pattern(AgsPatternEdit *pattern_edit, cairo_t *cr)
 
   widget = (GtkWidget *) pattern_edit->drawing_area;
 
-  cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
+  cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
 
   i = 0;
 
@@ -681,7 +687,7 @@ ags_pattern_edit_draw_pattern(AgsPatternEdit *pattern_edit, cairo_t *cr)
 	    cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
 	    cairo_stroke(cr);
 
-	    cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
+	    cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
 	  }
 	}else if(note->y == (pattern_edit->nth_y - 1) && pattern_edit->y0 != 0){
 	  if(pattern_edit->y0 > pattern_edit->control_margin_y){
@@ -710,7 +716,7 @@ ags_pattern_edit_draw_pattern(AgsPatternEdit *pattern_edit, cairo_t *cr)
 	      cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
 	      cairo_stroke(cr);
 	    
-	      cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
+	      cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
 	    }
 	  }
 	}else if(note->y == (pattern_edit->stop_y + 1) && pattern_edit->y1 != 0){
@@ -740,7 +746,7 @@ ags_pattern_edit_draw_pattern(AgsPatternEdit *pattern_edit, cairo_t *cr)
 	      cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
 	      cairo_stroke(cr);
 	    
-	      cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
+	      cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
 	    }
 	  }
 	}
@@ -776,7 +782,7 @@ ags_pattern_edit_draw_pattern(AgsPatternEdit *pattern_edit, cairo_t *cr)
 	  cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
 	  cairo_stroke(cr);
 	
-	  cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
+	  cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
 	}
       }else if(note->y == (pattern_edit->nth_y - 1) && pattern_edit->y0 != 0){
 	if(pattern_edit->y0 > pattern_edit->control_margin_y){
@@ -805,7 +811,7 @@ ags_pattern_edit_draw_pattern(AgsPatternEdit *pattern_edit, cairo_t *cr)
 	    cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
 	    cairo_stroke(cr);
 
-	    cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
+	    cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
 	  }
 	}
       }else if(note->y == (pattern_edit->stop_y + 1) && pattern_edit->y1 != 0){
@@ -835,7 +841,7 @@ ags_pattern_edit_draw_pattern(AgsPatternEdit *pattern_edit, cairo_t *cr)
 	    cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
 	    cairo_stroke(cr);
 
-	    cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
+	    cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
 	  }
 	}
       }
@@ -859,7 +865,7 @@ ags_pattern_edit_draw_pattern(AgsPatternEdit *pattern_edit, cairo_t *cr)
  */
 void
 ags_pattern_edit_draw_scroll(AgsPatternEdit *pattern_edit, cairo_t *cr,
-			     gdouble position)
+			  gdouble position)
 {
   double x, y;
   double width, height;
