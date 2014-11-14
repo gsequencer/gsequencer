@@ -1,5 +1,5 @@
 /* AGS - Advanced GTK Sequencer
- * Copyright (C) 2014 Joël Krähemann
+ * Copyright (C) 2005-2011 Joël Krähemann
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,8 +46,18 @@ ags_pattern_edit_drawing_area_expose_event(GtkWidget *widget, GdkEventExpose *ev
       cr = gdk_cairo_create(widget->window);
       cairo_push_group(cr);
 
-      if(AGS_IS_SYNTH(machine) ||
-	 AGS_IS_FFPLAYER(machine)){
+      if(AGS_IS_PANEL(machine)){
+      }else if(AGS_IS_MIXER(machine)){
+      }else if(AGS_IS_DRUM(machine)){
+	ags_pattern_edit_draw_segment(pattern_edit, cr);
+	ags_pattern_edit_draw_notation(pattern_edit, cr);
+      }else if(AGS_IS_MATRIX(machine)){
+	ags_pattern_edit_draw_segment(pattern_edit, cr);
+	ags_pattern_edit_draw_notation(pattern_edit, cr);
+      }else if(AGS_IS_SYNTH(machine)){
+	ags_pattern_edit_draw_segment(pattern_edit, cr);
+	ags_pattern_edit_draw_notation(pattern_edit, cr);
+      }else if(AGS_IS_FFPLAYER(machine)){
 	ags_pattern_edit_draw_segment(pattern_edit, cr);
 	ags_pattern_edit_draw_notation(pattern_edit, cr);
       }
@@ -67,23 +77,19 @@ ags_pattern_edit_drawing_area_expose_event(GtkWidget *widget, GdkEventExpose *ev
 gboolean
 ags_pattern_edit_drawing_area_configure_event(GtkWidget *widget, GdkEventConfigure *event, AgsPatternEdit *pattern_edit)
 {
-  if((AGS_PATTERN_EDIT_RESETING_VERTICALLY & (pattern_edit->flags)) == 0){
-    pattern_edit->flags |= AGS_PATTERN_EDIT_RESETING_VERTICALLY;
-    ags_pattern_edit_reset_vertically(pattern_edit, AGS_PATTERN_EDIT_RESET_VSCROLLBAR);
-    pattern_edit->flags &= (~AGS_PATTERN_EDIT_RESETING_VERTICALLY);
-  }
+  pattern_edit->flags |= AGS_PATTERN_EDIT_RESETING_VERTICALLY;
+  ags_pattern_edit_reset_vertically(pattern_edit, AGS_PATTERN_EDIT_RESET_VSCROLLBAR);
+  pattern_edit->flags &= (~AGS_PATTERN_EDIT_RESETING_VERTICALLY);
 
-  if((AGS_PATTERN_EDIT_RESETING_HORIZONTALLY & (pattern_edit->flags)) == 0){
-    pattern_edit->flags |= AGS_PATTERN_EDIT_RESETING_HORIZONTALLY;
-    ags_pattern_edit_reset_horizontally(pattern_edit, AGS_PATTERN_EDIT_RESET_HSCROLLBAR);
-    pattern_edit->flags &= (~AGS_PATTERN_EDIT_RESETING_HORIZONTALLY);  
-  }
+  pattern_edit->flags |= AGS_PATTERN_EDIT_RESETING_HORIZONTALLY;
+  ags_pattern_edit_reset_horizontally(pattern_edit, AGS_PATTERN_EDIT_RESET_HSCROLLBAR);
+  pattern_edit->flags &= (~AGS_PATTERN_EDIT_RESETING_HORIZONTALLY);  
 
   return(FALSE);
 }
 
 gboolean
-ags_pattern_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventButton *event, AgsPatternEdit *pattern_edit)
+ags_pattern_edit_drawing_area_button_press_event (GtkWidget *widget, GdkEventButton *event, AgsPatternEdit *pattern_edit)
 {
   AgsMachine *machine;
   AgsEditor *editor;
@@ -120,7 +126,7 @@ ags_pattern_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventButt
     note = pattern_edit->control.note;
     note->flags = AGS_NOTE_GUI;
     note->x[0] = (note_x * tact) + (note_offset_x0 * tact);
-    note->x[1] = (guint) note->x[0] + 1;
+    note->x[1] = note->x[0] + 1;
     note->y = note_y + note_offset_y0;
   }
 
@@ -137,11 +143,11 @@ ags_pattern_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventButt
     if(toolbar->selected_edit_mode == toolbar->position){
       pattern_edit->flags |= AGS_PATTERN_EDIT_POSITION_CURSOR;
     }else if(toolbar->selected_edit_mode == toolbar->edit){
-      pattern_edit->flags |= AGS_PATTERN_EDIT_ADDING_PATTERN;
+      pattern_edit->flags |= AGS_PATTERN_EDIT_ADDING_NOTE;
     }else if(toolbar->selected_edit_mode == toolbar->clear){
-      pattern_edit->flags |= AGS_PATTERN_EDIT_DELETING_PATTERN;
+      pattern_edit->flags |= AGS_PATTERN_EDIT_DELETING_NOTE;
     }else if(toolbar->selected_edit_mode == toolbar->select){
-      pattern_edit->flags |= AGS_PATTERN_EDIT_SELECTING_PATTERNS;
+      pattern_edit->flags |= AGS_PATTERN_EDIT_SELECTING_NOTES;
     }
 
     /* store the events position */
@@ -151,11 +157,17 @@ ags_pattern_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventButt
     pattern_edit->control.x0 = (guint) event->x;
     pattern_edit->control.y0 = (guint) event->y;
 
-    if((AGS_PATTERN_EDIT_ADDING_PATTERN & (pattern_edit->flags)) != 0 ||
+    if((AGS_PATTERN_EDIT_ADDING_NOTE & (pattern_edit->flags)) != 0 ||
        (AGS_PATTERN_EDIT_POSITION_CURSOR & (pattern_edit->flags)) != 0){
       tact = exp2(8.0 - (double) gtk_combo_box_get_active(editor->toolbar->zoom));
       
-      if(AGS_IS_SYNTH(machine)){
+      if(AGS_IS_PANEL(machine)){
+      }else if(AGS_IS_MIXER(machine)){
+      }else if(AGS_IS_DRUM(machine)){
+	ags_pattern_edit_drawing_area_button_press_event_set_control();
+      }else if(AGS_IS_MATRIX(machine)){
+	ags_pattern_edit_drawing_area_button_press_event_set_control();
+      }else if(AGS_IS_SYNTH(machine)){
 	ags_pattern_edit_drawing_area_button_press_event_set_control();
       }else if(AGS_IS_FFPLAYER(machine)){
 	ags_pattern_edit_drawing_area_button_press_event_set_control();
@@ -197,8 +209,6 @@ ags_pattern_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventBu
       note_offset_x1 -= 1;
       note_x = 0;
     }
-
-    note->x[1] = (note_x * tact) + (note_offset_x1 * tact);
 
     list_notation = machine->audio->notation;
     history = gtk_combo_box_get_active(editor->toolbar->mode);
@@ -453,33 +463,47 @@ ags_pattern_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventBu
       pattern_edit->selected_x = pattern_edit->control.note->x[0];
       pattern_edit->selected_y = pattern_edit->control.note->y;
 
-      if(AGS_IS_FFPLAYER(machine)){
+      if(AGS_IS_PANEL(machine)){
+      }else if(AGS_IS_MIXER(machine)){
+      }else if(AGS_IS_DRUM(machine)){
+	ags_pattern_edit_draw_position(pattern_edit, cr);
+      }else if(AGS_IS_MATRIX(machine)){
+	ags_pattern_edit_draw_position(pattern_edit, cr);
+      }else if(AGS_IS_FFPLAYER(machine)){
 	ags_pattern_edit_draw_position(pattern_edit, cr);
       }else if(AGS_IS_SYNTH(machine)){
 	ags_pattern_edit_draw_position(pattern_edit, cr);
       }
-    }else if((AGS_PATTERN_EDIT_ADDING_PATTERN & (pattern_edit->flags)) != 0){
-      pattern_edit->flags &= (~AGS_PATTERN_EDIT_ADDING_PATTERN);
+    }else if((AGS_PATTERN_EDIT_ADDING_NOTE & (pattern_edit->flags)) != 0){
+      pattern_edit->flags &= (~AGS_PATTERN_EDIT_ADDING_NOTE);
 
       ags_pattern_edit_draw_segment(pattern_edit, cr);
       ags_pattern_edit_draw_notation(pattern_edit, cr);
 
-      if(AGS_IS_FFPLAYER(machine)){
+      if(AGS_IS_PANEL(machine)){
+      }else if(AGS_IS_MIXER(machine)){
+      }else if(AGS_IS_DRUM(machine)){
+	ags_pattern_edit_drawing_area_button_release_event_set_control();
+	ags_pattern_edit_drawing_area_button_release_event_draw_control(cr);
+      }else if(AGS_IS_MATRIX(machine)){
+	ags_pattern_edit_drawing_area_button_release_event_set_control();
+	ags_pattern_edit_drawing_area_button_release_event_draw_control(cr);
+      }else if(AGS_IS_FFPLAYER(machine)){
 	ags_pattern_edit_drawing_area_button_release_event_set_control();
 	ags_pattern_edit_drawing_area_button_release_event_draw_control(cr);
       }else if(AGS_IS_SYNTH(machine)){
 	ags_pattern_edit_drawing_area_button_release_event_set_control();
 	ags_pattern_edit_drawing_area_button_release_event_draw_control(cr);
       }
-    }else if((AGS_PATTERN_EDIT_DELETING_PATTERN & (pattern_edit->flags)) != 0){
-      pattern_edit->flags &= (~AGS_PATTERN_EDIT_DELETING_PATTERN);
+    }else if((AGS_PATTERN_EDIT_DELETING_NOTE & (pattern_edit->flags)) != 0){
+      pattern_edit->flags &= (~AGS_PATTERN_EDIT_DELETING_NOTE);
 
       ags_pattern_edit_drawing_area_button_release_event_delete_point();
 
       ags_pattern_edit_draw_segment(pattern_edit, cr);
       ags_pattern_edit_draw_notation(pattern_edit, cr);
-    }else if((AGS_PATTERN_EDIT_SELECTING_PATTERNS & (pattern_edit->flags)) != 0){
-      pattern_edit->flags &= (~AGS_PATTERN_EDIT_SELECTING_PATTERNS);
+    }else if((AGS_PATTERN_EDIT_SELECTING_NOTES & (pattern_edit->flags)) != 0){
+      pattern_edit->flags &= (~AGS_PATTERN_EDIT_SELECTING_NOTES);
 
       ags_pattern_edit_drawing_area_button_release_event_select_region();
 
@@ -548,6 +572,8 @@ ags_pattern_edit_drawing_area_motion_notify_event (GtkWidget *widget, GdkEventMo
     }else{
       return;
     }
+
+    width = pattern_edit->control_unit.control_width;
 
     if(x + width > widget->allocation.width)
       width = widget->allocation.width - x;
@@ -685,20 +711,25 @@ ags_pattern_edit_drawing_area_motion_notify_event (GtkWidget *widget, GdkEventMo
     cr = gdk_cairo_create(widget->window);
     cairo_push_group(cr);
 
-    if((AGS_PATTERN_EDIT_ADDING_PATTERN & (pattern_edit->flags)) != 0){
+    if((AGS_PATTERN_EDIT_ADDING_NOTE & (pattern_edit->flags)) != 0){
       if(prev_x1 > pattern_edit->control.x1){
 	ags_pattern_edit_draw_segment(pattern_edit, cr);
 	ags_pattern_edit_draw_notation(pattern_edit, cr);
       }
 
-      if(AGS_IS_SYNTH(machine)){
+      if(AGS_IS_PANEL(machine)){
+      }else if(AGS_IS_MIXER(machine)){
+      }else if(AGS_IS_DRUM(machine)){
+	ags_pattern_edit_drawing_area_motion_notify_event_set_control();
+	ags_pattern_edit_drawing_area_motion_notify_event_draw_control(cr);
+      }else if(AGS_IS_MATRIX(machine)){
 	ags_pattern_edit_drawing_area_motion_notify_event_set_control();
 	ags_pattern_edit_drawing_area_motion_notify_event_draw_control(cr);
       }else if(AGS_IS_FFPLAYER(machine)){
 	ags_pattern_edit_drawing_area_motion_notify_event_set_control();
 	ags_pattern_edit_drawing_area_motion_notify_event_draw_control(cr);
       }
-    }else if((AGS_PATTERN_EDIT_SELECTING_PATTERNS & (pattern_edit->flags)) != 0){
+    }else if((AGS_PATTERN_EDIT_SELECTING_NOTES & (pattern_edit->flags)) != 0){
       ags_pattern_edit_draw_segment(pattern_edit, cr);
       ags_pattern_edit_draw_notation(pattern_edit, cr);
 
@@ -733,7 +764,7 @@ ags_pattern_edit_hscrollbar_value_changed(GtkRange *range, AgsPatternEdit *patte
 
   /* reset ruler */
   gtk_adjustment_set_value(pattern_edit->ruler->adjustment,
-  			   GTK_RANGE(pattern_edit->hscrollbar)->adjustment->value / (double) pattern_edit->control_current.control_width);
+			   GTK_RANGE(pattern_edit->hscrollbar)->adjustment->value / (double) pattern_edit->control_current.control_width);
   gtk_widget_queue_draw(pattern_edit->ruler);
 
   /* update note edit */

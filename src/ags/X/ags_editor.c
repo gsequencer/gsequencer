@@ -344,6 +344,8 @@ ags_editor_real_machine_changed(AgsEditor *editor, AgsMachine *machine)
   }
 
   if((AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0){
+    editor->flags |= AGS_EDITOR_TOOL_NOTE_EDIT;
+
     editor->piano.meter = ags_meter_new();
     gtk_table_attach(editor->table, (GtkWidget *) editor->piano.meter,
 		     0, 1, 1, 2,
@@ -366,6 +368,8 @@ ags_editor_real_machine_changed(AgsEditor *editor, AgsMachine *machine)
     ags_note_edit_set_map_height(editor->edit.note_edit,
 				 pads * editor->edit.note_edit->control_height);
   }else if((AGS_MACHINE_IS_SEQUENCER & (machine->flags)) != 0){
+    editor->flags |= AGS_EDITOR_TOOL_PATTERN_EDIT;
+
     editor->piano.soundset = ags_soundset_new();
     gtk_table_attach(editor->table, (GtkWidget *) editor->piano.soundset,
 		     0, 1, 1, 2,
@@ -388,6 +392,8 @@ ags_editor_real_machine_changed(AgsEditor *editor, AgsMachine *machine)
     ags_pattern_edit_set_map_height(editor->edit.pattern_edit,
  				    pads * editor->edit.pattern_edit->control_height);
   }else{
+    editor->flags |= AGS_EDITOR_TOOL_AUTOMATION_EDIT;
+
     editor->edit.automation_edit = ags_automation_edit_new();
     gtk_table_attach(table, (GtkWidget *) editor->edit.automation_edit,
 		     1, 2, 1, 2,

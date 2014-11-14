@@ -46,8 +46,18 @@ ags_note_edit_drawing_area_expose_event(GtkWidget *widget, GdkEventExpose *event
       cr = gdk_cairo_create(widget->window);
       cairo_push_group(cr);
 
-      if(AGS_IS_SYNTH(machine) ||
-	 AGS_IS_FFPLAYER(machine)){
+      if(AGS_IS_PANEL(machine)){
+      }else if(AGS_IS_MIXER(machine)){
+      }else if(AGS_IS_DRUM(machine)){
+	ags_note_edit_draw_segment(note_edit, cr);
+	ags_note_edit_draw_notation(note_edit, cr);
+      }else if(AGS_IS_MATRIX(machine)){
+	ags_note_edit_draw_segment(note_edit, cr);
+	ags_note_edit_draw_notation(note_edit, cr);
+      }else if(AGS_IS_SYNTH(machine)){
+	ags_note_edit_draw_segment(note_edit, cr);
+	ags_note_edit_draw_notation(note_edit, cr);
+      }else if(AGS_IS_FFPLAYER(machine)){
 	ags_note_edit_draw_segment(note_edit, cr);
 	ags_note_edit_draw_notation(note_edit, cr);
       }
@@ -67,23 +77,19 @@ ags_note_edit_drawing_area_expose_event(GtkWidget *widget, GdkEventExpose *event
 gboolean
 ags_note_edit_drawing_area_configure_event(GtkWidget *widget, GdkEventConfigure *event, AgsNoteEdit *note_edit)
 {
-  if((AGS_NOTE_EDIT_RESETING_VERTICALLY & (note_edit->flags)) == 0){
-    note_edit->flags |= AGS_NOTE_EDIT_RESETING_VERTICALLY;
-    ags_note_edit_reset_vertically(note_edit, AGS_NOTE_EDIT_RESET_VSCROLLBAR);
-    note_edit->flags &= (~AGS_NOTE_EDIT_RESETING_VERTICALLY);
-  }
+  note_edit->flags |= AGS_NOTE_EDIT_RESETING_VERTICALLY;
+  ags_note_edit_reset_vertically(note_edit, AGS_NOTE_EDIT_RESET_VSCROLLBAR);
+  note_edit->flags &= (~AGS_NOTE_EDIT_RESETING_VERTICALLY);
 
-  if((AGS_NOTE_EDIT_RESETING_HORIZONTALLY & (note_edit->flags)) == 0){
-    note_edit->flags |= AGS_NOTE_EDIT_RESETING_HORIZONTALLY;
-    ags_note_edit_reset_horizontally(note_edit, AGS_NOTE_EDIT_RESET_HSCROLLBAR);
-    note_edit->flags &= (~AGS_NOTE_EDIT_RESETING_HORIZONTALLY);  
-  }
+  note_edit->flags |= AGS_NOTE_EDIT_RESETING_HORIZONTALLY;
+  ags_note_edit_reset_horizontally(note_edit, AGS_NOTE_EDIT_RESET_HSCROLLBAR);
+  note_edit->flags &= (~AGS_NOTE_EDIT_RESETING_HORIZONTALLY);  
 
   return(FALSE);
 }
 
 gboolean
-ags_note_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventButton *event, AgsNoteEdit *note_edit)
+ags_note_edit_drawing_area_button_press_event (GtkWidget *widget, GdkEventButton *event, AgsNoteEdit *note_edit)
 {
   AgsMachine *machine;
   AgsEditor *editor;
@@ -155,7 +161,13 @@ ags_note_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventButton 
        (AGS_NOTE_EDIT_POSITION_CURSOR & (note_edit->flags)) != 0){
       tact = exp2(8.0 - (double) gtk_combo_box_get_active(editor->toolbar->zoom));
       
-      if(AGS_IS_SYNTH(machine)){
+      if(AGS_IS_PANEL(machine)){
+      }else if(AGS_IS_MIXER(machine)){
+      }else if(AGS_IS_DRUM(machine)){
+	ags_note_edit_drawing_area_button_press_event_set_control();
+      }else if(AGS_IS_MATRIX(machine)){
+	ags_note_edit_drawing_area_button_press_event_set_control();
+      }else if(AGS_IS_SYNTH(machine)){
 	ags_note_edit_drawing_area_button_press_event_set_control();
       }else if(AGS_IS_FFPLAYER(machine)){
 	ags_note_edit_drawing_area_button_press_event_set_control();
@@ -453,7 +465,13 @@ ags_note_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
       note_edit->selected_x = note_edit->control.note->x[0];
       note_edit->selected_y = note_edit->control.note->y;
 
-      if(AGS_IS_FFPLAYER(machine)){
+      if(AGS_IS_PANEL(machine)){
+      }else if(AGS_IS_MIXER(machine)){
+      }else if(AGS_IS_DRUM(machine)){
+	ags_note_edit_draw_position(note_edit, cr);
+      }else if(AGS_IS_MATRIX(machine)){
+	ags_note_edit_draw_position(note_edit, cr);
+      }else if(AGS_IS_FFPLAYER(machine)){
 	ags_note_edit_draw_position(note_edit, cr);
       }else if(AGS_IS_SYNTH(machine)){
 	ags_note_edit_draw_position(note_edit, cr);
@@ -464,7 +482,15 @@ ags_note_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
       ags_note_edit_draw_segment(note_edit, cr);
       ags_note_edit_draw_notation(note_edit, cr);
 
-      if(AGS_IS_FFPLAYER(machine)){
+      if(AGS_IS_PANEL(machine)){
+      }else if(AGS_IS_MIXER(machine)){
+      }else if(AGS_IS_DRUM(machine)){
+	ags_note_edit_drawing_area_button_release_event_set_control();
+	ags_note_edit_drawing_area_button_release_event_draw_control(cr);
+      }else if(AGS_IS_MATRIX(machine)){
+	ags_note_edit_drawing_area_button_release_event_set_control();
+	ags_note_edit_drawing_area_button_release_event_draw_control(cr);
+      }else if(AGS_IS_FFPLAYER(machine)){
 	ags_note_edit_drawing_area_button_release_event_set_control();
 	ags_note_edit_drawing_area_button_release_event_draw_control(cr);
       }else if(AGS_IS_SYNTH(machine)){
@@ -691,7 +717,12 @@ ags_note_edit_drawing_area_motion_notify_event (GtkWidget *widget, GdkEventMotio
 	ags_note_edit_draw_notation(note_edit, cr);
       }
 
-      if(AGS_IS_SYNTH(machine)){
+      if(AGS_IS_PANEL(machine)){
+      }else if(AGS_IS_MIXER(machine)){
+      }else if(AGS_IS_DRUM(machine)){
+	ags_note_edit_drawing_area_motion_notify_event_set_control();
+	ags_note_edit_drawing_area_motion_notify_event_draw_control(cr);
+      }else if(AGS_IS_MATRIX(machine)){
 	ags_note_edit_drawing_area_motion_notify_event_set_control();
 	ags_note_edit_drawing_area_motion_notify_event_draw_control(cr);
       }else if(AGS_IS_FFPLAYER(machine)){
@@ -733,7 +764,7 @@ ags_note_edit_hscrollbar_value_changed(GtkRange *range, AgsNoteEdit *note_edit)
 
   /* reset ruler */
   gtk_adjustment_set_value(note_edit->ruler->adjustment,
-  			   GTK_RANGE(note_edit->hscrollbar)->adjustment->value / (double) note_edit->control_current.control_width);
+			   GTK_RANGE(note_edit->hscrollbar)->adjustment->value / (double) note_edit->control_current.control_width);
   gtk_widget_queue_draw(note_edit->ruler);
 
   /* update note edit */

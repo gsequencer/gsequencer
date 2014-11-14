@@ -1,5 +1,5 @@
 /* AGS - Advanced GTK Sequencer
- * Copyright (C) 2014 Joël Krähemann
+ * Copyright (C) 2005-2011, 2014 Joël Krähemann
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@
 
 #include <ags/widget/ags_ruler.h>
 
+#include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_notation.h>
 
 #define AGS_TYPE_PATTERN_EDIT                (ags_pattern_edit_get_type())
@@ -44,9 +45,9 @@ typedef enum{
   AGS_PATTERN_EDIT_RESETING_VERTICALLY    = 1,
   AGS_PATTERN_EDIT_RESETING_HORIZONTALLY  = 1 <<  1,
   AGS_PATTERN_EDIT_POSITION_CURSOR        = 1 <<  2,
-  AGS_PATTERN_EDIT_ADDING_PATTERN         = 1 <<  3,
-  AGS_PATTERN_EDIT_DELETING_PATTERN       = 1 <<  4,
-  AGS_PATTERN_EDIT_SELECTING_PATTERNS     = 1 <<  5,
+  AGS_PATTERN_EDIT_ADDING_NOTE            = 1 <<  3,
+  AGS_PATTERN_EDIT_DELETING_NOTE          = 1 <<  4,
+  AGS_PATTERN_EDIT_SELECTING_NOTES        = 1 <<  5,
 }AgsPatternEditFlags;
 
 typedef enum{
@@ -78,7 +79,7 @@ struct _AgsPatternEdit
     guint x1;
     guint y1;
   }control;
-  
+
   guint width;
   guint height;
   guint map_width;
@@ -120,7 +121,7 @@ struct _AgsPatternEdit
 
   guint selected_x;
   guint selected_y;
-
+  
   GtkVScrollbar *vscrollbar;
   GtkHScrollbar *hscrollbar;
 };
@@ -139,7 +140,7 @@ void ags_pattern_edit_reset_horizontally(AgsPatternEdit *pattern_edit, guint fla
 
 void ags_pattern_edit_draw_segment(AgsPatternEdit *pattern_edit, cairo_t *cr);
 void ags_pattern_edit_draw_position(AgsPatternEdit *pattern_edit, cairo_t *cr);
-void ags_pattern_edit_draw_pattern(AgsPatternEdit *pattern_edit, cairo_t *cr);
+void ags_pattern_edit_draw_notation(AgsPatternEdit *pattern_edit, cairo_t *cr);
 
 void ags_pattern_edit_draw_scroll(AgsPatternEdit *pattern_edit, cairo_t *cr,
 				  gdouble position);

@@ -1,5 +1,5 @@
 /* AGS - Advanced GTK Sequencer
- * Copyright (C) 2014 Joël Krähemann
+ * Copyright (C) 2005-2011, 2014 Joël Krähemann
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -100,8 +100,6 @@ ags_pattern_edit_init(AgsPatternEdit *pattern_edit)
 {
   GtkAdjustment *adjustment;
 
-  pattern_edit->flags = 0;
-
   adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, 1.0, 1.0);
 
   pattern_edit->ruler = ags_ruler_new();
@@ -112,14 +110,14 @@ ags_pattern_edit_init(AgsPatternEdit *pattern_edit)
 
   pattern_edit->drawing_area = (GtkDrawingArea *) gtk_drawing_area_new();
   gtk_widget_set_style((GtkWidget *) pattern_edit->drawing_area, pattern_edit_style);
-  gtk_widget_set_events(GTK_WIDGET (pattern_edit->drawing_area), GDK_EXPOSURE_MASK
-			| GDK_LEAVE_NOTIFY_MASK
-			| GDK_BUTTON_PRESS_MASK
-			| GDK_BUTTON_RELEASE_MASK
-			| GDK_POINTER_MOTION_MASK
-			| GDK_POINTER_MOTION_HINT_MASK
-			);
-  
+  gtk_widget_set_events (GTK_WIDGET (pattern_edit->drawing_area), GDK_EXPOSURE_MASK
+                         | GDK_LEAVE_NOTIFY_MASK
+                         | GDK_BUTTON_PRESS_MASK
+			 | GDK_BUTTON_RELEASE_MASK
+                         | GDK_POINTER_MOTION_MASK
+			 | GDK_POINTER_MOTION_HINT_MASK
+			 );
+
   gtk_table_attach(GTK_TABLE(pattern_edit), (GtkWidget *) pattern_edit->drawing_area,
 		   0, 1, 1, 2,
 		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
@@ -209,6 +207,7 @@ ags_pattern_edit_connect(AgsConnectable *connectable)
 
   g_signal_connect_after((GObject *) pattern_edit->hscrollbar, "value-changed\0",
 			 G_CALLBACK (ags_pattern_edit_hscrollbar_value_changed), (gpointer) pattern_edit);
+
 }
 
 void
@@ -311,8 +310,6 @@ ags_pattern_edit_reset_vertically(AgsPatternEdit *pattern_edit, guint flags)
 
       cairo_pop_group_to_source(cr);
       cairo_paint(cr);
-
-      cairo_destroy(cr);
     }
   }
 }
@@ -898,3 +895,4 @@ ags_pattern_edit_new()
 
   return(pattern_edit);
 }
+
