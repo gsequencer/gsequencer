@@ -182,7 +182,6 @@ ags_editor_init(AgsEditor *editor)
 {
   GtkHPaned *paned;
   GtkScrolledWindow *scrolled_window;
-  GtkTable *table;
 
   g_signal_connect_after((GObject *) editor, "parent-set\0",
 			 G_CALLBACK(ags_editor_parent_set_callback), editor);
@@ -213,26 +212,22 @@ ags_editor_init(AgsEditor *editor)
 
   editor->selected_machine = NULL;
 
-  table = (GtkTable *) gtk_table_new(4, 3, FALSE);
-  gtk_paned_pack2((GtkPaned *) paned, (GtkWidget *) table, TRUE, FALSE);
+  editor->table = (GtkTable *) gtk_table_new(4, 3, FALSE);
+  gtk_paned_pack2((GtkPaned *) paned, (GtkWidget *) editor->table, TRUE, FALSE);
   
   editor->notebook = ags_notebook_new();
-  gtk_table_attach(table, (GtkWidget *) editor->notebook,
+  gtk_table_attach(editor->table, (GtkWidget *) editor->notebook,
 		   0, 3, 0, 1,
 		   GTK_FILL|GTK_EXPAND, GTK_FILL,
 		   0, 0);
 
   editor->meter = ags_meter_new();
-  gtk_table_attach(table, (GtkWidget *) editor->meter,
+  gtk_table_attach(editor->table, (GtkWidget *) editor->meter,
 		   0, 1, 1, 2,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
-  editor->note_edit = ags_note_edit_new();
-  gtk_table_attach(table, (GtkWidget *) editor->note_edit,
-		   1, 2, 1, 2,
-		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
-		   0, 0);
+  editor->edit.note_edit = NULL;
 
   editor->tact_counter = 0;
 }
@@ -317,7 +312,6 @@ ags_editor_connect(AgsConnectable *connectable)
   ags_connectable_connect(AGS_CONNECTABLE(editor->machine_selector));
   ags_connectable_connect(AGS_CONNECTABLE(editor->notebook));
   ags_connectable_connect(AGS_CONNECTABLE(editor->meter));
-  ags_connectable_connect(AGS_CONNECTABLE(editor->note_edit));
 }
 
 void
@@ -329,6 +323,7 @@ ags_editor_disconnect(AgsConnectable *connectable)
 void
 ags_editor_real_machine_changed(AgsEditor *editor, AgsMachine *machine)
 {
+  GtkTable *table;
   guint pads;
 
   if(editor->selected_machine == machine){
@@ -341,6 +336,8 @@ ags_editor_real_machine_changed(AgsEditor *editor, AgsMachine *machine)
     return;
   }
 
+  table = editor->table;
+
   editor->set_audio_channels_handler = g_signal_connect(machine->audio, "set-audio-channels\0",
 							G_CALLBACK(ags_editor_set_audio_channels_callback), editor);
   editor->set_pads_handler = g_signal_connect(machine->audio, "set-pads\0",
@@ -352,8 +349,40 @@ ags_editor_real_machine_changed(AgsEditor *editor, AgsMachine *machine)
     pads = machine->audio->output_pads;
   }
 
-  ags_note_edit_set_map_height(editor->note_edit,
-			       pads * editor->note_edit->control_height);
+  if((AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0){
+    editor->edit.note_edit = ags_note_edit_new();
+    gtk_table_attach(table, (GtkWidget *) editor->edit.note_edit,
+		     1, 2, 1, 2,
+		     GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
+		     0, 0);
+
+    ags_note_edit_set_map_height(editor->edit.note_edit,
+				 pads * editor->edit.note_edit->control_height);
+
+    ags_connectable_connect(AGS_CONNECTABLE(editor->edit.note_edit));
+  }else if((AGS_MACHINE_IS_SEQUENCER & (machine->flags)) != 0){
+    editor->edit.pattern_edit = ags_pattern_edit_new();
+    gtk_table_attach(table, (GtkWidget *) editor->edit.pattern_edit,
+		     1, 2, 1, 2,
+		     GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
+		     0, 0);
+
+    ags_pattern_edit_set_map_height(editor->edit.pattern_edit,
+				    pads * editor->edit.pattern_edit->control_height);
+
+    ags_connectable_connect(AGS_CONNECTABLE(editor->edit.pattern_edit));
+  }else{
+    editor->edit.automation_edit = ags_automation_edit_new();
+    gtk_table_attach(table, (GtkWidget *) editor->edit.automation_edit,
+		     1, 2, 1, 2,
+		     GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
+		     0, 0);
+
+    ags_automation_edit_set_map_height(editor->edit.automation_edit,
+				       pads * editor->edit.automation_edit->control_height);
+
+    ags_connectable_connect(AGS_CONNECTABLE(editor->edit.automation_edit));
+  }
 }
 
 /**

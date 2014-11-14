@@ -2366,13 +2366,13 @@ ags_file_read_editor_launch(AgsFileLaunch *file_launch,
     pads = machine->audio->output_pads;
   }
 
-  editor->note_edit->map_height = pads * editor->note_edit->control_height;
+  editor->edit.note_edit->map_height = pads * editor->edit.note_edit->control_height;
 
   gtk_widget_show_all(editor->notebook);
 
-  editor->note_edit->flags |= AGS_NOTE_EDIT_RESETING_VERTICALLY;
-  ags_note_edit_reset_vertically(editor->note_edit, AGS_NOTE_EDIT_RESET_VSCROLLBAR);
-  editor->note_edit->flags &= (~AGS_NOTE_EDIT_RESETING_VERTICALLY);
+  editor->edit.note_edit->flags |= AGS_NOTE_EDIT_RESETING_VERTICALLY;
+  ags_note_edit_reset_vertically(editor->edit.note_edit, AGS_NOTE_EDIT_RESET_VSCROLLBAR);
+  editor->edit.note_edit->flags &= (~AGS_NOTE_EDIT_RESETING_VERTICALLY);
 }
 
 xmlNode*

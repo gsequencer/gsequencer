@@ -40,28 +40,20 @@ ags_toolbar_position_callback(GtkToggleButton *toggle_button, AgsToolbar *toolba
   editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(toolbar), AGS_TYPE_EDITOR);
 
   if(toggle_button == toolbar->selected_edit_mode){
+    GtkWidget *child;
+    GList *list;
     GdkRectangle *rectangle;
     gint width, height;
     
+    list = gtk_container_get_children(editor->table);
+
+    /* 3rd - 1 */
+    child = g_list_nth(editor->table,
+		       2)->data;
+
     /* refresh editor */
-    gtk_widget_get_size_request(GTK_WIDGET(editor->note_edit->drawing_area),
-				&width,
-				&height);
-    
-    rectangle = g_new(GdkRectangle, 1);
-    rectangle->x = 0;
-    rectangle->y = 0;
-    rectangle->width = width;
-    rectangle->height = height;
-    
-    gdk_window_invalidate_rect(GTK_WIDGET(editor->note_edit->drawing_area)->window,
-			       rectangle,
-			       TRUE);
-    gdk_window_process_updates(GTK_WIDGET(editor->note_edit->drawing_area)->window,
-			       TRUE);
-    
-    g_free(rectangle);
-    
+    gtk_widget_queue_draw(child);
+
     if(!gtk_toggle_button_get_active(toggle_button)){
       gtk_toggle_button_set_active(toggle_button, TRUE);
     }
@@ -73,10 +65,16 @@ ags_toolbar_position_callback(GtkToggleButton *toggle_button, AgsToolbar *toolba
     toolbar->selected_edit_mode = toggle_button;
     gtk_toggle_button_set_active(old_selected_edit_mode, FALSE);
 
-    /* refresh note_edit */
-    cr = gdk_cairo_create(GTK_WIDGET(editor->note_edit->drawing_area)->window);
-    
-    ags_note_edit_draw_position(editor->note_edit, cr);
+    /* refresh note_edit */    
+    if((AGS_EDITOR_TOOL_NOTE_EDIT & (editor->flags)) != 0){
+      cr = gdk_cairo_create(GTK_WIDGET(editor->edit.note_edit->drawing_area)->window);
+      ags_note_edit_draw_position(editor->edit.note_edit, cr);
+    }else if((AGS_EDITOR_TOOL_PATTERN_EDIT & (editor->flags)) != 0){
+      cr = gdk_cairo_create(GTK_WIDGET(editor->edit.pattern_edit->drawing_area)->window);
+      ags_pattern_edit_draw_position(editor->edit.pattern_edit, cr);
+    }else if((AGS_EDITOR_TOOL_AUTOMATION_EDIT & (editor->flags)) != 0){
+      //TODO:JK: implement me
+    }
   }
 }
 
@@ -256,8 +254,19 @@ ags_toolbar_paste_callback(GtkWidget *widget, AgsToolbar *toolbar)
     if(toolbar->selected_edit_mode == toolbar->position){
       paste_from_position = TRUE;
 
-      position_x = editor->note_edit->selected_x;
-      position_y = editor->note_edit->selected_y;
+      if((AGS_EDITOR_TOOL_NOTE_EDIT & (editor->flags)) != 0){
+	position_x = editor->edit.note_edit->selected_x;
+	position_y = editor->edit.note_edit->selected_y;
+      }else if((AGS_EDITOR_TOOL_PATTERN_EDIT & (editor->flags)) != 0){
+	position_x = editor->edit.pattern_edit->selected_x;
+	position_y = editor->edit.pattern_edit->selected_y;
+      }else if((AGS_EDITOR_TOOL_AUTOMATION_EDIT & (editor->flags)) != 0){
+	//TODO:JK: implement me
+	position_x = 0;
+	position_y = 0;
+	//	position_x = editor->edit.automation_edit->selected_x;
+	//	position_y = editor->edit.automation_edit->selected_y;
+      }
 
       printf("pasting at position: [%u,%u]\n\0", position_x, position_y);
     }else{
@@ -305,10 +314,22 @@ ags_toolbar_zoom_callback(GtkComboBox *combo_box, AgsToolbar *toolbar)
 
   toolbar->zoom_history = history;
 
-  editor->note_edit->flags |= AGS_NOTE_EDIT_RESETING_HORIZONTALLY;
-  ags_note_edit_reset_horizontally(editor->note_edit, AGS_NOTE_EDIT_RESET_HSCROLLBAR |
-				   AGS_NOTE_EDIT_RESET_WIDTH);
-  editor->note_edit->flags &= (~AGS_NOTE_EDIT_RESETING_HORIZONTALLY);
+  if((AGS_EDITOR_TOOL_NOTE_EDIT & (editor->flags)) != 0){
+    editor->edit.note_edit->flags |= AGS_NOTE_EDIT_RESETING_HORIZONTALLY;
+    ags_note_edit_reset_horizontally(editor->edit.note_edit, AGS_NOTE_EDIT_RESET_HSCROLLBAR |
+				     AGS_NOTE_EDIT_RESET_WIDTH);
+    editor->edit.note_edit->flags &= (~AGS_NOTE_EDIT_RESETING_HORIZONTALLY);
+  }else if((AGS_EDITOR_TOOL_PATTERN_EDIT & (editor->flags)) != 0){
+    editor->edit.pattern_edit->flags |= AGS_NOTE_EDIT_RESETING_HORIZONTALLY;
+    ags_note_edit_reset_horizontally(editor->edit.pattern_edit, AGS_NOTE_EDIT_RESET_HSCROLLBAR |
+				     AGS_NOTE_EDIT_RESET_WIDTH);
+    editor->edit.note_edit->flags &= (~AGS_NOTE_EDIT_RESETING_HORIZONTALLY);
+  }else if((AGS_EDITOR_TOOL_AUTOMATION_EDIT & (editor->flags)) != 0){
+    editor->edit.automation_edit->flags |= AGS_NOTE_EDIT_RESETING_HORIZONTALLY;
+    ags_note_edit_reset_horizontally(editor->edit.automation_edit, AGS_NOTE_EDIT_RESET_HSCROLLBAR |
+				     AGS_NOTE_EDIT_RESET_WIDTH);
+    editor->edit.note_edit->flags &= (~AGS_NOTE_EDIT_RESETING_HORIZONTALLY);
+  }
 }
 
 void

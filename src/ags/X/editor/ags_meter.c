@@ -163,17 +163,17 @@ ags_meter_paint(AgsMeter *meter)
 
   bitmap = 0x52a52a; // description of the keyboard
 
-  j = (guint) ceil(GTK_RANGE(editor->note_edit->vscrollbar)->adjustment->value / (double) editor->note_edit->control_height);
+  j = (guint) ceil(GTK_RANGE(editor->edit.note_edit->vscrollbar)->adjustment->value / (double) editor->edit.note_edit->control_height);
   j = j % 12;
 
-  y[0] = (guint) round(GTK_RANGE(editor->note_edit->vscrollbar)->adjustment->value) % editor->note_edit->control_height;
+  y[0] = (guint) round(GTK_RANGE(editor->edit.note_edit->vscrollbar)->adjustment->value) % editor->edit.note_edit->control_height;
 
   if(y[0] != 0){
-    y[0] = editor->note_edit->control_height - y[0];
+    y[0] = editor->edit.note_edit->control_height - y[0];
   }
 
-  y[1] = ((guint) (widget->allocation.height - border_top) - y[0]) % editor->note_edit->control_height;
-  i_stop = ((widget->allocation.height - border_top) - y[0] - y[1]) / editor->note_edit->control_height;
+  y[1] = ((guint) (widget->allocation.height - border_top) - y[0]) % editor->edit.note_edit->control_height;
+  i_stop = ((widget->allocation.height - border_top) - y[0] - y[1]) / editor->edit.note_edit->control_height;
 
   cr = gdk_cairo_create(widget->window);
 
@@ -195,9 +195,9 @@ ags_meter_paint(AgsMeter *meter)
 
       cairo_set_source_rgb(cr, 0.68, 0.68, 0.68);
 
-      if(y[0] > editor->note_edit->control_height / 2){
-	cairo_move_to(cr, 2.0 / 3.0 * (double) widget->allocation.width, (double) (y[0] - editor->note_edit->control_height / 2) + border_top);
-	cairo_line_to(cr, (double) widget->allocation.width, (double) (y[0] - editor->note_edit->control_height / 2) + border_top);
+      if(y[0] > editor->edit.note_edit->control_height / 2){
+	cairo_move_to(cr, 2.0 / 3.0 * (double) widget->allocation.width, (double) (y[0] - editor->edit.note_edit->control_height / 2) + border_top);
+	cairo_line_to(cr, (double) widget->allocation.width, (double) (y[0] - editor->edit.note_edit->control_height / 2) + border_top);
 	cairo_stroke(cr);
       }
 
@@ -222,28 +222,28 @@ ags_meter_paint(AgsMeter *meter)
       // draw semi tone key
       cairo_set_source_rgb(cr, 0.2, 0.2, 0.2);
 
-      cairo_rectangle(cr, 0.0, (double) (i * editor->note_edit->control_height + y[0] + border_top), 2.0 / 3.0 * (double) widget->allocation.width, (double) editor->note_edit->control_height);
+      cairo_rectangle(cr, 0.0, (double) (i * editor->edit.note_edit->control_height + y[0] + border_top), 2.0 / 3.0 * (double) widget->allocation.width, (double) editor->edit.note_edit->control_height);
       cairo_fill(cr); 	
 
       cairo_set_source_rgb(cr, 0.68, 0.68, 0.68);
 
-      cairo_move_to(cr, 2.0 / 3.0 * (double) widget->allocation.width, (double) (i * editor->note_edit->control_height + y[0] + border_top + editor->note_edit->control_height / 2));
-      cairo_line_to(cr, (double) widget->allocation.width, (double) (i * editor->note_edit->control_height + y[0] + border_top + editor->note_edit->control_height / 2));
+      cairo_move_to(cr, 2.0 / 3.0 * (double) widget->allocation.width, (double) (i * editor->edit.note_edit->control_height + y[0] + border_top + editor->edit.note_edit->control_height / 2));
+      cairo_line_to(cr, (double) widget->allocation.width, (double) (i * editor->edit.note_edit->control_height + y[0] + border_top + editor->edit.note_edit->control_height / 2));
       cairo_stroke(cr);
 
-      cairo_move_to(cr, (double) widget->allocation.width, (double) (i * editor->note_edit->control_height + y[0] + border_top));
-      cairo_line_to(cr, (double) widget->allocation.width, (double) (i * editor->note_edit->control_height + y[0] + border_top + editor->note_edit->control_height));
+      cairo_move_to(cr, (double) widget->allocation.width, (double) (i * editor->edit.note_edit->control_height + y[0] + border_top));
+      cairo_line_to(cr, (double) widget->allocation.width, (double) (i * editor->edit.note_edit->control_height + y[0] + border_top + editor->edit.note_edit->control_height));
       cairo_stroke(cr);
     }else{
       // no semi tone key
       if(((1 << (j + 1)) & bitmap) == 0){
-	cairo_move_to(cr, 0.0, (double) (i * editor->note_edit->control_height + y[0] + border_top + editor->note_edit->control_height));
-	cairo_line_to(cr, (double) widget->allocation.width, (double) (i * editor->note_edit->control_height + y[0] + border_top + editor->note_edit->control_height));
+	cairo_move_to(cr, 0.0, (double) (i * editor->edit.note_edit->control_height + y[0] + border_top + editor->edit.note_edit->control_height));
+	cairo_line_to(cr, (double) widget->allocation.width, (double) (i * editor->edit.note_edit->control_height + y[0] + border_top + editor->edit.note_edit->control_height));
 	cairo_stroke(cr);
       }
 
-      cairo_move_to(cr, (double) widget->allocation.width, (double) (i * editor->note_edit->control_height + y[0] + border_top));
-      cairo_line_to(cr, (double) widget->allocation.width, (double) (i * editor->note_edit->control_height + y[0] + border_top + editor->note_edit->control_height));
+      cairo_move_to(cr, (double) widget->allocation.width, (double) (i * editor->edit.note_edit->control_height + y[0] + border_top));
+      cairo_line_to(cr, (double) widget->allocation.width, (double) (i * editor->edit.note_edit->control_height + y[0] + border_top + editor->edit.note_edit->control_height));
       cairo_stroke(cr);
     }
 
@@ -264,9 +264,9 @@ ags_meter_paint(AgsMeter *meter)
 
       cairo_set_source_rgb(cr, 0.68, 0.68, 0.68);
 
-      if(y[1] > editor->note_edit->control_height / 2){
-	cairo_move_to(cr, 2.0 / 3.0 * (double) widget->allocation.width, (double) (widget->allocation.height - y[1] + editor->note_edit->control_height / 2));
-	cairo_line_to(cr, (double) widget->allocation.width, (double) ((widget->allocation.height) - y[1] + editor->note_edit->control_height / 2));
+      if(y[1] > editor->edit.note_edit->control_height / 2){
+	cairo_move_to(cr, 2.0 / 3.0 * (double) widget->allocation.width, (double) (widget->allocation.height - y[1] + editor->edit.note_edit->control_height / 2));
+	cairo_line_to(cr, (double) widget->allocation.width, (double) ((widget->allocation.height) - y[1] + editor->edit.note_edit->control_height / 2));
 	cairo_stroke(cr);
       }
 
