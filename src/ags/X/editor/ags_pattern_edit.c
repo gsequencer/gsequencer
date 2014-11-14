@@ -133,6 +133,31 @@ ags_pattern_edit_init(AgsPatternEdit *pattern_edit)
 
   pattern_edit->control_width = 16;
 
+  pattern_edit->y0 = 0;
+  pattern_edit->y1 = 0;
+
+  pattern_edit->nth_y = 0;
+  pattern_edit->stop_y = 0;
+
+  /* AgsNoteEditControlCurrent is used by ags_pattern_edit_draw_segment */
+  pattern_edit->control_current.control_count = AGS_PATTERN_EDIT_MAX_CONTROLS;
+  pattern_edit->control_current.control_width = 64;
+
+  pattern_edit->control_current.x0 = 0;
+  pattern_edit->control_current.x1 = 0;
+
+  pattern_edit->control_current.nth_x = 0;
+
+  /* AgsNoteEditControlUnit is used by ags_pattern_edit_draw_notation */
+  pattern_edit->control_unit.control_count = 16 * AGS_PATTERN_EDIT_MAX_CONTROLS;
+  pattern_edit->control_unit.control_width = 1 * 4;
+
+  pattern_edit->control_unit.x0 = 0;
+  pattern_edit->control_unit.x1 = 0;
+
+  pattern_edit->control_unit.nth_x = 0;
+  pattern_edit->control_unit.stop_x = 0;
+
   /* GtkScrollbars */
   adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, 1.0, 1.0);
   pattern_edit->vscrollbar = (GtkVScrollbar *) gtk_vscrollbar_new(adjustment);
@@ -173,7 +198,15 @@ ags_pattern_edit_disconnect(AgsConnectable *connectable)
 void
 ags_pattern_edit_set_map_height(AgsPatternEdit *pattern_edit, guint map_height)
 {
-  //TODO:JK: implement me
+  pattern_edit->map_height = map_height;
+  
+  pattern_edit->flags |= AGS_PATTERN_EDIT_RESETING_VERTICALLY;
+  ags_pattern_edit_reset_vertically(pattern_edit, AGS_PATTERN_EDIT_RESET_VSCROLLBAR);
+  pattern_edit->flags &= (~AGS_PATTERN_EDIT_RESETING_VERTICALLY);
+  
+  pattern_edit->flags |= AGS_PATTERN_EDIT_RESETING_HORIZONTALLY;
+  ags_pattern_edit_reset_horizontally(pattern_edit, AGS_PATTERN_EDIT_RESET_HSCROLLBAR);
+  pattern_edit->flags &= (~AGS_PATTERN_EDIT_RESETING_HORIZONTALLY);
 }
 
 /**
@@ -188,7 +221,71 @@ ags_pattern_edit_set_map_height(AgsPatternEdit *pattern_edit, guint map_height)
 void
 ags_pattern_edit_reset_vertically(AgsPatternEdit *pattern_edit, guint flags)
 {
-  //TODO:JK: implement me
+  AgsEditor *editor;
+
+  editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(pattern_edit),
+						 AGS_TYPE_EDITOR);
+
+  if(editor->selected_machine != NULL){
+    cairo_t *cr;
+    gdouble value;
+
+    value = GTK_RANGE(pattern_edit->vscrollbar)->adjustment->value;
+
+    if((AGS_PATTERN_EDIT_RESET_VSCROLLBAR & flags) != 0){
+      GtkWidget *widget;
+      GtkAdjustment *adjustment;
+      guint height;
+
+      widget = GTK_WIDGET(pattern_edit->drawing_area);
+      adjustment = GTK_RANGE(pattern_edit->vscrollbar)->adjustment;
+      
+      if(pattern_edit->map_height > widget->allocation.height){
+	height = widget->allocation.height;
+	gtk_adjustment_set_upper(adjustment,
+				 (gdouble) (pattern_edit->map_height - height));
+	gtk_adjustment_set_value(adjustment, 0.0);
+      }else{
+	height = pattern_edit->map_height;
+	
+	gtk_adjustment_set_upper(adjustment, 0.0);
+	gtk_adjustment_set_value(adjustment, 0.0);
+      }
+      
+      pattern_edit->height = height;
+    }
+
+    pattern_edit->y0 = ((guint) round((double) value)) % (pattern_edit->control_height + 2 * pattern_edit->control_margin_y);
+
+    if(pattern_edit->y0 != 0){
+      pattern_edit->y0 = (pattern_edit->control_height + 2 * pattern_edit->control_margin_y) - pattern_edit->y0;
+    }
+
+    pattern_edit->y1 = (pattern_edit->height - pattern_edit->y0) % (pattern_edit->control_height + 2 * pattern_edit->control_margin_y);
+
+    pattern_edit->nth_y = (guint) ceil(round((double) value) / (double)(pattern_edit->control_height + 2.0 * pattern_edit->control_margin_y));
+    pattern_edit->stop_y = pattern_edit->nth_y + (pattern_edit->height - pattern_edit->y0 - pattern_edit->y1) / (pattern_edit->control_height + 2 * pattern_edit->control_margin_y);
+
+    /* refresh display */
+    if(GTK_WIDGET_VISIBLE(editor)){
+      ags_meter_paint(editor->meter);
+
+      cr = gdk_cairo_create(GTK_WIDGET(pattern_edit->drawing_area)->window);
+      cairo_push_group(cr);
+
+      ags_pattern_edit_draw_segment(pattern_edit, cr);
+      ags_pattern_edit_draw_pattern(pattern_edit, cr);
+
+      if(editor->toolbar->selected_edit_mode == editor->toolbar->position){
+	ags_pattern_edit_draw_position(pattern_edit, cr);
+      }
+
+      cairo_pop_group_to_source(cr);
+      cairo_paint(cr);
+
+      cairo_destroy(cr);
+    }
+  }
 }
 
 /**
@@ -203,7 +300,135 @@ ags_pattern_edit_reset_vertically(AgsPatternEdit *pattern_edit, guint flags)
 void
 ags_pattern_edit_reset_horizontally(AgsPatternEdit *pattern_edit, guint flags)
 {
-  //TODO:JK: implement me
+  AgsEditor *editor;
+  double tact_factor, zoom_factor;
+  double tact;
+
+  editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(pattern_edit),
+						 AGS_TYPE_EDITOR);
+
+  zoom_factor = 0.25;
+
+  tact_factor = exp2(8.0 - (double) gtk_combo_box_get_active(editor->toolbar->zoom));
+  tact = exp2((double) gtk_combo_box_get_active(editor->toolbar->zoom) - 4.0);
+
+  if((AGS_PATTERN_EDIT_RESET_WIDTH & flags) != 0){
+    pattern_edit->control_unit.control_width = (guint) (((double) pattern_edit->control_width * zoom_factor * tact));
+
+    pattern_edit->control_current.control_count = (guint) ((double) pattern_edit->control_unit.control_count * tact);
+    pattern_edit->control_current.control_width = (pattern_edit->control_width * zoom_factor * tact_factor * tact);
+
+    pattern_edit->map_width = (guint) ((double) pattern_edit->control_current.control_count * (double) pattern_edit->control_current.control_width);
+    /* reset ruler */
+    pattern_edit->ruler->factor = tact_factor;
+    pattern_edit->ruler->precision = tact;
+    pattern_edit->ruler->scale_precision = 1.0 / tact;
+
+    gtk_widget_queue_draw(pattern_edit->ruler);
+  }
+
+  if(editor->selected_machine != NULL){
+    cairo_t *cr;
+    gdouble value;
+
+    value = GTK_RANGE(pattern_edit->hscrollbar)->adjustment->value;
+
+    if((AGS_PATTERN_EDIT_RESET_HSCROLLBAR & flags) != 0){
+      GtkWidget *widget;
+      GtkAdjustment *adjustment;
+      guint width;
+
+      widget = GTK_WIDGET(pattern_edit->drawing_area);
+      adjustment = GTK_RANGE(pattern_edit->hscrollbar)->adjustment;
+
+      if(pattern_edit->map_width > widget->allocation.width){
+	width = widget->allocation.width;
+	//	gtk_adjustment_set_upper(adjustment, (double) (pattern_edit->map_width - width));
+	gtk_adjustment_set_upper(adjustment,
+				 (gdouble) (pattern_edit->map_width - width));
+	gtk_adjustment_set_upper(pattern_edit->ruler->adjustment,
+				 (gdouble) (pattern_edit->map_width - width) / pattern_edit->control_current.control_width);
+
+	if(adjustment->value > adjustment->upper){
+	  gtk_adjustment_set_value(adjustment, adjustment->upper);
+
+	  /* reset ruler */
+	  gtk_adjustment_set_value(pattern_edit->ruler->adjustment, pattern_edit->ruler->adjustment->upper);
+	  gtk_widget_queue_draw(pattern_edit->ruler);
+	}
+      }else{
+	width = pattern_edit->map_width;
+
+	gtk_adjustment_set_upper(adjustment, 0.0);
+	gtk_adjustment_set_value(adjustment, 0.0);
+	
+	/* reset ruler */
+	gtk_adjustment_set_upper(pattern_edit->ruler->adjustment, 0.0);
+	gtk_adjustment_set_value(pattern_edit->ruler->adjustment, 0.0);
+	gtk_widget_queue_draw(pattern_edit->ruler);
+      }
+
+      pattern_edit->width = width;
+    }
+
+    /* reset AgsPatternEditControlCurrent */
+    if(pattern_edit->map_width > pattern_edit->width){
+      pattern_edit->control_current.x0 = ((guint) round((double) value)) % pattern_edit->control_current.control_width;
+
+      if(pattern_edit->control_current.x0 != 0){
+	pattern_edit->control_current.x0 = pattern_edit->control_current.control_width - pattern_edit->control_current.x0;
+      }
+
+      pattern_edit->control_current.x1 = (pattern_edit->width - pattern_edit->control_current.x0) % pattern_edit->control_current.control_width;
+
+      pattern_edit->control_current.nth_x = (guint) ceil((double)(value) / (double)(pattern_edit->control_current.control_width));
+    }else{
+      pattern_edit->control_current.x0 = 0;
+      pattern_edit->control_current.x1 = 0;
+      pattern_edit->control_current.nth_x = 0;
+    }
+
+    /* reset AgsPatternEditControlUnit */
+    if(pattern_edit->map_width > pattern_edit->width){
+      pattern_edit->control_unit.x0 = ((guint)round((double) value)) % pattern_edit->control_unit.control_width;
+
+      if(pattern_edit->control_unit.x0 != 0)
+	pattern_edit->control_unit.x0 = pattern_edit->control_unit.control_width - pattern_edit->control_unit.x0;
+      
+      pattern_edit->control_unit.x1 = (pattern_edit->width - pattern_edit->control_unit.x0) % pattern_edit->control_unit.control_width;
+      
+      pattern_edit->control_unit.nth_x = (guint) ceil(round((double) value) / (double) (pattern_edit->control_unit.control_width));
+      pattern_edit->control_unit.stop_x = pattern_edit->control_unit.nth_x + (pattern_edit->width - pattern_edit->control_unit.x0 - pattern_edit->control_unit.x1) / pattern_edit->control_unit.control_width;
+    }else{
+      pattern_edit->control_unit.x0 = 0;
+      pattern_edit->control_unit.x1 = 0;
+      pattern_edit->control_unit.nth_x = 0;
+    }
+
+    /* refresh display */
+    if(GTK_WIDGET_VISIBLE(editor)){
+      gdouble position;
+      
+      cr = gdk_cairo_create(GTK_WIDGET(pattern_edit->drawing_area)->window);
+      cairo_push_group(cr);
+
+      ags_pattern_edit_draw_segment(pattern_edit, cr);
+      ags_pattern_edit_draw_pattern(pattern_edit, cr);
+
+      if(editor->toolbar->selected_edit_mode == editor->toolbar->position){
+	ags_pattern_edit_draw_position(pattern_edit, cr);
+      }
+
+      //TODO:JK: implement me
+      //      position = gtk_range_get_value(GTK_RANGE(pattern_edit->hscrollbar));
+      //      position -= floor(position / pattern_edit->control_current.control_width);
+      //      ags_pattern_edit_draw_scroll(pattern_edit, cr,
+      //				position);
+
+      cairo_pop_group_to_source(cr);
+      cairo_paint(cr);
+    }
+  }
 }
 
 /**
@@ -218,7 +443,72 @@ ags_pattern_edit_reset_horizontally(AgsPatternEdit *pattern_edit, guint flags)
 void
 ags_pattern_edit_draw_segment(AgsPatternEdit *pattern_edit, cairo_t *cr)
 {
-  //TODO:JK: implement me
+  AgsEditor *editor;
+  GtkWidget *widget;
+  double tact;
+  guint i, j;
+  guint j_set;
+
+  widget = (GtkWidget *) pattern_edit->drawing_area;
+
+  editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(pattern_edit),
+						 AGS_TYPE_EDITOR);
+
+  cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
+  cairo_rectangle(cr, 0.0, 0.0, (double) widget->allocation.width, (double) widget->allocation.height);
+  cairo_fill(cr);
+
+  cairo_set_line_width(cr, 1.0);
+
+  cairo_set_source_rgb(cr, 0.8, 0.8, 0.8);
+
+  for(i = pattern_edit->y0 ; i < pattern_edit->height;){
+    cairo_move_to(cr, 0.0, (double) i);
+    cairo_line_to(cr, (double) pattern_edit->width, (double) i);
+    cairo_stroke(cr);
+
+    i += (pattern_edit->control_height + 2 * pattern_edit->control_margin_y);
+  }
+
+  cairo_move_to(cr, 0.0, (double) i);
+  cairo_line_to(cr, (double) pattern_edit->width, (double) i);
+  cairo_stroke(cr);
+
+  tact = exp2((double) gtk_combo_box_get_active(editor->toolbar->zoom) - 4.0);
+
+  i = pattern_edit->control_current.x0;
+  
+  if(i < pattern_edit->width &&
+     tact > 1.0 ){
+    j_set = pattern_edit->control_current.nth_x % ((guint) tact);
+    cairo_set_source_rgb(cr, 0.6, 0.6, 0.6);
+
+    if(j_set != 0){
+      j = j_set;
+      goto ags_pattern_edit_draw_segment0;
+    }
+  }
+
+  for(; i < pattern_edit->width; ){
+    cairo_set_source_rgb(cr, 1.0, 1.0, 0.0);
+    
+    cairo_move_to(cr, (double) i, 0.0);
+    cairo_line_to(cr, (double) i, (double) pattern_edit->height);
+    cairo_stroke(cr);
+    
+    i += pattern_edit->control_current.control_width;
+    
+    cairo_set_source_rgb(cr, 0.6, 0.6, 0.6);
+    
+    for(j = 1; i < pattern_edit->width && j < tact; j++){
+    ags_pattern_edit_draw_segment0:
+      cairo_move_to(cr, (double) i, 0.0);
+      cairo_line_to(cr, (double) i, (double) pattern_edit->height);
+      cairo_stroke(cr);
+      
+      i += pattern_edit->control_current.control_width;
+    }
+  }
 }
 
 /**
@@ -233,7 +523,67 @@ ags_pattern_edit_draw_segment(AgsPatternEdit *pattern_edit, cairo_t *cr)
 void
 ags_pattern_edit_draw_position(AgsPatternEdit *pattern_edit, cairo_t *cr)
 {
-  //TODO:JK: implement me
+  guint selected_x, selected_y;
+  guint x_offset[2], y_offset[2];
+  guint x, y, width, height;
+  gint size_width, size_height;
+
+  selected_x = pattern_edit->selected_x * pattern_edit->control_unit.control_width;
+  selected_y = pattern_edit->selected_y * (pattern_edit->control_height + 2 * pattern_edit->control_margin_y);
+
+  size_width = GTK_WIDGET(pattern_edit->drawing_area)->allocation.width;
+  size_height = GTK_WIDGET(pattern_edit->drawing_area)->allocation.height;
+
+  x_offset[0] = (guint) gtk_range_get_value(GTK_RANGE(pattern_edit->hscrollbar));
+  x_offset[1] = x_offset[0] + (guint) size_width;
+
+  y_offset[0] = (guint) gtk_range_get_value(GTK_RANGE(pattern_edit->vscrollbar));
+  y_offset[1] = y_offset[0] + (guint) size_height;
+
+  /* calculate horizontally values */
+  if(selected_x < x_offset[0]){
+    if(selected_x + pattern_edit->control_current.control_width > x_offset[0]){
+      x = 0;
+      width = selected_x + pattern_edit->control_current.control_width - x_offset[0];
+    }else{
+      return;
+    }
+  }else if(selected_x > x_offset[1]){
+    return;
+  }else{
+    x = selected_x - x_offset[0];
+
+    if(selected_x + pattern_edit->control_current.control_width < x_offset[1]){
+      width = pattern_edit->control_current.control_width;
+    }else{
+      width = x_offset[1] - (selected_x + pattern_edit->control_current.control_width);
+    }
+  }
+
+  /* calculate vertically values */
+  if(selected_y < y_offset[0]){
+    if(selected_y + pattern_edit->control_height + 2 * pattern_edit->control_margin_y > y_offset[0]){
+      y = 0;
+      height = selected_y + pattern_edit->control_height + 2 * pattern_edit->control_margin_y - y_offset[0];
+    }else{
+      return;
+    }
+  }else if(selected_y > y_offset[1]){
+    return;
+  }else{
+    y = selected_y - y_offset[0];
+
+    if(selected_y + pattern_edit->control_height + 2 * pattern_edit->control_margin_y < y_offset[1]){
+      height = pattern_edit->control_height + 2 * pattern_edit->control_margin_y;
+    }else{
+      height = y_offset[1] - (selected_y + pattern_edit->control_height + 2 * pattern_edit->control_margin_y);
+    }
+  }
+
+  /* draw */
+  cairo_set_source_rgba(cr, 0.25, 0.5, 1.0, 0.5);
+  cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
+  cairo_fill(cr);
 }
 
 /**
@@ -248,7 +598,230 @@ ags_pattern_edit_draw_position(AgsPatternEdit *pattern_edit, cairo_t *cr)
 void
 ags_pattern_edit_draw_pattern(AgsPatternEdit *pattern_edit, cairo_t *cr)
 {
-  //TODO:JK: implement me
+  AgsMachine *machine;
+  AgsEditor *editor;
+  GtkWidget *widget;
+  AgsNote *note;
+  GList *list_notation, *list_note;
+  guint x_offset;
+  guint control_height;
+  guint x, y, width, height;
+  gint selected_channel;
+  gint i;
+
+  editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(pattern_edit),
+						 AGS_TYPE_EDITOR);
+
+  if(editor->selected_machine == NULL ||
+     (machine = editor->selected_machine) == NULL ||
+     machine->audio->notation == NULL)
+    return;
+
+  widget = (GtkWidget *) pattern_edit->drawing_area;
+
+  cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
+
+  i = 0;
+
+  while((selected_channel = ags_notebook_next_active_tab(editor->notebook,
+							 i)) != -1){
+    list_notation = g_list_nth(machine->audio->notation,
+			       selected_channel);
+    list_note = AGS_NOTATION(list_notation->data)->notes;
+
+    control_height = pattern_edit->control_height - 2 * pattern_edit->control_margin_y;
+
+    x_offset = (guint) GTK_RANGE(pattern_edit->hscrollbar)->adjustment->value;
+
+    /* draw controls smaller than pattern_edit->nth_x */
+    while(list_note != NULL && (note = (AgsNote *) list_note->data)->x[0] < pattern_edit->control_unit.nth_x){
+      if(note->x[1] >= pattern_edit->control_unit.nth_x){
+	if(note->y >= pattern_edit->nth_y && note->y <= pattern_edit->stop_y){
+	  x = 0;
+	  y = (note->y - pattern_edit->nth_y) * pattern_edit->control_height + pattern_edit->y0 + pattern_edit->control_margin_y;
+
+	  width = (guint) ((double) note->x[1] * pattern_edit->control_unit.control_width - (double) x_offset);
+
+	  if(width > widget->allocation.width)
+	    width = widget->allocation.width;
+
+	  height = control_height;
+
+	  /* draw note */
+	  cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
+	  cairo_fill(cr);
+
+	  /* check if note is selected */
+	  if((AGS_NOTE_IS_SELECTED & (note->flags)) != 0){
+	    cairo_set_source_rgba(cr, 1.0, 0.0, 0.0, 0.7);
+
+	    cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
+	    cairo_stroke(cr);
+
+	    cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
+	  }
+	}else if(note->y == (pattern_edit->nth_y - 1) && pattern_edit->y0 != 0){
+	  if(pattern_edit->y0 > pattern_edit->control_margin_y){
+	    x = 0;
+	    width = (guint) ((double) note->x[1] * (double) pattern_edit->control_unit.control_width - x_offset);
+
+	    if(width > widget->allocation.width)
+	      width = widget->allocation.width;
+
+	    if(pattern_edit->y0 > control_height + pattern_edit->control_margin_y){
+	      y = pattern_edit->y0 - (control_height + pattern_edit->control_margin_y);
+	      height = control_height;
+	    }else{
+	      y = 0;
+	      height = pattern_edit->y0 - pattern_edit->control_margin_y;
+	    }
+
+	    /* draw note */
+	    cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
+	    cairo_fill(cr);
+
+	    /* check if note is selected */
+	    if((AGS_NOTE_IS_SELECTED & (note->flags)) != 0){
+	      cairo_set_source_rgba(cr, 1.0, 0.0, 0.0, 0.7);
+	    
+	      cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
+	      cairo_stroke(cr);
+	    
+	      cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
+	    }
+	  }
+	}else if(note->y == (pattern_edit->stop_y + 1) && pattern_edit->y1 != 0){
+	  if(pattern_edit->y1 > pattern_edit->control_margin_y){
+	    x = 0;
+	    width = note->x[1] * pattern_edit->control_unit.control_width - x_offset;
+
+	    if(width > widget->allocation.width)
+	      width = widget->allocation.width;
+
+	    y = (note->y - pattern_edit->nth_y) * pattern_edit->control_height + pattern_edit->control_margin_y;
+
+	    if(pattern_edit->y1 > control_height + pattern_edit->control_margin_y){
+	      height = control_height;
+	    }else{
+	      height = pattern_edit->y1 - pattern_edit->control_margin_y;
+	    }
+
+	    /* draw note */
+	    cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
+	    cairo_fill(cr);
+	  
+	    /* check if note is selected */
+	    if((AGS_NOTE_IS_SELECTED & (note->flags)) != 0){
+	      cairo_set_source_rgba(cr, 1.0, 0.0, 0.0, 0.7);
+	    
+	      cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
+	      cairo_stroke(cr);
+	    
+	      cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
+	    }
+	  }
+	}
+      }
+
+      list_note = list_note->next;
+    }
+
+    /* draw controls equal or greater than pattern_edit->nth_x */
+    while(list_note != NULL && (note = (AgsNote *) list_note->data)->x[0] <= pattern_edit->control_unit.stop_x){
+      if(note->y >= pattern_edit->nth_y && note->y <= pattern_edit->stop_y){
+	x = (guint) note->x[0] * pattern_edit->control_unit.control_width;
+	y = (note->y - pattern_edit->nth_y) * pattern_edit->control_height +
+	  pattern_edit->y0 +
+	  pattern_edit->control_margin_y;
+
+	width = note->x[1] * pattern_edit->control_unit.control_width - x;
+	x -= x_offset;
+
+	if(x + width > widget->allocation.width)
+	  width = widget->allocation.width - x;
+
+	height = control_height;
+
+	/* draw note*/
+	cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
+	cairo_fill(cr);
+
+	/* check if note is selected */
+	if((AGS_NOTE_IS_SELECTED & (note->flags)) != 0){
+	  cairo_set_source_rgba(cr, 1.0, 0.0, 0.0, 0.7);
+	
+	  cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
+	  cairo_stroke(cr);
+	
+	  cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
+	}
+      }else if(note->y == (pattern_edit->nth_y - 1) && pattern_edit->y0 != 0){
+	if(pattern_edit->y0 > pattern_edit->control_margin_y){
+	  x = note->x[0] * pattern_edit->control_unit.control_width - x_offset;
+	  width = note->x[1] * pattern_edit->control_unit.control_width - x_offset - x;
+      
+	  if(x + width > widget->allocation.width)
+	    width = widget->allocation.width - x;
+
+	  if(pattern_edit->y0 > control_height + pattern_edit->control_margin_y){
+	    y = pattern_edit->y0 - (control_height + pattern_edit->control_margin_y);
+	    height = control_height;
+	  }else{
+	    y = 0;
+	    height = pattern_edit->y0 - pattern_edit->control_margin_y;
+	  }
+
+	  /* draw note */
+	  cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
+	  cairo_fill(cr);
+
+	  /* check if note is selected */
+	  if((AGS_NOTE_IS_SELECTED & (note->flags)) != 0){
+	    cairo_set_source_rgba(cr, 1.0, 0.0, 0.0, 0.7);
+
+	    cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
+	    cairo_stroke(cr);
+
+	    cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
+	  }
+	}
+      }else if(note->y == (pattern_edit->stop_y + 1) && pattern_edit->y1 != 0){
+	if(pattern_edit->y1 > pattern_edit->control_margin_y){
+	  x = note->x[0] * pattern_edit->control_unit.control_width - x_offset;
+	  width = note->x[1] * pattern_edit->control_unit.control_width - x_offset - x;
+      
+	  if(x + width > widget->allocation.width)
+	    width = widget->allocation.width - x;
+
+	  y = (note->y - pattern_edit->nth_y) * pattern_edit->control_height + pattern_edit->control_margin_y;
+
+	  if(pattern_edit->y1 > control_height + pattern_edit->control_margin_y){
+	    height = control_height;
+	  }else{
+	    height = pattern_edit->y1 - pattern_edit->control_margin_y;
+	  }
+
+	  /* draw note */
+	  cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
+	  cairo_fill(cr);
+
+	  /* check if note is selected */
+	  if((AGS_NOTE_IS_SELECTED & (note->flags)) != 0){
+	    cairo_set_source_rgba(cr, 1.0, 0.0, 0.0, 0.7);
+
+	    cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
+	    cairo_stroke(cr);
+
+	    cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
+	  }
+	}
+      }
+
+      list_note = list_note->next;
+    }
+
+    i++;
+  }
 }
 
 /**

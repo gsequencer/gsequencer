@@ -263,7 +263,7 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
  */
 void
 ags_automation_edit_draw_scroll(AgsAutomationEdit *automation_edit, cairo_t *cr,
-			     gdouble position)
+				gdouble position)
 {
   double x, y;
   double width, height;

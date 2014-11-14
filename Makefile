@@ -91,10 +91,14 @@ am_ags_OBJECTS = ags-ags_combo_box_text.$(OBJEXT) \
 	ags-ags_sf2_chooser_callbacks.$(OBJEXT) \
 	ags-ags_notebook.$(OBJEXT) \
 	ags-ags_note_edit_callbacks.$(OBJEXT) \
+	ags-ags_automation_edit_callbacks.$(OBJEXT) \
+	ags-ags_pattern_edit_callbacks.$(OBJEXT) \
 	ags-ags_file_selection_callbacks.$(OBJEXT) \
 	ags-ags_machine_selection.$(OBJEXT) \
 	ags-ags_inline_player.$(OBJEXT) ags-ags_meter.$(OBJEXT) \
 	ags-ags_file_selection.$(OBJEXT) ags-ags_note_edit.$(OBJEXT) \
+	ags-ags_pattern_edit.$(OBJEXT) \
+	ags-ags_automation_edit.$(OBJEXT) \
 	ags-ags_inline_player_callbacks.$(OBJEXT) \
 	ags-ags_toolbar.$(OBJEXT) ags-ags_plugin_preferences.$(OBJEXT) \
 	ags-ags_link_editor.$(OBJEXT) \
@@ -588,6 +592,8 @@ ags_SOURCES = src/ags/lib/ags_combo_box_text.c src/ags/lib/ags_list.c \
 	src/ags/X/editor/ags_file_selection_callbacks.h \
 	src/ags/X/editor/ags_notebook_callbacks.h \
 	src/ags/X/editor/ags_note_edit.h \
+	src/ags/X/editor/ags_automation_edit.h \
+	src/ags/X/editor/ags_pattern_edit.h \
 	src/ags/X/editor/ags_meter_callbacks.c \
 	src/ags/X/editor/ags_notebook.h \
 	src/ags/X/editor/ags_sf2_chooser.h \
@@ -602,6 +608,8 @@ ags_SOURCES = src/ags/lib/ags_combo_box_text.c src/ags/lib/ags_list.c \
 	src/ags/X/editor/ags_sf2_chooser_callbacks.c \
 	src/ags/X/editor/ags_notebook.c \
 	src/ags/X/editor/ags_note_edit_callbacks.c \
+	src/ags/X/editor/ags_automation_edit_callbacks.c \
+	src/ags/X/editor/ags_pattern_edit_callbacks.c \
 	src/ags/X/editor/ags_file_selection_callbacks.c \
 	src/ags/X/editor/ags_machine_selection.c \
 	src/ags/X/editor/ags_inline_player_callbacks.h \
@@ -612,8 +620,12 @@ ags_SOURCES = src/ags/lib/ags_combo_box_text.c src/ags/lib/ags_list.c \
 	src/ags/X/editor/ags_sf2_chooser_callbacks.h \
 	src/ags/X/editor/ags_file_selection.c \
 	src/ags/X/editor/ags_machine_selector.h \
+	src/ags/X/editor/ags_automation_edit_callbacks.h \
+	src/ags/X/editor/ags_pattern_edit_callbacks.h \
 	src/ags/X/editor/ags_note_edit_callbacks.h \
 	src/ags/X/editor/ags_note_edit.c \
+	src/ags/X/editor/ags_pattern_edit.c \
+	src/ags/X/editor/ags_automation_edit.c \
 	src/ags/X/editor/ags_inline_player_callbacks.c \
 	src/ags/X/editor/ags_toolbar_callbacks.h \
 	src/ags/X/editor/ags_machine_selection.h \
@@ -1254,6 +1266,8 @@ include ./$(DEPDIR)/ags-ags_audio_preferences.Po
 include ./$(DEPDIR)/ags-ags_audio_preferences_callbacks.Po
 include ./$(DEPDIR)/ags-ags_audio_set_recycling.Po
 include ./$(DEPDIR)/ags-ags_audio_signal.Po
+include ./$(DEPDIR)/ags-ags_automation_edit.Po
+include ./$(DEPDIR)/ags-ags_automation_edit_callbacks.Po
 include ./$(DEPDIR)/ags-ags_autosave_thread.Po
 include ./$(DEPDIR)/ags-ags_buffer_audio_signal.Po
 include ./$(DEPDIR)/ags-ags_buffer_channel.Po
@@ -1422,6 +1436,8 @@ include ./$(DEPDIR)/ags-ags_panel_input_line.Po
 include ./$(DEPDIR)/ags-ags_panel_input_pad.Po
 include ./$(DEPDIR)/ags-ags_parameter.Po
 include ./$(DEPDIR)/ags-ags_pattern.Po
+include ./$(DEPDIR)/ags-ags_pattern_edit.Po
+include ./$(DEPDIR)/ags-ags_pattern_edit_callbacks.Po
 include ./$(DEPDIR)/ags-ags_peak_channel.Po
 include ./$(DEPDIR)/ags-ags_peak_channel_run.Po
 include ./$(DEPDIR)/ags-ags_performance_preferences.Po
@@ -1780,6 +1796,34 @@ ags-ags_note_edit_callbacks.obj: src/ags/X/editor/ags_note_edit_callbacks.c
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_note_edit_callbacks.obj `if test -f 'src/ags/X/editor/ags_note_edit_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_note_edit_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_note_edit_callbacks.c'; fi`
 
+ags-ags_automation_edit_callbacks.o: src/ags/X/editor/ags_automation_edit_callbacks.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_automation_edit_callbacks.o -MD -MP -MF $(DEPDIR)/ags-ags_automation_edit_callbacks.Tpo -c -o ags-ags_automation_edit_callbacks.o `test -f 'src/ags/X/editor/ags_automation_edit_callbacks.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_automation_edit_callbacks.c
+	$(am__mv) $(DEPDIR)/ags-ags_automation_edit_callbacks.Tpo $(DEPDIR)/ags-ags_automation_edit_callbacks.Po
+#	source='src/ags/X/editor/ags_automation_edit_callbacks.c' object='ags-ags_automation_edit_callbacks.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_automation_edit_callbacks.o `test -f 'src/ags/X/editor/ags_automation_edit_callbacks.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_automation_edit_callbacks.c
+
+ags-ags_automation_edit_callbacks.obj: src/ags/X/editor/ags_automation_edit_callbacks.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_automation_edit_callbacks.obj -MD -MP -MF $(DEPDIR)/ags-ags_automation_edit_callbacks.Tpo -c -o ags-ags_automation_edit_callbacks.obj `if test -f 'src/ags/X/editor/ags_automation_edit_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_automation_edit_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_automation_edit_callbacks.c'; fi`
+	$(am__mv) $(DEPDIR)/ags-ags_automation_edit_callbacks.Tpo $(DEPDIR)/ags-ags_automation_edit_callbacks.Po
+#	source='src/ags/X/editor/ags_automation_edit_callbacks.c' object='ags-ags_automation_edit_callbacks.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_automation_edit_callbacks.obj `if test -f 'src/ags/X/editor/ags_automation_edit_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_automation_edit_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_automation_edit_callbacks.c'; fi`
+
+ags-ags_pattern_edit_callbacks.o: src/ags/X/editor/ags_pattern_edit_callbacks.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_pattern_edit_callbacks.o -MD -MP -MF $(DEPDIR)/ags-ags_pattern_edit_callbacks.Tpo -c -o ags-ags_pattern_edit_callbacks.o `test -f 'src/ags/X/editor/ags_pattern_edit_callbacks.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_pattern_edit_callbacks.c
+	$(am__mv) $(DEPDIR)/ags-ags_pattern_edit_callbacks.Tpo $(DEPDIR)/ags-ags_pattern_edit_callbacks.Po
+#	source='src/ags/X/editor/ags_pattern_edit_callbacks.c' object='ags-ags_pattern_edit_callbacks.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_pattern_edit_callbacks.o `test -f 'src/ags/X/editor/ags_pattern_edit_callbacks.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_pattern_edit_callbacks.c
+
+ags-ags_pattern_edit_callbacks.obj: src/ags/X/editor/ags_pattern_edit_callbacks.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_pattern_edit_callbacks.obj -MD -MP -MF $(DEPDIR)/ags-ags_pattern_edit_callbacks.Tpo -c -o ags-ags_pattern_edit_callbacks.obj `if test -f 'src/ags/X/editor/ags_pattern_edit_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_pattern_edit_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_pattern_edit_callbacks.c'; fi`
+	$(am__mv) $(DEPDIR)/ags-ags_pattern_edit_callbacks.Tpo $(DEPDIR)/ags-ags_pattern_edit_callbacks.Po
+#	source='src/ags/X/editor/ags_pattern_edit_callbacks.c' object='ags-ags_pattern_edit_callbacks.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_pattern_edit_callbacks.obj `if test -f 'src/ags/X/editor/ags_pattern_edit_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_pattern_edit_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_pattern_edit_callbacks.c'; fi`
+
 ags-ags_file_selection_callbacks.o: src/ags/X/editor/ags_file_selection_callbacks.c
 	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_file_selection_callbacks.o -MD -MP -MF $(DEPDIR)/ags-ags_file_selection_callbacks.Tpo -c -o ags-ags_file_selection_callbacks.o `test -f 'src/ags/X/editor/ags_file_selection_callbacks.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_file_selection_callbacks.c
 	$(am__mv) $(DEPDIR)/ags-ags_file_selection_callbacks.Tpo $(DEPDIR)/ags-ags_file_selection_callbacks.Po
@@ -1863,6 +1907,34 @@ ags-ags_note_edit.obj: src/ags/X/editor/ags_note_edit.c
 #	source='src/ags/X/editor/ags_note_edit.c' object='ags-ags_note_edit.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_note_edit.obj `if test -f 'src/ags/X/editor/ags_note_edit.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_note_edit.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_note_edit.c'; fi`
+
+ags-ags_pattern_edit.o: src/ags/X/editor/ags_pattern_edit.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_pattern_edit.o -MD -MP -MF $(DEPDIR)/ags-ags_pattern_edit.Tpo -c -o ags-ags_pattern_edit.o `test -f 'src/ags/X/editor/ags_pattern_edit.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_pattern_edit.c
+	$(am__mv) $(DEPDIR)/ags-ags_pattern_edit.Tpo $(DEPDIR)/ags-ags_pattern_edit.Po
+#	source='src/ags/X/editor/ags_pattern_edit.c' object='ags-ags_pattern_edit.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_pattern_edit.o `test -f 'src/ags/X/editor/ags_pattern_edit.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_pattern_edit.c
+
+ags-ags_pattern_edit.obj: src/ags/X/editor/ags_pattern_edit.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_pattern_edit.obj -MD -MP -MF $(DEPDIR)/ags-ags_pattern_edit.Tpo -c -o ags-ags_pattern_edit.obj `if test -f 'src/ags/X/editor/ags_pattern_edit.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_pattern_edit.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_pattern_edit.c'; fi`
+	$(am__mv) $(DEPDIR)/ags-ags_pattern_edit.Tpo $(DEPDIR)/ags-ags_pattern_edit.Po
+#	source='src/ags/X/editor/ags_pattern_edit.c' object='ags-ags_pattern_edit.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_pattern_edit.obj `if test -f 'src/ags/X/editor/ags_pattern_edit.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_pattern_edit.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_pattern_edit.c'; fi`
+
+ags-ags_automation_edit.o: src/ags/X/editor/ags_automation_edit.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_automation_edit.o -MD -MP -MF $(DEPDIR)/ags-ags_automation_edit.Tpo -c -o ags-ags_automation_edit.o `test -f 'src/ags/X/editor/ags_automation_edit.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_automation_edit.c
+	$(am__mv) $(DEPDIR)/ags-ags_automation_edit.Tpo $(DEPDIR)/ags-ags_automation_edit.Po
+#	source='src/ags/X/editor/ags_automation_edit.c' object='ags-ags_automation_edit.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_automation_edit.o `test -f 'src/ags/X/editor/ags_automation_edit.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_automation_edit.c
+
+ags-ags_automation_edit.obj: src/ags/X/editor/ags_automation_edit.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_automation_edit.obj -MD -MP -MF $(DEPDIR)/ags-ags_automation_edit.Tpo -c -o ags-ags_automation_edit.obj `if test -f 'src/ags/X/editor/ags_automation_edit.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_automation_edit.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_automation_edit.c'; fi`
+	$(am__mv) $(DEPDIR)/ags-ags_automation_edit.Tpo $(DEPDIR)/ags-ags_automation_edit.Po
+#	source='src/ags/X/editor/ags_automation_edit.c' object='ags-ags_automation_edit.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_automation_edit.obj `if test -f 'src/ags/X/editor/ags_automation_edit.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_automation_edit.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_automation_edit.c'; fi`
 
 ags-ags_inline_player_callbacks.o: src/ags/X/editor/ags_inline_player_callbacks.c
 	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_inline_player_callbacks.o -MD -MP -MF $(DEPDIR)/ags-ags_inline_player_callbacks.Tpo -c -o ags-ags_inline_player_callbacks.o `test -f 'src/ags/X/editor/ags_inline_player_callbacks.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_inline_player_callbacks.c

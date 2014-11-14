@@ -33,8 +33,26 @@
 #define AGS_IS_PATTERN_EDIT_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_PATTERN_EDIT))
 #define AGS_PATTERN_EDIT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS (obj, AGS_TYPE_PATTERN_EDIT, AgsPatternEditClass))
 
+#define AGS_PATTERN_EDIT_MAX_CONTROLS 1200
+
 typedef struct _AgsPatternEdit AgsPatternEdit;
 typedef struct _AgsPatternEditClass AgsPatternEditClass;
+
+typedef enum{
+  AGS_PATTERN_EDIT_RESETING_VERTICALLY    = 1,
+  AGS_PATTERN_EDIT_RESETING_HORIZONTALLY  = 1 <<  1,
+  AGS_PATTERN_EDIT_POSITION_CURSOR        = 1 <<  2,
+  AGS_PATTERN_EDIT_ADDING_PATTERN         = 1 <<  3,
+  AGS_PATTERN_EDIT_DELETING_PATTERN       = 1 <<  4,
+  AGS_PATTERN_EDIT_SELECTING_PATTERNS     = 1 <<  5,
+}AgsPatternEditFlags;
+
+typedef enum{
+  AGS_PATTERN_EDIT_RESET_VSCROLLBAR   = 1,
+  AGS_PATTERN_EDIT_RESET_HSCROLLBAR   = 1 <<  1,
+  AGS_PATTERN_EDIT_RESET_WIDTH        = 1 <<  2,
+  AGS_PATTERN_EDIT_RESET_HEIGHT       = 1 <<  3, // reserved
+}AgsPatternEditResetFlags;
 
 struct _AgsPatternEdit
 {
@@ -54,6 +72,38 @@ struct _AgsPatternEdit
   guint control_margin_y;
 
   guint control_width;
+
+  guint y0;
+  guint y1;
+
+  guint nth_y;
+  guint stop_y;
+
+  struct _AgsPatternEditControlCurrent{ // values for drawing refering to current tic and zoom
+    guint control_count;
+
+    guint control_width;
+
+    guint x0;
+    guint x1;
+
+    guint nth_x;
+  }control_current;
+
+  struct _AgsPatternEditControlUnit{ // values for drawing refering to smallest tic and current zoom
+    guint control_count;
+
+    guint control_width;
+
+    guint x0;
+    guint x1;
+
+    guint nth_x;
+    guint stop_x;
+  }control_unit;
+
+  guint selected_x;
+  guint selected_y;
 
   GtkVScrollbar *vscrollbar;
   GtkHScrollbar *hscrollbar;

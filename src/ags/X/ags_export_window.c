@@ -309,7 +309,7 @@ ags_export_window_init(AgsExportWindow *export_window)
 		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
 		   0, 0);
 
-  bpm = AGS_NAVIGATION(AGS_WINDOW(AGS_MAIN(export_window->ags_main)->window)->navigation)->bpm->adjustment->value;
+  bpm = AGS_DEVOUT_DEFAULT_BPM; // AGS_NAVIGATION(AGS_WINDOW(AGS_MAIN(export_window->ags_main)->window)->navigation)->bpm->adjustment->value
   str = ags_navigation_tact_to_time_string(0.0,
 					   bpm);
   export_window->duration = gtk_label_new(str);

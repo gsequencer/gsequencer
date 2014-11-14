@@ -33,8 +33,26 @@
 #define AGS_IS_AUTOMATION_EDIT_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_AUTOMATION_EDIT))
 #define AGS_AUTOMATION_EDIT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS (obj, AGS_TYPE_AUTOMATION_EDIT, AgsAutomationEditClass))
 
+#define AGS_AUTOMATION_EDIT_MAX_CONTROLS 1200
+
 typedef struct _AgsAutomationEdit AgsAutomationEdit;
 typedef struct _AgsAutomationEditClass AgsAutomationEditClass;
+
+typedef enum{
+  AGS_AUTOMATION_EDIT_RESETING_VERTICALLY    = 1,
+  AGS_AUTOMATION_EDIT_RESETING_HORIZONTALLY  = 1 <<  1,
+  AGS_AUTOMATION_EDIT_POSITION_CURSOR        = 1 <<  2,
+  AGS_AUTOMATION_EDIT_ADDING_AUTOMATION         = 1 <<  3,
+  AGS_AUTOMATION_EDIT_DELETING_AUTOMATION       = 1 <<  4,
+  AGS_AUTOMATION_EDIT_SELECTING_AUTOMATIONS     = 1 <<  5,
+}AgsAutomationEditFlags;
+
+typedef enum{
+  AGS_AUTOMATION_EDIT_RESET_VSCROLLBAR   = 1,
+  AGS_AUTOMATION_EDIT_RESET_HSCROLLBAR   = 1 <<  1,
+  AGS_AUTOMATION_EDIT_RESET_WIDTH        = 1 <<  2,
+  AGS_AUTOMATION_EDIT_RESET_HEIGHT       = 1 <<  3, // reserved
+}AgsAutomationEditResetFlags;
 
 struct _AgsAutomationEdit
 {
@@ -54,6 +72,17 @@ struct _AgsAutomationEdit
   guint control_margin_y;
 
   guint control_width;
+
+  struct _AgsAutomationEditControlCurrent{ // values for drawing refering to current tic and zoom
+    guint control_count;
+
+    guint control_width;
+
+    guint x0;
+    guint x1;
+
+    guint nth_x;
+  }control_current;
 
   GtkVScrollbar *vscrollbar;
   GtkHScrollbar *hscrollbar;
