@@ -221,7 +221,7 @@ ags_editor_init(AgsEditor *editor)
 		   GTK_FILL|GTK_EXPAND, GTK_FILL,
 		   0, 0);
 
-  editor->meter = NULL;
+  editor->piano.meter = NULL;
   editor->edit.note_edit = NULL;
 
   editor->tact_counter = 0;
@@ -306,7 +306,6 @@ ags_editor_connect(AgsConnectable *connectable)
   ags_connectable_connect(AGS_CONNECTABLE(editor->toolbar));
   ags_connectable_connect(AGS_CONNECTABLE(editor->machine_selector));
   ags_connectable_connect(AGS_CONNECTABLE(editor->notebook));
-  ags_connectable_connect(AGS_CONNECTABLE(editor->meter));
 }
 
 void
@@ -345,13 +344,13 @@ ags_editor_real_machine_changed(AgsEditor *editor, AgsMachine *machine)
   }
 
   if((AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0){
-    editor->meter = ags_meter_new();
-    gtk_table_attach(editor->table, (GtkWidget *) editor->meter,
+    editor->piano.meter = ags_meter_new();
+    gtk_table_attach(editor->table, (GtkWidget *) editor->piano.meter,
 		     0, 1, 1, 2,
 		     GTK_FILL, GTK_FILL,
 		     0, 0);
-    ags_connectable_connect(AGS_CONNECTABLE(editor->meter));
-    gtk_widget_show_all(editor->meter);
+    ags_connectable_connect(AGS_CONNECTABLE(editor->piano.meter));
+    gtk_widget_show_all(editor->piano.meter);
 
     editor->edit.note_edit = ags_note_edit_new();
     gtk_table_attach(table, (GtkWidget *) editor->edit.note_edit,
@@ -367,6 +366,14 @@ ags_editor_real_machine_changed(AgsEditor *editor, AgsMachine *machine)
     ags_note_edit_set_map_height(editor->edit.note_edit,
 				 pads * editor->edit.note_edit->control_height);
   }else if((AGS_MACHINE_IS_SEQUENCER & (machine->flags)) != 0){
+    editor->piano.soundset = ags_soundset_new();
+    gtk_table_attach(editor->table, (GtkWidget *) editor->piano.soundset,
+		     0, 1, 1, 2,
+		     GTK_FILL, GTK_FILL,
+		     0, 0);
+    ags_connectable_connect(AGS_CONNECTABLE(editor->piano.soundset));
+    gtk_widget_show_all(editor->piano.soundset);
+
     editor->edit.pattern_edit = ags_pattern_edit_new();
     gtk_table_attach(table, (GtkWidget *) editor->edit.pattern_edit,
 		     1, 2, 1, 2,

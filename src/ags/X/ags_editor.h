@@ -34,6 +34,7 @@
 #include <ags/X/editor/ags_machine_selector.h>
 #include <ags/X/editor/ags_notebook.h>
 #include <ags/X/editor/ags_meter.h>
+#include <ags/X/editor/ags_soundset.h>
 #include <ags/X/editor/ags_note_edit.h>
 #include <ags/X/editor/ags_pattern_edit.h>
 #include <ags/X/editor/ags_automation_edit.h>
@@ -81,7 +82,10 @@ struct _AgsEditor
 
   AgsNotebook *notebook;
 
-  AgsMeter *meter;
+  union AgsPiano{
+    AgsMeter *meter;
+    AgsSoundset *soundset;
+  }piano;
 
   union AgsEdit{
     AgsNoteEdit *note_edit;

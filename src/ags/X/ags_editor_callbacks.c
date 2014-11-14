@@ -136,8 +136,9 @@ ags_editor_note_edit_vscrollbar_value_changed_callback(GtkWidget *note_edit,
 						       AgsEditor *editor)
 {
   if((AGS_MACHINE_IS_SYNTHESIZER & (editor->selected_machine->flags)) != 0){
-    gtk_widget_queue_draw(editor->meter);
+    gtk_widget_queue_draw(editor->piano.meter);
   }else if((AGS_MACHINE_IS_SEQUENCER & (editor->selected_machine->flags)) != 0){
+    gtk_widget_queue_draw(editor->piano.soundset);
   }else{
   }
 }
