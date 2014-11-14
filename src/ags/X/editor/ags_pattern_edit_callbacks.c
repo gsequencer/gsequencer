@@ -313,7 +313,8 @@ ags_pattern_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventBu
       }
     }
 
-    cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
+    cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
+    cairo_set_line_cap(cr, CAIRO_LINE_CAP_ROUND);
     cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
     cairo_fill(cr);
   }
@@ -604,7 +605,8 @@ ags_pattern_edit_drawing_area_motion_notify_event (GtkWidget *widget, GdkEventMo
       }
     }
 
-    cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
+    cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
+    cairo_set_line_cap(cr, CAIRO_LINE_CAP_ROUND);
     cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
     cairo_fill(cr);
   }

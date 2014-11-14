@@ -480,13 +480,13 @@ ags_pattern_edit_draw_segment(AgsPatternEdit *pattern_edit, cairo_t *cr)
   editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(pattern_edit),
 						 AGS_TYPE_EDITOR);
 
-  cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
+  cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
   cairo_rectangle(cr, 0.0, 0.0, (double) widget->allocation.width, (double) widget->allocation.height);
   cairo_fill(cr);
 
   cairo_set_line_width(cr, 1.0);
 
-  cairo_set_source_rgb(cr, 0.8, 0.8, 0.8);
+  cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
 
   for(i = pattern_edit->y0 ; i < pattern_edit->height;){
     cairo_move_to(cr, 0.0, (double) i);
@@ -516,7 +516,7 @@ ags_pattern_edit_draw_segment(AgsPatternEdit *pattern_edit, cairo_t *cr)
   }
 
   for(; i < pattern_edit->width; ){
-    cairo_set_source_rgb(cr, 1.0, 1.0, 0.0);
+    cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
     
     cairo_move_to(cr, (double) i, 0.0);
     cairo_line_to(cr, (double) i, (double) pattern_edit->height);
@@ -645,7 +645,7 @@ ags_pattern_edit_draw_notation(AgsPatternEdit *pattern_edit, cairo_t *cr)
 
   widget = (GtkWidget *) pattern_edit->drawing_area;
 
-  cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
+  cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
 
   i = 0;
 
@@ -674,6 +674,7 @@ ags_pattern_edit_draw_notation(AgsPatternEdit *pattern_edit, cairo_t *cr)
 	  height = control_height;
 
 	  /* draw note */
+	  cairo_set_line_cap(cr, CAIRO_LINE_CAP_ROUND);
 	  cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
 	  cairo_fill(cr);
 

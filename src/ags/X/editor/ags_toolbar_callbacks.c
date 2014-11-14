@@ -321,8 +321,8 @@ ags_toolbar_zoom_callback(GtkComboBox *combo_box, AgsToolbar *toolbar)
     editor->edit.note_edit->flags &= (~AGS_NOTE_EDIT_RESETING_HORIZONTALLY);
   }else if((AGS_EDITOR_TOOL_PATTERN_EDIT & (editor->flags)) != 0){
     editor->edit.pattern_edit->flags |= AGS_PATTERN_EDIT_RESETING_HORIZONTALLY;
-    ags_note_edit_reset_horizontally(editor->edit.pattern_edit, AGS_PATTERN_EDIT_RESET_HSCROLLBAR |
-				     AGS_PATTERN_EDIT_RESET_WIDTH);
+    ags_pattern_edit_reset_horizontally(editor->edit.pattern_edit, AGS_PATTERN_EDIT_RESET_HSCROLLBAR |
+					AGS_PATTERN_EDIT_RESET_WIDTH);
     editor->edit.note_edit->flags &= (~AGS_NOTE_EDIT_RESETING_HORIZONTALLY);
   }else if((AGS_EDITOR_TOOL_AUTOMATION_EDIT & (editor->flags)) != 0){
     //TODO:JK: implement me
