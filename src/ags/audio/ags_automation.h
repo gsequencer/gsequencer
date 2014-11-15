@@ -37,6 +37,8 @@ struct _AgsAutomation
   GObject gobject;
 
   guint flags;
+
+  GList *acceleration;
 };
 
 struct _AgsAutomationClass
