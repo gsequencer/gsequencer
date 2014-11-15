@@ -103,9 +103,13 @@ void ags_automation_edit_set_map_height(AgsAutomationEdit *automation_edit, guin
 void ags_automation_edit_reset_vertically(AgsAutomationEdit *automation_edit, guint flags);
 void ags_automation_edit_reset_horizontally(AgsAutomationEdit *automation_edit, guint flags);
 
-void ags_automation_edit_draw_segment(AgsAutomationEdit *automation_edit, cairo_t *cr);
+void ags_automation_edit_draw_scale(AgsAutomationEdit *automation_edit, cairo_t *cr,
+				    gdouble lower, gdouble upper,
+				    gdouble ground);
 void ags_automation_edit_draw_position(AgsAutomationEdit *automation_edit, cairo_t *cr);
-void ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t *cr);
+void ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit,
+					 AgsAutomation *automation,
+					 cairo_t *cr);
 
 void ags_automation_edit_draw_scroll(AgsAutomationEdit *automation_edit, cairo_t *cr,
 				     gdouble position);

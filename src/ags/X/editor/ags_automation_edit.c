@@ -37,7 +37,6 @@ void ags_automation_edit_draw_surface(AgsAutomationEdit *automation_edit, cairo_
 				      gdouble azimut);
 void ags_automation_edit_draw_strip(AgsAutomationEdit *automation_edit, cairo_t *cr,
 				    AgsChannel *channel);
-
 /**
  * SECTION:ags_automation_edit
  * @short_description: edit automations
@@ -292,7 +291,9 @@ ags_automation_edit_draw_position(AgsAutomationEdit *automation_edit, cairo_t *c
  * Since: 0.4
  */
 void
-ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t *cr)
+ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit,
+				    AgsAutomation *automation,
+				    cairo_t *cr)
 {
   //TODO:JK: implement me
 }
