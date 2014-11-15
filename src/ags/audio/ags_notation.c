@@ -319,7 +319,8 @@ ags_notation_set_property(GObject *gobject,
       pthread_mutex_lock(&(port->mutex));
 
       if(notation->current_notes != NULL){
-	ags_list_free_and_unref_link(notation->current_notes);
+	g_list_free_full(notation->current_notes,
+			 g_object_unref);
       }
 
       if(current_notes != NULL){
@@ -349,7 +350,8 @@ ags_notation_set_property(GObject *gobject,
       pthread_mutex_lock(&(port->mutex));
 
       if(notation->next_notes != NULL){
-	ags_list_free_and_unref_link(notation->next_notes);
+	g_list_free_full(notation->next_notes,
+			 g_object_unref);
       }
 
       if(next_notes != NULL){
@@ -447,7 +449,8 @@ ags_notation_finalize(GObject *gobject)
 
   notation = AGS_NOTATION(gobject);
 
-  ags_list_free_and_unref_link(notation->notes);
+  g_list_free_full(notation->notes,
+		   g_object_unref);
 
   G_OBJECT_CLASS(ags_notation_parent_class)->finalize(gobject);
 }

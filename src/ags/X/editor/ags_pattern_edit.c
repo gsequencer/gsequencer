@@ -674,7 +674,6 @@ ags_pattern_edit_draw_notation(AgsPatternEdit *pattern_edit, cairo_t *cr)
 	  height = control_height;
 
 	  /* draw note */
-	  cairo_set_line_cap(cr, CAIRO_LINE_CAP_ROUND);
 	  cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
 	  cairo_fill(cr);
 

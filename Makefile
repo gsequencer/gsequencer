@@ -229,14 +229,15 @@ am_ags_OBJECTS = ags-ags_combo_box_text.$(OBJEXT) \
 	ags-ags_devout.$(OBJEXT) ags-ags_garbage_collector.$(OBJEXT) \
 	ags-ags_recall_container.$(OBJEXT) ags-ags_timestamp.$(OBJEXT) \
 	ags-ags_recall_channel_run.$(OBJEXT) ags-ags_port.$(OBJEXT) \
-	ags-ags_notation.$(OBJEXT) ags-ags_recycling.$(OBJEXT) \
-	ags-ags_input.$(OBJEXT) ags-ags_synths.$(OBJEXT) \
-	ags-ags_note.$(OBJEXT) ags-ags_timestamp_factory.$(OBJEXT) \
-	ags-ags_channel.$(OBJEXT) ags-ags_recall_audio.$(OBJEXT) \
-	ags-ags_audio_signal.$(OBJEXT) ags-ags_libao.$(OBJEXT) \
-	ags-ags_ipatch_sf2_reader.$(OBJEXT) ags-ags_ipatch.$(OBJEXT) \
-	ags-ags_audio_file.$(OBJEXT) ags-ags_audio_file_xml.$(OBJEXT) \
-	ags-ags_sndfile.$(OBJEXT) ags-ags_recall_audio_run.$(OBJEXT) \
+	ags-ags_automation.$(OBJEXT) ags-ags_notation.$(OBJEXT) \
+	ags-ags_recycling.$(OBJEXT) ags-ags_input.$(OBJEXT) \
+	ags-ags_synths.$(OBJEXT) ags-ags_note.$(OBJEXT) \
+	ags-ags_timestamp_factory.$(OBJEXT) ags-ags_channel.$(OBJEXT) \
+	ags-ags_recall_audio.$(OBJEXT) ags-ags_audio_signal.$(OBJEXT) \
+	ags-ags_libao.$(OBJEXT) ags-ags_ipatch_sf2_reader.$(OBJEXT) \
+	ags-ags_ipatch.$(OBJEXT) ags-ags_audio_file.$(OBJEXT) \
+	ags-ags_audio_file_xml.$(OBJEXT) ags-ags_sndfile.$(OBJEXT) \
+	ags-ags_recall_audio_run.$(OBJEXT) \
 	ags-ags_recycling_container.$(OBJEXT) \
 	ags-ags_clone_channel.$(OBJEXT) ags-ags_copy_channel.$(OBJEXT) \
 	ags-ags_copy_pattern_channel.$(OBJEXT) \
@@ -918,7 +919,7 @@ ags_SOURCES = src/ags/lib/ags_combo_box_text.c src/ags/lib/ags_list.c \
 	src/ags/audio/ags_timestamp.c src/ags/audio/ags_channel_iter.h \
 	src/ags/audio/ags_recall_channel_run.c \
 	src/ags/audio/ags_audio.h src/ags/audio/ags_port.c \
-	src/ags/audio/ags_notation.c \
+	src/ags/audio/ags_automation.c src/ags/audio/ags_notation.c \
 	src/ags/audio/ags_recall_dependency.h \
 	src/ags/audio/ags_recycling.c \
 	src/ags/audio/ags_recall_audio_signal.h \
@@ -941,7 +942,8 @@ ags_SOURCES = src/ags/lib/ags_combo_box_text.c src/ags/lib/ags_list.c \
 	src/ags/audio/file/ags_audio_file_xml.c \
 	src/ags/audio/file/ags_sndfile.c src/ags/audio/ags_devout.h \
 	src/ags/audio/ags_port.h src/ags/audio/ags_note.h \
-	src/ags/audio/ags_timestamp.h src/ags/audio/ags_notation.h \
+	src/ags/audio/ags_timestamp.h src/ags/audio/ags_automation.h \
+	src/ags/audio/ags_notation.h \
 	src/ags/audio/ags_recall_audio_run.c \
 	src/ags/audio/ags_recycling_container.c \
 	src/ags/audio/ags_audio_signal.h \
@@ -1270,6 +1272,7 @@ include ./$(DEPDIR)/ags-ags_audio_preferences.Po
 include ./$(DEPDIR)/ags-ags_audio_preferences_callbacks.Po
 include ./$(DEPDIR)/ags-ags_audio_set_recycling.Po
 include ./$(DEPDIR)/ags-ags_audio_signal.Po
+include ./$(DEPDIR)/ags-ags_automation.Po
 include ./$(DEPDIR)/ags-ags_automation_edit.Po
 include ./$(DEPDIR)/ags-ags_automation_edit_callbacks.Po
 include ./$(DEPDIR)/ags-ags_autosave_thread.Po
@@ -4419,6 +4422,20 @@ ags-ags_port.obj: src/ags/audio/ags_port.c
 #	source='src/ags/audio/ags_port.c' object='ags-ags_port.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_port.obj `if test -f 'src/ags/audio/ags_port.c'; then $(CYGPATH_W) 'src/ags/audio/ags_port.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/ags_port.c'; fi`
+
+ags-ags_automation.o: src/ags/audio/ags_automation.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_automation.o -MD -MP -MF $(DEPDIR)/ags-ags_automation.Tpo -c -o ags-ags_automation.o `test -f 'src/ags/audio/ags_automation.c' || echo '$(srcdir)/'`src/ags/audio/ags_automation.c
+	$(am__mv) $(DEPDIR)/ags-ags_automation.Tpo $(DEPDIR)/ags-ags_automation.Po
+#	source='src/ags/audio/ags_automation.c' object='ags-ags_automation.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_automation.o `test -f 'src/ags/audio/ags_automation.c' || echo '$(srcdir)/'`src/ags/audio/ags_automation.c
+
+ags-ags_automation.obj: src/ags/audio/ags_automation.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_automation.obj -MD -MP -MF $(DEPDIR)/ags-ags_automation.Tpo -c -o ags-ags_automation.obj `if test -f 'src/ags/audio/ags_automation.c'; then $(CYGPATH_W) 'src/ags/audio/ags_automation.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/ags_automation.c'; fi`
+	$(am__mv) $(DEPDIR)/ags-ags_automation.Tpo $(DEPDIR)/ags-ags_automation.Po
+#	source='src/ags/audio/ags_automation.c' object='ags-ags_automation.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_automation.obj `if test -f 'src/ags/audio/ags_automation.c'; then $(CYGPATH_W) 'src/ags/audio/ags_automation.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/ags_automation.c'; fi`
 
 ags-ags_notation.o: src/ags/audio/ags_notation.c
 	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_notation.o -MD -MP -MF $(DEPDIR)/ags-ags_notation.Tpo -c -o ags-ags_notation.o `test -f 'src/ags/audio/ags_notation.c' || echo '$(srcdir)/'`src/ags/audio/ags_notation.c

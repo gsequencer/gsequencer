@@ -26,6 +26,9 @@
 
 #include <ags/widget/ags_ruler.h>
 
+#include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_automation.h>
+
 #define AGS_TYPE_AUTOMATION_EDIT                (ags_automation_edit_get_type())
 #define AGS_AUTOMATION_EDIT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_AUTOMATION_EDIT, AgsAutomationEdit))
 #define AGS_AUTOMATION_EDIT_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_AUTOMATION_EDIT, AgsAutomationEditClass))
@@ -61,8 +64,8 @@ struct _AgsAutomationEdit
   guint flags;
 
   AgsRuler *ruler;
-  GtkDrawingArea *drawing_area;
-  
+  GtkVBox *drawing_area;
+
   guint width;
   guint height;
   guint map_width;
@@ -106,6 +109,9 @@ void ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cai
 
 void ags_automation_edit_draw_scroll(AgsAutomationEdit *automation_edit, cairo_t *cr,
 				     gdouble position);
+
+GtkDrawingArea* ags_automation_edit_add_drawing_area(AgsAutomationEdit *automation_edit,
+						     AgsAutomation *automation);
 
 AgsAutomationEdit* ags_automation_edit_new();
 

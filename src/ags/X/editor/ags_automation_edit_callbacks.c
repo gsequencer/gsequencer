@@ -47,11 +47,9 @@ ags_automation_edit_drawing_area_expose_event(GtkWidget *widget, GdkEventExpose 
       cairo_push_group(cr);
 
       if(AGS_IS_DRUM(machine)){
-	ags_automation_edit_draw_segment(automation_edit, cr);
-	ags_automation_edit_draw_automation(automation_edit, cr);
+	//TODO:JK: implement me
       }else if(AGS_IS_MATRIX(machine)){
-	ags_automation_edit_draw_segment(automation_edit, cr);
-	ags_automation_edit_draw_automation(automation_edit, cr);
+	//TODO:JK: implement me
       }
 
       if(editor->toolbar->selected_edit_mode == editor->toolbar->position){

@@ -32,6 +32,11 @@ void ags_automation_edit_connect(AgsConnectable *connectable);
 void ags_automation_edit_disconnect(AgsConnectable *connectable);
 
 void ags_automation_edit_paint(AgsAutomationEdit *automation_edit);
+void ags_automation_edit_draw_surface(AgsAutomationEdit *automation_edit, cairo_t *cr,
+				      gdouble x0, gdouble x1,
+				      gdouble azimut);
+void ags_automation_edit_draw_strip(AgsAutomationEdit *automation_edit, cairo_t *cr,
+				    AgsChannel *channel);
 
 /**
  * SECTION:ags_automation_edit
@@ -108,16 +113,7 @@ ags_automation_edit_init(AgsAutomationEdit *automation_edit)
 		   GTK_FILL|GTK_EXPAND, GTK_FILL,
 		   0, 0);
 
-  automation_edit->drawing_area = (GtkDrawingArea *) gtk_drawing_area_new();
-  gtk_widget_set_style((GtkWidget *) automation_edit->drawing_area, automation_edit_style);
-  gtk_widget_set_events(GTK_WIDGET (automation_edit->drawing_area), GDK_EXPOSURE_MASK
-			| GDK_LEAVE_NOTIFY_MASK
-			| GDK_BUTTON_PRESS_MASK
-			| GDK_BUTTON_RELEASE_MASK
-			| GDK_POINTER_MOTION_MASK
-			| GDK_POINTER_MOTION_HINT_MASK
-			);
-
+  automation_edit->drawing_area = gtk_vbox_new(FALSE, 0);
   gtk_table_attach(GTK_TABLE(automation_edit), (GtkWidget *) automation_edit->drawing_area,
 		   0, 1, 1, 2,
 		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
@@ -173,7 +169,15 @@ ags_automation_edit_disconnect(AgsConnectable *connectable)
 void
 ags_automation_edit_set_map_height(AgsAutomationEdit *automation_edit, guint map_height)
 {
-  //TODO:JK: implement me
+  automation_edit->map_height = map_height;
+  
+  automation_edit->flags |= AGS_AUTOMATION_EDIT_RESETING_VERTICALLY;
+  ags_automation_edit_reset_vertically(automation_edit, AGS_AUTOMATION_EDIT_RESET_VSCROLLBAR);
+  automation_edit->flags &= (~AGS_AUTOMATION_EDIT_RESETING_VERTICALLY);
+  
+  automation_edit->flags |= AGS_AUTOMATION_EDIT_RESETING_HORIZONTALLY;
+  ags_automation_edit_reset_horizontally(automation_edit, AGS_AUTOMATION_EDIT_RESET_HSCROLLBAR);
+  automation_edit->flags &= (~AGS_AUTOMATION_EDIT_RESETING_HORIZONTALLY);
 }
 
 /**
@@ -207,16 +211,58 @@ ags_automation_edit_reset_horizontally(AgsAutomationEdit *automation_edit, guint
 }
 
 /**
- * ags_automation_edit_draw_segment:
+ * ags_automation_edit_draw_surface:
  * @automation_edit: the #AgsAutomationEdit
  * @cr: the #cairo_t surface
+ * @x0: x offset
+ * @x1: x offset
+ * @azimut: y axis
  *
- * Draws horizontal and vertical lines.
+ * Draw a portion of data.
  *
  * Since: 0.4
  */
 void
-ags_automation_edit_draw_segment(AgsAutomationEdit *automation_edit, cairo_t *cr)
+ags_automation_edit_draw_surface(AgsAutomationEdit *automation_edit, cairo_t *cr,
+				 gdouble x0, gdouble x1,
+				 gdouble azimut)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_automation_edit_draw_strip:
+ * @automation_edit: the #AgsAutomationEdit
+ * @cr: the #cairo_t surface
+ * @channel: the #AgsChannel
+ *
+ * Plot data.
+ *
+ * Since: 0.4
+ */
+void
+ags_automation_edit_draw_strip(AgsAutomationEdit *automation_edit, cairo_t *cr,
+			       AgsChannel *channel)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_automation_edit_draw_scale:
+ * @automation_edit: the #AgsAutomationEdit
+ * @cr: the #cairo_t surface
+ * @lower: the lower of scale
+ * @upper: the upper of scale
+ * @ground: the adjusting point
+ *
+ * Draw a scale and its boundaries.
+ *
+ * Since: 0.4
+ */
+void
+ags_automation_edit_draw_scale(AgsAutomationEdit *automation_edit, cairo_t *cr,
+			       gdouble lower, gdouble upper,
+			       gdouble ground)
 {
   //TODO:JK: implement me
 }
@@ -278,6 +324,32 @@ ags_automation_edit_draw_scroll(AgsAutomationEdit *automation_edit, cairo_t *cr,
   cairo_set_source_rgba(cr, 0.79, 0.0, 1.0, 0.5);
   cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
   cairo_fill(cr);
+}
+
+
+GtkDrawingArea*
+ags_automation_edit_add_drawing_area(AgsAutomationEdit *automation_edit,
+				     AgsAutomation *automation)
+{
+  GtkDrawingArea *drawing_area;
+
+  drawing_area = (GtkDrawingArea *) gtk_drawing_area_new();
+  gtk_widget_set_style((GtkWidget *) automation_edit->drawing_area, automation_edit_style);
+  gtk_widget_set_events(GTK_WIDGET (automation_edit->drawing_area), GDK_EXPOSURE_MASK
+			| GDK_LEAVE_NOTIFY_MASK
+			| GDK_BUTTON_PRESS_MASK
+			| GDK_BUTTON_RELEASE_MASK
+			| GDK_POINTER_MOTION_MASK
+			| GDK_POINTER_MOTION_HINT_MASK
+			);
+  gtk_box_pack_start(automation_edit->drawing_area,
+		     drawing_area,
+		     TRUE, FALSE,
+		     0);
+  gtk_widget_set_size_request(GTK_WIDGET(drawing_area),
+			      -1, automation_edit->map_height);
+
+  return(drawing_area);
 }
 
 /**
