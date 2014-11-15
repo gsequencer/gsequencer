@@ -46,6 +46,10 @@ struct _AgsAutomation
   guint line;
   GObject *audio;
 
+  gdouble upper;
+  gdouble lower;
+  gdouble ground;
+
   GList *acceleration;
 
   gdouble start_loop;

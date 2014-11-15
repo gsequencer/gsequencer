@@ -41,23 +41,49 @@ ags_automation_edit_drawing_area_expose_event(GtkWidget *widget, GdkEventExpose 
     machine = editor->selected_machine;
 
     if(machine != NULL){
+      GtkDrawingArea *drawing_area;
       cairo_t *cr;
+      GList *automation;
+      GList *list, *list_start;
 
-      cr = gdk_cairo_create(widget->window);
-      cairo_push_group(cr);
+      list_start = 
+	list = gtk_container_get_children(automation_edit->drawing_area);
+      automation = machine->audio->automation;
 
-      if(AGS_IS_DRUM(machine)){
-	//TODO:JK: implement me
-      }else if(AGS_IS_MATRIX(machine)){
-	//TODO:JK: implement me
+      while(list != NULL){
+	drawing_area = list->data;
+
+	cr = gdk_cairo_create(widget->window);
+	cairo_push_group(cr);
+
+	if(AGS_IS_DRUM(machine)){
+	  ags_automation_edit_draw_scale(automation_edit, cr,
+					 AGS_AUTOMATION(automation->data)->lower, AGS_AUTOMATION(automation->data)->upper,
+					 AGS_AUTOMATION(automation->data)->ground);
+	  ags_automation_edit_draw_automation(automation_edit,
+					      automation->data,
+					      cr);
+	}else if(AGS_IS_MATRIX(machine)){
+	  ags_automation_edit_draw_scale(automation_edit, cr,
+					 AGS_AUTOMATION(automation->data)->lower, AGS_AUTOMATION(automation->data)->upper,
+					 AGS_AUTOMATION(automation->data)->ground);
+	  ags_automation_edit_draw_automation(automation_edit,
+					      automation->data,
+					      cr);
+	}
+
+	cairo_pop_group_to_source(cr);
+	cairo_paint(cr);
+
+	automation = automation->next;
+	list = list->next;
       }
+
+      g_list_free(list_start);
 
       if(editor->toolbar->selected_edit_mode == editor->toolbar->position){
 	ags_automation_edit_draw_position(automation_edit, cr);
       }
-
-      cairo_pop_group_to_source(cr);
-      cairo_paint(cr);
     }
   }
 
