@@ -143,7 +143,7 @@ ags_soundset_paint(AgsSoundset *soundset)
 
   border_top = 24; // see ags_ruler.c
 
-  bitmap = 0x52a52a; // description of the keyboard
+  bitmap = 0x555555; // description of the keyboard
 
   j = (guint) ceil(GTK_RANGE(editor->edit.pattern_edit->vscrollbar)->adjustment->value / (double) editor->edit.pattern_edit->control_height);
   j = j % 12;

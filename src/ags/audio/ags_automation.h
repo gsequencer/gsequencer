@@ -21,6 +21,9 @@
 
 #include <glib.h>
 #include <glib-object.h>
+#include <libxml/tree.h>
+
+#include <ags/audio/ags_acceleration.h>
 
 #define AGS_TYPE_AUTOMATION                (ags_automation_get_type())
 #define AGS_AUTOMATION(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_AUTOMATION, AgsAutomation))
@@ -38,7 +41,23 @@ struct _AgsAutomation
 
   guint flags;
 
+  GObject *timestamp;
+
+  guint line;
+  GObject *audio;
+
   GList *acceleration;
+
+  gdouble start_loop;
+  gdouble end_loop;
+  gdouble offset;
+
+  GList *selection;
+
+  GObject *port;
+
+  GList *current_accelerations;
+  GList *next_accelerations;
 };
 
 struct _AgsAutomationClass
@@ -47,6 +66,54 @@ struct _AgsAutomationClass
 };
 
 GType ags_automation_get_type(void);
+
+GList* ags_automation_find_near_timestamp(GList *automation, guint line,
+					  GObject *timestamp);
+
+void ags_automation_add_acceleration(AgsAutomation *automation,
+				     AgsAcceleration *acceleration,
+				     gboolean use_selection_list);
+
+gboolean ags_automation_remove_acceleration_at_position(AgsAutomation *automation,
+							guint x, guint y);
+
+GList* ags_automation_get_selection(AgsAutomation *automation);
+
+gboolean ags_automation_is_acceleration_selected(AgsAutomation *automation, AgsAcceleration *acceleration);
+
+AgsAcceleration* ags_automation_find_point(AgsAutomation *automation,
+					   guint x, guint y,
+					   gboolean use_selection_list);
+GList* ags_automation_find_region(AgsAutomation *automation,
+				  guint x0, guint y0,
+				  guint x1, guint y1,
+				  gboolean use_selection_list);
+
+void ags_automation_free_selection(AgsAutomation *automation);
+
+void ags_automation_add_point_to_selection(AgsAutomation *automation,
+					   guint x, guint y,
+					   gboolean replace_current_selection);
+void ags_automation_remove_point_from_selection(AgsAutomation *automation,
+						guint x, guint y);
+
+void ags_automation_add_region_to_selection(AgsAutomation *automation,
+					    guint x0, guint y0,
+					    guint x1, guint y1,
+					    gboolean replace_current_selection);
+void ags_automation_remove_region_from_selection(AgsAutomation *automation,
+						 guint x0, guint y0,
+						 guint x1, guint y1);
+
+xmlNodePtr ags_automation_copy_selection(AgsAutomation *automation);
+xmlNodePtr ags_automation_cut_selection(AgsAutomation *automation);
+
+void ags_automation_insert_from_clipboard(AgsAutomation *automation,
+					  xmlNodePtr content,
+					  gboolean reset_x_offset, guint x_offset,
+					  gboolean reset_y_offset, guint y_offset);
+
+GList* ags_automation_get_current(AgsAutomation *automation);
 
 AgsAutomation* ags_automation_new();
 

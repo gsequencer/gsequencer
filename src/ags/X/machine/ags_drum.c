@@ -224,13 +224,14 @@ ags_drum_init(AgsDrum *drum)
   g_signal_connect_after((GObject *) drum, "parent_set\0",
 			 G_CALLBACK(ags_drum_parent_set_callback), (gpointer) drum);
 
-
   audio = AGS_MACHINE(drum)->audio;
   audio->flags |= (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
 		   AGS_AUDIO_INPUT_HAS_RECYCLING |
 		   AGS_AUDIO_INPUT_TAKES_FILE |
 		   AGS_AUDIO_SYNC |
-		   AGS_AUDIO_ASYNC);
+		   AGS_AUDIO_ASYNC | 
+		   AGS_AUDIO_NOTATION_DEFAULT |
+		   AGS_AUDIO_HAS_NOTATION);
 
   AGS_MACHINE(drum)->flags |= AGS_MACHINE_IS_SEQUENCER;
   AGS_MACHINE(drum)->input_pad_type = AGS_TYPE_DRUM_INPUT_PAD;
