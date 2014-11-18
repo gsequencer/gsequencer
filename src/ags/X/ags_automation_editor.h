@@ -41,7 +41,11 @@ struct _AgsAutomationEditor
   GtkDialog dialog;
 
   AgsWindow *window;
-  GList *machine;
+
+  AgsAutomationToolbar *automation_toolbar;
+
+  AgsMachineSelector *machine_selector;
+  AgsAutomationEditor *automation_editor;
 };
 
 struct _AgsAutomationEditorClass
