@@ -208,6 +208,8 @@ void
 ags_automation_init(AgsAutomation *automation)
 {
   automation->flags = 0;
+
+  //TODO:JK: implement me
 }
 
 void

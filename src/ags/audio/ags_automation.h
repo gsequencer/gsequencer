@@ -43,8 +43,9 @@ struct _AgsAutomation
 
   GObject *timestamp;
 
-  guint line;
   GObject *audio;
+  guint line;
+  gchar *control_name;
 
   gdouble upper;
   gdouble lower;

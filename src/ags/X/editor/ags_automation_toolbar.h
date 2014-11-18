@@ -35,12 +35,24 @@ typedef struct _AgsAutomationToolbarClass AgsAutomationToolbarClass;
 
 struct _AgsAutomationToolbar
 {
-  GtkAutomationToolbar automation_toolbar;
+  GtkToolbar toolbar;
+
+  GtkToggleButton *selected_edit_mode;
+  GtkToggleButton *position;
+  GtkToggleButton *edit;
+  GtkToggleButton *clear;
+  GtkToggleButton *select;
+
+  GtkMenuItem *copy;
+  GtkMenuItem *cut;
+  GtkMenuItem *paste;
+
+  GtkSpinButton *zoom;
 };
 
 struct _AgsAutomationToolbarClass
 {
-  GtkAutomationToolbarClass automation_toolbar;
+  GtkToolbarClass toolbar;
 };
 
 GType ags_automation_toolbar_get_type(void);

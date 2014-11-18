@@ -62,9 +62,9 @@ ags_automation_toolbar_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_automation_toolbar = g_type_register_static(GTK_TYPE_AUTOMATION_TOOLBAR,
-					      "AgsAutomationToolbar\0", &ags_automation_toolbar_info,
-					      0);
+    ags_type_automation_toolbar = g_type_register_static(GTK_TYPE_TOOLBAR,
+							 "AgsAutomationToolbar\0", &ags_automation_toolbar_info,
+							 0);
     
     g_type_add_interface_static(ags_type_automation_toolbar,
 				AGS_TYPE_CONNECTABLE,
@@ -91,7 +91,79 @@ ags_automation_toolbar_connectable_interface_init(AgsConnectableInterface *conne
 void
 ags_automation_toolbar_init(AgsAutomationToolbar *automation_toolbar)
 {
-  //TODO:JK: implement me
+  GtkMenuToolButton *menu_tool_button;
+  GtkMenu *menu;
+  GtkLabel *label;
+
+  automation_toolbar->position = g_object_new(GTK_TYPE_TOGGLE_BUTTON,
+					      "label\0", "position\0",
+					      "image\0", gtk_image_new_from_stock(GTK_STOCK_JUMP_TO,
+										  GTK_ICON_SIZE_LARGE_TOOLBAR),
+					      NULL);
+  gtk_container_add(GTK_CONTAINER(automation_toolbar),
+		    GTK_WIDGET(automation_toolbar->position));
+
+  automation_toolbar->edit = g_object_new(GTK_TYPE_TOGGLE_BUTTON,
+					  "label\0", "edit\0",
+					  "image\0", gtk_image_new_from_stock(GTK_STOCK_JUMP_TO,
+										  GTK_ICON_SIZE_LARGE_TOOLBAR),
+					  NULL);
+  automation_toolbar->selected_edit_mode = automation_toolbar->edit;
+  gtk_container_add(GTK_CONTAINER(automation_toolbar),
+		    GTK_WIDGET(automation_toolbar->edit));
+
+  automation_toolbar->clear = g_object_new(GTK_TYPE_TOGGLE_BUTTON,
+					   "label\0", "clear\0",
+					   "image\0", gtk_image_new_from_stock(GTK_STOCK_CLEAR,
+									       GTK_ICON_SIZE_LARGE_TOOLBAR),
+					   NULL);
+  
+  automation_toolbar->select = g_object_new(GTK_TYPE_TOGGLE_BUTTON,
+					    "label\0", "select\0",
+					    "image\0", gtk_image_new_from_stock(GTK_STOCK_SELECT_ALL,
+										GTK_ICON_SIZE_LARGE_TOOLBAR),
+					    NULL);
+  gtk_container_add(GTK_CONTAINER(automation_toolbar),
+		    GTK_WIDGET(automation_toolbar->select));
+
+  menu_tool_button = gtk_menu_tool_button_new(gtk_image_new_from_stock(GTK_STOCK_EXECUTE,
+								       GTK_ICON_SIZE_BUTTON),
+					      NULL);
+  gtk_container_add(GTK_CONTAINER(automation_toolbar),
+		    GTK_WIDGET(menu_tool_button));
+
+  menu = g_object_new(GTK_TYPE_MENU,
+		      NULL);
+  gtk_menu_tool_button_set_menu(menu_tool_button,
+				menu);
+
+  automation_toolbar->copy = g_object_new(GTK_TYPE_MENU_ITEM,
+					  "label\0", "copy\0",
+					  NULL);
+  gtk_menu_shell_append(menu,
+			automation_toolbar->copy);
+
+  automation_toolbar->cut = g_object_new(GTK_TYPE_MENU_ITEM,
+					 "label\0", "cut\0",
+					 NULL);
+  gtk_menu_shell_append(menu,
+			automation_toolbar->cut);
+
+  automation_toolbar->paste = g_object_new(GTK_TYPE_MENU_ITEM,
+					   "label\0", "paste\0",
+					   NULL);
+  gtk_menu_shell_append(menu,
+			automation_toolbar->paste);
+
+  label = gtk_label_new("zoom\0");
+  gtk_container_add(GTK_CONTAINER(automation_toolbar),
+		    label);
+  
+  automation_toolbar->zoom = gtk_spin_button_new_with_range(0.0,
+							    800.0,
+							    0.25);
+  gtk_container_add(GTK_CONTAINER(automation_toolbar),
+		    automation_toolbar->zoom);
 }
 
 void

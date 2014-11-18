@@ -26,6 +26,10 @@
 
 #include <ags/X/ags_window.h>
 
+#include <ags/X/editor/ags_automation_toolbar.h>
+#include <ags/X/editor/ags_machine_selector.h>
+#include <ags/X/editor/ags_automation_edit.h>
+
 #define AGS_TYPE_AUTOMATION_EDITOR                (ags_automation_editor_get_type())
 #define AGS_AUTOMATION_EDITOR(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_AUTOMATION_EDITOR, AgsAutomationEditor))
 #define AGS_AUTOMATION_EDITOR_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_AUTOMATION_EDITOR, AgsAutomationEditorClass))
@@ -45,7 +49,7 @@ struct _AgsAutomationEditor
   AgsAutomationToolbar *automation_toolbar;
 
   AgsMachineSelector *machine_selector;
-  AgsAutomationEditor *automation_editor;
+  AgsAutomationEdit *automation_edit;
 };
 
 struct _AgsAutomationEditorClass

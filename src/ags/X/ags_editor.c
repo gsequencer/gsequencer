@@ -392,19 +392,7 @@ ags_editor_real_machine_changed(AgsEditor *editor, AgsMachine *machine)
     ags_pattern_edit_set_map_height(editor->edit.pattern_edit,
  				    pads * editor->edit.pattern_edit->control_height);
   }else{
-    editor->flags |= AGS_EDITOR_TOOL_AUTOMATION_EDIT;
-
-    editor->edit.automation_edit = ags_automation_edit_new();
-    gtk_table_attach(table, (GtkWidget *) editor->edit.automation_edit,
-		     1, 2, 1, 2,
-		     GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
-		     0, 0);
-
-    ags_connectable_connect(AGS_CONNECTABLE(editor->edit.automation_edit));
-    gtk_widget_show_all(editor->edit.automation_edit);
-
-    ags_automation_edit_set_map_height(editor->edit.automation_edit,
-				       pads * editor->edit.automation_edit->control_height);    
+    /* empty */
   }
 }
 

@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <ags/X/editor/ags_automation_editor.h>
+#include <ags/X/ags_automation_editor.h>
 
 #include <ags-lib/object/ags_connectable.h>
 
@@ -97,9 +97,43 @@ ags_automation_editor_class_init(AgsAutomationEditorClass *automation_editor)
 void
 ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 {
+  GtkTable *table;
+
   g_object_set(G_OBJECT(automation_editor),
 	       "title\0", g_strdup("edit automation\0"),
 	       NULL);
+
+  table = gtk_table_new(2,
+			2,
+			FALSE);
+  gtk_box_pack_start(gtk_dialog_get_content_area(automation_editor),
+		     GTK_WIDGET(table),
+		     TRUE, TRUE,
+		     0);
+
+  automation_editor->automation_toolbar = ags_automation_toolbar_new();
+  gtk_table_attach(table,
+		   GTK_WIDGET(automation_editor->automation_toolbar),
+		   0, 2,
+		   0, 1,
+		   GTK_FILL, 0,
+		   0, 0);
+		   
+  automation_editor->machine_selector = ags_machine_selector_new();
+  gtk_table_attach(table,
+		   GTK_WIDGET(automation_editor->machine_selector),
+		   0, 1,
+		   1, 2,
+		   GTK_FILL, 0,
+		   0, 0);
+
+  automation_editor->automation_edit = ags_automation_edit_new();
+  gtk_table_attach(table,
+		   GTK_WIDGET(automation_editor->automation_edit),
+		   1, 2,
+		   1, 2,
+		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
+		   0, 0);
 }
 
 void

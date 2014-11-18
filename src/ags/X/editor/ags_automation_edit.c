@@ -32,13 +32,13 @@ void ags_automation_edit_connect(AgsConnectable *connectable);
 void ags_automation_edit_disconnect(AgsConnectable *connectable);
 
 void ags_automation_edit_paint(AgsAutomationEdit *automation_edit);
-void ags_automation_edit_draw_surface(AgsAutomationEdit *automation_edit,
-				      cairo_t *cr,
+void ags_automation_edit_draw_surface(GtkDrawingArea *drawing_area, cairo_t *cr,
 				      gdouble x0, gdouble x1,
 				      gdouble azimut);
-void ags_automation_edit_draw_strip(AgsAutomationEdit *automation_edit,
+void ags_automation_edit_draw_strip(GtkDrawingArea *drawing_area,
 				    AgsChannel *channel, gchar *control_name,
 				    cairo_t *cr);
+
 /**
  * SECTION:ags_automation_edit
  * @short_description: edit automations
@@ -76,8 +76,8 @@ ags_automation_edit_get_type(void)
     };
 
     ags_type_automation_edit = g_type_register_static(GTK_TYPE_TABLE,
-						"AgsAutomationEdit\0", &ags_automation_edit_info,
-						0);
+						      "AgsAutomationEdit\0", &ags_automation_edit_info,
+						      0);
     
     g_type_add_interface_static(ags_type_automation_edit,
 				AGS_TYPE_CONNECTABLE,
@@ -199,7 +199,7 @@ ags_automation_edit_draw_surface(GtkDrawingArea *drawing_area, cairo_t *cr,
   gdouble width, height;
 
   automation_edit = gtk_widget_get_ancestor(drawing_area,
-					    GTK_TYPE_AUTOMATION_EDIT);
+					    AGS_TYPE_AUTOMATION_EDIT);
 
   width = (gdouble) GTK_WIDGET(drawing_area)->allocation.width;
   height = (gdouble) GTK_WIDGET(drawing_area)->allocation.height;
@@ -226,7 +226,7 @@ ags_automation_edit_draw_strip(GtkDrawingArea *drawing_area,
   gdouble width, height;
 
   automation_edit = gtk_widget_get_ancestor(drawing_area,
-					    GTK_TYPE_AUTOMATION_EDIT);
+					    AGS_TYPE_AUTOMATION_EDIT);
 
   width = (gdouble) GTK_WIDGET(drawing_area)->allocation.width;
   height = (gdouble) GTK_WIDGET(drawing_area)->allocation.height;
@@ -265,7 +265,7 @@ ags_automation_edit_draw_scale(GtkDrawingArea *drawing_area, cairo_t *cr,
   gdouble width, height;
 
   automation_edit = gtk_widget_get_ancestor(drawing_area,
-					    GTK_TYPE_AUTOMATION_EDIT);
+					    AGS_TYPE_AUTOMATION_EDIT);
 
   width = (gdouble) GTK_WIDGET(drawing_area)->allocation.width;
   height = (gdouble) GTK_WIDGET(drawing_area)->allocation.height;
@@ -289,7 +289,7 @@ ags_automation_edit_draw_position(GtkDrawingArea *drawing_area, cairo_t *cr)
   gdouble width, height;
 
   automation_edit = gtk_widget_get_ancestor(drawing_area,
-					    GTK_TYPE_AUTOMATION_EDIT);
+					    AGS_TYPE_AUTOMATION_EDIT);
 
   width = (gdouble) GTK_WIDGET(drawing_area)->allocation.width;
   height = (gdouble) GTK_WIDGET(drawing_area)->allocation.height;
@@ -318,10 +318,11 @@ ags_automation_edit_draw_automation(GtkDrawingArea *drawing_area,
 						 AGS_TYPE_EDITOR);
 
   automation_edit = gtk_widget_get_ancestor(drawing_area,
-					    GTK_TYPE_AUTOMATION_EDIT);
+					    AGS_TYPE_AUTOMATION_EDIT);
 
   if(editor->selected_machine != NULL){
     AgsMachine *machine;
+    AgsChannel *channel;
 
     machine = editor->selected_machine;
 
@@ -338,14 +339,15 @@ ags_automation_edit_draw_automation(GtkDrawingArea *drawing_area,
       while(automation != NULL){
 	if((AGS_AUDIO_NOTATION_DEFAULT & (machine->audio->flags)) == 0){
 	  channel = ags_channel_nth(machine->audio->output,
-				    AGS_AUTOMATION(automation->data)->line)
+				    AGS_AUTOMATION(automation->data)->line);
 	}else{
 	  channel = ags_channel_nth(machine->audio->input,
-				    AGS_AUTOMATION(automation->data)->line)
+				    AGS_AUTOMATION(automation->data)->line);
 	}
 
 	ags_automation_edit_draw_strip(drawing_area,
-				       channel);
+				       channel, AGS_AUTOMATION(automation->data)->control_name,
+				       cr);
 	
 	acceleration = AGS_ACCELERATION(AGS_AUTOMATION(automation->data)->acceleration);
 
@@ -378,7 +380,7 @@ ags_automation_edit_draw_scroll(GtkDrawingArea *drawing_area, cairo_t *cr,
   gdouble width, height;
 
   automation_edit = gtk_widget_get_ancestor(drawing_area,
-					    GTK_TYPE_AUTOMATION_EDIT);
+					    AGS_TYPE_AUTOMATION_EDIT);
 
   width = (gdouble) GTK_WIDGET(drawing_area)->allocation.width;
   height = (gdouble) GTK_WIDGET(drawing_area)->allocation.height;
