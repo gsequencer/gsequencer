@@ -105,7 +105,7 @@ ags_automation_edit_drawing_area_configure_event(GtkWidget *widget, GdkEventConf
 }
 
 gboolean
-ags_automation_edit_drawing_area_button_press_event (GtkWidget *widget, GdkEventButton *event, AgsAutomationEdit *automation_edit)
+ags_automation_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventButton *event, AgsAutomationEdit *automation_edit)
 {
   //TODO:JK: implement me
 
@@ -121,7 +121,7 @@ ags_automation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEven
 }
 
 gboolean
-ags_automation_edit_drawing_area_motion_notify_event (GtkWidget *widget, GdkEventMotion *event, AgsAutomationEdit *automation_edit)
+ags_automation_edit_drawing_area_motion_notify_event(GtkWidget *widget, GdkEventMotion *event, AgsAutomationEdit *automation_edit)
 {
   //TODO:JK: implement me
 
@@ -149,7 +149,7 @@ ags_automation_edit_hscrollbar_value_changed(GtkRange *range, AgsAutomationEdit 
 
   /* reset ruler */
   gtk_adjustment_set_value(automation_edit->ruler->adjustment,
-			   GTK_RANGE(automation_edit->hscrollbar)->adjustment->value / (double) automation_edit->control_current.control_width);
+			   GTK_RANGE(automation_edit->hscrollbar)->adjustment->value);
   gtk_widget_queue_draw(automation_edit->ruler);
 
   /* update automation edit */

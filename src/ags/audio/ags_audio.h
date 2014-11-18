@@ -71,7 +71,8 @@ struct _AgsAudio
   gpointer devout_play_domain;
 
   GList *notation;
-
+  GList *automation;
+  
   GList *recall_id;
 
   GList *container;

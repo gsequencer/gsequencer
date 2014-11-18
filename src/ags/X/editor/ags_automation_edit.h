@@ -66,26 +66,7 @@ struct _AgsAutomationEdit
   AgsRuler *ruler;
   GtkVBox *drawing_area;
 
-  guint width;
-  guint height;
-  guint map_width;
-  guint map_height;
 
-  guint control_height;
-  guint control_margin_y;
-
-  guint control_width;
-
-  struct _AgsAutomationEditControlCurrent{ // values for drawing refering to current tic and zoom
-    guint control_count;
-
-    guint control_width;
-
-    guint x0;
-    guint x1;
-
-    guint nth_x;
-  }control_current;
 
   GtkVScrollbar *vscrollbar;
   GtkHScrollbar *hscrollbar;
@@ -98,20 +79,18 @@ struct _AgsAutomationEditClass
 
 GType ags_automation_edit_get_type(void);
 
-void ags_automation_edit_set_map_height(AgsAutomationEdit *automation_edit, guint map_height);
-
 void ags_automation_edit_reset_vertically(AgsAutomationEdit *automation_edit, guint flags);
 void ags_automation_edit_reset_horizontally(AgsAutomationEdit *automation_edit, guint flags);
 
-void ags_automation_edit_draw_scale(AgsAutomationEdit *automation_edit, cairo_t *cr,
+void ags_automation_edit_draw_scale(GtkDrawingArea *drawing_area, cairo_t *cr,
 				    gdouble lower, gdouble upper,
 				    gdouble ground);
-void ags_automation_edit_draw_position(AgsAutomationEdit *automation_edit, cairo_t *cr);
-void ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit,
+void ags_automation_edit_draw_position(GtkDrawingArea *drawing_area, cairo_t *cr);
+void ags_automation_edit_draw_automation(GtkDrawingArea *drawing_area,
 					 AgsAutomation *automation,
 					 cairo_t *cr);
 
-void ags_automation_edit_draw_scroll(AgsAutomationEdit *automation_edit, cairo_t *cr,
+void ags_automation_edit_draw_scroll(GtkDrawingArea *drawing_area, cairo_t *cr,
 				     gdouble position);
 
 GtkDrawingArea* ags_automation_edit_add_drawing_area(AgsAutomationEdit *automation_edit,

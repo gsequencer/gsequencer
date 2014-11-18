@@ -313,6 +313,7 @@ ags_audio_init(AgsAudio *audio)
   AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->domain = audio;
 
   audio->notation = NULL;
+  audio->automation = NULL;
 
   audio->recall_id = NULL;
 
