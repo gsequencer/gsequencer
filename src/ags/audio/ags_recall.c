@@ -1277,7 +1277,7 @@ ags_recall_real_run_init_pre(AgsRecall *recall)
  *
  * Prepare for run, this is the pre stage within the preparation.
  * 
- * Since: 0.4
+ * Since: 0.3
  */
 void
 ags_recall_run_init_pre(AgsRecall *recall)
@@ -1314,7 +1314,7 @@ ags_recall_real_run_init_inter(AgsRecall *recall)
  *
  * Prepare for run, this is the inter stage within the preparation.
  * 
- * Since: 0.4
+ * Since: 0.3
  */
 void
 ags_recall_run_init_inter(AgsRecall *recall)
@@ -1353,7 +1353,7 @@ ags_recall_real_run_init_post(AgsRecall *recall)
  *
  * Prepare for run, this is the post stage within the preparation.
  * 
- * Since: 0.4
+ * Since: 0.3
  */
 void
 ags_recall_run_init_post(AgsRecall *recall)
@@ -1390,7 +1390,7 @@ ags_recall_real_run_pre(AgsRecall *recall)
  *
  * This is the pre stage within a run.
  * 
- * Since: 0.4
+ * Since: 0.3
  */
 void
 ags_recall_run_pre(AgsRecall *recall)
@@ -1427,7 +1427,7 @@ ags_recall_real_run_inter(AgsRecall *recall)
  *
  * This is the inter stage within a run.
  * 
- * Since: 0.4
+ * Since: 0.3
  */
 void
 ags_recall_run_inter(AgsRecall *recall)
@@ -1470,7 +1470,7 @@ ags_recall_real_run_post(AgsRecall *recall)
  *
  * This is the post stage within a run.
  * 
- * Since: 0.4
+ * Since: 0.3
  */
 void
 ags_recall_run_post(AgsRecall *recall)

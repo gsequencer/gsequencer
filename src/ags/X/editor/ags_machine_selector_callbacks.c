@@ -80,11 +80,19 @@ ags_machine_selector_popup_remove_index_callback(GtkWidget *menu_item, AgsMachin
 void
 ags_machine_selector_popup_link_index_callback(GtkWidget *menu_item, AgsMachineSelector *machine_selector)
 {
+  AgsWindow *window;
   AgsMachine *machine;
   AgsMachineSelection *machine_selection;
   AgsMachineRadioButton *machine_radio_button;
+  GList *list;
 
-  machine_selection = (AgsMachineSelection *) ags_machine_selection_new(gtk_widget_get_toplevel(machine_selector));
+  list = gtk_window_list_toplevels();
+
+  while(list != NULL && !AGS_IS_WINDOW(list->data)) list = list->next;
+
+  window = list->data;
+
+  machine_selection = (AgsMachineSelection *) ags_machine_selection_new(window);
   ags_machine_selection_load_default(machine_selection);
   g_signal_connect(G_OBJECT(machine_selection), "response\0",
 		   G_CALLBACK(ags_machine_selector_selection_response), machine_selector);

@@ -24,6 +24,7 @@
 #include <ags-lib/object/ags_connectable.h>
 
 #include <ags/object/ags_applicable.h>
+#include <ags/object/ags_soundcard.h>
 
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_config.h>
@@ -353,8 +354,11 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
 							   AGS_TYPE_PREFERENCES);
   window = AGS_WINDOW(preferences->window);
 
+  devout = window->devout;
+
   /* refresh */
-  ags_devout_list_cards(&card_id, &card_name);
+  ags_soundcard_list_cards(AGS_SOUNDCARD(devout),
+			   &card_id, &card_name);
   model = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_STRING);
 
   while(card_id != NULL){
@@ -375,7 +379,6 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
 			  GTK_TREE_MODEL(model));
 
   /*  */
-  devout = window->devout;
   g_object_get(G_OBJECT(devout),
 	       "device\0", &device,
 	       "pcm_channels\0", &channels,
@@ -400,12 +403,13 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
 			    (gdouble) buffer_size);
 
   /*  */
-  ags_devout_pcm_info(gtk_combo_box_get_active_text(audio_preferences->card),
-  		      &channels_min, &channels_max,
-  		      &rate_min, &rate_max,
-  		      &buffer_size_min, &buffer_size_max,
-  		      &error);
-
+  ags_soundcard_pcm_info(AGS_SOUNDCARD(devout),
+			 gtk_combo_box_get_active_text(audio_preferences->card),
+			 &channels_min, &channels_max,
+			 &rate_min, &rate_max,
+			 &buffer_size_min, &buffer_size_max,
+			 &error);
+  
   if(error != NULL){
     GtkMessageDialog *dialog;
 

@@ -440,6 +440,17 @@ ags_menu_bar_add_ffplayer_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 void
 ags_menu_bar_remove_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 {
+  //TODO:JK: implement me
+}
+
+void
+ags_menu_bar_automation_editor_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
+{
+  AgsWindow *window;
+
+  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) menu_bar, AGS_TYPE_WINDOW);
+  
+  gtk_widget_show_all(window->automation_editor);
 }
 
 void

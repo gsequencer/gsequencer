@@ -24,9 +24,8 @@
 
 #include <gtk/gtk.h>
 
-#include <ags/X/ags_window.h>
-
 #include <ags/X/editor/ags_automation_toolbar.h>
+#include <ags/X/editor/ags_notebook.h>
 #include <ags/X/editor/ags_machine_selector.h>
 #include <ags/X/editor/ags_automation_edit.h>
 
@@ -44,21 +43,36 @@ struct _AgsAutomationEditor
 {
   GtkDialog dialog;
 
-  AgsWindow *window;
+  gchar *version;
+  gchar *build_id;
+
+  GObject *window;
+
+  AgsMachineSelector *machine_selector;
+  AgsMachine *selected_machine;
+  gulong set_audio_channels_handler;
+  gulong set_pads_handler;
 
   AgsAutomationToolbar *automation_toolbar;
 
-  AgsMachineSelector *machine_selector;
+  AgsNotebook *notebook;
+
   AgsAutomationEdit *automation_edit;
 };
 
 struct _AgsAutomationEditorClass
 {
   GtkDialogClass dialog;
+
+  void (*machine_changed)(AgsAutomationEditor *automation_editor,
+			  AgsMachine *machine);
 };
 
 GType ags_automation_editor_get_type(void);
 
-AgsAutomationEditor* ags_automation_editor_new(AgsWindow *window);
+void ags_automation_editor_machine_changed(AgsAutomationEditor *automation_editor,
+					   AgsMachine *machine);
+
+AgsAutomationEditor* ags_automation_editor_new(GObject *window);
 
 #endif /*__AGS_AUTOMATION_EDITOR_H__*/

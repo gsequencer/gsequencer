@@ -23,6 +23,8 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
+#include <ags/audio/ags_audio.h>
+
 #include <ags/X/ags_editor.h>
 #include <ags/X/ags_navigation.h>
 #include <ags/X/ags_machine.h>

@@ -22,6 +22,32 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
+#include <ags/audio/ags_audio.h>
+
 #include <ags/X/ags_automation_editor.h>
+#include <ags/X/ags_navigation.h>
+#include <ags/X/ags_machine.h>
+
+#include <ags/X/editor/ags_machine_selector.h>
+
+gboolean ags_automation_editor_delete_event_callback(GtkWidget *automation_editor,
+						     gpointer data);
+
+void ags_automation_editor_set_audio_channels_callback(AgsAudio *audio,
+						       guint audio_channels, guint audio_channels_old,
+						       AgsAutomationEditor *automation_editor);
+void ags_automation_editor_set_pads_callback(AgsAudio *audio,
+					     GType channel_type,
+					     guint pads, guint pads_old,
+					     AgsAutomationEditor *automation_editor);
+
+void ags_automation_editor_machine_changed_callback(AgsMachineSelector *machine_selector, AgsMachine *machine,
+						    AgsAutomationEditor *automation_editor);
+
+void ags_automation_editor_change_position_callback(AgsNavigation *navigation, gdouble tact,
+						    AgsAutomationEditor *automation_editor);
+
+void ags_automation_editor_edit_vscrollbar_value_changed_callback(GtkWidget *note_edit,
+								  AgsAutomationEditor *automation_editor);
 
 #endif /*__AGS_AUTOMATION_EDITOR_CALLBACKS_H__*/

@@ -100,12 +100,14 @@ struct _AgsEditorClass
 {
   GtkVBoxClass vbox;
 
-  void (*machine_changed)(AgsEditor *editor, AgsMachine *machine);
+  void (*machine_changed)(AgsEditor *editor,
+			  AgsMachine *machine);
 };
 
 GType ags_editor_get_type(void);
 
-void ags_editor_machine_changed(AgsEditor *editor, AgsMachine *machine);
+void ags_editor_machine_changed(AgsEditor *editor,
+				AgsMachine *machine);
 
 AgsEditor* ags_editor_new();
 

@@ -17,14 +17,28 @@
  */
 
 #include <ags/X/ags_automation_editor.h>
+#include <ags/X/ags_automation_editor_callbacks.h>
 
 #include <ags-lib/object/ags_connectable.h>
+
+#include <ags/X/ags_window.h>
 
 void ags_automation_editor_class_init(AgsAutomationEditorClass *automation_editor);
 void ags_automation_editor_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_automation_editor_init(AgsAutomationEditor *automation_editor);
 void ags_automation_editor_connect(AgsConnectable *connectable);
 void ags_automation_editor_disconnect(AgsConnectable *connectable);
+void ags_automation_editor_finalize(GObject *gobject);
+
+void ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_editor, AgsMachine *machine);
+
+enum{
+  MACHINE_CHANGED,
+  LAST_SIGNAL,
+};
+
+static gpointer ags_automation_editor_parent_class = NULL;
+static guint automation_editor_signals[LAST_SIGNAL];
 
 /**
  * SECTION:ags_automation_editor
@@ -35,8 +49,6 @@ void ags_automation_editor_disconnect(AgsConnectable *connectable);
  *
  * The #AgsAutomationEditor enables you make choice of an #AgsMachine.
  */
-
-static gpointer ags_automation_editor_parent_class = NULL;
 
 GType
 ags_automation_editor_get_type(void)
@@ -87,11 +99,35 @@ void
 ags_automation_editor_class_init(AgsAutomationEditorClass *automation_editor)
 {
   GObjectClass *gobject;
+  GParamSpec *param_spec;
 
   ags_automation_editor_parent_class = g_type_class_peek_parent(automation_editor);
 
   /* GObjectClass */
   gobject = (GObjectClass *) automation_editor;
+
+  gobject->finalize = ags_automation_editor_finalize;
+
+  /* AgsEditorClass */
+  automation_editor->machine_changed = ags_automation_editor_real_machine_changed;
+
+  /* signals */
+  /**
+   * AgsEditor::machine-changed:
+   * @editor: the object to change machine.
+   * @machine: the #AgsMachine to set
+   *
+   * The ::machine-changed signal notifies about changed machine.
+   */
+  automation_editor_signals[MACHINE_CHANGED] =
+    g_signal_new("machine-changed\0",
+                 G_TYPE_FROM_CLASS(automation_editor),
+                 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsAutomationEditorClass, machine_changed),
+                 NULL, NULL,
+                 g_cclosure_marshal_VOID__OBJECT,
+                 G_TYPE_NONE, 1,
+		 G_TYPE_OBJECT);
 }
 
 void
@@ -100,7 +136,7 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
   GtkTable *table;
 
   g_object_set(G_OBJECT(automation_editor),
-	       "title\0", g_strdup("edit automation\0"),
+	       "title\0", "edit automation\0",
 	       NULL);
 
   table = gtk_table_new(2,
@@ -124,7 +160,7 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 		   GTK_WIDGET(automation_editor->machine_selector),
 		   0, 1,
 		   1, 2,
-		   GTK_FILL, 0,
+		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
   automation_editor->automation_edit = ags_automation_edit_new();
@@ -139,13 +175,56 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 void
 ags_automation_editor_connect(AgsConnectable *connectable)
 {
-  //TODO:JK: implement me
+  AgsAutomationEditor *automation_editor;
+
+  automation_editor = AGS_AUTOMATION_EDITOR(connectable);
+
+  g_signal_connect_after(automation_editor, "delete-event\0",
+			 G_CALLBACK(ags_automation_editor_delete_event_callback), NULL);
+
+  g_signal_connect((GObject *) automation_editor->machine_selector, "changed\0",
+		   G_CALLBACK(ags_automation_editor_machine_changed_callback), (gpointer) automation_editor);
 }
 
 void
 ags_automation_editor_disconnect(AgsConnectable *connectable)
 {
   //TODO:JK: implement me
+}
+
+void
+ags_automation_editor_finalize(GObject *gobject)
+{
+  //TODO:JK: implement me
+
+  G_OBJECT_CLASS(ags_automation_editor_parent_class)->finalize(gobject);
+}
+
+void
+ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_editor, AgsMachine *machine)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_automation_editor_machine_changed:
+ * @automation_editor: an #AgsAutomationEditor
+ * @machine: the new #AgsMachine
+ *
+ * Is emitted as machine changed of automation editor.
+ *
+ * Since: 0.4
+ */
+void
+ags_automation_editor_machine_changed(AgsAutomationEditor *automation_editor, AgsMachine *machine)
+{
+  g_return_if_fail(AGS_IS_EDITOR(automation_editor));
+
+  g_object_ref((GObject *) automation_editor);
+  g_signal_emit((GObject *) automation_editor,
+		automation_editor_signals[MACHINE_CHANGED], 0,
+		machine);
+  g_object_unref((GObject *) automation_editor);
 }
 
 /**
@@ -156,7 +235,7 @@ ags_automation_editor_disconnect(AgsConnectable *connectable)
  * Since: 0.4
  */
 AgsAutomationEditor*
-ags_automation_editor_new(AgsWindow *window)
+ags_automation_editor_new(GObject *window)
 {
   AgsAutomationEditor *automation_editor;
 

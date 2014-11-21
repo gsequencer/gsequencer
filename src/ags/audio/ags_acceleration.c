@@ -102,8 +102,7 @@ ags_acceleration_init(AgsAcceleration *acceleration)
 {
   acceleration->flags = 0;
 
-  acceleration->x[0] = 0;
-  acceleration->x[1] = 0;
+  acceleration->x = 0;
   acceleration->y = 0;
 
   acceleration->name = NULL;
@@ -149,8 +148,7 @@ ags_acceleration_duplicate(AgsAcceleration *acceleration)
 
   copy->flags = 0;
 
-  copy->x[0] = acceleration->x[0];
-  copy->x[1] = acceleration->x[1];
+  copy->x = acceleration->x;
   copy->y = acceleration->y;
 
   return(copy);

@@ -47,7 +47,7 @@ struct _AgsAcceleration
   guint flags;
 
   // gui format, convert easy to visualization
-  guint x[2];
+  guint x;
   guint y;
 
   gchar *name;

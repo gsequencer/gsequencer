@@ -7,15 +7,11 @@ TODO:
 - fix AgsAudio shouldn't contain an AgsDevout move it to AgsChannel
 - revise ags_recall_set_property
 - revise destroy functions - disconnect before destroying
-- play channel when linked if needed
 - implement an iteration function for ags_channel_recursive_play_init
-- AgsCopyPattern implementation in AgsDrum and AgsMatrix doesn't have correct abort code, perhaps see AgsDelay
 - remove recalls after the 3 stages were executed in ags_channel_recursive_play
 - destroy AgsRecalls and AgsAudioSignals
 - implement cancel signal in AgsRecalls
 - update retrieving of AgsDelay in recalls, recalls should duplicate AgsDelays in contrast plays work fine
-- modify ags_audio_set_audio_channels and ags_audio_set_pads so that it updates parent AgsChannel's first_recycling and last_recycling
-- ags_machine_link_editor_callbacks.c replace code in callbacks with ags_machine_link_editor_reset_input and ags_machine_link_editor_reset_output
 - remove ags_editor_reset and move code to callback functions
 - ags_editor.c implement machine_changed signal
 - ags_audio.c add protection against multiple pads on AgsChannel's with AGS_AUDIO_ASYNC and without AgsAudioSignal on AgsOutput
@@ -39,6 +35,13 @@ NOTES:
 
 
 RELEASE NOTES:
+
+ags_0.4.2:
+	- enhanced AgsDial, AgsRuler and AgsNoteEdit
+	- refactored AgsEditor, implemented AgsMachineSelection and AgsMachineSelector
+	- added LADSPA support and ags-peak recall
+	- implemented AgsVIndicator
+	- enhanced AgsLineMember
 
 ags_0.4.0:
 	- many refactorings to make Advanced Gtk+ Sequencer more attractive to develop with.

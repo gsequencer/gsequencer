@@ -25,6 +25,8 @@
 
 #include <ags/audio/ags_devout.h>
 
+#include <ags/X/ags_automation_editor.h>
+
 #include <ags/X/ags_menu_bar.h>
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_editor.h>
@@ -74,6 +76,8 @@ struct _AgsWindow
 
   AgsEditor *editor;
   AgsNavigation *navigation;
+
+  AgsAutomationEditor *automation_editor;
 
   AgsExportWindow *export_window;
   AgsPreferences *preferences;

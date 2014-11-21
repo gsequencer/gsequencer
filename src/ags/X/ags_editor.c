@@ -46,8 +46,6 @@ void ags_editor_disconnect(AgsConnectable *connectable);
 void ags_editor_destroy(GtkObject *object);
 void ags_editor_show(GtkWidget *widget);
 
-void ags_editor_real_audio_channels_changed(AgsEditor *editor, guint audio_channels);
-void ags_editor_real_pads_changed(AgsEditor *editor, guint pads);
 void ags_editor_real_machine_changed(AgsEditor *editor, AgsMachine *machine);
 
 /**

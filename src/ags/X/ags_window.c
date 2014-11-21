@@ -207,6 +207,8 @@ ags_window_init(AgsWindow *window)
 		     (GtkWidget *) window->navigation,
 		     FALSE, FALSE, 0);
 
+  window->automation_editor = ags_automation_editor_new(window);
+
   window->export_window = ags_export_window_new();
   window->preferences = NULL;
 
@@ -332,6 +334,8 @@ ags_window_connect(AgsConnectable *connectable)
   
   ags_connectable_connect(AGS_CONNECTABLE(window->editor));
   ags_connectable_connect(AGS_CONNECTABLE(window->navigation));
+
+  ags_connectable_connect(AGS_CONNECTABLE(window->automation_editor));
 
   ags_connectable_connect(AGS_CONNECTABLE(window->export_window));
 }

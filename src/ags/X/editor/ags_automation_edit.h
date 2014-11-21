@@ -63,10 +63,10 @@ struct _AgsAutomationEdit
 
   guint flags;
 
+  GList *automation;
+
   AgsRuler *ruler;
   GtkVBox *drawing_area;
-
-
 
   GtkVScrollbar *vscrollbar;
   GtkHScrollbar *hscrollbar;
@@ -82,15 +82,10 @@ GType ags_automation_edit_get_type(void);
 void ags_automation_edit_reset_vertically(AgsAutomationEdit *automation_edit, guint flags);
 void ags_automation_edit_reset_horizontally(AgsAutomationEdit *automation_edit, guint flags);
 
-void ags_automation_edit_draw_scale(GtkDrawingArea *drawing_area, cairo_t *cr,
-				    gdouble lower, gdouble upper,
-				    gdouble ground);
-void ags_automation_edit_draw_position(GtkDrawingArea *drawing_area, cairo_t *cr);
-void ags_automation_edit_draw_automation(GtkDrawingArea *drawing_area,
-					 AgsAutomation *automation,
-					 cairo_t *cr);
-
-void ags_automation_edit_draw_scroll(GtkDrawingArea *drawing_area, cairo_t *cr,
+void ags_automation_edit_draw_position(GtkVBox *drawing_area);
+void ags_automation_edit_draw_automation(GtkVBox *drawing_area,
+					 AgsAutomation *automation);
+void ags_automation_edit_draw_scroll(GtkVBox *drawing_area,
 				     gdouble position);
 
 GtkDrawingArea* ags_automation_edit_add_drawing_area(AgsAutomationEdit *automation_edit,

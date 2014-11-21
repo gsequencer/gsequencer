@@ -100,7 +100,8 @@ void
 ags_editor_machine_changed_callback(AgsMachineSelector *machine_selector, AgsMachine *machine,
 				    AgsEditor *editor)
 {
-  ags_editor_machine_changed(editor, machine);
+  ags_editor_machine_changed(editor,
+			     machine);
 }
 
 void

@@ -49,7 +49,6 @@ struct _AgsAutomation
 
   gdouble upper;
   gdouble lower;
-  gdouble ground;
 
   GList *acceleration;
 

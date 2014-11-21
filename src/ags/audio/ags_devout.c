@@ -137,6 +137,12 @@ ags_devout_get_type (void)
       NULL, /* interface_data */
     };
 
+    static const GInterfaceInfo ags_soundcard_interface_info = {
+      (GInterfaceInitFunc) ags_devout_soundcard_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_devout = g_type_register_static(G_TYPE_OBJECT,
 					     "AgsDevout\0",
 					     &ags_devout_info,
@@ -145,6 +151,10 @@ ags_devout_get_type (void)
     g_type_add_interface_static(ags_type_devout,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_type_add_interface_static(ags_type_devout,
+				AGS_TYPE_SOUNDCARD,
+				&ags_soundcard_interface_info);
   }
 
   return (ags_type_devout);
