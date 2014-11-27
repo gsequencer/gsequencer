@@ -47,6 +47,7 @@ struct _AgsAutomation
   guint line;
   gchar *control_name;
 
+  guint steps;
   gdouble upper;
   gdouble lower;
 

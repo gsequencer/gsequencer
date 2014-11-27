@@ -29,6 +29,8 @@
 #include <ags/X/ags_navigation.h>
 #include <ags/X/ags_machine.h>
 
+#include <ags/X/editor/ags_machine_selector.h>
+
 void ags_editor_parent_set_callback(GtkWidget  *widget, GtkObject *old_parent,
 				    AgsEditor *editor);
 

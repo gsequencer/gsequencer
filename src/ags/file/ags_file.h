@@ -57,6 +57,9 @@ struct _AgsFile
 
   guint flags;
 
+  FILE *out;
+  xmlChar *buffer;
+
   gchar *filename;
   gchar *encoding;
   gchar *dtd;
@@ -65,6 +68,7 @@ struct _AgsFile
   gchar *audio_encoding;
 
   xmlDoc *doc;
+  xmlNode *root_node;
 
   GList *id_refs;
   GList *lookup;
@@ -89,6 +93,12 @@ struct _AgsFileClass
 {
   GObjectClass object;
 
+  void (*open)(AgsFile *file);
+  void (*open_from_data)(AgsFile *file,
+			 gchar *data, guint length);
+  void (*rw_open)(AgsFile *file,
+		  gboolean create);
+
   void (*write)(AgsFile *file);
   void (*write_concurrent)(AgsFile *file);
   void (*write_resolve)(AgsFile *file);
@@ -112,6 +122,18 @@ void ags_file_add_lookup(AgsFile *file, GObject *file_lookup);
 
 void ags_file_add_launch(AgsFile *file, GObject *file_launch);
 
+/*  */
+void ags_file_open(AgsFile *file);
+void ags_file_open_from_data(AgsFile *file,
+			     gchar *data, guint length);
+void ags_file_rw_open(AgsFile *file,
+		      gboolean create);
+
+void ags_file_open_filename(AgsFile *file,
+			    gchar *filename);
+void ags_file_close(AgsFile *file);
+
+/*  */
 void ags_file_write(AgsFile *file);
 void ags_file_write_concurrent(AgsFile *file);
 void ags_file_write_resolve(AgsFile *file);
