@@ -831,13 +831,17 @@ main(int argc, char **argv)
   if(filename != NULL){
     AgsFile *file;
 
+    /* create file object for reading */
     file = g_object_new(AGS_TYPE_FILE,
 			"filename\0", filename,
 			NULL);
+    ags_file_open(file);
     ags_file_read(file);
 
+    /* retrieve toplevel object */
     ags_main = AGS_MAIN(file->ags_main);
 
+    /* load config */
     uid = getuid();
     pw = getpwuid(uid);
   
@@ -848,19 +852,21 @@ main(int argc, char **argv)
     config_file = g_strdup_printf("%s/%s\0",
 				  wdir,
 				  AGS_DEFAULT_CONFIG);
-
-   ags_config_load_from_file(ags_main->config,
-			     config_file);
-
+    
+    ags_config_load_from_file(ags_main->config,
+			      config_file);
+    
     g_free(wdir);
     g_free(config_file);
 
+    /* start threads */
     ags_thread_start(ags_main->main_loop);
 
     /* complete thread pool */
     ags_main->thread_pool->parent = AGS_THREAD(ags_main->main_loop);
     ags_thread_pool_start(ags_main->thread_pool);
 
+    /* join */
 #ifdef _USE_PTH
     pth_join(AGS_AUDIO_LOOP(ags_main->main_loop)->gui_thread->thread,
 	     NULL);
@@ -869,6 +875,7 @@ main(int argc, char **argv)
 		 NULL);
 #endif
   }else{
+    /* create toplevel object */
     ags_main = ags_main_new();
 
     if(single_thread){
@@ -960,6 +967,7 @@ main(int argc, char **argv)
       ags_thread_start((AgsThread *) single_thread);
     }
 
+    /* load config */
     uid = getuid();
     pw = getpwuid(uid);
   
@@ -977,8 +985,8 @@ main(int argc, char **argv)
     g_free(wdir);
     g_free(config_file);
 
+    /* join gui thread */
     if(!single_thread){
-      /* join gui thread */
 #ifdef _USE_PTH
       pth_join(AGS_AUDIO_LOOP(ags_main->main_loop)->gui_thread->thread,
 	       NULL);

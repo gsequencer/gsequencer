@@ -358,8 +358,7 @@ ags_automation_edit_draw_position(GtkVBox *drawing_area)
  * Since: 0.4
  */
 void
-ags_automation_edit_draw_automation(GtkVBox *drawing_area,
-				    AgsAutomation *automation)
+ags_automation_edit_draw_automation(GtkVBox *drawing_area)
 {
   AgsEditor *editor;
   AgsAutomationEdit *automation_edit;
@@ -459,12 +458,11 @@ ags_automation_edit_draw_scroll(GtkVBox *drawing_area,
 
 
 GtkDrawingArea*
-ags_automation_edit_add_drawing_area(AgsAutomationEdit *automation_edit,
-				     AgsAutomation *automation)
+ags_automation_edit_add_drawing_area(AgsAutomationEdit *automation_edit)
 {
   GtkDrawingArea *drawing_area;
 
-  drawing_area = (GtkDrawingArea *) gtk_drawing_area_new();
+  drawing_area = (GtkDrawingArea *) ags_automation_area_new();
   gtk_widget_set_style((GtkWidget *) automation_edit->drawing_area, automation_edit_style);
   gtk_widget_set_events(GTK_WIDGET (automation_edit->drawing_area), GDK_EXPOSURE_MASK
 			| GDK_LEAVE_NOTIFY_MASK
@@ -477,6 +475,8 @@ ags_automation_edit_add_drawing_area(AgsAutomationEdit *automation_edit,
 		     drawing_area,
 		     TRUE, FALSE,
 		     0);
+
+  //TODO:JK: implement me
 
   return(drawing_area);
 }

@@ -145,6 +145,7 @@ ags_save_file_launch(AgsTask *task)
   save_file = AGS_SAVE_FILE(task);
 
   g_message("Saving to: %s", save_file->file->filename);
+  ags_file_rw_open(save_file->file);
   ags_file_write(save_file->file);
 }
 
