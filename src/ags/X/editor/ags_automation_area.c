@@ -19,6 +19,8 @@
 #include <ags/X/editor/ags_automation_area.h>
 #include <ags/X/editor/ags_automation_area_callbacks.h>
 
+#include <ags-lib/object/ags_connectable.h>
+
 void ags_automation_area_class_init(AgsAutomationAreaClass *automation_area);
 void ags_automation_area_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_automation_area_init(AgsAutomationArea *automation_area);

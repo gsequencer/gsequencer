@@ -37,14 +37,10 @@ ags_automation_edit_drawing_area_expose_event(GtkWidget *widget, GdkEventExpose 
 
   if(editor->selected_machine != NULL){
     AgsMachine *machine;
-    GList *automation;
 
     machine = editor->selected_machine;
 
-    automation = machine->audio->automation;
-
-    ags_automation_edit_draw_automation(automation_edit->drawing_area,
-					automation);
+    ags_automation_edit_draw_automation(automation_edit->drawing_area);
 
     if(editor->toolbar->selected_edit_mode == editor->toolbar->position){
       ags_automation_edit_draw_position(automation_edit->drawing_area);
