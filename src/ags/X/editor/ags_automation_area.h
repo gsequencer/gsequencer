@@ -24,6 +24,7 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_automation.h>
 
 #define AGS_TYPE_AUTOMATION_AREA                (ags_automation_area_get_type())
@@ -51,6 +52,16 @@ struct _AgsAutomationAreaClass
 };
 
 GType ags_automation_area_get_type(void);
+
+void ags_automation_area_draw_strip(AgsAutomationArea *automation_area, cairo_t *cr,
+				    AgsChannel *channel, gchar *control_name);
+void ags_automation_area_draw_scale(AgsAutomationArea *automation_area, cairo_t *cr,
+				    gdouble lower, gdouble upper);
+void ags_automation_area_draw_automation(AgsAutomationArea *automation_area, cairo_t *cr,
+					 gdouble x0, gdouble x1);
+void ags_automation_area_draw_surface(AgsAutomationArea *automation_area, cairo_t *cr,
+				      gdouble x0, gdouble y0,
+				      gdouble x1, gdouble y1);
 
 AgsAutomationArea* ags_automation_area_new();
 

@@ -40,11 +40,7 @@ ags_automation_edit_drawing_area_expose_event(GtkWidget *widget, GdkEventExpose 
 
     machine = editor->selected_machine;
 
-    ags_automation_edit_draw_automation(automation_edit->drawing_area);
-
-    if(editor->toolbar->selected_edit_mode == editor->toolbar->position){
-      ags_automation_edit_draw_position(automation_edit->drawing_area);
-    }
+    gtk_widget_queue_draw(automation_edit->drawing_area);
   }
 
   return(TRUE);

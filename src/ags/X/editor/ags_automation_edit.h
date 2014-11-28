@@ -81,7 +81,6 @@ void ags_automation_edit_reset_vertically(AgsAutomationEdit *automation_edit, gu
 void ags_automation_edit_reset_horizontally(AgsAutomationEdit *automation_edit, guint flags);
 
 void ags_automation_edit_draw_position(GtkVBox *drawing_area);
-void ags_automation_edit_draw_automation(GtkVBox *drawing_area);
 void ags_automation_edit_draw_scroll(GtkVBox *drawing_area,
 				     gdouble position);
 
