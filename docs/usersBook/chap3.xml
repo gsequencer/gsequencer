@@ -11,6 +11,7 @@
 ]>
 <chapter xmlns="http://docbook.org/ns/docbook" version="5.0">
   <title>Editor</title>
+  <imagedata fileref="../images/ags_editor.png" />
   <para>
     The editor features a piano roll. After linking an editor index with an enginge
     You may perform tasks like adding notes or copy, cut and paste them. You may
@@ -29,7 +30,7 @@
 
   <sect1>
     <title>Toolbar</title>
-    <imagedata fileref="/home/jkraehemann/ags-code/doc/images/ags-toolbar.png" />
+    <imagedata fileref="../images/ags-toolbar.png" />
     <para>
       In the table below are the various buttons explained you may use for editing.
     </para>
