@@ -105,6 +105,8 @@ GtkListStore* ags_machine_get_possible_links(AgsMachine *machine);
 AgsMachine* ags_machine_find_by_name(GList *list, char *name);
 
 void ags_machine_find_port(AgsMachine *machine);
+GList* ags_machine_list_ports(AgsMachine *machine,
+			      GType type);
 
 void ags_machine_set_run(AgsMachine *machine,
 			 gboolean run);

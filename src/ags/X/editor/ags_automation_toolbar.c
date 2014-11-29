@@ -211,6 +211,13 @@ ags_automation_toolbar_load_ports(AgsAutomationToolbar *toolbar)
   automation_editor = gtk_widget_get_ancestor(toolbar,
 					      AGS_TYPE_AUTOMATION_EDITOR);
 
+  audio = automation_editor->selected_machine->audio;
+
+  /* read output ports of line member */
+  if(automation_editor->selected_machine->output != NULL){
+
+  }
+
   //TODO:JK: implement me
 }
 

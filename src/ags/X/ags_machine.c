@@ -33,6 +33,7 @@
 #include <ags/file/ags_file_id_ref.h>
 
 #include <ags/audio/ags_input.h>
+#include <ags/audio/ags_output.h>
 
 #include <ags/audio/file/ags_audio_file.h>
 
@@ -44,6 +45,8 @@
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_pad.h>
+#include <ags/X/ags_line.h>
+#include <ags/X/ags_line_member.h>
 
 void ags_machine_class_init(AgsMachineClass *machine);
 void ags_machine_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -746,6 +749,61 @@ ags_machine_find_port(AgsMachine *machine)
 
     pad = pad->next;
   }
+}
+
+/**
+ * ags_machine_list_ports:
+ * @machine: the #AgsMachine
+ * @type: the context AGS_TYPE_INPUT, AGS_TYPE_OUTPUT
+ *
+ * List available ports used by GUI.
+ */
+GList*
+ags_machine_list_ports(AgsMachine *machine,
+		       GType type)
+{
+  GList *pad, *pad_start;
+  GList *line, *line_start;
+  GList *line_member, *line_member_start;
+  GList *list;
+
+  pad_start =
+    pad = gtk_container_get_children(((type == AGS_TYPE_OUTPUT) ? machine->output: machine->input));
+  list = NULL;
+  
+  while(pad != NULL){
+    line_start =
+      line = gtk_container_get_children(AGS_PAD(pad->data)->expander_set);
+      
+    while(line != NULL){
+      line_member_start = 
+	line_member = gtk_container_get_children(AGS_LINE(line->data)->expander->table);
+
+      while(line_member != NULL){
+	if(AGS_IS_LINE_MEMBER(line_member->data)){
+	  list = g_list_prepend(list,
+				g_strdup_printf("%s\0",
+						AGS_LINE_MEMBER(line_member->data)->port->plugin_name));
+	}
+
+	line_member = line_member->next;
+      }
+	
+      g_list_free(line_member_start);
+
+      line = line->next;
+    }
+
+    g_list_free(line_start);
+
+    pad = pad->next;
+  }
+
+  g_list_free(pad_start);
+
+  list = g_list_reverse(list);
+
+  return(list);
 }
 
 /**
