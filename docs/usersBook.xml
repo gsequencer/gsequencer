@@ -35,6 +35,7 @@
   <xi:include href="usersBook/chap1.xml"/>
   <xi:include href="usersBook/chap2.xml"/>
   <xi:include href="usersBook/chap3.xml"/>
+  <xi:include href="usersBook/chap4.xml"/>
   <xi:include href="appa.xml"/>
   <xi:include href="usersBook/appb.xml"/>
 

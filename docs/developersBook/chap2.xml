@@ -171,136 +171,134 @@
 	<imageobject>
 	  <imagedata fileref="../images/AGS_recall_lifecycle.png" align="right" />
 	</imageobject>
-	<caption align="left">
-	  <para>
-	    The implemented effect as a subclass of AgsRecall resides as template on
-	    the appropriate AgsAudio or AgsChannel.
-	  </para>
-
-	  <para>
-	    When recycling changes on input, new AgsRecallRecycling will be added.
-	    This class function may be of relevancy:
-	  </para>
-
-	  <itemizedlist mark="bullet">
-	    <listitem>
-	      <para>
-		channel_class-&gt;recycling_changed
-	      </para>
-	    </listitem>
-	  </itemizedlist>
-
-	  <para>
-	    As a new run occures the AgsRecallAudioRun and AgsRecallChannelRun will be
-	    duplicated, dependencies resolved, state initialized and enter the play loop
-	    hierarchy. These class functions will be called on the recall:
-	  </para>
-
-	  <itemizedlist mark="bullet">
-	    <listitem>
-	      <para>
-		channel_class-&gt;duplicate
-	      </para>
-	      <itemizedlist mark="circle">
-		<listitem>
-		  This function will be called on the template object to instantiate the
-		  the object which will pass further processing.
-		</listitem>
-	      </itemizedlist>
-	    </listitem>
-	  </itemizedlist>
-
-	  <para>
-	    Further processing:
-	  </para>
-
-	  <itemizedlist mark="bullet">
-	    <listitem>
-	      <para>
-		recall_class-&gt;resolve_dependencies
-	      </para>
-	      <itemizedlist mark="circle">
-		<listitem>
-		  <para>
-		    The recall may want to depend on a other recall (eg. a counter) and
-		    may ignore following calls while rather do processing on an event
-		    of the dependency.
-		  </para>
-		</listitem>
-	      </itemizedlist>
-	    </listitem>
-
-	    <listitem>
-	      <para>
-		recall_class-&gt;run_init_pre, recall_class-&gt;run_init_inter &amp;
-		recall_class-&gt;run_init_post
-	      </para>
-	      <itemizedlist mark="circle">
-		<listitem>
-		  <para>
-		    Will be called only once for the run reffering to dedicated AgsGroupId.
-		  </para>
-		</listitem>
-	      </itemizedlist>
-	    </listitem>
-
-	    <listitem>
-	      <para>
-		recall_class-&gt;run_pre, recall_class-&gt;run_inter &amp;
-		recall_class-&gt;run_post
-	      </para>
-	      <itemizedlist mark="circle">
-		<listitem>
-		  <para>
-		    Will be called for each cycle of a run reffering to AgsGroupId.
-		  </para>
-		</listitem>
-		<listitem>
-		  <para>
-		    There may be more than one AgsGroupId for a template i.e. there can
-		    exist more than one run at the very same time.
-		  </para>
-		</listitem>
-	      </itemizedlist>
-	    </listitem>
-
-	  </itemizedlist>
-
-	  <para>
-	    As soon as an add_audio_signal event will be emitted on an AgsRecycling, the
-	    AgsRecallAudioSignal subclass will be instantiated which performs audio stream
-	    manipulation. These class functions will be called on the recall:
-	  </para>
-
-	  <itemizedlist mark="bullet">
-	    <listitem>
-	      <para>
-		recall_class-&gt;run_init_pre, recall_class-&gt;run_init_inter &amp;
-		recall_class-&gt;run_init_post
-	      </para>
-	    </listitem>
-	    <listitem>
-	      <para>
-		recall_class-&gt;run_pre, recall_class-&gt;run_inter &amp;
-		recall_class-&gt;run_post
-	      </para>
-	    </listitem>
-	  </itemizedlist>
-
-	  <para>
-	    When you're done with processing call:
-	  </para>
-
-	  <itemizedlist mark="bullet">
-	    <listitem>
-	      <para>
-		recall_class-&gt;done
-	      </para>
-	    </listitem>
-	  </itemizedlist>
-
-	</caption>
       </mediaobject>
+
+      <para>
+	The implemented effect as a subclass of AgsRecall resides as template on
+	the appropriate AgsAudio or AgsChannel.
+      </para>
+
+      <para>
+	When recycling changes on input, new AgsRecallRecycling will be added.
+	This class function may be of relevancy:
+      </para>
+
+      <itemizedlist mark="bullet">
+	<listitem>
+	  <para>
+	    channel_class-&gt;recycling_changed
+	  </para>
+	</listitem>
+      </itemizedlist>
+
+      <para>
+	As a new run occures the AgsRecallAudioRun and AgsRecallChannelRun will be
+	duplicated, dependencies resolved, state initialized and enter the play loop
+	hierarchy. These class functions will be called on the recall:
+      </para>
+
+      <itemizedlist mark="bullet">
+	<listitem>
+	  <para>
+	    channel_class-&gt;duplicate
+	  </para>
+	  <itemizedlist mark="circle">
+	    <listitem>
+	      This function will be called on the template object to instantiate the
+	      the object which will pass further processing.
+	    </listitem>
+	  </itemizedlist>
+	</listitem>
+      </itemizedlist>
+
+      <para>
+	Further processing:
+      </para>
+
+      <itemizedlist mark="bullet">
+	<listitem>
+	  <para>
+	    recall_class-&gt;resolve_dependencies
+	  </para>
+	  <itemizedlist mark="circle">
+	    <listitem>
+	      <para>
+		The recall may want to depend on a other recall (eg. a counter) and
+		may ignore following calls while rather do processing on an event
+		of the dependency.
+	      </para>
+	    </listitem>
+	  </itemizedlist>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    recall_class-&gt;run_init_pre, recall_class-&gt;run_init_inter &amp;
+	    recall_class-&gt;run_init_post
+	  </para>
+	  <itemizedlist mark="circle">
+	    <listitem>
+	      <para>
+		Will be called only once for the run reffering to dedicated AgsGroupId.
+	      </para>
+	    </listitem>
+	  </itemizedlist>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    recall_class-&gt;run_pre, recall_class-&gt;run_inter &amp;
+	    recall_class-&gt;run_post
+	  </para>
+	  <itemizedlist mark="circle">
+	    <listitem>
+	      <para>
+		Will be called for each cycle of a run reffering to AgsGroupId.
+	      </para>
+	    </listitem>
+	    <listitem>
+	      <para>
+		There may be more than one AgsGroupId for a template i.e. there can
+		exist more than one run at the very same time.
+	      </para>
+	    </listitem>
+	  </itemizedlist>
+	</listitem>
+
+      </itemizedlist>
+
+      <para>
+	As soon as an add_audio_signal event will be emitted on an AgsRecycling, the
+	AgsRecallAudioSignal subclass will be instantiated which performs audio stream
+	manipulation. These class functions will be called on the recall:
+      </para>
+
+      <itemizedlist mark="bullet">
+	<listitem>
+	  <para>
+	    recall_class-&gt;run_init_pre, recall_class-&gt;run_init_inter &amp;
+	    recall_class-&gt;run_init_post
+	  </para>
+	</listitem>
+	<listitem>
+	  <para>
+	    recall_class-&gt;run_pre, recall_class-&gt;run_inter &amp;
+	    recall_class-&gt;run_post
+	  </para>
+	</listitem>
+      </itemizedlist>
+
+      <para>
+	When you're done with processing call:
+      </para>
+
+      <itemizedlist mark="bullet">
+	<listitem>
+	  <para>
+	    recall_class-&gt;done
+	  </para>
+	</listitem>
+      </itemizedlist>
     </sect1>
 
     <sect1>

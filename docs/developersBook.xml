@@ -34,6 +34,7 @@
   <xi:include href="developersBook/preface.xml"/>
   <xi:include href="developersBook/chap1.xml"/>
   <xi:include href="developersBook/chap2.xml"/>
+  <xi:include href="developersBook/chap3.xml"/>
   <xi:include href="appa.xml"/>
   <xi:include href="developersBook/appb.xml"/>
 

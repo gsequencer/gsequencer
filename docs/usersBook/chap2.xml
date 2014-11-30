@@ -2,6 +2,7 @@
 <chapter xmlns="http://docbook.org/ns/docbook" version="5.0">
   <title>Engines</title>
   <imagedata fileref="../images/ags_menu.png" />
+
   <para>
     You can add engines by activating the appropriate menu item within
     the "add" submenu of the "edit" menu item. You may change the properties
