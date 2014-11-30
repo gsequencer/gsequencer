@@ -24,7 +24,7 @@
       AgsRecycling associated with the appropriate AgsChannel.
     </para>
 
-    <imagedata fileref="../images/AGS_linking.png" />
+    <imagedata fileref="../images/AGS_linking.svg" />
     <table>
       <title>AGS network layer table</title>
       <tgroup cols="2" align="left" colsep='1' rowsep='1'>

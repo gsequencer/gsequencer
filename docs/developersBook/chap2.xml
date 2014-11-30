@@ -169,7 +169,7 @@
 
       <mediaobject>
 	<imageobject>
-	  <imagedata fileref="../images/AGS_recall_lifecycle.png" align="right" />
+	  <imagedata fileref="../images/AGS_recall_lifecycle.svg" align="right" />
 	</imageobject>
       </mediaobject>
 
@@ -315,7 +315,7 @@
 	
 	<mediaobject>
 	  <imageobject>
-	    <imagedata fileref="../images/AGS_run_init.png" align="right" />
+	    <imagedata fileref="../images/AGS_run_init.svg" align="right" />
 	  </imageobject>
 	</mediaobject>
 
@@ -401,7 +401,7 @@
 
 	<mediaobject>
 	  <imageobject>
-	    <imagedata fileref="../images/AGS_run.png" align="right" />
+	    <imagedata fileref="../images/AGS_run.svg" align="right" />
 	  </imageobject>
 	</mediaobject>
 

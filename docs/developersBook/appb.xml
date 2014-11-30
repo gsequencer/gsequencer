@@ -2,6 +2,75 @@
 <appendix>
   <title>Related projects</title>
   <para>
-    <!-- TODO:JK: write some content -->
+    Here is a brief list of Advanced Gtk+ Sequencer's direct dependencies.
   </para>
+  
+  <itemizedlist mark="bullet">
+    <listitem>
+      <para>
+	gmp: Gnu MP Bignum, http://gmplib.org
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+	libasound2: ALSA, http://alsa-project.org
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+	ladspa-sdk: LADSPA, http://www.ladspa.org
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+	libsndfile1: Sndfile-1, http://www.mega-nerd.com/libsndfile
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+	libinstpatch1: Instpatch-1, http://www.swamiproject.org
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+	libxml2: Gnome XML-2, http://www.gnome.org
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+	libuuid: Universaly Unique Identifier, http://www.sourceforge.net/p/libuuid
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+	libglib-2.x: GLib-2, http://www.gtk.org
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+	libgobject-2.x: GObject-2, http://www.gtk.org
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+	libgdk-2.x: Gdk-2, http://www.gtk.org
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+	libcairo-2.x: Cairo-2, http://www.cairographics.org
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+	libgtk-2.x: Gtk-2, http://www.gtk.org
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+	libxmlrpc-c: XMLRPC-C, http://xmlrpc-c.sourceforge.net
+      </para>
+    </listitem>
+  </itemizedlist>
+
 </appendix>
