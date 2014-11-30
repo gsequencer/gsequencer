@@ -11,6 +11,12 @@
     persisting and restoring.
   </para>
 
+    <mediaobject>
+      <imageobject>
+	<imagedata fileref="../images/AGS_plugin.png" align="right" />
+      </imageobject>
+    </mediaobject>
+
   <sect1>
     <title>Hands-on</title>
 

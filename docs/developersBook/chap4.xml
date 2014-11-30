@@ -16,6 +16,13 @@
       implemententing class is responsible for thread safe get/set properties. Most common way
       is using mutices.
     </para>
+
+    <mediaobject>
+      <imageobject>
+	<imagedata fileref="../images/AGS_portlet.png" align="right" />
+      </imageobject>
+    </mediaobject>
+
   </sect1>
 
 </chapter>
