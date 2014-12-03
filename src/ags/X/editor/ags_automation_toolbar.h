@@ -49,7 +49,7 @@ struct _AgsAutomationToolbar
 
   GtkComboBox *zoom;
 
-  GtkComboBox *ports;
+  GtkMenuToolButton *ports;
 };
 
 struct _AgsAutomationToolbarClass

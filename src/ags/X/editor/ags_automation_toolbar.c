@@ -101,7 +101,6 @@ ags_automation_toolbar_init(AgsAutomationToolbar *automation_toolbar)
   GtkMenuToolButton *menu_tool_button;
   GtkMenu *menu;
   GtkLabel *label;
-  GtkTreeModel *tree_model;
 
   automation_toolbar->position = g_object_new(GTK_TYPE_TOGGLE_BUTTON,
 					      "image\0", gtk_image_new_from_stock(GTK_STOCK_JUMP_TO,
@@ -183,23 +182,10 @@ ags_automation_toolbar_init(AgsAutomationToolbar *automation_toolbar)
 			    NULL);
 
   /*  */
-  label = gtk_label_new("automation\0");
-  gtk_container_add(GTK_CONTAINER(automation_toolbar),
-		    label);
-
-  tree_model = gtk_list_store_new(2, G_TYPE_BOOLEAN, G_TYPE_STRING);
-
-  automation_toolbar->ports = g_object_new(GTK_TYPE_COMBO_BOX,
-					   "model\0", tree_model,
+  automation_toolbar->ports = g_object_new(GTK_TYPE_MENU_TOOL_BUTTON,
+					   "menu\0", NULL,
+					   "stock-id\0", GTK_STOCK_EXECUTE,
 					   NULL);
-
-  gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(automation_toolbar->ports),
-			     gtk_cell_renderer_toggle_new(),
-			     FALSE);
-  gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(automation_toolbar->ports),
-			     gtk_cell_renderer_text_new(),
-			     FALSE);
-
   gtk_toolbar_append_widget((GtkToolbar *) automation_toolbar,
 			    (GtkWidget *) automation_toolbar->ports,
 			    NULL,
@@ -209,9 +195,16 @@ ags_automation_toolbar_init(AgsAutomationToolbar *automation_toolbar)
 void
 ags_automation_toolbar_connect(AgsConnectable *connectable)
 {
+  AgsAutomationEditor *automation_editor;
   AgsAutomationToolbar *automation_toolbar;
 
   automation_toolbar = AGS_AUTOMATION_TOOLBAR(connectable);
+  automation_editor = gtk_widget_get_ancestor(automation_toolbar,
+					      AGS_TYPE_AUTOMATION_EDITOR);
+
+  /*  */
+  g_signal_connect_after(G_OBJECT(automation_editor), "machine-changed\0",
+			 G_CALLBACK(ags_automation_toolbar_machine_changed_callback), automation_toolbar);
 }
 
 void
@@ -225,11 +218,17 @@ ags_automation_toolbar_load_ports(AgsAutomationToolbar *toolbar)
 {
   AgsAutomationEditor *automation_editor;
   AgsAudio *audio;
-  GtkTreeModel *tree_model;
+  GtkMenu *menu;
+  GtkMenuItem *item;
+  AgsChannel *channel;
   GList *port;
 
   automation_editor = gtk_widget_get_ancestor(toolbar,
 					      AGS_TYPE_AUTOMATION_EDITOR);
+
+  if(automation_editor->selected_machine == NULL){
+    return;
+  }
 
   audio = automation_editor->selected_machine->audio;
 
@@ -249,22 +248,24 @@ ags_automation_toolbar_load_ports(AgsAutomationToolbar *toolbar)
   }
 
   /* retrieve port specifiers */
-  tree_model = gtk_list_store_new(2, G_TYPE_BOOLEAN, G_TYPE_STRING);
-  g_object_set(toolbar->ports,
-	       "model\0", tree_model,
-	       NULL);
+  menu = gtk_menu_new();
 
   while(port != NULL){
-    gtk_list_store_insert_with_values(GTK_LIST_STORE(tree_model),
-				      NULL, -1,
-				      0, FALSE,
-				      1, g_strdup_printf("%s: %s\0",
-							 AGS_PORT(port->data)->plugin_name,
-							 AGS_PORT(port->data)->specifier),
-				      -1);
+    item = gtk_check_menu_item_new_with_label(g_strdup_printf("%s: %s\0",
+							      AGS_PORT(port->data)->plugin_name,
+							      AGS_PORT(port->data)->specifier));
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu),
+			  GTK_WIDGET(item));
+    g_signal_connect(item, "toggled\0",
+		     G_CALLBACK(ags_automation_toolbar_ports_toggled_callback), toolbar); 
 
     port = port->next;
   }
+    
+  g_object_set(toolbar->ports,
+	       "menu\0", menu,
+	       NULL);
+  gtk_widget_show_all(menu);
 }
 
 /**

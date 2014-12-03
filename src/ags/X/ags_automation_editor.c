@@ -179,11 +179,17 @@ ags_automation_editor_connect(AgsConnectable *connectable)
 
   automation_editor = AGS_AUTOMATION_EDITOR(connectable);
 
+  /*  */
   g_signal_connect_after(automation_editor, "delete-event\0",
 			 G_CALLBACK(ags_automation_editor_delete_event_callback), NULL);
 
   g_signal_connect((GObject *) automation_editor->machine_selector, "changed\0",
 		   G_CALLBACK(ags_automation_editor_machine_changed_callback), (gpointer) automation_editor);
+
+  /* */
+  ags_connectable_connect(AGS_CONNECTABLE(automation_editor->automation_toolbar));
+  ags_connectable_connect(AGS_CONNECTABLE(automation_editor->notebook));
+  ags_connectable_connect(AGS_CONNECTABLE(automation_editor->automation_edit));
 }
 
 void
@@ -203,6 +209,8 @@ ags_automation_editor_finalize(GObject *gobject)
 void
 ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_editor, AgsMachine *machine)
 {
+  automation_editor->selected_machine = machine;
+
   //TODO:JK: implement me
 }
 
@@ -218,7 +226,7 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
 void
 ags_automation_editor_machine_changed(AgsAutomationEditor *automation_editor, AgsMachine *machine)
 {
-  g_return_if_fail(AGS_IS_EDITOR(automation_editor));
+  g_return_if_fail(AGS_IS_AUTOMATION_EDITOR(automation_editor));
 
   g_object_ref((GObject *) automation_editor);
   g_signal_emit((GObject *) automation_editor,

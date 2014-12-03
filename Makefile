@@ -85,6 +85,7 @@ am_ags_OBJECTS = ags-ags_combo_box_text.$(OBJEXT) \
 	ags-ags_soundset_callbacks.$(OBJEXT) \
 	ags-ags_meter_callbacks.$(OBJEXT) \
 	ags-ags_toolbar_callbacks.$(OBJEXT) \
+	ags-ags_automation_toolbar_callbacks.$(OBJEXT) \
 	ags-ags_machine_selector.$(OBJEXT) \
 	ags-ags_machine_selector_callbacks.$(OBJEXT) \
 	ags-ags_machine_radio_button.$(OBJEXT) \
@@ -612,6 +613,7 @@ ags_SOURCES = src/ags/lib/ags_combo_box_text.c src/ags/lib/ags_list.c \
 	src/ags/X/editor/ags_soundset_callbacks.h \
 	src/ags/X/editor/ags_meter_callbacks.h \
 	src/ags/X/editor/ags_toolbar_callbacks.c \
+	src/ags/X/editor/ags_automation_toolbar_callbacks.c \
 	src/ags/X/editor/ags_machine_selector.c \
 	src/ags/X/editor/ags_machine_selector_callbacks.c \
 	src/ags/X/editor/ags_machine_radio_button.c \
@@ -643,6 +645,7 @@ ags_SOURCES = src/ags/lib/ags_combo_box_text.c src/ags/lib/ags_list.c \
 	src/ags/X/editor/ags_automation_area.c \
 	src/ags/X/editor/ags_inline_player_callbacks.c \
 	src/ags/X/editor/ags_toolbar_callbacks.h \
+	src/ags/X/editor/ags_automation_toolbar_callbacks.h \
 	src/ags/X/editor/ags_machine_selection.h \
 	src/ags/X/editor/ags_automation_toolbar.c \
 	src/ags/X/editor/ags_toolbar.c src/ags/X/ags_line_callbacks.h \
@@ -1296,6 +1299,7 @@ include ./$(DEPDIR)/ags-ags_automation_edit_callbacks.Po
 include ./$(DEPDIR)/ags-ags_automation_editor.Po
 include ./$(DEPDIR)/ags-ags_automation_editor_callbacks.Po
 include ./$(DEPDIR)/ags-ags_automation_toolbar.Po
+include ./$(DEPDIR)/ags-ags_automation_toolbar_callbacks.Po
 include ./$(DEPDIR)/ags-ags_autosave_thread.Po
 include ./$(DEPDIR)/ags-ags_buffer_audio_signal.Po
 include ./$(DEPDIR)/ags-ags_buffer_channel.Po
@@ -1741,6 +1745,20 @@ ags-ags_toolbar_callbacks.obj: src/ags/X/editor/ags_toolbar_callbacks.c
 #	source='src/ags/X/editor/ags_toolbar_callbacks.c' object='ags-ags_toolbar_callbacks.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_toolbar_callbacks.obj `if test -f 'src/ags/X/editor/ags_toolbar_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_toolbar_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_toolbar_callbacks.c'; fi`
+
+ags-ags_automation_toolbar_callbacks.o: src/ags/X/editor/ags_automation_toolbar_callbacks.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_automation_toolbar_callbacks.o -MD -MP -MF $(DEPDIR)/ags-ags_automation_toolbar_callbacks.Tpo -c -o ags-ags_automation_toolbar_callbacks.o `test -f 'src/ags/X/editor/ags_automation_toolbar_callbacks.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_automation_toolbar_callbacks.c
+	$(am__mv) $(DEPDIR)/ags-ags_automation_toolbar_callbacks.Tpo $(DEPDIR)/ags-ags_automation_toolbar_callbacks.Po
+#	source='src/ags/X/editor/ags_automation_toolbar_callbacks.c' object='ags-ags_automation_toolbar_callbacks.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_automation_toolbar_callbacks.o `test -f 'src/ags/X/editor/ags_automation_toolbar_callbacks.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_automation_toolbar_callbacks.c
+
+ags-ags_automation_toolbar_callbacks.obj: src/ags/X/editor/ags_automation_toolbar_callbacks.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_automation_toolbar_callbacks.obj -MD -MP -MF $(DEPDIR)/ags-ags_automation_toolbar_callbacks.Tpo -c -o ags-ags_automation_toolbar_callbacks.obj `if test -f 'src/ags/X/editor/ags_automation_toolbar_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_automation_toolbar_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_automation_toolbar_callbacks.c'; fi`
+	$(am__mv) $(DEPDIR)/ags-ags_automation_toolbar_callbacks.Tpo $(DEPDIR)/ags-ags_automation_toolbar_callbacks.Po
+#	source='src/ags/X/editor/ags_automation_toolbar_callbacks.c' object='ags-ags_automation_toolbar_callbacks.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_automation_toolbar_callbacks.obj `if test -f 'src/ags/X/editor/ags_automation_toolbar_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_automation_toolbar_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_automation_toolbar_callbacks.c'; fi`
 
 ags-ags_machine_selector.o: src/ags/X/editor/ags_machine_selector.c
 	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_machine_selector.o -MD -MP -MF $(DEPDIR)/ags-ags_machine_selector.Tpo -c -o ags-ags_machine_selector.o `test -f 'src/ags/X/editor/ags_machine_selector.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_machine_selector.c

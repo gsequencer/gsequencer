@@ -22,6 +22,16 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
+#include <ags/X/ags_machine.h>
+#include <ags/X/ags_automation_editor.h>
+
 #include <ags/X/editor/ags_automation_toolbar.h>
+
+void ags_automation_toolbar_machine_changed_callback(AgsAutomationEditor *automation_editor,
+						     AgsMachine *machine,
+						     AgsAutomationToolbar *toolbar);
+
+void ags_automation_toolbar_ports_toggled_callback(GtkWidget *menu_item,
+						   AgsAutomationToolbar *toolbar);
 
 #endif /*__AGS_AUTOMATION_TOOLBAR_CALLBACKS_H__*/

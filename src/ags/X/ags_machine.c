@@ -765,11 +765,11 @@ ags_machine_list_ports(AgsMachine *machine,
   GList *pad, *pad_start;
   GList *line, *line_start;
   GList *line_member, *line_member_start;
-  GList *list;
+  GList *port;
 
   pad_start =
     pad = gtk_container_get_children(((type == AGS_TYPE_OUTPUT) ? machine->output: machine->input));
-  list = NULL;
+  port = NULL;
   
   while(pad != NULL){
     line_start =
@@ -781,9 +781,8 @@ ags_machine_list_ports(AgsMachine *machine,
 
       while(line_member != NULL){
 	if(AGS_IS_LINE_MEMBER(line_member->data)){
-	  list = g_list_prepend(list,
-				g_strdup_printf("%s\0",
-						AGS_LINE_MEMBER(line_member->data)->port->plugin_name));
+	  port = g_list_prepend(port,
+				AGS_LINE_MEMBER(line_member->data)->port);
 	}
 
 	line_member = line_member->next;
@@ -801,9 +800,9 @@ ags_machine_list_ports(AgsMachine *machine,
 
   g_list_free(pad_start);
 
-  list = g_list_reverse(list);
+  port = g_list_reverse(port);
 
-  return(list);
+  return(port);
 }
 
 /**

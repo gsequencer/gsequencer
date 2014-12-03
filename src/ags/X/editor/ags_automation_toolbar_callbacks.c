@@ -17,3 +17,20 @@
  */
 
 #include <ags/X/editor/ags_automation_toolbar_callbacks.h>
+
+void
+ags_automation_toolbar_machine_changed_callback(AgsAutomationEditor *automation_editor,
+						AgsMachine *machine,
+						AgsAutomationToolbar *toolbar)
+{
+  ags_automation_toolbar_load_ports(toolbar);
+}
+
+void
+ags_automation_toolbar_ports_toggled_callback(GtkWidget *menu_item,
+					      AgsAutomationToolbar *toolbar)
+{
+  g_message("debug\0");
+
+  //TODO:JK: implement me
+}
