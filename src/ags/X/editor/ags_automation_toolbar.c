@@ -21,6 +21,11 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_output.h>
+#include <ags/audio/ags_input.h>
+#include <ags/audio/ags_port.h>
+
 #include <ags/X/ags_automation_editor.h>
 
 void ags_automation_toolbar_class_init(AgsAutomationToolbarClass *automation_toolbar);
@@ -96,6 +101,7 @@ ags_automation_toolbar_init(AgsAutomationToolbar *automation_toolbar)
   GtkMenuToolButton *menu_tool_button;
   GtkMenu *menu;
   GtkLabel *label;
+  GtkTreeModel *tree_model;
 
   automation_toolbar->position = g_object_new(GTK_TYPE_TOGGLE_BUTTON,
 					      "image\0", gtk_image_new_from_stock(GTK_STOCK_JUMP_TO,
@@ -181,7 +187,19 @@ ags_automation_toolbar_init(AgsAutomationToolbar *automation_toolbar)
   gtk_container_add(GTK_CONTAINER(automation_toolbar),
 		    label);
 
-  automation_toolbar->ports = gtk_combo_box_text_new();
+  tree_model = gtk_list_store_new(2, G_TYPE_BOOLEAN, G_TYPE_STRING);
+
+  automation_toolbar->ports = g_object_new(GTK_TYPE_COMBO_BOX,
+					   "model\0", tree_model,
+					   NULL);
+
+  gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(automation_toolbar->ports),
+			     gtk_cell_renderer_toggle_new(),
+			     FALSE);
+  gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(automation_toolbar->ports),
+			     gtk_cell_renderer_text_new(),
+			     FALSE);
+
   gtk_toolbar_append_widget((GtkToolbar *) automation_toolbar,
 			    (GtkWidget *) automation_toolbar->ports,
 			    NULL,
@@ -207,18 +225,46 @@ ags_automation_toolbar_load_ports(AgsAutomationToolbar *toolbar)
 {
   AgsAutomationEditor *automation_editor;
   AgsAudio *audio;
+  GtkTreeModel *tree_model;
+  GList *port;
 
   automation_editor = gtk_widget_get_ancestor(toolbar,
 					      AGS_TYPE_AUTOMATION_EDITOR);
 
   audio = automation_editor->selected_machine->audio;
 
+  port = NULL;
+
   /* read output ports of line member */
   if(automation_editor->selected_machine->output != NULL){
-
+    port = ags_machine_list_ports(automation_editor->selected_machine,
+				  AGS_TYPE_OUTPUT);
   }
 
-  //TODO:JK: implement me
+  /* read input ports of line member */
+  if(automation_editor->selected_machine->input != NULL){
+    port = g_list_concat(port,
+			 ags_machine_list_ports(automation_editor->selected_machine,
+						AGS_TYPE_INPUT));
+  }
+
+  /* retrieve port specifiers */
+  tree_model = gtk_list_store_new(2, G_TYPE_BOOLEAN, G_TYPE_STRING);
+  g_object_set(toolbar->ports,
+	       "model\0", tree_model,
+	       NULL);
+
+  while(port != NULL){
+    gtk_list_store_insert_with_values(GTK_LIST_STORE(tree_model),
+				      NULL, -1,
+				      0, FALSE,
+				      1, g_strdup_printf("%s: %s\0",
+							 AGS_PORT(port->data)->plugin_name,
+							 AGS_PORT(port->data)->specifier),
+				      -1);
+
+    port = port->next;
+  }
 }
 
 /**

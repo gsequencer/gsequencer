@@ -32,8 +32,6 @@ void ags_automation_edit_init(AgsAutomationEdit *automation_edit);
 void ags_automation_edit_connect(AgsConnectable *connectable);
 void ags_automation_edit_disconnect(AgsConnectable *connectable);
 
-void ags_automation_edit_paint(AgsAutomationEdit *automation_edit);
-
 /**
  * SECTION:ags_automation_edit
  * @short_description: edit automations
@@ -220,62 +218,6 @@ ags_automation_edit_draw_scroll(GtkVBox *drawing_area,
   height = (gdouble) GTK_WIDGET(drawing_area)->allocation.height;
 
   //TODO:JK: implement me
-}
-
-void
-ags_automation_edit_paint(AgsAutomationEdit *automation_edit)
-{
-  AgsAutomationEditor *automation_editor;
-
-  automation_editor = (AgsAutomationEditor *) gtk_widget_get_ancestor(automation_edit,
-								      AGS_TYPE_AUTOMATION_EDITOR);
-
-  if(automation_editor->selected_machine != NULL){
-    AgsMachine *machine;
-    AgsAutomationArea *automation_area;
-    AgsChannel *channel;
-    cairo_t *cr;
-    GList *list;
-    guint width, height;
-    gdouble x0, x1;
-
-    machine = automation_editor->selected_machine;
-    
-    list = gtk_container_get_children(automation_edit->drawing_area);
-
-    while(list != NULL){
-      automation_area = AGS_AUTOMATION_AREA(list->data);
-
-      if((AGS_AUDIO_NOTATION_DEFAULT & (machine->audio->flags)) == 0){
-	channel = ags_channel_nth(machine->audio->output,
-				  automation_area->automation->line);
-      }else{
-	channel = ags_channel_nth(machine->audio->input,
-				  automation_area->automation->line);
-      }
-
-      cr = gdk_cairo_create(GTK_WIDGET(list->data)->window);
-
-      width = GTK_WIDGET(list->data)->allocation.width;
-      height = GTK_WIDGET(list->data)->allocation.height;
-
-      x0 = GTK_RANGE(automation_edit->vscrollbar)->adjustment->value;
-      x1 = x0 + width;
-
-      ags_automation_area_draw_strip(automation_area, cr,
-				     channel, automation_area->automation->control_name);
-
-      ags_automation_area_draw_automation(automation_area, cr,
-					  x0, x1);
-
-      ags_automation_area_draw_scale(automation_area, cr,
-				     automation_area->automation->lower, automation_area->automation->upper);
-
-      list = list->next;
-    }
-
-    g_list_free(list);
-  }
 }
 
 GtkDrawingArea*

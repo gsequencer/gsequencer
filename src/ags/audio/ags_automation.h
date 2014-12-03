@@ -45,6 +45,7 @@ struct _AgsAutomation
 
   GObject *audio;
   guint line;
+  GType channel_type;
   gchar *control_name;
 
   guint steps;
