@@ -24,9 +24,9 @@
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_input.h>
-#include <ags/audio/ags_port.h>
 
-#include <ags/X/ags_port_editor.h>
+#include <ags/X/ags_automation_editor.h>
+#include <ags/X/ags_machine.h>
 #include <ags/X/ags_pad.h>
 #include <ags/X/ags_line.h>
 #include <ags/X/ags_line_member.h>
@@ -47,8 +47,15 @@ void ags_port_selection_real_add_port(AgsPortSelection *port_selection,
  * @section_id:
  * @include: ags/X/editor/ags_note_edit.h
  *
- * The #AgsPortSelection lets you choose edit tool.
+ * The #AgsPortSelection lets you add ports to automation.
  */
+
+enum{
+  ADD_PORT,
+  LAST_SIGNAL,
+};
+
+static guint port_selection_signals[LAST_SIGNAL];
 
 GType
 ags_port_selection_get_type(void)
@@ -74,9 +81,9 @@ ags_port_selection_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_port_selection = g_type_register_static(GTK_TYPE_SELECTION,
-							 "AgsPortSelection\0", &ags_port_selection_info,
-							 0);
+    ags_type_port_selection = g_type_register_static(GTK_TYPE_MENU_TOOL_BUTTON,
+						     "AgsPortSelection\0", &ags_port_selection_info,
+						     0);
     
     g_type_add_interface_static(ags_type_port_selection,
 				AGS_TYPE_CONNECTABLE,
@@ -89,6 +96,18 @@ ags_port_selection_get_type(void)
 void
 ags_port_selection_class_init(AgsPortSelectionClass *port_selection)
 {
+  /* AgsPortSelectionClass */
+  port_selection->add_port = NULL;
+
+  port_selection_signals[ADD_PORT] =
+    g_signal_new("add-port\0",
+                 G_TYPE_FROM_CLASS(port_selection),
+                 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsPortSelectionClass, add_port),
+                 NULL, NULL,
+                 g_cclosure_marshal_VOID__OBJECT,
+                 G_TYPE_NONE, 1,
+		 G_TYPE_OBJECT);
 }
 
 void
@@ -103,125 +122,36 @@ ags_port_selection_connectable_interface_init(AgsConnectableInterface *connectab
 void
 ags_port_selection_init(AgsPortSelection *port_selection)
 {
-  GtkMenuToolButton *menu_tool_button;
-  GtkMenu *menu;
-  GtkLabel *label;
-
-  port_selection->position = g_object_new(GTK_TYPE_TOGGLE_BUTTON,
-					      "image\0", gtk_image_new_from_stock(GTK_STOCK_JUMP_TO,
-										  GTK_ICON_SIZE_LARGE_SELECTION),
-					      "relief\0", GTK_RELIEF_NONE,
-					      NULL);
-  gtk_selection_append_widget((GtkSelection *) port_selection,
-			    (GtkWidget *) port_selection->position,
-			    "position cursor\0",
-			    NULL);
-
-  port_selection->edit = g_object_new(GTK_TYPE_TOGGLE_BUTTON,
-					  "image\0", gtk_image_new_from_stock(GTK_STOCK_EDIT,
-									      GTK_ICON_SIZE_LARGE_SELECTION),
-					  "relief\0", GTK_RELIEF_NONE,
-					  NULL);
-  port_selection->selected_edit_mode = port_selection->edit;
-  gtk_selection_append_widget((GtkSelection *) port_selection,
-			    (GtkWidget *) port_selection->edit,
-			    "edit port\0",
-			    NULL);
-
-  port_selection->clear = g_object_new(GTK_TYPE_TOGGLE_BUTTON,
-					   "image\0", gtk_image_new_from_stock(GTK_STOCK_CLEAR,
-									       GTK_ICON_SIZE_LARGE_SELECTION),
-					   "relief\0", GTK_RELIEF_NONE,
-					   NULL);
-  
-  port_selection->select = g_object_new(GTK_TYPE_TOGGLE_BUTTON,
-					    "image\0", gtk_image_new_from_stock(GTK_STOCK_SELECT_ALL,
-										GTK_ICON_SIZE_LARGE_SELECTION),
-					    "relief\0", GTK_RELIEF_NONE,
-					    NULL);
-  gtk_selection_append_widget((GtkSelection *) port_selection,
-			    (GtkWidget *) port_selection->select,
-			    "select port\0",
-			    NULL);
-
-  port_selection->copy = (GtkButton *) g_object_new(GTK_TYPE_BUTTON,
-					     "image\0", gtk_image_new_from_stock(GTK_STOCK_COPY,
-										 GTK_ICON_SIZE_LARGE_SELECTION),
-					     "relief\0", GTK_RELIEF_NONE,
-					     NULL);
-  gtk_selection_append_widget((GtkSelection *) port_selection,
-			    port_selection->copy,
-			    "copy port\0",
-			    NULL);
-
-  port_selection->cut = (GtkButton *) g_object_new(GTK_TYPE_BUTTON,
-						       "image\0", gtk_image_new_from_stock(GTK_STOCK_CUT,
-											   GTK_ICON_SIZE_LARGE_SELECTION),
-						       "relief\0", GTK_RELIEF_NONE,
-						       NULL);
-  gtk_selection_append_widget((GtkSelection *) port_selection,
-			    port_selection->cut,
-			    "cut port\0",
-			    NULL);
-
-  port_selection->paste = (GtkButton *) g_object_new(GTK_TYPE_BUTTON,
-							 "image\0", gtk_image_new_from_stock(GTK_STOCK_PASTE,
-											     GTK_ICON_SIZE_LARGE_SELECTION),
-							 "relief\0", GTK_RELIEF_NONE,
-							 NULL);
-  gtk_selection_append_widget((GtkSelection *) port_selection,
-			    port_selection->paste,
-			    "paste port\0",
-			    NULL);
-
-  /*  */
-  label = gtk_label_new("zoom\0");
-  gtk_container_add(GTK_CONTAINER(port_selection),
-		    label);
-
-  port_selection->zoom = ags_zoom_combo_box_new();
-  gtk_combo_box_set_active(port_selection->zoom, 4);
-  gtk_selection_append_widget((GtkSelection *) port_selection,
-			    (GtkWidget *) port_selection->zoom,
-			    NULL,
-			    NULL);
-
-  /*  */
-  port_selection->ports = g_object_new(GTK_TYPE_MENU_TOOL_BUTTON,
-					   "menu\0", NULL,
-					   "stock-id\0", GTK_STOCK_EXECUTE,
-					   NULL);
-  gtk_selection_append_widget((GtkSelection *) port_selection,
-			    (GtkWidget *) port_selection->ports,
-			    NULL,
-			    NULL);
+  g_object_set(G_OBJECT(port_selection),
+	       "menu\0", NULL,
+	       "stock-id\0", GTK_STOCK_EXECUTE,
+	       NULL);
 }
 
 void
 ags_port_selection_connect(AgsConnectable *connectable)
 {
-  AgsPortEditor *port_editor;
   AgsPortSelection *port_selection;
 
   port_selection = AGS_PORT_SELECTION(connectable);
-  port_editor = gtk_widget_get_ancestor(port_selection,
-					      AGS_TYPE_PORT_EDITOR);
 
-  /*  */
-  g_signal_connect_after(G_OBJECT(port_editor), "machine-changed\0",
-			 G_CALLBACK(ags_port_selection_machine_changed_callback), port_selection);
+  //TODO:JK: implement me
 }
 
 void
 ags_port_selection_disconnect(AgsConnectable *connectable)
 {
+  AgsPortSelection *port_selection;
+
+  port_selection = AGS_PORT_SELECTION(connectable);
+
   //TODO:JK: implement me
 }
 
 void
 ags_port_selection_load_ports(AgsPortSelection *selection)
 {
-  AgsPortEditor *port_editor;
+  AgsAutomationEditor *automation_editor;
   AgsMachine *machine;
   AgsAudio *audio;
   GtkMenu *menu;
@@ -294,14 +224,14 @@ ags_port_selection_load_ports(AgsPortSelection *selection)
     return(port);
   }
 
-  port_editor = gtk_widget_get_ancestor(selection,
-					      AGS_TYPE_PORT_EDITOR);
+  automation_editor = gtk_widget_get_ancestor(selection,
+					      AGS_TYPE_AUTOMATION_EDITOR);
 
-  if(port_editor->selected_machine == NULL){
+  if(automation_editor->selected_machine == NULL){
     return;
   }
 
-  machine = port_editor->selected_machine;
+  machine = automation_editor->selected_machine;
   audio = machine->audio;
 
   port = NULL;
@@ -310,18 +240,18 @@ ags_port_selection_load_ports(AgsPortSelection *selection)
   menu = gtk_menu_new();
 
   /* read output ports of line member */
-  if(port_editor->selected_machine->output != NULL){
+  if(automation_editor->selected_machine->output != NULL){
     port = ags_port_selection_list_ports(AGS_TYPE_OUTPUT);
     g_list_free(port);
   }
 
   /* read input ports of line member */
-  if(port_editor->selected_machine->input != NULL){
+  if(automation_editor->selected_machine->input != NULL){
     port = ags_port_selection_list_ports(AGS_TYPE_INPUT);
     g_list_free(port);
   }
     
-  g_object_set(selection->ports,
+  g_object_set(selection,
 	       "menu\0", menu,
 	       NULL);
   gtk_widget_show_all(menu);

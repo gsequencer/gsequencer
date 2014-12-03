@@ -184,12 +184,9 @@ ags_automation_toolbar_init(AgsAutomationToolbar *automation_toolbar)
 			    NULL);
 
   /*  */
-  automation_toolbar->ports = g_object_new(GTK_TYPE_MENU_TOOL_BUTTON,
-					   "menu\0", NULL,
-					   "stock-id\0", GTK_STOCK_EXECUTE,
-					   NULL);
+  automation_toolbar->port_selection = ags_port_selection_new();
   gtk_toolbar_append_widget((GtkToolbar *) automation_toolbar,
-			    (GtkWidget *) automation_toolbar->ports,
+			    (GtkWidget *) automation_toolbar->port_selection,
 			    NULL,
 			    NULL);
 }

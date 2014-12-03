@@ -22,9 +22,6 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include <ags/X/ags_machine.h>
-#include <ags/X/ags_port_editor.h>
-
 #include <ags/X/editor/ags_port_selection.h>
 
 void ags_port_selection_ports_toggled_callback(GtkWidget *menu_item,

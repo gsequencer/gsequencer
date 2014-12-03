@@ -23,5 +23,9 @@ ags_automation_toolbar_machine_changed_callback(AgsAutomationEditor *automation_
 						AgsMachine *machine,
 						AgsAutomationToolbar *toolbar)
 {
-  ags_automation_toolbar_load_ports(toolbar);
+  AgsAutomation *automation;
+
+  ags_port_selection_load_ports(toolbar->port_selection);
+
+  //TODO:JK: implement me
 }

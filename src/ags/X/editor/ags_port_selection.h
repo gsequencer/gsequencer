@@ -23,6 +23,8 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
+#include <ags/audio/ags_port.h>
+
 #define AGS_TYPE_PORT_SELECTION                (ags_port_selection_get_type())
 #define AGS_PORT_SELECTION(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PORT_SELECTION, AgsPortSelection))
 #define AGS_PORT_SELECTION_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_PORT_SELECTION, AgsPortSelectionClass))

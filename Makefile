@@ -98,6 +98,8 @@ am_ags_OBJECTS = ags-ags_combo_box_text.$(OBJEXT) \
 	ags-ags_pattern_edit_callbacks.$(OBJEXT) \
 	ags-ags_file_selection_callbacks.$(OBJEXT) \
 	ags-ags_machine_selection.$(OBJEXT) \
+	ags-ags_port_selection.$(OBJEXT) \
+	ags-ags_port_selection_callbacks.$(OBJEXT) \
 	ags-ags_inline_player.$(OBJEXT) ags-ags_soundset.$(OBJEXT) \
 	ags-ags_meter.$(OBJEXT) ags-ags_file_selection.$(OBJEXT) \
 	ags-ags_note_edit.$(OBJEXT) ags-ags_pattern_edit.$(OBJEXT) \
@@ -627,6 +629,8 @@ ags_SOURCES = src/ags/lib/ags_combo_box_text.c src/ags/lib/ags_list.c \
 	src/ags/X/editor/ags_pattern_edit_callbacks.c \
 	src/ags/X/editor/ags_file_selection_callbacks.c \
 	src/ags/X/editor/ags_machine_selection.c \
+	src/ags/X/editor/ags_port_selection.c \
+	src/ags/X/editor/ags_port_selection_callbacks.c \
 	src/ags/X/editor/ags_inline_player_callbacks.h \
 	src/ags/X/editor/ags_inline_player.c \
 	src/ags/X/editor/ags_soundset.c src/ags/X/editor/ags_meter.c \
@@ -647,6 +651,8 @@ ags_SOURCES = src/ags/lib/ags_combo_box_text.c src/ags/lib/ags_list.c \
 	src/ags/X/editor/ags_toolbar_callbacks.h \
 	src/ags/X/editor/ags_automation_toolbar_callbacks.h \
 	src/ags/X/editor/ags_machine_selection.h \
+	src/ags/X/editor/ags_port_selection.h \
+	src/ags/X/editor/ags_port_selection_callbacks.h \
 	src/ags/X/editor/ags_automation_toolbar.c \
 	src/ags/X/editor/ags_toolbar.c src/ags/X/ags_line_callbacks.h \
 	src/ags/X/ags_plugin_preferences.c src/ags/X/ags_link_editor.c \
@@ -1492,6 +1498,8 @@ include ./$(DEPDIR)/ags-ags_plugin_factory.Po
 include ./$(DEPDIR)/ags-ags_plugin_preferences.Po
 include ./$(DEPDIR)/ags-ags_plugin_preferences_callbacks.Po
 include ./$(DEPDIR)/ags-ags_port.Po
+include ./$(DEPDIR)/ags-ags_port_selection.Po
+include ./$(DEPDIR)/ags-ags_port_selection_callbacks.Po
 include ./$(DEPDIR)/ags-ags_portlet.Po
 include ./$(DEPDIR)/ags-ags_preferences.Po
 include ./$(DEPDIR)/ags-ags_preferences_callbacks.Po
@@ -1927,6 +1935,34 @@ ags-ags_machine_selection.obj: src/ags/X/editor/ags_machine_selection.c
 #	source='src/ags/X/editor/ags_machine_selection.c' object='ags-ags_machine_selection.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_machine_selection.obj `if test -f 'src/ags/X/editor/ags_machine_selection.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_machine_selection.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_machine_selection.c'; fi`
+
+ags-ags_port_selection.o: src/ags/X/editor/ags_port_selection.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_port_selection.o -MD -MP -MF $(DEPDIR)/ags-ags_port_selection.Tpo -c -o ags-ags_port_selection.o `test -f 'src/ags/X/editor/ags_port_selection.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_port_selection.c
+	$(am__mv) $(DEPDIR)/ags-ags_port_selection.Tpo $(DEPDIR)/ags-ags_port_selection.Po
+#	source='src/ags/X/editor/ags_port_selection.c' object='ags-ags_port_selection.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_port_selection.o `test -f 'src/ags/X/editor/ags_port_selection.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_port_selection.c
+
+ags-ags_port_selection.obj: src/ags/X/editor/ags_port_selection.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_port_selection.obj -MD -MP -MF $(DEPDIR)/ags-ags_port_selection.Tpo -c -o ags-ags_port_selection.obj `if test -f 'src/ags/X/editor/ags_port_selection.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_port_selection.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_port_selection.c'; fi`
+	$(am__mv) $(DEPDIR)/ags-ags_port_selection.Tpo $(DEPDIR)/ags-ags_port_selection.Po
+#	source='src/ags/X/editor/ags_port_selection.c' object='ags-ags_port_selection.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_port_selection.obj `if test -f 'src/ags/X/editor/ags_port_selection.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_port_selection.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_port_selection.c'; fi`
+
+ags-ags_port_selection_callbacks.o: src/ags/X/editor/ags_port_selection_callbacks.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_port_selection_callbacks.o -MD -MP -MF $(DEPDIR)/ags-ags_port_selection_callbacks.Tpo -c -o ags-ags_port_selection_callbacks.o `test -f 'src/ags/X/editor/ags_port_selection_callbacks.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_port_selection_callbacks.c
+	$(am__mv) $(DEPDIR)/ags-ags_port_selection_callbacks.Tpo $(DEPDIR)/ags-ags_port_selection_callbacks.Po
+#	source='src/ags/X/editor/ags_port_selection_callbacks.c' object='ags-ags_port_selection_callbacks.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_port_selection_callbacks.o `test -f 'src/ags/X/editor/ags_port_selection_callbacks.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_port_selection_callbacks.c
+
+ags-ags_port_selection_callbacks.obj: src/ags/X/editor/ags_port_selection_callbacks.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_port_selection_callbacks.obj -MD -MP -MF $(DEPDIR)/ags-ags_port_selection_callbacks.Tpo -c -o ags-ags_port_selection_callbacks.obj `if test -f 'src/ags/X/editor/ags_port_selection_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_port_selection_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_port_selection_callbacks.c'; fi`
+	$(am__mv) $(DEPDIR)/ags-ags_port_selection_callbacks.Tpo $(DEPDIR)/ags-ags_port_selection_callbacks.Po
+#	source='src/ags/X/editor/ags_port_selection_callbacks.c' object='ags-ags_port_selection_callbacks.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_port_selection_callbacks.obj `if test -f 'src/ags/X/editor/ags_port_selection_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_port_selection_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_port_selection_callbacks.c'; fi`
 
 ags-ags_inline_player.o: src/ags/X/editor/ags_inline_player.c
 	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_inline_player.o -MD -MP -MF $(DEPDIR)/ags-ags_inline_player.Tpo -c -o ags-ags_inline_player.o `test -f 'src/ags/X/editor/ags_inline_player.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_inline_player.c
