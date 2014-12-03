@@ -27,6 +27,9 @@
 #include <ags/audio/ags_port.h>
 
 #include <ags/X/ags_automation_editor.h>
+#include <ags/X/ags_pad.h>
+#include <ags/X/ags_line.h>
+#include <ags/X/ags_line_member.h>
 
 void ags_automation_toolbar_class_init(AgsAutomationToolbarClass *automation_toolbar);
 void ags_automation_toolbar_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -217,11 +220,77 @@ void
 ags_automation_toolbar_load_ports(AgsAutomationToolbar *toolbar)
 {
   AgsAutomationEditor *automation_editor;
+  AgsMachine *machine;
   AgsAudio *audio;
   GtkMenu *menu;
   GtkMenuItem *item;
   AgsChannel *channel;
   GList *port;
+
+  auto GList* ags_automation_toolbar_list_ports(GType type);
+
+  GList* ags_automation_toolbar_list_ports(GType type){
+    GList *pad, *pad_start;
+    GList *line, *line_start;
+    GList *line_member, *line_member_start;
+    GList *port;
+
+    pad_start =
+      pad = gtk_container_get_children(((type == AGS_TYPE_OUTPUT) ? machine->output: machine->input));
+    port = NULL;
+  
+    while(pad != NULL){
+      line_start =
+	line = gtk_container_get_children(AGS_PAD(pad->data)->expander_set);
+      
+      while(line != NULL){
+	channel = AGS_LINE(line->data)->channel;
+
+	line_member_start = 
+	  line_member = gtk_container_get_children(AGS_LINE(line->data)->expander->table);
+
+	while(line_member != NULL){
+	  if(AGS_IS_LINE_MEMBER(line_member->data)){
+	    /* fill list */
+	    port = g_list_prepend(port,
+				  AGS_LINE_MEMBER(line_member->data)->port);
+
+	    /* add menu item */
+	    item = gtk_check_menu_item_new_with_label(g_strdup_printf("%s: %s\0",
+								      AGS_PORT(port->data)->plugin_name,
+								      AGS_PORT(port->data)->specifier));
+	    g_object_set_data(G_OBJECT(item),
+			      AGS_AUTOMATION_TOOLBAR_DATA_CHANNEL,
+			      channel);
+	    g_object_set_data(G_OBJECT(item),
+			      AGS_AUTOMATION_TOOLBAR_DATA_PORT,
+			      port->data);
+	    gtk_menu_shell_append(GTK_MENU_SHELL(menu),
+				  GTK_WIDGET(item));
+	    g_signal_connect(item, "toggled\0",
+			     G_CALLBACK(ags_automation_toolbar_ports_toggled_callback), toolbar); 
+
+	  }
+
+	  line_member = line_member->next;
+	}
+	
+	g_list_free(line_member_start);
+
+	line = line->next;
+      }
+
+      g_list_free(line_start);
+
+      pad = pad->next;
+    }
+
+    g_list_free(pad_start);
+
+    port = g_list_reverse(port);
+
+    return(port);
+  }
 
   automation_editor = gtk_widget_get_ancestor(toolbar,
 					      AGS_TYPE_AUTOMATION_EDITOR);
@@ -230,36 +299,24 @@ ags_automation_toolbar_load_ports(AgsAutomationToolbar *toolbar)
     return;
   }
 
-  audio = automation_editor->selected_machine->audio;
+  machine = automation_editor->selected_machine;
+  audio = machine->audio;
 
   port = NULL;
-
-  /* read output ports of line member */
-  if(automation_editor->selected_machine->output != NULL){
-    port = ags_machine_list_ports(automation_editor->selected_machine,
-				  AGS_TYPE_OUTPUT);
-  }
-
-  /* read input ports of line member */
-  if(automation_editor->selected_machine->input != NULL){
-    port = g_list_concat(port,
-			 ags_machine_list_ports(automation_editor->selected_machine,
-						AGS_TYPE_INPUT));
-  }
 
   /* retrieve port specifiers */
   menu = gtk_menu_new();
 
-  while(port != NULL){
-    item = gtk_check_menu_item_new_with_label(g_strdup_printf("%s: %s\0",
-							      AGS_PORT(port->data)->plugin_name,
-							      AGS_PORT(port->data)->specifier));
-    gtk_menu_shell_append(GTK_MENU_SHELL(menu),
-			  GTK_WIDGET(item));
-    g_signal_connect(item, "toggled\0",
-		     G_CALLBACK(ags_automation_toolbar_ports_toggled_callback), toolbar); 
+  /* read output ports of line member */
+  if(automation_editor->selected_machine->output != NULL){
+    port = ags_automation_toolbar_list_ports(AGS_TYPE_OUTPUT);
+    g_list_free(port);
+  }
 
-    port = port->next;
+  /* read input ports of line member */
+  if(automation_editor->selected_machine->input != NULL){
+    port = ags_automation_toolbar_list_ports(AGS_TYPE_INPUT);
+    g_list_free(port);
   }
     
   g_object_set(toolbar->ports,

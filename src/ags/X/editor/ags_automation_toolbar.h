@@ -30,6 +30,9 @@
 #define AGS_IS_AUTOMATION_TOOLBAR_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_AUTOMATION_TOOLBAR))
 #define AGS_AUTOMATION_TOOLBAR_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS (obj, AGS_TYPE_AUTOMATION_TOOLBAR, AgsAutomationToolbarClass))
 
+#define AGS_AUTOMATION_TOOLBAR_DATA_CHANNEL "ags-channel\0"
+#define AGS_AUTOMATION_TOOLBAR_DATA_PORT "ags-port\0"
+
 typedef struct _AgsAutomationToolbar AgsAutomationToolbar;
 typedef struct _AgsAutomationToolbarClass AgsAutomationToolbarClass;
 
