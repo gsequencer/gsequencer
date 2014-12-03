@@ -16,19 +16,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef __AGS_AUTOMATION_TOOLBAR_CALLBACKS_H__
-#define __AGS_AUTOMATION_TOOLBAR_CALLBACKS_H__
+#include <ags/X/editor/ags_port_selection_callbacks.h>
 
-#include <glib-object.h>
-#include <gtk/gtk.h>
-
-#include <ags/X/ags_machine.h>
-#include <ags/X/ags_automation_editor.h>
-
-#include <ags/X/editor/ags_automation_toolbar.h>
-
-void ags_automation_toolbar_machine_changed_callback(AgsAutomationEditor *automation_editor,
-						     AgsMachine *machine,
-						     AgsAutomationToolbar *toolbar);
-
-#endif /*__AGS_AUTOMATION_TOOLBAR_CALLBACKS_H__*/
+void
+ags_port_selection_ports_toggled_callback(GtkWidget *menu_item,
+					  AgsPortSelection *selection)
+{
+  //TODO:JK: implement me
+}

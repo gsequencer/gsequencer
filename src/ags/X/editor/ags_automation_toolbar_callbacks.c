@@ -25,12 +25,3 @@ ags_automation_toolbar_machine_changed_callback(AgsAutomationEditor *automation_
 {
   ags_automation_toolbar_load_ports(toolbar);
 }
-
-void
-ags_automation_toolbar_ports_toggled_callback(GtkWidget *menu_item,
-					      AgsAutomationToolbar *toolbar)
-{
-  g_message("debug\0");
-
-  //TODO:JK: implement me
-}
