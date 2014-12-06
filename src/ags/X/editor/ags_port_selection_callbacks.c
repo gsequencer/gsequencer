@@ -18,9 +18,16 @@
 
 #include <ags/X/editor/ags_port_selection_callbacks.h>
 
+#include <ags/audio/ags_port.h>
+
 void
 ags_port_selection_ports_toggled_callback(GtkWidget *menu_item,
 					  AgsPortSelection *selection)
 {
-  //TODO:JK: implement me
+  AgsPort *port;
+
+  port = g_object_get_data(menu_item,
+			   AGS_PORT_SELECTION_DATA_PORT);
+  ags_port_selection_add_port(selection,
+			      port);
 }

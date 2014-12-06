@@ -47,7 +47,8 @@ struct _AgsPortSelectionClass
 {
   GtkMenuToolButtonClass menu_tool_button;
 
-  void (*add_port)(AgsPortSelection *port_selection);
+  void (*add_port)(AgsPortSelection *port_selection,
+		   AgsPort *port);
 };
 
 GType ags_port_selection_get_type(void);

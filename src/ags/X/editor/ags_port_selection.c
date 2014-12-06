@@ -148,6 +148,12 @@ ags_port_selection_disconnect(AgsConnectable *connectable)
   //TODO:JK: implement me
 }
 
+/**
+ * ags_port_selection_load_ports:
+ * @selection: 
+ *
+ * 
+ */
 void
 ags_port_selection_load_ports(AgsPortSelection *selection)
 {
@@ -257,11 +263,38 @@ ags_port_selection_load_ports(AgsPortSelection *selection)
   gtk_widget_show_all(menu);
 }
 
+/**
+ * ags_port_selection_enable_ports:
+ * @port_selection: 
+ * @ports:
+ *
+ * 
+ */
 void
-ags_port_selection_add_port(AgsPortSelection *port_selection,
-				 AgsPort *port)
+ags_port_selection_enable_ports(AgsPortSelection *port_selection,
+				GList *ports)
 {
   //TODO:JK: implement me
+}
+
+/**
+ * ags_port_selection_add_port:
+ * @port_selection:
+ * @port: 
+ *
+ * 
+ */
+void
+ags_port_selection_add_port(AgsPortSelection *port_selection,
+			    AgsPort *port)
+{
+  g_return_if_fail(AGS_IS_PORT_SELECTION(port_selection));
+
+  g_object_ref((GObject *) port_selection);
+  g_signal_emit(G_OBJECT(port_selection),
+		port_selection_signals[ADD_PORT], 0,
+		port);
+  g_object_unref((GObject *) port_selection);
 }
 
 /**
