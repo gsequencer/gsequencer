@@ -194,7 +194,8 @@ ags_port_selection_load_ports(AgsPortSelection *selection)
 				  AGS_LINE_MEMBER(line_member->data)->port);
 
 	    /* add menu item */
-	    item = gtk_check_menu_item_new_with_label(g_strdup_printf("%s: %s\0",
+	    item = gtk_check_menu_item_new_with_label(g_strdup_printf("[%d] %s: %s\0",
+								      channel->line,
 								      AGS_PORT(port->data)->plugin_name,
 								      AGS_PORT(port->data)->specifier));
 	    g_object_set_data(G_OBJECT(item),
@@ -274,7 +275,33 @@ void
 ags_port_selection_enable_ports(AgsPortSelection *port_selection,
 				GList *ports)
 {
-  //TODO:JK: implement me
+  GtkMenu *menu;
+  AgsPort *current;
+  GList *list, *list_start;
+
+  g_object_get(port_selection,
+	       "menu\0", &menu,
+	       NULL);
+
+  /*  */
+  list_start = 
+    list = gtk_container_get_children(menu);
+
+  while(list != NULL){
+    current = g_object_get_data(list->data,
+				AGS_PORT_SELECTION_DATA_PORT);
+
+    if(current == ports->data){
+      gtk_check_menu_item_set_active(list->data,
+				     TRUE);
+
+      ports = ports->next;
+    }
+
+    list = list->next;
+  }
+
+  g_list_free(list_start);
 }
 
 /**
