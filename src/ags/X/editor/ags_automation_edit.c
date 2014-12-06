@@ -107,11 +107,17 @@ ags_automation_edit_init(AgsAutomationEdit *automation_edit)
 		   GTK_FILL|GTK_EXPAND, GTK_FILL,
 		   0, 0);
 
-  automation_edit->drawing_area = gtk_vbox_new(FALSE, 0);
-  gtk_table_attach(GTK_TABLE(automation_edit), (GtkWidget *) automation_edit->drawing_area,
+  /* drawing area box and its viewport */
+  automation_edit->viewport = gtk_viewport_new(NULL,
+					       NULL);
+  gtk_table_attach(GTK_TABLE(automation_edit), (GtkWidget *) automation_edit->viewport,
 		   0, 1, 1, 2,
 		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
 		   0, 0);
+
+  automation_edit->drawing_area = gtk_vbox_new(FALSE, 0);
+  gtk_container_add(automation_edit->viewport,
+		    automation_edit->drawing_area);
 
   /* GtkScrollbars */
   adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, 1.0, 1.0);
@@ -220,12 +226,22 @@ ags_automation_edit_draw_scroll(GtkVBox *drawing_area,
   //TODO:JK: implement me
 }
 
+/**
+ * ags_automation_edit_add_drawing_area:
+ * @automation_edit:
+ * @automation:
+ * 
+ * 
+ */
 GtkDrawingArea*
-ags_automation_edit_add_drawing_area(AgsAutomationEdit *automation_edit)
+ags_automation_edit_add_drawing_area(AgsAutomationEdit *automation_edit,
+				     AgsAutomation *automation)
 {
   GtkDrawingArea *drawing_area;
 
-  drawing_area = (GtkDrawingArea *) ags_automation_area_new();
+  drawing_area = (GtkDrawingArea *) g_object_new(AGS_TYPE_AUTOMATION_AREA,
+						 "automation\0", automation,
+						 NULL);
   gtk_widget_set_style((GtkWidget *) automation_edit->drawing_area, automation_edit_style);
   gtk_widget_set_events(GTK_WIDGET (automation_edit->drawing_area), GDK_EXPOSURE_MASK
 			| GDK_LEAVE_NOTIFY_MASK

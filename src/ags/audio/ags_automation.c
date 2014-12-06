@@ -69,8 +69,8 @@ void ags_automation_safe_get_property(AgsPortlet *portlet, gchar *property_name,
 enum{
   PROP_0,
   PROP_PORT,
-  PROP_CURRENT_NOTES,
-  PROP_NEXT_NOTES,
+  PROP_CURRENT_ACCELERATIONS,
+  PROP_NEXT_ACCELERATIONS,
 };
 
 static gpointer ags_automation_parent_class = NULL;
@@ -155,33 +155,33 @@ ags_automation_class_init(AgsAutomationClass *automation)
 				  param_spec);
 
   /**
-   * AgsAutomation:current-notes:
+   * AgsAutomation:current-accelerations:
    *
    * Offset of current position.
    * 
    * Since: 0.4.0
    */
-  param_spec = g_param_spec_pointer("current-notes\0",
-				    "current notes for offset\0",
-				    "The current notes for offset\0",
+  param_spec = g_param_spec_pointer("current-accelerations\0",
+				    "current accelerations for offset\0",
+				    "The current accelerations for offset\0",
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_CURRENT_NOTES,
+				  PROP_CURRENT_ACCELERATIONS,
 				  param_spec);
 
   /**
-   * AgsAutomation:next-notes:
+   * AgsAutomation:next-accelerations:
    *
    * Offset of next position.
    * 
    * Since: 0.4.0
    */
-  param_spec = g_param_spec_pointer("next-notes\0",
-				    "next notes for offset\0",
-				    "The next notes for offset\0",
+  param_spec = g_param_spec_pointer("next-accelerations\0",
+				    "next accelerations for offset\0",
+				    "The next accelerations for offset\0",
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_NEXT_NOTES,
+				  PROP_NEXT_ACCELERATIONS,
 				  param_spec);
 }
 
@@ -235,6 +235,53 @@ ags_automation_set_property(GObject *gobject,
   automation = AGS_AUTOMATION(gobject);
 
   switch(prop_id){
+  case PROP_PORT:
+    {
+      AgsPort *port;
+
+      port = g_value_get_object(value);
+
+      if(port == automation->port){
+	return;
+      }
+
+      if(automation->port != NULL){
+	g_object_unref(automation->port);
+      }
+
+      if(port != NULL){
+	g_object_ref(port);
+      }
+
+      automation->port = port;
+    }
+    break;
+  case PROP_CURRENT_ACCELERATIONS:
+    {
+      GList *current_accelerations;
+
+      current_accelerations = g_value_get_pointer(value);
+
+      if(automation->current_accelerations == current_accelerations){
+	return;
+      }
+
+      automation->current_accelerations = current_accelerations;
+    }
+    break;
+  case PROP_NEXT_ACCELERATIONS:
+    {
+      GList *next_accelerations;
+
+      next_accelerations = g_value_get_pointer(value);
+
+      if(automation->next_accelerations == next_accelerations){
+	return;
+      }
+
+      automation->next_accelerations = next_accelerations;
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -252,6 +299,21 @@ ags_automation_get_property(GObject *gobject,
   automation = AGS_AUTOMATION(gobject);
 
   switch(prop_id){
+  case PROP_PORT:
+    {
+      g_value_set_object(value, automation->port);
+    }
+    break;
+  case PROP_CURRENT_ACCELERATIONS:
+    {
+      g_value_set_pointer(value, automation->current_accelerations);
+    }
+    break;
+  case PROP_NEXT_ACCELERATIONS:
+    {
+      g_value_set_pointer(value, automation->next_accelerations);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;

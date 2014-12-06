@@ -26,6 +26,14 @@
 void ags_automation_area_class_init(AgsAutomationAreaClass *automation_area);
 void ags_automation_area_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_automation_area_init(AgsAutomationArea *automation_area);
+void ags_automation_area_set_property(GObject *gobject,
+				      guint prop_id,
+				      const GValue *value,
+				      GParamSpec *param_spec);
+void ags_automation_area_get_property(GObject *gobject,
+				      guint prop_id,
+				      GValue *value,
+				      GParamSpec *param_spec);
 void ags_automation_area_connect(AgsConnectable *connectable);
 void ags_automation_area_disconnect(AgsConnectable *connectable);
 
@@ -41,6 +49,12 @@ void ags_automation_area_paint(AgsAutomationArea *automation_area);
  * The #AgsAutomationArea lets you area automations.
  */
 
+enum{
+  PROP_0,
+  PROP_AUTOMATION,
+};
+
+static gpointer ags_automation_area_parent_class = NULL;
 GtkStyle *automation_area_style;
 
 GType
@@ -91,11 +105,54 @@ ags_automation_area_connectable_interface_init(AgsConnectableInterface *connecta
 void
 ags_automation_area_class_init(AgsAutomationAreaClass *automation_area)
 {
-  //TODO:JK: implement me
+  GObjectClass *gobject;
+  GParamSpec *param_spec;
+
+  ags_automation_area_parent_class = g_type_class_peek_parent(automation_area);
+
+  gobject = (GObjectClass *) automation_area;
+
+  gobject->set_property = ags_automation_area_set_property;
+  gobject->get_property = ags_automation_area_get_property;
+
+  /* properties */
+  /**
+   * AgsAutomationArea:automation:
+   *
+   * The assigned #AgsAutomation
+   * 
+   * Since: 0.4.0
+   */
+  param_spec = g_param_spec_object("automation\0",
+				   "automation of automation area\0",
+				   "The automation of automation area\0",
+				   AGS_TYPE_AUTOMATION,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_AUTOMATION,
+				  param_spec);
 }
 
 void
 ags_automation_area_init(AgsAutomationArea *automation_area)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_automation_area_set_property(GObject *gobject,
+				 guint prop_id,
+				 const GValue *value,
+				 GParamSpec *param_spec)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_automation_area_get_property(GObject *gobject,
+				 guint prop_id,
+				 GValue *value,
+				 GParamSpec *param_spec)
 {
   //TODO:JK: implement me
 }

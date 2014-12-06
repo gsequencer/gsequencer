@@ -123,6 +123,10 @@ void ags_audio_add_recall_container(AgsAudio *audio, GObject *recall_container);
 void ags_audio_remove_recall_container(AgsAudio *audio, GObject *recall_container);
 void ags_audio_add_recall(AgsAudio *audio, GObject *recall, gboolean play);
 void ags_audio_remove_recall(AgsAudio *audio, GObject *recall, gboolean play);
+void ags_audio_add_automation(AgsAudio *audio,
+			      GObject *automation);
+void ags_audio_remove_automation(AgsAudio *audio,
+				 GObject *automation);
 
 void ags_audio_recall_change_state(AgsAudio *audio, gboolean enable);
 

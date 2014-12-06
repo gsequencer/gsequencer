@@ -64,6 +64,8 @@ struct _AgsAutomationEdit
   guint flags;
 
   AgsRuler *ruler;
+
+  GtkViewport *viewport;
   GtkVBox *drawing_area;
 
   GtkVScrollbar *vscrollbar;
@@ -84,7 +86,8 @@ void ags_automation_edit_draw_position(GtkVBox *drawing_area);
 void ags_automation_edit_draw_scroll(GtkVBox *drawing_area,
 				     gdouble position);
 
-GtkDrawingArea* ags_automation_edit_add_area(AgsAutomationEdit *automation_edit);
+GtkDrawingArea* ags_automation_edit_add_area(AgsAutomationEdit *automation_edit,
+					     AgsAutomation *automation);
 
 AgsAutomationEdit* ags_automation_edit_new();
 

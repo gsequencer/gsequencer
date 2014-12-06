@@ -97,7 +97,7 @@ void
 ags_port_selection_class_init(AgsPortSelectionClass *port_selection)
 {
   /* AgsPortSelectionClass */
-  port_selection->add_port = NULL;
+  port_selection->add_port = ags_port_selection_real_add_port;
 
   port_selection_signals[ADD_PORT] =
     g_signal_new("add-port\0",
@@ -302,6 +302,30 @@ ags_port_selection_enable_ports(AgsPortSelection *port_selection,
   }
 
   g_list_free(list_start);
+}
+
+void
+ags_port_selection_real_add_port(AgsPortSelection *port_selection,
+				 AgsPort *port)
+{
+  AgsAutomationEditor *automation_editor;
+  AgsAutomationEdit *automation_edit;
+  AgsAutomation *automation;
+
+  automation_editor = gtk_widget_get_ancestor(port_selection,
+					      AGS_TYPE_AUTOMATION_EDITOR);
+  automation_edit = automation_editor->automation_edit;
+
+  /* add automation */
+  automation = g_object_new(AGS_TYPE_AUTOMATION,
+			    "port\0", port,
+			    NULL);
+  ags_audio_add_automation(automation_editor->selected_machine->audio,
+			   automation);
+
+  /* add automation area */
+  ags_automation_edit_add_drawing_area(automation_edit,
+				       automation);
 }
 
 /**

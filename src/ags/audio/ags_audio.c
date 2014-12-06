@@ -2284,6 +2284,40 @@ ags_audio_remove_recall(AgsAudio *audio, GObject *recall, gboolean play)
 }
 
 /**
+ * ags_audio_add_automation:
+ * @audio: 
+ * @automation: 
+ * 
+ * 
+ */
+void
+ags_audio_add_automation(AgsAudio *audio,
+			 GObject *automation)
+{
+  g_object_ref(G_OBJECT(automation));
+
+  audio->automation = g_list_append(audio->automation,
+				    automation);
+}
+
+/**
+ * ags_audio_remove_automation:
+ * @audio: 
+ * @automation: 
+ * 
+ * 
+ */
+void
+ags_audio_remove_automation(AgsAudio *audio,
+			    GObject *automation)
+{
+  audio->automation = g_list_remove(audio->automation,
+				    automation);
+
+  g_object_unref(G_OBJECT(automation));
+}
+
+/**
  * ags_audio_duplicate_recall:
  * @audio: an #AgsAudio
  * @recall_id: an #AgsRecallID
