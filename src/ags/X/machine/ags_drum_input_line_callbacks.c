@@ -42,8 +42,18 @@
 void
 ags_drum_input_line_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrumInputLine *drum_input_line)
 {
-  /* set devout */
-  //TODO:JK: implement me
+  AgsDrum *drum;
+
+  if(old_parent != NULL){
+    return;
+  }
+
+  drum = gtk_widget_get_ancestor(widget,
+				 AGS_TYPE_DRUM);
+  
+  /* AgsAudio */
+  g_signal_connect_after(G_OBJECT(AGS_MACHINE(drum)->audio), "set_pads\0",
+			 G_CALLBACK(ags_drum_input_line_audio_set_pads_callback), drum_input_line);
 }
 
 void
@@ -70,7 +80,6 @@ ags_drum_input_line_audio_set_pads_callback(AgsAudio *audio, GType type,
 	      g_object_set(G_OBJECT(recall->data),
 			   "destination\0", output,
 			   NULL);
-	      ags_connectable_connect(AGS_CONNECTABLE(recall->data));
 	    }
 
 	    recall = recall->next;
@@ -83,8 +92,6 @@ ags_drum_input_line_audio_set_pads_callback(AgsAudio *audio, GType type,
 	      g_object_set(G_OBJECT(recall->data),
 			   "destination\0", output,
 			   NULL);
-
-	      ags_connectable_connect(AGS_CONNECTABLE(recall->data));
 	    }
 
 	    recall = recall->next;

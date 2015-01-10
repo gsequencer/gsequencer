@@ -58,6 +58,8 @@ void ags_panel_input_line_show(GtkWidget *line);
 
 void ags_panel_input_line_set_channel(AgsLine *line, AgsChannel *channel);
 void ags_panel_input_line_group_changed(AgsLine *line);
+void ags_panel_input_line_map_recall(AgsLine *line,
+				     guint output_pad_start);
 
 /**
  * SECTION:ags_panel_input_line
@@ -141,6 +143,7 @@ ags_panel_input_line_class_init(AgsPanelInputLineClass *panel_input_line)
   line = AGS_LINE_CLASS(panel_input_line);
 
   line->set_channel = ags_panel_input_line_set_channel;
+  line->map_recall = ags_panel_input_line_map_recall;
 }
 
 void
@@ -258,24 +261,15 @@ ags_panel_input_line_set_channel(AgsLine *line, AgsChannel *channel)
 	    channel->line);
 #endif
 
-  if(line->channel != NULL){
-    line->flags &= (~AGS_LINE_MAPPED_RECALL);
-  }
-
-  if(channel != NULL){
-    if((AGS_LINE_PREMAPPED_RECALL & (line->flags)) == 0){
-      ags_panel_input_line_map_recall(panel_input_line, 0);
-      ags_line_find_port(line);
-    }
-  }
+  /* empty */
 }
 
 void
-ags_panel_input_line_map_recall(AgsPanelInputLine *panel_input_line,
+ags_panel_input_line_map_recall(AgsLine *line,
 				guint output_pad_start)
 {
   AgsPanel *panel;
-  AgsLine *line;
+  AgsPanelInputLine *panel_input_line;
 
   AgsAudio *audio;
   AgsChannel *source;
@@ -285,8 +279,11 @@ ags_panel_input_line_map_recall(AgsPanelInputLine *panel_input_line,
 
   GList *list;
 
-  line = AGS_LINE(panel_input_line);
-  line->flags |= AGS_LINE_MAPPED_RECALL;
+  if((AGS_LINE_MAPPED_RECALL & (line->flags)) != 0){
+    return;
+  }
+  
+  panel_input_line = AGS_PANEL_INPUT_LINE(line);
 
   audio = AGS_AUDIO(line->channel->audio);
 
@@ -322,6 +319,10 @@ ags_panel_input_line_map_recall(AgsPanelInputLine *panel_input_line,
 
     list = list->next;
   }
+
+  /* call parent */
+  AGS_LINE_CLASS(ags_panel_input_line_parent_class)->map_recall(line,
+								output_pad_start);
 }
 
 /**

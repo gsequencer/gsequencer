@@ -75,17 +75,23 @@ struct _AgsLineClass
   void (*set_channel)(AgsLine *line, AgsChannel *channel);
 
   void (*group_changed)(AgsLine *line);
+
+  void (*map_recall)(AgsLine *line,
+		     guint output_pad_start);
+  GList (*find_port)(AgsLine *line);
 };
 
 GType ags_line_get_type(void);
 
 void ags_line_set_channel(AgsLine *line, AgsChannel *channel);
 
-void ags_line_find_port(AgsLine *line);
-
 void ags_line_group_changed(AgsLine *line);
 
 GList* ags_line_find_next_grouped(GList *line);
+
+void ags_line_map_recall(AgsLine *line,
+			 guint output_pad_start);
+GList* ags_line_find_port(AgsLine *line);
 
 AgsLine* ags_line_new(GtkWidget *pad, AgsChannel *channel);
 

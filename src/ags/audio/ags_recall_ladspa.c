@@ -30,6 +30,7 @@
 #include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>
 
+#include <ags/audio/ags_config.h>
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_port.h>
 
@@ -78,6 +79,8 @@ enum{
   PROP_EFFECT,
   PROP_INDEX,
 };
+
+extern AgsConfig *config;
 
 static gpointer ags_recall_ladspa_parent_class = NULL;
 static AgsConnectableInterface* ags_recall_ladspa_parent_connectable_interface;
@@ -560,14 +563,25 @@ ags_recall_ladspa_load(AgsRecallLadspa *recall_ladspa)
 							   "ladspa_descriptor\0");
 
     if(dlerror() == NULL && ladspa_descriptor){
+      guint samplerate;
+
+      samplerate = g_ascii_strtoull(ags_config_get(config,
+						   AGS_CONFIG_DEVOUT,
+						   "samplerate\0"),
+				    NULL,
+				    10);
+
+
       recall_ladspa->plugin_descriptor = 
 	plugin_descriptor = ladspa_descriptor(recall_ladspa->index);
 
       /* instantiate ladspa */
       recall_ladspa->ladspa_handle = (LADSPA_Handle) recall_ladspa->plugin_descriptor->instantiate(recall_ladspa->plugin_descriptor,
-												   (unsigned long) devout->frequency);
+												   (unsigned long) samplerate);
 
+#ifdef AGS_DEBUG
       g_message("instantiate LADSPA handle\0");
+#endif
     }
   }
 }
@@ -692,6 +706,7 @@ ags_recall_ladspa_short_to_float(signed short *buffer,
  * ags_recall_ladspa_float_to_short:
  * @buffer: source
  * @destination: destination
+ * @buffer_size: buffer_size
  *
  * Convert data type.
  * 

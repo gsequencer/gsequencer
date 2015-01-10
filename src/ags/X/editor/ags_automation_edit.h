@@ -65,11 +65,11 @@ struct _AgsAutomationEdit
 
   AgsRuler *ruler;
 
-  GtkViewport *viewport;
-  GtkVBox *drawing_area;
+  guint map_width;
+  guint map_height;
 
-  GtkVScrollbar *vscrollbar;
-  GtkHScrollbar *hscrollbar;
+  GtkScrolledWindow *scrolled_window;
+  GtkVBox *drawing_area;
 };
 
 struct _AgsAutomationEditClass

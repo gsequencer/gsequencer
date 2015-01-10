@@ -48,6 +48,7 @@ typedef enum{
   AGS_MACHINE_PREMAPPED_RECALL  = 1 <<  6,
   AGS_MACHINE_BLOCK_PLAY        = 1 <<  7,
   AGS_MACHINE_BLOCK_STOP        = 1 <<  8,
+  AGS_MACHINE_CONNECTED         = 1 <<  9,
 }AgsMachineFlags;
 
 typedef enum{
@@ -93,20 +94,21 @@ struct _AgsMachineClass
 {
   GtkHandleBoxClass handle_box;
 
-  void (*add_default_recalls)(AgsMachine *machine);
+  void (*map_recall)(AgsMachine *machine);
+  GList* (*find_port)(AgsMachine *machine);
 };
 
 GType ags_machine_get_type(void);
 
-void ags_machine_add_default_recalls(AgsMachine *machine);
+void ags_machine_add_default_recalls(AgsMachine *machine) G_DEPRECATED_FOR(ags_machine_map_recall);
+
+void ags_machine_map_recall(AgsMachine *machine);
 
 GtkListStore* ags_machine_get_possible_links(AgsMachine *machine);
 
 AgsMachine* ags_machine_find_by_name(GList *list, char *name);
 
-void ags_machine_find_port(AgsMachine *machine);
-GList* ags_machine_list_ports(AgsMachine *machine,
-			      GType type);
+GList* ags_machine_find_port(AgsMachine *machine);
 
 void ags_machine_set_run(AgsMachine *machine,
 			 gboolean run);

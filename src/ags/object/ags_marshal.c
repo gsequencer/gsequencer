@@ -162,7 +162,46 @@ g_cclosure_user_marshal_VOID__UINT_UINT_UINT (GClosure     *closure,
             data2);
 }
 
-/* VOID:UINT,INT (ags_marshallers.list:4) */
+/* VOID:UINT,DOUBLE,UINT (ags_marshallers.list:4) */
+void
+g_cclosure_user_marshal_VOID__UINT_DOUBLE_UINT (GClosure     *closure,
+                                                GValue       *return_value G_GNUC_UNUSED,
+                                                guint         n_param_values,
+                                                const GValue *param_values,
+                                                gpointer      invocation_hint G_GNUC_UNUSED,
+                                                gpointer      marshal_data)
+{
+  typedef void (*GMarshalFunc_VOID__UINT_DOUBLE_UINT) (gpointer     data1,
+                                                       guint        arg_1,
+                                                       gdouble      arg_2,
+                                                       guint        arg_3,
+                                                       gpointer     data2);
+  register GMarshalFunc_VOID__UINT_DOUBLE_UINT callback;
+  register GCClosure *cc = (GCClosure*) closure;
+  register gpointer data1, data2;
+
+  g_return_if_fail (n_param_values == 4);
+
+  if (G_CCLOSURE_SWAP_DATA (closure))
+    {
+      data1 = closure->data;
+      data2 = g_value_peek_pointer (param_values + 0);
+    }
+  else
+    {
+      data1 = g_value_peek_pointer (param_values + 0);
+      data2 = closure->data;
+    }
+  callback = (GMarshalFunc_VOID__UINT_DOUBLE_UINT) (marshal_data ? marshal_data : cc->callback);
+
+  callback (data1,
+            g_marshal_value_peek_uint (param_values + 1),
+            g_marshal_value_peek_double (param_values + 2),
+            g_marshal_value_peek_uint (param_values + 3),
+            data2);
+}
+
+/* VOID:UINT,INT (ags_marshallers.list:5) */
 void
 g_cclosure_user_marshal_VOID__UINT_INT (GClosure     *closure,
                                         GValue       *return_value G_GNUC_UNUSED,
@@ -199,7 +238,7 @@ g_cclosure_user_marshal_VOID__UINT_INT (GClosure     *closure,
             data2);
 }
 
-/* VOID:UINT,DOUBLE (ags_marshallers.list:5) */
+/* VOID:UINT,DOUBLE (ags_marshallers.list:6) */
 void
 g_cclosure_user_marshal_VOID__UINT_DOUBLE (GClosure     *closure,
                                            GValue       *return_value G_GNUC_UNUSED,
@@ -236,7 +275,7 @@ g_cclosure_user_marshal_VOID__UINT_DOUBLE (GClosure     *closure,
             data2);
 }
 
-/* VOID:ULONG,UINT (ags_marshallers.list:6) */
+/* VOID:ULONG,UINT (ags_marshallers.list:7) */
 void
 g_cclosure_user_marshal_VOID__ULONG_UINT (GClosure     *closure,
                                           GValue       *return_value G_GNUC_UNUSED,
@@ -273,7 +312,7 @@ g_cclosure_user_marshal_VOID__ULONG_UINT (GClosure     *closure,
             data2);
 }
 
-/* VOID:DOUBLE,DOUBLE (ags_marshallers.list:7) */
+/* VOID:DOUBLE,DOUBLE (ags_marshallers.list:8) */
 void
 g_cclosure_user_marshal_VOID__DOUBLE_DOUBLE (GClosure     *closure,
                                              GValue       *return_value G_GNUC_UNUSED,
@@ -310,7 +349,7 @@ g_cclosure_user_marshal_VOID__DOUBLE_DOUBLE (GClosure     *closure,
             data2);
 }
 
-/* VOID:ULONG,UINT,UINT (ags_marshallers.list:8) */
+/* VOID:ULONG,UINT,UINT (ags_marshallers.list:9) */
 void
 g_cclosure_user_marshal_VOID__ULONG_UINT_UINT (GClosure     *closure,
                                                GValue       *return_value G_GNUC_UNUSED,
@@ -346,43 +385,6 @@ g_cclosure_user_marshal_VOID__ULONG_UINT_UINT (GClosure     *closure,
             g_marshal_value_peek_ulong (param_values + 1),
             g_marshal_value_peek_uint (param_values + 2),
             g_marshal_value_peek_uint (param_values + 3),
-            data2);
-}
-
-/* VOID:STRING,UINT (ags_marshallers.list:9) */
-void
-g_cclosure_user_marshal_VOID__STRING_UINT (GClosure     *closure,
-                                           GValue       *return_value G_GNUC_UNUSED,
-                                           guint         n_param_values,
-                                           const GValue *param_values,
-                                           gpointer      invocation_hint G_GNUC_UNUSED,
-                                           gpointer      marshal_data)
-{
-  typedef void (*GMarshalFunc_VOID__STRING_UINT) (gpointer     data1,
-                                                  gpointer     arg_1,
-                                                  guint        arg_2,
-                                                  gpointer     data2);
-  register GMarshalFunc_VOID__STRING_UINT callback;
-  register GCClosure *cc = (GCClosure*) closure;
-  register gpointer data1, data2;
-
-  g_return_if_fail (n_param_values == 3);
-
-  if (G_CCLOSURE_SWAP_DATA (closure))
-    {
-      data1 = closure->data;
-      data2 = g_value_peek_pointer (param_values + 0);
-    }
-  else
-    {
-      data1 = g_value_peek_pointer (param_values + 0);
-      data2 = closure->data;
-    }
-  callback = (GMarshalFunc_VOID__STRING_UINT) (marshal_data ? marshal_data : cc->callback);
-
-  callback (data1,
-            g_marshal_value_peek_string (param_values + 1),
-            g_marshal_value_peek_uint (param_values + 2),
             data2);
 }
 
@@ -732,7 +734,44 @@ g_cclosure_user_marshal_STRING__ULONG_STRING_STRING_STRING_STRING_UINT_POINTER (
   g_value_take_string (return_value, v_return);
 }
 
-/* OBJECT:VOID (ags_marshallers.list:18) */
+/* POINTER:VOID (ags_marshallers.list:18) */
+void
+g_cclosure_user_marshal_POINTER__VOID (GClosure     *closure,
+                                       GValue       *return_value G_GNUC_UNUSED,
+                                       guint         n_param_values,
+                                       const GValue *param_values,
+                                       gpointer      invocation_hint G_GNUC_UNUSED,
+                                       gpointer      marshal_data)
+{
+  typedef gpointer (*GMarshalFunc_POINTER__VOID) (gpointer     data1,
+                                                  gpointer     data2);
+  register GMarshalFunc_POINTER__VOID callback;
+  register GCClosure *cc = (GCClosure*) closure;
+  register gpointer data1, data2;
+  gpointer v_return;
+
+  g_return_if_fail (return_value != NULL);
+  g_return_if_fail (n_param_values == 1);
+
+  if (G_CCLOSURE_SWAP_DATA (closure))
+    {
+      data1 = closure->data;
+      data2 = g_value_peek_pointer (param_values + 0);
+    }
+  else
+    {
+      data1 = g_value_peek_pointer (param_values + 0);
+      data2 = closure->data;
+    }
+  callback = (GMarshalFunc_POINTER__VOID) (marshal_data ? marshal_data : cc->callback);
+
+  v_return = callback (data1,
+                       data2);
+
+  g_value_set_pointer (return_value, v_return);
+}
+
+/* OBJECT:VOID (ags_marshallers.list:19) */
 void
 g_cclosure_user_marshal_OBJECT__VOID (GClosure     *closure,
                                       GValue       *return_value G_GNUC_UNUSED,
@@ -769,7 +808,7 @@ g_cclosure_user_marshal_OBJECT__VOID (GClosure     *closure,
   g_value_take_object (return_value, v_return);
 }
 
-/* OBJECT:STRING,STRING,STRING (ags_marshallers.list:19) */
+/* OBJECT:STRING,STRING,STRING (ags_marshallers.list:20) */
 void
 g_cclosure_user_marshal_OBJECT__STRING_STRING_STRING (GClosure     *closure,
                                                       GValue       *return_value G_GNUC_UNUSED,
@@ -812,7 +851,7 @@ g_cclosure_user_marshal_OBJECT__STRING_STRING_STRING (GClosure     *closure,
   g_value_take_object (return_value, v_return);
 }
 
-/* OBJECT:OBJECT,POINTER,POINTER (ags_marshallers.list:20) */
+/* OBJECT:OBJECT,POINTER,POINTER (ags_marshallers.list:21) */
 void
 g_cclosure_user_marshal_OBJECT__OBJECT_POINTER_POINTER (GClosure     *closure,
                                                         GValue       *return_value G_GNUC_UNUSED,
@@ -855,7 +894,7 @@ g_cclosure_user_marshal_OBJECT__OBJECT_POINTER_POINTER (GClosure     *closure,
   g_value_take_object (return_value, v_return);
 }
 
-/* OBJECT:OBJECT,OBJECT (ags_marshallers.list:21) */
+/* OBJECT:OBJECT,OBJECT (ags_marshallers.list:22) */
 void
 g_cclosure_user_marshal_OBJECT__OBJECT_OBJECT (GClosure     *closure,
                                                GValue       *return_value G_GNUC_UNUSED,

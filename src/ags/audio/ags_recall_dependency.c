@@ -210,6 +210,7 @@ ags_recall_dependency_resolve(AgsRecallDependency *recall_dependency, AgsRecallI
   
   if(recall_dependency->dependency == NULL ||
      AGS_RECALL(recall_dependency->dependency)->container == NULL){
+    g_message("dependency resolve: container == NULL");
     return(NULL);
   }
 
@@ -221,28 +222,56 @@ ags_recall_dependency_resolve(AgsRecallDependency *recall_dependency, AgsRecallI
   }else if(AGS_IS_RECALL_AUDIO_RUN(dependency)){
     GList *recall_list;
 
+    if(recall_id == NULL){
+      g_message("dependency resolve: recall_id == NULL");
+      return(NULL);
+    }
+
     recall_list = ags_recall_find_recycling_container(recall_container->recall_audio_run,
 						      recall_id->recycling_container);
 
-    if(recall_list != NULL)
+    if(recall_list != NULL){
       return(G_OBJECT(recall_list->data));
+    }else{
+      recall_list = ags_recall_find_recycling_container(recall_container->recall_audio_run,
+							recall_id->recycling_container->parent);
+
+      if(recall_list != NULL){
+	return(G_OBJECT(recall_list->data));
+      }
+    }
   }else if(AGS_IS_RECALL_CHANNEL(dependency)){
     GList *recall_list;
 
     recall_list = ags_recall_find_provider(recall_container->recall_channel,
 					   (GObject *) AGS_RECALL_CHANNEL(dependency)->source);
 
-    if(recall_list != NULL)
+    if(recall_list != NULL){
       return(G_OBJECT(recall_list->data));
+    }
   }else if(AGS_IS_RECALL_CHANNEL_RUN(dependency)){
     GList *recall_list;
+
+    if(recall_id == NULL){
+      g_message("dependency resolve: recall_id == NULL");
+      return(NULL);
+    }
 
     recall_list = ags_recall_find_provider_with_recycling_container(recall_container->recall_channel_run,
 								    (GObject *) AGS_RECALL_CHANNEL_RUN(dependency)->recall_channel->source,
 								    recall_id->recycling_container);
 
-    if(recall_list != NULL)
+    if(recall_list != NULL){
       return(G_OBJECT(recall_list->data));
+    }else{
+      recall_list = ags_recall_find_provider_with_recycling_container(recall_container->recall_channel_run,
+								      (GObject *) AGS_RECALL_CHANNEL_RUN(dependency)->recall_channel->source,
+								      recall_id->recycling_container->parent);
+
+      if(recall_list != NULL){
+	return(G_OBJECT(recall_list->data));
+      }      
+    }
   }
 
   return(NULL);

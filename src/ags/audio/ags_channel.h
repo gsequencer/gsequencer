@@ -170,6 +170,7 @@ AgsRecallID* ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 					     AgsRecallID *recall_id);
 
 void ags_channel_cancel(AgsChannel *channel, AgsRecallID *recall_id);
+void ags_channel_remove(AgsChannel *channel, AgsRecallID *recall_id);
 void ags_channel_tillrecycling_cancel(AgsChannel *channel, AgsRecallID *recall_id);
 
 void ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
@@ -177,6 +178,8 @@ void ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *lin
 
 void ags_channel_recall_id_set(AgsChannel *output, AgsRecallID *recall_id, gboolean ommit_own_channel,
 			       guint mode, ...);
+
+GList* ags_channel_find_port(AgsChannel *channel);
 
 AgsChannel* ags_channel_new(GObject *audio);
 

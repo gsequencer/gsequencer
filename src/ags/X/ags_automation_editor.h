@@ -55,8 +55,6 @@ struct _AgsAutomationEditor
 
   AgsAutomationToolbar *automation_toolbar;
 
-  AgsNotebook *notebook;
-
   AgsAutomationEdit *automation_edit;
 };
 

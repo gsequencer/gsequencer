@@ -42,7 +42,7 @@ void ags_automation_edit_disconnect(AgsConnectable *connectable);
  * The #AgsAutomationEdit lets you edit automations.
  */
 
-GtkStyle *automation_edit_style;
+static gpointer ags_automation_edit_parent_class = NULL;
 
 GType
 ags_automation_edit_get_type(void)
@@ -92,6 +92,7 @@ ags_automation_edit_connectable_interface_init(AgsConnectableInterface *connecta
 void
 ags_automation_edit_class_init(AgsAutomationEditClass *automation_edit)
 {
+  ags_automation_edit_parent_class = g_type_class_peek_parent(automation_edit);
 }
 
 void
@@ -107,37 +108,45 @@ ags_automation_edit_init(AgsAutomationEdit *automation_edit)
 		   GTK_FILL|GTK_EXPAND, GTK_FILL,
 		   0, 0);
 
+  automation_edit->map_width = AGS_AUTOMATION_EDIT_MAX_CONTROLS * 64;
+  automation_edit->map_height = 0;
+
   /* drawing area box and its viewport */
-  automation_edit->viewport = gtk_viewport_new(NULL,
-					       NULL);
-  gtk_table_attach(GTK_TABLE(automation_edit), (GtkWidget *) automation_edit->viewport,
+  automation_edit->scrolled_window = gtk_scrolled_window_new(NULL,
+							     NULL);
+  gtk_widget_set_events(GTK_WIDGET(automation_edit->scrolled_window), GDK_EXPOSURE_MASK
+			| GDK_LEAVE_NOTIFY_MASK
+			| GDK_BUTTON_PRESS_MASK
+			| GDK_BUTTON_RELEASE_MASK
+			| GDK_POINTER_MOTION_MASK
+			| GDK_POINTER_MOTION_HINT_MASK
+			);
+  gtk_table_attach(GTK_TABLE(automation_edit), (GtkWidget *) automation_edit->scrolled_window,
 		   0, 1, 1, 2,
 		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
 		   0, 0);
 
   automation_edit->drawing_area = gtk_vbox_new(FALSE, 0);
-  gtk_container_add(automation_edit->viewport,
-		    automation_edit->drawing_area);
-
-  /* GtkScrollbars */
-  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, 1.0, 1.0);
-  automation_edit->vscrollbar = (GtkVScrollbar *) gtk_vscrollbar_new(adjustment);
-  gtk_table_attach(GTK_TABLE(automation_edit), (GtkWidget *) automation_edit->vscrollbar,
-		   1, 2, 1, 2,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
-
-  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, 1.0, 1.0);
-  automation_edit->hscrollbar = (GtkHScrollbar *) gtk_hscrollbar_new(adjustment);
-  gtk_table_attach(GTK_TABLE(automation_edit), (GtkWidget *) automation_edit->hscrollbar,
-		   0, 1, 2, 3,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+  gtk_scrolled_window_add_with_viewport(automation_edit->scrolled_window,
+					automation_edit->drawing_area);
 }
 
 void
 ags_automation_edit_connect(AgsConnectable *connectable)
 {
+  AgsAutomationEdit *automation_edit;
+
+  automation_edit = AGS_AUTOMATION_EDIT(connectable);
+
+  /*  */
+  g_signal_connect_after((GObject *) automation_edit->scrolled_window, "expose_event\0",
+			 G_CALLBACK (ags_automation_edit_scrolled_window_expose_event), (gpointer) automation_edit);
+
+  g_signal_connect_after((GObject *) automation_edit->scrolled_window, "configure_event\0",
+			 G_CALLBACK (ags_automation_edit_scrolled_window_configure_event), (gpointer) automation_edit);
+
+  /*  */
+
   //TODO:JK: implement me
 }
 
@@ -159,7 +168,21 @@ ags_automation_edit_disconnect(AgsConnectable *connectable)
 void
 ags_automation_edit_reset_vertically(AgsAutomationEdit *automation_edit, guint flags)
 {
-  //TODO:JK: implement me
+  if((AGS_AUTOMATION_EDIT_RESET_VSCROLLBAR & flags) != 0){
+    GtkAdjustment *vadjustment;
+    guint height;
+
+    height = GTK_WIDGET(automation_edit->drawing_area)->allocation.height;
+
+    vadjustment = gtk_scrolled_window_get_vadjustment(automation_edit->scrolled_window);
+
+    gtk_adjustment_set_upper(vadjustment,
+			     (gdouble) (automation_edit->map_height - height));
+
+    if(vadjustment->value > vadjustment->upper){
+      gtk_adjustment_set_value(vadjustment, vadjustment->upper);
+    }
+  }
 }
 
 /**
@@ -174,7 +197,21 @@ ags_automation_edit_reset_vertically(AgsAutomationEdit *automation_edit, guint f
 void
 ags_automation_edit_reset_horizontally(AgsAutomationEdit *automation_edit, guint flags)
 {
-  //TODO:JK: implement me
+  if((AGS_AUTOMATION_EDIT_RESET_HSCROLLBAR & flags) != 0){
+    GtkAdjustment *hadjustment;
+    guint width;
+
+    width = GTK_WIDGET(automation_edit->drawing_area)->allocation.width;
+
+    hadjustment = gtk_scrolled_window_get_hadjustment(automation_edit->scrolled_window);
+
+    gtk_adjustment_set_upper(hadjustment,
+			     (gdouble) (automation_edit->map_width - width));
+
+    if(hadjustment->value > hadjustment->upper){
+      gtk_adjustment_set_value(hadjustment, hadjustment->upper);
+    }
+  }
 }
 
 /**
@@ -238,24 +275,29 @@ ags_automation_edit_add_drawing_area(AgsAutomationEdit *automation_edit,
 				     AgsAutomation *automation)
 {
   GtkDrawingArea *drawing_area;
+  guint width;
+  
+  width = GTK_WIDGET(automation_edit->drawing_area)->allocation.width;
 
+  /* resize */
+  automation_edit->map_height += AGS_AUTOMATION_AREA_DEFAULT_HEIGHT;
+
+  automation_edit->flags |= AGS_AUTOMATION_EDIT_RESETING_VERTICALLY;
+  ags_automation_edit_reset_vertically(automation_edit, AGS_AUTOMATION_EDIT_RESET_VSCROLLBAR);
+  automation_edit->flags &= (~AGS_AUTOMATION_EDIT_RESETING_VERTICALLY);
+
+  /* add */
   drawing_area = (GtkDrawingArea *) g_object_new(AGS_TYPE_AUTOMATION_AREA,
 						 "automation\0", automation,
 						 NULL);
-  gtk_widget_set_style((GtkWidget *) automation_edit->drawing_area, automation_edit_style);
-  gtk_widget_set_events(GTK_WIDGET (automation_edit->drawing_area), GDK_EXPOSURE_MASK
-			| GDK_LEAVE_NOTIFY_MASK
-			| GDK_BUTTON_PRESS_MASK
-			| GDK_BUTTON_RELEASE_MASK
-			| GDK_POINTER_MOTION_MASK
-			| GDK_POINTER_MOTION_HINT_MASK
-			);
+  gtk_widget_set_size_request(drawing_area,
+			      width, AGS_AUTOMATION_AREA_DEFAULT_HEIGHT);
   gtk_box_pack_start(automation_edit->drawing_area,
 		     drawing_area,
-		     TRUE, FALSE,
+		     FALSE, FALSE,
 		     0);
-
-  //TODO:JK: implement me
+  ags_connectable_connect(AGS_CONNECTABLE(drawing_area));
+  gtk_widget_show(drawing_area);
 
   return(drawing_area);
 }

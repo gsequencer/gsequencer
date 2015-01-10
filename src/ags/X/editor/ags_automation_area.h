@@ -34,7 +34,7 @@
 #define AGS_IS_AUTOMATION_AREA_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_AUTOMATION_AREA))
 #define AGS_AUTOMATION_AREA_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS (obj, AGS_TYPE_AUTOMATION_AREA, AgsAutomationAreaClass))
 
-#define AGS_AUTOMATION_AREA_MAX_CONTROLS 1200
+#define AGS_AUTOMATION_AREA_DEFAULT_HEIGHT (128)
 
 typedef struct _AgsAutomationArea AgsAutomationArea;
 typedef struct _AgsAutomationAreaClass AgsAutomationAreaClass;

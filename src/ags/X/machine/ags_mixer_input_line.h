@@ -47,8 +47,6 @@ struct _AgsMixerInputLineClass
 
 GType ags_mixer_input_line_get_type();
 
-void ags_mixer_input_line_map_recall(AgsMixerInputLine *mixer_input_line);
-
 AgsMixerInputLine* ags_mixer_input_line_new(AgsChannel *channel);
 
 #endif /*__AGS_MIXER_INPUT_LINE_H__*/

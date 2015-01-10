@@ -202,8 +202,8 @@ ags_volume_channel_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connect
 
 AgsRecall*
 ags_volume_channel_run_duplicate(AgsRecall *recall,
-			     AgsRecallID *recall_id,
-			     guint *n_params, GParameter *parameter)
+				 AgsRecallID *recall_id,
+				 guint *n_params, GParameter *parameter)
 {
   AgsVolumeChannelRun *volume_channel_run, *copy;
 

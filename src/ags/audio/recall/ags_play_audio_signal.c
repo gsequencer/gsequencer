@@ -220,6 +220,7 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
   GList *stream;
   signed short *buffer0, *buffer1;
   guint audio_channel;
+  guint buffer_size;
   gboolean muted;
   GValue muted_value = {0,};
   GValue audio_channel_value = {0,};
@@ -277,17 +278,18 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
 		     &audio_channel_value);
 
   audio_channel = g_value_get_uint64(&audio_channel_value);
+  buffer_size = source->buffer_size;
 
   if((AGS_RECALL_INITIAL_RUN & (AGS_RECALL_AUDIO_SIGNAL(recall)->flags)) != 0){
     AGS_RECALL_AUDIO_SIGNAL(recall)->flags &= (~AGS_RECALL_INITIAL_RUN);
     ags_audio_signal_copy_buffer_to_buffer(&(buffer0[audio_channel + source->attack * devout->pcm_channels]),
 					   devout->pcm_channels,
 					   (signed short *) stream->data, 1,
-					   devout->buffer_size - source->attack);
+					   buffer_size - source->attack);
   }else{
     ags_audio_signal_copy_buffer_to_buffer(&(buffer0[audio_channel]), devout->pcm_channels,
 					   (signed short *) stream->data, 1,
-					   devout->buffer_size);
+					   buffer_size);
   }
 
   /* call parent */

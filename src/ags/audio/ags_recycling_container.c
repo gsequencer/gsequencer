@@ -303,12 +303,14 @@ ags_recycling_container_add(AgsRecyclingContainer *recycling_container,
   AgsRecyclingContainer *new_recycling_container;
   gint new_length;
 
-  new_recycling_container = (AgsRecyclingContainer *) g_object_new(AGS_TYPE_RECYCLING_CONTAINER,
-								   NULL);
+  if(recycling_container == NULL){
+    return;
+  }
 
   new_length = recycling_container->length + 1;
-
-  new_recycling_container->recycling = (AgsRecycling **) malloc(new_length * sizeof(AgsRecycling *));
+  new_recycling_container = (AgsRecyclingContainer *) g_object_new(AGS_TYPE_RECYCLING_CONTAINER,
+								   "length\0", new_length,
+								   NULL);
 
   memcpy(new_recycling_container->recycling, recycling_container->recycling, new_length * sizeof(AgsRecycling *));
   new_recycling_container->recycling[new_length] = recycling;

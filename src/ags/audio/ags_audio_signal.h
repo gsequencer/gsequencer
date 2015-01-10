@@ -63,7 +63,7 @@ struct _AgsAudioSignal
   guint loop_start;
   guint loop_end;
 
-  guint delay;
+  gdouble delay;
   guint attack;
 
   guint lock_attack;
@@ -95,17 +95,17 @@ void ags_audio_signal_realloc_buffer_size(AgsAudioSignal *audio_signal, guint bu
 void ags_audio_signal_morph_samplerate(AgsAudioSignal *audio_signal, guint samplerate, double k_morph);
 
 void ags_audio_signal_copy_buffer_to_buffer(signed short *destination, guint dchannels,
-					    signed short *source, guint schannels, guint size)
-  __attribute__ ((hot))
-  __attribute__ ((fastcall));
+					    signed short *source, guint schannels, guint size);
+//  __attribute__ ((hot))
+//  __attribute__ ((fastcall));
 void ags_audio_signal_copy_buffer_to_double_buffer(double *destination, guint dchannels,
-						   signed short *source, guint schannels, guint size)
-  __attribute__ ((hot))
-  __attribute__ ((fastcall));
+						   signed short *source, guint schannels, guint size);
+//  __attribute__ ((hot))
+//  __attribute__ ((fastcall));
 void ags_audio_signal_copy_double_buffer_to_buffer(signed short *destination, guint dchannels,
-						   double *source, guint schannels, guint size)
-  __attribute__ ((hot))
-  __attribute__ ((fastcall));
+						   double *source, guint schannels, guint size);
+//  __attribute__ ((hot))
+//  __attribute__ ((fastcall));
 
 void ags_audio_signal_duplicate_stream(AgsAudioSignal *audio_signal,
 				       AgsAudioSignal *template);

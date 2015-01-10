@@ -54,8 +54,6 @@ struct _AgsSynthInputLineClass
 
 GType ags_synth_input_line_get_type();
 
-void ags_synth_input_line_map_recall(AgsSynthInputLine *synth_input_line);
-
 AgsSynthInputLine* ags_synth_input_line_new(AgsChannel *channel);
 
 #endif /*__AGS_SYNTH_INPUT_LINE_H__*/

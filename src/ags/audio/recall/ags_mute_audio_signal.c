@@ -212,13 +212,13 @@ ags_mute_audio_signal_finalize(GObject *gobject)
 void
 ags_mute_audio_signal_run_inter(AgsRecall *recall)
 {
-  AgsDevout *devout;
   AgsMuteAudio *mute_audio;
   AgsMuteChannel *mute_channel;
   AgsMuteAudioSignal *mute_audio_signal;
   AgsAudioSignal *source;
   GList *stream_source;
   gboolean audio_muted, channel_muted;
+  guint buffer_size;
   guint i;
   GValue audio_value = {0,};
   GValue channel_value = {0,};
@@ -227,9 +227,9 @@ ags_mute_audio_signal_run_inter(AgsRecall *recall)
 
   mute_audio_signal = AGS_MUTE_AUDIO_SIGNAL(recall);
 
-  devout = AGS_DEVOUT(AGS_RECALL(mute_audio_signal)->devout);
   source = AGS_RECALL_AUDIO_SIGNAL(mute_audio_signal)->source;
   stream_source = source->stream_current;
+  buffer_size = source->buffer_size;
 
   if(stream_source == NULL){
     ags_recall_done(recall);
@@ -262,7 +262,7 @@ ags_mute_audio_signal_run_inter(AgsRecall *recall)
   }
 
   /* mute */
-  memset((signed short *) stream_source->data, 0, devout->buffer_size * sizeof(signed short));
+  memset((signed short *) stream_source->data, 0, buffer_size * sizeof(signed short));
 }
 
 AgsRecall*

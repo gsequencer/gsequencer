@@ -284,7 +284,6 @@ ags_play_audio_file_finalize(GObject *gobject)
 void
 ags_play_audio_file_run_inter(AgsRecall *recall)
 {
-  //TODO:JK:
   /* DEPRECATED
   AgsPlayAudioFile *play_audio_file;
   signed short *buffer;

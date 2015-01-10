@@ -592,6 +592,8 @@ ags_port_real_safe_write(AgsPort *port, GValue *value)
       port->port_value.ags_port_pointer = g_value_get_pointer(value);
     }else if(port->port_value_type == G_TYPE_OBJECT){
       port->port_value.ags_port_object = g_value_get_object(value);
+    }else{
+      g_warning("ags_port.c: unknown type\0");
     }
   }else{
     data = g_value_get_pointer(value);
@@ -611,6 +613,8 @@ ags_port_real_safe_write(AgsPort *port, GValue *value)
 
       if(port->port_value_type == G_TYPE_OBJECT){
 	port->port_value.ags_port_object = data;
+      }else{
+	g_warning("ags_port.c: unknown type\0");
       }
     }
   }
@@ -641,7 +645,6 @@ ags_port_safe_write(AgsPort *port, GValue *value)
 void
 ags_port_real_safe_get_property(AgsPort *port, gchar *property_name, GValue *value)
 {
-  //TODO:JK: uncomment me
   //  pthread_mutex_lock(&(port->mutex));
 
   g_object_get_property(port->port_value.ags_port_object,

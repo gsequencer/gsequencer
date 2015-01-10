@@ -159,8 +159,12 @@ ags_stream_audio_signal_init(AgsStreamAudioSignal *stream_audio_signal)
 void
 ags_stream_audio_signal_finalize(GObject *gobject)
 {
-  ags_recycling_remove_audio_signal(AGS_RECALL_RECYCLING(AGS_RECALL(gobject)->parent)->source,
-				    AGS_RECALL_AUDIO_SIGNAL(gobject)->source);
+  if(AGS_RECALL_AUDIO_SIGNAL(gobject)->source != NULL){
+    ags_recycling_remove_audio_signal(AGS_RECALL_RECYCLING(AGS_RECALL(gobject)->parent)->source,
+				      AGS_RECALL_AUDIO_SIGNAL(gobject)->source);
+  }
+  //  g_object_unref(AGS_RECALL_AUDIO_SIGNAL(gobject)->source);	
+  //  g_object_unref(AGS_RECALL_AUDIO_SIGNAL(gobject)->source);	
 
   /* call parent */
   G_OBJECT_CLASS(ags_stream_audio_signal_parent_class)->finalize(gobject); 
@@ -207,6 +211,8 @@ ags_stream_audio_signal_run_init_pre(AgsRecall *recall)
 {
   /* call parent */
   AGS_RECALL_CLASS(ags_stream_audio_signal_parent_class)->run_init_pre(recall);
+
+  //  g_message("stream\0");
 }
 
 void
@@ -218,14 +224,17 @@ ags_stream_audio_signal_run_post(AgsRecall *recall)
 
   if(AGS_RECALL_AUDIO_SIGNAL(recall)->source->stream_current != NULL){
     AGS_RECALL_AUDIO_SIGNAL(recall)->source->stream_current = AGS_RECALL_AUDIO_SIGNAL(recall)->source->stream_current->next;
+
+    /* call parent */
+    AGS_RECALL_CLASS(ags_stream_audio_signal_parent_class)->run_post(recall);
   }else{
-    ags_recall_done(recall);
+    /* call parent */
+    AGS_RECALL_CLASS(ags_stream_audio_signal_parent_class)->run_post(recall);
+
     ags_recycling_remove_audio_signal(AGS_RECALL_RECYCLING(recall->parent)->source,
 				      AGS_RECALL_AUDIO_SIGNAL(recall)->source);
+    ags_recall_done(recall);
   }
-
-  /* call parent */
-  AGS_RECALL_CLASS(ags_stream_audio_signal_parent_class)->run_post(recall);
 }
 
 AgsRecall*

@@ -50,9 +50,6 @@ struct _AgsDrumInputLineClass
 
 GType ags_drum_input_line_get_type();
 
-void ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
-				    guint output_pad_start);
-
 AgsDrumInputLine* ags_drum_input_line_new(AgsChannel *channel);
 
 #endif /*__AGS_DRUM_INPUT_LINE_H__*/

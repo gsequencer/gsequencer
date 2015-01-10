@@ -96,19 +96,6 @@ ags_matrix_index_callback(GtkWidget *widget, AgsMatrix *matrix)
       ags_matrix_draw_matrix(matrix);
 
       /* modify port */
-      /* play */
-      list = ags_recall_find_type(audio->play, AGS_TYPE_COPY_PATTERN_AUDIO);
-  
-      if(list != NULL){
-	play_copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(list->data);
-      }
-
-      g_value_init(&play_value, G_TYPE_UINT);
-      g_value_set_uint(&play_value, GPOINTER_TO_UINT(g_object_get_data((GObject *) widget, AGS_MATRIX_INDEX)));
-
-      ags_port_safe_write(play_copy_pattern_audio->bank_index_1, &play_value);
-
-      g_value_unset(&play_value);
 
       /* recall */
       list = ags_recall_find_type(audio->recall, AGS_TYPE_COPY_PATTERN_AUDIO);

@@ -57,6 +57,7 @@ void ags_config_set_build_id(AgsConfig *config, gchar *build_id);
  * #AgsConfig provides configuration to Advanced Gtk+ Sequencer.
  */
 
+AgsConfig *config;
 static gpointer ags_config_parent_class = NULL;
 
 static const gchar *ags_config_generic = AGS_CONFIG_GENERIC;

@@ -265,9 +265,12 @@ ags_copy_audio_signal_run_inter(AgsRecall *recall)
     ags_audio_signal_add_stream(destination);
   }
 
+  g_message("copy\0");
+
+  //TODO:JK
   ags_audio_signal_copy_buffer_to_buffer((signed short *) stream_destination->data, 1,
 					 (signed short *) stream_source->data, 1,
-					 devout->buffer_size);
+					 source->buffer_size);
 
   //  if(attack->first_start != 0){
   //    ags_audio_signal_copy_buffer_to_buffer((signed short *) stream_destination->data, 1,

@@ -24,6 +24,7 @@
 #include <ags/util/ags_id_generator.h>
 
 #include <ags/object/ags_plugin.h>
+#include <ags/object/ags_portlet.h>
 
 #include <ags/file/ags_file.h>
 #include <ags/file/ags_file_stock.h>
@@ -67,6 +68,8 @@
 
 #include <ags/X/machine/ags_drum.h>
 
+#include <ags/audio/ags_config.h>
+
 void ags_drum_input_line_class_init(AgsDrumInputLineClass *drum_input_line);
 void ags_drum_input_line_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_drum_input_line_plugin_interface_init(AgsPluginInterface *plugin);
@@ -83,6 +86,10 @@ xmlNode* ags_drum_input_line_write(AgsFile *file, xmlNode *parent, AgsPlugin *pl
 
 void ags_drum_input_line_set_channel(AgsLine *line, AgsChannel *channel);
 void ags_drum_input_line_group_changed(AgsLine *line);
+void ags_drum_input_line_map_recall(AgsLine *line,
+				    guint output_pad_start);
+
+extern AgsConfig *config;
 
 /**
  * SECTION:ags_drum_input_line
@@ -156,6 +163,8 @@ ags_drum_input_line_class_init(AgsDrumInputLineClass *drum_input_line)
   line->set_channel = ags_drum_input_line_set_channel;
   
   line->group_changed = ags_drum_input_line_group_changed;
+
+  line->map_recall = ags_drum_input_line_map_recall;
 }
 
 void
@@ -273,10 +282,6 @@ ags_drum_input_line_connect(AgsConnectable *connectable)
   /* AgsDrum */
   drum = AGS_DRUM(gtk_widget_get_ancestor((GtkWidget *) AGS_LINE(drum_input_line)->pad,
 					  AGS_TYPE_DRUM));
-
-  /* AgsAudio */
-  g_signal_connect_after(G_OBJECT(AGS_MACHINE(drum)->audio), "set_pads\0",
-			 G_CALLBACK(ags_drum_input_line_audio_set_pads_callback), drum_input_line);
 }
 
 void
@@ -315,9 +320,9 @@ void
 ags_drum_input_line_set_channel(AgsLine *line, AgsChannel *channel)
 {
   AgsDrumInputLine *drum_input_line;
-
-  AGS_LINE_CLASS(ags_drum_input_line_parent_class)->set_channel(line, channel);
-
+  AgsChannel *old_channel;
+  guint old_flags;
+  
   drum_input_line = AGS_DRUM_INPUT_LINE(line);
 
 #ifdef AGS_DEBUG
@@ -326,38 +331,47 @@ ags_drum_input_line_set_channel(AgsLine *line, AgsChannel *channel)
 #endif
 
   if(line->channel != NULL){
-    line->flags &= (~AGS_LINE_MAPPED_RECALL);
+    old_flags = line->flags;
+    old_channel = line->channel;
+  }else{
+    old_flags = 0;
+    old_channel = NULL;
   }
 
+  AGS_LINE_CLASS(ags_drum_input_line_parent_class)->set_channel(line, channel);
+
   if(channel != NULL){
+    AgsAudioSignal *audio_signal;
+
+    audio_signal = ags_audio_signal_new(AGS_AUDIO(channel->audio)->devout,
+					channel->first_recycling,
+					NULL);
+    audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
+    ags_recycling_add_audio_signal(channel->first_recycling,
+				   audio_signal);
     if(channel->pattern == NULL){
       channel->pattern = g_list_alloc();
       channel->pattern->data = (gpointer) ags_pattern_new();
       ags_pattern_set_dim((AgsPattern *) channel->pattern->data, 4, 12, 64);
     }
 
-    if((AGS_LINE_PREMAPPED_RECALL & (line->flags)) == 0){
-      ags_drum_input_line_map_recall(drum_input_line, 0);
-      ags_line_find_port(line);
-    }else{
-      line->flags &= (~AGS_LINE_PREMAPPED_RECALL);
+    /* reset edit button */
+    if(old_channel == NULL &&
+       line->channel->line == 0){
+      AgsDrum *drum;
+      GtkToggleButton *selected_edit_button;
+      GList *list;
 
-      //TODO:JK: make it advanced
-      /* reset edit button */
-      if(line->channel->line == 0){
-	AgsDrum *drum;
-	GtkToggleButton *selected_edit_button;
-	GList *list;
+      drum = (AgsDrum *) gtk_widget_get_ancestor(GTK_WIDGET(line),
+						 AGS_TYPE_DRUM);
 
-	drum = (AgsDrum *) gtk_widget_get_ancestor(GTK_WIDGET(line),
-						   AGS_TYPE_DRUM);
-
+      if(drum != NULL){
 	list = gtk_container_get_children((GtkContainer *) drum->input_pad);
 
 	drum->selected_pad = AGS_DRUM_INPUT_PAD(list->data);
 	drum->selected_edit_button = drum->selected_pad->edit;
 	gtk_toggle_button_set_active((GtkToggleButton *) drum->selected_edit_button, TRUE);
-
+	
 	g_list_free(list);
       }
     }
@@ -374,18 +388,18 @@ ags_drum_input_line_group_changed(AgsLine *line)
 }
 
 void
-ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
+ags_drum_input_line_map_recall(AgsLine *line,
 			       guint output_pad_start)
 {
-  AgsDrum *drum;
-  AgsLine *line;
   AgsLineMember *line_member;
 
   AgsAudio *audio;
   AgsChannel *source;
   AgsChannel *current, *destination;
+  AgsPattern *pattern;
   AgsRecallHandler *recall_handler;
 
+  AgsCopyPatternChannel *copy_pattern_channel;
   AgsPlayChannel *play_channel;
   AgsPlayChannelRun *play_channel_run;
   AgsPeakChannelRun *recall_peak_channel_run, *play_peak_channel_run;
@@ -396,14 +410,37 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
   GList *list;
   guint i;
 
-  line = AGS_LINE(drum_input_line);
-  line->flags |= AGS_LINE_MAPPED_RECALL;
+  if((AGS_LINE_MAPPED_RECALL & (line->flags)) != 0){
+    return;
+  }
 
   audio = AGS_AUDIO(line->channel->audio);
 
-  drum = AGS_DRUM(audio->machine);
-
   source = line->channel;
+
+  /* ags-copy-pattern */
+  ags_recall_factory_create(audio,
+			    NULL, NULL,
+			    "ags-copy-pattern\0",
+			    source->audio_channel, source->audio_channel + 1, 
+			    source->pad, source->pad + 1,
+			    (AGS_RECALL_FACTORY_INPUT |
+			     AGS_RECALL_FACTORY_REMAP |
+			     AGS_RECALL_FACTORY_RECALL),
+			    0);
+
+  /* set pattern object on port */
+  list = ags_recall_template_find_type(source->recall, AGS_TYPE_COPY_PATTERN_CHANNEL);
+
+  if(list != NULL){
+    copy_pattern_channel = AGS_COPY_PATTERN_CHANNEL(list->data);
+    list = source->pattern;
+    
+    pattern = AGS_PATTERN(list->data);
+    copy_pattern_channel->pattern->port_value.ags_port_object = (GObject *) pattern;
+  
+    ags_portlet_set_port(AGS_PORTLET(pattern), copy_pattern_channel->pattern);
+  }
 
   /* ags-play */
   ags_recall_factory_create(audio,
@@ -554,6 +591,9 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
   g_object_set(G_OBJECT(play_channel_run),
 	       "stream-channel-run\0", stream_channel_run,
 	       NULL);
+
+  AGS_LINE_CLASS(ags_drum_input_line_parent_class)->map_recall(line,
+							       output_pad_start);
 }
 
 void

@@ -579,7 +579,8 @@ ags_loop_channel_run_create_audio_signals(AgsLoopChannelRun *loop_channel_run)
   AgsDevout *devout;
   AgsRecycling *recycling;
   AgsAudioSignal *audio_signal;
-  guint delay, attack;
+  gdouble delay;
+  guint attack;
   guint tic_counter_incr;
 
   //  g_message("debug\0");
@@ -592,13 +593,14 @@ ags_loop_channel_run_create_audio_signals(AgsLoopChannelRun *loop_channel_run)
   /* delay and attack */
   tic_counter_incr = devout->tic_counter + 1;
 
-  attack = devout->attack[((tic_counter_incr > AGS_DEVOUT_DEFAULT_PERIOD) ?
-			   0:
-    			   tic_counter_incr)];
-  delay = devout->delay[((tic_counter_incr > AGS_DEVOUT_DEFAULT_PERIOD) ?
-			 0:
-  			 tic_counter_incr)];
-  
+  //TODO:JK: unclear
+  attack = 0;// devout->attack[((tic_counter_incr == AGS_NOTATION_TICS_PER_BEAT) ?
+  //		   0:
+  //			   tic_counter_incr)];
+  delay = 0.0; //devout->delay[((tic_counter_incr == AGS_NOTATION_TICS_PER_BEAT) ?
+  //		 0:
+  //			 tic_counter_incr)];
+
   while(recycling != AGS_RECALL_CHANNEL_RUN(loop_channel_run)->source->last_recycling->next){
     audio_signal = ags_audio_signal_new((GObject *) devout,
 					(GObject *) recycling,

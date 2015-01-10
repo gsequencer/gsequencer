@@ -69,7 +69,7 @@ void ags_ffplayer_connect(AgsConnectable *connectable);
 void ags_ffplayer_disconnect(AgsConnectable *connectable);
 void ags_ffplayer_finalize(GObject *gobject);
 void ags_ffplayer_show(GtkWidget *widget);
-void ags_ffplayer_add_default_recalls(AgsMachine *machine);
+void ags_ffplayer_map_recall(AgsMachine *machine);
 gchar* ags_ffplayer_get_name(AgsPlugin *plugin);
 void ags_ffplayer_set_name(AgsPlugin *plugin, gchar *name);
 gchar* ags_ffplayer_get_xml_type(AgsPlugin *plugin);
@@ -173,7 +173,7 @@ ags_ffplayer_class_init(AgsFFPlayerClass *ffplayer)
   /* AgsMachineClass */
   machine = (AgsMachineClass *) ffplayer;
 
-  machine->add_default_recalls = ags_ffplayer_add_default_recalls;
+  machine->map_recall = ags_ffplayer_map_recall;
 }
 
 void
@@ -223,6 +223,17 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   
   AGS_MACHINE(ffplayer)->flags |= AGS_MACHINE_IS_SYNTHESIZER;
   AGS_MACHINE(ffplayer)->file_input_flags |= AGS_MACHINE_ACCEPT_SOUNDFONT2;
+
+  AGS_MACHINE(ffplayer)->input_pad_type = G_TYPE_NONE;
+  AGS_MACHINE(ffplayer)->input_line_type = G_TYPE_NONE;
+  AGS_MACHINE(ffplayer)->output_pad_type = G_TYPE_NONE;
+  AGS_MACHINE(ffplayer)->output_line_type = G_TYPE_NONE;
+  
+  g_signal_connect_after(G_OBJECT(ffplayer->machine.audio), "set_audio_channels\0",
+			 G_CALLBACK(ags_ffplayer_set_audio_channels), NULL);
+
+  g_signal_connect_after(G_OBJECT(ffplayer->machine.audio), "set_pads\0",
+			 G_CALLBACK(ags_ffplayer_set_pads), NULL);
 
   ffplayer->mapped_input_pad = 0;
   ffplayer->mapped_output_pad = 0;
@@ -314,7 +325,7 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 }
 
 void
-ags_ffplayer_add_default_recalls(AgsMachine *machine)
+ags_ffplayer_map_recall(AgsMachine *machine)
 {
   AgsAudio *audio;
 
@@ -329,6 +340,8 @@ ags_ffplayer_add_default_recalls(AgsMachine *machine)
 
   audio = machine->audio;
 
+  AGS_MACHINE_CLASS(ags_ffplayer_parent_class)->map_recall(machine);
+  
   /* ags-delay */
   ags_recall_factory_create(audio,
 			    NULL, NULL,
@@ -418,6 +431,10 @@ ags_ffplayer_connect(AgsConnectable *connectable)
   AgsFFPlayer *ffplayer;
   GList *list;
 
+  if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) != 0){
+    return;
+  }
+
   ags_ffplayer_parent_connectable_interface->connect(connectable);
 
   /* AgsFFPlayer */
@@ -443,13 +460,7 @@ ags_ffplayer_connect(AgsConnectable *connectable)
   g_signal_connect((GObject *) ffplayer->hadjustment, "value_changed\0",
 		   G_CALLBACK(ags_ffplayer_hscrollbar_value_changed), (gpointer) ffplayer);
 
-  /* AgsAudio */
-  g_signal_connect_after(G_OBJECT(ffplayer->machine.audio), "set_audio_channels\0",
-			 G_CALLBACK(ags_ffplayer_set_audio_channels), NULL);
-
-  g_signal_connect_after(G_OBJECT(ffplayer->machine.audio), "set_pads\0",
-			 G_CALLBACK(ags_ffplayer_set_pads), NULL);
-  
+  /* AgsAudio */  
   //TODO:JK: magnify it
   if(!gtk_toggle_button_get_active(window->navigation->loop)){
     GList *list;

@@ -51,7 +51,7 @@ typedef enum{
   AGS_RECALL_NOTATION              = 1 <<  5,
   AGS_RECALL_DEFAULT_TEMPLATE      = 1 <<  6,
   //TODO:JK: remove because it's useless
-  //  AGS_RECALL_IS_REAL               = 1 <<  7,
+  AGS_RECALL_DYNAMIC_CONNECTED     = 1 <<  7,
   AGS_RECALL_INPUT_ORIENTATED      = 1 <<  8,
   AGS_RECALL_OUTPUT_ORIENTATED     = 1 <<  9,
   AGS_RECALL_PERSISTENT            = 1 << 10,

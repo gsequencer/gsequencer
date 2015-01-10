@@ -47,6 +47,8 @@ typedef enum{
   AGS_PAD_SHOW_GROUPING       = 1 << 1,
   AGS_PAD_GROUP_ALL           = 1 << 2,
   AGS_PAD_GROUP_LINE          = 1 << 3,
+  AGS_PAD_MAPPED_RECALL       = 1 << 4,
+  AGS_PAD_PREMAPPED_RECALL    = 1 << 5,
 }AgsPadFlags;
 
 struct _AgsPad
@@ -80,6 +82,9 @@ struct _AgsPadClass
 
   void (*resize_lines)(AgsPad *pad, GType line_type,
 		       guint audio_channels, guint audio_channels_old);
+  void (*map_recall)(AgsPad *pad,
+		     guint output_pad_start);
+  GList* (*find_port)(AgsPad *pad);
 };
 
 GType ags_pad_get_type(void);
@@ -89,7 +94,10 @@ void ags_pad_set_channel(AgsPad *pad, AgsChannel *channel);
 void ags_pad_resize_lines(AgsPad *pad, GType line_type,
 			  guint audio_channels, guint audio_channels_old);
 
-void ags_pad_find_port(AgsPad *pad);
+void ags_pad_map_recall(AgsPad *pad,
+			guint output_pad_start);
+
+GList* ags_pad_find_port(AgsPad *pad);
 
 AgsPad* ags_pad_new(AgsChannel *channel);
 

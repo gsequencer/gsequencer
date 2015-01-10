@@ -23,6 +23,7 @@
 
 #include <ags/main.h>
 
+#include <ags/object/ags_marshal.h>
 #include <ags/object/ags_plugin.h>
 
 #include <ags/X/ags_pad.h>
@@ -53,6 +54,9 @@ gchar* ags_line_get_build_id(AgsPlugin *plugin);
 void ags_line_set_build_id(AgsPlugin *plugin, gchar *build_id);
 
 void ags_line_real_set_channel(AgsLine *line, AgsChannel *channel);
+void ags_line_real_map_recall(AgsLine *line,
+			      guint output_pad_start);
+GList* ags_line_real_find_port(AgsLine *line);
 
 /**
  * SECTION:ags_line
@@ -69,6 +73,8 @@ void ags_line_real_set_channel(AgsLine *line, AgsChannel *channel);
 enum{
   SET_CHANNEL,
   GROUP_CHANGED,
+  MAP_RECALL,
+  FIND_PORT,
   LAST_SIGNAL,
 };
 
@@ -178,6 +184,8 @@ ags_line_class_init(AgsLineClass *line)
   line->set_channel = ags_line_real_set_channel;
 
   line->group_changed = NULL;
+  line->map_recall = ags_line_real_map_recall;
+  line->find_port = ags_line_real_find_port;
 
   /* signals */
   /**
@@ -188,7 +196,7 @@ ags_line_class_init(AgsLineClass *line)
    * The ::set-channel signal notifies about changed channel.
    */
   line_signals[SET_CHANNEL] =
-    g_signal_new("set_channel\0",
+    g_signal_new("set-channel\0",
 		 G_TYPE_FROM_CLASS(line),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsLineClass, set_channel),
@@ -205,12 +213,44 @@ ags_line_class_init(AgsLineClass *line)
    * normally happens as toggling group button in #AgsPad or #AgsLine.
    */
   line_signals[GROUP_CHANGED] =
-    g_signal_new("group_changed\0",
+    g_signal_new("group-changed\0",
 		 G_TYPE_FROM_CLASS(line),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsLineClass, group_changed),
 		 NULL, NULL,
 		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
+
+  /**
+   * AgsLine::map-recall:
+   * @line: the #AgsLine
+   *
+   * The ::map-recall as recalls should be mapped.
+   */
+  line_signals[MAP_RECALL] =
+    g_signal_new("map-recall\0",
+		 G_TYPE_FROM_CLASS(line),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsLineClass, map_recall),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__UINT,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_UINT);
+
+  /**
+   * AgsLine::find-port:
+   * @line: the #AgsLine 
+   * Returns: a #GList with associated ports
+   *
+   * The ::find-port retrieves all associated ports.
+   */
+  line_signals[FIND_PORT] =
+    g_signal_new("find-port\0",
+		 G_TYPE_FROM_CLASS(line),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsLineClass, find_port),
+		 NULL, NULL,
+		 g_cclosure_user_marshal_POINTER__VOID,
 		 G_TYPE_NONE, 0);
 }
 
@@ -362,8 +402,22 @@ ags_line_connect(AgsConnectable *connectable)
     return;
   }
 
+  /* set connected flag */
+  line->flags |= AGS_LINE_CONNECTED;
+
+  g_message("line connect\0");
+  
+  if((AGS_LINE_PREMAPPED_RECALL & (line->flags)) == 0){
+    if((AGS_LINE_MAPPED_RECALL & (line->flags)) == 0){
+      ags_line_map_recall(line,
+			 0);
+    }
+  }else{
+    line->flags &= (~AGS_LINE_PREMAPPED_RECALL);
+  }
+
   /* AgsMachine */
-  machine = AGS_MACHINE(gtk_widget_get_ancestor((GtkWidget *) AGS_LINE(line)->pad,
+  machine = AGS_MACHINE(gtk_widget_get_ancestor((GtkWidget *) AGS_LINE(line),
 						AGS_TYPE_MACHINE));
 
   /* connect group button */
@@ -382,10 +436,9 @@ ags_line_connect(AgsConnectable *connectable)
     list = list->next;
   }
 
-  g_list_free(list_start);
-  
-  /* set connected flag */
-  line->flags |= AGS_LINE_CONNECTED;
+  if(list_start != NULL){
+    g_list_free(list_start);
+  }
 }
 
 void
@@ -433,8 +486,12 @@ ags_line_real_set_channel(AgsLine *line, AgsChannel *channel)
     g_object_ref(G_OBJECT(channel));
   }
 
+  if(line->channel != NULL){
+    line->flags &= (~AGS_LINE_PREMAPPED_RECALL);
+  }
+  
   line->channel = channel;
-
+  
   /* set label */
   gtk_label_set_label(line->label, g_strdup_printf("line %d\0", channel->audio_channel));
 }
@@ -479,21 +536,50 @@ ags_line_group_changed(AgsLine *line)
   g_object_unref((GObject *) line);
 }
 
+void
+ags_line_real_map_recall(AgsLine *line,
+			 guint ouput_pad_start)
+{
+  if((AGS_LINE_MAPPED_RECALL & (line->flags)) != 0){
+    return;
+  }
+  
+  line->flags |= AGS_LINE_MAPPED_RECALL;
+
+  ags_line_find_port(line);
+}
+
 /**
- * ags_line_find_port:
+ * ags_line_map_recall:
  * @line: an #AgsLine
+ * Returns: an #GList containing all related #AgsPort
  *
- * Lookup ports of associated recalls.
+ * Is emitted as group is changed.
  *
  * Since: 0.4
  */
 void
-ags_line_find_port(AgsLine *line)
+ags_line_map_recall(AgsLine *line,
+		    guint output_pad_start)
 {
+  g_return_if_fail(AGS_IS_LINE(line));
+
+  g_object_ref((GObject *) line);
+  g_signal_emit(G_OBJECT(line),
+		line_signals[MAP_RECALL], 0,
+		output_pad_start);
+  g_object_unref((GObject *) line);
+}
+
+GList*
+ags_line_real_find_port(AgsLine *line)
+{
+  AgsChannel *channel, *next_pad;
+  GList *list, *tmp;
   GList *line_member, *line_member_start;
 
   if(line == NULL || line->expander == NULL){
-    return;
+    return(NULL);
   }
 
   line_member_start = 
@@ -507,7 +593,63 @@ ags_line_find_port(AgsLine *line)
     line_member = line_member->next;
   }
 
-  g_list_free(line_member_start);
+  if(line_member_start != NULL){
+    g_list_free(line_member_start);
+  }
+  
+  /*  */
+  channel = line->channel;
+
+  if(channel != NULL){
+    next_pad = channel->next_pad;
+
+    list = NULL;
+  
+    while(channel != next_pad){
+      if(list == NULL){
+	list = ags_channel_find_port(channel);
+      }else{
+	tmp = ags_channel_find_port(channel);
+	
+	if(tmp != NULL){
+	  list = g_list_concat(list,
+			       tmp);
+	}
+      }
+      
+      channel = channel->next;
+    }
+  }
+  
+  return(list);
+
+}
+
+/**
+ * ags_line_find_port:
+ * @line: an #AgsLine
+ * Returns: an #GList containing all related #AgsPort
+ *
+ * Lookup ports of assigned recalls.
+ *
+ * Since: 0.4
+ */
+GList*
+ags_line_find_port(AgsLine *line)
+{
+  GList *list;
+
+  list = NULL;
+  g_return_val_if_fail(AGS_IS_LINE(line),
+		       NULL);
+
+  g_object_ref((GObject *) line);
+  g_signal_emit((GObject *) line,
+		line_signals[FIND_PORT], 0,
+		&list);
+  g_object_unref((GObject *) line);
+
+  return(list);
 }
 
 /**

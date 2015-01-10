@@ -387,10 +387,12 @@ ags_recall_audio_signal_finalize(GObject *gobject)
 
   if(recall_audio_signal->destination != NULL){
     g_object_unref(recall_audio_signal->destination);
+    recall_audio_signal->destination = NULL;
   }
 
   if(recall_audio_signal->source != NULL){
     g_object_unref(recall_audio_signal->source);
+    recall_audio_signal->source = NULL;
   }
 
   /* call parent */

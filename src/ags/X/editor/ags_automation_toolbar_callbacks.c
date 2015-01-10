@@ -57,6 +57,7 @@ ags_automation_toolbar_machine_changed_callback(AgsAutomationEditor *automation_
 		   0, 1, 1, 2,
 		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
 		   0, 0);
+  gtk_widget_show(automation_edit->drawing_area);
 
   /* load ports */
   ags_port_selection_load_ports(toolbar->port_selection);

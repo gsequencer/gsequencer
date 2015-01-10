@@ -188,7 +188,6 @@ ags_automation_editor_connect(AgsConnectable *connectable)
 
   /* */
   ags_connectable_connect(AGS_CONNECTABLE(automation_editor->automation_toolbar));
-  ags_connectable_connect(AGS_CONNECTABLE(automation_editor->notebook));
   ags_connectable_connect(AGS_CONNECTABLE(automation_editor->automation_edit));
 }
 

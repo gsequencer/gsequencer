@@ -287,7 +287,8 @@ ags_port_selection_enable_ports(AgsPortSelection *port_selection,
   list_start = 
     list = gtk_container_get_children(menu);
 
-  while(list != NULL){
+  while(list != NULL &&
+	ports != NULL){
     current = g_object_get_data(list->data,
 				AGS_PORT_SELECTION_DATA_PORT);
 
@@ -311,6 +312,7 @@ ags_port_selection_real_add_port(AgsPortSelection *port_selection,
   AgsAutomationEditor *automation_editor;
   AgsAutomationEdit *automation_edit;
   AgsAutomation *automation;
+  GtkDrawingArea *drawing_area;
 
   automation_editor = gtk_widget_get_ancestor(port_selection,
 					      AGS_TYPE_AUTOMATION_EDITOR);
@@ -324,8 +326,8 @@ ags_port_selection_real_add_port(AgsPortSelection *port_selection,
 			   automation);
 
   /* add automation area */
-  ags_automation_edit_add_drawing_area(automation_edit,
-				       automation);
+  drawing_area = ags_automation_edit_add_drawing_area(automation_edit,
+						      automation);
 }
 
 /**

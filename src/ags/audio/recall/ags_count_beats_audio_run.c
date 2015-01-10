@@ -79,17 +79,17 @@ void ags_count_beats_audio_run_run_init_pre(AgsRecall *recall);
 void ags_count_beats_audio_run_done(AgsRecall *recall);
 
 void ags_count_beats_audio_run_notation_alloc_output_callback(AgsDelayAudioRun *delay_audio_run,
-							      guint run_order, guint delay, guint attack,
+							      guint run_order, gdouble delay, guint attack,
 							      AgsCountBeatsAudioRun *count_beats_audio_run);
 void ags_count_beats_audio_run_notation_count_callback(AgsDelayAudioRun *delay_audio_run,
-						       guint run_order, guint delay, guint attack,
+						       guint run_order, gdouble delay, guint attack,
 						       AgsCountBeatsAudioRun *count_beats_audio_run);
 
 void ags_count_beats_audio_run_sequencer_alloc_output_callback(AgsDelayAudioRun *delay_audio_run,
-							       guint run_order, guint delay, guint attack,
+							       guint run_order, gdouble delay, guint attack,
 							       AgsCountBeatsAudioRun *count_beats_audio_run);
 void ags_count_beats_audio_run_sequencer_count_callback(AgsDelayAudioRun *delay_audio_run,
-							guint run_order, guint delay, guint attack,
+							guint run_order, gdouble delay, guint attack,
 							AgsCountBeatsAudioRun *count_beats_audio_run);
 
 void ags_count_beats_audio_run_write_resolve_dependency(AgsFileLookup *file_lookup,
@@ -494,13 +494,11 @@ ags_count_beats_audio_run_set_property(GObject *gobject,
 	  ags_recall_remove_dependency(AGS_RECALL(count_beats_audio_run),
 				       (AgsRecall *) count_beats_audio_run->delay_audio_run);
 	}else{
-	  if((AGS_RECALL_RUN_INITIALIZED & (AGS_RECALL(count_beats_audio_run)->flags)) != 0){
-	    g_signal_handler_disconnect(G_OBJECT(count_beats_audio_run),
-					count_beats_audio_run->sequencer_alloc_output_handler);
+	  g_signal_handler_disconnect(G_OBJECT(count_beats_audio_run),
+				      count_beats_audio_run->sequencer_alloc_output_handler);
 
-	    g_signal_handler_disconnect(G_OBJECT(count_beats_audio_run),
-					count_beats_audio_run->sequencer_count_handler);
-	  }
+	  g_signal_handler_disconnect(G_OBJECT(count_beats_audio_run),
+				      count_beats_audio_run->sequencer_count_handler);
 	}
 	
 	g_object_unref(G_OBJECT(count_beats_audio_run->delay_audio_run));
@@ -513,23 +511,21 @@ ags_count_beats_audio_run_set_property(GObject *gobject,
 	  ags_recall_add_dependency(AGS_RECALL(count_beats_audio_run),
 				    ags_recall_dependency_new((GObject *) delay_audio_run));
 	}else{
-	  if((AGS_RECALL_RUN_INITIALIZED & (AGS_RECALL(count_beats_audio_run)->flags)) != 0){
-	    count_beats_audio_run->sequencer_count_handler =
-	      g_signal_connect(G_OBJECT(delay_audio_run), "sequencer-alloc-output\0",
-			       G_CALLBACK(ags_count_beats_audio_run_sequencer_alloc_output_callback), count_beats_audio_run);
+	  count_beats_audio_run->sequencer_count_handler =
+	    g_signal_connect(G_OBJECT(delay_audio_run), "sequencer-alloc-output\0",
+			     G_CALLBACK(ags_count_beats_audio_run_sequencer_alloc_output_callback), count_beats_audio_run);
 
-	    count_beats_audio_run->sequencer_count_handler =
-	      g_signal_connect(G_OBJECT(delay_audio_run), "sequencer-count\0",
-			       G_CALLBACK(ags_count_beats_audio_run_sequencer_count_callback), count_beats_audio_run);
+	  count_beats_audio_run->sequencer_count_handler =
+	    g_signal_connect(G_OBJECT(delay_audio_run), "sequencer-count\0",
+			     G_CALLBACK(ags_count_beats_audio_run_sequencer_count_callback), count_beats_audio_run);
 
-	    count_beats_audio_run->notation_count_handler =
-	      g_signal_connect(G_OBJECT(delay_audio_run), "notation-alloc-output\0",
-			       G_CALLBACK(ags_count_beats_audio_run_notation_alloc_output_callback), count_beats_audio_run);
+	  count_beats_audio_run->notation_count_handler =
+	    g_signal_connect(G_OBJECT(delay_audio_run), "notation-alloc-output\0",
+			     G_CALLBACK(ags_count_beats_audio_run_notation_alloc_output_callback), count_beats_audio_run);
 
-	    count_beats_audio_run->notation_count_handler =
-	      g_signal_connect(G_OBJECT(delay_audio_run), "notation-count\0",
-			       G_CALLBACK(ags_count_beats_audio_run_notation_count_callback), count_beats_audio_run);
-	  }
+	  count_beats_audio_run->notation_count_handler =
+	    g_signal_connect(G_OBJECT(delay_audio_run), "notation-count\0",
+			     G_CALLBACK(ags_count_beats_audio_run_notation_count_callback), count_beats_audio_run);
 	}
       }
 
@@ -1033,7 +1029,7 @@ ags_count_beats_audio_run_sequencer_stop(AgsCountBeatsAudioRun *count_beats_audi
 
 void
 ags_count_beats_audio_run_notation_alloc_output_callback(AgsDelayAudioRun *delay_audio_run,
-							 guint run_order, guint delay, guint attack,
+							 guint run_order, gdouble delay, guint attack,
 							 AgsCountBeatsAudioRun *count_beats_audio_run)
 {
   AgsCountBeatsAudio *count_beats_audio;
@@ -1068,7 +1064,7 @@ ags_count_beats_audio_run_notation_alloc_output_callback(AgsDelayAudioRun *delay
 void
 ags_count_beats_audio_run_sequencer_alloc_output_callback(AgsDelayAudioRun *delay_audio_run,
 							  guint run_order,
-							  guint delay, guint attack,
+							  gdouble delay, guint attack,
 							  AgsCountBeatsAudioRun *count_beats_audio_run)
 {
   AgsCountBeatsAudio *count_beats_audio;
@@ -1110,7 +1106,7 @@ ags_count_beats_audio_run_sequencer_alloc_output_callback(AgsDelayAudioRun *dela
 void
 ags_count_beats_audio_run_notation_count_callback(AgsDelayAudioRun *delay_audio_run,
 						  guint run_order,
-						  guint delay, guint attack,
+						  gdouble delay, guint attack,
 						  AgsCountBeatsAudioRun *count_beats_audio_run)
 {
   AgsCountBeatsAudio *count_beats_audio;
@@ -1143,13 +1139,13 @@ ags_count_beats_audio_run_notation_count_callback(AgsDelayAudioRun *delay_audio_
     loop_end = g_value_get_double(&value);
 
     if(loop){
-      if(count_beats_audio_run->notation_counter >= loop_end - 1.0){
+      if(count_beats_audio_run->notation_counter >= (guint) loop_end - 1.0){
 	count_beats_audio_run->notation_counter = 0;
       }else{
-	count_beats_audio_run->notation_counter += 1;
+ 	count_beats_audio_run->notation_counter += 1;
       }
     }else{
-      if(count_beats_audio_run->notation_counter >= loop_end - 1.0){
+      if(count_beats_audio_run->notation_counter >= (guint) loop_end - 1.0){
 	return;
       }
 
@@ -1162,7 +1158,7 @@ ags_count_beats_audio_run_notation_count_callback(AgsDelayAudioRun *delay_audio_
 
 void
 ags_count_beats_audio_run_sequencer_count_callback(AgsDelayAudioRun *delay_audio_run,
-						   guint run_order, guint delay, guint attack,
+						   guint run_order, gdouble delay, guint attack,
 						   AgsCountBeatsAudioRun *count_beats_audio_run)
 {
   AgsCountBeatsAudio *count_beats_audio;
@@ -1201,13 +1197,13 @@ ags_count_beats_audio_run_sequencer_count_callback(AgsDelayAudioRun *delay_audio
     }
 
     if(loop){
-      if(count_beats_audio_run->sequencer_counter >= loop_end - 1.0){
+      if(count_beats_audio_run->sequencer_counter >= (guint) loop_end - 1.0){
 	count_beats_audio_run->sequencer_counter = 0;
       }else{
 	count_beats_audio_run->sequencer_counter += 1;
       }
     }else{
-      if(count_beats_audio_run->sequencer_counter >= loop_end - 1.0){
+      if(count_beats_audio_run->sequencer_counter >= (guint) loop_end - 1.0){
 	AgsAudio *audio;
 	GList *devout_play;
 
@@ -1236,11 +1232,11 @@ ags_count_beats_audio_run_sequencer_count_callback(AgsDelayAudioRun *delay_audio
 	    channel = audio->output;
 	    found = FALSE;
 
-	    while((list = ags_recall_find_type_with_recycling_container(channel->play,
-									AGS_TYPE_STREAM_CHANNEL_RUN,
-									AGS_RECALL(count_beats_audio_run)->recall_id->recycling_container)) == NULL){
-	      channel = channel->next;
-	    }
+	    list = channel->play;
+
+	    list = ags_recall_find_type_with_recycling_container(list,
+								 AGS_TYPE_STREAM_CHANNEL_RUN,
+								 AGS_RECALL(count_beats_audio_run)->recall_id->recycling_container);
 
 	    if(list != NULL){
 	      stream_channel_run = AGS_STREAM_CHANNEL_RUN(list->data);

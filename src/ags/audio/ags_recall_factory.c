@@ -767,7 +767,7 @@ ags_recall_factory_create_stream(AgsAudio *audio,
   AgsPort *port;
   GList *list;
   guint i, j;
-
+  
   if(audio == NULL){
     return(NULL);
   }
@@ -806,6 +806,7 @@ ags_recall_factory_create_stream(AgsAudio *audio,
 							   "source\0", channel,
 							   "recall_container\0", play_container,
 							   NULL);
+							      
 	ags_recall_set_flags(AGS_RECALL(stream_channel), (AGS_RECALL_TEMPLATE |
 							  (((AGS_RECALL_FACTORY_OUTPUT & create_flags) != 0) ? AGS_RECALL_OUTPUT_ORIENTATED: AGS_RECALL_INPUT_ORIENTATED) |
 							  AGS_RECALL_PLAYBACK |
@@ -817,8 +818,8 @@ ags_recall_factory_create_stream(AgsAudio *audio,
 	/* AgsStreamChannelRun */
 	stream_channel_run = (AgsStreamChannelRun *) g_object_new(AGS_TYPE_STREAM_CHANNEL_RUN,
 								  "devout\0", audio->devout,
+								  "recall-channel\0", stream_channel,
 								  "source\0", channel,
-								  "recall_channel\0", stream_channel,
 								  "recall_container\0", play_container,
 								  NULL);
 	ags_recall_set_flags(AGS_RECALL(stream_channel_run), (AGS_RECALL_TEMPLATE |
@@ -854,13 +855,14 @@ ags_recall_factory_create_stream(AgsAudio *audio,
       
       for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
 	ags_channel_add_recall_container(channel, (GObject *) recall_container);
-    
+
 	/* AgsStreamChannel */
 	stream_channel = (AgsStreamChannel *) g_object_new(AGS_TYPE_STREAM_CHANNEL,
 							   "devout\0", audio->devout,
 							   "source\0", channel,
 							   "recall_container\0", recall_container,
 							   NULL);
+							      
 	ags_recall_set_flags(AGS_RECALL(stream_channel), (AGS_RECALL_TEMPLATE |
 							  (((AGS_RECALL_FACTORY_OUTPUT & create_flags) != 0) ? AGS_RECALL_OUTPUT_ORIENTATED: AGS_RECALL_INPUT_ORIENTATED) |
 							  AGS_RECALL_PLAYBACK |
@@ -872,8 +874,8 @@ ags_recall_factory_create_stream(AgsAudio *audio,
 	/* AgsStreamChannelRun */
 	stream_channel_run = (AgsStreamChannelRun *) g_object_new(AGS_TYPE_STREAM_CHANNEL_RUN,
 								  "devout\0", audio->devout,
-								  "source\0", channel,
 								  "recall_channel\0", stream_channel,
+								  "source\0", channel,
 								  "recall_container\0", recall_container,
 								  NULL);
 	ags_recall_set_flags(AGS_RECALL(stream_channel_run), (AGS_RECALL_TEMPLATE |
@@ -961,6 +963,8 @@ ags_recall_factory_create_buffer(AgsAudio *audio,
 								  "devout\0", audio->devout,
 								  "recall_channel\0", buffer_channel,
 								  "source\0", channel,
+								  "destination\0", ags_channel_nth(audio->output,
+												   channel->audio_channel),
 								  "recall_container\0", play_container,
 								  NULL);
 	ags_recall_set_flags(AGS_RECALL(buffer_channel_run), (AGS_RECALL_TEMPLATE |
@@ -1017,6 +1021,8 @@ ags_recall_factory_create_buffer(AgsAudio *audio,
 								  "devout\0", audio->devout,
 								  "recall_channel\0", buffer_channel,
 								  "source\0", channel,
+								  "destination\0", ags_channel_nth(audio->output,
+												   channel->audio_channel),
 								  "recall_container\0", recall_container,
 								  NULL);
 	ags_recall_set_flags(AGS_RECALL(buffer_channel_run), (AGS_RECALL_TEMPLATE |

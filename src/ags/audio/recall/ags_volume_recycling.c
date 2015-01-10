@@ -154,6 +154,8 @@ ags_volume_recycling_init(AgsVolumeRecycling *volume_recycling)
   AGS_RECALL(volume_recycling)->port = NULL;
 
   AGS_RECALL(volume_recycling)->child_type = AGS_TYPE_VOLUME_AUDIO_SIGNAL;
+
+  AGS_RECALL_RECYCLING(volume_recycling)->flags |= (AGS_RECALL_RECYCLING_MAP_CHILD_SOURCE);
 }
 
 void

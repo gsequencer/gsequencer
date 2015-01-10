@@ -28,26 +28,17 @@
 #include <ags/X/machine/ags_ffplayer.h>
 
 gboolean
-ags_automation_edit_drawing_area_expose_event(GtkWidget *widget, GdkEventExpose *event, AgsAutomationEdit *automation_edit)
+ags_automation_edit_scrolled_window_expose_event(GtkWidget *widget, GdkEventExpose *event,
+						 AgsAutomationEdit *automation_edit)
 {
-  AgsEditor *editor;
-
-  editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(automation_edit),
-						 AGS_TYPE_EDITOR);
-
-  if(editor->selected_machine != NULL){
-    AgsMachine *machine;
-
-    machine = editor->selected_machine;
-
-    gtk_widget_queue_draw(automation_edit->drawing_area);
-  }
+  //TODO:JK: implement me
 
   return(TRUE);
 }
 
 gboolean
-ags_automation_edit_drawing_area_configure_event(GtkWidget *widget, GdkEventConfigure *event, AgsAutomationEdit *automation_edit)
+ags_automation_edit_scrolled_window_configure_event(GtkWidget *widget, GdkEventConfigure *event,
+						    AgsAutomationEdit *automation_edit)
 {
   automation_edit->flags |= AGS_AUTOMATION_EDIT_RESETING_VERTICALLY;
   ags_automation_edit_reset_vertically(automation_edit, AGS_AUTOMATION_EDIT_RESET_VSCROLLBAR);
@@ -61,7 +52,8 @@ ags_automation_edit_drawing_area_configure_event(GtkWidget *widget, GdkEventConf
 }
 
 gboolean
-ags_automation_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventButton *event, AgsAutomationEdit *automation_edit)
+ags_automation_edit_scrolled_window_button_press_event(GtkWidget *widget, GdkEventButton *event,
+						       AgsAutomationEdit *automation_edit)
 {
   //TODO:JK: implement me
 
@@ -69,7 +61,8 @@ ags_automation_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventB
 }
 
 gboolean
-ags_automation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButton *event, AgsAutomationEdit *automation_edit)
+ags_automation_edit_scrolled_window_button_release_event(GtkWidget *widget, GdkEventButton *event,
+							 AgsAutomationEdit *automation_edit)
 {
   //TODO:JK: implement me
 
@@ -77,7 +70,8 @@ ags_automation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEven
 }
 
 gboolean
-ags_automation_edit_drawing_area_motion_notify_event(GtkWidget *widget, GdkEventMotion *event, AgsAutomationEdit *automation_edit)
+ags_automation_edit_scrolled_window_motion_notify_event(GtkWidget *widget, GdkEventMotion *event,
+							AgsAutomationEdit *automation_edit)
 {
   //TODO:JK: implement me
 
@@ -105,7 +99,7 @@ ags_automation_edit_hscrollbar_value_changed(GtkRange *range, AgsAutomationEdit 
 
   /* reset ruler */
   gtk_adjustment_set_value(automation_edit->ruler->adjustment,
-			   GTK_RANGE(automation_edit->hscrollbar)->adjustment->value);
+			   GTK_RANGE(gtk_scrolled_window_get_hadjustment(automation_edit->scrolled_window))->adjustment->value);
   gtk_widget_queue_draw(automation_edit->ruler);
 
   /* update automation edit */

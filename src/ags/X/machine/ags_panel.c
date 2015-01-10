@@ -54,7 +54,7 @@ static void ags_panel_finalize(GObject *gobject);
 void ags_panel_connect(AgsConnectable *connectable);
 void ags_panel_disconnect(AgsConnectable *connectable);
 void ags_panel_show(GtkWidget *widget);
-void ags_panel_add_default_recalls(AgsMachine *machine);
+void ags_panel_map_recall(AgsMachine *machine);
 gchar* ags_panel_get_name(AgsPlugin *plugin);
 void ags_panel_set_name(AgsPlugin *plugin, gchar *name);
 gchar* ags_panel_get_xml_type(AgsPlugin *plugin);
@@ -155,7 +155,7 @@ ags_panel_class_init(AgsPanelClass *panel)
   /* AgsMachine */
   machine = (AgsMachineClass *) panel;
 
-  machine->add_default_recalls = ags_panel_add_default_recalls;
+  machine->map_recall = ags_panel_map_recall;
 }
 
 void
@@ -189,14 +189,26 @@ ags_panel_init(AgsPanel *panel)
   AGS_MACHINE(panel)->audio->flags |= (AGS_AUDIO_SYNC);
   AGS_MACHINE(panel)->input_pad_type = AGS_TYPE_PANEL_INPUT_PAD;
 
+  AGS_MACHINE(panel)->input_pad_type = AGS_TYPE_PANEL_INPUT_PAD;
+  AGS_MACHINE(panel)->input_line_type = AGS_TYPE_PANEL_INPUT_LINE;
+  AGS_MACHINE(panel)->output_pad_type = G_TYPE_NONE;
+  AGS_MACHINE(panel)->output_line_type = G_TYPE_NONE;
+
+  g_signal_connect_after(G_OBJECT(panel->machine.audio), "set_audio_channels\0",
+			 G_CALLBACK(ags_panel_set_audio_channels), NULL);
+
+  g_signal_connect_after(G_OBJECT(panel->machine.audio), "set_pads\0",
+			 G_CALLBACK(ags_panel_set_pads), NULL);
+
+  /* */
   panel->name = NULL;
   panel->xml_type = "ags-panel\0";
 
   panel->vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
   gtk_container_add((GtkContainer*) (gtk_bin_get_child((GtkContainer *) panel)), (GtkWidget *) panel->vbox);
 
-  AGS_MACHINE(panel)->output = (GtkContainer *) gtk_hbox_new(FALSE, 0);
-  gtk_box_pack_start((GtkBox *) panel->vbox, (GtkWidget *) AGS_MACHINE(panel)->output, FALSE, FALSE, 0);
+  //  AGS_MACHINE(panel)->output = (GtkContainer *) gtk_hbox_new(FALSE, 0);
+  //  gtk_box_pack_start((GtkBox *) panel->vbox, (GtkWidget *) AGS_MACHINE(panel)->output, FALSE, FALSE, 0);
 
   AGS_MACHINE(panel)->input = (GtkContainer *) gtk_hbox_new(FALSE, 0);
   gtk_box_pack_start((GtkBox *) panel->vbox, (GtkWidget *) AGS_MACHINE(panel)->input, FALSE, FALSE, 0);
@@ -213,19 +225,16 @@ ags_panel_connect(AgsConnectable *connectable)
 {
   AgsPanel *panel;
 
+  if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) != 0){
+    return;
+  }
+
   ags_panel_parent_connectable_interface->connect(connectable);
 
   /* AgsPanel */
   panel = AGS_PANEL(connectable);
 
   /* AgsAudio */
-
-  /* AgsAudio */
-  g_signal_connect_after(G_OBJECT(panel->machine.audio), "set_audio_channels\0",
-			 G_CALLBACK(ags_panel_set_audio_channels), NULL);
-
-  g_signal_connect_after(G_OBJECT(panel->machine.audio), "set_pads\0",
-			 G_CALLBACK(ags_panel_set_pads), NULL);
 }
 
 void
@@ -248,9 +257,11 @@ ags_panel_show(GtkWidget *widget)
 }
 
 void
-ags_panel_add_default_recalls(AgsMachine *machine)
+ags_panel_map_recall(AgsMachine *machine)
 {
-  //empty
+  AGS_MACHINE_CLASS(ags_panel_parent_class)->map_recall(machine);
+
+  /* empty */
 }
 
 gchar*
@@ -336,75 +347,7 @@ ags_panel_set_audio_channels(AgsAudio *audio,
 			     guint audio_channels, guint audio_channels_old,
 			     gpointer data)
 {
-  AgsPanel *panel;
-  GList *list_input_pad, *list_input_pad_start;
-  guint i;
-
-  panel = (AgsPanel *) audio->machine;
-
-  list_input_pad_start = 
-    list_input_pad = gtk_container_get_children((GtkContainer *) AGS_MACHINE(panel)->input);
-    
-  if(audio_channels > audio_channels_old){
-    AgsPanelInputPad *panel_input_pad;
-    AgsChannel *channel;
-
-    /* AgsInput */
-    channel = audio->input;
-
-    for(i = 0; i < audio->input_pads; i++){
-      if(audio_channels_old == 0){
-	/* create AgsPad's if necessary */
-	panel_input_pad = ags_panel_input_pad_new(channel);
-	gtk_box_pack_start((GtkBox *) AGS_MACHINE(panel)->input,
-			   (GtkWidget *) panel_input_pad,
-			   FALSE, FALSE,
-			   0);
-	ags_pad_resize_lines((AgsPad *) panel_input_pad, AGS_TYPE_PANEL_INPUT_LINE,
-			     audio->audio_channels, 0);
-
-	if(GTK_WIDGET_VISIBLE((GtkWidget *) panel)){
-	  ags_connectable_connect(AGS_CONNECTABLE(panel_input_pad));
-	  ags_pad_find_port(AGS_PAD(panel_input_pad));
-	  gtk_widget_show_all((GtkWidget *) panel_input_pad);
-	}
-      }else{
-	panel_input_pad = AGS_PANEL_INPUT_PAD(list_input_pad->data);
-
-	ags_pad_resize_lines((AgsPad *) panel_input_pad, AGS_TYPE_PANEL_INPUT_LINE,
-			     audio_channels, audio_channels_old);
-      }
-
-      channel = channel->next_pad;
-
-      if(audio_channels_old != 0){
-	list_input_pad = list_input_pad->next;
-      }
-    }
-  }else if(audio_channels < audio_channels_old){
-    GList *list_input_pad_next;
-
-    if(audio_channels == 0){
-      /* AgsInput */
-      while(list_input_pad != NULL){
-	list_input_pad_next = list_input_pad->next;
-
-	gtk_widget_destroy(GTK_WIDGET(list_input_pad->data));
-
-	list_input_pad->next = list_input_pad_next;
-      }
-    }else{
-      /* AgsInput */
-      for(i = 0; list_input_pad != NULL; i++){
-	ags_pad_resize_lines(AGS_PAD(list_input_pad->data), AGS_TYPE_PANEL_INPUT_PAD,
-			     audio_channels, audio_channels_old);
-
-	list_input_pad = list_input_pad->next;
-      }
-    }
-  }
-
-  g_list_free(list_input_pad_start);
+  /* empty */
 }
 
 void
@@ -412,55 +355,7 @@ ags_panel_set_pads(AgsAudio *audio, GType type,
 		   guint pads, guint pads_old,
 		   gpointer data)
 {
-  AgsPanel *panel;
-  AgsChannel *channel;
-  GList *list, *list_next, *list_start;
-  guint i, j;
-
-  panel = (AgsPanel *) audio->machine;
-
-  if(type == AGS_TYPE_INPUT){
-    AgsPanelInputPad *panel_input_pad;
-
-    if(pads_old < pads){
-      /*  */
-      channel = ags_channel_nth(audio->input, pads_old * audio->audio_channels);
-
-      for(i = pads_old; i < pads; i++){
-	panel_input_pad = ags_panel_input_pad_new(channel);
-	gtk_box_pack_start((GtkBox *) AGS_MACHINE(panel)->input,
-			   (GtkWidget *) panel_input_pad, FALSE, FALSE, 0);
-	ags_pad_resize_lines((AgsPad *) panel_input_pad, AGS_TYPE_PANEL_INPUT_LINE,
-			     AGS_AUDIO(channel->audio)->audio_channels, 0);
-
-	if(GTK_WIDGET_VISIBLE((GtkWidget *) panel)){
-	  ags_connectable_connect(AGS_CONNECTABLE(panel_input_pad));
-	  ags_pad_find_port(AGS_PAD(panel_input_pad));
-	  gtk_widget_show_all((GtkWidget *) panel_input_pad);
-	}
-
-	channel = channel->next_pad;
-      }
-    }else{
-      /* destroy AgsPad's */
-      if(pads != 0){
-	
-	list_start = 
-	  list = gtk_container_get_children((GtkContainer *) AGS_MACHINE(panel)->input);
-	list = g_list_nth(list, pads);
-	
-	while(list != NULL){
-	  list_next = list->next;
-	  
-	  gtk_widget_destroy((GtkWidget *) list->data);
-	  
-	  list = list_next;
-	}
-
-	g_list_free(list_start);
-      }
-    }
-  }
+  /* empty */
 }
 
 /**

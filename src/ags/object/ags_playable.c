@@ -20,9 +20,13 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/audio/ags_config.h>
+
 #include <math.h>
 
 void ags_playable_base_init(AgsPlayableInterface *interface);
+
+extern AgsConfig *config;
 
 /**
  * SECTION:ags_playable
@@ -443,6 +447,8 @@ ags_playable_read_audio_signal(AgsPlayable *playable,
   guint loop_start;
   guint loop_end;
   guint length;
+  guint buffer_size;
+  guint samplerate;
   guint i, j, k, i_stop, j_stop;
   GError *error;
 
@@ -451,12 +457,22 @@ ags_playable_read_audio_signal(AgsPlayable *playable,
 		    &loop_start, &loop_end,
 		    &error);
 
-  length = (guint) ceil((double)(frames) / (double)(devout->buffer_size));
+  samplerate = g_ascii_strtoull(ags_config_get(config,
+					       AGS_CONFIG_DEVOUT,
+					       "samplerate\0"),
+				NULL,
+				10);
+  buffer_size = g_ascii_strtoull(ags_config_get(config,
+						AGS_CONFIG_DEVOUT,
+						"buffer-size\0"),
+				 NULL,
+				 10);
+  length = (guint) ceil((double)(frames) / (double)(buffer_size));
 
 #ifdef AGS_DEBUG
-  g_message("ags_playable_read_audio_signal:\n  frames = %u\n  devout->buffer_size = %u\n  length = %u\n\0", frames, devout->buffer_size, length);
+  g_message("ags_playable_read_audio_signal:\n  frames = %u\n  buffer_size = %u\n  length = %u\n\0", frames, buffer_size, length);
 #endif
-
+  
   list = NULL;
   i = start_channel;
   i_stop = start_channel + channels_to_read;
@@ -465,26 +481,23 @@ ags_playable_read_audio_signal(AgsPlayable *playable,
     audio_signal = ags_audio_signal_new((GObject *) devout,
 					NULL,
 					NULL);
-    audio_signal->samplerate = devout->frequency;
-    audio_signal->buffer_size = devout->buffer_size;
-
+    audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
     list = g_list_prepend(list, audio_signal);
 
     ags_connectable_connect(AGS_CONNECTABLE(audio_signal));
-
-    list->data = (gpointer) audio_signal;
-    audio_signal->devout = (GObject *) devout;
   }
 
   list_beginning = list;
 
-  j_stop = (guint) floor((double)(frames) / (double)(devout->buffer_size));
+  j_stop = (guint) floor((double)(frames) / (double)(buffer_size));
 
   for(i = start_channel; list != NULL; i++){
     audio_signal = AGS_AUDIO_SIGNAL(list->data);
     ags_audio_signal_stream_resize(audio_signal, length);
     audio_signal->loop_start = loop_start;
     audio_signal->loop_end = loop_end;
+    //TODO:JK: read resolution of file
+    //    audio_signal->resolution = AGS_DEVOUT_RESOLUTION_16_BIT;
 
     error = NULL;
     buffer = ags_playable_read(playable,
@@ -498,15 +511,17 @@ ags_playable_read_audio_signal(AgsPlayable *playable,
     stream = audio_signal->stream_beginning;
     
     for(j = 0; j < j_stop; j++){
-      for(k = 0; k < devout->buffer_size; k++)
-	((short *) stream->data)[k] = buffer[j * devout->buffer_size + k];
-      
+      for(k = 0; k < buffer_size; k++){
+	((short *) stream->data)[k] = buffer[j * buffer_size + k];
+      }
+
       stream = stream->next;
     }
     
-    if(frames % devout->buffer_size != 0){
-      for(k = 0; k < frames % devout->buffer_size; k++)
-	((short *) stream->data)[k] = buffer[j * devout->buffer_size + k];
+    if(frames % buffer_size != 0){
+      for(k = 0; k < frames % buffer_size; k++){
+	((short *) stream->data)[k] = buffer[j * buffer_size + k];
+      }
     }
 
     free(buffer);

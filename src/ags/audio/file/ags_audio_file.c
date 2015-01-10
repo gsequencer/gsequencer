@@ -25,6 +25,8 @@
 
 #include <ags/audio/file/ags_sndfile.h>
 
+#include <ags/audio/ags_config.h>
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
@@ -37,6 +39,8 @@ void ags_audio_file_init(AgsAudioFile *audio_file);
 void ags_audio_file_connect(AgsConnectable *connectable);
 void ags_audio_file_disconnect(AgsConnectable *connectable);
 void ags_audio_file_finalize(GObject *object);
+
+extern AgsConfig *config;
 
 enum{
   READ_BUFFER,
@@ -121,7 +125,11 @@ ags_audio_file_init(AgsAudioFile *audio_file)
 
   audio_file->name = NULL;
 
-  audio_file->samplerate = (int) AGS_DEVOUT_DEFAULT_SAMPLERATE;
+  audio_file->samplerate = g_ascii_strtoull(ags_config_get(config,
+							   AGS_CONFIG_DEVOUT,
+							   "samplerate\0"),
+					    NULL,
+					    10);
   audio_file->frames = 0;
   audio_file->channels = 2;
   audio_file->format = SF_FORMAT_WAV | SF_FORMAT_PCM_16;

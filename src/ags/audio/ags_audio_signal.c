@@ -21,13 +21,13 @@
 #include <ags/object/ags_marshal.h>
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/audio/ags_config.h>
 #include <ags/audio/ags_devout.h>
 
 #include <stdint.h>
 #include <emmintrin.h>
 #include <stdlib.h>
 #include <math.h>
-#include <gmp.h>
 #include <string.h>
 
 /**
@@ -71,6 +71,8 @@ enum{
   MORPH_SAMPLERATE,
   LAST_SIGNAL,
 };
+
+extern AgsConfig *config;
 
 static gpointer ags_audio_signal_parent_class = NULL;
 static guint audio_signal_signals[LAST_SIGNAL];
@@ -168,7 +170,7 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    * 
    * Since: 0.4.0
    */
-  param_spec = g_param_spec_object("recall-id\0",
+  param_spec = g_param_spec_object("recall_id\0",
 				   "assigned recall id\0",
 				   "The recall id it is assigned with\0",
 				   AGS_TYPE_RECALL_ID,
@@ -236,8 +238,16 @@ ags_audio_signal_init(AgsAudioSignal *audio_signal)
   audio_signal->recycling = NULL;
   audio_signal->recall_id = NULL;
 
-  audio_signal->samplerate = AGS_DEVOUT_DEFAULT_SAMPLERATE;
-  audio_signal->buffer_size = AGS_DEVOUT_DEFAULT_BUFFER_SIZE;
+  audio_signal->samplerate = g_ascii_strtoull(ags_config_get(config,
+							     AGS_CONFIG_DEVOUT,
+							     "samplerate\0"),
+					      NULL,
+					      10);
+  audio_signal->buffer_size = g_ascii_strtoull(ags_config_get(config,
+							      AGS_CONFIG_DEVOUT,
+							      "buffer-size\0"),
+					       NULL,
+					       10);
   audio_signal->resolution = AGS_DEVOUT_RESOLUTION_16_BIT;
 
   audio_signal->length = 0;
@@ -245,7 +255,7 @@ ags_audio_signal_init(AgsAudioSignal *audio_signal)
   audio_signal->loop_start = 0;
   audio_signal->loop_end = 0;
 
-  audio_signal->delay = 0;
+  audio_signal->delay = 0.0;
   audio_signal->attack = 0;
 
   audio_signal->lock_attack = 0;
@@ -469,7 +479,7 @@ ags_audio_signal_add_stream(AgsAudioSignal *audio_signal)
   signed short *buffer;
 
   stream = g_list_alloc();
-  buffer = ags_stream_alloc(AGS_DEVOUT(audio_signal->devout)->buffer_size);
+  buffer = ags_stream_alloc(audio_signal->buffer_size);
   stream->data = buffer;
 
   if(audio_signal->stream_end != NULL){
@@ -509,7 +519,7 @@ ags_audio_signal_stream_resize(AgsAudioSignal *audio_signal, guint length)
     stream = NULL;
 
     for(i = audio_signal->length; i < length; i++){
-      buffer = ags_stream_alloc(AGS_DEVOUT(audio_signal->devout)->buffer_size);
+      buffer = ags_stream_alloc(audio_signal->buffer_size);
 
       stream = g_list_prepend(stream,
 			      buffer);
@@ -544,7 +554,6 @@ ags_audio_signal_stream_resize(AgsAudioSignal *audio_signal, guint length)
       stream = stream->next;
     }
 
-
     if(length != 0){
       stream_end = stream->prev;
       stream_end->next = NULL;
@@ -555,12 +564,9 @@ ags_audio_signal_stream_resize(AgsAudioSignal *audio_signal, guint length)
       audio_signal->stream_end = NULL;
     }
 
-    while(stream != NULL){
-      stream_next = stream->next;
-      free((signed short *) stream->data);
-      g_list_free1(stream);
-      stream = stream_next;
-    }
+    stream->prev = NULL;
+    g_list_free_full(stream,
+		     g_free);
   }
 
   audio_signal->length = length;
@@ -849,72 +855,44 @@ void
 ags_audio_signal_duplicate_stream(AgsAudioSignal *audio_signal,
 				  AgsAudioSignal *template)
 {
-  GList *template_stream, *stream, *start;
-  signed short *buffer;
-  guint size;
-  guint k, template_k;
-
-  if(audio_signal->stream_beginning != NULL)
-    ags_audio_signal_stream_resize(audio_signal, 0);
+  if(template == NULL){
+    if(audio_signal == NULL){
+      return;
+    }else{
+      ags_audio_signal_stream_resize(audio_signal,
+				     0);
+      return;
+    }
+  }
 
   if(template->stream_beginning == NULL){
-    audio_signal->stream_beginning = NULL;
-    audio_signal->stream_current = NULL;
-    audio_signal->stream_end = NULL;
+    ags_audio_signal_stream_resize(audio_signal,
+				   0);
   }else{
-    AgsDevout *devout;
+    //    AgsDevout *devout;
+    GList *template_stream, *stream;
+    //    guint i, j, j_offcut;
+    //    guint k, template_k;
 
-    devout = AGS_DEVOUT(audio_signal->devout);
+    audio_signal->buffer_size = template->buffer_size;
+    ags_audio_signal_stream_resize(audio_signal,
+				   template->length);
 
-    size = devout->buffer_size * sizeof(signed short);
+    stream = audio_signal->stream_beginning;
+    template_stream = template->stream_beginning;
 
-    //TODO:JK: actualize me
-    ags_audio_signal_stream_resize(audio_signal, (audio_signal->delay +
-						  template->length)); /* (guint) ceil(((double) audio_signal->attack + /
-									   (double) devout->buffer_size) */
+    //    k = 0;
+    //    template_k = 0;
 
-    //    if(audio_signal->attack + template->last_frame > devout->buffer_size){
-    //      ags_audio_signal_add_stream(audio_signal);
-      //    }
-
-    stream =
-      start = g_list_nth(audio_signal->stream_beginning,
-			 audio_signal->delay);
-
-    template_stream = g_list_nth(template->stream_beginning,
-				 template->delay);
-
-    k = audio_signal->attack;
-    template_k = template->attack;
-
+    //TODO:JK: enhance me
     while(template_stream != NULL){
-      if(k == devout->buffer_size){
-	k = 0;
-	
-	stream = stream->next;
-      }
+      ags_audio_signal_copy_buffer_to_buffer(stream->data, 1,
+					     template_stream->data, 1,
+					     template->buffer_size);
 
-      if(k == 0){
-	if(stream->next == NULL){
-	  ags_audio_signal_add_stream(audio_signal);
-	}
-      }
-
-      if(template_k == devout->buffer_size){
-	template_k = 0;
-	template_stream = template_stream->next;
-      }
-
-      for(;
-	  template_stream != NULL && k < devout->buffer_size && template_k < devout->buffer_size;
-	  k++, template_k++){
-	/* copy audio data from template to new AgsAudioSignal */
-	((signed short*) stream->data)[k] = ((signed short*) template_stream->data)[template_k];
-      }
+      stream = stream->next;
+      template_stream = template_stream->next;
     }
-
-    // audio_signal->stream_beginning = start;
-    // audio_signal->stream_end = stream;
   }
 }
 
@@ -1023,7 +1001,7 @@ ags_audio_signal_get_by_recall_id(GList *list_audio_signal,
  * ags_audio_signal_tile:
  * @audio_signal: an #AgsAudioSignal
  * @template: the source #AgsAudioSignal
- * @length: new frame count
+ * @frame_count: new frame count
  *
  * Tile audio signal data.
  *
@@ -1032,17 +1010,17 @@ ags_audio_signal_get_by_recall_id(GList *list_audio_signal,
 void
 ags_audio_signal_tile(AgsAudioSignal *audio_signal,
 		      AgsAudioSignal *template,
-		      guint length)
+		      guint frame_count)
 {
   AgsDevout *devout;
   GList *template_stream, *audio_signal_stream, *audio_signal_stream_end;
   signed short *template_buffer, *audio_signal_buffer;
-  guint buffer_size;
-  guint template_length, mod_template_length, mod_template_length_odd;
-  guint remaining_length;
-  gboolean mod_template_even;
-  guint i, j, j_offcut, j_offcut_odd, k;
-
+  guint template_size;
+  guint remaining_size;
+  guint i, j, j_offcut;
+  guint k, k_end;
+  gboolean alloc_buffer;
+  
   devout = AGS_DEVOUT(audio_signal->devout);
 
   audio_signal_stream = NULL;
@@ -1052,119 +1030,109 @@ ags_audio_signal_tile(AgsAudioSignal *audio_signal,
     return;
   }
 
-  buffer_size = devout->buffer_size;
+  template_size = (guint) (template->delay * template->buffer_size) +
+    template->length * template->buffer_size +
+    template->last_frame;
 
-  template_length = template->length;
-  mod_template_length = template_length % buffer_size;
-  mod_template_length_odd = buffer_size - mod_template_length;
-  mod_template_even = TRUE;
+  j = 0;
+  k = 0;
+
+  if(template->buffer_size > audio_signal->buffer_size){
+    k_end = audio_signal->buffer_size;
+  }else if(template->buffer_size == audio_signal->buffer_size){
+    k_end = audio_signal->buffer_size;
+  }else{
+    k_end = template->buffer_size;
+  }
 
   j_offcut = 0;
-  k = 1;
+  alloc_buffer = TRUE;
 
   /* write buffers */
-  for(i = 0; i < length - buffer_size; i += buffer_size){
-    audio_signal_buffer = (signed short *) malloc(buffer_size * sizeof(signed short));
-    audio_signal_stream = g_list_prepend(audio_signal_stream,
-					 audio_signal_buffer);
+  for(i = 0; i < frame_count - template->buffer_size; i += audio_signal->buffer_size){
+    /* alloc buffer and prepend */
+    if(alloc_buffer){
+      audio_signal_buffer = ags_stream_alloc(audio_signal->buffer_size);
+      audio_signal_stream = g_list_prepend(audio_signal_stream,
+					   audio_signal_buffer);
+    }
 
+    /* get template buffer */
     template_buffer = (signed short *) template_stream->data;
 
-    if(template_length < buffer_size){
+    /* allocate and copy buffer */
+    if(template_size < audio_signal->buffer_size){
+      /* copy buffer */
       ags_audio_signal_copy_buffer_to_buffer(audio_signal_buffer, 1,
-					     &(template_buffer[j_offcut]), 1, template_length - j_offcut);
+					     &(template_buffer[j_offcut]), 1, template_size - j_offcut);
 
-      for(j = template_length - j_offcut; j < buffer_size - template_length; j += template_length){
+      for(j = template_size - j_offcut; j < audio_signal->buffer_size - template_size; j += template_size){
 	ags_audio_signal_copy_buffer_to_buffer(&(audio_signal_buffer[j]), 1,
-					       template_buffer, 1, template_length);
+					       template_buffer, 1, template_size);
       }
 
-      j_offcut = buffer_size - j;
+      j_offcut = audio_signal->buffer_size - j;
       ags_audio_signal_copy_buffer_to_buffer(&(audio_signal_buffer[j]), 1,
 					     template_buffer, 1, j_offcut);
     }else{
-      ags_audio_signal_copy_buffer_to_buffer(audio_signal_buffer, 1,
-					     &(template_buffer[j_offcut]), 1, j_offcut_odd);
+      /* deep copy */
+      ags_audio_signal_copy_buffer_to_buffer(audio_signal_buffer[j], 1,
+					     &(template_buffer[j_offcut]), 1, k_end - j_offcut);
+      k += (k_end - j_offcut);
 
-      if((guint) floor((double) (i + j_offcut_odd + buffer_size) / (double) template_length) < k){
-	template_stream = template_stream->next;
-      }else{
-	template_stream = template->stream_beginning;
-	k++;
+      /* iterate template stream */
+      if(k_end + j_offcut == template->buffer_size){
+	if(template_stream->next != NULL){
+	  template_stream = template_stream->next;
+	}else{
+	  template_stream = template->stream_beginning;
+	}
       }
-      
-      ags_audio_signal_copy_buffer_to_buffer(&(audio_signal_buffer[j_offcut_odd]), 1,
-					     template_buffer, 1, j_offcut);
 
-      if(mod_template_even){
-	j_offcut = mod_template_length;
-	j_offcut_odd = mod_template_length_odd;
+      /* copy parameters */
+      j = k % audio_signal->buffer_size;
 	
-	mod_template_even = FALSE;
+      if(template->buffer_size < audio_signal->buffer_size){
+	j_offcut = k % template->buffer_size;
+      }else if(template->buffer_size == audio_signal->buffer_size){
+	j_offcut = k % audio_signal->buffer_size;
       }else{
-	j_offcut = mod_template_length_odd;
-	j_offcut_odd = mod_template_length;
-	
-	mod_template_even = TRUE;
+	j_offcut = k % audio_signal->buffer_size;
+      }
+
+      k_end = template->buffer_size - j_offcut;
+
+      /* alloc audio signal */
+      if(j == 0){
+	alloc_buffer = TRUE;
+      }else{
+	alloc_buffer = FALSE;
       }
     }
   }
   
   /* write remaining buffer */
-  remaining_length = length - (i * buffer_size);
+  remaining_size = frame_count - (i * audio_signal->buffer_size);
 
-  if(template_length < buffer_size){
-    guint remaining_length_odd, remaining_length_overflow;
+  if(remaining_size > k_end - j_offcut){
+    ags_audio_signal_copy_buffer_to_buffer(audio_signal_buffer[j], 1,
+					   &(template_buffer[j_offcut]), 1, k_end - j_offcut);
 
-    if(remaining_length < template_length - j_offcut){
-      ags_audio_signal_copy_buffer_to_buffer(audio_signal_buffer, 1,
-					     &(template_buffer[j_offcut]), 1, remaining_length);
-    }else{
-      ags_audio_signal_copy_buffer_to_buffer(audio_signal_buffer, 1,
-					     &(template_buffer[j_offcut]), 1, template_length - j_offcut);
-    
-      if(remaining_length >= template_length){
-	for(j = template_length - j_offcut; j < remaining_length - template_length; j += template_length){
-	  ags_audio_signal_copy_buffer_to_buffer(&(audio_signal_buffer[j]), 1,
-						 template_buffer, 1, template_length);
-	}
-	
-	j_offcut = remaining_length - j;
-	ags_audio_signal_copy_buffer_to_buffer(&(audio_signal_buffer[j]), 1,
-					       template_buffer, 1, j_offcut);
-      }else{
-	j_offcut = remaining_length + j_offcut - template_length;
-	ags_audio_signal_copy_buffer_to_buffer(&(audio_signal_buffer[j]), 1,
-					       template_buffer, 1, j_offcut);
-      }
-    }
-  }else{
-    guint remaining_length_odd, remaining_length_overflow;
-
-    remaining_length_overflow = j_offcut + remaining_length;
-
-    if(remaining_length_overflow > buffer_size){
-      remaining_length = j_offcut_odd;
-      remaining_length_odd = buffer_size - remaining_length_overflow;
-    }else{
-      remaining_length_odd = 0;
-    }
-
-    ags_audio_signal_copy_buffer_to_buffer(audio_signal_buffer, 1,
-					   &(template_buffer[j_offcut]), 1, remaining_length);
-
-    if(remaining_length_odd != 0){
-      if((i + j_offcut + buffer_size) % template_length < template_length){
+    if(k_end + j_offcut == template->buffer_size){
+      if(template_stream->next != NULL){
 	template_stream = template_stream->next;
       }else{
 	template_stream = template->stream_beginning;
       }
-      
-      ags_audio_signal_copy_buffer_to_buffer(&(audio_signal_buffer[j_offcut_odd]), 1,
-					     template_buffer, 1, j_offcut);
     }
+
+    ags_audio_signal_copy_buffer_to_buffer(audio_signal_buffer[j], 1,
+					   &(template_buffer[j_offcut]), 1, remaining_size - (k_end - j_offcut));
+  }else{
+    ags_audio_signal_copy_buffer_to_buffer(audio_signal_buffer[j], 1,
+					   &(template_buffer[j_offcut]), 1, remaining_size);
   }
-  
+
   /* reverse list */
   audio_signal_stream_end = audio_signal_stream;
   audio_signal_stream = g_list_reverse(audio_signal_stream);
@@ -1199,6 +1167,7 @@ ags_audio_signal_scale(AgsAudioSignal *audio_signal,
   guint offset;
   double step;
   guint i, j, j_stop;
+  guint k, template_k;
   gboolean expand;
 
   auto void ags_audio_signal_scale_copy_8_bit(GList *source, GList *destination,
@@ -1622,20 +1591,7 @@ ags_audio_signal_scale(AgsAudioSignal *audio_signal,
 
   /* create audio data */
   //TODO:JK: fix me
-  {
-    mpz_t rop;
-    mpz_t op1, op2;
-
-    mpz_init(rop);
-    mpz_init(op1);
-    mpz_init(op2);
-
-    mpz_set_ui(op1, audio_signal->resolution);
-    mpz_set_ui(op2, template->resolution);
-
-    mpz_lcm(rop, op1, op2);
-    j_stop = mpz_get_ui(rop);
-  }
+  j_stop = audio_signal->resolution; // lcm(audio_signal->resolution, template->resolution);
 
   stream_template = NULL;
 
@@ -1729,9 +1685,15 @@ ags_audio_signal_scale(AgsAudioSignal *audio_signal,
   destination = audio_signal->stream_beginning;
 
   offset = 0;
+  k = 0;
+  template_k = 0;
 
   while(destination != NULL){
-    for(i = 0; i < audio_signal->buffer_size; i++){
+    for(i = 0;
+	i < audio_signal->buffer_size &&
+	  k < audio_signal->buffer_size &&
+	  template_k < template->buffer_size;
+	i++, k++, template_k++){
 
       switch(audio_signal->resolution){
       case AGS_DEVOUT_RESOLUTION_8_BIT:
@@ -1774,8 +1736,13 @@ ags_audio_signal_scale(AgsAudioSignal *audio_signal,
       offset = (guint) floor(morph_factor * (double) i);
     }
 
-    destination = destination->next;
-    source = source->next;
+    if(k == audio_signal->buffer_size){
+      destination = destination->next;
+    }
+
+    if(template_k == template->buffer_size){
+      source = source->next;
+    }
   }
 }
 

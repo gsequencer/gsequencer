@@ -61,6 +61,8 @@ void ags_synth_input_line_resolve_line(AgsFileLookup *file_lookup,
 xmlNode* ags_synth_input_line_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
 void ags_synth_input_line_set_channel(AgsLine *line, AgsChannel *channel);
+void ags_synth_input_line_map_recall(AgsLine *line,
+				     guint output_pad_start);
 
 /**
  * SECTION:ags_synth_input_line
@@ -132,6 +134,7 @@ ags_synth_input_line_class_init(AgsSynthInputLineClass *synth_input_line)
   line = AGS_LINE_CLASS(synth_input_line);
 
   line->set_channel = ags_synth_input_line_set_channel;
+  line->map_recall = ags_synth_input_line_map_recall;
 }
 
 void
@@ -202,28 +205,24 @@ ags_synth_input_line_set_channel(AgsLine *line, AgsChannel *channel)
 
   synth_input_line = AGS_SYNTH_INPUT_LINE(line);
 
-  if(line->channel != NULL){
-    line->flags &= (~AGS_LINE_MAPPED_RECALL);
-  }
-
-  if(channel != NULL){
-    if((AGS_LINE_PREMAPPED_RECALL & (line->flags)) == 0){
-      ags_synth_input_line_map_recall(synth_input_line);
-    }
-  }
+  /* empty */
 }
 
 void
-ags_synth_input_line_map_recall(AgsSynthInputLine *synth_input_line)
+ags_synth_input_line_map_recall(AgsLine *line,
+				guint output_pad_start)
 {
   AgsSynth *synth;
-  AgsLine *line;
+  AgsSynthInputLine *synth_input_line;
   AgsAudio *audio;
   AgsChannel *source;
   guint i;
 
-  line = AGS_LINE(synth_input_line);
-  line->flags |= AGS_LINE_MAPPED_RECALL;
+  if((AGS_LINE_MAPPED_RECALL & (line->flags)) != 0){
+    return;
+  }
+
+  synth_input_line = AGS_SYNTH_INPUT_LINE(line);
 
   audio = AGS_AUDIO(line->channel->audio);
 
@@ -232,6 +231,9 @@ ags_synth_input_line_map_recall(AgsSynthInputLine *synth_input_line)
   source = line->channel;
 
   /* empty */
+  /* call parent */
+  AGS_LINE_CLASS(ags_synth_input_line_parent_class)->map_recall(line,
+								output_pad_start);
 }
 
 gchar*

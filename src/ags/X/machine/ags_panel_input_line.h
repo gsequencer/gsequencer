@@ -50,9 +50,6 @@ struct _AgsPanelInputLineClass
 
 GType ags_panel_input_line_get_type();
 
-void ags_panel_input_line_map_recall(AgsPanelInputLine *panel_input_line,
-				    guint output_pad_start);
-
 AgsPanelInputLine* ags_panel_input_line_new(AgsChannel *channel);
 
 #endif /*__AGS_PANEL_INPUT_LINE_H__*/

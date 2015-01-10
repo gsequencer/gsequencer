@@ -46,7 +46,7 @@
 #define AGS_DEVOUT_PLAY(ptr)           ((AgsDevoutPlay *)(ptr))
 
 #define AGS_DEVOUT_DEFAULT_SAMPLERATE (44100.0)
-#define AGS_DEVOUT_DEFAULT_FORMAT (16)
+#define AGS_DEVOUT_DEFAULT_FORMAT (AGS_DEVOUT_RESOLUTION_16_BIT)
 #define AGS_DEVOUT_DEFAULT_BUFFER_SIZE (944)
 #define AGS_DEVOUT_DEFAULT_BPM (120.0)
 #define AGS_DEVOUT_DEFAULT_JIFFIE ((double) AGS_DEVOUT_DEFAULT_SAMPLERATE / (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE)
@@ -58,7 +58,7 @@
 #define AGS_DEVOUT_DEFAULT_SCALE (1.0)
 #define AGS_DEVOUT_DEFAULT_DELAY (AGS_DEVOUT_DEFAULT_JIFFIE * (60.0 / AGS_DEVOUT_DEFAULT_BPM))
 
-#define AGS_DEVOUT_DEFAULT_PERIOD (1.0)
+#define AGS_DEVOUT_DEFAULT_PERIOD (64.0)
 
 typedef struct _AgsDevout AgsDevout;
 typedef struct _AgsDevoutClass AgsDevoutClass;
@@ -136,9 +136,7 @@ struct _AgsDevout
   guint *attack; // where currently tic resides in the stream's offset, measured in 1/64 of bpm
 
   gdouble delay_counter; // next time attack changeing when delay_counter == delay
-  guint tic_counter;
-
-  guint64 offset;
+  guint tic_counter; // in the range of default period
 
   union{
     struct _AgsOss{
@@ -230,6 +228,14 @@ AgsDevoutPlay* ags_devout_play_alloc();
 void ags_devout_play_free(AgsDevoutPlay *devout_play);
 AgsDevoutPlay* ags_devout_play_find_source(GList *devout_play,
 					   GObject *source);
+
+void ags_devout_list_cards(GList **card_id, GList **card_name);
+void ags_devout_pcm_info(char *card_id,
+			 guint *channels_min, guint *channels_max,
+			 guint *rate_min, guint *rate_max,
+			 guint *buffer_size_min, guint *buffer_size_max,
+			 GError **error);
+void ags_devout_tic(AgsDevout *devout);
 
 void ags_devout_note_offset_changed(AgsDevout *devout, guint note_offset);
 

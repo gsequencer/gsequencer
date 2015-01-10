@@ -136,7 +136,16 @@ ags_automation_area_class_init(AgsAutomationAreaClass *automation_area)
 void
 ags_automation_area_init(AgsAutomationArea *automation_area)
 {
-  //TODO:JK: implement me
+  automation_area->automation = NULL;
+
+  gtk_widget_set_style((GtkWidget *) automation_area, automation_area_style);
+  gtk_widget_set_events(GTK_WIDGET (automation_area), GDK_EXPOSURE_MASK
+			| GDK_LEAVE_NOTIFY_MASK
+			| GDK_BUTTON_PRESS_MASK
+			| GDK_BUTTON_RELEASE_MASK
+			| GDK_POINTER_MOTION_MASK
+			| GDK_POINTER_MOTION_HINT_MASK
+			);
 }
 
 void
@@ -145,7 +154,36 @@ ags_automation_area_set_property(GObject *gobject,
 				 const GValue *value,
 				 GParamSpec *param_spec)
 {
-  //TODO:JK: implement me
+  AgsAutomationArea *automation_area;
+
+  automation_area = AGS_AUTOMATION_AREA(gobject);
+
+  switch(prop_id){
+  case PROP_AUTOMATION:
+    {
+      AgsAutomation *automation;
+
+      automation = g_value_get_object(value);
+
+      if(automation == automation_area->automation){
+	return;
+      }
+
+      if(automation_area->automation != NULL){
+	g_object_unref(automation_area->automation);
+      }
+
+      if(automation != NULL){
+	g_object_ref(automation);
+      }
+
+      automation_area->automation = automation;
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void
@@ -154,13 +192,34 @@ ags_automation_area_get_property(GObject *gobject,
 				 GValue *value,
 				 GParamSpec *param_spec)
 {
-  //TODO:JK: implement me
+  AgsAutomationArea *automation_area;
+
+  automation_area = AGS_AUTOMATION_AREA(gobject);
+
+  switch(prop_id){
+  case PROP_AUTOMATION:
+    {
+      g_value_set_object(value, automation_area->automation);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void
 ags_automation_area_connect(AgsConnectable *connectable)
 {
-  //TODO:JK: implement me
+  AgsAutomationArea *automation_area;
+
+  automation_area = AGS_AUTOMATION_AREA(connectable);
+
+  g_signal_connect_after((GObject *) automation_area, "expose_event\0",
+			 G_CALLBACK (ags_automation_area_expose_event), (gpointer) automation_area);
+
+  g_signal_connect_after((GObject *) automation_area, "configure_event\0",
+			 G_CALLBACK (ags_automation_area_configure_event), (gpointer) automation_area);
 }
 
 void
@@ -291,7 +350,7 @@ ags_automation_area_draw_automation(AgsAutomationArea *automation_area, cairo_t 
   width = GTK_WIDGET(automation_area)->allocation.width;
   height = GTK_WIDGET(automation_area)->allocation.height;
 
-  x0 = GTK_RANGE(automation_edit->vscrollbar)->adjustment->value;
+  x0 = gtk_scrolled_window_get_hadjustment(automation_edit->scrolled_window)->value;
   x1 = x0 + width;
 
   /*  */	

@@ -48,6 +48,9 @@ struct _AgsSynth
   gchar *name;
   gchar *xml_type;
 
+  guint mapped_input_pad;
+  guint mapped_output_pad;
+
   GtkVBox *input_pad;
 
   GtkSpinButton *lower; // how many channels until to lowest freq
