@@ -116,6 +116,10 @@ ags_file_read_devout(AgsFile *file, xmlNode *node, AgsDevout **devout)
   gobject->flags = (guint) g_ascii_strtoull(xmlGetProp(node, AGS_FILE_FLAGS_PROP),
 					    NULL,
 					    16);
+  gobject->flags &= (~(AGS_DEVOUT_BUFFER1 |
+		       AGS_DEVOUT_BUFFER2 |
+		       AGS_DEVOUT_BUFFER3 |
+		       AGS_DEVOUT_PLAY));
 
   gobject->dsp_channels = (guint) g_ascii_strtoull(xmlGetProp(node, "dsp-channels\0"),
 						   NULL,
@@ -182,7 +186,7 @@ ags_file_read_devout(AgsFile *file, xmlNode *node, AgsDevout **devout)
 
 	  str = content;
 
-	  for(i = 0; i < (int) ceil(AGS_NOTATION_TICS_PER_BEAT); i++){
+	  for(i = 0; i < (int) ceil(2.0 * AGS_DEVOUT_DEFAULT_PERIOD); i++){
 	    gobject->attack[i] = (guint) g_ascii_strtoull((gchar *) str,
 							  (gchar **) &endptr,
 							  10);
@@ -207,10 +211,9 @@ ags_file_read_devout(AgsFile *file, xmlNode *node, AgsDevout **devout)
 
 	  str = content;
 	  
-	  for(i = 0; i < (int) ceil(AGS_NOTATION_TICS_PER_BEAT); i++){
-	    gobject->delay[i] = (guint) g_ascii_strtoull((gchar *) str,
-							 (gchar **) &endptr,
-							 10);
+	  for(i = 0; i < (int) ceil(2.0 * AGS_DEVOUT_DEFAULT_PERIOD); i++){
+	    gobject->delay[i] = (gdouble) g_ascii_strtod((gchar *) str,
+							 (gchar **) &endptr);
 	    str = endptr;
 	  }
 	}
@@ -296,14 +299,14 @@ ags_file_write_devout(AgsFile *file, xmlNode *parent, AgsDevout *devout)
 		     "ags-delay-data\0");
   content = NULL;
 	  
-  for(i = 0; i < (int) ceil(2 * AGS_NOTATION_TICS_PER_BEAT); i++){
+  for(i = 0; i < (int) ceil(2 * AGS_DEVOUT_DEFAULT_PERIOD); i++){
     str = content;
 
     if(str != NULL){
-      content = g_strdup_printf("%s%d\n\0", content, devout->delay[i]);
+      content = g_strdup_printf("%s%f\n\0", content, devout->delay[i]);
       g_free(str);
     }else{
-      content = g_strdup_printf("%d\n\0", devout->delay[i]);
+      content = g_strdup_printf("%f\n\0", devout->delay[i]);
     }
   }
 
@@ -326,7 +329,7 @@ ags_file_write_devout(AgsFile *file, xmlNode *parent, AgsDevout *devout)
 		     "ags-attack-data\0");
   content = NULL;
 	  
-  for(i = 0; i < (int) ceil(2 * AGS_NOTATION_TICS_PER_BEAT); i++){
+  for(i = 0; i < (int) ceil(2 * AGS_DEVOUT_DEFAULT_PERIOD); i++){
     str = content;
 
     if(str != NULL){
@@ -608,7 +611,7 @@ ags_file_read_audio(AgsFile *file, xmlNode *node, AgsAudio **audio)
   if(audio[0] == NULL){
     gobject = (AgsAudio *) g_object_new(AGS_TYPE_AUDIO,
 					NULL);
-    audio[0] = gobject;
+    *audio = gobject;
   }else{
     gobject = *audio;
   }
@@ -706,6 +709,9 @@ ags_file_read_audio(AgsFile *file, xmlNode *node, AgsAudio **audio)
 		ags_file_read_channel(file,
 				      channel_node,
 				      &channel);
+		g_object_set(channel,
+			     "audio\0", gobject,
+			     NULL);
 	      }
 	    }
 
@@ -740,6 +746,9 @@ ags_file_read_audio(AgsFile *file, xmlNode *node, AgsAudio **audio)
 		ags_file_read_channel(file,
 				      channel_node,
 				      &channel);
+		g_object_set(channel,
+			     "audio\0", gobject,
+			     NULL);
 	      }
 	    }
 	    
@@ -758,21 +767,27 @@ ags_file_read_audio(AgsFile *file, xmlNode *node, AgsAudio **audio)
 	GList *list;
 
 	if(!xmlStrncmp(xmlGetProp(child, "is-play\0"),
-		       AGS_FILE_TRUE,
-		       5)){
+		       "TRUE\0",
+		       4)){
+
 	  /* ags-recall-list play */
 	  ags_file_read_recall_list(file,
 				    child,
-				    &(gobject->play));
-
-	  list = gobject->play;
+				    &list);
+	  gobject->play = list;
 	}else{
 	  /* ags-recall-list recall */
 	  ags_file_read_recall_list(file,
 				    child,
-				    &(gobject->recall));
+				    &list);
 
-	  list = gobject->recall;
+	  gobject->recall = list;
+	}
+
+	while(list != NULL){
+	  g_object_ref(list->data);
+
+	  list = list->next;
 	}
       }else if(!xmlStrncmp(child->name,
 			   "ags-notation-list\0",
@@ -801,9 +816,47 @@ ags_file_read_audio_resolve_devout(AgsFileLookup *file_lookup,
   id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_xpath(file_lookup->file, xpath);
 
   if(id_ref != NULL){
+    AgsDevout *devout;
+    AgsChannel *channel;
+    AgsAudioSignal *audio_signal;
+
+    devout = (AgsDevout *) id_ref->ref;
+
     g_object_set(G_OBJECT(audio),
-		 "devout\0", (AgsAudio *) id_ref->ref,
+		 "devout\0", devout,
 		 NULL);
+
+    /* create output audio signal template */
+    if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0){
+      channel = audio->output;
+
+      while(channel != NULL){
+	audio_signal = ags_audio_signal_new(devout,
+					    channel->first_recycling,
+					    NULL);
+	audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
+	ags_recycling_add_audio_signal(channel->first_recycling,
+				       audio_signal);
+
+	channel = channel->next;
+      }
+    }
+
+    /* create input audio signal template */
+    if((AGS_AUDIO_INPUT_HAS_RECYCLING & (audio->flags)) != 0){
+      channel = audio->input;
+
+      while(channel != NULL){
+	audio_signal = ags_audio_signal_new(devout,
+					    channel->first_recycling,
+					    NULL);
+	audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
+	ags_recycling_add_audio_signal(channel->first_recycling,
+				       audio_signal);
+
+	channel = channel->next;
+      }
+    }
   }
 }
 
@@ -834,7 +887,7 @@ ags_file_write_audio(AgsFile *file, xmlNode *parent, AgsAudio *audio)
 
   xmlNewProp(node,
 	     AGS_FILE_FLAGS_PROP,
-	     g_strdup_printf("%x\0", ((~(AGS_AUDIO_RUNNING | AGS_AUDIO_PLAYING)) & (audio->flags))));
+	     g_strdup_printf("%x\0", audio->flags));
 
   xmlNewProp(node,
 	     "sequence-length\0",
@@ -1144,33 +1197,35 @@ ags_file_read_channel(AgsFile *file, xmlNode *node, AgsChannel **channel)
 	GList *list;
 
 	if(!xmlStrncmp(xmlGetProp(child, "is-play\0"),
-		       AGS_FILE_TRUE,
-		       5)){
+		       "TRUE\0",
+		       4)){
 	  /* ags-recall-list play */
 	  ags_file_read_recall_list(file,
 				    child,
-				    &(gobject->play));
+				    &list);
 
-	  list = gobject->play;
+	  gobject->play = list;
 	}else{
 	  /* ags-recall-list recall */
 	  ags_file_read_recall_list(file,
 				    child,
-				    &(gobject->recall));
+				    &list);
 
-	  list = gobject->recall;
+	  gobject->recall = list;
 	}
 
 	while(list != NULL){
-	  g_object_set(G_OBJECT(list->data),
-		       "source\0", gobject,
-		       NULL);
+	  g_object_ref(list->data);
 
 	  list = list->next;
 	}
       }else if(!xmlStrncmp(child->name,
 			   "ags-pattern-list\0",
 			   17)){
+	g_list_free_full(gobject->pattern,
+			 g_object_unref);
+	gobject->pattern = NULL;
+
 	/* ags-pattern-list */
 	ags_file_read_pattern_list(file,
 				    child,
@@ -1629,7 +1684,8 @@ ags_file_read_recall(AgsFile *file, xmlNode *node, AgsRecall **recall)
 					    16);
 
   gobject->flags |= AGS_RECALL_TEMPLATE;
-
+  gobject->flags &= (~(AGS_RECALL_CONNECTED |
+		       AGS_RECALL_DYNAMIC_CONNECTED));
   /* devout */
   file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
 					       "file\0", file,
@@ -1845,9 +1901,12 @@ ags_file_read_recall_resolve_devout(AgsFileLookup *file_lookup,
   xpath = (gchar *) xmlGetProp(file_lookup->node,
 			       "devout\0");
 
-  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_xpath(file_lookup->file, xpath);
+  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_xpath(file_lookup->file,
+							  xpath);
 
-  recall->devout = (GObject *) id_ref->ref;
+  if(id_ref != NULL){
+    recall->devout = (GObject *) id_ref->ref;
+  }
 }
 
 xmlNode*
@@ -2796,6 +2855,7 @@ ags_file_read_port(AgsFile *file, xmlNode *node, AgsPort **port)
 				   NULL));
 
   gobject->plugin_name = g_strdup(xmlGetProp(node, "plugin-name\0"));
+
   gobject->specifier = g_strdup(xmlGetProp(node, "specifier\0"));
 
   gobject->control_port = g_strdup(xmlGetProp(node, "control-port\0"));
@@ -2877,6 +2937,10 @@ ags_file_write_port(AgsFile *file, xmlNode *parent, AgsPort *port)
   gchar *id;
   GValue *a;
 
+  if(!AGS_IS_PORT(port)){
+    return;
+  }
+
   id = ags_id_generator_create_uuid();
   
   node = xmlNewNode(NULL,
@@ -2895,32 +2959,32 @@ ags_file_write_port(AgsFile *file, xmlNode *parent, AgsPort *port)
 				   NULL));
 
   xmlNewProp(node,
-	     "plugin-name\0",
-	     port->plugin_name);
+	     BAD_CAST "plugin-name\0",
+	     BAD_CAST (port->plugin_name));
 
   xmlNewProp(node,
-	     "specifier\0",
+	     BAD_CAST "specifier\0",
 	     port->specifier);
 
   xmlNewProp(node,
-	     "control-port\0",
+	     BAD_CAST "control-port\0",
 	     port->control_port);
 
   xmlNewProp(node,
-	     "port-data-is-pointer\0",
-	     g_strdup_printf("%d\0", port->port_value_is_pointer));
+	     BAD_CAST "port-data-is-pointer\0",
+	     BAD_CAST (g_strdup_printf("%d\0", port->port_value_is_pointer)));
 
   xmlNewProp(node,
-	     "port-data-type\0",
-	     g_strdup(g_type_name(port->port_value_type)));
+	     BAD_CAST "port-data-type\0",
+	     BAD_CAST (g_strdup(g_type_name(port->port_value_type))));
 
   xmlNewProp(node,
-	     "port-data-size\0",
+	     BAD_CAST "port-data-size\0",
 	     g_strdup_printf("%d\0", port->port_value_size));
 
   xmlNewProp(node,
-	     "port-data-length\0",
-	     g_strdup_printf("%d\0", port->port_value_length));
+	     BAD_CAST "port-data-length\0",
+	     BAD_CAST (g_strdup_printf("%d\0", port->port_value_length)));
 
   xmlAddChild(parent,
 	      node);
@@ -3885,9 +3949,16 @@ ags_file_read_pattern_resolve_port(AgsFileLookup *file_lookup,
   id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_xpath(file_lookup->file, xpath);
 
   if(id_ref != NULL){
+    GValue value = {0,};
+
     g_object_set(G_OBJECT(pattern),
 		 "port\0", (AgsPort *) id_ref->ref,
 		 NULL);
+
+    g_value_init(&value, G_TYPE_OBJECT);
+    g_value_set_object(&value, pattern);
+    ags_port_safe_write(G_OBJECT(id_ref->ref),
+			&value);
   }
 }
 
@@ -3966,6 +4037,10 @@ ags_file_write_pattern_resolve_port(AgsFileLookup *file_lookup,
   gchar *id;
 
   id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_reference(file_lookup->file, pattern->port);
+
+  if(id_ref == NULL){
+    return;
+  }
 
   id = xmlGetProp(id_ref->node, AGS_FILE_ID_PROP);
 

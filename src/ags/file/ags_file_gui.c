@@ -37,6 +37,10 @@
 #include <ags/file/ags_file_lookup.h>
 #include <ags/file/ags_file_launch.h>
 
+#include <ags/audio/ags_input.h>
+
+#include <ags/X/machine/ags_drum_input_line_callbacks.h>
+
 #define AGS_FILE_READ_EDITOR_PARAMETER_NAME "ags-file-read-editor-parameter-name\0"
 
 void ags_file_read_window_resolve_devout(AgsFileLookup *file_lookup,
@@ -44,8 +48,6 @@ void ags_file_read_window_resolve_devout(AgsFileLookup *file_lookup,
 void ags_file_write_window_resolve_devout(AgsFileLookup *file_lookup,
 					  AgsWindow *window);
 
-void ags_file_read_machine_resolve_audio(AgsFileLookup *file_lookup,
-					 AgsMachine *machine);
 void ags_file_read_machine_resolve_machine_editor(AgsFileLookup *file_lookup,
 						  AgsMachine *machine);
 void ags_file_write_machine_resolve_machine_editor(AgsFileLookup *file_lookup,
@@ -57,11 +59,11 @@ void ags_file_read_machine_resolve_rename_dialog(AgsFileLookup *file_lookup,
 void ags_file_write_machine_resolve_rename_dialog(AgsFileLookup *file_lookup,
 						  AgsMachine *machine);
 
-void ags_file_read_line_pad_resolve_channel(AgsFileLookup *file_lookup,
-					    AgsPad *pad);
+void ags_file_read_pad_resolve_channel(AgsFileLookup *file_lookup,
+				       AgsPad *pad);
 
-void ags_file_read_line_line_resolve_channel(AgsFileLookup *file_lookup,
-					     AgsLine *line);
+void ags_file_read_line_resolve_channel(AgsFileLookup *file_lookup,
+					AgsLine *line);
 
 void ags_file_read_line_member_resolve_port(AgsFileLookup *file_lookup,
 					    AgsLineMember *line_member);
@@ -523,7 +525,6 @@ ags_file_read_machine(AgsFile *file, xmlNode *node, AgsMachine **machine)
     gobject = *machine;
   }
 
-  gobject->flags |= AGS_MACHINE_PREMAPPED_RECALL;
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
 				   "main\0", file->ags_main,
@@ -542,6 +543,8 @@ ags_file_read_machine(AgsFile *file, xmlNode *node, AgsMachine **machine)
   gobject->flags = (guint) g_ascii_strtoull(xmlGetProp(node, AGS_FILE_FLAGS_PROP),
 					    NULL,
 					    16);
+  gobject->flags |= AGS_MACHINE_PREMAPPED_RECALL;
+  gobject->flags &= (~AGS_MACHINE_CONNECTED);
 
   gobject->file_input_flags = (guint) g_ascii_strtoull(xmlGetProp(node, "file-input-flags\0"),
 						       NULL,
@@ -665,6 +668,12 @@ ags_file_read_machine_resolve_audio(AgsFileLookup *file_lookup,
 	       NULL);
 
   AGS_AUDIO(id_ref->ref)->machine = machine;
+
+  g_signal_connect_after(G_OBJECT(machine->audio), "set_audio_channels\0",
+			 G_CALLBACK(ags_machine_set_audio_channels), machine);
+
+  g_signal_connect_after(G_OBJECT(machine->audio), "set_pads\0",
+			 G_CALLBACK(ags_machine_set_pads), machine);
 }
 
 void
@@ -982,6 +991,7 @@ ags_file_read_pad(AgsFile *file, xmlNode *node, AgsPad **pad)
   gobject->flags = (guint) g_ascii_strtoull(xmlGetProp(node, AGS_FILE_FLAGS_PROP),
 					    NULL,
 					    16);
+  gobject->flags &= (~AGS_PAD_CONNECTED);
 
   /* channel */
   file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
@@ -991,7 +1001,7 @@ ags_file_read_pad(AgsFile *file, xmlNode *node, AgsPad **pad)
 					       NULL);
   ags_file_add_lookup(file, (GObject *) file_lookup);
   g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
-		   G_CALLBACK(ags_file_read_line_pad_resolve_channel), gobject);
+		   G_CALLBACK(ags_file_read_pad_resolve_channel), gobject);
 
   /* child elements */
   child = node->children;
@@ -1072,8 +1082,8 @@ ags_file_read_pad(AgsFile *file, xmlNode *node, AgsPad **pad)
 }
 
 void
-ags_file_read_line_pad_resolve_channel(AgsFileLookup *file_lookup,
-				       AgsPad *pad)
+ags_file_read_pad_resolve_channel(AgsFileLookup *file_lookup,
+				  AgsPad *pad)
 {
   AgsFile *file;
   AgsMachine *machine;
@@ -1081,14 +1091,31 @@ ags_file_read_line_pad_resolve_channel(AgsFileLookup *file_lookup,
   xmlNode *node, *audio_node, *channel_node;
   xmlXPathContext *xpath_context;
   xmlXPathObject *xpath_object;
+  GList *list;
   xmlChar *xpath;
   guint position;
-  guint i;
-
+  guint nth, audio_channel;
+  guint i, j;
+  gboolean is_output;
+  
   file = file_lookup->file;
 
   machine = (AgsMachine *) gtk_widget_get_ancestor(GTK_WIDGET(pad),
 						   AGS_TYPE_MACHINE);
+
+  if(machine->output != NULL){
+    list = gtk_container_get_children(machine->output);
+
+    if(list != NULL &&
+       g_list_find(list,
+		   pad) != NULL){
+      is_output = TRUE;
+    }else{
+      is_output = FALSE;
+    }
+  }else{
+    is_output = FALSE;
+  }
 
   node = file_lookup->node;
 
@@ -1101,9 +1128,15 @@ ags_file_read_line_pad_resolve_channel(AgsFileLookup *file_lookup,
   xpath_object = xmlXPathEval("./ags-pad\0",
 			      xpath_context);
 
-  for(i = 0; xpath_object->nodesetval->nodeTab[i] != node && i < xpath_object->nodesetval->nodeMax; i++);
+  for(i = 0, j = 0; xpath_object->nodesetval->nodeTab[i] != node && i < xpath_object->nodesetval->nodeMax; i++){
+    if(xpath_object->nodesetval->nodeTab[i]->type == XML_ELEMENT_NODE){
+      j++;
+    }
+  }
+  nth = j;
 
-  position = i * machine->audio->audio_channels;
+  /*  */
+  position = nth * machine->audio->audio_channels;
 
   /*  */
   id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_reference(file_lookup->file, machine->audio);
@@ -1114,24 +1147,36 @@ ags_file_read_line_pad_resolve_channel(AgsFileLookup *file_lookup,
   }
 
   /*  */
-  xpath = g_strdup_printf("./ags-audio[@id='%s']/ags-channel[position='%d']\0",
-			  xmlGetProp(audio_node, "id\0"),
-			  position);
+  xpath = g_strdup_printf("(./ags-channel-list/ags-channel)/%s\0",
+			  (is_output ? "ags-output\0": "ags-input\0"));
 
   xpath_context = xmlXPathNewContext(file->doc);
+  xpath_context->node = audio_node;
   xpath_object = xmlXPathEval(xpath,
 			      xpath_context);
 
   /*  */
   if(xpath_object != NULL && xpath_object->nodesetval != NULL){
     AgsFileIdRef *file_id_ref;
+    xmlNode *channel_node;
 
-    file_id_ref = ags_file_find_id_ref_by_node(file->id_refs,
-					       xpath_object->nodesetval->nodeTab[0]);
+    for(i = 0, j = 0; j < position && i < xpath_object->nodesetval->nodeMax; i++){
+      if(xpath_object->nodesetval->nodeTab[i] != NULL && xpath_object->nodesetval->nodeTab[i]->type == XML_ELEMENT_NODE){
+	j++;
+      }
+    }
+
+    channel_node = xpath_object->nodesetval->nodeTab[i];
+
+    file_id_ref = ags_file_find_id_ref_by_node(file,
+					       channel_node->parent);
 
     g_object_set(G_OBJECT(pad),
-		 "channel\0", (AgsChannel *) file_id_ref->ref,
+		 "channel\0", AGS_CHANNEL(file_id_ref->ref),
 		 NULL);
+  }else{
+    g_message("no xpath match: %s\0",
+	      xpath);
   }
 }
 
@@ -1337,6 +1382,17 @@ ags_file_read_line(AgsFile *file, xmlNode *node, AgsLine **line)
 					    NULL,
 					    16);
   gobject->flags |= AGS_LINE_PREMAPPED_RECALL;
+  gobject->flags &= (~AGS_LINE_CONNECTED);
+
+  /* channel */
+  file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
+					       "file\0", file,
+					       "node\0", node,
+					       "reference\0", gobject,
+					       NULL);
+  ags_file_add_lookup(file, (GObject *) file_lookup);
+  g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
+		   G_CALLBACK(ags_file_read_line_resolve_channel), gobject);
 
   /* child elements */
   child = node->children;
@@ -1439,6 +1495,127 @@ ags_file_read_line(AgsFile *file, xmlNode *node, AgsLine **line)
     }
 
     child = child->next;
+  }
+}
+
+void
+ags_file_read_line_resolve_channel(AgsFileLookup *file_lookup,
+				   AgsLine *line)
+{
+  AgsFile *file;
+  AgsMachine *machine;
+  AgsFileIdRef *id_ref;
+  xmlNode *pad_node, *node, *audio_node, *channel_node;
+  xmlXPathContext *xpath_context;
+  xmlXPathObject *xpath_object;
+  GList *list;
+  xmlChar *xpath;
+  guint position;
+  guint pad, audio_channel;
+  guint i, j;
+  gboolean is_output;
+
+  file = file_lookup->file;
+
+  machine = (AgsMachine *) gtk_widget_get_ancestor(GTK_WIDGET(line),
+						   AGS_TYPE_MACHINE);
+
+  if(machine->output != NULL){
+    AgsPad *pad;
+
+    pad = gtk_widget_get_ancestor(line,
+				  AGS_TYPE_PAD);
+    list = gtk_container_get_children(machine->output);
+
+    if(list != NULL &&
+       g_list_find(list,
+		   pad) != NULL){
+      is_output = TRUE;
+    }else{
+      is_output = FALSE;
+    }
+  }else{
+    is_output = FALSE;
+  }
+
+  node = file_lookup->node;
+  pad_node = node->parent->parent;
+
+  /* retrieve position - pad */
+  xpath_context = xmlXPathNewContext(file->doc);
+  //  xmlXPathSetContextNode(node->parent->parent->parent,
+  //			 xpath_context);
+  xpath_context->node = pad_node->parent;
+
+  xpath_object = xmlXPathEval("./ags-pad\0",
+			      xpath_context);
+
+  for(i = 0, j = 0; xpath_object->nodesetval->nodeTab[i] != pad_node && i < xpath_object->nodesetval->nodeMax; i++){
+    if(xpath_object->nodesetval->nodeTab[i]->type == XML_ELEMENT_NODE){
+      j++;
+    }
+  }
+  pad = j;
+
+  /* retrieve position - line */
+  xpath_context = xmlXPathNewContext(file->doc);
+  //  xmlXPathSetContextNode(node->parent,
+  //			 xpath_context);
+  xpath_context->node = node->parent;
+
+  xpath_object = xmlXPathEval("./ags-line\0",
+			      xpath_context);
+
+  for(i = 0, j = 0; xpath_object->nodesetval->nodeTab[i] != node && i < xpath_object->nodesetval->nodeMax; i++){
+    if(xpath_object->nodesetval->nodeTab[i]->type == XML_ELEMENT_NODE){
+      j++;
+    }
+  }
+
+  audio_channel = j;
+
+  /*  */
+  position = pad * machine->audio->audio_channels + (machine->audio->audio_channels - audio_channel - 1);
+
+  /*  */
+  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_reference(file_lookup->file, machine->audio);
+  audio_node = NULL;
+
+  if(id_ref != NULL){
+    audio_node = id_ref->node;
+  }
+
+  /*  */
+  xpath = g_strdup_printf("(./ags-channel-list/ags-channel)/%s\0",
+			  ((is_output) ? "ags-output\0": "ags-input\0"));
+
+  xpath_context = xmlXPathNewContext(file->doc);
+  xpath_context->node = audio_node;
+  xpath_object = xmlXPathEval(xpath,
+			      xpath_context);
+
+  /*  */
+  if(xpath_object != NULL && xpath_object->nodesetval != NULL){
+    AgsFileIdRef *file_id_ref;
+    xmlNode *channel_node;
+
+    for(i = 0, j = 0; j < position && i < xpath_object->nodesetval->nodeMax; i++){
+      if(xpath_object->nodesetval->nodeTab[i] != NULL && xpath_object->nodesetval->nodeTab[i]->type == XML_ELEMENT_NODE){
+	j++;
+      }
+    }
+
+    channel_node = xpath_object->nodesetval->nodeTab[i];
+
+    file_id_ref = ags_file_find_id_ref_by_node(file,
+					       channel_node->parent);
+
+    g_object_set(G_OBJECT(line),
+		 "channel\0", AGS_CHANNEL(file_id_ref->ref),
+		 NULL);
+  }else{
+    g_message("no xpath match: %s\0",
+	      xpath);
   }
 }
 
@@ -2334,6 +2511,8 @@ ags_file_read_editor_launch(AgsFileLaunch *file_launch,
 {
   AgsMachine *machine;
   GList *list;
+  double tact_factor, zoom_factor;
+  double tact;
   guint tabs, pads;
   guint i;
 
@@ -2359,20 +2538,19 @@ ags_file_read_editor_launch(AgsFileLaunch *file_launch,
     list = list->next;
   }
 
-  /* map height */
-  if((AGS_AUDIO_NOTATION_DEFAULT & (machine->audio->flags)) != 0){
-    pads = machine->audio->input_pads;
-  }else{
-    pads = machine->audio->output_pads;
-  }
+  /* set zoom */
+  zoom_factor = 0.25;
 
-  editor->edit.note_edit->map_height = pads * editor->edit.note_edit->control_height;
+  tact_factor = exp2(8.0 - (double) gtk_combo_box_get_active(editor->toolbar->zoom));
+  tact = exp2((double) gtk_combo_box_get_active(editor->toolbar->zoom) - 4.0);
 
-  gtk_widget_show_all(editor->notebook);
+  /* reset ruler */
+  editor->note_edit->ruler->factor = tact_factor;
+  editor->note_edit->ruler->precision = tact;
+  editor->note_edit->ruler->scale_precision = 1.0 / tact;
 
-  editor->edit.note_edit->flags |= AGS_NOTE_EDIT_RESETING_VERTICALLY;
-  ags_note_edit_reset_vertically(editor->edit.note_edit, AGS_NOTE_EDIT_RESET_VSCROLLBAR);
-  editor->edit.note_edit->flags &= (~AGS_NOTE_EDIT_RESETING_VERTICALLY);
+  gtk_widget_queue_draw(editor->note_edit->ruler);
+  gtk_widget_queue_draw(editor->note_edit);
 }
 
 xmlNode*
@@ -2485,6 +2663,8 @@ ags_file_read_toolbar(AgsFile *file, xmlNode *node, AgsToolbar **toolbar)
 
     gtk_combo_box_set_active_iter(gobject->zoom,
 				  &iter);
+
+    gobject->zoom_history = gtk_combo_box_get_active(gobject->zoom);
   }
 
   /* mode */
@@ -2655,10 +2835,6 @@ ags_file_read_machine_selector_resolve_parameter(AgsFileLookup *file_lookup,
     editor = gtk_widget_get_ancestor(machine_selector,
 				     AGS_TYPE_EDITOR);
 
-    if(editor->selected_machine == NULL){
-      editor->selected_machine = gobject;
-    }
-
     machine_radio_button = g_object_new(AGS_TYPE_MACHINE_RADIO_BUTTON,
 					NULL);
     gtk_box_pack_start(GTK_BOX(machine_selector),
@@ -2668,6 +2844,12 @@ ags_file_read_machine_selector_resolve_parameter(AgsFileLookup *file_lookup,
     g_object_set(machine_radio_button,
 		 "machine\0", gobject,
 		 NULL);
+
+    if(editor->selected_machine == NULL){
+      ags_editor_machine_changed(editor,
+				 gobject);
+    }
+
   }
 }
 

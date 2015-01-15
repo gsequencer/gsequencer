@@ -69,7 +69,7 @@ void ags_file_finalize(GObject *gobject);
 void ags_file_real_open(AgsFile *file);
 void ags_file_real_open_from_data(AgsFile *file,
 				  gchar *data, guint length);
-void ags_file__realrw_open(AgsFile *file,
+void ags_file_real_rw_open(AgsFile *file,
 			   gboolean create);
 
 void ags_file_real_write(AgsFile *file);
@@ -206,6 +206,10 @@ ags_file_class_init(AgsFileClass *file)
 				  param_spec);
 
   /* AgsFileClass */
+  file->open = ags_file_real_open;
+  file->rw_open = ags_file_real_rw_open;
+  file->open_from_data = ags_file_real_open_from_data;
+
   file->write = ags_file_real_write;
   file->write_concurrent = ags_file_real_write_concurrent;
   file->write_resolve = ags_file_real_write_resolve;
@@ -299,6 +303,9 @@ void
 ags_file_init(AgsFile *file)
 {
   file->flags = 0;
+
+  file->out = NULL;
+  file->buffer = NULL;
 
   file->filename = NULL;
   file->encoding = AGS_FILE_DEFAULT_ENCODING;
@@ -623,7 +630,7 @@ ags_file_add_launch(AgsFile *file, GObject *file_launch)
 void
 ags_file_real_open(AgsFile *file)
 {
-  if(file != NULL){
+  if(file == NULL){
     return;
   }
 
@@ -653,7 +660,7 @@ void
 ags_file_real_open_from_data(AgsFile *file,
 			     gchar *data, guint length)
 {
-  if(file != NULL){
+  if(file == NULL){
     return;
   }
 
@@ -684,7 +691,7 @@ void
 ags_file_real_rw_open(AgsFile *file,
 		      gboolean create)
 {
-  if(file != NULL){
+  if(file == NULL){
     return;
   }
 
@@ -733,6 +740,10 @@ ags_file_close(AgsFile *file)
     return;
   }
 
+  if(file->out != NULL){
+    fclose(file->out);
+  }
+  
   /*free the document */
   xmlFreeDoc(file->doc);
 
@@ -757,8 +768,8 @@ ags_file_real_write(AgsFile *file)
   GList *list;
   int size;
 
-  ags_file_rw_open(file,
-		   TRUE);
+  //  ags_file_rw_open(file,
+  //		   TRUE);
 
   /* write clip board */
   //TODO:JK: implement me
@@ -800,7 +811,6 @@ ags_file_real_write(AgsFile *file)
 
   fwrite(file->buffer, size, sizeof(xmlChar), file->out);
   fflush(file->out);
-  fclose(file->out);
 }
 
 void
@@ -984,6 +994,8 @@ ags_file_real_write_resolve(AgsFile *file)
 {
   GList *list;
 
+  file->lookup = g_list_prepend(file->lookup,
+				NULL);
   list = file->lookup;
 
   while(list != NULL){
@@ -1010,8 +1022,6 @@ ags_file_real_read(AgsFile *file)
   AgsMain *ags_main;
   xmlNode *root_node, *child;
   pid_t pid_num;
-
-  ags_file_open(file);
 
   root_node = file->root_node;
 
@@ -1097,8 +1107,10 @@ ags_file_real_read_resolve(AgsFile *file)
 {
   GList *list;
 
+  file->lookup = g_list_prepend(file->lookup,
+				NULL);
   list = g_list_reverse(file->lookup);
-
+  
   while(list != NULL){
     ags_file_lookup_resolve(AGS_FILE_LOOKUP(list->data));
 

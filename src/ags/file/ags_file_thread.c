@@ -79,14 +79,14 @@ ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread)
       thread_type_is_registered = TRUE;
     }
 
-    if(type == AGS_TYPE_RETURNABLE_THREAD){
-      return;
-    }
-
     type_name = xmlGetProp(node,
 			   AGS_FILE_TYPE_PROP);
 
     type = g_type_from_name(type_name);
+
+    if(type == AGS_TYPE_RETURNABLE_THREAD){
+      return;
+    }
 
     gobject = g_object_new(type,
 			   NULL);
