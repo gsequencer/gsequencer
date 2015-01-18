@@ -20,6 +20,8 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/file/ags_file_link.h>
+
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
@@ -141,6 +143,7 @@ ags_open_single_file_launch(AgsTask *task)
 {
   AgsOpenSingleFile *open_single_file;
   AgsChannel *channel;
+  AgsFileLink *file_link;
   AgsAudioSignal *old_template;
   AgsAudioFile *audio_file;
   GList *audio_signal;
@@ -172,6 +175,13 @@ ags_open_single_file_launch(AgsTask *task)
 	g_warning(error->message);
       }
     }
+
+    file_link = g_object_new(AGS_TYPE_FILE_LINK,
+			     "filename\0", open_single_file->filename,
+			     NULL);
+    g_object_set(G_OBJECT(channel),
+		 "file-link\0", file_link,
+		 NULL);
 
     /* mark as template */
     AGS_AUDIO_SIGNAL(audio_signal->data)->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;

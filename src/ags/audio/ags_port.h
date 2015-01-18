@@ -24,6 +24,8 @@
 
 #include <pthread.h>
 
+#include <ladspa.h>
+
 #define AGS_TYPE_PORT                (ags_port_get_type())
 #define AGS_PORT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PORT, AgsPort))
 #define AGS_PORT_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_PORT, AgsPortClass))
@@ -55,12 +57,12 @@ struct _AgsPort
     gboolean ags_port_boolean;
     gint64 ags_port_int;
     guint64 ags_port_uint;
-    gfloat ags_port_float;
+    LADSPA_Data ags_port_float;
     gdouble ags_port_double;
     gboolean *ags_port_boolean_ptr;
     gint64 *ags_port_int_ptr;
     guint64 *ags_port_uint_ptr;
-    gfloat *ags_port_float_ptr;
+    LADSPA_Data *ags_port_float_ptr;
     gdouble *ags_port_double_ptr;
     gpointer ags_port_pointer;
     GObject *ags_port_object;

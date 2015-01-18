@@ -27,6 +27,7 @@
 #include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>
 #include <ags/file/ags_file_lookup.h>
+#include <ags/file/ags_file_launch.h>
 
 #include <ags/audio/ags_audio.h>
 
@@ -39,8 +40,8 @@ void ags_file_util_read_value_resolve(AgsFileLookup *file_lookup,
 void ags_file_util_write_value_resolve(AgsFileLookup *file_lookup,
 				       GValue *value);
 
-void ags_file_util_read_file_link_resolve_parent(AgsFileLookup *file_lookup,
-						 AgsFileLink *file_link);
+void ags_file_util_read_file_link_launch(AgsFileLaunch *file_launch,
+					 AgsFileLink *file_link);
 
 void
 ags_file_util_read_value(AgsFile *file,
@@ -1053,7 +1054,7 @@ void
 ags_file_read_file_link(AgsFile *file, xmlNode *node, AgsFileLink **file_link)
 {
   AgsFileLink *gobject;
-  AgsFileLookup *file_lookup;
+  AgsFileLaunch *file_launch;
   xmlNode *child;
 
   if(*file_link == NULL){
@@ -1073,21 +1074,20 @@ ags_file_read_file_link(AgsFile *file, xmlNode *node, AgsFileLink **file_link)
 				   "reference\0", gobject,
 				   NULL));
 
-  /* parent */
-  file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
+  file_launch = (AgsFileLaunch *) g_object_new(AGS_TYPE_FILE_LAUNCH,
 					       "file\0", file,
 					       "node\0", node,
-					       "reference\0", gobject,
 					       NULL);
-  ags_file_add_lookup(file, (GObject *) file_lookup);
-  g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
-		   G_CALLBACK(ags_file_util_read_file_link_resolve_parent), gobject);
+  g_signal_connect(G_OBJECT(file_launch), "start\0",
+		   G_CALLBACK(ags_file_util_read_file_link_launch), gobject);
+  ags_file_add_launch(file,
+		      file_launch);
 }
 
-void ags_file_util_read_file_link_resolve_parent(AgsFileLookup *file_lookup,
-						 AgsFileLink *file_link)
+void
+ags_file_util_read_file_link_launch(AgsFileLaunch *file_launch,
+				    AgsFileLink *file_link)
 {
-  AgsFile *file;
   AgsFileIdRef *id_ref;
   AgsDevout *devout;
   AgsChannel *input;
@@ -1099,8 +1099,7 @@ void ags_file_util_read_file_link_resolve_parent(AgsFileLookup *file_lookup,
   xmlChar *filename;
   xmlChar *encoding, *demuxer;
 
-  file = file_lookup->file;
-  node = file_lookup->node;
+  node = file_launch->node;
 
   /*  */
   xpath = xmlGetProp(node,
@@ -1108,13 +1107,13 @@ void ags_file_util_read_file_link_resolve_parent(AgsFileLookup *file_lookup,
   
   /*  */
   input = NULL;
-  id_ref = ags_file_find_id_ref_by_node(file, node->parent);
+  id_ref = ags_file_find_id_ref_by_node(file_launch->file, node->parent->parent);
 
   if(id_ref != NULL){
     input = (AgsChannel *) id_ref->ref;
   }
 
-  devout = input->devout;
+  devout = AGS_AUDIO(input->audio)->devout;
 
   type = xmlGetProp(node,
 		    "type\0");
@@ -1170,7 +1169,7 @@ void ags_file_util_read_file_link_resolve_parent(AgsFileLookup *file_lookup,
     xmlXPathObject *xpath_object;
 
     /*  */
-    xpath_context = xmlXPathNewContext(file->doc);
+    xpath_context = xmlXPathNewContext(AGS_FILE(file_launch->file)->doc);
     //    xmlXPathSetContextNode(node,
     //			   xpath_context);
     xpath_context->node = node;  

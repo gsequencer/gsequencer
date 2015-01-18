@@ -80,6 +80,8 @@ static const gchar *ags_config_devout = AGS_CONFIG_DEVOUT;
 extern void ags_thread_resume_handler(int sig);
 extern void ags_thread_suspend_handler(int sig);
 
+extern AgsConfig *config;
+
 extern GtkStyle *matrix_style;
 extern GtkStyle *ffplayer_style;
 extern GtkStyle *editor_style;
@@ -211,9 +213,9 @@ ags_main_init(AgsMain *ags_main)
 			     wdir,
 			     AGS_DEFAULT_CONFIG);
 
-  ags_main->config = ags_config_new();
+  ags_main->config = config;
   //TODO:JK: ugly
-  ags_main->config->ags_main = ags_main;
+  config->ags_main = ags_main;
 
   g_free(filename);
   g_free(wdir);
@@ -629,6 +631,8 @@ ags_main_register_recall_type()
   ags_peak_channel_run_get_type();
 
   ags_recall_ladspa_get_type();
+  ags_recall_channel_run_dummy_get_type();
+  ags_recall_ladspa_run_get_type();
 
   ags_delay_audio_get_type();
   ags_delay_audio_run_get_type();
@@ -819,54 +823,42 @@ main(int argc, char **argv)
     }
   }
 
-  /* Declare ourself as a real time task */
-  param.sched_priority = AGS_PRIORITY;
+  config = ags_config_new();
+  uid = getuid();
+  pw = getpwuid(uid);
+  
+  wdir = g_strdup_printf("%s/%s\0",
+			 pw->pw_dir,
+			 AGS_DEFAULT_DIRECTORY);
 
-  if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
-    perror("sched_setscheduler failed\0");
-  }
+  config_file = g_strdup_printf("%s/%s\0",
+				wdir,
+				AGS_DEFAULT_CONFIG);
 
-  mlockall(MCL_CURRENT | MCL_FUTURE);
+  ags_config_load_from_file(config,
+			    config_file);
+
+  g_free(wdir);
+  g_free(config_file);
 
   if(filename != NULL){
     AgsFile *file;
 
-    /* create file object for reading */
     file = g_object_new(AGS_TYPE_FILE,
 			"filename\0", filename,
 			NULL);
     ags_file_open(file);
     ags_file_read(file);
 
-    /* retrieve toplevel object */
     ags_main = AGS_MAIN(file->ags_main);
+    ags_file_close(file);
 
-    /* load config */
-    uid = getuid();
-    pw = getpwuid(uid);
-  
-    wdir = g_strdup_printf("%s/%s\0",
-			   pw->pw_dir,
-			   AGS_DEFAULT_DIRECTORY);
-
-    config_file = g_strdup_printf("%s/%s\0",
-				  wdir,
-				  AGS_DEFAULT_CONFIG);
-    
-    ags_config_load_from_file(ags_main->config,
-			      config_file);
-    
-    g_free(wdir);
-    g_free(config_file);
-
-    /* start threads */
     ags_thread_start(ags_main->main_loop);
 
     /* complete thread pool */
     ags_main->thread_pool->parent = AGS_THREAD(ags_main->main_loop);
     ags_thread_pool_start(ags_main->thread_pool);
 
-    /* join */
 #ifdef _USE_PTH
     pth_join(AGS_AUDIO_LOOP(ags_main->main_loop)->gui_thread->thread,
 	     NULL);
@@ -875,12 +867,20 @@ main(int argc, char **argv)
 		 NULL);
 #endif
   }else{
-    /* create toplevel object */
     ags_main = ags_main_new();
 
     if(single_thread){
       ags_main->flags = AGS_MAIN_SINGLE_THREAD;
     }
+
+    /* Declare ourself as a real time task */
+    param.sched_priority = AGS_PRIORITY;
+
+    if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
+      perror("sched_setscheduler failed\0");
+    }
+
+    mlockall(MCL_CURRENT | MCL_FUTURE);
 
     if((AGS_MAIN_SINGLE_THREAD & (ags_main->flags)) == 0){
       //      GdkFrameClock *frame_clock;
@@ -967,26 +967,8 @@ main(int argc, char **argv)
       ags_thread_start((AgsThread *) single_thread);
     }
 
-    /* load config */
-    uid = getuid();
-    pw = getpwuid(uid);
-  
-    wdir = g_strdup_printf("%s/%s\0",
-			   pw->pw_dir,
-			   AGS_DEFAULT_DIRECTORY);
-
-    config_file = g_strdup_printf("%s/%s\0",
-				  wdir,
-				  AGS_DEFAULT_CONFIG);
-
-    ags_config_load_from_file(ags_main->config,
-			      config_file);
-
-    g_free(wdir);
-    g_free(config_file);
-
-    /* join gui thread */
     if(!single_thread){
+      /* join gui thread */
 #ifdef _USE_PTH
       pth_join(AGS_AUDIO_LOOP(ags_main->main_loop)->gui_thread->thread,
 	       NULL);

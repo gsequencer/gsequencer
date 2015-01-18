@@ -19,6 +19,7 @@
 #ifndef __AGS_MAIN_H__
 #define __AGS_MAIN_H__
 
+//#define AGS_DEBUG
 #define _GNU_SOURCE
 #define ALSA_PCM_NEW_HW_PARAMS_API
 

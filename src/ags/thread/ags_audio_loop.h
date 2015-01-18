@@ -110,8 +110,8 @@ void ags_audio_loop_remove_audio(AgsAudioLoop *audio_loop, GObject *audio);
 void ags_audio_loop_add_channel(AgsAudioLoop *audio_loop, GObject *channel);
 void ags_audio_loop_remove_channel(AgsAudioLoop *audio_loop, GObject *channel);
 
-void ags_audio_loop_add_recall(AgsAudioLoop *audio_loop, GObject *recall);
-void ags_audio_loop_remove_recall(AgsAudioLoop *audio_loop, GObject *recall);
+void ags_audio_loop_add_recall(AgsAudioLoop *audio_loop, gpointer devout_play);
+void ags_audio_loop_remove_recall(AgsAudioLoop *audio_loop, gpointer devout_play);
 
 AgsAudioLoop* ags_audio_loop_new(GObject *devout, GObject *ags_main);
 

@@ -542,7 +542,9 @@ ags_file_find_id_ref_by_xpath(AgsFile *file, gchar *xpath)
   guint i;
 
   if(file == NULL || xpath == NULL || !g_str_has_prefix(xpath, "xpath=\0")){
-    return;
+    g_message("invalid xpath: %s", xpath);
+
+    return(NULL);
   }
 
   xpath = &(xpath[6]);

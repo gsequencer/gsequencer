@@ -25,6 +25,8 @@
 
 #include <ags/object/ags_plugin.h>
 
+#include <ags/plugin/ags_ladspa_manager.h>
+
 #include <ags/audio/ags_config.h>
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_port.h>
@@ -44,8 +46,11 @@ void ags_recall_ladspa_run_connect(AgsConnectable *connectable);
 void ags_recall_ladspa_run_disconnect(AgsConnectable *connectable);
 void ags_recall_ladspa_run_finalize(GObject *gobject);
 
+void ags_recall_ladspa_run_run_init_pre(AgsRecall *recall);
 void ags_recall_ladspa_run_run_pre(AgsRecall *recall);
 void ags_recall_ladspa_run_run_inter(AgsRecall *recall);
+
+void ags_recall_ladspa_run_load_ports(AgsRecallLadspaRun *recall_ladspa_run);
 
 /**
  * SECTION:ags_recall_ladspa_run
@@ -123,6 +128,7 @@ ags_recall_ladspa_run_class_init(AgsRecallLadspaRunClass *recall_ladspa_run)
   /* AgsRecallClass */
   recall = (AgsRecallClass *) recall_ladspa_run;
 
+  recall->run_init_pre = ags_recall_ladspa_run_run_init_pre;
   recall->run_pre = ags_recall_ladspa_run_run_pre;
   recall->run_inter = ags_recall_ladspa_run_run_inter;
 }
@@ -131,6 +137,8 @@ ags_recall_ladspa_run_class_init(AgsRecallLadspaRunClass *recall_ladspa_run)
 void
 ags_recall_ladspa_run_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  ags_recall_ladspa_run_parent_connectable_interface = g_type_interface_peek_parent(connectable);
+
   connectable->connect = ags_recall_ladspa_run_connect;
   connectable->disconnect = ags_recall_ladspa_run_disconnect;
 }
@@ -144,16 +152,8 @@ ags_recall_ladspa_run_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_recall_ladspa_run_init(AgsRecallLadspaRun *recall_ladspa_run)
 {
-  guint buffer_size;
- 
-  buffer_size = g_ascii_strtoull(ags_config_get(config,
-						AGS_CONFIG_DEVOUT,
-						"buffer-size\0"),
-				 NULL,
-				 10);
-
-  recall_ladspa_run->input = (LADSPA_Data *) malloc(buffer_size * sizeof(LADSPA_Data));
-  recall_ladspa_run->output = (LADSPA_Data *) malloc(buffer_size * sizeof(LADSPA_Data));
+  recall_ladspa_run->input = NULL;
+  recall_ladspa_run->output = NULL;
 }
 
 void
@@ -171,10 +171,71 @@ ags_recall_ladspa_run_disconnect(AgsConnectable *connectable)
 void
 ags_recall_ladspa_run_finalize(GObject *gobject)
 {
-  //TODO:JK: implement me
+  AgsRecallLadspa *recall_ladspa;
+  AgsRecallLadspaRun *recall_ladspa_run;
+  unsigned long i;
+
+  recall_ladspa_run = AGS_RECALL_LADSPA_RUN(gobject);
+  recall_ladspa = AGS_RECALL_LADSPA(AGS_RECALL_CHANNEL_RUN(AGS_RECALL(gobject)->parent->parent)->recall_channel);
+
+  for(i = 0; i < recall_ladspa->input_lines; i++){
+    /* deactivate */
+    recall_ladspa->plugin_descriptor->deactivate(recall_ladspa_run->ladspa_handle);
+    recall_ladspa->plugin_descriptor->cleanup(recall_ladspa_run->ladspa_handle);
+  }
+
+  free(recall_ladspa_run->output);
+  free(recall_ladspa_run->input);
 
   /* call parent */
   G_OBJECT_CLASS(ags_recall_ladspa_run_parent_class)->finalize(gobject);
+}
+
+void
+ags_recall_ladspa_run_run_init_pre(AgsRecall *recall)
+{
+  AgsRecallLadspa *recall_ladspa;
+  AgsRecallLadspaRun *recall_ladspa_run;
+  unsigned long samplerate;
+  unsigned long buffer_size;
+  unsigned long i;
+
+  /* call parent */
+  AGS_RECALL_CLASS(ags_recall_ladspa_run_parent_class)->run_init_pre(recall);
+
+  recall_ladspa_run = AGS_RECALL_LADSPA_RUN(recall);
+  recall_ladspa = AGS_RECALL_LADSPA(AGS_RECALL_CHANNEL_RUN(recall->parent->parent)->recall_channel);
+
+  /* set up buffer */ 
+  samplerate = (unsigned long) g_ascii_strtoull(ags_config_get(config,
+							       AGS_CONFIG_DEVOUT,
+							       "samplerate\0"),
+						NULL,
+						10);
+  buffer_size = (unsigned long) g_ascii_strtoull(ags_config_get(config,
+								AGS_CONFIG_DEVOUT,
+								"buffer-size\0"),
+						 NULL,
+						 10);
+
+  recall_ladspa_run->input = (LADSPA_Data *) malloc(recall_ladspa->input_lines * buffer_size * sizeof(LADSPA_Data));
+  recall_ladspa_run->output = (LADSPA_Data *) malloc(recall_ladspa->output_lines * buffer_size * sizeof(LADSPA_Data));
+
+  recall_ladspa_run->ladspa_handle = (LADSPA_Handle *) malloc(recall_ladspa->input_lines * sizeof(LADSPA_Handle));
+
+  for(i = 0; i < recall_ladspa->input_lines; i++){
+    /* instantiate ladspa */
+    recall_ladspa_run->ladspa_handle[i] = (LADSPA_Handle *) recall_ladspa->plugin_descriptor->instantiate(recall_ladspa->plugin_descriptor,
+													  samplerate);
+    recall_ladspa->plugin_descriptor->activate(recall_ladspa_run->ladspa_handle[i]);
+
+#ifdef AGS_DEBUG
+      g_message("instantiate LADSPA handle\0");
+#endif
+
+  }
+
+  ags_recall_ladspa_run_load_ports(recall_ladspa_run);
 }
 
 void
@@ -183,37 +244,48 @@ ags_recall_ladspa_run_run_pre(AgsRecall *recall)
   AgsRecallLadspa *recall_ladspa;
   AgsRecallLadspaRun *recall_ladspa_run;
   AgsAudioSignal *audio_signal;
-  guint i;
+  unsigned long buffer_size;
+  unsigned long i;
 
   LADSPA_PortDescriptor *port_descriptor;
 
   /* call parent */
   AGS_RECALL_CLASS(ags_recall_ladspa_run_parent_class)->run_pre(recall);
 
-  /* set up buffer */
   recall_ladspa_run = AGS_RECALL_LADSPA_RUN(recall);
+  recall_ladspa = AGS_RECALL_LADSPA(AGS_RECALL_CHANNEL_RUN(recall->parent->parent)->recall_channel);
+
+  /* set up buffer */
   audio_signal = AGS_RECALL_AUDIO_SIGNAL(recall_ladspa_run)->source;
 
-  memset(recall_ladspa_run->output, 0, audio_signal->buffer_size * sizeof(LADSPA_Data));
-  memset(recall_ladspa_run->input, 0, audio_signal->buffer_size * sizeof(LADSPA_Data));
+  buffer_size = (unsigned long) g_ascii_strtoull(ags_config_get(config,
+								AGS_CONFIG_DEVOUT,
+								"buffer-size\0"),
+						 NULL,
+						 10);
+
+  memset(recall_ladspa_run->output, 0, recall_ladspa->output_lines * buffer_size * sizeof(LADSPA_Data));
+  memset(recall_ladspa_run->input, 0, recall_ladspa->input_lines * buffer_size * sizeof(LADSPA_Data));
 
   ags_recall_ladspa_short_to_float(audio_signal->stream_current->data,
 				   recall_ladspa_run->input,
-				   audio_signal->buffer_size);
+				   audio_signal->buffer_size, recall_ladspa->input_lines);
 
   /* can't be done in ags_recall_ladspa_run_run_init_inter since possebility of overlapping buffers */
   /* connect audio port */
-  recall_ladspa = AGS_RECALL_LADSPA(recall->parent->parent);
-
   port_descriptor = recall_ladspa->plugin_descriptor->PortDescriptors;
 
-  recall_ladspa->plugin_descriptor->connect_port(recall_ladspa->ladspa_handle,
-						 recall_ladspa->input_port,
-						 recall_ladspa_run->input);
+  for(i = 0; i < recall_ladspa->input_lines; i++){
+    recall_ladspa->plugin_descriptor->connect_port(recall_ladspa_run->ladspa_handle[i],
+						   recall_ladspa->input_port[i],
+						   &(recall_ladspa_run->input[i]));
+  }
 
-  recall_ladspa->plugin_descriptor->connect_port(recall_ladspa->ladspa_handle,
-						 recall_ladspa->output_port,
-						 recall_ladspa_run->output);
+  for(i = 0; i < recall_ladspa->output_lines; i++){
+    recall_ladspa->plugin_descriptor->connect_port(recall_ladspa_run->ladspa_handle[i],
+						   recall_ladspa->output_port[i],
+						   &(recall_ladspa_run->output[i]));
+  }
 }
 
 void
@@ -222,24 +294,119 @@ ags_recall_ladspa_run_run_inter(AgsRecall *recall)
   AgsRecallLadspa *recall_ladspa;
   AgsRecallLadspaRun *recall_ladspa_run;
   AgsAudioSignal *audio_signal;
+  unsigned long buffer_size;
+  unsigned long i;
 
   /* call parent */
   AGS_RECALL_CLASS(ags_recall_ladspa_run_parent_class)->run_inter(recall);
 
-  audio_signal = AGS_RECALL_AUDIO_SIGNAL(recall)->source;
-
-  /* process data */
-  recall_ladspa = AGS_RECALL_LADSPA(recall->parent);
+  recall_ladspa = AGS_RECALL_LADSPA(AGS_RECALL_CHANNEL_RUN(recall->parent->parent)->recall_channel);
   recall_ladspa_run = AGS_RECALL_LADSPA_RUN(recall);
 
-  recall_ladspa->plugin_descriptor->run_adding(recall_ladspa->ladspa_handle,
-					       audio_signal->buffer_size);
+  /* process data */
+  audio_signal = AGS_RECALL_AUDIO_SIGNAL(recall)->source;
+
+  buffer_size = (unsigned long) audio_signal->buffer_size;
+
+  for(i = 0; i < recall_ladspa->input_lines; i++){
+    recall_ladspa->plugin_descriptor->run(recall_ladspa_run->ladspa_handle[i],
+					  buffer_size);
+  }
 
   /* copy data */
-  memset(audio_signal->stream_current->data, 0, audio_signal->buffer_size * sizeof(LADSPA_Data));
+  memset(audio_signal->stream_current->data, 0, buffer_size * sizeof(short));
   ags_recall_ladspa_float_to_short(recall_ladspa_run->output,
 				   audio_signal->stream_current->data,
-				   audio_signal->buffer_size);
+				   audio_signal->buffer_size, recall_ladspa->output_lines);
+}
+
+/**
+ * ags_recall_ladspa_run_load_ports:
+ * @recall_ladspa_run: an #AgsRecallLadspaRun
+ *
+ * Set up LADSPA ports.
+ *
+ * Since: 0.4
+ */
+void
+ags_recall_ladspa_run_load_ports(AgsRecallLadspaRun *recall_ladspa_run)
+{
+  AgsRecallLadspa *recall_ladspa;
+  AgsLadspaPlugin *ladspa_plugin;
+  AgsPort *current;
+  GList *port;
+  gchar *path;
+  unsigned long port_count;
+  unsigned long i;
+
+  void *plugin_so;
+  LADSPA_Descriptor_Function ladspa_descriptor;
+  LADSPA_Descriptor *plugin_descriptor;
+  LADSPA_PortDescriptor *port_descriptor;
+  LADSPA_PortRangeHintDescriptor hint_descriptor;
+
+  recall_ladspa = AGS_RECALL_LADSPA(AGS_RECALL_CHANNEL_RUN(AGS_RECALL(recall_ladspa_run)->parent->parent)->recall_channel);
+
+  ags_ladspa_manager_load_file(recall_ladspa->filename);
+  ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(recall_ladspa->filename);
+  port = NULL;
+  
+  plugin_so = ladspa_plugin->plugin_so;
+
+  if(plugin_so){
+    ladspa_descriptor = (LADSPA_Descriptor_Function) dlsym(plugin_so,
+							   "ladspa_descriptor\0");
+
+    if(dlerror() == NULL && ladspa_descriptor){
+      recall_ladspa->plugin_descriptor = 
+	plugin_descriptor = ladspa_descriptor(recall_ladspa->index);
+
+      port_count = plugin_descriptor->PortCount;
+      port_descriptor = plugin_descriptor->PortDescriptors;
+
+      for(i = 0; i < port_count; i++){
+	if(LADSPA_IS_PORT_CONTROL(port_descriptor[i])){
+	  if(LADSPA_IS_PORT_INPUT(port_descriptor[i]) ||
+	     LADSPA_IS_PORT_OUTPUT(port_descriptor[i])){
+	    gchar *plugin_name;
+	    gchar *specifier;
+
+	    hint_descriptor = plugin_descriptor->PortRangeHints[i].HintDescriptor;
+
+	    plugin_name = g_strdup_printf("ladspa-%lu\0", plugin_descriptor->UniqueID);
+	    specifier = g_strdup(plugin_descriptor->PortNames[i]);
+
+	    current = g_object_new(AGS_TYPE_PORT,
+				   "plugin-name\0", plugin_name,
+				   "specifier\0", specifier,
+				   "control-port\0", g_strdup_printf("%d/%d\0",
+								     i,
+								     port_count),
+				   "port-value-is-pointer\0", FALSE,
+				   "port-value-type\0", G_TYPE_FLOAT,
+				   NULL);
+	    current->port_value.ags_port_float = plugin_descriptor->PortRangeHints[i].LowerBound;
+
+	    g_message("connecting port: %d/%d\0", i, port_count);
+	    recall_ladspa->plugin_descriptor->connect_port(recall_ladspa_run->ladspa_handle,
+							   i,
+							   &(current->port_value.ags_port_float));
+	    
+	    port = g_list_prepend(port,
+				  current);
+	  }
+	}else if(LADSPA_IS_PORT_AUDIO(port_descriptor[i])){
+	  if(LADSPA_IS_PORT_INPUT(port_descriptor[i])){
+	    recall_ladspa->input_port = i;
+	  }else if(LADSPA_IS_PORT_OUTPUT(port_descriptor[i])){
+	    recall_ladspa->output_port = i;
+	  }
+	}
+      }
+
+      AGS_RECALL(recall_ladspa)->port = g_list_reverse(port);
+    }
+  }
 }
 
 /**

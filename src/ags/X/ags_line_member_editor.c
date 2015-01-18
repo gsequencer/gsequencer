@@ -214,10 +214,10 @@ ags_line_member_editor_reset(AgsApplicable *applicable)
   line_editor = (AgsLineEditor *) gtk_widget_get_ancestor(line_member_editor,
 							  AGS_TYPE_LINE_EDITOR);
 
-  recall_ladspa = ags_recall_template_find_type(line_editor->channel->recall,
-						AGS_TYPE_RECALL_LADSPA);
+  recall_ladspa = line_editor->channel->recall;
 
-  while(recall_ladspa != NULL){
+  while((recall_ladspa = ags_recall_template_find_type(recall_ladspa,
+						       AGS_TYPE_RECALL_LADSPA)) != NULL){
     g_object_get(G_OBJECT(recall_ladspa->data),
 		 "filename\0", &filename,
 		 "effect\0", &effect,

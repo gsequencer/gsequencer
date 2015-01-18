@@ -148,6 +148,7 @@ ags_save_file_launch(AgsTask *task)
   ags_file_rw_open(save_file->file,
 		   TRUE);
   ags_file_write(save_file->file);
+  ags_file_close(save_file->file);
 }
 
 /**

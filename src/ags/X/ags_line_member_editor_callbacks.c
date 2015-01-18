@@ -227,19 +227,27 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
 		   NULL);
       AGS_RECALL(recall_ladspa)->flags |= AGS_RECALL_TEMPLATE;
       ags_recall_ladspa_load(recall_ladspa);
-      recall_ladspa->plugin_descriptor->activate(recall_ladspa->ladspa_handle);
       ags_recall_ladspa_load_ports(recall_ladspa);
-
-      recall_channel_run_dummy = ags_recall_channel_run_dummy_new(line_editor->channel,
-								  AGS_TYPE_RECALL_RECYCLING_DUMMY,
-								  AGS_TYPE_RECALL_LADSPA_RUN);
-      g_object_set(G_OBJECT(recall_channel_run_dummy),
-		   "devout\0", AGS_AUDIO(line_editor->channel->audio)->devout,
-		   "recall-container\0", recall_container,
-		   NULL);
 
       add_recall = ags_add_recall_new(line_editor->channel,
 				      recall_ladspa,
+				      TRUE);
+      task = g_list_prepend(task,
+			    add_recall);
+
+      /* dummy */
+      recall_channel_run_dummy = ags_recall_channel_run_dummy_new(line_editor->channel,
+								  AGS_TYPE_RECALL_RECYCLING_DUMMY,
+								  AGS_TYPE_RECALL_LADSPA_RUN);
+      AGS_RECALL(recall_channel_run_dummy)->flags |= AGS_RECALL_TEMPLATE;
+      g_object_set(G_OBJECT(recall_channel_run_dummy),
+		   "devout\0", AGS_AUDIO(line_editor->channel->audio)->devout,
+		   "recall-container\0", recall_container,
+		   "recall-channel\0", recall_ladspa,
+		   NULL);
+
+      add_recall = ags_add_recall_new(line_editor->channel,
+				      recall_channel_run_dummy,
 				      TRUE);
       task = g_list_prepend(task,
 			    add_recall);
@@ -257,19 +265,27 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
 		   NULL);
       AGS_RECALL(recall_ladspa)->flags |= AGS_RECALL_TEMPLATE;
       ags_recall_ladspa_load(recall_ladspa);
-      recall_ladspa->plugin_descriptor->activate(recall_ladspa->ladspa_handle);
       port = ags_recall_ladspa_load_ports(recall_ladspa);
-
-      recall_channel_run_dummy = ags_recall_channel_run_dummy_new(line_editor->channel,
-								  AGS_TYPE_RECALL_RECYCLING_DUMMY,
-								  AGS_TYPE_RECALL_LADSPA_RUN);
-      g_object_set(G_OBJECT(recall_channel_run_dummy),
-		   "devout\0", AGS_AUDIO(line_editor->channel->audio)->devout,
-		   "recall-container\0", recall_container,
-		   NULL);
 
       add_recall = ags_add_recall_new(line_editor->channel,
 				      recall_ladspa,
+				      FALSE);
+      task = g_list_prepend(task,
+			    add_recall);
+
+      /* dummy */
+      recall_channel_run_dummy = ags_recall_channel_run_dummy_new(line_editor->channel,
+								  AGS_TYPE_RECALL_RECYCLING_DUMMY,
+								  AGS_TYPE_RECALL_LADSPA_RUN);
+      AGS_RECALL(recall_channel_run_dummy)->flags |= AGS_RECALL_TEMPLATE;
+      g_object_set(G_OBJECT(recall_channel_run_dummy),
+		   "devout\0", AGS_AUDIO(line_editor->channel->audio)->devout,
+		   "recall-container\0", recall_container,
+		   "recall-channel\0", recall_ladspa,
+		   NULL);
+
+      add_recall = ags_add_recall_new(line_editor->channel,
+				      recall_channel_run_dummy,
 				      FALSE);
       task = g_list_prepend(task,
 			    add_recall);
@@ -307,8 +323,8 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
 							     NULL);
 		dial = ags_line_member_get_widget(line_member);
 		gtk_widget_set_size_request(dial,
-					    2 * dial->radius + 2 * dial->outline_strength + dial->button_width,
-					    2 * dial->radius + 2 * dial->outline_strength);
+					    2 * dial->radius + 2 * dial->outline_strength + dial->button_width + 1,
+					    2 * dial->radius + 2 * dial->outline_strength + 1);
 		
 		lower_bound = plugin_descriptor->PortRangeHints[i].LowerBound;
 		upper_bound = plugin_descriptor->PortRangeHints[i].UpperBound;

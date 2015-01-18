@@ -580,7 +580,8 @@ ags_matrix_map_recall(AgsMachine *machine)
 
   GValue value = {0,};
 
-  if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0){
+  if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0 ||
+     (AGS_MACHINE_PREMAPPED_RECALL & (machine->flags)) != 0){
     return;
   }
 
@@ -980,7 +981,6 @@ ags_matrix_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
   AgsMatrix *gobject;
   AgsFileLaunch *file_launch;
   GList *list;
-  guint64 length, index;
 
   gobject = AGS_MATRIX(plugin);
 
@@ -993,18 +993,37 @@ ags_matrix_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 				   "reference\0", gobject,
 				   NULL));
 
+  /*  */
+  file_launch = g_object_new(AGS_TYPE_FILE_LAUNCH,
+			     "node\0", node,
+			     "file\0", file,
+			     NULL);
+  g_signal_connect(G_OBJECT(file_launch), "start\0",
+		   G_CALLBACK(ags_matrix_launch_task), gobject);
+  ags_file_add_launch(file,
+		      file_launch);
+}
+
+void
+ags_matrix_launch_task(AgsFileLaunch *file_launch, AgsMatrix *matrix)
+{
+  xmlNode *node;
+  guint64 length, index;
+
+  node = file_launch->node;
+
   /* length */
   length = (gdouble) g_ascii_strtod(xmlGetProp(node,
 					       "length\0"),
 				    NULL);
-  gtk_spin_button_set_value(gobject->length_spin,
+  gtk_spin_button_set_value(matrix->length_spin,
 			    length);
 
   /* loop */
   if(!g_strcmp0(xmlGetProp(node,
 			   "loop\0"),
 		AGS_FILE_TRUE)){
-    gtk_toggle_button_set_active(gobject->loop_button,
+    gtk_toggle_button_set_active(matrix->loop_button,
 				 TRUE);
   }
 
@@ -1015,28 +1034,12 @@ ags_matrix_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 			   10);
 
   if(index != 0){
-    gtk_toggle_button_set_active(gobject->index[0],
+    gtk_toggle_button_set_active(matrix->index[0],
 				 FALSE);
-    gtk_toggle_button_set_active(gobject->index[index],
+    gtk_toggle_button_set_active(matrix->index[index],
 				 TRUE);
-    gobject->selected = gobject->index[index];
+    matrix->selected = matrix->index[index];
   }
-
-  /*  */
-  file_launch = g_object_new(AGS_TYPE_FILE_LAUNCH,
-			     "node\0", node,
-			     "file\0", file,
-			     NULL);
-  g_signal_connect(G_OBJECT(file_launch), "start\0",
-		   G_CALLBACK(ags_matrix_launch_task), gobject);
-  //  ags_file_add_launch(file,
-  //		      file_launch);
-}
-
-void
-ags_matrix_launch_task(AgsFileLaunch *file_launch, AgsMatrix *matrix)
-{
-  //TODO:JK: implement me
 }
 
 xmlNode*
@@ -1080,7 +1083,7 @@ ags_matrix_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 
   xmlNewProp(node,
 	     "loop\0",
-	     g_strdup_printf("%s\0", (gtk_toggle_button_get_active(matrix->loop_button) ? AGS_FILE_TRUE: AGS_FILE_FALSE)));
+	     g_strdup_printf("%s\0", ((gtk_toggle_button_get_active(matrix->loop_button)) ? AGS_FILE_TRUE: AGS_FILE_FALSE)));
 
   xmlAddChild(parent,
 	      node);

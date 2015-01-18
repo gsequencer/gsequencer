@@ -31,6 +31,8 @@
 #include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>
 #include <ags/file/ags_file_lookup.h>
+#include <ags/file/ags_file_launch.h>
+#include <ags/file/ags_file_gui.h>
 
 #include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_task_thread.h>
@@ -83,6 +85,8 @@ gchar* ags_synth_get_xml_type(AgsPlugin *plugin);
 void ags_synth_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
 void ags_synth_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
 xmlNode* ags_synth_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
+void ags_synth_read_resolve_audio(AgsFileLookup *file_lookup,
+				  AgsMachine *machine);
 
 void ags_synth_set_audio_channels(AgsAudio *audio,
 				  guint audio_channels, guint audio_channels_old,
@@ -381,7 +385,8 @@ ags_synth_map_recall(AgsMachine *machine)
 
   AgsAudio *audio;
 
-  if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0){
+  if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0 ||
+     (AGS_MACHINE_PREMAPPED_RECALL & (machine->flags)) != 0){
     return;
   }
 
@@ -431,6 +436,7 @@ void
 ags_synth_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 {
   AgsSynth *gobject;
+  AgsFileLookup *file_lookup;
   GList *list;
 
   gobject = AGS_SYNTH(plugin);
@@ -444,6 +450,27 @@ ags_synth_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 				   "reference\0", gobject,
 				   NULL));
 
+  list = file->lookup;
+
+  while((file_lookup = ags_file_lookup_find_by_node(list,
+						    node->parent)) != NULL){
+    if(g_signal_handler_find(list->data,
+			     G_SIGNAL_MATCH_FUNC,
+			     0,
+			     0,
+			     NULL,
+			     ags_file_read_machine_resolve_audio,
+			     NULL) != 0){
+      g_signal_connect_after(G_OBJECT(file_lookup), "resolve\0",
+			     G_CALLBACK(ags_synth_read_resolve_audio), gobject);
+      
+      break;
+    }
+
+    list = list->next;
+  }
+
+  /*  */
   gtk_spin_button_set_value(gobject->lower,
 			    g_ascii_strtod(xmlGetProp(node,
 						      "lower\0"),
@@ -458,6 +485,21 @@ ags_synth_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 			    g_ascii_strtod(xmlGetProp(node,
 						      "loop-end\0"),
 					   NULL));
+}
+
+void
+ags_synth_read_resolve_audio(AgsFileLookup *file_lookup,
+			     AgsMachine *machine)
+{
+  AgsSynth *synth;
+
+  synth = AGS_SYNTH(machine);
+
+  g_signal_connect_after(G_OBJECT(machine->audio), "set_audio_channels\0",
+			 G_CALLBACK(ags_synth_set_audio_channels), synth);
+
+  g_signal_connect_after(G_OBJECT(machine->audio), "set_pads\0",
+			 G_CALLBACK(ags_synth_set_pads), synth);
 }
 
 xmlNode*

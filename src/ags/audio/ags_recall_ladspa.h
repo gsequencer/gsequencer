@@ -47,10 +47,12 @@ struct _AgsRecallLadspa
   guint index;
 
   LADSPA_Descriptor *plugin_descriptor;
-  guint input_port;
-  guint output_port;
 
-  LADSPA_Handle ladspa_handle;
+  unsigned long *input_port;
+  unsigned long input_lines;
+
+  unsigned long *output_port;
+  unsigned long output_lines;
 };
 
 struct _AgsRecallLadspaClass
@@ -64,10 +66,10 @@ GList* ags_recall_ladspa_load_ports(AgsRecallLadspa *recall_ladspa);
 
 void ags_recall_ladspa_short_to_float(signed short *buffer,
 				      float *destination,
-				      guint buffer_size);
+				      guint buffer_size, guint lines);
 void ags_recall_ladspa_float_to_short(float *buffer,
 				      signed short *destination,
-				      guint buffer_size);
+				      guint buffer_size, guint lines);
 
 GList* ags_recall_ladpsa_find(GList *recall,
 			      gchar *filename, gchar *effect);

@@ -168,6 +168,8 @@ ags_drum_input_pad_open_play_callback(GtkToggleButton *toggle_button, AgsDrumInp
       play_audio_signal = ags_play_audio_signal_new(AGS_AUDIO_SIGNAL(audio_signal->data),
 						    devout,
 						    i);
+      g_object_ref(play_audio_signal);
+      AGS_AUDIO_SIGNAL(audio_signal->data)->flags &= (~AGS_AUDIO_SIGNAL_TEMPLATE);
       AGS_AUDIO_SIGNAL(audio_signal->data)->stream_current = AGS_AUDIO_SIGNAL(audio_signal->data)->stream_beginning;
       drum_input_pad->pad_open_play_ref++;
 
@@ -189,12 +191,13 @@ ags_drum_input_pad_open_play_callback(GtkToggleButton *toggle_button, AgsDrumInp
       
       /* AgsStreamAudioSignal recall */
       stream_audio_signal = ags_stream_audio_signal_new(AGS_AUDIO_SIGNAL(audio_signal->data));
+      g_object_ref(stream_audio_signal);
       drum_input_pad->pad_open_play_ref++;
 
       drum_input_pad->pad_open_recalls = g_list_prepend(drum_input_pad->pad_open_recalls,
 							stream_audio_signal);
-      g_signal_connect(G_OBJECT(stream_audio_signal), "done\0",
-		       G_CALLBACK(ags_drum_input_pad_open_play_done), drum_input_pad);
+      g_signal_connect_after(G_OBJECT(stream_audio_signal), "done\0",
+			     G_CALLBACK(ags_drum_input_pad_open_play_done), drum_input_pad);
 
       /* AgsAppendRecall */
       devout_play = ags_devout_play_alloc();
@@ -241,15 +244,26 @@ ags_drum_input_pad_open_play_callback(GtkToggleButton *toggle_button, AgsDrumInp
 void
 ags_drum_input_pad_open_play_done(AgsRecall *recall, AgsDrumInputPad *drum_input_pad)
 {
-  drum_input_pad->pad_open_recalls = g_list_remove(drum_input_pad->pad_open_recalls,
-						   recall);
-  recall->flags |= AGS_RECALL_REMOVE;
-
   drum_input_pad->pad_open_play_ref--;
+
+  //  ags_recycling_remove_audio_signal(AGS_RECALL_AUDIO_SIGNAL(recall)->source->recycling,
+  //				    AGS_RECALL_AUDIO_SIGNAL(recall)->source);
 
   if(drum_input_pad->pad_open_play_ref == 0){
     GtkToggleButton *toggle_button;
+    //    AgsCancelRecall *cancel_recall;
     GList *list;
+
+    list = drum_input_pad->pad_open_recalls;
+
+    while(list != NULL){
+      AGS_RECALL(list->data)->flags |= AGS_RECALL_REMOVE;
+    
+      list = list->next;
+    }
+    
+    g_list_free(drum_input_pad->pad_open_recalls);
+    drum_input_pad->pad_open_recalls = NULL;
 
     list = gtk_container_get_children((GtkContainer *) GTK_DIALOG(drum_input_pad->file_chooser)->action_area);
     toggle_button = (GtkToggleButton *) list->data;

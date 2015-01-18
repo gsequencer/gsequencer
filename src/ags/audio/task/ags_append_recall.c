@@ -149,12 +149,7 @@ ags_append_recall_launch(AgsTask *task)
   append_recall = AGS_APPEND_RECALL(task);
 
   audio_loop = AGS_AUDIO_LOOP(append_recall->audio_loop);
-
-  /* append to AgsDevout */
-  append_recall->devout_play->flags &= (~AGS_DEVOUT_PLAY_REMOVE);
-  audio_loop->play_recall = g_list_append(audio_loop->play_recall,
-					  append_recall->devout_play);
-  audio_loop->play_recall_ref += 1;
+  ags_audio_loop_add_recall(audio_loop, append_recall->devout_play);
 }
 
 /**

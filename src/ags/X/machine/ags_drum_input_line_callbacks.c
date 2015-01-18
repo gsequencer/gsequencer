@@ -51,9 +51,12 @@ ags_drum_input_line_parent_set_callback(GtkWidget *widget, GtkObject *old_parent
   drum = gtk_widget_get_ancestor(widget,
 				 AGS_TYPE_DRUM);
   
-  /* AgsAudio */
-  g_signal_connect_after(G_OBJECT(AGS_MACHINE(drum)->audio), "set_pads\0",
-			 G_CALLBACK(ags_drum_input_line_audio_set_pads_callback), drum_input_line);
+  if(drum != NULL &&
+     G_OBJECT(AGS_MACHINE(drum)->audio) != NULL){
+    /* AgsAudio */
+    g_signal_connect_after(G_OBJECT(AGS_MACHINE(drum)->audio), "set_pads\0",
+			   G_CALLBACK(ags_drum_input_line_audio_set_pads_callback), drum_input_line);
+  }
 }
 
 void

@@ -1803,6 +1803,7 @@ ags_file_read_recall(AgsFile *file, xmlNode *node, AgsRecall **recall)
 
 	ags_plugin_set_ports(AGS_PLUGIN(gobject),
 			     list);
+	gobject->port = list;
       }else if(!xmlStrncmp(child->name,
 			   "ags-parameter\0",
 			   13)){
@@ -3949,10 +3950,13 @@ ags_file_read_pattern_resolve_port(AgsFileLookup *file_lookup,
   id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_xpath(file_lookup->file, xpath);
 
   if(id_ref != NULL){
+    AgsPort *port;
     GValue value = {0,};
 
+    port = (AgsPort *) id_ref->ref;
+
     g_object_set(G_OBJECT(pattern),
-		 "port\0", (AgsPort *) id_ref->ref,
+		 "port\0", (AgsPort *) port,
 		 NULL);
 
     g_value_init(&value, G_TYPE_OBJECT);
@@ -4036,17 +4040,17 @@ ags_file_write_pattern_resolve_port(AgsFileLookup *file_lookup,
   AgsFileIdRef *id_ref;
   gchar *id;
 
-  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_reference(file_lookup->file, pattern->port);
-
-  if(id_ref == NULL){
+  if(pattern->port == NULL){
     return;
   }
+
+  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_reference(file_lookup->file, pattern->port);
 
   id = xmlGetProp(id_ref->node, AGS_FILE_ID_PROP);
 
   xmlNewProp(file_lookup->node,
 	     "port\0",
-	     g_strdup_printf("xpath=//ags-port[@id='%s']\0", id));
+	     g_strdup_printf("xpath=//*[@id='%s']\0", id));
 }
 
 void
@@ -4444,9 +4448,19 @@ ags_file_read_notation_resolve_port(AgsFileLookup *file_lookup,
   id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_xpath(file_lookup->file, xpath);
 
   if(id_ref != NULL){
+    AgsPort *port;
+    GValue value = {0,};
+
+    port = (AgsPort *) id_ref->ref;
+
     g_object_set(G_OBJECT(notation),
-		 "port\0", (AgsPort *) id_ref->ref,
+		 "port\0", port,
 		 NULL);
+
+    g_value_init(&value, G_TYPE_OBJECT);
+    g_value_set_object(&value, notation);
+    ags_port_safe_write(G_OBJECT(port),
+			&value);
   }
 }
 
@@ -4541,13 +4555,17 @@ ags_file_write_notation_resolve_port(AgsFileLookup *file_lookup,
   AgsFileIdRef *id_ref;
   gchar *id;
 
+  if(notation->port == NULL){
+    return;
+  }
+
   id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_reference(file_lookup->file, notation->port);
 
   id = xmlGetProp(id_ref->node, AGS_FILE_ID_PROP);
 
   xmlNewProp(file_lookup->node,
 	     "port\0",
-	     g_strdup_printf("xpath=//ags-port[@id='%s']\0", id));
+	     g_strdup_printf("xpath=//*[@id='%s']\0", id));
 }
 
 void

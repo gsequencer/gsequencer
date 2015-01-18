@@ -1907,8 +1907,8 @@ ags_file_read_line_member(AgsFile *file, xmlNode *node, AgsLineMember **line_mem
 		 "adjustment\0", adjustment,
 		 NULL);
     gtk_widget_set_size_request(dial,
-				2 * dial->radius + 2 * dial->outline_strength + dial->button_width,
-				2 * dial->radius + 2 * dial->outline_strength);
+				2 * dial->radius + 2 * dial->outline_strength + dial->button_width + 1,
+				2 * dial->radius + 2 * dial->outline_strength + 1);
   }else if(GTK_IS_RANGE(child_widget)){
     adjustment = GTK_RANGE(child_widget)->adjustment;
 
@@ -2513,6 +2513,7 @@ ags_file_read_editor_launch(AgsFileLaunch *file_launch,
   GList *list;
   double tact_factor, zoom_factor;
   double tact;
+  guint history;
   guint tabs, pads;
   guint i;
 
@@ -2543,6 +2544,16 @@ ags_file_read_editor_launch(AgsFileLaunch *file_launch,
 
   tact_factor = exp2(8.0 - (double) gtk_combo_box_get_active(editor->toolbar->zoom));
   tact = exp2((double) gtk_combo_box_get_active(editor->toolbar->zoom) - 4.0);
+
+  /* reset note edit */
+  history = gtk_combo_box_get_active(editor->toolbar->zoom);
+
+  editor->toolbar->zoom_history = history;
+
+  editor->note_edit->flags |= AGS_NOTE_EDIT_RESETING_HORIZONTALLY;
+  ags_note_edit_reset_horizontally(editor->note_edit, AGS_NOTE_EDIT_RESET_HSCROLLBAR |
+				   AGS_NOTE_EDIT_RESET_WIDTH);
+  editor->note_edit->flags &= (~AGS_NOTE_EDIT_RESETING_HORIZONTALLY);
 
   /* reset ruler */
   editor->note_edit->ruler->factor = tact_factor;

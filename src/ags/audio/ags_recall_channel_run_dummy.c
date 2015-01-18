@@ -26,6 +26,10 @@
 #include <ags/object/ags_dynamic_connectable.h>
 #include <ags/object/ags_plugin.h>
 
+#include <ags/file/ags_file.h>
+#include <ags/file/ags_file_stock.h>
+#include <ags/file/ags_file_id_ref.h>
+
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_recycling.h>
@@ -43,6 +47,9 @@ void ags_recall_channel_run_dummy_disconnect(AgsConnectable *connectable);
 void ags_recall_channel_run_dummy_connect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 void ags_recall_channel_run_dummy_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 void ags_recall_channel_run_dummy_finalize(GObject *gobject);
+
+void ags_recall_channel_run_dummy_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
+xmlNode* ags_recall_channel_run_dummy_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
 AgsRecall* ags_recall_channel_run_dummy_duplicate(AgsRecall *recall,
 						  AgsRecallID *recall_id,
@@ -161,21 +168,25 @@ void
 ags_recall_channel_run_dummy_plugin_interface_init(AgsPluginInterface *plugin)
 {
   ags_recall_channel_run_dummy_parent_plugin_interface = g_type_interface_peek_parent(plugin);
+
+  plugin->read = ags_recall_channel_run_dummy_read;
+  plugin->write = ags_recall_channel_run_dummy_write;
 }
 
 void
 ags_recall_channel_run_dummy_init(AgsRecallChannelRunDummy *recall_channel_run_dummy)
 {
-  AGS_RECALL(recall_channel_run_dummy)->name = NULL;
+  AGS_RECALL(recall_channel_run_dummy)->name = "ags-dummy";
   AGS_RECALL(recall_channel_run_dummy)->version = AGS_EFFECTS_DEFAULT_VERSION;
   AGS_RECALL(recall_channel_run_dummy)->build_id = AGS_BUILD_ID;
   AGS_RECALL(recall_channel_run_dummy)->xml_type = "ags-recall-channel-run-dummy\0";
   AGS_RECALL(recall_channel_run_dummy)->port = NULL;
 
-  AGS_RECALL(recall_channel_run_dummy)->flags |= AGS_RECALL_INPUT_ORIENTATED;
-  AGS_RECALL(recall_channel_run_dummy)->child_type = G_TYPE_NONE;
-
-  recall_channel_run_dummy = G_TYPE_NONE;
+  AGS_RECALL(recall_channel_run_dummy)->flags |= (AGS_RECALL_INPUT_ORIENTATED |
+						  AGS_RECALL_PLAYBACK |
+						  AGS_RECALL_SEQUENCER |
+						  AGS_RECALL_NOTATION);
+  AGS_RECALL(recall_channel_run_dummy)->child_type = AGS_TYPE_RECALL_RECYCLING_DUMMY;
 }
 
 void
@@ -252,6 +263,62 @@ ags_recall_channel_run_dummy_duplicate(AgsRecall *recall,
   }
 
   return((AgsRecall *) copy);
+}
+
+void
+ags_recall_channel_run_dummy_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
+{
+  AgsRecallChannelRunDummy *gobject;
+
+  gobject = AGS_RECALL_CHANNEL_RUN_DUMMY(plugin);
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->ags_main,
+				   "file\0", file,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference\0", gobject,
+				   NULL));
+
+  gobject->recycling_dummy_child_type = g_type_from_name(xmlGetProp(node,
+								    "recycling-child-type\0"));
+}
+
+xmlNode*
+ags_recall_channel_run_dummy_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
+{
+  AgsRecallChannelRunDummy *recall_channel_run_dummy;
+  xmlNode *node;
+  gchar *id;
+
+  recall_channel_run_dummy = AGS_RECALL_CHANNEL_RUN_DUMMY(plugin);
+
+  id = ags_id_generator_create_uuid();
+  
+  node = xmlNewNode(NULL,
+		    "ags-recall-channel-run-dummy\0");
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->ags_main,
+				   "file\0", file,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
+				   "reference\0", recall_channel_run_dummy,
+				   NULL));
+
+  xmlNewProp(node,
+	     "recycling-child-type\0",
+	     g_strdup(g_type_name(recall_channel_run_dummy->recycling_dummy_child_type)));
+
+  xmlAddChild(parent,
+	      node);
+
+  return(node);
 }
 
 /**

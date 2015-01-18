@@ -234,14 +234,17 @@ ags_drum_output_line_set_channel(AgsLine *line, AgsChannel *channel)
     gdouble delay;
     guint stop;
 
-    devout = AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout);
+    if(channel->audio != NULL &&
+       AGS_AUDIO(channel->audio)->devout != NULL){
+      devout = AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout);
 
-    audio_signal = ags_audio_signal_new(devout,
-					channel->first_recycling,
-					NULL);
-    audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
-    ags_recycling_add_audio_signal(channel->first_recycling,
-				   audio_signal);
+      audio_signal = ags_audio_signal_new(devout,
+					  channel->first_recycling,
+					  NULL);
+      audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
+      ags_recycling_add_audio_signal(channel->first_recycling,
+				     audio_signal);
+    }
   }
 }
 
@@ -257,7 +260,8 @@ ags_drum_output_line_map_recall(AgsLine *line,
 
   GList *list;
 
-  if((AGS_LINE_MAPPED_RECALL & (line->flags)) != 0){
+  if((AGS_LINE_MAPPED_RECALL & (line->flags)) != 0 ||
+     (AGS_LINE_PREMAPPED_RECALL & (line->flags)) != 0){
     return;
   }
 

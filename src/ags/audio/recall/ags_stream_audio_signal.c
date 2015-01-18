@@ -159,7 +159,8 @@ ags_stream_audio_signal_init(AgsStreamAudioSignal *stream_audio_signal)
 void
 ags_stream_audio_signal_finalize(GObject *gobject)
 {
-  if(AGS_RECALL_AUDIO_SIGNAL(gobject)->source != NULL){
+  if(AGS_RECALL_AUDIO_SIGNAL(gobject)->source != NULL &&
+     AGS_RECALL(gobject)->parent != NULL){
     ags_recycling_remove_audio_signal(AGS_RECALL_RECYCLING(AGS_RECALL(gobject)->parent)->source,
 				      AGS_RECALL_AUDIO_SIGNAL(gobject)->source);
   }
@@ -231,8 +232,11 @@ ags_stream_audio_signal_run_post(AgsRecall *recall)
     /* call parent */
     AGS_RECALL_CLASS(ags_stream_audio_signal_parent_class)->run_post(recall);
 
-    ags_recycling_remove_audio_signal(AGS_RECALL_RECYCLING(recall->parent)->source,
-				      AGS_RECALL_AUDIO_SIGNAL(recall)->source);
+    if(recall->parent != NULL){
+      ags_recycling_remove_audio_signal(AGS_RECALL_RECYCLING(recall->parent)->source,
+					AGS_RECALL_AUDIO_SIGNAL(recall)->source);
+    }
+
     ags_recall_done(recall);
   }
 }

@@ -342,6 +342,7 @@ ags_drum_pad_callback(GtkWidget *toggle_button, AgsDrum *drum)
 						    selected_line->channel->line,
 						    index0, index1,
 						    offset);
+    g_message("found %d %x\0", selected_line->channel, selected_line->channel->pattern->data);
 
     tasks = g_list_prepend(tasks,
 			   toggle_pattern_bit);

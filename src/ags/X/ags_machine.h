@@ -100,6 +100,14 @@ struct _AgsMachineClass
 
 GType ags_machine_get_type(void);
 
+
+void ags_machine_set_audio_channels(AgsAudio *audio,
+				    guint audio_channels, guint audio_channels_old,
+				    AgsMachine *machine);
+void ags_machine_set_pads(AgsAudio *audio, GType type,
+			  guint pads, guint pads_old,
+			  AgsMachine *machine);
+
 void ags_machine_add_default_recalls(AgsMachine *machine) G_DEPRECATED_FOR(ags_machine_map_recall);
 
 void ags_machine_map_recall(AgsMachine *machine);

@@ -435,7 +435,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 	  GList *list;
 
 	  list = source->link->recall_id;
-	
+
 	  while(list != NULL){
 	    if(AGS_RECALL_ID(list->data)->recycling_container->parent == AGS_RECALL(copy_pattern_channel_run)->recall_id->recycling_container){
 	      child_recall_id = list->data;
@@ -470,13 +470,12 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 	audio_signal->recall_id = child_recall_id;
 	ags_recycling_add_audio_signal(recycling,
 				       audio_signal);
-	g_object_unref(audio_signal);
 
 	/*
 	 * unref AgsAudioSignal because AgsCopyPatternChannelRun has no need for it
 	 * if you need a valid reference to audio_signal you have to g_object_ref(audio_signal)
 	 */
-	//FIXME:JK:
+	g_object_unref(audio_signal);
 		
 	recycling = recycling->next;
       }

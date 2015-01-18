@@ -29,6 +29,8 @@
 
 #include <ags/audio/file/ags_audio_file.h>
 
+#include <ags/X/ags_machine.h>
+
 void ags_open_file_class_init(AgsOpenFileClass *open_file);
 void ags_open_file_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_open_file_init(AgsOpenFile *open_file);
@@ -178,8 +180,13 @@ ags_open_file_launch(AgsTask *task)
 
   /*  */
   if(open_file->create_channels){
-    i_stop = g_slist_length(open_file->filenames);
+    AgsMachine *machine;
+    GList *list;
+    guint pads_old;
 
+    i_stop = g_slist_length(open_file->filenames);
+    pads_old = audio->input_pads;
+    
     if(open_file->overwrite_channels){
       if(i_stop > audio->input_pads){
 	ags_audio_set_pads(audio, AGS_TYPE_INPUT,
@@ -188,14 +195,32 @@ ags_open_file_launch(AgsTask *task)
 
       channel = audio->input;
     }else{
-      guint pads_old;
-
-      pads_old = audio->input_pads;
-
       ags_audio_set_pads(audio, AGS_TYPE_INPUT,
 			 audio->input_pads + i_stop);
 
-      channel = ags_channel_pad_nth(audio->input, pads_old);
+      channel = ags_channel_pad_nth(audio->input,
+				    pads_old);
+    }
+
+    iter = ags_channel_pad_nth(audio->input,
+			       pads_old);
+
+    while(iter != NULL){
+      ags_connectable_connect(AGS_CONNECTABLE(iter));
+
+      iter = iter->next;
+    }
+
+    machine = audio->machine;
+    list = gtk_container_get_children(machine->input);
+    list = g_list_nth(list,
+		      pads_old);
+
+    while(list != NULL){
+      ags_connectable_connect(AGS_CONNECTABLE(list->data));
+      gtk_widget_show_all(list->data);
+
+      list = list->next;
     }
   }
 

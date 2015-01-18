@@ -166,11 +166,13 @@ ags_cancel_audio_launch(AgsTask *task)
 	continue;
       }
 
+      g_object_ref(AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0]);
       ags_channel_tillrecycling_cancel(channel,
 				       AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0]);
 
       /* set remove flag */
       AGS_DEVOUT_PLAY(channel->devout_play)->flags |= (AGS_DEVOUT_PLAY_DONE | AGS_DEVOUT_PLAY_REMOVE);
+      AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0] = NULL;
 
       channel = channel->next;
     }
@@ -187,8 +189,10 @@ ags_cancel_audio_launch(AgsTask *task)
 	continue;
       }
 
+      g_object_ref(AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[1]);
       ags_channel_tillrecycling_cancel(channel,
 				       AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[1]);
+      AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[1] = NULL;
 
       /* set remove flag */
       AGS_DEVOUT_PLAY(channel->devout_play)->flags |= (AGS_DEVOUT_PLAY_DONE | AGS_DEVOUT_PLAY_REMOVE);
@@ -208,8 +212,11 @@ ags_cancel_audio_launch(AgsTask *task)
 	continue;
       }
 
+      g_object_ref(AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[2]);
       ags_channel_tillrecycling_cancel(channel,
 				       AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[2]);
+      AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[2] = NULL;
+
       /* set remove flag */
       AGS_DEVOUT_PLAY(channel->devout_play)->flags |= (AGS_DEVOUT_PLAY_DONE | AGS_DEVOUT_PLAY_REMOVE);
       

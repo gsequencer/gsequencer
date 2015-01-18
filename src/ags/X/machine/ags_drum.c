@@ -33,6 +33,7 @@
 #include <ags/file/ags_file_id_ref.h>
 #include <ags/file/ags_file_lookup.h>
 #include <ags/file/ags_file_launch.h>
+#include <ags/file/ags_file_gui.h>
 
 #include <ags/thread/ags_thread-posix.h>
 #include <ags/thread/ags_audio_loop.h>
@@ -43,6 +44,7 @@
 #include <ags/X/machine/ags_drum_input_line.h>
 #include <ags/X/machine/ags_drum_output_pad.h>
 #include <ags/X/machine/ags_drum_output_line.h>
+#include <ags/X/machine/ags_drum_input_line_callbacks.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_menu_bar.h>
@@ -88,7 +90,10 @@ void ags_drum_set_name(AgsPlugin *plugin, gchar *name);
 gchar* ags_drum_get_xml_type(AgsPlugin *plugin);
 void ags_drum_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
 void ags_drum_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
+void ags_drum_launch_task(AgsFileLaunch *file_launch, AgsDrum *drum);
 xmlNode* ags_drum_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
+void ags_drum_read_resolve_audio(AgsFileLookup *file_lookup,
+				 AgsMachine *machine);
 
 void ags_drum_set_audio_channels(AgsAudio *audio,
 				 guint audio_channels, guint audio_channels_old,
@@ -513,7 +518,8 @@ ags_drum_map_recall(AgsMachine *machine)
 
   GList *list;
 
-  if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0){
+  if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0 ||
+     (AGS_MACHINE_PREMAPPED_RECALL & (machine->flags)) != 0){
     return;
   }
 
@@ -614,8 +620,9 @@ void
 ags_drum_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 {
   AgsDrum *gobject;
+  AgsFileLookup *file_lookup;
+  AgsFileLaunch *file_launch;
   GList *list;
-  guint64 length, index;
 
   gobject = AGS_DRUM(plugin);
 
@@ -628,18 +635,92 @@ ags_drum_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 				   "reference\0", gobject,
 				   NULL));
 
+  list = file->lookup;
+
+  while((file_lookup = ags_file_lookup_find_by_node(list,
+						    node->parent)) != NULL){
+    if(g_signal_handler_find(list->data,
+			     G_SIGNAL_MATCH_FUNC,
+			     0,
+			     0,
+			     NULL,
+			     ags_file_read_machine_resolve_audio,
+			     NULL) != 0){
+      g_signal_connect_after(G_OBJECT(file_lookup), "resolve\0",
+			     G_CALLBACK(ags_drum_read_resolve_audio), gobject);
+      
+      break;
+    }
+
+    list = list->next;
+  }
+
+  /*  */
+  file_launch = g_object_new(AGS_TYPE_FILE_LAUNCH,
+			     "node\0", node,
+			     "file\0", file,
+			     NULL);
+  g_signal_connect(G_OBJECT(file_launch), "start\0",
+		   G_CALLBACK(ags_drum_launch_task), gobject);
+  ags_file_add_launch(file,
+		      file_launch);
+}
+
+void
+ags_drum_read_resolve_audio(AgsFileLookup *file_lookup,
+			    AgsMachine *machine)
+{
+  AgsDrum *drum;
+  GList *pad, *pad_start, *line, *line_start;
+
+  drum = AGS_DRUM(machine);
+
+  g_signal_connect_after(G_OBJECT(machine->audio), "set_audio_channels\0",
+			 G_CALLBACK(ags_drum_set_audio_channels), drum);
+
+  g_signal_connect_after(G_OBJECT(machine->audio), "set_pads\0",
+			 G_CALLBACK(ags_drum_set_pads), drum);
+
+  pad_start = 
+    pad = gtk_container_get_children(machine->input);
+
+  while(pad != NULL){
+    line_start = 
+      line = gtk_container_get_children(AGS_PAD(pad->data)->expander_set);
+
+    while(line != NULL){
+      /* AgsAudio */
+      g_signal_connect_after(G_OBJECT(machine->audio), "set_pads\0",
+			     G_CALLBACK(ags_drum_input_line_audio_set_pads_callback), AGS_DRUM_INPUT_LINE(line->data));
+
+      line = line->next;
+    }
+
+    g_list_free(line_start);
+    pad = pad->next;
+  }
+}
+
+void
+ags_drum_launch_task(AgsFileLaunch *file_launch, AgsDrum *drum)
+{
+  xmlNode *node;
+  guint64 length, index;
+
+  node = file_launch->node;
+
   /* length */
   length = (gdouble) g_ascii_strtod(xmlGetProp(node,
 					       "length\0"),
 				    NULL);
-  gtk_spin_button_set_value(gobject->length_spin,
+  gtk_spin_button_set_value(drum->length_spin,
 			    length);
 
   /* loop */
   if(!g_strcmp0(xmlGetProp(node,
 			   "loop\0"),
 		AGS_FILE_TRUE)){
-    gtk_toggle_button_set_active(gobject->loop_button,
+    gtk_toggle_button_set_active(drum->loop_button,
 				 TRUE);
   }
 
@@ -650,11 +731,11 @@ ags_drum_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 			   10);
 
   if(index != 0){
-    gtk_toggle_button_set_active(gobject->index0[0],
+    gtk_toggle_button_set_active(drum->index0[0],
 				 FALSE);
-    gtk_toggle_button_set_active(gobject->index0[index],
+    gtk_toggle_button_set_active(drum->index0[index],
 				 TRUE);
-    gobject->selected0 = gobject->index0[index];
+    drum->selected0 = drum->index0[index];
   }
 
   index = g_ascii_strtoull(xmlGetProp(node,
@@ -663,11 +744,11 @@ ags_drum_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 			   10);
 
   if(index != 0){
-    gtk_toggle_button_set_active(gobject->index1[0],
+    gtk_toggle_button_set_active(drum->index1[0],
 				 FALSE);
-    gtk_toggle_button_set_active(gobject->index1[index],
+    gtk_toggle_button_set_active(drum->index1[index],
 				 TRUE);
-    gobject->selected1 = gobject->index1[index];
+    drum->selected1 = drum->index1[index];
   }
 }
 
@@ -717,7 +798,7 @@ ags_drum_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 
   xmlNewProp(node,
 	     "loop\0",
-	     g_strdup_printf("%s\0", (gtk_toggle_button_get_active(drum->loop_button) ? AGS_FILE_TRUE: AGS_FILE_FALSE)));
+	     g_strdup_printf("%s\0", ((gtk_toggle_button_get_active(drum->loop_button)) ? AGS_FILE_TRUE: AGS_FILE_FALSE)));
 
   xmlAddChild(parent,
 	      node);
@@ -730,6 +811,7 @@ ags_drum_set_audio_channels(AgsAudio *audio,
 			    guint audio_channels, guint audio_channels_old,
 			    AgsDrum *drum)
 {
+  //empty
 }
 
 void

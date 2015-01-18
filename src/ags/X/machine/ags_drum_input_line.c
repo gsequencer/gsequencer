@@ -341,14 +341,18 @@ ags_drum_input_line_set_channel(AgsLine *line, AgsChannel *channel)
   AGS_LINE_CLASS(ags_drum_input_line_parent_class)->set_channel(line, channel);
 
   if(channel != NULL){
-    AgsAudioSignal *audio_signal;
+    if(channel->audio != NULL &&
+       AGS_AUDIO(channel->audio)->devout != NULL){
+      AgsAudioSignal *audio_signal;
 
-    audio_signal = ags_audio_signal_new(AGS_AUDIO(channel->audio)->devout,
-					channel->first_recycling,
-					NULL);
-    audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
-    ags_recycling_add_audio_signal(channel->first_recycling,
-				   audio_signal);
+      audio_signal = ags_audio_signal_new(AGS_AUDIO(channel->audio)->devout,
+					  channel->first_recycling,
+					  NULL);
+      audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
+      ags_recycling_add_audio_signal(channel->first_recycling,
+				     audio_signal);
+    }
+
     if(channel->pattern == NULL){
       channel->pattern = g_list_alloc();
       channel->pattern->data = (gpointer) ags_pattern_new();
@@ -410,7 +414,8 @@ ags_drum_input_line_map_recall(AgsLine *line,
   GList *list;
   guint i;
 
-  if((AGS_LINE_MAPPED_RECALL & (line->flags)) != 0){
+  if((AGS_LINE_MAPPED_RECALL & (line->flags)) != 0 ||
+     (AGS_LINE_PREMAPPED_RECALL & (line->flags)) != 0){
     return;
   }
 

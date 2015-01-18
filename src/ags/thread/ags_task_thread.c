@@ -29,6 +29,8 @@
 
 #include <ags/audio/ags_devout.h>
 
+#include <ags/audio/ags_config.h>
+
 #include <math.h>
 
 void ags_task_thread_class_init(AgsTaskThreadClass *task_thread);
@@ -43,6 +45,8 @@ void ags_task_thread_run(AgsThread *thread);
 
 void ags_task_thread_append_task_queue(AgsReturnableThread *returnable_thread, gpointer data);
 void ags_task_thread_append_tasks_queue(AgsReturnableThread *returnable_thread, gpointer data);
+
+extern AgsConfig *config;
 
 /**
  * SECTION:ags_task_thread
@@ -216,6 +220,8 @@ ags_task_thread_run(AgsThread *thread)
   AgsDevout *devout;
   AgsTaskThread *task_thread;
   GList *list;
+  guint buffer_size;
+  guint samplerate;
   static struct timespec play_idle;
   static useconds_t idle;
   guint prev_pending;
@@ -224,10 +230,21 @@ ags_task_thread_run(AgsThread *thread)
   task_thread = AGS_TASK_THREAD(thread);
   devout = AGS_DEVOUT(thread->devout);
 
+  buffer_size = g_ascii_strtoull(ags_config_get(config,
+						AGS_CONFIG_DEVOUT,
+						"buffer-size\0"),
+				 NULL,
+				 10);
+  samplerate = g_ascii_strtoull(ags_config_get(config,
+					       AGS_CONFIG_DEVOUT,
+					       "samplerate\0"),
+				NULL,
+				10);
+
   if(!initialized){
     play_idle.tv_sec = 0;
-    play_idle.tv_nsec = 10 * round(sysconf(_SC_CLK_TCK) * (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE  / (double) AGS_DEVOUT_DEFAULT_SAMPLERATE);
-    //    idle = sysconf(_SC_CLK_TCK) * round(sysconf(_SC_CLK_TCK) * (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE  / (double) AGS_DEVOUT_DEFAULT_SAMPLERATE / 8.0);
+    play_idle.tv_nsec = 10 * round(sysconf(_SC_CLK_TCK) * (double) buffer_size  / (double) samplerate);
+    //    idle = sysconf(_SC_CLK_TCK) * round(sysconf(_SC_CLK_TCK) * (double) buffer_size  / (double) samplerate / 8.0);
 
     initialized = TRUE;
   }

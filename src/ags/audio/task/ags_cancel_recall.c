@@ -142,12 +142,16 @@ ags_cancel_recall_finalize(GObject *gobject)
 void
 ags_cancel_recall_launch(AgsTask *task)
 {
+  AgsRecall *recall;
   AgsCancelRecall *cancel_recall;
 
   cancel_recall = AGS_CANCEL_RECALL(task);
 
+  recall = cancel_recall->recall;
+  recall->flags |= AGS_RECALL_REMOVE;
+
   /* cancel AgsRecall */
-  ags_recall_cancel(cancel_recall->recall);
+  ags_recall_cancel(recall);
 
   /* set remove flag */
   if(cancel_recall->play != NULL)

@@ -440,7 +440,7 @@ ags_devout_init(AgsDevout *devout)
   }
   
   for(i = 1; i < (int) 2.0 * AGS_DEVOUT_DEFAULT_PERIOD; i++){
-    devout->delay[i] = 2.0 * ((gdouble) (default_tact_frames + devout->attack[i])) / (gdouble) devout->buffer_size;
+    devout->delay[i] = ((gdouble) (default_tact_frames + devout->attack[i])) / (gdouble) devout->buffer_size;
     //    g_message("%f\0", devout->delay[i]);
   }
 

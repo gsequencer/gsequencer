@@ -144,14 +144,26 @@ void
 ags_toggle_led_launch(AgsTask *task)
 {
   AgsToggleLed *toggle_led;
+  GList *list, *active;
+  guint i;
 
   toggle_led = AGS_TOGGLE_LED(task);
+  list = toggle_led->led;
 
-  ags_led_unset_active(AGS_LED(g_list_nth(toggle_led->led,
-					  toggle_led->unset_active)->data));
+  for(i = 0; list != NULL; i++){
+    if(i == toggle_led->set_active){
+      active = list;
+      list = list->next;
+      
+      continue;
+    }
 
-  ags_led_set_active(AGS_LED(g_list_nth(toggle_led->led,
-					toggle_led->set_active)->data));
+    ags_led_unset_active(AGS_LED(list->data));
+
+    list = list->next;
+  }
+
+  ags_led_set_active(AGS_LED(active->data));
 }
 
 /**

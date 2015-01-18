@@ -31,6 +31,7 @@
 #include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>
 #include <ags/file/ags_file_lookup.h>
+#include <ags/file/ags_file_gui.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_input.h>
@@ -59,6 +60,8 @@ gchar* ags_mixer_get_xml_type(AgsPlugin *plugin);
 void ags_mixer_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
 void ags_mixer_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
 xmlNode* ags_mixer_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
+void ags_mixer_read_resolve_audio(AgsFileLookup *file_lookup,
+				  AgsMachine *machine);
 
 void ags_mixer_set_audio_channels(AgsAudio *audio,
 				  guint audio_channels, guint audio_channels_old,
@@ -282,6 +285,7 @@ void
 ags_mixer_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 {
   AgsMixer *gobject;
+  AgsFileLookup *file_lookup;
   GList *list;
   guint64 index;
 
@@ -295,6 +299,42 @@ ags_mixer_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
 				   "reference\0", gobject,
 				   NULL));
+
+  list = file->lookup;
+
+  while((file_lookup = ags_file_lookup_find_by_node(list,
+						    node->parent)) != NULL){
+    if(g_signal_handler_find(list->data,
+			     G_SIGNAL_MATCH_FUNC,
+			     0,
+			     0,
+			     NULL,
+			     ags_file_read_machine_resolve_audio,
+			     NULL) != 0){
+      g_signal_connect_after(G_OBJECT(file_lookup), "resolve\0",
+			     G_CALLBACK(ags_mixer_read_resolve_audio), gobject);
+      
+      break;
+    }
+
+    list = list->next;
+  }
+}
+
+void
+ags_mixer_read_resolve_audio(AgsFileLookup *file_lookup,
+			     AgsMachine *machine)
+{
+  AgsMixer *mixer;
+  GList *pad, *pad_start, *line, *line_start;
+
+  mixer = AGS_MIXER(machine);
+
+  g_signal_connect_after(G_OBJECT(machine->audio), "set_audio_channels\0",
+			 G_CALLBACK(ags_mixer_set_audio_channels), mixer);
+
+  g_signal_connect_after(G_OBJECT(machine->audio), "set_pads\0",
+			 G_CALLBACK(ags_mixer_set_pads), mixer);
 }
 
 xmlNode*

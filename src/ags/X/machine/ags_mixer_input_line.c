@@ -195,6 +195,11 @@ ags_mixer_input_line_map_recall(AgsLine *line,
   AgsChannel *source;
   guint i;
 
+  if((AGS_LINE_MAPPED_RECALL & (line->flags)) != 0 ||
+     (AGS_LINE_PREMAPPED_RECALL & (line->flags)) != 0){
+    return;
+  }
+
   mixer_input_line = AGS_MIXER_INPUT_LINE(line);
 
   audio = AGS_AUDIO(line->channel->audio);

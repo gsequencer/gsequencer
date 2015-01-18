@@ -221,7 +221,7 @@ ags_init_channel_launch(AgsTask *task)
 	  if(init_channel->playback){
 	    ags_channel_recursive_play_init(channel, stage,
 					    arrange_recall_id, duplicate_templates,
-					    FALSE, FALSE, TRUE,
+					    TRUE, FALSE, FALSE,
 					    resolve_dependencies,
 					    AGS_RECALL_ID(list->data));
 	  }

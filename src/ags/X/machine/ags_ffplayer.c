@@ -33,6 +33,7 @@
 #include <ags/file/ags_file_id_ref.h>
 #include <ags/file/ags_file_lookup.h>
 #include <ags/file/ags_file_launch.h>
+#include <ags/file/ags_file_gui.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_input.h>
@@ -78,6 +79,8 @@ void ags_ffplayer_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
 void ags_ffplayer_resolve_filename(AgsFileLookup *lookup, AgsFFPlayer *ffplayer);
 void ags_ffplayer_launch_task(AgsFileLaunch *file_launch, AgsFFPlayer *ffplayer);
 xmlNode* ags_ffplayer_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
+void ags_ffplayer_read_resolve_audio(AgsFileLookup *file_lookup,
+				 AgsMachine *machine);
 
 void ags_ffplayer_set_audio_channels(AgsAudio *audio,
 				     guint audio_channels, guint audio_channels_old,
@@ -97,7 +100,7 @@ void ags_ffplayer_paint(AgsFFPlayer *ffplayer);
  * @section_id:
  * @include: ags/X/machine/ags_ffplayer.h
  *
- * The #AgsFfplayer is a composite widget to act as soundfont2 notation player.
+ * The #AgsFFPlayer is a composite widget to act as soundfont2 notation player.
  */
 
 static gpointer ags_ffplayer_parent_class = NULL;
@@ -338,6 +341,11 @@ ags_ffplayer_map_recall(AgsMachine *machine)
 
   GList *list;
 
+  if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0 ||
+     (AGS_MACHINE_PREMAPPED_RECALL & (machine->flags)) != 0){
+    return;
+  }
+
   audio = machine->audio;
 
   AGS_MACHINE_CLASS(ags_ffplayer_parent_class)->map_recall(machine);
@@ -523,7 +531,9 @@ void
 ags_ffplayer_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 {
   AgsFFPlayer *gobject;
+  AgsFileLookup *file_lookup;
   AgsFileLaunch *file_launch;
+  GList *list;
   
   gobject = AGS_FFPLAYER(plugin);
 
@@ -536,6 +546,26 @@ ags_ffplayer_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 				   "reference\0", gobject,
 				   NULL));
 
+  list = file->lookup;
+
+  while((file_lookup = ags_file_lookup_find_by_node(list,
+						    node->parent)) != NULL){
+    if(g_signal_handler_find(list->data,
+			     G_SIGNAL_MATCH_FUNC,
+			     0,
+			     0,
+			     NULL,
+			     ags_file_read_machine_resolve_audio,
+			     NULL) != 0){
+      g_signal_connect_after(G_OBJECT(file_lookup), "resolve\0",
+			     G_CALLBACK(ags_ffplayer_read_resolve_audio), gobject);
+      
+      break;
+    }
+
+    list = list->next;
+  }
+
   file_launch = g_object_new(AGS_TYPE_FILE_LAUNCH,
 			     "node\0", node,
 			     NULL);
@@ -543,6 +573,22 @@ ags_ffplayer_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 		   G_CALLBACK(ags_ffplayer_launch_task), gobject);
   ags_file_add_launch(file,
 		      file_launch);
+}
+
+void
+ags_ffplayer_read_resolve_audio(AgsFileLookup *file_lookup,
+			    AgsMachine *machine)
+{
+  AgsFFPlayer *ffplayer;
+  GList *pad, *pad_start, *line, *line_start;
+
+  ffplayer = AGS_FFPLAYER(machine);
+
+  g_signal_connect_after(G_OBJECT(machine->audio), "set_audio_channels\0",
+			 G_CALLBACK(ags_ffplayer_set_audio_channels), ffplayer);
+
+  g_signal_connect_after(G_OBJECT(machine->audio), "set_pads\0",
+			 G_CALLBACK(ags_ffplayer_set_pads), ffplayer);
 }
 
 xmlNode*

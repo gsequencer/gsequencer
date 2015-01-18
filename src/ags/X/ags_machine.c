@@ -71,13 +71,6 @@ void ags_machine_show(GtkWidget *widget);
 void ags_machine_real_map_recall(AgsMachine *machine);
 GList* ags_machine_real_find_port(AgsMachine *machine);
 
-void ags_machine_set_audio_channels(AgsAudio *audio,
-				    guint audio_channels, guint audio_channels_old,
-				    AgsMachine *machine);
-void ags_machine_set_pads(AgsAudio *audio, GType type,
-			  guint pads, guint pads_old,
-			  AgsMachine *machine);
-
 GtkMenu* ags_machine_popup_new(AgsMachine *machine);
 
 /**
@@ -328,7 +321,7 @@ ags_machine_set_property(GObject *gobject,
 	if(audio == NULL){
 	  /* destroy pad */
 	  pad = gtk_container_get_children(machine->output);
-	  pad = g_list_nth(pad, audio->output_pads);
+	  //	  pad = g_list_nth(pad, audio->output_pads);
 	  
 	  while(pad != NULL){
 	    gtk_widget_destroy(pad->data);
@@ -337,7 +330,7 @@ ags_machine_set_property(GObject *gobject,
 	  }
 
 	  pad = gtk_container_get_children(machine->input);
-	  pad = g_list_nth(pad, audio->input_pads);
+	  //	  pad = g_list_nth(pad, audio->input_pads);
 	  
 	  while(pad != NULL){
 	    gtk_widget_destroy(pad->data);
@@ -366,72 +359,48 @@ ags_machine_set_property(GObject *gobject,
 
 	    i = 0;
 
-	    /* resize existing */
-	    while(pad != NULL){
+	    while(pad != NULL && output != NULL){
 	      line = gtk_container_get_children(GTK_CONTAINER(AGS_PAD(pad->data)->expander_set));
 
-	      if(audio->audio_channels < g_list_length(line)){
-		ags_pad_resize_lines(AGS_PAD(pad->data), machine->output_line_type,
-				     audio->audio_channels, g_list_length(line) - audio->audio_channels);
-	      }else{
-		ags_pad_resize_lines(AGS_PAD(pad->data), machine->output_line_type,
-				     audio->audio_channels, audio->audio_channels - g_list_length(line));
-	      }
-	      
-	      g_object_set(G_OBJECT(pad),
+	      ags_pad_resize_lines(AGS_PAD(pad->data), machine->output_line_type,
+				   audio->audio_channels, g_list_length(line));
+	      g_object_set(G_OBJECT(pad->data),
 			   "channel\0", output,
 			   NULL);
-	      
+
 	      output = output->next_pad;
 	      pad = pad->next;
 	      i++;
 	    }
 
-	    /* add new */
 	    if(output != NULL){
-	      if(g_list_length(pad) < audio->output_pads){
-		AgsPad *pad;
+	      AgsPad *pad;
 
-		if(audio->audio_channels < g_list_length(line)){
-		  ags_pad_resize_lines(pad, machine->output_line_type,
-				       audio->audio_channels, g_list_length(line) - audio->audio_channels);
-		}else{
-		  ags_pad_resize_lines(pad, machine->output_line_type,
-				       audio->audio_channels, audio->audio_channels - g_list_length(line));
-		}
-		  
+	      /* add pad */
+	      for(; i < audio->output_pads; i++){
+		pad = g_object_new(machine->output_pad_type,
+				   "channel\0", output,
+				   NULL);
+		gtk_container_add(machine->output,
+				  GTK_WIDGET(pad));
 
-		/* add pad */
-		for(; i < audio->output_pads; i++){
-		  pad = g_object_new(machine->output_pad_type,
-				     "channel\0", output,
-				     NULL);
-		  gtk_container_add(machine->output,
-				    GTK_WIDGET(pad));
-
-		  line = gtk_container_get_children(GTK_CONTAINER(AGS_PAD(pad)->expander_set));
-
-		  ags_pad_resize_lines(pad, machine->output_line_type,
-				       audio->audio_channels, audio->audio_channels);
-		  gtk_widget_show_all(pad);
-
-		  output = output->next_pad;
-		}
-	      }else if(g_list_length(pad) > audio->output_pads){
-		/* destroy pad */
-		pad = gtk_container_get_children(machine->output);
-		pad = g_list_nth(pad, audio->output_pads);
-
-		while(pad != NULL){
-		  gtk_widget_destroy(pad->data);
-
-		  pad = pad->next;
-		}	      
+		ags_pad_resize_lines(pad, machine->output_line_type,
+				     audio->audio_channels, 0);
 	      }
+	    }else{
+	      /* destroy pad */
+	      pad = gtk_container_get_children(machine->output);
+	      pad = g_list_nth(pad, audio->output_pads);
+
+	      while(pad != NULL){
+		gtk_widget_destroy(pad->data);
+
+		pad = pad->next;
+	      }	      
 	    }
 	  }
 
-	  /* set channel and resize for AgsInput */
+	  /* set channel and resize for AgsOutput */
 	  if(machine->input_pad_type != G_TYPE_NONE){
 	    input = audio->input;
 	    pad = gtk_container_get_children(machine->input);
@@ -567,7 +536,10 @@ ags_machine_connect(AgsConnectable *connectable)
       ags_machine_map_recall(machine);
     }
   }else{
-    machine->flags &= ~AGS_MACHINE_PREMAPPED_RECALL;
+    //    machine->flags &= ~AGS_MACHINE_PREMAPPED_RECALL;
+    g_message("find port\0");
+
+    ags_machine_find_port(machine);
   }
 
   if(machine->play != NULL){
