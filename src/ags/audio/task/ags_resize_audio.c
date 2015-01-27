@@ -24,6 +24,8 @@
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_input.h>
 
+#include <ags/X/ags_machine.h>
+
 void ags_resize_audio_class_init(AgsResizeAudioClass *resize_audio);
 void ags_resize_audio_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_resize_audio_init(AgsResizeAudio *resize_audio);
@@ -148,20 +150,74 @@ void
 ags_resize_audio_launch(AgsTask *task)
 {
   AgsResizeAudio *resize_audio;
-
+  AgsMachine *machine;
+  AgsChannel *iter;
+  GList *list;
+  guint pads_old;
+  
   resize_audio = AGS_RESIZE_AUDIO(task);
 
   /* resize audio */
   if(resize_audio->audio->output_pads != resize_audio->output_pads){
+    pads_old = resize_audio->audio->output_pads;
+    
     ags_audio_set_pads(resize_audio->audio,
 		       AGS_TYPE_OUTPUT,
 		       resize_audio->output_pads);
+
+    if(pads_old < resize_audio->audio->output_pads){
+      iter = ags_channel_pad_nth(resize_audio->audio->input,
+				 pads_old);
+      
+      while(iter != NULL){
+	ags_connectable_connect(AGS_CONNECTABLE(iter));
+	
+	iter = iter->next;
+      }
+    }
+
+    machine = resize_audio->audio->machine;
+    list = gtk_container_get_children(machine->output);
+    list = g_list_nth(list,
+		      pads_old);
+
+    while(list != NULL){
+      ags_connectable_connect(AGS_CONNECTABLE(list->data));
+      gtk_widget_show_all(list->data);
+
+      list = list->next;
+    }
   }
 
   if(resize_audio->audio->input_pads != resize_audio->input_pads){
+    pads_old = resize_audio->audio->input_pads;
+
     ags_audio_set_pads(resize_audio->audio,
 		       AGS_TYPE_INPUT,
 		       resize_audio->input_pads);
+
+    if(pads_old < resize_audio->audio->output_pads){
+      iter = ags_channel_pad_nth(resize_audio->audio->input,
+				 pads_old);
+      
+      while(iter != NULL){
+	ags_connectable_connect(AGS_CONNECTABLE(iter));
+	
+	iter = iter->next;
+      }
+    }
+
+    machine = resize_audio->audio->machine;
+    list = gtk_container_get_children(machine->input);
+    list = g_list_nth(list,
+		      pads_old);
+
+    while(list != NULL){
+      ags_connectable_connect(AGS_CONNECTABLE(list->data));
+      gtk_widget_show_all(list->data);
+
+      list = list->next;
+    }
   }
 
   if(resize_audio->audio->audio_channels != resize_audio->audio_channels){

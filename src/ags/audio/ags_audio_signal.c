@@ -1776,7 +1776,7 @@ ags_audio_signal_new(GObject *devout,
 }
 
 /**
- * ags_audio_signal_new:
+ * ags_audio_signal_new_with_length:
  * @devout: the assigned #AgsDevout
  * @recycling: the #AgsRecycling
  * @recall_id: the #AgsRecallID, it can be NULL if %AGS_AUDIO_SIGNAL_TEMPLATE is set
@@ -1787,6 +1787,8 @@ ags_audio_signal_new(GObject *devout,
  * The audio data is tiled to @length frame count.
  *
  * Returns: a new #AgsAudioSignal
+ *
+ * Since: 0.4
  */
 AgsAudioSignal*
 ags_audio_signal_new_with_length(GObject *devout,

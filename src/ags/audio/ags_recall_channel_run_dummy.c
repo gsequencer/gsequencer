@@ -23,6 +23,8 @@
 
 #include <ags/main.h>
 
+#include <ags/util/ags_id_generator.h>
+
 #include <ags/object/ags_dynamic_connectable.h>
 #include <ags/object/ags_plugin.h>
 
@@ -36,6 +38,8 @@
 #include <ags/audio/ags_recall_id.h>
 
 #include <ags/audio/task/ags_cancel_recall.h>
+
+#include <libxml/tree.h>
 
 void ags_recall_channel_run_dummy_class_init(AgsRecallChannelRunDummyClass *recall_channel_run_dummy);
 void ags_recall_channel_run_dummy_connectable_interface_init(AgsConnectableInterface *connectable);

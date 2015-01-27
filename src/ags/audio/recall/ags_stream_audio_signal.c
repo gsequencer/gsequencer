@@ -16,8 +16,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <ags/audio/recall/ags_stream_audio_signal.h>
+#include <ags/audio/recall/ags_stream_channel.h>
+#include <ags/audio/recall/ags_stream_channel_run.h>
 #include <ags/audio/recall/ags_stream_recycling.h>
+#include <ags/audio/recall/ags_stream_audio_signal.h>
 
 #include <ags-lib/object/ags_connectable.h>
 
@@ -219,11 +221,54 @@ ags_stream_audio_signal_run_init_pre(AgsRecall *recall)
 void
 ags_stream_audio_signal_run_post(AgsRecall *recall)
 {
+  AgsStreamChannel *stream_channel;
+  AgsStreamChannelRun *stream_channel_run;
   AgsStreamAudioSignal *stream_audio_signal;
 
   stream_audio_signal = AGS_STREAM_AUDIO_SIGNAL(recall);
-
+  
+  if(recall->parent != NULL &&
+     recall->parent->parent != NULL){
+    stream_channel_run = recall->parent->parent;
+    stream_channel = AGS_RECALL_CHANNEL_RUN(stream_channel_run)->recall_channel;
+  }else{
+    stream_channel_run = NULL;
+    stream_channel = NULL;
+  }
+  
   if(AGS_RECALL_AUDIO_SIGNAL(recall)->source->stream_current != NULL){
+    if(stream_channel != NULL &&
+       AGS_RECALL_AUDIO_SIGNAL(recall)->source->stream_current->next == NULL){
+      GValue value = {0,};
+      
+      g_value_init(&value, G_TYPE_BOOLEAN);
+      ags_port_safe_read(stream_channel->auto_sense,
+			 &value);
+
+      if(g_value_get_boolean(&value)){
+	signed short *buffer;
+	guint buffer_size;
+	guint i;
+	gboolean add_stream;
+
+	buffer = AGS_RECALL_AUDIO_SIGNAL(recall)->source->stream_current->data;
+	
+	buffer_size = AGS_RECALL_AUDIO_SIGNAL(recall)->source->buffer_size;
+	add_stream = FALSE;
+	
+	for(i = buffer_size - 1; i > buffer_size / 2; i--){
+	  if(buffer[i] != 0){
+	    add_stream = TRUE;
+	    break;
+	  }
+	}
+	
+	if(add_stream){
+	  ags_audio_signal_add_stream(AGS_RECALL_AUDIO_SIGNAL(recall)->source);
+	}
+      }
+    }
+    
     AGS_RECALL_AUDIO_SIGNAL(recall)->source->stream_current = AGS_RECALL_AUDIO_SIGNAL(recall)->source->stream_current->next;
 
     /* call parent */

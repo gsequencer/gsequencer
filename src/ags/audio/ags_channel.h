@@ -130,13 +130,19 @@ void ags_channel_set_devout(AgsChannel *channel, GObject *devout);
 
 void ags_channel_remove_recall_id(AgsChannel *channel, AgsRecallID *recall_id);
 void ags_channel_add_recall_id(AgsChannel *channel, AgsRecallID *recall_id);
+
 void ags_channel_add_recall_container(AgsChannel *channel, GObject *recall_container);
+void ags_channel_remove_recall_container(AgsChannel *channel, GObject *recall_container);
+
 void ags_channel_remove_recall(AgsChannel *channel, GObject *recall, gboolean play);
 void ags_channel_add_recall(AgsChannel *channel, GObject *recall, gboolean play);
 
 void ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
 			  GError **error);
 void ags_channel_set_recycling(AgsChannel *channel, AgsRecycling *first_recycling, AgsRecycling *last_recycling, gboolean update, gboolean destroy_old);
+void ags_channel_recursive_reset_recycling_container(AgsChannel *channel,
+						     AgsRecyclingContainer *old_recycling_container,
+						     AgsRecyclingContainer *recycling_container);
 void ags_channel_recycling_changed(AgsChannel *channel,
 				   AgsRecycling *old_start_region, AgsRecycling *old_end_region,
 				   AgsRecycling *new_start_region, AgsRecycling *new_end_region,

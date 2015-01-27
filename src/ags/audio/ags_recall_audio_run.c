@@ -462,6 +462,8 @@ ags_recall_audio_run_duplicate(AgsRecall *recall,
  * Creates an #AgsRecallAudioRun.
  *
  * Returns: a new #AgsRecallAudioRun.
+ *
+ * Since: 0.4
  */
 AgsRecallAudioRun*
 ags_recall_audio_run_new()

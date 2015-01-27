@@ -535,7 +535,7 @@ ags_pattern_safe_get_property(AgsPortlet *portlet, gchar *property_name, GValue 
 }
 
 /**
- * ags_pattern_find_by_timestamp:
+ * ags_pattern_get_by_timestamp:
  * @pattern: a #GList containing #AgsPattern
  * @timestamp: the matching timestamp
  *

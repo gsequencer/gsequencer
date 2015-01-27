@@ -40,7 +40,7 @@ void ags_recall_dependency_finalize(GObject *gobject);
  * @short_description: Object specifing dependency
  * @title: AgsRecallDependency
  * @section_id:
- * @include ags/audio/ags_recall_dependency.h
+ * @include: ags/audio/ags_recall_dependency.h
  *
  * #AgsRecallDependency specifies dependencies on other recalls. Dependencies
  * are resolved during initialization.

@@ -57,12 +57,12 @@ struct _AgsPort
     gboolean ags_port_boolean;
     gint64 ags_port_int;
     guint64 ags_port_uint;
-    LADSPA_Data ags_port_float;
+    gfloat ags_port_float;
     gdouble ags_port_double;
     gboolean *ags_port_boolean_ptr;
     gint64 *ags_port_int_ptr;
     guint64 *ags_port_uint_ptr;
-    LADSPA_Data *ags_port_float_ptr;
+    gfloat *ags_port_float_ptr;
     gdouble *ags_port_double_ptr;
     gpointer ags_port_pointer;
     GObject *ags_port_object;

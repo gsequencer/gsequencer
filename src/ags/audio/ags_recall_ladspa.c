@@ -22,6 +22,8 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/util/ags_id_generator.h>
+
 #include <ags/plugin/ags_ladspa_manager.h>
 
 #include <ags/object/ags_plugin.h>
@@ -40,6 +42,8 @@
 #include <string.h>
 #include <sys/types.h>
 #include <unistd.h>
+
+#include <libxml/tree.h>
 
 void ags_recall_ladspa_class_init(AgsRecallLadspaClass *recall_ladspa_class);
 void ags_recall_ladspa_connectable_interface_init(AgsConnectableInterface *connectable);

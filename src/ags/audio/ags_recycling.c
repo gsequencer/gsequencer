@@ -288,6 +288,15 @@ ags_recycling_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_recycling_parent_class)->finalize(gobject);
 }
 
+/**
+ * ags_recycling_set_devout:
+ * @recycling:  an #AgsRecycling
+ * @devout: the #AgsDevout to set
+ *
+ * Sets #AgsDevout to recycling.
+ *
+ * Since: 0.3
+ */
 void
 ags_recycling_set_devout(AgsRecycling *recycling, GObject *devout)
 {

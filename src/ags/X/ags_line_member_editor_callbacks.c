@@ -39,9 +39,11 @@
 #include <ags/audio/ags_recall_ladspa_run.h>
 #include <ags/audio/ags_port.h>
 
+#include <ags/audio/task/ags_add_recall_container.h>
 #include <ags/audio/task/ags_add_recall.h>
 #include <ags/audio/task/ags_add_line_member.h>
 #include <ags/audio/task/ags_remove_recall.h>
+#include <ags/audio/task/ags_remove_recall_container.h>
 
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_pad.h>
@@ -83,6 +85,7 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
       GtkHBox *hbox;
       GtkCheckButton *check_button;
       GtkLabel *label;
+      AgsAddRecallContainer *add_recall_container;
       AgsAddRecall *add_recall;
       AgsAddLineMember *add_line_member;
       AgsRecallContainer *recall_container;
@@ -217,6 +220,11 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
       /* ladspa play */
       recall_container = ags_recall_container_new();
 
+      add_recall_container = ags_add_recall_container_new(line_editor->channel->audio,
+							  recall_container);
+      task = g_list_prepend(task,
+			    add_recall_container);
+
       recall_ladspa = ags_recall_ladspa_new(line_editor->channel,
 					    filename,
 					    effect,
@@ -254,6 +262,11 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
 
       /* ladspa recall */
       recall_container = ags_recall_container_new();
+
+      add_recall_container = ags_add_recall_container_new(line_editor->channel->audio,
+							  recall_container);
+      task = g_list_prepend(task,
+			    add_recall_container);
 
       recall_ladspa = ags_recall_ladspa_new(line_editor->channel,
 					    filename,
@@ -388,6 +401,7 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
   AgsMachineEditor *machine_editor;
   AgsLineEditor *line_editor;
   AgsRemoveRecall *remove_recall;
+  AgsRemoveRecallContainer *remove_recall_container;
   GList *control;
   GList *line_member;
   GList *children;
@@ -460,35 +474,51 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
     if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(children->data))){
       task = NULL;
 
-      /*  */
+      /* play context */
       remove_recall = ags_remove_recall_new(line_editor->channel,
 					    g_list_nth(play_ladspa,
 						       index)->data,
+					    TRUE,
 					    TRUE);
       task = g_list_prepend(task,
 			    remove_recall);
 
       remove_recall = ags_remove_recall_new(line_editor->channel,
 					    ags_recall_find_template(AGS_RECALL_CONTAINER(AGS_RECALL(g_list_nth(play_ladspa,
-														index)->data)->container)->recall_channel_run),
+														index)->data)->container)->recall_channel_run)->data,
+					    TRUE,
 					    TRUE);
       task = g_list_prepend(task,
 			    remove_recall);
 
-      /*  */
+      remove_recall_container = ags_remove_recall_container_new(line_editor->channel->audio,
+								AGS_RECALL(g_list_nth(play_ladspa,
+										      index)->data)->container);
+      task = g_list_prepend(task,
+			    remove_recall_container);
+
+      /* recall context */
       remove_recall = ags_remove_recall_new(line_editor->channel,
 					    g_list_nth(recall_ladspa,
 						       index)->data,
-					    FALSE);
+					    FALSE,
+					    TRUE);
       task = g_list_prepend(task,
 			    remove_recall);
 
       remove_recall = ags_remove_recall_new(line_editor->channel,
 					    ags_recall_find_template(AGS_RECALL_CONTAINER(AGS_RECALL(g_list_nth(recall_ladspa,
-														index)->data)->container)->recall_channel_run),
-					    FALSE);
+														index)->data)->container)->recall_channel_run)->data,
+					    FALSE,
+					    TRUE);
       task = g_list_prepend(task,
 			    remove_recall);
+
+      remove_recall_container = ags_remove_recall_container_new(line_editor->channel->audio,
+								AGS_RECALL(g_list_nth(recall_ladspa,
+										      index)->data)->container);
+      task = g_list_prepend(task,
+			    remove_recall_container);
 
       /* destroy line member editor entry */
       gtk_widget_destroy(GTK_WIDGET(line_member->data));

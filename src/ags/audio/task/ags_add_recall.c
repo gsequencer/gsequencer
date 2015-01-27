@@ -20,8 +20,12 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/object/ags_dynamic_connectable.h>
+
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_recall_audio.h>
+#include <ags/audio/ags_recall_channel.h>
 
 void ags_add_recall_class_init(AgsAddRecallClass *add_recall);
 void ags_add_recall_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -146,10 +150,13 @@ void
 ags_add_recall_launch(AgsTask *task)
 {
   AgsAddRecall *add_recall;
-
+  
   add_recall = AGS_ADD_RECALL(task);
 
   if(AGS_IS_AUDIO(add_recall->context)){
+    AgsRecall *current;
+    GList *recall_id;
+
     if(g_list_find(AGS_AUDIO(add_recall->context)->container,
 		   add_recall->recall->container) == NULL){
       ags_audio_add_recall_container(AGS_AUDIO(add_recall->context),
@@ -159,7 +166,62 @@ ags_add_recall_launch(AgsTask *task)
     ags_audio_add_recall(AGS_AUDIO(add_recall->context),
 			 add_recall->recall,
 			 add_recall->is_play);
+
+    /* set up playback, sequencer or notation */
+    recall_id = AGS_AUDIO(add_recall->context)->recall_id;
+    if(!AGS_IS_RECALL_AUDIO(add_recall->recall)){
+      while(recall_id != NULL){
+	if((!add_recall->is_play && AGS_RECALL_ID(recall_id->data)->recycling_container->parent == NULL) ||
+	   (add_recall->is_play && AGS_RECALL_ID(recall_id->data)->recycling_container->parent != NULL)){
+	  recall_id = recall_id->next;
+	
+	  continue;
+	}
+
+	current = ags_recall_duplicate(add_recall->recall, recall_id->data);
+
+	/* set appropriate flag */
+	if((AGS_RECALL_ID_PLAYBACK & (AGS_RECALL_ID(recall_id->data)->flags)) != 0){
+	  ags_recall_set_flags(current, AGS_RECALL_PLAYBACK);
+	}else if((AGS_RECALL_ID_SEQUENCER & (AGS_RECALL_ID(recall_id->data)->flags)) != 0){
+	  ags_recall_set_flags(current, AGS_RECALL_SEQUENCER);
+	}else if((AGS_RECALL_ID_NOTATION & (AGS_RECALL_ID(recall_id->data)->flags)) != 0){
+	  ags_recall_set_flags(current, AGS_RECALL_NOTATION);
+	}
+
+	/* append to AgsAudio */
+	if(add_recall->is_play)
+	  AGS_AUDIO(add_recall->context)->play = g_list_append(AGS_AUDIO(add_recall->context)->play, current);
+	else
+	  AGS_AUDIO(add_recall->context)->recall = g_list_append(AGS_AUDIO(add_recall->context)->recall, current);
+
+	/* connect */
+	ags_connectable_connect(AGS_CONNECTABLE(current));
+
+	/* notify run */
+	ags_recall_notify_dependency(current, AGS_RECALL_NOTIFY_RUN, 1);
+
+	/* resolve */
+	ags_recall_resolve_dependencies(current);
+
+	/* init */
+	ags_dynamic_connectable_connect_dynamic(AGS_DYNAMIC_CONNECTABLE(current));
+      
+	current->flags &= (~AGS_RECALL_HIDE);
+	ags_recall_run_init_pre(current);
+	current->flags &= (~AGS_RECALL_REMOVE);
+      
+	ags_recall_run_init_inter(current);
+	ags_recall_run_init_post(current);
+
+	/* iterate */
+	recall_id = recall_id->next;
+      }
+    }
   }else if(AGS_IS_CHANNEL(add_recall->context)){
+    AgsRecall *current;
+    GList *recall_id;
+
     if(g_list_find(AGS_CHANNEL(add_recall->context)->container,
 		   add_recall->recall->container) == NULL){
       ags_channel_add_recall_container(AGS_CHANNEL(add_recall->context),
@@ -169,6 +231,59 @@ ags_add_recall_launch(AgsTask *task)
     ags_channel_add_recall(AGS_CHANNEL(add_recall->context),
 			   add_recall->recall,
 			   add_recall->is_play);
+
+      /* set up playback, sequencer or notation */
+    recall_id = AGS_CHANNEL(add_recall->context)->recall_id;
+
+    if(!AGS_IS_RECALL_CHANNEL(add_recall->recall)){
+      while(recall_id != NULL){
+	if((!add_recall->is_play && AGS_RECALL_ID(recall_id->data)->recycling_container->parent == NULL) ||
+	   (add_recall->is_play && AGS_RECALL_ID(recall_id->data)->recycling_container->parent != NULL)){
+	  recall_id = recall_id->next;
+	
+	  continue;
+	}
+      
+	current = ags_recall_duplicate(add_recall->recall, recall_id->data);
+
+	/* set appropriate flag */
+	if((AGS_RECALL_ID_PLAYBACK & (AGS_RECALL_ID(recall_id->data)->flags)) != 0){
+	  ags_recall_set_flags(current, AGS_RECALL_PLAYBACK);
+	}else if((AGS_RECALL_ID_SEQUENCER & (AGS_RECALL_ID(recall_id->data)->flags)) != 0){
+	  ags_recall_set_flags(current, AGS_RECALL_SEQUENCER);
+	}else if((AGS_RECALL_ID_NOTATION & (AGS_RECALL_ID(recall_id->data)->flags)) != 0){
+	  ags_recall_set_flags(current, AGS_RECALL_NOTATION);
+	}
+
+	/* append to AgsAudio */
+	if(add_recall->is_play)
+	  AGS_CHANNEL(add_recall->context)->play = g_list_append(AGS_CHANNEL(add_recall->context)->play, current);
+	else
+	  AGS_CHANNEL(add_recall->context)->recall = g_list_append(AGS_CHANNEL(add_recall->context)->recall, current);
+
+	/* connect */
+	ags_connectable_connect(AGS_CONNECTABLE(current));
+
+	/* notify run */
+	ags_recall_notify_dependency(current, AGS_RECALL_NOTIFY_RUN, 1);
+
+	/* resolve */
+	ags_recall_resolve_dependencies(current);
+
+	/* init */
+	ags_dynamic_connectable_connect_dynamic(AGS_DYNAMIC_CONNECTABLE(current));
+      
+	current->flags &= (~AGS_RECALL_HIDE);
+	ags_recall_run_init_pre(current);
+	current->flags &= (~AGS_RECALL_REMOVE);
+      
+	ags_recall_run_init_inter(current);
+	ags_recall_run_init_post(current);
+
+	/* iterate */
+	recall_id = recall_id->next;
+      }
+    }
   }else if(AGS_IS_RECALL(add_recall->context)){
     ags_recall_add_child(AGS_RECALL(add_recall->context),
 			 add_recall->recall);

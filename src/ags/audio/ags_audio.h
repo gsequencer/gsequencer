@@ -116,10 +116,15 @@ void ags_audio_set_sequence_length(AgsAudio *audio, guint sequence_length);
 
 void ags_audio_set_devout(AgsAudio *audio, GObject *devout);
 
+void ags_audio_add_recycling_container(AgsAudio *audio, GObject *recycling_container);
+void ags_audio_remove_recycling_container(AgsAudio *audio, GObject *recycling_container);
+
 void ags_audio_add_recall_id(AgsAudio *audio, GObject *recall_id);
 void ags_audio_remove_recall_id(AgsAudio *audio, GObject *recall_id);
+
 void ags_audio_add_recall_container(AgsAudio *audio, GObject *recall_container);
 void ags_audio_remove_recall_container(AgsAudio *audio, GObject *recall_container);
+
 void ags_audio_add_recall(AgsAudio *audio, GObject *recall, gboolean play);
 void ags_audio_remove_recall(AgsAudio *audio, GObject *recall, gboolean play);
 

@@ -80,9 +80,9 @@ void ags_recycling_container_remove_child(AgsRecyclingContainer *parent,
 
 GList* ags_recycling_container_get_child_recall_id(AgsRecyclingContainer *recycling_container);
 
-void ags_recycling_container_reset_recycling(AgsRecyclingContainer *recycling_container,
-					     AgsRecycling *old_first_recycling, AgsRecycling *old_last_recycling,
-					     AgsRecycling *new_first_recycling, AgsRecycling *new_last_recycling);
+AgsRecyclingContainer* ags_recycling_container_reset_recycling(AgsRecyclingContainer *recycling_container,
+							       AgsRecycling *old_first_recycling, AgsRecycling *old_last_recycling,
+							       AgsRecycling *new_first_recycling, AgsRecycling *new_last_recycling);
 
 AgsRecyclingContainer* ags_recycling_container_new(gint length);
 

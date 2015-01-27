@@ -63,6 +63,7 @@ static gpointer ags_config_parent_class = NULL;
 static const gchar *ags_config_generic = AGS_CONFIG_GENERIC;
 static const gchar *ags_config_thread = AGS_CONFIG_THREAD;
 static const gchar *ags_config_devout = AGS_CONFIG_DEVOUT;
+static const gchar *ags_config_recall = AGS_CONFIG_RECALL;
 
 GType
 ags_config_get_type (void)
@@ -223,6 +224,8 @@ ags_config_load_defaults(AgsConfig *config)
   ags_config_set(config, ags_config_devout, "pcm-channels\0", "2\0");
   ags_config_set(config, ags_config_devout, "dsp-channels\0", "2\0");
   ags_config_set(config, ags_config_devout, "alsa-handle\0", "hw:0,0\0");
+
+  ags_config_set(config, ags_config_recall, "auto-sense\0", "true\0");
 }
 
 /**
@@ -508,10 +511,16 @@ ags_config_get(AgsConfig *config, gchar *group, gchar *key)
 {
   gchar *str;
   GError *error;
+  
+  pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
+  pthread_mutex_lock(&mutex);
+  
   error = NULL;
 
   str = g_key_file_get_value(config->key_file, group, key, &error);
+
+  pthread_mutex_unlock(&mutex);
 
   return(str);
 }
