@@ -38,11 +38,11 @@ ags_tactable_get_type()
   static GType tactable_type = 0;
 
   if(!tactable_type){
-    tactable_type = g_type_register_static_simple (G_TYPE_INTERFACE,
-						   "AgsTactable\0",
-						   sizeof (AgsTactableInterface),
-						   (GClassInitFunc) ags_tactable_class_init,
-						   0, NULL, 0);
+    tactable_type = g_type_register_static_simple(G_TYPE_INTERFACE,
+						  "AgsTactable\0",
+						  sizeof (AgsTactableInterface),
+						  (GClassInitFunc) ags_tactable_class_init,
+						  0, NULL, 0);
   }
   
   return tactable_type;

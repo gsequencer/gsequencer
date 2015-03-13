@@ -70,11 +70,26 @@ void ags_devout_switch_buffer_flag(AgsDevout *devout);
 
 void ags_devout_play_functions(AgsDevout *devout);
 
-void ags_devout_alsa_init(AgsDevout *devout,
+void ags_devout_list_cards(AgsSoundcard *soundcard,
+			   GList **card_id, GList **card_name);
+void ags_devout_pcm_info(AgsSoundcard *soundcard, gchar *card_id,
+			 guint *channels_min, guint *channels_max,
+			 guint *rate_min, guint *rate_max,
+			 guint *buffer_size_min, guint *buffer_size_max,
+			 GError **error);
+
+void ags_devout_alsa_init(AgsSoundcard *soundcard,
 			  GError **error);
-void ags_devout_alsa_play(AgsDevout *devout,
+void ags_devout_alsa_play(AgsSoundcard *soundcard,
 			  GError **error);
-void ags_devout_alsa_free(AgsDevout *devout);
+void ags_devout_alsa_free(AgsSoundcard *soundcard);
+
+signed short* ags_devout_get_buffer(AgsSoundcard *soundcard);
+signed short* ags_devout_get_next_buffer(AgsSoundcard *soundcard);
+
+void ags_devout_set_note_offset(AgsSoundcard *soundcard,
+				guint note_offset);
+guint ags_devout_get_note_offset(AgsSoundcard *soundcard);
 
 enum{
   PROP_0,
@@ -90,17 +105,9 @@ enum{
   PROP_ATTACK,
 };
 
-enum{
-  RUN,
-  STOP,
-  TIC,
-  LAST_SIGNAL,
-};
-
 extern AgsConfig *config;
 
 static gpointer ags_devout_parent_class = NULL;
-static guint devout_signals[LAST_SIGNAL];
 
 /* dangerous - produces a lot of output */
 static gboolean DEBUG_DEVOUT = FALSE;
@@ -343,28 +350,7 @@ ags_devout_class_init(AgsDevoutClass *devout)
 
 
   /* AgsDevoutClass */
-  devout->play_init = ags_devout_alsa_init;
-  devout->play = ags_devout_alsa_play;
-  devout->stop = ags_devout_alsa_free;
-
-  devout->tic = NULL;
-  devout->note_offset_changed = NULL;
-
-  /* signals */
-  /**
-   * AgsDevout::tic:
-   * @devout: the object tics
-   *
-   * The ::tic signal is emited during playback after buffer time interval.
-   */
-  devout_signals[TIC] =
-    g_signal_new("tic\0",
-		 G_TYPE_FROM_CLASS (devout),
-		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET (AgsDevoutClass, tic),
-		 NULL, NULL,
-		 g_cclosure_marshal_VOID__VOID,
-		 G_TYPE_NONE, 0);
+  //empty
 }
 
 GQuark
@@ -390,10 +376,10 @@ ags_devout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
   soundcard->play_init = ags_devout_alsa_init;
   soundcard->play = ags_devout_alsa_play;
   soundcard->stop = ags_devout_alsa_free;
-  soundcard->tic = ags_devout_tic;
-  soundcard->offset_changed = ags_devout_offset_changed;
   soundcard->get_buffer = ags_devout_get_buffer;
   soundcard->get_next_buffer = ags_devout_get_next_buffer;
+  soundcard->set_note_offset = ags_devout_set_note_offset;
+  soundcard->get_note_offset = ags_devout_get_note_offset;
 }
 
 void
@@ -452,6 +438,8 @@ ags_devout_init(AgsDevout *devout)
   
   devout->attack = (guint *) malloc((int) 2 * AGS_DEVOUT_DEFAULT_PERIOD *
 				    sizeof(guint));
+
+  devout->note_offset = 0;
   
   delay = ((gdouble) devout->frequency / (gdouble) devout->buffer_size) * (gdouble)(60.0 / devout->bpm);
   //  g_message("delay : %f\0", delay);
@@ -1032,6 +1020,8 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   static snd_pcm_format_t format = SND_PCM_FORMAT_S16;
 
   devout = AGS_DEVOUT(soundcard);
+
+  devout->note_offset = 0;
   
   /* Open PCM device for playback. */
   if ((err = snd_pcm_open(&handle, devout->out.alsa.device, SND_PCM_STREAM_PLAYBACK, 0)) < 0) {
@@ -1332,10 +1322,12 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
 
     /* delay */
     devout->delay_counter = 0.0;
+    ags_soundcard_offset_changed(soundcard,
+				 devout->note_offset);
   } 
 
   /* tic */
-  ags_devout_tic(devout);
+  ags_soundcard_tic(soundcard);
 
   /* switch buffer flags */
   ags_devout_switch_buffer_flag(devout);
@@ -1353,26 +1345,69 @@ ags_devout_alsa_free(AgsSoundcard *soundcard)
   snd_pcm_drain(devout->out.alsa.handle);
   snd_pcm_close(devout->out.alsa.handle);
   devout->out.alsa.handle = NULL;
+  devout->flags &= (~(AGS_DEVOUT_BUFFER0 &
+		      AGS_DEVOUT_BUFFER1 &
+		      AGS_DEVOUT_BUFFER2 &
+		      AGS_DEVOUT_BUFFER3));
 }
 
 signed short*
-ags_soundcard_get_buffer(AgsSoundcard *soundcard)
+ags_devout_get_buffer(AgsSoundcard *soundcard)
 {
   AgsDevout *devout;
-
+  signed short *buffer;
+  
   devout = AGS_DEVOUT(soundcard);
 
-  //TODO:JK: implement me
+  if((AGS_DEVOUT_BUFFER0 & (devout->flags)) != 0){
+    buffer = devout->buffer[0];
+  }else if((AGS_DEVOUT_BUFFER1 & (devout->flags)) != 0){
+    buffer = devout->buffer[1];
+  }else if((AGS_DEVOUT_BUFFER2 & (devout->flags)) != 0){
+    buffer = devout->buffer[2];
+  }else if((AGS_DEVOUT_BUFFER3 & (devout->flags)) != 0){
+    buffer = devout->buffer[3];
+  }else{
+    buffer = NULL;
+  }
+
+  return(buffer);
 }
 
 signed short*
-ags_soundcard_get_next_buffer(AgsSoundcard *soundcard)
+ags_devout_get_next_buffer(AgsSoundcard *soundcard)
 {
   AgsDevout *devout;
-
+  signed short *buffer;
+  
   devout = AGS_DEVOUT(soundcard);
 
-  //TODO:JK: implement me
+  if((AGS_DEVOUT_BUFFER0 & (devout->flags)) != 0){
+    buffer = devout->buffer[1];
+  }else if((AGS_DEVOUT_BUFFER1 & (devout->flags)) != 0){
+    buffer = devout->buffer[2];
+  }else if((AGS_DEVOUT_BUFFER2 & (devout->flags)) != 0){
+    buffer = devout->buffer[3];
+  }else if((AGS_DEVOUT_BUFFER3 & (devout->flags)) != 0){
+    buffer = devout->buffer[0];
+  }else{
+    buffer = NULL;
+  }
+
+  return(buffer);
+}
+
+void
+ags_devout_set_note_offset(AgsSoundcard *soundcard,
+			   guint note_offset)
+{
+  AGS_DEVOUT(soundcard)->note_offset = note_offset;
+}
+
+guint
+ags_devout_get_note_offset(AgsSoundcard *soundcard)
+{
+  return(AGS_DEVOUT(soundcard)->note_offset);
 }
 
 /**
@@ -1399,30 +1434,6 @@ ags_devout_switch_buffer_flag(AgsDevout *devout)
     devout->flags &= (~AGS_DEVOUT_BUFFER3);
     devout->flags |= AGS_DEVOUT_BUFFER0;
   }
-}
-
-/**
- * ags_devout_tic:
- * @devout: an #AgsDevout
- *
- * The tic of devout.
- *
- * Since: 0.4
- */
-void
-ags_devout_tic(AgsDevout *devout)
-{
-  g_return_if_fail(AGS_IS_DEVOUT(devout));
-
-  if((AGS_DEVOUT_PLAY & devout->flags) == 0){
-    g_message("ags_devout_tic: not playing\0");
-    return;
-  }
-
-  g_object_ref((GObject *) devout);
-  g_signal_emit(G_OBJECT(devout),
-		devout_signals[TIC], 0);
-  g_object_unref((GObject *) devout);
 }
 
 /**

@@ -138,6 +138,8 @@ struct _AgsDevout
   gdouble delay_counter; // next time attack changeing when delay_counter == delay
   guint tic_counter; // in the range of default period
 
+  guint note_offset;
+  
   union{
     struct _AgsOss{
       int device_fd;

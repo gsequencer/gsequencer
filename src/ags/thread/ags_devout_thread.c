@@ -20,6 +20,8 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/object/ags_soundcard.h>
+
 #include <ags/thread/ags_timestamp_thread.h>
 
 #include <ags/audio/ags_devout.h>
@@ -191,9 +193,9 @@ ags_devout_thread_start(AgsThread *thread)
   devout_thread->error = NULL;
 
   if((AGS_DEVOUT_ALSA & (devout->flags)) != 0){
-    if(devout->out.alsa.handle == NULL){
-      ags_devout_alsa_init(devout,
-      			   &(devout_thread->error));
+    if(ags_soundcard_get_buffer(AGS_SOUNDCARD(devout)) == NULL){
+      ags_soundcard_play_init(AGS_SOUNDCARD(devout),
+			      &(devout_thread->error));
       
       if(devout_thread->error == NULL){
 	devout->flags &= (~AGS_DEVOUT_START_PLAY);
@@ -240,8 +242,8 @@ ags_devout_thread_run(AgsThread *thread)
   //  g_message("play\0");
   if((AGS_DEVOUT_PLAY & (devout->flags)) != 0){
     error = NULL;
-    ags_devout_alsa_play(devout,
-			 &error);
+    ags_soundcard_play(AGS_SOUNDCARD(devout),
+		       &error);
   }
 
   if(error != NULL){
