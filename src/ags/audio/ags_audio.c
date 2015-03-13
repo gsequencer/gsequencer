@@ -313,6 +313,7 @@ ags_audio_init(AgsAudio *audio)
   AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->domain = audio;
 
   audio->notation = NULL;
+  audio->automation = NULL;
 
   audio->recall_id = NULL;
   audio->recycling_container = NULL;
@@ -2245,35 +2246,67 @@ ags_audio_set_sequence_length(AgsAudio *audio, guint sequence_length)
 }
 
 /**
- * ags_audio_add_recycling_container:
+ * ags_audio_add_notation:
  * @audio: an #AgsAudio
- * @recycling_container: the #AgsRecyclingContainer
+ * @notation: the #AgsNotation
  *
- * Adds a recycling container.
+ * Adds a notation.
  *
  * Since: 0.4
  */
 void
-ags_audio_add_recycling_container(AgsAudio *audio, GObject *recycling_container)
+ags_audio_add_notation(AgsAudio *audio,
+		       GObject *notation)
 {
-  g_object_ref(recycling_container);
-  audio->recycling_container = g_list_prepend(audio->recycling_container, recycling_container);
+  //TODO:JK: implement me
 }
 
 /**
- * ags_audio_remove_recycling_container:
+ * ags_audio_add_notation:
  * @audio: an #AgsAudio
- * @recycling_container: the #AgsRecyclingContainer
+ * @notation: the #AgsNotation
  *
- * Removes a recycling container.
+ * Adds a notation.
  *
  * Since: 0.4
  */
 void
-ags_audio_remove_recycling_container(AgsAudio *audio, GObject *recycling_container)
+ags_audio_remove_notation(AgsAudio *audio,
+			  GObject *notation)
 {
-  audio->recycling_container = g_list_remove(audio->recycling_container, recycling_container);
-  g_object_unref(recycling_container);
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_audio_add_automation:
+ * @audio: an #AgsAudio
+ * @automation: the #AgsAutomation
+ *
+ * Adds an automation.
+ *
+ * Since: 0.4
+ */
+void
+ags_audio_add_automation(AgsAudio *audio,
+			 GObject *automation)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_audio_remove_automation:
+ * @audio: an #AgsAudio
+ * @automation: the #AgsAutomation
+ *
+ * Removes an automation.
+ *
+ * Since: 0.4
+ */
+void
+ags_audio_remove_automation(AgsAudio *audio,
+			    GObject *automation)
+{
+  //TODO:JK: implement me
 }
 
 /**
@@ -2313,6 +2346,38 @@ ags_audio_remove_recall_id(AgsAudio *audio, GObject *recall_id)
 
   audio->recall_id = g_list_remove(audio->recall_id, recall_id);
   g_object_unref(recall_id);
+}
+
+/**
+ * ags_audio_add_recycling_container:
+ * @audio: an #AgsAudio
+ * @recycling_container: the #AgsRecyclingContainer
+ *
+ * Adds a recycling container.
+ *
+ * Since: 0.4
+ */
+void
+ags_audio_add_recycling_container(AgsAudio *audio, GObject *recycling_container)
+{
+  g_object_ref(recycling_container);
+  audio->recycling_container = g_list_prepend(audio->recycling_container, recycling_container);
+}
+
+/**
+ * ags_audio_remove_recycling_container:
+ * @audio: an #AgsAudio
+ * @recycling_container: the #AgsRecyclingContainer
+ *
+ * Removes a recycling container.
+ *
+ * Since: 0.4
+ */
+void
+ags_audio_remove_recycling_container(AgsAudio *audio, GObject *recycling_container)
+{
+  audio->recycling_container = g_list_remove(audio->recycling_container, recycling_container);
+  g_object_unref(recycling_container);
 }
 
 /**

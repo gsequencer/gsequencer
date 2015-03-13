@@ -71,7 +71,8 @@ struct _AgsAudio
   gpointer devout_play_domain;
 
   GList *notation;
-
+  GList *automation;
+  
   GList *recall_id;
   GList *recycling_container;
 
@@ -116,11 +117,21 @@ void ags_audio_set_sequence_length(AgsAudio *audio, guint sequence_length);
 
 void ags_audio_set_devout(AgsAudio *audio, GObject *devout);
 
-void ags_audio_add_recycling_container(AgsAudio *audio, GObject *recycling_container);
-void ags_audio_remove_recycling_container(AgsAudio *audio, GObject *recycling_container);
+void ags_audio_add_notation(AgsAudio *audio,
+			      GObject *notation);
+void ags_audio_remove_notation(AgsAudio *audio,
+			       GObject *notation);
+
+void ags_audio_add_automation(AgsAudio *audio,
+			      GObject *automation);
+void ags_audio_remove_automation(AgsAudio *audio,
+				 GObject *automation);
 
 void ags_audio_add_recall_id(AgsAudio *audio, GObject *recall_id);
 void ags_audio_remove_recall_id(AgsAudio *audio, GObject *recall_id);
+
+void ags_audio_add_recycling_container(AgsAudio *audio, GObject *recycling_container);
+void ags_audio_remove_recycling_container(AgsAudio *audio, GObject *recycling_container);
 
 void ags_audio_add_recall_container(AgsAudio *audio, GObject *recall_container);
 void ags_audio_remove_recall_container(AgsAudio *audio, GObject *recall_container);

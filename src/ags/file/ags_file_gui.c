@@ -2550,18 +2550,18 @@ ags_file_read_editor_launch(AgsFileLaunch *file_launch,
 
   editor->toolbar->zoom_history = history;
 
-  editor->note_edit->flags |= AGS_NOTE_EDIT_RESETING_HORIZONTALLY;
-  ags_note_edit_reset_horizontally(editor->note_edit, AGS_NOTE_EDIT_RESET_HSCROLLBAR |
+  editor->edit.note_edit->flags |= AGS_NOTE_EDIT_RESETING_HORIZONTALLY;
+  ags_note_edit_reset_horizontally(editor->edit.note_edit, AGS_NOTE_EDIT_RESET_HSCROLLBAR |
 				   AGS_NOTE_EDIT_RESET_WIDTH);
-  editor->note_edit->flags &= (~AGS_NOTE_EDIT_RESETING_HORIZONTALLY);
+  editor->edit.note_edit->flags &= (~AGS_NOTE_EDIT_RESETING_HORIZONTALLY);
 
   /* reset ruler */
-  editor->note_edit->ruler->factor = tact_factor;
-  editor->note_edit->ruler->precision = tact;
-  editor->note_edit->ruler->scale_precision = 1.0 / tact;
+  editor->edit.note_edit->ruler->factor = tact_factor;
+  editor->edit.note_edit->ruler->precision = tact;
+  editor->edit.note_edit->ruler->scale_precision = 1.0 / tact;
 
-  gtk_widget_queue_draw(editor->note_edit->ruler);
-  gtk_widget_queue_draw(editor->note_edit);
+  gtk_widget_queue_draw(editor->edit.note_edit->ruler);
+  gtk_widget_queue_draw(editor->edit.note_edit);
 }
 
 xmlNode*
