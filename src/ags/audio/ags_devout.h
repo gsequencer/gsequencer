@@ -160,16 +160,6 @@ struct _AgsDevout
 struct _AgsDevoutClass
 {
   GObjectClass object;
-
-  void (*play_init)(AgsDevout *devout,
-		    GError **error);
-  void (*play)(AgsDevout *devout,
-	       GError **error);
-  void (*stop)(AgsDevout *devout);
-
-  void (*tic)(AgsDevout *devout);
-
-  void (*note_offset_changed)(AgsDevout *devout, guint note_offset);
 };
 
 /**
@@ -222,22 +212,19 @@ GType ags_devout_get_type();
 GQuark ags_devout_error_quark();
 
 AgsDevoutPlayDomain* ags_devout_play_domain_alloc();
+
 void ags_devout_play_domain_free(AgsDevoutPlayDomain *devout_play_domain);
 
 AgsDevoutPlay* ags_devout_play_alloc();
+
 void ags_devout_play_free(AgsDevoutPlay *devout_play);
+
 AgsDevoutPlay* ags_devout_play_find_source(GList *devout_play,
 					   GObject *source);
 
-void ags_devout_list_cards(GList **card_id, GList **card_name);
-void ags_devout_pcm_info(char *card_id,
-			 guint *channels_min, guint *channels_max,
-			 guint *rate_min, guint *rate_max,
-			 guint *buffer_size_min, guint *buffer_size_max,
-			 GError **error);
-void ags_devout_tic(AgsDevout *devout);
+void ags_devout_add_audio(AgsDevout *devout, GObject *audio);
 
-void ags_devout_note_offset_changed(AgsDevout *devout, guint note_offset);
+void ags_devout_remove_audio(AgsDevout *devout, GObject *audio);
 
 AgsDevout* ags_devout_new(GObject *ags_main);
 

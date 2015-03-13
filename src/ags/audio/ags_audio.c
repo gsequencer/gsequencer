@@ -2258,15 +2258,17 @@ void
 ags_audio_add_notation(AgsAudio *audio,
 		       GObject *notation)
 {
-  //TODO:JK: implement me
+  g_object_ref(notation);
+  audio->automation = g_list_prepend(audio->notation,
+				     notation);
 }
 
 /**
- * ags_audio_add_notation:
+ * ags_audio_remove_notation:
  * @audio: an #AgsAudio
  * @notation: the #AgsNotation
  *
- * Adds a notation.
+ * Removes a notation.
  *
  * Since: 0.4
  */
@@ -2274,7 +2276,9 @@ void
 ags_audio_remove_notation(AgsAudio *audio,
 			  GObject *notation)
 {
-  //TODO:JK: implement me
+  g_object_unref(notation);
+  audio->automation = g_list_remove(audio->notation,
+				    notation);
 }
 
 /**
@@ -2290,7 +2294,9 @@ void
 ags_audio_add_automation(AgsAudio *audio,
 			 GObject *automation)
 {
-  //TODO:JK: implement me
+  g_object_ref(automation);
+  audio->automation = g_list_prepend(audio->automation,
+				     automation);
 }
 
 /**
@@ -2306,7 +2312,9 @@ void
 ags_audio_remove_automation(AgsAudio *audio,
 			    GObject *automation)
 {
-  //TODO:JK: implement me
+  g_object_unref(automation);
+  audio->automation = g_list_remove(audio->automation,
+				    automation);
 }
 
 /**
