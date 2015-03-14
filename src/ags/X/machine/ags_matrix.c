@@ -727,6 +727,10 @@ ags_matrix_input_map_recall(AgsMatrix *matrix, guint input_pad_start)
   source = ags_channel_nth(audio->input,
 			   input_pad_start * audio->audio_channels);
 
+  if(source == NULL){
+    return;
+  }
+  
   current = source;
 
   while(current != NULL){
@@ -798,8 +802,6 @@ ags_matrix_output_map_recall(AgsMatrix *matrix, guint output_pad_start)
 
   AgsDelayAudio *recall_delay_audio;
   AgsCountBeatsAudioRun *recall_count_beats_audio_run;
-  AgsLoopChannel *recall_loop_channel;
-  AgsLoopChannelRun *recall_loop_channel_run;
 
   GList *list;
 
@@ -812,6 +814,10 @@ ags_matrix_output_map_recall(AgsMatrix *matrix, guint output_pad_start)
   source = ags_channel_nth(audio->output,
 			   output_pad_start * audio->audio_channels);
 
+  if(source == NULL){
+    return;
+  }
+  
   /* get some recalls */
   list = ags_recall_find_type(audio->play, AGS_TYPE_DELAY_AUDIO);
 
@@ -829,22 +835,9 @@ ags_matrix_output_map_recall(AgsMatrix *matrix, guint output_pad_start)
     recall_count_beats_audio_run = NULL;
   }
 
-  list = ags_recall_find_type(source->play, AGS_TYPE_LOOP_CHANNEL_RUN);
-
-  if(list != NULL){
-    recall_loop_channel_run = AGS_LOOP_CHANNEL_RUN(list->data);
-
-    /* set dependency */
-    g_object_set(G_OBJECT(recall_loop_channel_run),
-		 "count-beats-audio-run\0", recall_count_beats_audio_run,
-		 NULL);
-  }else{
-    recall_loop_channel_run = NULL;
-  }
-
   /* ags-stream */
   ags_recall_factory_create(audio,
-			    NULL, NULL,
+  			    NULL, NULL,
 			    "ags-stream\0",
 			    source->audio_channel, source->audio_channel + 1,
 			    output_pad_start, audio->output_pads,

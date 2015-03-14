@@ -982,63 +982,50 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
     AgsAudio *audio, *current_audio;
     AgsChannel *current_channel;
 
-    audio = AGS_AUDIO(channel->audio);
-
+    /* retrieve next channel */
     if(AGS_IS_OUTPUT(channel)){
-      current_channel = channel->link;
-    }else{
+      audio = AGS_AUDIO(link->audio);
+
       if((AGS_AUDIO_ASYNC & (audio->flags)) != 0){
 	current_channel = ags_channel_nth(audio->output, link->audio_channel);
-
-	if(current_channel != NULL){
-	  current_channel = current_channel->link;
-	}
       }else{
 	current_channel = ags_channel_nth(audio->output, link->line);
+      }
+    }else{
+      audio = AGS_AUDIO(channel->audio);
 
-      	if(current_channel != NULL){
-	  current_channel = current_channel->link;
-	}
+      if((AGS_AUDIO_ASYNC & (audio->flags)) != 0){
+	current_channel = ags_channel_nth(audio->output, channel->audio_channel);
+      }else{
+	current_channel = ags_channel_nth(audio->output, channel->line);
       }
     }
 
-    if(current_channel != NULL){
-      current_audio = AGS_AUDIO(current_channel->audio);
+    /* check for loop */
+    while(current_channel != NULL &&
+	  current_channel->link != NULL){
 
-      //TODO:JK: buggy
-      while(TRUE){
-	if(current_audio == audio){
-	  if(error != NULL){
-	    g_set_error(error,
-			AGS_CHANNEL_ERROR,
-			AGS_CHANNEL_ERROR_LOOP_IN_LINK,
-			"failed to link channel %u from %s with channel %u from %s\0",
-			channel->line, G_OBJECT_TYPE_NAME(audio),
-			link->line, G_OBJECT_TYPE_NAME(link->audio));
-	  }
-	  
-	  return;
-	}
+      current_audio = AGS_AUDIO(current_channel->link->audio);
 
-	if(current_channel->link == NULL)
-	  break;
-
-	current_audio = AGS_AUDIO(current_channel->link->audio);
-
-	if((AGS_AUDIO_ASYNC & (current_audio->flags)) != 0){
-	  current_channel = ags_channel_nth(current_audio->output, current_channel->audio_channel)->link;
-
-	  if(current_channel != NULL){
-	    current_channel = current_channel->link;
-	  }	  
-	}else{
-	  current_channel = ags_channel_nth(current_audio->output, current_channel->line)->link;
-
-	  if(current_channel != NULL){
-	    current_channel = current_channel->link;
-	  }
-	}
+      if((AGS_AUDIO_ASYNC & (current_audio->flags)) != 0){
+	current_channel = ags_channel_nth(current_audio->output, current_channel->link->audio_channel);
+      }else{
+	current_channel = ags_channel_nth(current_audio->output, current_channel->link->line);
       }
+
+      if(current_audio == audio){
+	if(error != NULL){
+	  g_set_error(error,
+		      AGS_CHANNEL_ERROR,
+		      AGS_CHANNEL_ERROR_LOOP_IN_LINK,
+		      "failed to link channel %u from %s with channel %u from %s\0",
+		      channel->line, G_OBJECT_TYPE_NAME(audio),
+		      link->line, G_OBJECT_TYPE_NAME(link->audio));
+	}
+	  
+	return;
+      }
+
     }
   }
 
@@ -4479,7 +4466,8 @@ ags_channel_tillrecycling_cancel(AgsChannel *channel,
     AgsRecallID *audio_recall_id, *default_recall_id;
     GList *list;
 
-    if(output == NULL){
+    if(output == NULL ||
+       recall_id == NULL){
       return;
     }
 
@@ -4712,7 +4700,8 @@ ags_channel_tillrecycling_cancel(AgsChannel *channel,
     AgsRecallID *audio_recall_id, *default_recall_id;
     GList *list;
 
-    if(output == NULL){
+    if(output == NULL ||
+       recall_id == NULL){
       return;
     }
 

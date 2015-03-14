@@ -497,7 +497,7 @@ CC = gcc
 CCDEPMODE = depmode=gcc3
 
 # what flags you want to pass to the C compiler & linker
-CFLAGS = --pedantic -Wall -O2 -I./src -I/usr/include
+CFLAGS = -g --pedantic -Wall -O -I./src -I/usr/include
 CFLAG_VISIBILITY = -fvisibility=hidden
 CPP = gcc -E
 CPPFLAGS = 

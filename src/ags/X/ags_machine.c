@@ -644,8 +644,6 @@ ags_machine_show(GtkWidget *widget)
 
   machine = (AgsMachine *) widget;
 
-  GTK_WIDGET_CLASS(ags_machine_parent_class)->show(widget);
-
   window = (AgsWindow *) gtk_widget_get_toplevel(widget);
 
   frame = (GtkFrame *) gtk_container_get_children((GtkContainer *) machine)->data;

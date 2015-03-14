@@ -2,7 +2,7 @@ AUTOMAKE_OPTIONS = foreign
 SUBDIRS = src doc
 
 # what flags you want to pass to the C compiler & linker
-CFLAGS = --pedantic -Wall -O2 -I./src -I/usr/include
+CFLAGS = -g --pedantic -Wall -O -I./src -I/usr/include
 LDFLAGS = -L/lib -L/usr/lib -L/usr/X11/lib -lm -pthread -lrt -lgmp
 
 # this lists the binaries to produce, the (non-PHONY, binary) targets in

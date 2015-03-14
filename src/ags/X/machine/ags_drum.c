@@ -499,9 +499,13 @@ ags_drum_show(GtkWidget *widget)
 void
 ags_drum_show_all(GtkWidget *widget)
 {
+  AgsDrum *drum;
+  
   GTK_WIDGET_CLASS(ags_drum_parent_class)->show_all(widget);
 
-  ags_drum_set_pattern(AGS_DRUM(widget));
+  drum = AGS_DRUM(widget);
+  
+  ags_drum_set_pattern(drum);
 }
 
 void
