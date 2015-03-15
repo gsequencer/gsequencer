@@ -1,5 +1,5 @@
 /* AGS - Advanced GTK Sequencer
- * Copyright (C) 2005-2011 Joël Krähemann
+ * Copyright (C) 2015 Joël Krähemann
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,7 +46,6 @@ gchar* ags_effect_bridge_get_version(AgsPlugin *plugin);
 void ags_effect_bridge_set_version(AgsPlugin *plugin, gchar *version);
 gchar* ags_effect_bridge_get_build_id(AgsPlugin *plugin);
 void ags_effect_bridge_set_build_id(AgsPlugin *plugin, gchar *build_id);
-void ags_effect_bridge_show(GtkWidget *widget);
 
 /**
  * SECTION:ags_effect_bridge
@@ -232,14 +231,6 @@ ags_effect_bridge_set_build_id(AgsPlugin *plugin, gchar *build_id)
   effect_bridge->build_id = build_id;
 }
 
-void
-ags_effect_bridge_show(GtkWidget *widget)
-{
-  AgsEffectBridge *effect_bridge;
-
-  effect_bridge = AGS_EFFECT_BRIDGE(widget);
-}
-
 /**
  * ags_effect_bridge_new:
  * @effect_bridge: the parent effect_bridge
@@ -249,7 +240,7 @@ ags_effect_bridge_show(GtkWidget *widget)
  *
  * Returns: a new #AgsEffectBridge
  *
- * Since: 0.3
+ * Since: 0.4
  */
 AgsEffectBridge*
 ags_effect_bridge_new(AgsAudio *audio)
