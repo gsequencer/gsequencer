@@ -55,16 +55,40 @@ struct _AgsEffectBridge
 
   gchar *version;
   gchar *build_id;
-
+  
   AgsAudio *audio;
+
+  GtkHBox *input;
+  GtkHBox *output;
+
+  GtkVBox *bulk_input;
+  GtkVBox *bulk_output;
 };
 
 struct _AgsEffectBridgeClass
 {
   GtkVBoxClass vbox;
+
+  void (*resize)(AgsEffectBridge *effect_bridge,
+		 GType channel_type,
+		 guint new_size,
+		 gboolean resize_pads);
 };
 
 GType ags_effect_bridge_get_type(void);
+
+void ags_effect_bridge_resize(AgsEffectBridge *effect_bridge,
+			      GType channel_type,
+			      guint new_size,
+			      gboolean resize_pads);
+
+void ags_effect_bridge_add_effect(AgsEffectBridge *effect_bridge,
+				  GType channel_type,
+				  gchar *effect_name,
+				  guint nth_line);
+void ags_effect_bridge_add_bulk_effect(AgsEffectBridge *effect_bridge,
+				       GType channel_type,
+				       gchar *effect_name);
 
 AgsEffectBridge* ags_effect_bridge_new(AgsAudio *audio);
 

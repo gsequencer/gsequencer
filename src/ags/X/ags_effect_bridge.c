@@ -47,6 +47,11 @@ void ags_effect_bridge_set_version(AgsPlugin *plugin, gchar *version);
 gchar* ags_effect_bridge_get_build_id(AgsPlugin *plugin);
 void ags_effect_bridge_set_build_id(AgsPlugin *plugin, gchar *build_id);
 
+void ags_effect_bridge_real_resize(AgsEffectBridge *effect_bridge,
+				   GType channel_type,
+				   guint new_size,
+				   gboolean resize_pads);
+
 /**
  * SECTION:ags_effect_bridge
  * @short_description: A composite widget to visualize a bunch of #AgsChannel
@@ -58,7 +63,13 @@ void ags_effect_bridge_set_build_id(AgsPlugin *plugin, gchar *build_id);
  * packed by an #AgsMachine.
  */
 
+enum{
+  RESIZE,
+  LAST_SIGNAL,
+};
+
 static gpointer ags_effect_bridge_parent_class = NULL;
+static guint effect_bridge_signals[LAST_SIGNAL];
 
 GType
 ags_effect_bridge_get_type(void)
@@ -119,6 +130,47 @@ ags_effect_bridge_class_init(AgsEffectBridgeClass *effect_bridge)
 
   gobject->set_property = ags_effect_bridge_set_property;
   gobject->get_property = ags_effect_bridge_get_property;
+
+  /* properties */
+  /**
+   * AgsEffectBridge:audio:
+   *
+   * The start of a bunch of #AgsAudio to visualize.
+   * 
+   * Since: 0.4
+   */
+  param_spec = g_param_spec_object("audio\0",
+				   "assigned audio\0",
+				   "The audio it is assigned with\0",
+				   AGS_TYPE_AUDIO,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_AUDIO,
+				  param_spec);
+
+  /* AgsEffectBridgeClass */
+  effect_bridge->resize = ags_effect_bridge_real_resize;
+
+  /* signals */
+  /**
+   * AgsEffectBridge::resize:
+   * @effect_bridge: the #AgsEffectBridge to modify
+   * @channel: the #AgsChannel to set
+   *
+   * The ::resize signal notifies about changed channel allocation within
+   * audio.
+   */
+  effect_bridge_signals[RESIZE] =
+    g_signal_new("resize\0",
+		 G_TYPE_FROM_CLASS(effect_bridge),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsEffectBridgeClass, resize),
+		 NULL, NULL,
+		 g_cclosure_user_marshal_VOID__ULONG_UINT_BOOLEAN,
+		 G_TYPE_NONE, 3,
+		 G_TYPE_ULONG,
+		 G_TYPE_UINT,
+		 G_TYPE_BOOLEAN);
 }
 
 void
@@ -229,6 +281,49 @@ ags_effect_bridge_set_build_id(AgsPlugin *plugin, gchar *build_id)
   effect_bridge = AGS_EFFECT_BRIDGE(plugin);
 
   effect_bridge->build_id = build_id;
+}
+
+void
+ags_effect_bridge_real_resize(AgsEffectBridge *effect_bridge,
+			      GType channel_type,
+			      guint new_size,
+			      gboolean resize_pads)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_effect_bridge_resize(AgsEffectBridge *effect_bridge,
+			 GType channel_type,
+			 guint new_size,
+			 gboolean resize_pads)
+{
+  g_return_if_fail(AGS_IS_EFFECT_BRIDGE(effect_bridge));
+
+  g_object_ref((GObject *) effect_bridge);
+  g_signal_emit(G_OBJECT(effect_bridge),
+		effect_bridge_signals[RESIZE], 0,
+		channel_type,
+		new_size,
+		resize_pads);
+  g_object_unref((GObject *) effect_bridge);
+}
+
+void
+ags_effect_bridge_add_effect(AgsEffectBridge *effect_bridge,
+			     GType channel_type,
+			     gchar *effect_name,
+			     guint nth_line)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_effect_bridge_add_bulk_effect(AgsEffectBridge *effect_bridge,
+				  GType channel_type,
+				  gchar *effect_name)
+{
+  //TODO:JK: implement me
 }
 
 /**
