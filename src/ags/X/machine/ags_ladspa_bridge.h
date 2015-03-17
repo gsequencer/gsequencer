@@ -25,6 +25,8 @@
 
 #include <ags/audio/ags_channel.h>
 
+#include <ags/X/ags_machine.h>
+
 #define AGS_TYPE_LADSPA_BRIDGE                (ags_ladspa_bridge_get_type())
 #define AGS_LADSPA_BRIDGE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_LADSPA_BRIDGE, AgsLadspaBridge))
 #define AGS_LADSPA_BRIDGE_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_LADSPA_BRIDGE, AgsLadspaBridgeClass))

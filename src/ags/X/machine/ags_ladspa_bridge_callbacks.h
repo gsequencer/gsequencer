@@ -23,7 +23,7 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include <ags/X/ags_ladspa_bridge.h>
+#include <ags/X/machine/ags_ladspa_bridge.h>
 
 
 

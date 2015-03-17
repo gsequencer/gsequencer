@@ -169,6 +169,8 @@ am_ags_OBJECTS = ags-ags_combo_box_text.$(OBJEXT) \
 	ags-ags_ffplayer_callbacks.$(OBJEXT) \
 	ags-ags_drum_output_pad.$(OBJEXT) \
 	ags-ags_drum_input_line_callbacks.$(OBJEXT) \
+	ags-ags_ladspa_bridge.$(OBJEXT) \
+	ags-ags_ladspa_bridge_callbacks.$(OBJEXT) \
 	ags-ags_synth_input_pad.$(OBJEXT) \
 	ags-ags_pad_editor_callbacks.$(OBJEXT) \
 	ags-ags_line_member_callbacks.$(OBJEXT) \
@@ -177,7 +179,9 @@ am_ags_OBJECTS = ags-ags_combo_box_text.$(OBJEXT) \
 	ags-ags_server_preferences.$(OBJEXT) \
 	ags-ags_line_editor.$(OBJEXT) \
 	ags-ags_audio_preferences.$(OBJEXT) ags-ags_pad.$(OBJEXT) \
-	ags-ags_line.$(OBJEXT) ags-ags_menu_bar_callbacks.$(OBJEXT) \
+	ags-ags_line.$(OBJEXT) ags-ags_effect_bridge.$(OBJEXT) \
+	ags-ags_effect_bridge_callbacks.$(OBJEXT) \
+	ags-ags_menu_bar_callbacks.$(OBJEXT) \
 	ags-ags_generic_preferences.$(OBJEXT) ags-ags_window.$(OBJEXT) \
 	ags-ags_line_editor_callbacks.$(OBJEXT) \
 	ags-ags_property_editor.$(OBJEXT) \
@@ -796,6 +800,10 @@ ags_SOURCES = src/ags/lib/ags_combo_box_text.c src/ags/lib/ags_list.c \
 	src/ags/X/machine/ags_drum_input_pad.h \
 	src/ags/X/machine/ags_drum_input_line_callbacks.c \
 	src/ags/X/machine/ags_mixer_input_pad.h \
+	src/ags/X/machine/ags_ladspa_bridge.h \
+	src/ags/X/machine/ags_ladspa_bridge.c \
+	src/ags/X/machine/ags_ladspa_bridge_callbacks.h \
+	src/ags/X/machine/ags_ladspa_bridge_callbacks.c \
 	src/ags/X/machine/ags_synth_input_pad.c \
 	src/ags/X/ags_server_preferences.h \
 	src/ags/X/ags_line_editor_callbacks.h \
@@ -811,7 +819,11 @@ ags_SOURCES = src/ags/lib/ags_combo_box_text.c src/ags/lib/ags_list.c \
 	src/ags/X/ags_server_preferences.c src/ags/X/ags_line_editor.c \
 	src/ags/X/ags_ladspa_browser.h \
 	src/ags/X/ags_audio_preferences.c src/ags/X/ags_pad.c \
-	src/ags/X/ags_line.c src/ags/X/ags_menu_bar_callbacks.c \
+	src/ags/X/ags_line.c src/ags/X/ags_effect_bridge.c \
+	src/ags/X/ags_effect_bridge.h \
+	src/ags/X/ags_effect_bridge_callbacks.c \
+	src/ags/X/ags_effect_bridge_callbacks.h \
+	src/ags/X/ags_menu_bar_callbacks.c \
 	src/ags/X/ags_generic_preferences_callbacks.h \
 	src/ags/X/ags_pad.h \
 	src/ags/X/ags_audio_preferences_callbacks.h \
@@ -1445,6 +1457,8 @@ include ./$(DEPDIR)/ags-ags_echo.Po
 include ./$(DEPDIR)/ags-ags_editor.Po
 include ./$(DEPDIR)/ags-ags_editor_callbacks.Po
 include ./$(DEPDIR)/ags-ags_effect.Po
+include ./$(DEPDIR)/ags-ags_effect_bridge.Po
+include ./$(DEPDIR)/ags-ags_effect_bridge_callbacks.Po
 include ./$(DEPDIR)/ags-ags_expander.Po
 include ./$(DEPDIR)/ags-ags_expander_set.Po
 include ./$(DEPDIR)/ags-ags_export_output.Po
@@ -1483,6 +1497,8 @@ include ./$(DEPDIR)/ags-ags_input.Po
 include ./$(DEPDIR)/ags-ags_ipatch.Po
 include ./$(DEPDIR)/ags-ags_ipatch_sf2_reader.Po
 include ./$(DEPDIR)/ags-ags_iterator_thread.Po
+include ./$(DEPDIR)/ags-ags_ladspa_bridge.Po
+include ./$(DEPDIR)/ags-ags_ladspa_bridge_callbacks.Po
 include ./$(DEPDIR)/ags-ags_ladspa_browser.Po
 include ./$(DEPDIR)/ags-ags_ladspa_browser_callbacks.Po
 include ./$(DEPDIR)/ags-ags_ladspa_manager.Po
@@ -2695,6 +2711,34 @@ ags-ags_drum_input_line_callbacks.obj: src/ags/X/machine/ags_drum_input_line_cal
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_drum_input_line_callbacks.obj `if test -f 'src/ags/X/machine/ags_drum_input_line_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_drum_input_line_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_drum_input_line_callbacks.c'; fi`
 
+ags-ags_ladspa_bridge.o: src/ags/X/machine/ags_ladspa_bridge.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_ladspa_bridge.o -MD -MP -MF $(DEPDIR)/ags-ags_ladspa_bridge.Tpo -c -o ags-ags_ladspa_bridge.o `test -f 'src/ags/X/machine/ags_ladspa_bridge.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_ladspa_bridge.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_ladspa_bridge.Tpo $(DEPDIR)/ags-ags_ladspa_bridge.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_ladspa_bridge.c' object='ags-ags_ladspa_bridge.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_ladspa_bridge.o `test -f 'src/ags/X/machine/ags_ladspa_bridge.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_ladspa_bridge.c
+
+ags-ags_ladspa_bridge.obj: src/ags/X/machine/ags_ladspa_bridge.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_ladspa_bridge.obj -MD -MP -MF $(DEPDIR)/ags-ags_ladspa_bridge.Tpo -c -o ags-ags_ladspa_bridge.obj `if test -f 'src/ags/X/machine/ags_ladspa_bridge.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_ladspa_bridge.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_ladspa_bridge.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_ladspa_bridge.Tpo $(DEPDIR)/ags-ags_ladspa_bridge.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_ladspa_bridge.c' object='ags-ags_ladspa_bridge.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_ladspa_bridge.obj `if test -f 'src/ags/X/machine/ags_ladspa_bridge.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_ladspa_bridge.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_ladspa_bridge.c'; fi`
+
+ags-ags_ladspa_bridge_callbacks.o: src/ags/X/machine/ags_ladspa_bridge_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_ladspa_bridge_callbacks.o -MD -MP -MF $(DEPDIR)/ags-ags_ladspa_bridge_callbacks.Tpo -c -o ags-ags_ladspa_bridge_callbacks.o `test -f 'src/ags/X/machine/ags_ladspa_bridge_callbacks.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_ladspa_bridge_callbacks.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_ladspa_bridge_callbacks.Tpo $(DEPDIR)/ags-ags_ladspa_bridge_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_ladspa_bridge_callbacks.c' object='ags-ags_ladspa_bridge_callbacks.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_ladspa_bridge_callbacks.o `test -f 'src/ags/X/machine/ags_ladspa_bridge_callbacks.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_ladspa_bridge_callbacks.c
+
+ags-ags_ladspa_bridge_callbacks.obj: src/ags/X/machine/ags_ladspa_bridge_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_ladspa_bridge_callbacks.obj -MD -MP -MF $(DEPDIR)/ags-ags_ladspa_bridge_callbacks.Tpo -c -o ags-ags_ladspa_bridge_callbacks.obj `if test -f 'src/ags/X/machine/ags_ladspa_bridge_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_ladspa_bridge_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_ladspa_bridge_callbacks.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_ladspa_bridge_callbacks.Tpo $(DEPDIR)/ags-ags_ladspa_bridge_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_ladspa_bridge_callbacks.c' object='ags-ags_ladspa_bridge_callbacks.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_ladspa_bridge_callbacks.obj `if test -f 'src/ags/X/machine/ags_ladspa_bridge_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_ladspa_bridge_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_ladspa_bridge_callbacks.c'; fi`
+
 ags-ags_synth_input_pad.o: src/ags/X/machine/ags_synth_input_pad.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_synth_input_pad.o -MD -MP -MF $(DEPDIR)/ags-ags_synth_input_pad.Tpo -c -o ags-ags_synth_input_pad.o `test -f 'src/ags/X/machine/ags_synth_input_pad.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_synth_input_pad.c
 	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_synth_input_pad.Tpo $(DEPDIR)/ags-ags_synth_input_pad.Po
@@ -2834,6 +2878,34 @@ ags-ags_line.obj: src/ags/X/ags_line.c
 #	$(AM_V_CC)source='src/ags/X/ags_line.c' object='ags-ags_line.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_line.obj `if test -f 'src/ags/X/ags_line.c'; then $(CYGPATH_W) 'src/ags/X/ags_line.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/ags_line.c'; fi`
+
+ags-ags_effect_bridge.o: src/ags/X/ags_effect_bridge.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_effect_bridge.o -MD -MP -MF $(DEPDIR)/ags-ags_effect_bridge.Tpo -c -o ags-ags_effect_bridge.o `test -f 'src/ags/X/ags_effect_bridge.c' || echo '$(srcdir)/'`src/ags/X/ags_effect_bridge.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_effect_bridge.Tpo $(DEPDIR)/ags-ags_effect_bridge.Po
+#	$(AM_V_CC)source='src/ags/X/ags_effect_bridge.c' object='ags-ags_effect_bridge.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_effect_bridge.o `test -f 'src/ags/X/ags_effect_bridge.c' || echo '$(srcdir)/'`src/ags/X/ags_effect_bridge.c
+
+ags-ags_effect_bridge.obj: src/ags/X/ags_effect_bridge.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_effect_bridge.obj -MD -MP -MF $(DEPDIR)/ags-ags_effect_bridge.Tpo -c -o ags-ags_effect_bridge.obj `if test -f 'src/ags/X/ags_effect_bridge.c'; then $(CYGPATH_W) 'src/ags/X/ags_effect_bridge.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/ags_effect_bridge.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_effect_bridge.Tpo $(DEPDIR)/ags-ags_effect_bridge.Po
+#	$(AM_V_CC)source='src/ags/X/ags_effect_bridge.c' object='ags-ags_effect_bridge.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_effect_bridge.obj `if test -f 'src/ags/X/ags_effect_bridge.c'; then $(CYGPATH_W) 'src/ags/X/ags_effect_bridge.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/ags_effect_bridge.c'; fi`
+
+ags-ags_effect_bridge_callbacks.o: src/ags/X/ags_effect_bridge_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_effect_bridge_callbacks.o -MD -MP -MF $(DEPDIR)/ags-ags_effect_bridge_callbacks.Tpo -c -o ags-ags_effect_bridge_callbacks.o `test -f 'src/ags/X/ags_effect_bridge_callbacks.c' || echo '$(srcdir)/'`src/ags/X/ags_effect_bridge_callbacks.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_effect_bridge_callbacks.Tpo $(DEPDIR)/ags-ags_effect_bridge_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/ags_effect_bridge_callbacks.c' object='ags-ags_effect_bridge_callbacks.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_effect_bridge_callbacks.o `test -f 'src/ags/X/ags_effect_bridge_callbacks.c' || echo '$(srcdir)/'`src/ags/X/ags_effect_bridge_callbacks.c
+
+ags-ags_effect_bridge_callbacks.obj: src/ags/X/ags_effect_bridge_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_effect_bridge_callbacks.obj -MD -MP -MF $(DEPDIR)/ags-ags_effect_bridge_callbacks.Tpo -c -o ags-ags_effect_bridge_callbacks.obj `if test -f 'src/ags/X/ags_effect_bridge_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/ags_effect_bridge_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/ags_effect_bridge_callbacks.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_effect_bridge_callbacks.Tpo $(DEPDIR)/ags-ags_effect_bridge_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/ags_effect_bridge_callbacks.c' object='ags-ags_effect_bridge_callbacks.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_effect_bridge_callbacks.obj `if test -f 'src/ags/X/ags_effect_bridge_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/ags_effect_bridge_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/ags_effect_bridge_callbacks.c'; fi`
 
 ags-ags_menu_bar_callbacks.o: src/ags/X/ags_menu_bar_callbacks.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_menu_bar_callbacks.o -MD -MP -MF $(DEPDIR)/ags-ags_menu_bar_callbacks.Tpo -c -o ags-ags_menu_bar_callbacks.o `test -f 'src/ags/X/ags_menu_bar_callbacks.c' || echo '$(srcdir)/'`src/ags/X/ags_menu_bar_callbacks.c

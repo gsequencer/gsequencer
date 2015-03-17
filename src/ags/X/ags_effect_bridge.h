@@ -23,7 +23,7 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_audio.h>
 
 #define AGS_TYPE_EFFECT_BRIDGE                (ags_effect_bridge_get_type())
 #define AGS_EFFECT_BRIDGE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_EFFECT_BRIDGE, AgsEffectBridge))
@@ -34,6 +34,8 @@
 
 #define AGS_EFFECT_BRIDGE_DEFAULT_VERSION "0.4.3\0"
 #define AGS_EFFECT_BRIDGE_DEFAULT_BUILD_ID "CEST 15-03-2015 13:40\0"
+
+#define AGS_EFFECT_BRIDGE_MAX_COLUMNS (2)
 
 typedef struct _AgsEffectBridge AgsEffectBridge;
 typedef struct _AgsEffectBridgeClass AgsEffectBridgeClass;
@@ -58,11 +60,11 @@ struct _AgsEffectBridge
   
   AgsAudio *audio;
 
-  GtkHBox *input;
-  GtkHBox *output;
-
-  GtkVBox *bulk_input;
   GtkVBox *bulk_output;
+  GtkHBox *output;
+  
+  GtkVBox *bulk_input;
+  GtkHBox *input;
 };
 
 struct _AgsEffectBridgeClass

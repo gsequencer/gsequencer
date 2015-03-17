@@ -26,6 +26,10 @@
 #include <ags/object/ags_marshal.h>
 #include <ags/object/ags_plugin.h>
 
+#include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_input.h>
+#include <ags/audio/ags_output.h>
+
 #include <ags/X/ags_machine.h>
 
 void ags_effect_bridge_class_init(AgsEffectBridgeClass *effect_bridge);
@@ -42,6 +46,8 @@ void ags_effect_bridge_get_property(GObject *gobject,
 				    GParamSpec *param_spec);
 void ags_effect_bridge_connect(AgsConnectable *connectable);
 void ags_effect_bridge_disconnect(AgsConnectable *connectable);
+gchar* ags_effect_bridge_get_name(AgsPlugin *plugin);
+void ags_effect_bridge_set_name(AgsPlugin *plugin, gchar *name);
 gchar* ags_effect_bridge_get_version(AgsPlugin *plugin);
 void ags_effect_bridge_set_version(AgsPlugin *plugin, gchar *version);
 gchar* ags_effect_bridge_get_build_id(AgsPlugin *plugin);
@@ -66,6 +72,11 @@ void ags_effect_bridge_real_resize(AgsEffectBridge *effect_bridge,
 enum{
   RESIZE,
   LAST_SIGNAL,
+};
+
+enum{
+  PROP_0,
+  PROP_AUDIO,
 };
 
 static gpointer ags_effect_bridge_parent_class = NULL;
@@ -202,7 +213,79 @@ ags_effect_bridge_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_effect_bridge_init(AgsEffectBridge *effect_bridge)
 {
-  //TODO:JK: implement me
+  GtkFrame *frame;
+  GtkExpander *expander;
+  GtkTable *table;
+  
+  effect_bridge->flags = 0;
+
+  effect_bridge->name = "ags-default-effect-bridge\0";
+  effect_bridge->version = AGS_EFFECT_BRIDGE_DEFAULT_VERSION;
+  effect_bridge->build_id = AGS_EFFECT_BRIDGE_DEFAULT_BUILD_ID;
+
+  effect_bridge->audio = NULL;
+
+  /* output */
+  frame = (GtkFrame *) gtk_frame_new("output\0");
+  gtk_box_pack_start(effect_bridge,
+		     frame,
+		     FALSE, FALSE,
+		     0);
+
+  expander = gtk_expander_new(NULL);
+  gtk_container_add(frame,
+		    expander);
+
+  table = (GtkTable *) gtk_table_new(1, 2, FALSE);
+  gtk_container_add(expander,
+		    table);
+  
+  effect_bridge->bulk_output = (GtkVBox *) gtk_vbox_new(FALSE, 0);
+  gtk_table_attach(table,
+		   effect_bridge->bulk_output,
+		   0, 1,
+		   0, 1,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+  
+  effect_bridge->output = (GtkHBox *) gtk_hbox_new(FALSE, 0);
+  gtk_table_attach(table,
+		   effect_bridge->output,
+		   1, 2,
+		   0, 1,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  /* input */
+  frame = (GtkFrame *) gtk_frame_new("input\0");
+  gtk_box_pack_start(effect_bridge,
+		     frame,
+		     FALSE, FALSE,
+		     0);
+
+  expander = gtk_expander_new(NULL);
+  gtk_container_add(frame,
+		    expander);
+
+  table = (GtkTable *) gtk_table_new(1, 2, FALSE);
+  gtk_container_add(expander,
+		    table);
+  
+  effect_bridge->bulk_input = (GtkVBox *) gtk_vbox_new(FALSE, 0);
+  gtk_table_attach(table,
+		   effect_bridge->bulk_input,
+		   0, 1,
+		   0, 1,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+  
+  effect_bridge->input = (GtkHBox *) gtk_hbox_new(FALSE, 0);
+  gtk_table_attach(table,
+		   effect_bridge->input,
+		   1, 2,
+		   0, 1,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
 }
 
 void
@@ -252,6 +335,22 @@ ags_effect_bridge_disconnect(AgsConnectable *connectable)
 }
 
 gchar*
+ags_effect_bridge_get_name(AgsPlugin *plugin)
+{
+  return(AGS_EFFECT_BRIDGE(plugin)->name);
+}
+
+void
+ags_effect_bridge_set_name(AgsPlugin *plugin, gchar *name)
+{
+  AgsEffectBridge *effect_bridge;
+
+  effect_bridge = AGS_EFFECT_BRIDGE(plugin);
+
+  effect_bridge->name = name;
+}
+
+gchar*
 ags_effect_bridge_get_version(AgsPlugin *plugin)
 {
   return(AGS_EFFECT_BRIDGE(plugin)->version);
@@ -289,7 +388,54 @@ ags_effect_bridge_real_resize(AgsEffectBridge *effect_bridge,
 			      guint new_size,
 			      gboolean resize_pads)
 {
-  //TODO:JK: implement me
+  GtkTable *table;
+  AgsAudio *audio;
+  AgsChannel *start, *current;
+
+  audio = effect_bridge->audio;
+
+  if(audio == NULL){
+    return;
+  }
+
+  /* retrieve first channel */
+  if(channel_type == AGS_TYPE_INPUT){
+    if(!resize_pads){
+      start =
+	current = ags_channel_nth(audio->input,
+				  new_size);
+    }else{
+      start =
+	current = ags_channel_pad_nth(audio->input,
+				      new_size);
+    }
+  }else{
+    if(!resize_pads){
+      start =
+	current = ags_channel_nth(audio->output,
+				  new_size);
+    }else{
+      start =
+	current = ags_channel_pad_nth(audio->output,
+				      new_size);
+    }
+  }
+
+  /* resize */
+  if(resize_pads){
+    if(((channel_type == AGS_TYPE_INPUT) && (new_size < audio->input_pads)) ||
+       (new_size < audio->output_pads)){
+      //TODO:JK: implement me
+    }else{
+      //TODO:JK: implement me
+    }
+  }else{
+    if(new_size < audio->audio_channels){
+      //TODO:JK: implement me
+    }else{
+      //TODO:JK: implement me
+    }
+  }
 }
 
 void

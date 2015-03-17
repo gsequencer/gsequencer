@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <ags/X/ags_ladspa_bridge.h>
-#include <ags/X/ags_ladspa_bridge_callbacks.h>
+#include <ags/X/machine/ags_ladspa_bridge.h>
+#include <ags/X/machine/ags_ladspa_bridge_callbacks.h>
 
 #include <ags-lib/object/ags_connectable.h>
 
@@ -25,8 +25,6 @@
 
 #include <ags/object/ags_marshal.h>
 #include <ags/object/ags_plugin.h>
-
-#include <ags/X/ags_machine.h>
 
 void ags_ladspa_bridge_class_init(AgsLadspaBridgeClass *ladspa_bridge);
 void ags_ladspa_bridge_connectable_interface_init(AgsConnectableInterface *connectable);
