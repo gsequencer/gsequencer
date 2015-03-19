@@ -41,10 +41,11 @@ typedef struct _AgsEffectBridge AgsEffectBridge;
 typedef struct _AgsEffectBridgeClass AgsEffectBridgeClass;
 
 typedef enum{
-  AGS_EFFECT_BRIDGE_DISPLAY_INPUT    = 1,
-  AGS_EFFECT_BRIDGE_BULK_OUTPUT      = 1 <<  1,
-  AGS_EFFECT_BRIDGE_DISPLAY_OUTPUT   = 1 <<  2,
-  AGS_EFFECT_BRIDGE_BULK_INPUT       = 1 <<  3,
+  AGS_EFFECT_BRIDGE_CONNECTED        = 1,
+  AGS_EFFECT_BRIDGE_DISPLAY_INPUT    = 1 <<  1,
+  AGS_EFFECT_BRIDGE_BULK_OUTPUT      = 1 <<  2,
+  AGS_EFFECT_BRIDGE_DISPLAY_OUTPUT   = 1 <<  3,
+  AGS_EFFECT_BRIDGE_BULK_INPUT       = 1 <<  4,
 }AgsEffectBridgeFlags;
 
 struct _AgsEffectBridge
@@ -71,18 +72,20 @@ struct _AgsEffectBridgeClass
 {
   GtkVBoxClass vbox;
 
-  void (*resize)(AgsEffectBridge *effect_bridge,
-		 GType channel_type,
-		 guint new_size,
-		 gboolean resize_pads);
+  void (*resize_audio_channels)(AgsEffectBridge *effect_bridge,
+				guint new_size, guint old_size);
+  void (*resize_pads)(AgsEffectBridge *effect_bridge,
+		      GType channel_type,
+		      guint new_size, guint old_size);
 };
 
 GType ags_effect_bridge_get_type(void);
 
-void ags_effect_bridge_resize(AgsEffectBridge *effect_bridge,
-			      GType channel_type,
-			      guint new_size,
-			      gboolean resize_pads);
+void ags_effect_bridge_resize_audio_channels(AgsEffectBridge *effect_bridge,
+					     guint new_size, guint old_size);
+void ags_effect_bridge_resize_pads(AgsEffectBridge *effect_bridge,
+				   GType channel_type,
+				   guint new_size, guint old_size);
 
 void ags_effect_bridge_add_effect(AgsEffectBridge *effect_bridge,
 				  GType channel_type,

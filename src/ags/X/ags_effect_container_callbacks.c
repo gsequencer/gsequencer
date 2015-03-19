@@ -16,25 +16,4 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <ags/X/ags_effect_bridge_callbacks.h>
-
-void
-ags_effect_bridge_set_audio_channels_callback(AgsAudio *audio,
-					      guint audio_channels, guint audio_channels_old,
-					      AgsEffectBridge *effect_bridge)
-{
-  ags_effect_bridge_resize_audio_channels(effect_bridge,
-					  audio_channels, audio_channels_old);
-}
-
-void
-ags_effect_bridge_set_pads_callback(AgsAudio *audio,
-				    GType channel_type,
-				    guint pads, guint pads_old,
-				    AgsEffectBridge *effect_bridge)
-{
-  ags_effect_bridge_resize_pads(effect_bridge,
-				channel_type,
-				pads, pads_old);
-}
-
+#include <ags/X/ags_effect_container_callbacks.h>

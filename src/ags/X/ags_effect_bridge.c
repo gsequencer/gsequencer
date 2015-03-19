@@ -53,10 +53,11 @@ void ags_effect_bridge_set_version(AgsPlugin *plugin, gchar *version);
 gchar* ags_effect_bridge_get_build_id(AgsPlugin *plugin);
 void ags_effect_bridge_set_build_id(AgsPlugin *plugin, gchar *build_id);
 
-void ags_effect_bridge_real_resize(AgsEffectBridge *effect_bridge,
-				   GType channel_type,
-				   guint new_size,
-				   gboolean resize_pads);
+void ags_effect_bridge_real_resize_audio_channels(AgsEffectBridge *effect_bridge,
+						  guint new_size, guint old_size);
+void ags_effect_bridge_real_resize_pads(AgsEffectBridge *effect_bridge,
+					GType channel_type,
+					guint new_size, guint old_size);
 
 /**
  * SECTION:ags_effect_bridge
@@ -70,7 +71,8 @@ void ags_effect_bridge_real_resize(AgsEffectBridge *effect_bridge,
  */
 
 enum{
-  RESIZE,
+  RESIZE_AUDIO_CHANNELS,
+  RESIZE_PADS,
   LAST_SIGNAL,
 };
 
@@ -160,28 +162,53 @@ ags_effect_bridge_class_init(AgsEffectBridgeClass *effect_bridge)
 				  param_spec);
 
   /* AgsEffectBridgeClass */
-  effect_bridge->resize = ags_effect_bridge_real_resize;
+  effect_bridge->resize_pads = ags_effect_bridge_real_resize_pads;
+  effect_bridge->resize_audio_channels = ags_effect_bridge_real_resize_audio_channels;
 
   /* signals */
   /**
-   * AgsEffectBridge::resize:
+   * AgsEffectBridge::resize-audio-channels:
    * @effect_bridge: the #AgsEffectBridge to modify
    * @channel: the #AgsChannel to set
+   * @new_size: the new size
+   * @old_size: the old size
    *
-   * The ::resize signal notifies about changed channel allocation within
+   * The ::resize-audio-channels signal notifies about changed channel allocation within
    * audio.
    */
-  effect_bridge_signals[RESIZE] =
-    g_signal_new("resize\0",
+  effect_bridge_signals[RESIZE_AUDIO_CHANNELS] =
+    g_signal_new("resize-audio-channels\0",
 		 G_TYPE_FROM_CLASS(effect_bridge),
 		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsEffectBridgeClass, resize),
+		 G_STRUCT_OFFSET(AgsEffectBridgeClass, resize_pads),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__ULONG_UINT_BOOLEAN,
+		 g_cclosure_user_marshal_VOID__UINT_UINT,
+		 G_TYPE_NONE, 2,
+		 G_TYPE_UINT,
+		 G_TYPE_UINT);
+
+  /**
+   * AgsEffectBridge::resize-pads:
+   * @effect_bridge: the #AgsEffectBridge to modify
+   * @channel: the #AgsChannel to set
+   * @channel_type: either %AGS_TYPE_INPUT or %AGS_TYPE_OUTPUT
+   * @new_size: the new size
+   * @old_size: the old size
+   *
+   * The ::resize-pads signal notifies about changed channel allocation within
+   * audio.
+   */
+  effect_bridge_signals[RESIZE_PADS] =
+    g_signal_new("resize-pads\0",
+		 G_TYPE_FROM_CLASS(effect_bridge),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsEffectBridgeClass, resize_pads),
+		 NULL, NULL,
+		 g_cclosure_user_marshal_VOID__ULONG_UINT_UINT,
 		 G_TYPE_NONE, 3,
 		 G_TYPE_ULONG,
 		 G_TYPE_UINT,
-		 G_TYPE_BOOLEAN);
+		 G_TYPE_UINT);
 }
 
 void
@@ -226,7 +253,7 @@ ags_effect_bridge_init(AgsEffectBridge *effect_bridge)
   effect_bridge->audio = NULL;
 
   /* output */
-  frame = (GtkFrame *) gtk_frame_new("output\0");
+  frame = (GtkFrame *) gtk_frame_new("output bridge\0");
   gtk_box_pack_start(effect_bridge,
 		     frame,
 		     FALSE, FALSE,
@@ -257,7 +284,7 @@ ags_effect_bridge_init(AgsEffectBridge *effect_bridge)
 		   0, 0);
 
   /* input */
-  frame = (GtkFrame *) gtk_frame_new("input\0");
+  frame = (GtkFrame *) gtk_frame_new("input bridge\0");
   gtk_box_pack_start(effect_bridge,
 		     frame,
 		     FALSE, FALSE,
@@ -299,6 +326,35 @@ ags_effect_bridge_set_property(GObject *gobject,
   effect_bridge = AGS_EFFECT_BRIDGE(gobject);
 
   switch(prop_id){
+  case PROP_AUDIO:
+    {
+      AgsAudio *audio;
+
+      audio = (AgsAudio *) g_value_get_object(value);
+
+      if(effect_bridge->audio == audio){
+	return;
+      }
+
+      if(effect_bridge->audio != NULL){
+	g_object_unref(effect_bridge->audio);
+      }
+
+      if(audio != NULL){
+	g_object_ref(audio);
+
+	if((AGS_EFFECT_BRIDGE_CONNECTED & (effect_bridge->flags)) != 0){
+	  g_signal_connect_after(G_OBJECT(audio), "set-audio-channels\0",
+				 G_CALLBACK(ags_effect_bridge_set_audio_channels_callback), effect_bridge);
+	  
+	  g_signal_connect_after(G_OBJECT(audio), "set-pads\0",
+				 G_CALLBACK(ags_effect_bridge_set_pads_callback), effect_bridge);
+	}
+      }
+
+      effect_bridge->audio = audio;
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -316,6 +372,10 @@ ags_effect_bridge_get_property(GObject *gobject,
   effect_bridge = AGS_EFFECT_BRIDGE(gobject);
 
   switch(prop_id){
+  case PROP_AUDIO:
+    {
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -383,10 +443,9 @@ ags_effect_bridge_set_build_id(AgsPlugin *plugin, gchar *build_id)
 }
 
 void
-ags_effect_bridge_real_resize(AgsEffectBridge *effect_bridge,
-			      GType channel_type,
-			      guint new_size,
-			      gboolean resize_pads)
+ags_effect_bridge_real_resize_audio_channels(AgsEffectBridge *effect_bridge,
+					     guint new_size,
+					     guint old_size)
 {
   GtkTable *table;
   AgsAudio *audio;
@@ -397,61 +456,55 @@ ags_effect_bridge_real_resize(AgsEffectBridge *effect_bridge,
   if(audio == NULL){
     return;
   }
-
-  /* retrieve first channel */
-  if(channel_type == AGS_TYPE_INPUT){
-    if(!resize_pads){
-      start =
-	current = ags_channel_nth(audio->input,
-				  new_size);
-    }else{
-      start =
-	current = ags_channel_pad_nth(audio->input,
-				      new_size);
-    }
-  }else{
-    if(!resize_pads){
-      start =
-	current = ags_channel_nth(audio->output,
-				  new_size);
-    }else{
-      start =
-	current = ags_channel_pad_nth(audio->output,
-				      new_size);
-    }
-  }
-
-  /* resize */
-  if(resize_pads){
-    if(((channel_type == AGS_TYPE_INPUT) && (new_size < audio->input_pads)) ||
-       (new_size < audio->output_pads)){
-      //TODO:JK: implement me
-    }else{
-      //TODO:JK: implement me
-    }
-  }else{
-    if(new_size < audio->audio_channels){
-      //TODO:JK: implement me
-    }else{
-      //TODO:JK: implement me
-    }
-  }
 }
 
 void
-ags_effect_bridge_resize(AgsEffectBridge *effect_bridge,
-			 GType channel_type,
-			 guint new_size,
-			 gboolean resize_pads)
+ags_effect_bridge_resize_audio_channels(AgsEffectBridge *effect_bridge,
+					guint new_size,
+					guint old_size)
 {
   g_return_if_fail(AGS_IS_EFFECT_BRIDGE(effect_bridge));
 
   g_object_ref((GObject *) effect_bridge);
   g_signal_emit(G_OBJECT(effect_bridge),
-		effect_bridge_signals[RESIZE], 0,
+		effect_bridge_signals[RESIZE_AUDIO_CHANNELS], 0,
+		new_size,
+		old_size);
+  g_object_unref((GObject *) effect_bridge);
+}
+
+
+void
+ags_effect_bridge_real_resize_pads(AgsEffectBridge *effect_bridge,
+				   GType channel_type,
+				   guint new_size,
+				   guint old_size)
+{
+  GtkTable *table;
+  AgsAudio *audio;
+  AgsChannel *start, *current;
+
+  audio = effect_bridge->audio;
+
+  if(audio == NULL){
+    return;
+  }
+}
+
+void
+ags_effect_bridge_resize_pads(AgsEffectBridge *effect_bridge,
+			      GType channel_type,
+			      guint new_size,
+			      guint old_size)
+{
+  g_return_if_fail(AGS_IS_EFFECT_BRIDGE(effect_bridge));
+
+  g_object_ref((GObject *) effect_bridge);
+  g_signal_emit(G_OBJECT(effect_bridge),
+		effect_bridge_signals[RESIZE_PADS], 0,
 		channel_type,
 		new_size,
-		resize_pads);
+		old_size);
   g_object_unref((GObject *) effect_bridge);
 }
 
