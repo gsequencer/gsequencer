@@ -33,7 +33,7 @@
 #define AGS_EFFECT_LINE_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_EFFECT_LINE, AgsEffectLineClass))
 
 #define AGS_EFFECT_LINE_DEFAULT_VERSION "0.4.3\0"
-#define AGS_EFFECT_LINE_DEFAULT_BUILD_ID "CEST 15-03-2015 13:40\0"
+#define AGS_EFFECT_LINE_DEFAULT_BUILD_ID "CEST 20-03-2015 08:24\0"
 
 typedef struct _AgsEffectLine AgsEffectLine;
 typedef struct _AgsEffectLineClass AgsEffectLineClass;
