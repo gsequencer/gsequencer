@@ -16,13 +16,4 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef __AGS_EFFECT_CONTAINER_CALLBACKS_H__
-#define __AGS_EFFECT_CONTAINER_CALLBACKS_H__
-
-#include <glib.h>
-#include <glib-object.h>
-#include <gtk/gtk.h>
-
-#include <ags/X/ags_effect_container.h>
-
-#endif /*__AGS_EFFECT_CONTAINER_CALLBACKS_H__*/
+#include <ags/X/ags_effect_line_callbacks.h>
