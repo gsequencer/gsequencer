@@ -35,6 +35,8 @@
 #define AGS_EFFECT_LINE_DEFAULT_VERSION "0.4.3\0"
 #define AGS_EFFECT_LINE_DEFAULT_BUILD_ID "CEST 20-03-2015 08:24\0"
 
+#define AGS_EFFECT_LINE_COLUMNS_COUNT (2)
+
 typedef struct _AgsEffectLine AgsEffectLine;
 typedef struct _AgsEffectLineClass AgsEffectLineClass;
 
