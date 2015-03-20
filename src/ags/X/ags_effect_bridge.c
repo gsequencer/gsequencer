@@ -267,7 +267,7 @@ ags_effect_bridge_init(AgsEffectBridge *effect_bridge)
   gtk_container_add(expander,
 		    table);
   
-  effect_bridge->bulk_output = (GtkVBox *) gtk_vbox_new(FALSE, 0);
+  effect_bridge->bulk_output = (GtkWidget *) ags_effect_bulk_new(NULL);
   gtk_table_attach(table,
 		   effect_bridge->bulk_output,
 		   0, 1,
@@ -298,7 +298,7 @@ ags_effect_bridge_init(AgsEffectBridge *effect_bridge)
   gtk_container_add(expander,
 		    table);
   
-  effect_bridge->bulk_input = (GtkVBox *) gtk_vbox_new(FALSE, 0);
+  effect_bridge->bulk_input = (GtkWidget *) ags_effect_bulk_new(NULL);
   gtk_table_attach(table,
 		   effect_bridge->bulk_input,
 		   0, 1,

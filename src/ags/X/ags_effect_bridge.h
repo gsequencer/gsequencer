@@ -61,10 +61,10 @@ struct _AgsEffectBridge
   
   AgsAudio *audio;
 
-  GtkVBox *bulk_output;
+  GtkWidget *bulk_output;
   GtkHBox *output;
   
-  GtkVBox *bulk_input;
+  GtkWidget *bulk_input;
   GtkHBox *input;
 };
 

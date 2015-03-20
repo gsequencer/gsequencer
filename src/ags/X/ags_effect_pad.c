@@ -179,6 +179,48 @@ ags_effect_pad_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_effect_pad_init(AgsEffectPad *effect_pad)
 {
+  GtkAlignment *alignment;
+  GtkHBox *hbox;
+  
+  effect_pad->flags = 0;
+
+  effect_pad->name = NULL;
+  
+  effect_pad->version = AGS_EFFECT_PAD_DEFAULT_VERSION;
+  effect_pad->build_id = AGS_EFFECT_PAD_DEFAULT_BUILD_ID;
+
+  effect_pad->channel = NULL;
+
+  alignment = (GtkAlignment *) g_object_new(GTK_TYPE_ALIGNMENT,
+					    "xalign\0", 1.0,
+					    NULL);
+  gtk_box_pack_start(GTK_BOX(effect_pad),
+		     GTK_WIDGET(alignment),
+		     FALSE, TRUE,
+		     0);
+  
+  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
+  gtk_container_add(GTK_CONTAINER(alignment),
+		    hbox);
+  
+  effect_pad->add = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_ADD);
+  gtk_box_pack_start(GTK_BOX(hbox),
+		     GTK_WIDGET(effect_pad->add),
+		     FALSE, TRUE,
+		     0);
+  
+  effect_pad->remove = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_REMOVE);
+  gtk_box_pack_start(GTK_BOX(hbox),
+		     GTK_WIDGET(effect_pad->remove),
+		     FALSE, TRUE,
+		     0);
+  
+  effect_pad->table = gtk_table_new(1, AGS_EFFECT_PAD_COLUMNS_COUNT,
+				    TRUE);
+  gtk_box_pack_start(GTK_BOX(hbox),
+		     GTK_WIDGET(effect_pad->table),
+		     FALSE, TRUE,
+		     0);
 }
 
 void

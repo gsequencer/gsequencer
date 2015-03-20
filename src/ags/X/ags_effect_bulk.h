@@ -54,6 +54,11 @@ struct _AgsEffectBulk
   gchar *build_id;
   
   AgsChannel *channel;
+
+  GtkButton *add;
+  GtkButton *remove;
+
+  GtkTable *table;
 };
 
 struct _AgsEffectBulkClass

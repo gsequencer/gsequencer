@@ -54,6 +54,11 @@ struct _AgsEffectLine
   gchar *build_id;
   
   AgsChannel *channel;
+
+  GtkButton *add;
+  GtkButton *remove;
+
+  GtkTable *table;
 };
 
 struct _AgsEffectLineClass

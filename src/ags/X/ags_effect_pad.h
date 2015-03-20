@@ -35,6 +35,8 @@
 #define AGS_EFFECT_PAD_DEFAULT_VERSION "0.4.3\0"
 #define AGS_EFFECT_PAD_DEFAULT_BUILD_ID "CEST 20-03-2015 08:24\0"
 
+#define AGS_EFFECT_PAD_COLUMNS_COUNT (2)
+
 typedef struct _AgsEffectPad AgsEffectPad;
 typedef struct _AgsEffectPadClass AgsEffectPadClass;
 
@@ -54,6 +56,11 @@ struct _AgsEffectPad
   gchar *build_id;
   
   AgsChannel *channel;
+
+  GtkButton *add;
+  GtkButton *remove;
+  
+  GtkTable *table;
 };
 
 struct _AgsEffectPadClass
