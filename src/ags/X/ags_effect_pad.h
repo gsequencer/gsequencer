@@ -67,13 +67,14 @@ struct _AgsEffectPadClass
 {
   GtkVBoxClass vbox;
 
-  void (*add_effect)(AgsEffectPad *effect_pad,
-		     gchar *effect);
-  void (*remove_effect)(AgsEffectPad *effect_pad,
-			guint nth);
+  void (*resize_lines)(AgsEffectPad *effect_pad, GType line_type,
+		       guint audio_channels, guint audio_channels_old);
 };
 
 GType ags_effect_pad_get_type(void);
+
+void ags_effect_pad_resize_lines(AgsEffectPad *effect_pad, GType line_type,
+				 guint audio_channels, guint audio_channels_old);
 
 AgsEffectPad* ags_effect_pad_new(AgsChannel *channel);
 

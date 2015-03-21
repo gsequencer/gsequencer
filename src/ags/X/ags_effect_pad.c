@@ -47,6 +47,9 @@ void ags_effect_pad_set_version(AgsPlugin *plugin, gchar *version);
 gchar* ags_effect_pad_get_build_id(AgsPlugin *plugin);
 void ags_effect_pad_set_build_id(AgsPlugin *plugin, gchar *build_id);
 
+void ags_effect_pad_real_resize_lines(AgsEffectPad *effect_pad, GType line_type,
+				      guint audio_channels, guint audio_channels_old);
+
 /**
  * SECTION:ags_effect_pad
  * @short_description: A composite widget to visualize a bunch of #AgsChannel
@@ -59,8 +62,7 @@ void ags_effect_pad_set_build_id(AgsPlugin *plugin, gchar *build_id);
  */
 
 enum{
-  ADD_EFFECT,
-  REMOVE_EFFECT,
+  RESIZE_LINES,
   LAST_SIGNAL,
 };
 
@@ -132,6 +134,9 @@ ags_effect_pad_class_init(AgsEffectPadClass *effect_pad)
   gobject->set_property = ags_effect_pad_set_property;
   gobject->get_property = ags_effect_pad_get_property;
 
+  /* AgsEffectPadClass */
+  effect_pad->resize_lines = ags_effect_pad_real_resize_lines;
+  
   /* properties */
   /**
    * AgsEffectPad:channel:
@@ -148,6 +153,25 @@ ags_effect_pad_class_init(AgsEffectPadClass *effect_pad)
   g_object_class_install_property(gobject,
 				  PROP_CHANNEL,
 				  param_spec);
+
+  /**
+   * AgsPad::resize-lines:
+   * @pad: the #AgsPad to resize
+   * @line_type: the channel type
+   * @audio_channels: count of lines
+   * @audio_channels_old: old count of lines
+   *
+   * The ::resize-lines is emitted as count of lines pack is modified.
+   */
+  effect_pad_signals[RESIZE_LINES] =
+    g_signal_new("resize-lines\0",
+		 G_TYPE_FROM_CLASS(effect_pad),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsEffectPadClass, resize_lines),
+		 NULL, NULL,
+		 g_cclosure_user_marshal_VOID__ULONG_UINT_UINT,
+		 G_TYPE_NONE, 3,
+		 G_TYPE_ULONG, G_TYPE_UINT, G_TYPE_UINT);
 }
 
 void
@@ -340,6 +364,27 @@ ags_effect_pad_set_build_id(AgsPlugin *plugin, gchar *build_id)
   effect_pad = AGS_EFFECT_PAD(plugin);
 
   effect_pad->build_id = build_id;
+}
+
+void
+ags_effect_pad_real_resize_lines(AgsEffectPad *effect_pad, GType line_type,
+				 guint audio_channels, guint audio_channels_old)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_effect_pad_resize_lines(AgsEffectPad *effect_pad, GType line_type,
+			    guint audio_channels, guint audio_channels_old)
+{
+  g_return_if_fail(AGS_IS_EFFECT_PAD(effect_pad));
+  
+  g_object_ref((GObject *) effect_pad);
+  g_signal_emit(G_OBJECT(effect_pad),
+		effect_pad_signals[RESIZE_LINES], 0,
+		line_type,
+		audio_channels, audio_channels_old);
+  g_object_unref((GObject *) effect_pad);
 }
 
 /**

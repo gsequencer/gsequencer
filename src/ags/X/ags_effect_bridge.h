@@ -60,11 +60,17 @@ struct _AgsEffectBridge
   gchar *build_id;
   
   AgsAudio *audio;
-
+  
   GtkWidget *bulk_output;
+  
+  GType *output_pad_type;
+  GType *output_line_type;
   GtkHBox *output;
   
   GtkWidget *bulk_input;
+
+  GType *input_pad_type;
+  GType *input_line_type;
   GtkHBox *input;
 };
 
