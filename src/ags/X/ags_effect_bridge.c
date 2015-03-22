@@ -224,8 +224,8 @@ ags_effect_bridge_connectable_interface_init(AgsConnectableInterface *connectabl
 void
 ags_effect_bridge_plugin_interface_init(AgsPluginInterface *plugin)
 {
-  plugin->get_name = NULL;
-  plugin->set_name = NULL;
+  plugin->get_name = ags_effect_bridge_get_name;
+  plugin->set_name = ags_effect_bridge_set_name;
   plugin->get_version = ags_effect_bridge_get_version;
   plugin->set_version = ags_effect_bridge_set_version;
   plugin->get_build_id = ags_effect_bridge_get_build_id;
