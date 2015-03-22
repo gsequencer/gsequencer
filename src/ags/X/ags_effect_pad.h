@@ -60,6 +60,7 @@ struct _AgsEffectPad
   GtkButton *add;
   GtkButton *remove;
   
+  guint cols;
   GtkTable *table;
 };
 

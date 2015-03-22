@@ -26,6 +26,9 @@
 #include <ags/object/ags_marshal.h>
 #include <ags/object/ags_plugin.h>
 
+#include <ags/X/ags_effect_bridge.h>
+#include <ags/X/ags_effect_line.h>
+
 void ags_effect_pad_class_init(AgsEffectPadClass *effect_pad);
 void ags_effect_pad_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_effect_pad_plugin_interface_init(AgsPluginInterface *plugin);
@@ -238,7 +241,8 @@ ags_effect_pad_init(AgsEffectPad *effect_pad)
 		     GTK_WIDGET(effect_pad->remove),
 		     FALSE, TRUE,
 		     0);
-  
+
+  effect_pad->cols = AGS_EFFECT_PAD_COLUMNS_COUNT;
   effect_pad->table = gtk_table_new(1, AGS_EFFECT_PAD_COLUMNS_COUNT,
 				    TRUE);
   gtk_box_pack_start(GTK_BOX(hbox),
@@ -367,10 +371,51 @@ ags_effect_pad_set_build_id(AgsPlugin *plugin, gchar *build_id)
 }
 
 void
-ags_effect_pad_real_resize_lines(AgsEffectPad *effect_pad, GType line_type,
+ags_effect_pad_real_resize_lines(AgsEffectPad *effect_pad, GType effect_line_type,
 				 guint audio_channels, guint audio_channels_old)
 {
-  //TODO:JK: implement me
+  AgsEffectBridge *effect_bridge;
+  AgsEffectLine *effect_line;
+  AgsChannel *channel;
+  GList *list, *list_next;
+  guint i, j;
+  
+  effect_bridge = (AgsEffectBridge *) gtk_widget_get_ancestor((GtkWidget *) effect_pad,
+							      AGS_TYPE_EFFECT_BRIDGE);
+  
+  if(audio_channels > audio_channels_old){
+    channel = ags_channel_nth(effect_pad->channel,
+			      audio_channels_old);
+
+    for(i = audio_channels_old; i < audio_channels;){
+      for(j = audio_channels_old % effect_pad->cols; j < effect_pad->cols && i < audio_channels; j++, i++){
+	effect_line = (AgsEffectLine *) g_object_new(effect_line_type,
+						     "pad\0", effect_pad,
+						     "channel\0", channel,
+						     NULL);
+	gtk_table_attach(effect_pad->table,
+			 (GtkWidget *) effect_line,
+			 j, j + 1,
+			 i / effect_pad->cols, i / effect_pad->cols + 1,
+			 FALSE, FALSE,
+			 0, 0);
+	
+	channel = channel->next;
+      }
+    }
+  }else{
+    list = gtk_container_get_children(effect_pad->table);
+    list = g_list_nth(list,
+		      audio_channels);
+
+    while(list = list->next){
+      list_next = list->next;
+      
+      gtk_widget_destroy(list->data);
+
+      list = list_next;
+    }
+  }
 }
 
 void

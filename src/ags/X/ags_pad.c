@@ -521,7 +521,7 @@ ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
   guint i, j;
 
   //  fprintf(stdout, "ags_pad_real_resize_lines: audio_channels = %u ; audio_channels_old = %u\n\0", audio_channels, audio_channels_old);
-    machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) pad, AGS_TYPE_MACHINE);
+  machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) pad, AGS_TYPE_MACHINE);
 
   if(audio_channels > audio_channels_old){
     channel = ags_channel_nth(pad->channel, audio_channels_old);
