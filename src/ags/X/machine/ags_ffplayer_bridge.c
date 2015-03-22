@@ -126,7 +126,28 @@ ags_ffplayer_bridge_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_ffplayer_bridge_init(AgsFFPlayerBridge *ffplayer_bridge)
 {
-  //TODO:JK: implement me
+  AgsEffectBridge *effect_bridge;
+  
+  effect_bridge = AGS_EFFECT_BRIDGE(ffplayer_bridge);
+
+  effect_bridge->input_pad_type = AGS_TYPE_FFPLAYER_INPUT_PAD;
+  effect_bridge->input_line_type = AGS_TYPE_FFPLAYER_INPUT_LINE;
+
+  effect_bridge->bulk_input = (GtkWidget *) ags_ffplayer_bulk_input_new(NULL);
+  gtk_table_attach(table,
+		   effect_bridge->bulk_input,
+		   0, 1,
+		   0, 1,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+  
+  effect_bridge->input = (GtkHBox *) gtk_hbox_new(FALSE, 0);
+  gtk_table_attach(table,
+		   effect_bridge->input,
+		   1, 2,
+		   0, 1,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
 }
 
 void
