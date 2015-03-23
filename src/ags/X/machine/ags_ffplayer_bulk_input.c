@@ -30,22 +30,8 @@ void ags_ffplayer_bulk_input_class_init(AgsFFPlayerBulkInputClass *ffplayer_bulk
 void ags_ffplayer_bulk_input_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_ffplayer_bulk_input_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_ffplayer_bulk_input_init(AgsFFPlayerBulkInput *ffplayer_bulk_input);
-void ags_ffplayer_bulk_input_set_property(GObject *gobject,
-					  guint prop_id,
-					  const GValue *value,
-					  GParamSpec *param_spec);
-void ags_ffplayer_bulk_input_get_property(GObject *gobject,
-					  guint prop_id,
-					  GValue *value,
-					  GParamSpec *param_spec);
 void ags_ffplayer_bulk_input_connect(AgsConnectable *connectable);
 void ags_ffplayer_bulk_input_disconnect(AgsConnectable *connectable);
-gchar* ags_ffplayer_bulk_input_get_name(AgsPlugin *plugin);
-void ags_ffplayer_bulk_input_set_name(AgsPlugin *plugin, gchar *name);
-gchar* ags_ffplayer_bulk_input_get_version(AgsPlugin *plugin);
-void ags_ffplayer_bulk_input_set_version(AgsPlugin *plugin, gchar *version);
-gchar* ags_ffplayer_bulk_input_get_build_id(AgsPlugin *plugin);
-void ags_ffplayer_bulk_input_set_build_id(AgsPlugin *plugin, gchar *build_id);
 
 /**
  * SECTION:ags_ffplayer_bulk_input
