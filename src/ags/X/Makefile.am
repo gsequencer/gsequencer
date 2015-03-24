@@ -138,5 +138,5 @@ ags_xorg_c_sources = \
 	ags_window_callbacks.c			\
 	ags_window.c
 
-libags_audio_h_sources = $(libags_audio_h_sources) $(ags_xorg_h_sources)
-libags_audio_c_sources = $(libags_audio_c_sources) $(ags_xorg_c_sources)
+gsequencer_h_sources = $(gsequencer_h_sources) $(ags_xorg_h_sources)
+gsequencer_c_sources = $(gsequencer_c_sources) $(ags_xorg_c_sources)

@@ -108,5 +108,5 @@ ags_machine_c_sources = \
 	ags_synth_output_pad_callbacks.c	\
 	ags_synth_output_pad.c
 
-libags_audio_h_sources = $(libags_audio_h_sources) $(ags_machine_h_sources)
-libags_audio_c_sources = $(libags_audio_c_sources) $(ags_machine_c_sources)
+gsequencer_h_sources = $(gsequencer_h_sources) $(ags_machine_h_sources)
+gsequencer_c_sources = $(gsequencer_c_sources) $(ags_machine_c_sources)

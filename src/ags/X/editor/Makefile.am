@@ -70,5 +70,5 @@ ags_editor_c_sources = \
 	ags_toolbar.c				\
 	ags_toolbar_mode_stock.c
 
-libags_audio_h_sources = $(libags_audio_h_sources) $(ags_editor_h_sources)
-libags_audio_c_sources = $(libags_audio_c_sources) $(ags_editor_c_sources)
+gsequencer_h_sources = $(gsequencer_h_sources) $(ags_editor_h_sources)
+gsequencer_c_sources = $(gsequencer_c_sources) $(ags_editor_c_sources)
