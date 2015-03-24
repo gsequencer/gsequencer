@@ -15,3 +15,6 @@ ags_audio_recall_task_c_sources = \
 	ags_apply_sequencer_length.c \
 	ags_apply_tact.c	\
 	ags_set_muted.c
+
+libags_audio_h_sources = $(libags_audio_h_sources) $(ags_audio_recall_task_h_sources)
+libags_audio_c_sources = $(libags_audio_c_sources) $(ags_audio_recall_task_c_sources)

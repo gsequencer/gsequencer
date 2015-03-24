@@ -1,4 +1,4 @@
-deprecated_ags_audio_file_h_sources = \
+deprecated_ags_recall_audio_h_sources = \
 	ags_amplifier.h			\
 	ags_clone_channel.h		\
 	ags_clone_channel_run.h		\
@@ -10,7 +10,7 @@ deprecated_ags_audio_file_h_sources = \
 	ags_stream.h			\
 	ags_synths.h
 
-ags_audio_audio_file_h_sources = \
+ags_recall_audio_h_sources = \
 	$(deprecated_ags_recall_audio_h_sources) \
 	ags_buffer_audio_signal.h	\
 	ags_buffer_channel.h		\
@@ -56,7 +56,7 @@ ags_audio_audio_file_h_sources = \
 	ags_volume_channel_run.h	\
 	ags_volume_recycling.h
 
-deprecated_ags_audio_file_c_sources =  \
+deprecated_ags_recall_audio_c_sources =  \
 	ags_amplifier.c			\
 	ags_clone_channel.c		\
 	ags_clone_channel_run.c		\
@@ -68,7 +68,7 @@ deprecated_ags_audio_file_c_sources =  \
 	ags_stream.c			\
 	ags_synths.c
 
-ags_audio_audio_file_c_sources = \
+ags_recall_audio_c_sources = \
 	$(deprecated_ags_recall_audio_c_sources) \
 	ags_buffer_audio_signal.c	\
 	ags_buffer_channel.c		\
@@ -113,3 +113,6 @@ ags_audio_audio_file_c_sources = \
 	ags_volume_channel.c		\
 	ags_volume_channel_run.c	\
 	ags_volume_recycling.c
+
+libags_audio_h_sources = $(libags_audio_h_sources) $(ags_recall_audio_h_sources)
+libags_audio_c_sources = $(libags_audio_c_sources) $(ags_recall_audio_c_sources)

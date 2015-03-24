@@ -95,3 +95,4 @@ ags_audio_c_sources =  		\
 	ags_timestamp.h
 
 libags_audio_h_sources = $(libags_audio_h_sources) $(ags_audio_h_sources)
+libags_audio_c_sources = $(libags_audio_c_sources) $(ags_audio_c_sources)

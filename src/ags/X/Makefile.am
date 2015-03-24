@@ -1,0 +1,142 @@
+subdirs editor \
+	machine
+
+include ./editor/Makefile.am \
+	./machine/Makefile.am
+
+deprecated_ags_xorg_h_sources =
+
+ags_xorg_h_sources = \
+	$(deprecated_ags_xorg_h_sources)	\
+	ags_audio_preferences_callbacks.h	\
+	ags_audio_preferences.h			\
+	ags_automation_editor_callbacks.h	\
+	ags_automation_editor.h			\
+	ags_editor_callbacks.h			\
+	ags_editor.h				\
+	ags_effect_bridge_callbacks.h		\
+	ags_effect_bridge.h			\
+	ags_effect_bulk_callbacks.h		\
+	ags_effect_bulk.h			\
+	ags_effect_line_callbacks.h		\
+	ags_effect_line.h			\
+	ags_effect_pad_callbacks.h		\
+	ags_effect_pad.h			\
+	ags_export_window_callbacks.h		\
+	ags_export_window.h			\
+	ags_generic_preferences_callbacks.h	\
+	ags_generic_preferences.h		\
+	ags_ladspa_browser_callbacks.h		\
+	ags_ladspa_browser.h			\
+	ags_line_callbacks.h 			\
+	ags_line_editor_callbacks.h		\
+	ags_line_editor.h			\
+	ags_line.h				\
+	ags_line_member_callbacks.h		\
+	ags_line_member_editor_callbacks.h	\
+	ags_line_member_editor.h		\
+	ags_line_member.h			\
+	ags_link_collection_editor_callbacks.h	\
+	ags_link_collection_editor.h		\
+	ags_link_editor_callbacks.h		\
+	ags_link_editor.h			\
+	ags_listing_editor_callbacks.h		\
+	ags_listing_editor.h			\
+	ags_machine_callbacks.h			\
+	ags_machine_editor_callbacks.h		\
+	ags_machine_editor.h			\
+	ags_machine.h				\
+	ags_menu_bar_callbacks.h		\
+	ags_menu_bar.h 				\
+	ags_navigation_callbacks.h		\
+	ags_navigation.h			\
+	ags_pad_callbacks.h			\
+	ags_pad_editor_callbacks.h 		\
+	ags_pad_editor.h			\
+	ags_pad.h				\
+	ags_performance_preferences_callbacks.h	\
+	ags_performance_preferences.h		\
+	ags_plugin_preferences_callbacks.h	\
+	ags_plugin_preferences.h		\
+	ags_preferences_callbacks.h		\
+	ags_preferences.h			\
+	ags_property_collection_editor_callbacks.h \
+	ags_property_collection_editor.h	\
+	ags_property_editor_callbacks.h		\
+	ags_property_editor.h			\
+	ags_property_listing_editor.h		\
+	ags_resize_editor.h			\
+	ags_server_preferences_callbacks.h	\
+	ags_server_preferences.h		\
+	ags_window_callbacks.h			\
+	ags_window.h
+
+deprecated_ags_xorg_c_sources =  \
+
+ags_xorg_c_sources = \
+	$(deprecated_ags_xorg_c_sources) \
+	ags_audio_preferences_callbacks.c	\
+	ags_audio_preferences.c			\
+	ags_automation_editor_callbacks.c	\
+	ags_automation_editor.c			\
+	ags_editor_callbacks.c			\
+	ags_editor.c				\
+	ags_effect_bridge_callbacks.c		\
+	ags_effect_bridge.c			\
+	ags_effect_bulk_callbacks.c		\
+	ags_effect_bulk.c			\
+	ags_effect_line_callbacks.c		\
+	ags_effect_line.c			\
+	ags_effect_pad_callbacks.c		\
+	ags_effect_pad.c			\
+	ags_export_window_callbacks.c		\
+	ags_export_window.c			\
+	ags_generic_preferences_callbacks.c	\
+	ags_generic_preferences.c		\
+	ags_ladspa_browser_callbacks.c		\
+	ags_ladspa_browser.c			\
+	ags_line_callbacks.c 			\
+	ags_line_editor_callbacks.c		\
+	ags_line_editor.c			\
+	ags_line.c				\
+	ags_line_member_callbacks.c		\
+	ags_line_member_editor_callbacks.c	\
+	ags_line_member_editor.c		\
+	ags_line_member.c			\
+	ags_link_collection_editor_callbacks.c	\
+	ags_link_collection_editor.c		\
+	ags_link_editor_callbacks.c		\
+	ags_link_editor.c			\
+	ags_listing_editor_callbacks.c		\
+	ags_listing_editor.c			\
+	ags_machine_callbacks.c			\
+	ags_machine_editor_callbacks.c		\
+	ags_machine_editor.c			\
+	ags_machine.c				\
+	ags_menu_bar_callbacks.c		\
+	ags_menu_bar.c 				\
+	ags_navigation_callbacks.c		\
+	ags_navigation.c			\
+	ags_pad_callbacks.c			\
+	ags_pad_editor_callbacks.c 		\
+	ags_pad_editor.c			\
+	ags_pad.c				\
+	ags_performance_preferences_callbacks.c	\
+	ags_performance_preferences.c		\
+	ags_plugin_preferences_callbacks.c	\
+	ags_plugin_preferences.c		\
+	ags_preferences_callbacks.c		\
+	ags_preferences.c			\
+	ags_property_collection_editor_callbacks.c \
+	ags_property_collection_editor.c	\
+	ags_property_editor_callbacks.c		\
+	ags_property_editor.c			\
+	ags_property_listing_editor.c		\
+	ags_resize_editor.c			\
+	ags_server_preferences_callbacks.c	\
+	ags_server_preferences.c		\
+	ags_window_callbacks.c			\
+	ags_window.c
+
+libags_audio_h_sources = $(libags_audio_h_sources) $(ags_xorg_h_sources)
+libags_audio_c_sources = $(libags_audio_c_sources) $(ags_xorg_c_sources)
