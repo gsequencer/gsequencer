@@ -101,5 +101,5 @@ AC_FUNC_MMAP
 AC_FUNC_REALLOC
 AC_CHECK_FUNCS([__argz_count __argz_next __argz_stringify atexit clock_gettime floor getcwd localeconv mblen mbrlen memchr mempcpy memset munmap nl_langinfo setlocale socket sqrt stpcpy strcasecmp strchr strcspn strdup strstr strtol strtoul])
 
-AC_CONFIG_FILES([Makefile])
+AC_CONFIG_FILES([Makefile src/ags/Makefile src/ags/util/Makefile src/ags/lib/Makefile src/ags/object/Makefile src/ags/thread/Makefile src/ags/widget/Makefile src/ags/plugin/Makefile src/ags/audio/Makefile src/ags/audio/task/Makefile src/ags/audio/task/recall/Makefile src/ags/audio/file/Makefile src/ags/audio/recall/Makefile src/ags/file/Makefile src/ags/server/Makefile src/ags/X/Makefile src/ags/X/machine/Makefile src/ags/X/editor/Makefile])
 AC_OUTPUT

@@ -2,10 +2,6 @@ SUBDIRS = task \
 	file \
 	recall
 
-include ./task/Makefile.am \
-	./file/Makefile.am \
-	./recall/Makefile.am
-
 deprecated_ags_audio_h_sources = \
 	ags_garbage_collector.h	\
 	ags_effect.h		\
@@ -94,5 +90,3 @@ ags_audio_c_sources =  		\
 	ags_timestamp_factory.h	\
 	ags_timestamp.h
 
-libags_audio_h_sources = $(libags_audio_h_sources) $(ags_audio_h_sources)
-libags_audio_c_sources = $(libags_audio_c_sources) $(ags_audio_c_sources)

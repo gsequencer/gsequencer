@@ -69,6 +69,3 @@ ags_editor_c_sources = \
 	ags_toolbar_callbacks.c			\
 	ags_toolbar.c				\
 	ags_toolbar_mode_stock.c
-
-gsequencer_h_sources = $(gsequencer_h_sources) $(ags_editor_h_sources)
-gsequencer_c_sources = $(gsequencer_c_sources) $(ags_editor_c_sources)

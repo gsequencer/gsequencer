@@ -1,4 +1,4 @@
-deprecated_ags_widget_h_sources = 
+odeprecated_ags_widget_h_sources = 
 
 ags_widget_h_sources = \
 	$(deprecated_ags_widget_h_sources) \
@@ -41,6 +41,3 @@ ags_widget_c_sources = \
 	ags_timebar.c			\
 	ags_vindicator.c		\
 	ags_waveform.c
-
-libags_gui_h_sources = $(libags_gui_h_sources) $(ags_widget_h_sources)
-libags_gui_c_sources = $(libags_gui_c_sources) $(ags_widget_c_sources)

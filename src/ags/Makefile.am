@@ -1,12 +1,12 @@
-include ./util/Makefile.am \
-	./lib/Makefile.am \
-	./object/Makefile.am \
-	./widget/Makefile.am \
-	./audio/Makefile.am \
-	./file/Makefile.am \
-	./X/Makefile.am \
-	./file/Makefile.am \
-	./server/Makefile.am 
+SUBDIRS = util \
+	lib \
+	object \
+	widget \
+	audio \
+	file \
+	X \
+	file \
+	server
 
 libags_h_sources = 
 libags_c_sources = 

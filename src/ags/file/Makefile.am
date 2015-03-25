@@ -33,6 +33,3 @@ ags_file_c_sources = \
 	ags_file_util.c			\
 	ags_file_value_factory.c	\
 	ags_file_write.c
-
-libags_audio_h_sources = $(libags_audio_h_sources) $(ags_file_h_sources)
-libags_audio_c_sources = $(libags_audio_c_sources) $(ags_file_c_sources)

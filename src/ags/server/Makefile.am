@@ -14,5 +14,3 @@ ags_server_c_sources = \
 	ags_remote_task.c		\
 	ags_server.c
 
-gsequencer_h_sources = $(gsequencer_h_sources) $(ags_server_h_sources)
-gsequencer_c_sources = $(gsequencer_c_sources) $(ags_server_c_sources)

@@ -44,5 +44,3 @@ ags_object_c_sources = \
 	ags_tactable.c			\
 	ags_tree_iterator.c
 
-libags_h_sources = $(libags_h_sources) $(ags_object_h_sources)
-libags_c_sources = $(libags_c_sources) $(ags_object_c_sources)

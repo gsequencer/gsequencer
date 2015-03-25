@@ -44,6 +44,3 @@ ags_thread_c_sources = \
 	ags_thread_pool.c		\
 	ags_thread-posix.c		\
 	ags_timestamp_thread.c
-
-libags_thread_h_sources = $(libags_thread_h_sources) $(ags_thread_h_sources)
-libags_thread_c_sources = $(libags_thread_c_sources) $(ags_thread_c_sources)

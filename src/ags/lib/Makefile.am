@@ -17,6 +17,3 @@ ags_lib_c_sources = \
 	ags_list.c			\
 	ags_log.c			\
 	ags_parameter.c
-
-libags_h_sources = $(libags_h_sources) $(ags_lib_h_sources)
-libags_c_sources = $(libags_c_sources) $(ags_lib_c_sources)

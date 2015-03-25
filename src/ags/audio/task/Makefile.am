@@ -1,7 +1,5 @@
 SUBDIRS = recall
 
-include ./recall/Makefile.am
-
 deprecated_ags_task_h_sources = \
 	ags_apply_wavetable.h
 
@@ -111,9 +109,3 @@ ags_xorg_task_c_sources = 		\
 	ags_scroll_on_play.c		\
 	ags_toggle_led.c		\
 	ags_toggle_pattern_bit.c
-
-libags_audio_h_sources = $(libags_audio_h_sources) $(ags_audio_task_h_sources)
-libags_audio_c_sources = $(libags_audio_c_sources) $(ags_audio_task_c_sources)
-
-libags_audio_h_sources = $(libags_audio_h_sources) $(ags_xorg_task_h_sources)
-libags_audio_c_sources = $(libags_audio_c_sources) $(ags_xorg_task_c_sources)

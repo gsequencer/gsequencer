@@ -1,8 +1,5 @@
-subdirs editor \
+SUBDIRS = editor \
 	machine
-
-include ./editor/Makefile.am \
-	./machine/Makefile.am
 
 deprecated_ags_xorg_h_sources =
 
@@ -71,7 +68,7 @@ ags_xorg_h_sources = \
 	ags_window_callbacks.h			\
 	ags_window.h
 
-deprecated_ags_xorg_c_sources =  \
+deprecated_ags_xorg_c_sources = 
 
 ags_xorg_c_sources = \
 	$(deprecated_ags_xorg_c_sources) \
@@ -137,6 +134,3 @@ ags_xorg_c_sources = \
 	ags_server_preferences.c		\
 	ags_window_callbacks.c			\
 	ags_window.c
-
-gsequencer_h_sources = $(gsequencer_h_sources) $(ags_xorg_h_sources)
-gsequencer_c_sources = $(gsequencer_c_sources) $(ags_xorg_c_sources)

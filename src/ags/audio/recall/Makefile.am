@@ -113,6 +113,3 @@ ags_recall_audio_c_sources = \
 	ags_volume_channel.c		\
 	ags_volume_channel_run.c	\
 	ags_volume_recycling.c
-
-libags_audio_h_sources = $(libags_audio_h_sources) $(ags_recall_audio_h_sources)
-libags_audio_c_sources = $(libags_audio_c_sources) $(ags_recall_audio_c_sources)

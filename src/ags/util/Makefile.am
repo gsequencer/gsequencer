@@ -10,5 +10,3 @@ ags_util_c_sources = \
 	$(deprecated_ags_util_c_sources) \
 	ags_util.c
 
-libags_h_sources = $(libags_h_sources) $(ags_util_h_sources)
-libags_c_sources = $(libags_c_sources) $(ags_util_c_sources)
