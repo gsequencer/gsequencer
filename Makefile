@@ -120,7 +120,7 @@ PROGRAMS = $(bin_PROGRAMS)
 am__objects_1 =
 am_gsequencer_OBJECTS = $(am__objects_1)
 gsequencer_OBJECTS = $(am_gsequencer_OBJECTS)
-gsequencer_DEPENDENCIES = libags.a
+gsequencer_DEPENDENCIES = libags.a libags-thread.a libags-audio.a
 gsequencer_LINK = $(CCLD) $(gsequencer_CFLAGS) $(CFLAGS) \
 	$(gsequencer_LDFLAGS) $(LDFLAGS) -o $@
 AM_V_P = $(am__v_P_$(V))
@@ -425,7 +425,7 @@ libags_a_LDFLAGS =
 # application
 gsequencer_CFLAGS = 
 gsequencer_LDFLAGS = 
-gsequencer_LDADD = libags.a
+gsequencer_LDADD = libags.a libags-thread.a libags-audio.a
 
 # 
 libags_audio_h_sources = $(ags_recall_audio_h_sources) $(ags_audio_task_h_sources) $(ags_xorg_task_h_sources) $(ags_audio_file_h_sources) $(ags_audio_recall_task_h_sources) 
