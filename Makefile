@@ -63,10 +63,10 @@ am__make_running_with_option = \
   test $$has_opt = yes
 am__make_dryrun = (target_option=n; $(am__make_running_with_option))
 am__make_keepgoing = (target_option=k; $(am__make_running_with_option))
-pkgdatadir = $(datadir)/ags
-pkgincludedir = $(includedir)/ags
-pkglibdir = $(libdir)/ags
-pkglibexecdir = $(libexecdir)/ags
+pkgdatadir = $(datadir)/gsequencer
+pkgincludedir = $(includedir)/gsequencer
+pkglibdir = $(libdir)/gsequencer
+pkglibexecdir = $(libexecdir)/gsequencer
 am__cd = CDPATH="$${ZSH_VERSION+.}$(PATH_SEPARATOR)" && cd
 install_sh_DATA = $(install_sh) -c -m 644
 install_sh_PROGRAM = $(install_sh) -c
@@ -79,15 +79,13 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-build_triplet = x86_64-unknown-linux-gnu
-host_triplet = x86_64-unknown-linux-gnu
 bin_PROGRAMS = gsequencer$(EXEEXT)
 subdir = .
 DIST_COMMON = INSTALL NEWS README AUTHORS ChangeLog \
 	$(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/configure $(am__configure_deps) \
 	$(srcdir)/config.h.in ABOUT-NLS COPYING compile config.guess \
-	config.rpath config.sub install-sh missing
+	config.rpath config.sub install-sh missing ltmain.sh
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
@@ -245,177 +243,106 @@ distuninstallcheck_listfiles = find . -type f -print
 am__distuninstallcheck_listfiles = $(distuninstallcheck_listfiles) \
   | sed 's|^\./|$(prefix)/|' | grep -v '$(infodir)/dir$$'
 distcleancheck_listfiles = find . -type f -print
-ACLOCAL = ${SHELL} /home/jkraehemann/ags-code/missing aclocal-1.14
-ALLOCA = 
+ACLOCAL = ${SHELL} /home/minos/ags-code/missing aclocal-1.14
 AMTAR = $${TAR-tar}
 AM_DEFAULT_VERBOSITY = 1
-AUTOCONF = ${SHELL} /home/jkraehemann/ags-code/missing autoconf
-AUTOHEADER = ${SHELL} /home/jkraehemann/ags-code/missing autoheader
-AUTOMAKE = ${SHELL} /home/jkraehemann/ags-code/missing automake-1.14
+AUTOCONF = ${SHELL} /home/minos/ags-code/missing autoconf
+AUTOHEADER = ${SHELL} /home/minos/ags-code/missing autoheader
+AUTOMAKE = ${SHELL} /home/minos/ags-code/missing automake-1.14
 AWK = gawk
-BUILD_INCLUDED_LIBINTL = no
-CAIRO_CFLAGS = -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng16 -I/usr/include/freetype2 -I/usr/include/libdrm -I/usr/include/libpng16 
+CAIRO_CFLAGS = -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng16 -I/usr/include/harfbuzz -I/usr/include/freetype2 -I/usr/include/harfbuzz -I/usr/include/libdrm -I/usr/include/libpng16 -I/usr/X11/include 
 CAIRO_LIBS = -lcairo 
-CATOBJEXT = .gmo
 CC = gcc
 CCDEPMODE = depmode=none
 
-#include ./src/ags/Makefile.am \
-#	$(top_srcdir)/util/Makefile.am \
-#	$(top_srcdir)/lib/Makefile.am \
-#	$(top_srcdir)/object/Makefile.am \
-#	$(top_srcdir)/widget/Makefile.am \
-#	$(top_srcdir)/audio/Makefile.am \
-#	$(top_srcdir)/audio/task/Makefile.am \
-#	$(top_srcdir)/audio/file/Makefile.am \
-#	$(top_srcdir)/audio/recall/Makefile.am \
-#	$(top_srcdir)/audio/task/recall/Makefile.am \
-#	$(top_srcdir)/file/Makefile.am \
-#	$(top_srcdir)/X/Makefile.am \
-#	$(top_srcdir)/X/editor/Makefile.am \
-#	$(top_srcdir)/X/machine/Makefile.am \
-#	$(top_srcdir)/file/Makefile.am \
-#	$(top_srcdir)/server/Makefile.am \
-#	./doc/Makefile.am
-
 # what flags you want to pass to the C compiler & linker
 CFLAGS = -g --pedantic -Wall -O -I./src -I/usr/include
-CFLAG_VISIBILITY = -fvisibility=hidden
 CPP = gcc -E
 CPPFLAGS = 
+CXX = g++
+CXXDEPMODE = depmode=none
+CXXFLAGS = -g -O2
 CYGPATH_W = echo
-DATADIRNAME = share
 DEFS = -DHAVE_CONFIG_H
 DEPDIR = .deps
 ECHO_C = 
 ECHO_N = -n
 ECHO_T = 
-EGREP = /usr/bin/grep -E
+EGREP = /bin/grep -E
 EXEEXT = 
-GDKPIXBUF_CFLAGS = -pthread -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng16 -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include 
+GDKPIXBUF_CFLAGS = -pthread -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng16 -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include 
 GDKPIXBUF_LIBS = -lgdk_pixbuf-2.0 -lgobject-2.0 -lglib-2.0 
-GENCAT = gencat
-GETTEXT_MACRO_VERSION = 0.19
-GLIBC2 = yes
-GLIBC21 = yes
-GMSGFMT = /usr/bin/msgfmt
-GMSGFMT_015 = /usr/bin/msgfmt
-GOBJECT_CFLAGS = -pthread -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include 
+GOBJECT_CFLAGS = -pthread -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include 
 GOBJECT_LIBS = -lgobject-2.0 -Wl,--export-dynamic -lgmodule-2.0 -pthread -lgthread-2.0 -pthread -lglib-2.0 
-GREP = /usr/bin/grep
-GTK_CFLAGS = -pthread -I/usr/include/gtk-2.0 -I/usr/lib64/gtk-2.0/include -I/usr/include/pango-1.0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/libdrm -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng16 -I/usr/include/pango-1.0 -I/usr/include/harfbuzz -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/freetype2 -I/usr/include/libpng16 -I/usr/include/freetype2 -I/usr/include/libpng16 
+GREP = /bin/grep
+GTK_CFLAGS = -pthread -I/usr/include/gtk-2.0 -I/usr/lib/gtk-2.0/include -I/usr/include/pango-1.0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/libdrm -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng16 -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include -I/usr/include/freetype2 -I/usr/include/libpng16 -I/usr/include/harfbuzz -I/usr/include/freetype2 -I/usr/include/libpng16 -I/usr/include/harfbuzz -I/usr/X11/include 
 GTK_LIBS = -lgtk-x11-2.0 -lgdk-x11-2.0 -lpangocairo-1.0 -latk-1.0 -lcairo -lgdk_pixbuf-2.0 -lgio-2.0 -lpangoft2-1.0 -lpango-1.0 -lgobject-2.0 -lglib-2.0 -lfontconfig -lfreetype 
-HAVE_ASPRINTF = 1
-HAVE_NEWLOCALE = 1
-HAVE_POSIX_PRINTF = 1
-HAVE_SNPRINTF = 1
-HAVE_VISIBILITY = 1
-HAVE_WPRINTF = 0
 INSTALL = /usr/bin/install -c
 INSTALL_DATA = ${INSTALL} -m 644
 INSTALL_PROGRAM = ${INSTALL}
 INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
-INSTOBJEXT = .mo
-INTLBISON = :
-INTLLIBS = 
-INTLOBJS = 
-INTL_DEFAULT_VERBOSITY = 1
-INTL_LIBTOOL_SUFFIX_PREFIX = 
-INTL_MACOSX_LIBS = 
 LDFLAGS = -L/lib -L/usr/lib -L/usr/X11/lib -lm -pthread -lrt -lgmp
 LIBAO_CFLAGS = 
 LIBAO_LIBS = -lao 
 LIBASOUND2_CFLAGS = -I/usr/include/alsa 
 LIBASOUND2_LIBS = -lasound 
-LIBICONV = 
-LIBINSTPATCH_CFLAGS = -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include 
+LIBINSTPATCH_CFLAGS = -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include 
 LIBINSTPATCH_LIBS = -linstpatch-1.0 -lgobject-2.0 -lglib-2.0 -lsndfile 
-LIBINTL = 
-LIBMULTITHREAD = -pthread
 LIBOBJS = 
-LIBPTH = 
-LIBPTH_PREFIX = 
-LIBS = -lrt -lm -ldl -lX11 
-LIBTHREAD = 
+LIBS = -lrt -lm -lgmp 
 LIBXML2_CFLAGS = -I/usr/include/libxml2 
 LIBXML2_LIBS = -lxml2 
-LTLIBC = -lc
-LTLIBICONV = 
-LTLIBINTL = 
-LTLIBMULTITHREAD = -pthread
+LN_S = ln -s
 LTLIBOBJS = 
-LTLIBPTH = 
-LTLIBTHREAD = 
-MAKEINFO = ${SHELL} /home/jkraehemann/ags-code/missing makeinfo
-MKDIR_P = /usr/bin/mkdir -p
-MSGFMT = /usr/bin/msgfmt
-MSGFMT_015 = /usr/bin/msgfmt
-MSGMERGE = /usr/bin/msgmerge
+MAKEINFO = ${SHELL} /home/minos/ags-code/missing makeinfo
+MKDIR_P = /bin/mkdir -p
 OBJEXT = o
-PACKAGE = ags
+PACKAGE = gsequencer
 PACKAGE_BUGREPORT = weedlight@gmail.com
-PACKAGE_NAME = ags
-PACKAGE_STRING = ags 0.4.2
-PACKAGE_TARNAME = ags
+PACKAGE_NAME = gsequencer
+PACKAGE_STRING = gsequencer 0.4.3
+PACKAGE_TARNAME = gsequencer
 PACKAGE_URL = 
-PACKAGE_VERSION = 0.4.2
+PACKAGE_VERSION = 0.4.3
 PATH_SEPARATOR = :
 PKG_CONFIG = /usr/bin/pkg-config
 PKG_CONFIG_LIBDIR = 
-PKG_CONFIG_PATH = 
-POSUB = po
-PRI_MACROS_BROKEN = 0
+PKG_CONFIG_PATH = /usr/lib/pkgconfig:/usr/X11/lib/pkgconfig:/usr/X11/share/pkgconfig
 RANLIB = ranlib
-SED = /usr/bin/sed
 SET_MAKE = 
 SHELL = /bin/sh
 SNDFILE_CFLAGS = 
 SNDFILE_LIBS = -lsndfile 
 STRIP = 
-USE_INCLUDED_LIBINTL = no
-USE_NLS = yes
 UUID_CFLAGS = -I/usr/include/uuid 
 UUID_LIBS = -luuid 
-VERSION = 0.4.2
-WINDRES = 
-WOE32 = no
-WOE32DLL = no
-XGETTEXT = /usr/bin/xgettext
-XGETTEXT_015 = /usr/bin/xgettext
-XGETTEXT_EXTRA_OPTIONS = 
+VERSION = 0.4.3
 XMKMF = 
-abs_builddir = /home/jkraehemann/ags-code
-abs_srcdir = /home/jkraehemann/ags-code
-abs_top_builddir = /home/jkraehemann/ags-code
-abs_top_srcdir = /home/jkraehemann/ags-code
+abs_builddir = /home/minos/ags-code
+abs_srcdir = /home/minos/ags-code
+abs_top_builddir = /home/minos/ags-code
+abs_top_srcdir = /home/minos/ags-code
 ac_ct_CC = gcc
+ac_ct_CXX = g++
 am__include = include
 am__leading_dot = .
 am__quote = 
 am__tar = $${TAR-tar} chof - "$$tardir"
 am__untar = $${TAR-tar} xf -
 bindir = ${exec_prefix}/bin
-build = x86_64-unknown-linux-gnu
 build_alias = 
-build_cpu = x86_64
-build_os = linux-gnu
-build_vendor = unknown
 builddir = .
 datadir = ${datarootdir}
 datarootdir = ${prefix}/share
 docdir = ${datarootdir}/doc/${PACKAGE_TARNAME}
 dvidir = ${docdir}
 exec_prefix = ${prefix}
-host = x86_64-unknown-linux-gnu
 host_alias = 
-host_cpu = x86_64
-host_os = linux-gnu
-host_vendor = unknown
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = ${SHELL} /home/jkraehemann/ags-code/install-sh
+install_sh = ${SHELL} /home/minos/ags-code/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
@@ -435,7 +362,8 @@ target_alias =
 top_build_prefix = 
 top_builddir = .
 top_srcdir = $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))/src/ags
-SUBDIRS = src/ags \
+SUBDIRS = po \
+	src/ags \
 	src/ags/util \
 	src/ags/lib \
 	src/ags/object \
@@ -453,6 +381,7 @@ SUBDIRS = src/ags \
 	src/ags/X/machine \
 	doc
 
+TARGETS = gsequencer$(EXEEXT)
 
 # this lists the binaries to produce, the (non-PHONY, binary) targets in
 # the previous manual Makefile
@@ -463,14 +392,15 @@ gsequencer_CFLAGS =
 gsequencer_LDFLAGS = 
 gsequencer_LDADD = libags.a libags-thread.a libags-audio.a libags-gui.a
 
-# 
-libags_audio_h_sources = $(ags_recall_audio_h_sources) $(ags_audio_task_h_sources) $(ags_audio_file_h_sources) $(ags_audio_recall_task_h_sources) 
-libags_audio_c_sources = $(ags_recall_audio_c_sources) $(ags_audio_task_c_sources) $(ags_audio_file_c_sources) $(ags_audio_recall_task_c_sources) 
-libags_a_SOURCES = $(ags_lib_c_sources) $(ags_object_c_sources) $(ags_util_c_sources)
-libags_thread_a_SOURCES = $(ags_thread_c_sources)
-libags_audio_a_SOURCES = $(ags_audio_c_sources)
-libags_gui_a_SOURCES = $(ags_widget_c_sources)
-gsequencer_SOURCES = $(gsequencer_c_sources) $(ags_xorg_c_sources) $(ags_machine_c_sources) $(ags_editor_c_sources) $(ags_server_c_sources) $(ags_file_c_sources)  $(ags_xorg_task_c_sources) 
+#
+libags_audio_h_sources = 
+libags_audio_c_sources = 
+libags_a_SOURCES = 
+libags_thread_a_SOURCES = 
+libags_audio_a_SOURCES = 
+libags_gui_a_SOURCES = 
+gsequencer_SOURCES = 
+ACLOCAL_AMFLAGS = -I m4
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 
@@ -839,7 +769,6 @@ distcheck: dist
 	  && am__cwd=`pwd` \
 	  && $(am__cd) $(distdir)/_build \
 	  && ../configure \
-	    --with-included-gettext \
 	    $(AM_DISTCHECK_CONFIGURE_FLAGS) \
 	    $(DISTCHECK_CONFIGURE_FLAGS) \
 	    --srcdir=.. --prefix="$$dc_install_base" \

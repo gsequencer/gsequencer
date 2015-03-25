@@ -1,7 +1,7 @@
 deprecated_ags_editor_h_sources = 
 
 ags_editor_h_sources = \
-	$(deprecated_ags_editor_c_sources) \
+	$(deprecated_ags_editor_h_sources) \
 	ags_automation_area_callbacks.h		\
 	ags_automation_area.h			\
 	ags_automation_edit_callbacks.h		\

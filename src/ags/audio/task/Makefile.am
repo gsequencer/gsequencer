@@ -2,7 +2,7 @@ deprecated_ags_task_h_sources = \
 	ags_apply_wavetable.h
 
 ags_audio_task_h_sources = \
-	$(deprecated_ags_audio_h_sources) \
+	$(deprecated_ags_audio_task_h_sources) \
 	ags_add_audio.h		\
 	ags_add_audio_signal.h	\
 	ags_add_line_member.h	\
@@ -57,7 +57,7 @@ deprecated_ags_task_c_sources = \
 	ags_apply_wavetable.c
 
 ags_audio_task_c_sources = \
-	$(deprecated_ags_audio_c_sources) \
+	$(deprecated_ags_audio_task_c_sources) \
 	ags_add_audio.c		\
 	ags_add_audio_signal.c	\
 	ags_add_line_member.c	\
