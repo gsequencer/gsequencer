@@ -3,7 +3,7 @@
 
 AC_PREREQ([2.69])
 AC_INIT([ags],[0.4.2],[weedlight@gmail.com])
-AM_INIT_AUTOMAKE([foreign])
+AM_INIT_AUTOMAKE
 AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADERS([config.h])
 

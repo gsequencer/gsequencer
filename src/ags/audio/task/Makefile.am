@@ -1,5 +1,3 @@
-SUBDIRS = recall
-
 deprecated_ags_task_h_sources = \
 	ags_apply_wavetable.h
 

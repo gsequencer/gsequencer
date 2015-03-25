@@ -14,6 +14,8 @@
 
 @SET_MAKE@
 
+# AUTOMAKE_OPTIONS = foreign
+
 
 VPATH = @srcdir@
 am__is_gnu_make = test -n '$(MAKEFILE_LIST)' && test -n '$(MAKELEVEL)'
@@ -81,11 +83,11 @@ build_triplet = @build@
 host_triplet = @host@
 bin_PROGRAMS = gsequencer$(EXEEXT)
 subdir = .
-DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
+DIST_COMMON = INSTALL NEWS README AUTHORS ChangeLog \
+	$(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/configure $(am__configure_deps) \
-	$(srcdir)/config.h.in AUTHORS COPYING ChangeLog INSTALL NEWS \
-	README compile config.guess config.rpath config.sub depcomp \
-	install-sh missing ltmain.sh
+	$(srcdir)/config.h.in ABOUT-NLS COPYING compile config.guess \
+	config.rpath config.sub install-sh missing
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
@@ -107,6 +109,10 @@ libags_audio_a_AR = $(AR) $(ARFLAGS)
 libags_audio_a_LIBADD =
 am_libags_audio_a_OBJECTS =
 libags_audio_a_OBJECTS = $(am_libags_audio_a_OBJECTS)
+libags_gui_a_AR = $(AR) $(ARFLAGS)
+libags_gui_a_LIBADD =
+am_libags_gui_a_OBJECTS =
+libags_gui_a_OBJECTS = $(am_libags_gui_a_OBJECTS)
 libags_thread_a_AR = $(AR) $(ARFLAGS)
 libags_thread_a_LIBADD =
 am_libags_thread_a_OBJECTS =
@@ -117,10 +123,10 @@ am_libags_a_OBJECTS =
 libags_a_OBJECTS = $(am_libags_a_OBJECTS)
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
-am__objects_1 =
-am_gsequencer_OBJECTS = $(am__objects_1)
+am_gsequencer_OBJECTS =
 gsequencer_OBJECTS = $(am_gsequencer_OBJECTS)
-gsequencer_DEPENDENCIES = libags.a libags-thread.a libags-audio.a
+gsequencer_DEPENDENCIES = libags.a libags-thread.a libags-audio.a \
+	libags-gui.a
 gsequencer_LINK = $(CCLD) $(gsequencer_CFLAGS) $(CFLAGS) \
 	$(gsequencer_LDFLAGS) $(LDFLAGS) -o $@
 AM_V_P = $(am__v_P_@AM_V@)
@@ -148,10 +154,12 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(libags_audio_a_SOURCES) $(libags_thread_a_SOURCES) \
-	$(libags_a_SOURCES) $(gsequencer_SOURCES)
-DIST_SOURCES = $(libags_audio_a_SOURCES) $(libags_thread_a_SOURCES) \
-	$(libags_a_SOURCES) $(gsequencer_SOURCES)
+SOURCES = $(libags_audio_a_SOURCES) $(libags_gui_a_SOURCES) \
+	$(libags_thread_a_SOURCES) $(libags_a_SOURCES) \
+	$(gsequencer_SOURCES)
+DIST_SOURCES = $(libags_audio_a_SOURCES) $(libags_gui_a_SOURCES) \
+	$(libags_thread_a_SOURCES) $(libags_a_SOURCES) \
+	$(gsequencer_SOURCES)
 RECURSIVE_TARGETS = all-recursive check-recursive cscopelist-recursive \
 	ctags-recursive dvi-recursive html-recursive info-recursive \
 	install-data-recursive install-dvi-recursive \
@@ -249,8 +257,26 @@ BUILD_INCLUDED_LIBINTL = @BUILD_INCLUDED_LIBINTL@
 CAIRO_CFLAGS = @CAIRO_CFLAGS@
 CAIRO_LIBS = @CAIRO_LIBS@
 CATOBJEXT = @CATOBJEXT@
-CC = gcc
+CC = @CC@
 CCDEPMODE = @CCDEPMODE@
+
+#include ./src/ags/Makefile.am \
+#	$(top_srcdir)/util/Makefile.am \
+#	$(top_srcdir)/lib/Makefile.am \
+#	$(top_srcdir)/object/Makefile.am \
+#	$(top_srcdir)/widget/Makefile.am \
+#	$(top_srcdir)/audio/Makefile.am \
+#	$(top_srcdir)/audio/task/Makefile.am \
+#	$(top_srcdir)/audio/file/Makefile.am \
+#	$(top_srcdir)/audio/recall/Makefile.am \
+#	$(top_srcdir)/audio/task/recall/Makefile.am \
+#	$(top_srcdir)/file/Makefile.am \
+#	$(top_srcdir)/X/Makefile.am \
+#	$(top_srcdir)/X/editor/Makefile.am \
+#	$(top_srcdir)/X/machine/Makefile.am \
+#	$(top_srcdir)/file/Makefile.am \
+#	$(top_srcdir)/server/Makefile.am \
+#	./doc/Makefile.am
 
 # what flags you want to pass to the C compiler & linker
 CFLAGS = -g --pedantic -Wall -O -I./src -I/usr/include
@@ -408,35 +434,43 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
-top_srcdir = $(shell pwd)/src/ags
-AUTOMAKE_OPTIONS = foreign
+top_srcdir = $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))/src/ags
 SUBDIRS = src/ags \
+	src/ags/util \
+	src/ags/lib \
+	src/ags/object \
+	src/ags/widget \
+	src/ags/audio \
+	src/ags/audio/task \
+	src/ags/audio/task/recall \
+	src/ags/audio/file \
+	src/ags/audio/recall \
+	src/ags/file \
+	src/ags/X \
+	src/ags/file \
+	src/ags/server \
+	src/ags/X/editor \
+	src/ags/X/machine \
 	doc
 
 
 # this lists the binaries to produce, the (non-PHONY, binary) targets in
 # the previous manual Makefile
-noinst_LIBRARIES = libags.a libags-thread.a libags-audio.a
-
-# library
-libags_a_CFLAGS = 
-libags_a_LDFLAGS = 
+noinst_LIBRARIES = libags.a libags-thread.a libags-audio.a libags-gui.a
 
 # application
 gsequencer_CFLAGS = 
 gsequencer_LDFLAGS = 
-gsequencer_LDADD = libags.a libags-thread.a libags-audio.a
+gsequencer_LDADD = libags.a libags-thread.a libags-audio.a libags-gui.a
 
 # 
-libags_audio_h_sources = $(ags_recall_audio_h_sources) $(ags_audio_task_h_sources) $(ags_xorg_task_h_sources) $(ags_audio_file_h_sources) $(ags_audio_recall_task_h_sources) 
-libags_audio_c_sources = $(ags_recall_audio_c_sources) $(ags_audio_task_c_sources) $(ags_xorg_task_c_sources) $(ags_audio_file_c_sources) $(ags_audio_recall_task_c_sources) 
-gsequencer_h_sources = $(ags_xorg_h_sources) $(ags_machine_h_sources) $(ags_editor_h_sources)
-gsequencer_c_sources = $(ags_xorg_c_sources) $(ags_machine_c_sources) $(ags_editor_c_sources)
+libags_audio_h_sources = $(ags_recall_audio_h_sources) $(ags_audio_task_h_sources) $(ags_audio_file_h_sources) $(ags_audio_recall_task_h_sources) 
+libags_audio_c_sources = $(ags_recall_audio_c_sources) $(ags_audio_task_c_sources) $(ags_audio_file_c_sources) $(ags_audio_recall_task_c_sources) 
 libags_a_SOURCES = $(ags_lib_c_sources) $(ags_object_c_sources) $(ags_util_c_sources)
 libags_thread_a_SOURCES = $(ags_thread_c_sources)
 libags_audio_a_SOURCES = $(ags_audio_c_sources)
 libags_gui_a_SOURCES = $(ags_widget_c_sources)
-gsequencer_SOURCES = $(gsequencer_c_sources) $(ags_server_c_sources) $(ags_file_c_sources)
+gsequencer_SOURCES = $(gsequencer_c_sources) $(ags_xorg_c_sources) $(ags_machine_c_sources) $(ags_editor_c_sources) $(ags_server_c_sources) $(ags_file_c_sources)  $(ags_xorg_task_c_sources) 
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 
@@ -447,15 +481,15 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
-	      echo ' cd $(srcdir) && $(AUTOMAKE) --foreign'; \
-	      $(am__cd) $(srcdir) && $(AUTOMAKE) --foreign \
+	      echo ' cd $(srcdir) && $(AUTOMAKE) --gnu'; \
+	      $(am__cd) $(srcdir) && $(AUTOMAKE) --gnu \
 		&& exit 0; \
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign Makefile
+	  $(AUTOMAKE) --gnu Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -498,6 +532,11 @@ libags-audio.a: $(libags_audio_a_OBJECTS) $(libags_audio_a_DEPENDENCIES) $(EXTRA
 	$(AM_V_at)-rm -f libags-audio.a
 	$(AM_V_AR)$(libags_audio_a_AR) libags-audio.a $(libags_audio_a_OBJECTS) $(libags_audio_a_LIBADD)
 	$(AM_V_at)$(RANLIB) libags-audio.a
+
+libags-gui.a: $(libags_gui_a_OBJECTS) $(libags_gui_a_DEPENDENCIES) $(EXTRA_libags_gui_a_DEPENDENCIES) 
+	$(AM_V_at)-rm -f libags-gui.a
+	$(AM_V_AR)$(libags_gui_a_AR) libags-gui.a $(libags_gui_a_OBJECTS) $(libags_gui_a_LIBADD)
+	$(AM_V_at)$(RANLIB) libags-gui.a
 
 libags-thread.a: $(libags_thread_a_OBJECTS) $(libags_thread_a_DEPENDENCIES) $(EXTRA_libags_thread_a_DEPENDENCIES) 
 	$(AM_V_at)-rm -f libags-thread.a
@@ -985,24 +1024,6 @@ uninstall-am: uninstall-binPROGRAMS
 	mostlyclean-generic pdf pdf-am ps ps-am tags tags-am uninstall \
 	uninstall-am uninstall-binPROGRAMS
 
-
-include ./src/ags/Makefile.am \
-	$(top_srcdir)/util/Makefile.am \
-	$(top_srcdir)/lib/Makefile.am \
-	$(top_srcdir)/object/Makefile.am \
-	$(top_srcdir)/widget/Makefile.am \
-	$(top_srcdir)/audio/Makefile.am \
-	$(top_srcdir)/audio/task/Makefile.am \
-	$(top_srcdir)/audio/file/Makefile.am \
-	$(top_srcdir)/audio/recall/Makefile.am \
-	$(top_srcdir)/audio/task/recall/Makefile.am \
-	$(top_srcdir)/file/Makefile.am \
-	$(top_srcdir)/X/Makefile.am \
-	$(top_srcdir)/X/editor/Makefile.am \
-	$(top_srcdir)/X/machine/Makefile.am \
-	$(top_srcdir)/file/Makefile.am \
-	$(top_srcdir)/server/Makefile.am \
-	./doc/Makefile.am
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

@@ -1,6 +1,3 @@
-SUBDIRS = editor \
-	machine
-
 deprecated_ags_xorg_h_sources =
 
 ags_xorg_h_sources = \

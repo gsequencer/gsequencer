@@ -1,7 +1,3 @@
-SUBDIRS = task \
-	file \
-	recall
-
 deprecated_ags_audio_h_sources = \
 	ags_garbage_collector.h	\
 	ags_effect.h		\
@@ -89,4 +85,5 @@ ags_audio_c_sources =  		\
 	ags_task.h		\
 	ags_timestamp_factory.h	\
 	ags_timestamp.h
+
 
