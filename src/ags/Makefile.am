@@ -1,5 +1,5 @@
-gsequencer_h_sources = \
+gsequencer_main_h_sources = \
 	main.h
 
-gsequencer_c_sources = \
+gsequencer_main_c_sources = \
 	main.c

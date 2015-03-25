@@ -17,6 +17,10 @@ AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
 AC_PROG_RANLIB
+AM_PROG_CC_STDC
+AC_C_CONST
+AC_LIBTOOL_WIN32_DLL
+AM_PROG_LIBTOOL
 
 # Checks for libraries.
 # FIXME: Replace `main' with a function in `-lgmp':
@@ -97,6 +101,7 @@ AC_FUNC_REALLOC
 AC_CHECK_FUNCS([atexit clock_gettime floor memset socket sqrt strchr strtol strtoul])
 
 AC_CONFIG_FILES([Makefile
+		 po/Makefile
                  doc/Makefile
                  src/ags/Makefile
                  src/ags/X/Makefile

@@ -14,8 +14,6 @@
 
 
 
-# AUTOMAKE_OPTIONS = foreign
-
 
 
 am__is_gnu_make = test -n '$(MAKEFILE_LIST)' && test -n '$(MAKELEVEL)'
@@ -79,15 +77,19 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
+build_triplet = x86_64-unknown-linux-gnu
+host_triplet = x86_64-unknown-linux-gnu
 bin_PROGRAMS = gsequencer$(EXEEXT)
 subdir = .
-DIST_COMMON = INSTALL NEWS README AUTHORS ChangeLog \
-	$(srcdir)/Makefile.in $(srcdir)/Makefile.am \
+DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/configure $(am__configure_deps) \
-	$(srcdir)/config.h.in ABOUT-NLS COPYING compile config.guess \
-	config.rpath config.sub install-sh missing ltmain.sh
+	$(srcdir)/config.h.in COPYING INSTALL compile config.guess \
+	config.sub install-sh missing ltmain.sh
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/configure.ac
+am__aclocal_m4_deps = $(top_srcdir)/m4/libtool.m4 \
+	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
+	$(top_srcdir)/m4/ltversion.m4 $(top_srcdir)/m4/lt~obsolete.m4 \
+	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
@@ -97,12 +99,16 @@ CONFIG_HEADER = config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 LIBRARIES = $(noinst_LIBRARIES)
-AR = ar
 ARFLAGS = cru
 AM_V_AR = $(am__v_AR_$(V))
 am__v_AR_ = $(am__v_AR_$(AM_DEFAULT_VERBOSITY))
 am__v_AR_0 = @echo "  AR      " $@;
 am__v_AR_1 = 
+libags_a_AR = $(AR) $(ARFLAGS)
+libags_a_LIBADD =
+am__objects_1 =
+am_libags_a_OBJECTS = $(am__objects_1)
+libags_a_OBJECTS = $(am_libags_a_OBJECTS)
 libags_audio_a_AR = $(AR) $(ARFLAGS)
 libags_audio_a_LIBADD =
 am_libags_audio_a_OBJECTS =
@@ -115,18 +121,19 @@ libags_thread_a_AR = $(AR) $(ARFLAGS)
 libags_thread_a_LIBADD =
 am_libags_thread_a_OBJECTS =
 libags_thread_a_OBJECTS = $(am_libags_thread_a_OBJECTS)
-libags_a_AR = $(AR) $(ARFLAGS)
-libags_a_LIBADD =
-am_libags_a_OBJECTS =
-libags_a_OBJECTS = $(am_libags_a_OBJECTS)
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_gsequencer_OBJECTS =
+am_gsequencer_OBJECTS = $(am__objects_1)
 gsequencer_OBJECTS = $(am_gsequencer_OBJECTS)
-gsequencer_DEPENDENCIES = libags.a libags-thread.a libags-audio.a \
-	libags-gui.a
-gsequencer_LINK = $(CCLD) $(gsequencer_CFLAGS) $(CFLAGS) \
-	$(gsequencer_LDFLAGS) $(LDFLAGS) -o $@
+gsequencer_DEPENDENCIES = libags.a libags_thread.a libags_audio.a \
+	libags_gui.a
+AM_V_lt = $(am__v_lt_$(V))
+am__v_lt_ = $(am__v_lt_$(AM_DEFAULT_VERBOSITY))
+am__v_lt_0 = --silent
+am__v_lt_1 = 
+gsequencer_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(gsequencer_CFLAGS) \
+	$(CFLAGS) $(gsequencer_LDFLAGS) $(LDFLAGS) -o $@
 AM_V_P = $(am__v_P_$(V))
 am__v_P_ = $(am__v_P_$(AM_DEFAULT_VERBOSITY))
 am__v_P_0 = false
@@ -142,21 +149,27 @@ am__v_at_1 =
 DEFAULT_INCLUDES = -I.
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+LTCOMPILE = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) \
+	$(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) \
+	$(AM_CFLAGS) $(CFLAGS)
 AM_V_CC = $(am__v_CC_$(V))
 am__v_CC_ = $(am__v_CC_$(AM_DEFAULT_VERBOSITY))
 am__v_CC_0 = @echo "  CC      " $@;
 am__v_CC_1 = 
 CCLD = $(CC)
-LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
+LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+	$(AM_LDFLAGS) $(LDFLAGS) -o $@
 AM_V_CCLD = $(am__v_CCLD_$(V))
 am__v_CCLD_ = $(am__v_CCLD_$(AM_DEFAULT_VERBOSITY))
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(libags_audio_a_SOURCES) $(libags_gui_a_SOURCES) \
-	$(libags_thread_a_SOURCES) $(libags_a_SOURCES) \
+SOURCES = $(libags_a_SOURCES) $(libags_audio_a_SOURCES) \
+	$(libags_gui_a_SOURCES) $(libags_thread_a_SOURCES) \
 	$(gsequencer_SOURCES)
-DIST_SOURCES = $(libags_audio_a_SOURCES) $(libags_gui_a_SOURCES) \
-	$(libags_thread_a_SOURCES) $(libags_a_SOURCES) \
+DIST_SOURCES = $(libags_a_SOURCES) $(libags_audio_a_SOURCES) \
+	$(libags_gui_a_SOURCES) $(libags_thread_a_SOURCES) \
 	$(gsequencer_SOURCES)
 RECURSIVE_TARGETS = all-recursive check-recursive cscopelist-recursive \
 	ctags-recursive dvi-recursive html-recursive info-recursive \
@@ -246,6 +259,8 @@ distcleancheck_listfiles = find . -type f -print
 ACLOCAL = ${SHELL} /home/minos/ags-code/missing aclocal-1.14
 AMTAR = $${TAR-tar}
 AM_DEFAULT_VERBOSITY = 1
+AR = ar
+AS = as
 AUTOCONF = ${SHELL} /home/minos/ags-code/missing autoconf
 AUTOHEADER = ${SHELL} /home/minos/ags-code/missing autoheader
 AUTOMAKE = ${SHELL} /home/minos/ags-code/missing automake-1.14
@@ -260,16 +275,21 @@ CFLAGS = -g --pedantic -Wall -O -I./src -I/usr/include
 CPP = gcc -E
 CPPFLAGS = 
 CXX = g++
+CXXCPP = g++ -E
 CXXDEPMODE = depmode=none
 CXXFLAGS = -g -O2
 CYGPATH_W = echo
 DEFS = -DHAVE_CONFIG_H
 DEPDIR = .deps
+DLLTOOL = dlltool
+DSYMUTIL = 
+DUMPBIN = 
 ECHO_C = 
 ECHO_N = -n
 ECHO_T = 
 EGREP = /bin/grep -E
 EXEEXT = 
+FGREP = /bin/grep -F
 GDKPIXBUF_CFLAGS = -pthread -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng16 -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include 
 GDKPIXBUF_LIBS = -lgdk_pixbuf-2.0 -lgobject-2.0 -lglib-2.0 
 GOBJECT_CFLAGS = -pthread -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include 
@@ -282,6 +302,7 @@ INSTALL_DATA = ${INSTALL} -m 644
 INSTALL_PROGRAM = ${INSTALL}
 INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
+LD = /usr/bin/ld -m elf_x86_64
 LDFLAGS = -L/lib -L/usr/lib -L/usr/X11/lib -lm -pthread -lrt -lgmp
 LIBAO_CFLAGS = 
 LIBAO_LIBS = -lao 
@@ -291,13 +312,21 @@ LIBINSTPATCH_CFLAGS = -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I
 LIBINSTPATCH_LIBS = -linstpatch-1.0 -lgobject-2.0 -lglib-2.0 -lsndfile 
 LIBOBJS = 
 LIBS = -lrt -lm -lgmp 
+LIBTOOL = $(SHELL) $(top_builddir)/libtool
 LIBXML2_CFLAGS = -I/usr/include/libxml2 
 LIBXML2_LIBS = -lxml2 
+LIPO = 
 LN_S = ln -s
 LTLIBOBJS = 
 MAKEINFO = ${SHELL} /home/minos/ags-code/missing makeinfo
+MANIFEST_TOOL = :
 MKDIR_P = /bin/mkdir -p
+NM = /usr/bin/nm -B
+NMEDIT = 
+OBJDUMP = objdump
 OBJEXT = o
+OTOOL = 
+OTOOL64 = 
 PACKAGE = gsequencer
 PACKAGE_BUGREPORT = weedlight@gmail.com
 PACKAGE_NAME = gsequencer
@@ -310,11 +339,12 @@ PKG_CONFIG = /usr/bin/pkg-config
 PKG_CONFIG_LIBDIR = 
 PKG_CONFIG_PATH = /usr/lib/pkgconfig:/usr/X11/lib/pkgconfig:/usr/X11/share/pkgconfig
 RANLIB = ranlib
+SED = /bin/sed
 SET_MAKE = 
 SHELL = /bin/sh
 SNDFILE_CFLAGS = 
 SNDFILE_LIBS = -lsndfile 
-STRIP = 
+STRIP = strip
 UUID_CFLAGS = -I/usr/include/uuid 
 UUID_LIBS = -luuid 
 VERSION = 0.4.3
@@ -323,22 +353,32 @@ abs_builddir = /home/minos/ags-code
 abs_srcdir = /home/minos/ags-code
 abs_top_builddir = /home/minos/ags-code
 abs_top_srcdir = /home/minos/ags-code
+ac_ct_AR = ar
 ac_ct_CC = gcc
 ac_ct_CXX = g++
+ac_ct_DUMPBIN = 
 am__include = include
 am__leading_dot = .
 am__quote = 
 am__tar = $${TAR-tar} chof - "$$tardir"
 am__untar = $${TAR-tar} xf -
 bindir = ${exec_prefix}/bin
+build = x86_64-unknown-linux-gnu
 build_alias = 
+build_cpu = x86_64
+build_os = linux-gnu
+build_vendor = unknown
 builddir = .
 datadir = ${datarootdir}
 datarootdir = ${prefix}/share
 docdir = ${datarootdir}/doc/${PACKAGE_TARNAME}
 dvidir = ${docdir}
 exec_prefix = ${prefix}
+host = x86_64-unknown-linux-gnu
 host_alias = 
+host_cpu = x86_64
+host_os = linux-gnu
+host_vendor = unknown
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
@@ -361,46 +401,52 @@ sysconfdir = ${prefix}/etc
 target_alias = 
 top_build_prefix = 
 top_builddir = .
-top_srcdir = $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))/src/ags
+top_srcdir = .
+AUTOMAKE_OPTIONS = foreign
 SUBDIRS = po \
-	src/ags \
 	src/ags/util \
 	src/ags/lib \
 	src/ags/object \
 	src/ags/widget \
-	src/ags/audio \
 	src/ags/audio/task \
 	src/ags/audio/task/recall \
 	src/ags/audio/file \
 	src/ags/audio/recall \
-	src/ags/file \
-	src/ags/X \
+	src/ags/audio \
 	src/ags/file \
 	src/ags/server \
 	src/ags/X/editor \
 	src/ags/X/machine \
+	src/ags/X \
+	src/ags \
 	doc
 
-TARGETS = gsequencer$(EXEEXT)
+ACLOCAL_AMFLAGS = -I m4
+TARGETS = gsequencer
 
 # this lists the binaries to produce, the (non-PHONY, binary) targets in
 # the previous manual Makefile
-noinst_LIBRARIES = libags.a libags-thread.a libags-audio.a libags-gui.a
+noinst_LIBRARIES = libags.a libags_thread.a libags_audio.a libags_gui.a
 
 # application
-gsequencer_CFLAGS = 
-gsequencer_LDFLAGS = 
-gsequencer_LDADD = libags.a libags-thread.a libags-audio.a libags-gui.a
+gsequencer_CFLAGS = $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
+gsequencer_LDFLAGS = $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
+gsequencer_LDADD = libags.a libags_thread.a libags_audio.a libags_gui.a
 
 #
-libags_audio_h_sources = 
-libags_audio_c_sources = 
-libags_a_SOURCES = 
+libags_h_sources = $(libags_util_h_sources) $(libags_object_h_sources)
+libags_c_sources = $(libags_util_c_sources) $(libags_object_c_sources)
+libags_thread_h_sources = 
+libags_thread_c_sources = 
+libags_gui_h_sources = 
+libags_gui_c_sources = 
+gsequencer_h_sources = $(gsequencer_main_h_sources)
+gsequencer_c_sources = $(gsequencer_main_c_sources)
+libags_a_SOURCES = $(libags_c_sources)
 libags_thread_a_SOURCES = 
 libags_audio_a_SOURCES = 
 libags_gui_a_SOURCES = 
-gsequencer_SOURCES = 
-ACLOCAL_AMFLAGS = -I m4
+gsequencer_SOURCES = $(gsequencer_c_sources)
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 
@@ -411,15 +457,15 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
-	      echo ' cd $(srcdir) && $(AUTOMAKE) --gnu'; \
-	      $(am__cd) $(srcdir) && $(AUTOMAKE) --gnu \
+	      echo ' cd $(srcdir) && $(AUTOMAKE) --foreign'; \
+	      $(am__cd) $(srcdir) && $(AUTOMAKE) --foreign \
 		&& exit 0; \
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu Makefile
+	  $(AUTOMAKE) --foreign Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -458,25 +504,25 @@ distclean-hdr:
 clean-noinstLIBRARIES:
 	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
 
-libags-audio.a: $(libags_audio_a_OBJECTS) $(libags_audio_a_DEPENDENCIES) $(EXTRA_libags_audio_a_DEPENDENCIES) 
-	$(AM_V_at)-rm -f libags-audio.a
-	$(AM_V_AR)$(libags_audio_a_AR) libags-audio.a $(libags_audio_a_OBJECTS) $(libags_audio_a_LIBADD)
-	$(AM_V_at)$(RANLIB) libags-audio.a
-
-libags-gui.a: $(libags_gui_a_OBJECTS) $(libags_gui_a_DEPENDENCIES) $(EXTRA_libags_gui_a_DEPENDENCIES) 
-	$(AM_V_at)-rm -f libags-gui.a
-	$(AM_V_AR)$(libags_gui_a_AR) libags-gui.a $(libags_gui_a_OBJECTS) $(libags_gui_a_LIBADD)
-	$(AM_V_at)$(RANLIB) libags-gui.a
-
-libags-thread.a: $(libags_thread_a_OBJECTS) $(libags_thread_a_DEPENDENCIES) $(EXTRA_libags_thread_a_DEPENDENCIES) 
-	$(AM_V_at)-rm -f libags-thread.a
-	$(AM_V_AR)$(libags_thread_a_AR) libags-thread.a $(libags_thread_a_OBJECTS) $(libags_thread_a_LIBADD)
-	$(AM_V_at)$(RANLIB) libags-thread.a
-
 libags.a: $(libags_a_OBJECTS) $(libags_a_DEPENDENCIES) $(EXTRA_libags_a_DEPENDENCIES) 
 	$(AM_V_at)-rm -f libags.a
 	$(AM_V_AR)$(libags_a_AR) libags.a $(libags_a_OBJECTS) $(libags_a_LIBADD)
 	$(AM_V_at)$(RANLIB) libags.a
+
+libags_audio.a: $(libags_audio_a_OBJECTS) $(libags_audio_a_DEPENDENCIES) $(EXTRA_libags_audio_a_DEPENDENCIES) 
+	$(AM_V_at)-rm -f libags_audio.a
+	$(AM_V_AR)$(libags_audio_a_AR) libags_audio.a $(libags_audio_a_OBJECTS) $(libags_audio_a_LIBADD)
+	$(AM_V_at)$(RANLIB) libags_audio.a
+
+libags_gui.a: $(libags_gui_a_OBJECTS) $(libags_gui_a_DEPENDENCIES) $(EXTRA_libags_gui_a_DEPENDENCIES) 
+	$(AM_V_at)-rm -f libags_gui.a
+	$(AM_V_AR)$(libags_gui_a_AR) libags_gui.a $(libags_gui_a_OBJECTS) $(libags_gui_a_LIBADD)
+	$(AM_V_at)$(RANLIB) libags_gui.a
+
+libags_thread.a: $(libags_thread_a_OBJECTS) $(libags_thread_a_DEPENDENCIES) $(EXTRA_libags_thread_a_DEPENDENCIES) 
+	$(AM_V_at)-rm -f libags_thread.a
+	$(AM_V_AR)$(libags_thread_a_AR) libags_thread.a $(libags_thread_a_OBJECTS) $(libags_thread_a_LIBADD)
+	$(AM_V_at)$(RANLIB) libags_thread.a
 install-binPROGRAMS: $(bin_PROGRAMS)
 	@$(NORMAL_INSTALL)
 	@list='$(bin_PROGRAMS)'; test -n "$(bindir)" || list=; \
@@ -487,6 +533,7 @@ install-binPROGRAMS: $(bin_PROGRAMS)
 	for p in $$list; do echo "$$p $$p"; done | \
 	sed 's/$(EXEEXT)$$//' | \
 	while read p p1; do if test -f $$p \
+	 || test -f $$p1 \
 	  ; then echo "$$p"; echo "$$p"; else :; fi; \
 	done | \
 	sed -e 'p;s,.*/,,;n;h' \
@@ -501,8 +548,8 @@ install-binPROGRAMS: $(bin_PROGRAMS)
 	while read type dir files; do \
 	    if test "$$dir" = .; then dir=; else dir=/$$dir; fi; \
 	    test -z "$$files" || { \
-	      echo " $(INSTALL_PROGRAM_ENV) $(INSTALL_PROGRAM) $$files '$(DESTDIR)$(bindir)$$dir'"; \
-	      $(INSTALL_PROGRAM_ENV) $(INSTALL_PROGRAM) $$files "$(DESTDIR)$(bindir)$$dir" || exit $$?; \
+	    echo " $(INSTALL_PROGRAM_ENV) $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=install $(INSTALL_PROGRAM) $$files '$(DESTDIR)$(bindir)$$dir'"; \
+	    $(INSTALL_PROGRAM_ENV) $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=install $(INSTALL_PROGRAM) $$files "$(DESTDIR)$(bindir)$$dir" || exit $$?; \
 	    } \
 	; done
 
@@ -518,7 +565,13 @@ uninstall-binPROGRAMS:
 	cd "$(DESTDIR)$(bindir)" && rm -f $$files
 
 clean-binPROGRAMS:
-	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
+	@list='$(bin_PROGRAMS)'; test -n "$$list" || exit 0; \
+	echo " rm -f" $$list; \
+	rm -f $$list || exit $$?; \
+	test -n "$(EXEEXT)" || exit 0; \
+	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
+	echo " rm -f" $$list; \
+	rm -f $$list
 
 gsequencer$(EXEEXT): $(gsequencer_OBJECTS) $(gsequencer_DEPENDENCIES) $(EXTRA_gsequencer_DEPENDENCIES) 
 	@rm -f gsequencer$(EXEEXT)
@@ -529,6 +582,15 @@ mostlyclean-compile:
 
 distclean-compile:
 	-rm -f *.tab.c
+
+mostlyclean-libtool:
+	-rm -f *.lo
+
+clean-libtool:
+	-rm -rf .libs _libs
+
+distclean-libtool:
+	-rm -f libtool config.lt
 
 # This directory's subdirectories are mostly independent; you can cd
 # into them and run 'make' without going through this Makefile.
@@ -864,14 +926,14 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-recursive
 
-clean-am: clean-binPROGRAMS clean-generic clean-noinstLIBRARIES \
-	mostlyclean-am
+clean-am: clean-binPROGRAMS clean-generic clean-libtool \
+	clean-noinstLIBRARIES mostlyclean-am
 
 distclean: distclean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
-	distclean-hdr distclean-tags
+	distclean-hdr distclean-libtool distclean-tags
 
 dvi: dvi-recursive
 
@@ -921,7 +983,8 @@ maintainer-clean-am: distclean-am maintainer-clean-generic
 
 mostlyclean: mostlyclean-recursive
 
-mostlyclean-am: mostlyclean-compile mostlyclean-generic
+mostlyclean-am: mostlyclean-compile mostlyclean-generic \
+	mostlyclean-libtool
 
 pdf: pdf-recursive
 
@@ -937,21 +1000,21 @@ uninstall-am: uninstall-binPROGRAMS
 
 .PHONY: $(am__recursive_targets) CTAGS GTAGS TAGS all all-am \
 	am--refresh check check-am clean clean-binPROGRAMS \
-	clean-cscope clean-generic clean-noinstLIBRARIES cscope \
-	cscopelist-am ctags ctags-am dist dist-all dist-bzip2 \
+	clean-cscope clean-generic clean-libtool clean-noinstLIBRARIES \
+	cscope cscopelist-am ctags ctags-am dist dist-all dist-bzip2 \
 	dist-gzip dist-lzip dist-shar dist-tarZ dist-xz dist-zip \
 	distcheck distclean distclean-compile distclean-generic \
-	distclean-hdr distclean-tags distcleancheck distdir \
-	distuninstallcheck dvi dvi-am html html-am info info-am \
-	install install-am install-binPROGRAMS install-data \
+	distclean-hdr distclean-libtool distclean-tags distcleancheck \
+	distdir distuninstallcheck dvi dvi-am html html-am info \
+	info-am install install-am install-binPROGRAMS install-data \
 	install-data-am install-dvi install-dvi-am install-exec \
 	install-exec-am install-html install-html-am install-info \
 	install-info-am install-man install-pdf install-pdf-am \
 	install-ps install-ps-am install-strip installcheck \
 	installcheck-am installdirs installdirs-am maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
-	mostlyclean-generic pdf pdf-am ps ps-am tags tags-am uninstall \
-	uninstall-am uninstall-binPROGRAMS
+	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
+	tags tags-am uninstall uninstall-am uninstall-binPROGRAMS
 
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
