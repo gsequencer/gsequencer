@@ -21,11 +21,11 @@ SUBDIRS = po \
 	doc
 
 #
-libags_a_SOURCES = $(ags_util_c_sources) $(ags_lib_c_sources) $(ags_object_c_sources) $(ags_plugin_c_sources)
+libags_a_SOURCES = $(ags_util_c_sources) $(ags_lib_c_sources) $(ags_object_c_sources)
 libags_thread_a_SOURCES = $(ags_thread_c_sources)
-libags_audio_a_SOURCES = $(ags_audio_c_sources) $(ags_audio_file_c_sources) $(ags_audio_task_c_sources) $(ags_audio_task_recall_c_sources) $(ags_audio_recall_c_sources) 
+libags_audio_a_SOURCES = $(ags_audio_c_sources) $(ags_audio_file_c_sources) $(ags_audio_task_c_sources) $(ags_audio_task_recall_c_sources) $(ags_audio_recall_c_sources)  $(ags_plugin_c_sources)
 libags_gui_a_SOURCES = $(ags_widget_c_sources)
-gsequencer_SOURCES = $(gsequencer_main_c_sources) $(gsequencer_server_c_sources) $(gsequencer_xorg_c_sources) $(gsequencer_machine_c_sources) $(gsequencer_editor_c_sources)
+gsequencer_SOURCES = $(gsequencer_main_c_sources) $(gsequencer_server_c_sources) $(gsequencer_xorg_c_sources) $(gsequencer_machine_c_sources) $(gsequencer_editor_c_sources) $(ags_xorg_task_c_sources) $(gsequencer_file_c_sources)
 
 #
 TARGETS = gsequencer
@@ -275,6 +275,7 @@ ags_audio_h_sources = 		\
 	src/ags/audio/ags_recall_channel_run.h \
 	src/ags/audio/ags_recall_container.h	\
 	src/ags/audio/ags_recall_dependency.h	\
+	src/ags/audio/ags_recall_factory.h	\
 	src/ags/audio/ags_recall.h		\
 	src/ags/audio/ags_recall_id.h		\
 	src/ags/audio/ags_recall_ladspa.h	\
@@ -318,6 +319,7 @@ ags_audio_c_sources =  		\
 	src/ags/audio/ags_recall_channel_run.c \
 	src/ags/audio/ags_recall_container.c	\
 	src/ags/audio/ags_recall_dependency.c	\
+	src/ags/audio/ags_recall_factory.c	\
 	src/ags/audio/ags_recall.c		\
 	src/ags/audio/ags_recall_id.c		\
 	src/ags/audio/ags_recall_ladspa.c	\
@@ -464,42 +466,6 @@ ags_audio_recall_c_sources = \
 	src/ags/audio/recall/ags_volume_channel_run.c	\
 	src/ags/audio/recall/ags_volume_recycling.c
 
-deprecated_ags_file_h_sources =
-
-ags_file_h_sources = \
-	$(deprecated_ags_file_h_sources) \
-	src/ags/audio/file/ags_file_gui.h			\
-	src/ags/audio/file/ags_file.h			\
-	src/ags/audio/file/ags_file_id_ref.h		\
-	src/ags/audio/file/ags_file_launch.h		\
-	src/ags/audio/file/ags_file_link.h			\
-	src/ags/audio/file/ags_file_lookup.h		\
-	src/ags/audio/file/ags_file_read.h			\
-	src/ags/audio/file/ags_file_sound.h		\
-	src/ags/audio/file/ags_file_stock.h		\
-	src/ags/audio/file/ags_file_thread.h		\
-	src/ags/audio/file/ags_file_util.h			\
-	src/ags/audio/file/ags_file_value_factory.h	\
-	src/ags/audio/file/ags_file_write.h
-
-deprecated_ags_file_c_sources = 
-
-ags_file_c_sources = \
-	$(deprecated_ags_file_c_sources) \
-	src/ags/audio/file/ags_file_gui.c			\
-	src/ags/audio/file/ags_file.c			\
-	src/ags/audio/file/ags_file_id_ref.c		\
-	src/ags/audio/file/ags_file_launch.c		\
-	src/ags/audio/file/ags_file_link.c			\
-	src/ags/audio/file/ags_file_lookup.c		\
-	src/ags/audio/file/ags_file_read.c			\
-	src/ags/audio/file/ags_file_sound.c		\
-	src/ags/audio/file/ags_file_stock.c		\
-	src/ags/audio/file/ags_file_thread.c		\
-	src/ags/audio/file/ags_file_util.c			\
-	src/ags/audio/file/ags_file_value_factory.c	\
-	src/ags/audio/file/ags_file_write.c
-
 deprecated_ags_task_h_sources = \
 	src/ags/audio/task/ags_apply_wavetable.h
 
@@ -612,7 +578,7 @@ ags_xorg_task_c_sources = 		\
 
 deprecated_ags_audio_task_recall_h_sources =
 
-ags_audio_recall_task_h_sources = \
+ags_audio_task_recall_h_sources = \
 	$(deprecated_ags_audio_task_recall_h_sources) \
 	src/ags/audio/task/recall/ags_apply_bpm.h		\
 	src/ags/audio/task/recall/ags_apply_sequencer_length.h \
@@ -621,7 +587,7 @@ ags_audio_recall_task_h_sources = \
 
 deprecated_ags_audio_task_recall_c_sources =
 
-ags_audio_recall_task_c_sources = \
+ags_audio_task_recall_c_sources = \
 	$(deprecated_ags_audio_task_recall_c_sources) \
 	src/ags/audio/task/recall/ags_apply_bpm.c		\
 	src/ags/audio/task/recall/ags_apply_sequencer_length.c \
@@ -966,3 +932,35 @@ gsequencer_editor_c_sources = \
 	src/ags/X/editor/ags_soundset.c				\
 	src/ags/X/editor/ags_toolbar_callbacks.c			\
 	src/ags/X/editor/ags_toolbar.c
+
+deprecated_gsequencer_file_h_sources =
+
+gsequencer_file_h_sources = \
+	$(deprecated_gsequencer_file_h_sources) \
+	src/ags/file/ags_file_gui.h			\
+	src/ags/file/ags_file.h			\
+	src/ags/file/ags_file_id_ref.h		\
+	src/ags/file/ags_file_launch.h		\
+	src/ags/file/ags_file_link.h			\
+	src/ags/file/ags_file_lookup.h		\
+	src/ags/file/ags_file_read.h			\
+	src/ags/file/ags_file_sound.h		\
+	src/ags/file/ags_file_stock.h		\
+	src/ags/file/ags_file_thread.h		\
+	src/ags/file/ags_file_util.h			\
+	src/ags/file/ags_file_value_factory.h	\
+	src/ags/file/ags_file_write.h
+
+deprecated_gsequencer_file_c_sources = 
+
+gsequencer_file_c_sources = \
+	$(deprecated_gsequencer_file_c_sources) \
+	src/ags/file/ags_file_gui.c			\
+	src/ags/file/ags_file.c			\
+	src/ags/file/ags_file_id_ref.c		\
+	src/ags/file/ags_file_launch.c		\
+	src/ags/file/ags_file_link.c			\
+	src/ags/file/ags_file_lookup.c		\
+	src/ags/file/ags_file_sound.c		\
+	src/ags/file/ags_file_thread.c		\
+	src/ags/file/ags_file_util.c

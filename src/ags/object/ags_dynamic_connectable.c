@@ -18,8 +18,6 @@
 
 #include <ags/object/ags_dynamic_connectable.h>
 
-#include <stdio.h>
-
 void ags_dynamic_connectable_base_init(AgsDynamicConnectableInterface *interface);
 
 /**
