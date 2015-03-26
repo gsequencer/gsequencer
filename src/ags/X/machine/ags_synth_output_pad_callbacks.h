@@ -23,6 +23,6 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include <ags/X/ags_synth_output_pad.h>
+#include <ags/X/machine/ags_synth_output_pad.h>
 
 #endif /*__AGS_SYNTH_OUTPUT_PAD_CALLBACKS_H__*/

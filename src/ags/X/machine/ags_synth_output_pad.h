@@ -25,6 +25,8 @@
 
 #include <ags/audio/ags_channel.h>
 
+#include <ags/X/ags_effect_pad.h>
+
 #define AGS_TYPE_SYNTH_OUTPUT_PAD                (ags_synth_output_pad_get_type())
 #define AGS_SYNTH_OUTPUT_PAD(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SYNTH_OUTPUT_PAD, AgsSynthOutputPad))
 #define AGS_SYNTH_OUTPUT_PAD_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_SYNTH_OUTPUT_PAD, AgsSynthOutputPadClass))

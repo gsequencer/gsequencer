@@ -16,4 +16,4 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <ags/X/ags_matrix_bulk_input_callbacks.h>
+#include <ags/X/machine/ags_matrix_bulk_input_callbacks.h>

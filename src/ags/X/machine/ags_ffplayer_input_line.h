@@ -25,6 +25,8 @@
 
 #include <ags/audio/ags_channel.h>
 
+#include <ags/X/ags_effect_line.h>
+
 #define AGS_TYPE_FFPLAYER_INPUT_LINE                (ags_ffplayer_input_line_get_type())
 #define AGS_FFPLAYER_INPUT_LINE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_FFPLAYER_INPUT_LINE, AgsFFPlayerInputLine))
 #define AGS_FFPLAYER_INPUT_LINE_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_FFPLAYER_INPUT_LINE, AgsFFPlayerInputLineClass))

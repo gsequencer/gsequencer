@@ -25,6 +25,8 @@
 
 #include <ags/audio/ags_channel.h>
 
+#include <ags/X/ags_effect_pad.h>
+
 #define AGS_TYPE_FFPLAYER_INPUT_PAD                (ags_ffplayer_input_pad_get_type())
 #define AGS_FFPLAYER_INPUT_PAD(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_FFPLAYER_INPUT_PAD, AgsFFPlayerInputPad))
 #define AGS_FFPLAYER_INPUT_PAD_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_FFPLAYER_INPUT_PAD, AgsFFPlayerInputPadClass))

@@ -23,6 +23,6 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include <ags/X/ags_matrix_bridge.h>
+#include <ags/X/machine/ags_matrix_bridge.h>
 
 #endif /*__AGS_MATRIX_BRIDGE_CALLBACKS_H__*/

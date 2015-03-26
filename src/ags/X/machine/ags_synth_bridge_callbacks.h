@@ -23,6 +23,6 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include <ags/X/ags_synth_bridge.h>
+#include <ags/X/machine/ags_synth_bridge.h>
 
 #endif /*__AGS_SYNTH_BRIDGE_CALLBACKS_H__*/

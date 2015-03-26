@@ -25,6 +25,8 @@
 
 #include <ags/audio/ags_channel.h>
 
+#include <ags/X/ags_effect_bulk.h>
+
 #define AGS_TYPE_SYNTH_BULK_OUTPUT                (ags_synth_bulk_output_get_type())
 #define AGS_SYNTH_BULK_OUTPUT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SYNTH_BULK_OUTPUT, AgsSynthBulkOutput))
 #define AGS_SYNTH_BULK_OUTPUT_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_SYNTH_BULK_OUTPUT, AgsSynthBulkOutputClass))

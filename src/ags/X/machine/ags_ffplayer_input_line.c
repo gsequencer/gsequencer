@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <ags/X/ags_ffplayer_input_line.h>
-#include <ags/X/ags_ffplayer_input_line_callbacks.h>
+#include <ags/X/machine/ags_ffplayer_input_line.h>
+#include <ags/X/machine/ags_ffplayer_input_line_callbacks.h>
 
 #include <ags-lib/object/ags_connectable.h>
 

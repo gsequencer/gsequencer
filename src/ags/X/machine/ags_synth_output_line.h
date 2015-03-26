@@ -25,6 +25,8 @@
 
 #include <ags/audio/ags_channel.h>
 
+#include <ags/X/ags_effect_line.h>
+
 #define AGS_TYPE_SYNTH_OUTPUT_LINE                (ags_synth_output_line_get_type())
 #define AGS_SYNTH_OUTPUT_LINE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SYNTH_OUTPUT_LINE, AgsSynthOutputLine))
 #define AGS_SYNTH_OUTPUT_LINE_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_SYNTH_OUTPUT_LINE, AgsSynthOutputLineClass))

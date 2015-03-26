@@ -23,6 +23,6 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include <ags/X/ags_ffplayer_bulk_input.h>
+#include <ags/X/machine/ags_ffplayer_bulk_input.h>
 
 #endif /*__AGS_FFPLAYER_BULK_INPUT_CALLBACKS_H__*/

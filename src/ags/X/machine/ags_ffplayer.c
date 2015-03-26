@@ -139,8 +139,8 @@ ags_ffplayer_get_type(void)
     };
 
     ags_type_ffplayer = g_type_register_static(AGS_TYPE_MACHINE,
-					    "AgsFFPlayer\0", &ags_ffplayer_info,
-					    0);
+					       "AgsFFPlayer\0", &ags_ffplayer_info,
+					       0);
     
     g_type_add_interface_static(ags_type_ffplayer,
 				AGS_TYPE_CONNECTABLE,

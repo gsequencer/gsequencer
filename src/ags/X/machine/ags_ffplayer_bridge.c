@@ -16,14 +16,18 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <ags/X/ags_ffplayer_bridge.h>
-#include <ags/X/ags_ffplayer_bridge_callbacks.h>
+#include <ags/X/machine/ags_ffplayer_bridge.h>
+#include <ags/X/machine/ags_ffplayer_bridge_callbacks.h>
+#include <ags/X/machine/ags_ffplayer_input_pad.h>
+#include <ags/X/machine/ags_ffplayer_input_line.h>
 
 #include <ags-lib/object/ags_connectable.h>
 
 #include <ags/main.h>
 
 #include <ags/object/ags_plugin.h>
+
+#include <ags/X/ags_effect_bulk.h>
 
 void ags_ffplayer_bridge_class_init(AgsFFPlayerBridgeClass *ffplayer_bridge);
 void ags_ffplayer_bridge_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -127,11 +131,16 @@ void
 ags_ffplayer_bridge_init(AgsFFPlayerBridge *ffplayer_bridge)
 {
   AgsEffectBridge *effect_bridge;
+  GtkTable *table;
   
   effect_bridge = AGS_EFFECT_BRIDGE(ffplayer_bridge);
 
   effect_bridge->input_pad_type = AGS_TYPE_FFPLAYER_INPUT_PAD;
   effect_bridge->input_line_type = AGS_TYPE_FFPLAYER_INPUT_LINE;
+
+  table = (GtkTable *) gtk_table_new(1, 2, FALSE);
+  gtk_container_add(effect_bridge,
+		    table);
 
   effect_bridge->bulk_input = (GtkWidget *) ags_ffplayer_bulk_input_new(NULL);
   gtk_table_attach(table,

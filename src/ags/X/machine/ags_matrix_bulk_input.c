@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <ags/X/ags_matrix_bulk_input.h>
-#include <ags/X/ags_matrix_bulk_input_callbacks.h>
+#include <ags/X/machine/ags_matrix_bulk_input.h>
+#include <ags/X/machine/ags_matrix_bulk_input_callbacks.h>
 
 #include <ags-lib/object/ags_connectable.h>
 
@@ -45,7 +45,6 @@ void ags_matrix_bulk_input_disconnect(AgsConnectable *connectable);
  */
 
 static gpointer ags_matrix_bulk_input_parent_class = NULL;
-static guint matrix_bulk_input_signals[LAST_SIGNAL];
 
 GType
 ags_matrix_bulk_input_get_type(void)

@@ -108,7 +108,8 @@ libags_a_AR = $(AR) $(ARFLAGS)
 libags_a_LIBADD =
 am__objects_1 =
 am__objects_2 = $(am__objects_1) libags_a-ags_id_generator.$(OBJEXT)
-am__objects_3 = $(am__objects_1) libags_a-ags_combo_box_text.$(OBJEXT) \
+am__objects_3 = $(am__objects_1) libags_a-ags_connectable.$(OBJEXT) \
+	libags_a-ags_combo_box_text.$(OBJEXT) \
 	libags_a-ags_container.$(OBJEXT) libags_a-ags_list.$(OBJEXT) \
 	libags_a-ags_log.$(OBJEXT) libags_a-ags_parameter.$(OBJEXT)
 am__objects_4 = $(am__objects_1) libags_a-ags_applicable.$(OBJEXT) \
@@ -131,7 +132,7 @@ am_libags_a_OBJECTS = $(am__objects_2) $(am__objects_3) \
 	$(am__objects_4) $(am__objects_5)
 libags_a_OBJECTS = $(am_libags_a_OBJECTS)
 libags_audio_a_AR = $(AR) $(ARFLAGS)
-libags_audio_a_LIBADD =
+libags_audio_a_DEPENDENCIES = libags.a libags_thread.a
 am__objects_6 = libags_audio_a-ags_garbage_collector.$(OBJEXT) \
 	libags_audio_a-ags_libao.$(OBJEXT) \
 	libags_audio_a-ags_timestamp.$(OBJEXT) \
@@ -230,7 +231,7 @@ am__objects_9 = $(am__objects_1) libags_gui_a-ags_cartesian.$(OBJEXT) \
 am_libags_gui_a_OBJECTS = $(am__objects_9)
 libags_gui_a_OBJECTS = $(am_libags_gui_a_OBJECTS)
 libags_thread_a_AR = $(AR) $(ARFLAGS)
-libags_thread_a_LIBADD =
+libags_thread_a_DEPENDENCIES = libags.a
 am__objects_10 = $(am__objects_1) \
 	libags_thread_a-ags_async_queue.$(OBJEXT) \
 	libags_thread_a-ags_audio_loop.$(OBJEXT) \
@@ -317,7 +318,90 @@ am__objects_12 = $(am__objects_1) \
 	gsequencer-ags_server_preferences.$(OBJEXT) \
 	gsequencer-ags_window_callbacks.$(OBJEXT) \
 	gsequencer-ags_window.$(OBJEXT)
-am_gsequencer_OBJECTS = $(am__objects_11) $(am__objects_12)
+am__objects_13 = $(am__objects_1) \
+	gsequencer-ags_drum_callbacks.$(OBJEXT) \
+	gsequencer-ags_drum.$(OBJEXT) \
+	gsequencer-ags_drum_input_line_callbacks.$(OBJEXT) \
+	gsequencer-ags_drum_input_line.$(OBJEXT) \
+	gsequencer-ags_drum_input_pad_callbacks.$(OBJEXT) \
+	gsequencer-ags_drum_input_pad.$(OBJEXT) \
+	gsequencer-ags_drum_output_line_callbacks.$(OBJEXT) \
+	gsequencer-ags_drum_output_line.$(OBJEXT) \
+	gsequencer-ags_drum_output_pad_callbacks.$(OBJEXT) \
+	gsequencer-ags_drum_output_pad.$(OBJEXT) \
+	gsequencer-ags_ffplayer_bridge_callbacks.$(OBJEXT) \
+	gsequencer-ags_ffplayer_bridge.$(OBJEXT) \
+	gsequencer-ags_ffplayer_bulk_input_callbacks.$(OBJEXT) \
+	gsequencer-ags_ffplayer_bulk_input.$(OBJEXT) \
+	gsequencer-ags_ffplayer_callbacks.$(OBJEXT) \
+	gsequencer-ags_ffplayer.$(OBJEXT) \
+	gsequencer-ags_ffplayer_input_line_callbacks.$(OBJEXT) \
+	gsequencer-ags_ffplayer_input_line.$(OBJEXT) \
+	gsequencer-ags_ffplayer_input_pad_callbacks.$(OBJEXT) \
+	gsequencer-ags_ffplayer_input_pad.$(OBJEXT) \
+	gsequencer-ags_ladspa_bridge_callbacks.$(OBJEXT) \
+	gsequencer-ags_ladspa_bridge.$(OBJEXT) \
+	gsequencer-ags_matrix_bridge_callbacks.$(OBJEXT) \
+	gsequencer-ags_matrix_bridge.$(OBJEXT) \
+	gsequencer-ags_matrix_bulk_input_callbacks.$(OBJEXT) \
+	gsequencer-ags_matrix_bulk_input.$(OBJEXT) \
+	gsequencer-ags_matrix_callbacks.$(OBJEXT) \
+	gsequencer-ags_matrix.$(OBJEXT) \
+	gsequencer-ags_mixer_callbacks.$(OBJEXT) \
+	gsequencer-ags_mixer.$(OBJEXT) \
+	gsequencer-ags_mixer_input_line.$(OBJEXT) \
+	gsequencer-ags_mixer_input_pad.$(OBJEXT) \
+	gsequencer-ags_oscillator_callbacks.$(OBJEXT) \
+	gsequencer-ags_oscillator.$(OBJEXT) \
+	gsequencer-ags_panel_callbacks.$(OBJEXT) \
+	gsequencer-ags_panel.$(OBJEXT) \
+	gsequencer-ags_panel_input_line.$(OBJEXT) \
+	gsequencer-ags_panel_input_pad.$(OBJEXT) \
+	gsequencer-ags_synth_bridge_callbacks.$(OBJEXT) \
+	gsequencer-ags_synth_bridge.$(OBJEXT) \
+	gsequencer-ags_synth_bulk_output_callbacks.$(OBJEXT) \
+	gsequencer-ags_synth_bulk_output.$(OBJEXT) \
+	gsequencer-ags_synth_callbacks.$(OBJEXT) \
+	gsequencer-ags_synth.$(OBJEXT) \
+	gsequencer-ags_synth_input_line.$(OBJEXT) \
+	gsequencer-ags_synth_input_pad.$(OBJEXT) \
+	gsequencer-ags_synth_output_line_callbacks.$(OBJEXT) \
+	gsequencer-ags_synth_output_line.$(OBJEXT) \
+	gsequencer-ags_synth_output_pad_callbacks.$(OBJEXT) \
+	gsequencer-ags_synth_output_pad.$(OBJEXT)
+am__objects_14 = $(am__objects_1) \
+	gsequencer-ags_automation_area_callbacks.$(OBJEXT) \
+	gsequencer-ags_automation_area.$(OBJEXT) \
+	gsequencer-ags_automation_edit_callbacks.$(OBJEXT) \
+	gsequencer-ags_automation_edit.$(OBJEXT) \
+	gsequencer-ags_automation_toolbar_callbacks.$(OBJEXT) \
+	gsequencer-ags_automation_toolbar.$(OBJEXT) \
+	gsequencer-ags_file_selection_callbacks.$(OBJEXT) \
+	gsequencer-ags_file_selection.$(OBJEXT) \
+	gsequencer-ags_inline_player_callbacks.$(OBJEXT) \
+	gsequencer-ags_inline_player.$(OBJEXT) \
+	gsequencer-ags_machine_radio_button.$(OBJEXT) \
+	gsequencer-ags_machine_selection.$(OBJEXT) \
+	gsequencer-ags_machine_selector_callbacks.$(OBJEXT) \
+	gsequencer-ags_machine_selector.$(OBJEXT) \
+	gsequencer-ags_meter_callbacks.$(OBJEXT) \
+	gsequencer-ags_meter.$(OBJEXT) \
+	gsequencer-ags_notebook_callbacks.$(OBJEXT) \
+	gsequencer-ags_notebook.$(OBJEXT) \
+	gsequencer-ags_note_edit_callbacks.$(OBJEXT) \
+	gsequencer-ags_note_edit.$(OBJEXT) \
+	gsequencer-ags_pattern_edit_callbacks.$(OBJEXT) \
+	gsequencer-ags_pattern_edit.$(OBJEXT) \
+	gsequencer-ags_port_selection_callbacks.$(OBJEXT) \
+	gsequencer-ags_port_selection.$(OBJEXT) \
+	gsequencer-ags_sf2_chooser_callbacks.$(OBJEXT) \
+	gsequencer-ags_sf2_chooser.$(OBJEXT) \
+	gsequencer-ags_soundset_callbacks.$(OBJEXT) \
+	gsequencer-ags_soundset.$(OBJEXT) \
+	gsequencer-ags_toolbar_callbacks.$(OBJEXT) \
+	gsequencer-ags_toolbar.$(OBJEXT)
+am_gsequencer_OBJECTS = $(am__objects_11) $(am__objects_12) \
+	$(am__objects_13) $(am__objects_14)
 gsequencer_OBJECTS = $(am_gsequencer_OBJECTS)
 gsequencer_DEPENDENCIES = libags.a libags_thread.a libags_audio.a \
 	libags_gui.a
@@ -626,7 +710,7 @@ libags_a_SOURCES = $(ags_util_c_sources) $(ags_lib_c_sources) $(ags_object_c_sou
 libags_thread_a_SOURCES = $(ags_thread_c_sources)
 libags_audio_a_SOURCES = $(ags_audio_c_sources) $(ags_audio_file_c_sources) $(ags_audio_task_c_sources) $(ags_audio_task_recall_c_sources) $(ags_audio_recall_c_sources) 
 libags_gui_a_SOURCES = $(ags_widget_c_sources)
-gsequencer_SOURCES = $(gsequencer_main_c_sources) $(gsequencer_server_c_sources) $(gsequencer_xorg_c_sources)
+gsequencer_SOURCES = $(gsequencer_main_c_sources) $(gsequencer_server_c_sources) $(gsequencer_xorg_c_sources) $(gsequencer_machine_c_sources) $(gsequencer_editor_c_sources)
 
 #
 TARGETS = gsequencer
@@ -640,8 +724,10 @@ libags_a_CFLAGS = -g -O2 -g --pedantic -Wall -O -I./src -I/usr/include $(UUID_CF
 libags_a_LDFLAGS =  -L/lib -L/usr/lib -L/usr/X11/lib -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
 libags_thread_a_CFLAGS = -g -O2 -g --pedantic -Wall -O -I./src -I/usr/include $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
 libags_thread_a_LDFLAGS =  -L/lib -L/usr/lib -L/usr/X11/lib -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
+libags_thread_a_LIBADD = libags.a
 libags_audio_a_CFLAGS = -g -O2 -g --pedantic -Wall -O -I./src -I/usr/include $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
 libags_audio_a_LDFLAGS =  -L/lib -L/usr/lib -L/usr/X11/lib -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
+libags_audio_a_LIBADD = libags.a libags_thread.a
 libags_gui_a_CFLAGS = -g -O2 -g --pedantic -Wall -O -I./src -I/usr/include $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
 libags_gui_a_LDFLAGS =  -L/lib -L/usr/lib -L/usr/X11/lib -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
 gsequencer_CFLAGS = -g -O2 -g --pedantic -Wall -O -I./src -I/usr/include $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
@@ -653,6 +739,7 @@ ACLOCAL_AMFLAGS = -I m4
 deprecated_ags_lib_h_sources = 
 ags_lib_h_sources = \
 	$(deprecated_ags_lib_h_sources) \
+	src/ags-lib/object/ags_connectable.h	\
 	src/ags/lib/ags_combo_box_text.h		\
 	src/ags/lib/ags_container.h			\
 	src/ags/lib/ags_list.h			\
@@ -662,6 +749,7 @@ ags_lib_h_sources = \
 deprecated_ags_lib_c_sources = 
 ags_lib_c_sources = \
 	$(deprecated_ags_lib_c_sources) \
+	src/ags-lib/object/ags_connectable.c	\
 	src/ags/lib/ags_combo_box_text.c		\
 	src/ags/lib/ags_container.c			\
 	src/ags/lib/ags_list.c			\
@@ -1344,183 +1432,182 @@ gsequencer_xorg_c_sources = \
 	src/ags/X/ags_window_callbacks.c			\
 	src/ags/X/ags_window.c
 
-deprecated_ags_machine_h_sources = 
-ags_machine_h_sources = \
-	$(deprecated_ags_machine_h_sources) \
-	src/ags/machine/ags_drum_callbacks.h			\
-	src/ags/machine/ags_drum.h				\
-	src/ags/machine/ags_drum_input_line_callbacks.h		\
-	src/ags/machine/ags_drum_input_line.h			\
-	src/ags/machine/ags_drum_input_pad_callbacks.h		\
-	src/ags/machine/ags_drum_input_pad.h			\
-	src/ags/machine/ags_drum_output_line_callbacks.h	\
-	src/ags/machine/ags_drum_output_line.h			\
-	src/ags/machine/ags_drum_output_pad_callbacks.h		\
-	src/ags/machine/ags_drum_output_pad.h			\
-	src/ags/machine/ags_ffplayer_bridge_callbacks.h		\
-	src/ags/machine/ags_ffplayer_bridge.h			\
-	src/ags/machine/ags_ffplayer_bulk_input_callbacks.h	\
-	src/ags/machine/ags_ffplayer_bulk_input.h		\
-	src/ags/machine/ags_ffplayer_callbacks.h		\
-	src/ags/machine/ags_ffplayer.h				\
-	src/ags/machine/ags_ffplayer_input_line_callbacks.h	\
-	src/ags/machine/ags_ffplayer_input_line.h		\
-	src/ags/machine/ags_ffplayer_input_pad_callbacks.h	\
-	src/ags/machine/ags_ffplayer_input_pad.h		\
-	src/ags/machine/ags_ladspa_bridge_callbacks.h		\
-	src/ags/machine/ags_ladspa_bridge.h			\
-	src/ags/machine/ags_matrix_bridge_callbacks.h		\
-	src/ags/machine/ags_matrix_bridge.h			\
-	src/ags/machine/ags_matrix_bulk_input_callbacks.h	\
-	src/ags/machine/ags_matrix_bulk_input.h			\
-	src/ags/machine/ags_matrix_callbacks.h			\
-	src/ags/machine/ags_matrix.h				\
-	src/ags/machine/ags_mixer_callbacks.h			\
-	src/ags/machine/ags_mixer.h				\
-	src/ags/machine/ags_mixer_input_line.h			\
-	src/ags/machine/ags_mixer_input_pad.h			\
-	src/ags/machine/ags_oscillator_callbacks.h		\
-	src/ags/machine/ags_oscillator.h			\
-	src/ags/machine/ags_panel_callbacks.h			\
-	src/ags/machine/ags_panel.h				\
-	src/ags/machine/ags_panel_input_line.h			\
-	src/ags/machine/ags_panel_input_pad.h			\
-	src/ags/machine/ags_synth_bridge_callbacks.h		\
-	src/ags/machine/ags_synth_bridge.h			\
-	src/ags/machine/ags_synth_bulk_output_callbacks.h	\
-	src/ags/machine/ags_synth_bulk_output.h			\
-	src/ags/machine/ags_synth_callbacks.h			\
-	src/ags/machine/ags_synth.h				\
-	src/ags/machine/ags_synth_input_line.h			\
-	src/ags/machine/ags_synth_input_pad.h			\
-	src/ags/machine/ags_synth_output_line_callbacks.h	\
-	src/ags/machine/ags_synth_output_line.h			\
-	src/ags/machine/ags_synth_output_pad_callbacks.h	\
-	src/ags/machine/ags_synth_output_pad.h
+deprecated_gsequencer_machine_h_sources = 
+gsequencer_machine_h_sources = \
+	$(deprecated_gsequencer_machine_h_sources) \
+	src/ags/X/machine/ags_drum_callbacks.h			\
+	src/ags/X/machine/ags_drum.h				\
+	src/ags/X/machine/ags_drum_input_line_callbacks.h		\
+	src/ags/X/machine/ags_drum_input_line.h			\
+	src/ags/X/machine/ags_drum_input_pad_callbacks.h		\
+	src/ags/X/machine/ags_drum_input_pad.h			\
+	src/ags/X/machine/ags_drum_output_line_callbacks.h	\
+	src/ags/X/machine/ags_drum_output_line.h			\
+	src/ags/X/machine/ags_drum_output_pad_callbacks.h		\
+	src/ags/X/machine/ags_drum_output_pad.h			\
+	src/ags/X/machine/ags_ffplayer_bridge_callbacks.h		\
+	src/ags/X/machine/ags_ffplayer_bridge.h			\
+	src/ags/X/machine/ags_ffplayer_bulk_input_callbacks.h	\
+	src/ags/X/machine/ags_ffplayer_bulk_input.h		\
+	src/ags/X/machine/ags_ffplayer_callbacks.h		\
+	src/ags/X/machine/ags_ffplayer.h				\
+	src/ags/X/machine/ags_ffplayer_input_line_callbacks.h	\
+	src/ags/X/machine/ags_ffplayer_input_line.h		\
+	src/ags/X/machine/ags_ffplayer_input_pad_callbacks.h	\
+	src/ags/X/machine/ags_ffplayer_input_pad.h		\
+	src/ags/X/machine/ags_ladspa_bridge_callbacks.h		\
+	src/ags/X/machine/ags_ladspa_bridge.h			\
+	src/ags/X/machine/ags_matrix_bridge_callbacks.h		\
+	src/ags/X/machine/ags_matrix_bridge.h			\
+	src/ags/X/machine/ags_matrix_bulk_input_callbacks.h	\
+	src/ags/X/machine/ags_matrix_bulk_input.h			\
+	src/ags/X/machine/ags_matrix_callbacks.h			\
+	src/ags/X/machine/ags_matrix.h				\
+	src/ags/X/machine/ags_mixer_callbacks.h			\
+	src/ags/X/machine/ags_mixer.h				\
+	src/ags/X/machine/ags_mixer_input_line.h			\
+	src/ags/X/machine/ags_mixer_input_pad.h			\
+	src/ags/X/machine/ags_oscillator_callbacks.h		\
+	src/ags/X/machine/ags_oscillator.h			\
+	src/ags/X/machine/ags_panel_callbacks.h			\
+	src/ags/X/machine/ags_panel.h				\
+	src/ags/X/machine/ags_panel_input_line.h			\
+	src/ags/X/machine/ags_panel_input_pad.h			\
+	src/ags/X/machine/ags_synth_bridge_callbacks.h		\
+	src/ags/X/machine/ags_synth_bridge.h			\
+	src/ags/X/machine/ags_synth_bulk_output_callbacks.h	\
+	src/ags/X/machine/ags_synth_bulk_output.h			\
+	src/ags/X/machine/ags_synth_callbacks.h			\
+	src/ags/X/machine/ags_synth.h				\
+	src/ags/X/machine/ags_synth_input_line.h			\
+	src/ags/X/machine/ags_synth_input_pad.h			\
+	src/ags/X/machine/ags_synth_output_line_callbacks.h	\
+	src/ags/X/machine/ags_synth_output_line.h			\
+	src/ags/X/machine/ags_synth_output_pad_callbacks.h	\
+	src/ags/X/machine/ags_synth_output_pad.h
 
-deprecated_ags_machine_c_sources = 
-ags_machine_c_sources = \
-	$(deprecated_ags_machine_c_sources) \
-	src/ags/machine/ags_drum_callbacks.c			\
-	src/ags/machine/ags_drum.c				\
-	src/ags/machine/ags_drum_input_line_callbacks.c		\
-	src/ags/machine/ags_drum_input_line.c			\
-	src/ags/machine/ags_drum_input_pad_callbacks.c		\
-	src/ags/machine/ags_drum_input_pad.c			\
-	src/ags/machine/ags_drum_output_line_callbacks.c	\
-	src/ags/machine/ags_drum_output_line.c			\
-	src/ags/machine/ags_drum_output_pad_callbacks.c		\
-	src/ags/machine/ags_drum_output_pad.c			\
-	src/ags/machine/ags_ffplayer_bridge_callbacks.c		\
-	src/ags/machine/ags_ffplayer_bridge.c			\
-	src/ags/machine/ags_ffplayer_bulk_input_callbacks.c	\
-	src/ags/machine/ags_ffplayer_bulk_input.c		\
-	src/ags/machine/ags_ffplayer_callbacks.c		\
-	src/ags/machine/ags_ffplayer.c				\
-	src/ags/machine/ags_ffplayer_input_line_callbacks.c	\
-	src/ags/machine/ags_ffplayer_input_line.c		\
-	src/ags/machine/ags_ffplayer_input_pad_callbacks.c	\
-	src/ags/machine/ags_ffplayer_input_pad.c		\
-	src/ags/machine/ags_ladspa_bridge_callbacks.c		\
-	src/ags/machine/ags_ladspa_bridge.c			\
-	src/ags/machine/ags_matrix_bridge_callbacks.c		\
-	src/ags/machine/ags_matrix_bridge.c			\
-	src/ags/machine/ags_matrix_bulk_input_callbacks.c	\
-	src/ags/machine/ags_matrix_bulk_input.c			\
-	src/ags/machine/ags_matrix_callbacks.c			\
-	src/ags/machine/ags_matrix.c				\
-	src/ags/machine/ags_mixer_callbacks.c			\
-	src/ags/machine/ags_mixer.c				\
-	src/ags/machine/ags_mixer_input_line.c			\
-	src/ags/machine/ags_mixer_input_pad.c			\
-	src/ags/machine/ags_oscillator_callbacks.c		\
-	src/ags/machine/ags_oscillator.c			\
-	src/ags/machine/ags_panel_callbacks.c			\
-	src/ags/machine/ags_panel.c				\
-	src/ags/machine/ags_panel_input_line.c			\
-	src/ags/machine/ags_panel_input_pad.c			\
-	src/ags/machine/ags_synth_bridge_callbacks.c		\
-	src/ags/machine/ags_synth_bridge.c			\
-	src/ags/machine/ags_synth_bulk_output_callbacks.c	\
-	src/ags/machine/ags_synth_bulk_output.c			\
-	src/ags/machine/ags_synth_callbacks.c			\
-	src/ags/machine/ags_synth.c				\
-	src/ags/machine/ags_synth_input_line.c			\
-	src/ags/machine/ags_synth_input_pad.c			\
-	src/ags/machine/ags_synth_output_line_callbacks.c	\
-	src/ags/machine/ags_synth_output_line.c			\
-	src/ags/machine/ags_synth_output_pad_callbacks.c	\
-	src/ags/machine/ags_synth_output_pad.c
+deprecated_gsequencer_machine_c_sources = 
+gsequencer_machine_c_sources = \
+	$(deprecated_gsequencer_machine_c_sources) \
+	src/ags/X/machine/ags_drum_callbacks.c			\
+	src/ags/X/machine/ags_drum.c				\
+	src/ags/X/machine/ags_drum_input_line_callbacks.c		\
+	src/ags/X/machine/ags_drum_input_line.c			\
+	src/ags/X/machine/ags_drum_input_pad_callbacks.c		\
+	src/ags/X/machine/ags_drum_input_pad.c			\
+	src/ags/X/machine/ags_drum_output_line_callbacks.c	\
+	src/ags/X/machine/ags_drum_output_line.c			\
+	src/ags/X/machine/ags_drum_output_pad_callbacks.c		\
+	src/ags/X/machine/ags_drum_output_pad.c			\
+	src/ags/X/machine/ags_ffplayer_bridge_callbacks.c		\
+	src/ags/X/machine/ags_ffplayer_bridge.c			\
+	src/ags/X/machine/ags_ffplayer_bulk_input_callbacks.c	\
+	src/ags/X/machine/ags_ffplayer_bulk_input.c		\
+	src/ags/X/machine/ags_ffplayer_callbacks.c		\
+	src/ags/X/machine/ags_ffplayer.c				\
+	src/ags/X/machine/ags_ffplayer_input_line_callbacks.c	\
+	src/ags/X/machine/ags_ffplayer_input_line.c		\
+	src/ags/X/machine/ags_ffplayer_input_pad_callbacks.c	\
+	src/ags/X/machine/ags_ffplayer_input_pad.c		\
+	src/ags/X/machine/ags_ladspa_bridge_callbacks.c		\
+	src/ags/X/machine/ags_ladspa_bridge.c			\
+	src/ags/X/machine/ags_matrix_bridge_callbacks.c		\
+	src/ags/X/machine/ags_matrix_bridge.c			\
+	src/ags/X/machine/ags_matrix_bulk_input_callbacks.c	\
+	src/ags/X/machine/ags_matrix_bulk_input.c			\
+	src/ags/X/machine/ags_matrix_callbacks.c			\
+	src/ags/X/machine/ags_matrix.c				\
+	src/ags/X/machine/ags_mixer_callbacks.c			\
+	src/ags/X/machine/ags_mixer.c				\
+	src/ags/X/machine/ags_mixer_input_line.c			\
+	src/ags/X/machine/ags_mixer_input_pad.c			\
+	src/ags/X/machine/ags_oscillator_callbacks.c		\
+	src/ags/X/machine/ags_oscillator.c			\
+	src/ags/X/machine/ags_panel_callbacks.c			\
+	src/ags/X/machine/ags_panel.c				\
+	src/ags/X/machine/ags_panel_input_line.c			\
+	src/ags/X/machine/ags_panel_input_pad.c			\
+	src/ags/X/machine/ags_synth_bridge_callbacks.c		\
+	src/ags/X/machine/ags_synth_bridge.c			\
+	src/ags/X/machine/ags_synth_bulk_output_callbacks.c	\
+	src/ags/X/machine/ags_synth_bulk_output.c			\
+	src/ags/X/machine/ags_synth_callbacks.c			\
+	src/ags/X/machine/ags_synth.c				\
+	src/ags/X/machine/ags_synth_input_line.c			\
+	src/ags/X/machine/ags_synth_input_pad.c			\
+	src/ags/X/machine/ags_synth_output_line_callbacks.c	\
+	src/ags/X/machine/ags_synth_output_line.c			\
+	src/ags/X/machine/ags_synth_output_pad_callbacks.c	\
+	src/ags/X/machine/ags_synth_output_pad.c
 
-deprecated_ags_editor_h_sources = 
-ags_editor_h_sources = \
-	$(deprecated_ags_editor_h_sources) \
-	src/ags/editor/ags_automation_area_callbacks.h		\
-	src/ags/editor/ags_automation_area.h			\
-	src/ags/editor/ags_automation_edit_callbacks.h		\
-	src/ags/editor/ags_automation_edit.h			\
-	src/ags/editor/ags_automation_toolbar_callbacks.h	\
-	src/ags/editor/ags_automation_toolbar.h		\
-	src/ags/editor/ags_file_selection_callbacks.h		\
-	src/ags/editor/ags_file_selection.h			\
-	src/ags/editor/ags_inline_player_callbacks.h		\
-	src/ags/editor/ags_inline_player.h			\
-	src/ags/editor/ags_machine_radio_button.h		\
-	src/ags/editor/ags_machine_selection.h			\
-	src/ags/editor/ags_machine_selector_callbacks.h	\
-	src/ags/editor/ags_machine_selector.h			\
-	src/ags/editor/ags_meter_callbacks.h			\
-	src/ags/editor/ags_meter.h				\
-	src/ags/editor/ags_notebook_callbacks.h		\
-	src/ags/editor/ags_notebook.h				\
-	src/ags/editor/ags_note_edit_callbacks.h		\
-	src/ags/editor/ags_note_edit.h				\
-	src/ags/editor/ags_pattern_edit_callbacks.h		\
-	src/ags/editor/ags_pattern_edit.h			\
-	src/ags/editor/ags_port_selection_callbacks.h		\
-	src/ags/editor/ags_port_selection.h			\
-	src/ags/editor/ags_sf2_chooser_callbacks.h		\
-	src/ags/editor/ags_sf2_chooser.h			\
-	src/ags/editor/ags_soundset_callbacks.h		\
-	src/ags/editor/ags_soundset.h				\
-	src/ags/editor/ags_toolbar_callbacks.h			\
-	src/ags/editor/ags_toolbar.h				\
-	src/ags/editor/ags_toolbar_mode_stock.h
+deprecated_gsequencer_editor_h_sources = 
+gsequencer_editor_h_sources = \
+	$(deprecated_gsequencer_editor_h_sources) \
+	src/ags/X/editor/ags_automation_area_callbacks.h		\
+	src/ags/X/editor/ags_automation_area.h			\
+	src/ags/X/editor/ags_automation_edit_callbacks.h		\
+	src/ags/X/editor/ags_automation_edit.h			\
+	src/ags/X/editor/ags_automation_toolbar_callbacks.h	\
+	src/ags/X/editor/ags_automation_toolbar.h		\
+	src/ags/X/editor/ags_file_selection_callbacks.h		\
+	src/ags/X/editor/ags_file_selection.h			\
+	src/ags/X/editor/ags_inline_player_callbacks.h		\
+	src/ags/X/editor/ags_inline_player.h			\
+	src/ags/X/editor/ags_machine_radio_button.h		\
+	src/ags/X/editor/ags_machine_selection.h			\
+	src/ags/X/editor/ags_machine_selector_callbacks.h	\
+	src/ags/X/editor/ags_machine_selector.h			\
+	src/ags/X/editor/ags_meter_callbacks.h			\
+	src/ags/X/editor/ags_meter.h				\
+	src/ags/X/editor/ags_notebook_callbacks.h		\
+	src/ags/X/editor/ags_notebook.h				\
+	src/ags/X/editor/ags_note_edit_callbacks.h		\
+	src/ags/X/editor/ags_note_edit.h				\
+	src/ags/X/editor/ags_pattern_edit_callbacks.h		\
+	src/ags/X/editor/ags_pattern_edit.h			\
+	src/ags/X/editor/ags_port_selection_callbacks.h		\
+	src/ags/X/editor/ags_port_selection.h			\
+	src/ags/X/editor/ags_sf2_chooser_callbacks.h		\
+	src/ags/X/editor/ags_sf2_chooser.h			\
+	src/ags/X/editor/ags_soundset_callbacks.h		\
+	src/ags/X/editor/ags_soundset.h				\
+	src/ags/X/editor/ags_toolbar_callbacks.h			\
+	src/ags/X/editor/ags_toolbar.h				\
+	src/ags/X/editor/ags_toolbar_mode_stock.h
 
-deprecated_ags_editor_c_sources = 
-ags_editor_c_sources = \
-	$(deprecated_ags_editor_c_sources) \
-	src/ags/editor/ags_automation_area_callbacks.c		\
-	src/ags/editor/ags_automation_area.c			\
-	src/ags/editor/ags_automation_edit_callbacks.c		\
-	src/ags/editor/ags_automation_edit.c			\
-	src/ags/editor/ags_automation_toolbar_callbacks.c	\
-	src/ags/editor/ags_automation_toolbar.c		\
-	src/ags/editor/ags_file_selection_callbacks.c		\
-	src/ags/editor/ags_file_selection.c			\
-	src/ags/editor/ags_inline_player_callbacks.c		\
-	src/ags/editor/ags_inline_player.c			\
-	src/ags/editor/ags_machine_radio_button.c		\
-	src/ags/editor/ags_machine_selection.c			\
-	src/ags/editor/ags_machine_selector_callbacks.c	\
-	src/ags/editor/ags_machine_selector.c			\
-	src/ags/editor/ags_meter_callbacks.c			\
-	src/ags/editor/ags_meter.c				\
-	src/ags/editor/ags_notebook_callbacks.c		\
-	src/ags/editor/ags_notebook.c				\
-	src/ags/editor/ags_note_edit_callbacks.c		\
-	src/ags/editor/ags_note_edit.c				\
-	src/ags/editor/ags_pattern_edit_callbacks.c		\
-	src/ags/editor/ags_pattern_edit.c			\
-	src/ags/editor/ags_port_selection_callbacks.c		\
-	src/ags/editor/ags_port_selection.c			\
-	src/ags/editor/ags_sf2_chooser_callbacks.c		\
-	src/ags/editor/ags_sf2_chooser.c			\
-	src/ags/editor/ags_soundset_callbacks.c		\
-	src/ags/editor/ags_soundset.c				\
-	src/ags/editor/ags_toolbar_callbacks.c			\
-	src/ags/editor/ags_toolbar.c				\
-	src/ags/editor/ags_toolbar_mode_stock.c
+deprecated_gsequencer_editor_c_sources = 
+gsequencer_editor_c_sources = \
+	$(deprecated_gsequencer_editor_c_sources) \
+	src/ags/X/editor/ags_automation_area_callbacks.c		\
+	src/ags/X/editor/ags_automation_area.c			\
+	src/ags/X/editor/ags_automation_edit_callbacks.c		\
+	src/ags/X/editor/ags_automation_edit.c			\
+	src/ags/X/editor/ags_automation_toolbar_callbacks.c	\
+	src/ags/X/editor/ags_automation_toolbar.c		\
+	src/ags/X/editor/ags_file_selection_callbacks.c		\
+	src/ags/X/editor/ags_file_selection.c			\
+	src/ags/X/editor/ags_inline_player_callbacks.c		\
+	src/ags/X/editor/ags_inline_player.c			\
+	src/ags/X/editor/ags_machine_radio_button.c		\
+	src/ags/X/editor/ags_machine_selection.c			\
+	src/ags/X/editor/ags_machine_selector_callbacks.c	\
+	src/ags/X/editor/ags_machine_selector.c			\
+	src/ags/X/editor/ags_meter_callbacks.c			\
+	src/ags/X/editor/ags_meter.c				\
+	src/ags/X/editor/ags_notebook_callbacks.c		\
+	src/ags/X/editor/ags_notebook.c				\
+	src/ags/X/editor/ags_note_edit_callbacks.c		\
+	src/ags/X/editor/ags_note_edit.c				\
+	src/ags/X/editor/ags_pattern_edit_callbacks.c		\
+	src/ags/X/editor/ags_pattern_edit.c			\
+	src/ags/X/editor/ags_port_selection_callbacks.c		\
+	src/ags/X/editor/ags_port_selection.c			\
+	src/ags/X/editor/ags_sf2_chooser_callbacks.c		\
+	src/ags/X/editor/ags_sf2_chooser.c			\
+	src/ags/X/editor/ags_soundset_callbacks.c		\
+	src/ags/X/editor/ags_soundset.c				\
+	src/ags/X/editor/ags_toolbar_callbacks.c			\
+	src/ags/X/editor/ags_toolbar.c
 
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
@@ -1661,8 +1748,24 @@ distclean-compile:
 
 include ./$(DEPDIR)/gsequencer-ags_audio_preferences.Po
 include ./$(DEPDIR)/gsequencer-ags_audio_preferences_callbacks.Po
+include ./$(DEPDIR)/gsequencer-ags_automation_area.Po
+include ./$(DEPDIR)/gsequencer-ags_automation_area_callbacks.Po
+include ./$(DEPDIR)/gsequencer-ags_automation_edit.Po
+include ./$(DEPDIR)/gsequencer-ags_automation_edit_callbacks.Po
 include ./$(DEPDIR)/gsequencer-ags_automation_editor.Po
 include ./$(DEPDIR)/gsequencer-ags_automation_editor_callbacks.Po
+include ./$(DEPDIR)/gsequencer-ags_automation_toolbar.Po
+include ./$(DEPDIR)/gsequencer-ags_automation_toolbar_callbacks.Po
+include ./$(DEPDIR)/gsequencer-ags_drum.Po
+include ./$(DEPDIR)/gsequencer-ags_drum_callbacks.Po
+include ./$(DEPDIR)/gsequencer-ags_drum_input_line.Po
+include ./$(DEPDIR)/gsequencer-ags_drum_input_line_callbacks.Po
+include ./$(DEPDIR)/gsequencer-ags_drum_input_pad.Po
+include ./$(DEPDIR)/gsequencer-ags_drum_input_pad_callbacks.Po
+include ./$(DEPDIR)/gsequencer-ags_drum_output_line.Po
+include ./$(DEPDIR)/gsequencer-ags_drum_output_line_callbacks.Po
+include ./$(DEPDIR)/gsequencer-ags_drum_output_pad.Po
+include ./$(DEPDIR)/gsequencer-ags_drum_output_pad_callbacks.Po
 include ./$(DEPDIR)/gsequencer-ags_editor.Po
 include ./$(DEPDIR)/gsequencer-ags_editor_callbacks.Po
 include ./$(DEPDIR)/gsequencer-ags_effect_bridge.Po
@@ -1675,8 +1778,24 @@ include ./$(DEPDIR)/gsequencer-ags_effect_pad.Po
 include ./$(DEPDIR)/gsequencer-ags_effect_pad_callbacks.Po
 include ./$(DEPDIR)/gsequencer-ags_export_window.Po
 include ./$(DEPDIR)/gsequencer-ags_export_window_callbacks.Po
+include ./$(DEPDIR)/gsequencer-ags_ffplayer.Po
+include ./$(DEPDIR)/gsequencer-ags_ffplayer_bridge.Po
+include ./$(DEPDIR)/gsequencer-ags_ffplayer_bridge_callbacks.Po
+include ./$(DEPDIR)/gsequencer-ags_ffplayer_bulk_input.Po
+include ./$(DEPDIR)/gsequencer-ags_ffplayer_bulk_input_callbacks.Po
+include ./$(DEPDIR)/gsequencer-ags_ffplayer_callbacks.Po
+include ./$(DEPDIR)/gsequencer-ags_ffplayer_input_line.Po
+include ./$(DEPDIR)/gsequencer-ags_ffplayer_input_line_callbacks.Po
+include ./$(DEPDIR)/gsequencer-ags_ffplayer_input_pad.Po
+include ./$(DEPDIR)/gsequencer-ags_ffplayer_input_pad_callbacks.Po
+include ./$(DEPDIR)/gsequencer-ags_file_selection.Po
+include ./$(DEPDIR)/gsequencer-ags_file_selection_callbacks.Po
 include ./$(DEPDIR)/gsequencer-ags_generic_preferences.Po
 include ./$(DEPDIR)/gsequencer-ags_generic_preferences_callbacks.Po
+include ./$(DEPDIR)/gsequencer-ags_inline_player.Po
+include ./$(DEPDIR)/gsequencer-ags_inline_player_callbacks.Po
+include ./$(DEPDIR)/gsequencer-ags_ladspa_bridge.Po
+include ./$(DEPDIR)/gsequencer-ags_ladspa_bridge_callbacks.Po
 include ./$(DEPDIR)/gsequencer-ags_ladspa_browser.Po
 include ./$(DEPDIR)/gsequencer-ags_ladspa_browser_callbacks.Po
 include ./$(DEPDIR)/gsequencer-ags_line.Po
@@ -1697,18 +1816,48 @@ include ./$(DEPDIR)/gsequencer-ags_machine.Po
 include ./$(DEPDIR)/gsequencer-ags_machine_callbacks.Po
 include ./$(DEPDIR)/gsequencer-ags_machine_editor.Po
 include ./$(DEPDIR)/gsequencer-ags_machine_editor_callbacks.Po
+include ./$(DEPDIR)/gsequencer-ags_machine_radio_button.Po
+include ./$(DEPDIR)/gsequencer-ags_machine_selection.Po
+include ./$(DEPDIR)/gsequencer-ags_machine_selector.Po
+include ./$(DEPDIR)/gsequencer-ags_machine_selector_callbacks.Po
+include ./$(DEPDIR)/gsequencer-ags_matrix.Po
+include ./$(DEPDIR)/gsequencer-ags_matrix_bridge.Po
+include ./$(DEPDIR)/gsequencer-ags_matrix_bridge_callbacks.Po
+include ./$(DEPDIR)/gsequencer-ags_matrix_bulk_input.Po
+include ./$(DEPDIR)/gsequencer-ags_matrix_bulk_input_callbacks.Po
+include ./$(DEPDIR)/gsequencer-ags_matrix_callbacks.Po
 include ./$(DEPDIR)/gsequencer-ags_menu_bar.Po
 include ./$(DEPDIR)/gsequencer-ags_menu_bar_callbacks.Po
+include ./$(DEPDIR)/gsequencer-ags_meter.Po
+include ./$(DEPDIR)/gsequencer-ags_meter_callbacks.Po
+include ./$(DEPDIR)/gsequencer-ags_mixer.Po
+include ./$(DEPDIR)/gsequencer-ags_mixer_callbacks.Po
+include ./$(DEPDIR)/gsequencer-ags_mixer_input_line.Po
+include ./$(DEPDIR)/gsequencer-ags_mixer_input_pad.Po
 include ./$(DEPDIR)/gsequencer-ags_navigation.Po
 include ./$(DEPDIR)/gsequencer-ags_navigation_callbacks.Po
+include ./$(DEPDIR)/gsequencer-ags_note_edit.Po
+include ./$(DEPDIR)/gsequencer-ags_note_edit_callbacks.Po
+include ./$(DEPDIR)/gsequencer-ags_notebook.Po
+include ./$(DEPDIR)/gsequencer-ags_notebook_callbacks.Po
+include ./$(DEPDIR)/gsequencer-ags_oscillator.Po
+include ./$(DEPDIR)/gsequencer-ags_oscillator_callbacks.Po
 include ./$(DEPDIR)/gsequencer-ags_pad.Po
 include ./$(DEPDIR)/gsequencer-ags_pad_callbacks.Po
 include ./$(DEPDIR)/gsequencer-ags_pad_editor.Po
 include ./$(DEPDIR)/gsequencer-ags_pad_editor_callbacks.Po
+include ./$(DEPDIR)/gsequencer-ags_panel.Po
+include ./$(DEPDIR)/gsequencer-ags_panel_callbacks.Po
+include ./$(DEPDIR)/gsequencer-ags_panel_input_line.Po
+include ./$(DEPDIR)/gsequencer-ags_panel_input_pad.Po
+include ./$(DEPDIR)/gsequencer-ags_pattern_edit.Po
+include ./$(DEPDIR)/gsequencer-ags_pattern_edit_callbacks.Po
 include ./$(DEPDIR)/gsequencer-ags_performance_preferences.Po
 include ./$(DEPDIR)/gsequencer-ags_performance_preferences_callbacks.Po
 include ./$(DEPDIR)/gsequencer-ags_plugin_preferences.Po
 include ./$(DEPDIR)/gsequencer-ags_plugin_preferences_callbacks.Po
+include ./$(DEPDIR)/gsequencer-ags_port_selection.Po
+include ./$(DEPDIR)/gsequencer-ags_port_selection_callbacks.Po
 include ./$(DEPDIR)/gsequencer-ags_preferences.Po
 include ./$(DEPDIR)/gsequencer-ags_preferences_callbacks.Po
 include ./$(DEPDIR)/gsequencer-ags_property_collection_editor.Po
@@ -1719,11 +1868,30 @@ include ./$(DEPDIR)/gsequencer-ags_property_listing_editor.Po
 include ./$(DEPDIR)/gsequencer-ags_resize_editor.Po
 include ./$(DEPDIR)/gsequencer-ags_server_preferences.Po
 include ./$(DEPDIR)/gsequencer-ags_server_preferences_callbacks.Po
+include ./$(DEPDIR)/gsequencer-ags_sf2_chooser.Po
+include ./$(DEPDIR)/gsequencer-ags_sf2_chooser_callbacks.Po
+include ./$(DEPDIR)/gsequencer-ags_soundset.Po
+include ./$(DEPDIR)/gsequencer-ags_soundset_callbacks.Po
+include ./$(DEPDIR)/gsequencer-ags_synth.Po
+include ./$(DEPDIR)/gsequencer-ags_synth_bridge.Po
+include ./$(DEPDIR)/gsequencer-ags_synth_bridge_callbacks.Po
+include ./$(DEPDIR)/gsequencer-ags_synth_bulk_output.Po
+include ./$(DEPDIR)/gsequencer-ags_synth_bulk_output_callbacks.Po
+include ./$(DEPDIR)/gsequencer-ags_synth_callbacks.Po
+include ./$(DEPDIR)/gsequencer-ags_synth_input_line.Po
+include ./$(DEPDIR)/gsequencer-ags_synth_input_pad.Po
+include ./$(DEPDIR)/gsequencer-ags_synth_output_line.Po
+include ./$(DEPDIR)/gsequencer-ags_synth_output_line_callbacks.Po
+include ./$(DEPDIR)/gsequencer-ags_synth_output_pad.Po
+include ./$(DEPDIR)/gsequencer-ags_synth_output_pad_callbacks.Po
+include ./$(DEPDIR)/gsequencer-ags_toolbar.Po
+include ./$(DEPDIR)/gsequencer-ags_toolbar_callbacks.Po
 include ./$(DEPDIR)/gsequencer-ags_window.Po
 include ./$(DEPDIR)/gsequencer-ags_window_callbacks.Po
 include ./$(DEPDIR)/gsequencer-main.Po
 include ./$(DEPDIR)/libags_a-ags_applicable.Po
 include ./$(DEPDIR)/libags_a-ags_combo_box_text.Po
+include ./$(DEPDIR)/libags_a-ags_connectable.Po
 include ./$(DEPDIR)/libags_a-ags_container.Po
 include ./$(DEPDIR)/libags_a-ags_countable.Po
 include ./$(DEPDIR)/libags_a-ags_dynamic_connectable.Po
@@ -1889,6 +2057,20 @@ libags_a-ags_id_generator.obj: src/ags/util/ags_id_generator.c
 #	$(AM_V_CC)source='src/ags/util/ags_id_generator.c' object='libags_a-ags_id_generator.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -c -o libags_a-ags_id_generator.obj `if test -f 'src/ags/util/ags_id_generator.c'; then $(CYGPATH_W) 'src/ags/util/ags_id_generator.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/util/ags_id_generator.c'; fi`
+
+libags_a-ags_connectable.o: src/ags-lib/object/ags_connectable.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -MT libags_a-ags_connectable.o -MD -MP -MF $(DEPDIR)/libags_a-ags_connectable.Tpo -c -o libags_a-ags_connectable.o `test -f 'src/ags-lib/object/ags_connectable.c' || echo '$(srcdir)/'`src/ags-lib/object/ags_connectable.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_a-ags_connectable.Tpo $(DEPDIR)/libags_a-ags_connectable.Po
+#	$(AM_V_CC)source='src/ags-lib/object/ags_connectable.c' object='libags_a-ags_connectable.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -c -o libags_a-ags_connectable.o `test -f 'src/ags-lib/object/ags_connectable.c' || echo '$(srcdir)/'`src/ags-lib/object/ags_connectable.c
+
+libags_a-ags_connectable.obj: src/ags-lib/object/ags_connectable.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -MT libags_a-ags_connectable.obj -MD -MP -MF $(DEPDIR)/libags_a-ags_connectable.Tpo -c -o libags_a-ags_connectable.obj `if test -f 'src/ags-lib/object/ags_connectable.c'; then $(CYGPATH_W) 'src/ags-lib/object/ags_connectable.c'; else $(CYGPATH_W) '$(srcdir)/src/ags-lib/object/ags_connectable.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_a-ags_connectable.Tpo $(DEPDIR)/libags_a-ags_connectable.Po
+#	$(AM_V_CC)source='src/ags-lib/object/ags_connectable.c' object='libags_a-ags_connectable.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -c -o libags_a-ags_connectable.obj `if test -f 'src/ags-lib/object/ags_connectable.c'; then $(CYGPATH_W) 'src/ags-lib/object/ags_connectable.c'; else $(CYGPATH_W) '$(srcdir)/src/ags-lib/object/ags_connectable.c'; fi`
 
 libags_a-ags_combo_box_text.o: src/ags/lib/ags_combo_box_text.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -MT libags_a-ags_combo_box_text.o -MD -MP -MF $(DEPDIR)/libags_a-ags_combo_box_text.Tpo -c -o libags_a-ags_combo_box_text.o `test -f 'src/ags/lib/ags_combo_box_text.c' || echo '$(srcdir)/'`src/ags/lib/ags_combo_box_text.c
@@ -4605,6 +4787,1126 @@ gsequencer-ags_window.obj: src/ags/X/ags_window.c
 #	$(AM_V_CC)source='src/ags/X/ags_window.c' object='gsequencer-ags_window.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_window.obj `if test -f 'src/ags/X/ags_window.c'; then $(CYGPATH_W) 'src/ags/X/ags_window.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/ags_window.c'; fi`
+
+gsequencer-ags_drum_callbacks.o: src/ags/X/machine/ags_drum_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_drum_callbacks.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_drum_callbacks.Tpo -c -o gsequencer-ags_drum_callbacks.o `test -f 'src/ags/X/machine/ags_drum_callbacks.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_drum_callbacks.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_drum_callbacks.Tpo $(DEPDIR)/gsequencer-ags_drum_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_drum_callbacks.c' object='gsequencer-ags_drum_callbacks.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_drum_callbacks.o `test -f 'src/ags/X/machine/ags_drum_callbacks.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_drum_callbacks.c
+
+gsequencer-ags_drum_callbacks.obj: src/ags/X/machine/ags_drum_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_drum_callbacks.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_drum_callbacks.Tpo -c -o gsequencer-ags_drum_callbacks.obj `if test -f 'src/ags/X/machine/ags_drum_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_drum_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_drum_callbacks.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_drum_callbacks.Tpo $(DEPDIR)/gsequencer-ags_drum_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_drum_callbacks.c' object='gsequencer-ags_drum_callbacks.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_drum_callbacks.obj `if test -f 'src/ags/X/machine/ags_drum_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_drum_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_drum_callbacks.c'; fi`
+
+gsequencer-ags_drum.o: src/ags/X/machine/ags_drum.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_drum.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_drum.Tpo -c -o gsequencer-ags_drum.o `test -f 'src/ags/X/machine/ags_drum.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_drum.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_drum.Tpo $(DEPDIR)/gsequencer-ags_drum.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_drum.c' object='gsequencer-ags_drum.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_drum.o `test -f 'src/ags/X/machine/ags_drum.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_drum.c
+
+gsequencer-ags_drum.obj: src/ags/X/machine/ags_drum.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_drum.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_drum.Tpo -c -o gsequencer-ags_drum.obj `if test -f 'src/ags/X/machine/ags_drum.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_drum.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_drum.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_drum.Tpo $(DEPDIR)/gsequencer-ags_drum.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_drum.c' object='gsequencer-ags_drum.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_drum.obj `if test -f 'src/ags/X/machine/ags_drum.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_drum.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_drum.c'; fi`
+
+gsequencer-ags_drum_input_line_callbacks.o: src/ags/X/machine/ags_drum_input_line_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_drum_input_line_callbacks.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_drum_input_line_callbacks.Tpo -c -o gsequencer-ags_drum_input_line_callbacks.o `test -f 'src/ags/X/machine/ags_drum_input_line_callbacks.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_drum_input_line_callbacks.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_drum_input_line_callbacks.Tpo $(DEPDIR)/gsequencer-ags_drum_input_line_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_drum_input_line_callbacks.c' object='gsequencer-ags_drum_input_line_callbacks.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_drum_input_line_callbacks.o `test -f 'src/ags/X/machine/ags_drum_input_line_callbacks.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_drum_input_line_callbacks.c
+
+gsequencer-ags_drum_input_line_callbacks.obj: src/ags/X/machine/ags_drum_input_line_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_drum_input_line_callbacks.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_drum_input_line_callbacks.Tpo -c -o gsequencer-ags_drum_input_line_callbacks.obj `if test -f 'src/ags/X/machine/ags_drum_input_line_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_drum_input_line_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_drum_input_line_callbacks.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_drum_input_line_callbacks.Tpo $(DEPDIR)/gsequencer-ags_drum_input_line_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_drum_input_line_callbacks.c' object='gsequencer-ags_drum_input_line_callbacks.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_drum_input_line_callbacks.obj `if test -f 'src/ags/X/machine/ags_drum_input_line_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_drum_input_line_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_drum_input_line_callbacks.c'; fi`
+
+gsequencer-ags_drum_input_line.o: src/ags/X/machine/ags_drum_input_line.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_drum_input_line.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_drum_input_line.Tpo -c -o gsequencer-ags_drum_input_line.o `test -f 'src/ags/X/machine/ags_drum_input_line.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_drum_input_line.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_drum_input_line.Tpo $(DEPDIR)/gsequencer-ags_drum_input_line.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_drum_input_line.c' object='gsequencer-ags_drum_input_line.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_drum_input_line.o `test -f 'src/ags/X/machine/ags_drum_input_line.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_drum_input_line.c
+
+gsequencer-ags_drum_input_line.obj: src/ags/X/machine/ags_drum_input_line.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_drum_input_line.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_drum_input_line.Tpo -c -o gsequencer-ags_drum_input_line.obj `if test -f 'src/ags/X/machine/ags_drum_input_line.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_drum_input_line.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_drum_input_line.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_drum_input_line.Tpo $(DEPDIR)/gsequencer-ags_drum_input_line.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_drum_input_line.c' object='gsequencer-ags_drum_input_line.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_drum_input_line.obj `if test -f 'src/ags/X/machine/ags_drum_input_line.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_drum_input_line.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_drum_input_line.c'; fi`
+
+gsequencer-ags_drum_input_pad_callbacks.o: src/ags/X/machine/ags_drum_input_pad_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_drum_input_pad_callbacks.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_drum_input_pad_callbacks.Tpo -c -o gsequencer-ags_drum_input_pad_callbacks.o `test -f 'src/ags/X/machine/ags_drum_input_pad_callbacks.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_drum_input_pad_callbacks.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_drum_input_pad_callbacks.Tpo $(DEPDIR)/gsequencer-ags_drum_input_pad_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_drum_input_pad_callbacks.c' object='gsequencer-ags_drum_input_pad_callbacks.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_drum_input_pad_callbacks.o `test -f 'src/ags/X/machine/ags_drum_input_pad_callbacks.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_drum_input_pad_callbacks.c
+
+gsequencer-ags_drum_input_pad_callbacks.obj: src/ags/X/machine/ags_drum_input_pad_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_drum_input_pad_callbacks.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_drum_input_pad_callbacks.Tpo -c -o gsequencer-ags_drum_input_pad_callbacks.obj `if test -f 'src/ags/X/machine/ags_drum_input_pad_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_drum_input_pad_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_drum_input_pad_callbacks.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_drum_input_pad_callbacks.Tpo $(DEPDIR)/gsequencer-ags_drum_input_pad_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_drum_input_pad_callbacks.c' object='gsequencer-ags_drum_input_pad_callbacks.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_drum_input_pad_callbacks.obj `if test -f 'src/ags/X/machine/ags_drum_input_pad_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_drum_input_pad_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_drum_input_pad_callbacks.c'; fi`
+
+gsequencer-ags_drum_input_pad.o: src/ags/X/machine/ags_drum_input_pad.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_drum_input_pad.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_drum_input_pad.Tpo -c -o gsequencer-ags_drum_input_pad.o `test -f 'src/ags/X/machine/ags_drum_input_pad.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_drum_input_pad.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_drum_input_pad.Tpo $(DEPDIR)/gsequencer-ags_drum_input_pad.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_drum_input_pad.c' object='gsequencer-ags_drum_input_pad.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_drum_input_pad.o `test -f 'src/ags/X/machine/ags_drum_input_pad.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_drum_input_pad.c
+
+gsequencer-ags_drum_input_pad.obj: src/ags/X/machine/ags_drum_input_pad.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_drum_input_pad.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_drum_input_pad.Tpo -c -o gsequencer-ags_drum_input_pad.obj `if test -f 'src/ags/X/machine/ags_drum_input_pad.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_drum_input_pad.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_drum_input_pad.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_drum_input_pad.Tpo $(DEPDIR)/gsequencer-ags_drum_input_pad.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_drum_input_pad.c' object='gsequencer-ags_drum_input_pad.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_drum_input_pad.obj `if test -f 'src/ags/X/machine/ags_drum_input_pad.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_drum_input_pad.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_drum_input_pad.c'; fi`
+
+gsequencer-ags_drum_output_line_callbacks.o: src/ags/X/machine/ags_drum_output_line_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_drum_output_line_callbacks.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_drum_output_line_callbacks.Tpo -c -o gsequencer-ags_drum_output_line_callbacks.o `test -f 'src/ags/X/machine/ags_drum_output_line_callbacks.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_drum_output_line_callbacks.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_drum_output_line_callbacks.Tpo $(DEPDIR)/gsequencer-ags_drum_output_line_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_drum_output_line_callbacks.c' object='gsequencer-ags_drum_output_line_callbacks.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_drum_output_line_callbacks.o `test -f 'src/ags/X/machine/ags_drum_output_line_callbacks.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_drum_output_line_callbacks.c
+
+gsequencer-ags_drum_output_line_callbacks.obj: src/ags/X/machine/ags_drum_output_line_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_drum_output_line_callbacks.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_drum_output_line_callbacks.Tpo -c -o gsequencer-ags_drum_output_line_callbacks.obj `if test -f 'src/ags/X/machine/ags_drum_output_line_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_drum_output_line_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_drum_output_line_callbacks.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_drum_output_line_callbacks.Tpo $(DEPDIR)/gsequencer-ags_drum_output_line_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_drum_output_line_callbacks.c' object='gsequencer-ags_drum_output_line_callbacks.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_drum_output_line_callbacks.obj `if test -f 'src/ags/X/machine/ags_drum_output_line_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_drum_output_line_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_drum_output_line_callbacks.c'; fi`
+
+gsequencer-ags_drum_output_line.o: src/ags/X/machine/ags_drum_output_line.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_drum_output_line.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_drum_output_line.Tpo -c -o gsequencer-ags_drum_output_line.o `test -f 'src/ags/X/machine/ags_drum_output_line.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_drum_output_line.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_drum_output_line.Tpo $(DEPDIR)/gsequencer-ags_drum_output_line.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_drum_output_line.c' object='gsequencer-ags_drum_output_line.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_drum_output_line.o `test -f 'src/ags/X/machine/ags_drum_output_line.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_drum_output_line.c
+
+gsequencer-ags_drum_output_line.obj: src/ags/X/machine/ags_drum_output_line.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_drum_output_line.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_drum_output_line.Tpo -c -o gsequencer-ags_drum_output_line.obj `if test -f 'src/ags/X/machine/ags_drum_output_line.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_drum_output_line.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_drum_output_line.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_drum_output_line.Tpo $(DEPDIR)/gsequencer-ags_drum_output_line.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_drum_output_line.c' object='gsequencer-ags_drum_output_line.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_drum_output_line.obj `if test -f 'src/ags/X/machine/ags_drum_output_line.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_drum_output_line.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_drum_output_line.c'; fi`
+
+gsequencer-ags_drum_output_pad_callbacks.o: src/ags/X/machine/ags_drum_output_pad_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_drum_output_pad_callbacks.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_drum_output_pad_callbacks.Tpo -c -o gsequencer-ags_drum_output_pad_callbacks.o `test -f 'src/ags/X/machine/ags_drum_output_pad_callbacks.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_drum_output_pad_callbacks.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_drum_output_pad_callbacks.Tpo $(DEPDIR)/gsequencer-ags_drum_output_pad_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_drum_output_pad_callbacks.c' object='gsequencer-ags_drum_output_pad_callbacks.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_drum_output_pad_callbacks.o `test -f 'src/ags/X/machine/ags_drum_output_pad_callbacks.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_drum_output_pad_callbacks.c
+
+gsequencer-ags_drum_output_pad_callbacks.obj: src/ags/X/machine/ags_drum_output_pad_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_drum_output_pad_callbacks.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_drum_output_pad_callbacks.Tpo -c -o gsequencer-ags_drum_output_pad_callbacks.obj `if test -f 'src/ags/X/machine/ags_drum_output_pad_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_drum_output_pad_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_drum_output_pad_callbacks.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_drum_output_pad_callbacks.Tpo $(DEPDIR)/gsequencer-ags_drum_output_pad_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_drum_output_pad_callbacks.c' object='gsequencer-ags_drum_output_pad_callbacks.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_drum_output_pad_callbacks.obj `if test -f 'src/ags/X/machine/ags_drum_output_pad_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_drum_output_pad_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_drum_output_pad_callbacks.c'; fi`
+
+gsequencer-ags_drum_output_pad.o: src/ags/X/machine/ags_drum_output_pad.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_drum_output_pad.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_drum_output_pad.Tpo -c -o gsequencer-ags_drum_output_pad.o `test -f 'src/ags/X/machine/ags_drum_output_pad.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_drum_output_pad.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_drum_output_pad.Tpo $(DEPDIR)/gsequencer-ags_drum_output_pad.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_drum_output_pad.c' object='gsequencer-ags_drum_output_pad.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_drum_output_pad.o `test -f 'src/ags/X/machine/ags_drum_output_pad.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_drum_output_pad.c
+
+gsequencer-ags_drum_output_pad.obj: src/ags/X/machine/ags_drum_output_pad.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_drum_output_pad.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_drum_output_pad.Tpo -c -o gsequencer-ags_drum_output_pad.obj `if test -f 'src/ags/X/machine/ags_drum_output_pad.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_drum_output_pad.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_drum_output_pad.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_drum_output_pad.Tpo $(DEPDIR)/gsequencer-ags_drum_output_pad.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_drum_output_pad.c' object='gsequencer-ags_drum_output_pad.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_drum_output_pad.obj `if test -f 'src/ags/X/machine/ags_drum_output_pad.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_drum_output_pad.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_drum_output_pad.c'; fi`
+
+gsequencer-ags_ffplayer_bridge_callbacks.o: src/ags/X/machine/ags_ffplayer_bridge_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_ffplayer_bridge_callbacks.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_ffplayer_bridge_callbacks.Tpo -c -o gsequencer-ags_ffplayer_bridge_callbacks.o `test -f 'src/ags/X/machine/ags_ffplayer_bridge_callbacks.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_ffplayer_bridge_callbacks.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_ffplayer_bridge_callbacks.Tpo $(DEPDIR)/gsequencer-ags_ffplayer_bridge_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_ffplayer_bridge_callbacks.c' object='gsequencer-ags_ffplayer_bridge_callbacks.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_ffplayer_bridge_callbacks.o `test -f 'src/ags/X/machine/ags_ffplayer_bridge_callbacks.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_ffplayer_bridge_callbacks.c
+
+gsequencer-ags_ffplayer_bridge_callbacks.obj: src/ags/X/machine/ags_ffplayer_bridge_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_ffplayer_bridge_callbacks.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_ffplayer_bridge_callbacks.Tpo -c -o gsequencer-ags_ffplayer_bridge_callbacks.obj `if test -f 'src/ags/X/machine/ags_ffplayer_bridge_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_ffplayer_bridge_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_ffplayer_bridge_callbacks.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_ffplayer_bridge_callbacks.Tpo $(DEPDIR)/gsequencer-ags_ffplayer_bridge_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_ffplayer_bridge_callbacks.c' object='gsequencer-ags_ffplayer_bridge_callbacks.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_ffplayer_bridge_callbacks.obj `if test -f 'src/ags/X/machine/ags_ffplayer_bridge_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_ffplayer_bridge_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_ffplayer_bridge_callbacks.c'; fi`
+
+gsequencer-ags_ffplayer_bridge.o: src/ags/X/machine/ags_ffplayer_bridge.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_ffplayer_bridge.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_ffplayer_bridge.Tpo -c -o gsequencer-ags_ffplayer_bridge.o `test -f 'src/ags/X/machine/ags_ffplayer_bridge.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_ffplayer_bridge.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_ffplayer_bridge.Tpo $(DEPDIR)/gsequencer-ags_ffplayer_bridge.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_ffplayer_bridge.c' object='gsequencer-ags_ffplayer_bridge.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_ffplayer_bridge.o `test -f 'src/ags/X/machine/ags_ffplayer_bridge.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_ffplayer_bridge.c
+
+gsequencer-ags_ffplayer_bridge.obj: src/ags/X/machine/ags_ffplayer_bridge.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_ffplayer_bridge.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_ffplayer_bridge.Tpo -c -o gsequencer-ags_ffplayer_bridge.obj `if test -f 'src/ags/X/machine/ags_ffplayer_bridge.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_ffplayer_bridge.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_ffplayer_bridge.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_ffplayer_bridge.Tpo $(DEPDIR)/gsequencer-ags_ffplayer_bridge.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_ffplayer_bridge.c' object='gsequencer-ags_ffplayer_bridge.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_ffplayer_bridge.obj `if test -f 'src/ags/X/machine/ags_ffplayer_bridge.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_ffplayer_bridge.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_ffplayer_bridge.c'; fi`
+
+gsequencer-ags_ffplayer_bulk_input_callbacks.o: src/ags/X/machine/ags_ffplayer_bulk_input_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_ffplayer_bulk_input_callbacks.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_ffplayer_bulk_input_callbacks.Tpo -c -o gsequencer-ags_ffplayer_bulk_input_callbacks.o `test -f 'src/ags/X/machine/ags_ffplayer_bulk_input_callbacks.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_ffplayer_bulk_input_callbacks.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_ffplayer_bulk_input_callbacks.Tpo $(DEPDIR)/gsequencer-ags_ffplayer_bulk_input_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_ffplayer_bulk_input_callbacks.c' object='gsequencer-ags_ffplayer_bulk_input_callbacks.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_ffplayer_bulk_input_callbacks.o `test -f 'src/ags/X/machine/ags_ffplayer_bulk_input_callbacks.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_ffplayer_bulk_input_callbacks.c
+
+gsequencer-ags_ffplayer_bulk_input_callbacks.obj: src/ags/X/machine/ags_ffplayer_bulk_input_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_ffplayer_bulk_input_callbacks.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_ffplayer_bulk_input_callbacks.Tpo -c -o gsequencer-ags_ffplayer_bulk_input_callbacks.obj `if test -f 'src/ags/X/machine/ags_ffplayer_bulk_input_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_ffplayer_bulk_input_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_ffplayer_bulk_input_callbacks.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_ffplayer_bulk_input_callbacks.Tpo $(DEPDIR)/gsequencer-ags_ffplayer_bulk_input_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_ffplayer_bulk_input_callbacks.c' object='gsequencer-ags_ffplayer_bulk_input_callbacks.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_ffplayer_bulk_input_callbacks.obj `if test -f 'src/ags/X/machine/ags_ffplayer_bulk_input_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_ffplayer_bulk_input_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_ffplayer_bulk_input_callbacks.c'; fi`
+
+gsequencer-ags_ffplayer_bulk_input.o: src/ags/X/machine/ags_ffplayer_bulk_input.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_ffplayer_bulk_input.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_ffplayer_bulk_input.Tpo -c -o gsequencer-ags_ffplayer_bulk_input.o `test -f 'src/ags/X/machine/ags_ffplayer_bulk_input.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_ffplayer_bulk_input.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_ffplayer_bulk_input.Tpo $(DEPDIR)/gsequencer-ags_ffplayer_bulk_input.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_ffplayer_bulk_input.c' object='gsequencer-ags_ffplayer_bulk_input.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_ffplayer_bulk_input.o `test -f 'src/ags/X/machine/ags_ffplayer_bulk_input.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_ffplayer_bulk_input.c
+
+gsequencer-ags_ffplayer_bulk_input.obj: src/ags/X/machine/ags_ffplayer_bulk_input.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_ffplayer_bulk_input.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_ffplayer_bulk_input.Tpo -c -o gsequencer-ags_ffplayer_bulk_input.obj `if test -f 'src/ags/X/machine/ags_ffplayer_bulk_input.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_ffplayer_bulk_input.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_ffplayer_bulk_input.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_ffplayer_bulk_input.Tpo $(DEPDIR)/gsequencer-ags_ffplayer_bulk_input.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_ffplayer_bulk_input.c' object='gsequencer-ags_ffplayer_bulk_input.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_ffplayer_bulk_input.obj `if test -f 'src/ags/X/machine/ags_ffplayer_bulk_input.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_ffplayer_bulk_input.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_ffplayer_bulk_input.c'; fi`
+
+gsequencer-ags_ffplayer_callbacks.o: src/ags/X/machine/ags_ffplayer_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_ffplayer_callbacks.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_ffplayer_callbacks.Tpo -c -o gsequencer-ags_ffplayer_callbacks.o `test -f 'src/ags/X/machine/ags_ffplayer_callbacks.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_ffplayer_callbacks.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_ffplayer_callbacks.Tpo $(DEPDIR)/gsequencer-ags_ffplayer_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_ffplayer_callbacks.c' object='gsequencer-ags_ffplayer_callbacks.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_ffplayer_callbacks.o `test -f 'src/ags/X/machine/ags_ffplayer_callbacks.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_ffplayer_callbacks.c
+
+gsequencer-ags_ffplayer_callbacks.obj: src/ags/X/machine/ags_ffplayer_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_ffplayer_callbacks.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_ffplayer_callbacks.Tpo -c -o gsequencer-ags_ffplayer_callbacks.obj `if test -f 'src/ags/X/machine/ags_ffplayer_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_ffplayer_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_ffplayer_callbacks.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_ffplayer_callbacks.Tpo $(DEPDIR)/gsequencer-ags_ffplayer_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_ffplayer_callbacks.c' object='gsequencer-ags_ffplayer_callbacks.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_ffplayer_callbacks.obj `if test -f 'src/ags/X/machine/ags_ffplayer_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_ffplayer_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_ffplayer_callbacks.c'; fi`
+
+gsequencer-ags_ffplayer.o: src/ags/X/machine/ags_ffplayer.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_ffplayer.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_ffplayer.Tpo -c -o gsequencer-ags_ffplayer.o `test -f 'src/ags/X/machine/ags_ffplayer.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_ffplayer.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_ffplayer.Tpo $(DEPDIR)/gsequencer-ags_ffplayer.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_ffplayer.c' object='gsequencer-ags_ffplayer.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_ffplayer.o `test -f 'src/ags/X/machine/ags_ffplayer.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_ffplayer.c
+
+gsequencer-ags_ffplayer.obj: src/ags/X/machine/ags_ffplayer.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_ffplayer.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_ffplayer.Tpo -c -o gsequencer-ags_ffplayer.obj `if test -f 'src/ags/X/machine/ags_ffplayer.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_ffplayer.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_ffplayer.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_ffplayer.Tpo $(DEPDIR)/gsequencer-ags_ffplayer.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_ffplayer.c' object='gsequencer-ags_ffplayer.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_ffplayer.obj `if test -f 'src/ags/X/machine/ags_ffplayer.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_ffplayer.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_ffplayer.c'; fi`
+
+gsequencer-ags_ffplayer_input_line_callbacks.o: src/ags/X/machine/ags_ffplayer_input_line_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_ffplayer_input_line_callbacks.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_ffplayer_input_line_callbacks.Tpo -c -o gsequencer-ags_ffplayer_input_line_callbacks.o `test -f 'src/ags/X/machine/ags_ffplayer_input_line_callbacks.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_ffplayer_input_line_callbacks.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_ffplayer_input_line_callbacks.Tpo $(DEPDIR)/gsequencer-ags_ffplayer_input_line_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_ffplayer_input_line_callbacks.c' object='gsequencer-ags_ffplayer_input_line_callbacks.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_ffplayer_input_line_callbacks.o `test -f 'src/ags/X/machine/ags_ffplayer_input_line_callbacks.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_ffplayer_input_line_callbacks.c
+
+gsequencer-ags_ffplayer_input_line_callbacks.obj: src/ags/X/machine/ags_ffplayer_input_line_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_ffplayer_input_line_callbacks.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_ffplayer_input_line_callbacks.Tpo -c -o gsequencer-ags_ffplayer_input_line_callbacks.obj `if test -f 'src/ags/X/machine/ags_ffplayer_input_line_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_ffplayer_input_line_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_ffplayer_input_line_callbacks.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_ffplayer_input_line_callbacks.Tpo $(DEPDIR)/gsequencer-ags_ffplayer_input_line_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_ffplayer_input_line_callbacks.c' object='gsequencer-ags_ffplayer_input_line_callbacks.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_ffplayer_input_line_callbacks.obj `if test -f 'src/ags/X/machine/ags_ffplayer_input_line_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_ffplayer_input_line_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_ffplayer_input_line_callbacks.c'; fi`
+
+gsequencer-ags_ffplayer_input_line.o: src/ags/X/machine/ags_ffplayer_input_line.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_ffplayer_input_line.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_ffplayer_input_line.Tpo -c -o gsequencer-ags_ffplayer_input_line.o `test -f 'src/ags/X/machine/ags_ffplayer_input_line.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_ffplayer_input_line.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_ffplayer_input_line.Tpo $(DEPDIR)/gsequencer-ags_ffplayer_input_line.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_ffplayer_input_line.c' object='gsequencer-ags_ffplayer_input_line.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_ffplayer_input_line.o `test -f 'src/ags/X/machine/ags_ffplayer_input_line.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_ffplayer_input_line.c
+
+gsequencer-ags_ffplayer_input_line.obj: src/ags/X/machine/ags_ffplayer_input_line.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_ffplayer_input_line.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_ffplayer_input_line.Tpo -c -o gsequencer-ags_ffplayer_input_line.obj `if test -f 'src/ags/X/machine/ags_ffplayer_input_line.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_ffplayer_input_line.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_ffplayer_input_line.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_ffplayer_input_line.Tpo $(DEPDIR)/gsequencer-ags_ffplayer_input_line.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_ffplayer_input_line.c' object='gsequencer-ags_ffplayer_input_line.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_ffplayer_input_line.obj `if test -f 'src/ags/X/machine/ags_ffplayer_input_line.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_ffplayer_input_line.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_ffplayer_input_line.c'; fi`
+
+gsequencer-ags_ffplayer_input_pad_callbacks.o: src/ags/X/machine/ags_ffplayer_input_pad_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_ffplayer_input_pad_callbacks.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_ffplayer_input_pad_callbacks.Tpo -c -o gsequencer-ags_ffplayer_input_pad_callbacks.o `test -f 'src/ags/X/machine/ags_ffplayer_input_pad_callbacks.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_ffplayer_input_pad_callbacks.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_ffplayer_input_pad_callbacks.Tpo $(DEPDIR)/gsequencer-ags_ffplayer_input_pad_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_ffplayer_input_pad_callbacks.c' object='gsequencer-ags_ffplayer_input_pad_callbacks.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_ffplayer_input_pad_callbacks.o `test -f 'src/ags/X/machine/ags_ffplayer_input_pad_callbacks.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_ffplayer_input_pad_callbacks.c
+
+gsequencer-ags_ffplayer_input_pad_callbacks.obj: src/ags/X/machine/ags_ffplayer_input_pad_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_ffplayer_input_pad_callbacks.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_ffplayer_input_pad_callbacks.Tpo -c -o gsequencer-ags_ffplayer_input_pad_callbacks.obj `if test -f 'src/ags/X/machine/ags_ffplayer_input_pad_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_ffplayer_input_pad_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_ffplayer_input_pad_callbacks.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_ffplayer_input_pad_callbacks.Tpo $(DEPDIR)/gsequencer-ags_ffplayer_input_pad_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_ffplayer_input_pad_callbacks.c' object='gsequencer-ags_ffplayer_input_pad_callbacks.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_ffplayer_input_pad_callbacks.obj `if test -f 'src/ags/X/machine/ags_ffplayer_input_pad_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_ffplayer_input_pad_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_ffplayer_input_pad_callbacks.c'; fi`
+
+gsequencer-ags_ffplayer_input_pad.o: src/ags/X/machine/ags_ffplayer_input_pad.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_ffplayer_input_pad.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_ffplayer_input_pad.Tpo -c -o gsequencer-ags_ffplayer_input_pad.o `test -f 'src/ags/X/machine/ags_ffplayer_input_pad.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_ffplayer_input_pad.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_ffplayer_input_pad.Tpo $(DEPDIR)/gsequencer-ags_ffplayer_input_pad.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_ffplayer_input_pad.c' object='gsequencer-ags_ffplayer_input_pad.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_ffplayer_input_pad.o `test -f 'src/ags/X/machine/ags_ffplayer_input_pad.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_ffplayer_input_pad.c
+
+gsequencer-ags_ffplayer_input_pad.obj: src/ags/X/machine/ags_ffplayer_input_pad.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_ffplayer_input_pad.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_ffplayer_input_pad.Tpo -c -o gsequencer-ags_ffplayer_input_pad.obj `if test -f 'src/ags/X/machine/ags_ffplayer_input_pad.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_ffplayer_input_pad.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_ffplayer_input_pad.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_ffplayer_input_pad.Tpo $(DEPDIR)/gsequencer-ags_ffplayer_input_pad.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_ffplayer_input_pad.c' object='gsequencer-ags_ffplayer_input_pad.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_ffplayer_input_pad.obj `if test -f 'src/ags/X/machine/ags_ffplayer_input_pad.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_ffplayer_input_pad.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_ffplayer_input_pad.c'; fi`
+
+gsequencer-ags_ladspa_bridge_callbacks.o: src/ags/X/machine/ags_ladspa_bridge_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_ladspa_bridge_callbacks.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_ladspa_bridge_callbacks.Tpo -c -o gsequencer-ags_ladspa_bridge_callbacks.o `test -f 'src/ags/X/machine/ags_ladspa_bridge_callbacks.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_ladspa_bridge_callbacks.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_ladspa_bridge_callbacks.Tpo $(DEPDIR)/gsequencer-ags_ladspa_bridge_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_ladspa_bridge_callbacks.c' object='gsequencer-ags_ladspa_bridge_callbacks.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_ladspa_bridge_callbacks.o `test -f 'src/ags/X/machine/ags_ladspa_bridge_callbacks.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_ladspa_bridge_callbacks.c
+
+gsequencer-ags_ladspa_bridge_callbacks.obj: src/ags/X/machine/ags_ladspa_bridge_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_ladspa_bridge_callbacks.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_ladspa_bridge_callbacks.Tpo -c -o gsequencer-ags_ladspa_bridge_callbacks.obj `if test -f 'src/ags/X/machine/ags_ladspa_bridge_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_ladspa_bridge_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_ladspa_bridge_callbacks.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_ladspa_bridge_callbacks.Tpo $(DEPDIR)/gsequencer-ags_ladspa_bridge_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_ladspa_bridge_callbacks.c' object='gsequencer-ags_ladspa_bridge_callbacks.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_ladspa_bridge_callbacks.obj `if test -f 'src/ags/X/machine/ags_ladspa_bridge_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_ladspa_bridge_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_ladspa_bridge_callbacks.c'; fi`
+
+gsequencer-ags_ladspa_bridge.o: src/ags/X/machine/ags_ladspa_bridge.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_ladspa_bridge.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_ladspa_bridge.Tpo -c -o gsequencer-ags_ladspa_bridge.o `test -f 'src/ags/X/machine/ags_ladspa_bridge.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_ladspa_bridge.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_ladspa_bridge.Tpo $(DEPDIR)/gsequencer-ags_ladspa_bridge.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_ladspa_bridge.c' object='gsequencer-ags_ladspa_bridge.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_ladspa_bridge.o `test -f 'src/ags/X/machine/ags_ladspa_bridge.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_ladspa_bridge.c
+
+gsequencer-ags_ladspa_bridge.obj: src/ags/X/machine/ags_ladspa_bridge.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_ladspa_bridge.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_ladspa_bridge.Tpo -c -o gsequencer-ags_ladspa_bridge.obj `if test -f 'src/ags/X/machine/ags_ladspa_bridge.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_ladspa_bridge.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_ladspa_bridge.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_ladspa_bridge.Tpo $(DEPDIR)/gsequencer-ags_ladspa_bridge.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_ladspa_bridge.c' object='gsequencer-ags_ladspa_bridge.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_ladspa_bridge.obj `if test -f 'src/ags/X/machine/ags_ladspa_bridge.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_ladspa_bridge.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_ladspa_bridge.c'; fi`
+
+gsequencer-ags_matrix_bridge_callbacks.o: src/ags/X/machine/ags_matrix_bridge_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_matrix_bridge_callbacks.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_matrix_bridge_callbacks.Tpo -c -o gsequencer-ags_matrix_bridge_callbacks.o `test -f 'src/ags/X/machine/ags_matrix_bridge_callbacks.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_matrix_bridge_callbacks.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_matrix_bridge_callbacks.Tpo $(DEPDIR)/gsequencer-ags_matrix_bridge_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_matrix_bridge_callbacks.c' object='gsequencer-ags_matrix_bridge_callbacks.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_matrix_bridge_callbacks.o `test -f 'src/ags/X/machine/ags_matrix_bridge_callbacks.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_matrix_bridge_callbacks.c
+
+gsequencer-ags_matrix_bridge_callbacks.obj: src/ags/X/machine/ags_matrix_bridge_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_matrix_bridge_callbacks.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_matrix_bridge_callbacks.Tpo -c -o gsequencer-ags_matrix_bridge_callbacks.obj `if test -f 'src/ags/X/machine/ags_matrix_bridge_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_matrix_bridge_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_matrix_bridge_callbacks.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_matrix_bridge_callbacks.Tpo $(DEPDIR)/gsequencer-ags_matrix_bridge_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_matrix_bridge_callbacks.c' object='gsequencer-ags_matrix_bridge_callbacks.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_matrix_bridge_callbacks.obj `if test -f 'src/ags/X/machine/ags_matrix_bridge_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_matrix_bridge_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_matrix_bridge_callbacks.c'; fi`
+
+gsequencer-ags_matrix_bridge.o: src/ags/X/machine/ags_matrix_bridge.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_matrix_bridge.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_matrix_bridge.Tpo -c -o gsequencer-ags_matrix_bridge.o `test -f 'src/ags/X/machine/ags_matrix_bridge.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_matrix_bridge.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_matrix_bridge.Tpo $(DEPDIR)/gsequencer-ags_matrix_bridge.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_matrix_bridge.c' object='gsequencer-ags_matrix_bridge.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_matrix_bridge.o `test -f 'src/ags/X/machine/ags_matrix_bridge.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_matrix_bridge.c
+
+gsequencer-ags_matrix_bridge.obj: src/ags/X/machine/ags_matrix_bridge.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_matrix_bridge.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_matrix_bridge.Tpo -c -o gsequencer-ags_matrix_bridge.obj `if test -f 'src/ags/X/machine/ags_matrix_bridge.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_matrix_bridge.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_matrix_bridge.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_matrix_bridge.Tpo $(DEPDIR)/gsequencer-ags_matrix_bridge.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_matrix_bridge.c' object='gsequencer-ags_matrix_bridge.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_matrix_bridge.obj `if test -f 'src/ags/X/machine/ags_matrix_bridge.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_matrix_bridge.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_matrix_bridge.c'; fi`
+
+gsequencer-ags_matrix_bulk_input_callbacks.o: src/ags/X/machine/ags_matrix_bulk_input_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_matrix_bulk_input_callbacks.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_matrix_bulk_input_callbacks.Tpo -c -o gsequencer-ags_matrix_bulk_input_callbacks.o `test -f 'src/ags/X/machine/ags_matrix_bulk_input_callbacks.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_matrix_bulk_input_callbacks.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_matrix_bulk_input_callbacks.Tpo $(DEPDIR)/gsequencer-ags_matrix_bulk_input_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_matrix_bulk_input_callbacks.c' object='gsequencer-ags_matrix_bulk_input_callbacks.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_matrix_bulk_input_callbacks.o `test -f 'src/ags/X/machine/ags_matrix_bulk_input_callbacks.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_matrix_bulk_input_callbacks.c
+
+gsequencer-ags_matrix_bulk_input_callbacks.obj: src/ags/X/machine/ags_matrix_bulk_input_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_matrix_bulk_input_callbacks.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_matrix_bulk_input_callbacks.Tpo -c -o gsequencer-ags_matrix_bulk_input_callbacks.obj `if test -f 'src/ags/X/machine/ags_matrix_bulk_input_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_matrix_bulk_input_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_matrix_bulk_input_callbacks.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_matrix_bulk_input_callbacks.Tpo $(DEPDIR)/gsequencer-ags_matrix_bulk_input_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_matrix_bulk_input_callbacks.c' object='gsequencer-ags_matrix_bulk_input_callbacks.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_matrix_bulk_input_callbacks.obj `if test -f 'src/ags/X/machine/ags_matrix_bulk_input_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_matrix_bulk_input_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_matrix_bulk_input_callbacks.c'; fi`
+
+gsequencer-ags_matrix_bulk_input.o: src/ags/X/machine/ags_matrix_bulk_input.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_matrix_bulk_input.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_matrix_bulk_input.Tpo -c -o gsequencer-ags_matrix_bulk_input.o `test -f 'src/ags/X/machine/ags_matrix_bulk_input.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_matrix_bulk_input.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_matrix_bulk_input.Tpo $(DEPDIR)/gsequencer-ags_matrix_bulk_input.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_matrix_bulk_input.c' object='gsequencer-ags_matrix_bulk_input.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_matrix_bulk_input.o `test -f 'src/ags/X/machine/ags_matrix_bulk_input.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_matrix_bulk_input.c
+
+gsequencer-ags_matrix_bulk_input.obj: src/ags/X/machine/ags_matrix_bulk_input.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_matrix_bulk_input.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_matrix_bulk_input.Tpo -c -o gsequencer-ags_matrix_bulk_input.obj `if test -f 'src/ags/X/machine/ags_matrix_bulk_input.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_matrix_bulk_input.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_matrix_bulk_input.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_matrix_bulk_input.Tpo $(DEPDIR)/gsequencer-ags_matrix_bulk_input.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_matrix_bulk_input.c' object='gsequencer-ags_matrix_bulk_input.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_matrix_bulk_input.obj `if test -f 'src/ags/X/machine/ags_matrix_bulk_input.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_matrix_bulk_input.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_matrix_bulk_input.c'; fi`
+
+gsequencer-ags_matrix_callbacks.o: src/ags/X/machine/ags_matrix_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_matrix_callbacks.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_matrix_callbacks.Tpo -c -o gsequencer-ags_matrix_callbacks.o `test -f 'src/ags/X/machine/ags_matrix_callbacks.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_matrix_callbacks.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_matrix_callbacks.Tpo $(DEPDIR)/gsequencer-ags_matrix_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_matrix_callbacks.c' object='gsequencer-ags_matrix_callbacks.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_matrix_callbacks.o `test -f 'src/ags/X/machine/ags_matrix_callbacks.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_matrix_callbacks.c
+
+gsequencer-ags_matrix_callbacks.obj: src/ags/X/machine/ags_matrix_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_matrix_callbacks.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_matrix_callbacks.Tpo -c -o gsequencer-ags_matrix_callbacks.obj `if test -f 'src/ags/X/machine/ags_matrix_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_matrix_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_matrix_callbacks.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_matrix_callbacks.Tpo $(DEPDIR)/gsequencer-ags_matrix_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_matrix_callbacks.c' object='gsequencer-ags_matrix_callbacks.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_matrix_callbacks.obj `if test -f 'src/ags/X/machine/ags_matrix_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_matrix_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_matrix_callbacks.c'; fi`
+
+gsequencer-ags_matrix.o: src/ags/X/machine/ags_matrix.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_matrix.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_matrix.Tpo -c -o gsequencer-ags_matrix.o `test -f 'src/ags/X/machine/ags_matrix.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_matrix.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_matrix.Tpo $(DEPDIR)/gsequencer-ags_matrix.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_matrix.c' object='gsequencer-ags_matrix.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_matrix.o `test -f 'src/ags/X/machine/ags_matrix.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_matrix.c
+
+gsequencer-ags_matrix.obj: src/ags/X/machine/ags_matrix.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_matrix.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_matrix.Tpo -c -o gsequencer-ags_matrix.obj `if test -f 'src/ags/X/machine/ags_matrix.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_matrix.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_matrix.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_matrix.Tpo $(DEPDIR)/gsequencer-ags_matrix.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_matrix.c' object='gsequencer-ags_matrix.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_matrix.obj `if test -f 'src/ags/X/machine/ags_matrix.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_matrix.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_matrix.c'; fi`
+
+gsequencer-ags_mixer_callbacks.o: src/ags/X/machine/ags_mixer_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_mixer_callbacks.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_mixer_callbacks.Tpo -c -o gsequencer-ags_mixer_callbacks.o `test -f 'src/ags/X/machine/ags_mixer_callbacks.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_mixer_callbacks.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_mixer_callbacks.Tpo $(DEPDIR)/gsequencer-ags_mixer_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_mixer_callbacks.c' object='gsequencer-ags_mixer_callbacks.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_mixer_callbacks.o `test -f 'src/ags/X/machine/ags_mixer_callbacks.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_mixer_callbacks.c
+
+gsequencer-ags_mixer_callbacks.obj: src/ags/X/machine/ags_mixer_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_mixer_callbacks.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_mixer_callbacks.Tpo -c -o gsequencer-ags_mixer_callbacks.obj `if test -f 'src/ags/X/machine/ags_mixer_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_mixer_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_mixer_callbacks.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_mixer_callbacks.Tpo $(DEPDIR)/gsequencer-ags_mixer_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_mixer_callbacks.c' object='gsequencer-ags_mixer_callbacks.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_mixer_callbacks.obj `if test -f 'src/ags/X/machine/ags_mixer_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_mixer_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_mixer_callbacks.c'; fi`
+
+gsequencer-ags_mixer.o: src/ags/X/machine/ags_mixer.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_mixer.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_mixer.Tpo -c -o gsequencer-ags_mixer.o `test -f 'src/ags/X/machine/ags_mixer.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_mixer.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_mixer.Tpo $(DEPDIR)/gsequencer-ags_mixer.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_mixer.c' object='gsequencer-ags_mixer.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_mixer.o `test -f 'src/ags/X/machine/ags_mixer.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_mixer.c
+
+gsequencer-ags_mixer.obj: src/ags/X/machine/ags_mixer.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_mixer.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_mixer.Tpo -c -o gsequencer-ags_mixer.obj `if test -f 'src/ags/X/machine/ags_mixer.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_mixer.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_mixer.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_mixer.Tpo $(DEPDIR)/gsequencer-ags_mixer.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_mixer.c' object='gsequencer-ags_mixer.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_mixer.obj `if test -f 'src/ags/X/machine/ags_mixer.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_mixer.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_mixer.c'; fi`
+
+gsequencer-ags_mixer_input_line.o: src/ags/X/machine/ags_mixer_input_line.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_mixer_input_line.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_mixer_input_line.Tpo -c -o gsequencer-ags_mixer_input_line.o `test -f 'src/ags/X/machine/ags_mixer_input_line.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_mixer_input_line.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_mixer_input_line.Tpo $(DEPDIR)/gsequencer-ags_mixer_input_line.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_mixer_input_line.c' object='gsequencer-ags_mixer_input_line.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_mixer_input_line.o `test -f 'src/ags/X/machine/ags_mixer_input_line.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_mixer_input_line.c
+
+gsequencer-ags_mixer_input_line.obj: src/ags/X/machine/ags_mixer_input_line.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_mixer_input_line.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_mixer_input_line.Tpo -c -o gsequencer-ags_mixer_input_line.obj `if test -f 'src/ags/X/machine/ags_mixer_input_line.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_mixer_input_line.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_mixer_input_line.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_mixer_input_line.Tpo $(DEPDIR)/gsequencer-ags_mixer_input_line.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_mixer_input_line.c' object='gsequencer-ags_mixer_input_line.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_mixer_input_line.obj `if test -f 'src/ags/X/machine/ags_mixer_input_line.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_mixer_input_line.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_mixer_input_line.c'; fi`
+
+gsequencer-ags_mixer_input_pad.o: src/ags/X/machine/ags_mixer_input_pad.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_mixer_input_pad.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_mixer_input_pad.Tpo -c -o gsequencer-ags_mixer_input_pad.o `test -f 'src/ags/X/machine/ags_mixer_input_pad.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_mixer_input_pad.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_mixer_input_pad.Tpo $(DEPDIR)/gsequencer-ags_mixer_input_pad.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_mixer_input_pad.c' object='gsequencer-ags_mixer_input_pad.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_mixer_input_pad.o `test -f 'src/ags/X/machine/ags_mixer_input_pad.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_mixer_input_pad.c
+
+gsequencer-ags_mixer_input_pad.obj: src/ags/X/machine/ags_mixer_input_pad.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_mixer_input_pad.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_mixer_input_pad.Tpo -c -o gsequencer-ags_mixer_input_pad.obj `if test -f 'src/ags/X/machine/ags_mixer_input_pad.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_mixer_input_pad.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_mixer_input_pad.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_mixer_input_pad.Tpo $(DEPDIR)/gsequencer-ags_mixer_input_pad.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_mixer_input_pad.c' object='gsequencer-ags_mixer_input_pad.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_mixer_input_pad.obj `if test -f 'src/ags/X/machine/ags_mixer_input_pad.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_mixer_input_pad.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_mixer_input_pad.c'; fi`
+
+gsequencer-ags_oscillator_callbacks.o: src/ags/X/machine/ags_oscillator_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_oscillator_callbacks.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_oscillator_callbacks.Tpo -c -o gsequencer-ags_oscillator_callbacks.o `test -f 'src/ags/X/machine/ags_oscillator_callbacks.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_oscillator_callbacks.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_oscillator_callbacks.Tpo $(DEPDIR)/gsequencer-ags_oscillator_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_oscillator_callbacks.c' object='gsequencer-ags_oscillator_callbacks.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_oscillator_callbacks.o `test -f 'src/ags/X/machine/ags_oscillator_callbacks.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_oscillator_callbacks.c
+
+gsequencer-ags_oscillator_callbacks.obj: src/ags/X/machine/ags_oscillator_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_oscillator_callbacks.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_oscillator_callbacks.Tpo -c -o gsequencer-ags_oscillator_callbacks.obj `if test -f 'src/ags/X/machine/ags_oscillator_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_oscillator_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_oscillator_callbacks.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_oscillator_callbacks.Tpo $(DEPDIR)/gsequencer-ags_oscillator_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_oscillator_callbacks.c' object='gsequencer-ags_oscillator_callbacks.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_oscillator_callbacks.obj `if test -f 'src/ags/X/machine/ags_oscillator_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_oscillator_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_oscillator_callbacks.c'; fi`
+
+gsequencer-ags_oscillator.o: src/ags/X/machine/ags_oscillator.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_oscillator.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_oscillator.Tpo -c -o gsequencer-ags_oscillator.o `test -f 'src/ags/X/machine/ags_oscillator.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_oscillator.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_oscillator.Tpo $(DEPDIR)/gsequencer-ags_oscillator.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_oscillator.c' object='gsequencer-ags_oscillator.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_oscillator.o `test -f 'src/ags/X/machine/ags_oscillator.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_oscillator.c
+
+gsequencer-ags_oscillator.obj: src/ags/X/machine/ags_oscillator.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_oscillator.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_oscillator.Tpo -c -o gsequencer-ags_oscillator.obj `if test -f 'src/ags/X/machine/ags_oscillator.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_oscillator.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_oscillator.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_oscillator.Tpo $(DEPDIR)/gsequencer-ags_oscillator.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_oscillator.c' object='gsequencer-ags_oscillator.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_oscillator.obj `if test -f 'src/ags/X/machine/ags_oscillator.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_oscillator.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_oscillator.c'; fi`
+
+gsequencer-ags_panel_callbacks.o: src/ags/X/machine/ags_panel_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_panel_callbacks.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_panel_callbacks.Tpo -c -o gsequencer-ags_panel_callbacks.o `test -f 'src/ags/X/machine/ags_panel_callbacks.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_panel_callbacks.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_panel_callbacks.Tpo $(DEPDIR)/gsequencer-ags_panel_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_panel_callbacks.c' object='gsequencer-ags_panel_callbacks.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_panel_callbacks.o `test -f 'src/ags/X/machine/ags_panel_callbacks.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_panel_callbacks.c
+
+gsequencer-ags_panel_callbacks.obj: src/ags/X/machine/ags_panel_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_panel_callbacks.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_panel_callbacks.Tpo -c -o gsequencer-ags_panel_callbacks.obj `if test -f 'src/ags/X/machine/ags_panel_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_panel_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_panel_callbacks.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_panel_callbacks.Tpo $(DEPDIR)/gsequencer-ags_panel_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_panel_callbacks.c' object='gsequencer-ags_panel_callbacks.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_panel_callbacks.obj `if test -f 'src/ags/X/machine/ags_panel_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_panel_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_panel_callbacks.c'; fi`
+
+gsequencer-ags_panel.o: src/ags/X/machine/ags_panel.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_panel.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_panel.Tpo -c -o gsequencer-ags_panel.o `test -f 'src/ags/X/machine/ags_panel.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_panel.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_panel.Tpo $(DEPDIR)/gsequencer-ags_panel.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_panel.c' object='gsequencer-ags_panel.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_panel.o `test -f 'src/ags/X/machine/ags_panel.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_panel.c
+
+gsequencer-ags_panel.obj: src/ags/X/machine/ags_panel.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_panel.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_panel.Tpo -c -o gsequencer-ags_panel.obj `if test -f 'src/ags/X/machine/ags_panel.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_panel.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_panel.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_panel.Tpo $(DEPDIR)/gsequencer-ags_panel.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_panel.c' object='gsequencer-ags_panel.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_panel.obj `if test -f 'src/ags/X/machine/ags_panel.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_panel.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_panel.c'; fi`
+
+gsequencer-ags_panel_input_line.o: src/ags/X/machine/ags_panel_input_line.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_panel_input_line.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_panel_input_line.Tpo -c -o gsequencer-ags_panel_input_line.o `test -f 'src/ags/X/machine/ags_panel_input_line.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_panel_input_line.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_panel_input_line.Tpo $(DEPDIR)/gsequencer-ags_panel_input_line.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_panel_input_line.c' object='gsequencer-ags_panel_input_line.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_panel_input_line.o `test -f 'src/ags/X/machine/ags_panel_input_line.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_panel_input_line.c
+
+gsequencer-ags_panel_input_line.obj: src/ags/X/machine/ags_panel_input_line.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_panel_input_line.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_panel_input_line.Tpo -c -o gsequencer-ags_panel_input_line.obj `if test -f 'src/ags/X/machine/ags_panel_input_line.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_panel_input_line.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_panel_input_line.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_panel_input_line.Tpo $(DEPDIR)/gsequencer-ags_panel_input_line.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_panel_input_line.c' object='gsequencer-ags_panel_input_line.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_panel_input_line.obj `if test -f 'src/ags/X/machine/ags_panel_input_line.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_panel_input_line.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_panel_input_line.c'; fi`
+
+gsequencer-ags_panel_input_pad.o: src/ags/X/machine/ags_panel_input_pad.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_panel_input_pad.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_panel_input_pad.Tpo -c -o gsequencer-ags_panel_input_pad.o `test -f 'src/ags/X/machine/ags_panel_input_pad.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_panel_input_pad.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_panel_input_pad.Tpo $(DEPDIR)/gsequencer-ags_panel_input_pad.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_panel_input_pad.c' object='gsequencer-ags_panel_input_pad.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_panel_input_pad.o `test -f 'src/ags/X/machine/ags_panel_input_pad.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_panel_input_pad.c
+
+gsequencer-ags_panel_input_pad.obj: src/ags/X/machine/ags_panel_input_pad.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_panel_input_pad.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_panel_input_pad.Tpo -c -o gsequencer-ags_panel_input_pad.obj `if test -f 'src/ags/X/machine/ags_panel_input_pad.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_panel_input_pad.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_panel_input_pad.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_panel_input_pad.Tpo $(DEPDIR)/gsequencer-ags_panel_input_pad.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_panel_input_pad.c' object='gsequencer-ags_panel_input_pad.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_panel_input_pad.obj `if test -f 'src/ags/X/machine/ags_panel_input_pad.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_panel_input_pad.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_panel_input_pad.c'; fi`
+
+gsequencer-ags_synth_bridge_callbacks.o: src/ags/X/machine/ags_synth_bridge_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_synth_bridge_callbacks.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_synth_bridge_callbacks.Tpo -c -o gsequencer-ags_synth_bridge_callbacks.o `test -f 'src/ags/X/machine/ags_synth_bridge_callbacks.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_synth_bridge_callbacks.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_synth_bridge_callbacks.Tpo $(DEPDIR)/gsequencer-ags_synth_bridge_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_synth_bridge_callbacks.c' object='gsequencer-ags_synth_bridge_callbacks.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_synth_bridge_callbacks.o `test -f 'src/ags/X/machine/ags_synth_bridge_callbacks.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_synth_bridge_callbacks.c
+
+gsequencer-ags_synth_bridge_callbacks.obj: src/ags/X/machine/ags_synth_bridge_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_synth_bridge_callbacks.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_synth_bridge_callbacks.Tpo -c -o gsequencer-ags_synth_bridge_callbacks.obj `if test -f 'src/ags/X/machine/ags_synth_bridge_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_synth_bridge_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_synth_bridge_callbacks.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_synth_bridge_callbacks.Tpo $(DEPDIR)/gsequencer-ags_synth_bridge_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_synth_bridge_callbacks.c' object='gsequencer-ags_synth_bridge_callbacks.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_synth_bridge_callbacks.obj `if test -f 'src/ags/X/machine/ags_synth_bridge_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_synth_bridge_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_synth_bridge_callbacks.c'; fi`
+
+gsequencer-ags_synth_bridge.o: src/ags/X/machine/ags_synth_bridge.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_synth_bridge.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_synth_bridge.Tpo -c -o gsequencer-ags_synth_bridge.o `test -f 'src/ags/X/machine/ags_synth_bridge.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_synth_bridge.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_synth_bridge.Tpo $(DEPDIR)/gsequencer-ags_synth_bridge.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_synth_bridge.c' object='gsequencer-ags_synth_bridge.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_synth_bridge.o `test -f 'src/ags/X/machine/ags_synth_bridge.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_synth_bridge.c
+
+gsequencer-ags_synth_bridge.obj: src/ags/X/machine/ags_synth_bridge.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_synth_bridge.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_synth_bridge.Tpo -c -o gsequencer-ags_synth_bridge.obj `if test -f 'src/ags/X/machine/ags_synth_bridge.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_synth_bridge.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_synth_bridge.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_synth_bridge.Tpo $(DEPDIR)/gsequencer-ags_synth_bridge.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_synth_bridge.c' object='gsequencer-ags_synth_bridge.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_synth_bridge.obj `if test -f 'src/ags/X/machine/ags_synth_bridge.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_synth_bridge.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_synth_bridge.c'; fi`
+
+gsequencer-ags_synth_bulk_output_callbacks.o: src/ags/X/machine/ags_synth_bulk_output_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_synth_bulk_output_callbacks.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_synth_bulk_output_callbacks.Tpo -c -o gsequencer-ags_synth_bulk_output_callbacks.o `test -f 'src/ags/X/machine/ags_synth_bulk_output_callbacks.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_synth_bulk_output_callbacks.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_synth_bulk_output_callbacks.Tpo $(DEPDIR)/gsequencer-ags_synth_bulk_output_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_synth_bulk_output_callbacks.c' object='gsequencer-ags_synth_bulk_output_callbacks.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_synth_bulk_output_callbacks.o `test -f 'src/ags/X/machine/ags_synth_bulk_output_callbacks.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_synth_bulk_output_callbacks.c
+
+gsequencer-ags_synth_bulk_output_callbacks.obj: src/ags/X/machine/ags_synth_bulk_output_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_synth_bulk_output_callbacks.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_synth_bulk_output_callbacks.Tpo -c -o gsequencer-ags_synth_bulk_output_callbacks.obj `if test -f 'src/ags/X/machine/ags_synth_bulk_output_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_synth_bulk_output_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_synth_bulk_output_callbacks.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_synth_bulk_output_callbacks.Tpo $(DEPDIR)/gsequencer-ags_synth_bulk_output_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_synth_bulk_output_callbacks.c' object='gsequencer-ags_synth_bulk_output_callbacks.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_synth_bulk_output_callbacks.obj `if test -f 'src/ags/X/machine/ags_synth_bulk_output_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_synth_bulk_output_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_synth_bulk_output_callbacks.c'; fi`
+
+gsequencer-ags_synth_bulk_output.o: src/ags/X/machine/ags_synth_bulk_output.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_synth_bulk_output.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_synth_bulk_output.Tpo -c -o gsequencer-ags_synth_bulk_output.o `test -f 'src/ags/X/machine/ags_synth_bulk_output.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_synth_bulk_output.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_synth_bulk_output.Tpo $(DEPDIR)/gsequencer-ags_synth_bulk_output.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_synth_bulk_output.c' object='gsequencer-ags_synth_bulk_output.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_synth_bulk_output.o `test -f 'src/ags/X/machine/ags_synth_bulk_output.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_synth_bulk_output.c
+
+gsequencer-ags_synth_bulk_output.obj: src/ags/X/machine/ags_synth_bulk_output.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_synth_bulk_output.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_synth_bulk_output.Tpo -c -o gsequencer-ags_synth_bulk_output.obj `if test -f 'src/ags/X/machine/ags_synth_bulk_output.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_synth_bulk_output.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_synth_bulk_output.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_synth_bulk_output.Tpo $(DEPDIR)/gsequencer-ags_synth_bulk_output.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_synth_bulk_output.c' object='gsequencer-ags_synth_bulk_output.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_synth_bulk_output.obj `if test -f 'src/ags/X/machine/ags_synth_bulk_output.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_synth_bulk_output.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_synth_bulk_output.c'; fi`
+
+gsequencer-ags_synth_callbacks.o: src/ags/X/machine/ags_synth_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_synth_callbacks.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_synth_callbacks.Tpo -c -o gsequencer-ags_synth_callbacks.o `test -f 'src/ags/X/machine/ags_synth_callbacks.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_synth_callbacks.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_synth_callbacks.Tpo $(DEPDIR)/gsequencer-ags_synth_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_synth_callbacks.c' object='gsequencer-ags_synth_callbacks.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_synth_callbacks.o `test -f 'src/ags/X/machine/ags_synth_callbacks.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_synth_callbacks.c
+
+gsequencer-ags_synth_callbacks.obj: src/ags/X/machine/ags_synth_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_synth_callbacks.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_synth_callbacks.Tpo -c -o gsequencer-ags_synth_callbacks.obj `if test -f 'src/ags/X/machine/ags_synth_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_synth_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_synth_callbacks.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_synth_callbacks.Tpo $(DEPDIR)/gsequencer-ags_synth_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_synth_callbacks.c' object='gsequencer-ags_synth_callbacks.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_synth_callbacks.obj `if test -f 'src/ags/X/machine/ags_synth_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_synth_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_synth_callbacks.c'; fi`
+
+gsequencer-ags_synth.o: src/ags/X/machine/ags_synth.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_synth.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_synth.Tpo -c -o gsequencer-ags_synth.o `test -f 'src/ags/X/machine/ags_synth.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_synth.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_synth.Tpo $(DEPDIR)/gsequencer-ags_synth.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_synth.c' object='gsequencer-ags_synth.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_synth.o `test -f 'src/ags/X/machine/ags_synth.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_synth.c
+
+gsequencer-ags_synth.obj: src/ags/X/machine/ags_synth.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_synth.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_synth.Tpo -c -o gsequencer-ags_synth.obj `if test -f 'src/ags/X/machine/ags_synth.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_synth.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_synth.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_synth.Tpo $(DEPDIR)/gsequencer-ags_synth.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_synth.c' object='gsequencer-ags_synth.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_synth.obj `if test -f 'src/ags/X/machine/ags_synth.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_synth.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_synth.c'; fi`
+
+gsequencer-ags_synth_input_line.o: src/ags/X/machine/ags_synth_input_line.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_synth_input_line.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_synth_input_line.Tpo -c -o gsequencer-ags_synth_input_line.o `test -f 'src/ags/X/machine/ags_synth_input_line.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_synth_input_line.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_synth_input_line.Tpo $(DEPDIR)/gsequencer-ags_synth_input_line.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_synth_input_line.c' object='gsequencer-ags_synth_input_line.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_synth_input_line.o `test -f 'src/ags/X/machine/ags_synth_input_line.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_synth_input_line.c
+
+gsequencer-ags_synth_input_line.obj: src/ags/X/machine/ags_synth_input_line.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_synth_input_line.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_synth_input_line.Tpo -c -o gsequencer-ags_synth_input_line.obj `if test -f 'src/ags/X/machine/ags_synth_input_line.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_synth_input_line.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_synth_input_line.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_synth_input_line.Tpo $(DEPDIR)/gsequencer-ags_synth_input_line.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_synth_input_line.c' object='gsequencer-ags_synth_input_line.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_synth_input_line.obj `if test -f 'src/ags/X/machine/ags_synth_input_line.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_synth_input_line.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_synth_input_line.c'; fi`
+
+gsequencer-ags_synth_input_pad.o: src/ags/X/machine/ags_synth_input_pad.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_synth_input_pad.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_synth_input_pad.Tpo -c -o gsequencer-ags_synth_input_pad.o `test -f 'src/ags/X/machine/ags_synth_input_pad.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_synth_input_pad.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_synth_input_pad.Tpo $(DEPDIR)/gsequencer-ags_synth_input_pad.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_synth_input_pad.c' object='gsequencer-ags_synth_input_pad.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_synth_input_pad.o `test -f 'src/ags/X/machine/ags_synth_input_pad.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_synth_input_pad.c
+
+gsequencer-ags_synth_input_pad.obj: src/ags/X/machine/ags_synth_input_pad.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_synth_input_pad.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_synth_input_pad.Tpo -c -o gsequencer-ags_synth_input_pad.obj `if test -f 'src/ags/X/machine/ags_synth_input_pad.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_synth_input_pad.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_synth_input_pad.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_synth_input_pad.Tpo $(DEPDIR)/gsequencer-ags_synth_input_pad.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_synth_input_pad.c' object='gsequencer-ags_synth_input_pad.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_synth_input_pad.obj `if test -f 'src/ags/X/machine/ags_synth_input_pad.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_synth_input_pad.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_synth_input_pad.c'; fi`
+
+gsequencer-ags_synth_output_line_callbacks.o: src/ags/X/machine/ags_synth_output_line_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_synth_output_line_callbacks.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_synth_output_line_callbacks.Tpo -c -o gsequencer-ags_synth_output_line_callbacks.o `test -f 'src/ags/X/machine/ags_synth_output_line_callbacks.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_synth_output_line_callbacks.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_synth_output_line_callbacks.Tpo $(DEPDIR)/gsequencer-ags_synth_output_line_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_synth_output_line_callbacks.c' object='gsequencer-ags_synth_output_line_callbacks.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_synth_output_line_callbacks.o `test -f 'src/ags/X/machine/ags_synth_output_line_callbacks.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_synth_output_line_callbacks.c
+
+gsequencer-ags_synth_output_line_callbacks.obj: src/ags/X/machine/ags_synth_output_line_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_synth_output_line_callbacks.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_synth_output_line_callbacks.Tpo -c -o gsequencer-ags_synth_output_line_callbacks.obj `if test -f 'src/ags/X/machine/ags_synth_output_line_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_synth_output_line_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_synth_output_line_callbacks.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_synth_output_line_callbacks.Tpo $(DEPDIR)/gsequencer-ags_synth_output_line_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_synth_output_line_callbacks.c' object='gsequencer-ags_synth_output_line_callbacks.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_synth_output_line_callbacks.obj `if test -f 'src/ags/X/machine/ags_synth_output_line_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_synth_output_line_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_synth_output_line_callbacks.c'; fi`
+
+gsequencer-ags_synth_output_line.o: src/ags/X/machine/ags_synth_output_line.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_synth_output_line.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_synth_output_line.Tpo -c -o gsequencer-ags_synth_output_line.o `test -f 'src/ags/X/machine/ags_synth_output_line.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_synth_output_line.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_synth_output_line.Tpo $(DEPDIR)/gsequencer-ags_synth_output_line.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_synth_output_line.c' object='gsequencer-ags_synth_output_line.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_synth_output_line.o `test -f 'src/ags/X/machine/ags_synth_output_line.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_synth_output_line.c
+
+gsequencer-ags_synth_output_line.obj: src/ags/X/machine/ags_synth_output_line.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_synth_output_line.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_synth_output_line.Tpo -c -o gsequencer-ags_synth_output_line.obj `if test -f 'src/ags/X/machine/ags_synth_output_line.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_synth_output_line.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_synth_output_line.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_synth_output_line.Tpo $(DEPDIR)/gsequencer-ags_synth_output_line.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_synth_output_line.c' object='gsequencer-ags_synth_output_line.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_synth_output_line.obj `if test -f 'src/ags/X/machine/ags_synth_output_line.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_synth_output_line.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_synth_output_line.c'; fi`
+
+gsequencer-ags_synth_output_pad_callbacks.o: src/ags/X/machine/ags_synth_output_pad_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_synth_output_pad_callbacks.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_synth_output_pad_callbacks.Tpo -c -o gsequencer-ags_synth_output_pad_callbacks.o `test -f 'src/ags/X/machine/ags_synth_output_pad_callbacks.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_synth_output_pad_callbacks.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_synth_output_pad_callbacks.Tpo $(DEPDIR)/gsequencer-ags_synth_output_pad_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_synth_output_pad_callbacks.c' object='gsequencer-ags_synth_output_pad_callbacks.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_synth_output_pad_callbacks.o `test -f 'src/ags/X/machine/ags_synth_output_pad_callbacks.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_synth_output_pad_callbacks.c
+
+gsequencer-ags_synth_output_pad_callbacks.obj: src/ags/X/machine/ags_synth_output_pad_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_synth_output_pad_callbacks.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_synth_output_pad_callbacks.Tpo -c -o gsequencer-ags_synth_output_pad_callbacks.obj `if test -f 'src/ags/X/machine/ags_synth_output_pad_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_synth_output_pad_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_synth_output_pad_callbacks.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_synth_output_pad_callbacks.Tpo $(DEPDIR)/gsequencer-ags_synth_output_pad_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_synth_output_pad_callbacks.c' object='gsequencer-ags_synth_output_pad_callbacks.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_synth_output_pad_callbacks.obj `if test -f 'src/ags/X/machine/ags_synth_output_pad_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_synth_output_pad_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_synth_output_pad_callbacks.c'; fi`
+
+gsequencer-ags_synth_output_pad.o: src/ags/X/machine/ags_synth_output_pad.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_synth_output_pad.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_synth_output_pad.Tpo -c -o gsequencer-ags_synth_output_pad.o `test -f 'src/ags/X/machine/ags_synth_output_pad.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_synth_output_pad.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_synth_output_pad.Tpo $(DEPDIR)/gsequencer-ags_synth_output_pad.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_synth_output_pad.c' object='gsequencer-ags_synth_output_pad.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_synth_output_pad.o `test -f 'src/ags/X/machine/ags_synth_output_pad.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_synth_output_pad.c
+
+gsequencer-ags_synth_output_pad.obj: src/ags/X/machine/ags_synth_output_pad.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_synth_output_pad.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_synth_output_pad.Tpo -c -o gsequencer-ags_synth_output_pad.obj `if test -f 'src/ags/X/machine/ags_synth_output_pad.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_synth_output_pad.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_synth_output_pad.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_synth_output_pad.Tpo $(DEPDIR)/gsequencer-ags_synth_output_pad.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_synth_output_pad.c' object='gsequencer-ags_synth_output_pad.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_synth_output_pad.obj `if test -f 'src/ags/X/machine/ags_synth_output_pad.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_synth_output_pad.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_synth_output_pad.c'; fi`
+
+gsequencer-ags_automation_area_callbacks.o: src/ags/X/editor/ags_automation_area_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_automation_area_callbacks.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_automation_area_callbacks.Tpo -c -o gsequencer-ags_automation_area_callbacks.o `test -f 'src/ags/X/editor/ags_automation_area_callbacks.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_automation_area_callbacks.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_automation_area_callbacks.Tpo $(DEPDIR)/gsequencer-ags_automation_area_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/editor/ags_automation_area_callbacks.c' object='gsequencer-ags_automation_area_callbacks.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_automation_area_callbacks.o `test -f 'src/ags/X/editor/ags_automation_area_callbacks.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_automation_area_callbacks.c
+
+gsequencer-ags_automation_area_callbacks.obj: src/ags/X/editor/ags_automation_area_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_automation_area_callbacks.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_automation_area_callbacks.Tpo -c -o gsequencer-ags_automation_area_callbacks.obj `if test -f 'src/ags/X/editor/ags_automation_area_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_automation_area_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_automation_area_callbacks.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_automation_area_callbacks.Tpo $(DEPDIR)/gsequencer-ags_automation_area_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/editor/ags_automation_area_callbacks.c' object='gsequencer-ags_automation_area_callbacks.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_automation_area_callbacks.obj `if test -f 'src/ags/X/editor/ags_automation_area_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_automation_area_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_automation_area_callbacks.c'; fi`
+
+gsequencer-ags_automation_area.o: src/ags/X/editor/ags_automation_area.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_automation_area.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_automation_area.Tpo -c -o gsequencer-ags_automation_area.o `test -f 'src/ags/X/editor/ags_automation_area.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_automation_area.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_automation_area.Tpo $(DEPDIR)/gsequencer-ags_automation_area.Po
+#	$(AM_V_CC)source='src/ags/X/editor/ags_automation_area.c' object='gsequencer-ags_automation_area.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_automation_area.o `test -f 'src/ags/X/editor/ags_automation_area.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_automation_area.c
+
+gsequencer-ags_automation_area.obj: src/ags/X/editor/ags_automation_area.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_automation_area.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_automation_area.Tpo -c -o gsequencer-ags_automation_area.obj `if test -f 'src/ags/X/editor/ags_automation_area.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_automation_area.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_automation_area.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_automation_area.Tpo $(DEPDIR)/gsequencer-ags_automation_area.Po
+#	$(AM_V_CC)source='src/ags/X/editor/ags_automation_area.c' object='gsequencer-ags_automation_area.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_automation_area.obj `if test -f 'src/ags/X/editor/ags_automation_area.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_automation_area.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_automation_area.c'; fi`
+
+gsequencer-ags_automation_edit_callbacks.o: src/ags/X/editor/ags_automation_edit_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_automation_edit_callbacks.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_automation_edit_callbacks.Tpo -c -o gsequencer-ags_automation_edit_callbacks.o `test -f 'src/ags/X/editor/ags_automation_edit_callbacks.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_automation_edit_callbacks.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_automation_edit_callbacks.Tpo $(DEPDIR)/gsequencer-ags_automation_edit_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/editor/ags_automation_edit_callbacks.c' object='gsequencer-ags_automation_edit_callbacks.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_automation_edit_callbacks.o `test -f 'src/ags/X/editor/ags_automation_edit_callbacks.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_automation_edit_callbacks.c
+
+gsequencer-ags_automation_edit_callbacks.obj: src/ags/X/editor/ags_automation_edit_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_automation_edit_callbacks.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_automation_edit_callbacks.Tpo -c -o gsequencer-ags_automation_edit_callbacks.obj `if test -f 'src/ags/X/editor/ags_automation_edit_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_automation_edit_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_automation_edit_callbacks.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_automation_edit_callbacks.Tpo $(DEPDIR)/gsequencer-ags_automation_edit_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/editor/ags_automation_edit_callbacks.c' object='gsequencer-ags_automation_edit_callbacks.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_automation_edit_callbacks.obj `if test -f 'src/ags/X/editor/ags_automation_edit_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_automation_edit_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_automation_edit_callbacks.c'; fi`
+
+gsequencer-ags_automation_edit.o: src/ags/X/editor/ags_automation_edit.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_automation_edit.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_automation_edit.Tpo -c -o gsequencer-ags_automation_edit.o `test -f 'src/ags/X/editor/ags_automation_edit.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_automation_edit.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_automation_edit.Tpo $(DEPDIR)/gsequencer-ags_automation_edit.Po
+#	$(AM_V_CC)source='src/ags/X/editor/ags_automation_edit.c' object='gsequencer-ags_automation_edit.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_automation_edit.o `test -f 'src/ags/X/editor/ags_automation_edit.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_automation_edit.c
+
+gsequencer-ags_automation_edit.obj: src/ags/X/editor/ags_automation_edit.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_automation_edit.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_automation_edit.Tpo -c -o gsequencer-ags_automation_edit.obj `if test -f 'src/ags/X/editor/ags_automation_edit.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_automation_edit.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_automation_edit.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_automation_edit.Tpo $(DEPDIR)/gsequencer-ags_automation_edit.Po
+#	$(AM_V_CC)source='src/ags/X/editor/ags_automation_edit.c' object='gsequencer-ags_automation_edit.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_automation_edit.obj `if test -f 'src/ags/X/editor/ags_automation_edit.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_automation_edit.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_automation_edit.c'; fi`
+
+gsequencer-ags_automation_toolbar_callbacks.o: src/ags/X/editor/ags_automation_toolbar_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_automation_toolbar_callbacks.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_automation_toolbar_callbacks.Tpo -c -o gsequencer-ags_automation_toolbar_callbacks.o `test -f 'src/ags/X/editor/ags_automation_toolbar_callbacks.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_automation_toolbar_callbacks.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_automation_toolbar_callbacks.Tpo $(DEPDIR)/gsequencer-ags_automation_toolbar_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/editor/ags_automation_toolbar_callbacks.c' object='gsequencer-ags_automation_toolbar_callbacks.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_automation_toolbar_callbacks.o `test -f 'src/ags/X/editor/ags_automation_toolbar_callbacks.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_automation_toolbar_callbacks.c
+
+gsequencer-ags_automation_toolbar_callbacks.obj: src/ags/X/editor/ags_automation_toolbar_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_automation_toolbar_callbacks.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_automation_toolbar_callbacks.Tpo -c -o gsequencer-ags_automation_toolbar_callbacks.obj `if test -f 'src/ags/X/editor/ags_automation_toolbar_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_automation_toolbar_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_automation_toolbar_callbacks.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_automation_toolbar_callbacks.Tpo $(DEPDIR)/gsequencer-ags_automation_toolbar_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/editor/ags_automation_toolbar_callbacks.c' object='gsequencer-ags_automation_toolbar_callbacks.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_automation_toolbar_callbacks.obj `if test -f 'src/ags/X/editor/ags_automation_toolbar_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_automation_toolbar_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_automation_toolbar_callbacks.c'; fi`
+
+gsequencer-ags_automation_toolbar.o: src/ags/X/editor/ags_automation_toolbar.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_automation_toolbar.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_automation_toolbar.Tpo -c -o gsequencer-ags_automation_toolbar.o `test -f 'src/ags/X/editor/ags_automation_toolbar.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_automation_toolbar.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_automation_toolbar.Tpo $(DEPDIR)/gsequencer-ags_automation_toolbar.Po
+#	$(AM_V_CC)source='src/ags/X/editor/ags_automation_toolbar.c' object='gsequencer-ags_automation_toolbar.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_automation_toolbar.o `test -f 'src/ags/X/editor/ags_automation_toolbar.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_automation_toolbar.c
+
+gsequencer-ags_automation_toolbar.obj: src/ags/X/editor/ags_automation_toolbar.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_automation_toolbar.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_automation_toolbar.Tpo -c -o gsequencer-ags_automation_toolbar.obj `if test -f 'src/ags/X/editor/ags_automation_toolbar.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_automation_toolbar.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_automation_toolbar.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_automation_toolbar.Tpo $(DEPDIR)/gsequencer-ags_automation_toolbar.Po
+#	$(AM_V_CC)source='src/ags/X/editor/ags_automation_toolbar.c' object='gsequencer-ags_automation_toolbar.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_automation_toolbar.obj `if test -f 'src/ags/X/editor/ags_automation_toolbar.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_automation_toolbar.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_automation_toolbar.c'; fi`
+
+gsequencer-ags_file_selection_callbacks.o: src/ags/X/editor/ags_file_selection_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_file_selection_callbacks.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_file_selection_callbacks.Tpo -c -o gsequencer-ags_file_selection_callbacks.o `test -f 'src/ags/X/editor/ags_file_selection_callbacks.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_file_selection_callbacks.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_file_selection_callbacks.Tpo $(DEPDIR)/gsequencer-ags_file_selection_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/editor/ags_file_selection_callbacks.c' object='gsequencer-ags_file_selection_callbacks.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_file_selection_callbacks.o `test -f 'src/ags/X/editor/ags_file_selection_callbacks.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_file_selection_callbacks.c
+
+gsequencer-ags_file_selection_callbacks.obj: src/ags/X/editor/ags_file_selection_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_file_selection_callbacks.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_file_selection_callbacks.Tpo -c -o gsequencer-ags_file_selection_callbacks.obj `if test -f 'src/ags/X/editor/ags_file_selection_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_file_selection_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_file_selection_callbacks.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_file_selection_callbacks.Tpo $(DEPDIR)/gsequencer-ags_file_selection_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/editor/ags_file_selection_callbacks.c' object='gsequencer-ags_file_selection_callbacks.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_file_selection_callbacks.obj `if test -f 'src/ags/X/editor/ags_file_selection_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_file_selection_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_file_selection_callbacks.c'; fi`
+
+gsequencer-ags_file_selection.o: src/ags/X/editor/ags_file_selection.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_file_selection.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_file_selection.Tpo -c -o gsequencer-ags_file_selection.o `test -f 'src/ags/X/editor/ags_file_selection.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_file_selection.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_file_selection.Tpo $(DEPDIR)/gsequencer-ags_file_selection.Po
+#	$(AM_V_CC)source='src/ags/X/editor/ags_file_selection.c' object='gsequencer-ags_file_selection.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_file_selection.o `test -f 'src/ags/X/editor/ags_file_selection.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_file_selection.c
+
+gsequencer-ags_file_selection.obj: src/ags/X/editor/ags_file_selection.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_file_selection.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_file_selection.Tpo -c -o gsequencer-ags_file_selection.obj `if test -f 'src/ags/X/editor/ags_file_selection.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_file_selection.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_file_selection.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_file_selection.Tpo $(DEPDIR)/gsequencer-ags_file_selection.Po
+#	$(AM_V_CC)source='src/ags/X/editor/ags_file_selection.c' object='gsequencer-ags_file_selection.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_file_selection.obj `if test -f 'src/ags/X/editor/ags_file_selection.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_file_selection.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_file_selection.c'; fi`
+
+gsequencer-ags_inline_player_callbacks.o: src/ags/X/editor/ags_inline_player_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_inline_player_callbacks.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_inline_player_callbacks.Tpo -c -o gsequencer-ags_inline_player_callbacks.o `test -f 'src/ags/X/editor/ags_inline_player_callbacks.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_inline_player_callbacks.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_inline_player_callbacks.Tpo $(DEPDIR)/gsequencer-ags_inline_player_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/editor/ags_inline_player_callbacks.c' object='gsequencer-ags_inline_player_callbacks.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_inline_player_callbacks.o `test -f 'src/ags/X/editor/ags_inline_player_callbacks.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_inline_player_callbacks.c
+
+gsequencer-ags_inline_player_callbacks.obj: src/ags/X/editor/ags_inline_player_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_inline_player_callbacks.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_inline_player_callbacks.Tpo -c -o gsequencer-ags_inline_player_callbacks.obj `if test -f 'src/ags/X/editor/ags_inline_player_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_inline_player_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_inline_player_callbacks.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_inline_player_callbacks.Tpo $(DEPDIR)/gsequencer-ags_inline_player_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/editor/ags_inline_player_callbacks.c' object='gsequencer-ags_inline_player_callbacks.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_inline_player_callbacks.obj `if test -f 'src/ags/X/editor/ags_inline_player_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_inline_player_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_inline_player_callbacks.c'; fi`
+
+gsequencer-ags_inline_player.o: src/ags/X/editor/ags_inline_player.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_inline_player.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_inline_player.Tpo -c -o gsequencer-ags_inline_player.o `test -f 'src/ags/X/editor/ags_inline_player.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_inline_player.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_inline_player.Tpo $(DEPDIR)/gsequencer-ags_inline_player.Po
+#	$(AM_V_CC)source='src/ags/X/editor/ags_inline_player.c' object='gsequencer-ags_inline_player.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_inline_player.o `test -f 'src/ags/X/editor/ags_inline_player.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_inline_player.c
+
+gsequencer-ags_inline_player.obj: src/ags/X/editor/ags_inline_player.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_inline_player.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_inline_player.Tpo -c -o gsequencer-ags_inline_player.obj `if test -f 'src/ags/X/editor/ags_inline_player.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_inline_player.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_inline_player.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_inline_player.Tpo $(DEPDIR)/gsequencer-ags_inline_player.Po
+#	$(AM_V_CC)source='src/ags/X/editor/ags_inline_player.c' object='gsequencer-ags_inline_player.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_inline_player.obj `if test -f 'src/ags/X/editor/ags_inline_player.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_inline_player.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_inline_player.c'; fi`
+
+gsequencer-ags_machine_radio_button.o: src/ags/X/editor/ags_machine_radio_button.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_machine_radio_button.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_machine_radio_button.Tpo -c -o gsequencer-ags_machine_radio_button.o `test -f 'src/ags/X/editor/ags_machine_radio_button.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_machine_radio_button.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_machine_radio_button.Tpo $(DEPDIR)/gsequencer-ags_machine_radio_button.Po
+#	$(AM_V_CC)source='src/ags/X/editor/ags_machine_radio_button.c' object='gsequencer-ags_machine_radio_button.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_machine_radio_button.o `test -f 'src/ags/X/editor/ags_machine_radio_button.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_machine_radio_button.c
+
+gsequencer-ags_machine_radio_button.obj: src/ags/X/editor/ags_machine_radio_button.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_machine_radio_button.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_machine_radio_button.Tpo -c -o gsequencer-ags_machine_radio_button.obj `if test -f 'src/ags/X/editor/ags_machine_radio_button.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_machine_radio_button.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_machine_radio_button.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_machine_radio_button.Tpo $(DEPDIR)/gsequencer-ags_machine_radio_button.Po
+#	$(AM_V_CC)source='src/ags/X/editor/ags_machine_radio_button.c' object='gsequencer-ags_machine_radio_button.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_machine_radio_button.obj `if test -f 'src/ags/X/editor/ags_machine_radio_button.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_machine_radio_button.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_machine_radio_button.c'; fi`
+
+gsequencer-ags_machine_selection.o: src/ags/X/editor/ags_machine_selection.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_machine_selection.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_machine_selection.Tpo -c -o gsequencer-ags_machine_selection.o `test -f 'src/ags/X/editor/ags_machine_selection.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_machine_selection.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_machine_selection.Tpo $(DEPDIR)/gsequencer-ags_machine_selection.Po
+#	$(AM_V_CC)source='src/ags/X/editor/ags_machine_selection.c' object='gsequencer-ags_machine_selection.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_machine_selection.o `test -f 'src/ags/X/editor/ags_machine_selection.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_machine_selection.c
+
+gsequencer-ags_machine_selection.obj: src/ags/X/editor/ags_machine_selection.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_machine_selection.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_machine_selection.Tpo -c -o gsequencer-ags_machine_selection.obj `if test -f 'src/ags/X/editor/ags_machine_selection.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_machine_selection.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_machine_selection.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_machine_selection.Tpo $(DEPDIR)/gsequencer-ags_machine_selection.Po
+#	$(AM_V_CC)source='src/ags/X/editor/ags_machine_selection.c' object='gsequencer-ags_machine_selection.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_machine_selection.obj `if test -f 'src/ags/X/editor/ags_machine_selection.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_machine_selection.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_machine_selection.c'; fi`
+
+gsequencer-ags_machine_selector_callbacks.o: src/ags/X/editor/ags_machine_selector_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_machine_selector_callbacks.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_machine_selector_callbacks.Tpo -c -o gsequencer-ags_machine_selector_callbacks.o `test -f 'src/ags/X/editor/ags_machine_selector_callbacks.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_machine_selector_callbacks.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_machine_selector_callbacks.Tpo $(DEPDIR)/gsequencer-ags_machine_selector_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/editor/ags_machine_selector_callbacks.c' object='gsequencer-ags_machine_selector_callbacks.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_machine_selector_callbacks.o `test -f 'src/ags/X/editor/ags_machine_selector_callbacks.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_machine_selector_callbacks.c
+
+gsequencer-ags_machine_selector_callbacks.obj: src/ags/X/editor/ags_machine_selector_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_machine_selector_callbacks.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_machine_selector_callbacks.Tpo -c -o gsequencer-ags_machine_selector_callbacks.obj `if test -f 'src/ags/X/editor/ags_machine_selector_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_machine_selector_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_machine_selector_callbacks.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_machine_selector_callbacks.Tpo $(DEPDIR)/gsequencer-ags_machine_selector_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/editor/ags_machine_selector_callbacks.c' object='gsequencer-ags_machine_selector_callbacks.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_machine_selector_callbacks.obj `if test -f 'src/ags/X/editor/ags_machine_selector_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_machine_selector_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_machine_selector_callbacks.c'; fi`
+
+gsequencer-ags_machine_selector.o: src/ags/X/editor/ags_machine_selector.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_machine_selector.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_machine_selector.Tpo -c -o gsequencer-ags_machine_selector.o `test -f 'src/ags/X/editor/ags_machine_selector.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_machine_selector.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_machine_selector.Tpo $(DEPDIR)/gsequencer-ags_machine_selector.Po
+#	$(AM_V_CC)source='src/ags/X/editor/ags_machine_selector.c' object='gsequencer-ags_machine_selector.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_machine_selector.o `test -f 'src/ags/X/editor/ags_machine_selector.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_machine_selector.c
+
+gsequencer-ags_machine_selector.obj: src/ags/X/editor/ags_machine_selector.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_machine_selector.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_machine_selector.Tpo -c -o gsequencer-ags_machine_selector.obj `if test -f 'src/ags/X/editor/ags_machine_selector.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_machine_selector.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_machine_selector.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_machine_selector.Tpo $(DEPDIR)/gsequencer-ags_machine_selector.Po
+#	$(AM_V_CC)source='src/ags/X/editor/ags_machine_selector.c' object='gsequencer-ags_machine_selector.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_machine_selector.obj `if test -f 'src/ags/X/editor/ags_machine_selector.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_machine_selector.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_machine_selector.c'; fi`
+
+gsequencer-ags_meter_callbacks.o: src/ags/X/editor/ags_meter_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_meter_callbacks.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_meter_callbacks.Tpo -c -o gsequencer-ags_meter_callbacks.o `test -f 'src/ags/X/editor/ags_meter_callbacks.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_meter_callbacks.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_meter_callbacks.Tpo $(DEPDIR)/gsequencer-ags_meter_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/editor/ags_meter_callbacks.c' object='gsequencer-ags_meter_callbacks.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_meter_callbacks.o `test -f 'src/ags/X/editor/ags_meter_callbacks.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_meter_callbacks.c
+
+gsequencer-ags_meter_callbacks.obj: src/ags/X/editor/ags_meter_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_meter_callbacks.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_meter_callbacks.Tpo -c -o gsequencer-ags_meter_callbacks.obj `if test -f 'src/ags/X/editor/ags_meter_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_meter_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_meter_callbacks.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_meter_callbacks.Tpo $(DEPDIR)/gsequencer-ags_meter_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/editor/ags_meter_callbacks.c' object='gsequencer-ags_meter_callbacks.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_meter_callbacks.obj `if test -f 'src/ags/X/editor/ags_meter_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_meter_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_meter_callbacks.c'; fi`
+
+gsequencer-ags_meter.o: src/ags/X/editor/ags_meter.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_meter.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_meter.Tpo -c -o gsequencer-ags_meter.o `test -f 'src/ags/X/editor/ags_meter.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_meter.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_meter.Tpo $(DEPDIR)/gsequencer-ags_meter.Po
+#	$(AM_V_CC)source='src/ags/X/editor/ags_meter.c' object='gsequencer-ags_meter.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_meter.o `test -f 'src/ags/X/editor/ags_meter.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_meter.c
+
+gsequencer-ags_meter.obj: src/ags/X/editor/ags_meter.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_meter.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_meter.Tpo -c -o gsequencer-ags_meter.obj `if test -f 'src/ags/X/editor/ags_meter.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_meter.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_meter.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_meter.Tpo $(DEPDIR)/gsequencer-ags_meter.Po
+#	$(AM_V_CC)source='src/ags/X/editor/ags_meter.c' object='gsequencer-ags_meter.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_meter.obj `if test -f 'src/ags/X/editor/ags_meter.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_meter.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_meter.c'; fi`
+
+gsequencer-ags_notebook_callbacks.o: src/ags/X/editor/ags_notebook_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_notebook_callbacks.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_notebook_callbacks.Tpo -c -o gsequencer-ags_notebook_callbacks.o `test -f 'src/ags/X/editor/ags_notebook_callbacks.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_notebook_callbacks.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_notebook_callbacks.Tpo $(DEPDIR)/gsequencer-ags_notebook_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/editor/ags_notebook_callbacks.c' object='gsequencer-ags_notebook_callbacks.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_notebook_callbacks.o `test -f 'src/ags/X/editor/ags_notebook_callbacks.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_notebook_callbacks.c
+
+gsequencer-ags_notebook_callbacks.obj: src/ags/X/editor/ags_notebook_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_notebook_callbacks.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_notebook_callbacks.Tpo -c -o gsequencer-ags_notebook_callbacks.obj `if test -f 'src/ags/X/editor/ags_notebook_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_notebook_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_notebook_callbacks.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_notebook_callbacks.Tpo $(DEPDIR)/gsequencer-ags_notebook_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/editor/ags_notebook_callbacks.c' object='gsequencer-ags_notebook_callbacks.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_notebook_callbacks.obj `if test -f 'src/ags/X/editor/ags_notebook_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_notebook_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_notebook_callbacks.c'; fi`
+
+gsequencer-ags_notebook.o: src/ags/X/editor/ags_notebook.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_notebook.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_notebook.Tpo -c -o gsequencer-ags_notebook.o `test -f 'src/ags/X/editor/ags_notebook.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_notebook.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_notebook.Tpo $(DEPDIR)/gsequencer-ags_notebook.Po
+#	$(AM_V_CC)source='src/ags/X/editor/ags_notebook.c' object='gsequencer-ags_notebook.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_notebook.o `test -f 'src/ags/X/editor/ags_notebook.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_notebook.c
+
+gsequencer-ags_notebook.obj: src/ags/X/editor/ags_notebook.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_notebook.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_notebook.Tpo -c -o gsequencer-ags_notebook.obj `if test -f 'src/ags/X/editor/ags_notebook.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_notebook.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_notebook.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_notebook.Tpo $(DEPDIR)/gsequencer-ags_notebook.Po
+#	$(AM_V_CC)source='src/ags/X/editor/ags_notebook.c' object='gsequencer-ags_notebook.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_notebook.obj `if test -f 'src/ags/X/editor/ags_notebook.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_notebook.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_notebook.c'; fi`
+
+gsequencer-ags_note_edit_callbacks.o: src/ags/X/editor/ags_note_edit_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_note_edit_callbacks.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_note_edit_callbacks.Tpo -c -o gsequencer-ags_note_edit_callbacks.o `test -f 'src/ags/X/editor/ags_note_edit_callbacks.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_note_edit_callbacks.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_note_edit_callbacks.Tpo $(DEPDIR)/gsequencer-ags_note_edit_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/editor/ags_note_edit_callbacks.c' object='gsequencer-ags_note_edit_callbacks.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_note_edit_callbacks.o `test -f 'src/ags/X/editor/ags_note_edit_callbacks.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_note_edit_callbacks.c
+
+gsequencer-ags_note_edit_callbacks.obj: src/ags/X/editor/ags_note_edit_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_note_edit_callbacks.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_note_edit_callbacks.Tpo -c -o gsequencer-ags_note_edit_callbacks.obj `if test -f 'src/ags/X/editor/ags_note_edit_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_note_edit_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_note_edit_callbacks.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_note_edit_callbacks.Tpo $(DEPDIR)/gsequencer-ags_note_edit_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/editor/ags_note_edit_callbacks.c' object='gsequencer-ags_note_edit_callbacks.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_note_edit_callbacks.obj `if test -f 'src/ags/X/editor/ags_note_edit_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_note_edit_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_note_edit_callbacks.c'; fi`
+
+gsequencer-ags_note_edit.o: src/ags/X/editor/ags_note_edit.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_note_edit.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_note_edit.Tpo -c -o gsequencer-ags_note_edit.o `test -f 'src/ags/X/editor/ags_note_edit.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_note_edit.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_note_edit.Tpo $(DEPDIR)/gsequencer-ags_note_edit.Po
+#	$(AM_V_CC)source='src/ags/X/editor/ags_note_edit.c' object='gsequencer-ags_note_edit.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_note_edit.o `test -f 'src/ags/X/editor/ags_note_edit.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_note_edit.c
+
+gsequencer-ags_note_edit.obj: src/ags/X/editor/ags_note_edit.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_note_edit.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_note_edit.Tpo -c -o gsequencer-ags_note_edit.obj `if test -f 'src/ags/X/editor/ags_note_edit.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_note_edit.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_note_edit.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_note_edit.Tpo $(DEPDIR)/gsequencer-ags_note_edit.Po
+#	$(AM_V_CC)source='src/ags/X/editor/ags_note_edit.c' object='gsequencer-ags_note_edit.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_note_edit.obj `if test -f 'src/ags/X/editor/ags_note_edit.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_note_edit.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_note_edit.c'; fi`
+
+gsequencer-ags_pattern_edit_callbacks.o: src/ags/X/editor/ags_pattern_edit_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_pattern_edit_callbacks.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_pattern_edit_callbacks.Tpo -c -o gsequencer-ags_pattern_edit_callbacks.o `test -f 'src/ags/X/editor/ags_pattern_edit_callbacks.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_pattern_edit_callbacks.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_pattern_edit_callbacks.Tpo $(DEPDIR)/gsequencer-ags_pattern_edit_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/editor/ags_pattern_edit_callbacks.c' object='gsequencer-ags_pattern_edit_callbacks.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_pattern_edit_callbacks.o `test -f 'src/ags/X/editor/ags_pattern_edit_callbacks.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_pattern_edit_callbacks.c
+
+gsequencer-ags_pattern_edit_callbacks.obj: src/ags/X/editor/ags_pattern_edit_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_pattern_edit_callbacks.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_pattern_edit_callbacks.Tpo -c -o gsequencer-ags_pattern_edit_callbacks.obj `if test -f 'src/ags/X/editor/ags_pattern_edit_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_pattern_edit_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_pattern_edit_callbacks.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_pattern_edit_callbacks.Tpo $(DEPDIR)/gsequencer-ags_pattern_edit_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/editor/ags_pattern_edit_callbacks.c' object='gsequencer-ags_pattern_edit_callbacks.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_pattern_edit_callbacks.obj `if test -f 'src/ags/X/editor/ags_pattern_edit_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_pattern_edit_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_pattern_edit_callbacks.c'; fi`
+
+gsequencer-ags_pattern_edit.o: src/ags/X/editor/ags_pattern_edit.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_pattern_edit.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_pattern_edit.Tpo -c -o gsequencer-ags_pattern_edit.o `test -f 'src/ags/X/editor/ags_pattern_edit.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_pattern_edit.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_pattern_edit.Tpo $(DEPDIR)/gsequencer-ags_pattern_edit.Po
+#	$(AM_V_CC)source='src/ags/X/editor/ags_pattern_edit.c' object='gsequencer-ags_pattern_edit.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_pattern_edit.o `test -f 'src/ags/X/editor/ags_pattern_edit.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_pattern_edit.c
+
+gsequencer-ags_pattern_edit.obj: src/ags/X/editor/ags_pattern_edit.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_pattern_edit.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_pattern_edit.Tpo -c -o gsequencer-ags_pattern_edit.obj `if test -f 'src/ags/X/editor/ags_pattern_edit.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_pattern_edit.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_pattern_edit.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_pattern_edit.Tpo $(DEPDIR)/gsequencer-ags_pattern_edit.Po
+#	$(AM_V_CC)source='src/ags/X/editor/ags_pattern_edit.c' object='gsequencer-ags_pattern_edit.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_pattern_edit.obj `if test -f 'src/ags/X/editor/ags_pattern_edit.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_pattern_edit.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_pattern_edit.c'; fi`
+
+gsequencer-ags_port_selection_callbacks.o: src/ags/X/editor/ags_port_selection_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_port_selection_callbacks.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_port_selection_callbacks.Tpo -c -o gsequencer-ags_port_selection_callbacks.o `test -f 'src/ags/X/editor/ags_port_selection_callbacks.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_port_selection_callbacks.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_port_selection_callbacks.Tpo $(DEPDIR)/gsequencer-ags_port_selection_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/editor/ags_port_selection_callbacks.c' object='gsequencer-ags_port_selection_callbacks.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_port_selection_callbacks.o `test -f 'src/ags/X/editor/ags_port_selection_callbacks.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_port_selection_callbacks.c
+
+gsequencer-ags_port_selection_callbacks.obj: src/ags/X/editor/ags_port_selection_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_port_selection_callbacks.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_port_selection_callbacks.Tpo -c -o gsequencer-ags_port_selection_callbacks.obj `if test -f 'src/ags/X/editor/ags_port_selection_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_port_selection_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_port_selection_callbacks.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_port_selection_callbacks.Tpo $(DEPDIR)/gsequencer-ags_port_selection_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/editor/ags_port_selection_callbacks.c' object='gsequencer-ags_port_selection_callbacks.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_port_selection_callbacks.obj `if test -f 'src/ags/X/editor/ags_port_selection_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_port_selection_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_port_selection_callbacks.c'; fi`
+
+gsequencer-ags_port_selection.o: src/ags/X/editor/ags_port_selection.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_port_selection.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_port_selection.Tpo -c -o gsequencer-ags_port_selection.o `test -f 'src/ags/X/editor/ags_port_selection.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_port_selection.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_port_selection.Tpo $(DEPDIR)/gsequencer-ags_port_selection.Po
+#	$(AM_V_CC)source='src/ags/X/editor/ags_port_selection.c' object='gsequencer-ags_port_selection.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_port_selection.o `test -f 'src/ags/X/editor/ags_port_selection.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_port_selection.c
+
+gsequencer-ags_port_selection.obj: src/ags/X/editor/ags_port_selection.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_port_selection.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_port_selection.Tpo -c -o gsequencer-ags_port_selection.obj `if test -f 'src/ags/X/editor/ags_port_selection.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_port_selection.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_port_selection.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_port_selection.Tpo $(DEPDIR)/gsequencer-ags_port_selection.Po
+#	$(AM_V_CC)source='src/ags/X/editor/ags_port_selection.c' object='gsequencer-ags_port_selection.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_port_selection.obj `if test -f 'src/ags/X/editor/ags_port_selection.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_port_selection.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_port_selection.c'; fi`
+
+gsequencer-ags_sf2_chooser_callbacks.o: src/ags/X/editor/ags_sf2_chooser_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_sf2_chooser_callbacks.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_sf2_chooser_callbacks.Tpo -c -o gsequencer-ags_sf2_chooser_callbacks.o `test -f 'src/ags/X/editor/ags_sf2_chooser_callbacks.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_sf2_chooser_callbacks.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_sf2_chooser_callbacks.Tpo $(DEPDIR)/gsequencer-ags_sf2_chooser_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/editor/ags_sf2_chooser_callbacks.c' object='gsequencer-ags_sf2_chooser_callbacks.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_sf2_chooser_callbacks.o `test -f 'src/ags/X/editor/ags_sf2_chooser_callbacks.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_sf2_chooser_callbacks.c
+
+gsequencer-ags_sf2_chooser_callbacks.obj: src/ags/X/editor/ags_sf2_chooser_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_sf2_chooser_callbacks.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_sf2_chooser_callbacks.Tpo -c -o gsequencer-ags_sf2_chooser_callbacks.obj `if test -f 'src/ags/X/editor/ags_sf2_chooser_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_sf2_chooser_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_sf2_chooser_callbacks.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_sf2_chooser_callbacks.Tpo $(DEPDIR)/gsequencer-ags_sf2_chooser_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/editor/ags_sf2_chooser_callbacks.c' object='gsequencer-ags_sf2_chooser_callbacks.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_sf2_chooser_callbacks.obj `if test -f 'src/ags/X/editor/ags_sf2_chooser_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_sf2_chooser_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_sf2_chooser_callbacks.c'; fi`
+
+gsequencer-ags_sf2_chooser.o: src/ags/X/editor/ags_sf2_chooser.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_sf2_chooser.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_sf2_chooser.Tpo -c -o gsequencer-ags_sf2_chooser.o `test -f 'src/ags/X/editor/ags_sf2_chooser.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_sf2_chooser.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_sf2_chooser.Tpo $(DEPDIR)/gsequencer-ags_sf2_chooser.Po
+#	$(AM_V_CC)source='src/ags/X/editor/ags_sf2_chooser.c' object='gsequencer-ags_sf2_chooser.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_sf2_chooser.o `test -f 'src/ags/X/editor/ags_sf2_chooser.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_sf2_chooser.c
+
+gsequencer-ags_sf2_chooser.obj: src/ags/X/editor/ags_sf2_chooser.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_sf2_chooser.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_sf2_chooser.Tpo -c -o gsequencer-ags_sf2_chooser.obj `if test -f 'src/ags/X/editor/ags_sf2_chooser.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_sf2_chooser.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_sf2_chooser.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_sf2_chooser.Tpo $(DEPDIR)/gsequencer-ags_sf2_chooser.Po
+#	$(AM_V_CC)source='src/ags/X/editor/ags_sf2_chooser.c' object='gsequencer-ags_sf2_chooser.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_sf2_chooser.obj `if test -f 'src/ags/X/editor/ags_sf2_chooser.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_sf2_chooser.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_sf2_chooser.c'; fi`
+
+gsequencer-ags_soundset_callbacks.o: src/ags/X/editor/ags_soundset_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_soundset_callbacks.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_soundset_callbacks.Tpo -c -o gsequencer-ags_soundset_callbacks.o `test -f 'src/ags/X/editor/ags_soundset_callbacks.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_soundset_callbacks.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_soundset_callbacks.Tpo $(DEPDIR)/gsequencer-ags_soundset_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/editor/ags_soundset_callbacks.c' object='gsequencer-ags_soundset_callbacks.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_soundset_callbacks.o `test -f 'src/ags/X/editor/ags_soundset_callbacks.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_soundset_callbacks.c
+
+gsequencer-ags_soundset_callbacks.obj: src/ags/X/editor/ags_soundset_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_soundset_callbacks.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_soundset_callbacks.Tpo -c -o gsequencer-ags_soundset_callbacks.obj `if test -f 'src/ags/X/editor/ags_soundset_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_soundset_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_soundset_callbacks.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_soundset_callbacks.Tpo $(DEPDIR)/gsequencer-ags_soundset_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/editor/ags_soundset_callbacks.c' object='gsequencer-ags_soundset_callbacks.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_soundset_callbacks.obj `if test -f 'src/ags/X/editor/ags_soundset_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_soundset_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_soundset_callbacks.c'; fi`
+
+gsequencer-ags_soundset.o: src/ags/X/editor/ags_soundset.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_soundset.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_soundset.Tpo -c -o gsequencer-ags_soundset.o `test -f 'src/ags/X/editor/ags_soundset.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_soundset.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_soundset.Tpo $(DEPDIR)/gsequencer-ags_soundset.Po
+#	$(AM_V_CC)source='src/ags/X/editor/ags_soundset.c' object='gsequencer-ags_soundset.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_soundset.o `test -f 'src/ags/X/editor/ags_soundset.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_soundset.c
+
+gsequencer-ags_soundset.obj: src/ags/X/editor/ags_soundset.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_soundset.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_soundset.Tpo -c -o gsequencer-ags_soundset.obj `if test -f 'src/ags/X/editor/ags_soundset.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_soundset.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_soundset.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_soundset.Tpo $(DEPDIR)/gsequencer-ags_soundset.Po
+#	$(AM_V_CC)source='src/ags/X/editor/ags_soundset.c' object='gsequencer-ags_soundset.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_soundset.obj `if test -f 'src/ags/X/editor/ags_soundset.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_soundset.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_soundset.c'; fi`
+
+gsequencer-ags_toolbar_callbacks.o: src/ags/X/editor/ags_toolbar_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_toolbar_callbacks.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_toolbar_callbacks.Tpo -c -o gsequencer-ags_toolbar_callbacks.o `test -f 'src/ags/X/editor/ags_toolbar_callbacks.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_toolbar_callbacks.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_toolbar_callbacks.Tpo $(DEPDIR)/gsequencer-ags_toolbar_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/editor/ags_toolbar_callbacks.c' object='gsequencer-ags_toolbar_callbacks.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_toolbar_callbacks.o `test -f 'src/ags/X/editor/ags_toolbar_callbacks.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_toolbar_callbacks.c
+
+gsequencer-ags_toolbar_callbacks.obj: src/ags/X/editor/ags_toolbar_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_toolbar_callbacks.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_toolbar_callbacks.Tpo -c -o gsequencer-ags_toolbar_callbacks.obj `if test -f 'src/ags/X/editor/ags_toolbar_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_toolbar_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_toolbar_callbacks.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_toolbar_callbacks.Tpo $(DEPDIR)/gsequencer-ags_toolbar_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/editor/ags_toolbar_callbacks.c' object='gsequencer-ags_toolbar_callbacks.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_toolbar_callbacks.obj `if test -f 'src/ags/X/editor/ags_toolbar_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_toolbar_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_toolbar_callbacks.c'; fi`
+
+gsequencer-ags_toolbar.o: src/ags/X/editor/ags_toolbar.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_toolbar.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_toolbar.Tpo -c -o gsequencer-ags_toolbar.o `test -f 'src/ags/X/editor/ags_toolbar.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_toolbar.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_toolbar.Tpo $(DEPDIR)/gsequencer-ags_toolbar.Po
+#	$(AM_V_CC)source='src/ags/X/editor/ags_toolbar.c' object='gsequencer-ags_toolbar.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_toolbar.o `test -f 'src/ags/X/editor/ags_toolbar.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_toolbar.c
+
+gsequencer-ags_toolbar.obj: src/ags/X/editor/ags_toolbar.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_toolbar.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_toolbar.Tpo -c -o gsequencer-ags_toolbar.obj `if test -f 'src/ags/X/editor/ags_toolbar.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_toolbar.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_toolbar.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_toolbar.Tpo $(DEPDIR)/gsequencer-ags_toolbar.Po
+#	$(AM_V_CC)source='src/ags/X/editor/ags_toolbar.c' object='gsequencer-ags_toolbar.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_toolbar.obj `if test -f 'src/ags/X/editor/ags_toolbar.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_toolbar.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_toolbar.c'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo

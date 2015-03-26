@@ -23,6 +23,6 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include <ags/X/ags_ffplayer_bridge.h>
+#include <ags/X/machine/ags_ffplayer_bridge.h>
 
 #endif /*__AGS_FFPLAYER_BRIDGE_CALLBACKS_H__*/

@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <ags/X/ags_synth_bulk_output.h>
-#include <ags/X/ags_synth_bulk_output_callbacks.h>
+#include <ags/X/machine/ags_synth_bulk_output.h>
+#include <ags/X/machine/ags_synth_bulk_output_callbacks.h>
 
 #include <ags-lib/object/ags_connectable.h>
 
@@ -45,7 +45,6 @@ void ags_synth_bulk_output_disconnect(AgsConnectable *connectable);
  */
 
 static gpointer ags_synth_bulk_output_parent_class = NULL;
-static guint synth_bulk_output_signals[LAST_SIGNAL];
 
 GType
 ags_synth_bulk_output_get_type(void)
