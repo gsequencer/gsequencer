@@ -1,7 +1,7 @@
-deprecated_ags_xorg_h_sources =
+deprecated_gsequencer_xorg_h_sources =
 
-ags_xorg_h_sources = \
-	$(deprecated_ags_xorg_h_sources)	\
+gsequencer_xorg_h_sources = \
+	$(deprecated_gsequencer_xorg_h_sources)	\
 	ags_audio_preferences_callbacks.h	\
 	ags_audio_preferences.h			\
 	ags_automation_editor_callbacks.h	\
@@ -65,10 +65,10 @@ ags_xorg_h_sources = \
 	ags_window_callbacks.h			\
 	ags_window.h
 
-deprecated_ags_xorg_c_sources = 
+deprecated_gsequencer_xorg_c_sources = 
 
-ags_xorg_c_sources = \
-	$(deprecated_ags_xorg_c_sources) \
+gsequencer_xorg_c_sources = \
+	$(deprecated_gsequencer_xorg_c_sources) \
 	ags_audio_preferences_callbacks.c	\
 	ags_audio_preferences.c			\
 	ags_automation_editor_callbacks.c	\
@@ -131,5 +131,3 @@ ags_xorg_c_sources = \
 	ags_server_preferences.c		\
 	ags_window_callbacks.c			\
 	ags_window.c
-
-gsequencer_SOURCES = $(ags_xorg_c_sources)

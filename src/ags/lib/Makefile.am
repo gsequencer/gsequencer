@@ -1,5 +1,3 @@
-AUTOMAKE_OPTIONS = subdir-objects
-
 deprecated_ags_lib_h_sources =
 
 ags_lib_h_sources = \
@@ -20,4 +18,3 @@ ags_lib_c_sources = \
 	ags_log.c			\
 	ags_parameter.c
 
-libags_a_SOURCES += $(ags_lib_c_sources)

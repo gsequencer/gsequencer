@@ -5,6 +5,46 @@ AC_PREREQ([2.69])
 AC_INIT([gsequencer], [0.4.3], [weedlight@gmail.com])
 AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADERS([config.h])
+AC_CONFIG_SUBDIRS([.
+		   po
+		   doc
+		   src/ags
+		   src/ags/X
+		   src/ags/X/editor
+		   src/ags/X/machine
+		   src/ags/audio
+		   src/ags/audio/file
+		   src/ags/audio/recall
+		   src/ags/audio/task
+		   src/ags/audio/task/recall
+		   src/ags/file
+		   src/ags/lib
+		   src/ags/object
+		   src/ags/plugin
+		   src/ags/server
+		   src/ags/thread
+		   src/ags/util
+		   src/ags/widget])
+AC_CONFIG_FILES([Makefile
+		 po/Makefile
+                 doc/Makefile
+                 src/ags/Makefile
+                 src/ags/X/Makefile
+                 src/ags/X/editor/Makefile
+                 src/ags/X/machine/Makefile
+                 src/ags/audio/Makefile
+                 src/ags/audio/file/Makefile
+                 src/ags/audio/recall/Makefile
+                 src/ags/audio/task/Makefile
+                 src/ags/audio/task/recall/Makefile
+                 src/ags/file/Makefile
+                 src/ags/lib/Makefile
+                 src/ags/object/Makefile
+                 src/ags/plugin/Makefile
+                 src/ags/server/Makefile
+                 src/ags/thread/Makefile
+                 src/ags/util/Makefile
+                 src/ags/widget/Makefile])
 
 AM_INIT_AUTOMAKE(gsequencer, 0.4.3)
 
@@ -100,44 +140,5 @@ AC_FUNC_MALLOC
 AC_FUNC_REALLOC
 AC_CHECK_FUNCS([atexit clock_gettime floor memset socket sqrt strchr strtol strtoul])
 
-AC_CONFIG_SUBDIRS([po
-		   doc
-		   src/ags
-		   src/ags/X
-		   src/ags/X/editor
-		   src/ags/X/machine
-		   src/ags/audio
-		   src/ags/audio/file
-		   src/ags/audio/recall
-		   src/ags/audio/task
-		   src/ags/audio/task/recall
-		   src/ags/file
-		   src/ags/lib
-		   src/ags/object
-		   src/ags/plugin
-		   src/ags/server
-		   src/ags/thread
-		   src/ags/util
-		   src/ags/widget])
-AC_CONFIG_FILES([Makefile
-		 po/Makefile
-                 doc/Makefile
-                 src/ags/Makefile
-                 src/ags/X/Makefile
-                 src/ags/X/editor/Makefile
-                 src/ags/X/machine/Makefile
-                 src/ags/audio/Makefile
-                 src/ags/audio/file/Makefile
-                 src/ags/audio/recall/Makefile
-                 src/ags/audio/task/Makefile
-                 src/ags/audio/task/recall/Makefile
-                 src/ags/file/Makefile
-                 src/ags/lib/Makefile
-                 src/ags/object/Makefile
-                 src/ags/plugin/Makefile
-                 src/ags/server/Makefile
-                 src/ags/thread/Makefile
-                 src/ags/util/Makefile
-                 src/ags/widget/Makefile])
 AC_OUTPUT
 
