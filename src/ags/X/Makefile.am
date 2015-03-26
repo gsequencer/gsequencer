@@ -131,3 +131,5 @@ ags_xorg_c_sources = \
 	ags_server_preferences.c		\
 	ags_window_callbacks.c			\
 	ags_window.c
+
+gsequencer_SOURCES = $(ags_xorg_c_sources)

@@ -106,8 +106,7 @@ am__v_AR_0 = @echo "  AR      " $@;
 am__v_AR_1 = 
 libags_a_AR = $(AR) $(ARFLAGS)
 libags_a_LIBADD =
-am__objects_1 =
-am_libags_a_OBJECTS = $(am__objects_1)
+am_libags_a_OBJECTS =
 libags_a_OBJECTS = $(am_libags_a_OBJECTS)
 libags_audio_a_AR = $(AR) $(ARFLAGS)
 libags_audio_a_LIBADD =
@@ -123,7 +122,7 @@ am_libags_thread_a_OBJECTS =
 libags_thread_a_OBJECTS = $(am_libags_thread_a_OBJECTS)
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_gsequencer_OBJECTS = $(am__objects_1)
+am_gsequencer_OBJECTS =
 gsequencer_OBJECTS = $(am_gsequencer_OBJECTS)
 gsequencer_DEPENDENCIES = libags.a libags_thread.a libags_audio.a \
 	libags_gui.a
@@ -397,12 +396,30 @@ psdir = ${docdir}
 sbindir = ${exec_prefix}/sbin
 sharedstatedir = ${prefix}/com
 srcdir = .
+subdirs =  po doc src/ags src/ags/X src/ags/X/editor src/ags/X/machine src/ags/audio src/ags/audio/file src/ags/audio/recall src/ags/audio/task src/ags/audio/task/recall src/ags/file src/ags/lib src/ags/object src/ags/plugin src/ags/server src/ags/thread src/ags/util src/ags/widget
 sysconfdir = ${prefix}/etc
 target_alias = 
 top_build_prefix = 
 top_builddir = .
 top_srcdir = .
 AUTOMAKE_OPTIONS = foreign
+TARGETS = gsequencer
+
+# this lists the binaries to produce, the (non-PHONY, binary) targets in
+# the previous manual Makefile
+noinst_LIBRARIES = libags.a libags_thread.a libags_audio.a libags_gui.a
+
+# application
+gsequencer_CFLAGS = $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
+gsequencer_LDFLAGS = $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
+gsequencer_LDADD = libags.a libags_thread.a libags_audio.a libags_gui.a
+
+#
+libags_a_SOURCES = 
+libags_thread_a_SOURCES = 
+libags_audio_a_SOURCES = 
+libags_gui_a_SOURCES = 
+gsequencer_SOURCES = 
 SUBDIRS = po \
 	src/ags/util \
 	src/ags/lib \
@@ -422,31 +439,6 @@ SUBDIRS = po \
 	doc
 
 ACLOCAL_AMFLAGS = -I m4
-TARGETS = gsequencer
-
-# this lists the binaries to produce, the (non-PHONY, binary) targets in
-# the previous manual Makefile
-noinst_LIBRARIES = libags.a libags_thread.a libags_audio.a libags_gui.a
-
-# application
-gsequencer_CFLAGS = $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
-gsequencer_LDFLAGS = $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
-gsequencer_LDADD = libags.a libags_thread.a libags_audio.a libags_gui.a
-
-#
-libags_h_sources = $(libags_util_h_sources) $(libags_object_h_sources)
-libags_c_sources = $(libags_util_c_sources) $(libags_object_c_sources)
-libags_thread_h_sources = 
-libags_thread_c_sources = 
-libags_gui_h_sources = 
-libags_gui_c_sources = 
-gsequencer_h_sources = $(gsequencer_main_h_sources)
-gsequencer_c_sources = $(gsequencer_main_c_sources)
-libags_a_SOURCES = $(libags_c_sources)
-libags_thread_a_SOURCES = 
-libags_audio_a_SOURCES = 
-libags_gui_a_SOURCES = 
-gsequencer_SOURCES = $(gsequencer_c_sources)
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 
@@ -1016,6 +1008,24 @@ uninstall-am: uninstall-binPROGRAMS
 	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
 	tags tags-am uninstall uninstall-am uninstall-binPROGRAMS
 
+
+include po/Makefile.am \
+	src/ags/util/Makefile.am \
+	src/ags/lib/Makefile.am \
+	src/ags/object/Makefile.am \
+	src/ags/widget/Makefile.am \
+	src/ags/audio/task/Makefile.am \
+	src/ags/audio/task/recall/Makefile.am \
+	src/ags/audio/file/Makefile.am \
+	src/ags/audio/recall/Makefile.am \
+	src/ags/audio/Makefile.am \
+	src/ags/file/Makefile.am \
+	src/ags/server/Makefile.am \
+	src/ags/X/editor/Makefile.am \
+	src/ags/X/machine/Makefile.am \
+	src/ags/X/Makefile.am \
+	src/ags/Makefile.am \
+	doc/Makefile.am
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

@@ -893,6 +893,8 @@ cat >>"$ac_tmp/subs1.awk" <<\_ACAWK &&
 S["am__EXEEXT_FALSE"]=""
 S["am__EXEEXT_TRUE"]="#"
 S["LTLIBOBJS"]=""
+S["subdirs"]=" po doc src/ags src/ags/X src/ags/X/editor src/ags/X/machine src/ags/audio src/ags/audio/file src/ags/audio/recall src/ags/audio/task src/ags/audio/"\
+"task/recall src/ags/file src/ags/lib src/ags/object src/ags/plugin src/ags/server src/ags/thread src/ags/util src/ags/widget"
 S["LIBOBJS"]=""
 S["GTK_LIBS"]="-lgtk-x11-2.0 -lgdk-x11-2.0 -lpangocairo-1.0 -latk-1.0 -lcairo -lgdk_pixbuf-2.0 -lgio-2.0 -lpangoft2-1.0 -lpango-1.0 -lgobject-2.0 -lglib-2.0 -lfont"\
 "config -lfreetype "

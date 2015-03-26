@@ -853,7 +853,47 @@ m4trace:configure.ac:101: -1- AH_OUTPUT([HAVE_STRTOL], [/* Define to 1 if you ha
 @%:@undef HAVE_STRTOL])
 m4trace:configure.ac:101: -1- AH_OUTPUT([HAVE_STRTOUL], [/* Define to 1 if you have the `strtoul\' function. */
 @%:@undef HAVE_STRTOUL])
-m4trace:configure.ac:103: -1- AC_CONFIG_FILES([Makefile
+m4trace:configure.ac:103: -1- AC_CONFIG_SUBDIRS([po
+		   doc
+		   src/ags
+		   src/ags/X
+		   src/ags/X/editor
+		   src/ags/X/machine
+		   src/ags/audio
+		   src/ags/audio/file
+		   src/ags/audio/recall
+		   src/ags/audio/task
+		   src/ags/audio/task/recall
+		   src/ags/file
+		   src/ags/lib
+		   src/ags/object
+		   src/ags/plugin
+		   src/ags/server
+		   src/ags/thread
+		   src/ags/util
+		   src/ags/widget])
+m4trace:configure.ac:103: -1- AC_SUBST([subdirs], ["$subdirs m4_normalize([po
+		   doc
+		   src/ags
+		   src/ags/X
+		   src/ags/X/editor
+		   src/ags/X/machine
+		   src/ags/audio
+		   src/ags/audio/file
+		   src/ags/audio/recall
+		   src/ags/audio/task
+		   src/ags/audio/task/recall
+		   src/ags/file
+		   src/ags/lib
+		   src/ags/object
+		   src/ags/plugin
+		   src/ags/server
+		   src/ags/thread
+		   src/ags/util
+		   src/ags/widget])"])
+m4trace:configure.ac:103: -1- AC_SUBST_TRACE([subdirs])
+m4trace:configure.ac:103: -1- m4_pattern_allow([^subdirs$])
+m4trace:configure.ac:122: -1- AC_CONFIG_FILES([Makefile
 		 po/Makefile
                  doc/Makefile
                  src/ags/Makefile
@@ -873,30 +913,30 @@ m4trace:configure.ac:103: -1- AC_CONFIG_FILES([Makefile
                  src/ags/thread/Makefile
                  src/ags/util/Makefile
                  src/ags/widget/Makefile])
-m4trace:configure.ac:123: -1- AC_SUBST([LIB@&t@OBJS], [$ac_libobjs])
-m4trace:configure.ac:123: -1- AC_SUBST_TRACE([LIB@&t@OBJS])
-m4trace:configure.ac:123: -1- m4_pattern_allow([^LIB@&t@OBJS$])
-m4trace:configure.ac:123: -1- AC_SUBST([LTLIBOBJS], [$ac_ltlibobjs])
-m4trace:configure.ac:123: -1- AC_SUBST_TRACE([LTLIBOBJS])
-m4trace:configure.ac:123: -1- m4_pattern_allow([^LTLIBOBJS$])
-m4trace:configure.ac:123: -1- AM_CONDITIONAL([am__EXEEXT], [test -n "$EXEEXT"])
-m4trace:configure.ac:123: -1- AC_SUBST([am__EXEEXT_TRUE])
-m4trace:configure.ac:123: -1- AC_SUBST_TRACE([am__EXEEXT_TRUE])
-m4trace:configure.ac:123: -1- m4_pattern_allow([^am__EXEEXT_TRUE$])
-m4trace:configure.ac:123: -1- AC_SUBST([am__EXEEXT_FALSE])
-m4trace:configure.ac:123: -1- AC_SUBST_TRACE([am__EXEEXT_FALSE])
-m4trace:configure.ac:123: -1- m4_pattern_allow([^am__EXEEXT_FALSE$])
-m4trace:configure.ac:123: -1- _AM_SUBST_NOTMAKE([am__EXEEXT_TRUE])
-m4trace:configure.ac:123: -1- _AM_SUBST_NOTMAKE([am__EXEEXT_FALSE])
-m4trace:configure.ac:123: -1- AC_SUBST_TRACE([top_builddir])
-m4trace:configure.ac:123: -1- AC_SUBST_TRACE([top_build_prefix])
-m4trace:configure.ac:123: -1- AC_SUBST_TRACE([srcdir])
-m4trace:configure.ac:123: -1- AC_SUBST_TRACE([abs_srcdir])
-m4trace:configure.ac:123: -1- AC_SUBST_TRACE([top_srcdir])
-m4trace:configure.ac:123: -1- AC_SUBST_TRACE([abs_top_srcdir])
-m4trace:configure.ac:123: -1- AC_SUBST_TRACE([builddir])
-m4trace:configure.ac:123: -1- AC_SUBST_TRACE([abs_builddir])
-m4trace:configure.ac:123: -1- AC_SUBST_TRACE([abs_top_builddir])
-m4trace:configure.ac:123: -1- AC_SUBST_TRACE([INSTALL])
-m4trace:configure.ac:123: -1- AC_SUBST_TRACE([MKDIR_P])
-m4trace:configure.ac:123: -1- AC_REQUIRE_AUX_FILE([ltmain.sh])
+m4trace:configure.ac:142: -1- AC_SUBST([LIB@&t@OBJS], [$ac_libobjs])
+m4trace:configure.ac:142: -1- AC_SUBST_TRACE([LIB@&t@OBJS])
+m4trace:configure.ac:142: -1- m4_pattern_allow([^LIB@&t@OBJS$])
+m4trace:configure.ac:142: -1- AC_SUBST([LTLIBOBJS], [$ac_ltlibobjs])
+m4trace:configure.ac:142: -1- AC_SUBST_TRACE([LTLIBOBJS])
+m4trace:configure.ac:142: -1- m4_pattern_allow([^LTLIBOBJS$])
+m4trace:configure.ac:142: -1- AM_CONDITIONAL([am__EXEEXT], [test -n "$EXEEXT"])
+m4trace:configure.ac:142: -1- AC_SUBST([am__EXEEXT_TRUE])
+m4trace:configure.ac:142: -1- AC_SUBST_TRACE([am__EXEEXT_TRUE])
+m4trace:configure.ac:142: -1- m4_pattern_allow([^am__EXEEXT_TRUE$])
+m4trace:configure.ac:142: -1- AC_SUBST([am__EXEEXT_FALSE])
+m4trace:configure.ac:142: -1- AC_SUBST_TRACE([am__EXEEXT_FALSE])
+m4trace:configure.ac:142: -1- m4_pattern_allow([^am__EXEEXT_FALSE$])
+m4trace:configure.ac:142: -1- _AM_SUBST_NOTMAKE([am__EXEEXT_TRUE])
+m4trace:configure.ac:142: -1- _AM_SUBST_NOTMAKE([am__EXEEXT_FALSE])
+m4trace:configure.ac:142: -1- AC_SUBST_TRACE([top_builddir])
+m4trace:configure.ac:142: -1- AC_SUBST_TRACE([top_build_prefix])
+m4trace:configure.ac:142: -1- AC_SUBST_TRACE([srcdir])
+m4trace:configure.ac:142: -1- AC_SUBST_TRACE([abs_srcdir])
+m4trace:configure.ac:142: -1- AC_SUBST_TRACE([top_srcdir])
+m4trace:configure.ac:142: -1- AC_SUBST_TRACE([abs_top_srcdir])
+m4trace:configure.ac:142: -1- AC_SUBST_TRACE([builddir])
+m4trace:configure.ac:142: -1- AC_SUBST_TRACE([abs_builddir])
+m4trace:configure.ac:142: -1- AC_SUBST_TRACE([abs_top_builddir])
+m4trace:configure.ac:142: -1- AC_SUBST_TRACE([INSTALL])
+m4trace:configure.ac:142: -1- AC_SUBST_TRACE([MKDIR_P])
+m4trace:configure.ac:142: -1- AC_REQUIRE_AUX_FILE([ltmain.sh])

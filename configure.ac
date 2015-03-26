@@ -100,6 +100,25 @@ AC_FUNC_MALLOC
 AC_FUNC_REALLOC
 AC_CHECK_FUNCS([atexit clock_gettime floor memset socket sqrt strchr strtol strtoul])
 
+AC_CONFIG_SUBDIRS([po
+		   doc
+		   src/ags
+		   src/ags/X
+		   src/ags/X/editor
+		   src/ags/X/machine
+		   src/ags/audio
+		   src/ags/audio/file
+		   src/ags/audio/recall
+		   src/ags/audio/task
+		   src/ags/audio/task/recall
+		   src/ags/file
+		   src/ags/lib
+		   src/ags/object
+		   src/ags/plugin
+		   src/ags/server
+		   src/ags/thread
+		   src/ags/util
+		   src/ags/widget])
 AC_CONFIG_FILES([Makefile
 		 po/Makefile
                  doc/Makefile
