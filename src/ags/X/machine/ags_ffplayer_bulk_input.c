@@ -129,6 +129,19 @@ ags_ffplayer_bulk_input_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_ffplayer_bulk_input_init(AgsFFPlayerBulkInput *ffplayer_bulk_input)
 {
+  //TODO:JK: implement me
+}
+
+void
+ags_ffplayer_bulk_input_connect(AgsConnectable *connectable)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_ffplayer_bulk_input_disconnect(AgsConnectable *connectable)
+{
+  //TODO:JK: implement me
 }
 
 /**

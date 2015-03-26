@@ -45,14 +45,14 @@ libags_thread_a_LIBADD = libags.a
 
 libags_audio_a_CFLAGS = @CFLAGS@ -g --pedantic -Wall -O -I./src -I/usr/include $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
 libags_audio_a_LDFLAGS = @LDFLAGS@ -L/lib -L/usr/lib -L/usr/X11/lib -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
-libags_audio_a_LIBADD = libags.a libags_thread.a
+libags_audio_a_LIBADD = libags_thread.a libags.a 
 
 libags_gui_a_CFLAGS = @CFLAGS@ -g --pedantic -Wall -O -I./src -I/usr/include $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
 libags_gui_a_LDFLAGS = @LDFLAGS@ -L/lib -L/usr/lib -L/usr/X11/lib -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
 
 gsequencer_CFLAGS = @CFLAGS@ -g --pedantic -Wall -O -I./src -I/usr/include $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
 gsequencer_LDFLAGS = @LDFLAGS@ -L/lib -L/usr/lib -L/usr/X11/lib -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
-gsequencer_LDADD = libags.a libags_thread.a libags_audio.a libags_gui.a
+gsequencer_LDADD = libags_audio.a libags_gui.a libags_thread.a libags.a
 
 ACLOCAL_AMFLAGS = -I m4
 
@@ -127,7 +127,6 @@ ags_object_c_sources = \
 	src/ags/object/ags_mutable.c			\
 	src/ags/object/ags_packable.c			\
 	src/ags/object/ags_persistable.c		\
-	src/ags/object/ags_playable.c			\
 	src/ags/object/ags_plugin.c			\
 	src/ags/object/ags_portlet.c			\
 	src/ags/object/ags_runnable.c			\
@@ -298,6 +297,7 @@ deprecated_ags_audio_c_sources =  \
 ags_audio_c_sources =  		\
 	$(deprecated_ags_audio_c_sources) \
 	src/ags/audio/ags_acceleration.c	\
+	src/ags/object/ags_playable.c			\
 	src/ags/audio/ags_audio.c		\
 	src/ags/audio/ags_audio_signal.c	\
 	src/ags/audio/ags_automation.c	\
@@ -601,18 +601,18 @@ gsequencer_main_h_sources = \
 gsequencer_main_c_sources = \
 	src/ags/main.c
 
-deprecated_ags_server_h_sources = 
+deprecated_gsequencer_server_h_sources = 
 
-ags_server_h_sources = \
-	$(deprecated_ags_server_h_sources) \
+gsequencer_server_h_sources = \
+	$(deprecated_gsequencer_server_h_sources) \
 	src/ags/server/ags_registry.h			\
 	src/ags/server/ags_remote_task.h		\
 	src/ags/server/ags_server.h
 
-deprecated_ags_server_c_sources = 
+deprecated_gsequencer_server_c_sources = 
 
-ags_server_c_sources = \
-	$(deprecated_ags_server_c_sources) \
+gsequencer_server_c_sources = \
+	$(deprecated_gsequencer_server_c_sources) \
 	src/ags/server/ags_registry.c			\
 	src/ags/server/ags_remote_task.c		\
 	src/ags/server/ags_server.c

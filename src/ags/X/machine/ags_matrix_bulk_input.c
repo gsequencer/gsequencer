@@ -129,7 +129,21 @@ ags_matrix_bulk_input_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_matrix_bulk_input_init(AgsMatrixBulkInput *matrix_bulk_input)
 {
+  //TODO:JK: implement me
 }
+
+void
+ags_matrix_bulk_input_connect(AgsConnectable *connectable)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_matrix_bulk_input_disconnect(AgsConnectable *connectable)
+{
+  //TODO:JK: implement me
+}
+
 
 /**
  * ags_matrix_bulk_input_new:

@@ -129,6 +129,19 @@ ags_synth_bulk_output_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_synth_bulk_output_init(AgsSynthBulkOutput *synth_bulk_output)
 {
+  //TODO:JK: implement me
+}
+
+void
+ags_synth_bulk_output_connect(AgsConnectable *connectable)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_synth_bulk_output_disconnect(AgsConnectable *connectable)
+{
+  //TODO:JK: implement me
 }
 
 /**
