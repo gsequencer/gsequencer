@@ -49,6 +49,7 @@ struct _AgsMatrixBulkInputClass
 
 GType ags_matrix_bulk_input_get_type(void);
 
-AgsMatrixBulkInput* ags_matrix_bulk_input_new(AgsChannel *channel);
+AgsMatrixBulkInput* ags_matrix_bulk_input_new(AgsAudio *audio,
+					      GType channel_type);
 
 #endif /*__AGS_MATRIX_BULK_INPUT_H__*/

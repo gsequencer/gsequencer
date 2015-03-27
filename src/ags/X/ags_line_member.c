@@ -31,8 +31,6 @@
 
 #include <ags/widget/ags_dial.h>
 
-#include <ags/X/ags_pad.h>
-
 void ags_line_member_class_init(AgsLineMemberClass *line_member);
 void ags_line_member_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_line_member_init(AgsLineMember *line_member);
@@ -813,7 +811,6 @@ ags_line_member_change_port(AgsLineMember *line_member,
 void
 ags_line_member_find_port(AgsLineMember *line_member)
 {
-  AgsMachine *machine;
   AgsLine *line;
   AgsAudio *audio;
   AgsChannel *channel;
@@ -864,8 +861,6 @@ ags_line_member_find_port(AgsLineMember *line_member)
 					     AGS_TYPE_LINE);
 
   audio = AGS_AUDIO(line->channel->audio);
-
-  machine = AGS_MACHINE(audio->machine);
 
   audio_port = NULL;
   channel_port = NULL;

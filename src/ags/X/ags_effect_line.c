@@ -179,9 +179,6 @@ ags_effect_line_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_effect_line_init(AgsEffectLine *effect_line)
 {
-  GtkAlignment *alignment;
-  GtkHBox *hbox;
-  
   effect_line->flags = 0;
 
   effect_line->name = NULL;
@@ -191,37 +188,20 @@ ags_effect_line_init(AgsEffectLine *effect_line)
 
   effect_line->channel = NULL;
 
-  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-  gtk_container_add(GTK_CONTAINER(alignment),
-		    hbox);
-  
-  effect_line->add = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_ADD);
-  gtk_box_pack_start(GTK_BOX(hbox),
-		     GTK_WIDGET(effect_line->add),
-		     FALSE, TRUE,
-		     0);
-  
-  effect_line->remove = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_REMOVE);
-  gtk_box_pack_start(GTK_BOX(hbox),
-		     GTK_WIDGET(effect_line->remove),
-		     FALSE, TRUE,
-		     0);
-  
-  effect_line->table = gtk_table_new(1, AGS_EFFECT_LINE_COLUMNS_COUNT,
-				    TRUE);
-  gtk_box_pack_start(GTK_BOX(hbox),
-		     GTK_WIDGET(effect_line->table),
+  effect_line->label = g_object_new(GTK_TYPE_LABEL,
+				    NULL);
+  gtk_box_pack_start(GTK_BOX(effect_line),
+		     GTK_WIDGET(effect_line->label),
 		     FALSE, TRUE,
 		     0);
 
-  alignment = (GtkAlignment *) g_object_new(GTK_TYPE_ALIGNMENT,
-					    "xalign\0", 0.0,
-					    NULL);
+  effect_line->table = gtk_table_new(1, AGS_EFFECT_LINE_COLUMNS_COUNT,
+				    TRUE);
   gtk_box_pack_start(GTK_BOX(effect_line),
-		     GTK_WIDGET(alignment),
+		     GTK_WIDGET(effect_line->table),
 		     FALSE, TRUE,
 		     0);
-  }
+}
 
 void
 ags_effect_line_set_property(GObject *gobject,

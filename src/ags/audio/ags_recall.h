@@ -65,6 +65,7 @@ typedef enum{
   AGS_RECALL_PERSISTENT_SEQUENCER  = 1 << 18,
   AGS_RECALL_PERSISTENT_NOTATION   = 1 << 19,
   AGS_RECALL_SKIP_DEPENDENCIES     = 1 << 20,
+  AGS_RECALL_BULK_MODE             = 1 << 21,
 }AgsRecallFlags;
 
 typedef enum{

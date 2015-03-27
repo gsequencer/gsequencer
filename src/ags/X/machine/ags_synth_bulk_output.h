@@ -49,6 +49,7 @@ struct _AgsSynthBulkOutputClass
 
 GType ags_synth_bulk_output_get_type(void);
 
-AgsSynthBulkOutput* ags_synth_bulk_output_new(AgsChannel *channel);
+AgsSynthBulkOutput* ags_synth_bulk_output_new(AgsAudio *audio,
+					      GType channel_type);
 
 #endif /*__AGS_SYNTH_BULK_OUTPUT_H__*/

@@ -148,7 +148,8 @@ ags_matrix_bulk_input_disconnect(AgsConnectable *connectable)
 /**
  * ags_matrix_bulk_input_new:
  * @matrix_bulk_input: the parent matrix_bulk_input
- * @channel: the #AgsChannel to visualize
+ * @audio: the #AgsAudio to visualize
+ * @channel_type: either %AGS_TYPE_INPUT or %AGS_TYPE_OUTPUT
  *
  * Creates an #AgsMatrixBulkInput
  *
@@ -157,12 +158,14 @@ ags_matrix_bulk_input_disconnect(AgsConnectable *connectable)
  * Since: 0.4
  */
 AgsMatrixBulkInput*
-ags_matrix_bulk_input_new(AgsChannel *channel)
+ags_matrix_bulk_input_new(AgsAudio *audio,
+			  GType channel_type)
 {
   AgsMatrixBulkInput *matrix_bulk_input;
 
   matrix_bulk_input = (AgsMatrixBulkInput *) g_object_new(AGS_TYPE_MATRIX_BULK_INPUT,
-							  "channel\0", channel,
+							  "audio\0", audio,
+							  "channel-type\0", channel_type,
 							  NULL);
 
   return(matrix_bulk_input);

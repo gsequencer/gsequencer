@@ -57,9 +57,8 @@ struct _AgsEffectLine
   
   AgsChannel *channel;
 
-  GtkButton *add;
-  GtkButton *remove;
-
+  GtkLabel *label;
+  
   GtkTable *table;
 };
 

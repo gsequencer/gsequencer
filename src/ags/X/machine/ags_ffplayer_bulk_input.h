@@ -54,6 +54,7 @@ struct _AgsFFPlayerBulkInputClass
 
 GType ags_ffplayer_bulk_input_get_type(void);
 
-AgsFFPlayerBulkInput* ags_ffplayer_bulk_input_new(AgsChannel *channel);
+AgsFFPlayerBulkInput* ags_ffplayer_bulk_input_new(AgsAudio *audio,
+						  GType channel_type);
 
 #endif /*__AGS_FFPLAYER_BULK_INPUT_H__*/

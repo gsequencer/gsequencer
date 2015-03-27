@@ -147,7 +147,8 @@ ags_ffplayer_bulk_input_disconnect(AgsConnectable *connectable)
 /**
  * ags_ffplayer_bulk_input_new:
  * @ffplayer_bulk_input: the parent ffplayer_bulk_input
- * @channel: the #AgsChannel to visualize
+ * @audio: the #AgsAudio to visualize
+ * @channel_type: either %AGS_TYPE_INPUT or %AGS_TYPE_OUTPUT
  *
  * Creates an #AgsFFPlayerBulkInput
  *
@@ -156,12 +157,14 @@ ags_ffplayer_bulk_input_disconnect(AgsConnectable *connectable)
  * Since: 0.4
  */
 AgsFFPlayerBulkInput*
-ags_ffplayer_bulk_input_new(AgsChannel *channel)
+ags_ffplayer_bulk_input_new(AgsAudio *audio,
+			    GType channel_type)
 {
   AgsFFPlayerBulkInput *ffplayer_bulk_input;
 
   ffplayer_bulk_input = (AgsFFPlayerBulkInput *) g_object_new(AGS_TYPE_FFPLAYER_BULK_INPUT,
-							      "channel\0", channel,
+							      "audio\0", audio,
+							      "channel-type\0", channel_type,
 							      NULL);
 
   return(ffplayer_bulk_input);

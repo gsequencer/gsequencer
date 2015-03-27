@@ -47,6 +47,11 @@ void ags_effect_bulk_set_version(AgsPlugin *plugin, gchar *version);
 gchar* ags_effect_bulk_get_build_id(AgsPlugin *plugin);
 void ags_effect_bulk_set_build_id(AgsPlugin *plugin, gchar *build_id);
 
+void ags_effect_bulk_real_add_effect(AgsEffectBulk *effect_bulk,
+				     gchar *effect);
+void ags_effect_bulk_real_remove_effect(AgsEffectBulk *effect_bulk,
+					guint nth);
+
 /**
  * SECTION:ags_effect_bulk
  * @short_description: A composite widget to visualize a bunch of #AgsChannel
@@ -66,7 +71,8 @@ enum{
 
 enum{
   PROP_0,
-  PROP_CHANNEL,
+  PROP_AUDIO,
+  PROP_CHANNEL_TYPE,
 };
 
 static gpointer ags_effect_bulk_parent_class = NULL;
@@ -132,22 +138,78 @@ ags_effect_bulk_class_init(AgsEffectBulkClass *effect_bulk)
   gobject->set_property = ags_effect_bulk_set_property;
   gobject->get_property = ags_effect_bulk_get_property;
 
+  /* AgsEffectBulkClass */
+  effect_bulk->add_effect = ags_effect_bulk_real_add_effect;
+  effect_bulk->remove_effect = ags_effect_bulk_real_remove_effect;
+  
+  /* signals */
+  /**
+   * AgsEffectBulk::add-effect:
+   * @effect_bulk: the #AgsEffectBulk to modify
+   * @effect: the effect's name
+   *
+   * The ::add-effect signal notifies about added effect.
+   */
+  effect_bulk_signals[RESIZE_AUDIO_CHANNELS] =
+    g_signal_new("add-effect\0",
+		 G_TYPE_FROM_CLASS(effect_bulk),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsEffectBulkClass, add_effect),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__STRING,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_STRING);
+
+  /**
+   * AgsEffectBulk::remove-effect:
+   * @effect_bulk: the #AgsEffectBulk to modify
+   * @nth: the nth effect
+   *
+   * The ::remove-effect signal notifies about removed effect.
+   */
+  effect_bulk_signals[RESIZE_AUDIO_CHANNELS] =
+    g_signal_new("remove-effect\0",
+		 G_TYPE_FROM_CLASS(effect_bulk),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsEffectBulkClass, remove_effect),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__UINT,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_UINT);
+
   /* properties */
   /**
-   * AgsEffectBulk:channel:
+   * AgsEffectBulk:audio:
    *
-   * The start of a bunch of #AgsChannel to visualize.
+   * The #AgsAudio to visualize.
    * 
    * Since: 0.4
    */
-  param_spec = g_param_spec_object("channel\0",
-				   "assigned channel\0",
-				   "The channel it is assigned with\0",
-				   AGS_TYPE_CHANNEL,
+  param_spec = g_param_spec_object("audio\0",
+				   "assigned audio\0",
+				   "The audio it is assigned with\0",
+				   AGS_TYPE_AUDIO,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_CHANNEL,
+				  PROP_AUDIO,
 				  param_spec);
+
+  /**
+   * AgsEffectBulk:channel-type:
+   *
+   * The target channel.
+   * 
+   * Since: 0.4
+   */
+  param_spec = g_param_spec_object("channel-type\0",
+				   "assigned channel type\0",
+				   "The channel type it is assigned with\0",
+				   G_TYPE_ULONG,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_CHANNEL_TYPE,
+				  param_spec);
+
 }
 
 void
@@ -184,36 +246,13 @@ ags_effect_bulk_init(AgsEffectBulk *effect_bulk)
   
   effect_bulk->flags = 0;
 
-  effect_bulk->name = "ags-default-effect-bulk\0";
+  effect_bulk->name = NULL;
   
   effect_bulk->version = AGS_EFFECT_BULK_DEFAULT_VERSION;
   effect_bulk->build_id = AGS_EFFECT_BULK_DEFAULT_BUILD_ID;
-  
-  effect_bulk->channel = NULL;
 
-  alignment = (GtkAlignment *) g_object_new(GTK_TYPE_ALIGNMENT,
-					    "xalign\0", 1.0,
-					    NULL);
-  gtk_box_pack_start(effect_bulk,
-		     alignment,
-		     FALSE, FALSE,
-		     0);
-
-  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-  gtk_container_add(alignment,
-		    hbox);
-
-  effect_bulk->add = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_ADD);
-  gtk_box_pack_start(hbox,
-		     effect_bulk->add,
-		     FALSE, FALSE,
-		     0);
-
-  effect_bulk->remove = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_REMOVE);
-  gtk_box_pack_start(hbox,
-		     effect_bulk->remove,
-		     FALSE, FALSE,
-		     0);
+  effect_bulk->channel_type = G_TYPE_NONE;
+  effect_bulk->audio = NULL;
 
   effect_bulk->table = (GtkTable *) gtk_table_new(1, 2, FALSE);
   gtk_box_pack_start(effect_bulk,
@@ -233,25 +272,33 @@ ags_effect_bulk_set_property(GObject *gobject,
   effect_bulk = AGS_EFFECT_BULK(gobject);
 
   switch(prop_id){
-  case PROP_CHANNEL:
+  case PROP_AUDIO:
     {
-      AgsChannel *channel;
+      AgsAudio *audio;
 
-      channel = (AgsChannel *) g_value_get_object(value);
+      audio = (AgsAudio *) g_value_get_object(value);
 
-      if(effect_bulk->channel == channel){
+      if(effect_bulk->audio == audio){
 	return;
       }
 
-      if(effect_bulk->channel != NULL){
-	g_object_unref(effect_bulk->channel);
+      if(effect_bulk->audio != NULL){
+	g_object_unref(effect_bulk->audio);
       }
 
-      if(channel != NULL){
-	g_object_ref(channel);
+      if(audio != NULL){
+	g_object_ref(audio);
       }
 
-      effect_bulk->channel = channel;
+      effect_bulk->audio = audio;
+    }
+  case PROP_CHANNEL_TYPE:
+    {
+      GType channel_type;
+
+      channel_type = (GType) g_value_get_ulong(value);
+
+      effect_bulk->channel_type = channel_type;
     }
     break;
   default:
@@ -271,8 +318,16 @@ ags_effect_bulk_get_property(GObject *gobject,
   effect_bulk = AGS_EFFECT_BULK(gobject);
 
   switch(prop_id){
-  case PROP_CHANNEL:
+  case PROP_AUDIO:
     {
+      g_value_set_object(value,
+			 effect_bulk->audio);
+    }
+    break;
+  case PROP_AUDIO:
+    {
+      g_value_set_ulong(value,
+			effect_bulk->channel_type);
     }
     break;
   default:
@@ -341,10 +396,51 @@ ags_effect_bulk_set_build_id(AgsPlugin *plugin, gchar *build_id)
   effect_bulk->build_id = build_id;
 }
 
+void
+ags_effect_bulk_real_add_effect(AgsEffectBulk *effect_bulk,
+				gchar *effect)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_effect_bulk_add_effect(AgsEffectBulk *effect_bulk,
+			   gchar *effect)
+{
+  g_return_if_fail(AGS_IS_EFFECT_BULK(effect_bulk));
+
+  g_object_ref((GObject *) effect_bulk);
+  g_signal_emit(G_OBJECT(effect_bulk),
+		effect_bulk_signals[ADD_EFFECT], 0,
+		effect);
+  g_object_unref((GObject *) effect_bulk);
+}
+
+void
+ags_effect_bulk_real_remove_effect(AgsEffectBulk *effect_bulk,
+				   guint nth)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_effect_bulk_remove_effect(AgsEffectBulk *effect_bulk,
+			      guint nth)
+{
+  g_return_if_fail(AGS_IS_EFFECT_BULK(effect_bulk));
+
+  g_object_ref((GObject *) effect_bulk);
+  g_signal_emit(G_OBJECT(effect_bulk),
+		effect_bulk_signals[REMOVE_EFFECT], 0,
+		nth);
+  g_object_unref((GObject *) effect_bulk);
+}
+
 /**
  * ags_effect_bulk_new:
  * @effect_bulk: the parent effect_bulk
- * @channel: the #AgsChannel to visualize
+ * @audio: the #AgsAudio to visualize
+ * @channel_type: either %AGS_TYPE_INPUT or %AGS_TYPE_OUTPUT
  *
  * Creates an #AgsEffectBulk
  *
@@ -353,12 +449,14 @@ ags_effect_bulk_set_build_id(AgsPlugin *plugin, gchar *build_id)
  * Since: 0.4
  */
 AgsEffectBulk*
-ags_effect_bulk_new(AgsChannel *channel)
+ags_effect_bulk_new(AgsAudio *audio,
+		    GType channel_type)
 {
   AgsEffectBulk *effect_bulk;
 
   effect_bulk = (AgsEffectBulk *) g_object_new(AGS_TYPE_EFFECT_BULK,
-					       "channel\0", channel,
+					       "audio\0", audio,
+					       "channel-type\0", channel_type,
 					       NULL);
 
   return(effect_bulk);

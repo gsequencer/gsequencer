@@ -23,7 +23,7 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_audio.h>
 
 #define AGS_TYPE_EFFECT_BULK                (ags_effect_bulk_get_type())
 #define AGS_EFFECT_BULK(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_EFFECT_BULK, AgsEffectBulk))
@@ -52,11 +52,9 @@ struct _AgsEffectBulk
 
   gchar *version;
   gchar *build_id;
-  
-  AgsChannel *channel;
 
-  GtkButton *add;
-  GtkButton *remove;
+  GType *channel_type;
+  AgsAudio *audio;
 
   GtkTable *table;
 };
@@ -73,6 +71,12 @@ struct _AgsEffectBulkClass
 
 GType ags_effect_bulk_get_type(void);
 
-AgsEffectBulk* ags_effect_bulk_new(AgsChannel *channel);
+void ags_effect_bulk_add_effect(AgsEffectBulk *effect_bulk,
+				gchar *effect);
+void ags_effect_bulk_remove_effect(AgsEffectBulk *effect_bulk,
+				   guint nth);
+
+AgsEffectBulk* ags_effect_bulk_new(AgsAudio *audio,
+				   GType channel_type);
 
 #endif /*__AGS_EFFECT_BULK_H__*/

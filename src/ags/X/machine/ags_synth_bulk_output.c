@@ -147,7 +147,8 @@ ags_synth_bulk_output_disconnect(AgsConnectable *connectable)
 /**
  * ags_synth_bulk_output_new:
  * @synth_bulk_output: the parent synth_bulk_output
- * @channel: the #AgsChannel to visualize
+ * @audio: the #AgsAudio to visualize
+ * @channel_type: either %AGS_TYPE_INPUT or %AGS_TYPE_OUTPUT
  *
  * Creates an #AgsSynthBulkOutput
  *
@@ -156,12 +157,13 @@ ags_synth_bulk_output_disconnect(AgsConnectable *connectable)
  * Since: 0.4
  */
 AgsSynthBulkOutput*
-ags_synth_bulk_output_new(AgsChannel *channel)
+ags_synth_bulk_output_new(AgsAudio *audio,
+			  GType channel_type)
 {
   AgsSynthBulkOutput *synth_bulk_output;
 
   synth_bulk_output = (AgsSynthBulkOutput *) g_object_new(AGS_TYPE_SYNTH_BULK_OUTPUT,
-							  "channel\0", channel,
+							  "audio\0", audio,
 							  NULL);
 
   return(synth_bulk_output);

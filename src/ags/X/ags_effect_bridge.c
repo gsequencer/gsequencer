@@ -181,7 +181,7 @@ ags_effect_bridge_class_init(AgsEffectBridgeClass *effect_bridge)
     g_signal_new("resize-audio-channels\0",
 		 G_TYPE_FROM_CLASS(effect_bridge),
 		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsEffectBridgeClass, resize_pads),
+		 G_STRUCT_OFFSET(AgsEffectBridgeClass, resize_audio_channels),
 		 NULL, NULL,
 		 g_cclosure_user_marshal_VOID__UINT_UINT,
 		 G_TYPE_NONE, 2,
