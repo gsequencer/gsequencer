@@ -273,7 +273,7 @@ ags_synth_init(AgsSynth *synth)
   gtk_box_pack_start((GtkBox *) vbox, (GtkWidget *) synth->update, FALSE, FALSE, 0);
 
 
-  table = (GtkTable *) gtk_table_new(3, 2, FALSE);
+  table = (GtkTable *) gtk_table_new(4, 2, FALSE);
   gtk_box_pack_start((GtkBox *) vbox, (GtkWidget *) table, FALSE, FALSE, 0);
 
   
@@ -335,6 +335,12 @@ ags_synth_init(AgsSynth *synth)
 		   2, 3,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
+
+  AGS_MACHINE(synth)->bridge = ags_synth_bridge_new(FALSE);
+  gtk_box_pack_start((GtkBox *) hbox,
+		     (GtkWidget *) AGS_MACHINE(synth)->bridge,
+		     FALSE, FALSE,
+		     0);
 }
 
 void

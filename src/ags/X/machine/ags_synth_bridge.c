@@ -25,6 +25,10 @@
 
 #include <ags/object/ags_plugin.h>
 
+#include <ags/X/machine/ags_synth_bulk_output.h>
+#include <ags/X/machine/ags_synth_output_pad.h>
+#include <ags/X/machine/ags_synth_output_line.h>
+
 void ags_synth_bridge_class_init(AgsSynthBridgeClass *synth_bridge);
 void ags_synth_bridge_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_synth_bridge_plugin_interface_init(AgsPluginInterface *plugin);
@@ -126,7 +130,43 @@ ags_synth_bridge_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_synth_bridge_init(AgsSynthBridge *synth_bridge)
 {
-  //TODO:JK: implement me
+  GtkFrame *frame;
+  GtkExpander *expander;
+  GtkTable *table;
+
+  AGS_EFFECT_BRIDGE(synth_bridge)->output_pad_type = AGS_TYPE_SYNTH_OUTPUT_PAD;
+  AGS_EFFECT_BRIDGE(synth_bridge)->output_line_type = AGS_TYPE_SYNTH_OUTPUT_LINE;
+
+  frame = (GtkFrame *) gtk_frame_new("output bridge\0");
+  gtk_box_pack_start(AGS_EFFECT_BRIDGE(synth_bridge),
+		     frame,
+		     FALSE, FALSE,
+		     0);
+
+  expander = gtk_expander_new("show/hide\0");
+  gtk_container_add(frame,
+		    expander);
+
+  table = (GtkTable *) gtk_table_new(1, 2, FALSE);
+  gtk_container_add(expander,
+		    table);
+
+  AGS_EFFECT_BRIDGE(synth_bridge)->bulk_output = (GtkWidget *) g_object_new(AGS_TYPE_SYNTH_BULK_OUTPUT,
+									      NULL);
+  gtk_table_attach(table,
+		   AGS_EFFECT_BRIDGE(synth_bridge)->bulk_output,
+		   0, 1,
+		   0, 1,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+  
+  AGS_EFFECT_BRIDGE(synth_bridge)->output = (GtkHBox *) gtk_hbox_new(FALSE, 0);
+  gtk_table_attach(table,
+		   AGS_EFFECT_BRIDGE(synth_bridge)->output,
+		   1, 2,
+		   0, 1,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
 }
 
 void

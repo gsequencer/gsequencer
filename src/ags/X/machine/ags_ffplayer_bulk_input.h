@@ -23,8 +23,6 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include <ags/audio/ags_channel.h>
-
 #include <ags/X/ags_effect_bulk.h>
 
 #define AGS_TYPE_FFPLAYER_BULK_INPUT                (ags_ffplayer_bulk_input_get_type())
@@ -34,8 +32,15 @@
 #define AGS_IS_FFPLAYER_BULK_INPUT_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_FFPLAYER_BULK_INPUT))
 #define AGS_FFPLAYER_BULK_INPUT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_FFPLAYER_BULK_INPUT, AgsFFPlayerBulkInputClass))
 
+#define AGS_FFPLAYER_BULK_INPUT_DEFAULT_VERSION "0.4.3\0"
+#define AGS_FFPLAYER_BULK_INPUT_DEFAULT_BUILD_ID "CEST 20-03-2015 08:24\0"
+
 typedef struct _AgsFFPlayerBulkInput AgsFFPlayerBulkInput;
 typedef struct _AgsFFPlayerBulkInputClass AgsFFPlayerBulkInputClass;
+
+typedef enum{
+  AGS_FFPLAYER_BULK_INPUT_CONNECTED        = 1,
+}AgsFFPlayerBulkInputFlags;
 
 struct _AgsFFPlayerBulkInput
 {

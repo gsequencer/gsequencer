@@ -18,8 +18,6 @@
 
 #include <ags/X/machine/ags_ffplayer_bridge.h>
 #include <ags/X/machine/ags_ffplayer_bridge_callbacks.h>
-#include <ags/X/machine/ags_ffplayer_input_pad.h>
-#include <ags/X/machine/ags_ffplayer_input_line.h>
 
 #include <ags-lib/object/ags_connectable.h>
 
@@ -28,6 +26,10 @@
 #include <ags/object/ags_plugin.h>
 
 #include <ags/X/ags_effect_bulk.h>
+
+#include <ags/X/machine/ags_ffplayer_bulk_input.h>
+#include <ags/X/machine/ags_ffplayer_input_pad.h>
+#include <ags/X/machine/ags_ffplayer_input_line.h>
 
 void ags_ffplayer_bridge_class_init(AgsFFPlayerBridgeClass *ffplayer_bridge);
 void ags_ffplayer_bridge_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -130,23 +132,20 @@ ags_ffplayer_bridge_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_ffplayer_bridge_init(AgsFFPlayerBridge *ffplayer_bridge)
 {
-  AgsEffectBridge *effect_bridge;
   GtkFrame *frame;
   GtkExpander *expander;
   GtkTable *table;
-  
-  effect_bridge = AGS_EFFECT_BRIDGE(ffplayer_bridge);
 
-  effect_bridge->input_pad_type = AGS_TYPE_FFPLAYER_INPUT_PAD;
-  effect_bridge->input_line_type = AGS_TYPE_FFPLAYER_INPUT_LINE;
+  AGS_EFFECT_BRIDGE(ffplayer_bridge)->input_pad_type = AGS_TYPE_FFPLAYER_INPUT_PAD;
+  AGS_EFFECT_BRIDGE(ffplayer_bridge)->input_line_type = AGS_TYPE_FFPLAYER_INPUT_LINE;
 
   frame = (GtkFrame *) gtk_frame_new("input bridge\0");
-  gtk_box_pack_start(effect_bridge,
+  gtk_box_pack_start(AGS_EFFECT_BRIDGE(ffplayer_bridge),
 		     frame,
 		     FALSE, FALSE,
 		     0);
 
-  expander = gtk_expander_new(NULL);
+  expander = gtk_expander_new("show/hide\0");
   gtk_container_add(frame,
 		    expander);
 
@@ -154,17 +153,18 @@ ags_ffplayer_bridge_init(AgsFFPlayerBridge *ffplayer_bridge)
   gtk_container_add(expander,
 		    table);
 
-  effect_bridge->bulk_input = (GtkWidget *) ags_ffplayer_bulk_input_new(NULL);
+  AGS_EFFECT_BRIDGE(ffplayer_bridge)->bulk_input = (GtkWidget *) g_object_new(AGS_TYPE_FFPLAYER_BULK_INPUT,
+									      NULL);
   gtk_table_attach(table,
-		   effect_bridge->bulk_input,
+		   AGS_EFFECT_BRIDGE(ffplayer_bridge)->bulk_input,
 		   0, 1,
 		   0, 1,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
   
-  effect_bridge->input = (GtkHBox *) gtk_hbox_new(FALSE, 0);
+  AGS_EFFECT_BRIDGE(ffplayer_bridge)->input = (GtkHBox *) gtk_hbox_new(FALSE, 0);
   gtk_table_attach(table,
-		   effect_bridge->input,
+		   AGS_EFFECT_BRIDGE(ffplayer_bridge)->input,
 		   1, 2,
 		   0, 1,
 		   GTK_FILL, GTK_FILL,

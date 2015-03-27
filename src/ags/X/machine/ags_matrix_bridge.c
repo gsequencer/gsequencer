@@ -25,6 +25,8 @@
 
 #include <ags/object/ags_plugin.h>
 
+#include <ags/X/machine/ags_matrix_bulk_input.h>
+
 void ags_matrix_bridge_class_init(AgsMatrixBridgeClass *matrix_bridge);
 void ags_matrix_bridge_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_matrix_bridge_plugin_interface_init(AgsPluginInterface *plugin);
@@ -126,7 +128,31 @@ ags_matrix_bridge_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_matrix_bridge_init(AgsMatrixBridge *matrix_bridge)
 {
-  //TODO:JK: implement me
+  GtkFrame *frame;
+  GtkExpander *expander;
+  GtkTable *table;
+
+  frame = (GtkFrame *) gtk_frame_new("input bridge\0");
+  gtk_box_pack_start(AGS_EFFECT_BRIDGE(matrix_bridge),
+		     frame,
+		     FALSE, FALSE,
+		     0);
+
+  expander = gtk_expander_new("show/hide\0");
+  gtk_container_add(frame,
+		    expander);
+
+  table = (GtkTable *) gtk_table_new(1, 2, FALSE);
+  gtk_container_add(expander,
+		    table);
+
+  AGS_EFFECT_BRIDGE(matrix_bridge)->bulk_input = (GtkWidget *) ags_matrix_bulk_input_new(NULL);
+  gtk_table_attach(table,
+		   AGS_EFFECT_BRIDGE(matrix_bridge)->bulk_input,
+		   0, 1,
+		   0, 1,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
 }
 
 void

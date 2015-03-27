@@ -191,7 +191,9 @@ ags_effect_bulk_init(AgsEffectBulk *effect_bulk)
   
   effect_bulk->channel = NULL;
 
-  alignment = (GtkAlignment *) gtk_alignment_new(1.0, 0.0, 0.0, 0.0);
+  alignment = (GtkAlignment *) g_object_new(GTK_TYPE_ALIGNMENT,
+					    "xalign\0", 1.0,
+					    NULL);
   gtk_box_pack_start(effect_bulk,
 		     alignment,
 		     FALSE, FALSE,

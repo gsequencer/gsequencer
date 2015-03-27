@@ -328,9 +328,8 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   gtk_widget_set_style((GtkWidget *) hscrollbar, ffplayer_style);
   gtk_box_pack_start((GtkBox *) vbox, (GtkWidget *) hscrollbar, FALSE, FALSE, 0);
 
-  /* input bridge */
+  /* effect bridge */
   AGS_MACHINE(ffplayer)->bridge = ags_ffplayer_bridge_new(audio);
-  //  gtk_widget_set_style((GtkWidget *) AGS_MACHINE(ffplayer)->bridge, ffplayer_style);
   gtk_table_attach(table,
 		   (GtkWidget *) AGS_MACHINE(ffplayer)->bridge,
 		   0, 2,

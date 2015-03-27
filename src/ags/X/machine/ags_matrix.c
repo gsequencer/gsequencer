@@ -359,6 +359,15 @@ ags_matrix_init(AgsMatrix *matrix)
 
   matrix->loop_button = (GtkCheckButton *) gtk_check_button_new_with_label("loop\0");
   gtk_box_pack_start((GtkBox *) vbox, (GtkWidget *) matrix->loop_button, FALSE, FALSE, 0);
+
+  /* effect bridge */
+  AGS_MACHINE(matrix)->bridge = ags_matrix_bridge_new(audio);
+  gtk_table_attach(matrix->table,
+		   (GtkWidget *) AGS_MACHINE(matrix)->bridge,
+		   0, 4,
+		   2, 3,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
 }
 
 void
