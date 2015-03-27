@@ -53,6 +53,15 @@ void ags_line_set_version(AgsPlugin *plugin, gchar *version);
 gchar* ags_line_get_build_id(AgsPlugin *plugin);
 void ags_line_set_build_id(AgsPlugin *plugin, gchar *build_id);
 
+void ags_effect_bulk_real_add_effect(AgsEffectBulk *effect_bulk,
+				     gchar *effect);
+void ags_effect_bulk_real_remove_effect(AgsEffectBulk *effect_bulk,
+					guint nth);
+
+void ags_line_real_add_effect(AgsLine *line,
+			      gchar *effect);
+void ags_line_real_remove_effect(AgsLine *line,
+				 guint nth);
 void ags_line_real_set_channel(AgsLine *line, AgsChannel *channel);
 void ags_line_real_map_recall(AgsLine *line,
 			      guint output_pad_start);
@@ -183,11 +192,47 @@ ags_line_class_init(AgsLineClass *line)
   /* AgsLineClass */
   line->set_channel = ags_line_real_set_channel;
 
+  line->add_effect = ags_line_real_add_effect;
+  line->remove_effect = ags_line_real_remove_effect;
   line->group_changed = NULL;
   line->map_recall = ags_line_real_map_recall;
   line->find_port = ags_line_real_find_port;
-
+  
   /* signals */
+  /**
+   * AgsLine::add-effect:
+   * @line: the #AgsLine to modify
+   * @effect: the effect's name
+   *
+   * The ::add-effect signal notifies about added effect.
+   */
+  line_signals[RESIZE_AUDIO_CHANNELS] =
+    g_signal_new("add-effect\0",
+		 G_TYPE_FROM_CLASS(line),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsLineClass, add_effect),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__STRING,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_STRING);
+
+  /**
+   * AgsLine::remove-effect:
+   * @line: the #AgsLine to modify
+   * @nth: the nth effect
+   *
+   * The ::remove-effect signal notifies about removed effect.
+   */
+  line_signals[RESIZE_AUDIO_CHANNELS] =
+    g_signal_new("remove-effect\0",
+		 G_TYPE_FROM_CLASS(line),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsLineClass, remove_effect),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__UINT,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_UINT);
+
   /**
    * AgsLine::set-channel:
    * @line: the #AgsLine to modify
@@ -410,7 +455,7 @@ ags_line_connect(AgsConnectable *connectable)
   if((AGS_LINE_PREMAPPED_RECALL & (line->flags)) == 0){
     if((AGS_LINE_MAPPED_RECALL & (line->flags)) == 0){
       ags_line_map_recall(line,
-			 0);
+			  0);
     }
   }else{
     line->flags &= (~AGS_LINE_PREMAPPED_RECALL);
@@ -533,6 +578,46 @@ ags_line_group_changed(AgsLine *line)
   g_object_ref((GObject *) line);
   g_signal_emit(G_OBJECT(line),
 		line_signals[GROUP_CHANGED], 0);
+  g_object_unref((GObject *) line);
+}
+
+void
+ags_line_real_add_effect(AgsLine *line,
+			 gchar *effect)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_line_add_effect(AgsLine *line,
+		    gchar *effect)
+{
+  g_return_if_fail(AGS_IS_LINE(line));
+
+  g_object_ref((GObject *) line);
+  g_signal_emit(G_OBJECT(line),
+		line_signals[ADD_EFFECT], 0,
+		effect);
+  g_object_unref((GObject *) line);
+}
+
+void
+ags_line_real_remove_effect(AgsLine *line,
+			    guint nth)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_line_remove_effect(AgsLine *line,
+		       guint nth)
+{
+  g_return_if_fail(AGS_IS_LINE(line));
+
+  g_object_ref((GObject *) line);
+  g_signal_emit(G_OBJECT(line),
+		line_signals[REMOVE_EFFECT], 0,
+		nth);
   g_object_unref((GObject *) line);
 }
 

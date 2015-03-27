@@ -400,6 +400,7 @@ void
 ags_effect_bulk_real_add_effect(AgsEffectBulk *effect_bulk,
 				gchar *effect)
 {
+  AgsLineMember *line_member;
   //TODO:JK: implement me
 }
 

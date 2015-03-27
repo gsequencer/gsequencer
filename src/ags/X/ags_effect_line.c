@@ -47,6 +47,11 @@ void ags_effect_line_set_version(AgsPlugin *plugin, gchar *version);
 gchar* ags_effect_line_get_build_id(AgsPlugin *plugin);
 void ags_effect_line_set_build_id(AgsPlugin *plugin, gchar *build_id);
 
+void ags_effect_line_real_add_effect(AgsEffectLine *effect_line,
+				     gchar *effect);
+void ags_effect_line_real_remove_effect(AgsEffectLine *effect_line,
+					guint nth);
+
 /**
  * SECTION:ags_effect_line
  * @short_description: A composite widget to visualize a bunch of #AgsChannel
@@ -131,6 +136,45 @@ ags_effect_line_class_init(AgsEffectLineClass *effect_line)
 
   gobject->set_property = ags_effect_line_set_property;
   gobject->get_property = ags_effect_line_get_property;
+
+  /* AgsEffectLineClass */
+  effect_line->add_effect = ags_effect_line_real_add_effect;
+  effect_line->remove_effect = ags_effect_line_real_remove_effect;
+  
+  /* signals */
+  /**
+   * AgsEffectLine::add-effect:
+   * @effect_line: the #AgsEffectLine to modify
+   * @effect: the effect's name
+   *
+   * The ::add-effect signal notifies about added effect.
+   */
+  effect_line_signals[RESIZE_AUDIO_CHANNELS] =
+    g_signal_new("add-effect\0",
+		 G_TYPE_FROM_CLASS(effect_line),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsEffectLineClass, add_effect),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__STRING,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_STRING);
+
+  /**
+   * AgsEffectLine::remove-effect:
+   * @effect_line: the #AgsEffectLine to modify
+   * @nth: the nth effect
+   *
+   * The ::remove-effect signal notifies about removed effect.
+   */
+  effect_line_signals[RESIZE_AUDIO_CHANNELS] =
+    g_signal_new("remove-effect\0",
+		 G_TYPE_FROM_CLASS(effect_line),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsEffectLineClass, remove_effect),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__UINT,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_UINT);
 
   /* properties */
   /**
@@ -320,6 +364,46 @@ ags_effect_line_set_build_id(AgsPlugin *plugin, gchar *build_id)
   effect_line = AGS_EFFECT_LINE(plugin);
 
   effect_line->build_id = build_id;
+}
+
+void
+ags_effect_line_real_add_effect(AgsEffectLine *effect_line,
+				gchar *effect)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_effect_line_add_effect(AgsEffectLine *effect_line,
+			   gchar *effect)
+{
+  g_return_if_fail(AGS_IS_EFFECT_LINE(effect_line));
+
+  g_object_ref((GObject *) effect_line);
+  g_signal_emit(G_OBJECT(effect_line),
+		effect_line_signals[ADD_EFFECT], 0,
+		effect);
+  g_object_unref((GObject *) effect_line);
+}
+
+void
+ags_effect_line_real_remove_effect(AgsEffectLine *effect_line,
+				   guint nth)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_effect_line_remove_effect(AgsEffectLine *effect_line,
+			      guint nth)
+{
+  g_return_if_fail(AGS_IS_EFFECT_LINE(effect_line));
+
+  g_object_ref((GObject *) effect_line);
+  g_signal_emit(G_OBJECT(effect_line),
+		effect_line_signals[REMOVE_EFFECT], 0,
+		nth);
+  g_object_unref((GObject *) effect_line);
 }
 
 /**

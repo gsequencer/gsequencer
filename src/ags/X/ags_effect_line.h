@@ -74,6 +74,11 @@ struct _AgsEffectLineClass
 
 GType ags_effect_line_get_type(void);
 
+void ags_effect_line_add_effect(AgsEffectLine *effect_line,
+				gchar *effect);
+void ags_effect_line_remove_effect(AgsEffectLine *effect_line,
+				   guint nth);
+
 AgsEffectLine* ags_effect_line_new(AgsChannel *channel);
 
 #endif /*__AGS_EFFECT_LINE_H__*/

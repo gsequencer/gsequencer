@@ -75,7 +75,12 @@ struct _AgsLineClass
   void (*set_channel)(AgsLine *line, AgsChannel *channel);
 
   void (*group_changed)(AgsLine *line);
-
+  
+  void (*add_effect)(AgsLine *line,
+		     gchar *effect);
+  void (*remove_effect)(AgsLine *line,
+			guint nth);
+  
   void (*map_recall)(AgsLine *line,
 		     guint output_pad_start);
   GList (*find_port)(AgsLine *line);
@@ -88,6 +93,11 @@ void ags_line_set_channel(AgsLine *line, AgsChannel *channel);
 void ags_line_group_changed(AgsLine *line);
 
 GList* ags_line_find_next_grouped(GList *line);
+
+void ags_line_add_effect(AgsLine *line,
+			 gchar *effect);
+void ags_line_remove_effect(AgsLine *line,
+			    guint nth);
 
 void ags_line_map_recall(AgsLine *line,
 			 guint output_pad_start);
