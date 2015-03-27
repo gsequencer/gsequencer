@@ -98,7 +98,7 @@ ags_ffplayer_input_pad_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_ffplayer_input_pad = g_type_register_static(GTK_TYPE_VBOX,
+    ags_type_ffplayer_input_pad = g_type_register_static(AGS_TYPE_EFFECT_PAD,
 							 "AgsFFPlayerInputPad\0", &ags_ffplayer_input_pad_info,
 							 0);
 

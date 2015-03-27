@@ -60,6 +60,8 @@
 
 #include <ags/X/ags_editor.h>
 
+#include <ags/X/machine/ags_ffplayer_bridge.h>
+
 #include <math.h>
 
 void ags_ffplayer_class_init(AgsFFPlayerClass *ffplayer);
@@ -231,7 +233,7 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   AGS_MACHINE(ffplayer)->input_line_type = G_TYPE_NONE;
   AGS_MACHINE(ffplayer)->output_pad_type = G_TYPE_NONE;
   AGS_MACHINE(ffplayer)->output_line_type = G_TYPE_NONE;
-  
+
   g_signal_connect_after(G_OBJECT(ffplayer->machine.audio), "set_audio_channels\0",
 			 G_CALLBACK(ags_ffplayer_set_audio_channels), NULL);
 
@@ -245,7 +247,7 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   ffplayer->xml_type = "ags-ffplayer\0";
 
   /* create widgets */
-  table = (GtkTable *) gtk_table_new(3, 2, FALSE);
+  table = (GtkTable *) gtk_table_new(4, 2, FALSE);
   gtk_container_add((GtkContainer *) (gtk_bin_get_child((GtkBin *) ffplayer)), (GtkWidget *) table);
 
   hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
@@ -325,6 +327,16 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   hscrollbar = (GtkHScrollbar *) gtk_hscrollbar_new(ffplayer->hadjustment);
   gtk_widget_set_style((GtkWidget *) hscrollbar, ffplayer_style);
   gtk_box_pack_start((GtkBox *) vbox, (GtkWidget *) hscrollbar, FALSE, FALSE, 0);
+
+  /* input bridge */
+  AGS_MACHINE(ffplayer)->bridge = ags_ffplayer_bridge_new(audio);
+  //  gtk_widget_set_style((GtkWidget *) AGS_MACHINE(ffplayer)->bridge, ffplayer_style);
+  gtk_table_attach(table,
+		   (GtkWidget *) AGS_MACHINE(ffplayer)->bridge,
+		   0, 2,
+		   3, 4,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
 }
 
 void

@@ -83,8 +83,7 @@ struct _AgsMachine
   GType input_line_type;
   GtkContainer *input;
 
-  GtkContainer *output_bridge;
-  GtkContainer *input_bridge;
+  GtkContainer *bridge;
   
   GList *port;
 

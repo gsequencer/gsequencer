@@ -98,7 +98,7 @@ ags_synth_output_line_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_synth_output_line = g_type_register_static(GTK_TYPE_VBOX,
+    ags_type_synth_output_line = g_type_register_static(AGS_TYPE_EFFECT_LINE,
 							"AgsSynthOutputLine\0", &ags_synth_output_line_info,
 							0);
 

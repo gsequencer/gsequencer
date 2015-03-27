@@ -75,7 +75,7 @@ ags_matrix_bridge_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_matrix_bridge = g_type_register_static(GTK_TYPE_VBOX,
+    ags_type_matrix_bridge = g_type_register_static(AGS_TYPE_EFFECT_BRIDGE,
 						    "AgsMatrixBridge\0", &ags_matrix_bridge_info,
 						    0);
 

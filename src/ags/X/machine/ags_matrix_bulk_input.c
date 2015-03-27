@@ -76,7 +76,7 @@ ags_matrix_bulk_input_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_matrix_bulk_input = g_type_register_static(GTK_TYPE_VBOX,
+    ags_type_matrix_bulk_input = g_type_register_static(AGS_TYPE_EFFECT_BULK,
 							"AgsMatrixBulkInput\0", &ags_matrix_bulk_input_info,
 							0);
 

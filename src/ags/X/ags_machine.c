@@ -281,8 +281,7 @@ ags_machine_init(AgsMachine *machine)
   machine->output = NULL;
   machine->input = NULL;
 
-  machine->output_bridge = NULL;
-  machine->input_bridge = NULL;
+  machine->bridge = NULL;
 
   machine->port = NULL;
 

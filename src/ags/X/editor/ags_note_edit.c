@@ -335,7 +335,7 @@ ags_note_edit_reset_horizontally(AgsNoteEdit *note_edit, guint flags)
   editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(note_edit),
 						 AGS_TYPE_EDITOR);
 
-  zoom_factor = 1.0 / 16.0;
+  zoom_factor = 1.0 / 4.0;
 
   tact_factor = exp2(8.0 - (double) gtk_combo_box_get_active(editor->toolbar->zoom));
   tact = exp2((double) gtk_combo_box_get_active(editor->toolbar->zoom) - 4.0);

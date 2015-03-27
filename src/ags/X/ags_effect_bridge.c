@@ -241,10 +241,6 @@ ags_effect_bridge_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_effect_bridge_init(AgsEffectBridge *effect_bridge)
 {
-  GtkFrame *frame;
-  GtkExpander *expander;
-  GtkTable *table;
-  
   effect_bridge->flags = 0;
 
   effect_bridge->name = "ags-default-effect-bridge\0";
@@ -256,20 +252,6 @@ ags_effect_bridge_init(AgsEffectBridge *effect_bridge)
   /* output */
   effect_bridge->output_pad_type = G_TYPE_NONE;
   effect_bridge->output_line_type = G_TYPE_NONE;
-    
-  frame = (GtkFrame *) gtk_frame_new("output bridge\0");
-  gtk_box_pack_start(effect_bridge,
-		     frame,
-		     FALSE, FALSE,
-		     0);
-
-  expander = gtk_expander_new(NULL);
-  gtk_container_add(frame,
-		    expander);
-
-  table = (GtkTable *) gtk_table_new(1, 2, FALSE);
-  gtk_container_add(expander,
-		    table);
   
   effect_bridge->bulk_output_type = G_TYPE_NONE;
 
@@ -279,22 +261,7 @@ ags_effect_bridge_init(AgsEffectBridge *effect_bridge)
   
   /* input */
   effect_bridge->input_pad_type = G_TYPE_NONE;
-  effect_bridge->input_line_type = G_TYPE_NONE;
-
-  frame = (GtkFrame *) gtk_frame_new("input bridge\0");
-  gtk_box_pack_start(effect_bridge,
-		     frame,
-		     FALSE, FALSE,
-		     0);
-
-  expander = gtk_expander_new(NULL);
-  gtk_container_add(frame,
-		    expander);
-
-  table = (GtkTable *) gtk_table_new(1, 2, FALSE);
-  gtk_container_add(expander,
-		    table);
-  
+  effect_bridge->input_line_type = G_TYPE_NONE;  
 
   effect_bridge->bulk_input_type = G_TYPE_NONE;
 

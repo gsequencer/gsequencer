@@ -179,6 +179,45 @@ ags_effect_bulk_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_effect_bulk_init(AgsEffectBulk *effect_bulk)
 {
+  GtkAlignment *alignment;
+  GtkHBox *hbox;
+  
+  effect_bulk->flags = 0;
+
+  effect_bulk->name = "ags-default-effect-bulk\0";
+  
+  effect_bulk->version = AGS_EFFECT_BULK_DEFAULT_VERSION;
+  effect_bulk->build_id = AGS_EFFECT_BULK_DEFAULT_BUILD_ID;
+  
+  effect_bulk->channel = NULL;
+
+  alignment = (GtkAlignment *) gtk_alignment_new(1.0, 0.0, 0.0, 0.0);
+  gtk_box_pack_start(effect_bulk,
+		     alignment,
+		     FALSE, FALSE,
+		     0);
+
+  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
+  gtk_container_add(alignment,
+		    hbox);
+
+  effect_bulk->add = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_ADD);
+  gtk_box_pack_start(hbox,
+		     effect_bulk->add,
+		     FALSE, FALSE,
+		     0);
+
+  effect_bulk->remove = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_REMOVE);
+  gtk_box_pack_start(hbox,
+		     effect_bulk->remove,
+		     FALSE, FALSE,
+		     0);
+
+  effect_bulk->table = (GtkTable *) gtk_table_new(1, 2, FALSE);
+  gtk_box_pack_start(effect_bulk,
+		     effect_bulk->table,
+		     FALSE, FALSE,
+		     0);
 }
 
 void

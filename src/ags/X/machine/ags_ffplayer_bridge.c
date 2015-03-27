@@ -79,7 +79,7 @@ ags_ffplayer_bridge_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_ffplayer_bridge = g_type_register_static(GTK_TYPE_VBOX,
+    ags_type_ffplayer_bridge = g_type_register_static(AGS_TYPE_EFFECT_BRIDGE,
 						      "AgsFFPlayerBridge\0", &ags_ffplayer_bridge_info,
 						      0);
 
@@ -131,6 +131,8 @@ void
 ags_ffplayer_bridge_init(AgsFFPlayerBridge *ffplayer_bridge)
 {
   AgsEffectBridge *effect_bridge;
+  GtkFrame *frame;
+  GtkExpander *expander;
   GtkTable *table;
   
   effect_bridge = AGS_EFFECT_BRIDGE(ffplayer_bridge);
@@ -138,8 +140,18 @@ ags_ffplayer_bridge_init(AgsFFPlayerBridge *ffplayer_bridge)
   effect_bridge->input_pad_type = AGS_TYPE_FFPLAYER_INPUT_PAD;
   effect_bridge->input_line_type = AGS_TYPE_FFPLAYER_INPUT_LINE;
 
+  frame = (GtkFrame *) gtk_frame_new("input bridge\0");
+  gtk_box_pack_start(effect_bridge,
+		     frame,
+		     FALSE, FALSE,
+		     0);
+
+  expander = gtk_expander_new(NULL);
+  gtk_container_add(frame,
+		    expander);
+
   table = (GtkTable *) gtk_table_new(1, 2, FALSE);
-  gtk_container_add(effect_bridge,
+  gtk_container_add(expander,
 		    table);
 
   effect_bridge->bulk_input = (GtkWidget *) ags_ffplayer_bulk_input_new(NULL);

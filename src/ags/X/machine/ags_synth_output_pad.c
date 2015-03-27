@@ -55,18 +55,7 @@ void ags_synth_output_pad_disconnect(AgsConnectable *connectable);
  * packed by an #AgsSynthOutputPad.
  */
 
-enum{
-  RESIZE_LINES,
-  LAST_SIGNAL,
-};
-
-enum{
-  PROP_0,
-  PROP_CHANNEL,
-};
-
 static gpointer ags_synth_output_pad_parent_class = NULL;
-static guint synth_output_pad_signals[LAST_SIGNAL];
 
 GType
 ags_synth_output_pad_get_type(void)
@@ -98,7 +87,7 @@ ags_synth_output_pad_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_synth_output_pad = g_type_register_static(GTK_TYPE_VBOX,
+    ags_type_synth_output_pad = g_type_register_static(AGS_TYPE_EFFECT_PAD,
 						       "AgsSynthOutputPad\0", &ags_synth_output_pad_info,
 						       0);
 
