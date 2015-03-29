@@ -435,14 +435,14 @@ ags_menu_bar_add_ffplayer_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 
   ags_connectable_connect(AGS_CONNECTABLE(ffplayer));
 
-  gtk_widget_show_all((GtkWidget *) ffplayer);
-
   //  ffplayer->machine.audio->frequence = ;
   ffplayer->machine.audio->audio_channels = 2;
   ags_audio_set_pads(AGS_MACHINE(ffplayer)->audio, AGS_TYPE_INPUT, 78);
   ags_audio_set_pads(AGS_MACHINE(ffplayer)->audio, AGS_TYPE_OUTPUT, 1);
 
   ags_machine_find_port(AGS_MACHINE(ffplayer));
+
+  gtk_widget_show_all((GtkWidget *) ffplayer);
 }
 
 

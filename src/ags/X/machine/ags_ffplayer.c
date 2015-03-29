@@ -184,8 +184,6 @@ ags_ffplayer_class_init(AgsFFPlayerClass *ffplayer)
 void
 ags_ffplayer_connectable_interface_init(AgsConnectableInterface *connectable)
 {
-  AgsConnectableInterface *ags_ffplayer_connectable_parent_interface;
-
   ags_ffplayer_parent_connectable_interface = g_type_interface_peek_parent(connectable);
 
   connectable->connect = ags_ffplayer_connect;
@@ -336,6 +334,9 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 		   3, 4,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
+  g_object_set(AGS_MACHINE(ffplayer)->bridge,
+	       "audio\0", AGS_MACHINE(ffplayer)->audio,
+	       NULL);
 }
 
 void

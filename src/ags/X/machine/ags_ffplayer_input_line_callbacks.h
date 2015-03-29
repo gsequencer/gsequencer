@@ -25,4 +25,8 @@
 
 #include <ags/X/machine/ags_ffplayer_input_line.h>
 
+void ags_ffplayer_input_line_notify_channel_callback(GObject *gobject,
+						     GParamSpec *pspec,
+						     gpointer user_data);
+
 #endif /*__AGS_FFPLAYER_INPUT_LINE_CALLBACKS_H__*/

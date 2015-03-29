@@ -32,7 +32,7 @@ ags_effect_bridge_set_pads_callback(AgsAudio *audio,
 				    GType channel_type,
 				    guint pads, guint pads_old,
 				    AgsEffectBridge *effect_bridge)
-{
+{  
   ags_effect_bridge_resize_pads(effect_bridge,
 				channel_type,
 				pads, pads_old);

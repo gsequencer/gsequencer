@@ -45,6 +45,7 @@ void ags_ffplayer_bulk_input_disconnect(AgsConnectable *connectable);
  */
 
 static gpointer ags_ffplayer_bulk_input_parent_class = NULL;
+static AgsConnectableInterface *ags_ffplayer_bulk_input_parent_connectable_interface;
 
 GType
 ags_ffplayer_bulk_input_get_type(void)
@@ -96,17 +97,18 @@ void
 ags_ffplayer_bulk_input_class_init(AgsFFPlayerBulkInputClass *ffplayer_bulk_input)
 {
   GObjectClass *gobject;
-  GParamSpec *param_spec;
 
   ags_ffplayer_bulk_input_parent_class = g_type_class_peek_parent(ffplayer_bulk_input);
 
   /* GObjectClass */
-  gobject = G_OBJECT_CLASS(ffplayer_bulk_input);
+  gobject = (GObjectClass *) ffplayer_bulk_input;
 }
 
 void
 ags_ffplayer_bulk_input_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  ags_ffplayer_bulk_input_parent_connectable_interface = g_type_interface_peek_parent(connectable);
+
   connectable->is_ready = NULL;
   connectable->is_connected = NULL;
   connectable->connect = ags_ffplayer_bulk_input_connect;
@@ -135,6 +137,13 @@ ags_ffplayer_bulk_input_init(AgsFFPlayerBulkInput *ffplayer_bulk_input)
 void
 ags_ffplayer_bulk_input_connect(AgsConnectable *connectable)
 {
+  if((AGS_EFFECT_BULK_CONNECTED & (AGS_EFFECT_BULK(connectable)->flags)) != 0){
+    return;
+  }
+
+  ags_ffplayer_bulk_input_parent_connectable_interface->connect(connectable);
+
+
   //TODO:JK: implement me
 }
 

@@ -40,6 +40,8 @@ typedef struct _AgsFFPlayerInputLineClass AgsFFPlayerInputLineClass;
 struct _AgsFFPlayerInputLine
 {
   AgsEffectLine effect_line;
+
+  GtkLabel *label;
 };
 
 struct _AgsFFPlayerInputLineClass

@@ -66,6 +66,8 @@ enum{
 };
 
 static gpointer ags_ffplayer_input_line_parent_class = NULL;
+static AgsConnectableInterface *ags_ffplayer_input_line_parent_connectable_interface;
+
 static guint ffplayer_input_line_signals[LAST_SIGNAL];
 
 GType
@@ -129,6 +131,8 @@ ags_ffplayer_input_line_class_init(AgsFFPlayerInputLineClass *ffplayer_input_lin
 void
 ags_ffplayer_input_line_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  ags_ffplayer_input_line_parent_connectable_interface = g_type_interface_peek_parent(connectable);
+
   connectable->is_ready = NULL;
   connectable->is_connected = NULL;
   connectable->connect = ags_ffplayer_input_line_connect;
@@ -151,13 +155,18 @@ ags_ffplayer_input_line_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_ffplayer_input_line_init(AgsFFPlayerInputLine *ffplayer_input_line)
 {
-  //TODO:JK: implement me
+  g_signal_connect_after(ffplayer_input_line, "notify::channel",
+			 G_CALLBACK(ags_ffplayer_input_line_notify_channel_callback), NULL);
 }
 
 void
 ags_ffplayer_input_line_connect(AgsConnectable *connectable)
 {
-  //TODO:JK: implement me
+  if((AGS_EFFECT_LINE_CONNECTED & (AGS_EFFECT_LINE(connectable)->flags)) != 0){
+    return;
+  }
+
+  ags_ffplayer_input_line_parent_connectable_interface->connect(connectable);
 }
 
 void

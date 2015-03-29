@@ -17,3 +17,16 @@
  */
 
 #include <ags/X/machine/ags_ffplayer_input_line_callbacks.h>
+
+void
+ags_ffplayer_input_line_notify_channel_callback(GObject *gobject,
+						GParamSpec *pspec,
+						gpointer user_data)
+{
+  AgsFFPlayerInputLine *ffplayer_input_line;
+
+  ffplayer_input_line = AGS_FFPLAYER_INPUT_LINE(gobject);
+  gtk_label_set_text(AGS_EFFECT_LINE(ffplayer_input_line)->label,
+		     g_strdup_printf("in:%d", AGS_EFFECT_LINE(ffplayer_input_line)->channel->line));
+}
+

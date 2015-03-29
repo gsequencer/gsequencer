@@ -50,6 +50,7 @@ void ags_ffplayer_bridge_disconnect(AgsConnectable *connectable);
  */
 
 static gpointer ags_ffplayer_bridge_parent_class = NULL;
+static AgsConnectableInterface *ags_ffplayer_bridge_parent_connectable_interface;
 
 GType
 ags_ffplayer_bridge_get_type(void)
@@ -112,6 +113,8 @@ ags_ffplayer_bridge_class_init(AgsFFPlayerBridgeClass *ffplayer_bridge)
 void
 ags_ffplayer_bridge_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  ags_ffplayer_bridge_parent_connectable_interface = g_type_interface_peek_parent(connectable);
+
   connectable->is_ready = NULL;
   connectable->is_connected = NULL;
   connectable->connect = ags_ffplayer_bridge_connect;
@@ -167,19 +170,31 @@ ags_ffplayer_bridge_init(AgsFFPlayerBridge *ffplayer_bridge)
 		   AGS_EFFECT_BRIDGE(ffplayer_bridge)->input,
 		   1, 2,
 		   0, 1,
-		   GTK_FILL, GTK_FILL,
+		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
 		   0, 0);
 }
 
 void
 ags_ffplayer_bridge_connect(AgsConnectable *connectable)
 {
+  if((AGS_EFFECT_BRIDGE_CONNECTED & (AGS_EFFECT_BRIDGE(connectable)->flags)) != 0){
+    return;
+  }
+
+  ags_ffplayer_bridge_parent_connectable_interface->connect(connectable);
+
   //TODO:JK: implement me
 }
 
 void
 ags_ffplayer_bridge_disconnect(AgsConnectable *connectable)
 {
+  if((AGS_EFFECT_BRIDGE_CONNECTED & (AGS_EFFECT_BRIDGE(connectable)->flags)) == 0){
+    return;
+  }
+
+  ags_ffplayer_bridge_parent_connectable_interface->connect(connectable);
+
   //TODO:JK: implement me
 }
 

@@ -60,19 +60,21 @@ struct _AgsEffectBridge
   gchar *build_id;
   
   AgsAudio *audio;
-
-  GType *bulk_output_type;
+  gulong set_audio_channels_handler;
+  gulong set_pads_handler;
+  
+  GType bulk_output_type;
   GtkWidget *bulk_output;
   
-  GType *output_pad_type;
-  GType *output_line_type;
+  GType output_pad_type;
+  GType output_line_type;
   GtkHBox *output;
   
-  GType *bulk_input_type;
+  GType bulk_input_type;
   GtkWidget *bulk_input;
 
-  GType *input_pad_type;
-  GType *input_line_type;
+  GType input_pad_type;
+  GType input_line_type;
   GtkHBox *input;
 };
 

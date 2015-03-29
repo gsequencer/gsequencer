@@ -205,10 +205,7 @@ ags_effect_pad_plugin_interface_init(AgsPluginInterface *plugin)
 
 void
 ags_effect_pad_init(AgsEffectPad *effect_pad)
-{
-  GtkAlignment *alignment;
-  GtkHBox *hbox;
-  
+{  
   effect_pad->flags = 0;
 
   effect_pad->name = NULL;
@@ -218,34 +215,10 @@ ags_effect_pad_init(AgsEffectPad *effect_pad)
 
   effect_pad->channel = NULL;
 
-  alignment = (GtkAlignment *) g_object_new(GTK_TYPE_ALIGNMENT,
-					    "xalign\0", 1.0,
-					    NULL);
-  gtk_box_pack_start(GTK_BOX(effect_pad),
-		     GTK_WIDGET(alignment),
-		     FALSE, TRUE,
-		     0);
-  
-  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-  gtk_container_add(GTK_CONTAINER(alignment),
-		    hbox);
-  
-  effect_pad->add = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_ADD);
-  gtk_box_pack_start(GTK_BOX(hbox),
-		     GTK_WIDGET(effect_pad->add),
-		     FALSE, TRUE,
-		     0);
-  
-  effect_pad->remove = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_REMOVE);
-  gtk_box_pack_start(GTK_BOX(hbox),
-		     GTK_WIDGET(effect_pad->remove),
-		     FALSE, TRUE,
-		     0);
-
   effect_pad->cols = AGS_EFFECT_PAD_COLUMNS_COUNT;
   effect_pad->table = gtk_table_new(1, AGS_EFFECT_PAD_COLUMNS_COUNT,
 				    TRUE);
-  gtk_box_pack_start(GTK_BOX(hbox),
+  gtk_box_pack_start(GTK_BOX(effect_pad),
 		     GTK_WIDGET(effect_pad->table),
 		     FALSE, TRUE,
 		     0);
@@ -390,7 +363,6 @@ ags_effect_pad_real_resize_lines(AgsEffectPad *effect_pad, GType effect_line_typ
     for(i = audio_channels_old; i < audio_channels;){
       for(j = audio_channels_old % effect_pad->cols; j < effect_pad->cols && i < audio_channels; j++, i++){
 	effect_line = (AgsEffectLine *) g_object_new(effect_line_type,
-						     "pad\0", effect_pad,
 						     "channel\0", channel,
 						     NULL);
 	gtk_table_attach(effect_pad->table,

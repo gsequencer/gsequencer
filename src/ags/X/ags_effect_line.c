@@ -238,14 +238,14 @@ ags_effect_line_init(AgsEffectLine *effect_line)
 				    NULL);
   gtk_box_pack_start(GTK_BOX(effect_line),
 		     GTK_WIDGET(effect_line->label),
-		     FALSE, TRUE,
+		     FALSE, FALSE,
 		     0);
 
   effect_line->table = gtk_table_new(1, AGS_EFFECT_LINE_COLUMNS_COUNT,
 				    TRUE);
   gtk_box_pack_start(GTK_BOX(effect_line),
 		     GTK_WIDGET(effect_line->table),
-		     FALSE, TRUE,
+		     FALSE, FALSE,
 		     0);
 }
 

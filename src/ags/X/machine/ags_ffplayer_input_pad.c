@@ -55,18 +55,8 @@ void ags_ffplayer_input_pad_disconnect(AgsConnectable *connectable);
  * packed by an #AgsFFPlayerInputPad.
  */
 
-enum{
-  RESIZE_LINES,
-  LAST_SIGNAL,
-};
-
-enum{
-  PROP_0,
-  PROP_CHANNEL,
-};
-
 static gpointer ags_ffplayer_input_pad_parent_class = NULL;
-static guint ffplayer_input_pad_signals[LAST_SIGNAL];
+static AgsConnectableInterface *ags_ffplayer_input_pad_parent_connectable_interface;
 
 GType
 ags_ffplayer_input_pad_get_type(void)
@@ -118,17 +108,18 @@ void
 ags_ffplayer_input_pad_class_init(AgsFFPlayerInputPadClass *ffplayer_input_pad)
 {
   GObjectClass *gobject;
-  GParamSpec *param_spec;
 
   ags_ffplayer_input_pad_parent_class = g_type_class_peek_parent(ffplayer_input_pad);
 
   /* GObjectClass */
-  gobject = G_OBJECT_CLASS(ffplayer_input_pad);
+  gobject = (GObjectClass *) ffplayer_input_pad;
 }
 
 void
 ags_ffplayer_input_pad_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  ags_ffplayer_input_pad_parent_connectable_interface = g_type_interface_peek_parent(connectable);
+
   connectable->is_ready = NULL;
   connectable->is_connected = NULL;
   connectable->connect = ags_ffplayer_input_pad_connect;
@@ -157,6 +148,12 @@ ags_ffplayer_input_pad_init(AgsFFPlayerInputPad *ffplayer_input_pad)
 void
 ags_ffplayer_input_pad_connect(AgsConnectable *connectable)
 {
+  if((AGS_EFFECT_PAD_CONNECTED & (AGS_EFFECT_PAD(connectable)->flags)) != 0){
+    return;
+  }
+
+  ags_ffplayer_input_pad_parent_connectable_interface->connect(connectable);
+
   //TODO:JK: implement me
 }
 

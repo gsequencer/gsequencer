@@ -56,9 +56,6 @@ struct _AgsEffectPad
   gchar *build_id;
   
   AgsChannel *channel;
-
-  GtkButton *add;
-  GtkButton *remove;
   
   guint cols;
   GtkTable *table;

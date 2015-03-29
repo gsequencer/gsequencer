@@ -33,6 +33,7 @@
 #include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>
 
+#include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_input.h>
 
@@ -307,12 +308,9 @@ ags_machine_set_property(GObject *gobject,
   case PROP_AUDIO:
     {
       AgsAudio *audio;
-      gboolean reset;
 
       audio = (AgsAudio *) g_value_get_object(value);
       
-      reset = TRUE;
-
       if(machine->audio != NULL){
 	GList *pad;
 
@@ -339,156 +337,123 @@ ags_machine_set_property(GObject *gobject,
 	    
 	    pad = pad->next;
 	  }
-	  
-	  reset = FALSE;
 	}
       }
       
       if(audio != NULL){
+	AgsChannel *input, *output;
+	GList *pad;
+	GList *line;
+	guint i;
+
 	g_object_ref(G_OBJECT(audio));
-	machine->audio = audio;
 
-	if(reset){
-	  AgsChannel *input, *output;
-	  GList *pad;
-	  GList *line;
-	  guint i;
+	/* set channel and resize for AgsOutput */
+	if(machine->output_pad_type != G_TYPE_NONE){
+	  output = audio->output;
+	  pad = gtk_container_get_children(machine->output);
 
-	  /* set channel and resize for AgsOutput */
-	  if(machine->output_pad_type != G_TYPE_NONE){
-	    output = audio->output;
-	    pad = gtk_container_get_children(machine->output);
+	  /* reset */
+	  i = 0;
 
-	    i = 0;
+	  while(pad != NULL && output != NULL){
+	    line = gtk_container_get_children(GTK_CONTAINER(AGS_PAD(pad->data)->expander_set));
 
-	    while(pad != NULL && output != NULL){
-	      line = gtk_container_get_children(GTK_CONTAINER(AGS_PAD(pad->data)->expander_set));
+	    ags_pad_resize_lines(AGS_PAD(pad->data), machine->output_line_type,
+				 audio->audio_channels, g_list_length(line));
+	    g_object_set(G_OBJECT(pad->data),
+			 "channel\0", output,
+			 NULL);
 
-	      ags_pad_resize_lines(AGS_PAD(pad->data), machine->output_line_type,
-				   audio->audio_channels, g_list_length(line));
-	      g_object_set(G_OBJECT(pad->data),
-			   "channel\0", output,
-			   NULL);
-
-	      output = output->next_pad;
-	      pad = pad->next;
-	      i++;
-	    }
-
-	    if(output != NULL){
-	      AgsPad *pad;
-
-	      /* add pad */
-	      for(; i < audio->output_pads; i++){
-		pad = g_object_new(machine->output_pad_type,
-				   "channel\0", output,
-				   NULL);
-		gtk_container_add(machine->output,
-				  GTK_WIDGET(pad));
-
-		ags_pad_resize_lines(pad, machine->output_line_type,
-				     audio->audio_channels, 0);
-	      }
-	    }else{
-	      /* destroy pad */
-	      pad = gtk_container_get_children(machine->output);
-	      pad = g_list_nth(pad, audio->output_pads);
-
-	      while(pad != NULL){
-		gtk_widget_destroy(pad->data);
-
-		pad = pad->next;
-	      }	      
-	    }
+	    output = output->next_pad;
+	    pad = pad->next;
+	    i++;
 	  }
 
-	  /* set channel and resize for AgsOutput */
-	  if(machine->input_pad_type != G_TYPE_NONE){
-	    input = audio->input;
-	    pad = gtk_container_get_children(machine->input);
+	  if(output != NULL){
+	    AgsPad *pad;
 
-	    i = 0;
-
-	    while(pad != NULL && input != NULL){
-	      line = gtk_container_get_children(GTK_CONTAINER(AGS_PAD(pad->data)->expander_set));
-
-	      ags_pad_resize_lines(AGS_PAD(pad->data), machine->input_line_type,
-				   audio->audio_channels, g_list_length(line));
-	      g_object_set(G_OBJECT(pad->data),
-			   "channel\0", input,
-			   NULL);
-
-	      input = input->next_pad;
-	      pad = pad->next;
-	      i++;
-	    }
-
-	    if(input != NULL){
-	      AgsPad *pad;
-
-	      /* add pad */
-	      for(; i < audio->input_pads; i++){
-		pad = g_object_new(machine->input_pad_type,
-				   "channel\0", input,
-				   NULL);
-		gtk_container_add(machine->input,
-				  GTK_WIDGET(pad));
-
-		ags_pad_resize_lines(pad, machine->input_line_type,
-				     audio->audio_channels, 0);
-	      }
-	    }else{
-	      /* destroy pad */
-	      pad = gtk_container_get_children(machine->input);
-	      pad = g_list_nth(pad, audio->input_pads);
-
-	      while(pad != NULL){
-		gtk_widget_destroy(pad->data);
-
-		pad = pad->next;
-	      }	      
-	    }
-	  }
-	}else{
-	  AgsPad *pad;
-	  AgsChannel *channel;
-	  guint i;
-
-	  /* add pad */
-	  if(machine->output_pad_type != G_TYPE_NONE){
-	    channel = audio->output;
-
-	    for(i = 0; i < audio->output_pads; i++){
+	    /* add pad */
+	    for(; i < audio->output_pads; i++){
 	      pad = g_object_new(machine->output_pad_type,
-				 "channel\0", channel,
-				 NULL);
-	      gtk_container_add(machine->output,
-				GTK_WIDGET(pad));	  
-	      ags_pad_resize_lines(pad, machine->output_line_type,
-				   audio->audio_channels, 0);
-
-	      channel = channel->next_pad;
-	    }
-	  }
-
-	  if(machine->input_pad_type != G_TYPE_NONE){
-	    channel = audio->input;
-
-	    for(i = 0; i < audio->input_pads; i++){
-	      pad = g_object_new(machine->input_pad_type,
-				 "channel\0", channel,
+				 "channel\0", output,
 				 NULL);
 	      gtk_container_add(machine->output,
 				GTK_WIDGET(pad));
+
+	      ags_pad_resize_lines(pad, machine->output_line_type,
+				   audio->audio_channels, 0);
+	    }
+	  }else{
+	    /* destroy pad */
+	    pad = gtk_container_get_children(machine->output);
+	    pad = g_list_nth(pad, audio->output_pads);
+
+	    while(pad != NULL){
+	      gtk_widget_destroy(pad->data);
+
+	      pad = pad->next;
+	    }	      
+	  }
+	}
+	
+	/* set channel and resize for AgsInput */
+	if(machine->input_pad_type != G_TYPE_NONE){
+	  input = audio->input;
+	  pad = gtk_container_get_children(machine->input);
+
+	  i = 0;
+
+	  while(pad != NULL && input != NULL){
+	    line = gtk_container_get_children(GTK_CONTAINER(AGS_PAD(pad->data)->expander_set));
+
+	    ags_pad_resize_lines(AGS_PAD(pad->data), machine->input_line_type,
+				 audio->audio_channels, g_list_length(line));
+	    g_object_set(G_OBJECT(pad->data),
+			 "channel\0", input,
+			 NULL);
+
+	    input = input->next_pad;
+	    pad = pad->next;
+	    i++;
+	  }
+
+	  if(input != NULL){
+	    AgsPad *pad;
+
+	    /* add pad */
+	    for(; i < audio->input_pads; i++){
+	      pad = g_object_new(machine->input_pad_type,
+				 "channel\0", input,
+				 NULL);
+	      gtk_container_add(machine->input,
+				GTK_WIDGET(pad));
+
 	      ags_pad_resize_lines(pad, machine->input_line_type,
 				   audio->audio_channels, 0);
 
-	      channel = channel->next_pad;
+	      input = input->next_pad;
 	    }
+	  }else{
+	    /* destroy pad */
+	    pad = gtk_container_get_children(machine->input);
+	    pad = g_list_nth(pad, audio->input_pads);
+
+	    while(pad != NULL){
+	      gtk_widget_destroy(pad->data);
+
+	      pad = pad->next;
+	    }	      
 	  }
 	}
-      }else{
-	machine->audio = NULL;
+      }
+
+      machine->audio = audio;
+
+      if(machine->bridge != NULL){
+	g_object_set(machine->bridge,
+		     "audio\0", audio,
+		     NULL);
       }
     }
     break;
@@ -575,6 +540,11 @@ ags_machine_connect(AgsConnectable *connectable)
     }
   }
 
+  /* AgsEffectBridge */
+  if(machine->bridge != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(machine->bridge));
+  }
+  
   /* audio */
   g_signal_connect_after(machine->audio, "tact\0",
 			 G_CALLBACK(ags_machine_tact_callback), machine);

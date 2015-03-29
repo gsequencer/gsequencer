@@ -161,7 +161,7 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
 	filename = ags_ladspa_browser_get_plugin_filename(line_member_editor->ladspa_browser);
 	effect = ags_ladspa_browser_get_plugin_effect(line_member_editor->ladspa_browser);
 
-	if(line == NULL){
+	if(line != NULL){
 	  ags_line_member_editor_ladspa_browser_response_create_entry();
 	
 	  /* add effect */
@@ -210,7 +210,7 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
 	filename = ags_ladspa_browser_get_plugin_filename(line_member_editor->ladspa_browser);
 	effect = ags_ladspa_browser_get_plugin_effect(line_member_editor->ladspa_browser);
 
-	if(effect_line == NULL){
+	if(effect_line != NULL){
 	  ags_line_member_editor_ladspa_browser_response_create_entry();
 
 	  /* add effect */
