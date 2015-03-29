@@ -48,6 +48,7 @@ gchar* ags_effect_line_get_build_id(AgsPlugin *plugin);
 void ags_effect_line_set_build_id(AgsPlugin *plugin, gchar *build_id);
 
 void ags_effect_line_real_add_effect(AgsEffectLine *effect_line,
+				     gchar *filename,
 				     gchar *effect);
 void ags_effect_line_real_remove_effect(AgsEffectLine *effect_line,
 					guint nth);
@@ -155,8 +156,9 @@ ags_effect_line_class_init(AgsEffectLineClass *effect_line)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsEffectLineClass, add_effect),
 		 NULL, NULL,
-		 g_cclosure_marshal_VOID__STRING,
-		 G_TYPE_NONE, 1,
+		 g_cclosure_user_marshal_VOID__STRING_STRING,
+		 G_TYPE_NONE, 2,
+		 G_TYPE_STRING,
 		 G_TYPE_STRING);
 
   /**
@@ -368,6 +370,7 @@ ags_effect_line_set_build_id(AgsPlugin *plugin, gchar *build_id)
 
 void
 ags_effect_line_real_add_effect(AgsEffectLine *effect_line,
+				gchar *filename,
 				gchar *effect)
 {
   //TODO:JK: implement me
@@ -375,6 +378,7 @@ ags_effect_line_real_add_effect(AgsEffectLine *effect_line,
 
 void
 ags_effect_line_add_effect(AgsEffectLine *effect_line,
+			   gchar *filename,
 			   gchar *effect)
 {
   g_return_if_fail(AGS_IS_EFFECT_LINE(effect_line));
@@ -382,6 +386,7 @@ ags_effect_line_add_effect(AgsEffectLine *effect_line,
   g_object_ref((GObject *) effect_line);
   g_signal_emit(G_OBJECT(effect_line),
 		effect_line_signals[ADD_EFFECT], 0,
+		filename,
 		effect);
   g_object_unref((GObject *) effect_line);
 }

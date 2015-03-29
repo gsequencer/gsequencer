@@ -29,6 +29,9 @@
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_pad.h>
 #include <ags/X/ags_line.h>
+#include <ags/X/ags_effect_bridge.h>
+#include <ags/X/ags_effect_pad.h>
+#include <ags/X/ags_effect_line.h>
 #include <ags/X/ags_line_member.h>
 #include <ags/X/ags_machine_editor.h>
 #include <ags/X/ags_line_editor.h>
@@ -55,11 +58,14 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
 							AgsLineMemberEditor *line_member_editor)
 {
   AgsMachine *machine;
-  AgsLine *line;
   AgsMachineEditor *machine_editor;
   AgsLineEditor *line_editor;
-  GList *list, *list_start, *pad, *pad_start;
+
+  GList *pad, *pad_start;
+  GList *list, *list_start;
   gchar *filename, *effect;
+  gboolean has_bridge;
+  gboolean is_output;
   
   auto void ags_line_member_editor_ladspa_browser_response_create_entry();
   
@@ -101,56 +107,117 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
 							      AGS_TYPE_LINE_EDITOR);
 
       machine = machine_editor->machine;
-      
-      /* find pad and line */
-      line = NULL;
 
       if(AGS_IS_OUTPUT(line_editor->channel)){
-	pad_start = 
-	  pad = gtk_container_get_children(machine_editor->machine->output);
+	is_output = TRUE;
       }else{
-	pad_start = 
-	  pad = gtk_container_get_children(machine_editor->machine->input);
+	is_output = FALSE;
       }
 
-      pad = g_list_nth(pad,
-		       line_editor->channel->pad);
+      if(machine->bridge != NULL){
+	has_bridge = TRUE;
+      }else{
+	has_bridge = FALSE;
+      }
+      
+      if(!has_bridge){	
+	AgsLine *line;
+	
+	/* find pad and line */
+	line = NULL;
+	
+	if(is_output){
+	  pad_start = 
+	    pad = gtk_container_get_children(machine_editor->machine->output);
+	}else{
+	  pad_start = 
+	    pad = gtk_container_get_children(machine_editor->machine->input);
+	}
 
-      if(pad != NULL){
-	list_start =
-	  list = gtk_container_get_children(AGS_PAD(pad->data)->expander_set);
+	pad = g_list_nth(pad,
+			 line_editor->channel->pad);
 
-	while(list != NULL){
-	  if(AGS_LINE(list->data)->channel == line_editor->channel){
-	    break;
+	if(pad != NULL){
+	  list_start =
+	    list = gtk_container_get_children(AGS_PAD(pad->data)->expander_set);
+
+	  while(list != NULL){
+	    if(AGS_LINE(list->data)->channel == line_editor->channel){
+	      break;
+	    }
+
+	    list = list->next;
 	  }
 
-	  list = list->next;
+	  if(list != NULL){
+	    line = AGS_LINE(list->data);
+	    g_list_free(list_start);
+	  }
 	}
 
-	if(list != NULL){
-	  line = AGS_LINE(list->data);
-	  g_list_free(list_start);
+	g_list_free(pad_start);
+
+	/* retrieve plugin */
+	filename = ags_ladspa_browser_get_plugin_filename(line_member_editor->ladspa_browser);
+	effect = ags_ladspa_browser_get_plugin_effect(line_member_editor->ladspa_browser);
+
+	if(line == NULL){
+	  ags_line_member_editor_ladspa_browser_response_create_entry();
+	
+	  /* add effect */
+	  ags_line_add_effect(line,
+			      filename,
+			      effect);
 	}
-      }
-
-      g_list_free(pad_start);
-
-      /* retrieve plugin */
-      filename = ags_ladspa_browser_get_plugin_filename(line_member_editor->ladspa_browser);
-      effect = ags_ladspa_browser_get_plugin_effect(line_member_editor->ladspa_browser);
-
-      if(line == NULL){
-	ags_line_member_editor_ladspa_browser_response_create_entry();
+      }else{
+	AgsEffectBridge *effect_bridge;
+	AgsEffectLine *effect_line;
 	
-	/* add effect */
-	ags_line_add_effect(line,
-			    filename,
-			    effect);
-      }else if(machine->bridge != NULL){
-	ags_line_member_editor_ladspa_browser_response_create_entry();
+	effect_bridge = machine->bridge;
 	
-	//TODO:JK: implement me
+	if(is_output){
+	  pad_start = 
+	    pad = gtk_container_get_children(effect_bridge->output);
+	}else{
+	  pad_start = 
+	    pad = gtk_container_get_children(effect_bridge->input);
+	}
+
+	pad = g_list_nth(pad,
+			 line_editor->channel->pad);
+
+	if(pad != NULL){
+	  list_start =
+	    list = gtk_container_get_children(AGS_EFFECT_PAD(pad->data)->table);
+
+	  while(list != NULL){
+	    if(AGS_EFFECT_LINE(list->data)->channel == line_editor->channel){
+	      break;
+	    }
+
+	    list = list->next;
+	  }
+
+	  if(list != NULL){
+	    effect_line = AGS_EFFECT_LINE(list->data);
+	    g_list_free(list_start);
+	  }
+	}
+
+	g_list_free(pad_start);
+
+	/* retrieve plugin */
+	filename = ags_ladspa_browser_get_plugin_filename(line_member_editor->ladspa_browser);
+	effect = ags_ladspa_browser_get_plugin_effect(line_member_editor->ladspa_browser);
+
+	if(effect_line == NULL){
+	  ags_line_member_editor_ladspa_browser_response_create_entry();
+
+	  /* add effect */
+	  ags_effect_line_add_effect(effect_line,
+				     filename,
+				     effect);
+	}
       }
     }
     break;      
@@ -161,7 +228,7 @@ void
 ags_line_member_editor_remove_callback(GtkWidget *button,
 				       AgsLineMemberEditor *line_member_editor)
 {
-  AgsLine *line;
+  AgsMachine *machine;
   AgsMachineEditor *machine_editor;
   AgsLineEditor *line_editor;
 
@@ -169,6 +236,8 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
   GList *list, *list_start, *pad, *pad_start;
   GList *children;
   guint nth;
+  gboolean has_bridge;
+  gboolean is_output;
   
   auto void ags_line_member_editor_ladspa_browser_response_destroy_entry();
   
@@ -189,59 +258,127 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
 
   line_member = gtk_container_get_children(GTK_CONTAINER(line_member_editor->line_member));
 
-  /* retrieve line and pad */
-  line = NULL;
+  machine = machine_editor->machine;
 
   if(AGS_IS_OUTPUT(line_editor->channel)){
-    pad_start = 
-      pad = gtk_container_get_children(machine_editor->machine->output);
+    is_output = TRUE;
   }else{
-    pad_start = 
-      pad = gtk_container_get_children(machine_editor->machine->input);
+    is_output = FALSE;
   }
 
-  pad = g_list_nth(pad,
-		   line_editor->channel->pad);
+  if(machine->bridge != NULL){
+    has_bridge = TRUE;
+  }else{
+    has_bridge = FALSE;
+  }
 
-  if(pad != NULL){
-    list_start =
-      list = gtk_container_get_children(AGS_PAD(pad->data)->expander_set);
+  if(!has_bridge){	
+    AgsLine *line;
+    
+    /* retrieve line and pad */
+    line = NULL;
 
-    while(list != NULL){
-      if(AGS_LINE(list->data)->channel == line_editor->channel){
-	break;
+    if(AGS_IS_OUTPUT(line_editor->channel)){
+      pad_start = 
+	pad = gtk_container_get_children(machine->output);
+    }else{
+      pad_start = 
+	pad = gtk_container_get_children(machine->input);
+    }
+
+    pad = g_list_nth(pad,
+		     line_editor->channel->pad);
+
+    if(pad != NULL){
+      list_start =
+	list = gtk_container_get_children(AGS_PAD(pad->data)->expander_set);
+
+      while(list != NULL){
+	if(AGS_LINE(list->data)->channel == line_editor->channel){
+	  break;
+	}
+
+	list = list->next;
       }
 
-      list = list->next;
+      if(list != NULL){
+	line = AGS_LINE(list->data);
+	g_list_free(list_start);
+      }
     }
 
-    if(list != NULL){
-      line = AGS_LINE(list->data);
-      g_list_free(list_start);
-    }
-  }
+    g_list_free(pad_start);
 
-  g_list_free(pad_start);
+    /* iterate line member */
+    if(line != NULL){
+      for(nth = 0; line_member != NULL; nth++){
 
-  /* iterate line member */
-  if(line != NULL){
-    for(nth = 0; line_member != NULL; nth++){
+	children = gtk_container_get_children(GTK_CONTAINER(line_member->data));
 
-      children = gtk_container_get_children(GTK_CONTAINER(line_member->data));
-
-      if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(children->data))){
-	ags_line_member_editor_ladspa_browser_response_destroy_entry();
+	if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(children->data))){
+	  ags_line_member_editor_ladspa_browser_response_destroy_entry();
 	
-	/* remove effect */
-	ags_line_remove_effect(line,
-			       nth);
-      }
+	  /* remove effect */
+	  ags_line_remove_effect(line,
+				 nth);
+	}
       
-      line_member = line_member->next;
+	line_member = line_member->next;
+      }
     }
-  }else if(machine_editor->machine->bridge != NULL){
-    ags_line_member_editor_ladspa_browser_response_destroy_entry();
+  }else{
+    AgsEffectBridge *effect_bridge;
+    AgsEffectLine *effect_line;
 	
-    //TODO:JK: implement me
+    effect_bridge = machine->bridge;
+	
+    if(is_output){
+      pad_start = 
+	pad = gtk_container_get_children(effect_bridge->output);
+    }else{
+      pad_start = 
+	pad = gtk_container_get_children(effect_bridge->input);
+    }
+
+    pad = g_list_nth(pad,
+		     line_editor->channel->pad);
+
+    if(pad != NULL){
+      list_start =
+	list = gtk_container_get_children(AGS_EFFECT_PAD(pad->data)->table);
+
+      while(list != NULL){
+	if(AGS_EFFECT_LINE(list->data)->channel == line_editor->channel){
+	  break;
+	}
+
+	list = list->next;
+      }
+
+      if(list != NULL){
+	effect_line = AGS_EFFECT_LINE(list->data);
+	g_list_free(list_start);
+      }
+    }
+
+    g_list_free(pad_start);
+
+    /* iterate line member */
+    if(effect_line != NULL){
+      for(nth = 0; line_member != NULL; nth++){
+
+	children = gtk_container_get_children(GTK_CONTAINER(line_member->data));
+
+	if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(children->data))){
+	  ags_line_member_editor_ladspa_browser_response_destroy_entry();
+	
+	  /* remove effect */
+	  ags_effect_line_remove_effect(effect_line,
+					nth);
+	}
+      
+	line_member = line_member->next;
+      }
+    }
   }
 }

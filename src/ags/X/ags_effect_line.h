@@ -67,6 +67,7 @@ struct _AgsEffectLineClass
   GtkVBoxClass vbox;
 
   void (*add_effect)(AgsEffectLine *effect_line,
+		     gchar *filename,
 		     gchar *effect);
   void (*remove_effect)(AgsEffectLine *effect_line,
 			guint nth);
@@ -75,6 +76,7 @@ struct _AgsEffectLineClass
 GType ags_effect_line_get_type(void);
 
 void ags_effect_line_add_effect(AgsEffectLine *effect_line,
+				gchar *filename,
 				gchar *effect);
 void ags_effect_line_remove_effect(AgsEffectLine *effect_line,
 				   guint nth);
