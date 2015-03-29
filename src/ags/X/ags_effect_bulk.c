@@ -19,9 +19,9 @@
 #include <ags/X/ags_effect_bulk.h>
 #include <ags/X/ags_effect_bulk_callbacks.h>
 
-#include <ags-lib/object/ags_connectable.h>
-
 #include <ags/main.h>
+
+#include <ags-lib/object/ags_connectable.h>
 
 #include <ags/object/ags_marshal.h>
 #include <ags/object/ags_plugin.h>
@@ -48,6 +48,7 @@ gchar* ags_effect_bulk_get_build_id(AgsPlugin *plugin);
 void ags_effect_bulk_set_build_id(AgsPlugin *plugin, gchar *build_id);
 
 void ags_effect_bulk_real_add_effect(AgsEffectBulk *effect_bulk,
+				     gchar *filename,
 				     gchar *effect);
 void ags_effect_bulk_real_remove_effect(AgsEffectBulk *effect_bulk,
 					guint nth);
@@ -150,14 +151,15 @@ ags_effect_bulk_class_init(AgsEffectBulkClass *effect_bulk)
    *
    * The ::add-effect signal notifies about added effect.
    */
-  effect_bulk_signals[RESIZE_AUDIO_CHANNELS] =
+  effect_bulk_signals[ADD_EFFECT] =
     g_signal_new("add-effect\0",
 		 G_TYPE_FROM_CLASS(effect_bulk),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsEffectBulkClass, add_effect),
 		 NULL, NULL,
-		 g_cclosure_marshal_VOID__STRING,
-		 G_TYPE_NONE, 1,
+		 g_cclosure_user_marshal_VOID__STRING_STRING,
+		 G_TYPE_NONE, 2,
+		 G_TYPE_STRING,
 		 G_TYPE_STRING);
 
   /**
@@ -167,7 +169,7 @@ ags_effect_bulk_class_init(AgsEffectBulkClass *effect_bulk)
    *
    * The ::remove-effect signal notifies about removed effect.
    */
-  effect_bulk_signals[RESIZE_AUDIO_CHANNELS] =
+  effect_bulk_signals[REMOVE_EFFECT] =
     g_signal_new("remove-effect\0",
 		 G_TYPE_FROM_CLASS(effect_bulk),
 		 G_SIGNAL_RUN_LAST,
@@ -324,7 +326,7 @@ ags_effect_bulk_get_property(GObject *gobject,
 			 effect_bulk->audio);
     }
     break;
-  case PROP_AUDIO:
+  case PROP_CHANNEL_TYPE:
     {
       g_value_set_ulong(value,
 			effect_bulk->channel_type);
@@ -398,14 +400,15 @@ ags_effect_bulk_set_build_id(AgsPlugin *plugin, gchar *build_id)
 
 void
 ags_effect_bulk_real_add_effect(AgsEffectBulk *effect_bulk,
+				gchar *filename,
 				gchar *effect)
 {
-  AgsLineMember *line_member;
   //TODO:JK: implement me
 }
 
 void
 ags_effect_bulk_add_effect(AgsEffectBulk *effect_bulk,
+			   gchar *filename,
 			   gchar *effect)
 {
   g_return_if_fail(AGS_IS_EFFECT_BULK(effect_bulk));
@@ -413,6 +416,7 @@ ags_effect_bulk_add_effect(AgsEffectBulk *effect_bulk,
   g_object_ref((GObject *) effect_bulk);
   g_signal_emit(G_OBJECT(effect_bulk),
 		effect_bulk_signals[ADD_EFFECT], 0,
+		filename,
 		effect);
   g_object_unref((GObject *) effect_bulk);
 }

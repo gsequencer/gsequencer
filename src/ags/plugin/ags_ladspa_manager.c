@@ -309,6 +309,62 @@ ags_ladspa_manager_load_default_directory()
 }
 
 /**
+ * ags_ladspa_manager_effect_index:
+ * @filename: the plugin.so filename
+ * @effect: the effect's name within plugin
+ *
+ * Retrieve the effect's index within @filename
+ *
+ * Returns: the index, -1 if not found
+ *
+ * Since: 0.4
+ */
+long
+ags_ladspa_manager_effect_index(gchar *filename,
+				gchar *effect)
+{
+  AgsLadspaPlugin *ladspa_plugin;
+
+  void *plugin_so;
+  LADSPA_Descriptor_Function ladspa_descriptor;
+  LADSPA_Descriptor *plugin_descriptor;
+  LADSPA_PortDescriptor *port_descriptor;
+
+  long index;
+  long i;
+
+  if(filename == NULL ||
+     effect == NULL){
+    return(-1);
+  }
+  
+  /* load plugin */
+  ags_ladspa_manager_load_file(filename);
+  ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(filename);
+
+  plugin_so = ladspa_plugin->plugin_so;
+
+  index = -1;
+
+  if(plugin_so){
+    ladspa_descriptor = (LADSPA_Descriptor_Function) dlsym(plugin_so,
+							   "ladspa_descriptor\0");
+    
+    if(dlerror() == NULL && ladspa_descriptor){
+      for(i = 0; (plugin_descriptor = ladspa_descriptor(i)) != NULL; i++){
+	if(!strcmp(effect,
+		   plugin_descriptor->Name)){
+	  index = i;
+	  break;
+	}
+      }
+    }
+  }
+  
+  return(index);
+}
+
+/**
  * ags_ladspa_manager_get_instance:
  *
  * Get instance.

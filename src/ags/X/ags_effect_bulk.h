@@ -64,6 +64,7 @@ struct _AgsEffectBulkClass
   GtkVBoxClass vbox;
 
   void (*add_effect)(AgsEffectBulk *effect_bulk,
+		     gchar *filename,
 		     gchar *effect);
   void (*remove_effect)(AgsEffectBulk *effect_bulk,
 			guint nth);
@@ -72,6 +73,7 @@ struct _AgsEffectBulkClass
 GType ags_effect_bulk_get_type(void);
 
 void ags_effect_bulk_add_effect(AgsEffectBulk *effect_bulk,
+				gchar *filename,
 				gchar *effect);
 void ags_effect_bulk_remove_effect(AgsEffectBulk *effect_bulk,
 				   guint nth);

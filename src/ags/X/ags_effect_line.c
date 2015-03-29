@@ -149,7 +149,7 @@ ags_effect_line_class_init(AgsEffectLineClass *effect_line)
    *
    * The ::add-effect signal notifies about added effect.
    */
-  effect_line_signals[RESIZE_AUDIO_CHANNELS] =
+  effect_line_signals[ADD_EFFECT] =
     g_signal_new("add-effect\0",
 		 G_TYPE_FROM_CLASS(effect_line),
 		 G_SIGNAL_RUN_LAST,
@@ -166,7 +166,7 @@ ags_effect_line_class_init(AgsEffectLineClass *effect_line)
    *
    * The ::remove-effect signal notifies about removed effect.
    */
-  effect_line_signals[RESIZE_AUDIO_CHANNELS] =
+  effect_line_signals[REMOVE_EFFECT] =
     g_signal_new("remove-effect\0",
 		 G_TYPE_FROM_CLASS(effect_line),
 		 G_SIGNAL_RUN_LAST,

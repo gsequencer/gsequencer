@@ -95,14 +95,6 @@ void ags_effect_bridge_resize_pads(AgsEffectBridge *effect_bridge,
 				   GType channel_type,
 				   guint new_size, guint old_size);
 
-void ags_effect_bridge_add_effect(AgsEffectBridge *effect_bridge,
-				  GType channel_type,
-				  gchar *effect_name,
-				  guint nth_line);
-void ags_effect_bridge_add_bulk_effect(AgsEffectBridge *effect_bridge,
-				       GType channel_type,
-				       gchar *effect_name);
-
 AgsEffectBridge* ags_effect_bridge_new(AgsAudio *audio);
 
 #endif /*__AGS_EFFECT_BRIDGE_H__*/

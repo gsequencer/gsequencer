@@ -537,23 +537,6 @@ ags_effect_bridge_resize_pads(AgsEffectBridge *effect_bridge,
   g_object_unref((GObject *) effect_bridge);
 }
 
-void
-ags_effect_bridge_add_effect(AgsEffectBridge *effect_bridge,
-			     GType channel_type,
-			     gchar *effect_name,
-			     guint nth_line)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_effect_bridge_add_bulk_effect(AgsEffectBridge *effect_bridge,
-				  GType channel_type,
-				  gchar *effect_name)
-{
-  //TODO:JK: implement me
-}
-
 /**
  * ags_effect_bridge_new:
  * @effect_bridge: the parent effect_bridge

@@ -25,6 +25,8 @@
 
 #include <ags/object/ags_plugin.h>
 
+#include <ags/audio/ags_input.h>
+
 #include <ags/X/machine/ags_matrix_bulk_input.h>
 
 void ags_matrix_bridge_class_init(AgsMatrixBridgeClass *matrix_bridge);
@@ -146,7 +148,8 @@ ags_matrix_bridge_init(AgsMatrixBridge *matrix_bridge)
   gtk_container_add(expander,
 		    table);
 
-  AGS_EFFECT_BRIDGE(matrix_bridge)->bulk_input = (GtkWidget *) ags_matrix_bulk_input_new(NULL);
+  AGS_EFFECT_BRIDGE(matrix_bridge)->bulk_input = (GtkWidget *) ags_matrix_bulk_input_new(NULL,
+											 AGS_TYPE_INPUT);
   gtk_table_attach(table,
 		   AGS_EFFECT_BRIDGE(matrix_bridge)->bulk_input,
 		   0, 1,

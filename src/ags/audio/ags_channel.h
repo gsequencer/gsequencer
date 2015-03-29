@@ -99,6 +99,12 @@ struct _AgsChannelClass
 {
   GObjectClass object;
 
+  void (*add_effect)(AgsChannel *channel,
+		     gchar *filename,
+		     gchar *effect);
+  void (*remove_effect)(AgsChannel *channel,
+			guint nth);
+  
   void (*recycling_changed)(AgsChannel *channel,
 			    AgsRecycling *old_start_region, AgsRecycling *old_end_region,
 			    AgsRecycling *new_start_region, AgsRecycling *new_end_region,
@@ -136,6 +142,12 @@ void ags_channel_remove_recall_container(AgsChannel *channel, GObject *recall_co
 
 void ags_channel_remove_recall(AgsChannel *channel, GObject *recall, gboolean play);
 void ags_channel_add_recall(AgsChannel *channel, GObject *recall, gboolean play);
+
+void ags_channel_add_effect(AgsChannel *channel,
+			    char *filename,
+			    gchar *effect);
+void ags_channel_remove_effect(AgsChannel *channel,
+			       guint nth);
 
 void ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
 			  GError **error);

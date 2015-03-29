@@ -31,6 +31,8 @@
 
 #include <ags/widget/ags_dial.h>
 
+#include <ags/X/ags_line.h>
+
 void ags_line_member_class_init(AgsLineMemberClass *line_member);
 void ags_line_member_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_line_member_init(AgsLineMember *line_member);

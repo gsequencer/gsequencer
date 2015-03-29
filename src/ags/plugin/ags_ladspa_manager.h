@@ -70,6 +70,9 @@ AgsLadspaPlugin* ags_ladspa_manager_find_ladspa_plugin(gchar *filename);
 void ags_ladspa_manager_load_file(gchar *filename);
 void ags_ladspa_manager_load_default_directory();
 
+long ags_ladspa_manager_effect_index(gchar *filename,
+				     gchar *effect);
+
 /*  */
 AgsLadspaManager* ags_ladspa_manager_get_instance();
 
