@@ -315,7 +315,7 @@ ags_ladspa_manager_load_default_directory()
  *
  * Retrieve the effect's index within @filename
  *
- * Returns: the index, -1 if not found
+ * Returns: the index, G_MAXULONG if not found
  *
  * Since: 0.4
  */
@@ -335,7 +335,7 @@ ags_ladspa_manager_effect_index(gchar *filename,
 
   if(filename == NULL ||
      effect == NULL){
-    return(-1);
+    return(G_MAXULONG);
   }
   
   /* load plugin */
@@ -354,9 +354,8 @@ ags_ladspa_manager_effect_index(gchar *filename,
       for(i = 0; (plugin_descriptor = ladspa_descriptor(i)) != NULL; i++){
 	if(!strncmp(plugin_descriptor->Name,
 		    effect,
-		    strlen(effect) - 1)){
+		    strlen(effect))){
 	  index = i;
-	  g_message("found ladspa effect");
 	  break;
 	}
       }

@@ -412,8 +412,8 @@ ags_effect_line_real_add_effect(AgsEffectLine *effect_line,
   LADSPA_Descriptor *plugin_descriptor;
   LADSPA_PortDescriptor *port_descriptor;
   LADSPA_Data lower_bound, upper_bound;
-  long index;
-  long i;
+  unsigned long index;
+  unsigned long i;
 
   machine = gtk_widget_get_ancestor(effect_line,
 				    AGS_TYPE_MACHINE);
@@ -449,7 +449,6 @@ ags_effect_line_real_add_effect(AgsEffectLine *effect_line,
   while(list != NULL){
     if(y <= ((GtkTableChild *) list->data)->top_attach){
       y = ((GtkTableChild *) list->data)->top_attach + 1;
-      g_message("y = %d\0", y);
     }
 
     list = list->next;

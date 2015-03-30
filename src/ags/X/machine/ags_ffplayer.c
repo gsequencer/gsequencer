@@ -245,7 +245,7 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   ffplayer->xml_type = "ags-ffplayer\0";
 
   /* create widgets */
-  table = (GtkTable *) gtk_table_new(4, 2, FALSE);
+  table = (GtkTable *) gtk_table_new(4, 3, FALSE);
   gtk_container_add((GtkContainer *) (gtk_bin_get_child((GtkBin *) ffplayer)), (GtkWidget *) table);
 
   hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
@@ -330,8 +330,8 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   AGS_MACHINE(ffplayer)->bridge = ags_ffplayer_bridge_new(audio);
   gtk_table_attach(table,
 		   (GtkWidget *) AGS_MACHINE(ffplayer)->bridge,
-		   0, 2,
-		   3, 4,
+		   2, 3,
+		   0, 4,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
   g_object_set(AGS_MACHINE(ffplayer)->bridge,

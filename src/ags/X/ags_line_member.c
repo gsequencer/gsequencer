@@ -32,6 +32,7 @@
 #include <ags/widget/ags_dial.h>
 
 #include <ags/X/ags_line.h>
+#include <ags/X/ags_effect_line.h>
 
 void ags_line_member_class_init(AgsLineMemberClass *line_member);
 void ags_line_member_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -813,7 +814,7 @@ ags_line_member_change_port(AgsLineMember *line_member,
 void
 ags_line_member_find_port(AgsLineMember *line_member)
 {
-  AgsLine *line;
+  GtkWidget *line;
   AgsAudio *audio;
   AgsChannel *channel;
   AgsPort *audio_port, *channel_port;
@@ -859,10 +860,21 @@ ags_line_member_find_port(AgsLineMember *line_member)
     return;
   }
 
-  line = (AgsLine *) gtk_widget_get_ancestor(GTK_WIDGET(line_member),
-					     AGS_TYPE_LINE);
+  line = gtk_widget_get_ancestor(GTK_WIDGET(line_member),
+				 AGS_TYPE_LINE);
 
-  audio = AGS_AUDIO(line->channel->audio);
+  if(line != NULL){
+    channel = AGS_LINE(line)->channel;
+  }else{
+    line = gtk_widget_get_ancestor(GTK_WIDGET(line_member),
+				   AGS_TYPE_EFFECT_LINE);
+
+    if(line != NULL){
+      channel = AGS_EFFECT_LINE(line)->channel;
+    }
+  }
+  
+  audio = AGS_AUDIO(channel->audio);
 
   audio_port = NULL;
   channel_port = NULL;
@@ -871,8 +883,6 @@ ags_line_member_find_port(AgsLineMember *line_member)
   recall_channel_port = NULL;
   
   /* search channels */
-  channel = line->channel;
-
   recall = channel->play;
   channel_port = ags_line_member_find_specifier(recall);
 
