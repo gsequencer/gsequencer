@@ -1,4 +1,3 @@
-
 /* AGS - Advanced GTK Sequencer
  * Copyright (C) 2013 Joël Krähemann
  *

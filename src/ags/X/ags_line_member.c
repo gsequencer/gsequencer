@@ -767,10 +767,11 @@ ags_line_member_real_change_port(AgsLineMember *line_member,
     AgsTaskThread *task_thread;
     AgsTask *task;
 
+    //TODO:JK: add support for effect_line
     line = (AgsLine *) gtk_widget_get_ancestor(GTK_WIDGET(line_member),
 					       AGS_TYPE_LINE);
     
-    task_thread = AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(line->channel->devout)->ags_main)->main_loop)->task_thread);
+    task_thread = AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(line->channel->audio->devout)->ags_main)->main_loop)->task_thread);
 
     task = (AgsTask *) g_object_new(line_member->task_type,
 				    line_member->control_port, port_data,
