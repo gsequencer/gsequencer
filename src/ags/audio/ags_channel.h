@@ -99,9 +99,9 @@ struct _AgsChannelClass
 {
   GObjectClass object;
 
-  void (*add_effect)(AgsChannel *channel,
-		     gchar *filename,
-		     gchar *effect);
+  GList* (*add_effect)(AgsChannel *channel,
+		       gchar *filename,
+		       gchar *effect);
   void (*remove_effect)(AgsChannel *channel,
 			guint nth);
   
@@ -143,9 +143,9 @@ void ags_channel_remove_recall_container(AgsChannel *channel, GObject *recall_co
 void ags_channel_remove_recall(AgsChannel *channel, GObject *recall, gboolean play);
 void ags_channel_add_recall(AgsChannel *channel, GObject *recall, gboolean play);
 
-void ags_channel_add_effect(AgsChannel *channel,
-			    char *filename,
-			    gchar *effect);
+GList* ags_channel_add_effect(AgsChannel *channel,
+			      char *filename,
+			      gchar *effect);
 void ags_channel_remove_effect(AgsChannel *channel,
 			       guint nth);
 

@@ -319,7 +319,7 @@ ags_ladspa_manager_load_default_directory()
  *
  * Since: 0.4
  */
-long
+unsigned long
 ags_ladspa_manager_effect_index(gchar *filename,
 				gchar *effect)
 {
@@ -330,8 +330,8 @@ ags_ladspa_manager_effect_index(gchar *filename,
   LADSPA_Descriptor *plugin_descriptor;
   LADSPA_PortDescriptor *port_descriptor;
 
-  long index;
-  long i;
+  unsigned long index;
+  unsigned long i;
 
   if(filename == NULL ||
      effect == NULL){
@@ -344,7 +344,7 @@ ags_ladspa_manager_effect_index(gchar *filename,
 
   plugin_so = ladspa_plugin->plugin_so;
 
-  index = -1;
+  index = G_MAXULONG;
 
   if(plugin_so){
     ladspa_descriptor = (LADSPA_Descriptor_Function) dlsym(plugin_so,
@@ -352,9 +352,11 @@ ags_ladspa_manager_effect_index(gchar *filename,
     
     if(dlerror() == NULL && ladspa_descriptor){
       for(i = 0; (plugin_descriptor = ladspa_descriptor(i)) != NULL; i++){
-	if(!strcmp(effect,
-		   plugin_descriptor->Name)){
+	if(!strncmp(plugin_descriptor->Name,
+		    effect,
+		    strlen(effect) - 1)){
 	  index = i;
+	  g_message("found ladspa effect");
 	  break;
 	}
       }

@@ -42,10 +42,6 @@
 
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_pad.h>
-#include <ags/X/ags_line.h>
-#include <ags/X/ags_line_member.h>
-#include <ags/X/ags_machine_editor.h>
-#include <ags/X/ags_line_editor.h>
 
 void ags_line_class_init(AgsLineClass *line);
 void ags_line_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -229,8 +225,8 @@ ags_line_class_init(AgsLineClass *line)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsLineClass, add_effect),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__STRING_STRING,
-		 G_TYPE_NONE, 2,
+		 g_cclosure_user_marshal_POINTER__STRING_STRING,
+		 G_TYPE_POINTER, 2,
 		 G_TYPE_STRING,
 		 G_TYPE_STRING);
 
@@ -599,7 +595,7 @@ ags_line_group_changed(AgsLine *line)
   g_object_unref((GObject *) line);
 }
 
-void
+GList*
 ags_line_real_add_effect(AgsLine *line,
 			 gchar *filename,
 			 gchar *effect)
@@ -614,10 +610,6 @@ ags_line_real_add_effect(AgsLine *line,
   AgsAudioLoop *audio_loop;
   AgsTaskThread *task_thread;
 
-  GList *control;
-  GList *pad, *pad_start;
-  GList *list, *list_start;
-  GList *children;
   GList *port;
   GList *task;
   gdouble step;
@@ -628,8 +620,8 @@ ags_line_real_add_effect(AgsLine *line,
   LADSPA_Descriptor *plugin_descriptor;
   LADSPA_PortDescriptor *port_descriptor;
   LADSPA_Data lower_bound, upper_bound;
-  long index;
-  long i;
+  unsigned long index;
+  unsigned long i;
 
   machine = gtk_widget_get_ancestor(line,
 				    AGS_TYPE_MACHINE);
@@ -646,6 +638,8 @@ ags_line_real_add_effect(AgsLine *line,
   index = ags_ladspa_manager_effect_index(filename,
 					  effect);
 
+  task = NULL;
+  
   /* load plugin */
   ags_ladspa_manager_load_file(filename);
   ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(filename);
@@ -668,9 +662,9 @@ ags_line_real_add_effect(AgsLine *line,
   }
 
   /* add effect to channel */
-  ags_channel_add_effect(line->channel,
-			 filename,
-			 effect);
+  port = ags_channel_add_effect(line->channel,
+				filename,
+				effect);
 
   /* load ports */
   if(index != -1 &&
@@ -694,6 +688,8 @@ ags_line_real_add_effect(AgsLine *line,
 	    x = 0;
 	    y++;
 	  }
+	  
+	  g_message("line_add_effect - add line member\0");
 
 	  /* add line member */
 	  line_member = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
@@ -755,21 +751,28 @@ ags_line_real_add_effect(AgsLine *line,
   task = g_list_reverse(task);      
   ags_task_thread_append_tasks(task_thread,
 			       task);
+
+  return(port);
 }
 
-void
+GList*
 ags_line_add_effect(AgsLine *line,
 		    gchar *filename,
 		    gchar *effect)
 {
-  g_return_if_fail(AGS_IS_LINE(line));
+  GList *port;
+  
+  g_return_val_if_fail(AGS_IS_LINE(line), NULL);
 
   g_object_ref((GObject *) line);
   g_signal_emit(G_OBJECT(line),
 		line_signals[ADD_EFFECT], 0,
 		filename,
-		effect);
+		effect,
+		&port);
   g_object_unref((GObject *) line);
+  
+  return(port);
 }
 
 void

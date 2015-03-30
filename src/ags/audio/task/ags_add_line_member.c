@@ -23,6 +23,9 @@
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
 
+#include <ags/X/ags_line.h>
+#include <ags/X/ags_effect_line.h>
+
 void ags_add_line_member_class_init(AgsAddLineMemberClass *add_line_member);
 void ags_add_line_member_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_add_line_member_init(AgsAddLineMember *add_line_member);
@@ -152,11 +155,23 @@ ags_add_line_member_launch(AgsTask *task)
 
   add_line_member = AGS_ADD_LINE_MEMBER(task);
 
-  ags_expander_add(add_line_member->line->expander,
-		   add_line_member->line_member,
-		   add_line_member->x, add_line_member->y,
-		   add_line_member->width, add_line_member->height);
-
+  if(AGS_IS_LINE(add_line_member->line)){
+    g_message("add line member\0");
+    ags_expander_add(AGS_LINE(add_line_member->line)->expander,
+		     add_line_member->line_member,
+		     add_line_member->x, add_line_member->y,
+		     add_line_member->width, add_line_member->height);
+  }else if(AGS_IS_EFFECT_LINE(add_line_member->line)){
+    gtk_table_attach(AGS_EFFECT_LINE(add_line_member->line)->table,
+		     add_line_member->line_member,
+		     add_line_member->x, add_line_member->x + add_line_member->width,
+		     add_line_member->y, add_line_member->y + add_line_member->height,
+		     GTK_FILL, GTK_FILL,
+		     0, 0);
+  }else{
+    g_warning("ags_add_line_member.c - unknow line type");
+  }
+  
   ags_line_member_find_port(add_line_member->line_member);
 
   //  gtk_widget_set_child_visible(GTK_BIN(add_line_member->line->expander)->child,
@@ -165,7 +180,7 @@ ags_add_line_member_launch(AgsTask *task)
 
 /**
  * ags_add_line_member_new:
- * @line: the #AgsLine
+ * @line: the #AgsLine or #AgsEffectLine
  * @line_member: the #AgsLineMember to add
  * @x: pack start x
  * @y: pack start y
@@ -179,7 +194,7 @@ ags_add_line_member_launch(AgsTask *task)
  * Since: 0.4
  */
 AgsAddLineMember*
-ags_add_line_member_new(AgsLine *line,
+ags_add_line_member_new(GtkWidget *line,
 			AgsLineMember *line_member,
 			guint x, guint y,
 			guint width, guint height)

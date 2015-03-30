@@ -89,9 +89,9 @@ void ags_channel_connect(AgsConnectable *connectable);
 void ags_channel_disconnect(AgsConnectable *connectable);
 static void ags_channel_finalize(GObject *gobject);
 
-void ags_channel_real_add_effect(AgsChannel *channel,
-				 gchar *filename,
-				 gchar *effect);
+GList* ags_channel_real_add_effect(AgsChannel *channel,
+				   gchar *filename,
+				   gchar *effect);
 void ags_channel_real_remove_effect(AgsChannel *channel,
 				    guint nth);
 
@@ -219,8 +219,8 @@ ags_channel_class_init(AgsChannelClass *channel)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsChannelClass, add_effect),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__STRING_STRING,
-		 G_TYPE_NONE, 2,
+		 g_cclosure_user_marshal_POINTER__STRING_STRING,
+		 G_TYPE_POINTER, 2,
 		 G_TYPE_STRING,
 		 G_TYPE_STRING);
 
@@ -995,7 +995,7 @@ ags_channel_add_recall(AgsChannel *channel, GObject *recall, gboolean play)
   }
 }
 
-void
+GList*
 ags_channel_real_add_effect(AgsChannel *channel,
 			    char *filename,
 			    gchar *effect)
@@ -1018,8 +1018,7 @@ ags_channel_real_add_effect(AgsChannel *channel,
   LADSPA_Descriptor *plugin_descriptor;
   LADSPA_PortDescriptor *port_descriptor;
   LADSPA_Data lower_bound, upper_bound;
-  long index;
-  long i;
+  unsigned long index;
 
   audio_loop = (AgsAudioLoop *) AGS_MAIN(AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout)->ags_main)->main_loop;
   task_thread = (AgsTaskThread *) audio_loop->task_thread;
@@ -1125,21 +1124,28 @@ ags_channel_real_add_effect(AgsChannel *channel,
   /* launch tasks */
   ags_task_thread_append_tasks(task_thread,
 			       task);
+
+  return(port);
 }
 
-void
+GList*
 ags_channel_add_effect(AgsChannel *channel,
 		       char *filename,
 		       gchar *effect)
 {
-  g_return_if_fail(AGS_IS_CHANNEL(channel));
+  GList *port;
+
+  g_return_val_if_fail(AGS_IS_CHANNEL(channel), NULL);
 
   g_object_ref((GObject *) channel);
   g_signal_emit(G_OBJECT(channel),
 		channel_signals[ADD_EFFECT], 0,
 		filename,
-		effect);
+		effect,
+		&port);
   g_object_unref((GObject *) channel);
+
+  return(port);
 }
 
 void

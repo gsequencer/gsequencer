@@ -353,14 +353,51 @@ ags_ladspa_browser_get_plugin_filename(AgsLadspaBrowser *ladspa_browser)
 gchar*
 ags_ladspa_browser_get_plugin_effect(AgsLadspaBrowser *ladspa_browser)
 {
-  GtkComboBoxText *effect;
-  GList *list;
+  GtkComboBoxText *filename, *effect;
+  AgsLadspaPlugin *ladspa_plugin;
+  GList *list, *list_start;
+  gchar *effect_name;
 
-  list = gtk_container_get_children(GTK_CONTAINER(ladspa_browser->plugin));
-  effect = GTK_COMBO_BOX_TEXT(list->next->next->next->data);
-  g_list_free(list);
+  void *plugin_so;
+  LADSPA_Descriptor_Function ladspa_descriptor;
+  LADSPA_Descriptor *plugin_descriptor;
+  unsigned long index;
 
-  return(gtk_combo_box_text_get_active_text(effect));
+  /* retrieve filename and effect */
+  list_start = 
+    list = gtk_container_get_children(GTK_CONTAINER(ladspa_browser->plugin));
+
+  filename = GTK_COMBO_BOX(list->next->data);
+  effect = GTK_COMBO_BOX(list->next->next->next->data);
+
+  g_list_free(list_start);
+
+  /* update description */
+  list_start = 
+    list = gtk_container_get_children(GTK_CONTAINER(ladspa_browser->description));
+
+  ags_ladspa_manager_load_file(gtk_combo_box_text_get_active_text(filename));
+  ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(gtk_combo_box_text_get_active_text(filename));
+  
+  plugin_so = ladspa_plugin->plugin_so;
+
+  effect_name = NULL;
+  
+  index = (unsigned long) gtk_combo_box_get_active(effect);
+  
+  if(index != -1 &&
+     plugin_so){
+    ladspa_descriptor = (LADSPA_Descriptor_Function) dlsym(plugin_so,
+							   "ladspa_descriptor\0");
+
+    if(dlerror() == NULL && ladspa_descriptor){
+      plugin_descriptor = ladspa_descriptor(index);
+
+      effect_name = plugin_descriptor->Name;
+    }
+  }
+
+  return(effect_name);
 }
 
 /**

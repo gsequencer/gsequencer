@@ -40,7 +40,6 @@ ags_ladspa_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
   GtkComboBoxText *filename, *effect;
   AgsLadspaPlugin *ladspa_plugin;
   GList *list;
-  gchar *path;
 
   void *plugin_so;
   LADSPA_Descriptor_Function ladspa_descriptor;
@@ -63,7 +62,7 @@ ags_ladspa_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
 							   "ladspa_descriptor\0");
 
     if(dlerror() == NULL && ladspa_descriptor){
-      long index;
+      unsigned long index;
 
       /* We've successfully found a ladspa_descriptor function. Pass
 	 it to the callback function. */
@@ -91,13 +90,13 @@ ags_ladspa_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
   gchar *str, *tmp;
   guint port_count;
   guint y;
-  guint i;
+  unsigned long i;
 
   void *plugin_so;
   LADSPA_Descriptor_Function ladspa_descriptor;
   LADSPA_Descriptor *plugin_descriptor;
   LADSPA_PortDescriptor *port_descriptor;
-  long index;
+  unsigned long index;
 
   /* retrieve filename and effect */
   list_start = 
@@ -117,7 +116,7 @@ ags_ladspa_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
   
   plugin_so = ladspa_plugin->plugin_so;
 
-  index = gtk_combo_box_get_active(effect);
+  index = (unsigned long) gtk_combo_box_get_active(effect);
 
   if(index != -1 &&
      plugin_so){

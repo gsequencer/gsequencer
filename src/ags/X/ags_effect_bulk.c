@@ -47,9 +47,9 @@ void ags_effect_bulk_set_version(AgsPlugin *plugin, gchar *version);
 gchar* ags_effect_bulk_get_build_id(AgsPlugin *plugin);
 void ags_effect_bulk_set_build_id(AgsPlugin *plugin, gchar *build_id);
 
-void ags_effect_bulk_real_add_effect(AgsEffectBulk *effect_bulk,
-				     gchar *filename,
-				     gchar *effect);
+GList* ags_effect_bulk_real_add_effect(AgsEffectBulk *effect_bulk,
+				       gchar *filename,
+				       gchar *effect);
 void ags_effect_bulk_real_remove_effect(AgsEffectBulk *effect_bulk,
 					guint nth);
 
@@ -157,7 +157,7 @@ ags_effect_bulk_class_init(AgsEffectBulkClass *effect_bulk)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsEffectBulkClass, add_effect),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__STRING_STRING,
+		 g_cclosure_user_marshal_POINTER__STRING_STRING,
 		 G_TYPE_NONE, 2,
 		 G_TYPE_STRING,
 		 G_TYPE_STRING);
@@ -398,20 +398,22 @@ ags_effect_bulk_set_build_id(AgsPlugin *plugin, gchar *build_id)
   effect_bulk->build_id = build_id;
 }
 
-void
+GList*
 ags_effect_bulk_real_add_effect(AgsEffectBulk *effect_bulk,
 				gchar *filename,
 				gchar *effect)
 {
   //TODO:JK: implement me
+
+  return(NULL);
 }
 
-void
+GList*
 ags_effect_bulk_add_effect(AgsEffectBulk *effect_bulk,
 			   gchar *filename,
 			   gchar *effect)
 {
-  g_return_if_fail(AGS_IS_EFFECT_BULK(effect_bulk));
+  g_return_val_if_fail(AGS_IS_EFFECT_BULK(effect_bulk), NULL);
 
   g_object_ref((GObject *) effect_bulk);
   g_signal_emit(G_OBJECT(effect_bulk),
@@ -419,6 +421,8 @@ ags_effect_bulk_add_effect(AgsEffectBulk *effect_bulk,
 		filename,
 		effect);
   g_object_unref((GObject *) effect_bulk);
+
+  return(NULL);
 }
 
 void

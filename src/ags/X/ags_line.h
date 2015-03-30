@@ -76,7 +76,7 @@ struct _AgsLineClass
 
   void (*group_changed)(AgsLine *line);
   
-  void (*add_effect)(AgsLine *line,
+  GList* (*add_effect)(AgsLine *line,
 		     gchar *filename,
 		     gchar *effect);
   void (*remove_effect)(AgsLine *line,
@@ -95,9 +95,9 @@ void ags_line_group_changed(AgsLine *line);
 
 GList* ags_line_find_next_grouped(GList *line);
 
-void ags_line_add_effect(AgsLine *line,
-			 gchar *filename,
-			 gchar *effect);
+GList* ags_line_add_effect(AgsLine *line,
+			   gchar *filename,
+			   gchar *effect);
 void ags_line_remove_effect(AgsLine *line,
 			    guint nth);
 

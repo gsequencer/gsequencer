@@ -193,13 +193,13 @@ ags_recall_ladspa_class_init(AgsRecallLadspaClass *recall_ladspa)
    * 
    * Since: 0.4.2
    */
-  param_spec =  g_param_spec_uint("index\0",
-				  "index of effect\0",
-				  "The numerical index of effect\0",
-				  0,
-				  65535,
-				  0,
-				  G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec =  g_param_spec_ulong("index\0",
+				   "index of effect\0",
+				   "The numerical index of effect\0",
+				   0,
+				   65535,
+				   0,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_INDEX,
 				  param_spec);
@@ -291,9 +291,9 @@ ags_recall_ladspa_set_property(GObject *gobject,
     break;
   case PROP_INDEX:
     {
-      guint *index;
+      unsigned long *index;
       
-      index = g_value_get_uint(value);
+      index = g_value_get_ulong(value);
 
       if(index == recall_ladspa->index){
 	return;
@@ -331,7 +331,7 @@ ags_recall_ladspa_get_property(GObject *gobject,
     break;
   case PROP_INDEX:
     {
-      g_value_set_uint(value, recall_ladspa->index);
+      g_value_set_ulong(value, recall_ladspa->index);
     }
     break;
   default:
@@ -650,22 +650,22 @@ ags_recall_ladspa_load_ports(AgsRecallLadspa *recall_ladspa)
 	}else if(LADSPA_IS_PORT_AUDIO(port_descriptor[i])){
 	  if(LADSPA_IS_PORT_INPUT(port_descriptor[i])){
 	    if(recall_ladspa->input_port == NULL){
-	      recall_ladspa->input_port = (guint *) malloc(sizeof(guint));
+	      recall_ladspa->input_port = (unsigned long *) malloc(sizeof(unsigned long));
 	      recall_ladspa->input_port[0] = i;
 	    }else{
-	      recall_ladspa->input_port = (guint *) realloc(recall_ladspa->input_port,
-							    (recall_ladspa->input_lines + 1) * sizeof(guint));
+	      recall_ladspa->input_port = (unsigned long *) realloc(recall_ladspa->input_port,
+								    (recall_ladspa->input_lines + 1) * sizeof(unsigned long));
 	      recall_ladspa->input_port[recall_ladspa->input_lines] = i;
 	    }
 
 	    recall_ladspa->input_lines += 1;
 	  }else if(LADSPA_IS_PORT_OUTPUT(port_descriptor[i])){
 	    if(recall_ladspa->output_port == NULL){
-	      recall_ladspa->output_port = (guint *) malloc(sizeof(guint));
+	      recall_ladspa->output_port = (unsigned long *) malloc(sizeof(unsigned long));
 	      recall_ladspa->output_port[0] = i;
 	    }else{
-	      recall_ladspa->output_port = (guint *) realloc(recall_ladspa->output_port,
-							    (recall_ladspa->output_lines + 1) * sizeof(guint));
+	      recall_ladspa->output_port = (unsigned long *) realloc(recall_ladspa->output_port,
+								     (recall_ladspa->output_lines + 1) * sizeof(unsigned long));
 	      recall_ladspa->output_port[recall_ladspa->output_lines] = i;
 	    }
 
@@ -779,7 +779,7 @@ AgsRecallLadspa*
 ags_recall_ladspa_new(AgsChannel *source,
 		      gchar *filename,
 		      gchar *effect,
-		      guint index)
+		      unsigned long index)
 {
   AgsDevout *devout;
   AgsRecallLadspa *recall_ladspa;
