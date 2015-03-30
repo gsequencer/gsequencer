@@ -62,15 +62,9 @@ void ags_line_set_version(AgsPlugin *plugin, gchar *version);
 gchar* ags_line_get_build_id(AgsPlugin *plugin);
 void ags_line_set_build_id(AgsPlugin *plugin, gchar *build_id);
 
-void ags_line_real_add_effect(AgsLine *line,
-			      gchar *filename,
-			      gchar *effect);
-void ags_line_real_remove_effect(AgsLine *line,
-				 guint nth);
-
-void ags_line_real_add_effect(AgsLine *line,
-			      gchar *filename,
-			      gchar *effect);
+GList* ags_line_real_add_effect(AgsLine *line,
+				gchar *filename,
+				gchar *effect);
 void ags_line_real_remove_effect(AgsLine *line,
 				 guint nth);
 void ags_line_real_set_channel(AgsLine *line, AgsChannel *channel);
@@ -610,6 +604,7 @@ ags_line_real_add_effect(AgsLine *line,
   AgsAudioLoop *audio_loop;
   AgsTaskThread *task_thread;
 
+  GList *list;
   GList *port;
   GList *task;
   gdouble step;
