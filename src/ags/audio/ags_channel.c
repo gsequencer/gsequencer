@@ -1051,7 +1051,7 @@ ags_channel_real_add_effect(AgsChannel *channel,
 	       NULL);
   AGS_RECALL(recall_ladspa)->flags |= AGS_RECALL_TEMPLATE;
   ags_recall_ladspa_load(recall_ladspa);
-  ags_recall_ladspa_load_ports(recall_ladspa);
+  port = ags_recall_ladspa_load_ports(recall_ladspa);
 
   add_recall = ags_add_recall_new(channel,
 				  recall_ladspa,
@@ -1094,8 +1094,12 @@ ags_channel_real_add_effect(AgsChannel *channel,
 	       NULL);
   AGS_RECALL(recall_ladspa)->flags |= AGS_RECALL_TEMPLATE;
   ags_recall_ladspa_load(recall_ladspa);
-  port = ags_recall_ladspa_load_ports(recall_ladspa);
 
+  if(port != NULL){
+    port = g_list_concat(port,
+			 ags_recall_ladspa_load_ports(recall_ladspa));
+  }
+  
   add_recall = ags_add_recall_new(channel,
 				  recall_ladspa,
 				  FALSE);

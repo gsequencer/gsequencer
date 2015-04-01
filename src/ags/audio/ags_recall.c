@@ -2125,8 +2125,9 @@ ags_recall_template_find_type(GList *recall_i, GType type)
     recall = AGS_RECALL(recall_i->data);
 
     if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0 &&
-       G_OBJECT_TYPE(recall) == type)
+       G_TYPE_CHECK_INSTANCE_TYPE((recall), type)){
       break;
+    }
 
     recall_i = recall_i->next;
   }
