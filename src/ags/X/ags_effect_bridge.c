@@ -439,6 +439,18 @@ ags_effect_bridge_set_property(GObject *gobject,
       }
       
       effect_bridge->audio = audio;
+
+      if(effect_bridge->bulk_output != NULL){
+	g_object_set(effect_bridge->bulk_output,
+		     "audio\0", audio,
+		     NULL);
+      }
+
+      if(effect_bridge->bulk_input != NULL){
+	g_object_set(effect_bridge->bulk_input,
+		     "audio\0", audio,
+		     NULL);
+      }
     }
     break;
   default:

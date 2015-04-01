@@ -44,6 +44,15 @@
 #include <ags/X/ags_ladspa_browser.h>
 #include <ags/X/ags_bulk_member.h>
 
+#include <dlfcn.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/types.h>
+#include <unistd.h>
+
+#include <ladspa.h>
+
 void ags_effect_bulk_class_init(AgsEffectBulkClass *effect_bulk);
 void ags_effect_bulk_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_effect_bulk_plugin_interface_init(AgsPluginInterface *plugin);
@@ -324,6 +333,8 @@ ags_effect_bulk_init(AgsEffectBulk *effect_bulk)
   effect_bulk->channel_type = G_TYPE_NONE;
   effect_bulk->audio = NULL;
 
+  effect_bulk->plugin = NULL;
+
   alignment = g_object_new(GTK_TYPE_ALIGNMENT,
 			   "xalign\0", 1.0,
 			   NULL);
@@ -414,8 +425,12 @@ ags_effect_bulk_set_property(GObject *gobject,
 
       if(audio != NULL){
 	g_object_ref(audio);
+      }
 
-	if((AGS_EFFECT_BULK_CONNECTED & (effect_bulk->flags)) != 0){
+      effect_bulk->audio = audio;
+
+      if(audio != NULL){
+      	if((AGS_EFFECT_BULK_CONNECTED & (effect_bulk->flags)) != 0){
 	  effect_bulk->set_audio_channels_handler = g_signal_connect_after(effect_bulk->audio, "set-audio-channels\0",
 									   G_CALLBACK(ags_effect_bulk_set_audio_channels_callback), effect_bulk);
 
@@ -432,8 +447,6 @@ ags_effect_bulk_set_property(GObject *gobject,
 	  }
 	}
       }
-
-      effect_bulk->audio = audio;
     }
   case PROP_CHANNEL_TYPE:
     {
@@ -656,6 +669,18 @@ ags_effect_bulk_real_add_effect(AgsEffectBulk *effect_bulk,
     }
   }
 
+  /*  */
+  index = ags_ladspa_manager_effect_index(filename,
+					  effect);
+
+  task = NULL;
+  
+  /* load plugin */
+  ags_ladspa_manager_load_file(filename);
+  ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(filename);
+
+  plugin_so = ladspa_plugin->plugin_so;
+
   /* retrieve position within table  */
   x = 0;
   y = 0;
@@ -701,6 +726,8 @@ ags_effect_bulk_real_add_effect(AgsEffectBulk *effect_bulk,
 						       "widget-type\0", AGS_TYPE_DIAL,
 						       "widget-label\0", plugin_descriptor->PortNames[k],
 						       "plugin-name\0", AGS_PORT(port->data)->plugin_name,
+						       "filename\0", filename,
+						       "effect\0", effect,
 						       "specifier\0", AGS_PORT(port->data)->specifier,
 						       "control-port\0", AGS_PORT(port->data)->control_port,
 						       NULL);

@@ -75,6 +75,8 @@ enum{
   PROP_WIDGET_TYPE,
   PROP_WIDGET_LABEL,
   PROP_PLUGIN_NAME,
+  PROP_FILENAME,
+  PROP_EFFECT,
   PROP_SPECIFIER,
   PROP_CONTROL_PORT,
   PROP_TASK_TYPE,
@@ -202,6 +204,38 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
 				  param_spec);
 
   /**
+   * AgsBulkMember:filename:
+   *
+   * The plugin filename of the recall to apply.
+   * 
+   * Since: 0.4
+   */
+  param_spec = g_param_spec_string("filename\0",
+				   "the filename\0",
+				   "The filename of the plugin\0",
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FILENAME,
+				  param_spec);
+
+    /**
+   * AgsBulkMember:effect:
+   *
+   * The plugin effect of the recall to apply.
+   * 
+   * Since: 0.4
+   */
+  param_spec = g_param_spec_string("effect\0",
+				   "the effect\0",
+				   "The effect of the plugin\0",
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_EFFECT,
+				  param_spec);
+
+  /**
    * AgsBulkMember:control-port:
    *
    * The control port of the recall.
@@ -267,6 +301,9 @@ ags_bulk_member_init(AgsBulkMember *bulk_member)
   bulk_member->widget_label = NULL;
 
   bulk_member->plugin_name = NULL;
+  
+  bulk_member->filename = NULL;
+  bulk_member->effect = NULL;
   bulk_member->specifier = NULL;
 
   bulk_member->control_port = NULL;
@@ -340,6 +377,32 @@ ags_bulk_member_set_property(GObject *gobject,
       bulk_member->plugin_name = g_strdup(plugin_name);
     }
     break;
+  case PROP_FILENAME:
+    {
+      gchar *filename;
+
+      filename = g_value_get_string(value);
+
+      if(filename == bulk_member->filename){
+	return;
+      }
+
+      bulk_member->filename = g_strdup(filename);
+    }
+    break;
+  case PROP_EFFECT:
+    {
+      gchar *effect;
+
+      effect = g_value_get_string(value);
+
+      if(effect == bulk_member->effect){
+	return;
+      }
+
+      bulk_member->effect = g_strdup(effect);
+    }
+    break;
   case PROP_SPECIFIER:
     {
       gchar *specifier;
@@ -409,6 +472,16 @@ ags_bulk_member_get_property(GObject *gobject,
   case PROP_PLUGIN_NAME:
     {
       g_value_set_string(value, bulk_member->plugin_name);
+    }
+    break;
+  case PROP_FILENAME:
+    {
+      g_value_set_string(value, bulk_member->filename);
+    }
+    break;
+  case PROP_EFFECT:
+    {
+      g_value_set_string(value, bulk_member->effect);
     }
     break;
   case PROP_SPECIFIER:

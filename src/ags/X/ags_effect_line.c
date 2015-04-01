@@ -41,6 +41,15 @@
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_line_member.h>
 
+#include <dlfcn.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/types.h>
+#include <unistd.h>
+
+#include <ladspa.h>
+
 void ags_effect_line_class_init(AgsEffectLineClass *effect_line);
 void ags_effect_line_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_effect_line_plugin_interface_init(AgsPluginInterface *plugin);

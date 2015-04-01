@@ -56,6 +56,9 @@ struct _AgsBulkMember
   GType widget_type;
   gchar *widget_label;
 
+  gchar *filename;
+  gchar *effect;
+  
   gchar *plugin_name;
   gchar *specifier;
 
