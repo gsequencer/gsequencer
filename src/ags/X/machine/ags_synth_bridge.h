@@ -23,6 +23,8 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
+#include <ags/audio/ags_audio.h>
+
 #include <ags/X/ags_effect_bridge.h>
 
 #define AGS_TYPE_SYNTH_BRIDGE                (ags_synth_bridge_get_type())

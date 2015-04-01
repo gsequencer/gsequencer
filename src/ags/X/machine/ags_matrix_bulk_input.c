@@ -45,6 +45,7 @@ void ags_matrix_bulk_input_disconnect(AgsConnectable *connectable);
  */
 
 static gpointer ags_matrix_bulk_input_parent_class = NULL;
+static AgsConnectableInterface *ags_matrix_bulk_input_parent_connectable_interface;
 
 GType
 ags_matrix_bulk_input_get_type(void)
@@ -96,7 +97,6 @@ void
 ags_matrix_bulk_input_class_init(AgsMatrixBulkInputClass *matrix_bulk_input)
 {
   GObjectClass *gobject;
-  GParamSpec *param_spec;
 
   ags_matrix_bulk_input_parent_class = g_type_class_peek_parent(matrix_bulk_input);
 
@@ -107,6 +107,8 @@ ags_matrix_bulk_input_class_init(AgsMatrixBulkInputClass *matrix_bulk_input)
 void
 ags_matrix_bulk_input_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  ags_matrix_bulk_input_parent_connectable_interface = g_type_interface_peek_parent(connectable);
+
   connectable->is_ready = NULL;
   connectable->is_connected = NULL;
   connectable->connect = ags_matrix_bulk_input_connect;
@@ -135,12 +137,24 @@ ags_matrix_bulk_input_init(AgsMatrixBulkInput *matrix_bulk_input)
 void
 ags_matrix_bulk_input_connect(AgsConnectable *connectable)
 {
+  if((AGS_EFFECT_BULK_CONNECTED & (AGS_EFFECT_BULK(connectable)->flags)) != 0){
+    return;
+  }
+
+  ags_matrix_bulk_input_parent_connectable_interface->connect(connectable);
+
   //TODO:JK: implement me
 }
 
 void
 ags_matrix_bulk_input_disconnect(AgsConnectable *connectable)
 {
+  if((AGS_EFFECT_BULK_CONNECTED & (AGS_EFFECT_BULK(connectable)->flags)) == 0){
+    return;
+  }
+
+  ags_matrix_bulk_input_parent_connectable_interface->disconnect(connectable);
+
   //TODO:JK: implement me
 }
 

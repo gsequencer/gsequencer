@@ -25,6 +25,8 @@
 
 #include <ags/object/ags_plugin.h>
 
+#include <ags/X/ags_effect_bulk.h>
+
 #include <ags/X/machine/ags_synth_bulk_output.h>
 #include <ags/X/machine/ags_synth_output_pad.h>
 #include <ags/X/machine/ags_synth_output_line.h>
@@ -48,6 +50,7 @@ void ags_synth_bridge_disconnect(AgsConnectable *connectable);
  */
 
 static gpointer ags_synth_bridge_parent_class = NULL;
+static AgsConnectableInterface *ags_synth_bridge_parent_connectable_interface;
 
 GType
 ags_synth_bridge_get_type(void)
@@ -99,17 +102,18 @@ void
 ags_synth_bridge_class_init(AgsSynthBridgeClass *synth_bridge)
 {
   GObjectClass *gobject;
-  GParamSpec *param_spec;
 
   ags_synth_bridge_parent_class = g_type_class_peek_parent(synth_bridge);
 
   /* GObjectClass */
-  gobject = G_OBJECT_CLASS(synth_bridge);
+  gobject = (GObjectClass *) synth_bridge;
 }
 
 void
 ags_synth_bridge_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  ags_synth_bridge_parent_connectable_interface = g_type_interface_peek_parent(connectable);
+
   connectable->is_ready = NULL;
   connectable->is_connected = NULL;
   connectable->connect = ags_synth_bridge_connect;
@@ -152,14 +156,14 @@ ags_synth_bridge_init(AgsSynthBridge *synth_bridge)
 		    table);
 
   AGS_EFFECT_BRIDGE(synth_bridge)->bulk_output = (GtkWidget *) g_object_new(AGS_TYPE_SYNTH_BULK_OUTPUT,
-									      NULL);
+									    NULL);
   gtk_table_attach(table,
 		   AGS_EFFECT_BRIDGE(synth_bridge)->bulk_output,
 		   0, 1,
 		   0, 1,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
-  
+
   AGS_EFFECT_BRIDGE(synth_bridge)->output = (GtkHBox *) gtk_hbox_new(FALSE, 0);
   gtk_table_attach(table,
 		   AGS_EFFECT_BRIDGE(synth_bridge)->output,
@@ -172,12 +176,24 @@ ags_synth_bridge_init(AgsSynthBridge *synth_bridge)
 void
 ags_synth_bridge_connect(AgsConnectable *connectable)
 {
+  if((AGS_EFFECT_BRIDGE_CONNECTED & (AGS_EFFECT_BRIDGE(connectable)->flags)) != 0){
+    return;
+  }
+
+  ags_synth_bridge_parent_connectable_interface->connect(connectable);
+
   //TODO:JK: implement me
 }
 
 void
 ags_synth_bridge_disconnect(AgsConnectable *connectable)
 {
+  if((AGS_EFFECT_BRIDGE_CONNECTED & (AGS_EFFECT_BRIDGE(connectable)->flags)) == 0){
+    return;
+  }
+
+  ags_synth_bridge_parent_connectable_interface->connect(connectable);
+
   //TODO:JK: implement me
 }
 

@@ -62,6 +62,7 @@
 #include <ags/X/ags_pad.h>
 #include <ags/X/ags_line.h>
 
+#include <ags/X/machine/ags_synth_bridge.h>
 #include <ags/X/machine/ags_synth_input_pad.h>
 #include <ags/X/machine/ags_synth_input_line.h>
 #include <ags/X/machine/ags_oscillator.h>
@@ -336,7 +337,7 @@ ags_synth_init(AgsSynth *synth)
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
-  AGS_MACHINE(synth)->bridge = ags_synth_bridge_new(FALSE);
+  AGS_MACHINE(synth)->bridge = ags_synth_bridge_new(audio);
   gtk_box_pack_start((GtkBox *) hbox,
 		     (GtkWidget *) AGS_MACHINE(synth)->bridge,
 		     FALSE, FALSE,

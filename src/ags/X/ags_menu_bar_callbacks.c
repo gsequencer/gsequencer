@@ -402,15 +402,13 @@ ags_menu_bar_add_synth_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 
   ags_connectable_connect(AGS_CONNECTABLE(synth));
 
-  gtk_widget_show_all((GtkWidget *) synth);
-
   synth->machine.audio->audio_channels = 1;
   ags_audio_set_pads((AgsAudio*) synth->machine.audio, AGS_TYPE_INPUT, 2);
   ags_audio_set_pads((AgsAudio*) synth->machine.audio, AGS_TYPE_OUTPUT, 78);
 
   ags_machine_find_port(AGS_MACHINE(synth));
 
-  gtk_widget_show_all(synth->input_pad);
+  gtk_widget_show_all((GtkWidget *) synth);
 }
 
 void

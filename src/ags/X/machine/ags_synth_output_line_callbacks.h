@@ -25,4 +25,8 @@
 
 #include <ags/X/machine/ags_synth_output_line.h>
 
+void ags_synth_output_line_notify_channel_callback(GObject *gobject,
+						   GParamSpec *pspec,
+						   gpointer user_data);
+
 #endif /*__AGS_SYNTH_OUTPUT_LINE_CALLBACKS_H__*/

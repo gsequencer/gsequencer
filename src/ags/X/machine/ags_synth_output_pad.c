@@ -107,12 +107,11 @@ void
 ags_synth_output_pad_class_init(AgsSynthOutputPadClass *synth_output_pad)
 {
   GObjectClass *gobject;
-  GParamSpec *param_spec;
 
   ags_synth_output_pad_parent_class = g_type_class_peek_parent(synth_output_pad);
 
   /* GObjectClass */
-  gobject = G_OBJECT_CLASS(synth_output_pad);
+  gobject = (GObjectClass *) synth_output_pad;
 }
 
 void

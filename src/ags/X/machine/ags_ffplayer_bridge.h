@@ -23,6 +23,8 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
+#include <ags/audio/ags_audio.h>
+
 #include <ags/X/ags_effect_bridge.h>
 
 #define AGS_TYPE_FFPLAYER_BRIDGE                (ags_ffplayer_bridge_get_type())

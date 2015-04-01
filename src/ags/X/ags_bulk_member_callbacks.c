@@ -71,24 +71,30 @@ ags_bulk_member_spin_button_changed_callback(GtkWidget *spin_button, AgsBulkMemb
 void
 ags_bulk_member_check_button_clicked_callback(GtkWidget *check_button, AgsBulkMember *bulk_member)
 {
-  bulk_member->active = gtk_toggle_button_get_active((GtkToggleButton *) check_button);
+  gboolean active;
+
+  active = gtk_toggle_button_get_active((GtkToggleButton *) check_button);
   ags_bulk_member_change_port(bulk_member,
-			      &(bulk_member->active));
+			      &(active));
 }
 
 void
 ags_bulk_member_toggle_button_clicked_callback(GtkWidget *toggle_button, AgsBulkMember *bulk_member)
 {
-  bulk_member->active = gtk_toggle_button_get_active((GtkToggleButton *) toggle_button);
+  gboolean active;
+
+  active = gtk_toggle_button_get_active((GtkToggleButton *) toggle_button);
   ags_bulk_member_change_port(bulk_member,
-			      &(bulk_member->active));
+			      &(active));
 }
 
 void
 ags_bulk_member_button_clicked_callback(GtkWidget *button, AgsBulkMember *bulk_member)
 {
+  gboolean active;
+
   ags_bulk_member_change_port(bulk_member,
-			      &(bulk_member->active));
+			      &(active));
 }
 void
 ags_bulk_member_port_safe_write_callback(AgsPort *port, GValue *value,

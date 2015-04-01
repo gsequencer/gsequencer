@@ -42,6 +42,7 @@
 
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_pad.h>
+#include <ags/X/ags_line_member.h>
 
 void ags_line_class_init(AgsLineClass *line);
 void ags_line_connectable_interface_init(AgsConnectableInterface *connectable);

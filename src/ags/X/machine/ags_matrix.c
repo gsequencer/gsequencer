@@ -67,6 +67,8 @@
 
 #include <ags/X/ags_menu_bar.h>
 
+#include <ags/X/machine/ags_matrix_bridge.h>
+
 #include <math.h>
 
 #define AGS_MATRIX_INPUT_LINE_MAPPED_KEY "AGS_MATRIX_INPUT_LINE_MAPPED_KEY"

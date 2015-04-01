@@ -27,11 +27,12 @@
 #include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_output.h>
+#include <ags/audio/ags_input.h>
 #include <ags/audio/ags_devout.h>
 
 #include <ags/widget/ags_dial.h>
 
-#include <ags/X/ags_bulk.h>
 #include <ags/X/ags_effect_bulk.h>
 
 void ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member);
@@ -76,12 +77,6 @@ enum{
   PROP_PLUGIN_NAME,
   PROP_SPECIFIER,
   PROP_CONTROL_PORT,
-  PROP_PORT,
-  PROP_PORT_DATA,
-  PROP_PORT_DATA_LENGTH,
-  PROP_RECALL_PORT,
-  PROP_RECALL_PORT_DATA,
-  PROP_RECALL_PORT_DATA_LENGTH,
   PROP_TASK_TYPE,
 };
 
@@ -222,68 +217,6 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
 				  PROP_CONTROL_PORT,
 				  param_spec);
 
-  /**
-   * AgsBulkMember:apply:
-   *
-   * The matching simple port of plugin name and specifier.
-   * 
-   * Since: 0.4
-   */
-  param_spec = g_param_spec_object("port\0",
-				   "port to apply\0",
-				   "The port to apply\0",
-				   G_TYPE_POINTER,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_PORT,
-				  param_spec);
-
-  /**
-   * AgsBulkMember:port-data:
-   *
-   * The port data to apply.
-   * 
-   * Since: 0.4
-   */
-  param_spec = g_param_spec_pointer("port-data\0",
-				    "port data\0",
-				    "The port data\0",
-				    G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_PORT_DATA,
-				  param_spec);
-
-  /**
-   * AgsBulkMember:recall-port:
-   *
-   * The matching complex port of plugin name and specifier.
-   * 
-   * Since: 0.4
-   */
-  param_spec = g_param_spec_object("recall-port\0",
-				   "recall port to apply\0",
-				   "The recall port to apply\0",
-				   G_TYPE_POINTER,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_RECALL_PORT,
-				  param_spec);
-
-  /**
-   * AgsBulkMember:recall-port-data:
-   *
-   * The complex port data to apply.
-   * 
-   * Since: 0.4
-   */
-  param_spec = g_param_spec_pointer("recall-port-data\0",
-				    "recall port data\0",
-				    "The recall port data\0",
-				    G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_RECALL_PORT_DATA,
-				  param_spec);
-
   /* AgsBulkMember */
   bulk_member->change_port = ags_bulk_member_real_change_port;
 
@@ -338,13 +271,7 @@ ags_bulk_member_init(AgsBulkMember *bulk_member)
 
   bulk_member->control_port = NULL;
 
-  bulk_member->port = NULL;
-  bulk_member->port_data = NULL;
-  bulk_member->active = FALSE;
-
-  bulk_member->recall_port = NULL;
-  bulk_member->recall_port_data = NULL;
-  bulk_member->recall_active = FALSE;
+  bulk_member->bulk_port = NULL;
 
   bulk_member->task_type = G_TYPE_NONE;
 }
@@ -439,64 +366,6 @@ ags_bulk_member_set_property(GObject *gobject,
       bulk_member->control_port = g_strdup(control_port);
     }
     break;
-  case PROP_PORT:
-    {
-      AgsPort *port;
-
-      port = g_value_get_object(value);
-      
-      if(port != NULL){
-	g_object_ref(port);
-
-	if(g_list_find(bulk_member->port, port) == NULL){
-	  bulk_member->port = g_list_prepend(bulk_member->port,
-					     port);
-	}
-      }
-    }
-    break;
-  case PROP_PORT_DATA:
-    {
-      gpointer port_data;
-
-      port_data = g_value_get_pointer(value);
-
-      if(port_data == bulk_member->port_data){
-	return;
-      }
-
-      bulk_member->port_data = port_data;
-    }
-    break;
-  case PROP_RECALL_PORT:
-    {
-      AgsPort *port;
-
-      port = g_value_get_object(value);
-      
-      if(port != NULL){
-	g_object_ref(port);
-
-	if(g_list_find(bulk_member->port, port) == NULL){
-	  bulk_member->port = g_list_prepend(bulk_member->port,
-					     port);
-	}
-      }
-    }
-    break;
-  case PROP_RECALL_PORT_DATA:
-    {
-      gpointer port_data;
-
-      port_data = g_value_get_pointer(value);
-
-      if(port_data == bulk_member->recall_port_data){
-	return;
-      }
-
-      bulk_member->recall_port_data = port_data;
-    }
-    break;
   case PROP_TASK_TYPE:
     {
       GType type;
@@ -552,26 +421,6 @@ ags_bulk_member_get_property(GObject *gobject,
       g_value_set_string(value, bulk_member->control_port);
     }
     break;
-  case PROP_PORT:
-    {
-      g_value_set_pointer(value, bulk_member->port);
-    }
-    break;
-  case PROP_PORT_DATA:
-    {
-      g_value_set_pointer(value, bulk_member->port_data);
-    }
-    break;
-  case PROP_RECALL_PORT:
-    {
-      g_value_set_pointer(value, bulk_member->port);
-    }
-    break;
-  case PROP_RECALL_PORT_DATA:
-    {
-      g_value_set_pointer(value, bulk_member->port_data);
-    }
-    break;
   case PROP_TASK_TYPE:
     {
       g_value_set_ulong(value, bulk_member->task_type);
@@ -616,19 +465,6 @@ ags_bulk_member_connect(AgsConnectable *connectable)
     g_signal_connect(GTK_WIDGET(control), "clicked\0",
 		     G_CALLBACK(ags_bulk_member_button_clicked_callback), bulk_member);
   }
-
-  /* port callback */
-  if((AGS_BULK_MEMBER_PLAY_CALLBACK_WRITE & (bulk_member->flags)) != 0 &&
-     bulk_member->port != NULL){
-    g_signal_connect_after(bulk_member->port, "safe-write\0",
-			   G_CALLBACK(ags_bulk_member_port_safe_write_callback), bulk_member);
-  }
-
-  if((AGS_BULK_MEMBER_RECALL_CALLBACK_WRITE & (bulk_member->flags)) != 0 &&
-     bulk_member->recall_port != NULL){
-    g_signal_connect_after(bulk_member->recall_port, "safe-write\0",
-			   G_CALLBACK(ags_bulk_member_port_safe_write_callback), bulk_member);
-  }
 }
 
 void
@@ -647,6 +483,25 @@ GtkWidget*
 ags_bulk_member_get_widget(AgsBulkMember *bulk_member)
 {
   return(gtk_bin_get_child(bulk_member));
+}
+
+AgsBulkPort*
+ags_bulk_port_alloc(AgsPort *port,
+		    AgsPort *recall_port)
+{
+  AgsBulkPort *bulk_port;
+
+  bulk_port = (AgsBulkPort *) malloc(sizeof(AgsBulkPort));
+
+  bulk_port->port = port;
+  bulk_port->port_data = &(port->port_value);
+  bulk_port->active = FALSE;
+  
+  bulk_port->recall_port = recall_port;
+  bulk_port->recall_port_data = &(port->port_value);
+  bulk_port->active = FALSE;
+
+  return(bulk_port);
 }
 
 /**
@@ -688,7 +543,7 @@ ags_bulk_member_real_change_port(AgsBulkMember *bulk_member,
     GList *list;
     GValue value = {0,};
 
-    list = bulk_member->port;
+    list = bulk_member->bulk_port;
 
     while(list != NULL){
       port = AGS_BULK_PORT(list->data)->port;
@@ -747,7 +602,7 @@ ags_bulk_member_real_change_port(AgsBulkMember *bulk_member,
 	}
       }
 
-      ags_port_safe_write(bulk_member->port,
+      ags_port_safe_write(bulk_member->bulk_port,
 			  &value);
 
       if((AGS_BULK_MEMBER_APPLY_RECALL & (bulk_member->flags)) != 0){
@@ -871,9 +726,9 @@ ags_bulk_member_find_port(AgsBulkMember *bulk_member)
   /* search channels */
   channel = NULL;
   
-  if(effect_bulk->channel_type == AGS_TYPE_OUTPUT){
+  if(AGS_EFFECT_BULK(effect_bulk)->channel_type == AGS_TYPE_OUTPUT){
     channel = audio->output;
-  }else if(effect_bulk->channel_type == AGS_TYPE_INPUT){
+  }else if(AGS_EFFECT_BULK(effect_bulk)->channel_type == AGS_TYPE_INPUT){
     channel = audio->input;
   }
 
@@ -885,13 +740,9 @@ ags_bulk_member_find_port(AgsBulkMember *bulk_member)
     recall_channel_port = ags_bulk_member_find_specifier(recall);
 
     if(channel_port != NULL){
-      g_object_set(G_OBJECT(bulk_member),
-		   "port\0", channel_port,
-		   NULL);
-
-      g_object_set(G_OBJECT(bulk_member),
-		   "recall-port\0", recall_channel_port,
-		   NULL);
+      bulk_member->bulk_port = g_list_prepend(bulk_member->bulk_port,
+					      ags_bulk_port_alloc(channel_port,
+								  recall_channel_port));
     }
 
     channel = channel->next;

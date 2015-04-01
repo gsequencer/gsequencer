@@ -26,6 +26,24 @@
 #include <ags/object/ags_marshal.h>
 #include <ags/object/ags_plugin.h>
 
+#include <ags/plugin/ags_ladspa_manager.h>
+
+#include <ags/thread/ags_audio_loop.h>
+#include <ags/thread/ags_task_thread.h>
+
+#include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_output.h>
+#include <ags/audio/ags_input.h>
+#include <ags/audio/ags_recall_ladspa.h>
+
+#include <ags/audio/task/ags_add_bulk_member.h>
+#include <ags/audio/task/ags_update_bulk_member.h>
+
+#include <ags/widget/ags_dial.h>
+
+#include <ags/X/ags_ladspa_browser.h>
+#include <ags/X/ags_bulk_member.h>
+
 void ags_effect_bulk_class_init(AgsEffectBulkClass *effect_bulk);
 void ags_effect_bulk_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_effect_bulk_plugin_interface_init(AgsPluginInterface *plugin);
@@ -53,6 +71,13 @@ GList* ags_effect_bulk_real_add_effect(AgsEffectBulk *effect_bulk,
 void ags_effect_bulk_real_remove_effect(AgsEffectBulk *effect_bulk,
 					guint nth);
 
+void ags_effect_bulk_real_resize_audio_channels(AgsEffectBulk *effect_bulk,
+				      guint new_size,
+				      guint old_size);
+void ags_effect_bulk_real_resize_pads(AgsEffectBulk *effect_bulk,
+				      guint new_size,
+				      guint old_size);
+
 /**
  * SECTION:ags_effect_bulk
  * @short_description: A composite widget to visualize a bunch of #AgsChannel
@@ -67,6 +92,8 @@ void ags_effect_bulk_real_remove_effect(AgsEffectBulk *effect_bulk,
 enum{
   ADD_EFFECT,
   REMOVE_EFFECT,
+  RESIZE_AUDIO_CHANNELS,
+  RESIZE_PADS,
   LAST_SIGNAL,
 };
 
@@ -139,46 +166,7 @@ ags_effect_bulk_class_init(AgsEffectBulkClass *effect_bulk)
   gobject->set_property = ags_effect_bulk_set_property;
   gobject->get_property = ags_effect_bulk_get_property;
 
-  /* AgsEffectBulkClass */
-  effect_bulk->add_effect = ags_effect_bulk_real_add_effect;
-  effect_bulk->remove_effect = ags_effect_bulk_real_remove_effect;
   
-  /* signals */
-  /**
-   * AgsEffectBulk::add-effect:
-   * @effect_bulk: the #AgsEffectBulk to modify
-   * @effect: the effect's name
-   *
-   * The ::add-effect signal notifies about added effect.
-   */
-  effect_bulk_signals[ADD_EFFECT] =
-    g_signal_new("add-effect\0",
-		 G_TYPE_FROM_CLASS(effect_bulk),
-		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsEffectBulkClass, add_effect),
-		 NULL, NULL,
-		 g_cclosure_user_marshal_POINTER__STRING_STRING,
-		 G_TYPE_NONE, 2,
-		 G_TYPE_STRING,
-		 G_TYPE_STRING);
-
-  /**
-   * AgsEffectBulk::remove-effect:
-   * @effect_bulk: the #AgsEffectBulk to modify
-   * @nth: the nth effect
-   *
-   * The ::remove-effect signal notifies about removed effect.
-   */
-  effect_bulk_signals[REMOVE_EFFECT] =
-    g_signal_new("remove-effect\0",
-		 G_TYPE_FROM_CLASS(effect_bulk),
-		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsEffectBulkClass, remove_effect),
-		 NULL, NULL,
-		 g_cclosure_marshal_VOID__UINT,
-		 G_TYPE_NONE, 1,
-		 G_TYPE_UINT);
-
   /* properties */
   /**
    * AgsEffectBulk:audio:
@@ -203,15 +191,95 @@ ags_effect_bulk_class_init(AgsEffectBulkClass *effect_bulk)
    * 
    * Since: 0.4
    */
-  param_spec = g_param_spec_object("channel-type\0",
-				   "assigned channel type\0",
-				   "The channel type it is assigned with\0",
-				   G_TYPE_ULONG,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_gtype("channel-type\0",
+				  "assigned channel type\0",
+				  "The channel type it is assigned with\0",
+				  AGS_TYPE_CHANNEL,
+				  G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_CHANNEL_TYPE,
 				  param_spec);
 
+  /* AgsEffectBulkClass */
+  effect_bulk->add_effect = ags_effect_bulk_real_add_effect;
+  effect_bulk->remove_effect = ags_effect_bulk_real_remove_effect;
+
+  effect_bulk->resize_audio_channels = ags_effect_bulk_real_resize_audio_channels;
+  effect_bulk->resize_pads = ags_effect_bulk_real_resize_pads;
+
+  /* signals */
+  /**
+   * AgsEffectBulk::add-effect:
+   * @effect_bulk: the #AgsEffectBulk to modify
+   * @effect: the effect's name
+   *
+   * The ::add-effect signal notifies about added effect.
+   */
+  effect_bulk_signals[ADD_EFFECT] =
+    g_signal_new("add-effect\0",
+		 G_TYPE_FROM_CLASS(effect_bulk),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsEffectBulkClass, add_effect),
+		 NULL, NULL,
+		 g_cclosure_user_marshal_POINTER__STRING_STRING,
+		 G_TYPE_POINTER, 2,
+		 G_TYPE_STRING,
+		 G_TYPE_STRING);
+
+  /**
+   * AgsEffectBulk::remove-effect:
+   * @effect_bulk: the #AgsEffectBulk to modify
+   * @nth: the nth effect
+   *
+   * The ::remove-effect signal notifies about removed effect.
+   */
+  effect_bulk_signals[REMOVE_EFFECT] =
+    g_signal_new("remove-effect\0",
+		 G_TYPE_FROM_CLASS(effect_bulk),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsEffectBulkClass, remove_effect),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__UINT,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_UINT);
+
+  /**
+   * AgsEffectBulk::resize-audio-channels:
+   * @effect_bulk: the object to adjust the channels.
+   * @new_size: new audio channel count
+   * @old_size: old audio channel count
+   *
+   * The ::resize-audio-channels signal notifies about changes in channel
+   * alignment.
+   */
+  effect_bulk_signals[RESIZE_AUDIO_CHANNELS] = 
+    g_signal_new("resize-audio-channels\0",
+		 G_TYPE_FROM_CLASS(effect_bulk),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsEffectBulkClass, resize_audio_channels),
+		 NULL, NULL,
+		 g_cclosure_user_marshal_VOID__UINT_UINT,
+		 G_TYPE_NONE, 2,
+		 G_TYPE_UINT, G_TYPE_UINT);
+
+  /**
+   * AgsEffectBulk::resize-pads:
+   * @effect_bulk: the object to adjust the channels.
+   * @new_size: new pad count
+   * @old_size: old pad count
+   *
+   * The ::resize-pads signal notifies about changes in channel
+   * alignment.
+   */
+  effect_bulk_signals[RESIZE_PADS] = 
+    g_signal_new("resize_pads\0",
+		 G_TYPE_FROM_CLASS(effect_bulk),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsEffectBulkClass, resize_pads),
+		 NULL, NULL,
+		 g_cclosure_user_marshal_VOID__UINT_UINT,
+		 G_TYPE_NONE, 2,
+		 G_TYPE_UINT, G_TYPE_UINT);
 }
 
 void
@@ -256,11 +324,50 @@ ags_effect_bulk_init(AgsEffectBulk *effect_bulk)
   effect_bulk->channel_type = G_TYPE_NONE;
   effect_bulk->audio = NULL;
 
-  effect_bulk->table = (GtkTable *) gtk_table_new(1, 2, FALSE);
+  alignment = g_object_new(GTK_TYPE_ALIGNMENT,
+			   "xalign\0", 1.0,
+			   NULL);
   gtk_box_pack_start(effect_bulk,
+		     alignment,
+		     FALSE, FALSE,
+		     0);
+
+  hbox = gtk_hbox_new(FALSE, 0);
+  gtk_container_add(alignment,
+		    hbox);
+
+  effect_bulk->add = gtk_button_new_from_stock(GTK_STOCK_ADD);
+  gtk_box_pack_start(hbox,
+		     effect_bulk->add,
+		     FALSE, FALSE,
+		     0);
+
+  effect_bulk->remove = gtk_button_new_from_stock(GTK_STOCK_REMOVE);
+  gtk_box_pack_start(hbox,
+		     effect_bulk->remove,
+		     FALSE, FALSE,
+		     0);
+
+  hbox = gtk_hbox_new(FALSE, 0);
+  gtk_box_pack_start(effect_bulk,
+		     hbox,
+		     FALSE, FALSE,
+		     0);
+
+  effect_bulk->bulk_member = (GtkVBox *) gtk_vbox_new(FALSE, 0);
+  gtk_box_pack_start(hbox,
+		     effect_bulk->bulk_member,
+		     FALSE, FALSE,
+		     0);
+
+  effect_bulk->table = (GtkTable *) gtk_table_new(1, AGS_EFFECT_BULK_COLUMNS_COUNT,
+						  FALSE);
+  gtk_box_pack_start(hbox,
 		     effect_bulk->table,
 		     FALSE, FALSE,
 		     0);
+
+  effect_bulk->ladspa_browser = ags_ladspa_browser_new(effect_bulk);
 }
 
 void
@@ -285,11 +392,45 @@ ags_effect_bulk_set_property(GObject *gobject,
       }
 
       if(effect_bulk->audio != NULL){
+	if((AGS_EFFECT_BULK_CONNECTED & (effect_bulk->flags)) != 0){
+	  g_signal_handler_disconnect(effect_bulk->audio,
+				      effect_bulk->set_audio_channels_handler);
+	  g_signal_handler_disconnect(effect_bulk->audio,
+				      effect_bulk->set_pads_handler);
+	}
+
+	if(effect_bulk->channel_type == AGS_TYPE_OUTPUT){
+	  ags_effect_bulk_resize_pads(effect_bulk,
+				      0,
+				      effect_bulk->audio->output_pads);
+	}else{
+	  ags_effect_bulk_resize_pads(effect_bulk,
+				      0,
+				      effect_bulk->audio->input_pads);
+	}
+	
 	g_object_unref(effect_bulk->audio);
       }
 
       if(audio != NULL){
 	g_object_ref(audio);
+
+	if((AGS_EFFECT_BULK_CONNECTED & (effect_bulk->flags)) != 0){
+	  effect_bulk->set_audio_channels_handler = g_signal_connect_after(effect_bulk->audio, "set-audio-channels\0",
+									   G_CALLBACK(ags_effect_bulk_set_audio_channels_callback), effect_bulk);
+
+	  effect_bulk->set_pads_handler = g_signal_connect_after(effect_bulk->audio, "set-pads\0",
+								 G_CALLBACK(ags_effect_bulk_set_pads_callback), effect_bulk);
+	  if(effect_bulk->channel_type == AGS_TYPE_OUTPUT){
+	    ags_effect_bulk_resize_pads(effect_bulk,
+					audio->output_pads,
+					0);
+	  }else{
+	    ags_effect_bulk_resize_pads(effect_bulk,
+					audio->input_pads,
+					0);
+	  }
+	}
       }
 
       effect_bulk->audio = audio;
@@ -298,7 +439,7 @@ ags_effect_bulk_set_property(GObject *gobject,
     {
       GType channel_type;
 
-      channel_type = (GType) g_value_get_ulong(value);
+      channel_type = (GType) g_value_get_gtype(value);
 
       effect_bulk->channel_type = channel_type;
     }
@@ -328,7 +469,7 @@ ags_effect_bulk_get_property(GObject *gobject,
     break;
   case PROP_CHANNEL_TYPE:
     {
-      g_value_set_ulong(value,
+      g_value_set_gtype(value,
 			effect_bulk->channel_type);
     }
     break;
@@ -341,12 +482,45 @@ ags_effect_bulk_get_property(GObject *gobject,
 void
 ags_effect_bulk_connect(AgsConnectable *connectable)
 {
-  //TODO:JK: implement me
+  AgsEffectBulk *effect_bulk;
+
+  effect_bulk = AGS_EFFECT_BULK(connectable);
+
+  if((AGS_EFFECT_BULK_CONNECTED & (effect_bulk->flags)) != 0){
+    return;
+  }
+
+  g_signal_connect(G_OBJECT(effect_bulk->add), "clicked\0",
+		   G_CALLBACK(ags_effect_bulk_add_callback), effect_bulk);
+
+  g_signal_connect(G_OBJECT(effect_bulk->remove), "clicked\0",
+		   G_CALLBACK(ags_effect_bulk_remove_callback), effect_bulk);
+
+  ags_connectable_connect(AGS_CONNECTABLE(effect_bulk->ladspa_browser));
+
+  g_signal_connect(G_OBJECT(effect_bulk->ladspa_browser), "response\0",
+		   G_CALLBACK(ags_effect_bulk_ladspa_browser_response_callback), effect_bulk);
+
+  if(effect_bulk->audio != NULL){
+    effect_bulk->set_audio_channels_handler = g_signal_connect_after(effect_bulk->audio, "set-audio-channels\0",
+								     G_CALLBACK(ags_effect_bulk_set_audio_channels_callback), effect_bulk);
+
+    effect_bulk->set_pads_handler = g_signal_connect_after(effect_bulk->audio, "set-pads\0",
+							   G_CALLBACK(ags_effect_bulk_set_pads_callback), effect_bulk);
+  }
 }
 
 void
 ags_effect_bulk_disconnect(AgsConnectable *connectable)
 {
+  AgsEffectBulk *effect_bulk;
+
+  effect_bulk = AGS_EFFECT_BULK(connectable);
+
+  if((AGS_EFFECT_BULK_CONNECTED & (effect_bulk->flags)) == 0){
+    return;
+  }
+
   //TODO:JK: implement me
 }
 
@@ -398,14 +572,190 @@ ags_effect_bulk_set_build_id(AgsPlugin *plugin, gchar *build_id)
   effect_bulk->build_id = build_id;
 }
 
+AgsEffectBulkPlugin*
+ags_effect_bulk_plugin_alloc(gchar *filename,
+			     gchar *effect)
+{
+  AgsEffectBulkPlugin *effect_plugin;
+
+  effect_plugin = (AgsEffectBulkPlugin *) malloc(sizeof(AgsEffectBulkPlugin));
+
+  effect_plugin->filename = filename;
+  effect_plugin->effect = effect;
+  
+  return(effect_plugin);
+}
+
 GList*
 ags_effect_bulk_real_add_effect(AgsEffectBulk *effect_bulk,
 				gchar *filename,
 				gchar *effect)
 {
-  //TODO:JK: implement me
+  AgsBulkMember *bulk_member;
+  AgsAddBulkMember *add_bulk_member;
+  GtkAdjustment *adjustment;
 
-  return(NULL);
+  AgsChannel *current;
+
+  AgsLadspaPlugin *ladspa_plugin;
+
+  AgsAudioLoop *audio_loop;
+  AgsTaskThread *task_thread;
+  
+  GList *list, *list_start;
+  GList *port;
+  GList *task;
+  guint pads, audio_channels;
+  gdouble step;
+  guint x, y;
+  guint i, j;
+
+  void *plugin_so;
+  LADSPA_Descriptor_Function ladspa_descriptor;
+  LADSPA_Descriptor *plugin_descriptor;
+  LADSPA_PortDescriptor *port_descriptor;
+  LADSPA_Data lower_bound, upper_bound;
+  unsigned long index;
+  unsigned long k;
+
+  effect_bulk->plugin = g_list_append(effect_bulk->plugin,
+				      ags_effect_bulk_plugin_alloc(filename,
+								   effect));
+  
+  audio_loop = (AgsAudioLoop *) AGS_MAIN(AGS_DEVOUT(effect_bulk->audio->devout)->ags_main)->main_loop;
+  task_thread = (AgsTaskThread *) audio_loop->task_thread;
+
+  port = NULL;
+  
+  audio_channels = effect_bulk->audio->audio_channels;
+
+  if(effect_bulk->channel_type == AGS_TYPE_OUTPUT){
+    current = effect_bulk->audio->output;
+    
+    pads = effect_bulk->audio->output_pads;
+  }else{
+    current = effect_bulk->audio->input;
+
+    pads = effect_bulk->audio->input_pads;
+  }
+  
+  for(i = 0; i < pads; i++){
+    for(j = 0; j < audio_channels; j++){
+      if(port == NULL){
+	port = ags_channel_add_effect(current,
+				      filename,
+				      effect);
+      }else{
+	port = g_list_concat(port,
+			     ags_channel_add_effect(current,
+						    filename,
+						    effect));
+      }
+
+      current = current->next;
+    }
+  }
+
+  /* retrieve position within table  */
+  x = 0;
+  y = 0;
+  
+  list_start = 
+    list = effect_bulk->table->children;
+
+  while(list != NULL){
+    if(y <= ((GtkTableChild *) list->data)->top_attach){
+      y = ((GtkTableChild *) list->data)->top_attach + 1;
+    }
+
+    list = list->next;
+  }
+  
+  /* load ports */
+  if(index != -1 &&
+     plugin_so){
+    ladspa_descriptor = (LADSPA_Descriptor_Function) dlsym(plugin_so,
+							   "ladspa_descriptor\0");
+
+    if(dlerror() == NULL && ladspa_descriptor){
+      plugin_descriptor = ladspa_descriptor(index);
+
+      port_descriptor = plugin_descriptor->PortDescriptors;
+
+      for(k = 0; k < plugin_descriptor->PortCount; k++){
+	if((LADSPA_IS_PORT_CONTROL(port_descriptor[k]) && 
+	    (LADSPA_IS_PORT_INPUT(port_descriptor[k]) ||
+	     LADSPA_IS_PORT_OUTPUT(port_descriptor[k])))){
+	  AgsDial *dial;
+	  GtkAdjustment *adjustment;
+
+	  if(x == AGS_EFFECT_BULK_COLUMNS_COUNT){
+	    x = 0;
+	    y++;
+	    gtk_table_resize(effect_bulk->table,
+			     y + 1, AGS_EFFECT_BULK_COLUMNS_COUNT);
+	  }
+
+	  /* add bulk member */
+	  bulk_member = (AgsBulkMember *) g_object_new(AGS_TYPE_BULK_MEMBER,
+						       "widget-type\0", AGS_TYPE_DIAL,
+						       "widget-label\0", plugin_descriptor->PortNames[k],
+						       "plugin-name\0", AGS_PORT(port->data)->plugin_name,
+						       "specifier\0", AGS_PORT(port->data)->specifier,
+						       "control-port\0", AGS_PORT(port->data)->control_port,
+						       NULL);
+	  dial = ags_bulk_member_get_widget(bulk_member);
+	  gtk_widget_set_size_request(dial,
+				      2 * dial->radius + 2 * dial->outline_strength + dial->button_width + 1,
+				      2 * dial->radius + 2 * dial->outline_strength + 1);
+		
+	  /* add controls of ports and apply range  */
+	  lower_bound = plugin_descriptor->PortRangeHints[k].LowerBound;
+	  upper_bound = plugin_descriptor->PortRangeHints[k].UpperBound;
+
+	  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0);
+	  g_object_set(dial,
+		       "adjustment", adjustment,
+		       NULL);
+
+	  if(upper_bound >= 0.0 && lower_bound >= 0.0){
+	    step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
+	  }else if(upper_bound < 0.0 && lower_bound < 0.0){
+	    step = -1.0 * (upper_bound + lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
+	  }else{
+	    step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
+	  }
+
+	  gtk_adjustment_set_step_increment(adjustment,
+					    step);
+	  gtk_adjustment_set_lower(adjustment,
+				   lower_bound);
+	  gtk_adjustment_set_upper(adjustment,
+				   upper_bound);
+	  gtk_adjustment_set_value(adjustment,
+				   lower_bound);
+
+	  /* create task */
+	  add_bulk_member = ags_add_bulk_member_new(effect_bulk,
+						    bulk_member,
+						    x, y,
+						    1, 1);
+	  task = g_list_prepend(task,
+				add_bulk_member);
+	  
+	  x++;
+	  port = port->next;
+	}
+      }
+    }
+  }
+  
+  /* launch tasks */
+  task = g_list_reverse(task);      
+  ags_task_thread_append_tasks(task_thread,
+			       task);
+
+  return(port);
 }
 
 GList*
@@ -413,23 +763,98 @@ ags_effect_bulk_add_effect(AgsEffectBulk *effect_bulk,
 			   gchar *filename,
 			   gchar *effect)
 {
+  GList *list;
+  
   g_return_val_if_fail(AGS_IS_EFFECT_BULK(effect_bulk), NULL);
 
   g_object_ref((GObject *) effect_bulk);
   g_signal_emit(G_OBJECT(effect_bulk),
 		effect_bulk_signals[ADD_EFFECT], 0,
 		filename,
-		effect);
+		effect,
+		&list);
   g_object_unref((GObject *) effect_bulk);
 
-  return(NULL);
+  return(list);
 }
 
 void
 ags_effect_bulk_real_remove_effect(AgsEffectBulk *effect_bulk,
 				   guint nth)
 {
-  //TODO:JK: implement me
+  AgsAddBulkMember *add_bulk_member;
+  GtkAdjustment *adjustment;
+  
+  AgsChannel *current;
+
+  AgsEffectBulkPlugin *effect_bulk_plugin;
+  GList *control;
+  GList *play_ladspa;
+  GList *port;
+  GList *list;
+  guint pads, audio_channels;
+  guint i, j;
+
+  /* free plugin specification */
+  effect_bulk_plugin = g_list_nth_data(effect_bulk->plugin,
+				       nth);
+  effect_bulk->plugin = g_list_remove(effect_bulk->plugin,
+				      effect_bulk_plugin);
+  free(effect_bulk_plugin);
+
+  /* retrieve channel */
+  audio_channels = effect_bulk->audio->audio_channels;
+
+  if(effect_bulk->channel_type == AGS_TYPE_OUTPUT){
+    current = effect_bulk->audio->output;
+    
+    pads = effect_bulk->audio->output_pads;
+  }else{
+    current = effect_bulk->audio->input;
+
+    pads = effect_bulk->audio->input_pads;
+  }
+
+  /* retrieve ladspa recall*/
+  play_ladspa = ags_recall_template_find_type(current->play,
+					      AGS_TYPE_RECALL_LADSPA);
+
+  /* destroy controls */
+  port = AGS_RECALL(g_list_nth(play_ladspa,
+			       nth)->data)->port;
+    
+  while(port != NULL){
+    control = gtk_container_get_children(effect_bulk->table);
+      
+    while(control != NULL){
+      if(AGS_IS_BULK_MEMBER(control->data)){
+	list = AGS_BULK_MEMBER(control->data)->bulk_port;
+
+	while(list != NULL){
+	  if(AGS_BULK_PORT(list->data)->port == port){
+	    gtk_widget_destroy(control->data);
+	    break;
+	  }
+	
+	  list = list->next;
+	}
+      }
+      
+      control = control->next;
+    }
+      
+    port = port->next;
+  }
+
+  /* remove recalls */
+  for(i = 0; i < pads; i++){
+    for(j = 0; j < audio_channels; j++){
+      ags_channel_remove_effect(current,
+				nth);
+
+      current = current->next;
+    }
+  }
 }
 
 void
@@ -442,6 +867,208 @@ ags_effect_bulk_remove_effect(AgsEffectBulk *effect_bulk,
   g_signal_emit(G_OBJECT(effect_bulk),
 		effect_bulk_signals[REMOVE_EFFECT], 0,
 		nth);
+  g_object_unref((GObject *) effect_bulk);
+}
+
+void
+ags_effect_bulk_real_resize_audio_channels(AgsEffectBulk *effect_bulk,
+					   guint new_size,
+					   guint old_size)
+{
+  AgsUpdateBulkMember *update_bulk_member;
+
+  AgsChannel *current;
+
+  AgsAudioLoop *audio_loop;
+  AgsTaskThread *task_thread;
+
+  GList *task;
+  GList *bulk_member;
+  GList *effect_bulk_plugin;
+  GList *list;
+  guint pads;
+  guint i, j;
+
+  audio_loop = (AgsAudioLoop *) AGS_MAIN(AGS_DEVOUT(effect_bulk->audio->devout)->ags_main)->main_loop;
+  task_thread = (AgsTaskThread *) audio_loop->task_thread;
+  
+  /* retrieve channel */
+  if(effect_bulk->channel_type == AGS_TYPE_OUTPUT){
+    current = effect_bulk->audio->output;
+    
+    pads = effect_bulk->audio->output_pads;
+  }else{
+    current = effect_bulk->audio->input;
+
+    pads = effect_bulk->audio->input_pads;
+  }
+
+  /* collect bulk member */
+  task = NULL;
+  bulk_member = NULL;
+
+  list = gtk_container_get_children(effect_bulk->table);
+
+  while(list != NULL){
+    if(AGS_IS_BULK_MEMBER(list->data)){
+      bulk_member = g_list_prepend(bulk_member,
+				   list->data);
+    }
+      
+    list = list->next;
+  }
+
+  bulk_member = g_list_reverse(bulk_member);
+
+  /* create task */
+  update_bulk_member = ags_update_bulk_member_new(effect_bulk,
+						  bulk_member,
+						  new_size,
+						  old_size,
+						  FALSE);
+  task = g_list_prepend(task,
+			update_bulk_member);
+
+  if(new_size > old_size){  
+    /* add effect */
+    for(i = 0; i < pads; i++){
+      current = ags_channel_nth(current,
+				old_size);
+    
+      for(j = old_size; j < new_size; j++){
+	effect_bulk_plugin = effect_bulk->plugin;
+
+	while(effect_bulk_plugin != NULL){
+	  ags_channel_add_effect(current,
+				 AGS_EFFECT_BULK_PLUGIN(effect_bulk_plugin->data)->filename,
+				 AGS_EFFECT_BULK_PLUGIN(effect_bulk_plugin->data)->effect);
+
+	  effect_bulk_plugin = effect_bulk_plugin->next;
+	}
+
+	current = current->next;
+      }
+    }
+  }
+  
+  /* launch tasks */
+  task = g_list_reverse(task);      
+  ags_task_thread_append_tasks(task_thread,
+			       task);
+}
+
+void
+ags_effect_bulk_resize_audio_channels(AgsEffectBulk *effect_bulk,
+				      guint new_size,
+				      guint old_size)
+{
+  g_return_if_fail(AGS_IS_EFFECT_BULK(effect_bulk));
+
+  g_object_ref((GObject *) effect_bulk);
+  g_signal_emit(G_OBJECT(effect_bulk),
+		effect_bulk_signals[RESIZE_AUDIO_CHANNELS], 0,
+		new_size,
+		old_size);
+  g_object_unref((GObject *) effect_bulk);
+}
+
+void
+ags_effect_bulk_real_resize_pads(AgsEffectBulk *effect_bulk,
+				 guint new_size,
+				 guint old_size)
+{
+  AgsUpdateBulkMember *update_bulk_member;
+
+  AgsChannel *current;
+
+  AgsAudioLoop *audio_loop;
+  AgsTaskThread *task_thread;
+
+  GList *task;
+  GList *bulk_member;
+  GList *effect_bulk_plugin;
+  GList *list;
+  guint audio_channels;
+  guint i, j;
+
+  audio_loop = (AgsAudioLoop *) AGS_MAIN(AGS_DEVOUT(effect_bulk->audio->devout)->ags_main)->main_loop;
+  task_thread = (AgsTaskThread *) audio_loop->task_thread;
+  
+  audio_channels = effect_bulk->audio->audio_channels;
+  
+  /* retrieve channel */
+  if(effect_bulk->channel_type == AGS_TYPE_OUTPUT){
+    current = effect_bulk->audio->output;
+  }else{
+    current = effect_bulk->audio->input;
+  }
+
+  /* collect bulk member */
+  task = NULL;
+  bulk_member = NULL;
+
+  list = gtk_container_get_children(effect_bulk->table);
+
+  while(list != NULL){
+    if(AGS_IS_BULK_MEMBER(list->data)){
+      bulk_member = g_list_prepend(bulk_member,
+				   list->data);
+    }
+      
+    list = list->next;
+  }
+
+  bulk_member = g_list_reverse(bulk_member);
+
+  /* create task */
+  update_bulk_member = ags_update_bulk_member_new(effect_bulk,
+						  bulk_member,
+						  new_size,
+						  old_size,
+						  TRUE);
+  task = g_list_prepend(task,
+			update_bulk_member);
+   
+  if(new_size > old_size){ 
+    /* add effect */
+    current = ags_channel_pad_nth(current,
+				  old_size);
+
+    for(i = old_size; i < new_size; i++){
+      for(j = 0; j < audio_channels; j++){    
+	effect_bulk_plugin = effect_bulk->plugin;
+
+	while(effect_bulk_plugin != NULL){
+	  ags_channel_add_effect(current,
+				 AGS_EFFECT_BULK_PLUGIN(effect_bulk_plugin->data)->filename,
+				 AGS_EFFECT_BULK_PLUGIN(effect_bulk_plugin->data)->effect);
+
+	  effect_bulk_plugin = effect_bulk_plugin->next;
+	}
+
+	current = current->next;
+      }
+    }
+  }
+  
+  /* launch tasks */
+  task = g_list_reverse(task);      
+  ags_task_thread_append_tasks(task_thread,
+			       task);
+}
+
+void
+ags_effect_bulk_resize_pads(AgsEffectBulk *effect_bulk,
+			    guint new_size,
+			    guint old_size)
+{
+  g_return_if_fail(AGS_IS_EFFECT_BULK(effect_bulk));
+
+  g_object_ref((GObject *) effect_bulk);
+  g_signal_emit(G_OBJECT(effect_bulk),
+		effect_bulk_signals[RESIZE_PADS], 0,
+		new_size,
+		old_size);
   g_object_unref((GObject *) effect_bulk);
 }
 

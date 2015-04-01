@@ -473,7 +473,6 @@ ags_audio_task_h_sources = \
 	$(deprecated_ags_audio_task_h_sources) \
 	src/ags/audio/task/ags_add_audio.h		\
 	src/ags/audio/task/ags_add_audio_signal.h	\
-	src/ags/audio/task/ags_add_line_member.h	\
 	src/ags/audio/task/ags_add_note.h		\
 	src/ags/audio/task/ags_add_recall_container.h \
 	src/ags/audio/task/ags_add_recall.h	\
@@ -511,6 +510,9 @@ ags_audio_task_h_sources = \
 ags_xorg_task_h_sources = 		\
 	src/ags/audio/task/ags_add_point_to_selection.h	\
 	src/ags/audio/task/ags_add_region_to_selection.h	\
+	src/ags/audio/task/ags_add_line_member.h	\
+	src/ags/audio/task/ags_add_bulk_member.h	\
+	src/ags/audio/task/ags_update_bulk_member.h	\
 	src/ags/audio/task/ags_change_indicator.h		\
 	src/ags/audio/task/ags_change_tact.h		\
 	src/ags/audio/task/ags_display_tact.h		\
@@ -528,7 +530,6 @@ ags_audio_task_c_sources = \
 	$(deprecated_ags_audio_task_c_sources) \
 	src/ags/audio/task/ags_add_audio.c		\
 	src/ags/audio/task/ags_add_audio_signal.c	\
-	src/ags/audio/task/ags_add_line_member.c	\
 	src/ags/audio/task/ags_add_note.c		\
 	src/ags/audio/task/ags_add_recall_container.c \
 	src/ags/audio/task/ags_add_recall.c	\
@@ -564,6 +565,9 @@ ags_audio_task_c_sources = \
 	src/ags/audio/task/ags_unref_audio_signal.c
 
 ags_xorg_task_c_sources = 		\
+	src/ags/audio/task/ags_add_line_member.c	\
+	src/ags/audio/task/ags_add_bulk_member.c	\
+	src/ags/audio/task/ags_update_bulk_member.c	\
 	src/ags/audio/task/ags_add_point_to_selection.c	\
 	src/ags/audio/task/ags_add_region_to_selection.c	\
 	src/ags/audio/task/ags_change_indicator.c		\
@@ -632,6 +636,8 @@ gsequencer_xorg_h_sources = \
 	src/ags/X/ags_effect_bridge.h			\
 	src/ags/X/ags_effect_bulk_callbacks.h		\
 	src/ags/X/ags_effect_bulk.h			\
+	src/ags/X/ags_bulk_member_callbacks.h		\
+	src/ags/X/ags_bulk_member.h			\
 	src/ags/X/ags_effect_line_callbacks.h		\
 	src/ags/X/ags_effect_line.h			\
 	src/ags/X/ags_effect_pad_callbacks.h		\
@@ -699,6 +705,8 @@ gsequencer_xorg_c_sources = \
 	src/ags/X/ags_effect_bridge.c			\
 	src/ags/X/ags_effect_bulk_callbacks.c		\
 	src/ags/X/ags_effect_bulk.c				\
+	src/ags/X/ags_bulk_member.c				\
+	src/ags/X/ags_bulk_member_callbacks.c				\
 	src/ags/X/ags_effect_line_callbacks.c		\
 	src/ags/X/ags_effect_line.c				\
 	src/ags/X/ags_effect_pad_callbacks.c		\

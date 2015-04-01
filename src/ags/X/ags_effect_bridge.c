@@ -371,6 +371,8 @@ ags_effect_bridge_set_property(GObject *gobject,
 
 	      ags_effect_pad_resize_lines(effect_pad, effect_bridge->output_line_type,
 					  audio->audio_channels, 0);
+
+	      output = output->next_pad;
 	    }
 	  }else{
 	    /* destroy effect pad */
@@ -481,6 +483,16 @@ ags_effect_bridge_connect(AgsConnectable *connectable)
 
   effect_bridge->flags |= AGS_EFFECT_BRIDGE_CONNECTED;
 
+  /* AgsEffectBulk - input */
+  if(effect_bridge->bulk_input != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(effect_bridge->bulk_input));
+  }
+  
+  /* AgsEffectBulk - output */
+  if(effect_bridge->bulk_output != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(effect_bridge->bulk_output));
+  }
+  
   /* AgsEffectPad - input */
   if(effect_bridge->input != NULL){
     effect_pad_list = gtk_container_get_children(GTK_CONTAINER(effect_bridge->input));

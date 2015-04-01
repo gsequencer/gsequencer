@@ -17,3 +17,17 @@
  */
 
 #include <ags/X/machine/ags_synth_output_line_callbacks.h>
+
+void
+ags_synth_output_line_notify_channel_callback(GObject *gobject,
+						GParamSpec *pspec,
+						gpointer user_data)
+{
+  AgsSynthOutputLine *synth_output_line;
+
+  synth_output_line = AGS_SYNTH_OUTPUT_LINE(gobject);
+  gtk_label_set_text(AGS_EFFECT_LINE(synth_output_line)->label,
+		     g_strdup_printf("out:%d,%d",
+				     AGS_EFFECT_LINE(synth_output_line)->channel->pad,
+				     AGS_EFFECT_LINE(synth_output_line)->channel->audio_channel));
+}

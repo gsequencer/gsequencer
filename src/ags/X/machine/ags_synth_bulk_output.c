@@ -45,6 +45,7 @@ void ags_synth_bulk_output_disconnect(AgsConnectable *connectable);
  */
 
 static gpointer ags_synth_bulk_output_parent_class = NULL;
+static AgsConnectableInterface *ags_synth_bulk_input_parent_connectable_interface;
 
 GType
 ags_synth_bulk_output_get_type(void)
@@ -107,6 +108,8 @@ ags_synth_bulk_output_class_init(AgsSynthBulkOutputClass *synth_bulk_output)
 void
 ags_synth_bulk_output_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  ags_synth_bulk_input_parent_connectable_interface = g_type_interface_peek_parent(connectable);
+
   connectable->is_ready = NULL;
   connectable->is_connected = NULL;
   connectable->connect = ags_synth_bulk_output_connect;
@@ -135,6 +138,12 @@ ags_synth_bulk_output_init(AgsSynthBulkOutput *synth_bulk_output)
 void
 ags_synth_bulk_output_connect(AgsConnectable *connectable)
 {
+  if((AGS_EFFECT_BULK_CONNECTED & (AGS_EFFECT_BULK(connectable)->flags)) != 0){
+    return;
+  }
+
+  ags_synth_bulk_input_parent_connectable_interface->connect(connectable);
+
   //TODO:JK: implement me
 }
 

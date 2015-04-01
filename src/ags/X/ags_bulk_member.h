@@ -45,10 +45,6 @@ typedef enum{
   AGS_BULK_MEMBER_RESET_BY_ATOMIC       = 1 << 1,
   AGS_BULK_MEMBER_RESET_BY_TASK         = 1 << 2,
   AGS_BULK_MEMBER_APPLY_RECALL          = 1 << 3,
-  AGS_BULK_MEMBER_PLAY_CALLBACK_WRITE   = 1 << 4,
-  AGS_BULK_MEMBER_RECALL_CALLBACK_WRITE = 1 << 5,
-  AGS_BULK_MEMBER_CALLBACK_READ_BLOCK   = 1 << 6,
-  AGS_BULK_MEMBER_CALLBACK_WRITE_BLOCK  = 1 << 7,
 }AgsBulkMemberFlags;
 
 struct _AgsBulkMember
@@ -90,6 +86,9 @@ struct _AgsBulkPort
 };
 
 GType ags_bulk_member_get_type(void);
+
+AgsBulkPort* ags_bulk_port_alloc(AgsPort *port,
+				 AgsPort *recall_port);
 
 GtkWidget* ags_bulk_member_get_widget(AgsBulkMember *bulk_member);
 void ags_bulk_member_set_label(AgsBulkMember *bulk_member,

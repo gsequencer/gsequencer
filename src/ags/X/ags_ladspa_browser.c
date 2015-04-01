@@ -30,6 +30,15 @@
 #include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_task_thread.h>
 
+#include <dlfcn.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/types.h>
+#include <unistd.h>
+
+#include <ladspa.h>
+
 void ags_ladspa_browser_class_init(AgsLadspaBrowserClass *ladspa_browser);
 void ags_ladspa_browser_init(AgsLadspaBrowser *ladspa_browser);
 void ags_ladspa_browser_connectable_interface_init(AgsConnectableInterface *connectable);

@@ -398,10 +398,7 @@ ags_effect_line_real_add_effect(AgsEffectLine *effect_line,
   AgsAudioLoop *audio_loop;
   AgsTaskThread *task_thread;
 
-  GList *control;
-  GList *pad, *pad_start;
   GList *list, *list_start;
-  GList *children;
   GList *port;
   GList *task;
   gdouble step;
@@ -477,9 +474,11 @@ ags_effect_line_real_add_effect(AgsEffectLine *effect_line,
 	  AgsDial *dial;
 	  GtkAdjustment *adjustment;
 
-	  if(x == 2){
+	  if(x == AGS_EFFECT_LINE_COLUMNS_COUNT){
 	    x = 0;
 	    y++;
+	    gtk_table_resize(effect_line->table,
+			     y + 1, AGS_EFFECT_LINE_COLUMNS_COUNT);
 	  }
 
 	  /* add line member */

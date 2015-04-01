@@ -25,4 +25,23 @@
 
 #include <ags/X/ags_effect_bulk.h>
 
+void ags_effect_bulk_add_callback(GtkWidget *button,
+				  AgsEffectBulk *effect_bulk);
+void ags_effect_bulk_remove_callback(GtkWidget *button,
+				     AgsEffectBulk *effect_bulk);
+
+void ags_effect_bulk_ladspa_browser_response_callback(GtkDialog *dialog,
+						      gint response,
+						      AgsEffectBulk *effect_bulk);
+
+void ags_effect_bulk_set_audio_channels_callback(AgsAudio *audio,
+						 guint audio_channels,
+						 guint audio_channels_old,
+						 AgsEffectBulk *effect_bulk);
+void ags_effect_bulk_set_pads_callback(AgsAudio *audio,
+				       GType channel_type,
+				       guint pads,
+				       guint pads_old,
+				       AgsEffectBulk *effect_bulk);
+
 #endif /*__AGS_EFFECT_BULK_CALLBACKS_H__*/

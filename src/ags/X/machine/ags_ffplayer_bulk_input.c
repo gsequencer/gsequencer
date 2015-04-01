@@ -143,7 +143,6 @@ ags_ffplayer_bulk_input_connect(AgsConnectable *connectable)
 
   ags_ffplayer_bulk_input_parent_connectable_interface->connect(connectable);
 
-
   //TODO:JK: implement me
 }
 

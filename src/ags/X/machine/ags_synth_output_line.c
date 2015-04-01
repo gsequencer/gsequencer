@@ -55,18 +55,7 @@ void ags_synth_output_line_disconnect(AgsConnectable *connectable);
  * packed by an #AgsSynthOutputLine.
  */
 
-enum{
-  RESIZE_LINES,
-  LAST_SIGNAL,
-};
-
-enum{
-  PROP_0,
-  PROP_CHANNEL,
-};
-
 static gpointer ags_synth_output_line_parent_class = NULL;
-static guint synth_output_line_signals[LAST_SIGNAL];
 
 GType
 ags_synth_output_line_get_type(void)
@@ -118,12 +107,11 @@ void
 ags_synth_output_line_class_init(AgsSynthOutputLineClass *synth_output_line)
 {
   GObjectClass *gobject;
-  GParamSpec *param_spec;
 
   ags_synth_output_line_parent_class = g_type_class_peek_parent(synth_output_line);
 
   /* GObjectClass */
-  gobject = G_OBJECT_CLASS(synth_output_line);
+  gobject = (GObjectClass *) synth_output_line;
 }
 
 void
@@ -151,7 +139,8 @@ ags_synth_output_line_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_synth_output_line_init(AgsSynthOutputLine *synth_output_line)
 {
-  //TODO:JK: implement me
+  g_signal_connect_after(synth_output_line, "notify::channel",
+			 G_CALLBACK(ags_synth_output_line_notify_channel_callback), NULL);
 }
 
 void
