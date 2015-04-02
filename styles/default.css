@@ -1,0 +1,83 @@
+@CHARSET "UTF-8";
+
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0px 0px 0px 0px;
+    padding: 0px 0px 0px 0px;
+    font: 14px serif,Times;
+}
+
+h1 {
+    font: bold 22px serif,Times;
+    clear: both;
+}
+
+a:link {
+    color: #444444;
+}
+
+a:visited {
+    color: #444444;
+}
+
+a:active {
+    color: #ff0000;
+}
+
+a:hover {
+    color: #aaaaaa;
+    text-decoration: none;
+} 
+
+.ags-outer {
+    margin: 0px 0px 0px 240px;
+    padding: 0px 0px 0px 0px;
+}
+
+.ags-inner {
+    width: 768px;
+    margin: 0px 0px 0px 0px;
+    padding: 0px 0px 0px 0px;
+}
+
+.ags-inner article {
+    width: 768px;
+    float: right;
+    margin: 0px 0px 0px 0px;
+    padding: 0px 0px 0px 0px;
+}
+
+.ags-content {
+    width: 768px;
+    float: left;
+    margin: 0px 0px 0px 0px;
+    padding: 0px 0px 0px 0px;
+}
+
+.ags-banner {
+    float: right;
+    margin: 0px 0px 0px 0px;
+    padding: 0px 0px 0px 0px;
+}
+
+.ags-banner img {
+    float: right;
+    margin: 0px 0px 0px 0px;
+    padding: 0px 0px 0px 0px;
+}
+
+.ags-nav {
+    width: 240px;
+    float: none;
+    margin: 0px 0px 0px 0px;
+    padding: 120px 0px 0px 0px;
+}
+
+.ags-nav ul {
+    list-style: none;
+}
+
+.ags-code {
+    overflow: auto;
+}
