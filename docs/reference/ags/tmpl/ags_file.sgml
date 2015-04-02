@@ -1,0 +1,274 @@
+<!-- ##### SECTION Title ##### -->
+AgsFile
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### MACRO AGS_FILE_CHECKSUM_LENGTH ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO AGS_FILE_DEFAULT_AUDIO_ENCODING ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO AGS_FILE_DEFAULT_AUDIO_FORMAT ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO AGS_FILE_DEFAULT_DTD ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO AGS_FILE_DEFAULT_ENCODING ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### STRUCT AgsFile ##### -->
+<para>
+
+</para>
+
+@object: 
+@flags: 
+@filename: 
+@encoding: 
+@dtd: 
+@audio_format: 
+@audio_encoding: 
+@doc: 
+@id_refs: 
+@lookup: 
+@launch: 
+@ags_main: 
+@clipboard: 
+@property: 
+@script: 
+@cluster: 
+@client: 
+@server: 
+@history: 
+@embedded_audio: 
+@file_link: 
+
+<!-- ##### STRUCT AgsFileClass ##### -->
+<para>
+
+</para>
+
+@object: 
+@write: 
+@write_concurrent: 
+@write_resolve: 
+@read: 
+@read_resolve: 
+@read_start: 
+
+<!-- ##### ENUM AgsFileFlags ##### -->
+<para>
+
+</para>
+
+@AGS_FILE_READ: 
+@AGS_FILE_READ_AUDIO_SIGNAL: 
+@AGS_FILE_READ_EMBEDDED_AUDIO: 
+@AGS_FILE_WRITE: 
+@AGS_FILE_WRITE_AUDIO_SIGNAL: 
+@AGS_FILE_WRITE_EMBEDDED_AUDIO: 
+
+<!-- ##### FUNCTION ags_file_add_id_ref ##### -->
+<para>
+
+</para>
+
+@file: 
+@id_ref: 
+
+
+<!-- ##### FUNCTION ags_file_add_launch ##### -->
+<para>
+
+</para>
+
+@file: 
+@file_launch: 
+
+
+<!-- ##### FUNCTION ags_file_add_lookup ##### -->
+<para>
+
+</para>
+
+@file: 
+@file_lookup: 
+
+
+<!-- ##### FUNCTION ags_file_find_id_ref_by_node ##### -->
+<para>
+
+</para>
+
+@file: 
+@node: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_file_find_id_ref_by_reference ##### -->
+<para>
+
+</para>
+
+@file: 
+@ref: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_file_find_id_ref_by_xpath ##### -->
+<para>
+
+</para>
+
+@file: 
+@xpath: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_file_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_file_read ##### -->
+<para>
+
+</para>
+
+@file: 
+
+
+<!-- ##### FUNCTION ags_file_read_main ##### -->
+<para>
+
+</para>
+
+@file: 
+@node: 
+@main: 
+
+
+<!-- ##### FUNCTION ags_file_read_resolve ##### -->
+<para>
+
+</para>
+
+@file: 
+
+
+<!-- ##### FUNCTION ags_file_read_server ##### -->
+<para>
+
+</para>
+
+@file: 
+@node: 
+@server: 
+
+
+<!-- ##### FUNCTION ags_file_read_start ##### -->
+<para>
+
+</para>
+
+@file: 
+
+
+<!-- ##### FUNCTION ags_file_str2md5 ##### -->
+<para>
+
+</para>
+
+@content: 
+@strlen: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_file_write ##### -->
+<para>
+
+</para>
+
+@file: 
+
+
+<!-- ##### FUNCTION ags_file_write_concurrent ##### -->
+<para>
+
+</para>
+
+@file: 
+
+
+<!-- ##### FUNCTION ags_file_write_main ##### -->
+<para>
+
+</para>
+
+@file: 
+@parent: 
+@main: 
+
+
+<!-- ##### FUNCTION ags_file_write_resolve ##### -->
+<para>
+
+</para>
+
+@file: 
+
+
+<!-- ##### FUNCTION ags_file_write_server ##### -->
+<para>
+
+</para>
+
+@file: 
+@parent: 
+@server: 
+
+

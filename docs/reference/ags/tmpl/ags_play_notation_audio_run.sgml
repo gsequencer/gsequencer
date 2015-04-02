@@ -1,0 +1,57 @@
+<!-- ##### SECTION Title ##### -->
+AgsPlayNotationAudioRun
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT AgsPlayNotationAudioRun ##### -->
+<para>
+
+</para>
+
+@recall: 
+@flags: 
+@delay_audio_run: 
+@notation_alloc_input_handler: 
+@count_beats_audio_run: 
+
+<!-- ##### STRUCT AgsPlayNotationAudioRunClass ##### -->
+<para>
+
+</para>
+
+@recall: 
+
+<!-- ##### ENUM AgsPlayNotationAudioRunFlags ##### -->
+<para>
+
+</para>
+
+@AGS_PLAY_NOTATION_AUDIO_RUN_DEFAULT: 
+
+<!-- ##### FUNCTION ags_play_notation_audio_run_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

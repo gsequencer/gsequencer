@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsHIndicator">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsHIndicator.top_of_page">AgsHIndicator</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsHIndicator</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsHIndicator.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>struct              <link linkend="AgsHIndicator">AgsHIndicator</link>;
+struct              <link linkend="AgsHIndicatorClass">AgsHIndicatorClass</link>;
+<link linkend="AgsHIndicator"><returnvalue>AgsHIndicator</returnvalue></link> *     <link linkend="ags-hindicator-new">ags_hindicator_new</link>                  ();
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsHIndicator.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsHIndicator.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AgsHIndicator" role="struct">
+<title>struct AgsHIndicator</title>
+<indexterm zone="AgsHIndicator"><primary>AgsHIndicator</primary></indexterm>
+<programlisting>struct AgsHIndicator {
+  AgsIndicator indicator;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsHIndicatorClass" role="struct">
+<title>struct AgsHIndicatorClass</title>
+<indexterm zone="AgsHIndicatorClass"><primary>AgsHIndicatorClass</primary></indexterm>
+<programlisting>struct AgsHIndicatorClass {
+  GtkWidgetClass indicator;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-hindicator-new" role="function">
+<title>ags_hindicator_new ()</title>
+<indexterm zone="ags-hindicator-new"><primary>ags_hindicator_new</primary></indexterm>
+<programlisting><link linkend="AgsHIndicator"><returnvalue>AgsHIndicator</returnvalue></link> *     ags_hindicator_new                  ();</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

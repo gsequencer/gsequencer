@@ -1,0 +1,46 @@
+<!-- ##### SECTION Title ##### -->
+AgsFileRead
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT AgsFileRead ##### -->
+<para>
+
+</para>
+
+@object: 
+
+<!-- ##### STRUCT AgsFileReadClass ##### -->
+<para>
+
+</para>
+
+@object: 
+
+<!-- ##### FUNCTION ags_file_read_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

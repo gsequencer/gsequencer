@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsHistory">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsHistory.top_of_page">AgsHistory</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsHistory</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsHistory.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>struct              <link linkend="AgsHistory">AgsHistory</link>;
+                    <link linkend="AgsHistoryAppend">AgsHistoryAppend</link>;
+struct              <link linkend="AgsHistoryClass">AgsHistoryClass</link>;
+<link linkend="AgsHistory"><returnvalue>AgsHistory</returnvalue></link> *        <link linkend="ags-history-new">ags_history_new</link>                     ();
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsHistory.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsHistory.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AgsHistory" role="struct">
+<title>struct AgsHistory</title>
+<indexterm zone="AgsHistory"><primary>AgsHistory</primary></indexterm>
+<programlisting>struct AgsHistory {
+  GObject gobject;
+  
+  GList *task;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsHistoryAppend" role="struct">
+<title>AgsHistoryAppend</title>
+<indexterm zone="AgsHistoryAppend"><primary>AgsHistoryAppend</primary></indexterm>
+<programlisting>typedef struct _AgsHistoryAppend AgsHistoryAppend;</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsHistoryClass" role="struct">
+<title>struct AgsHistoryClass</title>
+<indexterm zone="AgsHistoryClass"><primary>AgsHistoryClass</primary></indexterm>
+<programlisting>struct AgsHistoryClass {
+  GObjectClass gobject;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-history-new" role="function">
+<title>ags_history_new ()</title>
+<indexterm zone="ags-history-new"><primary>ags_history_new</primary></indexterm>
+<programlisting><link linkend="AgsHistory"><returnvalue>AgsHistory</returnvalue></link> *        ags_history_new                     ();</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

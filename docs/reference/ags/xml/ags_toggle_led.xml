@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsToggleLed">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsToggleLed.top_of_page">AgsToggleLed</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsToggleLed</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsToggleLed.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>struct              <link linkend="AgsToggleLed">AgsToggleLed</link>;
+struct              <link linkend="AgsToggleLedClass">AgsToggleLedClass</link>;
+<link linkend="AgsToggleLed"><returnvalue>AgsToggleLed</returnvalue></link> *      <link linkend="ags-toggle-led-new">ags_toggle_led_new</link>                  (<parameter><link linkend="GList"><type>GList</type></link> *led</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> set_active</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> unset_active</parameter>);
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsToggleLed.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsToggleLed.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AgsToggleLed" role="struct">
+<title>struct AgsToggleLed</title>
+<indexterm zone="AgsToggleLed"><primary>AgsToggleLed</primary></indexterm>
+<programlisting>struct AgsToggleLed {
+  AgsTask task;
+
+  GList *led;
+  guint set_active;
+  guint unset_active;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsToggleLedClass" role="struct">
+<title>struct AgsToggleLedClass</title>
+<indexterm zone="AgsToggleLedClass"><primary>AgsToggleLedClass</primary></indexterm>
+<programlisting>struct AgsToggleLedClass {
+  AgsTaskClass task;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-toggle-led-new" role="function">
+<title>ags_toggle_led_new ()</title>
+<indexterm zone="ags-toggle-led-new"><primary>ags_toggle_led_new</primary></indexterm>
+<programlisting><link linkend="AgsToggleLed"><returnvalue>AgsToggleLed</returnvalue></link> *      ags_toggle_led_new                  (<parameter><link linkend="GList"><type>GList</type></link> *led</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> set_active</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> unset_active</parameter>);</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

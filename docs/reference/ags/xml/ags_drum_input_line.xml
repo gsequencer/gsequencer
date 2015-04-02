@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsDrumInputLine">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsDrumInputLine.top_of_page">AgsDrumInputLine</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsDrumInputLine</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsDrumInputLine.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>struct              <link linkend="AgsDrumInputLine">AgsDrumInputLine</link>;
+struct              <link linkend="AgsDrumInputLineClass">AgsDrumInputLineClass</link>;
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-drum-input-line-map-recall">ags_drum_input_line_map_recall</link>      (<parameter><link linkend="AgsDrumInputLine"><type>AgsDrumInputLine</type></link> *drum_input_line</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> output_pad_start</parameter>);
+<link linkend="AgsDrumInputLine"><returnvalue>AgsDrumInputLine</returnvalue></link> *  <link linkend="ags-drum-input-line-new">ags_drum_input_line_new</link>             (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>);
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsDrumInputLine.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsDrumInputLine.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AgsDrumInputLine" role="struct">
+<title>struct AgsDrumInputLine</title>
+<indexterm zone="AgsDrumInputLine"><primary>AgsDrumInputLine</primary></indexterm>
+<programlisting>struct AgsDrumInputLine {
+  AgsLine line;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsDrumInputLineClass" role="struct">
+<title>struct AgsDrumInputLineClass</title>
+<indexterm zone="AgsDrumInputLineClass"><primary>AgsDrumInputLineClass</primary></indexterm>
+<programlisting>struct AgsDrumInputLineClass {
+  AgsLineClass line;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-drum-input-line-map-recall" role="function">
+<title>ags_drum_input_line_map_recall ()</title>
+<indexterm zone="ags-drum-input-line-map-recall"><primary>ags_drum_input_line_map_recall</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_drum_input_line_map_recall      (<parameter><link linkend="AgsDrumInputLine"><type>AgsDrumInputLine</type></link> *drum_input_line</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> output_pad_start</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-drum-input-line-new" role="function">
+<title>ags_drum_input_line_new ()</title>
+<indexterm zone="ags-drum-input-line-new"><primary>ags_drum_input_line_new</primary></indexterm>
+<programlisting><link linkend="AgsDrumInputLine"><returnvalue>AgsDrumInputLine</returnvalue></link> *  ags_drum_input_line_new             (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>);</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

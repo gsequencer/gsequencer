@@ -1,0 +1,58 @@
+<!-- ##### SECTION Title ##### -->
+AgsCopyChannelRun
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT AgsCopyChannelRun ##### -->
+<para>
+
+</para>
+
+@recall_channel_run: 
+@flags: 
+
+<!-- ##### STRUCT AgsCopyChannelRunClass ##### -->
+<para>
+
+</para>
+
+@recall_channel_run: 
+
+<!-- ##### ENUM AgsCopyChannelRunFlags ##### -->
+<para>
+
+</para>
+
+@AGS_COPY_CHANNEL_RUN_EXACT_LENGTH: 
+@AGS_COPY_CHANNEL_RUN_OMIT_FURTHER_ATTACK: 
+
+<!-- ##### FUNCTION ags_copy_channel_run_new ##### -->
+<para>
+
+</para>
+
+@destination: 
+@source: 
+@devout: 
+@Returns: 
+
+

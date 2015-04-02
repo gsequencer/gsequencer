@@ -1,0 +1,162 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsCountBeatsAudioRun">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsCountBeatsAudioRun.top_of_page">AgsCountBeatsAudioRun</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsCountBeatsAudioRun</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsCountBeatsAudioRun.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>struct              <link linkend="AgsCountBeatsAudioRun">AgsCountBeatsAudioRun</link>;
+struct              <link linkend="AgsCountBeatsAudioRunClass">AgsCountBeatsAudioRunClass</link>;
+<link linkend="AgsCountBeatsAudioRun"><returnvalue>AgsCountBeatsAudioRun</returnvalue></link> * <link linkend="ags-count-beats-audio-run-new">ags_count_beats_audio_run_new</link>   (<parameter><link linkend="AgsDelayAudioRun"><type>AgsDelayAudioRun</type></link> *delay_audio_run</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-count-beats-audio-run-notation-loop">ags_count_beats_audio_run_notation_loop</link>
+                                                        (<parameter><link linkend="AgsCountBeatsAudioRun"><type>AgsCountBeatsAudioRun</type></link> *count_beats_audio_run</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> run_order</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-count-beats-audio-run-notation-start">ags_count_beats_audio_run_notation_start</link>
+                                                        (<parameter><link linkend="AgsCountBeatsAudioRun"><type>AgsCountBeatsAudioRun</type></link> *count_beats_audio_run</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> run_order</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-count-beats-audio-run-notation-stop">ags_count_beats_audio_run_notation_stop</link>
+                                                        (<parameter><link linkend="AgsCountBeatsAudioRun"><type>AgsCountBeatsAudioRun</type></link> *count_beats_audio_run</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> run_order</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-count-beats-audio-run-sequencer-loop">ags_count_beats_audio_run_sequencer_loop</link>
+                                                        (<parameter><link linkend="AgsCountBeatsAudioRun"><type>AgsCountBeatsAudioRun</type></link> *count_beats_audio_run</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> run_order</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-count-beats-audio-run-sequencer-start">ags_count_beats_audio_run_sequencer_start</link>
+                                                        (<parameter><link linkend="AgsCountBeatsAudioRun"><type>AgsCountBeatsAudioRun</type></link> *count_beats_audio_run</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> run_order</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-count-beats-audio-run-sequencer-stop">ags_count_beats_audio_run_sequencer_stop</link>
+                                                        (<parameter><link linkend="AgsCountBeatsAudioRun"><type>AgsCountBeatsAudioRun</type></link> *count_beats_audio_run</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> run_order</parameter>);
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsCountBeatsAudioRun.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsCountBeatsAudioRun.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AgsCountBeatsAudioRun" role="struct">
+<title>struct AgsCountBeatsAudioRun</title>
+<indexterm zone="AgsCountBeatsAudioRun"><primary>AgsCountBeatsAudioRun</primary></indexterm>
+<programlisting>struct AgsCountBeatsAudioRun {
+  AgsRecallAudioRun recall_audio_run;
+
+  gboolean first_run;
+
+  guint notation_counter;
+  guint sequencer_counter;
+
+  guint recall_ref;
+
+  guint hide_ref;
+  guint notation_hide_ref_counter;
+  guint sequencer_hide_ref_counter;
+
+  gulong sequencer_alloc_output_handler;
+  gulong sequencer_count_handler;
+
+  gulong notation_alloc_output_handler;
+  gulong notation_count_handler;
+
+  AgsDelayAudioRun *delay_audio_run;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsCountBeatsAudioRunClass" role="struct">
+<title>struct AgsCountBeatsAudioRunClass</title>
+<indexterm zone="AgsCountBeatsAudioRunClass"><primary>AgsCountBeatsAudioRunClass</primary></indexterm>
+<programlisting>struct AgsCountBeatsAudioRunClass {
+  AgsRecallAudioRunClass recall_audio_run;
+  
+  void (*notation_start)(AgsCountBeatsAudioRun *count_beats_audio_run,
+			 guint run_order);
+  void (*notation_loop)(AgsCountBeatsAudioRun *count_beats_audio_run,
+			guint run_order);
+  void (*notation_stop)(AgsCountBeatsAudioRun *count_beats_audio_run,
+			guint run_order);
+  
+  void (*sequencer_start)(AgsCountBeatsAudioRun *count_beats_audio_run,
+			  guint run_order);
+  void (*sequencer_loop)(AgsCountBeatsAudioRun *count_beats_audio_run,
+			 guint run_order);
+  void (*sequencer_stop)(AgsCountBeatsAudioRun *count_beats_audio_run,
+			 guint run_order);
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-count-beats-audio-run-new" role="function">
+<title>ags_count_beats_audio_run_new ()</title>
+<indexterm zone="ags-count-beats-audio-run-new"><primary>ags_count_beats_audio_run_new</primary></indexterm>
+<programlisting><link linkend="AgsCountBeatsAudioRun"><returnvalue>AgsCountBeatsAudioRun</returnvalue></link> * ags_count_beats_audio_run_new   (<parameter><link linkend="AgsDelayAudioRun"><type>AgsDelayAudioRun</type></link> *delay_audio_run</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-count-beats-audio-run-notation-loop" role="function">
+<title>ags_count_beats_audio_run_notation_loop ()</title>
+<indexterm zone="ags-count-beats-audio-run-notation-loop"><primary>ags_count_beats_audio_run_notation_loop</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_count_beats_audio_run_notation_loop
+                                                        (<parameter><link linkend="AgsCountBeatsAudioRun"><type>AgsCountBeatsAudioRun</type></link> *count_beats_audio_run</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> run_order</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-count-beats-audio-run-notation-start" role="function">
+<title>ags_count_beats_audio_run_notation_start ()</title>
+<indexterm zone="ags-count-beats-audio-run-notation-start"><primary>ags_count_beats_audio_run_notation_start</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_count_beats_audio_run_notation_start
+                                                        (<parameter><link linkend="AgsCountBeatsAudioRun"><type>AgsCountBeatsAudioRun</type></link> *count_beats_audio_run</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> run_order</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-count-beats-audio-run-notation-stop" role="function">
+<title>ags_count_beats_audio_run_notation_stop ()</title>
+<indexterm zone="ags-count-beats-audio-run-notation-stop"><primary>ags_count_beats_audio_run_notation_stop</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_count_beats_audio_run_notation_stop
+                                                        (<parameter><link linkend="AgsCountBeatsAudioRun"><type>AgsCountBeatsAudioRun</type></link> *count_beats_audio_run</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> run_order</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-count-beats-audio-run-sequencer-loop" role="function">
+<title>ags_count_beats_audio_run_sequencer_loop ()</title>
+<indexterm zone="ags-count-beats-audio-run-sequencer-loop"><primary>ags_count_beats_audio_run_sequencer_loop</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_count_beats_audio_run_sequencer_loop
+                                                        (<parameter><link linkend="AgsCountBeatsAudioRun"><type>AgsCountBeatsAudioRun</type></link> *count_beats_audio_run</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> run_order</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-count-beats-audio-run-sequencer-start" role="function">
+<title>ags_count_beats_audio_run_sequencer_start ()</title>
+<indexterm zone="ags-count-beats-audio-run-sequencer-start"><primary>ags_count_beats_audio_run_sequencer_start</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_count_beats_audio_run_sequencer_start
+                                                        (<parameter><link linkend="AgsCountBeatsAudioRun"><type>AgsCountBeatsAudioRun</type></link> *count_beats_audio_run</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> run_order</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-count-beats-audio-run-sequencer-stop" role="function">
+<title>ags_count_beats_audio_run_sequencer_stop ()</title>
+<indexterm zone="ags-count-beats-audio-run-sequencer-stop"><primary>ags_count_beats_audio_run_sequencer_stop</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_count_beats_audio_run_sequencer_stop
+                                                        (<parameter><link linkend="AgsCountBeatsAudioRun"><type>AgsCountBeatsAudioRun</type></link> *count_beats_audio_run</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> run_order</parameter>);</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

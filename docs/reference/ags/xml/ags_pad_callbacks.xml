@@ -1,0 +1,101 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-ags-pad-callbacks">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-ags-pad-callbacks.top_of_page">ags_pad_callbacks</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>ags_pad_callbacks</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-ags-pad-callbacks.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis><link linkend="int"><returnvalue>int</returnvalue></link>                 <link linkend="ags-pad-destroy-callback">ags_pad_destroy_callback</link>            (<parameter><link linkend="GtkObject"><type>GtkObject</type></link> *object</parameter>,
+                                                         <parameter><link linkend="AgsPad"><type>AgsPad</type></link> *pad</parameter>);
+<link linkend="int"><returnvalue>int</returnvalue></link>                 <link linkend="ags-pad-group-clicked-callback">ags_pad_group_clicked_callback</link>      (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                                                         <parameter><link linkend="AgsPad"><type>AgsPad</type></link> *pad</parameter>);
+<link linkend="int"><returnvalue>int</returnvalue></link>                 <link linkend="ags-pad-mute-clicked-callback">ags_pad_mute_clicked_callback</link>       (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                                                         <parameter><link linkend="AgsPad"><type>AgsPad</type></link> *pad</parameter>);
+<link linkend="int"><returnvalue>int</returnvalue></link>                 <link linkend="ags-pad-option-changed-callback">ags_pad_option_changed_callback</link>     (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                                                         <parameter><link linkend="AgsPad"><type>AgsPad</type></link> *pad</parameter>);
+<link linkend="int"><returnvalue>int</returnvalue></link>                 <link linkend="ags-pad-parent-set-callback">ags_pad_parent_set_callback</link>         (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                                                         <parameter><link linkend="GtkObject"><type>GtkObject</type></link> *old_parent</parameter>,
+                                                         <parameter><link linkend="AgsPad"><type>AgsPad</type></link> *pad</parameter>);
+<link linkend="int"><returnvalue>int</returnvalue></link>                 <link linkend="ags-pad-show-callback">ags_pad_show_callback</link>               (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                                                         <parameter><link linkend="AgsPad"><type>AgsPad</type></link> *pad</parameter>);
+<link linkend="int"><returnvalue>int</returnvalue></link>                 <link linkend="ags-pad-solo-clicked-callback">ags_pad_solo_clicked_callback</link>       (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                                                         <parameter><link linkend="AgsPad"><type>AgsPad</type></link> *pad</parameter>);
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-ags-pad-callbacks.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-ags-pad-callbacks.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="ags-pad-destroy-callback" role="function">
+<title>ags_pad_destroy_callback ()</title>
+<indexterm zone="ags-pad-destroy-callback"><primary>ags_pad_destroy_callback</primary></indexterm>
+<programlisting><link linkend="int"><returnvalue>int</returnvalue></link>                 ags_pad_destroy_callback            (<parameter><link linkend="GtkObject"><type>GtkObject</type></link> *object</parameter>,
+                                                         <parameter><link linkend="AgsPad"><type>AgsPad</type></link> *pad</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-pad-group-clicked-callback" role="function">
+<title>ags_pad_group_clicked_callback ()</title>
+<indexterm zone="ags-pad-group-clicked-callback"><primary>ags_pad_group_clicked_callback</primary></indexterm>
+<programlisting><link linkend="int"><returnvalue>int</returnvalue></link>                 ags_pad_group_clicked_callback      (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                                                         <parameter><link linkend="AgsPad"><type>AgsPad</type></link> *pad</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-pad-mute-clicked-callback" role="function">
+<title>ags_pad_mute_clicked_callback ()</title>
+<indexterm zone="ags-pad-mute-clicked-callback"><primary>ags_pad_mute_clicked_callback</primary></indexterm>
+<programlisting><link linkend="int"><returnvalue>int</returnvalue></link>                 ags_pad_mute_clicked_callback       (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                                                         <parameter><link linkend="AgsPad"><type>AgsPad</type></link> *pad</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-pad-option-changed-callback" role="function">
+<title>ags_pad_option_changed_callback ()</title>
+<indexterm zone="ags-pad-option-changed-callback"><primary>ags_pad_option_changed_callback</primary></indexterm>
+<programlisting><link linkend="int"><returnvalue>int</returnvalue></link>                 ags_pad_option_changed_callback     (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                                                         <parameter><link linkend="AgsPad"><type>AgsPad</type></link> *pad</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-pad-parent-set-callback" role="function">
+<title>ags_pad_parent_set_callback ()</title>
+<indexterm zone="ags-pad-parent-set-callback"><primary>ags_pad_parent_set_callback</primary></indexterm>
+<programlisting><link linkend="int"><returnvalue>int</returnvalue></link>                 ags_pad_parent_set_callback         (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                                                         <parameter><link linkend="GtkObject"><type>GtkObject</type></link> *old_parent</parameter>,
+                                                         <parameter><link linkend="AgsPad"><type>AgsPad</type></link> *pad</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-pad-show-callback" role="function">
+<title>ags_pad_show_callback ()</title>
+<indexterm zone="ags-pad-show-callback"><primary>ags_pad_show_callback</primary></indexterm>
+<programlisting><link linkend="int"><returnvalue>int</returnvalue></link>                 ags_pad_show_callback               (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                                                         <parameter><link linkend="AgsPad"><type>AgsPad</type></link> *pad</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-pad-solo-clicked-callback" role="function">
+<title>ags_pad_solo_clicked_callback ()</title>
+<indexterm zone="ags-pad-solo-clicked-callback"><primary>ags_pad_solo_clicked_callback</primary></indexterm>
+<programlisting><link linkend="int"><returnvalue>int</returnvalue></link>                 ags_pad_solo_clicked_callback       (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                                                         <parameter><link linkend="AgsPad"><type>AgsPad</type></link> *pad</parameter>);</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

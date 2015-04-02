@@ -1,0 +1,251 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsAsyncQueue">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsAsyncQueue.top_of_page">AgsAsyncQueue</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsAsyncQueue</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsAsyncQueue.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>#define             <link linkend="AGS-ASYNC-QUEUE-CLOCK-ID:CAPS">AGS_ASYNC_QUEUE_CLOCK_ID</link>
+#define             <link linkend="AGS-ASYNC-QUEUE-DEFAULT-SYSTEM-JIFFIE:CAPS">AGS_ASYNC_QUEUE_DEFAULT_SYSTEM_JIFFIE</link>
+#define             <link linkend="AGS-ASYNC-QUEUE-SIGNAL-HIGH:CAPS">AGS_ASYNC_QUEUE_SIGNAL_HIGH</link>
+#define             <link linkend="AGS-ASYNC-QUEUE-SIGNAL-LOW:CAPS">AGS_ASYNC_QUEUE_SIGNAL_LOW</link>
+struct              <link linkend="AgsAsyncQueue">AgsAsyncQueue</link>;
+struct              <link linkend="AgsAsyncQueueClass">AgsAsyncQueueClass</link>;
+enum                <link linkend="AgsAsyncQueueFlags">AgsAsyncQueueFlags</link>;
+struct              <link linkend="AgsContext">AgsContext</link>;
+struct              <link linkend="AgsTimer">AgsTimer</link>;
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-async-queue-add">ags_async_queue_add</link>                 (<parameter><link linkend="AgsAsyncQueue"><type>AgsAsyncQueue</type></link> *async_queue</parameter>,
+                                                         <parameter><link linkend="AgsStackable"><type>AgsStackable</type></link> *stackable</parameter>);
+<link linkend="AgsContext"><returnvalue>AgsContext</returnvalue></link> *        <link linkend="ags-async-queue-find-context">ags_async_queue_find_context</link>        (<parameter><link linkend="AgsAsyncQueue"><type>AgsAsyncQueue</type></link> *async_queue</parameter>,
+                                                         <parameter><link linkend="AgsStackable"><type>AgsStackable</type></link> *stackable</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-async-queue-idle">ags_async_queue_idle</link>                (<parameter><link linkend="AgsAsyncQueue"><type>AgsAsyncQueue</type></link> *async_queue</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-async-queue-initerrupt">ags_async_queue_initerrupt</link>          (<parameter><link linkend="AgsAsyncQueue"><type>AgsAsyncQueue</type></link> *async_queue</parameter>);
+<link linkend="AgsAsyncQueue"><returnvalue>AgsAsyncQueue</returnvalue></link> *     <link linkend="ags-async-queue-new">ags_async_queue_new</link>                 ();
+<link linkend="guint"><returnvalue>guint</returnvalue></link>               <link linkend="ags-async-queue-next-interval">ags_async_queue_next_interval</link>       (<parameter><link linkend="AgsAsyncQueue"><type>AgsAsyncQueue</type></link> *async_queue</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-async-queue-pop-context">ags_async_queue_pop_context</link>         (<parameter><link linkend="AgsAsyncQueue"><type>AgsAsyncQueue</type></link> *async_queue</parameter>,
+                                                         <parameter><link linkend="AgsContext"><type>AgsContext</type></link> *context</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-async-queue-push-context">ags_async_queue_push_context</link>        (<parameter><link linkend="AgsAsyncQueue"><type>AgsAsyncQueue</type></link> *async_queue</parameter>,
+                                                         <parameter><link linkend="AgsContext"><type>AgsContext</type></link> *context</parameter>);
+<link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            <link linkend="ags-async-queue-remove">ags_async_queue_remove</link>              (<parameter><link linkend="AgsAsyncQueue"><type>AgsAsyncQueue</type></link> *async_queue</parameter>,
+                                                         <parameter><link linkend="AgsStackable"><type>AgsStackable</type></link> *stackable</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link> *              <link linkend="ags-async-queue-worker">ags_async_queue_worker</link>              (<parameter><link linkend="void"><type>void</type></link> *ptr</parameter>);
+<link linkend="AgsContext"><returnvalue>AgsContext</returnvalue></link> *        <link linkend="ags-context-alloc">ags_context_alloc</link>                   (<parameter><link linkend="GQueue"><type>GQueue</type></link> *stack</parameter>,
+                                                         <parameter><link linkend="GHashTable"><type>GHashTable</type></link> *timer</parameter>);
+<link linkend="AgsTimer"><returnvalue>AgsTimer</returnvalue></link> *          <link linkend="ags-timer-alloc">ags_timer_alloc</link>                     (<parameter><link linkend="time-t"><type>time_t</type></link> tv_sec</parameter>,
+                                                         <parameter>long <link linkend="tv-nsec"><type>tv_nsec</type></link> Param2</parameter>);
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsAsyncQueue.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsAsyncQueue.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AGS-ASYNC-QUEUE-CLOCK-ID:CAPS" role="macro">
+<title>AGS_ASYNC_QUEUE_CLOCK_ID</title>
+<indexterm zone="AGS-ASYNC-QUEUE-CLOCK-ID:CAPS"><primary>AGS_ASYNC_QUEUE_CLOCK_ID</primary></indexterm>
+<programlisting>#define AGS_ASYNC_QUEUE_CLOCK_ID CLOCK_REALTIME
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AGS-ASYNC-QUEUE-DEFAULT-SYSTEM-JIFFIE:CAPS" role="macro">
+<title>AGS_ASYNC_QUEUE_DEFAULT_SYSTEM_JIFFIE</title>
+<indexterm zone="AGS-ASYNC-QUEUE-DEFAULT-SYSTEM-JIFFIE:CAPS"><primary>AGS_ASYNC_QUEUE_DEFAULT_SYSTEM_JIFFIE</primary></indexterm>
+<programlisting>#define AGS_ASYNC_QUEUE_DEFAULT_SYSTEM_JIFFIE (250)
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AGS-ASYNC-QUEUE-SIGNAL-HIGH:CAPS" role="macro">
+<title>AGS_ASYNC_QUEUE_SIGNAL_HIGH</title>
+<indexterm zone="AGS-ASYNC-QUEUE-SIGNAL-HIGH:CAPS"><primary>AGS_ASYNC_QUEUE_SIGNAL_HIGH</primary></indexterm>
+<programlisting>#define AGS_ASYNC_QUEUE_SIGNAL_HIGH SIGRTMAX
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AGS-ASYNC-QUEUE-SIGNAL-LOW:CAPS" role="macro">
+<title>AGS_ASYNC_QUEUE_SIGNAL_LOW</title>
+<indexterm zone="AGS-ASYNC-QUEUE-SIGNAL-LOW:CAPS"><primary>AGS_ASYNC_QUEUE_SIGNAL_LOW</primary></indexterm>
+<programlisting>#define AGS_ASYNC_QUEUE_SIGNAL_LOW SIGRTMIN
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsAsyncQueue" role="struct">
+<title>struct AgsAsyncQueue</title>
+<indexterm zone="AgsAsyncQueue"><primary>AgsAsyncQueue</primary></indexterm>
+<programlisting>struct AgsAsyncQueue {
+  GObject object;
+
+  guint flags;
+
+  guint output_sum;
+  guint systemrate;
+  guint interval;
+
+  timer_t timerid;
+
+  GQueue *stack;
+  GHashTable *timer;
+
+  union{
+    //    atomic_t monitor;
+    pthread_mutex_t mutex;
+  }lock;
+
+  GList *context;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsAsyncQueueClass" role="struct">
+<title>struct AgsAsyncQueueClass</title>
+<indexterm zone="AgsAsyncQueueClass"><primary>AgsAsyncQueueClass</primary></indexterm>
+<programlisting>struct AgsAsyncQueueClass {
+  GObjectClass object;
+
+  void (*interrupt)(AgsAsyncQueue *async_queue);
+  
+  void (*push_context)(AgsAsyncQueue *async_queue,
+		       AgsContext *context);
+  void (*pop_context)(AgsAsyncQueue *async_queue,
+		      AgsContext *context);
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsAsyncQueueFlags" role="enum">
+<title>enum AgsAsyncQueueFlags</title>
+<indexterm zone="AgsAsyncQueueFlags"><primary>AgsAsyncQueueFlags</primary></indexterm>
+<programlisting>typedef enum {
+  AGS_ASYNC_QUEUE_LINUX_THREADS     = 1,
+  AGS_ASYNC_QUEUE_POSIX_THREADS     = 1 &lt;&lt; 1,
+  AGS_ASYNC_QUEUE_WORKER_RUNNING    = 1 &lt;&lt; 2,
+  AGS_ASYNC_QUEUE_INTERRUPT_OWN     = 1 &lt;&lt; 2,
+  AGS_ASYNC_QUEUE_INTERRUPT_OTHER   = 1 &lt;&lt; 3,
+  AGS_ASYNC_QUEUE_STOP_BIT_0        = 1 &lt;&lt; 4,
+  AGS_ASYNC_QUEUE_STOP_BIT_1        = 1 &lt;&lt; 5,
+} AgsAsyncQueueFlags;
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsContext" role="struct">
+<title>struct AgsContext</title>
+<indexterm zone="AgsContext"><primary>AgsContext</primary></indexterm>
+<programlisting>struct AgsContext {
+  GQueue *stack;
+  GHashTable *timer;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsTimer" role="struct">
+<title>struct AgsTimer</title>
+<indexterm zone="AgsTimer"><primary>AgsTimer</primary></indexterm>
+<programlisting>struct AgsTimer {
+  struct timespec run_delay;
+
+  //NOTE: not supported for now
+  gboolean record_history;
+  gpointer history;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-async-queue-add" role="function">
+<title>ags_async_queue_add ()</title>
+<indexterm zone="ags-async-queue-add"><primary>ags_async_queue_add</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_async_queue_add                 (<parameter><link linkend="AgsAsyncQueue"><type>AgsAsyncQueue</type></link> *async_queue</parameter>,
+                                                         <parameter><link linkend="AgsStackable"><type>AgsStackable</type></link> *stackable</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-async-queue-find-context" role="function">
+<title>ags_async_queue_find_context ()</title>
+<indexterm zone="ags-async-queue-find-context"><primary>ags_async_queue_find_context</primary></indexterm>
+<programlisting><link linkend="AgsContext"><returnvalue>AgsContext</returnvalue></link> *        ags_async_queue_find_context        (<parameter><link linkend="AgsAsyncQueue"><type>AgsAsyncQueue</type></link> *async_queue</parameter>,
+                                                         <parameter><link linkend="AgsStackable"><type>AgsStackable</type></link> *stackable</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-async-queue-idle" role="function">
+<title>ags_async_queue_idle ()</title>
+<indexterm zone="ags-async-queue-idle"><primary>ags_async_queue_idle</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_async_queue_idle                (<parameter><link linkend="AgsAsyncQueue"><type>AgsAsyncQueue</type></link> *async_queue</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-async-queue-initerrupt" role="function">
+<title>ags_async_queue_initerrupt ()</title>
+<indexterm zone="ags-async-queue-initerrupt"><primary>ags_async_queue_initerrupt</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_async_queue_initerrupt          (<parameter><link linkend="AgsAsyncQueue"><type>AgsAsyncQueue</type></link> *async_queue</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-async-queue-new" role="function">
+<title>ags_async_queue_new ()</title>
+<indexterm zone="ags-async-queue-new"><primary>ags_async_queue_new</primary></indexterm>
+<programlisting><link linkend="AgsAsyncQueue"><returnvalue>AgsAsyncQueue</returnvalue></link> *     ags_async_queue_new                 ();</programlisting>
+</refsect2>
+<refsect2 id="ags-async-queue-next-interval" role="function">
+<title>ags_async_queue_next_interval ()</title>
+<indexterm zone="ags-async-queue-next-interval"><primary>ags_async_queue_next_interval</primary></indexterm>
+<programlisting><link linkend="guint"><returnvalue>guint</returnvalue></link>               ags_async_queue_next_interval       (<parameter><link linkend="AgsAsyncQueue"><type>AgsAsyncQueue</type></link> *async_queue</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-async-queue-pop-context" role="function">
+<title>ags_async_queue_pop_context ()</title>
+<indexterm zone="ags-async-queue-pop-context"><primary>ags_async_queue_pop_context</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_async_queue_pop_context         (<parameter><link linkend="AgsAsyncQueue"><type>AgsAsyncQueue</type></link> *async_queue</parameter>,
+                                                         <parameter><link linkend="AgsContext"><type>AgsContext</type></link> *context</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-async-queue-push-context" role="function">
+<title>ags_async_queue_push_context ()</title>
+<indexterm zone="ags-async-queue-push-context"><primary>ags_async_queue_push_context</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_async_queue_push_context        (<parameter><link linkend="AgsAsyncQueue"><type>AgsAsyncQueue</type></link> *async_queue</parameter>,
+                                                         <parameter><link linkend="AgsContext"><type>AgsContext</type></link> *context</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-async-queue-remove" role="function">
+<title>ags_async_queue_remove ()</title>
+<indexterm zone="ags-async-queue-remove"><primary>ags_async_queue_remove</primary></indexterm>
+<programlisting><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            ags_async_queue_remove              (<parameter><link linkend="AgsAsyncQueue"><type>AgsAsyncQueue</type></link> *async_queue</parameter>,
+                                                         <parameter><link linkend="AgsStackable"><type>AgsStackable</type></link> *stackable</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-async-queue-worker" role="function">
+<title>ags_async_queue_worker ()</title>
+<indexterm zone="ags-async-queue-worker"><primary>ags_async_queue_worker</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link> *              ags_async_queue_worker              (<parameter><link linkend="void"><type>void</type></link> *ptr</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-context-alloc" role="function">
+<title>ags_context_alloc ()</title>
+<indexterm zone="ags-context-alloc"><primary>ags_context_alloc</primary></indexterm>
+<programlisting><link linkend="AgsContext"><returnvalue>AgsContext</returnvalue></link> *        ags_context_alloc                   (<parameter><link linkend="GQueue"><type>GQueue</type></link> *stack</parameter>,
+                                                         <parameter><link linkend="GHashTable"><type>GHashTable</type></link> *timer</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-timer-alloc" role="function">
+<title>ags_timer_alloc ()</title>
+<indexterm zone="ags-timer-alloc"><primary>ags_timer_alloc</primary></indexterm>
+<programlisting><link linkend="AgsTimer"><returnvalue>AgsTimer</returnvalue></link> *          ags_timer_alloc                     (<parameter><link linkend="time-t"><type>time_t</type></link> tv_sec</parameter>,
+                                                         <parameter>long <link linkend="tv-nsec"><type>tv_nsec</type></link> Param2</parameter>);</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

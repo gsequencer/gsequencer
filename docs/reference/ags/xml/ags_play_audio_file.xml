@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsPlayAudioFile">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsPlayAudioFile.top_of_page">AgsPlayAudioFile</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsPlayAudioFile</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsPlayAudioFile.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>struct              <link linkend="AgsPlayAudioFile">AgsPlayAudioFile</link>;
+struct              <link linkend="AgsPlayAudioFileClass">AgsPlayAudioFileClass</link>;
+<link linkend="AgsPlayAudioFile"><returnvalue>AgsPlayAudioFile</returnvalue></link> *  <link linkend="ags-play-audio-file-new">ags_play_audio_file_new</link>             (<parameter><link linkend="AgsAudioFile"><type>AgsAudioFile</type></link> *audio_file</parameter>,
+                                                         <parameter><link linkend="AgsDevout"><type>AgsDevout</type></link> *devout</parameter>);
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsPlayAudioFile.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsPlayAudioFile.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AgsPlayAudioFile" role="struct">
+<title>struct AgsPlayAudioFile</title>
+<indexterm zone="AgsPlayAudioFile"><primary>AgsPlayAudioFile</primary></indexterm>
+<programlisting>struct AgsPlayAudioFile {
+  AgsRecall recall;
+
+  AgsAudioFile *audio_file;
+  guint current_frame;
+
+  AgsDevout *devout;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsPlayAudioFileClass" role="struct">
+<title>struct AgsPlayAudioFileClass</title>
+<indexterm zone="AgsPlayAudioFileClass"><primary>AgsPlayAudioFileClass</primary></indexterm>
+<programlisting>struct AgsPlayAudioFileClass {
+  AgsRecallClass recall;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-play-audio-file-new" role="function">
+<title>ags_play_audio_file_new ()</title>
+<indexterm zone="ags-play-audio-file-new"><primary>ags_play_audio_file_new</primary></indexterm>
+<programlisting><link linkend="AgsPlayAudioFile"><returnvalue>AgsPlayAudioFile</returnvalue></link> *  ags_play_audio_file_new             (<parameter><link linkend="AgsAudioFile"><type>AgsAudioFile</type></link> *audio_file</parameter>,
+                                                         <parameter><link linkend="AgsDevout"><type>AgsDevout</type></link> *devout</parameter>);</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

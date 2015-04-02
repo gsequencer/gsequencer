@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsInitAudio">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsInitAudio.top_of_page">AgsInitAudio</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsInitAudio</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsInitAudio.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>struct              <link linkend="AgsInitAudio">AgsInitAudio</link>;
+struct              <link linkend="AgsInitAudioClass">AgsInitAudioClass</link>;
+<link linkend="AgsInitAudio"><returnvalue>AgsInitAudio</returnvalue></link> *      <link linkend="ags-init-audio-new">ags_init_audio_new</link>                  (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> playback</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> sequencer</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> notation</parameter>);
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsInitAudio.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsInitAudio.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AgsInitAudio" role="struct">
+<title>struct AgsInitAudio</title>
+<indexterm zone="AgsInitAudio"><primary>AgsInitAudio</primary></indexterm>
+<programlisting>struct AgsInitAudio {
+  AgsTask task;
+
+  AgsAudio *audio;
+  gboolean playback;
+  gboolean sequencer;
+  gboolean notation;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsInitAudioClass" role="struct">
+<title>struct AgsInitAudioClass</title>
+<indexterm zone="AgsInitAudioClass"><primary>AgsInitAudioClass</primary></indexterm>
+<programlisting>struct AgsInitAudioClass {
+  AgsTaskClass task;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-init-audio-new" role="function">
+<title>ags_init_audio_new ()</title>
+<indexterm zone="ags-init-audio-new"><primary>ags_init_audio_new</primary></indexterm>
+<programlisting><link linkend="AgsInitAudio"><returnvalue>AgsInitAudio</returnvalue></link> *      ags_init_audio_new                  (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> playback</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> sequencer</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> notation</parameter>);</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

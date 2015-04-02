@@ -1,0 +1,130 @@
+<!-- ##### SECTION Title ##### -->
+AgsNavigation
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### MACRO AGS_NAVIGATION_DEFAULT_TACT_STEP ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO AGS_NAVIGATION_REWIND_STEPS ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO AGS_NAVIGATION_SEEK_STEPS ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### STRUCT AgsNavigation ##### -->
+<para>
+
+</para>
+
+@vbox: 
+@flags: 
+@devout: 
+@expander: 
+@bpm: 
+@current_bpm: 
+@rewind: 
+@previous: 
+@play: 
+@stop: 
+@next: 
+@forward: 
+@loop: 
+@position_time: 
+@position_tact: 
+@duration_time: 
+@duration_tact: 
+@loop_left_tact: 
+@loop_right_tact: 
+@scroll: 
+
+<!-- ##### STRUCT AgsNavigationClass ##### -->
+<para>
+
+</para>
+
+@vbox: 
+@change_position: 
+
+<!-- ##### ENUM AgsNavigationFlags ##### -->
+<para>
+
+</para>
+
+@AGS_NAVIGATION_BLOCK_TACT: 
+
+<!-- ##### FUNCTION ags_navigation_change_position ##### -->
+<para>
+
+</para>
+
+@navigation: 
+@tact: 
+
+
+<!-- ##### FUNCTION ags_navigation_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_navigation_set_seeking_sensitive ##### -->
+<para>
+
+</para>
+
+@navigation: 
+@enabled: 
+
+
+<!-- ##### FUNCTION ags_navigation_tact_to_time_string ##### -->
+<para>
+
+</para>
+
+@tact: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_navigation_update_time_string ##### -->
+<para>
+
+</para>
+
+@tact: 
+@time_string: 
+
+

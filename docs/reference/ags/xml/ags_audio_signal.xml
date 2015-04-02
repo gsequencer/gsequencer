@@ -1,0 +1,331 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsAudioSignal">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsAudioSignal.top_of_page">AgsAudioSignal</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsAudioSignal</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsAudioSignal.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>                    <link linkend="AgsAttack">AgsAttack</link>;
+enum                <link linkend="AgsAttackFlags">AgsAttackFlags</link>;
+struct              <link linkend="AgsAudioSignal">AgsAudioSignal</link>;
+struct              <link linkend="AgsAudioSignalClass">AgsAudioSignalClass</link>;
+enum                <link linkend="AgsAudioSignalFlags">AgsAudioSignalFlags</link>;
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-audio-signal-add-stream">ags_audio_signal_add_stream</link>         (<parameter><link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link> *audio_signal</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-audio-signal-copy-buffer-to-buffer">ags_audio_signal_copy_buffer_to_buffer</link>
+                                                        (<parameter>signed <link linkend="short"><type>short</type></link> *destination</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> dchannels</parameter>,
+                                                         <parameter>signed <link linkend="short"><type>short</type></link> *source</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> schannels</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-audio-signal-copy-buffer-to-double-buffer">ags_audio_signal_copy_buffer_to_double_buffer</link>
+                                                        (<parameter><link linkend="double"><type>double</type></link> *destination</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> dchannels</parameter>,
+                                                         <parameter>signed <link linkend="short"><type>short</type></link> *source</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> schannels</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-audio-signal-copy-double-buffer-to-buffer">ags_audio_signal_copy_double_buffer_to_buffer</link>
+                                                        (<parameter>signed <link linkend="short"><type>short</type></link> *destination</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> dchannels</parameter>,
+                                                         <parameter><link linkend="double"><type>double</type></link> *source</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> schannels</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-audio-signal-duplicate-stream">ags_audio_signal_duplicate_stream</link>   (<parameter><link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link> *audio_signal</parameter>,
+                                                         <parameter><link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link> *template</parameter>);
+<link linkend="GList"><returnvalue>GList</returnvalue></link> *             <link linkend="ags-audio-signal-get-by-recall-id">ags_audio_signal_get_by_recall_id</link>   (<parameter><link linkend="GList"><type>GList</type></link> *audio_signal</parameter>,
+                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *recall_id</parameter>);
+<link linkend="guint"><returnvalue>guint</returnvalue></link>               <link linkend="ags-audio-signal-get-length-till-current">ags_audio_signal_get_length_till_current</link>
+                                                        (<parameter><link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link> *audio_signal</parameter>);
+<link linkend="GList"><returnvalue>GList</returnvalue></link> *             <link linkend="ags-audio-signal-get-stream-current">ags_audio_signal_get_stream_current</link> (<parameter><link linkend="GList"><type>GList</type></link> *audio_signal</parameter>,
+                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *recall_id</parameter>);
+<link linkend="AgsAudioSignal"><returnvalue>AgsAudioSignal</returnvalue></link> *    <link linkend="ags-audio-signal-get-template">ags_audio_signal_get_template</link>       (<parameter><link linkend="GList"><type>GList</type></link> *audio_signal</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-audio-signal-morph-samplerate">ags_audio_signal_morph_samplerate</link>   (<parameter><link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link> *audio_signal</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> samplerate</parameter>,
+                                                         <parameter><link linkend="double"><type>double</type></link> k_morph</parameter>);
+<link linkend="AgsAudioSignal"><returnvalue>AgsAudioSignal</returnvalue></link> *    <link linkend="ags-audio-signal-new">ags_audio_signal_new</link>                (<parameter><link linkend="GObject"><type>GObject</type></link> *devout</parameter>,
+                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *recycling</parameter>,
+                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *recall_id</parameter>);
+<link linkend="AgsAudioSignal"><returnvalue>AgsAudioSignal</returnvalue></link> *    <link linkend="ags-audio-signal-new-with-length">ags_audio_signal_new_with_length</link>    (<parameter><link linkend="GObject"><type>GObject</type></link> *devout</parameter>,
+                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *recycling</parameter>,
+                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *recall_id</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> length</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-audio-signal-realloc-buffer-size">ags_audio_signal_realloc_buffer_size</link>
+                                                        (<parameter><link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link> *audio_signal</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> buffer_size</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-audio-signal-scale">ags_audio_signal_scale</link>              (<parameter><link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link> *audio_signal</parameter>,
+                                                         <parameter><link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link> *template</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> length</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-audio-signal-stream-resize">ags_audio_signal_stream_resize</link>      (<parameter><link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link> *audio_signal</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> length</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-audio-signal-stream-safe-resize">ags_audio_signal_stream_safe_resize</link> (<parameter><link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link> *audio_signal</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> length</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-audio-signal-tile">ags_audio_signal_tile</link>               (<parameter><link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link> *audio_signal</parameter>,
+                                                         <parameter><link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link> *template</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> length</parameter>);
+signed <link linkend="short"><returnvalue>short</returnvalue></link> *      <link linkend="ags-stream-alloc">ags_stream_alloc</link>                    (<parameter><link linkend="guint"><type>guint</type></link> buffer_size</parameter>);
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsAudioSignal.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsAudioSignal.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AgsAttack" role="struct">
+<title>AgsAttack</title>
+<indexterm zone="AgsAttack"><primary>AgsAttack</primary></indexterm>
+<programlisting>typedef struct _AgsAttack AgsAttack;</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsAttackFlags" role="enum">
+<title>enum AgsAttackFlags</title>
+<indexterm zone="AgsAttackFlags"><primary>AgsAttackFlags</primary></indexterm>
+<programlisting>typedef enum {
+  AGS_ATTACK_INITIAL_RUN  = 1,
+  AGS_ATTACK_SWAP         = 1 &lt;&lt; 1,
+} AgsAttackFlags;
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsAudioSignal" role="struct">
+<title>struct AgsAudioSignal</title>
+<indexterm zone="AgsAudioSignal"><primary>AgsAudioSignal</primary></indexterm>
+<programlisting>struct AgsAudioSignal {
+  GObject object;
+
+  guint flags;
+
+  GObject *devout;
+
+  GObject *recycling;
+  GObject *recall_id; // AGS_TYPE_RECALL_ID to identify the AgsAudioSignal
+
+  guint samplerate;
+  guint buffer_size;
+  guint resolution;
+
+  guint length;
+  guint last_frame; // the last frame at stream_end
+  guint loop_start;
+  guint loop_end;
+
+  guint delay;
+  guint attack;
+
+  guint lock_attack;
+  
+  GList *stream_beginning;
+  GList *stream_current;
+  GList *stream_end;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsAudioSignalClass" role="struct">
+<title>struct AgsAudioSignalClass</title>
+<indexterm zone="AgsAudioSignalClass"><primary>AgsAudioSignalClass</primary></indexterm>
+<programlisting>struct AgsAudioSignalClass {
+  GObjectClass object;
+
+  void (*realloc_buffer_size)(AgsAudioSignal *audio_signal, guint buffer_size);
+  void (*morph_samplerate)(AgsAudioSignal *audio_signal, guint samplerate, double k_morph);
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsAudioSignalFlags" role="enum">
+<title>enum AgsAudioSignalFlags</title>
+<indexterm zone="AgsAudioSignalFlags"><primary>AgsAudioSignalFlags</primary></indexterm>
+<programlisting>typedef enum {
+  AGS_AUDIO_SIGNAL_TEMPLATE             = 1,
+  AGS_AUDIO_SIGNAL_PLAY_DONE            = 1 &lt;&lt; 1,
+  AGS_AUDIO_SIGNAL_STANDALONE           = 1 &lt;&lt; 2,
+} AgsAudioSignalFlags;
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-audio-signal-add-stream" role="function">
+<title>ags_audio_signal_add_stream ()</title>
+<indexterm zone="ags-audio-signal-add-stream"><primary>ags_audio_signal_add_stream</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_audio_signal_add_stream         (<parameter><link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link> *audio_signal</parameter>);</programlisting>
+<para>
+Adds a buffer at the end of the stream.
+</para></refsect2>
+<refsect2 id="ags-audio-signal-copy-buffer-to-buffer" role="function">
+<title>ags_audio_signal_copy_buffer_to_buffer ()</title>
+<indexterm zone="ags-audio-signal-copy-buffer-to-buffer"><primary>ags_audio_signal_copy_buffer_to_buffer</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_audio_signal_copy_buffer_to_buffer
+                                                        (<parameter>signed <link linkend="short"><type>short</type></link> *destination</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> dchannels</parameter>,
+                                                         <parameter>signed <link linkend="short"><type>short</type></link> *source</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> schannels</parameter>);</programlisting>
+<para>
+Copy a buffer to an other buffer.
+</para></refsect2>
+<refsect2 id="ags-audio-signal-copy-buffer-to-double-buffer" role="function">
+<title>ags_audio_signal_copy_buffer_to_double_buffer ()</title>
+<indexterm zone="ags-audio-signal-copy-buffer-to-double-buffer"><primary>ags_audio_signal_copy_buffer_to_double_buffer</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_audio_signal_copy_buffer_to_double_buffer
+                                                        (<parameter><link linkend="double"><type>double</type></link> *destination</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> dchannels</parameter>,
+                                                         <parameter>signed <link linkend="short"><type>short</type></link> *source</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> schannels</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-audio-signal-copy-double-buffer-to-buffer" role="function">
+<title>ags_audio_signal_copy_double_buffer_to_buffer ()</title>
+<indexterm zone="ags-audio-signal-copy-double-buffer-to-buffer"><primary>ags_audio_signal_copy_double_buffer_to_buffer</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_audio_signal_copy_double_buffer_to_buffer
+                                                        (<parameter>signed <link linkend="short"><type>short</type></link> *destination</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> dchannels</parameter>,
+                                                         <parameter><link linkend="double"><type>double</type></link> *source</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> schannels</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-audio-signal-duplicate-stream" role="function">
+<title>ags_audio_signal_duplicate_stream ()</title>
+<indexterm zone="ags-audio-signal-duplicate-stream"><primary>ags_audio_signal_duplicate_stream</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_audio_signal_duplicate_stream   (<parameter><link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link> *audio_signal</parameter>,
+                                                         <parameter><link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link> *template</parameter>);</programlisting>
+<para>
+Copy stream of one audio signal to another
+</para></refsect2>
+<refsect2 id="ags-audio-signal-get-by-recall-id" role="function">
+<title>ags_audio_signal_get_by_recall_id ()</title>
+<indexterm zone="ags-audio-signal-get-by-recall-id"><primary>ags_audio_signal_get_by_recall_id</primary></indexterm>
+<programlisting><link linkend="GList"><returnvalue>GList</returnvalue></link> *             ags_audio_signal_get_by_recall_id   (<parameter><link linkend="GList"><type>GList</type></link> *audio_signal</parameter>,
+                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *recall_id</parameter>);</programlisting>
+<para>
+Retrieve next audio signal refering to <parameter>recall_id</parameter>
+</para><variablelist role="params">
+<varlistentry><term><emphasis>Returns</emphasis>&#160;:</term><listitem><simpara>matching <link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link></simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2 id="ags-audio-signal-get-length-till-current" role="function">
+<title>ags_audio_signal_get_length_till_current ()</title>
+<indexterm zone="ags-audio-signal-get-length-till-current"><primary>ags_audio_signal_get_length_till_current</primary></indexterm>
+<programlisting><link linkend="guint"><returnvalue>guint</returnvalue></link>               ags_audio_signal_get_length_till_current
+                                                        (<parameter><link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link> *audio_signal</parameter>);</programlisting>
+<para>
+Counts the buffers from stream_beginning upto stream_current.
+</para><variablelist role="params">
+<varlistentry><term><emphasis>Returns</emphasis>&#160;:</term><listitem><simpara>the counted length.</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2 id="ags-audio-signal-get-stream-current" role="function">
+<title>ags_audio_signal_get_stream_current ()</title>
+<indexterm zone="ags-audio-signal-get-stream-current"><primary>ags_audio_signal_get_stream_current</primary></indexterm>
+<programlisting><link linkend="GList"><returnvalue>GList</returnvalue></link> *             ags_audio_signal_get_stream_current (<parameter><link linkend="GList"><type>GList</type></link> *audio_signal</parameter>,
+                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *recall_id</parameter>);</programlisting>
+<para>
+Retrieve next current stream of <link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link> list.
+</para><variablelist role="params">
+<varlistentry><term><emphasis>Returns</emphasis>&#160;:</term><listitem><simpara>next <link linkend="GList"><type>GList</type></link> matching <link linkend="AgsRecallID"><type>AgsRecallID</type></link></simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2 id="ags-audio-signal-get-template" role="function">
+<title>ags_audio_signal_get_template ()</title>
+<indexterm zone="ags-audio-signal-get-template"><primary>ags_audio_signal_get_template</primary></indexterm>
+<programlisting><link linkend="AgsAudioSignal"><returnvalue>AgsAudioSignal</returnvalue></link> *    ags_audio_signal_get_template       (<parameter><link linkend="GList"><type>GList</type></link> *audio_signal</parameter>);</programlisting>
+<para>
+Retrieve the template audio signal.
+</para><variablelist role="params">
+<varlistentry><term><emphasis>Returns</emphasis>&#160;:</term><listitem><simpara>the template <link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link></simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2 id="ags-audio-signal-morph-samplerate" role="function">
+<title>ags_audio_signal_morph_samplerate ()</title>
+<indexterm zone="ags-audio-signal-morph-samplerate"><primary>ags_audio_signal_morph_samplerate</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_audio_signal_morph_samplerate   (<parameter><link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link> *audio_signal</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> samplerate</parameter>,
+                                                         <parameter><link linkend="double"><type>double</type></link> k_morph</parameter>);</programlisting>
+<para>
+Scale audio signal data.
+</para></refsect2>
+<refsect2 id="ags-audio-signal-new" role="function">
+<title>ags_audio_signal_new ()</title>
+<indexterm zone="ags-audio-signal-new"><primary>ags_audio_signal_new</primary></indexterm>
+<programlisting><link linkend="AgsAudioSignal"><returnvalue>AgsAudioSignal</returnvalue></link> *    ags_audio_signal_new                (<parameter><link linkend="GObject"><type>GObject</type></link> *devout</parameter>,
+                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *recycling</parameter>,
+                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *recall_id</parameter>);</programlisting>
+<para>
+Creates a <link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link>, with defaults of <parameter>devout</parameter>, linking <parameter>recycling</parameter> tree
+and refering to <parameter>recall_id</parameter>.
+The audio data is tiled to <parameter>length</parameter> frame count.
+</para><variablelist role="params">
+<varlistentry><term><emphasis>Returns</emphasis>&#160;:</term><listitem><simpara>a new <link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link></simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2 id="ags-audio-signal-new-with-length" role="function">
+<title>ags_audio_signal_new_with_length ()</title>
+<indexterm zone="ags-audio-signal-new-with-length"><primary>ags_audio_signal_new_with_length</primary></indexterm>
+<programlisting><link linkend="AgsAudioSignal"><returnvalue>AgsAudioSignal</returnvalue></link> *    ags_audio_signal_new_with_length    (<parameter><link linkend="GObject"><type>GObject</type></link> *devout</parameter>,
+                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *recycling</parameter>,
+                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *recall_id</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> length</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-audio-signal-realloc-buffer-size" role="function">
+<title>ags_audio_signal_realloc_buffer_size ()</title>
+<indexterm zone="ags-audio-signal-realloc-buffer-size"><primary>ags_audio_signal_realloc_buffer_size</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_audio_signal_realloc_buffer_size
+                                                        (<parameter><link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link> *audio_signal</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> buffer_size</parameter>);</programlisting>
+<para>
+Realloc the stream to the new buffer size.
+</para></refsect2>
+<refsect2 id="ags-audio-signal-scale" role="function">
+<title>ags_audio_signal_scale ()</title>
+<indexterm zone="ags-audio-signal-scale"><primary>ags_audio_signal_scale</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_audio_signal_scale              (<parameter><link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link> *audio_signal</parameter>,
+                                                         <parameter><link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link> *template</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> length</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-audio-signal-stream-resize" role="function">
+<title>ags_audio_signal_stream_resize ()</title>
+<indexterm zone="ags-audio-signal-stream-resize"><primary>ags_audio_signal_stream_resize</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_audio_signal_stream_resize      (<parameter><link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link> *audio_signal</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> length</parameter>);</programlisting>
+<para>
+Resizes an <link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link>'s stream but be carefull with shrinking.
+This function may crash the application.
+</para></refsect2>
+<refsect2 id="ags-audio-signal-stream-safe-resize" role="function">
+<title>ags_audio_signal_stream_safe_resize ()</title>
+<indexterm zone="ags-audio-signal-stream-safe-resize"><primary>ags_audio_signal_stream_safe_resize</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_audio_signal_stream_safe_resize (<parameter><link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link> *audio_signal</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> length</parameter>);</programlisting>
+<para>
+Resizes an <link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link>'s stream but doesn't shrink more than the
+current stream position.
+</para></refsect2>
+<refsect2 id="ags-audio-signal-tile" role="function">
+<title>ags_audio_signal_tile ()</title>
+<indexterm zone="ags-audio-signal-tile"><primary>ags_audio_signal_tile</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_audio_signal_tile               (<parameter><link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link> *audio_signal</parameter>,
+                                                         <parameter><link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link> *template</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> length</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-stream-alloc" role="function">
+<title>ags_stream_alloc ()</title>
+<indexterm zone="ags-stream-alloc"><primary>ags_stream_alloc</primary></indexterm>
+<programlisting>signed <link linkend="short"><returnvalue>short</returnvalue></link> *      ags_stream_alloc                    (<parameter><link linkend="guint"><type>guint</type></link> buffer_size</parameter>);</programlisting>
+<para>
+Allocs an audio buffer.
+</para><variablelist role="params">
+<varlistentry><term><emphasis>Returns</emphasis>&#160;:</term><listitem><simpara>the audio data array</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+
+</refsect1>
+
+</refentry>

@@ -1,0 +1,136 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-ags-machine-editor-callbacks">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-ags-machine-editor-callbacks.top_of_page">ags_machine_editor_callbacks</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>ags_machine_editor_callbacks</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-ags-machine-editor-callbacks.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis><link linkend="int"><returnvalue>int</returnvalue></link>                 <link linkend="ags-machine-editor-add-callback">ags_machine_editor_add_callback</link>     (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                                                         <parameter><link linkend="AgsMachineEditor"><type>AgsMachineEditor</type></link> *machine_editor</parameter>);
+<link linkend="int"><returnvalue>int</returnvalue></link>                 <link linkend="ags-machine-editor-apply-callback">ags_machine_editor_apply_callback</link>   (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                                                         <parameter><link linkend="AgsMachineEditor"><type>AgsMachineEditor</type></link> *machine_editor</parameter>);
+<link linkend="int"><returnvalue>int</returnvalue></link>                 <link linkend="ags-machine-editor-back-callback">ags_machine_editor_back_callback</link>    (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *button</parameter>,
+                                                         <parameter><link linkend="AgsMachineEditor"><type>AgsMachineEditor</type></link> *machine_editor</parameter>);
+<link linkend="int"><returnvalue>int</returnvalue></link>                 <link linkend="ags-machine-editor-cancel-callback">ags_machine_editor_cancel_callback</link>  (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                                                         <parameter><link linkend="AgsMachineEditor"><type>AgsMachineEditor</type></link> *machine_editor</parameter>);
+<link linkend="int"><returnvalue>int</returnvalue></link>                 <link linkend="ags-machine-editor-destroy-callback">ags_machine_editor_destroy_callback</link> (<parameter><link linkend="GtkObject"><type>GtkObject</type></link> *object</parameter>,
+                                                         <parameter><link linkend="AgsMachineEditor"><type>AgsMachineEditor</type></link> *machine_editor</parameter>);
+<link linkend="int"><returnvalue>int</returnvalue></link>                 <link linkend="ags-machine-editor-ok-callback">ags_machine_editor_ok_callback</link>      (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                                                         <parameter><link linkend="AgsMachineEditor"><type>AgsMachineEditor</type></link> *machine_editor</parameter>);
+<link linkend="int"><returnvalue>int</returnvalue></link>                 <link linkend="ags-machine-editor-parent-set-callback">ags_machine_editor_parent_set_callback</link>
+                                                        (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                                                         <parameter><link linkend="GtkObject"><type>GtkObject</type></link> *old_parent</parameter>,
+                                                         <parameter><link linkend="AgsMachineEditor"><type>AgsMachineEditor</type></link> *machine_editor</parameter>);
+<link linkend="int"><returnvalue>int</returnvalue></link>                 <link linkend="ags-machine-editor-remove-callback">ags_machine_editor_remove_callback</link>  (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                                                         <parameter><link linkend="AgsMachineEditor"><type>AgsMachineEditor</type></link> *machine_editor</parameter>);
+<link linkend="int"><returnvalue>int</returnvalue></link>                 <link linkend="ags-machine-editor-show-callback">ags_machine_editor_show_callback</link>    (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                                                         <parameter><link linkend="AgsMachineEditor"><type>AgsMachineEditor</type></link> *machine_editor</parameter>);
+<link linkend="int"><returnvalue>int</returnvalue></link>                 <link linkend="ags-machine-editor-switch-page-callback">ags_machine_editor_switch_page_callback</link>
+                                                        (<parameter><link linkend="GtkNotebook"><type>GtkNotebook</type></link> *notebook</parameter>,
+                                                         <parameter><link linkend="GtkNotebookPage"><type>GtkNotebookPage</type></link> *page</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> page_num</parameter>,
+                                                         <parameter><link linkend="AgsMachineEditor"><type>AgsMachineEditor</type></link> *machine_editor</parameter>);
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-ags-machine-editor-callbacks.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-ags-machine-editor-callbacks.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="ags-machine-editor-add-callback" role="function">
+<title>ags_machine_editor_add_callback ()</title>
+<indexterm zone="ags-machine-editor-add-callback"><primary>ags_machine_editor_add_callback</primary></indexterm>
+<programlisting><link linkend="int"><returnvalue>int</returnvalue></link>                 ags_machine_editor_add_callback     (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                                                         <parameter><link linkend="AgsMachineEditor"><type>AgsMachineEditor</type></link> *machine_editor</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-machine-editor-apply-callback" role="function">
+<title>ags_machine_editor_apply_callback ()</title>
+<indexterm zone="ags-machine-editor-apply-callback"><primary>ags_machine_editor_apply_callback</primary></indexterm>
+<programlisting><link linkend="int"><returnvalue>int</returnvalue></link>                 ags_machine_editor_apply_callback   (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                                                         <parameter><link linkend="AgsMachineEditor"><type>AgsMachineEditor</type></link> *machine_editor</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-machine-editor-back-callback" role="function">
+<title>ags_machine_editor_back_callback ()</title>
+<indexterm zone="ags-machine-editor-back-callback"><primary>ags_machine_editor_back_callback</primary></indexterm>
+<programlisting><link linkend="int"><returnvalue>int</returnvalue></link>                 ags_machine_editor_back_callback    (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *button</parameter>,
+                                                         <parameter><link linkend="AgsMachineEditor"><type>AgsMachineEditor</type></link> *machine_editor</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-machine-editor-cancel-callback" role="function">
+<title>ags_machine_editor_cancel_callback ()</title>
+<indexterm zone="ags-machine-editor-cancel-callback"><primary>ags_machine_editor_cancel_callback</primary></indexterm>
+<programlisting><link linkend="int"><returnvalue>int</returnvalue></link>                 ags_machine_editor_cancel_callback  (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                                                         <parameter><link linkend="AgsMachineEditor"><type>AgsMachineEditor</type></link> *machine_editor</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-machine-editor-destroy-callback" role="function">
+<title>ags_machine_editor_destroy_callback ()</title>
+<indexterm zone="ags-machine-editor-destroy-callback"><primary>ags_machine_editor_destroy_callback</primary></indexterm>
+<programlisting><link linkend="int"><returnvalue>int</returnvalue></link>                 ags_machine_editor_destroy_callback (<parameter><link linkend="GtkObject"><type>GtkObject</type></link> *object</parameter>,
+                                                         <parameter><link linkend="AgsMachineEditor"><type>AgsMachineEditor</type></link> *machine_editor</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-machine-editor-ok-callback" role="function">
+<title>ags_machine_editor_ok_callback ()</title>
+<indexterm zone="ags-machine-editor-ok-callback"><primary>ags_machine_editor_ok_callback</primary></indexterm>
+<programlisting><link linkend="int"><returnvalue>int</returnvalue></link>                 ags_machine_editor_ok_callback      (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                                                         <parameter><link linkend="AgsMachineEditor"><type>AgsMachineEditor</type></link> *machine_editor</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-machine-editor-parent-set-callback" role="function">
+<title>ags_machine_editor_parent_set_callback ()</title>
+<indexterm zone="ags-machine-editor-parent-set-callback"><primary>ags_machine_editor_parent_set_callback</primary></indexterm>
+<programlisting><link linkend="int"><returnvalue>int</returnvalue></link>                 ags_machine_editor_parent_set_callback
+                                                        (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                                                         <parameter><link linkend="GtkObject"><type>GtkObject</type></link> *old_parent</parameter>,
+                                                         <parameter><link linkend="AgsMachineEditor"><type>AgsMachineEditor</type></link> *machine_editor</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-machine-editor-remove-callback" role="function">
+<title>ags_machine_editor_remove_callback ()</title>
+<indexterm zone="ags-machine-editor-remove-callback"><primary>ags_machine_editor_remove_callback</primary></indexterm>
+<programlisting><link linkend="int"><returnvalue>int</returnvalue></link>                 ags_machine_editor_remove_callback  (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                                                         <parameter><link linkend="AgsMachineEditor"><type>AgsMachineEditor</type></link> *machine_editor</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-machine-editor-show-callback" role="function">
+<title>ags_machine_editor_show_callback ()</title>
+<indexterm zone="ags-machine-editor-show-callback"><primary>ags_machine_editor_show_callback</primary></indexterm>
+<programlisting><link linkend="int"><returnvalue>int</returnvalue></link>                 ags_machine_editor_show_callback    (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                                                         <parameter><link linkend="AgsMachineEditor"><type>AgsMachineEditor</type></link> *machine_editor</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-machine-editor-switch-page-callback" role="function">
+<title>ags_machine_editor_switch_page_callback ()</title>
+<indexterm zone="ags-machine-editor-switch-page-callback"><primary>ags_machine_editor_switch_page_callback</primary></indexterm>
+<programlisting><link linkend="int"><returnvalue>int</returnvalue></link>                 ags_machine_editor_switch_page_callback
+                                                        (<parameter><link linkend="GtkNotebook"><type>GtkNotebook</type></link> *notebook</parameter>,
+                                                         <parameter><link linkend="GtkNotebookPage"><type>GtkNotebookPage</type></link> *page</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> page_num</parameter>,
+                                                         <parameter><link linkend="AgsMachineEditor"><type>AgsMachineEditor</type></link> *machine_editor</parameter>);</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

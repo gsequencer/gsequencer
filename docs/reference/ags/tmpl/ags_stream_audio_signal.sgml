@@ -1,0 +1,47 @@
+<!-- ##### SECTION Title ##### -->
+AgsStreamAudioSignal
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT AgsStreamAudioSignal ##### -->
+<para>
+
+</para>
+
+@recall_audio_signal: 
+
+<!-- ##### STRUCT AgsStreamAudioSignalClass ##### -->
+<para>
+
+</para>
+
+@recall_audio_signal: 
+
+<!-- ##### FUNCTION ags_stream_audio_signal_new ##### -->
+<para>
+
+</para>
+
+@audio_signal: 
+@Returns: 
+
+

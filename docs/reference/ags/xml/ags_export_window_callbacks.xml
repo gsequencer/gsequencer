@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-ags-export-window-callbacks">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-ags-export-window-callbacks.top_of_page">ags_export_window_callbacks</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>ags_export_window_callbacks</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-ags-export-window-callbacks.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis><link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-export-window-export-callback">ags_export_window_export_callback</link>   (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *toggle_button</parameter>,
+                                                         <parameter><link linkend="AgsExportWindow"><type>AgsExportWindow</type></link> *export_window</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-export-window-file-chooser-button-callback">ags_export_window_file_chooser_button_callback</link>
+                                                        (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *file_chooser_button</parameter>,
+                                                         <parameter><link linkend="AgsExportWindow"><type>AgsExportWindow</type></link> *export_window</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-export-window-tact-callback">ags_export_window_tact_callback</link>     (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *spin_button</parameter>,
+                                                         <parameter><link linkend="AgsExportWindow"><type>AgsExportWindow</type></link> *export_window</parameter>);
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-ags-export-window-callbacks.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-ags-export-window-callbacks.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="ags-export-window-export-callback" role="function">
+<title>ags_export_window_export_callback ()</title>
+<indexterm zone="ags-export-window-export-callback"><primary>ags_export_window_export_callback</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_export_window_export_callback   (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *toggle_button</parameter>,
+                                                         <parameter><link linkend="AgsExportWindow"><type>AgsExportWindow</type></link> *export_window</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-export-window-file-chooser-button-callback" role="function">
+<title>ags_export_window_file_chooser_button_callback ()</title>
+<indexterm zone="ags-export-window-file-chooser-button-callback"><primary>ags_export_window_file_chooser_button_callback</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_export_window_file_chooser_button_callback
+                                                        (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *file_chooser_button</parameter>,
+                                                         <parameter><link linkend="AgsExportWindow"><type>AgsExportWindow</type></link> *export_window</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-export-window-tact-callback" role="function">
+<title>ags_export_window_tact_callback ()</title>
+<indexterm zone="ags-export-window-tact-callback"><primary>ags_export_window_tact_callback</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_export_window_tact_callback     (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *spin_button</parameter>,
+                                                         <parameter><link linkend="AgsExportWindow"><type>AgsExportWindow</type></link> *export_window</parameter>);</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

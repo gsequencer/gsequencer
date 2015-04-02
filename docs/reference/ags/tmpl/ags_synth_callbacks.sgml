@@ -1,0 +1,61 @@
+<!-- ##### SECTION Title ##### -->
+ags_synth_callbacks
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### FUNCTION ags_synth_auto_update_callback ##### -->
+<para>
+
+</para>
+
+@toggle: 
+@synth: 
+
+
+<!-- ##### FUNCTION ags_synth_lower_callback ##### -->
+<para>
+
+</para>
+
+@spin_button: 
+@synth: 
+
+
+<!-- ##### FUNCTION ags_synth_parent_set_callback ##### -->
+<para>
+
+</para>
+
+@widget: 
+@old_parent: 
+@synth: 
+
+
+<!-- ##### FUNCTION ags_synth_update_callback ##### -->
+<para>
+
+</para>
+
+@button: 
+@synth: 
+
+

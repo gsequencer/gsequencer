@@ -1,0 +1,295 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsPlayable">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsPlayable.top_of_page">AgsPlayable</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsPlayable</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsPlayable.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>#define             <link linkend="AGS-PLAYABLE-ERROR:CAPS">AGS_PLAYABLE_ERROR</link>
+typedef             <link linkend="AgsPlayable">AgsPlayable</link>;
+enum                <link linkend="AgsPlayableError">AgsPlayableError</link>;
+struct              <link linkend="AgsPlayableInterface">AgsPlayableInterface</link>;
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-playable-close">ags_playable_close</link>                  (<parameter><link linkend="AgsPlayable"><type>AgsPlayable</type></link> *playable</parameter>);
+<link linkend="GQuark"><returnvalue>GQuark</returnvalue></link>              <link linkend="ags-playable-error-quark">ags_playable_error_quark</link>            ();
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-playable-flush">ags_playable_flush</link>                  (<parameter><link linkend="AgsPlayable"><type>AgsPlayable</type></link> *playable</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-playable-info">ags_playable_info</link>                   (<parameter><link linkend="AgsPlayable"><type>AgsPlayable</type></link> *playable</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> *channels</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> *frames</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> *loop_start</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> *loop_end</parameter>,
+                                                         <parameter><link linkend="GError"><type>GError</type></link> **error</parameter>);
+<link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            <link linkend="ags-playable-iter-next">ags_playable_iter_next</link>              (<parameter><link linkend="AgsPlayable"><type>AgsPlayable</type></link> *playable</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-playable-iter-start">ags_playable_iter_start</link>             (<parameter><link linkend="AgsPlayable"><type>AgsPlayable</type></link> *playable</parameter>);
+<link linkend="guint"><returnvalue>guint</returnvalue></link>               <link linkend="ags-playable-level-count">ags_playable_level_count</link>            (<parameter><link linkend="AgsPlayable"><type>AgsPlayable</type></link> *playable</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-playable-level-select">ags_playable_level_select</link>           (<parameter><link linkend="AgsPlayable"><type>AgsPlayable</type></link> *playable</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> nth_level</parameter>,
+                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *sublevel_name</parameter>,
+                                                         <parameter><link linkend="GError"><type>GError</type></link> **error</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-playable-level-up">ags_playable_level_up</link>               (<parameter><link linkend="AgsPlayable"><type>AgsPlayable</type></link> *playable</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> levels</parameter>,
+                                                         <parameter><link linkend="GError"><type>GError</type></link> **error</parameter>);
+<link linkend="guint"><returnvalue>guint</returnvalue></link>               <link linkend="ags-playable-nth-level">ags_playable_nth_level</link>              (<parameter><link linkend="AgsPlayable"><type>AgsPlayable</type></link> *playable</parameter>);
+<link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            <link linkend="ags-playable-open">ags_playable_open</link>                   (<parameter><link linkend="AgsPlayable"><type>AgsPlayable</type></link> *playable</parameter>,
+                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *name</parameter>);
+signed <link linkend="short"><returnvalue>short</returnvalue></link> *      <link linkend="ags-playable-read">ags_playable_read</link>                   (<parameter><link linkend="AgsPlayable"><type>AgsPlayable</type></link> *playable</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> channel</parameter>,
+                                                         <parameter><link linkend="GError"><type>GError</type></link> **error</parameter>);
+<link linkend="GList"><returnvalue>GList</returnvalue></link> *             <link linkend="ags-playable-read-audio-signal">ags_playable_read_audio_signal</link>      (<parameter><link linkend="AgsPlayable"><type>AgsPlayable</type></link> *playable</parameter>,
+                                                         <parameter><link linkend="AgsDevout"><type>AgsDevout</type></link> *devout</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> start_channel</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> channels</parameter>);
+<link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            <link linkend="ags-playable-rw-open">ags_playable_rw_open</link>                (<parameter><link linkend="AgsPlayable"><type>AgsPlayable</type></link> *playable</parameter>,
+                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *name</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> create</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> samplerate</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> channels</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> frames</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> format</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-playable-seek">ags_playable_seek</link>                   (<parameter><link linkend="AgsPlayable"><type>AgsPlayable</type></link> *playable</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> frames</parameter>,
+                                                         <parameter><link linkend="gint"><type>gint</type></link> whence</parameter>);
+<link linkend="gchar"><returnvalue>gchar</returnvalue></link> *             <link linkend="ags-playable-selected-level">ags_playable_selected_level</link>         (<parameter><link linkend="AgsPlayable"><type>AgsPlayable</type></link> *playable</parameter>);
+<link linkend="gchar"><returnvalue>gchar</returnvalue></link> **            <link linkend="ags-playable-sublevel-names">ags_playable_sublevel_names</link>         (<parameter><link linkend="AgsPlayable"><type>AgsPlayable</type></link> *playable</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-playable-write">ags_playable_write</link>                  (<parameter><link linkend="AgsPlayable"><type>AgsPlayable</type></link> *playable</parameter>,
+                                                         <parameter>signed <link linkend="short"><type>short</type></link> *buffer</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> buffer_length</parameter>);
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsPlayable.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsPlayable.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AGS-PLAYABLE-ERROR:CAPS" role="macro">
+<title>AGS_PLAYABLE_ERROR</title>
+<indexterm zone="AGS-PLAYABLE-ERROR:CAPS"><primary>AGS_PLAYABLE_ERROR</primary></indexterm>
+<programlisting>#define AGS_PLAYABLE_ERROR (ags_playable_error_quark())
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsPlayable" role="typedef">
+<title>AgsPlayable</title>
+<indexterm zone="AgsPlayable"><primary>AgsPlayable</primary></indexterm>
+<programlisting>typedef void AgsPlayable;
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsPlayableError" role="enum">
+<title>enum AgsPlayableError</title>
+<indexterm zone="AgsPlayableError"><primary>AgsPlayableError</primary></indexterm>
+<programlisting>typedef enum {
+  AGS_PLAYABLE_ERROR_NO_SUCH_LEVEL,
+  AGS_PLAYABLE_ERROR_NO_SAMPLE,
+} AgsPlayableError;
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsPlayableInterface" role="struct">
+<title>struct AgsPlayableInterface</title>
+<indexterm zone="AgsPlayableInterface"><primary>AgsPlayableInterface</primary></indexterm>
+<programlisting>struct AgsPlayableInterface {
+  GTypeInterface interface;
+
+  gboolean (*open)(AgsPlayable *playable, gchar *name);
+  gboolean (*rw_open)(AgsPlayable *playable, gchar *name,
+		      gboolean create,
+		      guint samplerate, guint channels,
+		      guint frames,
+		      guint format);
+
+  /* these functions are especially for soundfonts */
+  guint (*level_count)(AgsPlayable *playable);
+  guint (*nth_level)(AgsPlayable *playable);
+  gchar* (*selected_level)(AgsPlayable *playable);
+
+  gchar** (*sublevel_names)(AgsPlayable *playable);
+  void (*level_select)(AgsPlayable *playable,
+		       guint nth_level, gchar *sublevel_name,
+		       GError **error);
+  void (*level_up)(AgsPlayable *playable,
+		   guint levels,
+		   GError **error);
+
+  void (*iter_start)(AgsPlayable *playable);
+  gboolean (*iter_next)(AgsPlayable *playable);
+
+  /* read sample data */
+  void (*info)(AgsPlayable *playable,
+	       guint *channels, guint *frames,
+	       guint *loop_start, guint *loop_end,
+	       GError **error);
+  signed short* (*read)(AgsPlayable *playable,
+			guint channel,
+			GError **error);
+
+  /* write sample data */
+  void (*write)(AgsPlayable *playable,
+		signed short *buffer, guint buffer_length);
+  void (*flush)(AgsPlayable *playable);
+
+  /* position */
+  void (*seek)(AgsPlayable *playable,
+	       guint frames, gint whence);
+
+  /* close */
+  void (*close)(AgsPlayable *playable);
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-playable-close" role="function">
+<title>ags_playable_close ()</title>
+<indexterm zone="ags-playable-close"><primary>ags_playable_close</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_playable_close                  (<parameter><link linkend="AgsPlayable"><type>AgsPlayable</type></link> *playable</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-playable-error-quark" role="function">
+<title>ags_playable_error_quark ()</title>
+<indexterm zone="ags-playable-error-quark"><primary>ags_playable_error_quark</primary></indexterm>
+<programlisting><link linkend="GQuark"><returnvalue>GQuark</returnvalue></link>              ags_playable_error_quark            ();</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-playable-flush" role="function">
+<title>ags_playable_flush ()</title>
+<indexterm zone="ags-playable-flush"><primary>ags_playable_flush</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_playable_flush                  (<parameter><link linkend="AgsPlayable"><type>AgsPlayable</type></link> *playable</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-playable-info" role="function">
+<title>ags_playable_info ()</title>
+<indexterm zone="ags-playable-info"><primary>ags_playable_info</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_playable_info                   (<parameter><link linkend="AgsPlayable"><type>AgsPlayable</type></link> *playable</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> *channels</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> *frames</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> *loop_start</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> *loop_end</parameter>,
+                                                         <parameter><link linkend="GError"><type>GError</type></link> **error</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-playable-iter-next" role="function">
+<title>ags_playable_iter_next ()</title>
+<indexterm zone="ags-playable-iter-next"><primary>ags_playable_iter_next</primary></indexterm>
+<programlisting><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            ags_playable_iter_next              (<parameter><link linkend="AgsPlayable"><type>AgsPlayable</type></link> *playable</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-playable-iter-start" role="function">
+<title>ags_playable_iter_start ()</title>
+<indexterm zone="ags-playable-iter-start"><primary>ags_playable_iter_start</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_playable_iter_start             (<parameter><link linkend="AgsPlayable"><type>AgsPlayable</type></link> *playable</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-playable-level-count" role="function">
+<title>ags_playable_level_count ()</title>
+<indexterm zone="ags-playable-level-count"><primary>ags_playable_level_count</primary></indexterm>
+<programlisting><link linkend="guint"><returnvalue>guint</returnvalue></link>               ags_playable_level_count            (<parameter><link linkend="AgsPlayable"><type>AgsPlayable</type></link> *playable</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-playable-level-select" role="function">
+<title>ags_playable_level_select ()</title>
+<indexterm zone="ags-playable-level-select"><primary>ags_playable_level_select</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_playable_level_select           (<parameter><link linkend="AgsPlayable"><type>AgsPlayable</type></link> *playable</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> nth_level</parameter>,
+                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *sublevel_name</parameter>,
+                                                         <parameter><link linkend="GError"><type>GError</type></link> **error</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-playable-level-up" role="function">
+<title>ags_playable_level_up ()</title>
+<indexterm zone="ags-playable-level-up"><primary>ags_playable_level_up</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_playable_level_up               (<parameter><link linkend="AgsPlayable"><type>AgsPlayable</type></link> *playable</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> levels</parameter>,
+                                                         <parameter><link linkend="GError"><type>GError</type></link> **error</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-playable-nth-level" role="function">
+<title>ags_playable_nth_level ()</title>
+<indexterm zone="ags-playable-nth-level"><primary>ags_playable_nth_level</primary></indexterm>
+<programlisting><link linkend="guint"><returnvalue>guint</returnvalue></link>               ags_playable_nth_level              (<parameter><link linkend="AgsPlayable"><type>AgsPlayable</type></link> *playable</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-playable-open" role="function">
+<title>ags_playable_open ()</title>
+<indexterm zone="ags-playable-open"><primary>ags_playable_open</primary></indexterm>
+<programlisting><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            ags_playable_open                   (<parameter><link linkend="AgsPlayable"><type>AgsPlayable</type></link> *playable</parameter>,
+                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *name</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-playable-read" role="function">
+<title>ags_playable_read ()</title>
+<indexterm zone="ags-playable-read"><primary>ags_playable_read</primary></indexterm>
+<programlisting>signed <link linkend="short"><returnvalue>short</returnvalue></link> *      ags_playable_read                   (<parameter><link linkend="AgsPlayable"><type>AgsPlayable</type></link> *playable</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> channel</parameter>,
+                                                         <parameter><link linkend="GError"><type>GError</type></link> **error</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-playable-read-audio-signal" role="function">
+<title>ags_playable_read_audio_signal ()</title>
+<indexterm zone="ags-playable-read-audio-signal"><primary>ags_playable_read_audio_signal</primary></indexterm>
+<programlisting><link linkend="GList"><returnvalue>GList</returnvalue></link> *             ags_playable_read_audio_signal      (<parameter><link linkend="AgsPlayable"><type>AgsPlayable</type></link> *playable</parameter>,
+                                                         <parameter><link linkend="AgsDevout"><type>AgsDevout</type></link> *devout</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> start_channel</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> channels</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-playable-rw-open" role="function">
+<title>ags_playable_rw_open ()</title>
+<indexterm zone="ags-playable-rw-open"><primary>ags_playable_rw_open</primary></indexterm>
+<programlisting><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            ags_playable_rw_open                (<parameter><link linkend="AgsPlayable"><type>AgsPlayable</type></link> *playable</parameter>,
+                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *name</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> create</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> samplerate</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> channels</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> frames</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> format</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-playable-seek" role="function">
+<title>ags_playable_seek ()</title>
+<indexterm zone="ags-playable-seek"><primary>ags_playable_seek</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_playable_seek                   (<parameter><link linkend="AgsPlayable"><type>AgsPlayable</type></link> *playable</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> frames</parameter>,
+                                                         <parameter><link linkend="gint"><type>gint</type></link> whence</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-playable-selected-level" role="function">
+<title>ags_playable_selected_level ()</title>
+<indexterm zone="ags-playable-selected-level"><primary>ags_playable_selected_level</primary></indexterm>
+<programlisting><link linkend="gchar"><returnvalue>gchar</returnvalue></link> *             ags_playable_selected_level         (<parameter><link linkend="AgsPlayable"><type>AgsPlayable</type></link> *playable</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-playable-sublevel-names" role="function">
+<title>ags_playable_sublevel_names ()</title>
+<indexterm zone="ags-playable-sublevel-names"><primary>ags_playable_sublevel_names</primary></indexterm>
+<programlisting><link linkend="gchar"><returnvalue>gchar</returnvalue></link> **            ags_playable_sublevel_names         (<parameter><link linkend="AgsPlayable"><type>AgsPlayable</type></link> *playable</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-playable-write" role="function">
+<title>ags_playable_write ()</title>
+<indexterm zone="ags-playable-write"><primary>ags_playable_write</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_playable_write                  (<parameter><link linkend="AgsPlayable"><type>AgsPlayable</type></link> *playable</parameter>,
+                                                         <parameter>signed <link linkend="short"><type>short</type></link> *buffer</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> buffer_length</parameter>);</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

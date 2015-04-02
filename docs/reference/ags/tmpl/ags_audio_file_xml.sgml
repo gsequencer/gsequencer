@@ -1,0 +1,47 @@
+<!-- ##### SECTION Title ##### -->
+AgsAudioFileXml
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT AgsAudioFileXml ##### -->
+<para>
+
+</para>
+
+@object: 
+
+<!-- ##### STRUCT AgsAudioFileXmlClass ##### -->
+<para>
+
+</para>
+
+@object: 
+
+<!-- ##### FUNCTION ags_audio_file_xml_new ##### -->
+<para>
+
+</para>
+
+@audio_file: 
+@Returns: 
+
+

@@ -1,0 +1,130 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsPattern">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsPattern.top_of_page">AgsPattern</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsPattern</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsPattern.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>struct              <link linkend="AgsPattern">AgsPattern</link>;
+struct              <link linkend="AgsPatternClass">AgsPatternClass</link>;
+<link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            <link linkend="ags-pattern-get-bit">ags_pattern_get_bit</link>                 (<parameter><link linkend="AgsPattern"><type>AgsPattern</type></link> *pattern</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> i</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> j</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> bit</parameter>);
+<link linkend="AgsPattern"><returnvalue>AgsPattern</returnvalue></link> *        <link linkend="ags-pattern-get-by-timestamp">ags_pattern_get_by_timestamp</link>        (<parameter><link linkend="GList"><type>GList</type></link> *list</parameter>,
+                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *timestamp</parameter>);
+<link linkend="AgsPattern"><returnvalue>AgsPattern</returnvalue></link> *        <link linkend="ags-pattern-new">ags_pattern_new</link>                     ();
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-pattern-set-dim">ags_pattern_set_dim</link>                 (<parameter><link linkend="AgsPattern"><type>AgsPattern</type></link> *pattern</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> dim0</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> dim1</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> lenght</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-pattern-toggle-bit">ags_pattern_toggle_bit</link>              (<parameter><link linkend="AgsPattern"><type>AgsPattern</type></link> *pattern</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> i</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> j</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> bit</parameter>);
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsPattern.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsPattern.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AgsPattern" role="struct">
+<title>struct AgsPattern</title>
+<indexterm zone="AgsPattern"><primary>AgsPattern</primary></indexterm>
+<programlisting>struct AgsPattern {
+  GObject object;
+
+  GObject *timestamp;
+
+  guint dim[3];
+  guint ***pattern;
+
+  GObject *port;
+
+  guint i;
+  guint j;
+  guint bit;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsPatternClass" role="struct">
+<title>struct AgsPatternClass</title>
+<indexterm zone="AgsPatternClass"><primary>AgsPatternClass</primary></indexterm>
+<programlisting>struct AgsPatternClass {
+  GObjectClass object;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-pattern-get-bit" role="function">
+<title>ags_pattern_get_bit ()</title>
+<indexterm zone="ags-pattern-get-bit"><primary>ags_pattern_get_bit</primary></indexterm>
+<programlisting><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            ags_pattern_get_bit                 (<parameter><link linkend="AgsPattern"><type>AgsPattern</type></link> *pattern</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> i</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> j</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> bit</parameter>);</programlisting>
+<para>
+Check for tic to be played.
+</para><variablelist role="params">
+<varlistentry><term><emphasis>Returns</emphasis>&#160;:</term><listitem><simpara><link linkend="TRUE:CAPS"><literal>TRUE</literal></link> if tone is enabled.</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2 id="ags-pattern-get-by-timestamp" role="function">
+<title>ags_pattern_get_by_timestamp ()</title>
+<indexterm zone="ags-pattern-get-by-timestamp"><primary>ags_pattern_get_by_timestamp</primary></indexterm>
+<programlisting><link linkend="AgsPattern"><returnvalue>AgsPattern</returnvalue></link> *        ags_pattern_get_by_timestamp        (<parameter><link linkend="GList"><type>GList</type></link> *list</parameter>,
+                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *timestamp</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-pattern-new" role="function">
+<title>ags_pattern_new ()</title>
+<indexterm zone="ags-pattern-new"><primary>ags_pattern_new</primary></indexterm>
+<programlisting><link linkend="AgsPattern"><returnvalue>AgsPattern</returnvalue></link> *        ags_pattern_new                     ();</programlisting>
+<para>
+Creates an <link linkend="AgsPattern"><type>AgsPattern</type></link>
+</para><variablelist role="params">
+<varlistentry><term><emphasis>Returns</emphasis>&#160;:</term><listitem><simpara>a new <link linkend="AgsPattern"><type>AgsPattern</type></link></simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2 id="ags-pattern-set-dim" role="function">
+<title>ags_pattern_set_dim ()</title>
+<indexterm zone="ags-pattern-set-dim"><primary>ags_pattern_set_dim</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_pattern_set_dim                 (<parameter><link linkend="AgsPattern"><type>AgsPattern</type></link> *pattern</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> dim0</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> dim1</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> lenght</parameter>);</programlisting>
+<para>
+Reallocates the pattern's dimensions.
+</para></refsect2>
+<refsect2 id="ags-pattern-toggle-bit" role="function">
+<title>ags_pattern_toggle_bit ()</title>
+<indexterm zone="ags-pattern-toggle-bit"><primary>ags_pattern_toggle_bit</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_pattern_toggle_bit              (<parameter><link linkend="AgsPattern"><type>AgsPattern</type></link> *pattern</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> i</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> j</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> bit</parameter>);</programlisting>
+<para>
+Toggle tone.
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

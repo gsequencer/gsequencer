@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsExportOutput">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsExportOutput.top_of_page">AgsExportOutput</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsExportOutput</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsExportOutput.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>struct              <link linkend="AgsExportOutput">AgsExportOutput</link>;
+struct              <link linkend="AgsExportOutputClass">AgsExportOutputClass</link>;
+<link linkend="AgsExportOutput"><returnvalue>AgsExportOutput</returnvalue></link> *   <link linkend="ags-export-output-new">ags_export_output_new</link>               (<parameter><link linkend="AgsExportThread"><type>AgsExportThread</type></link> *export_thread</parameter>,
+                                                         <parameter><link linkend="AgsDevout"><type>AgsDevout</type></link> *devout</parameter>,
+                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *filename</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> tic</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> live_performance</parameter>);
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsExportOutput.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsExportOutput.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AgsExportOutput" role="struct">
+<title>struct AgsExportOutput</title>
+<indexterm zone="AgsExportOutput"><primary>AgsExportOutput</primary></indexterm>
+<programlisting>struct AgsExportOutput {
+  AgsTask task;
+
+  AgsExportThread *export_thread;
+  AgsDevout *devout;
+  gchar *filename;
+  guint tic;
+  gboolean live_performance;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsExportOutputClass" role="struct">
+<title>struct AgsExportOutputClass</title>
+<indexterm zone="AgsExportOutputClass"><primary>AgsExportOutputClass</primary></indexterm>
+<programlisting>struct AgsExportOutputClass {
+  AgsTaskClass task;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-export-output-new" role="function">
+<title>ags_export_output_new ()</title>
+<indexterm zone="ags-export-output-new"><primary>ags_export_output_new</primary></indexterm>
+<programlisting><link linkend="AgsExportOutput"><returnvalue>AgsExportOutput</returnvalue></link> *   ags_export_output_new               (<parameter><link linkend="AgsExportThread"><type>AgsExportThread</type></link> *export_thread</parameter>,
+                                                         <parameter><link linkend="AgsDevout"><type>AgsDevout</type></link> *devout</parameter>,
+                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *filename</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> tic</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> live_performance</parameter>);</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

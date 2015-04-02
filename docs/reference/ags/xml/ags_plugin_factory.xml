@@ -1,0 +1,160 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsPluginFactory">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsPluginFactory.top_of_page">AgsPluginFactory</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsPluginFactory</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsPluginFactory.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>struct              <link linkend="AgsPluginFactory">AgsPluginFactory</link>;
+struct              <link linkend="AgsPluginFactoryClass">AgsPluginFactoryClass</link>;
+struct              <link linkend="AgsPluginMetadata">AgsPluginMetadata</link>;
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-plugin-factory-add">ags_plugin_factory_add</link>              (<parameter><link linkend="AgsPluginFactory"><type>AgsPluginFactory</type></link> *plugin_factory</parameter>,
+                                                         <parameter><link linkend="GType"><type>GType</type></link> plugin_type</parameter>,
+                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *plugin_name</parameter>,
+                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *version</parameter>,
+                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *build_id</parameter>,
+                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *xml_type</parameter>,
+                                                         <parameter><link linkend="GParameter"><type>GParameter</type></link> *control</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> control_count</parameter>);
+<link linkend="AgsPlugin"><returnvalue>AgsPlugin</returnvalue></link> *         <link linkend="ags-plugin-factory-create">ags_plugin_factory_create</link>           (<parameter><link linkend="AgsPluginFactory"><type>AgsPluginFactory</type></link> *plugin_factory</parameter>,
+                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *plugin_name</parameter>,
+                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *version</parameter>,
+                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *build_id</parameter>);
+<link linkend="AgsPluginFactory"><returnvalue>AgsPluginFactory</returnvalue></link> *  <link linkend="ags-plugin-factory-get-instance">ags_plugin_factory_get_instance</link>     ();
+<link linkend="GList"><returnvalue>GList</returnvalue></link> *             <link linkend="ags-plugin-factory-list-by-name">ags_plugin_factory_list_by_name</link>     (<parameter><link linkend="AgsPluginFactory"><type>AgsPluginFactory</type></link> *plugin_factory</parameter>,
+                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *plugin_name</parameter>);
+<link linkend="AgsPluginFactory"><returnvalue>AgsPluginFactory</returnvalue></link> *  <link linkend="ags-plugin-factory-new">ags_plugin_factory_new</link>              ();
+<link linkend="AgsPluginFactory"><returnvalue>AgsPluginFactory</returnvalue></link> *  <link linkend="ags-plugin-factory-new-from-file">ags_plugin_factory_new_from_file</link>    (<parameter><link linkend="gchar"><type>gchar</type></link> *path</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-plugin-factory-read-file">ags_plugin_factory_read_file</link>        (<parameter><link linkend="AgsPluginFactory"><type>AgsPluginFactory</type></link> *plugin_factory</parameter>,
+                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *path</parameter>);
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsPluginFactory.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsPluginFactory.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AgsPluginFactory" role="struct">
+<title>struct AgsPluginFactory</title>
+<indexterm zone="AgsPluginFactory"><primary>AgsPluginFactory</primary></indexterm>
+<programlisting>struct AgsPluginFactory {
+  GObject object;
+
+  GList *plugin;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsPluginFactoryClass" role="struct">
+<title>struct AgsPluginFactoryClass</title>
+<indexterm zone="AgsPluginFactoryClass"><primary>AgsPluginFactoryClass</primary></indexterm>
+<programlisting>struct AgsPluginFactoryClass {
+  GObjectClass object;
+
+  void (*add)(AgsPluginFactory *plugin_factory,
+	      GType plugin_type,
+	      gchar *plugin_name,
+	      gchar *version, gchar *build_id,
+	      gchar *xml_type,
+	      GParameter *control, guint control_count);
+
+  AgsPlugin* (*create)(AgsPluginFactory *plugin_factory,
+		       gchar *xml_type);
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsPluginMetadata" role="struct">
+<title>struct AgsPluginMetadata</title>
+<indexterm zone="AgsPluginMetadata"><primary>AgsPluginMetadata</primary></indexterm>
+<programlisting>struct AgsPluginMetadata {
+  GType plugin_type;
+  gchar *plugin_name;
+
+  gchar *version;
+  gchar *build_id;
+
+  gchar *xml_type;
+
+  GParameter *control;
+  guint control_count;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-plugin-factory-add" role="function">
+<title>ags_plugin_factory_add ()</title>
+<indexterm zone="ags-plugin-factory-add"><primary>ags_plugin_factory_add</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_plugin_factory_add              (<parameter><link linkend="AgsPluginFactory"><type>AgsPluginFactory</type></link> *plugin_factory</parameter>,
+                                                         <parameter><link linkend="GType"><type>GType</type></link> plugin_type</parameter>,
+                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *plugin_name</parameter>,
+                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *version</parameter>,
+                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *build_id</parameter>,
+                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *xml_type</parameter>,
+                                                         <parameter><link linkend="GParameter"><type>GParameter</type></link> *control</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> control_count</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-plugin-factory-create" role="function">
+<title>ags_plugin_factory_create ()</title>
+<indexterm zone="ags-plugin-factory-create"><primary>ags_plugin_factory_create</primary></indexterm>
+<programlisting><link linkend="AgsPlugin"><returnvalue>AgsPlugin</returnvalue></link> *         ags_plugin_factory_create           (<parameter><link linkend="AgsPluginFactory"><type>AgsPluginFactory</type></link> *plugin_factory</parameter>,
+                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *plugin_name</parameter>,
+                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *version</parameter>,
+                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *build_id</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-plugin-factory-get-instance" role="function">
+<title>ags_plugin_factory_get_instance ()</title>
+<indexterm zone="ags-plugin-factory-get-instance"><primary>ags_plugin_factory_get_instance</primary></indexterm>
+<programlisting><link linkend="AgsPluginFactory"><returnvalue>AgsPluginFactory</returnvalue></link> *  ags_plugin_factory_get_instance     ();</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-plugin-factory-list-by-name" role="function">
+<title>ags_plugin_factory_list_by_name ()</title>
+<indexterm zone="ags-plugin-factory-list-by-name"><primary>ags_plugin_factory_list_by_name</primary></indexterm>
+<programlisting><link linkend="GList"><returnvalue>GList</returnvalue></link> *             ags_plugin_factory_list_by_name     (<parameter><link linkend="AgsPluginFactory"><type>AgsPluginFactory</type></link> *plugin_factory</parameter>,
+                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *plugin_name</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-plugin-factory-new" role="function">
+<title>ags_plugin_factory_new ()</title>
+<indexterm zone="ags-plugin-factory-new"><primary>ags_plugin_factory_new</primary></indexterm>
+<programlisting><link linkend="AgsPluginFactory"><returnvalue>AgsPluginFactory</returnvalue></link> *  ags_plugin_factory_new              ();</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-plugin-factory-new-from-file" role="function">
+<title>ags_plugin_factory_new_from_file ()</title>
+<indexterm zone="ags-plugin-factory-new-from-file"><primary>ags_plugin_factory_new_from_file</primary></indexterm>
+<programlisting><link linkend="AgsPluginFactory"><returnvalue>AgsPluginFactory</returnvalue></link> *  ags_plugin_factory_new_from_file    (<parameter><link linkend="gchar"><type>gchar</type></link> *path</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-plugin-factory-read-file" role="function">
+<title>ags_plugin_factory_read_file ()</title>
+<indexterm zone="ags-plugin-factory-read-file"><primary>ags_plugin_factory_read_file</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_plugin_factory_read_file        (<parameter><link linkend="AgsPluginFactory"><type>AgsPluginFactory</type></link> *plugin_factory</parameter>,
+                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *path</parameter>);</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>
