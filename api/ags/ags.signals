@@ -1,0 +1,790 @@
+<SIGNAL>
+<NAME>AgsAsyncQueue::interrupt</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsAsyncQueue *agsasyncqueue
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsAsyncQueue::pop-context</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsAsyncQueue *agsasyncqueue
+gpointer  arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsAsyncQueue::push-context</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsAsyncQueue *agsasyncqueue
+gpointer  arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsAudio::done</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsAudio *agsaudio
+GObject *arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsAudio::init-run</NAME>
+<RETURNS>GObject*</RETURNS>
+<FLAGS>l</FLAGS>
+AgsAudio *agsaudio
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsAudio::set-audio-channels</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsAudio *agsaudio
+guint  arg1
+guint  arg2
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsAudio::set-pads</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsAudio *agsaudio
+gulong  arg1
+guint  arg2
+guint  arg3
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsAudio::tact</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsAudio *agsaudio
+GObject *arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsAudioSignal::morph-samplerate</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsAudioSignal *agsaudiosignal
+guint  arg1
+gdouble  arg2
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsAudioSignal::realloc-buffer-size</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsAudioSignal *agsaudiosignal
+guint  arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsChannel::done</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsChannel *agschannel
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsChannel::recycling-changed</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsChannel *agschannel
+GObject *arg1
+GObject *arg2
+GObject *arg3
+GObject *arg4
+GObject *arg5
+GObject *arg6
+GObject *arg7
+GObject *arg8
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsCountBeatsAudioRun::notation-loop</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsCountBeatsAudioRun *agscountbeatsaudiorun
+guint  arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsCountBeatsAudioRun::notation-start</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsCountBeatsAudioRun *agscountbeatsaudiorun
+guint  arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsCountBeatsAudioRun::notation-stop</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsCountBeatsAudioRun *agscountbeatsaudiorun
+guint  arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsCountBeatsAudioRun::sequencer-loop</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsCountBeatsAudioRun *agscountbeatsaudiorun
+guint  arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsCountBeatsAudioRun::sequencer-start</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsCountBeatsAudioRun *agscountbeatsaudiorun
+guint  arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsCountBeatsAudioRun::sequencer-stop</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsCountBeatsAudioRun *agscountbeatsaudiorun
+guint  arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsDelayAudio::notation-duration-changed</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsDelayAudio *agsdelayaudio
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsDelayAudio::sequencer-duration-changed</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsDelayAudio *agsdelayaudio
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsDelayAudioRun::notation-alloc-input</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsDelayAudioRun *agsdelayaudiorun
+guint  arg1
+guint  arg2
+guint  arg3
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsDelayAudioRun::notation-alloc-output</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsDelayAudioRun *agsdelayaudiorun
+guint  arg1
+guint  arg2
+guint  arg3
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsDelayAudioRun::notation-count</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsDelayAudioRun *agsdelayaudiorun
+guint  arg1
+guint  arg2
+guint  arg3
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsDelayAudioRun::sequencer-alloc-input</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsDelayAudioRun *agsdelayaudiorun
+guint  arg1
+guint  arg2
+guint  arg3
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsDelayAudioRun::sequencer-alloc-output</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsDelayAudioRun *agsdelayaudiorun
+guint  arg1
+guint  arg2
+guint  arg3
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsDelayAudioRun::sequencer-count</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsDelayAudioRun *agsdelayaudiorun
+guint  arg1
+guint  arg2
+guint  arg3
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsDevout::tic</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsDevout *agsdevout
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsEditor::machine-changed</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsEditor *agseditor
+GObject *arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsFile::read</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsFile *agsfile
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsFile::read-resolve</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsFile *agsfile
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsFile::read-start</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsFile *agsfile
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsFile::write</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsFile *agsfile
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsFile::write-concurrent</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsFile *agsfile
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsFile::write-resolve</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsFile *agsfile
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsFileIdRef::resolved</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsFileIdRef *agsfileidref
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsFileLaunch::start</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsFileLaunch *agsfilelaunch
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsFileLookup::resolve</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsFileLookup *agsfilelookup
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsFileSelection::add-entry</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsFileSelection *agsfileselection
+GObject *arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsFileSelection::completed</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsFileSelection *agsfileselection
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsFileSelection::remove-entry</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsFileSelection *agsfileselection
+GObject *arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsIteratorThread::children-ready</NAME>
+<RETURNS>gboolean</RETURNS>
+<FLAGS>l</FLAGS>
+AgsIteratorThread *agsiteratorthread
+GObject *arg1
+GObject *arg2
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsLine::group-changed</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsLine *agsline
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsLine::set-channel</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsLine *agsline
+GObject *arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsLineMember::change-port</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsLineMember *agslinemember
+gpointer  arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsMachineEditor::set-machine</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsMachineEditor *agsmachineeditor
+GObject *arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsMachine::add-default-recalls</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsMachine *agsmachine
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsMachineSelector::changed</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsMachineSelector *agsmachineselector
+GObject *arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsNavigation::change-position</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsNavigation *agsnavigation
+gdouble  arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsPad::resize-lines</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsPad *agspad
+gulong  arg1
+guint  arg2
+guint  arg3
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsPad::set-channel</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsPad *agspad
+GObject *arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsPluginFactory::add</NAME>
+<RETURNS>GObject*</RETURNS>
+<FLAGS>l</FLAGS>
+AgsPluginFactory *agspluginfactory
+gulong  arg1
+gchar *arg2
+gchar *arg3
+gchar *arg4
+gchar *arg5
+guint  arg6
+gpointer  arg7
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsPluginFactory::create</NAME>
+<RETURNS>GObject*</RETURNS>
+<FLAGS>l</FLAGS>
+AgsPluginFactory *agspluginfactory
+gchar *arg1
+gchar *arg2
+gchar *arg3
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsPort::safe-get-property</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsPort *agsport
+gchar *arg1
+gpointer  arg2
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsPort::safe-read</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsPort *agsport
+gpointer  arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsPort::safe-set-property</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsPort *agsport
+gchar *arg1
+gpointer  arg2
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsPort::safe-write</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsPort *agsport
+gpointer  arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsRecallChannelRun::run-order-changed</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsRecallChannelRun *agsrecallchannelrun
+guint  arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsRecall::cancel</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsRecall *agsrecall
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsRecall::child-added</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsRecall *agsrecall
+GObject *arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsRecall::done</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsRecall *agsrecall
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsRecall::duplicate</NAME>
+<RETURNS>GObject*</RETURNS>
+<FLAGS>l</FLAGS>
+AgsRecall *agsrecall
+GObject *arg1
+gpointer  arg2
+gpointer  arg3
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsRecall::notify-dependency</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsRecall *agsrecall
+guint  arg1
+gint  arg2
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsRecall::remove</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsRecall *agsrecall
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsRecall::resolve-dependencies</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsRecall *agsrecall
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsRecall::run-init-inter</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsRecall *agsrecall
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsRecall::run-init-post</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsRecall *agsrecall
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsRecall::run-init-pre</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsRecall *agsrecall
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsRecall::run-inter</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsRecall *agsrecall
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsRecall::run-post</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsRecall *agsrecall
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsRecall::run-pre</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsRecall *agsrecall
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsRecall::stop-persistent</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsRecall *agsrecall
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsRecycling::add-audio-signal</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsRecycling *agsrecycling
+GObject *arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsRecycling::remove-audio-signal</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsRecycling *agsrecycling
+GObject *arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsRecyclingThread::play-audio</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsRecyclingThread *agsrecyclingthread
+GObject *arg1
+GObject *arg2
+GObject *arg3
+GObject *arg4
+GObject *arg5
+GObject *arg6
+guint  arg7
+gint  arg8
+gboolean  arg9
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsRecyclingThread::play-channel</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsRecyclingThread *agsrecyclingthread
+GObject *arg1
+GObject *arg2
+GObject *arg3
+gint  arg4
+gboolean  arg5
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsReturnableThread::safe-run</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsReturnableThread *agsreturnablethread
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsServer::start</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsServer *agsserver
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsTactable::change-bpm</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsTactable *agstactable
+gdouble  arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsTactable::change-notation-duration</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsTactable *agstactable
+gdouble  arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsTactable::change-sequencer-duration</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsTactable *agstactable
+gdouble  arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsTactable::change-tact</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsTactable *agstactable
+gdouble  arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsTask::failure</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsTask *agstask
+gpointer  arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsTask::launch</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsTask *agstask
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsThread::resume</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsThread *agsthread
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsThread::run</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsThread *agsthread
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsThread::start</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsThread *agsthread
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsThread::stop</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsThread *agsthread
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsThread::suspend</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsThread *agsthread
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsThread::timelock</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsThread *agsthread
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsThread::resume</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsThread *agsthread
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsThread::run</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsThread *agsthread
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsThread::start</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsThread *agsthread
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsThread::stop</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsThread *agsthread
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsThread::suspend</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsThread *agsthread
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsThread::timelock</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsThread *agsthread
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsThreadPool::start</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsThreadPool *agsthreadpool
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsTimestampFactory::create</NAME>
+<RETURNS>GObject*</RETURNS>
+<FLAGS>l</FLAGS>
+AgsTimestampFactory *agstimestampfactory
+GObject *arg1
+GObject *arg2
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsTogglePatternBit::refresh-gui</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsTogglePatternBit *agstogglepatternbit
+</SIGNAL>
+

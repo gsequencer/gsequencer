@@ -1,0 +1,5 @@
+GtkBuildable GObject
+GtkOrientable GObject
+GtkActivatable GObject
+GtkToolShell GtkWidget
+GIcon GObject

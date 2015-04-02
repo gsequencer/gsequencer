@@ -1,0 +1,2415 @@
+19% symbol docs coverage.
+531 symbols documented.
+407 symbols incomplete.
+2337 not documented.
+
+
+AGS_ACCOUNTING_TABLE
+AGS_ASYNC_QUEUE_CLOCK_ID
+AGS_ASYNC_QUEUE_DEFAULT_SYSTEM_JIFFIE
+AGS_ASYNC_QUEUE_SIGNAL_HIGH
+AGS_ASYNC_QUEUE_SIGNAL_LOW
+AGS_AUDIO_LOOP_DEFAULT_JIFFIE
+AGS_AUTOSAVE_THREAD_DEFAULT_FILENAME
+AGS_AUTOSAVE_THREAD_DEFAULT_JIFFIE
+AGS_BUILD_ID
+AGS_CHANNEL_ERROR
+AGS_CLIPBOARD_DEFAULT_VERSION
+AGS_CONFIG_DEFAULT_BUILD_ID
+AGS_CONFIG_DEFAULT_VERSION
+AGS_CONFIG_DEVOUT
+AGS_CONFIG_THREAD
+AGS_DEVOUT_DEFAULT_BPM
+AGS_DEVOUT_DEFAULT_BUFFER_SIZE
+AGS_DEVOUT_DEFAULT_DELAY
+AGS_DEVOUT_DEFAULT_FORMAT
+AGS_DEVOUT_DEFAULT_JIFFIE
+AGS_DEVOUT_DEFAULT_SAMPLERATE
+AGS_DEVOUT_DEFAULT_SCALE
+AGS_DEVOUT_DEFAULT_TACT
+AGS_DEVOUT_DEFAULT_TACTRATE
+AGS_DEVOUT_DEFAULT_TACT_JIFFIE
+AGS_DEVOUT_ERROR
+AGS_DEVOUT_PLAY
+AGS_DEVOUT_PLAY_DOMAIN
+AGS_DEVOUT_THREAD_DEFAULT_JIFFIE
+AGS_DIAL_DEFAULT_PRECISION
+AGS_DRUM_PATTERN_CONTROLS
+AGS_EDITOR_DEFAULT
+AGS_EDITOR_DEFAULT_BUILD_ID
+AGS_EDITOR_DEFAULT_VERSION
+AGS_EFFECTS_DEFAULT_VERSION
+AGS_EXPANDER_CHILD
+AGS_EXPANDER_SET_CHILD
+AGS_EXPORT_THREAD_BUFFER_TIME
+AGS_EXPORT_THREAD_DEFAULT_JIFFIE
+AGS_FILE_BOOLEAN_POINTER_PROP
+AGS_FILE_BOOLEAN_PROP
+AGS_FILE_BUILD_ID_PROP
+AGS_FILE_CHAR_POINTER_PROP
+AGS_FILE_CHAR_PROP
+AGS_FILE_CHECKSUM_LENGTH
+AGS_FILE_DEFAULT_AUDIO_ENCODING
+AGS_FILE_DEFAULT_AUDIO_FORMAT
+AGS_FILE_DEFAULT_DTD
+AGS_FILE_DEFAULT_ENCODING
+AGS_FILE_DEFAULT_VERSION
+AGS_FILE_DOUBLE_POINTER_PROP
+AGS_FILE_DOUBLE_PROP
+AGS_FILE_DYNAMIC_WIDGET_BUTTON
+AGS_FILE_DYNAMIC_WIDGET_CARTESIAN
+AGS_FILE_DYNAMIC_WIDGET_CHECK_BUTTON
+AGS_FILE_DYNAMIC_WIDGET_DIAL
+AGS_FILE_DYNAMIC_WIDGET_HINDICATOR
+AGS_FILE_DYNAMIC_WIDGET_HSCALE
+AGS_FILE_DYNAMIC_WIDGET_LABEL
+AGS_FILE_DYNAMIC_WIDGET_LED
+AGS_FILE_DYNAMIC_WIDGET_SPIN_BUTTON
+AGS_FILE_DYNAMIC_WIDGET_TOGGLE_BUTTON
+AGS_FILE_DYNAMIC_WIDGET_VINDICATOR
+AGS_FILE_DYNAMIC_WIDGET_VSCALE
+AGS_FILE_DYNAMIC_WIDGET_WAVEFORM
+AGS_FILE_EFFECTS_DEFAULT_VERSION
+AGS_FILE_FALSE
+AGS_FILE_FLAGS_PROP
+AGS_FILE_FLOAT_POINTER_PROP
+AGS_FILE_FLOAT_PROP
+AGS_FILE_ID_PROP
+AGS_FILE_ID_REF_RESOLVE_DATA
+AGS_FILE_ID_REF_SERIALIZE_DATA
+AGS_FILE_INT64_POINTER_PROP
+AGS_FILE_INT64_PROP
+AGS_FILE_NAME_PROP
+AGS_FILE_OBJECT_PROP
+AGS_FILE_POINTER_PROP
+AGS_FILE_RESOLVE
+AGS_FILE_SCOPE_PROP
+AGS_FILE_SELECTION_ENTRY
+AGS_FILE_TRUE
+AGS_FILE_TYPE_PROP
+AGS_FILE_UINT64_POINTER_PROP
+AGS_FILE_UINT64_PROP
+AGS_FILE_VERSION_PROP
+AGS_FILE_XPATH_PROP
+AGS_GUI_THREAD_DEFAULT_JIFFIE
+AGS_IPATCH_DEFAULT_CHANNELS
+AGS_IPATCH_READ
+AGS_IPATCH_WRITE
+AGS_LADSPA_PLUGIN
+AGS_LINE_DEFAULT_BUILD_ID
+AGS_LINE_DEFAULT_VERSION
+AGS_LINE_EDITOR_DEFAULT_BUILD_ID
+AGS_LINE_EDITOR_DEFAULT_VERSION
+AGS_MACHINE_COUNTER
+AGS_MACHINE_DEFAULT_BUILD_ID
+AGS_MACHINE_DEFAULT_VERSION
+AGS_MACHINE_EDITOR_DEFAULT_BUILD_ID
+AGS_MACHINE_EDITOR_DEFAULT_VERSION
+AGS_MATRIX_CELL_HEIGHT
+AGS_MATRIX_CELL_WIDTH
+AGS_MATRIX_OCTAVE
+AGS_MATRIX_PATTERN_CONTROLS
+AGS_MICROSECONDS_PER_SECOND
+AGS_NAVIGATION_DEFAULT_TACT_STEP
+AGS_NAVIGATION_REWIND_STEPS
+AGS_NAVIGATION_SEEK_STEPS
+AGS_NOTATION_DEFAULT_BPM
+AGS_NOTATION_DEFAULT_DURATION
+AGS_NOTATION_DEFAULT_JIFFIE
+AGS_NOTATION_DEFAULT_LENGTH
+AGS_NOTATION_MAXIMUM_NOTE_LENGTH
+AGS_NOTATION_MINIMUM_NOTE_LENGTH
+AGS_NOTATION_TICS_PER_BEAT
+AGS_NOTEBOOK_TAB
+AGS_NOTE_EDIT_MAX_CONTROLS
+AGS_PAD_DEFAULT_BUILD_ID
+AGS_PAD_DEFAULT_VERSION
+AGS_PAD_EDITOR_DEFAULT_BUILD_ID
+AGS_PAD_EDITOR_DEFAULT_VERSION
+AGS_PLAYABLE_ERROR
+AGS_PLAY_CHANNEL_RUN_MASTER_STREAMER
+AGS_PLUGIN_NAME_VOLUME
+AGS_PRIORITY
+AGS_RECALL_DEFAULT_BUILD_ID
+AGS_RECALL_DEFAULT_VERSION
+AGS_RECALL_HANDLER
+AGS_RECYCLING_THREAD_DEFAULT_JIFFIE
+AGS_REGISTRY_DEFAULT_ID_LENGTH
+AGS_RETURNABLE_THREAD_DEFAULT_JIFFIE
+AGS_SINGLE_THREAD_DEFAULT_GUI_JIFFIE
+AGS_TASK_THREAD_DEFAULT_JIFFIE
+AGS_THREAD_DEFAULT_ATTACK
+AGS_THREAD_DEFAULT_JIFFIE
+AGS_THREAD_MAX_PRECISION
+AGS_THREAD_RESUME_SIG
+AGS_THREAD_STACKSIZE
+AGS_THREAD_SUSPEND_SIG
+AGS_TIMESTAMP_THREAD_DEFAULT_BPM
+AGS_TIMESTAMP_THREAD_DEFAULT_BUFFER_SIZE
+AGS_TIMESTAMP_THREAD_DEFAULT_JIFFIE
+AGS_TIMESTAMP_THREAD_DEFAULT_SAMPLERATE
+AGS_TIMESTAMP_THREAD_DEFAULT_TIC
+AGS_TOOLBAR_MODE_ALL_CHANNELS
+AGS_TOOLBAR_MODE_MULTI_CHANNEL
+AGS_TOOLBAR_MODE_SINGLE_CHANNEL
+AGS_VERSION
+ALSA_PCM_NEW_HW_PARAMS_API
+AgsAccountingTable (<items>)
+AgsAddAudio
+AgsAddAudioClass (<items>)
+AgsAddAudioSignal
+AgsAddAudioSignalClass (<items>)
+AgsAddLineMember
+AgsAddLineMemberClass (<items>)
+AgsAddNote
+AgsAddNoteClass (<items>)
+AgsAddPointToSelection
+AgsAddPointToSelectionClass (<items>)
+AgsAddRecall
+AgsAddRecallClass (<items>)
+AgsAddRegionToSelection
+AgsAddRegionToSelectionClass (<items>)
+AgsAppendAudio
+AgsAppendAudioClass (<items>)
+AgsAppendChannel
+AgsAppendChannelClass (<items>)
+AgsAppendRecall
+AgsAppendRecallClass (<items>)
+AgsApplicable
+AgsApplicableInterface (<items>)
+AgsApplyBpm
+AgsApplyBpmClass (<items>)
+AgsApplySequencerLength
+AgsApplySequencerLengthClass (<items>)
+AgsApplySynth
+AgsApplySynthClass (<items>)
+AgsApplySynthWave (<items>)
+AgsApplyTact
+AgsApplyTactClass (<items>)
+AgsApplyWavetable
+AgsApplyWavetableClass (<items>)
+AgsAsyncQueue
+AgsAsyncQueue::interrupt
+AgsAsyncQueue::pop-context
+AgsAsyncQueue::push-context
+AgsAsyncQueueClass (<items>)
+AgsAsyncQueueFlags (<items>)
+AgsAttack
+AgsAttackFlags (<items>)
+AgsAudio
+AgsAudioClass (<items>)
+AgsAudioFile
+AgsAudioFileClass (<items>)
+AgsAudioFileXml
+AgsAudioFileXmlClass (<items>)
+AgsAudioFlags (<items>)
+AgsAudioLoop
+AgsAudioLoopClass (<items>)
+AgsAudioLoopFlags (<items>)
+AgsAudioPreferences
+AgsAudioPreferencesClass (<items>)
+AgsAudioSetRecycling
+AgsAudioSetRecyclingClass (<items>)
+AgsAudioSignal
+AgsAudioSignalClass (<items>)
+AgsAudioSignalFlags (<items>)
+AgsAutosaveThread
+AgsAutosaveThreadClass (<items>)
+AgsBufferAudioSignal
+AgsBufferAudioSignalClass (<items>)
+AgsBufferChannel
+AgsBufferChannelClass (<items>)
+AgsBufferChannelRun
+AgsBufferChannelRunClass (<items>)
+AgsBufferRecycling
+AgsBufferRecyclingClass (<items>)
+AgsCancelAudio
+AgsCancelAudioClass (<items>)
+AgsCancelChannel
+AgsCancelChannelClass (<items>)
+AgsCancelRecall
+AgsCancelRecallClass (<items>)
+AgsChangeIndicator
+AgsChangeIndicatorClass (<items>)
+AgsChangeTact
+AgsChangeTactClass (<items>)
+AgsChannel
+AgsChannelClass (<items>)
+AgsChannelError (<items>)
+AgsChannelFlags (<items>)
+AgsChannelIter (<items>)
+AgsChannelIterFlags (<items>)
+AgsChannelRecallIDMode (<items>)
+AgsChannelSetRecycling
+AgsChannelSetRecyclingClass (<items>)
+AgsConfig
+AgsConfigClass (<items>)
+AgsContext (<items>)
+AgsCopyAudioSignal
+AgsCopyAudioSignalClass (<items>)
+AgsCopyChannel
+AgsCopyChannelClass (<items>)
+AgsCopyChannelRun
+AgsCopyChannelRunClass (<items>)
+AgsCopyChannelRunFlags (<items>)
+AgsCopyNotationAudio
+AgsCopyNotationAudioClass (<items>)
+AgsCopyNotationAudioFlags (<items>)
+AgsCopyNotationAudioRun
+AgsCopyNotationAudioRunClass (<items>)
+AgsCopyPatternAudio
+AgsCopyPatternAudioClass (<items>)
+AgsCopyPatternAudioRun
+AgsCopyPatternAudioRunClass (<items>)
+AgsCopyPatternChannel
+AgsCopyPatternChannelClass (<items>)
+AgsCopyPatternChannelRun
+AgsCopyPatternChannelRunClass (<items>)
+AgsCopyRecycling
+AgsCopyRecyclingClass (<items>)
+AgsCountBeatsAudio
+AgsCountBeatsAudioClass (<items>)
+AgsCountBeatsAudioRun
+AgsCountBeatsAudioRun::notation-loop
+AgsCountBeatsAudioRun::notation-start
+AgsCountBeatsAudioRun::notation-stop
+AgsCountBeatsAudioRun::sequencer-loop
+AgsCountBeatsAudioRun::sequencer-start
+AgsCountBeatsAudioRun::sequencer-stop
+AgsCountBeatsAudioRunClass (<items>)
+AgsCountable
+AgsCountableInterface (<items>)
+AgsDelayAudio
+AgsDelayAudio::notation-duration-changed
+AgsDelayAudio::sequencer-duration-changed
+AgsDelayAudioClass (<items>)
+AgsDelayAudioRun
+AgsDelayAudioRun::notation-alloc-input
+AgsDelayAudioRun::notation-alloc-output
+AgsDelayAudioRun::notation-count
+AgsDelayAudioRun::sequencer-alloc-input
+AgsDelayAudioRun::sequencer-alloc-output
+AgsDelayAudioRun::sequencer-count
+AgsDelayAudioRunClass (<items>)
+AgsDevout
+AgsDevoutClass (<items>)
+AgsDevoutError (<items>)
+AgsDevoutFlags (<items>)
+AgsDevoutPlayFlags (<items>)
+AgsDevoutResolutionMode (<items>)
+AgsDevoutThread
+AgsDevoutThreadClass (<items>)
+AgsDial
+AgsDialClass (<items>)
+AgsDialFlags (<items>)
+AgsDisplayTact
+AgsDisplayTactClass (<items>)
+AgsDrum
+AgsDrumClass (<items>)
+AgsDrumFlags (<items>)
+AgsDrumInputLine
+AgsDrumInputLineClass (<items>)
+AgsDrumInputPad
+AgsDrumInputPadClass (<items>)
+AgsDrumInputPadFlags (<items>)
+AgsDrumOutputLine
+AgsDrumOutputLineClass (<items>)
+AgsDrumOutputPad
+AgsDrumOutputPadClass (<items>)
+AgsDrumOutputPadFlags (<items>)
+AgsDynamicConnectable
+AgsDynamicConnectableInterface (<items>)
+AgsEditor
+AgsEditor::machine-changed
+AgsEditorClass (<items>)
+AgsExpander
+AgsExpanderChild (<items>)
+AgsExpanderClass (<items>)
+AgsExpanderFlags (<items>)
+AgsExpanderSet
+AgsExpanderSetChild (<items>)
+AgsExpanderSetClass (<items>)
+AgsExpanderSetFlags (<items>)
+AgsExportOutput
+AgsExportOutputClass (<items>)
+AgsExportThread
+AgsExportThreadClass (<items>)
+AgsExportWindow
+AgsExportWindowClass (<items>)
+AgsExportWindowFlags (<items>)
+AgsFFPlayer
+AgsFFPlayerClass (<items>)
+AgsFile
+AgsFile::read
+AgsFile::read-resolve
+AgsFile::read-start
+AgsFile::write
+AgsFile::write-concurrent
+AgsFile::write-resolve
+AgsFileClass (<items>)
+AgsFileFlags (<items>)
+AgsFileIdRef
+AgsFileIdRef::resolved
+AgsFileIdRefClass (<items>)
+AgsFileLaunch
+AgsFileLaunch::start
+AgsFileLaunchClass (<items>)
+AgsFileLink
+AgsFileLinkClass (<items>)
+AgsFileLookup
+AgsFileLookup::resolve
+AgsFileLookupClass (<items>)
+AgsFileResolve
+AgsFileSelection
+AgsFileSelection::add-entry
+AgsFileSelection::completed
+AgsFileSelection::remove-entry
+AgsFileSelectionClass (<items>)
+AgsFileSelectionEntry (<items>)
+AgsFileSelectionFlags (<items>)
+AgsFreeSelection
+AgsFreeSelectionClass (<items>)
+AgsGarbageCollector
+AgsGarbageCollectorClass (<items>)
+AgsGarbageCollectorFlags (<items>)
+AgsGuiTaskThread
+AgsGuiTaskThreadClass (<items>)
+AgsGuiThread
+AgsGuiThreadClass (<items>)
+AgsHTimebar (<items>)
+AgsHTimebarClass (<items>)
+AgsIndicator
+AgsIndicatorClass (<items>)
+AgsInitAudio
+AgsInitAudioClass (<items>)
+AgsInitChannel
+AgsInitChannelClass (<items>)
+AgsInlinePlayer
+AgsInlinePlayerClass (<items>)
+AgsInput
+AgsInputClass (<items>)
+AgsIpatch
+AgsIpatchClass (<items>)
+AgsIpatchFlags (<items>)
+AgsIpatchSF2Reader
+AgsIpatchSF2ReaderClass (<items>)
+AgsIteratorThread
+AgsIteratorThread::children-ready
+AgsIteratorThreadClass (<items>)
+AgsIteratorThreadFlags (<items>)
+AgsLadspaBrowser
+AgsLadspaBrowserClass (<items>)
+AgsLadspaManager
+AgsLadspaManagerClass (<items>)
+AgsLadspaPlugin (<items>)
+AgsLadspaPluginFlags (<items>)
+AgsLadspaPluginPreferences (<items>)
+AgsLed
+AgsLedClass (<items>)
+AgsLedFlags (<items>)
+AgsLine
+AgsLine::group-changed
+AgsLine::set-channel
+AgsLineClass (<items>)
+AgsLineEditor
+AgsLineEditorClass (<items>)
+AgsLineFlags (<items>)
+AgsLineMember
+AgsLineMember::change-port
+AgsLineMemberClass (<items>)
+AgsLineMemberEditor
+AgsLineMemberEditorClass (<items>)
+AgsLineMemberFlags (<items>)
+AgsLinkChannel
+AgsLinkChannelClass (<items>)
+AgsLinkCollectionEditor
+AgsLinkCollectionEditorClass (<items>)
+AgsLinkEditor
+AgsLinkEditorClass (<items>)
+AgsLinkEditorFlags (<items>)
+AgsListingEditor
+AgsListingEditorClass (<items>)
+AgsLog (<items>)
+AgsLogClass (<items>)
+AgsLogFlags (<items>)
+AgsLogFormatedMessage (<items>)
+AgsLogMessage (<items>)
+AgsLoopChannel
+AgsLoopChannelClass (<items>)
+AgsLoopChannelRun
+AgsLoopChannelRunClass (<items>)
+AgsMachine
+AgsMachine::add-default-recalls
+AgsMachineClass (<items>)
+AgsMachineCounter (<items>)
+AgsMachineEditor
+AgsMachineEditor::set-machine
+AgsMachineEditorClass (<items>)
+AgsMachineEditorFlags (<items>)
+AgsMachineFileInputFlags (<items>)
+AgsMachineFlags (<items>)
+AgsMachineRadioButton
+AgsMachineRadioButtonClass (<items>)
+AgsMachineSelection
+AgsMachineSelectionClass (<items>)
+AgsMachineSelector
+AgsMachineSelector::changed
+AgsMachineSelectorClass (<items>)
+AgsMain
+AgsMainClass (<items>)
+AgsMainFlags (<items>)
+AgsMainLoop
+AgsMainLoopInterface (<items>)
+AgsMatrix
+AgsMatrixClass (<items>)
+AgsMenu
+AgsMenuBar
+AgsMenuBarClass (<items>)
+AgsMenuClass (<items>)
+AgsMenuItem
+AgsMenuItemClass (<items>)
+AgsMeter
+AgsMeterClass (<items>)
+AgsMixer
+AgsMixerClass (<items>)
+AgsMixerInputLine
+AgsMixerInputLineClass (<items>)
+AgsMixerInputPad
+AgsMixerInputPadClass (<items>)
+AgsMutable
+AgsMutableInterface (<items>)
+AgsMuteAudio
+AgsMuteAudioClass (<items>)
+AgsMuteAudioSignal
+AgsMuteAudioSignalClass (<items>)
+AgsMuteChannel
+AgsMuteChannelClass (<items>)
+AgsMuteChannelRun
+AgsMuteChannelRunClass (<items>)
+AgsMuteRecycling
+AgsMuteRecyclingClass (<items>)
+AgsNavigation
+AgsNavigation::change-position
+AgsNavigationClass (<items>)
+AgsNavigationFlags (<items>)
+AgsNotation
+AgsNotationClass (<items>)
+AgsNotationFlags (<items>)
+AgsNote
+AgsNoteClass (<items>)
+AgsNoteEdit
+AgsNoteEditClass (<items>)
+AgsNoteEditFlags (<items>)
+AgsNoteEditResetFlags (<items>)
+AgsNoteFlags (<items>)
+AgsNotebook
+AgsNotebookClass (<items>)
+AgsNotebookTab (<items>)
+AgsNotebookTabFlags (<items>)
+AgsOpenFile
+AgsOpenFileClass (<items>)
+AgsOpenSingleFile
+AgsOpenSingleFileClass (<items>)
+AgsOptionMenu
+AgsOptionMenuClass (<items>)
+AgsOscillator
+AgsOscillatorClass (<items>)
+AgsOutput
+AgsOutputClass (<items>)
+AgsPackable
+AgsPackableInterface (<items>)
+AgsPad
+AgsPad::resize-lines
+AgsPad::set-channel
+AgsPadClass (<items>)
+AgsPadEditor
+AgsPadEditorClass (<items>)
+AgsPadFlags (<items>)
+AgsPanel
+AgsPanelClass (<items>)
+AgsPanelInputLine
+AgsPanelInputLineClass (<items>)
+AgsPanelInputPad
+AgsPanelInputPadClass (<items>)
+AgsPattern
+AgsPatternClass (<items>)
+AgsPeakChannel
+AgsPeakChannelClass (<items>)
+AgsPeakChannelRun
+AgsPeakChannelRunClass (<items>)
+AgsPerformancePreferences
+AgsPerformancePreferencesClass (<items>)
+AgsPersistable
+AgsPersistableInterface (<items>)
+AgsPlayAudio
+AgsPlayAudioClass (<items>)
+AgsPlayAudioFile
+AgsPlayAudioFileClass (<items>)
+AgsPlayAudioSignal
+AgsPlayAudioSignalClass (<items>)
+AgsPlayChannel
+AgsPlayChannelClass (<items>)
+AgsPlayChannelRun
+AgsPlayChannelRunClass (<items>)
+AgsPlayChannelRunFlags (<items>)
+AgsPlayChannelRunMaster
+AgsPlayChannelRunMasterClass (<items>)
+AgsPlayChannelRunMasterFlags (<items>)
+AgsPlayChannelRunMasterStreamer (<items>)
+AgsPlayNotationAudio
+AgsPlayNotationAudioClass (<items>)
+AgsPlayNotationAudioRun
+AgsPlayNotationAudioRunClass (<items>)
+AgsPlayNotationAudioRunFlags (<items>)
+AgsPlayNote
+AgsPlayNoteClass (<items>)
+AgsPlayPattern
+AgsPlayPatternClass (<items>)
+AgsPlayRecycling
+AgsPlayRecyclingClass (<items>)
+AgsPlayable
+AgsPlayableError (<items>)
+AgsPlayableInterface (<items>)
+AgsPlugin
+AgsPluginFactory
+AgsPluginFactory::add
+AgsPluginFactory::create
+AgsPluginFactoryClass (<items>)
+AgsPluginInterface (<items>)
+AgsPluginMetadata (<items>)
+AgsPluginPreferences
+AgsPluginPreferencesClass (<items>)
+AgsPort
+AgsPortClass (<items>)
+AgsPortlet
+AgsPortletInterface (<items>)
+AgsPreferences
+AgsPreferencesClass (<items>)
+AgsPreferencesFlags (<items>)
+AgsPropertyCollectionEditor
+AgsPropertyCollectionEditorClass (<items>)
+AgsPropertyEditor
+AgsPropertyEditorClass (<items>)
+AgsPropertyEditorFlags (<items>)
+AgsPropertyListingEditor
+AgsPropertyListingEditorClass (<items>)
+AgsRecall
+AgsRecall::cancel
+AgsRecall::child-added
+AgsRecall::done
+AgsRecall::duplicate
+AgsRecall::notify-dependency
+AgsRecall::remove
+AgsRecall::resolve-dependencies
+AgsRecall::run-init-inter
+AgsRecall::run-init-post
+AgsRecall::run-init-pre
+AgsRecall::run-inter
+AgsRecall::run-post
+AgsRecall::run-pre
+AgsRecall::stop-persistent
+AgsRecallAudio
+AgsRecallAudioClass (<items>)
+AgsRecallAudioRun
+AgsRecallAudioRunClass (<items>)
+AgsRecallAudioSignal
+AgsRecallAudioSignalClass (<items>)
+AgsRecallAudioSignalFlags (<items>)
+AgsRecallChannel
+AgsRecallChannelClass (<items>)
+AgsRecallChannelRun
+AgsRecallChannelRunClass (<items>)
+AgsRecallChannelRunDummy
+AgsRecallChannelRunDummyClass (<items>)
+AgsRecallClass (<items>)
+AgsRecallContainer
+AgsRecallContainerClass (<items>)
+AgsRecallContainerFindFlags (<items>)
+AgsRecallContainerFlags (<items>)
+AgsRecallDependency
+AgsRecallDependencyClass (<items>)
+AgsRecallFactory
+AgsRecallFactoryClass (<items>)
+AgsRecallFactoryCreateFlags (<items>)
+AgsRecallFlags (<items>)
+AgsRecallHandler (signal_name, callback, data, handler)
+AgsRecallID
+AgsRecallIDClass (<items>)
+AgsRecallIDFlags (<items>)
+AgsRecallLadspa
+AgsRecallLadspaClass (<items>)
+AgsRecallLadspaRun
+AgsRecallLadspaRunClass (<items>)
+AgsRecallNotifyDependencyMode (<items>)
+AgsRecallRecycling
+AgsRecallRecyclingClass (<items>)
+AgsRecallRecyclingDummy
+AgsRecallRecyclingDummyClass (<items>)
+AgsRecallRecyclingFlags (<items>)
+AgsRecycling
+AgsRecyclingClass (<items>)
+AgsRecyclingContainer
+AgsRecyclingContainerClass (<items>)
+AgsRecyclingFlags (<items>)
+AgsRecyclingThread
+AgsRecyclingThread::play-audio
+AgsRecyclingThread::play-channel
+AgsRecyclingThreadClass (<items>)
+AgsRecyclingThreadFlags (<items>)
+AgsRegistry
+AgsRegistryClass (<items>)
+AgsRegistryEntry (<items>)
+AgsRemoteTask
+AgsRemoteTaskClass (<items>)
+AgsRemoveAudio
+AgsRemoveAudioClass (<items>)
+AgsRemoveAudioSignal
+AgsRemoveAudioSignalClass (<items>)
+AgsRemoveNote
+AgsRemoveNoteClass (<items>)
+AgsRemovePointFromSelection
+AgsRemovePointFromSelectionClass (<items>)
+AgsRemoveRecall
+AgsRemoveRecallClass (<items>)
+AgsRemoveRegionFromSelection
+AgsRemoveRegionFromSelectionClass (<items>)
+AgsResizeEditor (<items>)
+AgsResizeEditorClass (<items>)
+AgsReturnableThread
+AgsReturnableThread::safe-run
+AgsReturnableThreadCallback
+AgsReturnableThreadClass (<items>)
+AgsReturnableThreadFlags (<items>)
+AgsRuler
+AgsRulerClass (<items>)
+AgsRunnable
+AgsRunnableInterface (<items>)
+AgsSF2Chooser
+AgsSF2ChooserClass (<items>)
+AgsSF2Levels (<items>)
+AgsSaveFile
+AgsSaveFileClass (<items>)
+AgsScrollOnPlay
+AgsScrollOnPlayClass (<items>)
+AgsSeekable
+AgsSeekableInterface (<items>)
+AgsServer
+AgsServer::start
+AgsServerClass (<items>)
+AgsServerFlags (<items>)
+AgsServerPreferences
+AgsServerPreferencesClass (<items>)
+AgsSetAudioChannels
+AgsSetAudioChannelsClass (<items>)
+AgsSetBufferSize
+AgsSetBufferSizeClass (<items>)
+AgsSetDevoutPlayFlags
+AgsSetDevoutPlayFlagsClass (<items>)
+AgsSetMuted
+AgsSetMutedClass (<items>)
+AgsSetOutputDevice
+AgsSetOutputDeviceClass (<items>)
+AgsSetSamplerate
+AgsSetSamplerateClass (<items>)
+AgsSingleThread
+AgsSingleThreadClass (<items>)
+AgsSndfile
+AgsSndfileClass (<items>)
+AgsSndfileFlags (<items>)
+AgsStackable
+AgsStackableInterface (<items>)
+AgsStartDevout
+AgsStartDevoutClass (<items>)
+AgsStream
+AgsStreamAudioSignal
+AgsStreamAudioSignalClass (<items>)
+AgsStreamChannel
+AgsStreamChannelClass (<items>)
+AgsStreamChannelRun
+AgsStreamChannelRunClass (<items>)
+AgsStreamClass (<items>)
+AgsStreamRecycling
+AgsStreamRecyclingClass (<items>)
+AgsSynth
+AgsSynthClass (<items>)
+AgsSynthFlags (<items>)
+AgsSynthInputLine
+AgsSynthInputLineClass (<items>)
+AgsSynthInputPad
+AgsSynthInputPadClass (<items>)
+AgsTable
+AgsTableClass (<items>)
+AgsTactable
+AgsTactable::change-bpm
+AgsTactable::change-notation-duration
+AgsTactable::change-sequencer-duration
+AgsTactable::change-tact
+AgsTactableInterface (<items>)
+AgsTask
+AgsTaskClass (<items>)
+AgsTaskFlags (<items>)
+AgsTaskThread
+AgsTaskThreadAppend (<items>)
+AgsTaskThreadClass (<items>)
+AgsThread
+AgsThread::resume
+AgsThread::run
+AgsThread::start
+AgsThread::stop
+AgsThread::suspend
+AgsThread::timelock
+AgsThreadClass (<items>)
+AgsThreadFlags (<items>)
+AgsThreadPool
+AgsThreadPool::start
+AgsThreadPoolClass (<items>)
+AgsThreadPoolFlags (<items>)
+AgsTimebar (<items>)
+AgsTimebarClass (<items>)
+AgsTimer (<items>)
+AgsTimestamp
+AgsTimestampClass (<items>)
+AgsTimestampFactory
+AgsTimestampFactory::create
+AgsTimestampFactoryClass (<items>)
+AgsTimestampFactoryFlags (<items>)
+AgsTimestampFlags (<items>)
+AgsTimestampThread
+AgsTimestampThreadClass (<items>)
+AgsToggleLed
+AgsToggleLedClass (<items>)
+AgsTogglePatternBit
+AgsTogglePatternBit::refresh-gui
+AgsTogglePatternBitClass (<items>)
+AgsToolbar
+AgsToolbarClass (<items>)
+AgsTreeIterator
+AgsTreeIteratorInterface (<items>)
+AgsUnrefAudioSignal
+AgsUnrefAudioSignalClass (<items>)
+AgsVIndicator
+AgsVIndicatorClass (<items>)
+AgsVolumeAudioSignal
+AgsVolumeAudioSignalClass (<items>)
+AgsVolumeChannel
+AgsVolumeChannelClass (<items>)
+AgsVolumeChannelRun
+AgsVolumeChannelRunClass (<items>)
+AgsVolumeRecycling
+AgsVolumeRecyclingClass (<items>)
+AgsWindow
+AgsWindowClass (<items>)
+AgsWindowFlags (<items>)
+MSEC_PER_SEC
+NSEC_PER_SEC
+ags_accounting_table_alloc
+ags_accounting_table_set_sanity
+ags_add_audio_new
+ags_add_audio_signal_new
+ags_add_line_member_new
+ags_add_note_new
+ags_add_point_to_selection_new
+ags_add_recall_new
+ags_add_region_to_selection_new
+ags_amplifier
+ags_append_audio_new
+ags_append_channel_new
+ags_append_recall_new
+ags_applicable_apply
+ags_applicable_reset
+ags_applicable_set_update
+ags_apply_bpm_new
+ags_apply_sequencer_length_new
+ags_apply_synth_new
+ags_apply_tact_new
+ags_apply_wavetable_new
+ags_async_queue_add
+ags_async_queue_find_context
+ags_async_queue_idle
+ags_async_queue_initerrupt
+ags_async_queue_new
+ags_async_queue_next_interval
+ags_async_queue_pop_context
+ags_async_queue_push_context
+ags_async_queue_remove
+ags_async_queue_worker
+ags_audio_add_recall (recall)
+ags_audio_done
+ags_audio_file_close
+ags_audio_file_flush
+ags_audio_file_new
+ags_audio_file_open
+ags_audio_file_open_from_data
+ags_audio_file_read_audio_signal
+ags_audio_file_rw_open
+ags_audio_file_seek
+ags_audio_file_write
+ags_audio_file_xml_new
+ags_audio_init_run (Returns)
+ags_audio_loop_add_audio
+ags_audio_loop_add_channel
+ags_audio_loop_add_recall
+ags_audio_loop_new
+ags_audio_loop_remove_audio
+ags_audio_loop_remove_channel
+ags_audio_loop_remove_recall
+ags_audio_preferences_audio_channels_changed
+ags_audio_preferences_buffer_size_changed
+ags_audio_preferences_card_changed_callback
+ags_audio_preferences_new
+ags_audio_preferences_samplerate_changed
+ags_audio_recall_change_state
+ags_audio_remove_recall (recall)
+ags_audio_set_recycling_new
+ags_audio_signal_copy_buffer_to_double_buffer
+ags_audio_signal_copy_double_buffer_to_buffer
+ags_audio_signal_morph_samplerate (samplerate, k_morph)
+ags_audio_signal_new_with_length
+ags_audio_signal_scale
+ags_audio_signal_tile
+ags_audio_tact
+ags_audio_unset_flags
+ags_autosave_thread_new
+ags_buffer_audio_signal_new
+ags_buffer_channel_new
+ags_buffer_channel_run_new
+ags_buffer_recycling_new
+ags_cancel_audio_new
+ags_cancel_channel_new
+ags_cancel_recall_new
+ags_change_indicator_new
+ags_change_tact_new
+ags_channel_add_recall (recall)
+ags_channel_done
+ags_channel_error_quark
+ags_channel_find_recall
+ags_channel_init_recall (stage)
+ags_channel_iter_alloc
+ags_channel_iter_free
+ags_channel_iter_next
+ags_channel_iter_prev
+ags_channel_recall_id_set
+ags_channel_recursive_play_init (Returns)
+ags_channel_remove_recall (recall)
+ags_channel_safe_resize_audio_signal (size)
+ags_channel_set_recycling_new
+ags_combo_box_text_remove_all
+ags_config_get
+ags_config_load_defaults
+ags_config_load_from_file
+ags_config_new
+ags_config_save
+ags_config_set
+ags_container_add_all
+ags_context_alloc
+ags_copy_audio_signal_new
+ags_copy_channel_new
+ags_copy_channel_run_new
+ags_copy_notation_audio_new
+ags_copy_notation_audio_run_new
+ags_copy_pattern_audio_new
+ags_copy_pattern_audio_run_new
+ags_copy_pattern_channel_new
+ags_copy_pattern_channel_run_new
+ags_copy_pattern_channel_template_find_source_and_destination
+ags_copy_recycling_new
+ags_count_beats_audio_new
+ags_count_beats_audio_run_new
+ags_count_beats_audio_run_notation_loop
+ags_count_beats_audio_run_notation_start
+ags_count_beats_audio_run_notation_stop
+ags_count_beats_audio_run_sequencer_loop
+ags_count_beats_audio_run_sequencer_start
+ags_count_beats_audio_run_sequencer_stop
+ags_countable_get_notation_counter
+ags_countable_get_sequencer_counter
+ags_default_log
+ags_delay_audio_new
+ags_delay_audio_notation_duration_changed
+ags_delay_audio_run_new
+ags_delay_audio_run_notation_alloc_input
+ags_delay_audio_run_notation_alloc_output
+ags_delay_audio_run_notation_count
+ags_delay_audio_run_sequencer_alloc_input
+ags_delay_audio_run_sequencer_alloc_output
+ags_delay_audio_run_sequencer_count
+ags_delay_audio_sequencer_duration_changed
+ags_devout_error_quark
+ags_devout_note_offset_changed
+ags_devout_pcm_info (buffer_size_max)
+ags_devout_play_find_source (source)
+ags_devout_thread_new
+ags_dial_new
+ags_display_tact_new
+ags_drum_done_callback
+ags_drum_index0_callback
+ags_drum_index1_callback
+ags_drum_input_line_audio_set_pads_callback
+ags_drum_input_line_channel_done_callback
+ags_drum_input_line_map_recall
+ags_drum_input_line_new
+ags_drum_input_line_parent_set_callback
+ags_drum_input_pad_edit_callback
+ags_drum_input_pad_new
+ags_drum_input_pad_open_callback
+ags_drum_input_pad_play_callback
+ags_drum_length_spin_callback
+ags_drum_loop_button_callback
+ags_drum_new
+ags_drum_offset_callback
+ags_drum_open_callback
+ags_drum_output_line_add_default_recall
+ags_drum_output_line_new
+ags_drum_output_line_parent_set_callback
+ags_drum_output_pad_new
+ags_drum_output_pad_play_cancel
+ags_drum_output_pad_play_done
+ags_drum_pad_callback
+ags_drum_parent_set_callback
+ags_drum_set_pattern
+ags_drum_tact_callback
+ags_dynamic_connectable_connect
+ags_dynamic_connectable_disconnect
+ags_echo
+ags_editor_change_position_callback
+ags_editor_machine_changed
+ags_editor_machine_changed_callback
+ags_editor_new
+ags_editor_parent_set_callback
+ags_editor_set_audio_channels_callback
+ags_editor_set_pads_callback
+ags_expander_add
+ags_expander_child_alloc
+ags_expander_child_find
+ags_expander_new
+ags_expander_remove
+ags_expander_set_add
+ags_expander_set_child_alloc
+ags_expander_set_child_find
+ags_expander_set_new
+ags_expander_set_remove
+ags_expander_set_set_flags
+ags_export_output_new
+ags_export_thread_new
+ags_export_window_export_callback
+ags_export_window_file_chooser_button_callback
+ags_export_window_new
+ags_export_window_tact_callback
+ags_ffplayer_drawing_area_button_press_callback
+ags_ffplayer_drawing_area_configure_callback
+ags_ffplayer_drawing_area_expose_callback
+ags_ffplayer_hscrollbar_value_changed
+ags_ffplayer_instrument_changed_callback
+ags_ffplayer_new
+ags_ffplayer_open_clicked_callback
+ags_ffplayer_open_dialog_response_callback
+ags_ffplayer_paint
+ags_ffplayer_parent_set_callback
+ags_ffplayer_preset_changed_callback
+ags_file_add_id_ref
+ags_file_add_launch
+ags_file_add_lookup
+ags_file_find_id_ref_by_node
+ags_file_find_id_ref_by_reference
+ags_file_find_id_ref_by_xpath
+ags_file_id_ref_new
+ags_file_id_ref_resolved
+ags_file_launch_new
+ags_file_launch_start
+ags_file_link_new
+ags_file_lookup_find_by_node
+ags_file_lookup_new
+ags_file_lookup_resolve
+ags_file_new
+ags_file_read
+ags_file_read_audio
+ags_file_read_audio_list
+ags_file_read_audio_loop
+ags_file_read_audio_signal
+ags_file_read_audio_signal_list
+ags_file_read_channel
+ags_file_read_channel_list
+ags_file_read_devout
+ags_file_read_devout_list
+ags_file_read_devout_play
+ags_file_read_devout_play_list
+ags_file_read_dialog
+ags_file_read_dialog_list
+ags_file_read_editor
+ags_file_read_embedded_audio
+ags_file_read_embedded_audio_list
+ags_file_read_file_link
+ags_file_read_file_link_list
+ags_file_read_input
+ags_file_read_line
+ags_file_read_line_editor
+ags_file_read_line_list
+ags_file_read_line_member
+ags_file_read_line_member_editor
+ags_file_read_line_member_list
+ags_file_read_link_collection_editor
+ags_file_read_link_editor
+ags_file_read_machine
+ags_file_read_machine_counter
+ags_file_read_machine_counter_list
+ags_file_read_machine_editor
+ags_file_read_machine_editor_list
+ags_file_read_machine_list
+ags_file_read_machine_selector
+ags_file_read_main
+ags_file_read_menu_bar
+ags_file_read_mixer_input_pad
+ags_file_read_mixer_output_pad
+ags_file_read_navigation
+ags_file_read_notation
+ags_file_read_notation_list
+ags_file_read_note
+ags_file_read_note_list
+ags_file_read_notebook
+ags_file_read_notebook_tab
+ags_file_read_notebook_tab_list
+ags_file_read_oscillator
+ags_file_read_output
+ags_file_read_pad
+ags_file_read_pad_editor
+ags_file_read_pad_list
+ags_file_read_pattern
+ags_file_read_pattern_data
+ags_file_read_pattern_data_list
+ags_file_read_pattern_list
+ags_file_read_port
+ags_file_read_port_list
+ags_file_read_recall
+ags_file_read_recall_audio
+ags_file_read_recall_audio_run
+ags_file_read_recall_audio_signal
+ags_file_read_recall_channel
+ags_file_read_recall_channel_run
+ags_file_read_recall_container
+ags_file_read_recall_container_list
+ags_file_read_recall_list
+ags_file_read_recall_recycling
+ags_file_read_recycling
+ags_file_read_recycling_list
+ags_file_read_resize_editor
+ags_file_read_resolve
+ags_file_read_server
+ags_file_read_start
+ags_file_read_stream
+ags_file_read_stream_list
+ags_file_read_task
+ags_file_read_task_list
+ags_file_read_thread
+ags_file_read_thread_list
+ags_file_read_thread_pool
+ags_file_read_timestamp
+ags_file_read_timestamp_list
+ags_file_read_toolbar
+ags_file_read_widget
+ags_file_read_window
+ags_file_selection_add_entry
+ags_file_selection_completed
+ags_file_selection_contains_file
+ags_file_selection_entry_alloc
+ags_file_selection_new
+ags_file_selection_remove_callback
+ags_file_selection_remove_entry
+ags_file_selection_set_entry (file_selection, entry)
+ags_file_str2md5
+ags_file_util_read_dependency
+ags_file_util_read_history
+ags_file_util_read_object
+ags_file_util_read_parameter
+ags_file_util_read_value
+ags_file_util_write_dependency
+ags_file_util_write_history
+ags_file_util_write_object
+ags_file_util_write_parameter
+ags_file_util_write_value
+ags_file_write
+ags_file_write_audio
+ags_file_write_audio_list
+ags_file_write_audio_loop
+ags_file_write_audio_signal
+ags_file_write_audio_signal_list
+ags_file_write_channel
+ags_file_write_channel_list
+ags_file_write_concurrent
+ags_file_write_devout
+ags_file_write_devout_list
+ags_file_write_devout_play
+ags_file_write_devout_play_list
+ags_file_write_dialog
+ags_file_write_dialog_list
+ags_file_write_editor
+ags_file_write_embedded_audio
+ags_file_write_embedded_audio_list
+ags_file_write_file_link
+ags_file_write_file_link_list
+ags_file_write_input
+ags_file_write_line
+ags_file_write_line_editor
+ags_file_write_line_list
+ags_file_write_line_member
+ags_file_write_line_member_editor
+ags_file_write_line_member_list
+ags_file_write_link_collection_editor
+ags_file_write_link_editor
+ags_file_write_machine
+ags_file_write_machine_counter
+ags_file_write_machine_counter_list
+ags_file_write_machine_editor
+ags_file_write_machine_editor_list
+ags_file_write_machine_list
+ags_file_write_machine_selector
+ags_file_write_main
+ags_file_write_menu_bar
+ags_file_write_mixer_input_pad
+ags_file_write_mixer_output_pad
+ags_file_write_navigation
+ags_file_write_notation
+ags_file_write_notation_list
+ags_file_write_note
+ags_file_write_note_list
+ags_file_write_notebook
+ags_file_write_notebook_tab
+ags_file_write_notebook_tab_list
+ags_file_write_oscillator
+ags_file_write_output
+ags_file_write_pad
+ags_file_write_pad_editor
+ags_file_write_pad_list
+ags_file_write_pattern
+ags_file_write_pattern_data
+ags_file_write_pattern_data_list
+ags_file_write_pattern_list
+ags_file_write_port
+ags_file_write_port_list
+ags_file_write_recall
+ags_file_write_recall_audio
+ags_file_write_recall_audio_run
+ags_file_write_recall_audio_signal
+ags_file_write_recall_channel
+ags_file_write_recall_channel_run
+ags_file_write_recall_container
+ags_file_write_recall_container_list
+ags_file_write_recall_list
+ags_file_write_recall_recycling
+ags_file_write_recycling
+ags_file_write_recycling_list
+ags_file_write_resize_editor
+ags_file_write_resolve
+ags_file_write_server
+ags_file_write_stream
+ags_file_write_stream_list
+ags_file_write_task
+ags_file_write_task_list
+ags_file_write_thread
+ags_file_write_thread_list
+ags_file_write_thread_pool
+ags_file_write_timestamp
+ags_file_write_timestamp_list
+ags_file_write_toolbar
+ags_file_write_widget
+ags_file_write_window
+ags_free_selection_new
+ags_garbage_collector_add
+ags_garbage_collector_new
+ags_garbage_collector_remove
+ags_garbage_collector_run
+ags_gui_task_thread_new
+ags_gui_thread_new
+ags_htimebar_new
+ags_id_generator_create_uuid
+ags_indicator_new
+ags_init_audio_new
+ags_init_channel_new
+ags_inline_player_new
+ags_ipatch_new
+ags_ipatch_sf2_reader_new
+ags_iterator_thread_children_ready
+ags_iterator_thread_new
+ags_ladspa_browser_cancel_callback
+ags_ladspa_browser_combo_box_controls_new
+ags_ladspa_browser_get_plugin_effect
+ags_ladspa_browser_get_plugin_filename
+ags_ladspa_browser_new
+ags_ladspa_browser_ok_callback
+ags_ladspa_browser_plugin_effect_callback
+ags_ladspa_browser_plugin_filename_callback
+ags_ladspa_browser_preview_close_callback
+ags_ladspa_browser_preview_new
+ags_ladspa_manager_find_ladspa_plugin
+ags_ladspa_manager_get_filenames
+ags_ladspa_manager_get_instance
+ags_ladspa_manager_load_default_directory
+ags_ladspa_manager_load_file
+ags_ladspa_manager_new
+ags_ladspa_plugin_alloc
+ags_ladspa_plugin_free
+ags_ladspa_plugin_preferences_alloc
+ags_led_new
+ags_led_set_active
+ags_led_unset_active
+ags_line_channel_done_callback
+ags_line_copy_pattern_cancel
+ags_line_copy_pattern_done
+ags_line_editor_destroy_callback
+ags_line_editor_new
+ags_line_editor_parent_set_callback
+ags_line_editor_set_channel
+ags_line_editor_show_callback
+ags_line_find_next_grouped
+ags_line_find_port
+ags_line_group_changed
+ags_line_group_clicked_callback
+ags_line_member_button_clicked_callback
+ags_line_member_change_port
+ags_line_member_check_button_clicked_callback
+ags_line_member_dial_changed_callback
+ags_line_member_editor_add_callback
+ags_line_member_editor_ladspa_browser_response_callback
+ags_line_member_editor_new
+ags_line_member_editor_remove_callback
+ags_line_member_find_port
+ags_line_member_get_widget
+ags_line_member_hscale_changed_callback
+ags_line_member_new
+ags_line_member_parent_set_callback
+ags_line_member_port_safe_write_callback
+ags_line_member_set_label
+ags_line_member_spin_button_changed_callback
+ags_line_member_toggle_button_clicked_callback
+ags_line_member_vscale_changed_callback
+ags_line_new
+ags_line_parent_set_callback
+ags_line_peak_run_post_callback
+ags_line_play_channel_run_cancel
+ags_line_play_volume_cancel
+ags_line_play_volume_done
+ags_line_recall_volume_cancel
+ags_line_recall_volume_done
+ags_line_remove_recall_callback
+ags_line_set_channel
+ags_line_volume_callback
+ags_link_channel_new
+ags_link_collection_editor_check_count
+ags_link_collection_editor_check_first_line
+ags_link_collection_editor_check_first_link
+ags_link_collection_editor_count_callback
+ags_link_collection_editor_first_line_callback
+ags_link_collection_editor_first_link_callback
+ags_link_collection_editor_link_callback
+ags_link_collection_editor_new
+ags_link_collection_editor_parent_set_callback
+ags_link_editor_combo_callback
+ags_link_editor_destroy_callback
+ags_link_editor_new
+ags_link_editor_parent_set_callback
+ags_link_editor_show_callback
+ags_list_duplicate_list
+ags_list_free_and_free_link
+ags_list_free_and_unref_link
+ags_listing_editor_add_children
+ags_listing_editor_new
+ags_listing_editor_parent_set_callback
+ags_listing_editor_set_pads_callback
+ags_log_debug
+ags_log_message
+ags_log_start_queue
+ags_log_stop_queue
+ags_loop_channel_new
+ags_loop_channel_run_new
+ags_machine_add_default_recalls
+ags_machine_button_press_callback
+ags_machine_counter_alloc
+ags_machine_destroy_callback
+ags_machine_done_callback
+ags_machine_editor_add_callback
+ags_machine_editor_add_children
+ags_machine_editor_add_input
+ags_machine_editor_add_output
+ags_machine_editor_apply_callback
+ags_machine_editor_back_callback
+ags_machine_editor_cancel_callback
+ags_machine_editor_destroy_callback
+ags_machine_editor_new
+ags_machine_editor_ok_callback
+ags_machine_editor_parent_set_callback
+ags_machine_editor_remove_callback
+ags_machine_editor_remove_input
+ags_machine_editor_remove_output
+ags_machine_editor_set_machine
+ags_machine_editor_show_callback
+ags_machine_editor_switch_page_callback
+ags_machine_file_chooser_dialog_new
+ags_machine_find_by_name
+ags_machine_find_port
+ags_machine_get_possible_links
+ags_machine_new
+ags_machine_open_files
+ags_machine_open_response_callback
+ags_machine_parent_set_callback
+ags_machine_play_callback
+ags_machine_popup_destroy_activate_callback
+ags_machine_popup_hide_activate_callback
+ags_machine_popup_move_down_activate_callback
+ags_machine_popup_move_up_activate_callback
+ags_machine_popup_properties_activate_callback
+ags_machine_popup_rename_activate_callback
+ags_machine_popup_show_activate_callback
+ags_machine_radio_button_new
+ags_machine_selection_new
+ags_machine_selection_run
+ags_machine_selector_changed
+ags_machine_selector_new
+ags_machine_selector_popup_add_index_callback
+ags_machine_selector_popup_add_tab_callback
+ags_machine_selector_popup_link_index_callback
+ags_machine_selector_popup_new
+ags_machine_selector_popup_remove_index_callback
+ags_machine_selector_popup_remove_tab_callback
+ags_machine_selector_radio_changed
+ags_machine_set_run
+ags_machine_start_failure_callback
+ags_machine_tact_callback
+ags_main_add_devout
+ags_main_load_config
+ags_main_loop_get_async_queue
+ags_main_loop_get_last_sync
+ags_main_loop_get_tic
+ags_main_loop_set_async_queue
+ags_main_loop_set_last_sync
+ags_main_loop_set_tic
+ags_main_new
+ags_main_quit
+ags_main_register_machine_type
+ags_main_register_recall_type
+ags_main_register_task_type
+ags_main_register_thread_type
+ags_main_register_widget_type
+ags_matrix_adjustment_value_changed_callback
+ags_matrix_bpm_callback
+ags_matrix_done_callback
+ags_matrix_draw_gutter
+ags_matrix_draw_matrix
+ags_matrix_drawing_area_button_press_callback
+ags_matrix_drawing_area_expose_callback
+ags_matrix_highlight_gutter_point
+ags_matrix_index_callback
+ags_matrix_input_map_recall
+ags_matrix_length_spin_callback
+ags_matrix_loop_button_callback
+ags_matrix_new
+ags_matrix_output_map_recall
+ags_matrix_parent_set_callback
+ags_matrix_redraw_gutter_point
+ags_matrix_tact_callback
+ags_matrix_unpaint_gutter_point
+ags_menu_bar_about_callback
+ags_menu_bar_add_callback
+ags_menu_bar_add_drum_callback
+ags_menu_bar_add_ffplayer_callback
+ags_menu_bar_add_matrix_callback
+ags_menu_bar_add_mixer_callback
+ags_menu_bar_add_panel_callback
+ags_menu_bar_add_synth_callback
+ags_menu_bar_destroy_callback
+ags_menu_bar_export_callback
+ags_menu_bar_new
+ags_menu_bar_open_callback
+ags_menu_bar_preferences_callback
+ags_menu_bar_quit_callback
+ags_menu_bar_remove_callback
+ags_menu_bar_save_as_callback
+ags_menu_bar_save_callback
+ags_menu_bar_show_callback
+ags_menu_item_new
+ags_menu_new
+ags_meter_configure_event
+ags_meter_destroy_callback
+ags_meter_expose_event
+ags_meter_new
+ags_meter_paint
+ags_meter_show_callback
+ags_meter_sound_string
+ags_mixer_input_line_map_recall
+ags_mixer_input_line_new
+ags_mixer_input_pad_new
+ags_mixer_new
+ags_mixer_parent_set_callback
+ags_mutable_set_muted
+ags_mute_audio_new
+ags_mute_audio_signal_new
+ags_mute_channel_new
+ags_mute_channel_run_new
+ags_mute_recycling_new
+ags_navigation_bpm_callback
+ags_navigation_change_position
+ags_navigation_destroy_callback
+ags_navigation_duration_tact_callback
+ags_navigation_expander_callback
+ags_navigation_forward_callback
+ags_navigation_loop_callback
+ags_navigation_loop_left_tact_callback
+ags_navigation_loop_right_tact_callback
+ags_navigation_new
+ags_navigation_next_callback
+ags_navigation_parent_set_callback
+ags_navigation_play_callback
+ags_navigation_position_tact_callback
+ags_navigation_prev_callback
+ags_navigation_raster_callback
+ags_navigation_rewind_callback
+ags_navigation_set_seeking_sensitive
+ags_navigation_show_callback
+ags_navigation_stop_callback
+ags_navigation_tact_to_time_string
+ags_navigation_tic_callback
+ags_navigation_update_time_string
+ags_notation_find_region (use_selection_list)
+ags_notation_get_current
+ags_notation_insert_from_clipboard (content)
+ags_notation_remove_point_from_selection
+ags_note_edit_draw_notation
+ags_note_edit_draw_position
+ags_note_edit_draw_scroll
+ags_note_edit_draw_segment
+ags_note_edit_drawing_area_button_press_event
+ags_note_edit_drawing_area_button_release_event
+ags_note_edit_drawing_area_configure_event
+ags_note_edit_drawing_area_expose_event
+ags_note_edit_drawing_area_motion_notify_event
+ags_note_edit_hscrollbar_value_changed
+ags_note_edit_new
+ags_note_edit_reset_horizontally
+ags_note_edit_reset_vertically
+ags_note_edit_set_map_height
+ags_note_edit_vscrollbar_value_changed
+ags_notebook_add_child
+ags_notebook_add_tab
+ags_notebook_insert_tab
+ags_notebook_machine_changed_callback
+ags_notebook_new
+ags_notebook_next_active_tab
+ags_notebook_remove_child
+ags_notebook_remove_tab
+ags_notebook_tab_index
+ags_open_file_new
+ags_open_single_file_new
+ags_option_menu_new
+ags_oscillator_attack_callback
+ags_oscillator_frame_count_callback
+ags_oscillator_frequency_callback
+ags_oscillator_new
+ags_oscillator_phase_callback
+ags_oscillator_volume_callback
+ags_oscillator_wave_callback
+ags_packable_pack
+ags_packable_unpack
+ags_pad_destroy_callback
+ags_pad_editor_destroy_callback
+ags_pad_editor_new
+ags_pad_editor_parent_set_callback
+ags_pad_editor_set_audio_channels_callback
+ags_pad_editor_set_channel
+ags_pad_editor_show_callback
+ags_pad_find_port
+ags_pad_group_clicked_callback
+ags_pad_mute_clicked_callback
+ags_pad_new
+ags_pad_option_changed_callback
+ags_pad_parent_set_callback
+ags_pad_resize_lines
+ags_pad_set_channel
+ags_pad_show_callback
+ags_pad_solo_clicked_callback
+ags_panel_input_line_map_recall
+ags_panel_input_line_new
+ags_panel_input_pad_new
+ags_panel_new
+ags_panel_parent_set_callback
+ags_parameter_grow
+ags_pattern_get_by_timestamp
+ags_pattern_set_dim (lenght)
+ags_peak_channel_new
+ags_peak_channel_retrieve_peak
+ags_peak_channel_run_new
+ags_performance_preferences_new
+ags_persistable_read
+ags_persistable_read_link
+ags_persistable_write
+ags_persistable_write_link
+ags_play_audio_file_new
+ags_play_audio_new
+ags_play_audio_signal_new
+ags_play_channel_new
+ags_play_channel_run_master_find_streamer
+ags_play_channel_run_master_new
+ags_play_channel_run_master_streamer_alloc
+ags_play_channel_run_new
+ags_play_notation_audio_new
+ags_play_notation_audio_run_new
+ags_play_note_new
+ags_play_pattern_connect
+ags_play_recycling_new
+ags_playable_close
+ags_playable_error_quark
+ags_playable_flush
+ags_playable_info
+ags_playable_iter_next
+ags_playable_iter_start
+ags_playable_level_count
+ags_playable_level_select
+ags_playable_level_up
+ags_playable_nth_level
+ags_playable_open
+ags_playable_read
+ags_playable_read_audio_signal
+ags_playable_rw_open
+ags_playable_seek
+ags_playable_selected_level
+ags_playable_sublevel_names
+ags_playable_write
+ags_plugin_factory_add
+ags_plugin_factory_create
+ags_plugin_factory_get_instance
+ags_plugin_factory_list_by_name
+ags_plugin_factory_new
+ags_plugin_factory_new_from_file
+ags_plugin_factory_read_file
+ags_plugin_get_build_id
+ags_plugin_get_name
+ags_plugin_get_ports
+ags_plugin_get_version
+ags_plugin_get_xml_type
+ags_plugin_preferences_new
+ags_plugin_read
+ags_plugin_set_build_id
+ags_plugin_set_name
+ags_plugin_set_ports
+ags_plugin_set_version
+ags_plugin_set_xml_type
+ags_plugin_write
+ags_port_safe_write
+ags_portlet_get_port
+ags_portlet_list_safe_properties
+ags_portlet_safe_get_property
+ags_portlet_safe_set_property
+ags_portlet_set_port
+ags_preferences_new
+ags_preferences_response_callback
+ags_property_collection_editor_add_collection_callback
+ags_property_collection_editor_new
+ags_property_collection_editor_remove_collection_callback
+ags_property_editor_enable_callback
+ags_property_editor_new
+ags_property_listing_editor_new
+ags_recall_add_child (recall)
+ags_recall_add_dependency (dependency)
+ags_recall_add_handler
+ags_recall_audio_new (audio)
+ags_recall_channel_find_channel (channel)
+ags_recall_channel_run_get_run_order
+ags_recall_child_added
+ags_recall_dependency_resolve (recall_dependency)
+ags_recall_duplicate (Returns)
+ags_recall_factory_create (play_container)
+ags_recall_factory_get_instance
+ags_recall_factory_remove
+ags_recall_find_provider
+ags_recall_find_provider_with_recycling_container
+ags_recall_find_recycling_container (recall)
+ags_recall_find_template (recall)
+ags_recall_find_type (recall, type)
+ags_recall_find_type_with_recycling_container (recall)
+ags_recall_handler_alloc
+ags_recall_id_find_parent_recycling_container (parent_recycling_container)
+ags_recall_id_new (recycling)
+ags_recall_is_done (recalls, Returns)
+ags_recall_ladspa_load_ports (recall_ladspa)
+ags_recall_ladspa_new
+ags_recall_notify_dependency (dependency)
+ags_recall_recycling_dummy_new (recycling, child_type)
+ags_recall_recycling_get_child_source
+ags_recall_remove_child (recall)
+ags_recall_remove_dependency (template)
+ags_recall_remove_handler
+ags_recall_resolve_dependencies (reall)
+ags_recall_run_init
+ags_recall_run_inter
+ags_recall_run_post
+ags_recall_run_pre
+ags_recall_set_devout_recursive
+ags_recall_set_effect
+ags_recall_template_find_provider
+ags_recall_template_find_type
+ags_recycling_container_insert
+ags_recycling_container_remove
+ags_recycling_container_replace
+ags_recycling_create_audio_signal_with_defaults (delay, attack, delay, attack)
+ags_recycling_create_audio_signal_with_frame_count (delay, attack, delay, attack)
+ags_recycling_position (start_recycling)
+ags_recycling_set_devout
+ags_recycling_thread_iterate_callback
+ags_recycling_thread_new
+ags_recycling_thread_play_audio
+ags_recycling_thread_play_channel
+ags_registry_add
+ags_registry_entry_alloc
+ags_registry_entry_bulk
+ags_registry_entry_find
+ags_registry_new
+ags_remote_task_launch
+ags_remote_task_launch_timed
+ags_remote_task_new
+ags_remove_audio_new
+ags_remove_audio_signal_new
+ags_remove_note_new
+ags_remove_point_from_selection_new
+ags_remove_recall_new
+ags_remove_region_from_selection_new
+ags_resize_editor_new
+ags_returnable_thread_connect_safe_run
+ags_returnable_thread_disconnect_safe_run
+ags_returnable_thread_new
+ags_returnable_thread_safe_run
+ags_ruler_configure_event
+ags_ruler_expose_event
+ags_ruler_new
+ags_runnable_run
+ags_runnable_stop
+ags_save_file_new
+ags_scroll_on_play_new
+ags_seekable_seek
+ags_server_create_object
+ags_server_lookup
+ags_server_new
+ags_server_object_set_property
+ags_server_preferences_new
+ags_server_start
+ags_set_audio_channels_new
+ags_set_buffer_size_new
+ags_set_devout_play_flags_new
+ags_set_muted_new
+ags_set_output_device_new
+ags_set_samplerate_new
+ags_sf2_chooser_completed
+ags_sf2_chooser_instrument_changed
+ags_sf2_chooser_new
+ags_sf2_chooser_open
+ags_sf2_chooser_preset_changed
+ags_sf2_chooser_remove_all_from_combo
+ags_sf2_chooser_sample_changed
+ags_single_thread_new
+ags_sndfile_new
+ags_stackable_pop
+ags_stackable_push
+ags_start_devout_new
+ags_stream
+ags_stream_audio_signal_new
+ags_stream_channel_new
+ags_stream_channel_run_new
+ags_stream_new
+ags_stream_recycling_new
+ags_synth_auto_update_callback
+ags_synth_input_line_map_recall
+ags_synth_input_line_new
+ags_synth_input_pad_new
+ags_synth_lower_callback
+ags_synth_new
+ags_synth_parent_set_callback
+ags_synth_saw (<parameters>)
+ags_synth_sin (<parameters>)
+ags_synth_square (<parameters>)
+ags_synth_triangle (<parameters>)
+ags_synth_update_callback
+ags_table_new
+ags_tact_combo_box_new
+ags_tact_menu_new
+ags_tactable_change_bpm
+ags_tactable_change_notation_duration
+ags_tactable_change_sequencer_duration
+ags_tactable_change_tact
+ags_task_thread_append_task (task_thread, task)
+ags_task_thread_append_tasks (task_thread, list)
+ags_task_thread_new
+ags_thread_add_child
+ags_thread_children_is_locked (thread, Returns, thread, Returns)
+ags_thread_first (thread, Returns, thread, Returns)
+ags_thread_get_toplevel (thread, Returns, thread, Returns)
+ags_thread_hangcheck (thread, thread)
+ags_thread_is_current_ready
+ags_thread_is_tree_ready
+ags_thread_last (thread, Returns, thread, Returns)
+ags_thread_lock (thread, thread)
+ags_thread_lock_all
+ags_thread_lock_children (thread, thread)
+ags_thread_lock_parent (thread, parent, thread, parent)
+ags_thread_lock_sibling (thread, thread)
+ags_thread_new (data, Returns, data, Returns)
+ags_thread_next_children_locked (thread, Returns, thread, Returns)
+ags_thread_next_parent_locked (thread, parent, Returns, thread, parent, Returns)
+ags_thread_next_sibling_locked (thread, Returns, thread, Returns)
+ags_thread_parental_is_locked (thread, parent, Returns, thread, parent, Returns)
+ags_thread_pool_new
+ags_thread_pool_pull
+ags_thread_pool_start
+ags_thread_remove_child
+ags_thread_resume
+ags_thread_run (thread, thread)
+ags_thread_set_sync (thread, tic, thread, tic)
+ags_thread_set_sync_all
+ags_thread_sibling_is_locked (thread, Returns, thread, Returns)
+ags_thread_signal_children (thread, broadcast, thread, broadcast)
+ags_thread_signal_parent (thread, parent, broadcast, thread, parent, broadcast)
+ags_thread_signal_sibling (thread, broadcast, thread, broadcast)
+ags_thread_start (thread, thread)
+ags_thread_stop (thread, thread)
+ags_thread_suspend
+ags_thread_timelock
+ags_thread_trylock
+ags_thread_unlock (thread, thread)
+ags_thread_unlock_all
+ags_thread_unlock_children (thread, thread)
+ags_thread_unlock_parent (thread, parent, thread, parent)
+ags_thread_unlock_sibling (thread, thread)
+ags_thread_wait_children (thread, thread)
+ags_thread_wait_parent (thread, parent, thread, parent)
+ags_thread_wait_sibling (thread, thread)
+ags_timebar_new
+ags_timer_alloc
+ags_timestamp_factory_create
+ags_timestamp_factory_get_instance
+ags_timestamp_thread_new
+ags_toggle_led_new
+ags_toggle_pattern_bit_new
+ags_toggle_pattern_bit_refresh_gui
+ags_toolbar_clear_callback
+ags_toolbar_copy_or_cut_callback
+ags_toolbar_destroy_callback
+ags_toolbar_edit_callback
+ags_toolbar_mode_callback
+ags_toolbar_new
+ags_toolbar_paste_callback
+ags_toolbar_position_callback
+ags_toolbar_select_callback
+ags_toolbar_show_callback
+ags_toolbar_zoom_callback
+ags_tree_iterator_is_inverse_mode
+ags_tree_iterator_iterate
+ags_tree_iterator_iterate_nested
+ags_tree_iterator_safe_iterate
+ags_tree_iterator_safe_iterate_nested
+ags_tree_iterator_set_inverse_mode
+ags_unref_audio_signal_new
+ags_vindicator_new
+ags_volume_audio_signal_new
+ags_volume_channel_new
+ags_volume_channel_run_new
+ags_volume_recycling_new
+ags_window_decrement_machine_counter
+ags_window_delete_event_callback
+ags_window_find_machine_counter
+ags_window_increment_machine_counter
+ags_window_new
+ags_zoom_combo_box_new
+ags_zoom_menu_new
+g_cclosure_user_marshal_BOOLEAN__OBJECT_OBJECT
+g_cclosure_user_marshal_OBJECT__OBJECT_OBJECT
+g_cclosure_user_marshal_OBJECT__OBJECT_POINTER_POINTER
+g_cclosure_user_marshal_OBJECT__STRING_STRING_STRING
+g_cclosure_user_marshal_OBJECT__VOID
+g_cclosure_user_marshal_STRING__ULONG_STRING_STRING_STRING_STRING_UINT_POINTER
+g_cclosure_user_marshal_ULONG__VOID
+g_cclosure_user_marshal_VOID__DOUBLE_DOUBLE
+g_cclosure_user_marshal_VOID__OBJECT_OBJECT
+g_cclosure_user_marshal_VOID__OBJECT_OBJECT_OBJECT_INT_BOOLEAN
+g_cclosure_user_marshal_VOID__OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT
+g_cclosure_user_marshal_VOID__OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_UINT_INT_BOOLEAN
+g_cclosure_user_marshal_VOID__OBJECT_UINT
+g_cclosure_user_marshal_VOID__STRING_POINTER
+g_cclosure_user_marshal_VOID__UINT_DOUBLE
+g_cclosure_user_marshal_VOID__UINT_INT
+g_cclosure_user_marshal_VOID__UINT_UINT
+g_cclosure_user_marshal_VOID__UINT_UINT_UINT
+g_cclosure_user_marshal_VOID__ULONG_UINT
+g_cclosure_user_marshal_VOID__ULONG_UINT_UINT
+j_math_algebra_brackeds_out
+j_math_algebra_functions_out
+j_math_algebra_operations_out
+j_math_algebra_solve
+j_math_and
+j_math_cut_leading_zeros
+j_math_exclusive_or
+j_math_exp
+j_math_exp2
+j_math_gauss
+j_math_get_first_level_operator
+j_math_get_second_level_operator
+j_math_is_function
+j_math_is_function_backward
+j_math_is_operator
+j_math_less
+j_math_make_valid
+j_math_more
+j_math_or
+j_math_put_null_at_beginning
+j_math_put_null_at_end
+j_math_root
+j_math_root2
+j_math_solve_arithmetic
+j_math_sort_array
+j_math_width
+j_math_width_list
+
+
+ags_add_audio:Long_Description
+ags_add_audio:Short_Description
+ags_add_audio_signal:Long_Description
+ags_add_audio_signal:Short_Description
+ags_add_line_member:Long_Description
+ags_add_line_member:Short_Description
+ags_add_note:Long_Description
+ags_add_note:Short_Description
+ags_add_point_to_selection:Long_Description
+ags_add_point_to_selection:Short_Description
+ags_add_recall:Long_Description
+ags_add_recall:Short_Description
+ags_add_region_to_selection:Long_Description
+ags_add_region_to_selection:Short_Description
+ags_amplifier:Long_Description
+ags_amplifier:Short_Description
+ags_append_audio:Long_Description
+ags_append_audio:Short_Description
+ags_append_channel:Long_Description
+ags_append_channel:Short_Description
+ags_append_recall:Long_Description
+ags_append_recall:Short_Description
+ags_applicable:Long_Description
+ags_applicable:Short_Description
+ags_apply_bpm:Long_Description
+ags_apply_bpm:Short_Description
+ags_apply_sequencer_length:Long_Description
+ags_apply_sequencer_length:Short_Description
+ags_apply_synth:Long_Description
+ags_apply_synth:Short_Description
+ags_apply_tact:Long_Description
+ags_apply_tact:Short_Description
+ags_apply_wavetable:Long_Description
+ags_apply_wavetable:Short_Description
+ags_async_queue:Long_Description
+ags_async_queue:Short_Description
+ags_audio_file:Long_Description
+ags_audio_file:Short_Description
+ags_audio_file_xml:Long_Description
+ags_audio_file_xml:Short_Description
+ags_audio_loop:Long_Description
+ags_audio_loop:Short_Description
+ags_audio_preferences:Long_Description
+ags_audio_preferences:Short_Description
+ags_audio_preferences_callbacks:Long_Description
+ags_audio_preferences_callbacks:Short_Description
+ags_audio_set_recycling:Long_Description
+ags_audio_set_recycling:Short_Description
+ags_autosave_thread:Long_Description
+ags_autosave_thread:Short_Description
+ags_buffer_audio_signal:Long_Description
+ags_buffer_audio_signal:Short_Description
+ags_buffer_channel:Long_Description
+ags_buffer_channel:Short_Description
+ags_buffer_channel_run:Long_Description
+ags_buffer_channel_run:Short_Description
+ags_buffer_recycling:Long_Description
+ags_buffer_recycling:Short_Description
+ags_cancel_audio:Long_Description
+ags_cancel_audio:Short_Description
+ags_cancel_channel:Long_Description
+ags_cancel_channel:Short_Description
+ags_cancel_recall:Long_Description
+ags_cancel_recall:Short_Description
+ags_change_indicator:Long_Description
+ags_change_indicator:Short_Description
+ags_change_tact:Long_Description
+ags_change_tact:Short_Description
+ags_channel_iter:Long_Description
+ags_channel_iter:Short_Description
+ags_channel_set_recycling:Long_Description
+ags_channel_set_recycling:Short_Description
+ags_combo_box_text:Long_Description
+ags_combo_box_text:Short_Description
+ags_config:Long_Description
+ags_config:Short_Description
+ags_container:Long_Description
+ags_container:Short_Description
+ags_copy_audio_signal:Long_Description
+ags_copy_audio_signal:Short_Description
+ags_copy_channel:Long_Description
+ags_copy_channel:Short_Description
+ags_copy_channel_run:Long_Description
+ags_copy_channel_run:Short_Description
+ags_copy_notation_audio:Long_Description
+ags_copy_notation_audio:Short_Description
+ags_copy_notation_audio_run:Long_Description
+ags_copy_notation_audio_run:Short_Description
+ags_copy_pattern_audio:Long_Description
+ags_copy_pattern_audio:Short_Description
+ags_copy_pattern_audio_run:Long_Description
+ags_copy_pattern_audio_run:Short_Description
+ags_copy_pattern_channel:Long_Description
+ags_copy_pattern_channel:Short_Description
+ags_copy_pattern_channel_run:Long_Description
+ags_copy_pattern_channel_run:Short_Description
+ags_copy_recycling:Long_Description
+ags_copy_recycling:Short_Description
+ags_count_beats_audio:Long_Description
+ags_count_beats_audio:Short_Description
+ags_count_beats_audio_run:Long_Description
+ags_count_beats_audio_run:Short_Description
+ags_countable:Long_Description
+ags_countable:Short_Description
+ags_delay_audio:Long_Description
+ags_delay_audio:Short_Description
+ags_delay_audio_run:Long_Description
+ags_delay_audio_run:Short_Description
+ags_devout_thread:Long_Description
+ags_devout_thread:Short_Description
+ags_dial:Long_Description
+ags_dial:Short_Description
+ags_display_tact:Long_Description
+ags_display_tact:Short_Description
+ags_down_mix:Long_Description
+ags_down_mix:Short_Description
+ags_drum:Long_Description
+ags_drum:Short_Description
+ags_drum_callbacks:Long_Description
+ags_drum_callbacks:Short_Description
+ags_drum_input_line:Long_Description
+ags_drum_input_line:Short_Description
+ags_drum_input_line_callbacks:Long_Description
+ags_drum_input_line_callbacks:Short_Description
+ags_drum_input_pad:Long_Description
+ags_drum_input_pad:Short_Description
+ags_drum_input_pad_callbacks:Long_Description
+ags_drum_input_pad_callbacks:Short_Description
+ags_drum_output_line:Long_Description
+ags_drum_output_line:Short_Description
+ags_drum_output_line_callbacks:Long_Description
+ags_drum_output_line_callbacks:Short_Description
+ags_drum_output_pad:Long_Description
+ags_drum_output_pad:Short_Description
+ags_drum_output_pad_callbacks:Long_Description
+ags_drum_output_pad_callbacks:Short_Description
+ags_dynamic_connectable:Long_Description
+ags_dynamic_connectable:Short_Description
+ags_echo:Long_Description
+ags_echo:Short_Description
+ags_editor:Long_Description
+ags_editor:Short_Description
+ags_editor_callbacks:Long_Description
+ags_editor_callbacks:Short_Description
+ags_expander:Long_Description
+ags_expander:Short_Description
+ags_expander_set:Long_Description
+ags_expander_set:Short_Description
+ags_export_output:Long_Description
+ags_export_output:Short_Description
+ags_export_thread:Long_Description
+ags_export_thread:Short_Description
+ags_export_window:Long_Description
+ags_export_window:Short_Description
+ags_export_window_callbacks:Long_Description
+ags_export_window_callbacks:Short_Description
+ags_ffplayer:Long_Description
+ags_ffplayer:Short_Description
+ags_ffplayer_callbacks:Long_Description
+ags_ffplayer_callbacks:Short_Description
+ags_file:Long_Description
+ags_file:Short_Description
+ags_file_gui:Long_Description
+ags_file_gui:Short_Description
+ags_file_id_ref:Long_Description
+ags_file_id_ref:Short_Description
+ags_file_launch:Long_Description
+ags_file_launch:Short_Description
+ags_file_link:Long_Description
+ags_file_link:Short_Description
+ags_file_lookup:Long_Description
+ags_file_lookup:Short_Description
+ags_file_selection:Long_Description
+ags_file_selection:Short_Description
+ags_file_selection_callbacks:Long_Description
+ags_file_selection_callbacks:Short_Description
+ags_file_sound:Long_Description
+ags_file_sound:Short_Description
+ags_file_stock:Long_Description
+ags_file_stock:Short_Description
+ags_file_thread:Long_Description
+ags_file_thread:Short_Description
+ags_file_util:Long_Description
+ags_file_util:Short_Description
+ags_free_selection:Long_Description
+ags_free_selection:Short_Description
+ags_garbage_collector:Long_Description
+ags_garbage_collector:Short_Description
+ags_gui_task_thread:Long_Description
+ags_gui_task_thread:Short_Description
+ags_gui_thread:Long_Description
+ags_gui_thread:Short_Description
+ags_htimebar:Long_Description
+ags_htimebar:Short_Description
+ags_id_generator:Long_Description
+ags_id_generator:Short_Description
+ags_indicator:Long_Description
+ags_indicator:Short_Description
+ags_init_audio:Long_Description
+ags_init_audio:Short_Description
+ags_init_channel:Long_Description
+ags_init_channel:Short_Description
+ags_inline_player:Long_Description
+ags_inline_player:Short_Description
+ags_inline_player_callbacks:Long_Description
+ags_inline_player_callbacks:Short_Description
+ags_ipatch:Long_Description
+ags_ipatch:Short_Description
+ags_ipatch_sf2_reader:Long_Description
+ags_ipatch_sf2_reader:Short_Description
+ags_iterator_thread:Long_Description
+ags_iterator_thread:Short_Description
+ags_ladspa_browser:Long_Description
+ags_ladspa_browser:Short_Description
+ags_ladspa_browser_callbacks:Long_Description
+ags_ladspa_browser_callbacks:Short_Description
+ags_ladspa_manager:Long_Description
+ags_ladspa_manager:Short_Description
+ags_led:Long_Description
+ags_led:Short_Description
+ags_line:Long_Description
+ags_line:Short_Description
+ags_line_callbacks:Long_Description
+ags_line_callbacks:Short_Description
+ags_line_editor:Long_Description
+ags_line_editor:Short_Description
+ags_line_editor_callbacks:Long_Description
+ags_line_editor_callbacks:Short_Description
+ags_line_member:Long_Description
+ags_line_member:Short_Description
+ags_line_member_callbacks:Long_Description
+ags_line_member_callbacks:Short_Description
+ags_line_member_editor:Long_Description
+ags_line_member_editor:Short_Description
+ags_line_member_editor_callbacks:Long_Description
+ags_line_member_editor_callbacks:Short_Description
+ags_link_channel:Long_Description
+ags_link_channel:Short_Description
+ags_link_collection_editor:Long_Description
+ags_link_collection_editor:Short_Description
+ags_link_collection_editor_callbacks:Long_Description
+ags_link_collection_editor_callbacks:Short_Description
+ags_link_editor:Long_Description
+ags_link_editor:Short_Description
+ags_link_editor_callbacks:Long_Description
+ags_link_editor_callbacks:Short_Description
+ags_list:Long_Description
+ags_list:Short_Description
+ags_listing_editor:Long_Description
+ags_listing_editor:Short_Description
+ags_listing_editor_callbacks:Long_Description
+ags_listing_editor_callbacks:Short_Description
+ags_log:Long_Description
+ags_log:Short_Description
+ags_loop_channel:Long_Description
+ags_loop_channel:Short_Description
+ags_loop_channel_run:Long_Description
+ags_loop_channel_run:Short_Description
+ags_machine:Long_Description
+ags_machine:Short_Description
+ags_machine_callbacks:Long_Description
+ags_machine_callbacks:Short_Description
+ags_machine_editor:Long_Description
+ags_machine_editor:Short_Description
+ags_machine_editor_callbacks:Long_Description
+ags_machine_editor_callbacks:Short_Description
+ags_machine_radio_button:Long_Description
+ags_machine_radio_button:Short_Description
+ags_machine_selection:Long_Description
+ags_machine_selection:Short_Description
+ags_machine_selector:Long_Description
+ags_machine_selector:Short_Description
+ags_machine_selector_callbacks:Long_Description
+ags_machine_selector_callbacks:Short_Description
+ags_main_loop:Long_Description
+ags_main_loop:Short_Description
+ags_marshal:Long_Description
+ags_marshal:Short_Description
+ags_matrix:Long_Description
+ags_matrix:Short_Description
+ags_matrix_callbacks:Long_Description
+ags_matrix_callbacks:Short_Description
+ags_menu:Long_Description
+ags_menu:Short_Description
+ags_menu_bar:Long_Description
+ags_menu_bar:Short_Description
+ags_menu_bar_callbacks:Long_Description
+ags_menu_bar_callbacks:Short_Description
+ags_menu_item:Long_Description
+ags_menu_item:Short_Description
+ags_meter:Long_Description
+ags_meter:Short_Description
+ags_meter_callbacks:Long_Description
+ags_meter_callbacks:Short_Description
+ags_mixer:Long_Description
+ags_mixer:Short_Description
+ags_mixer_callbacks:Long_Description
+ags_mixer_callbacks:Short_Description
+ags_mixer_input_line:Long_Description
+ags_mixer_input_line:Short_Description
+ags_mixer_input_pad:Long_Description
+ags_mixer_input_pad:Short_Description
+ags_mutable:Long_Description
+ags_mutable:Short_Description
+ags_mute_audio:Long_Description
+ags_mute_audio:Short_Description
+ags_mute_audio_signal:Long_Description
+ags_mute_audio_signal:Short_Description
+ags_mute_channel:Long_Description
+ags_mute_channel:Short_Description
+ags_mute_channel_run:Long_Description
+ags_mute_channel_run:Short_Description
+ags_mute_recycling:Long_Description
+ags_mute_recycling:Short_Description
+ags_navigation:Long_Description
+ags_navigation:Short_Description
+ags_navigation_callbacks:Long_Description
+ags_navigation_callbacks:Short_Description
+ags_note_edit:Long_Description
+ags_note_edit:Short_Description
+ags_note_edit_callbacks:Long_Description
+ags_note_edit_callbacks:Short_Description
+ags_notebook:Long_Description
+ags_notebook:Short_Description
+ags_notebook_callbacks:Long_Description
+ags_notebook_callbacks:Short_Description
+ags_open_file:Long_Description
+ags_open_file:Short_Description
+ags_open_single_file:Long_Description
+ags_open_single_file:Short_Description
+ags_option_menu:Long_Description
+ags_option_menu:Short_Description
+ags_oscillator:Long_Description
+ags_oscillator:Short_Description
+ags_oscillator_callbacks:Long_Description
+ags_oscillator_callbacks:Short_Description
+ags_packable:Long_Description
+ags_packable:Short_Description
+ags_pad:Long_Description
+ags_pad:Short_Description
+ags_pad_callbacks:Long_Description
+ags_pad_callbacks:Short_Description
+ags_pad_editor:Long_Description
+ags_pad_editor:Short_Description
+ags_pad_editor_callbacks:Long_Description
+ags_pad_editor_callbacks:Short_Description
+ags_panel:Long_Description
+ags_panel:Short_Description
+ags_panel_callbacks:Long_Description
+ags_panel_callbacks:Short_Description
+ags_panel_input_line:Long_Description
+ags_panel_input_line:Short_Description
+ags_panel_input_pad:Long_Description
+ags_panel_input_pad:Short_Description
+ags_parameter:Long_Description
+ags_parameter:Short_Description
+ags_peak_channel:Long_Description
+ags_peak_channel:Short_Description
+ags_peak_channel_run:Long_Description
+ags_peak_channel_run:Short_Description
+ags_performance_preferences:Long_Description
+ags_performance_preferences:Short_Description
+ags_performance_preferences_callbacks:Long_Description
+ags_performance_preferences_callbacks:Short_Description
+ags_persistable:Long_Description
+ags_persistable:Short_Description
+ags_play_audio:Long_Description
+ags_play_audio:Short_Description
+ags_play_audio_file:Long_Description
+ags_play_audio_file:Short_Description
+ags_play_audio_signal:Long_Description
+ags_play_audio_signal:Short_Description
+ags_play_channel:Long_Description
+ags_play_channel:Short_Description
+ags_play_channel_run:Long_Description
+ags_play_channel_run:Short_Description
+ags_play_channel_run_master:Long_Description
+ags_play_channel_run_master:Short_Description
+ags_play_notation_audio:Long_Description
+ags_play_notation_audio:Short_Description
+ags_play_notation_audio_run:Long_Description
+ags_play_notation_audio_run:Short_Description
+ags_play_note:Long_Description
+ags_play_note:Short_Description
+ags_play_pattern:Long_Description
+ags_play_pattern:Short_Description
+ags_play_recycling:Long_Description
+ags_play_recycling:Short_Description
+ags_playable:Long_Description
+ags_playable:Short_Description
+ags_plugin:Long_Description
+ags_plugin:Short_Description
+ags_plugin_factory:Long_Description
+ags_plugin_factory:Short_Description
+ags_plugin_preferences:Long_Description
+ags_plugin_preferences:Short_Description
+ags_plugin_preferences_callbacks:Long_Description
+ags_plugin_preferences_callbacks:Short_Description
+ags_plugin_stock:Long_Description
+ags_plugin_stock:Short_Description
+ags_portlet:Long_Description
+ags_portlet:Short_Description
+ags_preferences:Long_Description
+ags_preferences:Short_Description
+ags_preferences_callbacks:Long_Description
+ags_preferences_callbacks:Short_Description
+ags_property_collection_editor:Long_Description
+ags_property_collection_editor:Short_Description
+ags_property_collection_editor_callbacks:Long_Description
+ags_property_collection_editor_callbacks:Short_Description
+ags_property_editor:Long_Description
+ags_property_editor:Short_Description
+ags_property_editor_callbacks:Long_Description
+ags_property_editor_callbacks:Short_Description
+ags_property_listing_editor:Long_Description
+ags_property_listing_editor:Short_Description
+ags_recycling_thread:Long_Description
+ags_recycling_thread:Short_Description
+ags_recycling_thread_callbacks:Long_Description
+ags_recycling_thread_callbacks:Short_Description
+ags_registry:Long_Description
+ags_registry:Short_Description
+ags_remote_task:Long_Description
+ags_remote_task:Short_Description
+ags_remove_audio:Long_Description
+ags_remove_audio:Short_Description
+ags_remove_audio_signal:Long_Description
+ags_remove_audio_signal:Short_Description
+ags_remove_note:Long_Description
+ags_remove_note:Short_Description
+ags_remove_point_from_selection:Long_Description
+ags_remove_point_from_selection:Short_Description
+ags_remove_recall:Long_Description
+ags_remove_recall:Short_Description
+ags_remove_region_from_selection:Long_Description
+ags_remove_region_from_selection:Short_Description
+ags_resize_editor:Long_Description
+ags_resize_editor:Short_Description
+ags_returnable_thread:Long_Description
+ags_returnable_thread:Short_Description
+ags_ruler:Long_Description
+ags_ruler:Short_Description
+ags_ruler_callbacks:Long_Description
+ags_ruler_callbacks:Short_Description
+ags_runnable:Long_Description
+ags_runnable:Short_Description
+ags_save_file:Long_Description
+ags_save_file:Short_Description
+ags_scroll_on_play:Long_Description
+ags_scroll_on_play:Short_Description
+ags_seekable:Long_Description
+ags_seekable:Short_Description
+ags_server:Long_Description
+ags_server:Short_Description
+ags_server_preferences:Long_Description
+ags_server_preferences:Short_Description
+ags_server_preferences_callbacks:Long_Description
+ags_server_preferences_callbacks:Short_Description
+ags_set_audio_channels:Long_Description
+ags_set_audio_channels:Short_Description
+ags_set_buffer_size:Long_Description
+ags_set_buffer_size:Short_Description
+ags_set_devout_play_flags:Long_Description
+ags_set_devout_play_flags:Short_Description
+ags_set_muted:Long_Description
+ags_set_muted:Short_Description
+ags_set_output_device:Long_Description
+ags_set_output_device:Short_Description
+ags_set_samplerate:Long_Description
+ags_set_samplerate:Short_Description
+ags_sf2_chooser:Long_Description
+ags_sf2_chooser:Short_Description
+ags_sf2_chooser_callbacks:Long_Description
+ags_sf2_chooser_callbacks:Short_Description
+ags_single_thread:Long_Description
+ags_single_thread:Short_Description
+ags_sndfile:Long_Description
+ags_sndfile:Short_Description
+ags_stackable:Long_Description
+ags_stackable:Short_Description
+ags_start_devout:Long_Description
+ags_start_devout:Short_Description
+ags_stream:Long_Description
+ags_stream:Short_Description
+ags_stream_audio_signal:Long_Description
+ags_stream_audio_signal:Short_Description
+ags_stream_channel:Long_Description
+ags_stream_channel:Short_Description
+ags_stream_channel_run:Long_Description
+ags_stream_channel_run:Short_Description
+ags_stream_recycling:Long_Description
+ags_stream_recycling:Short_Description
+ags_synth:Long_Description
+ags_synth:Short_Description
+ags_synth_callbacks:Long_Description
+ags_synth_callbacks:Short_Description
+ags_synth_input_line:Long_Description
+ags_synth_input_line:Short_Description
+ags_synth_input_pad:Long_Description
+ags_synth_input_pad:Short_Description
+ags_synths:Long_Description
+ags_synths:Short_Description
+ags_table:Long_Description
+ags_table:Short_Description
+ags_tactable:Long_Description
+ags_tactable:Short_Description
+ags_task_thread:Long_Description
+ags_task_thread:Short_Description
+ags_thread-kthreads:Long_Description
+ags_thread-kthreads:Short_Description
+ags_thread-posix:Long_Description
+ags_thread-posix:Short_Description
+ags_thread_pool:Long_Description
+ags_thread_pool:Short_Description
+ags_timebar:Long_Description
+ags_timebar:Short_Description
+ags_timestamp_thread:Long_Description
+ags_timestamp_thread:Short_Description
+ags_toggle_led:Long_Description
+ags_toggle_led:Short_Description
+ags_toggle_pattern_bit:Long_Description
+ags_toggle_pattern_bit:Short_Description
+ags_toolbar:Long_Description
+ags_toolbar:Short_Description
+ags_toolbar_callbacks:Long_Description
+ags_toolbar_callbacks:Short_Description
+ags_toolbar_mode_stock:Long_Description
+ags_toolbar_mode_stock:Short_Description
+ags_tree_iterator:Long_Description
+ags_tree_iterator:Short_Description
+ags_unref_audio_signal:Long_Description
+ags_unref_audio_signal:Short_Description
+ags_vindicator:Long_Description
+ags_vindicator:Short_Description
+ags_volume_audio_signal:Long_Description
+ags_volume_audio_signal:Short_Description
+ags_volume_channel:Long_Description
+ags_volume_channel:Short_Description
+ags_volume_channel_run:Long_Description
+ags_volume_channel_run:Short_Description
+ags_volume_recycling:Long_Description
+ags_volume_recycling:Short_Description
+ags_window:Long_Description
+ags_window:Short_Description
+ags_window_callbacks:Long_Description
+ags_window_callbacks:Short_Description
+jmath:Long_Description
+jmath:Short_Description
+main:Short_Description

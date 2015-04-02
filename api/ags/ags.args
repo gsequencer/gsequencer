@@ -1,0 +1,1770 @@
+<ARG>
+<NAME>AgsAudio::devout</NAME>
+<TYPE>AgsDevout*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned devout</NICK>
+<BLURB>The devout it is assigned with.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsAudioLoop::devout-thread</NAME>
+<TYPE>AgsDevoutThread*</TYPE>
+<RANGE></RANGE>
+<FLAGS>w</FLAGS>
+<NICK>devout thread to run</NICK>
+<BLURB>The devout thread to run.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsAudioLoop::export-thread</NAME>
+<TYPE>AgsExportThread*</TYPE>
+<RANGE></RANGE>
+<FLAGS>w</FLAGS>
+<NICK>export thread to run</NICK>
+<BLURB>The export thread to run.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsAudioLoop::gui-thread</NAME>
+<TYPE>AgsGuiThread*</TYPE>
+<RANGE></RANGE>
+<FLAGS>w</FLAGS>
+<NICK>gui thread to run</NICK>
+<BLURB>The gui thread to run.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsAudioLoop::play-audio</NAME>
+<TYPE>AgsAudio*</TYPE>
+<RANGE></RANGE>
+<FLAGS>w</FLAGS>
+<NICK>audio to run</NICK>
+<BLURB>A audio to run.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsAudioLoop::play-channel</NAME>
+<TYPE>AgsChannel*</TYPE>
+<RANGE></RANGE>
+<FLAGS>w</FLAGS>
+<NICK>channel to run</NICK>
+<BLURB>A channel to run.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsAudioLoop::play-recall</NAME>
+<TYPE>AgsRecall*</TYPE>
+<RANGE></RANGE>
+<FLAGS>w</FLAGS>
+<NICK>recall to run</NICK>
+<BLURB>A recall to run.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsAudioLoop::task-thread</NAME>
+<TYPE>AgsTaskThread*</TYPE>
+<RANGE></RANGE>
+<FLAGS>w</FLAGS>
+<NICK>task thread to run</NICK>
+<BLURB>The task thread to run.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsAudioSignal::devout</NAME>
+<TYPE>AgsDevout*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned devout</NICK>
+<BLURB>The devout it is assigned with.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsAudioSignal::recall-id</NAME>
+<TYPE>AgsRecallID*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned recall id</NICK>
+<BLURB>The recall id it is assigned with.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsAudioSignal::recycling</NAME>
+<TYPE>AgsRecycling*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned recycling</NICK>
+<BLURB>The recycling it is assigned with.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsAutosaveThread::ags-main</NAME>
+<TYPE>AgsMain*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>ags_main to check against</NICK>
+<BLURB>The ags_main to check against serialization.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsBufferChannel::muted</NAME>
+<TYPE>AgsPort*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>mute channel</NICK>
+<BLURB>Mute the channel.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsChannel::audio</NAME>
+<TYPE>GObject*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned audio</NICK>
+<BLURB>The audio it is assigned with.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsChannel::devout</NAME>
+<TYPE>GObject*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned devout</NICK>
+<BLURB>The devout it is assigned with.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsCopyChannel::muted</NAME>
+<TYPE>AgsPort*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>mute channel</NICK>
+<BLURB>Mute the channel.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsCopyNotationAudio::audio-channel</NAME>
+<TYPE>guint</TYPE>
+<RANGE><= 65535</RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>the audio channel to play</NICK>
+<BLURB>The audio channel to play of audio object.</BLURB>
+<DEFAULT>0</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsCopyNotationAudio::notation</NAME>
+<TYPE>AgsNotation*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>the assigned notation</NICK>
+<BLURB>The AgsNotation it is assigned to.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsCopyNotationAudioRun::count-beats-audio-run</NAME>
+<TYPE>AgsCountBeatsAudioRun*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned AgsCountBeatsAudioRun</NICK>
+<BLURB>The AgsCountBeatsAudioRun which emits beat signal.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsCopyPatternAudio::bank-index-0</NAME>
+<TYPE>AgsPort*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>current bank index 0</NICK>
+<BLURB>The current bank index 0 of the AgsPattern.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsCopyPatternAudio::bank-index-1</NAME>
+<TYPE>AgsPort*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>current bank index 1</NICK>
+<BLURB>The current bank index 1 of the AgsPattern.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsCopyPatternAudioRun::count-beats-audio-run</NAME>
+<TYPE>AgsCountBeatsAudioRun*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned AgsCountBeatsAudioRun</NICK>
+<BLURB>the AgsCountBeatsAudioRun which emits beat signal.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsCopyPatternChannel::pattern</NAME>
+<TYPE>AgsPort*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>pattern to play</NICK>
+<BLURB>The pattern which has to be played.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsCountBeatsAudio::loop</NAME>
+<TYPE>AgsPort*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>loop playing</NICK>
+<BLURB>Play in a endless loop.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsCountBeatsAudio::notation-loop-end</NAME>
+<TYPE>AgsPort*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>end beat of notation loop</NICK>
+<BLURB>The end beat of the notation loop.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsCountBeatsAudio::notation-loop-start</NAME>
+<TYPE>AgsPort*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>start beat of notation loop</NICK>
+<BLURB>The start beat of the notation loop.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsCountBeatsAudio::sequencer-loop-end</NAME>
+<TYPE>AgsPort*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>end beat of sequencer loop</NICK>
+<BLURB>The end beat of the sequencer loop.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsCountBeatsAudio::sequencer-loop-start</NAME>
+<TYPE>AgsPort*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>start beat of loop</NICK>
+<BLURB>The start beat of the sequencer loop.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsCountBeatsAudioRun::delay-audio-run</NAME>
+<TYPE>AgsDelayAudioRun*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned AgsDelayAudioRun</NICK>
+<BLURB>The AgsDelayAudioRun which emits sequencer_alloc_output sequencer_count signal.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsCountBeatsAudioRun::notation-counter</NAME>
+<TYPE>guint</TYPE>
+<RANGE><= 65535</RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>notation counter indicates offset</NICK>
+<BLURB>The notation counter indicates the offset in the notation.</BLURB>
+<DEFAULT>0</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsCountBeatsAudioRun::sequencer-counter</NAME>
+<TYPE>guint</TYPE>
+<RANGE><= 65535</RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>sequencer counter indicates offset</NICK>
+<BLURB>The sequenecer counter indicates the offset in the sequencer.</BLURB>
+<DEFAULT>0</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsDelayAudio::bpm</NAME>
+<TYPE>AgsPort*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>bpm of recall</NICK>
+<BLURB>The recall's bpm.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsDelayAudio::notation-delay</NAME>
+<TYPE>AgsPort*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>notation-delay of recall</NICK>
+<BLURB>The delay of the notation.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsDelayAudio::notation-duration</NAME>
+<TYPE>AgsPort*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>notation-duration of recall</NICK>
+<BLURB>The duration of the notation.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsDelayAudio::sequencer-delay</NAME>
+<TYPE>AgsPort*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>sequencer-delay of recall</NICK>
+<BLURB>The delay of the sequencer.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsDelayAudio::sequencer-duration</NAME>
+<TYPE>AgsPort*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>sequencer-duration of recall</NICK>
+<BLURB>The duration of the sequencer.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsDelayAudio::tact</NAME>
+<TYPE>AgsPort*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>tact of recall</NICK>
+<BLURB>The recall's tact.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsDevout::attack</NAME>
+<TYPE>gpointer</TYPE>
+<RANGE></RANGE>
+<FLAGS>r</FLAGS>
+<NICK>attack of buffer</NICK>
+<BLURB>The attack to use for the buffer.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsDevout::bits</NAME>
+<TYPE>guint</TYPE>
+<RANGE>[1,64]</RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>precision of buffer</NICK>
+<BLURB>The precision to use for a frame.</BLURB>
+<DEFAULT>16</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsDevout::bpm</NAME>
+<TYPE>gdouble</TYPE>
+<RANGE>[1,240]</RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>beats per minute</NICK>
+<BLURB>Beats per minute to use.</BLURB>
+<DEFAULT>120</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsDevout::buffer</NAME>
+<TYPE>gpointer</TYPE>
+<RANGE></RANGE>
+<FLAGS>r</FLAGS>
+<NICK>the buffer</NICK>
+<BLURB>The buffer to play.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsDevout::buffer-size</NAME>
+<TYPE>guint</TYPE>
+<RANGE>[1,44100]</RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>frame count of a buffer</NICK>
+<BLURB>The count of frames a buffer contains.</BLURB>
+<DEFAULT>940</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsDevout::device</NAME>
+<TYPE>gchar*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>the device identifier</NICK>
+<BLURB>The device to perform output to.</BLURB>
+<DEFAULT>"hw:0"</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsDevout::dsp-channels</NAME>
+<TYPE>guint</TYPE>
+<RANGE>[1,64]</RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>count of DSP channels</NICK>
+<BLURB>The count of DSP channels to use.</BLURB>
+<DEFAULT>2</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsDevout::frequency</NAME>
+<TYPE>guint</TYPE>
+<RANGE>[8000,96000]</RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>frames per second</NICK>
+<BLURB>The frames count played during a second.</BLURB>
+<DEFAULT>44100</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsDevout::main</NAME>
+<TYPE>AgsMain*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>the main object</NICK>
+<BLURB>The main object.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsDevout::pcm-channels</NAME>
+<TYPE>guint</TYPE>
+<RANGE>[1,64]</RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>count of PCM channels</NICK>
+<BLURB>The count of PCM channels to use.</BLURB>
+<DEFAULT>2</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsDial::adjustment</NAME>
+<TYPE>GObject*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned adjustment</NICK>
+<BLURB>The adjustment it is assigned with.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsEditor::devout</NAME>
+<TYPE>GObject*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned devout</NICK>
+<BLURB>The devout it is assigned with.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsExpander::child</NAME>
+<TYPE>GtkWidget*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>child of expander</NICK>
+<BLURB>The child which this expander is packed into.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsExpander::height</NAME>
+<TYPE>guint</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>height of expander</NICK>
+<BLURB>The height which this expander is packed into.</BLURB>
+<DEFAULT>1</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsExpander::width</NAME>
+<TYPE>guint</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>width of expander grid</NICK>
+<BLURB>The width of the expander's grid.</BLURB>
+<DEFAULT>1</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsExportThread::audio-file</NAME>
+<TYPE>AgsAudioFile*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>audio file to write</NICK>
+<BLURB>The audio file to write output.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsExportWindow::ags-main</NAME>
+<TYPE>GObject*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned ags_main</NICK>
+<BLURB>The AgsMain it is assigned with.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsExportWindow::devout</NAME>
+<TYPE>GObject*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned devout</NICK>
+<BLURB>The devout it is assigned with.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsFile::audio-encoding</NAME>
+<TYPE>gchar*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>audio encoding to use</NICK>
+<BLURB>The audio encoding used to embedded audio.</BLURB>
+<DEFAULT>"base64"</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsFile::audio-format</NAME>
+<TYPE>gchar*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>audio format to use</NICK>
+<BLURB>The audio format used to embedded audio.</BLURB>
+<DEFAULT>"raw"</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsFile::encoding</NAME>
+<TYPE>gchar*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>encoding to use</NICK>
+<BLURB>The encoding of the XML document.</BLURB>
+<DEFAULT>NULL</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsFile::filename</NAME>
+<TYPE>gchar*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>filename to read or write</NICK>
+<BLURB>The filename to read or write to.</BLURB>
+<DEFAULT>NULL</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsFile::main</NAME>
+<TYPE>AgsMain*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>main object of file</NICK>
+<BLURB>The main object to write to file.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsFileIdRef::file</NAME>
+<TYPE>GObject*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>file assigned to</NICK>
+<BLURB>The entire file assigned to.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsFileIdRef::main</NAME>
+<TYPE>GObject*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>main access</NICK>
+<BLURB>The main object to access the tree.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsFileIdRef::node</NAME>
+<TYPE>gpointer</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>the node</NICK>
+<BLURB>The node to find the element.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsFileIdRef::reference</NAME>
+<TYPE>gpointer</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>reference of the locator</NICK>
+<BLURB>The reference resulted by the xpath locator.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsFileIdRef::xpath</NAME>
+<TYPE>gchar*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>the xpath</NICK>
+<BLURB>The xpath to find the element.</BLURB>
+<DEFAULT>NULL</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsFileLaunch::node</NAME>
+<TYPE>gpointer</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>the node</NICK>
+<BLURB>The node to find the element.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsFileLink::data</NAME>
+<TYPE>gchar*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>the data</NICK>
+<BLURB>The embedded data.</BLURB>
+<DEFAULT>NULL</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsFileLink::filename</NAME>
+<TYPE>gchar*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>the filename</NICK>
+<BLURB>The filename to locate the file.</BLURB>
+<DEFAULT>NULL</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsFileLink::timestamp</NAME>
+<TYPE>GObject*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>timestamp</NICK>
+<BLURB>The timestamp.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsFileLookup::file</NAME>
+<TYPE>AgsFile*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned file</NICK>
+<BLURB>The file it is assigned with.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsFileLookup::node</NAME>
+<TYPE>gpointer</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned node</NICK>
+<BLURB>The node it is assigned with.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsFileLookup::reference</NAME>
+<TYPE>gpointer</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned reference</NICK>
+<BLURB>The reference it is assigned with.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsIndicator::adjustment</NAME>
+<TYPE>GObject*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned adjustment</NICK>
+<BLURB>The adjustment it is assigned with.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsInlinePlayer::playable</NAME>
+<TYPE>GObject*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>playable for player</NICK>
+<BLURB>The AgsPlayable to use within the AgsInlinePlayer.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsInput::file-link</NAME>
+<TYPE>AgsFileLink*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>file link assigned to</NICK>
+<BLURB>The file link to read from.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsIpatch::filename</NAME>
+<TYPE>gpointer</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>the filename</NICK>
+<BLURB>The filename to open.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsIpatch::mode</NAME>
+<TYPE>gpointer</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>the mode</NICK>
+<BLURB>The mode to open the file.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsLineEditor::channel</NAME>
+<TYPE>AgsChannel*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned channel</NICK>
+<BLURB>The channel which this pad editor is assigned with.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsLine::channel</NAME>
+<TYPE>AgsChannel*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned channel</NICK>
+<BLURB>The channel it is assigned with.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsLine::pad</NAME>
+<TYPE>AgsPad*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>parent pad</NICK>
+<BLURB>The pad which is its parent.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsLineMember::control-port</NAME>
+<TYPE>gchar*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>control port index</NICK>
+<BLURB>The index of the port to control.</BLURB>
+<DEFAULT>NULL</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsLineMember::plugin-name</NAME>
+<TYPE>gchar*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>plugin name to control</NICK>
+<BLURB>The plugin's name to control.</BLURB>
+<DEFAULT>NULL</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsLineMember::port</NAME>
+<TYPE>AgsPort*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>port to apply</NICK>
+<BLURB>The port to apply.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsLineMember::port-data</NAME>
+<TYPE>gpointer</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>port data</NICK>
+<BLURB>The port data.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsLineMember::recall-port</NAME>
+<TYPE>AgsPort*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>recall port to apply</NICK>
+<BLURB>The recall port to apply.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsLineMember::recall-port-data</NAME>
+<TYPE>gpointer</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>recall port data</NICK>
+<BLURB>The recall port data.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsLineMember::specifier</NAME>
+<TYPE>gchar*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>port specifier</NICK>
+<BLURB>The specifier of the port.</BLURB>
+<DEFAULT>NULL</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsLineMember::widget-label</NAME>
+<TYPE>gchar*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>label to display</NICK>
+<BLURB>The label to display.</BLURB>
+<DEFAULT>NULL</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsLineMember::widget-type</NAME>
+<TYPE>gulong</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>widget type of line member</NICK>
+<BLURB>The widget type this line member packs.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsLinkCollectionEditor::channel-type</NAME>
+<TYPE>GType*</TYPE>
+<RANGE>void</RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned channel type</NICK>
+<BLURB>The channel type which this channel link collection editor is assigned with.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsLoopChannel::delay-audio</NAME>
+<TYPE>AgsDelayAudio*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned delay-audio</NICK>
+<BLURB>The delay-audio it is assigned with.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsLoopChannelRun::count-beats-audio-run</NAME>
+<TYPE>GObject*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned AgsCountBeatsAudioRun</NICK>
+<BLURB>The pointer to a counter object which indicates when looping should happen.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsMachineEditor::machine</NAME>
+<TYPE>AgsMachine*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned machine</NICK>
+<BLURB>The machine which this machine editor is assigned with.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsMachine::audio</NAME>
+<TYPE>AgsAudio*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned audio</NICK>
+<BLURB>The audio it is assigned to.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsMachineRadioButton::machine</NAME>
+<TYPE>AgsMachine*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned machine</NICK>
+<BLURB>The machine it is assigned to.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsMuteAudio::muted</NAME>
+<TYPE>AgsPort*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>mute audio</NICK>
+<BLURB>Mute the audio.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsMuteChannel::muted</NAME>
+<TYPE>AgsPort*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>mute channel</NICK>
+<BLURB>Mute the channel.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsNavigation::devout</NAME>
+<TYPE>GObject*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned devout</NICK>
+<BLURB>The devout it is assigned with.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsNotation::current-notes</NAME>
+<TYPE>gpointer</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>current notes for offset</NICK>
+<BLURB>The current notes for offset.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsNotation::next-notes</NAME>
+<TYPE>gpointer</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>next notes for offset</NICK>
+<BLURB>The next notes for offset.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsNotation::port</NAME>
+<TYPE>AgsPort*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>port of notation</NICK>
+<BLURB>The port of notation.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsPadEditor::channel</NAME>
+<TYPE>AgsChannel*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned channel</NICK>
+<BLURB>The channel which this pad editor is assigned with.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsPad::channel</NAME>
+<TYPE>AgsChannel*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned channel</NICK>
+<BLURB>The channel it is assigned with.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsPattern::current-bit</NAME>
+<TYPE>gboolean</TYPE>
+<RANGE></RANGE>
+<FLAGS>r</FLAGS>
+<NICK>current bit for offset</NICK>
+<BLURB>The current bit for offset.</BLURB>
+<DEFAULT>FALSE</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsPattern::first-index</NAME>
+<TYPE>guint</TYPE>
+<RANGE><= 256</RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>the first index</NICK>
+<BLURB>The first index to select pattern.</BLURB>
+<DEFAULT>0</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsPattern::offset</NAME>
+<TYPE>guint</TYPE>
+<RANGE><= 65535</RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>the offset</NICK>
+<BLURB>The offset within the pattern.</BLURB>
+<DEFAULT>0</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsPattern::port</NAME>
+<TYPE>AgsPort*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>port of pattern</NICK>
+<BLURB>The port of pattern.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsPattern::second-index</NAME>
+<TYPE>guint</TYPE>
+<RANGE><= 256</RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>the second index</NICK>
+<BLURB>The second index to select pattern.</BLURB>
+<DEFAULT>0</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsPeakChannel::peak</NAME>
+<TYPE>AgsPort*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>peak of channel</NICK>
+<BLURB>The peak of channel.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsPlayAudioFile::audio-file</NAME>
+<TYPE>GType*</TYPE>
+<RANGE>GObject</RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned audio file</NICK>
+<BLURB>The audio file this recall is assigned to.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsPlayAudioFile::current</NAME>
+<TYPE>GType*</TYPE>
+<RANGE>guint</RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>current frame</NICK>
+<BLURB>The current frame this recall is playing.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsPlayAudioFile::devout</NAME>
+<TYPE>GType*</TYPE>
+<RANGE>GObject</RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned devout</NICK>
+<BLURB>The devout this recall is assigned to.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsPlayChannel::audio-channel</NAME>
+<TYPE>AgsPort*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned audio channel</NICK>
+<BLURB>The audio channel this recall does output to.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsPlayChannel::muted</NAME>
+<TYPE>AgsPort*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>mute channel</NICK>
+<BLURB>Mute the channel.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsPlayChannelRun::stream-channel-run</NAME>
+<TYPE>AgsStreamChannelRun*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned AgsStreamChannelRun</NICK>
+<BLURB>the assigned AgsStreamChannelRun.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsPlayChannelRunMaster::stream-channel-run</NAME>
+<TYPE>AgsStreamChannelRun*</TYPE>
+<RANGE></RANGE>
+<FLAGS>w</FLAGS>
+<NICK>assigned AgsStreamChannelRun</NICK>
+<BLURB>an assigned AgsStreamChannelRun.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsPlayNotationAudio::notation</NAME>
+<TYPE>AgsPort*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned notation</NICK>
+<BLURB>The notation this recall does play.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsPlayNotationAudioRun::count-beats-audio-run</NAME>
+<TYPE>AgsCountBeatsAudioRun*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned AgsCountBeatsAudioRun</NICK>
+<BLURB>the AgsCount_BeatsAudioRun which just counts.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsPlayNotationAudioRun::delay-audio-run</NAME>
+<TYPE>AgsDelayAudioRun*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned AgsDelayAudioRun</NICK>
+<BLURB>the AgsDelayAudioRun which emits notation_alloc_input signal.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsPort::control-port</NAME>
+<TYPE>gchar*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>control-port of port</NICK>
+<BLURB>The control-port this port is numbered.</BLURB>
+<DEFAULT>NULL</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsPort::plugin-name</NAME>
+<TYPE>gchar*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>plugin-name of port</NICK>
+<BLURB>The plugin-name this port belongs to.</BLURB>
+<DEFAULT>NULL</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsPort::port-value-is-pointer</NAME>
+<TYPE>gboolean</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>port-value-is-pointer indicates if value is a pointer</NICK>
+<BLURB>The port-value-is-pointer indicates if value is a pointer.</BLURB>
+<DEFAULT>FALSE</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsPort::port-value-length</NAME>
+<TYPE>guint</TYPE>
+<RANGE><= 65535</RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>port-value-length is the array size</NICK>
+<BLURB>The port-value-length is the array size.</BLURB>
+<DEFAULT>1</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsPort::port-value-size</NAME>
+<TYPE>guint</TYPE>
+<RANGE>[1,8]</RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>port-value-size is the size of a single entry</NICK>
+<BLURB>The port-value-size is the size of a single entry.</BLURB>
+<DEFAULT>8</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsPort::port-value-type</NAME>
+<TYPE>GType*</TYPE>
+<RANGE>void</RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>port-value-type tells you the type of the values</NICK>
+<BLURB>The port-value-type tells you the type of the values.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsPort::specifier</NAME>
+<TYPE>gchar*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>specifier of port</NICK>
+<BLURB>The specifier this port is identified by.</BLURB>
+<DEFAULT>NULL</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsRecallAudio::audio</NAME>
+<TYPE>AgsAudio*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned audio</NICK>
+<BLURB>The audio object it is assigned to.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsRecallAudioRun::recall-audio</NAME>
+<TYPE>AgsRecallAudio*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>AgsRecallAudio of this recall</NICK>
+<BLURB>The AgsRecallAudio which this recall needs.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsRecallAudioSignal::audio-channel</NAME>
+<TYPE>guint</TYPE>
+<RANGE><= 65536</RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>output to audio channel</NICK>
+<BLURB>The audio channel to which it should write.</BLURB>
+<DEFAULT>0</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsRecallAudioSignal::destination</NAME>
+<TYPE>AgsAudioSignal*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>destination of output</NICK>
+<BLURB>The destination where this recall will write the audio signal to.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsRecallAudioSignal::source</NAME>
+<TYPE>AgsAudioSignal*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>source of input</NICK>
+<BLURB>The source where this recall will take the audio signal from.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsRecallChannel::destination</NAME>
+<TYPE>AgsChannel*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned destination channel</NICK>
+<BLURB>The destination channel object it is assigned to.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsRecallChannel::source</NAME>
+<TYPE>AgsChannel*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned source channel</NICK>
+<BLURB>The source channel object it is assigned to.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsRecallChannelRun::audio-channel</NAME>
+<TYPE>guint</TYPE>
+<RANGE><= 65535</RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned audio channel</NICK>
+<BLURB>The audio channel this recall is assigned to.</BLURB>
+<DEFAULT>0</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsRecallChannelRun::destination</NAME>
+<TYPE>AgsChannel*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>destination of output</NICK>
+<BLURB>The destination AgsChannel where it will output to.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsRecallChannelRun::recall-audio-run</NAME>
+<TYPE>AgsRecallAudioRun*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>AgsRecallAudioRun of this recall</NICK>
+<BLURB>The AgsRecallAudioRun which this recall needs.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsRecallChannelRun::recall-channel</NAME>
+<TYPE>AgsRecallChannel*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>AsgRecallChannel of this recall</NICK>
+<BLURB>The AgsRecallChannel which this recall needs.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsRecallChannelRun::source</NAME>
+<TYPE>AgsChannel*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>source of input</NICK>
+<BLURB>The source AgsChannel where it will take the input from.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsRecallContainer::recall-audio</NAME>
+<TYPE>AgsRecallAudio*</TYPE>
+<RANGE></RANGE>
+<FLAGS>w</FLAGS>
+<NICK>audio level recall</NICK>
+<BLURB>The recall which this recall container has on audio level.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsRecallContainer::recall-audio-run</NAME>
+<TYPE>AgsRecallAudioRun*</TYPE>
+<RANGE></RANGE>
+<FLAGS>w</FLAGS>
+<NICK>audio runlevel recall</NICK>
+<BLURB>The recall which this recall container has on audio level during a run.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsRecallContainer::recall-audio-run-type</NAME>
+<TYPE>GType*</TYPE>
+<RANGE>void</RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>audio runlevel recall type</NICK>
+<BLURB>The recall type which this recall container has on audio level during a run.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsRecallContainer::recall-audio-type</NAME>
+<TYPE>GType*</TYPE>
+<RANGE>void</RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>audio level recall type</NICK>
+<BLURB>The recall type which this recall container has on audio level.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsRecallContainer::recall-channel</NAME>
+<TYPE>AgsRecallChannel*</TYPE>
+<RANGE></RANGE>
+<FLAGS>w</FLAGS>
+<NICK>channel level recall</NICK>
+<BLURB>The recall which this recall container has on channel level.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsRecallContainer::recall-channel-run</NAME>
+<TYPE>AgsRecallChannelRun*</TYPE>
+<RANGE></RANGE>
+<FLAGS>w</FLAGS>
+<NICK>channel runlevel recall</NICK>
+<BLURB>The recall which this recall container has on audio level during a run.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsRecallContainer::recall-channel-run-type</NAME>
+<TYPE>GType*</TYPE>
+<RANGE>void</RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>channel runlevel recall type</NICK>
+<BLURB>The recall type which this recall container has on audio level during a run.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsRecallContainer::recall-channel-type</NAME>
+<TYPE>GType*</TYPE>
+<RANGE>void</RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>channel level recall type</NICK>
+<BLURB>The recall type which this recall container has on channel level.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsRecall::child</NAME>
+<TYPE>AgsRecall*</TYPE>
+<RANGE></RANGE>
+<FLAGS>w</FLAGS>
+<NICK>child of recall</NICK>
+<BLURB>The child that can be added.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsRecall::dependency</NAME>
+<TYPE>AgsRecallDependency*</TYPE>
+<RANGE></RANGE>
+<FLAGS>w</FLAGS>
+<NICK>dependency of recall</NICK>
+<BLURB>The dependency that can be added.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsRecall::devout</NAME>
+<TYPE>AgsDevout*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>devout of recall</NICK>
+<BLURB>The devout which this recall is packed into.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsRecall::parent</NAME>
+<TYPE>AgsRecall*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>parent recall of this recall</NICK>
+<BLURB>The recall should be the parent instance of this recall.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsRecall::recall-container</NAME>
+<TYPE>AgsRecallContainer*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>container of recall</NICK>
+<BLURB>The container which this recall is packed into.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsRecall::recall-id</NAME>
+<TYPE>AgsRecallID*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>run id of recall</NICK>
+<BLURB>The recall id of the recall.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsRecallID::recycling</NAME>
+<TYPE>GObject*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned recycling</NICK>
+<BLURB>The recycling it is assigned with.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsRecallID::recycling-container</NAME>
+<TYPE>GObject*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned recycling container</NICK>
+<BLURB>The recycling container it is assigned with.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsRecallLadspa::effect</NAME>
+<TYPE>gchar*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>the effect</NICK>
+<BLURB>The effect's string representation.</BLURB>
+<DEFAULT>NULL</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsRecallLadspa::filename</NAME>
+<TYPE>gchar*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>the object file</NICK>
+<BLURB>The filename as string of object file.</BLURB>
+<DEFAULT>NULL</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsRecallLadspa::index</NAME>
+<TYPE>guint</TYPE>
+<RANGE><= 65535</RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>index of effect</NICK>
+<BLURB>The numerical index of effect.</BLURB>
+<DEFAULT>0</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsRecallRecycling::audio-channel</NAME>
+<TYPE>guint</TYPE>
+<RANGE><= 65536</RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned audio channel</NICK>
+<BLURB>The audio channel this recall does output to.</BLURB>
+<DEFAULT>0</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsRecallRecycling::child-destination</NAME>
+<TYPE>AgsAudioSignal*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>AgsAudioSignal of this recall</NICK>
+<BLURB>The destination AgsAudioSignal child recall needs.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsRecallRecycling::child-source</NAME>
+<TYPE>AgsAudioSignal*</TYPE>
+<RANGE></RANGE>
+<FLAGS>w</FLAGS>
+<NICK>AgsAudioSignal of this recall</NICK>
+<BLURB>The source AgsAudioSignal child recall needs.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsRecallRecycling::destination</NAME>
+<TYPE>AgsRecycling*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>AgsRecycling destination of this recall</NICK>
+<BLURB>The AgsRecycling destination of this recall.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsRecallRecycling::source</NAME>
+<TYPE>AgsRecycling*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>AgsRecycling source of this recall</NICK>
+<BLURB>The AgsRecycling source of this recall.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsRecyclingContainer::length</NAME>
+<TYPE>guint64</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>length of the array of assigned recycling</NICK>
+<BLURB>The recycling array length.</BLURB>
+<DEFAULT>0</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsRecyclingContainer::parent</NAME>
+<TYPE>AgsRecyclingContainer*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>parent container</NICK>
+<BLURB>The container this one is packed into.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsRecyclingContainer::recall-id</NAME>
+<TYPE>AgsRecallID*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>the default recall id</NICK>
+<BLURB>The recall id located in audio object as destiny.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsRecycling::devout</NAME>
+<TYPE>AgsDevout*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned devout</NICK>
+<BLURB>The devout it is assigned with.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsRecyclingThread::iterator-thread</NAME>
+<TYPE>AgsIteratorThread*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned iterator thread</NICK>
+<BLURB>The iterator thread object it is assigned to.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsSF2Chooser::ipatch</NAME>
+<TYPE>AgsIpatch*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>current ipatch</NICK>
+<BLURB>The current AgsIpatch.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsThread::devout</NAME>
+<TYPE>AgsDevout*</TYPE>
+<RANGE></RANGE>
+<FLAGS>w</FLAGS>
+<NICK>devout assigned to</NICK>
+<BLURB>The AgsDevout it is assigned to.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsThread::frequency</NAME>
+<TYPE>gdouble</TYPE>
+<RANGE>[0.01,1000]</RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>JIFFIE</NICK>
+<BLURB>JIFFIE.</BLURB>
+<DEFAULT>1000</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsThread::devout</NAME>
+<TYPE>AgsDevout*</TYPE>
+<RANGE></RANGE>
+<FLAGS>w</FLAGS>
+<NICK>devout assigned to</NICK>
+<BLURB>The AgsDevout it is assigned to.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsThread::frequency</NAME>
+<TYPE>gdouble</TYPE>
+<RANGE>[0.01,1000]</RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>JIFFIE</NICK>
+<BLURB>JIFFIE.</BLURB>
+<DEFAULT>1000</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsThreadPool::max-threads</NAME>
+<TYPE>guint</TYPE>
+<RANGE>[1,65535]</RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>maximum threads to use</NICK>
+<BLURB>The maximum of threads to be created.</BLURB>
+<DEFAULT>1024</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsThreadPool::max-unused-threads</NAME>
+<TYPE>guint</TYPE>
+<RANGE>[1,65535]</RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>maximum unused threads</NICK>
+<BLURB>The maximum of unused threads.</BLURB>
+<DEFAULT>24</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsVolumeChannel::volume</NAME>
+<TYPE>AgsPort*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>volume to apply</NICK>
+<BLURB>The volume to apply on the channel.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsWindow::ags-main</NAME>
+<TYPE>GObject*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned ags_main</NICK>
+<BLURB>The AgsMain it is assigned with.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsWindow::devout</NAME>
+<TYPE>GObject*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned devout</NICK>
+<BLURB>The devout it is assigned with.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
