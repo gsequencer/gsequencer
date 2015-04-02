@@ -1005,8 +1005,8 @@ S["am__isrc"]=""
 S["INSTALL_DATA"]="${INSTALL} -m 644"
 S["INSTALL_SCRIPT"]="${INSTALL}"
 S["INSTALL_PROGRAM"]="${INSTALL}"
-S["subdirs"]=" . po doc src/ags src/ags/X src/ags/X/editor src/ags/X/machine src/ags/audio src/ags/audio/file src/ags/audio/recall src/ags/audio/task src/ags/audi"\
-"o/task/recall src/ags/file src/ags/lib src/ags/object src/ags/plugin src/ags/server src/ags/thread src/ags/util src/ags/widget"
+S["subdirs"]=" po doc src/ags src/ags/X src/ags/X/editor src/ags/X/machine src/ags/audio src/ags/audio/file src/ags/audio/recall src/ags/audio/task src/ags/audio/"\
+"task/recall src/ags/file src/ags/lib src/ags/object src/ags/plugin src/ags/server src/ags/thread src/ags/util src/ags/widget"
 S["target_alias"]=""
 S["host_alias"]=""
 S["build_alias"]=""
