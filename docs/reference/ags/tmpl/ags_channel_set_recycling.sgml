@@ -1,0 +1,52 @@
+<!-- ##### SECTION Title ##### -->
+AgsChannelSetRecycling
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT AgsChannelSetRecycling ##### -->
+<para>
+
+</para>
+
+@task: 
+@channel: 
+@first_recycling: 
+@last_recycling: 
+
+<!-- ##### STRUCT AgsChannelSetRecyclingClass ##### -->
+<para>
+
+</para>
+
+@task: 
+
+<!-- ##### FUNCTION ags_channel_set_recycling_new ##### -->
+<para>
+
+</para>
+
+@channel: 
+@first_recycling: 
+@last_recycling: 
+@Returns: 
+
+

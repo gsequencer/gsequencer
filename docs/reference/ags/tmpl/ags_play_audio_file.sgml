@@ -1,0 +1,51 @@
+<!-- ##### SECTION Title ##### -->
+AgsPlayAudioFile
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT AgsPlayAudioFile ##### -->
+<para>
+
+</para>
+
+@recall: 
+@audio_file: 
+@current_frame: 
+@devout: 
+
+<!-- ##### STRUCT AgsPlayAudioFileClass ##### -->
+<para>
+
+</para>
+
+@recall: 
+
+<!-- ##### FUNCTION ags_play_audio_file_new ##### -->
+<para>
+
+</para>
+
+@audio_file: 
+@devout: 
+@Returns: 
+
+

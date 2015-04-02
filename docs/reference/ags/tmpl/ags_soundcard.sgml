@@ -1,0 +1,87 @@
+<!-- ##### SECTION Title ##### -->
+AgsSoundcard
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### TYPEDEF AgsSoundcard ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### STRUCT AgsSoundcardInterface ##### -->
+<para>
+
+</para>
+
+@interface: 
+@list_cards: 
+@pcm_info: 
+@play_init: 
+@play: 
+@stop: 
+@tic: 
+@offset_changed: 
+
+<!-- ##### FUNCTION ags_soundcard_list_cards ##### -->
+<para>
+
+</para>
+
+@soundcard: 
+@card_id: 
+@card_name: 
+
+
+<!-- ##### FUNCTION ags_soundcard_offset_changed ##### -->
+<para>
+
+</para>
+
+@soundcard: 
+@note_offset: 
+
+
+<!-- ##### FUNCTION ags_soundcard_pcm_info ##### -->
+<para>
+
+</para>
+
+@soundcard: 
+@card_id: 
+@channels_min: 
+@channels_max: 
+@rate_min: 
+@rate_max: 
+@buffer_size_min: 
+@buffer_size_max: 
+@error: 
+
+
+<!-- ##### FUNCTION ags_soundcard_tic ##### -->
+<para>
+
+</para>
+
+@soundcard: 
+
+

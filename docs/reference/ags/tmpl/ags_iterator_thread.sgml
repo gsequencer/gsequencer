@@ -1,0 +1,71 @@
+<!-- ##### SECTION Title ##### -->
+AgsIteratorThread
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT AgsIteratorThread ##### -->
+<para>
+
+</para>
+
+@thread: 
+@flags: 
+@tic_mutex: 
+@tic_cond: 
+@recycling_thread: 
+@channel: 
+@recall_id: 
+@stage: 
+
+<!-- ##### STRUCT AgsIteratorThreadClass ##### -->
+<para>
+
+</para>
+
+@thread: 
+@children_ready: 
+
+<!-- ##### ENUM AgsIteratorThreadFlags ##### -->
+<para>
+
+</para>
+
+@AGS_ITERATOR_THREAD_DONE: 
+@AGS_ITERATOR_THREAD_WAIT: 
+
+<!-- ##### FUNCTION ags_iterator_thread_children_ready ##### -->
+<para>
+
+</para>
+
+@iterator_thread: 
+@current: 
+
+
+<!-- ##### FUNCTION ags_iterator_thread_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsFileValueFactory">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsFileValueFactory.top_of_page">AgsFileValueFactory</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsFileValueFactory</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsFileValueFactory.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>struct              <link linkend="AgsFileValueFactory">AgsFileValueFactory</link>;
+struct              <link linkend="AgsFileValueFactoryClass">AgsFileValueFactoryClass</link>;
+<link linkend="AgsFileValueFactory"><returnvalue>AgsFileValueFactory</returnvalue></link> * <link linkend="ags-file-value-factory-new">ags_file_value_factory_new</link>        ();
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsFileValueFactory.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsFileValueFactory.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AgsFileValueFactory" role="struct">
+<title>struct AgsFileValueFactory</title>
+<indexterm zone="AgsFileValueFactory"><primary>AgsFileValueFactory</primary></indexterm>
+<programlisting>struct AgsFileValueFactory {
+  GObject object;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsFileValueFactoryClass" role="struct">
+<title>struct AgsFileValueFactoryClass</title>
+<indexterm zone="AgsFileValueFactoryClass"><primary>AgsFileValueFactoryClass</primary></indexterm>
+<programlisting>struct AgsFileValueFactoryClass {
+  GObject object;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-file-value-factory-new" role="function">
+<title>ags_file_value_factory_new ()</title>
+<indexterm zone="ags-file-value-factory-new"><primary>ags_file_value_factory_new</primary></indexterm>
+<programlisting><link linkend="AgsFileValueFactory"><returnvalue>AgsFileValueFactory</returnvalue></link> * ags_file_value_factory_new        ();</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

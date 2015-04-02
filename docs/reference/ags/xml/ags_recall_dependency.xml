@@ -1,0 +1,108 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsRecallDependency">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsRecallDependency.top_of_page">AgsRecallDependency</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsRecallDependency</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsRecallDependency.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>struct              <link linkend="AgsRecallDependency">AgsRecallDependency</link>;
+struct              <link linkend="AgsRecallDependencyClass">AgsRecallDependencyClass</link>;
+<link linkend="GList"><returnvalue>GList</returnvalue></link> *             <link linkend="ags-recall-dependency-find-dependency">ags_recall_dependency_find_dependency</link>
+                                                        (<parameter><link linkend="GList"><type>GList</type></link> *recall_dependencies</parameter>,
+                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *dependency</parameter>);
+<link linkend="GList"><returnvalue>GList</returnvalue></link> *             <link linkend="ags-recall-dependency-find-dependency-by-provider">ags_recall_dependency_find_dependency_by_provider</link>
+                                                        (<parameter><link linkend="GList"><type>GList</type></link> *recall_dependencies</parameter>,
+                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *provider</parameter>);
+<link linkend="AgsRecallDependency"><returnvalue>AgsRecallDependency</returnvalue></link> * <link linkend="ags-recall-dependency-new">ags_recall_dependency_new</link>         (<parameter><link linkend="GObject"><type>GObject</type></link> *dependency</parameter>);
+<link linkend="GObject"><returnvalue>GObject</returnvalue></link> *           <link linkend="ags-recall-dependency-resolve">ags_recall_dependency_resolve</link>       (<parameter><link linkend="AgsRecallDependency"><type>AgsRecallDependency</type></link> *recall_dependency</parameter>,
+                                                         <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>);
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsRecallDependency.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsRecallDependency.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AgsRecallDependency" role="struct">
+<title>struct AgsRecallDependency</title>
+<indexterm zone="AgsRecallDependency"><primary>AgsRecallDependency</primary></indexterm>
+<programlisting>struct AgsRecallDependency {
+  GObject object;
+
+  GObject *dependency;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsRecallDependencyClass" role="struct">
+<title>struct AgsRecallDependencyClass</title>
+<indexterm zone="AgsRecallDependencyClass"><primary>AgsRecallDependencyClass</primary></indexterm>
+<programlisting>struct AgsRecallDependencyClass {
+  GObjectClass object;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-recall-dependency-find-dependency" role="function">
+<title>ags_recall_dependency_find_dependency ()</title>
+<indexterm zone="ags-recall-dependency-find-dependency"><primary>ags_recall_dependency_find_dependency</primary></indexterm>
+<programlisting><link linkend="GList"><returnvalue>GList</returnvalue></link> *             ags_recall_dependency_find_dependency
+                                                        (<parameter><link linkend="GList"><type>GList</type></link> *recall_dependencies</parameter>,
+                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *dependency</parameter>);</programlisting>
+<para>
+Retrieve dependency.
+</para><variablelist role="params">
+<varlistentry><term><emphasis>Returns</emphasis>&#160;:</term><listitem><simpara>Next match.</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2 id="ags-recall-dependency-find-dependency-by-provider" role="function">
+<title>ags_recall_dependency_find_dependency_by_provider ()</title>
+<indexterm zone="ags-recall-dependency-find-dependency-by-provider"><primary>ags_recall_dependency_find_dependency_by_provider</primary></indexterm>
+<programlisting><link linkend="GList"><returnvalue>GList</returnvalue></link> *             ags_recall_dependency_find_dependency_by_provider
+                                                        (<parameter><link linkend="GList"><type>GList</type></link> *recall_dependencies</parameter>,
+                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *provider</parameter>);</programlisting>
+<para>
+Retrieve dependency by provider.
+</para><variablelist role="params">
+<varlistentry><term><emphasis>Returns</emphasis>&#160;:</term><listitem><simpara>Next match.</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2 id="ags-recall-dependency-new" role="function">
+<title>ags_recall_dependency_new ()</title>
+<indexterm zone="ags-recall-dependency-new"><primary>ags_recall_dependency_new</primary></indexterm>
+<programlisting><link linkend="AgsRecallDependency"><returnvalue>AgsRecallDependency</returnvalue></link> * ags_recall_dependency_new         (<parameter><link linkend="GObject"><type>GObject</type></link> *dependency</parameter>);</programlisting>
+<para>
+Creates a <link linkend="AgsRecallDependency"><type>AgsRecallDependency</type></link>
+</para><variablelist role="params">
+<varlistentry><term><emphasis>Returns</emphasis>&#160;:</term><listitem><simpara>a new <link linkend="AgsRecallDependency"><type>AgsRecallDependency</type></link></simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2 id="ags-recall-dependency-resolve" role="function">
+<title>ags_recall_dependency_resolve ()</title>
+<indexterm zone="ags-recall-dependency-resolve"><primary>ags_recall_dependency_resolve</primary></indexterm>
+<programlisting><link linkend="GObject"><returnvalue>GObject</returnvalue></link> *           ags_recall_dependency_resolve       (<parameter><link linkend="AgsRecallDependency"><type>AgsRecallDependency</type></link> *recall_dependency</parameter>,
+                                                         <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>);</programlisting>
+<para>
+Resolve dependency.
+</para><variablelist role="params">
+<varlistentry><term><emphasis>Returns</emphasis>&#160;:</term><listitem><simpara>the <link linkend="AgsRecall"><type>AgsRecall</type></link> dependency.</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+
+</refsect1>
+
+</refentry>

@@ -1,0 +1,153 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsExpander">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsExpander.top_of_page">AgsExpander</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsExpander</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsExpander.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>#define             <link linkend="AGS-EXPANDER-CHILD:CAPS">AGS_EXPANDER_CHILD</link>                  (ptr)
+struct              <link linkend="AgsExpander">AgsExpander</link>;
+struct              <link linkend="AgsExpanderChild">AgsExpanderChild</link>;
+struct              <link linkend="AgsExpanderClass">AgsExpanderClass</link>;
+enum                <link linkend="AgsExpanderFlags">AgsExpanderFlags</link>;
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-expander-add">ags_expander_add</link>                    (<parameter><link linkend="AgsExpander"><type>AgsExpander</type></link> *expander</parameter>,
+                                                         <parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> x</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> y</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> width</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> height</parameter>);
+<link linkend="AgsExpanderChild"><returnvalue>AgsExpanderChild</returnvalue></link> *  <link linkend="ags-expander-child-alloc">ags_expander_child_alloc</link>            (<parameter><link linkend="guint"><type>guint</type></link> x</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> y</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> width</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> height</parameter>);
+<link linkend="AgsExpanderChild"><returnvalue>AgsExpanderChild</returnvalue></link> *  <link linkend="ags-expander-child-find">ags_expander_child_find</link>             (<parameter><link linkend="AgsExpander"><type>AgsExpander</type></link> *expander</parameter>,
+                                                         <parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *child</parameter>);
+<link linkend="AgsExpander"><returnvalue>AgsExpander</returnvalue></link> *       <link linkend="ags-expander-new">ags_expander_new</link>                    (<parameter><link linkend="guint"><type>guint</type></link> width</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> height</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-expander-remove">ags_expander_remove</link>                 (<parameter><link linkend="AgsExpander"><type>AgsExpander</type></link> *expander</parameter>,
+                                                         <parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>);
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsExpander.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsExpander.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AGS-EXPANDER-CHILD:CAPS" role="macro">
+<title>AGS_EXPANDER_CHILD()</title>
+<indexterm zone="AGS-EXPANDER-CHILD:CAPS"><primary>AGS_EXPANDER_CHILD</primary></indexterm>
+<programlisting>#define AGS_EXPANDER_CHILD(ptr) ((AgsExpanderChild *)(ptr))
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsExpander" role="struct">
+<title>struct AgsExpander</title>
+<indexterm zone="AgsExpander"><primary>AgsExpander</primary></indexterm>
+<programlisting>struct AgsExpander {
+  GtkExpander expander;
+
+  guint flags;
+
+  GtkTable *table;
+
+  GList *children;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsExpanderChild" role="struct">
+<title>struct AgsExpanderChild</title>
+<indexterm zone="AgsExpanderChild"><primary>AgsExpanderChild</primary></indexterm>
+<programlisting>struct AgsExpanderChild {
+  GtkWidget *child;
+
+  guint x;
+  guint y;
+
+  guint width;
+  guint height;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsExpanderClass" role="struct">
+<title>struct AgsExpanderClass</title>
+<indexterm zone="AgsExpanderClass"><primary>AgsExpanderClass</primary></indexterm>
+<programlisting>struct AgsExpanderClass {
+  GtkExpanderClass expander;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsExpanderFlags" role="enum">
+<title>enum AgsExpanderFlags</title>
+<indexterm zone="AgsExpanderFlags"><primary>AgsExpanderFlags</primary></indexterm>
+<programlisting>typedef enum {
+  AGS_EXPANDER_DRAW_BORDER        = 1,
+} AgsExpanderFlags;
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-expander-add" role="function">
+<title>ags_expander_add ()</title>
+<indexterm zone="ags-expander-add"><primary>ags_expander_add</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_expander_add                    (<parameter><link linkend="AgsExpander"><type>AgsExpander</type></link> *expander</parameter>,
+                                                         <parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> x</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> y</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> width</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> height</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-expander-child-alloc" role="function">
+<title>ags_expander_child_alloc ()</title>
+<indexterm zone="ags-expander-child-alloc"><primary>ags_expander_child_alloc</primary></indexterm>
+<programlisting><link linkend="AgsExpanderChild"><returnvalue>AgsExpanderChild</returnvalue></link> *  ags_expander_child_alloc            (<parameter><link linkend="guint"><type>guint</type></link> x</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> y</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> width</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> height</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-expander-child-find" role="function">
+<title>ags_expander_child_find ()</title>
+<indexterm zone="ags-expander-child-find"><primary>ags_expander_child_find</primary></indexterm>
+<programlisting><link linkend="AgsExpanderChild"><returnvalue>AgsExpanderChild</returnvalue></link> *  ags_expander_child_find             (<parameter><link linkend="AgsExpander"><type>AgsExpander</type></link> *expander</parameter>,
+                                                         <parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *child</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-expander-new" role="function">
+<title>ags_expander_new ()</title>
+<indexterm zone="ags-expander-new"><primary>ags_expander_new</primary></indexterm>
+<programlisting><link linkend="AgsExpander"><returnvalue>AgsExpander</returnvalue></link> *       ags_expander_new                    (<parameter><link linkend="guint"><type>guint</type></link> width</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> height</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-expander-remove" role="function">
+<title>ags_expander_remove ()</title>
+<indexterm zone="ags-expander-remove"><primary>ags_expander_remove</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_expander_remove                 (<parameter><link linkend="AgsExpander"><type>AgsExpander</type></link> *expander</parameter>,
+                                                         <parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>);</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

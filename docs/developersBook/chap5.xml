@@ -1,0 +1,68 @@
+<?xml version='1.0' encoding="utf-8"?>
+<chapter xmlns="http://docbook.org/ns/docbook"
+	 xmlns:xi="http://www.w3.org/2001/XInclude" version="5.0">
+  <title>Plugin interface to do abstraction</title>
+  <para>
+    The AgsPlugin interface defines some elementary functions like get_name() or set_name() and
+    therefor get_version(), set_version(), get_build_id() and set_build_id(). Further it contains
+    functions used to persist it using XML. This would be get_xml_type(), set_xml_type(), read()
+    and write(). And get_ports() and set_ports() to allow thread safe communication between the
+    different layers of Advanced Gtk+ Sequencer but to be said those functions accomplish for
+    persisting and restoring.
+  </para>
+
+    <mediaobject>
+      <imageobject>
+	<imagedata fileref="../images/AGS_plugin.svg" align="right" />
+      </imageobject>
+    </mediaobject>
+
+  <sect1>
+    <title>Hands-on</title>
+
+      <sect2>
+	<title>get_type()</title>
+	<para>
+	  First you need to tell object type system to use the AgsPluginInterface this is normally
+	  done in the classes get_type() function.
+	</para>
+
+	<example>
+	  <title>ags_echo_channel_get_type()</title>
+	  <programlisting language="C">
+<xi:include href="../listings/echo_get_type.c" parse="text" />
+	  </programlisting>
+	</example>
+      </sect2>
+
+      <sect2>
+	<title>plugin_interface_init()</title>
+	<para>
+	  Implement its set_ports() function.
+	</para>
+
+	<example>
+	  <title>ags_echo_channel_plugin_interface_init()</title>
+	  <programlisting language="C">
+<xi:include href="../listings/echo_plugin_interface_init.c" parse="text" />
+	  </programlisting>
+	</example>
+      </sect2>
+
+      <sect2>
+	<title>set_ports()</title>
+	<para>
+	  Finally load the ports restored of XML file.
+	</para>
+
+	<example>
+	  <title>ags_echo_channel_set_ports()</title>
+	  <programlisting language="C">
+<xi:include href="../listings/echo_set_ports.c" parse="text" />
+	  </programlisting>
+	</example>
+      </sect2>
+
+    </sect1>
+
+</chapter>

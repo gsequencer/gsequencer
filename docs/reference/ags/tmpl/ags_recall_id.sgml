@@ -1,0 +1,126 @@
+<!-- ##### SECTION Title ##### -->
+AgsRecallID
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT AgsRecallID ##### -->
+<para>
+
+</para>
+
+@object: 
+@flags: 
+@recycling: 
+@recycling_container: 
+
+<!-- ##### STRUCT AgsRecallIDClass ##### -->
+<para>
+
+</para>
+
+@object: 
+
+<!-- ##### ENUM AgsRecallIDFlags ##### -->
+<para>
+
+</para>
+
+@AGS_RECALL_ID_PLAYBACK: 
+@AGS_RECALL_ID_SEQUENCER: 
+@AGS_RECALL_ID_NOTATION: 
+@AGS_RECALL_ID_DUPLICATE: 
+@AGS_RECALL_ID_RESOLVE: 
+@AGS_RECALL_ID_INIT_PRE: 
+@AGS_RECALL_ID_INIT_INTER: 
+@AGS_RECALL_ID_INIT_POST: 
+@AGS_RECALL_ID_PRE: 
+@AGS_RECALL_ID_INTER: 
+@AGS_RECALL_ID_POST: 
+@AGS_RECALL_ID_CANCEL: 
+
+<!-- ##### FUNCTION ags_recall_id_add ##### -->
+<para>
+
+</para>
+
+@recall_id_list: 
+@recall_id: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_recall_id_find_parent_recycling_container ##### -->
+<para>
+
+</para>
+
+@recall_id_list: 
+@parent_recycling_container: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_recall_id_find_recycling_container ##### -->
+<para>
+
+</para>
+
+@recall_id_list: 
+@recycling_container: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_recall_id_get_run_stage ##### -->
+<para>
+
+</para>
+
+@id: 
+@stage: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_recall_id_new ##### -->
+<para>
+
+</para>
+
+@recycling: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_recall_id_set_run_stage ##### -->
+<para>
+
+</para>
+
+@recall_id: 
+@stage: 
+
+
+<!-- ##### FUNCTION ags_recall_id_unset_run_stage ##### -->
+<para>
+
+</para>
+
+@recall_id: 
+@stage: 
+
+

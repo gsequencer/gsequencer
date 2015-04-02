@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding="utf-8"?>
+<chapter xmlns="http://docbook.org/ns/docbook"
+	 xmlns:xi="http://www.w3.org/2001/XInclude" version="5.0">
+  <title>Port to safe read/write</title>
+  <para>
+    The AgsPort object may contain primitive types as well objects. The read/write operations are
+    generally done by atomic operations. There exists interfacing AgsTaskThread functions but not
+    used, for now.
+    Representing objects should implement AgsPortletInterface.
+  </para>
+
+  <sect1>
+    <title>Portlet interface safe read/write properties</title>
+    <para>
+      The AgsPortletInterface is used where a GObject is represented by the assigned port. The
+      implemententing class is responsible for thread safe get/set properties. Most common way
+      is using mutices.
+    </para>
+
+    <mediaobject>
+      <imageobject>
+	<imagedata fileref="../images/AGS_portlet.svg" align="right" />
+      </imageobject>
+    </mediaobject>
+
+  </sect1>
+
+</chapter>

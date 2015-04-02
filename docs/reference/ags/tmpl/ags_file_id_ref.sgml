@@ -1,0 +1,90 @@
+<!-- ##### SECTION Title ##### -->
+AgsFileIdRef
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### MACRO AGS_FILE_ID_REF_RESOLVE_DATA ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO AGS_FILE_ID_REF_SERIALIZE_DATA ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO AGS_FILE_RESOLVE ##### -->
+<para>
+
+</para>
+
+@f: 
+
+
+<!-- ##### STRUCT AgsFileIdRef ##### -->
+<para>
+
+</para>
+
+@object: 
+@main: 
+@file: 
+@node: 
+@xpath: 
+@ref: 
+
+<!-- ##### STRUCT AgsFileIdRefClass ##### -->
+<para>
+
+</para>
+
+@object: 
+@resolved: 
+
+<!-- ##### USER_FUNCTION AgsFileResolve ##### -->
+<para>
+
+</para>
+
+@void: 
+
+
+<!-- ##### FUNCTION ags_file_id_ref_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_file_id_ref_resolved ##### -->
+<para>
+
+</para>
+
+@file_id_ref: 
+
+

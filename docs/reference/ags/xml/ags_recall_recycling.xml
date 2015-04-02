@@ -1,0 +1,103 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsRecallRecycling">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsRecallRecycling.top_of_page">AgsRecallRecycling</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsRecallRecycling</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsRecallRecycling.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>struct              <link linkend="AgsRecallRecycling">AgsRecallRecycling</link>;
+struct              <link linkend="AgsRecallRecyclingClass">AgsRecallRecyclingClass</link>;
+enum                <link linkend="AgsRecallRecyclingFlags">AgsRecallRecyclingFlags</link>;
+<link linkend="GList"><returnvalue>GList</returnvalue></link> *             <link linkend="ags-recall-recycling-get-child-source">ags_recall_recycling_get_child_source</link>
+                                                        (<parameter><link linkend="AgsRecallRecycling"><type>AgsRecallRecycling</type></link> *recall_recycling</parameter>);
+<link linkend="AgsRecallRecycling"><returnvalue>AgsRecallRecycling</returnvalue></link> * <link linkend="ags-recall-recycling-new">ags_recall_recycling_new</link>           ();
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsRecallRecycling.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsRecallRecycling.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AgsRecallRecycling" role="struct">
+<title>struct AgsRecallRecycling</title>
+<indexterm zone="AgsRecallRecycling"><primary>AgsRecallRecycling</primary></indexterm>
+<programlisting>struct AgsRecallRecycling {
+  AgsRecall recall;
+
+  guint flags;
+
+  guint audio_channel;
+
+  AgsRecycling *destination;
+  gulong destination_add_audio_signal_handler;
+  gulong destination_remove_audio_signal_handler;
+
+  AgsRecycling *source;
+  gulong source_add_audio_signal_handler;
+  gulong source_remove_audio_signal_handler;
+
+  AgsAudioSignal *child_destination;
+  GList *child_source;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsRecallRecyclingClass" role="struct">
+<title>struct AgsRecallRecyclingClass</title>
+<indexterm zone="AgsRecallRecyclingClass"><primary>AgsRecallRecyclingClass</primary></indexterm>
+<programlisting>struct AgsRecallRecyclingClass {
+  AgsRecallClass recall;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsRecallRecyclingFlags" role="enum">
+<title>enum AgsRecallRecyclingFlags</title>
+<indexterm zone="AgsRecallRecyclingFlags"><primary>AgsRecallRecyclingFlags</primary></indexterm>
+<programlisting>typedef enum {
+  AGS_RECALL_RECYCLING_GARBAGE_COLLECTOR                = 1,
+  AGS_RECALL_RECYCLING_MAP_CHILD_DESTINATION            = 1 &lt;&lt; 1,
+  AGS_RECALL_RECYCLING_MAP_CHILD_SOURCE                 = 1 &lt;&lt; 2,
+  AGS_RECALL_RECYCLING_CREATE_DESTINATION_ON_MAP_SOURCE = 1 &lt;&lt; 3,
+} AgsRecallRecyclingFlags;
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-recall-recycling-get-child-source" role="function">
+<title>ags_recall_recycling_get_child_source ()</title>
+<indexterm zone="ags-recall-recycling-get-child-source"><primary>ags_recall_recycling_get_child_source</primary></indexterm>
+<programlisting><link linkend="GList"><returnvalue>GList</returnvalue></link> *             ags_recall_recycling_get_child_source
+                                                        (<parameter><link linkend="AgsRecallRecycling"><type>AgsRecallRecycling</type></link> *recall_recycling</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-recall-recycling-new" role="function">
+<title>ags_recall_recycling_new ()</title>
+<indexterm zone="ags-recall-recycling-new"><primary>ags_recall_recycling_new</primary></indexterm>
+<programlisting><link linkend="AgsRecallRecycling"><returnvalue>AgsRecallRecycling</returnvalue></link> * ags_recall_recycling_new           ();</programlisting>
+<para>
+Creates a <link linkend="AgsRecallRecycling"><type>AgsRecallRecycling</type></link>
+</para><variablelist role="params">
+<varlistentry><term><emphasis>Returns</emphasis>&#160;:</term><listitem><simpara>a new <link linkend="AgsRecallRecycling"><type>AgsRecallRecycling</type></link></simpara></listitem></varlistentry>
+</variablelist></refsect2>
+
+</refsect1>
+
+</refentry>

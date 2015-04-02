@@ -1,0 +1,91 @@
+<!-- ##### SECTION Title ##### -->
+AgsTimestampThread
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### MACRO AGS_MICROSECONDS_PER_SECOND ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO AGS_TIMESTAMP_THREAD_DEFAULT_BPM ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO AGS_TIMESTAMP_THREAD_DEFAULT_BUFFER_SIZE ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO AGS_TIMESTAMP_THREAD_DEFAULT_JIFFIE ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO AGS_TIMESTAMP_THREAD_DEFAULT_SAMPLERATE ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO AGS_TIMESTAMP_THREAD_DEFAULT_TIC ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### STRUCT AgsTimestampThread ##### -->
+<para>
+
+</para>
+
+@thread: 
+@current_timestamp: 
+@current_latency: 
+@timestamp: 
+
+<!-- ##### STRUCT AgsTimestampThreadClass ##### -->
+<para>
+
+</para>
+
+@thread: 
+
+<!-- ##### FUNCTION ags_timestamp_thread_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

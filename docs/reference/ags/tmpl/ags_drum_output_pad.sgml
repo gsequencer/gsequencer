@@ -1,0 +1,55 @@
+<!-- ##### SECTION Title ##### -->
+AgsDrumOutputPad
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT AgsDrumOutputPad ##### -->
+<para>
+
+</para>
+
+@pad: 
+@flags: 
+
+<!-- ##### STRUCT AgsDrumOutputPadClass ##### -->
+<para>
+
+</para>
+
+@pad: 
+
+<!-- ##### ENUM AgsDrumOutputPadFlags ##### -->
+<para>
+
+</para>
+
+@AGS_DRUM_OUTPUT_PAD_PLAY_DONE: 
+
+<!-- ##### FUNCTION ags_drum_output_pad_new ##### -->
+<para>
+
+</para>
+
+@channel: 
+@Returns: 
+
+

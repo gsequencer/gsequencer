@@ -1,0 +1,33 @@
+<!-- ##### SECTION Title ##### -->
+ags_container
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### FUNCTION ags_container_add_all ##### -->
+<para>
+
+</para>
+
+@container: 
+@list: 
+
+

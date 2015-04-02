@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsCopyPatternAudioRun">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsCopyPatternAudioRun.top_of_page">AgsCopyPatternAudioRun</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsCopyPatternAudioRun</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsCopyPatternAudioRun.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>struct              <link linkend="AgsCopyPatternAudioRun">AgsCopyPatternAudioRun</link>;
+struct              <link linkend="AgsCopyPatternAudioRunClass">AgsCopyPatternAudioRunClass</link>;
+<link linkend="AgsCopyPatternAudioRun"><returnvalue>AgsCopyPatternAudioRun</returnvalue></link> * <link linkend="ags-copy-pattern-audio-run-new">ags_copy_pattern_audio_run_new</link> (<parameter><link linkend="AgsCountBeatsAudioRun"><type>AgsCountBeatsAudioRun</type></link> *count_beats_audio_run</parameter>);
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsCopyPatternAudioRun.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsCopyPatternAudioRun.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AgsCopyPatternAudioRun" role="struct">
+<title>struct AgsCopyPatternAudioRun</title>
+<indexterm zone="AgsCopyPatternAudioRun"><primary>AgsCopyPatternAudioRun</primary></indexterm>
+<programlisting>struct AgsCopyPatternAudioRun {
+  AgsRecallAudioRun recall_audio_run;
+
+  guint hide_ref;
+  guint hide_ref_counter;
+
+  AgsCountBeatsAudioRun *count_beats_audio_run;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsCopyPatternAudioRunClass" role="struct">
+<title>struct AgsCopyPatternAudioRunClass</title>
+<indexterm zone="AgsCopyPatternAudioRunClass"><primary>AgsCopyPatternAudioRunClass</primary></indexterm>
+<programlisting>struct AgsCopyPatternAudioRunClass {
+  AgsRecallAudioRunClass recall_audio_run;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-copy-pattern-audio-run-new" role="function">
+<title>ags_copy_pattern_audio_run_new ()</title>
+<indexterm zone="ags-copy-pattern-audio-run-new"><primary>ags_copy_pattern_audio_run_new</primary></indexterm>
+<programlisting><link linkend="AgsCopyPatternAudioRun"><returnvalue>AgsCopyPatternAudioRun</returnvalue></link> * ags_copy_pattern_audio_run_new (<parameter><link linkend="AgsCountBeatsAudioRun"><type>AgsCountBeatsAudioRun</type></link> *count_beats_audio_run</parameter>);</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

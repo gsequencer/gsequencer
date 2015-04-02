@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsRemoveRecall">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsRemoveRecall.top_of_page">AgsRemoveRecall</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsRemoveRecall</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsRemoveRecall.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>struct              <link linkend="AgsRemoveRecall">AgsRemoveRecall</link>;
+struct              <link linkend="AgsRemoveRecallClass">AgsRemoveRecallClass</link>;
+<link linkend="AgsRemoveRecall"><returnvalue>AgsRemoveRecall</returnvalue></link> *   <link linkend="ags-remove-recall-new">ags_remove_recall_new</link>               (<parameter><link linkend="GObject"><type>GObject</type></link> *context</parameter>,
+                                                         <parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> is_play</parameter>);
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsRemoveRecall.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsRemoveRecall.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AgsRemoveRecall" role="struct">
+<title>struct AgsRemoveRecall</title>
+<indexterm zone="AgsRemoveRecall"><primary>AgsRemoveRecall</primary></indexterm>
+<programlisting>struct AgsRemoveRecall {
+  AgsTask task;
+
+  GObject *context;
+
+  AgsRecall *recall;
+  gboolean is_play;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsRemoveRecallClass" role="struct">
+<title>struct AgsRemoveRecallClass</title>
+<indexterm zone="AgsRemoveRecallClass"><primary>AgsRemoveRecallClass</primary></indexterm>
+<programlisting>struct AgsRemoveRecallClass {
+  AgsTaskClass task;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-remove-recall-new" role="function">
+<title>ags_remove_recall_new ()</title>
+<indexterm zone="ags-remove-recall-new"><primary>ags_remove_recall_new</primary></indexterm>
+<programlisting><link linkend="AgsRemoveRecall"><returnvalue>AgsRemoveRecall</returnvalue></link> *   ags_remove_recall_new               (<parameter><link linkend="GObject"><type>GObject</type></link> *context</parameter>,
+                                                         <parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> is_play</parameter>);</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

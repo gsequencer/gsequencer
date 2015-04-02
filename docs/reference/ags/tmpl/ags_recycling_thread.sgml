@@ -1,0 +1,91 @@
+<!-- ##### SECTION Title ##### -->
+AgsRecyclingThread
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### MACRO AGS_RECYCLING_THREAD_DEFAULT_JIFFIE ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### STRUCT AgsRecyclingThread ##### -->
+<para>
+
+</para>
+
+@thread: 
+@flags: 
+@iterator_thread: 
+@iteration_mutex: 
+@iteration_cond: 
+
+<!-- ##### STRUCT AgsRecyclingThreadClass ##### -->
+<para>
+
+</para>
+
+@thread: 
+@play_channel: 
+@play_audio: 
+
+<!-- ##### ENUM AgsRecyclingThreadFlags ##### -->
+<para>
+
+</para>
+
+@AGS_RECYCLING_THREAD_RUNNING: 
+@AGS_RECYCLING_THREAD_WAIT: 
+@AGS_RECYCLING_THREAD_DONE: 
+
+<!-- ##### FUNCTION ags_recycling_thread_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_recycling_thread_play_audio ##### -->
+<para>
+
+</para>
+
+@recycling_thread: 
+@output: 
+@audio: 
+@recall_id: 
+@stage: 
+
+
+<!-- ##### FUNCTION ags_recycling_thread_play_channel ##### -->
+<para>
+
+</para>
+
+@recycling_thread: 
+@channel: 
+@recall_id: 
+@stage: 
+
+

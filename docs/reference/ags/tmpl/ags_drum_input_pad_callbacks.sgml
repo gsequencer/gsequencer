@@ -1,0 +1,51 @@
+<!-- ##### SECTION Title ##### -->
+ags_drum_input_pad_callbacks
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### FUNCTION ags_drum_input_pad_edit_callback ##### -->
+<para>
+
+</para>
+
+@toggle_button: 
+@drum_input_pad: 
+
+
+<!-- ##### FUNCTION ags_drum_input_pad_open_callback ##### -->
+<para>
+
+</para>
+
+@button: 
+@drum_input_pad: 
+
+
+<!-- ##### FUNCTION ags_drum_input_pad_play_callback ##### -->
+<para>
+
+</para>
+
+@button: 
+@drum_input_pad: 
+
+

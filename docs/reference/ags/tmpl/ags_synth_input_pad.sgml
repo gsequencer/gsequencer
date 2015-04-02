@@ -1,0 +1,49 @@
+<!-- ##### SECTION Title ##### -->
+AgsSynthInputPad
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT AgsSynthInputPad ##### -->
+<para>
+
+</para>
+
+@pad: 
+@name: 
+@xml_type: 
+
+<!-- ##### STRUCT AgsSynthInputPadClass ##### -->
+<para>
+
+</para>
+
+@pad: 
+
+<!-- ##### FUNCTION ags_synth_input_pad_new ##### -->
+<para>
+
+</para>
+
+@channel: 
+@Returns: 
+
+

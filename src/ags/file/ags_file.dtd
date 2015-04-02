@@ -1,0 +1,942 @@
+<!ENTITY ags-default-version "0.4.2">
+<!ENTITY ags-effects-default-version "0.4.2">
+<!ENTITY ags-clipboard-default-version "0.4.2">
+<!ENTITY ags-led "AgsLed">
+<!ENTITY ags-vindicator "AgsVIndicator">
+<!ENTITY ags-hindicator "AgsHIndicator">
+<!ENTITY gtk-label "GtkLabel">
+<!ENTITY ags-waveform "AgsWaveform">
+<!ENTITY gtk-button "GtkButton">
+<!ENTITY gtk-toggle-button "GtkToggleButton">
+<!ENTITY gtk-check-button "GtkCheckButton">
+<!ENTITY gtk-spin-button "GtkSpinButton">
+<!ENTITY gtk-vscale "GtkVScale">
+<!ENTITY gtk-hscale "GtkHScale">
+<!ENTITY ags-dial "AgsDial">
+<!ENTITY ags-cartesian "AgsCartesian">
+
+<!-- utility -->
+<!ELEMENT ags-value PCDATA>
+<!ATTLIST ags-value
+	  id               ID         #REQUIRED
+          type             CDATA      #REQUIRED
+	  >
+
+<!ELEMENT ags-parameter (ags-value)*>
+<!ATTLIST ags-parameter
+	  id               ID         #REQUIRED
+	  name             CDATA      #IMPLIED
+	  >
+
+<!ELEMENT ags-dependency-list (ags-dependency*)>
+<!ATTLIST ags-dependency-list
+	  id               ID         #REQUIRED
+	  >
+
+<!ELEMENT ags-dependency EMPTY>
+<!ATTLIST ags-dependency
+	  id               ID         #REQUIRED
+	  xpath            CDATA      #REQUIRED
+	  >
+
+<!ELEMENT ags-object (ags-widget | ags-plugin | ags-parameter)>
+<!ATTLIST ags-object
+	  id                   ID         #REQUIRED
+	  >
+
+<!ELEMENT ags-plugin EMPTY
+	  type                   CDATA      #REQUIRED
+	  id                     ID         #REQUIRED
+	  version                CDATA      #REQUIRED
+	  build-id               CDATA      #REQUIRED
+	  flags                  PCDATA     #REQUIRED	  
+	  >
+
+<!-- root node -->
+<!ELEMENT ags (ags-clip-board?, ags-script-list?, ags-cluster?, ags-client?, ags-server?, ags-main?, ags-embedded-audio-list?, ags-file-link-list?, ags-history?)>
+<!ATTLIST ags
+	  version          CDATA      #REQUIRED
+	  build-id         CDATA      #REQUIRED
+	  embedded-audio   CDATA      "FALSE"
+	  >
+
+<!ELEMENT ags-offset (#CDATA)>
+<!ATTLIST ags-offset
+	  offset-type      CDATA      "date-time"
+	  offset-format    CDATA      "YYYY-MM-DD H:M:S.N"
+	  >
+
+<!ELEMENT ags-tic (#NMTOKEN)>
+
+<!-- clipboard -->
+<!ELEMENT ags-clip-board (#CDATA)>
+<!ATTLIST ags-clip-board
+          id               ID         #REQUIRED
+          >
+
+<!-- script -->
+<!ELEMENT ags-script-list (ags-script*)>
+
+<!ELEMENT ags-script (#CDATA)>
+<!ATTLIST ags-script
+	  id               ID         #REQUIRED
+	  version          CDATA      #REQUIRED
+	  build-id         CDATA      #REQUIRED
+	  filename         CDATA      #REQUIRED
+	  >
+
+<!-- cluster -->
+<!ELEMENT ags-cluster (ags-client-list)>
+<!ATTLIST ags-cluster
+	  id               ID         #REQUIRED
+	  version          CDATA      #REQUIRED
+	  build-id         CDATA      #REQUIRED
+	  >
+
+<!-- TODO:JK: define me -->
+
+<!-- client -->
+<!ATTLIST ags-client-list (ags-client*)>
+<!ATTLIST ags-client-list
+	  id               ID         #REQUIRED
+	  >
+
+<!ELEMENT ags-client>
+<!ATTLIST ags-client
+	  id               ID         #REQUIRED
+	  version          CDATA      #REQUIRED
+	  build-id         CDATA      #REQUIRED
+	  socket-type      CDATA      "IPv4"
+	  remote-address   CDATA      #REQUIRED
+	  remote-port      CDATA      #REQUIRED
+	  remote-username  CDATA      #REQUIRED
+	  remote-password  CDATA      #REQUIRED
+	  local-address    CDATA      #REQUIRED
+	  local-port       CDATA      #IMPLIED
+	  proxy-protocol   CDATA      "HTTPS"
+	  proxy-address    CDATA      #IMPLIED
+	  proxy-port       CDATA      #IMPLIED
+	  proxy-username   CDATA      #IMPLIED
+	  proxy-password   CDATA      #IMPLIED
+	  security         CDATA      "SSLv3"
+	  public-key       CDATA      #REQUIRED
+	  private-key      CDATA      #IMPLIED
+	  log-file         CDATA      #REQUIRED
+	  >
+
+<!-- server -->
+<!ELEMENT ags-server (ags-registry, ags-remote-task-list, ags-timestamp-list)>
+<!ATTLIST ags-server
+          id               ID         #REQUIRED
+	  version          CDATA      #REQUIRED
+	  build-id         CDATA      #REQUIRED
+	  autostart        CDATA      #REQUIRED
+	  socket-type      CDATA      "IPv4"
+	  address          CDATA      #REQUIRED
+	  port             CDATA      #REQUIRED
+	  username         CDATA      #REQUIRED
+	  password         CDATA      #REQUIRED
+	  security         CDATA      "SSLv3"
+	  public-key       CDATA      #REQUIRED
+	  private-key      CDATA      #IMPLIED
+	  log-file         CDATA      #REQUIRED
+	  >
+
+<!ELEMENT ags-registry (ags-registry-entry-list)>
+<!ATTLIST ags-registry
+          id               ID         #REQUIRED
+	  id-type          CDATA      "hex-string"
+	  id-length        NMTOKEN    16
+	  indicated        CDATA      "FALSE"
+	  >
+
+<!ELEMENT ags-registry-entry-list (ags-registry-entry*)>
+<!ATTLIST ags-registry-entry-list
+	  id               ID         #REQUIRED
+	  >
+
+<!ELEMENT ags-registry-entry EMPTY>
+<!ATTLIST ags-registry-entry
+	  id               ID         #REQUIRED
+	  entry            IDREF      #REQUIRED
+	  key              PCDATA     #REQUIRED
+	  >
+
+<!ELEMENT ags-remote-task-list (ags-remote-task*)>
+<!ATTLIST ags-remote-task-list
+	  id               ID         #REQUIRED
+	  >
+
+<!ELEMENT ags-remote-task (ags-timestamp?)>
+<!ATTLIST ags-remote-task
+	  id               ID         #REQUIRED
+	  task             IDREF      #REQUIRED
+	  launched         CDATA      #REQUIRED
+	  >
+
+<!-- main -->
+<!ELEMENT ags-main (ags-audio-loop, ags-devout-list, ags-window, ags-thread, ags-thread-pool)>
+<!ATTLIST ags-main
+	  id               ID         #REQUIRED
+	  version          CDATA      #REQUIRED
+	  build-id         CDATA      #REQUIRED
+	  log-file         NMTOKEN    #REQUIRED
+	  >
+
+<!-- thread -->
+<!ELEMENT ags-thread-list (ags-thread*)>
+<!ATTLIST ags-thread-list
+	  id               ID         #REQUIRED
+	  >
+
+<!ELEMENT ags-thread (ags-thread-list, (ags-audio-loop | ags-task-thread | ags-gui-thread |ags-devout-thread | ags-export-thread | ags-recycling-thread | ags-timestamp-thread | ags-single-thread))>
+<!ATTLIST ags-thread
+	  type             CDATA      #REQUIRED
+	  id               ID         #REQUIRED
+	  flags            PCDATA     #REQUIRED
+	  devout           CDATA      #REQUIRED
+>
+
+<!ELEMENT ags-thread-pool (ags-parameter?)>
+<!ATTLIST ags-thread-pool
+	  id               ID         #REQUIRED
+	  flags            PCDATA     #REQUIRED
+>
+
+<!ELEMENT ags-audio-loop (ags-parameter, ags-parameter, ags-parameter, ags-parameter)>
+<!ATTLIST ags-audio-loop
+	  id               ID         #REQUIRED
+	  flags            PCDATA     #REQUIRED
+	  frequency        NMTOKEN    #REQUIRED
+>
+
+<!ELEMENT ags-task-thread EMPTY>
+
+<!ELEMENT ags-gui-thread EMPTY>
+
+<!ELEMENT ags-devout-thread EMPTY>
+
+<!ELEMENT ags-export-thread EMPTY>
+
+<!ELEMENT ags-recycling-thread EMPTY>
+
+<!ELEMENT ags-timestamp-thread EMPTY>
+
+<!ELEMENT ags-single-thread EMPTY>
+
+<!-- audio -->
+<!ELEMENT ags-devout-list (ags-devout*)>
+<!ATTLIST ags-devout-list
+	  id               ID         #REQUIRED
+	  >
+
+<!ELEMENT ags-devout (ags-audio-list, ags-delay-data, ags-attack-data)>
+<!ATTLIST ags-devout
+	  id               ID         #REQUIRED
+	  flags            PCDATA     #REQUIRED
+	  dsp-channels     NMTOKEN    2
+	  pcm-channels     NMTOKEN    2
+	  bits             NMTOKEN    16
+	  buffer-size      NMTOKEN    128
+	  frequency        NMTOKEN    44100 <!-- renamed frequence -->
+	  bpm              NMTOKEN    120.0
+	  delay-counter    NMTOKEN    #REQUIRED
+	  device           CDATA      "default"
+	  >
+
+<!ELEMENT ags-delay-data (NMTOKEN)*> <!-- default start 84 -->
+<!ATTLIST ags-delay-data
+	  checksum        PCDATA      #REQUIRED
+	  >
+
+<!ELEMENT ags-attack-data (NMTOKEN)*>
+<!ATTLIST ags-attack-data
+	  checksum        PCDATA      #REQUIRED
+	  >
+
+<!ELEMENT ags-devout-play-list (ags-devout-play*)>
+<!ATTLIST ags-devout-play-list
+	  id               ID         #REQUIRED
+	  >
+
+<!ELEMENT ags-devout-play EMPTY>
+<!ATTLIST ags-devout-play
+	  id               ID         #REQUIRED
+	  flags            PCDATA     #REQUIRED
+	  source           IDREF      #REQUIRED
+	  audio-channel    NMTOKEN    #REQUIRED
+	  >
+
+<!ELEMENT ags-audio-list ags-audio>
+<!ATTLIST ags-audio-list
+	  id               ID         #REQUIRED
+	  >
+
+<!ELEMENT ags-audio (ags-channel-list, ags-channel-list, ags-recall-list, ags-recall-list, ags-notation-list)>
+<!ATTLIST ags-audio
+	  id               ID         #REQUIRED
+	  flags            PCDATA     #REQUIRED
+	  devout           CDATA      #REQUIRED
+	  sequence-length  NMTOKEN    16
+	  audio-channels   NMTOKEN    2
+	  output-pads      NMTOKEN    1
+	  input-pads       NMTOKEN    1
+	  >
+
+<!ELEMENT ags-channel-list (ags-channel*)>
+<!ATTLIST ags-channel-list
+	  id               ID         #REQUIRED
+	  >
+
+<!ELEMENT ags-channel (ags-recycling?, ags-recall-list, ags-recall-list, ags-pattern-list?, (ags-output|ags-input), ags-devout-play)>
+<!ATTLIST ags-channel
+          id               ID         #REQUIRED
+	  flags            PCDATA     #REQUIRED
+	  pad              NMTOKEN    #REQUIRED
+	  audio-channel    NMTOKEN    #REQUIRED
+	  link             IDREF      #REQUIRED
+	  >
+
+<!ELEMENT ags-output EMPTY>
+<!ELEMENT ags-output
+	  id               ID         #REQUIRED
+	  >
+
+<!ELEMENT ags-input (ags-file-link?)>
+<!ELEMENT ags-input
+	  id               ID         #REQUIRED
+	  >
+
+<!ELEMENT ags-recycling (ags-audio-signal-list)>
+<!ATTLIST ags-recycling
+          id               ID         #REQUIRED
+	  flags            PCDATA     #REQUIRED
+          >
+
+<!ELEMENT ags-audio-signal-list (ags-audio-signal*)>
+<!ATTLIST ags-audio-signal-list
+	  id               ID         #REQUIRED
+	  >
+
+<!ELEMENT ags-audio-signal (ags-timestamp,ags-stream-list)>
+<!ATTLIST ags-audio-signal
+          id               ID         #REQUIRED
+	  flags            PCDATA     #REQUIRED
+	  samplerate       NMTOKEN    #REQUIRED
+	  buffer-size      NMTOKEN    #REQUIRED
+	  resolution       NMTOKEN    #REQUIRED
+	  length           NMTOKEN    #REQUIRED
+	  last-frame       NMTOKEN    #REQUIRED
+	  loop-start       NMTOKEN    #REQUIRED
+	  loop-end         NMTOKEN    #REQUIRED
+	  delay            NMTOKEN    #IMPLIED
+	  attack           NMTOKEN    #REQUIRED
+	  >
+
+<!ELEMENT ags-stream-list (ags-stream*)>
+<!ATTLIST ags-stream-list
+	  id               ID         #REQUIRED
+	  >
+
+<!ELEMENT ags-stream (#PCDATA)>
+<!ATTLIST ags-stream
+	  id               ID         #REQUIRED
+	  index            NMTOKEN    #REQUIRED
+	  encoding         CDATA      "base64"
+	  demuxer          CDATA      "raw"
+	  >
+
+<!ELEMENT ags-pattern-list (ags-pattern*)>
+<!ATTLIST ags-pattern-list
+	  id               ID         #REQUIRED
+	  >
+
+<!ELEMENT ags-pattern (ags-timestamp,ags-pattern-data-list)>
+<!ATTLIST ags-pattern
+	  id               ID         #REQUIRED
+	  port             IDREF      #REQUIRED
+	  dim-1st-level    NMTOKEN    1
+	  dim-2nd-level    NMTOKEN    1
+	  length           NMTOKEN    32
+	  <!-- TODO:JK: implement following -->
+	  delay            NMTOKEN    #REQUIRED
+	  attack           NMTOKEN    #REQUIRED
+	  >
+
+<!ELEMENT ags-pattern-data-list (ags-pattern-data*)>
+<!ATTLIST ags-pattern-data-list
+	  id               ID         #REQUIRED
+	  >
+
+<!ELEMENT ags-pattern-data (#CDATA)>
+<!ATTLIST ags-pattern-data
+	  id               ID         #REQUIRED
+	  flags            PCDATA     #REQUIRED
+	  index-1st-level  NMTOKEN    #REQUIRED
+	  index-2nd-level  NMTOKEN    #REQUIRED
+	  coding           CDATA      "human readable"
+	  >
+
+<!ELEMENT ags-notation-list (ags-notation*)>
+<!ATTLIST ags-notation-list
+	  id               ID         #REQUIRED
+	  >
+
+<!ELEMENT ags-notation (ags-timestamp, ags-note-list)>
+<!ATTLIST ags-notation
+	  id               ID         #REQUIRED
+	  port             IDREF      #REQUIRED
+	  flags            PCDATA     #REQUIRED
+	  audio-channel    NMTOKEN    #REQUIRED
+	  key              CDATA      "violine"
+	  base-frequency   NMTOKEN    440.0
+	  bpm              NMTOKEN    120.0
+	  max-note-length  NMTOKEN    16.0
+	  loop-start       NMTOKEN    #IMPLIED
+	  loop-end         NMTOKEN    #IMPLIED
+	  <!-- TODO:JK: implement following -->
+	  delay            NMTOKEN    #REQUIRED
+	  attack           NMTOKEN    #REQUIRED
+	  >
+
+<!ELEMENT ags-note-list (ags-note*)>
+<!ATTLIST ags-note-list
+	  id               ID        #REQUIRED
+	  >
+
+<!ELEMENT ags-note EMPTY>
+<!ATTLIST ags-note
+	  id               ID         #REQUIRED
+	  flags            PCDATA     #REQUIRED
+	  x0               NMTOKEN    #REQUIRED
+	  x1               NMTOKEN    #REQUIRED
+	  y                NMTOKEN    #REQUIRED
+	  name             CDATA      #IMPLIED
+	  frequency        NMTOKEN    #IMPLIED
+	  >
+
+<!ELEMENT ags-task-list (ags-task*)>
+<!ATTLIST ags-task-list
+	  id               ID         #REQUIRED
+	  >
+
+<!ELEMENT ags-task (ags-parameter)>
+<!ATTLIST ags-task
+	  type             CDATA      #REQUIRED
+	  id               ID         #REQUIRED
+	  flags            PCDATA     #REQUIRED
+	  name             CDATA      #REQUIRED
+	  delay            NMTOKEN    #REQUIRED
+	  error-message    CDATA      #IMPLIED
+	  >
+
+<!-- recalls -->
+<!ELEMENT ags-recall-list (ags-recall*)>
+<!ATTLIST ags-recall-list
+	  id               ID         #REQUIRED
+	  is-play          CDATA      #REQUIRED
+	  >
+
+<!ELEMENT ags-recall ((ags-recall-audio|ags-recall-audio-run|ags-recall-channel|ags-recall-channel-run|ags-recall-recycling|ags-recall-audio-signal)?, ags-recall-list?, ags-port-list?, ags-dependency-list?,  ags-parameter?)>
+<!ATTLIST ags-recall
+	  type                   CDATA      #REQUIRED
+	  id                     ID         #REQUIRED
+	  version                CDATA      #REQUIRED
+	  build-id               CDATA      #REQUIRED
+	  flags                  PCDATA     #REQUIRED
+	  devout                 CDATA      #REQUIRED
+	  effect                 CDATA      #REQUIRED
+	  name                   CDATA      #REQUIRED
+	  control-count	         NMTOKEN    #REQUIRED
+	  control-types          CDATA      #REQUIRED
+	  control-property-name  CDATA      #REQUIRED
+	  control-property-value CDATA      #REQUIRED
+	  next-grouped           IDREF      #REQUIRED
+	  >
+
+<!ELEMENT ags-recall-container-list (ags-recall-container*)>
+<!ATTLIST ags-recall-container-list
+	  id               ID         #REQUIRED
+	  >
+
+<!ELEMENT ags-recall-container (ags-parameter)>
+<!ATTLIST ags-recall-container
+	  id               ID         #REQUIRED
+	  >
+
+<!ELEMENT ags-recall-audio EMPTY>
+<!ATTLIST ags-recall-audio
+	  id               ID         #REQUIRED
+	  audio-ref        IDREF      "../"
+	  >
+
+<!ELEMENT ags-recall-audio-run EMPTY>
+<!ATTLIST ags-recall-audio-run
+	  id               ID         #REQUIRED
+	  audio-ref        IDREF      "../"
+	  >
+
+<!ELEMENT ags-recall-channel EMPTY>
+<!ATTLIST ags-recall-channel
+	  id               ID         #REQUIRED
+	  channel-ref      IDREF      "../"
+	  >
+
+<!ELEMENT ags-recall-channel-run EMPTY>
+<!ATTLIST ags-recall-channel-run
+	  id               ID         #REQUIRED
+	  channel-ref      IDREF      "../"
+	  >
+
+<!ELEMENT ags-recall-recycling EMPTY>
+<!ATTLIST ags-recall-recycling
+	  id               ID         #REQUIRED
+	  recycling-ref    IDREF      #REQUIRED
+	  >
+
+<!ELEMENT ags-recall-audio-signal EMPTY>
+<!ATTLIST ags-recall-audio-signal
+	  id               ID         #REQUIRED
+	  audio-signal-ref IDREF      #REQUIRED
+	  >
+
+<!ELEMENT ags-port-list (ags-port*)>
+<!ATTLIST ags-port-list
+	  id               ID         #REQUIRED
+	  >
+
+<!ELEMENT ags-port (ags-value)>
+<!ATTLIST ags-port
+	  plugin-name          CDATA      #REQUIRED
+	  specifier            CDATA      #REQUIRED
+	  control-port         CDATA      #REQUIRED
+	  port-data-size       NMTOKEN    #REQUIRED
+	  port-data-length     NMTOKEN    #REQUIRED
+	  port-data-is-pointer CDATA      #REQUIRED
+	  port-data-type       CDATA      #REQUIRED
+	  >
+
+<!--GUI Widgets -->
+<!ELEMENT ags-widget
+	  width                NMTOKEN    #REQUIRED
+	  height               NMTOKEN    #REQUIRED
+	  xalign               NMTOKEN    #IMPLIED
+	  xpad                 NMTOKEN    #IMPLIED
+	  yalign               NMTOKEN    #IMPLIED
+	  ypad                 NMTOKEN    #IMPLIED
+	  upper                NMTOKEN    #IMPLIED
+	  lower                NMTOKEN    #IMPLIED
+	  step                 NMTOKEN    #IMPLIED
+	  page                 NMTOKEN    #IMPLIED
+	  value                NMTOKEN    #IMPLIED
+	  >
+
+<!ELEMENT ags-window (ags-menu-bar, ags-machine-counter-list, ags-machine-list, ags-editor, ags-navigation, ags-dialog-list, ags-machine-editor-list)>
+<!ATTLIST ags-window
+	  id               ID         #REQUIRED
+	  flags            PCDATA     #REQUIRED
+	  name             CDATA      #REQUIRED
+	  devout           CDATA      #REQUIRED
+	  >
+
+<!ELEMENT ags-menu-bar EMPTY>
+<!ATTLIST ags-menu-bar
+	  id               ID         #REQUIRED
+	  >
+
+<!ELEMENT ags-machine-counter-list (ags-machine-counter*)>
+<!ATTLIST ags-machine-counter-list
+	  id               ID         #REQUIRED
+	  >
+
+<!ELEMENT ags-machine-counter EMPTY>
+<!ATTLIST ags-machine-counter
+	  id               ID         #REQUIRED
+	  version          CDATA      #REQUIRED
+	  build-id         CDATA      #REQUIRED
+	  machine-type     CDATA      #REQUIRED
+	  counter          CDATA      #REQUIRED
+	  >
+
+<!-- machine -->
+<!ELEMENT ags-machine-list (ags-machine*)>
+<!ATTLIST ags-machine-list
+	  id               ID         #REQUIRED
+	  >
+
+<!ELEMENT ags-machine ((ags-panel|ags-mixer|ags-drum|ags-matrix|ags-synth|ags-ffplayer), ags-pad-list, ags-pad-list)>
+<!ATTLIST ags-machine
+	  type             CDATA      #REQUIRED
+	  id               ID         #REQUIRED
+	  version          CDATA      #REQUIRED
+	  build-id         CDATA      #REQUIRED
+	  flags            PCDATA     #REQUIRED
+	  file-input-flags PCDATA     #REQUIRED
+	  name             CDATA      #REQUIRED
+	  audio            IDREF      #REQUIRED
+	  machine-editor   IDREF      #REQUIRED
+	  rename-dialog    IDREF      #IMPLIED
+	  >
+
+<!ELEMENT ags-panel EMPTY>
+<!ATTLIST ags-panel
+	  id               ID         #REQUIRED
+	  devout           IDREF      #REQUIRED
+	  >
+
+<!ELEMENT ags-mixer EMPTY>
+<!ATTLIST ags-mixer
+	  id               ID         #REQUIRED
+	  >
+
+<!ELEMENT ags-drum EMPTY>
+<!ATTLIST ags-drum
+	  id               ID         #REQUIRED
+	  length           NMTOKEN    #REQUIRED
+	  bank-index-0     NMTOKEN    #REQUIRED
+	  bank-index-1     NMTOKEN    #REQUIRED
+	  loop             CDATA      #IMPLIED
+	  >
+
+<!ELEMENT ags-matrix EMPTY>
+<!ATTLIST ags-matrix
+	  id               ID         #REQUIRED
+	  length           NMTOKEN    #REQUIRED
+	  bank-index       NMTOKEN    #REQUIRED
+	  loop             CDATA      #IMPLIED
+	  >
+
+<!ELEMENT ags-synth EMPTY>
+<!ATTLIST ags-synth
+	  id               ID         #REQUIRED
+	  lower            NMTOKEN    #REQUIRED
+	  loop-begin       NMTOKEN    #REQUIRED
+	  loop-end         NMOTKEN    #REQUIRED
+	  >
+
+<!ELEMENT ags-ffplayer EMPTY>
+<!ATTLIST ags-ffplayer
+	  id               ID         #REQUIRED
+	  filename         CDATA      #IMPLIED
+	  preset           CDATA      #IMPLIED
+	  instrument       CDATA      #IMPLIED
+	  >
+
+<!ELEMENT ags-pad-list (ags-pad*)>
+<!ATTLIST ags-pad-list
+	  id               ID         #REQUIRED
+	  scope            CDATA      #REQUIRED
+	  >
+
+<!ELEMENT ags-pad (ags-line-list, (ags-panel-input-pad|ags-mixer-input-pad|ags-mixer-output-pad|ags-drum-input-pad|ags-drum-output-pad|ags-synth-input-pad))>
+<!ATTLIST ags-pad
+	  type             CDATA      #REQUIRED
+	  id               ID         #REQUIRED
+	  version          CDATA      #REQUIRED
+	  build-id         CDATA      #REQUIRED
+	  flags            PCDATA     #REQUIRED
+	  rows             NMTOKEN    #REQUIRED
+	  cols             NMTOKEN    #REQUIRED
+	  group            CDATA      "true"
+	  mute             CDATA      "false"
+	  solo             CDATA      "false"
+	  >
+
+<!ELEMENT ags-panel-input-pad EMPTY>
+<!ATTLIST ags-panel-input-pad
+	  id               ID         #REQUIRED
+	  >
+
+<!ELEMENT ags-mixer-input-pad EMPTY>
+<!ATTLIST ags-mixer-input-pad
+	  id               ID         #REQUIRED
+	  >
+
+<!ELEMENT ags-mixer-output-pad EMPTY>
+<!ATTLIST ags-mixer-output-pad
+	  id               ID         #REQUIRED
+	  >
+
+<!ELEMENT ags-drum-input-pad EMPTY>
+<!ATTLIST ags-drum-input-pad
+	  id               ID         #REQUIRED
+	  edit             CDATA      #REQUIRED
+	  >
+
+<!ELEMENT ags-drum-output-pad EMPTY>
+<!ATTLIST ags-drum-output-pad
+	  id               ID         #REQUIRED
+	  >
+
+<!ELEMENT ags-synth-input-pad EMPTY>
+<!ATTLIST ags-synth-input-pad
+	  id               ID         #REQUIRED
+	  >
+
+<!ELEMENT ags-line (ags-line-member-list, (ags-panel-input-line|ags-mixer-input-line|ags-drum-input-line|ags-drum-output-line|ags-synth-input-line))>
+<!ATTLIST ags-line
+	  type             CDATA      #REQUIRED
+	  id               ID         #REQUIRED
+	  version          CDATA      #REQUIRED
+	  build-id         CDATA      #REQUIRED
+	  flags            PCDATA     #REQUIRED
+	  left-attach      NMTOKEN    #REQUIRED
+	  rigth-attach     NMTOKEN    #REQUIRED
+	  top-attach       NMTOKEN    #REQUIRED
+	  bottom-attach    NMTOKEN    #REQUIRED
+	  rows             NMTOKEN    #REQUIRED
+	  cols             NMTOKEN    #REQUIRED
+	  grouped          NMTOKEN    #REQUIRED
+	  >
+
+<!ELEMENT ags-panel-input-line EMPTY>
+<!ATTLIST ags-panel-input-line
+	  id               ID         #REQUIRED
+	  >
+
+<!ELEMENT ags-mixer-input-line EMPTY>
+<!ATTLIST ags-mixer-input-line
+	  id               ID         #REQUIRED
+	  >
+
+<!ELEMENT ags-mixer-output-line EMPTY>
+<!ATTLIST ags-mixer-output-line
+	  id               ID         #REQUIRED
+	  >
+
+<!ELEMENT ags-drum-input-line EMPTY>
+<!ATTLIST ags-drum-input-line
+	  id               ID         #REQUIRED
+	  >
+
+<!ELEMENT ags-drum-output-line EMPTY>
+<!ATTLIST ags-drum-output-line
+	  id               ID         #REQUIRED
+	  >
+
+<!ELEMENT ags-synth-input-line (ags-oscillator)>
+<!ATTLIST ags-synth-input-line
+	  id               ID         #REQUIRED	  
+	  >
+
+<!ELEMENT ags-oscillator EMPTY>
+<!ATTLIST ags-oscillator
+	  id               ID         #REQUIRED
+	  wave             CDATA      #REQUIRED
+	  attack           NMTOKEN    #REQUIRED
+	  frame-count      NMTOKEN    #REQUIRED
+	  frequency        NMTOKEN    #REQUIRED
+	  phase            NMTOKEN    #REQUIRED
+	  volume           NMTOKEN    #REQUIRED
+	  >
+
+<!ELEMENT ags-line-member-list (ags-line-member*)>
+<!ATTLIST ags-line-member-list
+	  id               ID         #REQUIRED
+	  >
+
+<!ELEMENT ags-line-member EMPTY>
+<!ATTLIST ags-line-member
+	  id                   ID         #REQUIRED
+	  flags                PCDATA     #REQUIRED
+	  widget-type          CDATA      "AgsDial"
+	  label                CDATA      #IMPLIED
+	  port                 CDATA      #REQUIRED
+	  recall-port          CDATA      #IMPLIED
+	  task-type            CDATA      #REQUIRED
+	  left-attach          NMTOKEN    #REQUIRED
+	  rigth-attach         NMTOKEN    #REQUIRED
+	  top-attach           NMTOKEN    #REQUIRED
+	  bottom-attach        NMTOKEN    #REQUIRED
+	  width                NMTOKEN    #REQUIRED
+	  height               NMTOKEN    #REQUIRED
+	  xalign               NMTOKEN    #IMPLIED
+	  xpad                 NMTOKEN    #IMPLIED
+	  yalign               NMTOKEN    #IMPLIED
+	  ypad                 NMTOKEN    #IMPLIED
+	  upper                NMTOKEN    #IMPLIED
+	  lower                NMTOKEN    #IMPLIED
+	  step                 NMTOKEN    #IMPLIED
+	  page                 NMTOKEN    #IMPLIED
+	  value                CDATA      #IMPLIED
+	  inverted             CDATA      #IMPLIED
+	  >
+
+<!-- dialogs -->
+<!ELEMENT ags-dialog-list (ags-dialog*)>
+<!ATTLIST ags-dialog-list
+	  id               ID         #REQUIRED
+	  >
+
+<!ELEMENT ags-dialog EMPTY>
+<!ATTLIST ags-dialog
+	  id               ID         #REQUIRED
+	  dialog-type      CDATA      #REQUIRED
+	  >
+
+<!ELEMENT ags-machine-editor-list (ags-machine-editor*)>
+<!ATTLIST ags-machine-editor-list
+	  id               ID         #REQUIRED
+	  >
+
+<!ELEMENT ags-machine-editor (ags-pad-editor-list)>
+<!ATTLIST ags-machine-editor
+	  id               ID         #REQUIRED
+	  version          CDATA      #REQUIRED
+	  build-id         CDATA      #REQUIRED
+	  machine          IDREF      #REQUIRED
+	  >
+
+<!ELEMENT ags-pad-editor-list (ags-pad-editor*)>
+<!ATTLIST ags-pad-editor-list
+	  id               ID         #REQUIRED
+	  >
+
+<!ELEMENT ags-pad-editor (ags-line-editor-list)>
+<!ATTLIST ags-pad-editor
+	  id               ID         #REQUIRED
+	  version          CDATA      #REQUIRED
+	  build-id         CDATA      #REQUIRED
+	  pad              NMTOKEN    #REQUIRED
+	  >
+
+<!ELEMENT ags-line-editor-list (ags-line-editor*)>
+<!ATTLIST ags-line-editor-list
+	  id               ID         #REQUIRED
+	  >
+
+<!ELEMENT ags-line-editor (ags-line-member-editor-list, ags-link-editor)>
+<!ATTLIST ags-line-editor
+	  id               ID         #REQUIRED
+	  version          CDATA      #REQUIRED
+	  build-id         CDATA      #REQUIRED
+	  line             NMTOKEN    #REQUIRED
+	  >
+
+<!ELEMENT ags-line-member-editor-list (ags-line-member-editor*)>
+<!ATTLIST ags-line-member-editor-list
+	  id               ID         #REQUIRED
+	  >
+
+<!ELEMENT ags-line-member-editor (#IDREF, #CDATA, #CDATA, #NMTOKEN, ((#CDATA), (#CDATA, #CDATA)*)*, #IDREF, #IDREF, #CDATA, #NMTOKEN, #NMTOKEN, #NMTOKEN, #NMTOKEN)*>
+
+<!ELEMENT ags-link-editor-list (ags-link-editor*)>
+<!ATTLIST ags-link-editor-list
+	  id               ID         #REQUIRED
+	  >
+
+<!ELEMENT ags-link-editor EMPTY>
+<!ATTLIST ags-link-editor
+	  id               ID         #REQUIRED
+	  machine          CDATA      #REQUIRED
+	  name             CDATA      #REQUIRED
+	  link		   NMTOKEN    #REQUIRED
+	  >
+
+<!-- editor -->
+<!ELEMENT ags-editor (ags-toolbar, ags-notebook)>
+<!ATTLIST ags-editor
+	  id               ID         #REQUIRED
+	  version          CDATA      #REQUIRED
+	  build-id         CDATA      #REQUIRED
+	  flags            PCDATA     #REQUIRED
+	  >
+
+<!ELEMENT ags-toolbar EMPTY>
+<!ATTLIST ags-toolbar
+	  id               ID         #REQUIRED
+	  edit-mode        CDATA      "edit"
+	  zoom             CDATA      "1:4"
+	  mode             CDATA      "single-channel"
+	  >
+
+<!ELEMENT ags-machine-selector (ags-parameter)>
+<!ATTLIST ags-machine-selector
+	  id               ID         #REQUIRED
+	  >
+
+<!ELEMENT ags-notebook (ags-notebook-tab-list)>
+<!ATTLIST ags-notebook
+	  id               ID         #REQUIRED
+	  >
+
+<!ELEMENT ags-notebook-tab-list (ags-notebook-tab*)>
+<!ATTLIST ags-notebook-tab-list
+	  id               ID         #REQUIRED
+	  >
+
+<!ELEMENT ags-notebook-tab EMPTY>
+<!ATTLIST ags-notebook-tab
+	  id               ID         #REQUIRED
+	  notation         IDREF      #IMPLIED
+	  >
+
+<!-- navigation -->
+<!ELEMENT ags-navigation EMPTY>
+<!ATTLIST ags-navigation
+	  id               ID         #REQUIRED
+	  expanded         CDATA      "FALSE"
+	  bpm              NMTOKEN    120.0
+	  loop             CDATA      "FALSE"
+	  position         NMTOKEN    "0.0"
+	  loop-left        NMTOKEN    "0.0"
+	  loop-right       NMTOKEN    "4.0"
+	  raster           CDATA      "TRUE"
+	  >
+
+<!-- embedded audio list -->
+<!ELEMENT ags-embedded-audio-list (ags-embedded-audio*)>
+<!ATTLIST ags-embedded-audio-list
+	  id               ID         #REQUIRED
+	  >
+
+<!ELEMENT ags-embedded-audio (#PCDATA)>
+<!ATTLIST ags-embedded-audio
+	  id               ID         #REQUIRED
+	  encoding         CDATA      "base64"
+	  demuxer          CDATA      "raw"
+	  length           NMTOKEN    #IMPLIED
+	  >
+
+<!-- file link list -->
+<!ELEMENT ags-file-link-list (ags-file-link*)>
+<!ATTLIST ags-file-link-list
+	  id               ID         #REQUIRED
+	  >
+
+<!ELEMENT ags-file-link (ags-embedded-audio?, ags-timestamp)>
+<!ATTLIST ags-file-link
+	  id               ID         #REQUIRED
+	  type             CDATA      "url"
+	  filename         CDATA      #REQUIRED
+	  delay            CDATA      #REQUIRED <!-- start renamed -->
+	  >
+
+<!ELEMENT ags-history (ags-history-entry-list, ags-timestamp-list))>
+<!ATTLIST ags-history
+	  id               ID         #REQUIRED
+	  >
+
+<!ELEMENT ags-history-entry-list (ags-history-entry*)>
+<!ATTLIST ags-history-entry-list
+	  id               ID         #REQUIRED
+	  >
+
+<!ELEMENT ags-history-entry (#CDATA)>
+<!ATTLIST ags-history-entry
+	  id               ID         #REQUIRED
+	  timestamp        IDREF      #REQUIRED
+	  >
+
+<!ELEMENT ags-timestamp-list (ags-timestamp*)>
+<!ATTLIST ags-timestamp-list
+	  id               ID         #REQUIRED
+	  >
+
+<!ELEMENT ags-timestamp (CDATA)>
+<!ATTLIST ags-timestamp
+	  id               ID         #REQUIRED
+	  flags            PCDATA     #REQUIRED
+	  delay            NMTOKEN    #REQUIRED
+	  attack           NMTOKEN    #REQUIRED
+	  >

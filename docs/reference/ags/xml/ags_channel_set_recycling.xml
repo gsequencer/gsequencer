@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsChannelSetRecycling">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsChannelSetRecycling.top_of_page">AgsChannelSetRecycling</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsChannelSetRecycling</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsChannelSetRecycling.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>struct              <link linkend="AgsChannelSetRecycling">AgsChannelSetRecycling</link>;
+struct              <link linkend="AgsChannelSetRecyclingClass">AgsChannelSetRecyclingClass</link>;
+<link linkend="AgsChannelSetRecycling"><returnvalue>AgsChannelSetRecycling</returnvalue></link> * <link linkend="ags-channel-set-recycling-new">ags_channel_set_recycling_new</link>  (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>,
+                                                         <parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *first_recycling</parameter>,
+                                                         <parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *last_recycling</parameter>);
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsChannelSetRecycling.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsChannelSetRecycling.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AgsChannelSetRecycling" role="struct">
+<title>struct AgsChannelSetRecycling</title>
+<indexterm zone="AgsChannelSetRecycling"><primary>AgsChannelSetRecycling</primary></indexterm>
+<programlisting>struct AgsChannelSetRecycling {
+  AgsTask task;
+
+  AgsChannel *channel;
+
+  AgsRecycling *first_recycling;
+  AgsRecycling *last_recycling;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsChannelSetRecyclingClass" role="struct">
+<title>struct AgsChannelSetRecyclingClass</title>
+<indexterm zone="AgsChannelSetRecyclingClass"><primary>AgsChannelSetRecyclingClass</primary></indexterm>
+<programlisting>struct AgsChannelSetRecyclingClass {
+  AgsTaskClass task;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-channel-set-recycling-new" role="function">
+<title>ags_channel_set_recycling_new ()</title>
+<indexterm zone="ags-channel-set-recycling-new"><primary>ags_channel_set_recycling_new</primary></indexterm>
+<programlisting><link linkend="AgsChannelSetRecycling"><returnvalue>AgsChannelSetRecycling</returnvalue></link> * ags_channel_set_recycling_new  (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>,
+                                                         <parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *first_recycling</parameter>,
+                                                         <parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *last_recycling</parameter>);</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

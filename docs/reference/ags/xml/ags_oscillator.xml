@@ -1,0 +1,103 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsOscillator">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsOscillator.top_of_page">AgsOscillator</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsOscillator</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsOscillator.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>struct              <link linkend="AgsOscillator">AgsOscillator</link>;
+struct              <link linkend="AgsOscillatorClass">AgsOscillatorClass</link>;
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-file-read-oscillator">ags_file_read_oscillator</link>            (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                                                         <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *node</parameter>,
+                                                         <parameter><link linkend="AgsOscillator"><type>AgsOscillator</type></link> **oscillator</parameter>);
+<link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link> *           <link linkend="ags-file-write-oscillator">ags_file_write_oscillator</link>           (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                                                         <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *parent</parameter>,
+                                                         <parameter><link linkend="AgsOscillator"><type>AgsOscillator</type></link> *oscillator</parameter>);
+<link linkend="AgsOscillator"><returnvalue>AgsOscillator</returnvalue></link> *     <link linkend="ags-oscillator-new">ags_oscillator_new</link>                  ();
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsOscillator.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsOscillator.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AgsOscillator" role="struct">
+<title>struct AgsOscillator</title>
+<indexterm zone="AgsOscillator"><primary>AgsOscillator</primary></indexterm>
+<programlisting>struct AgsOscillator {
+  GtkFrame frame;
+
+  GtkComboBox *wave;
+  gulong wave_handler;
+
+  GtkSpinButton *attack;
+  gulong attack_handler;
+
+  GtkSpinButton *frame_count;
+  gulong frame_count_handler;
+
+  GtkSpinButton *frequency;
+  gulong frequency_handler;
+
+  GtkSpinButton *phase;
+  gulong phase_handler;
+
+  GtkSpinButton *volume;
+  gulong volume_handler;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsOscillatorClass" role="struct">
+<title>struct AgsOscillatorClass</title>
+<indexterm zone="AgsOscillatorClass"><primary>AgsOscillatorClass</primary></indexterm>
+<programlisting>struct AgsOscillatorClass {
+  GtkFrameClass frame;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-file-read-oscillator" role="function">
+<title>ags_file_read_oscillator ()</title>
+<indexterm zone="ags-file-read-oscillator"><primary>ags_file_read_oscillator</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_file_read_oscillator            (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                                                         <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *node</parameter>,
+                                                         <parameter><link linkend="AgsOscillator"><type>AgsOscillator</type></link> **oscillator</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-file-write-oscillator" role="function">
+<title>ags_file_write_oscillator ()</title>
+<indexterm zone="ags-file-write-oscillator"><primary>ags_file_write_oscillator</primary></indexterm>
+<programlisting><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link> *           ags_file_write_oscillator           (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                                                         <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *parent</parameter>,
+                                                         <parameter><link linkend="AgsOscillator"><type>AgsOscillator</type></link> *oscillator</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-oscillator-new" role="function">
+<title>ags_oscillator_new ()</title>
+<indexterm zone="ags-oscillator-new"><primary>ags_oscillator_new</primary></indexterm>
+<programlisting><link linkend="AgsOscillator"><returnvalue>AgsOscillator</returnvalue></link> *     ags_oscillator_new                  ();</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

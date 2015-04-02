@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsCancelChannel">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsCancelChannel.top_of_page">AgsCancelChannel</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsCancelChannel</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsCancelChannel.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>struct              <link linkend="AgsCancelChannel">AgsCancelChannel</link>;
+struct              <link linkend="AgsCancelChannelClass">AgsCancelChannelClass</link>;
+<link linkend="AgsCancelChannel"><returnvalue>AgsCancelChannel</returnvalue></link> *  <link linkend="ags-cancel-channel-new">ags_cancel_channel_new</link>              (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>,
+                                                         <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>,
+                                                         <parameter><link linkend="AgsDevoutPlay"><type>AgsDevoutPlay</type></link> *play</parameter>);
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsCancelChannel.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsCancelChannel.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AgsCancelChannel" role="struct">
+<title>struct AgsCancelChannel</title>
+<indexterm zone="AgsCancelChannel"><primary>AgsCancelChannel</primary></indexterm>
+<programlisting>struct AgsCancelChannel {
+  AgsTask task;
+
+  AgsChannel *channel;
+  AgsRecallID *recall_id;
+
+  AgsDevoutPlay *play;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsCancelChannelClass" role="struct">
+<title>struct AgsCancelChannelClass</title>
+<indexterm zone="AgsCancelChannelClass"><primary>AgsCancelChannelClass</primary></indexterm>
+<programlisting>struct AgsCancelChannelClass {
+  AgsTaskClass task;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-cancel-channel-new" role="function">
+<title>ags_cancel_channel_new ()</title>
+<indexterm zone="ags-cancel-channel-new"><primary>ags_cancel_channel_new</primary></indexterm>
+<programlisting><link linkend="AgsCancelChannel"><returnvalue>AgsCancelChannel</returnvalue></link> *  ags_cancel_channel_new              (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>,
+                                                         <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>,
+                                                         <parameter><link linkend="AgsDevoutPlay"><type>AgsDevoutPlay</type></link> *play</parameter>);</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

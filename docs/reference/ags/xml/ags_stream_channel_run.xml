@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsStreamChannelRun">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsStreamChannelRun.top_of_page">AgsStreamChannelRun</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsStreamChannelRun</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsStreamChannelRun.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>struct              <link linkend="AgsStreamChannelRun">AgsStreamChannelRun</link>;
+struct              <link linkend="AgsStreamChannelRunClass">AgsStreamChannelRunClass</link>;
+<link linkend="AgsStreamChannelRun"><returnvalue>AgsStreamChannelRun</returnvalue></link> * <link linkend="ags-stream-channel-run-new">ags_stream_channel_run_new</link>        ();
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsStreamChannelRun.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsStreamChannelRun.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AgsStreamChannelRun" role="struct">
+<title>struct AgsStreamChannelRun</title>
+<indexterm zone="AgsStreamChannelRun"><primary>AgsStreamChannelRun</primary></indexterm>
+<programlisting>struct AgsStreamChannelRun {
+  AgsRecallChannelRun recall_channel_run;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsStreamChannelRunClass" role="struct">
+<title>struct AgsStreamChannelRunClass</title>
+<indexterm zone="AgsStreamChannelRunClass"><primary>AgsStreamChannelRunClass</primary></indexterm>
+<programlisting>struct AgsStreamChannelRunClass {
+  AgsRecallChannelRunClass recall_channel_run;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-stream-channel-run-new" role="function">
+<title>ags_stream_channel_run_new ()</title>
+<indexterm zone="ags-stream-channel-run-new"><primary>ags_stream_channel_run_new</primary></indexterm>
+<programlisting><link linkend="AgsStreamChannelRun"><returnvalue>AgsStreamChannelRun</returnvalue></link> * ags_stream_channel_run_new        ();</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsVolumeChannel">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsVolumeChannel.top_of_page">AgsVolumeChannel</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsVolumeChannel</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsVolumeChannel.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>struct              <link linkend="AgsVolumeChannel">AgsVolumeChannel</link>;
+struct              <link linkend="AgsVolumeChannelClass">AgsVolumeChannelClass</link>;
+<link linkend="AgsVolumeChannel"><returnvalue>AgsVolumeChannel</returnvalue></link> *  <link linkend="ags-volume-channel-new">ags_volume_channel_new</link>              ();
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsVolumeChannel.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsVolumeChannel.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AgsVolumeChannel" role="struct">
+<title>struct AgsVolumeChannel</title>
+<indexterm zone="AgsVolumeChannel"><primary>AgsVolumeChannel</primary></indexterm>
+<programlisting>struct AgsVolumeChannel {
+  AgsRecallChannel recall_channel;
+
+  AgsPort *volume;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsVolumeChannelClass" role="struct">
+<title>struct AgsVolumeChannelClass</title>
+<indexterm zone="AgsVolumeChannelClass"><primary>AgsVolumeChannelClass</primary></indexterm>
+<programlisting>struct AgsVolumeChannelClass {
+  AgsRecallChannelClass recall_channel;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-volume-channel-new" role="function">
+<title>ags_volume_channel_new ()</title>
+<indexterm zone="ags-volume-channel-new"><primary>ags_volume_channel_new</primary></indexterm>
+<programlisting><link linkend="AgsVolumeChannel"><returnvalue>AgsVolumeChannel</returnvalue></link> *  ags_volume_channel_new              ();</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

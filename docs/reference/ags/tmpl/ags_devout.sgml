@@ -1,0 +1,323 @@
+<!-- ##### SECTION Title ##### -->
+AgsDevout
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### MACRO AGS_DEVOUT_DEFAULT_BPM ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO AGS_DEVOUT_DEFAULT_BUFFER_SIZE ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO AGS_DEVOUT_DEFAULT_DELAY ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO AGS_DEVOUT_DEFAULT_FORMAT ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO AGS_DEVOUT_DEFAULT_JIFFIE ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO AGS_DEVOUT_DEFAULT_SAMPLERATE ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO AGS_DEVOUT_DEFAULT_SCALE ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO AGS_DEVOUT_DEFAULT_TACT ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO AGS_DEVOUT_DEFAULT_TACTRATE ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO AGS_DEVOUT_DEFAULT_TACT_JIFFIE ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO AGS_DEVOUT_ERROR ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO AGS_DEVOUT_PLAY ##### -->
+<para>
+
+</para>
+
+@ptr: 
+
+
+<!-- ##### MACRO AGS_DEVOUT_PLAY_DOMAIN ##### -->
+<para>
+
+</para>
+
+@ptr: 
+
+
+<!-- ##### STRUCT AgsDevout ##### -->
+<para>
+
+</para>
+
+@object: 
+@flags: 
+@dsp_channels: 
+@pcm_channels: 
+@bits: 
+@buffer_size: 
+@frequency: 
+@buffer: 
+@bpm: 
+@delay: 
+@attack: 
+@delay_counter: 
+@tic_counter: 
+
+<!-- ##### STRUCT AgsDevoutClass ##### -->
+<para>
+
+</para>
+
+@object: 
+@play_init: 
+@play: 
+@stop: 
+@tic: 
+@note_offset_changed: 
+
+<!-- ##### ENUM AgsDevoutError ##### -->
+<para>
+
+</para>
+
+@AGS_DEVOUT_ERROR_LOCKED_SOUNDCARD: 
+
+<!-- ##### ENUM AgsDevoutFlags ##### -->
+<para>
+
+</para>
+
+@AGS_DEVOUT_BUFFER0: 
+@AGS_DEVOUT_BUFFER1: 
+@AGS_DEVOUT_BUFFER2: 
+@AGS_DEVOUT_BUFFER3: 
+@AGS_DEVOUT_ATTACK_FIRST: 
+@AGS_DEVOUT_PLAY: 
+@AGS_DEVOUT_LIBAO: 
+@AGS_DEVOUT_OSS: 
+@AGS_DEVOUT_ALSA: 
+@AGS_DEVOUT_SHUTDOWN: 
+@AGS_DEVOUT_START_PLAY: 
+@AGS_DEVOUT_NONBLOCKING: 
+@AGS_DEVOUT_TIMING_SET_0: 
+@AGS_DEVOUT_TIMING_SET_1: 
+
+<!-- ##### STRUCT AgsDevoutPlay ##### -->
+<para>
+
+</para>
+
+@flags: 
+@iterator_thread: 
+@source: 
+@audio_channel: 
+@recall_id: 
+
+<!-- ##### STRUCT AgsDevoutPlayDomain ##### -->
+<para>
+
+</para>
+
+@domain: 
+@playback: 
+@sequencer: 
+@notation: 
+@devout_play: 
+
+<!-- ##### ENUM AgsDevoutPlayFlags ##### -->
+<para>
+
+</para>
+
+@AGS_DEVOUT_PLAY_DONE: 
+@AGS_DEVOUT_PLAY_REMOVE: 
+@AGS_DEVOUT_PLAY_CHANNEL: 
+@AGS_DEVOUT_PLAY_PAD: 
+@AGS_DEVOUT_PLAY_AUDIO: 
+@AGS_DEVOUT_PLAY_PLAYBACK: 
+@AGS_DEVOUT_PLAY_SEQUENCER: 
+@AGS_DEVOUT_PLAY_NOTATION: 
+@AGS_DEVOUT_PLAY_SUPER_THREADED: 
+
+<!-- ##### ENUM AgsDevoutResolutionMode ##### -->
+<para>
+
+</para>
+
+@AGS_DEVOUT_RESOLUTION_8_BIT: 
+@AGS_DEVOUT_RESOLUTION_16_BIT: 
+@AGS_DEVOUT_RESOLUTION_24_BIT: 
+@AGS_DEVOUT_RESOLUTION_32_BIT: 
+@AGS_DEVOUT_RESOLUTION_64_BIT: 
+
+<!-- ##### FUNCTION ags_devout_error_quark ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_devout_list_cards ##### -->
+<para>
+
+</para>
+
+@card_id: 
+@card_name: 
+
+
+<!-- ##### FUNCTION ags_devout_new ##### -->
+<para>
+
+</para>
+
+@ags_main: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_devout_note_offset_changed ##### -->
+<para>
+
+</para>
+
+@devout: 
+@note_offset: 
+
+
+<!-- ##### FUNCTION ags_devout_pcm_info ##### -->
+<para>
+
+</para>
+
+@card_id: 
+@channels_min: 
+@channels_max: 
+@rate_min: 
+@rate_max: 
+@buffer_size_min: 
+@buffer_size_max: 
+@error: 
+
+
+<!-- ##### FUNCTION ags_devout_play_alloc ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_devout_play_domain_alloc ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_devout_play_domain_free ##### -->
+<para>
+
+</para>
+
+@devout_play_domain: 
+
+
+<!-- ##### FUNCTION ags_devout_play_find_source ##### -->
+<para>
+
+</para>
+
+@devout_play: 
+@source: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_devout_play_free ##### -->
+<para>
+
+</para>
+
+@devout_play: 
+
+
+<!-- ##### FUNCTION ags_devout_tic ##### -->
+<para>
+
+</para>
+
+@devout: 
+
+

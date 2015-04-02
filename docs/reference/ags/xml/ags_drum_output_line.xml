@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsDrumOutputLine">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsDrumOutputLine.top_of_page">AgsDrumOutputLine</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsDrumOutputLine</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsDrumOutputLine.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>struct              <link linkend="AgsDrumOutputLine">AgsDrumOutputLine</link>;
+struct              <link linkend="AgsDrumOutputLineClass">AgsDrumOutputLineClass</link>;
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-drum-output-line-add-default-recall">ags_drum_output_line_add_default_recall</link>
+                                                        (<parameter><link linkend="AgsDrumOutputLine"><type>AgsDrumOutputLine</type></link> *drum_output_line</parameter>);
+<link linkend="AgsDrumOutputLine"><returnvalue>AgsDrumOutputLine</returnvalue></link> * <link linkend="ags-drum-output-line-new">ags_drum_output_line_new</link>            (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>);
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsDrumOutputLine.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsDrumOutputLine.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AgsDrumOutputLine" role="struct">
+<title>struct AgsDrumOutputLine</title>
+<indexterm zone="AgsDrumOutputLine"><primary>AgsDrumOutputLine</primary></indexterm>
+<programlisting>struct AgsDrumOutputLine {
+  AgsLine line;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsDrumOutputLineClass" role="struct">
+<title>struct AgsDrumOutputLineClass</title>
+<indexterm zone="AgsDrumOutputLineClass"><primary>AgsDrumOutputLineClass</primary></indexterm>
+<programlisting>struct AgsDrumOutputLineClass {
+  AgsLineClass line;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-drum-output-line-add-default-recall" role="function">
+<title>ags_drum_output_line_add_default_recall ()</title>
+<indexterm zone="ags-drum-output-line-add-default-recall"><primary>ags_drum_output_line_add_default_recall</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_drum_output_line_add_default_recall
+                                                        (<parameter><link linkend="AgsDrumOutputLine"><type>AgsDrumOutputLine</type></link> *drum_output_line</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-drum-output-line-new" role="function">
+<title>ags_drum_output_line_new ()</title>
+<indexterm zone="ags-drum-output-line-new"><primary>ags_drum_output_line_new</primary></indexterm>
+<programlisting><link linkend="AgsDrumOutputLine"><returnvalue>AgsDrumOutputLine</returnvalue></link> * ags_drum_output_line_new            (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>);</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>
