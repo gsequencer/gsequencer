@@ -1,0 +1,55 @@
+<!-- ##### SECTION Title ##### -->
+AgsStackable
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### TYPEDEF AgsStackable ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### STRUCT AgsStackableInterface ##### -->
+<para>
+
+</para>
+
+@interface: 
+@push: 
+@pop: 
+
+<!-- ##### FUNCTION ags_stackable_pop ##### -->
+<para>
+
+</para>
+
+@stackable: 
+
+
+<!-- ##### FUNCTION ags_stackable_push ##### -->
+<para>
+
+</para>
+
+@stackable: 
+
+

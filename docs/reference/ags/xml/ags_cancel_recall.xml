@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsCancelRecall">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsCancelRecall.top_of_page">AgsCancelRecall</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsCancelRecall</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsCancelRecall.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>struct              <link linkend="AgsCancelRecall">AgsCancelRecall</link>;
+struct              <link linkend="AgsCancelRecallClass">AgsCancelRecallClass</link>;
+<link linkend="AgsCancelRecall"><returnvalue>AgsCancelRecall</returnvalue></link> *   <link linkend="ags-cancel-recall-new">ags_cancel_recall_new</link>               (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>,
+                                                         <parameter><link linkend="AgsDevoutPlay"><type>AgsDevoutPlay</type></link> *play</parameter>);
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsCancelRecall.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsCancelRecall.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AgsCancelRecall" role="struct">
+<title>struct AgsCancelRecall</title>
+<indexterm zone="AgsCancelRecall"><primary>AgsCancelRecall</primary></indexterm>
+<programlisting>struct AgsCancelRecall {
+  AgsTask task;
+
+  AgsRecall *recall;
+
+  AgsDevoutPlay *play;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsCancelRecallClass" role="struct">
+<title>struct AgsCancelRecallClass</title>
+<indexterm zone="AgsCancelRecallClass"><primary>AgsCancelRecallClass</primary></indexterm>
+<programlisting>struct AgsCancelRecallClass {
+  AgsTaskClass task;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-cancel-recall-new" role="function">
+<title>ags_cancel_recall_new ()</title>
+<indexterm zone="ags-cancel-recall-new"><primary>ags_cancel_recall_new</primary></indexterm>
+<programlisting><link linkend="AgsCancelRecall"><returnvalue>AgsCancelRecall</returnvalue></link> *   ags_cancel_recall_new               (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>,
+                                                         <parameter><link linkend="AgsDevoutPlay"><type>AgsDevoutPlay</type></link> *play</parameter>);</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

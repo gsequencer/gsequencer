@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsPlayAudio">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsPlayAudio.top_of_page">AgsPlayAudio</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsPlayAudio</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsPlayAudio.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>struct              <link linkend="AgsPlayAudio">AgsPlayAudio</link>;
+struct              <link linkend="AgsPlayAudioClass">AgsPlayAudioClass</link>;
+<link linkend="AgsPlayAudio"><returnvalue>AgsPlayAudio</returnvalue></link> *      <link linkend="ags-play-audio-new">ags_play_audio_new</link>                  ();
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsPlayAudio.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsPlayAudio.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AgsPlayAudio" role="struct">
+<title>struct AgsPlayAudio</title>
+<indexterm zone="AgsPlayAudio"><primary>AgsPlayAudio</primary></indexterm>
+<programlisting>struct AgsPlayAudio {
+  AgsRecallAudio recall_audio;
+
+  AgsPort *muted;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsPlayAudioClass" role="struct">
+<title>struct AgsPlayAudioClass</title>
+<indexterm zone="AgsPlayAudioClass"><primary>AgsPlayAudioClass</primary></indexterm>
+<programlisting>struct AgsPlayAudioClass {
+  AgsRecallAudioClass recall_audio;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-play-audio-new" role="function">
+<title>ags_play_audio_new ()</title>
+<indexterm zone="ags-play-audio-new"><primary>ags_play_audio_new</primary></indexterm>
+<programlisting><link linkend="AgsPlayAudio"><returnvalue>AgsPlayAudio</returnvalue></link> *      ags_play_audio_new                  ();</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

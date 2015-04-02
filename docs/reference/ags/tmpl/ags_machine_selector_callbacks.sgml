@@ -1,0 +1,78 @@
+<!-- ##### SECTION Title ##### -->
+ags_machine_selector_callbacks
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### FUNCTION ags_machine_selector_popup_add_index_callback ##### -->
+<para>
+
+</para>
+
+@menu_item: 
+@machine_selector: 
+
+
+<!-- ##### FUNCTION ags_machine_selector_popup_add_tab_callback ##### -->
+<para>
+
+</para>
+
+@menu_item: 
+@machine_selector: 
+
+
+<!-- ##### FUNCTION ags_machine_selector_popup_link_index_callback ##### -->
+<para>
+
+</para>
+
+@menu_item: 
+@machine_selector: 
+
+
+<!-- ##### FUNCTION ags_machine_selector_popup_remove_index_callback ##### -->
+<para>
+
+</para>
+
+@menu_item: 
+@machine_selector: 
+
+
+<!-- ##### FUNCTION ags_machine_selector_popup_remove_tab_callback ##### -->
+<para>
+
+</para>
+
+@menu_item: 
+@machine_selector: 
+
+
+<!-- ##### FUNCTION ags_machine_selector_radio_changed ##### -->
+<para>
+
+</para>
+
+@radio_button: 
+@machine_selector: 
+
+

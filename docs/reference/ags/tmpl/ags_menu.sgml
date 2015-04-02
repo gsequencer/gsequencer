@@ -1,0 +1,47 @@
+<!-- ##### SECTION Title ##### -->
+AgsMenu
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT AgsMenu ##### -->
+<para>
+
+</para>
+
+@window: 
+@table: 
+
+<!-- ##### STRUCT AgsMenuClass ##### -->
+<para>
+
+</para>
+
+@window: 
+
+<!-- ##### FUNCTION ags_menu_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

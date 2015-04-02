@@ -1,0 +1,87 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsRemoteTask">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsRemoteTask.top_of_page">AgsRemoteTask</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsRemoteTask</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsRemoteTask.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>struct              <link linkend="AgsRemoteTask">AgsRemoteTask</link>;
+struct              <link linkend="AgsRemoteTaskClass">AgsRemoteTaskClass</link>;
+<link linkend="xmlrpc-value"><returnvalue>xmlrpc_value</returnvalue></link> *      <link linkend="ags-remote-task-launch">ags_remote_task_launch</link>              (<parameter><link linkend="xmlrpc-env"><type>xmlrpc_env</type></link> *env</parameter>,
+                                                         <parameter><link linkend="xmlrpc-value"><type>xmlrpc_value</type></link> *param_array</parameter>,
+                                                         <parameter><link linkend="void"><type>void</type></link> *server_info</parameter>);
+<link linkend="xmlrpc-value"><returnvalue>xmlrpc_value</returnvalue></link> *      <link linkend="ags-remote-task-launch-timed">ags_remote_task_launch_timed</link>        (<parameter><link linkend="xmlrpc-env"><type>xmlrpc_env</type></link> *env</parameter>,
+                                                         <parameter><link linkend="xmlrpc-value"><type>xmlrpc_value</type></link> *param_array</parameter>,
+                                                         <parameter><link linkend="void"><type>void</type></link> *server_info</parameter>);
+<link linkend="AgsRemoteTask"><returnvalue>AgsRemoteTask</returnvalue></link> *     <link linkend="ags-remote-task-new">ags_remote_task_new</link>                 ();
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsRemoteTask.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsRemoteTask.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AgsRemoteTask" role="struct">
+<title>struct AgsRemoteTask</title>
+<indexterm zone="AgsRemoteTask"><primary>AgsRemoteTask</primary></indexterm>
+<programlisting>struct AgsRemoteTask {
+  GObject object;
+
+  GObject *server;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsRemoteTaskClass" role="struct">
+<title>struct AgsRemoteTaskClass</title>
+<indexterm zone="AgsRemoteTaskClass"><primary>AgsRemoteTaskClass</primary></indexterm>
+<programlisting>struct AgsRemoteTaskClass {
+  GObjectClass object;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-remote-task-launch" role="function">
+<title>ags_remote_task_launch ()</title>
+<indexterm zone="ags-remote-task-launch"><primary>ags_remote_task_launch</primary></indexterm>
+<programlisting><link linkend="xmlrpc-value"><returnvalue>xmlrpc_value</returnvalue></link> *      ags_remote_task_launch              (<parameter><link linkend="xmlrpc-env"><type>xmlrpc_env</type></link> *env</parameter>,
+                                                         <parameter><link linkend="xmlrpc-value"><type>xmlrpc_value</type></link> *param_array</parameter>,
+                                                         <parameter><link linkend="void"><type>void</type></link> *server_info</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-remote-task-launch-timed" role="function">
+<title>ags_remote_task_launch_timed ()</title>
+<indexterm zone="ags-remote-task-launch-timed"><primary>ags_remote_task_launch_timed</primary></indexterm>
+<programlisting><link linkend="xmlrpc-value"><returnvalue>xmlrpc_value</returnvalue></link> *      ags_remote_task_launch_timed        (<parameter><link linkend="xmlrpc-env"><type>xmlrpc_env</type></link> *env</parameter>,
+                                                         <parameter><link linkend="xmlrpc-value"><type>xmlrpc_value</type></link> *param_array</parameter>,
+                                                         <parameter><link linkend="void"><type>void</type></link> *server_info</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-remote-task-new" role="function">
+<title>ags_remote_task_new ()</title>
+<indexterm zone="ags-remote-task-new"><primary>ags_remote_task_new</primary></indexterm>
+<programlisting><link linkend="AgsRemoteTask"><returnvalue>AgsRemoteTask</returnvalue></link> *     ags_remote_task_new                 ();</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

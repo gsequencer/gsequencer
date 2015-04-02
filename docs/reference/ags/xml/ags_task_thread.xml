@@ -1,0 +1,119 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsTaskThread">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsTaskThread.top_of_page">AgsTaskThread</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsTaskThread</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsTaskThread.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>#define             <link linkend="AGS-TASK-THREAD-DEFAULT-JIFFIE:CAPS">AGS_TASK_THREAD_DEFAULT_JIFFIE</link>
+struct              <link linkend="AgsTaskThread">AgsTaskThread</link>;
+struct              <link linkend="AgsTaskThreadAppend">AgsTaskThreadAppend</link>;
+struct              <link linkend="AgsTaskThreadClass">AgsTaskThreadClass</link>;
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-task-thread-append-task">ags_task_thread_append_task</link>         (<parameter><link linkend="AgsTaskThread"><type>AgsTaskThread</type></link> *task_thread</parameter>,
+                                                         <parameter><link linkend="AgsTask"><type>AgsTask</type></link> *task</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-task-thread-append-tasks">ags_task_thread_append_tasks</link>        (<parameter><link linkend="AgsTaskThread"><type>AgsTaskThread</type></link> *task_thread</parameter>,
+                                                         <parameter><link linkend="GList"><type>GList</type></link> *list</parameter>);
+<link linkend="AgsTaskThread"><returnvalue>AgsTaskThread</returnvalue></link> *     <link linkend="ags-task-thread-new">ags_task_thread_new</link>                 (<parameter><link linkend="GObject"><type>GObject</type></link> *devout</parameter>);
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsTaskThread.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsTaskThread.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AGS-TASK-THREAD-DEFAULT-JIFFIE:CAPS" role="macro">
+<title>AGS_TASK_THREAD_DEFAULT_JIFFIE</title>
+<indexterm zone="AGS-TASK-THREAD-DEFAULT-JIFFIE:CAPS"><primary>AGS_TASK_THREAD_DEFAULT_JIFFIE</primary></indexterm>
+<programlisting>#define AGS_TASK_THREAD_DEFAULT_JIFFIE (1000)
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsTaskThread" role="struct">
+<title>struct AgsTaskThread</title>
+<indexterm zone="AgsTaskThread"><primary>AgsTaskThread</primary></indexterm>
+<programlisting>struct AgsTaskThread {
+  AgsThread thread;
+
+  guint flags;
+
+  GMutex mutex;
+  GCond cond;
+
+  pthread_mutex_t read_mutex;
+  pthread_mutex_t launch_mutex;
+
+  volatile guint queued;
+  volatile guint pending;
+
+  volatile GList *exec;
+  volatile GList *queue;
+
+  AgsThreadPool *thread_pool;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsTaskThreadAppend" role="struct">
+<title>struct AgsTaskThreadAppend</title>
+<indexterm zone="AgsTaskThreadAppend"><primary>AgsTaskThreadAppend</primary></indexterm>
+<programlisting>struct AgsTaskThreadAppend {
+  volatile AgsTaskThread *task_thread;
+  volatile gpointer data;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsTaskThreadClass" role="struct">
+<title>struct AgsTaskThreadClass</title>
+<indexterm zone="AgsTaskThreadClass"><primary>AgsTaskThreadClass</primary></indexterm>
+<programlisting>struct AgsTaskThreadClass {
+  AgsThreadClass thread;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-task-thread-append-task" role="function">
+<title>ags_task_thread_append_task ()</title>
+<indexterm zone="ags-task-thread-append-task"><primary>ags_task_thread_append_task</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_task_thread_append_task         (<parameter><link linkend="AgsTaskThread"><type>AgsTaskThread</type></link> *task_thread</parameter>,
+                                                         <parameter><link linkend="AgsTask"><type>AgsTask</type></link> *task</parameter>);</programlisting>
+<para>
+Adds the task to <parameter>task_thread</parameter>.
+</para></refsect2>
+<refsect2 id="ags-task-thread-append-tasks" role="function">
+<title>ags_task_thread_append_tasks ()</title>
+<indexterm zone="ags-task-thread-append-tasks"><primary>ags_task_thread_append_tasks</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_task_thread_append_tasks        (<parameter><link linkend="AgsTaskThread"><type>AgsTaskThread</type></link> *task_thread</parameter>,
+                                                         <parameter><link linkend="GList"><type>GList</type></link> *list</parameter>);</programlisting>
+<para>
+Concats the list with <parameter>task_thread</parameter>'s internal task list. Don't
+free the list you pass. It will be freed for you.
+</para></refsect2>
+<refsect2 id="ags-task-thread-new" role="function">
+<title>ags_task_thread_new ()</title>
+<indexterm zone="ags-task-thread-new"><primary>ags_task_thread_new</primary></indexterm>
+<programlisting><link linkend="AgsTaskThread"><returnvalue>AgsTaskThread</returnvalue></link> *     ags_task_thread_new                 (<parameter><link linkend="GObject"><type>GObject</type></link> *devout</parameter>);</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

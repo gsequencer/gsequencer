@@ -1,0 +1,50 @@
+<!-- ##### SECTION Title ##### -->
+AgsSetMuted
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT AgsSetMuted ##### -->
+<para>
+
+</para>
+
+@task: 
+@gobject: 
+@muted: 
+
+<!-- ##### STRUCT AgsSetMutedClass ##### -->
+<para>
+
+</para>
+
+@task: 
+
+<!-- ##### FUNCTION ags_set_muted_new ##### -->
+<para>
+
+</para>
+
+@gobject: 
+@muted: 
+@Returns: 
+
+

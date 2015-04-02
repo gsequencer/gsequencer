@@ -1,0 +1,76 @@
+<!-- ##### SECTION Title ##### -->
+AgsSF2Chooser
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT AgsSF2Chooser ##### -->
+<para>
+
+</para>
+
+@vbox: 
+@ipatch: 
+@preset: 
+@instrument: 
+@sample: 
+
+<!-- ##### STRUCT AgsSF2ChooserClass ##### -->
+<para>
+
+</para>
+
+@vbox: 
+
+<!-- ##### FUNCTION ags_sf2_chooser_completed ##### -->
+<para>
+
+</para>
+
+@sf2_chooser: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_sf2_chooser_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_sf2_chooser_open ##### -->
+<para>
+
+</para>
+
+@sf2_chooser: 
+@filename: 
+
+
+<!-- ##### FUNCTION ags_sf2_chooser_remove_all_from_combo ##### -->
+<para>
+
+</para>
+
+@combo: 
+
+

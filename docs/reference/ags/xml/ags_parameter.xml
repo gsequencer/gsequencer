@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-ags-parameter">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-ags-parameter.top_of_page">ags_parameter</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>ags_parameter</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-ags-parameter.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis><link linkend="GParameter"><returnvalue>GParameter</returnvalue></link> *        <link linkend="ags-parameter-grow">ags_parameter_grow</link>                  (<parameter><link linkend="GType"><type>GType</type></link> type</parameter>,
+                                                         <parameter><link linkend="GParameter"><type>GParameter</type></link> *params</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> *n_params</parameter>,
+                                                         <parameter>...</parameter>);
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-ags-parameter.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-ags-parameter.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="ags-parameter-grow" role="function">
+<title>ags_parameter_grow ()</title>
+<indexterm zone="ags-parameter-grow"><primary>ags_parameter_grow</primary></indexterm>
+<programlisting><link linkend="GParameter"><returnvalue>GParameter</returnvalue></link> *        ags_parameter_grow                  (<parameter><link linkend="GType"><type>GType</type></link> type</parameter>,
+                                                         <parameter><link linkend="GParameter"><type>GParameter</type></link> *params</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> *n_params</parameter>,
+                                                         <parameter>...</parameter>);</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

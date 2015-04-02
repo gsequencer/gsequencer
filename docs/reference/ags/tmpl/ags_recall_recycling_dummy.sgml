@@ -1,0 +1,48 @@
+<!-- ##### SECTION Title ##### -->
+AgsRecallRecyclingDummy
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT AgsRecallRecyclingDummy ##### -->
+<para>
+
+</para>
+
+@recall_recycling: 
+
+<!-- ##### STRUCT AgsRecallRecyclingDummyClass ##### -->
+<para>
+
+</para>
+
+@recall_recycling: 
+
+<!-- ##### FUNCTION ags_recall_recycling_dummy_new ##### -->
+<para>
+
+</para>
+
+@recycling: 
+@child_type: 
+@Returns: 
+
+

@@ -1,0 +1,356 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-ags-file-stock">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-ags-file-stock.top_of_page">ags_file_stock</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>ags_file_stock</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-ags-file-stock.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>#define             <link linkend="AGS-CLIPBOARD-DEFAULT-VERSION:CAPS">AGS_CLIPBOARD_DEFAULT_VERSION</link>
+#define             <link linkend="AGS-FILE-BOOLEAN-POINTER-PROP:CAPS">AGS_FILE_BOOLEAN_POINTER_PROP</link>
+#define             <link linkend="AGS-FILE-BOOLEAN-PROP:CAPS">AGS_FILE_BOOLEAN_PROP</link>
+#define             <link linkend="AGS-FILE-BUILD-ID-PROP:CAPS">AGS_FILE_BUILD_ID_PROP</link>
+#define             <link linkend="AGS-FILE-CHAR-POINTER-PROP:CAPS">AGS_FILE_CHAR_POINTER_PROP</link>
+#define             <link linkend="AGS-FILE-CHAR-PROP:CAPS">AGS_FILE_CHAR_PROP</link>
+#define             <link linkend="AGS-FILE-DEFAULT-VERSION:CAPS">AGS_FILE_DEFAULT_VERSION</link>
+#define             <link linkend="AGS-FILE-DOUBLE-POINTER-PROP:CAPS">AGS_FILE_DOUBLE_POINTER_PROP</link>
+#define             <link linkend="AGS-FILE-DOUBLE-PROP:CAPS">AGS_FILE_DOUBLE_PROP</link>
+#define             <link linkend="AGS-FILE-DYNAMIC-WIDGET-BUTTON:CAPS">AGS_FILE_DYNAMIC_WIDGET_BUTTON</link>
+#define             <link linkend="AGS-FILE-DYNAMIC-WIDGET-CARTESIAN:CAPS">AGS_FILE_DYNAMIC_WIDGET_CARTESIAN</link>
+#define             <link linkend="AGS-FILE-DYNAMIC-WIDGET-CHECK-BUTTON:CAPS">AGS_FILE_DYNAMIC_WIDGET_CHECK_BUTTON</link>
+#define             <link linkend="AGS-FILE-DYNAMIC-WIDGET-DIAL:CAPS">AGS_FILE_DYNAMIC_WIDGET_DIAL</link>
+#define             <link linkend="AGS-FILE-DYNAMIC-WIDGET-HINDICATOR:CAPS">AGS_FILE_DYNAMIC_WIDGET_HINDICATOR</link>
+#define             <link linkend="AGS-FILE-DYNAMIC-WIDGET-HSCALE:CAPS">AGS_FILE_DYNAMIC_WIDGET_HSCALE</link>
+#define             <link linkend="AGS-FILE-DYNAMIC-WIDGET-LABEL:CAPS">AGS_FILE_DYNAMIC_WIDGET_LABEL</link>
+#define             <link linkend="AGS-FILE-DYNAMIC-WIDGET-LED:CAPS">AGS_FILE_DYNAMIC_WIDGET_LED</link>
+#define             <link linkend="AGS-FILE-DYNAMIC-WIDGET-SPIN-BUTTON:CAPS">AGS_FILE_DYNAMIC_WIDGET_SPIN_BUTTON</link>
+#define             <link linkend="AGS-FILE-DYNAMIC-WIDGET-TOGGLE-BUTTON:CAPS">AGS_FILE_DYNAMIC_WIDGET_TOGGLE_BUTTON</link>
+#define             <link linkend="AGS-FILE-DYNAMIC-WIDGET-VINDICATOR:CAPS">AGS_FILE_DYNAMIC_WIDGET_VINDICATOR</link>
+#define             <link linkend="AGS-FILE-DYNAMIC-WIDGET-VSCALE:CAPS">AGS_FILE_DYNAMIC_WIDGET_VSCALE</link>
+#define             <link linkend="AGS-FILE-DYNAMIC-WIDGET-WAVEFORM:CAPS">AGS_FILE_DYNAMIC_WIDGET_WAVEFORM</link>
+#define             <link linkend="AGS-FILE-EFFECTS-DEFAULT-VERSION:CAPS">AGS_FILE_EFFECTS_DEFAULT_VERSION</link>
+#define             <link linkend="AGS-FILE-FALSE:CAPS">AGS_FILE_FALSE</link>
+#define             <link linkend="AGS-FILE-FLAGS-PROP:CAPS">AGS_FILE_FLAGS_PROP</link>
+#define             <link linkend="AGS-FILE-FLOAT-POINTER-PROP:CAPS">AGS_FILE_FLOAT_POINTER_PROP</link>
+#define             <link linkend="AGS-FILE-FLOAT-PROP:CAPS">AGS_FILE_FLOAT_PROP</link>
+#define             <link linkend="AGS-FILE-ID-PROP:CAPS">AGS_FILE_ID_PROP</link>
+#define             <link linkend="AGS-FILE-INT64-POINTER-PROP:CAPS">AGS_FILE_INT64_POINTER_PROP</link>
+#define             <link linkend="AGS-FILE-INT64-PROP:CAPS">AGS_FILE_INT64_PROP</link>
+#define             <link linkend="AGS-FILE-NAME-PROP:CAPS">AGS_FILE_NAME_PROP</link>
+#define             <link linkend="AGS-FILE-OBJECT-PROP:CAPS">AGS_FILE_OBJECT_PROP</link>
+#define             <link linkend="AGS-FILE-POINTER-PROP:CAPS">AGS_FILE_POINTER_PROP</link>
+#define             <link linkend="AGS-FILE-SCOPE-PROP:CAPS">AGS_FILE_SCOPE_PROP</link>
+#define             <link linkend="AGS-FILE-TRUE:CAPS">AGS_FILE_TRUE</link>
+#define             <link linkend="AGS-FILE-TYPE-PROP:CAPS">AGS_FILE_TYPE_PROP</link>
+#define             <link linkend="AGS-FILE-UINT64-POINTER-PROP:CAPS">AGS_FILE_UINT64_POINTER_PROP</link>
+#define             <link linkend="AGS-FILE-UINT64-PROP:CAPS">AGS_FILE_UINT64_PROP</link>
+#define             <link linkend="AGS-FILE-VERSION-PROP:CAPS">AGS_FILE_VERSION_PROP</link>
+#define             <link linkend="AGS-FILE-XPATH-PROP:CAPS">AGS_FILE_XPATH_PROP</link>
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-ags-file-stock.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-ags-file-stock.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AGS-CLIPBOARD-DEFAULT-VERSION:CAPS" role="macro">
+<title>AGS_CLIPBOARD_DEFAULT_VERSION</title>
+<indexterm zone="AGS-CLIPBOARD-DEFAULT-VERSION:CAPS"><primary>AGS_CLIPBOARD_DEFAULT_VERSION</primary></indexterm>
+<programlisting>#define AGS_CLIPBOARD_DEFAULT_VERSION "0.4.2\0"
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AGS-FILE-BOOLEAN-POINTER-PROP:CAPS" role="macro">
+<title>AGS_FILE_BOOLEAN_POINTER_PROP</title>
+<indexterm zone="AGS-FILE-BOOLEAN-POINTER-PROP:CAPS"><primary>AGS_FILE_BOOLEAN_POINTER_PROP</primary></indexterm>
+<programlisting>#define AGS_FILE_BOOLEAN_POINTER_PROP "gboolean-pointer\0"
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AGS-FILE-BOOLEAN-PROP:CAPS" role="macro">
+<title>AGS_FILE_BOOLEAN_PROP</title>
+<indexterm zone="AGS-FILE-BOOLEAN-PROP:CAPS"><primary>AGS_FILE_BOOLEAN_PROP</primary></indexterm>
+<programlisting>#define AGS_FILE_BOOLEAN_PROP "gboolean\0"
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AGS-FILE-BUILD-ID-PROP:CAPS" role="macro">
+<title>AGS_FILE_BUILD_ID_PROP</title>
+<indexterm zone="AGS-FILE-BUILD-ID-PROP:CAPS"><primary>AGS_FILE_BUILD_ID_PROP</primary></indexterm>
+<programlisting>#define AGS_FILE_BUILD_ID_PROP "build-id\0"
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AGS-FILE-CHAR-POINTER-PROP:CAPS" role="macro">
+<title>AGS_FILE_CHAR_POINTER_PROP</title>
+<indexterm zone="AGS-FILE-CHAR-POINTER-PROP:CAPS"><primary>AGS_FILE_CHAR_POINTER_PROP</primary></indexterm>
+<programlisting>#define AGS_FILE_CHAR_POINTER_PROP "gchar-pointer\0"
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AGS-FILE-CHAR-PROP:CAPS" role="macro">
+<title>AGS_FILE_CHAR_PROP</title>
+<indexterm zone="AGS-FILE-CHAR-PROP:CAPS"><primary>AGS_FILE_CHAR_PROP</primary></indexterm>
+<programlisting>#define AGS_FILE_CHAR_PROP "gchar\0"
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AGS-FILE-DEFAULT-VERSION:CAPS" role="macro">
+<title>AGS_FILE_DEFAULT_VERSION</title>
+<indexterm zone="AGS-FILE-DEFAULT-VERSION:CAPS"><primary>AGS_FILE_DEFAULT_VERSION</primary></indexterm>
+<programlisting>#define AGS_FILE_DEFAULT_VERSION "0.4.2\0"
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AGS-FILE-DOUBLE-POINTER-PROP:CAPS" role="macro">
+<title>AGS_FILE_DOUBLE_POINTER_PROP</title>
+<indexterm zone="AGS-FILE-DOUBLE-POINTER-PROP:CAPS"><primary>AGS_FILE_DOUBLE_POINTER_PROP</primary></indexterm>
+<programlisting>#define AGS_FILE_DOUBLE_POINTER_PROP "gdouble-pointer\0"
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AGS-FILE-DOUBLE-PROP:CAPS" role="macro">
+<title>AGS_FILE_DOUBLE_PROP</title>
+<indexterm zone="AGS-FILE-DOUBLE-PROP:CAPS"><primary>AGS_FILE_DOUBLE_PROP</primary></indexterm>
+<programlisting>#define AGS_FILE_DOUBLE_PROP "gdouble\0"
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AGS-FILE-DYNAMIC-WIDGET-BUTTON:CAPS" role="macro">
+<title>AGS_FILE_DYNAMIC_WIDGET_BUTTON</title>
+<indexterm zone="AGS-FILE-DYNAMIC-WIDGET-BUTTON:CAPS"><primary>AGS_FILE_DYNAMIC_WIDGET_BUTTON</primary></indexterm>
+<programlisting>#define AGS_FILE_DYNAMIC_WIDGET_BUTTON (g_type_name(GtkTypeButton))
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AGS-FILE-DYNAMIC-WIDGET-CARTESIAN:CAPS" role="macro">
+<title>AGS_FILE_DYNAMIC_WIDGET_CARTESIAN</title>
+<indexterm zone="AGS-FILE-DYNAMIC-WIDGET-CARTESIAN:CAPS"><primary>AGS_FILE_DYNAMIC_WIDGET_CARTESIAN</primary></indexterm>
+<programlisting>#define AGS_FILE_DYNAMIC_WIDGET_CARTESIAN (g_type_name(GtkTypeCartesian))
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AGS-FILE-DYNAMIC-WIDGET-CHECK-BUTTON:CAPS" role="macro">
+<title>AGS_FILE_DYNAMIC_WIDGET_CHECK_BUTTON</title>
+<indexterm zone="AGS-FILE-DYNAMIC-WIDGET-CHECK-BUTTON:CAPS"><primary>AGS_FILE_DYNAMIC_WIDGET_CHECK_BUTTON</primary></indexterm>
+<programlisting>#define AGS_FILE_DYNAMIC_WIDGET_CHECK_BUTTON (g_type_name(GtkTypeCheckButton))
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AGS-FILE-DYNAMIC-WIDGET-DIAL:CAPS" role="macro">
+<title>AGS_FILE_DYNAMIC_WIDGET_DIAL</title>
+<indexterm zone="AGS-FILE-DYNAMIC-WIDGET-DIAL:CAPS"><primary>AGS_FILE_DYNAMIC_WIDGET_DIAL</primary></indexterm>
+<programlisting>#define AGS_FILE_DYNAMIC_WIDGET_DIAL (g_type_name(AgsTypeDial))
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AGS-FILE-DYNAMIC-WIDGET-HINDICATOR:CAPS" role="macro">
+<title>AGS_FILE_DYNAMIC_WIDGET_HINDICATOR</title>
+<indexterm zone="AGS-FILE-DYNAMIC-WIDGET-HINDICATOR:CAPS"><primary>AGS_FILE_DYNAMIC_WIDGET_HINDICATOR</primary></indexterm>
+<programlisting>#define AGS_FILE_DYNAMIC_WIDGET_HINDICATOR (g_type_name(AgsTypeHIndicator))
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AGS-FILE-DYNAMIC-WIDGET-HSCALE:CAPS" role="macro">
+<title>AGS_FILE_DYNAMIC_WIDGET_HSCALE</title>
+<indexterm zone="AGS-FILE-DYNAMIC-WIDGET-HSCALE:CAPS"><primary>AGS_FILE_DYNAMIC_WIDGET_HSCALE</primary></indexterm>
+<programlisting>#define AGS_FILE_DYNAMIC_WIDGET_HSCALE (g_type_name(GtkTypeHScale))
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AGS-FILE-DYNAMIC-WIDGET-LABEL:CAPS" role="macro">
+<title>AGS_FILE_DYNAMIC_WIDGET_LABEL</title>
+<indexterm zone="AGS-FILE-DYNAMIC-WIDGET-LABEL:CAPS"><primary>AGS_FILE_DYNAMIC_WIDGET_LABEL</primary></indexterm>
+<programlisting>#define AGS_FILE_DYNAMIC_WIDGET_LABEL (g_type_name(GtkTypeLabel))
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AGS-FILE-DYNAMIC-WIDGET-LED:CAPS" role="macro">
+<title>AGS_FILE_DYNAMIC_WIDGET_LED</title>
+<indexterm zone="AGS-FILE-DYNAMIC-WIDGET-LED:CAPS"><primary>AGS_FILE_DYNAMIC_WIDGET_LED</primary></indexterm>
+<programlisting>#define AGS_FILE_DYNAMIC_WIDGET_LED (g_type_name(AgsTypeLed))
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AGS-FILE-DYNAMIC-WIDGET-SPIN-BUTTON:CAPS" role="macro">
+<title>AGS_FILE_DYNAMIC_WIDGET_SPIN_BUTTON</title>
+<indexterm zone="AGS-FILE-DYNAMIC-WIDGET-SPIN-BUTTON:CAPS"><primary>AGS_FILE_DYNAMIC_WIDGET_SPIN_BUTTON</primary></indexterm>
+<programlisting>#define AGS_FILE_DYNAMIC_WIDGET_SPIN_BUTTON (g_type_name(GtkTypeSpinButton))
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AGS-FILE-DYNAMIC-WIDGET-TOGGLE-BUTTON:CAPS" role="macro">
+<title>AGS_FILE_DYNAMIC_WIDGET_TOGGLE_BUTTON</title>
+<indexterm zone="AGS-FILE-DYNAMIC-WIDGET-TOGGLE-BUTTON:CAPS"><primary>AGS_FILE_DYNAMIC_WIDGET_TOGGLE_BUTTON</primary></indexterm>
+<programlisting>#define AGS_FILE_DYNAMIC_WIDGET_TOGGLE_BUTTON (g_type_name(GtkTypeToggleButton))
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AGS-FILE-DYNAMIC-WIDGET-VINDICATOR:CAPS" role="macro">
+<title>AGS_FILE_DYNAMIC_WIDGET_VINDICATOR</title>
+<indexterm zone="AGS-FILE-DYNAMIC-WIDGET-VINDICATOR:CAPS"><primary>AGS_FILE_DYNAMIC_WIDGET_VINDICATOR</primary></indexterm>
+<programlisting>#define AGS_FILE_DYNAMIC_WIDGET_VINDICATOR (g_type_name(AgsTypeVIndicator))
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AGS-FILE-DYNAMIC-WIDGET-VSCALE:CAPS" role="macro">
+<title>AGS_FILE_DYNAMIC_WIDGET_VSCALE</title>
+<indexterm zone="AGS-FILE-DYNAMIC-WIDGET-VSCALE:CAPS"><primary>AGS_FILE_DYNAMIC_WIDGET_VSCALE</primary></indexterm>
+<programlisting>#define AGS_FILE_DYNAMIC_WIDGET_VSCALE (g_type_name(GtkTypeVScale))
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AGS-FILE-DYNAMIC-WIDGET-WAVEFORM:CAPS" role="macro">
+<title>AGS_FILE_DYNAMIC_WIDGET_WAVEFORM</title>
+<indexterm zone="AGS-FILE-DYNAMIC-WIDGET-WAVEFORM:CAPS"><primary>AGS_FILE_DYNAMIC_WIDGET_WAVEFORM</primary></indexterm>
+<programlisting>#define AGS_FILE_DYNAMIC_WIDGET_WAVEFORM (g_type_name(AgsTypeWaveform))
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AGS-FILE-EFFECTS-DEFAULT-VERSION:CAPS" role="macro">
+<title>AGS_FILE_EFFECTS_DEFAULT_VERSION</title>
+<indexterm zone="AGS-FILE-EFFECTS-DEFAULT-VERSION:CAPS"><primary>AGS_FILE_EFFECTS_DEFAULT_VERSION</primary></indexterm>
+<programlisting>#define AGS_FILE_EFFECTS_DEFAULT_VERSION "0.4.2\0"
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AGS-FILE-FALSE:CAPS" role="macro">
+<title>AGS_FILE_FALSE</title>
+<indexterm zone="AGS-FILE-FALSE:CAPS"><primary>AGS_FILE_FALSE</primary></indexterm>
+<programlisting>#define AGS_FILE_FALSE "FALSE\0"
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AGS-FILE-FLAGS-PROP:CAPS" role="macro">
+<title>AGS_FILE_FLAGS_PROP</title>
+<indexterm zone="AGS-FILE-FLAGS-PROP:CAPS"><primary>AGS_FILE_FLAGS_PROP</primary></indexterm>
+<programlisting>#define AGS_FILE_FLAGS_PROP "flags\0"
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AGS-FILE-FLOAT-POINTER-PROP:CAPS" role="macro">
+<title>AGS_FILE_FLOAT_POINTER_PROP</title>
+<indexterm zone="AGS-FILE-FLOAT-POINTER-PROP:CAPS"><primary>AGS_FILE_FLOAT_POINTER_PROP</primary></indexterm>
+<programlisting>#define AGS_FILE_FLOAT_POINTER_PROP "gfloat-pointer\0"
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AGS-FILE-FLOAT-PROP:CAPS" role="macro">
+<title>AGS_FILE_FLOAT_PROP</title>
+<indexterm zone="AGS-FILE-FLOAT-PROP:CAPS"><primary>AGS_FILE_FLOAT_PROP</primary></indexterm>
+<programlisting>#define AGS_FILE_FLOAT_PROP "gfloat\0"
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AGS-FILE-ID-PROP:CAPS" role="macro">
+<title>AGS_FILE_ID_PROP</title>
+<indexterm zone="AGS-FILE-ID-PROP:CAPS"><primary>AGS_FILE_ID_PROP</primary></indexterm>
+<programlisting>#define AGS_FILE_ID_PROP "id\0"
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AGS-FILE-INT64-POINTER-PROP:CAPS" role="macro">
+<title>AGS_FILE_INT64_POINTER_PROP</title>
+<indexterm zone="AGS-FILE-INT64-POINTER-PROP:CAPS"><primary>AGS_FILE_INT64_POINTER_PROP</primary></indexterm>
+<programlisting>#define AGS_FILE_INT64_POINTER_PROP "gint64-pointer\0"
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AGS-FILE-INT64-PROP:CAPS" role="macro">
+<title>AGS_FILE_INT64_PROP</title>
+<indexterm zone="AGS-FILE-INT64-PROP:CAPS"><primary>AGS_FILE_INT64_PROP</primary></indexterm>
+<programlisting>#define AGS_FILE_INT64_PROP "gint64\0"
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AGS-FILE-NAME-PROP:CAPS" role="macro">
+<title>AGS_FILE_NAME_PROP</title>
+<indexterm zone="AGS-FILE-NAME-PROP:CAPS"><primary>AGS_FILE_NAME_PROP</primary></indexterm>
+<programlisting>#define AGS_FILE_NAME_PROP "name\0"
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AGS-FILE-OBJECT-PROP:CAPS" role="macro">
+<title>AGS_FILE_OBJECT_PROP</title>
+<indexterm zone="AGS-FILE-OBJECT-PROP:CAPS"><primary>AGS_FILE_OBJECT_PROP</primary></indexterm>
+<programlisting>#define AGS_FILE_OBJECT_PROP "GObject\0"
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AGS-FILE-POINTER-PROP:CAPS" role="macro">
+<title>AGS_FILE_POINTER_PROP</title>
+<indexterm zone="AGS-FILE-POINTER-PROP:CAPS"><primary>AGS_FILE_POINTER_PROP</primary></indexterm>
+<programlisting>#define AGS_FILE_POINTER_PROP "gpointer\0"
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AGS-FILE-SCOPE-PROP:CAPS" role="macro">
+<title>AGS_FILE_SCOPE_PROP</title>
+<indexterm zone="AGS-FILE-SCOPE-PROP:CAPS"><primary>AGS_FILE_SCOPE_PROP</primary></indexterm>
+<programlisting>#define AGS_FILE_SCOPE_PROP "scope\0"
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AGS-FILE-TRUE:CAPS" role="macro">
+<title>AGS_FILE_TRUE</title>
+<indexterm zone="AGS-FILE-TRUE:CAPS"><primary>AGS_FILE_TRUE</primary></indexterm>
+<programlisting>#define AGS_FILE_TRUE "TRUE\0"
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AGS-FILE-TYPE-PROP:CAPS" role="macro">
+<title>AGS_FILE_TYPE_PROP</title>
+<indexterm zone="AGS-FILE-TYPE-PROP:CAPS"><primary>AGS_FILE_TYPE_PROP</primary></indexterm>
+<programlisting>#define AGS_FILE_TYPE_PROP "type\0"
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AGS-FILE-UINT64-POINTER-PROP:CAPS" role="macro">
+<title>AGS_FILE_UINT64_POINTER_PROP</title>
+<indexterm zone="AGS-FILE-UINT64-POINTER-PROP:CAPS"><primary>AGS_FILE_UINT64_POINTER_PROP</primary></indexterm>
+<programlisting>#define AGS_FILE_UINT64_POINTER_PROP "guint64-pointer\0"
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AGS-FILE-UINT64-PROP:CAPS" role="macro">
+<title>AGS_FILE_UINT64_PROP</title>
+<indexterm zone="AGS-FILE-UINT64-PROP:CAPS"><primary>AGS_FILE_UINT64_PROP</primary></indexterm>
+<programlisting>#define AGS_FILE_UINT64_PROP "guint64\0"
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AGS-FILE-VERSION-PROP:CAPS" role="macro">
+<title>AGS_FILE_VERSION_PROP</title>
+<indexterm zone="AGS-FILE-VERSION-PROP:CAPS"><primary>AGS_FILE_VERSION_PROP</primary></indexterm>
+<programlisting>#define AGS_FILE_VERSION_PROP "version\0"
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AGS-FILE-XPATH-PROP:CAPS" role="macro">
+<title>AGS_FILE_XPATH_PROP</title>
+<indexterm zone="AGS-FILE-XPATH-PROP:CAPS"><primary>AGS_FILE_XPATH_PROP</primary></indexterm>
+<programlisting>#define AGS_FILE_XPATH_PROP "xpath\0"
+</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

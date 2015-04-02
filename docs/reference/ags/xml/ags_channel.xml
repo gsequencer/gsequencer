@@ -1,0 +1,559 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsChannel">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsChannel.top_of_page">AgsChannel</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsChannel</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsChannel.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>#define             <link linkend="AGS-CHANNEL-ERROR:CAPS">AGS_CHANNEL_ERROR</link>
+struct              <link linkend="AgsChannel">AgsChannel</link>;
+struct              <link linkend="AgsChannelClass">AgsChannelClass</link>;
+enum                <link linkend="AgsChannelError">AgsChannelError</link>;
+enum                <link linkend="AgsChannelFlags">AgsChannelFlags</link>;
+enum                <link linkend="AgsChannelRecallIDMode">AgsChannelRecallIDMode</link>;
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-channel-add-recall">ags_channel_add_recall</link>              (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>,
+                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *recall</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> play</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-channel-add-recall-container">ags_channel_add_recall_container</link>    (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>,
+                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *recall_container</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-channel-add-recall-id">ags_channel_add_recall_id</link>           (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>,
+                                                         <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-channel-cancel">ags_channel_cancel</link>                  (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>,
+                                                         <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-channel-done">ags_channel_done</link>                    (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>,
+                                                         <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-channel-duplicate-recall">ags_channel_duplicate_recall</link>        (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>,
+                                                         <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>);
+<link linkend="GQuark"><returnvalue>GQuark</returnvalue></link>              <link linkend="ags-channel-error-quark">ags_channel_error_quark</link>             ();
+<link linkend="AgsRecall"><returnvalue>AgsRecall</returnvalue></link> *         <link linkend="ags-channel-find-recall">ags_channel_find_recall</link>             (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>,
+                                                         <parameter><link linkend="char"><type>char</type></link> *effect</parameter>,
+                                                         <parameter><link linkend="char"><type>char</type></link> *name</parameter>);
+<link linkend="AgsChannel"><returnvalue>AgsChannel</returnvalue></link> *        <link linkend="ags-channel-first">ags_channel_first</link>                   (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>);
+<link linkend="AgsChannel"><returnvalue>AgsChannel</returnvalue></link> *        <link linkend="ags-channel-first-with-recycling">ags_channel_first_with_recycling</link>    (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-channel-init-recall">ags_channel_init_recall</link>             (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>,
+                                                         <parameter><link linkend="gint"><type>gint</type></link> stage</parameter>,
+                                                         <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>);
+<link linkend="AgsChannel"><returnvalue>AgsChannel</returnvalue></link> *        <link linkend="ags-channel-last">ags_channel_last</link>                    (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>);
+<link linkend="AgsChannel"><returnvalue>AgsChannel</returnvalue></link> *        <link linkend="ags-channel-last-with-recycling">ags_channel_last_with_recycling</link>     (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>);
+<link linkend="AgsChannel"><returnvalue>AgsChannel</returnvalue></link> *        <link linkend="ags-channel-new">ags_channel_new</link>                     (<parameter><link linkend="GObject"><type>GObject</type></link> *audio</parameter>);
+<link linkend="AgsChannel"><returnvalue>AgsChannel</returnvalue></link> *        <link linkend="ags-channel-nth">ags_channel_nth</link>                     (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> nth</parameter>);
+<link linkend="AgsChannel"><returnvalue>AgsChannel</returnvalue></link> *        <link linkend="ags-channel-pad-first">ags_channel_pad_first</link>               (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>);
+<link linkend="AgsChannel"><returnvalue>AgsChannel</returnvalue></link> *        <link linkend="ags-channel-pad-last">ags_channel_pad_last</link>                (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>);
+<link linkend="AgsChannel"><returnvalue>AgsChannel</returnvalue></link> *        <link linkend="ags-channel-pad-nth">ags_channel_pad_nth</link>                 (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> nth</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-channel-play">ags_channel_play</link>                    (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>,
+                                                         <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>,
+                                                         <parameter><link linkend="gint"><type>gint</type></link> stage</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-channel-recall-id-set">ags_channel_recall_id_set</link>           (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *output</parameter>,
+                                                         <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> ommit_own_channel</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> mode</parameter>,
+                                                         <parameter>...</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-channel-recursive-play">ags_channel_recursive_play</link>          (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>,
+                                                         <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>,
+                                                         <parameter><link linkend="gint"><type>gint</type></link> stage</parameter>);
+<link linkend="AgsRecallID"><returnvalue>AgsRecallID</returnvalue></link> *       <link linkend="ags-channel-recursive-play-init">ags_channel_recursive_play_init</link>     (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>,
+                                                         <parameter><link linkend="gint"><type>gint</type></link> stage</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> arrange_recall_id</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> duplicate_templates</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> playback</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> sequencer</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> notation</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> resolve_dependencies</parameter>,
+                                                         <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-channel-recursive-play-threaded">ags_channel_recursive_play_threaded</link> (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>,
+                                                         <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>,
+                                                         <parameter><link linkend="gint"><type>gint</type></link> stage</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-channel-recursive-reset-recall-ids">ags_channel_recursive_reset_recall_ids</link>
+                                                        (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>,
+                                                         <parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *link</parameter>,
+                                                         <parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *old_channel_link</parameter>,
+                                                         <parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *old_link_link</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-channel-recycling-changed">ags_channel_recycling_changed</link>       (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>,
+                                                         <parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *old_start_region</parameter>,
+                                                         <parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *old_end_region</parameter>,
+                                                         <parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *new_start_region</parameter>,
+                                                         <parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *new_end_region</parameter>,
+                                                         <parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *old_start_changed_region</parameter>,
+                                                         <parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *old_end_changed_region</parameter>,
+                                                         <parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *new_start_changed_region</parameter>,
+                                                         <parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *new_end_changed_region</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-channel-remove-recall">ags_channel_remove_recall</link>           (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>,
+                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *recall</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> play</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-channel-remove-recall-id">ags_channel_remove_recall_id</link>        (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>,
+                                                         <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-channel-resolve-recall">ags_channel_resolve_recall</link>          (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>,
+                                                         <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-channel-safe-resize-audio-signal">ags_channel_safe_resize_audio_signal</link>
+                                                        (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> size</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-channel-set-devout">ags_channel_set_devout</link>              (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>,
+                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *devout</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-channel-set-link">ags_channel_set_link</link>                (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>,
+                                                         <parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *link</parameter>,
+                                                         <parameter><link linkend="GError"><type>GError</type></link> **error</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-channel-set-recycling">ags_channel_set_recycling</link>           (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>,
+                                                         <parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *first_recycling</parameter>,
+                                                         <parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *last_recycling</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> update</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> destroy_old</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-channel-tillrecycling-cancel">ags_channel_tillrecycling_cancel</link>    (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>,
+                                                         <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>);
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsChannel.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsChannel.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AGS-CHANNEL-ERROR:CAPS" role="macro">
+<title>AGS_CHANNEL_ERROR</title>
+<indexterm zone="AGS-CHANNEL-ERROR:CAPS"><primary>AGS_CHANNEL_ERROR</primary></indexterm>
+<programlisting>#define AGS_CHANNEL_ERROR (ags_channel_error_quark())
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsChannel" role="struct">
+<title>struct AgsChannel</title>
+<indexterm zone="AgsChannel"><primary>AgsChannel</primary></indexterm>
+<programlisting>struct AgsChannel {
+  GObject object;
+
+  guint flags;
+
+  GObject *audio;
+  GObject *devout;
+
+  AgsChannel *prev;
+  AgsChannel *prev_pad;
+  AgsChannel *next;
+  AgsChannel *next_pad;
+
+  guint pad;
+  guint audio_channel;
+  guint line;
+
+  char *note;
+
+  gpointer devout_play;
+
+  // GObject *recycling_container; // contains child recycling
+  GList *recall_id; // there may be several recall's running
+  GList *container;
+
+  GList *recall;
+  GList *play;
+
+  AgsChannel *link;
+  AgsRecycling *first_recycling;
+  AgsRecycling *last_recycling;
+  GObject *recycling_thread;
+
+  GList *pattern;
+  AgsNotation *notation;
+
+  GtkWidget *line_widget;
+  gpointer file_data;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsChannelClass" role="struct">
+<title>struct AgsChannelClass</title>
+<indexterm zone="AgsChannelClass"><primary>AgsChannelClass</primary></indexterm>
+<programlisting>struct AgsChannelClass {
+  GObjectClass object;
+
+  void (*recycling_changed)(AgsChannel *channel,
+			    AgsRecycling *old_start_region, AgsRecycling *old_end_region,
+			    AgsRecycling *new_start_region, AgsRecycling *new_end_region,
+			    AgsRecycling *old_start_changed_region, AgsRecycling *old_end_changed_region,
+			    AgsRecycling *new_start_changed_region, AgsRecycling *new_end_changed_region);
+
+  void (*done)(AgsChannel *channel,
+	       AgsRecallID *recall_id);
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsChannelError" role="enum">
+<title>enum AgsChannelError</title>
+<indexterm zone="AgsChannelError"><primary>AgsChannelError</primary></indexterm>
+<programlisting>typedef enum {
+  AGS_CHANNEL_ERROR_LOOP_IN_LINK,
+} AgsChannelError;
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsChannelFlags" role="enum">
+<title>enum AgsChannelFlags</title>
+<indexterm zone="AgsChannelFlags"><primary>AgsChannelFlags</primary></indexterm>
+<programlisting>typedef enum {
+  AGS_CHANNEL_RUNNING        = 1,
+} AgsChannelFlags;
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsChannelRecallIDMode" role="enum">
+<title>enum AgsChannelRecallIDMode</title>
+<indexterm zone="AgsChannelRecallIDMode"><primary>AgsChannelRecallIDMode</primary></indexterm>
+<programlisting>typedef enum {
+  AGS_CHANNEL_RECALL_ID_RUN_STAGE,
+  AGS_CHANNEL_RECALL_ID_CANCEL,
+} AgsChannelRecallIDMode;
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-channel-add-recall" role="function">
+<title>ags_channel_add_recall ()</title>
+<indexterm zone="ags-channel-add-recall"><primary>ags_channel_add_recall</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_channel_add_recall              (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>,
+                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *recall</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> play</parameter>);</programlisting>
+<para>
+Adds a recall.
+</para></refsect2>
+<refsect2 id="ags-channel-add-recall-container" role="function">
+<title>ags_channel_add_recall_container ()</title>
+<indexterm zone="ags-channel-add-recall-container"><primary>ags_channel_add_recall_container</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_channel_add_recall_container    (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>,
+                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *recall_container</parameter>);</programlisting>
+<para>
+Adds a recall container.
+</para></refsect2>
+<refsect2 id="ags-channel-add-recall-id" role="function">
+<title>ags_channel_add_recall_id ()</title>
+<indexterm zone="ags-channel-add-recall-id"><primary>ags_channel_add_recall_id</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_channel_add_recall_id           (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>,
+                                                         <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>);</programlisting>
+<para>
+Adds a recall id.
+</para></refsect2>
+<refsect2 id="ags-channel-cancel" role="function">
+<title>ags_channel_cancel ()</title>
+<indexterm zone="ags-channel-cancel"><primary>ags_channel_cancel</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_channel_cancel                  (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>,
+                                                         <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>);</programlisting>
+<para>
+Calls for every matching <parameter>recall_id</parameter> <link linkend="ags-recall-cancel"><function>ags_recall_cancel()</function></link>
+</para></refsect2>
+<refsect2 id="ags-channel-done" role="function">
+<title>ags_channel_done ()</title>
+<indexterm zone="ags-channel-done"><primary>ags_channel_done</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_channel_done                    (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>,
+                                                         <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-channel-duplicate-recall" role="function">
+<title>ags_channel_duplicate_recall ()</title>
+<indexterm zone="ags-channel-duplicate-recall"><primary>ags_channel_duplicate_recall</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_channel_duplicate_recall        (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>,
+                                                         <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>);</programlisting>
+<para>
+Duplicate <link linkend="AgsRecall"><type>AgsRecall</type></link> templates for use with <link linkend="ags-channel-recursive-play"><function>ags_channel_recursive_play()</function></link>,
+but <link linkend="ags-channel-recursive-play-init"><function>ags_channel_recursive_play_init()</function></link> may call this function for you.
+</para></refsect2>
+<refsect2 id="ags-channel-error-quark" role="function">
+<title>ags_channel_error_quark ()</title>
+<indexterm zone="ags-channel-error-quark"><primary>ags_channel_error_quark</primary></indexterm>
+<programlisting><link linkend="GQuark"><returnvalue>GQuark</returnvalue></link>              ags_channel_error_quark             ();</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-channel-find-recall" role="function">
+<title>ags_channel_find_recall ()</title>
+<indexterm zone="ags-channel-find-recall"><primary>ags_channel_find_recall</primary></indexterm>
+<programlisting><link linkend="AgsRecall"><returnvalue>AgsRecall</returnvalue></link> *         ags_channel_find_recall             (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>,
+                                                         <parameter><link linkend="char"><type>char</type></link> *effect</parameter>,
+                                                         <parameter><link linkend="char"><type>char</type></link> *name</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-channel-first" role="function">
+<title>ags_channel_first ()</title>
+<indexterm zone="ags-channel-first"><primary>ags_channel_first</primary></indexterm>
+<programlisting><link linkend="AgsChannel"><returnvalue>AgsChannel</returnvalue></link> *        ags_channel_first                   (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>);</programlisting>
+<para>
+Iterates until the first <link linkend="AgsChannel"><type>AgsChannel</type></link> was found.
+</para><variablelist role="params">
+<varlistentry><term><emphasis>Returns</emphasis>&#160;:</term><listitem><simpara>the first <link linkend="AgsChannel"><type>AgsChannel</type></link></simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2 id="ags-channel-first-with-recycling" role="function">
+<title>ags_channel_first_with_recycling ()</title>
+<indexterm zone="ags-channel-first-with-recycling"><primary>ags_channel_first_with_recycling</primary></indexterm>
+<programlisting><link linkend="AgsChannel"><returnvalue>AgsChannel</returnvalue></link> *        ags_channel_first_with_recycling    (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>);</programlisting>
+<para>
+Iterates over pads forwards as long as there is no <link linkend="AgsRecycling"><type>AgsRecycling</type></link> on the <link linkend="AgsChannel"><type>AgsChannel</type></link>.
+</para><variablelist role="params">
+<varlistentry><term><emphasis>Returns</emphasis>&#160;:</term><listitem><simpara>the first channel with an <link linkend="AgsRecycling"><type>AgsRecycling</type></link></simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2 id="ags-channel-init-recall" role="function">
+<title>ags_channel_init_recall ()</title>
+<indexterm zone="ags-channel-init-recall"><primary>ags_channel_init_recall</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_channel_init_recall             (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>,
+                                                         <parameter><link linkend="gint"><type>gint</type></link> stage</parameter>,
+                                                         <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>);</programlisting>
+<para>
+Prepare <link linkend="AgsRecall"><type>AgsRecall</type></link> objects to become runnning, <link linkend="ags-channel-recursive-play-init"><function>ags_channel_recursive_play_init()</function></link>
+may call this function for you.
+</para></refsect2>
+<refsect2 id="ags-channel-last" role="function">
+<title>ags_channel_last ()</title>
+<indexterm zone="ags-channel-last"><primary>ags_channel_last</primary></indexterm>
+<programlisting><link linkend="AgsChannel"><returnvalue>AgsChannel</returnvalue></link> *        ags_channel_last                    (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>);</programlisting>
+<para>
+Iterates until the last <link linkend="AgsChannel"><type>AgsChannel</type></link> was found.
+</para><variablelist role="params">
+<varlistentry><term><emphasis>Returns</emphasis>&#160;:</term><listitem><simpara>the last <link linkend="AgsChannel"><type>AgsChannel</type></link></simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2 id="ags-channel-last-with-recycling" role="function">
+<title>ags_channel_last_with_recycling ()</title>
+<indexterm zone="ags-channel-last-with-recycling"><primary>ags_channel_last_with_recycling</primary></indexterm>
+<programlisting><link linkend="AgsChannel"><returnvalue>AgsChannel</returnvalue></link> *        ags_channel_last_with_recycling     (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>);</programlisting>
+<para>
+Iterates over pads backwards as long as there is no <link linkend="AgsRecycling"><type>AgsRecycling</type></link> on the <link linkend="AgsChannel"><type>AgsChannel</type></link>.
+</para><variablelist role="params">
+<varlistentry><term><emphasis>Returns</emphasis>&#160;:</term><listitem><simpara>the last channel with an <link linkend="AgsChannel"><type>AgsChannel</type></link>.</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2 id="ags-channel-new" role="function">
+<title>ags_channel_new ()</title>
+<indexterm zone="ags-channel-new"><primary>ags_channel_new</primary></indexterm>
+<programlisting><link linkend="AgsChannel"><returnvalue>AgsChannel</returnvalue></link> *        ags_channel_new                     (<parameter><link linkend="GObject"><type>GObject</type></link> *audio</parameter>);</programlisting>
+<para>
+Creates a <link linkend="AgsChannel"><type>AgsChannel</type></link>, linking tree to <parameter>audio</parameter>.
+</para><variablelist role="params">
+<varlistentry><term><emphasis>Returns</emphasis>&#160;:</term><listitem><simpara>a new <link linkend="AgsChannel"><type>AgsChannel</type></link></simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2 id="ags-channel-nth" role="function">
+<title>ags_channel_nth ()</title>
+<indexterm zone="ags-channel-nth"><primary>ags_channel_nth</primary></indexterm>
+<programlisting><link linkend="AgsChannel"><returnvalue>AgsChannel</returnvalue></link> *        ags_channel_nth                     (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> nth</parameter>);</programlisting>
+<para>
+Iterates <parameter>nth</parameter> times forward.
+</para><variablelist role="params">
+<varlistentry><term><emphasis>Returns</emphasis>&#160;:</term><listitem><simpara>the nth <link linkend="AgsChannel"><type>AgsChannel</type></link></simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2 id="ags-channel-pad-first" role="function">
+<title>ags_channel_pad_first ()</title>
+<indexterm zone="ags-channel-pad-first"><primary>ags_channel_pad_first</primary></indexterm>
+<programlisting><link linkend="AgsChannel"><returnvalue>AgsChannel</returnvalue></link> *        ags_channel_pad_first               (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>);</programlisting>
+<para>
+Iterates until the first pad has been reached.
+</para><variablelist role="params">
+<varlistentry><term><emphasis>Returns</emphasis>&#160;:</term><listitem><simpara>the first <link linkend="AgsChannel"><type>AgsChannel</type></link> with the same audio_channel as <parameter>channel</parameter></simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2 id="ags-channel-pad-last" role="function">
+<title>ags_channel_pad_last ()</title>
+<indexterm zone="ags-channel-pad-last"><primary>ags_channel_pad_last</primary></indexterm>
+<programlisting><link linkend="AgsChannel"><returnvalue>AgsChannel</returnvalue></link> *        ags_channel_pad_last                (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>);</programlisting>
+<para>
+Iterates until the last pad has been reached.
+</para><variablelist role="params">
+<varlistentry><term><emphasis>Returns</emphasis>&#160;:</term><listitem><simpara>the last <link linkend="AgsChannel"><type>AgsChannel</type></link> with the same audio_channel as <parameter>channel</parameter></simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2 id="ags-channel-pad-nth" role="function">
+<title>ags_channel_pad_nth ()</title>
+<indexterm zone="ags-channel-pad-nth"><primary>ags_channel_pad_nth</primary></indexterm>
+<programlisting><link linkend="AgsChannel"><returnvalue>AgsChannel</returnvalue></link> *        ags_channel_pad_nth                 (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> nth</parameter>);</programlisting>
+<para>
+Iterates nth times.
+</para><variablelist role="params">
+<varlistentry><term><emphasis>Returns</emphasis>&#160;:</term><listitem><simpara>the nth pad</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2 id="ags-channel-play" role="function">
+<title>ags_channel_play ()</title>
+<indexterm zone="ags-channel-play"><primary>ags_channel_play</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_channel_play                    (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>,
+                                                         <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>,
+                                                         <parameter><link linkend="gint"><type>gint</type></link> stage</parameter>);</programlisting>
+<para>
+Play one single run of <parameter>stage</parameter> step.
+</para></refsect2>
+<refsect2 id="ags-channel-recall-id-set" role="function">
+<title>ags_channel_recall_id_set ()</title>
+<indexterm zone="ags-channel-recall-id-set"><primary>ags_channel_recall_id_set</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_channel_recall_id_set           (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *output</parameter>,
+                                                         <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> ommit_own_channel</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> mode</parameter>,
+                                                         <parameter>...</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-channel-recursive-play" role="function">
+<title>ags_channel_recursive_play ()</title>
+<indexterm zone="ags-channel-recursive-play"><primary>ags_channel_recursive_play</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_channel_recursive_play          (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>,
+                                                         <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>,
+                                                         <parameter><link linkend="gint"><type>gint</type></link> stage</parameter>);</programlisting>
+<para>
+Call recursively <link linkend="ags-channel-play"><function>ags_channel_play()</function></link> and <link linkend="ags-audio-play"><function>ags_audio_play()</function></link>
+</para></refsect2>
+<refsect2 id="ags-channel-recursive-play-init" role="function">
+<title>ags_channel_recursive_play_init ()</title>
+<indexterm zone="ags-channel-recursive-play-init"><primary>ags_channel_recursive_play_init</primary></indexterm>
+<programlisting><link linkend="AgsRecallID"><returnvalue>AgsRecallID</returnvalue></link> *       ags_channel_recursive_play_init     (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>,
+                                                         <parameter><link linkend="gint"><type>gint</type></link> stage</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> arrange_recall_id</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> duplicate_templates</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> playback</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> sequencer</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> notation</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> resolve_dependencies</parameter>,
+                                                         <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>);</programlisting>
+<para>
+Make the tree ready for a new <link linkend="AgsDevoutPlay"><type>AgsDevoutPlay</type></link>.
+</para></refsect2>
+<refsect2 id="ags-channel-recursive-play-threaded" role="function">
+<title>ags_channel_recursive_play_threaded ()</title>
+<indexterm zone="ags-channel-recursive-play-threaded"><primary>ags_channel_recursive_play_threaded</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_channel_recursive_play_threaded (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>,
+                                                         <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>,
+                                                         <parameter><link linkend="gint"><type>gint</type></link> stage</parameter>);</programlisting>
+<para>
+Super-threaded version of play one single run of <parameter>stage</parameter> step.
+</para></refsect2>
+<refsect2 id="ags-channel-recursive-reset-recall-ids" role="function">
+<title>ags_channel_recursive_reset_recall_ids ()</title>
+<indexterm zone="ags-channel-recursive-reset-recall-ids"><primary>ags_channel_recursive_reset_recall_ids</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_channel_recursive_reset_recall_ids
+                                                        (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>,
+                                                         <parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *link</parameter>,
+                                                         <parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *old_channel_link</parameter>,
+                                                         <parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *old_link_link</parameter>);</programlisting>
+<para>
+Called by <link linkend="ags-channel-set-link"><function>ags_channel_set_link()</function></link> to handle running <link linkend="AgsAudio"><type>AgsAudio</type></link> objects correctly.
+This function destroys <link linkend="AgsRecall"><type>AgsRecall</type></link> objects which were uneeded because they became
+invalid due to unlinking. By the way it destroys the uneeded <link linkend="AgsRecallID"><type>AgsRecallID</type></link> objects, too.
+Additionally it creates <link linkend="AgsRecall"><type>AgsRecall</type></link> and <link linkend="AgsRecallID"><type>AgsRecallID</type></link> objects to prepare becoming a
+running object (<link linkend="AgsAudio"><type>AgsAudio</type></link> or <link linkend="AgsChannel"><type>AgsChannel</type></link>).
+By the clean up the invalid <link linkend="AgsRecall"><type>AgsRecall</type></link> objects will be removed.
+Once the clean up has done <link linkend="ags-channel-recursive-play-init"><function>ags_channel_recursive_play_init()</function></link> will be called for every
+playing instance that was found.
+</para></refsect2>
+<refsect2 id="ags-channel-recycling-changed" role="function">
+<title>ags_channel_recycling_changed ()</title>
+<indexterm zone="ags-channel-recycling-changed"><primary>ags_channel_recycling_changed</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_channel_recycling_changed       (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>,
+                                                         <parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *old_start_region</parameter>,
+                                                         <parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *old_end_region</parameter>,
+                                                         <parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *new_start_region</parameter>,
+                                                         <parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *new_end_region</parameter>,
+                                                         <parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *old_start_changed_region</parameter>,
+                                                         <parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *old_end_changed_region</parameter>,
+                                                         <parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *new_start_changed_region</parameter>,
+                                                         <parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *new_end_changed_region</parameter>);</programlisting>
+<para>
+Modify recycling.
+</para><variablelist role="params">
+<varlistentry><term><parameter>old_start_region</parameter>&#160;:</term>
+<listitem><simpara>first recycling</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>old_end_region</parameter>&#160;:</term>
+<listitem><simpara>last recycling</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>new_start_region</parameter>&#160;:</term>
+<listitem><simpara>new first recycling</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>new_end_region</parameter>&#160;:</term>
+<listitem><simpara>new last recycling</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>old_start_changed_region</parameter>&#160;:</term>
+<listitem><simpara>modified link recycling start</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>old_end_changed_region</parameter>&#160;:</term>
+<listitem><simpara>modified link recyclig end</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>new_start_changed_region</parameter>&#160;:</term>
+<listitem><simpara>replacing link recycling start</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>new_end_changed_region</parameter>&#160;:</term>
+<listitem><simpara>replacing link recycling end</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2 id="ags-channel-remove-recall" role="function">
+<title>ags_channel_remove_recall ()</title>
+<indexterm zone="ags-channel-remove-recall"><primary>ags_channel_remove_recall</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_channel_remove_recall           (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>,
+                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *recall</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> play</parameter>);</programlisting>
+<para>
+Removes a recall.
+</para></refsect2>
+<refsect2 id="ags-channel-remove-recall-id" role="function">
+<title>ags_channel_remove_recall_id ()</title>
+<indexterm zone="ags-channel-remove-recall-id"><primary>ags_channel_remove_recall_id</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_channel_remove_recall_id        (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>,
+                                                         <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>);</programlisting>
+<para>
+Removes a recall id.
+</para></refsect2>
+<refsect2 id="ags-channel-resolve-recall" role="function">
+<title>ags_channel_resolve_recall ()</title>
+<indexterm zone="ags-channel-resolve-recall"><primary>ags_channel_resolve_recall</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_channel_resolve_recall          (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>,
+                                                         <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>);</programlisting>
+<para>
+Resolve step of initialization.
+</para></refsect2>
+<refsect2 id="ags-channel-safe-resize-audio-signal" role="function">
+<title>ags_channel_safe_resize_audio_signal ()</title>
+<indexterm zone="ags-channel-safe-resize-audio-signal"><primary>ags_channel_safe_resize_audio_signal</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_channel_safe_resize_audio_signal
+                                                        (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> size</parameter>);</programlisting>
+<para>
+Resize audio data.
+</para></refsect2>
+<refsect2 id="ags-channel-set-devout" role="function">
+<title>ags_channel_set_devout ()</title>
+<indexterm zone="ags-channel-set-devout"><primary>ags_channel_set_devout</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_channel_set_devout              (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>,
+                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *devout</parameter>);</programlisting>
+<para>
+Sets devout.
+</para></refsect2>
+<refsect2 id="ags-channel-set-link" role="function">
+<title>ags_channel_set_link ()</title>
+<indexterm zone="ags-channel-set-link"><primary>ags_channel_set_link</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_channel_set_link                (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>,
+                                                         <parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *link</parameter>,
+                                                         <parameter><link linkend="GError"><type>GError</type></link> **error</parameter>);</programlisting>
+<para>
+Change the linking of <link linkend="AgsChannel"><type>AgsChannel</type></link> objects.
+</para></refsect2>
+<refsect2 id="ags-channel-set-recycling" role="function">
+<title>ags_channel_set_recycling ()</title>
+<indexterm zone="ags-channel-set-recycling"><primary>ags_channel_set_recycling</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_channel_set_recycling           (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>,
+                                                         <parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *first_recycling</parameter>,
+                                                         <parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *last_recycling</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> update</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> destroy_old</parameter>);</programlisting>
+<para>
+Called by <link linkend="ags-channel-set-link"><function>ags_channel_set_link()</function></link> to handle outdated <link linkend="AgsRecycling"><type>AgsRecycling</type></link> references.
+</para></refsect2>
+<refsect2 id="ags-channel-tillrecycling-cancel" role="function">
+<title>ags_channel_tillrecycling_cancel ()</title>
+<indexterm zone="ags-channel-tillrecycling-cancel"><primary>ags_channel_tillrecycling_cancel</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_channel_tillrecycling_cancel    (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>,
+                                                         <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>);</programlisting>
+<para>
+Traverses the tree down and up and calls <link linkend="ags-channel-cancel"><function>ags_channel_cancel()</function></link> for corresponding
+<parameter>recall_id</parameter>.
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

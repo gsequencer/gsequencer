@@ -1,0 +1,136 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsSegment">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsSegment.top_of_page">AgsSegment</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsSegment</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsSegment.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>enum                <link linkend="AGS-SEGMENT-FLAGS:CAPS">AGS_SEGMENT_FLAGS</link>;
+struct              <link linkend="AgsSegment">AgsSegment</link>;
+struct              <link linkend="AgsSegmentClass">AgsSegmentClass</link>;
+enum                <link linkend="AgsSegmentFields">AgsSegmentFields</link>;
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-segment-draw-string">ags_segment_draw_string</link>             (<parameter><link linkend="AgsSegment"><type>AgsSegment</type></link> *segment</parameter>,
+                                                         <parameter><link linkend="gchar"><type>gchar</type></link> **string</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-segment-field-off">ags_segment_field_off</link>               (<parameter><link linkend="AgsSegment"><type>AgsSegment</type></link> *segment</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> field</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-segment-field-on">ags_segment_field_on</link>                (<parameter><link linkend="AgsSegment"><type>AgsSegment</type></link> *segment</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> field</parameter>);
+<link linkend="AgsSegment"><returnvalue>AgsSegment</returnvalue></link> *        <link linkend="ags-segment-new">ags_segment_new</link>                     ();
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsSegment.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsSegment.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AGS-SEGMENT-FLAGS:CAPS" role="enum">
+<title>enum AGS_SEGMENT_FLAGS</title>
+<indexterm zone="AGS-SEGMENT-FLAGS:CAPS"><primary>AGS_SEGMENT_FLAGS</primary></indexterm>
+<programlisting>typedef enum {
+  AGS_SEGMENT_MONOCHROME      = 1,
+  AGS_SEGMENT_COLOR_RED       = 1 &lt;&lt;  1,
+  AGS_SEGMENT_COLOR_BLUE      = 1 &lt;&lt;  2,
+  AGS_SGEMENT_COLOR_GREEN     = 1 &lt;&lt;  3,
+} AGS_SEGMENT_FLAGS;
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsSegment" role="struct">
+<title>struct AgsSegment</title>
+<indexterm zone="AgsSegment"><primary>AgsSegment</primary></indexterm>
+<programlisting>struct AgsSegment {
+  GtkWidget widget;
+
+  guint flags;
+
+  guint count;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsSegmentClass" role="struct">
+<title>struct AgsSegmentClass</title>
+<indexterm zone="AgsSegmentClass"><primary>AgsSegmentClass</primary></indexterm>
+<programlisting>struct AgsSegmentClass {
+  GtkWidgetClass widget;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsSegmentFields" role="enum">
+<title>enum AgsSegmentFields</title>
+<indexterm zone="AgsSegmentFields"><primary>AgsSegmentFields</primary></indexterm>
+<programlisting>typedef enum {
+  AGS_SEGMENT_UPPER_LEFT                = 1,
+  AGS_SEGMENT_UPPER_RIGHT               = 1 &lt;&lt;  1,
+  AGS_SEGMENT_LOWER_LEFT                = 1 &lt;&lt;  2,
+  AGS_SEGMENT_LOWER_RIGHT               = 1 &lt;&lt;  3,
+  AGS_SEGMENT_LEFT_UPPER_1              = 1 &lt;&lt;  4,
+  AGS_SEGMENT_LEFT_UPPER_2              = 1 &lt;&lt;  5,
+  AGS_SEGMENT_LEFT_LOWER_1              = 1 &lt;&lt;  6,
+  AGS_SEGMENT_LEFT_LOWER_2              = 1 &lt;&lt;  7,
+  AGS_SEGMENT_RIGHT_UPPER_1             = 1 &lt;&lt;  8,
+  AGS_SEGMENT_RIGHT_UPPER_2             = 1 &lt;&lt;  9,
+  AGS_SEGMENT_RIGHT_LOWER_1             = 1 &lt;&lt; 10,
+  AGS_SEGMENT_RIGHT_LOWER_2             = 1 &lt;&lt; 11,
+  AGS_SEGMENT_DIAGONAL_UPPER_LEFT_1     = 1 &lt;&lt; 12,
+  AGS_SEGMENT_DIAGONAL_UPPER_LEFT_2     = 1 &lt;&lt; 13,
+  AGS_SEGMENT_DIAGONAL_UPPER_RIGHT_1    = 1 &lt;&lt; 14,
+  AGS_SEGMENT_DIAGONAL_UPPER_RIGHT_2    = 1 &lt;&lt; 15,
+  AGS_SEGMENT_DIAGONAL_LOWER_LEFT_1     = 1 &lt;&lt; 16,
+  AGS_SEGMENT_DIAGONAL_LOWER_LEFT_2     = 1 &lt;&lt; 17,
+  AGS_SEGMENT_DIAGONAL_LOWER_RIGHT_1    = 1 &lt;&lt; 18,
+  AGS_SEGMENT_DIAGONAL_LOWER_RIGHT_2    = 1 &lt;&lt; 19,
+} AgsSegmentFields;
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-segment-draw-string" role="function">
+<title>ags_segment_draw_string ()</title>
+<indexterm zone="ags-segment-draw-string"><primary>ags_segment_draw_string</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_segment_draw_string             (<parameter><link linkend="AgsSegment"><type>AgsSegment</type></link> *segment</parameter>,
+                                                         <parameter><link linkend="gchar"><type>gchar</type></link> **string</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-segment-field-off" role="function">
+<title>ags_segment_field_off ()</title>
+<indexterm zone="ags-segment-field-off"><primary>ags_segment_field_off</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_segment_field_off               (<parameter><link linkend="AgsSegment"><type>AgsSegment</type></link> *segment</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> field</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-segment-field-on" role="function">
+<title>ags_segment_field_on ()</title>
+<indexterm zone="ags-segment-field-on"><primary>ags_segment_field_on</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_segment_field_on                (<parameter><link linkend="AgsSegment"><type>AgsSegment</type></link> *segment</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> field</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-segment-new" role="function">
+<title>ags_segment_new ()</title>
+<indexterm zone="ags-segment-new"><primary>ags_segment_new</primary></indexterm>
+<programlisting><link linkend="AgsSegment"><returnvalue>AgsSegment</returnvalue></link> *        ags_segment_new                     ();</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

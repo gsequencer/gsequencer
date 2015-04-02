@@ -1,0 +1,47 @@
+<!-- ##### SECTION Title ##### -->
+AgsMutable
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### TYPEDEF AgsMutable ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### STRUCT AgsMutableInterface ##### -->
+<para>
+
+</para>
+
+@interface: 
+@set_muted: 
+
+<!-- ##### FUNCTION ags_mutable_set_muted ##### -->
+<para>
+
+</para>
+
+@mutable: 
+@muted: 
+
+

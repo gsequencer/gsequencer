@@ -1,0 +1,87 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsTogglePatternBit">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsTogglePatternBit.top_of_page">AgsTogglePatternBit</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsTogglePatternBit</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsTogglePatternBit.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>struct              <link linkend="AgsTogglePatternBit">AgsTogglePatternBit</link>;
+struct              <link linkend="AgsTogglePatternBitClass">AgsTogglePatternBitClass</link>;
+<link linkend="AgsTogglePatternBit"><returnvalue>AgsTogglePatternBit</returnvalue></link> * <link linkend="ags-toggle-pattern-bit-new">ags_toggle_pattern_bit_new</link>        (<parameter><link linkend="AgsPattern"><type>AgsPattern</type></link> *pattern</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> line</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> index_i</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> index_j</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> bit</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-toggle-pattern-bit-refresh-gui">ags_toggle_pattern_bit_refresh_gui</link>  (<parameter><link linkend="AgsTogglePatternBit"><type>AgsTogglePatternBit</type></link> *toggle_pattern_bit</parameter>);
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsTogglePatternBit.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsTogglePatternBit.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AgsTogglePatternBit" role="struct">
+<title>struct AgsTogglePatternBit</title>
+<indexterm zone="AgsTogglePatternBit"><primary>AgsTogglePatternBit</primary></indexterm>
+<programlisting>struct AgsTogglePatternBit {
+  AgsTask task;
+
+  AgsPattern *pattern;
+  guint line;
+
+  guint index_i;
+  guint index_j;
+  guint bit;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsTogglePatternBitClass" role="struct">
+<title>struct AgsTogglePatternBitClass</title>
+<indexterm zone="AgsTogglePatternBitClass"><primary>AgsTogglePatternBitClass</primary></indexterm>
+<programlisting>struct AgsTogglePatternBitClass {
+  AgsTaskClass task;
+
+  void (*refresh_gui)(AgsTogglePatternBit *toggle_pattern_bit);
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-toggle-pattern-bit-new" role="function">
+<title>ags_toggle_pattern_bit_new ()</title>
+<indexterm zone="ags-toggle-pattern-bit-new"><primary>ags_toggle_pattern_bit_new</primary></indexterm>
+<programlisting><link linkend="AgsTogglePatternBit"><returnvalue>AgsTogglePatternBit</returnvalue></link> * ags_toggle_pattern_bit_new        (<parameter><link linkend="AgsPattern"><type>AgsPattern</type></link> *pattern</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> line</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> index_i</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> index_j</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> bit</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-toggle-pattern-bit-refresh-gui" role="function">
+<title>ags_toggle_pattern_bit_refresh_gui ()</title>
+<indexterm zone="ags-toggle-pattern-bit-refresh-gui"><primary>ags_toggle_pattern_bit_refresh_gui</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_toggle_pattern_bit_refresh_gui  (<parameter><link linkend="AgsTogglePatternBit"><type>AgsTogglePatternBit</type></link> *toggle_pattern_bit</parameter>);</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

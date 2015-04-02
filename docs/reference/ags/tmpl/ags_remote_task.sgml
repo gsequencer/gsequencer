@@ -1,0 +1,69 @@
+<!-- ##### SECTION Title ##### -->
+AgsRemoteTask
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT AgsRemoteTask ##### -->
+<para>
+
+</para>
+
+@object: 
+@server: 
+
+<!-- ##### STRUCT AgsRemoteTaskClass ##### -->
+<para>
+
+</para>
+
+@object: 
+
+<!-- ##### FUNCTION ags_remote_task_launch ##### -->
+<para>
+
+</para>
+
+@env: 
+@param_array: 
+@server_info: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_remote_task_launch_timed ##### -->
+<para>
+
+</para>
+
+@env: 
+@param_array: 
+@server_info: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_remote_task_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

@@ -1,0 +1,423 @@
+<!-- ##### SECTION Title ##### -->
+AgsChannel
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### MACRO AGS_CHANNEL_ERROR ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### STRUCT AgsChannel ##### -->
+<para>
+
+</para>
+
+@object: 
+@flags: 
+@audio: 
+@devout: 
+@prev: 
+@prev_pad: 
+@next: 
+@next_pad: 
+@pad: 
+@audio_channel: 
+@line: 
+@note: 
+@devout_play: 
+@recall_id: 
+@container: 
+@recall: 
+@play: 
+@link: 
+@first_recycling: 
+@last_recycling: 
+@recycling_thread: 
+@pattern: 
+@notation: 
+@line_widget: 
+@file_data: 
+
+<!-- ##### STRUCT AgsChannelClass ##### -->
+<para>
+
+</para>
+
+@object: 
+@recycling_changed: 
+@done: 
+
+<!-- ##### ENUM AgsChannelError ##### -->
+<para>
+
+</para>
+
+@AGS_CHANNEL_ERROR_LOOP_IN_LINK: 
+
+<!-- ##### ENUM AgsChannelFlags ##### -->
+<para>
+
+</para>
+
+@AGS_CHANNEL_RUNNING: 
+
+<!-- ##### ENUM AgsChannelRecallIDMode ##### -->
+<para>
+
+</para>
+
+@AGS_CHANNEL_RECALL_ID_RUN_STAGE: 
+@AGS_CHANNEL_RECALL_ID_CANCEL: 
+
+<!-- ##### FUNCTION ags_channel_add_recall ##### -->
+<para>
+
+</para>
+
+@channel: 
+@recall: 
+@play: 
+
+
+<!-- ##### FUNCTION ags_channel_add_recall_container ##### -->
+<para>
+
+</para>
+
+@channel: 
+@recall_container: 
+
+
+<!-- ##### FUNCTION ags_channel_add_recall_id ##### -->
+<para>
+
+</para>
+
+@channel: 
+@recall_id: 
+
+
+<!-- ##### FUNCTION ags_channel_cancel ##### -->
+<para>
+
+</para>
+
+@channel: 
+@recall_id: 
+
+
+<!-- ##### FUNCTION ags_channel_done ##### -->
+<para>
+
+</para>
+
+@channel: 
+@recall_id: 
+
+
+<!-- ##### FUNCTION ags_channel_duplicate_recall ##### -->
+<para>
+
+</para>
+
+@channel: 
+@recall_id: 
+
+
+<!-- ##### FUNCTION ags_channel_error_quark ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_channel_find_recall ##### -->
+<para>
+
+</para>
+
+@channel: 
+@effect: 
+@name: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_channel_first ##### -->
+<para>
+
+</para>
+
+@channel: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_channel_first_with_recycling ##### -->
+<para>
+
+</para>
+
+@channel: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_channel_init_recall ##### -->
+<para>
+
+</para>
+
+@channel: 
+@stage: 
+@recall_id: 
+
+
+<!-- ##### FUNCTION ags_channel_last ##### -->
+<para>
+
+</para>
+
+@channel: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_channel_last_with_recycling ##### -->
+<para>
+
+</para>
+
+@channel: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_channel_new ##### -->
+<para>
+
+</para>
+
+@audio: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_channel_nth ##### -->
+<para>
+
+</para>
+
+@channel: 
+@nth: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_channel_pad_first ##### -->
+<para>
+
+</para>
+
+@channel: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_channel_pad_last ##### -->
+<para>
+
+</para>
+
+@channel: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_channel_pad_nth ##### -->
+<para>
+
+</para>
+
+@channel: 
+@nth: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_channel_play ##### -->
+<para>
+
+</para>
+
+@channel: 
+@recall_id: 
+@stage: 
+
+
+<!-- ##### FUNCTION ags_channel_recall_id_set ##### -->
+<para>
+
+</para>
+
+@output: 
+@recall_id: 
+@ommit_own_channel: 
+@mode: 
+@...: 
+
+
+<!-- ##### FUNCTION ags_channel_recursive_play ##### -->
+<para>
+
+</para>
+
+@channel: 
+@recall_id: 
+@stage: 
+
+
+<!-- ##### FUNCTION ags_channel_recursive_play_init ##### -->
+<para>
+
+</para>
+
+@channel: 
+@stage: 
+@arrange_recall_id: 
+@duplicate_templates: 
+@playback: 
+@sequencer: 
+@notation: 
+@resolve_dependencies: 
+@recall_id: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_channel_recursive_play_threaded ##### -->
+<para>
+
+</para>
+
+@channel: 
+@recall_id: 
+@stage: 
+
+
+<!-- ##### FUNCTION ags_channel_recursive_reset_recall_ids ##### -->
+<para>
+
+</para>
+
+@channel: 
+@link: 
+@old_channel_link: 
+@old_link_link: 
+
+
+<!-- ##### FUNCTION ags_channel_recycling_changed ##### -->
+<para>
+
+</para>
+
+@channel: 
+@old_start_region: 
+@old_end_region: 
+@new_start_region: 
+@new_end_region: 
+@old_start_changed_region: 
+@old_end_changed_region: 
+@new_start_changed_region: 
+@new_end_changed_region: 
+
+
+<!-- ##### FUNCTION ags_channel_remove_recall ##### -->
+<para>
+
+</para>
+
+@channel: 
+@recall: 
+@play: 
+
+
+<!-- ##### FUNCTION ags_channel_remove_recall_id ##### -->
+<para>
+
+</para>
+
+@channel: 
+@recall_id: 
+
+
+<!-- ##### FUNCTION ags_channel_resolve_recall ##### -->
+<para>
+
+</para>
+
+@channel: 
+@recall_id: 
+
+
+<!-- ##### FUNCTION ags_channel_safe_resize_audio_signal ##### -->
+<para>
+
+</para>
+
+@channel: 
+@size: 
+
+
+<!-- ##### FUNCTION ags_channel_set_devout ##### -->
+<para>
+
+</para>
+
+@channel: 
+@devout: 
+
+
+<!-- ##### FUNCTION ags_channel_set_link ##### -->
+<para>
+
+</para>
+
+@channel: 
+@link: 
+@error: 
+
+
+<!-- ##### FUNCTION ags_channel_set_recycling ##### -->
+<para>
+
+</para>
+
+@channel: 
+@first_recycling: 
+@last_recycling: 
+@update: 
+@destroy_old: 
+
+
+<!-- ##### FUNCTION ags_channel_tillrecycling_cancel ##### -->
+<para>
+
+</para>
+
+@channel: 
+@recall_id: 
+
+

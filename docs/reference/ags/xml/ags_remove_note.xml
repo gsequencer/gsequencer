@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsRemoveNote">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsRemoveNote.top_of_page">AgsRemoveNote</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsRemoveNote</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsRemoveNote.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>struct              <link linkend="AgsRemoveNote">AgsRemoveNote</link>;
+struct              <link linkend="AgsRemoveNoteClass">AgsRemoveNoteClass</link>;
+<link linkend="AgsRemoveNote"><returnvalue>AgsRemoveNote</returnvalue></link> *     <link linkend="ags-remove-note-new">ags_remove_note_new</link>                 (<parameter><link linkend="AgsNotation"><type>AgsNotation</type></link> *notation</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> x</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> y</parameter>);
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsRemoveNote.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsRemoveNote.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AgsRemoveNote" role="struct">
+<title>struct AgsRemoveNote</title>
+<indexterm zone="AgsRemoveNote"><primary>AgsRemoveNote</primary></indexterm>
+<programlisting>struct AgsRemoveNote {
+  AgsTask task;
+
+  AgsNotation *notation;
+
+  guint x;
+  guint y;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsRemoveNoteClass" role="struct">
+<title>struct AgsRemoveNoteClass</title>
+<indexterm zone="AgsRemoveNoteClass"><primary>AgsRemoveNoteClass</primary></indexterm>
+<programlisting>struct AgsRemoveNoteClass {
+  AgsTaskClass task;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-remove-note-new" role="function">
+<title>ags_remove_note_new ()</title>
+<indexterm zone="ags-remove-note-new"><primary>ags_remove_note_new</primary></indexterm>
+<programlisting><link linkend="AgsRemoveNote"><returnvalue>AgsRemoveNote</returnvalue></link> *     ags_remove_note_new                 (<parameter><link linkend="AgsNotation"><type>AgsNotation</type></link> *notation</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> x</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> y</parameter>);</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

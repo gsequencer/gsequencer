@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-ags-combo-box-text">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-ags-combo-box-text.top_of_page">ags_combo_box_text</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>ags_combo_box_text</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-ags-combo-box-text.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis><link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-combo-box-text-remove-all">ags_combo_box_text_remove_all</link>       (<parameter><link linkend="GtkComboBoxText"><type>GtkComboBoxText</type></link> *combo_box</parameter>);
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-ags-combo-box-text.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-ags-combo-box-text.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="ags-combo-box-text-remove-all" role="function">
+<title>ags_combo_box_text_remove_all ()</title>
+<indexterm zone="ags-combo-box-text-remove-all"><primary>ags_combo_box_text_remove_all</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_combo_box_text_remove_all       (<parameter><link linkend="GtkComboBoxText"><type>GtkComboBoxText</type></link> *combo_box</parameter>);</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

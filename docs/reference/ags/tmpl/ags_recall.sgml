@@ -1,0 +1,494 @@
+<!-- ##### SECTION Title ##### -->
+AgsRecall
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### MACRO AGS_RECALL_DEFAULT_BUILD_ID ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO AGS_RECALL_DEFAULT_VERSION ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO AGS_RECALL_HANDLER ##### -->
+<para>
+
+</para>
+
+@handler: 
+
+
+<!-- ##### STRUCT AgsRecall ##### -->
+<para>
+
+</para>
+
+@object: 
+@flags: 
+@devout: 
+@container: 
+@version: 
+@build_id: 
+@effect: 
+@name: 
+@xml_type: 
+@dependencies: 
+@recall_id: 
+@parent: 
+@children: 
+@child_type: 
+@child_parameters: 
+@n_params: 
+@port: 
+@handlers: 
+
+<!-- ##### STRUCT AgsRecallClass ##### -->
+<para>
+
+</para>
+
+@object: 
+@resolve_dependencies: 
+@run_init_pre: 
+@run_init_inter: 
+@run_init_post: 
+@run_pre: 
+@run_inter: 
+@run_post: 
+@stop_persistent: 
+@done: 
+@cancel: 
+@remove: 
+@duplicate: 
+@notify_dependency: 
+@child_added: 
+
+<!-- ##### ENUM AgsRecallFlags ##### -->
+<para>
+
+</para>
+
+@AGS_RECALL_CONNECTED: 
+@AGS_RECALL_RUN_INITIALIZED: 
+@AGS_RECALL_TEMPLATE: 
+@AGS_RECALL_PLAYBACK: 
+@AGS_RECALL_SEQUENCER: 
+@AGS_RECALL_NOTATION: 
+@AGS_RECALL_DEFAULT_TEMPLATE: 
+@AGS_RECALL_INPUT_ORIENTATED: 
+@AGS_RECALL_OUTPUT_ORIENTATED: 
+@AGS_RECALL_PERSISTENT: 
+@AGS_RECALL_INITIAL_RUN: 
+@AGS_RECALL_TERMINATING: 
+@AGS_RECALL_DONE: 
+@AGS_RECALL_REMOVE: 
+@AGS_RECALL_HIDE: 
+@AGS_RECALL_PROPAGATE_DONE: 
+@AGS_RECALL_PERSISTENT_PLAYBACK: 
+@AGS_RECALL_PERSISTENT_SEQUENCER: 
+@AGS_RECALL_PERSISTENT_NOTATION: 
+@AGS_RECALL_SKIP_DEPENDENCIES: 
+
+<!-- ##### STRUCT AgsRecallHandler ##### -->
+<para>
+
+</para>
+
+@signal_name: 
+@callback: 
+@data: 
+@handler: 
+
+<!-- ##### ENUM AgsRecallNotifyDependencyMode ##### -->
+<para>
+
+</para>
+
+@AGS_RECALL_NOTIFY_RUN: 
+@AGS_RECALL_NOTIFY_AUDIO: 
+@AGS_RECALL_NOTIFY_AUDIO_RUN: 
+@AGS_RECALL_NOTIFY_CHANNEL: 
+@AGS_RECALL_NOTIFY_CHANNEL_RUN: 
+@AGS_RECALL_NOTIFY_RECALL: 
+
+<!-- ##### FUNCTION ags_recall_add_child ##### -->
+<para>
+
+</para>
+
+@recall: 
+@child: 
+
+
+<!-- ##### FUNCTION ags_recall_add_dependency ##### -->
+<para>
+
+</para>
+
+@recall: 
+@dependency: 
+
+
+<!-- ##### FUNCTION ags_recall_add_handler ##### -->
+<para>
+
+</para>
+
+@recall: 
+@recall_handler: 
+
+
+<!-- ##### FUNCTION ags_recall_cancel ##### -->
+<para>
+
+</para>
+
+@recall: 
+
+
+<!-- ##### FUNCTION ags_recall_child_added ##### -->
+<para>
+
+</para>
+
+@parent: 
+@child: 
+
+
+<!-- ##### FUNCTION ags_recall_done ##### -->
+<para>
+
+</para>
+
+@recall: 
+
+
+<!-- ##### FUNCTION ags_recall_duplicate ##### -->
+<para>
+
+</para>
+
+@recall: 
+@recall_id: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_recall_find_by_effect ##### -->
+<para>
+
+</para>
+
+@list: 
+@recall_id: 
+@effect: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_recall_find_provider ##### -->
+<para>
+
+</para>
+
+@recall: 
+@provider: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_recall_find_provider_with_recycling_container ##### -->
+<para>
+
+</para>
+
+@recall: 
+@provider: 
+@recycling_container: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_recall_find_recycling_container ##### -->
+<para>
+
+</para>
+
+@recall: 
+@recycling_container: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_recall_find_template ##### -->
+<para>
+
+</para>
+
+@recall: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_recall_find_type ##### -->
+<para>
+
+</para>
+
+@recall: 
+@type: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_recall_find_type_with_recycling_container ##### -->
+<para>
+
+</para>
+
+@recall: 
+@type: 
+@recycling_container: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_recall_get_children ##### -->
+<para>
+
+</para>
+
+@recall: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_recall_get_dependencies ##### -->
+<para>
+
+</para>
+
+@recall: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_recall_handler_alloc ##### -->
+<para>
+
+</para>
+
+@signal_name: 
+@callback: 
+@data: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_recall_is_done ##### -->
+<para>
+
+</para>
+
+@recalls: 
+@recycling_container: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_recall_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_recall_notify_dependency ##### -->
+<para>
+
+</para>
+
+@recall: 
+@dependency: 
+@count: 
+
+
+<!-- ##### FUNCTION ags_recall_remove ##### -->
+<para>
+
+</para>
+
+@recall: 
+
+
+<!-- ##### FUNCTION ags_recall_remove_child ##### -->
+<para>
+
+</para>
+
+@recall: 
+@child: 
+
+
+<!-- ##### FUNCTION ags_recall_remove_dependency ##### -->
+<para>
+
+</para>
+
+@recall: 
+@template: 
+
+
+<!-- ##### FUNCTION ags_recall_remove_handler ##### -->
+<para>
+
+</para>
+
+@recall: 
+@recall_handler: 
+
+
+<!-- ##### FUNCTION ags_recall_resolve_dependencies ##### -->
+<para>
+
+</para>
+
+@reall: 
+
+
+<!-- ##### FUNCTION ags_recall_run_init ##### -->
+<para>
+
+</para>
+
+@recall: 
+@stage: 
+
+
+<!-- ##### FUNCTION ags_recall_run_init_inter ##### -->
+<para>
+
+</para>
+
+@recall: 
+
+
+<!-- ##### FUNCTION ags_recall_run_init_post ##### -->
+<para>
+
+</para>
+
+@recall: 
+
+
+<!-- ##### FUNCTION ags_recall_run_init_pre ##### -->
+<para>
+
+</para>
+
+@recall: 
+
+
+<!-- ##### FUNCTION ags_recall_run_inter ##### -->
+<para>
+
+</para>
+
+@recall: 
+
+
+<!-- ##### FUNCTION ags_recall_run_post ##### -->
+<para>
+
+</para>
+
+@recall: 
+
+
+<!-- ##### FUNCTION ags_recall_run_pre ##### -->
+<para>
+
+</para>
+
+@recall: 
+
+
+<!-- ##### FUNCTION ags_recall_set_devout_recursive ##### -->
+<para>
+
+</para>
+
+@recall: 
+@devout: 
+
+
+<!-- ##### FUNCTION ags_recall_set_effect ##### -->
+<para>
+
+</para>
+
+@recall: 
+@effect: 
+
+
+<!-- ##### FUNCTION ags_recall_set_flags ##### -->
+<para>
+
+</para>
+
+@recall: 
+@flags: 
+
+
+<!-- ##### FUNCTION ags_recall_set_recall_id ##### -->
+<para>
+
+</para>
+
+@recall: 
+@recall_id: 
+
+
+<!-- ##### FUNCTION ags_recall_stop_persistent ##### -->
+<para>
+
+</para>
+
+@recall: 
+
+
+<!-- ##### FUNCTION ags_recall_template_find_provider ##### -->
+<para>
+
+</para>
+
+@recall: 
+@provider: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_recall_template_find_type ##### -->
+<para>
+
+</para>
+
+@recall: 
+@type: 
+@Returns: 
+
+

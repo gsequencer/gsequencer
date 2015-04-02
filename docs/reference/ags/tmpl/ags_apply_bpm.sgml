@@ -1,0 +1,50 @@
+<!-- ##### SECTION Title ##### -->
+AgsApplyBpm
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT AgsApplyBpm ##### -->
+<para>
+
+</para>
+
+@task: 
+@gobject: 
+@bpm: 
+
+<!-- ##### STRUCT AgsApplyBpmClass ##### -->
+<para>
+
+</para>
+
+@task: 
+
+<!-- ##### FUNCTION ags_apply_bpm_new ##### -->
+<para>
+
+</para>
+
+@gobject: 
+@bpm: 
+@Returns: 
+
+

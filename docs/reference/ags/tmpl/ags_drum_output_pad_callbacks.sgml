@@ -1,0 +1,44 @@
+<!-- ##### SECTION Title ##### -->
+ags_drum_output_pad_callbacks
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### FUNCTION ags_drum_output_pad_play_cancel ##### -->
+<para>
+
+</para>
+
+@recall: 
+@recall_id: 
+@drum_output_pad: 
+
+
+<!-- ##### FUNCTION ags_drum_output_pad_play_done ##### -->
+<para>
+
+</para>
+
+@recall: 
+@recall_id: 
+@drum_output_pad: 
+
+

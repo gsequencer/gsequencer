@@ -1,0 +1,32 @@
+<!-- ##### SECTION Title ##### -->
+ags_recycling_thread_callbacks
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### FUNCTION ags_recycling_thread_iterate_callback ##### -->
+<para>
+
+</para>
+
+@thread: 
+
+

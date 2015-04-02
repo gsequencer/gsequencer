@@ -1,0 +1,50 @@
+<!-- ##### SECTION Title ##### -->
+AgsSetDevoutPlayFlags
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT AgsSetDevoutPlayFlags ##### -->
+<para>
+
+</para>
+
+@task: 
+@devout_play: 
+@devout_play_flags: 
+
+<!-- ##### STRUCT AgsSetDevoutPlayFlagsClass ##### -->
+<para>
+
+</para>
+
+@task: 
+
+<!-- ##### FUNCTION ags_set_devout_play_flags_new ##### -->
+<para>
+
+</para>
+
+@play: 
+@devout_play_flags: 
+@Returns: 
+
+

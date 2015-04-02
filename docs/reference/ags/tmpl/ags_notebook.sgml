@@ -1,0 +1,141 @@
+<!-- ##### SECTION Title ##### -->
+AgsNotebook
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### MACRO AGS_NOTEBOOK_TAB ##### -->
+<para>
+
+</para>
+
+@x: 
+
+
+<!-- ##### STRUCT AgsNotebook ##### -->
+<para>
+
+</para>
+
+@vbox: 
+@flags: 
+@hbox: 
+@tabs: 
+@child: 
+
+<!-- ##### STRUCT AgsNotebookClass ##### -->
+<para>
+
+</para>
+
+@vbox: 
+
+<!-- ##### STRUCT AgsNotebookTab ##### -->
+<para>
+
+</para>
+
+@flags: 
+@toggle: 
+@notation: 
+
+<!-- ##### ENUM AgsNotebookTabFlags ##### -->
+<para>
+
+</para>
+
+@AGS_NOTEBOOK_TAB_VISIBLE: 
+@AGS_NOTEBOOK_TAB_MODE_NORMAL: 
+@AGS_NOTEBOOK_TAB_MODE_OVERLAY: 
+
+<!-- ##### FUNCTION ags_notebook_add_child ##### -->
+<para>
+
+</para>
+
+@notebook: 
+@child: 
+
+
+<!-- ##### FUNCTION ags_notebook_add_tab ##### -->
+<para>
+
+</para>
+
+@notebook: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_notebook_insert_tab ##### -->
+<para>
+
+</para>
+
+@notebook: 
+@position: 
+
+
+<!-- ##### FUNCTION ags_notebook_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_notebook_next_active_tab ##### -->
+<para>
+
+</para>
+
+@notebook: 
+@position: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_notebook_remove_child ##### -->
+<para>
+
+</para>
+
+@notebook: 
+@child: 
+
+
+<!-- ##### FUNCTION ags_notebook_remove_tab ##### -->
+<para>
+
+</para>
+
+@notebook: 
+@nth: 
+
+
+<!-- ##### FUNCTION ags_notebook_tab_index ##### -->
+<para>
+
+</para>
+
+@notebook: 
+@notation: 
+@Returns: 
+
+
