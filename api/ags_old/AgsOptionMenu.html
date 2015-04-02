@@ -1,0 +1,107 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsOptionMenu</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="util.html" title="Part I. Util - Helper functions">
+<link rel="prev" href="AgsMenuItem.html" title="AgsMenuItem">
+<link rel="next" href="ags-ags-parameter.html" title="ags_parameter">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="AgsMenuItem.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="util.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="ags-ags-parameter.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#AgsOptionMenu.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#AgsOptionMenu.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#AgsOptionMenu.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#AgsOptionMenu.implemented-interfaces" class="shortcut">Implemented Interfaces</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="AgsOptionMenu"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="AgsOptionMenu.top_of_page"></a>AgsOptionMenu</span></h2>
+<p>AgsOptionMenu</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="AgsOptionMenu.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">struct              <a class="link" href="AgsOptionMenu.html#AgsOptionMenu-struct" title="struct AgsOptionMenu">AgsOptionMenu</a>;
+struct              <a class="link" href="AgsOptionMenu.html#AgsOptionMenuClass" title="struct AgsOptionMenuClass">AgsOptionMenuClass</a>;
+<a class="link" href="AgsOptionMenu.html" title="AgsOptionMenu"><span class="returnvalue">AgsOptionMenu</span></a> *     <a class="link" href="AgsOptionMenu.html#ags-option-menu-new" title="ags_option_menu_new ()">ags_option_menu_new</a>                 ();
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsOptionMenu.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  <GTKDOCLINK HREF="GObject">GObject</GTKDOCLINK>
+   +----<GTKDOCLINK HREF="GInitiallyUnowned">GInitiallyUnowned</GTKDOCLINK>
+         +----<GTKDOCLINK HREF="GtkObject">GtkObject</GTKDOCLINK>
+               +----<GTKDOCLINK HREF="GtkWidget">GtkWidget</GTKDOCLINK>
+                     +----<GTKDOCLINK HREF="GtkContainer">GtkContainer</GTKDOCLINK>
+                           +----<GTKDOCLINK HREF="GtkBox">GtkBox</GTKDOCLINK>
+                                 +----<GTKDOCLINK HREF="GtkHBox">GtkHBox</GTKDOCLINK>
+                                       +----AgsOptionMenu
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsOptionMenu.implemented-interfaces"></a><h2>Implemented Interfaces</h2>
+<p>
+AgsOptionMenu implements
+ <GTKDOCLINK HREF="AtkImplementorIface">AtkImplementorIface</GTKDOCLINK>,  <GTKDOCLINK HREF="GtkBuildable">GtkBuildable</GTKDOCLINK> and  <GTKDOCLINK HREF="GtkOrientable">GtkOrientable</GTKDOCLINK>.</p>
+</div>
+<div class="refsect1">
+<a name="AgsOptionMenu.description"></a><h2>Description</h2>
+<p>
+</p>
+</div>
+<div class="refsect1">
+<a name="AgsOptionMenu.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AgsOptionMenu-struct"></a><h3>struct AgsOptionMenu</h3>
+<pre class="programlisting">struct AgsOptionMenu;</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsOptionMenuClass"></a><h3>struct AgsOptionMenuClass</h3>
+<pre class="programlisting">struct AgsOptionMenuClass {
+  GtkHBoxClass hbox;
+
+  void (*changed)(AgsOptionMenu *option_menu);
+  void (*focus_changed)(AgsOptionMenu *option_menu);
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-option-menu-new"></a><h3>ags_option_menu_new ()</h3>
+<pre class="programlisting"><a class="link" href="AgsOptionMenu.html" title="AgsOptionMenu"><span class="returnvalue">AgsOptionMenu</span></a> *     ags_option_menu_new                 ();</pre>
+<p>
+</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>AgsDial</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="ags Reference Manual"><link rel="up" href="ch01.html" title="Chapter 1. [Insert title here]"><link rel="prev" href="re56.html" title="AgsDevoutThread"><link rel="next" href="re58.html" title="AgsDisplayTact"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="ags-AgsDial"></a><div class="titlepage"></div><div class="refnamediv"><h2>Name</h2><p>AgsDial</p></div><div class="refsynopsisdiv"><a name="ags-AgsDial.synopsis"></a><h2>Synopsis</h2><pre class="synopsis">enum                <a class="link" href="re57.html#AgsDialFlags" title="enum AgsDialFlags">AgsDialFlags</a>;
+struct              <a class="link" href="re57.html#AgsDial" title="struct AgsDial">AgsDial</a>;
+struct              <a class="link" href="re57.html#AgsDialClass" title="struct AgsDialClass">AgsDialClass</a>;
+<a class="link" href="re57.html#AgsDial" title="struct AgsDial"><span class="returnvalue">AgsDial</span></a> *           <a class="link" href="re57.html#ags-dial-new" title="ags_dial_new ()">ags_dial_new</a>                        ();
+</pre></div><div class="refsect1"><a name="ags-AgsDial.description"></a><h2>Description</h2></div><div class="refsect1"><a name="ags-AgsDial.details"></a><h2>Details</h2><div class="refsect2"><a name="AgsDialFlags"></a><h3>enum AgsDialFlags</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsDialFlags"></OBJECT><pre class="programlisting">typedef enum {
+  AGS_DIAL_WITH_BUTTONS           = 1,
+  AGS_DIAL_MOUSE_BUTTON_PRESSED   = 1 &lt;&lt;  1,
+  AGS_DIAL_BUTTON_DOWN_PRESSED    = 1 &lt;&lt;  2,
+  AGS_DIAL_BUTTON_UP_PRESSED      = 1 &lt;&lt;  3,
+  AGS_DIAL_MOTION_CAPTURING_INIT  = 1 &lt;&lt;  4,
+  AGS_DIAL_MOTION_CAPTURING       = 1 &lt;&lt;  5,
+  AGS_DIAL_IDLE                   = 1 &lt;&lt;  6,
+} AgsDialFlags;
+</pre><div class="variablelist"><dl class="variablelist"><dt><a name="AGS-DIAL-WITH-BUTTONS:CAPS"></a><span class="term"><code class="literal">AGS_DIAL_WITH_BUTTONS</code></span></dt><dd></dd><dt><a name="AGS-DIAL-MOUSE-BUTTON-PRESSED:CAPS"></a><span class="term"><code class="literal">AGS_DIAL_MOUSE_BUTTON_PRESSED</code></span></dt><dd></dd><dt><a name="AGS-DIAL-BUTTON-DOWN-PRESSED:CAPS"></a><span class="term"><code class="literal">AGS_DIAL_BUTTON_DOWN_PRESSED</code></span></dt><dd></dd><dt><a name="AGS-DIAL-BUTTON-UP-PRESSED:CAPS"></a><span class="term"><code class="literal">AGS_DIAL_BUTTON_UP_PRESSED</code></span></dt><dd></dd><dt><a name="AGS-DIAL-MOTION-CAPTURING-INIT:CAPS"></a><span class="term"><code class="literal">AGS_DIAL_MOTION_CAPTURING_INIT</code></span></dt><dd></dd><dt><a name="AGS-DIAL-MOTION-CAPTURING:CAPS"></a><span class="term"><code class="literal">AGS_DIAL_MOTION_CAPTURING</code></span></dt><dd></dd><dt><a name="AGS-DIAL-IDLE:CAPS"></a><span class="term"><code class="literal">AGS_DIAL_IDLE</code></span></dt><dd></dd></dl></div></div><div class="refsect2"><a name="AgsDial"></a><h3>struct AgsDial</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsDial"></OBJECT><pre class="programlisting">struct AgsDial {
+  GtkWidget widget;
+
+  guint flags;
+
+  guint radius;
+  guint outline_strength;
+  guint scale_precision;
+
+  guint font_size;
+  gint button_width;
+  gint button_height;
+  gint margin_left;
+  gint margin_right;
+
+  gdouble tolerance;
+  gdouble negated_tolerance;
+
+  gint sleep_interval;
+
+  GtkAdjustment *adjustment;
+
+  pthread_t idle_thread;
+  pthread_attr_t idle_thread_attr;
+  pthread_mutex_t idle_mutex;
+  pthread_mutexattr_t idle_mutex_attr;
+  pthread_cond_t idle_cond;
+
+  gdouble gravity_x;
+  gdouble gravity_y;
+  gdouble current_x;
+  gdouble current_y;
+};
+</pre></div><div class="refsect2"><a name="AgsDialClass"></a><h3>struct AgsDialClass</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsDialClass"></OBJECT><pre class="programlisting">struct AgsDialClass {
+  GtkWidgetClass widget;
+};
+</pre></div><div class="refsect2"><a name="ags-dial-new"></a><h3>ags_dial_new ()</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="ags_dial_new"></OBJECT><pre class="programlisting"><a class="link" href="re57.html#AgsDial" title="struct AgsDial"><span class="returnvalue">AgsDial</span></a> *           ags_dial_new                        ();</pre></div></div></div></body></html>

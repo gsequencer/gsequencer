@@ -1,0 +1,158 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>ags_line_callbacks</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="composite-widgets.html" title="Composite widgets">
+<link rel="prev" href="ags-AgsLine.html" title="AgsLine">
+<link rel="next" href="ags-AgsLineEditor.html" title="AgsLineEditor">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="ags-AgsLine.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="composite-widgets.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="ags-AgsLineEditor.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#ags-ags-line-callbacks.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#ags-ags-line-callbacks.description" class="shortcut">Description</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="ags-ags-line-callbacks"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="ags-ags-line-callbacks.top_of_page"></a>ags_line_callbacks</span></h2>
+<p>ags_line_callbacks</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="ags-ags-line-callbacks.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-ags-line-callbacks.html#ags-line-channel-done-callback" title="ags_line_channel_done_callback ()">ags_line_channel_done_callback</a>      (<em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsLine.html#AgsLine" title="struct AgsLine"><span class="type">AgsLine</span></a> *line</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-ags-line-callbacks.html#ags-line-copy-pattern-cancel" title="ags_line_copy_pattern_cancel ()">ags_line_copy_pattern_cancel</a>        (<em class="parameter"><code><a class="link" href="ags-AgsRecall.html#AgsRecall" title="struct AgsRecall"><span class="type">AgsRecall</span></a> *recall</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsLine.html#AgsLine" title="struct AgsLine"><span class="type">AgsLine</span></a> *line</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-ags-line-callbacks.html#ags-line-copy-pattern-done" title="ags_line_copy_pattern_done ()">ags_line_copy_pattern_done</a>          (<em class="parameter"><code><a class="link" href="ags-AgsRecall.html#AgsRecall" title="struct AgsRecall"><span class="type">AgsRecall</span></a> *recall</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsLine.html#AgsLine" title="struct AgsLine"><span class="type">AgsLine</span></a> *line</code></em>);
+<GTKDOCLINK HREF="int"><span class="returnvalue">int</span></GTKDOCLINK>                 <a class="link" href="ags-ags-line-callbacks.html#ags-line-group-clicked-callback" title="ags_line_group_clicked_callback ()">ags_line_group_clicked_callback</a>     (<em class="parameter"><code><GTKDOCLINK HREF="GtkWidget"><span class="type">GtkWidget</span></GTKDOCLINK> *widget</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsLine.html#AgsLine" title="struct AgsLine"><span class="type">AgsLine</span></a> *line</code></em>);
+<GTKDOCLINK HREF="int"><span class="returnvalue">int</span></GTKDOCLINK>                 <a class="link" href="ags-ags-line-callbacks.html#ags-line-parent-set-callback" title="ags_line_parent_set_callback ()">ags_line_parent_set_callback</a>        (<em class="parameter"><code><GTKDOCLINK HREF="GtkWidget"><span class="type">GtkWidget</span></GTKDOCLINK> *widget</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GtkObject"><span class="type">GtkObject</span></GTKDOCLINK> *old_parent</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsLine.html#AgsLine" title="struct AgsLine"><span class="type">AgsLine</span></a> *line</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-ags-line-callbacks.html#ags-line-peak-run-post-callback" title="ags_line_peak_run_post_callback ()">ags_line_peak_run_post_callback</a>     (<em class="parameter"><code><a class="link" href="ags-AgsRecall.html#AgsRecall" title="struct AgsRecall"><span class="type">AgsRecall</span></a> *peak_channel</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsLine.html#AgsLine" title="struct AgsLine"><span class="type">AgsLine</span></a> *line</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-ags-line-callbacks.html#ags-line-play-channel-run-cancel" title="ags_line_play_channel_run_cancel ()">ags_line_play_channel_run_cancel</a>    (<em class="parameter"><code><a class="link" href="ags-AgsRecall.html#AgsRecall" title="struct AgsRecall"><span class="type">AgsRecall</span></a> *recall</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsLine.html#AgsLine" title="struct AgsLine"><span class="type">AgsLine</span></a> *line</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-ags-line-callbacks.html#ags-line-play-volume-cancel" title="ags_line_play_volume_cancel ()">ags_line_play_volume_cancel</a>         (<em class="parameter"><code><a class="link" href="ags-AgsRecall.html#AgsRecall" title="struct AgsRecall"><span class="type">AgsRecall</span></a> *recall</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsLine.html#AgsLine" title="struct AgsLine"><span class="type">AgsLine</span></a> *line</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-ags-line-callbacks.html#ags-line-play-volume-done" title="ags_line_play_volume_done ()">ags_line_play_volume_done</a>           (<em class="parameter"><code><a class="link" href="ags-AgsRecall.html#AgsRecall" title="struct AgsRecall"><span class="type">AgsRecall</span></a> *recall</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsLine.html#AgsLine" title="struct AgsLine"><span class="type">AgsLine</span></a> *line</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-ags-line-callbacks.html#ags-line-recall-volume-cancel" title="ags_line_recall_volume_cancel ()">ags_line_recall_volume_cancel</a>       (<em class="parameter"><code><a class="link" href="ags-AgsRecall.html#AgsRecall" title="struct AgsRecall"><span class="type">AgsRecall</span></a> *recall</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsLine.html#AgsLine" title="struct AgsLine"><span class="type">AgsLine</span></a> *line</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-ags-line-callbacks.html#ags-line-recall-volume-done" title="ags_line_recall_volume_done ()">ags_line_recall_volume_done</a>         (<em class="parameter"><code><a class="link" href="ags-AgsRecall.html#AgsRecall" title="struct AgsRecall"><span class="type">AgsRecall</span></a> *recall</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsLine.html#AgsLine" title="struct AgsLine"><span class="type">AgsLine</span></a> *line</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-ags-line-callbacks.html#ags-line-remove-recall-callback" title="ags_line_remove_recall_callback ()">ags_line_remove_recall_callback</a>     (<em class="parameter"><code><a class="link" href="ags-AgsRecall.html#AgsRecall" title="struct AgsRecall"><span class="type">AgsRecall</span></a> *recall</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsLine.html#AgsLine" title="struct AgsLine"><span class="type">AgsLine</span></a> *line</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-ags-line-callbacks.html#ags-line-volume-callback" title="ags_line_volume_callback ()">ags_line_volume_callback</a>            (<em class="parameter"><code><GTKDOCLINK HREF="GtkRange"><span class="type">GtkRange</span></GTKDOCLINK> *range</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsLine.html#AgsLine" title="struct AgsLine"><span class="type">AgsLine</span></a> *line</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="ags-ags-line-callbacks.description"></a><h2>Description</h2>
+</div>
+<div class="refsect1">
+<a name="ags-ags-line-callbacks.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="ags-line-channel-done-callback"></a><h3>ags_line_channel_done_callback ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_line_channel_done_callback      (<em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsLine.html#AgsLine" title="struct AgsLine"><span class="type">AgsLine</span></a> *line</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-line-copy-pattern-cancel"></a><h3>ags_line_copy_pattern_cancel ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_line_copy_pattern_cancel        (<em class="parameter"><code><a class="link" href="ags-AgsRecall.html#AgsRecall" title="struct AgsRecall"><span class="type">AgsRecall</span></a> *recall</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsLine.html#AgsLine" title="struct AgsLine"><span class="type">AgsLine</span></a> *line</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-line-copy-pattern-done"></a><h3>ags_line_copy_pattern_done ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_line_copy_pattern_done          (<em class="parameter"><code><a class="link" href="ags-AgsRecall.html#AgsRecall" title="struct AgsRecall"><span class="type">AgsRecall</span></a> *recall</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsLine.html#AgsLine" title="struct AgsLine"><span class="type">AgsLine</span></a> *line</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-line-group-clicked-callback"></a><h3>ags_line_group_clicked_callback ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="int"><span class="returnvalue">int</span></GTKDOCLINK>                 ags_line_group_clicked_callback     (<em class="parameter"><code><GTKDOCLINK HREF="GtkWidget"><span class="type">GtkWidget</span></GTKDOCLINK> *widget</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsLine.html#AgsLine" title="struct AgsLine"><span class="type">AgsLine</span></a> *line</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-line-parent-set-callback"></a><h3>ags_line_parent_set_callback ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="int"><span class="returnvalue">int</span></GTKDOCLINK>                 ags_line_parent_set_callback        (<em class="parameter"><code><GTKDOCLINK HREF="GtkWidget"><span class="type">GtkWidget</span></GTKDOCLINK> *widget</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GtkObject"><span class="type">GtkObject</span></GTKDOCLINK> *old_parent</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsLine.html#AgsLine" title="struct AgsLine"><span class="type">AgsLine</span></a> *line</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-line-peak-run-post-callback"></a><h3>ags_line_peak_run_post_callback ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_line_peak_run_post_callback     (<em class="parameter"><code><a class="link" href="ags-AgsRecall.html#AgsRecall" title="struct AgsRecall"><span class="type">AgsRecall</span></a> *peak_channel</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsLine.html#AgsLine" title="struct AgsLine"><span class="type">AgsLine</span></a> *line</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-line-play-channel-run-cancel"></a><h3>ags_line_play_channel_run_cancel ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_line_play_channel_run_cancel    (<em class="parameter"><code><a class="link" href="ags-AgsRecall.html#AgsRecall" title="struct AgsRecall"><span class="type">AgsRecall</span></a> *recall</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsLine.html#AgsLine" title="struct AgsLine"><span class="type">AgsLine</span></a> *line</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-line-play-volume-cancel"></a><h3>ags_line_play_volume_cancel ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_line_play_volume_cancel         (<em class="parameter"><code><a class="link" href="ags-AgsRecall.html#AgsRecall" title="struct AgsRecall"><span class="type">AgsRecall</span></a> *recall</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsLine.html#AgsLine" title="struct AgsLine"><span class="type">AgsLine</span></a> *line</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-line-play-volume-done"></a><h3>ags_line_play_volume_done ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_line_play_volume_done           (<em class="parameter"><code><a class="link" href="ags-AgsRecall.html#AgsRecall" title="struct AgsRecall"><span class="type">AgsRecall</span></a> *recall</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsLine.html#AgsLine" title="struct AgsLine"><span class="type">AgsLine</span></a> *line</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-line-recall-volume-cancel"></a><h3>ags_line_recall_volume_cancel ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_line_recall_volume_cancel       (<em class="parameter"><code><a class="link" href="ags-AgsRecall.html#AgsRecall" title="struct AgsRecall"><span class="type">AgsRecall</span></a> *recall</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsLine.html#AgsLine" title="struct AgsLine"><span class="type">AgsLine</span></a> *line</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-line-recall-volume-done"></a><h3>ags_line_recall_volume_done ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_line_recall_volume_done         (<em class="parameter"><code><a class="link" href="ags-AgsRecall.html#AgsRecall" title="struct AgsRecall"><span class="type">AgsRecall</span></a> *recall</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsLine.html#AgsLine" title="struct AgsLine"><span class="type">AgsLine</span></a> *line</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-line-remove-recall-callback"></a><h3>ags_line_remove_recall_callback ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_line_remove_recall_callback     (<em class="parameter"><code><a class="link" href="ags-AgsRecall.html#AgsRecall" title="struct AgsRecall"><span class="type">AgsRecall</span></a> *recall</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsLine.html#AgsLine" title="struct AgsLine"><span class="type">AgsLine</span></a> *line</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-line-volume-callback"></a><h3>ags_line_volume_callback ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_line_volume_callback            (<em class="parameter"><code><GTKDOCLINK HREF="GtkRange"><span class="type">GtkRange</span></GTKDOCLINK> *range</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsLine.html#AgsLine" title="struct AgsLine"><span class="type">AgsLine</span></a> *line</code></em>);</pre>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

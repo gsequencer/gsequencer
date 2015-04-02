@@ -1,0 +1,134 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsOpenFile</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="task.html" title="Task - Data exchanged between Audio and GUI">
+<link rel="prev" href="AgsMuteRecycling.html" title="AgsMuteRecycling">
+<link rel="next" href="AgsOpenSingleFile.html" title="AgsOpenSingleFile">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="AgsMuteRecycling.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="task.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="AgsOpenSingleFile.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#AgsOpenFile.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#AgsOpenFile.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#AgsOpenFile.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#AgsOpenFile.implemented-interfaces" class="shortcut">Implemented Interfaces</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="AgsOpenFile"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="AgsOpenFile.top_of_page"></a>AgsOpenFile</span></h2>
+<p>AgsOpenFile — open file object</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="AgsOpenFile.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">
+#include &lt;ags/audio/task/ags_open_file.h&gt;
+
+struct              <a class="link" href="AgsOpenFile.html#AgsOpenFile-struct" title="struct AgsOpenFile">AgsOpenFile</a>;
+struct              <a class="link" href="AgsOpenFile.html#AgsOpenFileClass" title="struct AgsOpenFileClass">AgsOpenFileClass</a>;
+<a class="link" href="AgsOpenFile.html" title="AgsOpenFile"><span class="returnvalue">AgsOpenFile</span></a> *       <a class="link" href="AgsOpenFile.html#ags-open-file-new" title="ags_open_file_new ()">ags_open_file_new</a>                   (<em class="parameter"><code><a class="link" href="AgsAudio.html" title="AgsAudio"><span class="type">AgsAudio</span></a> *audio</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Singly-Linked-Lists.html#GSList"><span class="type">GSList</span></a> *filenames</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a> overwrite_channels</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a> create_channels</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsOpenFile.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  <a href="../gobject/gobject-The-Base-Object-Type.html#GObject">GObject</a>
+   +----<a class="link" href="AgsTask.html" title="AgsTask">AgsTask</a>
+         +----AgsOpenFile
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsOpenFile.implemented-interfaces"></a><h2>Implemented Interfaces</h2>
+<p>
+AgsOpenFile implements
+ AgsConnectable.</p>
+</div>
+<div class="refsect1">
+<a name="AgsOpenFile.description"></a><h2>Description</h2>
+<p>
+The <a class="link" href="AgsOpenFile.html" title="AgsOpenFile"><span class="type">AgsOpenFile</span></a> task opens files.
+</p>
+</div>
+<div class="refsect1">
+<a name="AgsOpenFile.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AgsOpenFile-struct"></a><h3>struct AgsOpenFile</h3>
+<pre class="programlisting">struct AgsOpenFile;</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsOpenFileClass"></a><h3>struct AgsOpenFileClass</h3>
+<pre class="programlisting">struct AgsOpenFileClass {
+  AgsTaskClass task;
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-open-file-new"></a><h3>ags_open_file_new ()</h3>
+<pre class="programlisting"><a class="link" href="AgsOpenFile.html" title="AgsOpenFile"><span class="returnvalue">AgsOpenFile</span></a> *       ags_open_file_new                   (<em class="parameter"><code><a class="link" href="AgsAudio.html" title="AgsAudio"><span class="type">AgsAudio</span></a> *audio</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Singly-Linked-Lists.html#GSList"><span class="type">GSList</span></a> *filenames</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a> overwrite_channels</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a> create_channels</code></em>);</pre>
+<p>
+Creates an <a class="link" href="AgsOpenFile.html" title="AgsOpenFile"><span class="type">AgsOpenFile</span></a>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>filenames</code></em> :</span></p></td>
+<td>the filenames to be opened</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>overwrite_channels</code></em> :</span></p></td>
+<td>reset existing <a class="link" href="AgsInput.html" title="AgsInput"><span class="type">AgsInput</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>create_channels</code></em> :</span></p></td>
+<td>inistantiate new <a class="link" href="AgsInput.html" title="AgsInput"><span class="type">AgsInput</span></a>, if <em class="parameter"><code>overwrite_channell</code></em> as needed
+else for sure</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>an new <a class="link" href="AgsOpenFile.html" title="AgsOpenFile"><span class="type">AgsOpenFile</span></a>.</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

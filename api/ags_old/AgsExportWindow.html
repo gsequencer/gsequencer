@@ -1,0 +1,138 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsExportWindow</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="composite-widgets.html" title="Composite widgets">
+<link rel="prev" href="ags-ags-editor-callbacks.html" title="ags_editor_callbacks">
+<link rel="next" href="ags-ags-export-window-callbacks.html" title="ags_export_window_callbacks">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="ags-ags-editor-callbacks.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="composite-widgets.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="ags-ags-export-window-callbacks.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#AgsExportWindow.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#AgsExportWindow.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#AgsExportWindow.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#AgsExportWindow.implemented-interfaces" class="shortcut">Implemented Interfaces</a>
+                   | 
+                  <a href="#AgsExportWindow.properties" class="shortcut">Properties</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="AgsExportWindow"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="AgsExportWindow.top_of_page"></a>AgsExportWindow</span></h2>
+<p>AgsExportWindow</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="AgsExportWindow.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">struct              <a class="link" href="AgsExportWindow.html#AgsExportWindow-struct" title="struct AgsExportWindow">AgsExportWindow</a>;
+struct              <a class="link" href="AgsExportWindow.html#AgsExportWindowClass" title="struct AgsExportWindowClass">AgsExportWindowClass</a>;
+enum                <a class="link" href="AgsExportWindow.html#AgsExportWindowFlags" title="enum AgsExportWindowFlags">AgsExportWindowFlags</a>;
+<a class="link" href="AgsExportWindow.html" title="AgsExportWindow"><span class="returnvalue">AgsExportWindow</span></a> *   <a class="link" href="AgsExportWindow.html#ags-export-window-new" title="ags_export_window_new ()">ags_export_window_new</a>               ();
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsExportWindow.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  <GTKDOCLINK HREF="GObject">GObject</GTKDOCLINK>
+   +----<GTKDOCLINK HREF="GInitiallyUnowned">GInitiallyUnowned</GTKDOCLINK>
+         +----<GTKDOCLINK HREF="GtkObject">GtkObject</GTKDOCLINK>
+               +----<GTKDOCLINK HREF="GtkWidget">GtkWidget</GTKDOCLINK>
+                     +----<GTKDOCLINK HREF="GtkContainer">GtkContainer</GTKDOCLINK>
+                           +----<GTKDOCLINK HREF="GtkBin">GtkBin</GTKDOCLINK>
+                                 +----<GTKDOCLINK HREF="GtkWindow">GtkWindow</GTKDOCLINK>
+                                       +----AgsExportWindow
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsExportWindow.implemented-interfaces"></a><h2>Implemented Interfaces</h2>
+<p>
+AgsExportWindow implements
+ <GTKDOCLINK HREF="AtkImplementorIface">AtkImplementorIface</GTKDOCLINK>,  <GTKDOCLINK HREF="GtkBuildable">GtkBuildable</GTKDOCLINK> and  <GTKDOCLINK HREF="AgsConnectable">AgsConnectable</GTKDOCLINK>.</p>
+</div>
+<div class="refsect1">
+<a name="AgsExportWindow.properties"></a><h2>Properties</h2>
+<pre class="synopsis">
+  "<a class="link" href="AgsExportWindow.html#AgsExportWindow--ags-main" title='The "ags-main" property'>ags-main</a>"                 <GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK>*              : Read / Write
+  "<a class="link" href="AgsExportWindow.html#AgsExportWindow--devout" title='The "devout" property'>devout</a>"                   <GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK>*              : Read / Write
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsExportWindow.description"></a><h2>Description</h2>
+<p>
+</p>
+</div>
+<div class="refsect1">
+<a name="AgsExportWindow.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AgsExportWindow-struct"></a><h3>struct AgsExportWindow</h3>
+<pre class="programlisting">struct AgsExportWindow;</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsExportWindowClass"></a><h3>struct AgsExportWindowClass</h3>
+<pre class="programlisting">struct AgsExportWindowClass {
+  GtkWindowClass window;
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsExportWindowFlags"></a><h3>enum AgsExportWindowFlags</h3>
+<pre class="programlisting">typedef enum {
+  AGS_EXPORT_WINDOW_LIVE_EXPORT   = 1,
+} AgsExportWindowFlags;
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-export-window-new"></a><h3>ags_export_window_new ()</h3>
+<pre class="programlisting"><a class="link" href="AgsExportWindow.html" title="AgsExportWindow"><span class="returnvalue">AgsExportWindow</span></a> *   ags_export_window_new               ();</pre>
+<p>
+</p>
+</div>
+</div>
+<div class="refsect1">
+<a name="AgsExportWindow.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="AgsExportWindow--ags-main"></a><h3>The <code class="literal">"ags-main"</code> property</h3>
+<pre class="programlisting">  "ags-main"                 <GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK>*              : Read / Write</pre>
+<p>The AgsMain it is assigned with.</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsExportWindow--devout"></a><h3>The <code class="literal">"devout"</code> property</h3>
+<pre class="programlisting">  "devout"                   <GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK>*              : Read / Write</pre>
+<p>The devout it is assigned with.</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

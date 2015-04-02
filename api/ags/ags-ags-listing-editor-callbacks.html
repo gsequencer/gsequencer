@@ -1,0 +1,80 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>ags_listing_editor_callbacks</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="composite-widgets.html" title="Composite widgets">
+<link rel="prev" href="ags-AgsListingEditor.html" title="AgsListingEditor">
+<link rel="next" href="ags-AgsMachine.html" title="AgsMachine">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="ags-AgsListingEditor.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="composite-widgets.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="ags-AgsMachine.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#ags-ags-listing-editor-callbacks.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#ags-ags-listing-editor-callbacks.description" class="shortcut">Description</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="ags-ags-listing-editor-callbacks"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="ags-ags-listing-editor-callbacks.top_of_page"></a>ags_listing_editor_callbacks</span></h2>
+<p>ags_listing_editor_callbacks</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="ags-ags-listing-editor-callbacks.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis"><GTKDOCLINK HREF="int"><span class="returnvalue">int</span></GTKDOCLINK>                 <a class="link" href="ags-ags-listing-editor-callbacks.html#ags-listing-editor-parent-set-callback" title="ags_listing_editor_parent_set_callback ()">ags_listing_editor_parent_set_callback</a>
+                                                        (<em class="parameter"><code><GTKDOCLINK HREF="GtkWidget"><span class="type">GtkWidget</span></GTKDOCLINK> *widget</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GtkObject"><span class="type">GtkObject</span></GTKDOCLINK> *old_parent</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsListingEditor.html#AgsListingEditor" title="struct AgsListingEditor"><span class="type">AgsListingEditor</span></a> *listing_editor</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-ags-listing-editor-callbacks.html#ags-listing-editor-set-pads-callback" title="ags_listing_editor_set_pads_callback ()">ags_listing_editor_set_pads_callback</a>
+                                                        (<em class="parameter"><code><a class="link" href="ags-AgsAudio.html#AgsAudio" title="struct AgsAudio"><span class="type">AgsAudio</span></a> *audio</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GType"><span class="type">GType</span></GTKDOCLINK> channel_type</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> pads</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> pads_old</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsListingEditor.html#AgsListingEditor" title="struct AgsListingEditor"><span class="type">AgsListingEditor</span></a> *listing_editor</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="ags-ags-listing-editor-callbacks.description"></a><h2>Description</h2>
+</div>
+<div class="refsect1">
+<a name="ags-ags-listing-editor-callbacks.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="ags-listing-editor-parent-set-callback"></a><h3>ags_listing_editor_parent_set_callback ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="int"><span class="returnvalue">int</span></GTKDOCLINK>                 ags_listing_editor_parent_set_callback
+                                                        (<em class="parameter"><code><GTKDOCLINK HREF="GtkWidget"><span class="type">GtkWidget</span></GTKDOCLINK> *widget</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GtkObject"><span class="type">GtkObject</span></GTKDOCLINK> *old_parent</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsListingEditor.html#AgsListingEditor" title="struct AgsListingEditor"><span class="type">AgsListingEditor</span></a> *listing_editor</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-listing-editor-set-pads-callback"></a><h3>ags_listing_editor_set_pads_callback ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_listing_editor_set_pads_callback
+                                                        (<em class="parameter"><code><a class="link" href="ags-AgsAudio.html#AgsAudio" title="struct AgsAudio"><span class="type">AgsAudio</span></a> *audio</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GType"><span class="type">GType</span></GTKDOCLINK> channel_type</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> pads</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> pads_old</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsListingEditor.html#AgsListingEditor" title="struct AgsListingEditor"><span class="type">AgsListingEditor</span></a> *listing_editor</code></em>);</pre>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

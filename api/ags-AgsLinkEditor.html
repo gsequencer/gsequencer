@@ -1,0 +1,117 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Advanced Gtk+ Sequencer Reference Manual: AgsLinkEditor</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="pt08.html" title="Part VIII. Graphical user interface">
+<link rel="prev" href="ags-ags-link-collection-editor-callbacks.html" title="ags_link_collection_editor_callbacks">
+<link rel="next" href="ags-ags-link-editor-callbacks.html" title="ags_link_editor_callbacks">
+<meta name="generator" content="GTK-Doc V1.21 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#ags-AgsLinkEditor.description" class="shortcut">Description</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="pt08.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="ags-ags-link-collection-editor-callbacks.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="ags-ags-link-editor-callbacks.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry">
+<a name="ags-AgsLinkEditor"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="ags-AgsLinkEditor.top_of_page"></a>AgsLinkEditor</span></h2>
+<p>AgsLinkEditor — Edit links.</p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1">
+<a name="ags-AgsLinkEditor.functions"></a><h2>Functions</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="functions_return">
+<col class="functions_name">
+</colgroup>
+<tbody><tr>
+<td class="function_type">
+<GTKDOCLINK HREF="AgsLinkEditor"><span class="returnvalue">AgsLinkEditor</span></GTKDOCLINK> *
+</td>
+<td class="function_name">
+<a class="link" href="ags-AgsLinkEditor.html#ags-link-editor-new" title="ags_link_editor_new ()">ags_link_editor_new</a> <span class="c_punctuation">()</span>
+</td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="ags-AgsLinkEditor.other"></a><h2>Types and Values</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="name">
+<col class="description">
+</colgroup>
+<tbody><tr>
+<td class="datatype_keyword">enum</td>
+<td class="function_name"><a class="link" href="ags-AgsLinkEditor.html#AgsLinkEditorFlags" title="enum AgsLinkEditorFlags">AgsLinkEditorFlags</a></td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="ags-AgsLinkEditor.includes"></a><h2>Includes</h2>
+<pre class="synopsis">#include &lt;ags/X/ags_link_editor.h&gt;
+</pre>
+</div>
+<div class="refsect1">
+<a name="ags-AgsLinkEditor.description"></a><h2>Description</h2>
+<p><GTKDOCLINK HREF="AgsLinkEditor"><span class="type">AgsLinkEditor</span></GTKDOCLINK> is a composite widget to modify links. A link editor 
+should be packed by a <GTKDOCLINK HREF="AgsLineEditor"><span class="type">AgsLineEditor</span></GTKDOCLINK>.</p>
+</div>
+<div class="refsect1">
+<a name="ags-AgsLinkEditor.functions_details"></a><h2>Functions</h2>
+<div class="refsect2">
+<a name="ags-link-editor-new"></a><h3>ags_link_editor_new ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="AgsLinkEditor"><span class="returnvalue">AgsLinkEditor</span></GTKDOCLINK> *
+ags_link_editor_new ();</pre>
+<p>Creates an <GTKDOCLINK HREF="AgsLinkEditor"><span class="type">AgsLinkEditor</span></GTKDOCLINK></p>
+<div class="refsect3">
+<a name="id-1.10.24.7.2.5"></a><h4>Returns</h4>
+<p> a new <GTKDOCLINK HREF="AgsLinkEditor"><span class="type">AgsLinkEditor</span></GTKDOCLINK></p>
+<p></p>
+</div>
+<p class="since">Since 0.3</p>
+</div>
+</div>
+<div class="refsect1">
+<a name="ags-AgsLinkEditor.other_details"></a><h2>Types and Values</h2>
+<div class="refsect2">
+<a name="AgsLinkEditorFlags"></a><h3>enum AgsLinkEditorFlags</h3>
+<p>
+</p>
+<div class="refsect3">
+<a name="id-1.10.24.8.2.4"></a><h4>Members</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="300px" class="enum_members_name">
+<col class="enum_members_description">
+<col width="200px" class="enum_members_annotations">
+</colgroup>
+<tbody><tr>
+<td class="enum_member_name"><p><a name="AGS-LINK-EDITOR-FILE-CHOOSER-PLAY-DONE:CAPS"></a>AGS_LINK_EDITOR_FILE_CHOOSER_PLAY_DONE</p></td>
+<td class="enum_member_description"> </td>
+<td class="enum_member_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.21</div>
+</body>
+</html>

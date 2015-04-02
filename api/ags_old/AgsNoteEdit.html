@@ -1,0 +1,214 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsNoteEdit</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="editor.html" title="Editor - Piano roll and its controls">
+<link rel="prev" href="ags-ags-meter-callbacks.html" title="ags_meter_callbacks">
+<link rel="next" href="ags-ags-note-edit-callbacks.html" title="ags_note_edit_callbacks">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="ags-ags-meter-callbacks.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="editor.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="ags-ags-note-edit-callbacks.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#AgsNoteEdit.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#AgsNoteEdit.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#AgsNoteEdit.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#AgsNoteEdit.implemented-interfaces" class="shortcut">Implemented Interfaces</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="AgsNoteEdit"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="AgsNoteEdit.top_of_page"></a>AgsNoteEdit</span></h2>
+<p>AgsNoteEdit</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="AgsNoteEdit.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">#define             <a class="link" href="AgsNoteEdit.html#AGS-NOTE-EDIT-MAX-CONTROLS:CAPS" title="AGS_NOTE_EDIT_MAX_CONTROLS">AGS_NOTE_EDIT_MAX_CONTROLS</a>
+struct              <a class="link" href="AgsNoteEdit.html#AgsNoteEdit-struct" title="struct AgsNoteEdit">AgsNoteEdit</a>;
+struct              <a class="link" href="AgsNoteEdit.html#AgsNoteEditClass" title="struct AgsNoteEditClass">AgsNoteEditClass</a>;
+enum                <a class="link" href="AgsNoteEdit.html#AgsNoteEditFlags" title="enum AgsNoteEditFlags">AgsNoteEditFlags</a>;
+enum                <a class="link" href="AgsNoteEdit.html#AgsNoteEditResetFlags" title="enum AgsNoteEditResetFlags">AgsNoteEditResetFlags</a>;
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="AgsNoteEdit.html#ags-note-edit-draw-notation" title="ags_note_edit_draw_notation ()">ags_note_edit_draw_notation</a>         (<em class="parameter"><code><a class="link" href="AgsNoteEdit.html" title="AgsNoteEdit"><span class="type">AgsNoteEdit</span></a> *note_edit</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="cairo-t"><span class="type">cairo_t</span></GTKDOCLINK> *cr</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="AgsNoteEdit.html#ags-note-edit-draw-position" title="ags_note_edit_draw_position ()">ags_note_edit_draw_position</a>         (<em class="parameter"><code><a class="link" href="AgsNoteEdit.html" title="AgsNoteEdit"><span class="type">AgsNoteEdit</span></a> *note_edit</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="cairo-t"><span class="type">cairo_t</span></GTKDOCLINK> *cr</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="AgsNoteEdit.html#ags-note-edit-draw-scroll" title="ags_note_edit_draw_scroll ()">ags_note_edit_draw_scroll</a>           (<em class="parameter"><code><a class="link" href="AgsNoteEdit.html" title="AgsNoteEdit"><span class="type">AgsNoteEdit</span></a> *note_edit</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="cairo-t"><span class="type">cairo_t</span></GTKDOCLINK> *cr</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gdouble"><span class="type">gdouble</span></GTKDOCLINK> position</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="AgsNoteEdit.html#ags-note-edit-draw-segment" title="ags_note_edit_draw_segment ()">ags_note_edit_draw_segment</a>          (<em class="parameter"><code><a class="link" href="AgsNoteEdit.html" title="AgsNoteEdit"><span class="type">AgsNoteEdit</span></a> *note_edit</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="cairo-t"><span class="type">cairo_t</span></GTKDOCLINK> *cr</code></em>);
+<a class="link" href="AgsNoteEdit.html" title="AgsNoteEdit"><span class="returnvalue">AgsNoteEdit</span></a> *       <a class="link" href="AgsNoteEdit.html#ags-note-edit-new" title="ags_note_edit_new ()">ags_note_edit_new</a>                   ();
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="AgsNoteEdit.html#ags-note-edit-reset-horizontally" title="ags_note_edit_reset_horizontally ()">ags_note_edit_reset_horizontally</a>    (<em class="parameter"><code><a class="link" href="AgsNoteEdit.html" title="AgsNoteEdit"><span class="type">AgsNoteEdit</span></a> *note_edit</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> flags</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="AgsNoteEdit.html#ags-note-edit-reset-vertically" title="ags_note_edit_reset_vertically ()">ags_note_edit_reset_vertically</a>      (<em class="parameter"><code><a class="link" href="AgsNoteEdit.html" title="AgsNoteEdit"><span class="type">AgsNoteEdit</span></a> *note_edit</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> flags</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="AgsNoteEdit.html#ags-note-edit-set-map-height" title="ags_note_edit_set_map_height ()">ags_note_edit_set_map_height</a>        (<em class="parameter"><code><a class="link" href="AgsNoteEdit.html" title="AgsNoteEdit"><span class="type">AgsNoteEdit</span></a> *note_edit</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> map_height</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsNoteEdit.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  <GTKDOCLINK HREF="GObject">GObject</GTKDOCLINK>
+   +----<GTKDOCLINK HREF="GInitiallyUnowned">GInitiallyUnowned</GTKDOCLINK>
+         +----<GTKDOCLINK HREF="GtkObject">GtkObject</GTKDOCLINK>
+               +----<GTKDOCLINK HREF="GtkWidget">GtkWidget</GTKDOCLINK>
+                     +----<GTKDOCLINK HREF="GtkContainer">GtkContainer</GTKDOCLINK>
+                           +----<GTKDOCLINK HREF="GtkTable">GtkTable</GTKDOCLINK>
+                                 +----AgsNoteEdit
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsNoteEdit.implemented-interfaces"></a><h2>Implemented Interfaces</h2>
+<p>
+AgsNoteEdit implements
+ <GTKDOCLINK HREF="AtkImplementorIface">AtkImplementorIface</GTKDOCLINK>,  <GTKDOCLINK HREF="GtkBuildable">GtkBuildable</GTKDOCLINK> and  <GTKDOCLINK HREF="AgsConnectable">AgsConnectable</GTKDOCLINK>.</p>
+</div>
+<div class="refsect1">
+<a name="AgsNoteEdit.description"></a><h2>Description</h2>
+<p>
+</p>
+</div>
+<div class="refsect1">
+<a name="AgsNoteEdit.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AGS-NOTE-EDIT-MAX-CONTROLS:CAPS"></a><h3>AGS_NOTE_EDIT_MAX_CONTROLS</h3>
+<pre class="programlisting">#define AGS_NOTE_EDIT_MAX_CONTROLS 1200
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsNoteEdit-struct"></a><h3>struct AgsNoteEdit</h3>
+<pre class="programlisting">struct AgsNoteEdit;</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsNoteEditClass"></a><h3>struct AgsNoteEditClass</h3>
+<pre class="programlisting">struct AgsNoteEditClass {
+  GtkTableClass table;
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsNoteEditFlags"></a><h3>enum AgsNoteEditFlags</h3>
+<pre class="programlisting">typedef enum {
+  AGS_NOTE_EDIT_RESETING_VERTICALLY    = 1,
+  AGS_NOTE_EDIT_RESETING_HORIZONTALLY  = 1 &lt;&lt;  1,
+  AGS_NOTE_EDIT_POSITION_CURSOR        = 1 &lt;&lt;  2,
+  AGS_NOTE_EDIT_ADDING_NOTE            = 1 &lt;&lt;  3,
+  AGS_NOTE_EDIT_DELETING_NOTE          = 1 &lt;&lt;  4,
+  AGS_NOTE_EDIT_SELECTING_NOTES        = 1 &lt;&lt;  5,
+} AgsNoteEditFlags;
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsNoteEditResetFlags"></a><h3>enum AgsNoteEditResetFlags</h3>
+<pre class="programlisting">typedef enum {
+  AGS_NOTE_EDIT_RESET_VSCROLLBAR   = 1,
+  AGS_NOTE_EDIT_RESET_HSCROLLBAR   = 1 &lt;&lt;  1,
+  AGS_NOTE_EDIT_RESET_WIDTH        = 1 &lt;&lt;  2,
+  AGS_NOTE_EDIT_RESET_HEIGHT       = 1 &lt;&lt;  3, // reserved
+} AgsNoteEditResetFlags;
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-note-edit-draw-notation"></a><h3>ags_note_edit_draw_notation ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_note_edit_draw_notation         (<em class="parameter"><code><a class="link" href="AgsNoteEdit.html" title="AgsNoteEdit"><span class="type">AgsNoteEdit</span></a> *note_edit</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="cairo-t"><span class="type">cairo_t</span></GTKDOCLINK> *cr</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-note-edit-draw-position"></a><h3>ags_note_edit_draw_position ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_note_edit_draw_position         (<em class="parameter"><code><a class="link" href="AgsNoteEdit.html" title="AgsNoteEdit"><span class="type">AgsNoteEdit</span></a> *note_edit</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="cairo-t"><span class="type">cairo_t</span></GTKDOCLINK> *cr</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-note-edit-draw-scroll"></a><h3>ags_note_edit_draw_scroll ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_note_edit_draw_scroll           (<em class="parameter"><code><a class="link" href="AgsNoteEdit.html" title="AgsNoteEdit"><span class="type">AgsNoteEdit</span></a> *note_edit</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="cairo-t"><span class="type">cairo_t</span></GTKDOCLINK> *cr</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gdouble"><span class="type">gdouble</span></GTKDOCLINK> position</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-note-edit-draw-segment"></a><h3>ags_note_edit_draw_segment ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_note_edit_draw_segment          (<em class="parameter"><code><a class="link" href="AgsNoteEdit.html" title="AgsNoteEdit"><span class="type">AgsNoteEdit</span></a> *note_edit</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="cairo-t"><span class="type">cairo_t</span></GTKDOCLINK> *cr</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-note-edit-new"></a><h3>ags_note_edit_new ()</h3>
+<pre class="programlisting"><a class="link" href="AgsNoteEdit.html" title="AgsNoteEdit"><span class="returnvalue">AgsNoteEdit</span></a> *       ags_note_edit_new                   ();</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-note-edit-reset-horizontally"></a><h3>ags_note_edit_reset_horizontally ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_note_edit_reset_horizontally    (<em class="parameter"><code><a class="link" href="AgsNoteEdit.html" title="AgsNoteEdit"><span class="type">AgsNoteEdit</span></a> *note_edit</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> flags</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-note-edit-reset-vertically"></a><h3>ags_note_edit_reset_vertically ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_note_edit_reset_vertically      (<em class="parameter"><code><a class="link" href="AgsNoteEdit.html" title="AgsNoteEdit"><span class="type">AgsNoteEdit</span></a> *note_edit</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> flags</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-note-edit-set-map-height"></a><h3>ags_note_edit_set_map_height ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_note_edit_set_map_height        (<em class="parameter"><code><a class="link" href="AgsNoteEdit.html" title="AgsNoteEdit"><span class="type">AgsNoteEdit</span></a> *note_edit</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> map_height</code></em>);</pre>
+<p>
+</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

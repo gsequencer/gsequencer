@@ -1,0 +1,129 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsRecallFactory</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer">
+<link rel="up" href="ch01.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td> </td>
+<td><a accesskey="u" href="ch01.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer</th>
+<td> </td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#ags-AgsRecallFactory.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#ags-AgsRecallFactory.description" class="shortcut">Description</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="ags-AgsRecallFactory"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="ags-AgsRecallFactory.top_of_page"></a>AgsRecallFactory</span></h2>
+<p>AgsRecallFactory</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="ags-AgsRecallFactory.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">struct              <a href="ags-AgsRecallFactory.html#AgsRecallFactory">AgsRecallFactory</a>;
+struct              <a href="ags-AgsRecallFactory.html#AgsRecallFactoryClass">AgsRecallFactoryClass</a>;
+enum                <a href="ags-AgsRecallFactory.html#AgsRecallFactoryCreateFlags">AgsRecallFactoryCreateFlags</a>;
+<a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="returnvalue">GList</span></a> *             <a href="ags-AgsRecallFactory.html#ags-recall-factory-create">ags_recall_factory_create</a>           (<em class="parameter"><code><a href="ags-AgsAudio.html#AgsAudio"><span class="type">AgsAudio</span></a> *audio</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsRecallContainer.html#AgsRecallContainer"><span class="type">AgsRecallContainer</span></a> *play_container</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsRecallContainer.html#AgsRecallContainer"><span class="type">AgsRecallContainer</span></a> *recall_container</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *plugin_name</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> start_audio_channel</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> stop_audio_channel</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> start_pad</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> stop_pad</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> create_flags</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> recall_flags</code></em>);
+<a href="ags-AgsRecallFactory.html#AgsRecallFactory"><span class="returnvalue">AgsRecallFactory</span></a> *  <a href="ags-AgsRecallFactory.html#ags-recall-factory-get-instance">ags_recall_factory_get_instance</a>     ();
+<a href="ags-AgsRecallFactory.html#AgsRecallFactory"><span class="returnvalue">AgsRecallFactory</span></a> *  <a href="ags-AgsRecallFactory.html#ags-recall-factory-new">ags_recall_factory_new</a>              ();
+<span class="returnvalue">void</span>                <a href="ags-AgsRecallFactory.html#ags-recall-factory-remove">ags_recall_factory_remove</a>           (<em class="parameter"><code><a href="ags-AgsAudio.html#AgsAudio"><span class="type">AgsAudio</span></a> *audio</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsRecallContainer.html#AgsRecallContainer"><span class="type">AgsRecallContainer</span></a> *recall_container</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="ags-AgsRecallFactory.description"></a><h2>Description</h2>
+</div>
+<div class="refsect1">
+<a name="ags-AgsRecallFactory.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AgsRecallFactory"></a><h3>struct AgsRecallFactory</h3>
+<pre class="programlisting">struct AgsRecallFactory {
+  GObject object;
+};
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsRecallFactoryClass"></a><h3>struct AgsRecallFactoryClass</h3>
+<pre class="programlisting">struct AgsRecallFactoryClass {
+  GObjectClass object;
+};
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsRecallFactoryCreateFlags"></a><h3>enum AgsRecallFactoryCreateFlags</h3>
+<pre class="programlisting">typedef enum {
+  AGS_RECALL_FACTORY_OUTPUT    = 1,
+  AGS_RECALL_FACTORY_INPUT     = 1 &lt;&lt; 1,
+  AGS_RECALL_FACTORY_REMAP     = 1 &lt;&lt; 2,
+  AGS_RECALL_FACTORY_ADD       = 1 &lt;&lt; 3,
+  AGS_RECALL_FACTORY_PLAY      = 1 &lt;&lt; 4,
+  AGS_RECALL_FACTORY_RECALL    = 1 &lt;&lt; 5,
+} AgsRecallFactoryCreateFlags;
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-recall-factory-create"></a><h3>ags_recall_factory_create ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="returnvalue">GList</span></a> *             ags_recall_factory_create           (<em class="parameter"><code><a href="ags-AgsAudio.html#AgsAudio"><span class="type">AgsAudio</span></a> *audio</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsRecallContainer.html#AgsRecallContainer"><span class="type">AgsRecallContainer</span></a> *play_container</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsRecallContainer.html#AgsRecallContainer"><span class="type">AgsRecallContainer</span></a> *recall_container</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *plugin_name</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> start_audio_channel</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> stop_audio_channel</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> start_pad</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> stop_pad</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> create_flags</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> recall_flags</code></em>);</pre>
+<p>
+Instantiate <a href="ags-AgsRecall.html#AgsRecall"><span class="type">AgsRecall</span></a> by this factory.
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-recall-factory-get-instance"></a><h3>ags_recall_factory_get_instance ()</h3>
+<pre class="programlisting"><a href="ags-AgsRecallFactory.html#AgsRecallFactory"><span class="returnvalue">AgsRecallFactory</span></a> *  ags_recall_factory_get_instance     ();</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-recall-factory-new"></a><h3>ags_recall_factory_new ()</h3>
+<pre class="programlisting"><a href="ags-AgsRecallFactory.html#AgsRecallFactory"><span class="returnvalue">AgsRecallFactory</span></a> *  ags_recall_factory_new              ();</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-recall-factory-remove"></a><h3>ags_recall_factory_remove ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_recall_factory_remove           (<em class="parameter"><code><a href="ags-AgsAudio.html#AgsAudio"><span class="type">AgsAudio</span></a> *audio</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsRecallContainer.html#AgsRecallContainer"><span class="type">AgsRecallContainer</span></a> *recall_container</code></em>);</pre>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>ags_ladspa_browser_callbacks</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer">
+<link rel="up" href="ch01.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td> </td>
+<td><a accesskey="u" href="ch01.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer</th>
+<td> </td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#ags-ags-ladspa-browser-callbacks.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#ags-ags-ladspa-browser-callbacks.description" class="shortcut">Description</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="ags-ags-ladspa-browser-callbacks"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="ags-ags-ladspa-browser-callbacks.top_of_page"></a>ags_ladspa_browser_callbacks</span></h2>
+<p>ags_ladspa_browser_callbacks</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="ags-ags-ladspa-browser-callbacks.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis"><span class="returnvalue">int</span>                 <a href="ags-ags-ladspa-browser-callbacks.html#ags-ladspa-browser-cancel-callback">ags_ladspa_browser_cancel_callback</a>  (<em class="parameter"><code><a href="../gtk3/GtkWidget.html"><span class="type">GtkWidget</span></a> *widget</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsLadspaBrowser.html#AgsLadspaBrowser"><span class="type">AgsLadspaBrowser</span></a> *ladspa_browser</code></em>);
+<span class="returnvalue">int</span>                 <a href="ags-ags-ladspa-browser-callbacks.html#ags-ladspa-browser-ok-callback">ags_ladspa_browser_ok_callback</a>      (<em class="parameter"><code><a href="../gtk3/GtkWidget.html"><span class="type">GtkWidget</span></a> *widget</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsLadspaBrowser.html#AgsLadspaBrowser"><span class="type">AgsLadspaBrowser</span></a> *ladspa_browser</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-ags-ladspa-browser-callbacks.html#ags-ladspa-browser-plugin-effect-callback">ags_ladspa_browser_plugin_effect_callback</a>
+                                                        (<em class="parameter"><code><a href="../gtk3/GtkComboBoxText.html"><span class="type">GtkComboBoxText</span></a> *combo_box</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsLadspaBrowser.html#AgsLadspaBrowser"><span class="type">AgsLadspaBrowser</span></a> *ladspa_browser</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-ags-ladspa-browser-callbacks.html#ags-ladspa-browser-plugin-filename-callback">ags_ladspa_browser_plugin_filename_callback</a>
+                                                        (<em class="parameter"><code><a href="../gtk3/GtkComboBoxText.html"><span class="type">GtkComboBoxText</span></a> *combo_box</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsLadspaBrowser.html#AgsLadspaBrowser"><span class="type">AgsLadspaBrowser</span></a> *ladspa_browser</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-ags-ladspa-browser-callbacks.html#ags-ladspa-browser-preview-close-callback">ags_ladspa_browser_preview_close_callback</a>
+                                                        (<em class="parameter"><code><a href="../gtk3/GtkWidget.html"><span class="type">GtkWidget</span></a> *preview</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsLadspaBrowser.html#AgsLadspaBrowser"><span class="type">AgsLadspaBrowser</span></a> *ladspa_browser</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="ags-ags-ladspa-browser-callbacks.description"></a><h2>Description</h2>
+</div>
+<div class="refsect1">
+<a name="ags-ags-ladspa-browser-callbacks.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="ags-ladspa-browser-cancel-callback"></a><h3>ags_ladspa_browser_cancel_callback ()</h3>
+<pre class="programlisting"><span class="returnvalue">int</span>                 ags_ladspa_browser_cancel_callback  (<em class="parameter"><code><a href="../gtk3/GtkWidget.html"><span class="type">GtkWidget</span></a> *widget</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsLadspaBrowser.html#AgsLadspaBrowser"><span class="type">AgsLadspaBrowser</span></a> *ladspa_browser</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-ladspa-browser-ok-callback"></a><h3>ags_ladspa_browser_ok_callback ()</h3>
+<pre class="programlisting"><span class="returnvalue">int</span>                 ags_ladspa_browser_ok_callback      (<em class="parameter"><code><a href="../gtk3/GtkWidget.html"><span class="type">GtkWidget</span></a> *widget</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsLadspaBrowser.html#AgsLadspaBrowser"><span class="type">AgsLadspaBrowser</span></a> *ladspa_browser</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-ladspa-browser-plugin-effect-callback"></a><h3>ags_ladspa_browser_plugin_effect_callback ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_ladspa_browser_plugin_effect_callback
+                                                        (<em class="parameter"><code><a href="../gtk3/GtkComboBoxText.html"><span class="type">GtkComboBoxText</span></a> *combo_box</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsLadspaBrowser.html#AgsLadspaBrowser"><span class="type">AgsLadspaBrowser</span></a> *ladspa_browser</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-ladspa-browser-plugin-filename-callback"></a><h3>ags_ladspa_browser_plugin_filename_callback ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_ladspa_browser_plugin_filename_callback
+                                                        (<em class="parameter"><code><a href="../gtk3/GtkComboBoxText.html"><span class="type">GtkComboBoxText</span></a> *combo_box</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsLadspaBrowser.html#AgsLadspaBrowser"><span class="type">AgsLadspaBrowser</span></a> *ladspa_browser</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-ladspa-browser-preview-close-callback"></a><h3>ags_ladspa_browser_preview_close_callback ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_ladspa_browser_preview_close_callback
+                                                        (<em class="parameter"><code><a href="../gtk3/GtkWidget.html"><span class="type">GtkWidget</span></a> *preview</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsLadspaBrowser.html#AgsLadspaBrowser"><span class="type">AgsLadspaBrowser</span></a> *ladspa_browser</code></em>);</pre>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

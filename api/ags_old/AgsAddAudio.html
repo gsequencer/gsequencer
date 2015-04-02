@@ -1,0 +1,101 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsAddAudio</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="task.html" title="Task - Data exchanged between Audio and GUI">
+<link rel="prev" href="task.html" title="Task - Data exchanged between Audio and GUI">
+<link rel="next" href="AgsAddAudioSignal.html" title="AgsAddAudioSignal">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="task.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="task.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="AgsAddAudioSignal.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#AgsAddAudio.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#AgsAddAudio.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#AgsAddAudio.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#AgsAddAudio.implemented-interfaces" class="shortcut">Implemented Interfaces</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="AgsAddAudio"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="AgsAddAudio.top_of_page"></a>AgsAddAudio</span></h2>
+<p>AgsAddAudio</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="AgsAddAudio.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">struct              <a class="link" href="AgsAddAudio.html#AgsAddAudio-struct" title="struct AgsAddAudio">AgsAddAudio</a>;
+struct              <a class="link" href="AgsAddAudio.html#AgsAddAudioClass" title="struct AgsAddAudioClass">AgsAddAudioClass</a>;
+<a class="link" href="AgsAddAudio.html" title="AgsAddAudio"><span class="returnvalue">AgsAddAudio</span></a> *       <a class="link" href="AgsAddAudio.html#ags-add-audio-new" title="ags_add_audio_new ()">ags_add_audio_new</a>                   (<em class="parameter"><code><a class="link" href="AgsDevout.html" title="AgsDevout"><span class="type">AgsDevout</span></a> *devout</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags_audio.html#AgsAudio"><span class="type">AgsAudio</span></a> *audio</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsAddAudio.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  <GTKDOCLINK HREF="GObject">GObject</GTKDOCLINK>
+   +----<a class="link" href="AgsTask.html" title="AgsTask">AgsTask</a>
+         +----AgsAddAudio
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsAddAudio.implemented-interfaces"></a><h2>Implemented Interfaces</h2>
+<p>
+AgsAddAudio implements
+ <GTKDOCLINK HREF="AgsConnectable">AgsConnectable</GTKDOCLINK>.</p>
+</div>
+<div class="refsect1">
+<a name="AgsAddAudio.description"></a><h2>Description</h2>
+<p>
+</p>
+</div>
+<div class="refsect1">
+<a name="AgsAddAudio.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AgsAddAudio-struct"></a><h3>struct AgsAddAudio</h3>
+<pre class="programlisting">struct AgsAddAudio;</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsAddAudioClass"></a><h3>struct AgsAddAudioClass</h3>
+<pre class="programlisting">struct AgsAddAudioClass {
+  AgsTaskClass task;
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-add-audio-new"></a><h3>ags_add_audio_new ()</h3>
+<pre class="programlisting"><a class="link" href="AgsAddAudio.html" title="AgsAddAudio"><span class="returnvalue">AgsAddAudio</span></a> *       ags_add_audio_new                   (<em class="parameter"><code><a class="link" href="AgsDevout.html" title="AgsDevout"><span class="type">AgsDevout</span></a> *devout</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags_audio.html#AgsAudio"><span class="type">AgsAudio</span></a> *audio</code></em>);</pre>
+<p>
+</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

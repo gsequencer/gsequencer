@@ -1,0 +1,187 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsLineEditor</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="pt08.html" title="Part VIII. Graphical user interface">
+<link rel="prev" href="ags-ags-line-callbacks.html" title="ags_line_callbacks">
+<link rel="next" href="ags-ags-line-editor-callbacks.html" title="ags_line_editor_callbacks">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="ags-ags-line-callbacks.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="pt08.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="ags-ags-line-editor-callbacks.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#AgsLineEditor.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#AgsLineEditor.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#AgsLineEditor.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#AgsLineEditor.implemented-interfaces" class="shortcut">Implemented Interfaces</a>
+                   | 
+                  <a href="#AgsLineEditor.properties" class="shortcut">Properties</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="AgsLineEditor"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="AgsLineEditor.top_of_page"></a>AgsLineEditor</span></h2>
+<p>AgsLineEditor — A composite widget to edit <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a></p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="AgsLineEditor.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">
+#include &lt;ags/X/ags_line_editor.h&gt;
+
+#define             <a class="link" href="AgsLineEditor.html#AGS-LINE-EDITOR-DEFAULT-BUILD-ID:CAPS" title="AGS_LINE_EDITOR_DEFAULT_BUILD_ID">AGS_LINE_EDITOR_DEFAULT_BUILD_ID</a>
+#define             <a class="link" href="AgsLineEditor.html#AGS-LINE-EDITOR-DEFAULT-VERSION:CAPS" title="AGS_LINE_EDITOR_DEFAULT_VERSION">AGS_LINE_EDITOR_DEFAULT_VERSION</a>
+struct              <a class="link" href="AgsLineEditor.html#AgsLineEditor-struct" title="struct AgsLineEditor">AgsLineEditor</a>;
+struct              <a class="link" href="AgsLineEditor.html#AgsLineEditorClass" title="struct AgsLineEditorClass">AgsLineEditorClass</a>;
+<a class="link" href="AgsLineEditor.html" title="AgsLineEditor"><span class="returnvalue">AgsLineEditor</span></a> *     <a class="link" href="AgsLineEditor.html#ags-line-editor-new" title="ags_line_editor_new ()">ags_line_editor_new</a>                 (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsLineEditor.html#ags-line-editor-set-channel" title="ags_line_editor_set_channel ()">ags_line_editor_set_channel</a>         (<em class="parameter"><code><a class="link" href="AgsLineEditor.html" title="AgsLineEditor"><span class="type">AgsLineEditor</span></a> *line_editor</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsLineEditor.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  <a href="../gobject/gobject-The-Base-Object-Type.html#GObject">GObject</a>
+   +----<a href="../gobject/gobject-The-Base-Object-Type.html#GInitiallyUnowned">GInitiallyUnowned</a>
+         +----<a href="../gtk/GtkObject.html">GtkObject</a>
+               +----<a href="../gtk3/GtkWidget.html">GtkWidget</a>
+                     +----<a href="../gtk3/GtkContainer.html">GtkContainer</a>
+                           +----<a href="../gtk3/GtkBox.html">GtkBox</a>
+                                 +----<a href="../gtk3/GtkVBox.html">GtkVBox</a>
+                                       +----AgsLineEditor
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsLineEditor.implemented-interfaces"></a><h2>Implemented Interfaces</h2>
+<p>
+AgsLineEditor implements
+ AtkImplementorIface,  <a href="../gtk3/GtkBuildable.html">GtkBuildable</a>,  <a href="../gtk3/gtk3-Orientable.html#GtkOrientable">GtkOrientable</a>,  AgsConnectable and  <a class="link" href="AgsApplicable.html" title="AgsApplicable">AgsApplicable</a>.</p>
+</div>
+<div class="refsect1">
+<a name="AgsLineEditor.properties"></a><h2>Properties</h2>
+<pre class="synopsis">
+  "<a class="link" href="AgsLineEditor.html#AgsLineEditor--channel" title='The "channel" property'>channel</a>"                  <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a>*           : Read / Write
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsLineEditor.description"></a><h2>Description</h2>
+<p>
+<a class="link" href="AgsLineEditor.html" title="AgsLineEditor"><span class="type">AgsLineEditor</span></a> is a composite widget to edit <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a>. It should be
+packed by an <a class="link" href="AgsPadEditor.html" title="AgsPadEditor"><span class="type">AgsPadEditor</span></a>.
+</p>
+</div>
+<div class="refsect1">
+<a name="AgsLineEditor.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AGS-LINE-EDITOR-DEFAULT-BUILD-ID:CAPS"></a><h3>AGS_LINE_EDITOR_DEFAULT_BUILD_ID</h3>
+<pre class="programlisting">#define AGS_LINE_EDITOR_DEFAULT_BUILD_ID "CEST 02-10-2014 19:36\0"
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-LINE-EDITOR-DEFAULT-VERSION:CAPS"></a><h3>AGS_LINE_EDITOR_DEFAULT_VERSION</h3>
+<pre class="programlisting">#define AGS_LINE_EDITOR_DEFAULT_VERSION "0.4.2\0"
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsLineEditor-struct"></a><h3>struct AgsLineEditor</h3>
+<pre class="programlisting">struct AgsLineEditor;</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsLineEditorClass"></a><h3>struct AgsLineEditorClass</h3>
+<pre class="programlisting">struct AgsLineEditorClass {
+  GtkVBoxClass vbox;
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-line-editor-new"></a><h3>ags_line_editor_new ()</h3>
+<pre class="programlisting"><a class="link" href="AgsLineEditor.html" title="AgsLineEditor"><span class="returnvalue">AgsLineEditor</span></a> *     ags_line_editor_new                 (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>);</pre>
+<p>
+Creates an <a class="link" href="AgsLineEditor.html" title="AgsLineEditor"><span class="type">AgsLineEditor</span></a>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>channel</code></em> :</span></p></td>
+<td>the channel to edit</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new <a class="link" href="AgsLineEditor.html" title="AgsLineEditor"><span class="type">AgsLineEditor</span></a>
+</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.3</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-line-editor-set-channel"></a><h3>ags_line_editor_set_channel ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_line_editor_set_channel         (<em class="parameter"><code><a class="link" href="AgsLineEditor.html" title="AgsLineEditor"><span class="type">AgsLineEditor</span></a> *line_editor</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>);</pre>
+<p>
+Is called as channel gets modified.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>line_editor</code></em> :</span></p></td>
+<td>an <a class="link" href="AgsLineEditor.html" title="AgsLineEditor"><span class="type">AgsLineEditor</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>channel</code></em> :</span></p></td>
+<td>the new <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a>
+</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.3</p>
+</div>
+</div>
+<div class="refsect1">
+<a name="AgsLineEditor.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="AgsLineEditor--channel"></a><h3>The <code class="literal">"channel"</code> property</h3>
+<pre class="programlisting">  "channel"                  <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a>*           : Read / Write</pre>
+<p>The channel which this pad editor is assigned with.</p>
+<p class="since">Since 0.3</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

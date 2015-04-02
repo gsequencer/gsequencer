@@ -1,0 +1,346 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsRecycling</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="process-tree.html" title="audio processing tree">
+<link rel="prev" href="ags-AgsRecallRecyclingDummy.html" title="AgsRecallRecyclingDummy">
+<link rel="next" href="ags-AgsRecyclingContainer.html" title="AgsRecyclingContainer">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="ags-AgsRecallRecyclingDummy.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="process-tree.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="ags-AgsRecyclingContainer.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#ags-AgsRecycling.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#ags-AgsRecycling.description" class="shortcut">Description</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="ags-AgsRecycling"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="ags-AgsRecycling.top_of_page"></a>AgsRecycling</span></h2>
+<p>AgsRecycling — A container of audio signals</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="ags-AgsRecycling.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">
+#include &lt;ags/audio/ags_recycling.h&gt;
+
+struct              <a class="link" href="ags-AgsRecycling.html#AgsRecycling" title="struct AgsRecycling">AgsRecycling</a>;
+struct              <a class="link" href="ags-AgsRecycling.html#AgsRecyclingClass" title="struct AgsRecyclingClass">AgsRecyclingClass</a>;
+enum                <a class="link" href="ags-AgsRecycling.html#AgsRecyclingFlags" title="enum AgsRecyclingFlags">AgsRecyclingFlags</a>;
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsRecycling.html#ags-recycling-add-audio-signal" title="ags_recycling_add_audio_signal ()">ags_recycling_add_audio_signal</a>      (<em class="parameter"><code><a class="link" href="ags-AgsRecycling.html#AgsRecycling" title="struct AgsRecycling"><span class="type">AgsRecycling</span></a> *recycling</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsAudioSignal.html#AgsAudioSignal" title="struct AgsAudioSignal"><span class="type">AgsAudioSignal</span></a> *audio_signal</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsRecycling.html#ags-recycling-create-audio-signal-with-defaults" title="ags_recycling_create_audio_signal_with_defaults ()">ags_recycling_create_audio_signal_with_defaults</a>
+                                                        (<em class="parameter"><code><a class="link" href="ags-AgsRecycling.html#AgsRecycling" title="struct AgsRecycling"><span class="type">AgsRecycling</span></a> *recycling</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsAudioSignal.html#AgsAudioSignal" title="struct AgsAudioSignal"><span class="type">AgsAudioSignal</span></a> *audio_signal</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gdouble"><span class="type">gdouble</span></GTKDOCLINK> delay</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> attack</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsRecycling.html#ags-recycling-create-audio-signal-with-frame-count" title="ags_recycling_create_audio_signal_with_frame_count ()">ags_recycling_create_audio_signal_with_frame_count</a>
+                                                        (<em class="parameter"><code><a class="link" href="ags-AgsRecycling.html#AgsRecycling" title="struct AgsRecycling"><span class="type">AgsRecycling</span></a> *recycling</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsAudioSignal.html#AgsAudioSignal" title="struct AgsAudioSignal"><span class="type">AgsAudioSignal</span></a> *audio_signal</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> frame_count</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gdouble"><span class="type">gdouble</span></GTKDOCLINK> delay</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> attack</code></em>);
+<a class="link" href="ags-AgsRecycling.html#AgsRecycling" title="struct AgsRecycling"><span class="returnvalue">AgsRecycling</span></a> *      <a class="link" href="ags-AgsRecycling.html#ags-recycling-find-next-channel" title="ags_recycling_find_next_channel ()">ags_recycling_find_next_channel</a>     (<em class="parameter"><code><a class="link" href="ags-AgsRecycling.html#AgsRecycling" title="struct AgsRecycling"><span class="type">AgsRecycling</span></a> *start_region</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsRecycling.html#AgsRecycling" title="struct AgsRecycling"><span class="type">AgsRecycling</span></a> *end_region</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *prev_channel</code></em>);
+<a class="link" href="ags-AgsRecycling.html#AgsRecycling" title="struct AgsRecycling"><span class="returnvalue">AgsRecycling</span></a> *      <a class="link" href="ags-AgsRecycling.html#ags-recycling-new" title="ags_recycling_new ()">ags_recycling_new</a>                   (<em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *devout</code></em>);
+<GTKDOCLINK HREF="gint"><span class="returnvalue">gint</span></GTKDOCLINK>                <a class="link" href="ags-AgsRecycling.html#ags-recycling-position" title="ags_recycling_position ()">ags_recycling_position</a>              (<em class="parameter"><code><a class="link" href="ags-AgsRecycling.html#AgsRecycling" title="struct AgsRecycling"><span class="type">AgsRecycling</span></a> *start_recycling</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsRecycling.html#AgsRecycling" title="struct AgsRecycling"><span class="type">AgsRecycling</span></a> *end_region</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsRecycling.html#AgsRecycling" title="struct AgsRecycling"><span class="type">AgsRecycling</span></a> *recycling</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsRecycling.html#ags-recycling-remove-audio-signal" title="ags_recycling_remove_audio_signal ()">ags_recycling_remove_audio_signal</a>   (<em class="parameter"><code><a class="link" href="ags-AgsRecycling.html#AgsRecycling" title="struct AgsRecycling"><span class="type">AgsRecycling</span></a> *recycling</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsAudioSignal.html#AgsAudioSignal" title="struct AgsAudioSignal"><span class="type">AgsAudioSignal</span></a> *audio_signal</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsRecycling.html#ags-recycling-set-devout" title="ags_recycling_set_devout ()">ags_recycling_set_devout</a>            (<em class="parameter"><code><a class="link" href="ags-AgsRecycling.html#AgsRecycling" title="struct AgsRecycling"><span class="type">AgsRecycling</span></a> *recycling</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *devout</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="ags-AgsRecycling.description"></a><h2>Description</h2>
+<p>
+<a class="link" href="ags-AgsRecycling.html#AgsRecycling" title="struct AgsRecycling"><span class="type">AgsRecycling</span></a> forms the nested tree of AgsChannel. Ever channel
+having own audio signal contains therefor an <a class="link" href="ags-AgsRecycling.html#AgsRecycling" title="struct AgsRecycling"><span class="type">AgsRecycling</span></a>
+</p>
+</div>
+<div class="refsect1">
+<a name="ags-AgsRecycling.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AgsRecycling"></a><h3>struct AgsRecycling</h3>
+<pre class="programlisting">struct AgsRecycling {
+  GObject object;
+
+  guint flags;
+
+  GObject *channel;
+  GObject *devout;
+
+  AgsRecycling *parent;
+
+  AgsRecycling *next;
+  AgsRecycling *prev;
+
+  GList *audio_signal;
+};
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsRecyclingClass"></a><h3>struct AgsRecyclingClass</h3>
+<pre class="programlisting">struct AgsRecyclingClass {
+  GObjectClass object;
+
+  void (*add_audio_signal)(AgsRecycling *recycling,
+			   AgsAudioSignal *audio_signal);
+  void (*remove_audio_signal)(AgsRecycling *recycling,
+			      AgsAudioSignal *audio_signal);
+};
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsRecyclingFlags"></a><h3>enum AgsRecyclingFlags</h3>
+<pre class="programlisting">typedef enum {
+  AGS_RECYCLING_MUTED           =  1,
+} AgsRecyclingFlags;
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-recycling-add-audio-signal"></a><h3>ags_recycling_add_audio_signal ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_recycling_add_audio_signal      (<em class="parameter"><code><a class="link" href="ags-AgsRecycling.html#AgsRecycling" title="struct AgsRecycling"><span class="type">AgsRecycling</span></a> *recycling</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsAudioSignal.html#AgsAudioSignal" title="struct AgsAudioSignal"><span class="type">AgsAudioSignal</span></a> *audio_signal</code></em>);</pre>
+<p>
+Add <a class="link" href="ags-AgsAudioSignal.html#AgsAudioSignal" title="struct AgsAudioSignal"><span class="type">AgsAudioSignal</span></a> to recycling.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>recycling</code></em> :</span></p></td>
+<td>an <a class="link" href="ags-AgsRecycling.html#AgsRecycling" title="struct AgsRecycling"><span class="type">AgsRecycling</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>audio_signal</code></em> :</span></p></td>
+<td>the <a class="link" href="ags-AgsAudioSignal.html#AgsAudioSignal" title="struct AgsAudioSignal"><span class="type">AgsAudioSignal</span></a> to add</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.3</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-recycling-create-audio-signal-with-defaults"></a><h3>ags_recycling_create_audio_signal_with_defaults ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_recycling_create_audio_signal_with_defaults
+                                                        (<em class="parameter"><code><a class="link" href="ags-AgsRecycling.html#AgsRecycling" title="struct AgsRecycling"><span class="type">AgsRecycling</span></a> *recycling</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsAudioSignal.html#AgsAudioSignal" title="struct AgsAudioSignal"><span class="type">AgsAudioSignal</span></a> *audio_signal</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gdouble"><span class="type">gdouble</span></GTKDOCLINK> delay</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> attack</code></em>);</pre>
+<p>
+Create audio signal with defaults.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>recycling</code></em> :</span></p></td>
+<td>an <a class="link" href="ags-AgsRecycling.html#AgsRecycling" title="struct AgsRecycling"><span class="type">AgsRecycling</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>audio_signal</code></em> :</span></p></td>
+<td>the <a class="link" href="ags-AgsAudioSignal.html#AgsAudioSignal" title="struct AgsAudioSignal"><span class="type">AgsAudioSignal</span></a> to apply defaults</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-recycling-create-audio-signal-with-frame-count"></a><h3>ags_recycling_create_audio_signal_with_frame_count ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_recycling_create_audio_signal_with_frame_count
+                                                        (<em class="parameter"><code><a class="link" href="ags-AgsRecycling.html#AgsRecycling" title="struct AgsRecycling"><span class="type">AgsRecycling</span></a> *recycling</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsAudioSignal.html#AgsAudioSignal" title="struct AgsAudioSignal"><span class="type">AgsAudioSignal</span></a> *audio_signal</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> frame_count</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gdouble"><span class="type">gdouble</span></GTKDOCLINK> delay</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> attack</code></em>);</pre>
+<p>
+Create audio signal with frame count.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>recycling</code></em> :</span></p></td>
+<td>an <a class="link" href="ags-AgsRecycling.html#AgsRecycling" title="struct AgsRecycling"><span class="type">AgsRecycling</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>audio_signal</code></em> :</span></p></td>
+<td>the <a class="link" href="ags-AgsAudioSignal.html#AgsAudioSignal" title="struct AgsAudioSignal"><span class="type">AgsAudioSignal</span></a> to apply defaults</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>frame_count</code></em> :</span></p></td>
+<td>the audio data size</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-recycling-find-next-channel"></a><h3>ags_recycling_find_next_channel ()</h3>
+<pre class="programlisting"><a class="link" href="ags-AgsRecycling.html#AgsRecycling" title="struct AgsRecycling"><span class="returnvalue">AgsRecycling</span></a> *      ags_recycling_find_next_channel     (<em class="parameter"><code><a class="link" href="ags-AgsRecycling.html#AgsRecycling" title="struct AgsRecycling"><span class="type">AgsRecycling</span></a> *start_region</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsRecycling.html#AgsRecycling" title="struct AgsRecycling"><span class="type">AgsRecycling</span></a> *end_region</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *prev_channel</code></em>);</pre>
+<p>
+Retrieve next recycling with different channel.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>start_region</code></em> :</span></p></td>
+<td>boundary start</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>end_region</code></em> :</span></p></td>
+<td>boundary end</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>prev_channel</code></em> :</span></p></td>
+<td>previous channel</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>Matching recycling.</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-recycling-new"></a><h3>ags_recycling_new ()</h3>
+<pre class="programlisting"><a class="link" href="ags-AgsRecycling.html#AgsRecycling" title="struct AgsRecycling"><span class="returnvalue">AgsRecycling</span></a> *      ags_recycling_new                   (<em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *devout</code></em>);</pre>
+<p>
+Creates a <a class="link" href="ags-AgsRecycling.html#AgsRecycling" title="struct AgsRecycling"><span class="type">AgsRecycling</span></a>, with defaults of <em class="parameter"><code>devout</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>devout</code></em> :</span></p></td>
+<td>the <a class="link" href="ags-AgsDevout.html#AgsDevout" title="struct AgsDevout"><span class="type">AgsDevout</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new <a class="link" href="ags-AgsRecycling.html#AgsRecycling" title="struct AgsRecycling"><span class="type">AgsRecycling</span></a>
+</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.3</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-recycling-position"></a><h3>ags_recycling_position ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="gint"><span class="returnvalue">gint</span></GTKDOCLINK>                ags_recycling_position              (<em class="parameter"><code><a class="link" href="ags-AgsRecycling.html#AgsRecycling" title="struct AgsRecycling"><span class="type">AgsRecycling</span></a> *start_recycling</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsRecycling.html#AgsRecycling" title="struct AgsRecycling"><span class="type">AgsRecycling</span></a> *end_region</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsRecycling.html#AgsRecycling" title="struct AgsRecycling"><span class="type">AgsRecycling</span></a> *recycling</code></em>);</pre>
+<p>
+Retrieve position of recycling.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>start_region</code></em> :</span></p></td>
+<td>boundary start</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>end_region</code></em> :</span></p></td>
+<td>boundary end</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>recycling</code></em> :</span></p></td>
+<td>matching recycling</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>position within boundary.</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-recycling-remove-audio-signal"></a><h3>ags_recycling_remove_audio_signal ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_recycling_remove_audio_signal   (<em class="parameter"><code><a class="link" href="ags-AgsRecycling.html#AgsRecycling" title="struct AgsRecycling"><span class="type">AgsRecycling</span></a> *recycling</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsAudioSignal.html#AgsAudioSignal" title="struct AgsAudioSignal"><span class="type">AgsAudioSignal</span></a> *audio_signal</code></em>);</pre>
+<p>
+Remove <a class="link" href="ags-AgsAudioSignal.html#AgsAudioSignal" title="struct AgsAudioSignal"><span class="type">AgsAudioSignal</span></a> of recycling.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>recycling</code></em> :</span></p></td>
+<td>an <a class="link" href="ags-AgsRecycling.html#AgsRecycling" title="struct AgsRecycling"><span class="type">AgsRecycling</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>audio_signal</code></em> :</span></p></td>
+<td>the <a class="link" href="ags-AgsAudioSignal.html#AgsAudioSignal" title="struct AgsAudioSignal"><span class="type">AgsAudioSignal</span></a> to remove</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.3</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-recycling-set-devout"></a><h3>ags_recycling_set_devout ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_recycling_set_devout            (<em class="parameter"><code><a class="link" href="ags-AgsRecycling.html#AgsRecycling" title="struct AgsRecycling"><span class="type">AgsRecycling</span></a> *recycling</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *devout</code></em>);</pre>
+<p>
+Sets <a class="link" href="ags-AgsDevout.html#AgsDevout" title="struct AgsDevout"><span class="type">AgsDevout</span></a> to recycling.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>recycling</code></em> :</span></p></td>
+<td>an <a class="link" href="ags-AgsRecycling.html#AgsRecycling" title="struct AgsRecycling"><span class="type">AgsRecycling</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>devout</code></em> :</span></p></td>
+<td>the <a class="link" href="ags-AgsDevout.html#AgsDevout" title="struct AgsDevout"><span class="type">AgsDevout</span></a> to set</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.3</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

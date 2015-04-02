@@ -1,0 +1,167 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsCountBeatsAudioRun</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer">
+<link rel="up" href="ch01.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td> </td>
+<td><a accesskey="u" href="ch01.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer</th>
+<td> </td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#ags-AgsCountBeatsAudioRun.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#ags-AgsCountBeatsAudioRun.description" class="shortcut">Description</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="ags-AgsCountBeatsAudioRun"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="ags-AgsCountBeatsAudioRun.top_of_page"></a>AgsCountBeatsAudioRun</span></h2>
+<p>AgsCountBeatsAudioRun</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="ags-AgsCountBeatsAudioRun.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">struct              <a href="ags-AgsCountBeatsAudioRun.html#AgsCountBeatsAudioRun">AgsCountBeatsAudioRun</a>;
+struct              <a href="ags-AgsCountBeatsAudioRun.html#AgsCountBeatsAudioRunClass">AgsCountBeatsAudioRunClass</a>;
+<a href="ags-AgsCountBeatsAudioRun.html#AgsCountBeatsAudioRun"><span class="returnvalue">AgsCountBeatsAudioRun</span></a> * <a href="ags-AgsCountBeatsAudioRun.html#ags-count-beats-audio-run-new">ags_count_beats_audio_run_new</a>   (<em class="parameter"><code><a href="ags-AgsDelayAudioRun.html#AgsDelayAudioRun"><span class="type">AgsDelayAudioRun</span></a> *delay_audio_run</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-AgsCountBeatsAudioRun.html#ags-count-beats-audio-run-notation-loop">ags_count_beats_audio_run_notation_loop</a>
+                                                        (<em class="parameter"><code><a href="ags-AgsCountBeatsAudioRun.html#AgsCountBeatsAudioRun"><span class="type">AgsCountBeatsAudioRun</span></a> *count_beats_audio_run</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> run_order</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-AgsCountBeatsAudioRun.html#ags-count-beats-audio-run-notation-start">ags_count_beats_audio_run_notation_start</a>
+                                                        (<em class="parameter"><code><a href="ags-AgsCountBeatsAudioRun.html#AgsCountBeatsAudioRun"><span class="type">AgsCountBeatsAudioRun</span></a> *count_beats_audio_run</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> run_order</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-AgsCountBeatsAudioRun.html#ags-count-beats-audio-run-notation-stop">ags_count_beats_audio_run_notation_stop</a>
+                                                        (<em class="parameter"><code><a href="ags-AgsCountBeatsAudioRun.html#AgsCountBeatsAudioRun"><span class="type">AgsCountBeatsAudioRun</span></a> *count_beats_audio_run</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> run_order</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-AgsCountBeatsAudioRun.html#ags-count-beats-audio-run-sequencer-loop">ags_count_beats_audio_run_sequencer_loop</a>
+                                                        (<em class="parameter"><code><a href="ags-AgsCountBeatsAudioRun.html#AgsCountBeatsAudioRun"><span class="type">AgsCountBeatsAudioRun</span></a> *count_beats_audio_run</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> run_order</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-AgsCountBeatsAudioRun.html#ags-count-beats-audio-run-sequencer-start">ags_count_beats_audio_run_sequencer_start</a>
+                                                        (<em class="parameter"><code><a href="ags-AgsCountBeatsAudioRun.html#AgsCountBeatsAudioRun"><span class="type">AgsCountBeatsAudioRun</span></a> *count_beats_audio_run</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> run_order</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-AgsCountBeatsAudioRun.html#ags-count-beats-audio-run-sequencer-stop">ags_count_beats_audio_run_sequencer_stop</a>
+                                                        (<em class="parameter"><code><a href="ags-AgsCountBeatsAudioRun.html#AgsCountBeatsAudioRun"><span class="type">AgsCountBeatsAudioRun</span></a> *count_beats_audio_run</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> run_order</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="ags-AgsCountBeatsAudioRun.description"></a><h2>Description</h2>
+</div>
+<div class="refsect1">
+<a name="ags-AgsCountBeatsAudioRun.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AgsCountBeatsAudioRun"></a><h3>struct AgsCountBeatsAudioRun</h3>
+<pre class="programlisting">struct AgsCountBeatsAudioRun {
+  AgsRecallAudioRun recall_audio_run;
+
+  gboolean first_run;
+
+  guint notation_counter;
+  guint sequencer_counter;
+
+  guint recall_ref;
+
+  guint hide_ref;
+  guint notation_hide_ref_counter;
+  guint sequencer_hide_ref_counter;
+
+  gulong sequencer_alloc_output_handler;
+  gulong sequencer_count_handler;
+
+  gulong notation_alloc_output_handler;
+  gulong notation_count_handler;
+
+  AgsDelayAudioRun *delay_audio_run;
+};
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsCountBeatsAudioRunClass"></a><h3>struct AgsCountBeatsAudioRunClass</h3>
+<pre class="programlisting">struct AgsCountBeatsAudioRunClass {
+  AgsRecallAudioRunClass recall_audio_run;
+  
+  void (*notation_start)(AgsCountBeatsAudioRun *count_beats_audio_run,
+			 guint run_order);
+  void (*notation_loop)(AgsCountBeatsAudioRun *count_beats_audio_run,
+			guint run_order);
+  void (*notation_stop)(AgsCountBeatsAudioRun *count_beats_audio_run,
+			guint run_order);
+  
+  void (*sequencer_start)(AgsCountBeatsAudioRun *count_beats_audio_run,
+			  guint run_order);
+  void (*sequencer_loop)(AgsCountBeatsAudioRun *count_beats_audio_run,
+			 guint run_order);
+  void (*sequencer_stop)(AgsCountBeatsAudioRun *count_beats_audio_run,
+			 guint run_order);
+};
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-count-beats-audio-run-new"></a><h3>ags_count_beats_audio_run_new ()</h3>
+<pre class="programlisting"><a href="ags-AgsCountBeatsAudioRun.html#AgsCountBeatsAudioRun"><span class="returnvalue">AgsCountBeatsAudioRun</span></a> * ags_count_beats_audio_run_new   (<em class="parameter"><code><a href="ags-AgsDelayAudioRun.html#AgsDelayAudioRun"><span class="type">AgsDelayAudioRun</span></a> *delay_audio_run</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-count-beats-audio-run-notation-loop"></a><h3>ags_count_beats_audio_run_notation_loop ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_count_beats_audio_run_notation_loop
+                                                        (<em class="parameter"><code><a href="ags-AgsCountBeatsAudioRun.html#AgsCountBeatsAudioRun"><span class="type">AgsCountBeatsAudioRun</span></a> *count_beats_audio_run</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> run_order</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-count-beats-audio-run-notation-start"></a><h3>ags_count_beats_audio_run_notation_start ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_count_beats_audio_run_notation_start
+                                                        (<em class="parameter"><code><a href="ags-AgsCountBeatsAudioRun.html#AgsCountBeatsAudioRun"><span class="type">AgsCountBeatsAudioRun</span></a> *count_beats_audio_run</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> run_order</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-count-beats-audio-run-notation-stop"></a><h3>ags_count_beats_audio_run_notation_stop ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_count_beats_audio_run_notation_stop
+                                                        (<em class="parameter"><code><a href="ags-AgsCountBeatsAudioRun.html#AgsCountBeatsAudioRun"><span class="type">AgsCountBeatsAudioRun</span></a> *count_beats_audio_run</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> run_order</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-count-beats-audio-run-sequencer-loop"></a><h3>ags_count_beats_audio_run_sequencer_loop ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_count_beats_audio_run_sequencer_loop
+                                                        (<em class="parameter"><code><a href="ags-AgsCountBeatsAudioRun.html#AgsCountBeatsAudioRun"><span class="type">AgsCountBeatsAudioRun</span></a> *count_beats_audio_run</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> run_order</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-count-beats-audio-run-sequencer-start"></a><h3>ags_count_beats_audio_run_sequencer_start ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_count_beats_audio_run_sequencer_start
+                                                        (<em class="parameter"><code><a href="ags-AgsCountBeatsAudioRun.html#AgsCountBeatsAudioRun"><span class="type">AgsCountBeatsAudioRun</span></a> *count_beats_audio_run</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> run_order</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-count-beats-audio-run-sequencer-stop"></a><h3>ags_count_beats_audio_run_sequencer_stop ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_count_beats_audio_run_sequencer_stop
+                                                        (<em class="parameter"><code><a href="ags-AgsCountBeatsAudioRun.html#AgsCountBeatsAudioRun"><span class="type">AgsCountBeatsAudioRun</span></a> *count_beats_audio_run</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> run_order</code></em>);</pre>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsMachineSelector</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer">
+<link rel="up" href="ch01.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td> </td>
+<td><a accesskey="u" href="ch01.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer</th>
+<td> </td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#ags-AgsMachineSelector.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#ags-AgsMachineSelector.description" class="shortcut">Description</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="ags-AgsMachineSelector"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="ags-AgsMachineSelector.top_of_page"></a>AgsMachineSelector</span></h2>
+<p>AgsMachineSelector</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="ags-AgsMachineSelector.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">struct              <a href="ags-AgsMachineSelector.html#AgsMachineSelector">AgsMachineSelector</a>;
+struct              <a href="ags-AgsMachineSelector.html#AgsMachineSelectorClass">AgsMachineSelectorClass</a>;
+<span class="returnvalue">void</span>                <a href="ags-AgsMachineSelector.html#ags-machine-selector-changed">ags_machine_selector_changed</a>        (<em class="parameter"><code><a href="ags-AgsMachineSelector.html#AgsMachineSelector"><span class="type">AgsMachineSelector</span></a> *machine_selector</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsMachine.html#AgsMachine"><span class="type">AgsMachine</span></a> *machine</code></em>);
+<a href="ags-AgsMachineSelector.html#AgsMachineSelector"><span class="returnvalue">AgsMachineSelector</span></a> * <a href="ags-AgsMachineSelector.html#ags-machine-selector-new">ags_machine_selector_new</a>           ();
+<a href="../gtk3/GtkMenu.html"><span class="returnvalue">GtkMenu</span></a> *           <a href="ags-AgsMachineSelector.html#ags-machine-selector-popup-new">ags_machine_selector_popup_new</a>      (<em class="parameter"><code><a href="ags-AgsMachineSelector.html#AgsMachineSelector"><span class="type">AgsMachineSelector</span></a> *machine_selector</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="ags-AgsMachineSelector.description"></a><h2>Description</h2>
+</div>
+<div class="refsect1">
+<a name="ags-AgsMachineSelector.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AgsMachineSelector"></a><h3>struct AgsMachineSelector</h3>
+<pre class="programlisting">struct AgsMachineSelector {
+  GtkVBox vbox;
+
+  GtkMenu *popup;
+};
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsMachineSelectorClass"></a><h3>struct AgsMachineSelectorClass</h3>
+<pre class="programlisting">struct AgsMachineSelectorClass {
+  GtkVBoxClass vbox;
+
+  void (*changed)(AgsMachineSelector *machine_selector, AgsMachine *machine);
+};
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-machine-selector-changed"></a><h3>ags_machine_selector_changed ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_machine_selector_changed        (<em class="parameter"><code><a href="ags-AgsMachineSelector.html#AgsMachineSelector"><span class="type">AgsMachineSelector</span></a> *machine_selector</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsMachine.html#AgsMachine"><span class="type">AgsMachine</span></a> *machine</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-machine-selector-new"></a><h3>ags_machine_selector_new ()</h3>
+<pre class="programlisting"><a href="ags-AgsMachineSelector.html#AgsMachineSelector"><span class="returnvalue">AgsMachineSelector</span></a> * ags_machine_selector_new           ();</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-machine-selector-popup-new"></a><h3>ags_machine_selector_popup_new ()</h3>
+<pre class="programlisting"><a href="../gtk3/GtkMenu.html"><span class="returnvalue">GtkMenu</span></a> *           ags_machine_selector_popup_new      (<em class="parameter"><code><a href="ags-AgsMachineSelector.html#AgsMachineSelector"><span class="type">AgsMachineSelector</span></a> *machine_selector</code></em>);</pre>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

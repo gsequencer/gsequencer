@@ -1,0 +1,103 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsDrumOutputLine</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="engines.html" title="Engines - Composite widgets with audio set up">
+<link rel="prev" href="ags-ags-drum-input-pad-callbacks.html" title="ags_drum_input_pad_callbacks">
+<link rel="next" href="ags-ags-drum-output-line-callbacks.html" title="ags_drum_output_line_callbacks">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="ags-ags-drum-input-pad-callbacks.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="engines.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="ags-ags-drum-output-line-callbacks.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#ags-AgsDrumOutputLine.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#ags-AgsDrumOutputLine.description" class="shortcut">Description</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="ags-AgsDrumOutputLine"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="ags-AgsDrumOutputLine.top_of_page"></a>AgsDrumOutputLine</span></h2>
+<p>AgsDrumOutputLine — drum sequencer output line</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="ags-AgsDrumOutputLine.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">
+#include &lt;ags/X/machine/ags_drum_output_line.h&gt;
+
+struct              <a class="link" href="ags-AgsDrumOutputLine.html#AgsDrumOutputLine" title="struct AgsDrumOutputLine">AgsDrumOutputLine</a>;
+struct              <a class="link" href="ags-AgsDrumOutputLine.html#AgsDrumOutputLineClass" title="struct AgsDrumOutputLineClass">AgsDrumOutputLineClass</a>;
+<a class="link" href="ags-AgsDrumOutputLine.html#AgsDrumOutputLine" title="struct AgsDrumOutputLine"><span class="returnvalue">AgsDrumOutputLine</span></a> * <a class="link" href="ags-AgsDrumOutputLine.html#ags-drum-output-line-new" title="ags_drum_output_line_new ()">ags_drum_output_line_new</a>            (<em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="ags-AgsDrumOutputLine.description"></a><h2>Description</h2>
+<p>
+The <a class="link" href="ags-AgsDrumOutputLine.html#AgsDrumOutputLine" title="struct AgsDrumOutputLine"><span class="type">AgsDrumOutputLine</span></a> is a composite widget to act as drum sequencer output line.
+</p>
+</div>
+<div class="refsect1">
+<a name="ags-AgsDrumOutputLine.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AgsDrumOutputLine"></a><h3>struct AgsDrumOutputLine</h3>
+<pre class="programlisting">struct AgsDrumOutputLine {
+  AgsLine line;
+
+  gchar *name;
+  gchar *xml_type;
+};
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsDrumOutputLineClass"></a><h3>struct AgsDrumOutputLineClass</h3>
+<pre class="programlisting">struct AgsDrumOutputLineClass {
+  AgsLineClass line;
+};
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-drum-output-line-new"></a><h3>ags_drum_output_line_new ()</h3>
+<pre class="programlisting"><a class="link" href="ags-AgsDrumOutputLine.html#AgsDrumOutputLine" title="struct AgsDrumOutputLine"><span class="returnvalue">AgsDrumOutputLine</span></a> * ags_drum_output_line_new            (<em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>);</pre>
+<p>
+Creates an <a class="link" href="ags-AgsDrumOutputLine.html#AgsDrumOutputLine" title="struct AgsDrumOutputLine"><span class="type">AgsDrumOutputLine</span></a>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>channel</code></em> :</span></p></td>
+<td>the assigned channel</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new <a class="link" href="ags-AgsDrumOutputLine.html#AgsDrumOutputLine" title="struct AgsDrumOutputLine"><span class="type">AgsDrumOutputLine</span></a>
+</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

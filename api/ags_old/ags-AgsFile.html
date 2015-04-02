@@ -1,0 +1,348 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsFile</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="xml-io.html" title="Part VIII. XML Input/Output - Persist project">
+<link rel="prev" href="xml-io.html" title="Part VIII. XML Input/Output - Persist project">
+<link rel="next" href="ags-ags-file-gui.html" title="ags_file_gui">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="xml-io.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="xml-io.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="ags-ags-file-gui.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#ags-AgsFile.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#ags-AgsFile.description" class="shortcut">Description</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="ags-AgsFile"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="ags-AgsFile.top_of_page"></a>AgsFile</span></h2>
+<p>AgsFile</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="ags-AgsFile.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">#define             <a class="link" href="ags-AgsFile.html#AGS-FILE-CHECKSUM-LENGTH:CAPS" title="AGS_FILE_CHECKSUM_LENGTH">AGS_FILE_CHECKSUM_LENGTH</a>
+#define             <a class="link" href="ags-AgsFile.html#AGS-FILE-DEFAULT-AUDIO-ENCODING:CAPS" title="AGS_FILE_DEFAULT_AUDIO_ENCODING">AGS_FILE_DEFAULT_AUDIO_ENCODING</a>
+#define             <a class="link" href="ags-AgsFile.html#AGS-FILE-DEFAULT-AUDIO-FORMAT:CAPS" title="AGS_FILE_DEFAULT_AUDIO_FORMAT">AGS_FILE_DEFAULT_AUDIO_FORMAT</a>
+#define             <a class="link" href="ags-AgsFile.html#AGS-FILE-DEFAULT-DTD:CAPS" title="AGS_FILE_DEFAULT_DTD">AGS_FILE_DEFAULT_DTD</a>
+#define             <a class="link" href="ags-AgsFile.html#AGS-FILE-DEFAULT-ENCODING:CAPS" title="AGS_FILE_DEFAULT_ENCODING">AGS_FILE_DEFAULT_ENCODING</a>
+struct              <a class="link" href="ags-AgsFile.html#AgsFile" title="struct AgsFile">AgsFile</a>;
+struct              <a class="link" href="ags-AgsFile.html#AgsFileClass" title="struct AgsFileClass">AgsFileClass</a>;
+enum                <a class="link" href="ags-AgsFile.html#AgsFileFlags" title="enum AgsFileFlags">AgsFileFlags</a>;
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsFile.html#ags-file-add-id-ref" title="ags_file_add_id_ref ()">ags_file_add_id_ref</a>                 (<em class="parameter"><code><a class="link" href="ags-AgsFile.html#AgsFile" title="struct AgsFile"><span class="type">AgsFile</span></a> *file</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *id_ref</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsFile.html#ags-file-add-launch" title="ags_file_add_launch ()">ags_file_add_launch</a>                 (<em class="parameter"><code><a class="link" href="ags-AgsFile.html#AgsFile" title="struct AgsFile"><span class="type">AgsFile</span></a> *file</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *file_launch</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsFile.html#ags-file-add-lookup" title="ags_file_add_lookup ()">ags_file_add_lookup</a>                 (<em class="parameter"><code><a class="link" href="ags-AgsFile.html#AgsFile" title="struct AgsFile"><span class="type">AgsFile</span></a> *file</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *file_lookup</code></em>);
+<GTKDOCLINK HREF="GObject"><span class="returnvalue">GObject</span></GTKDOCLINK> *           <a class="link" href="ags-AgsFile.html#ags-file-find-id-ref-by-node" title="ags_file_find_id_ref_by_node ()">ags_file_find_id_ref_by_node</a>        (<em class="parameter"><code><a class="link" href="ags-AgsFile.html#AgsFile" title="struct AgsFile"><span class="type">AgsFile</span></a> *file</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *node</code></em>);
+<GTKDOCLINK HREF="GObject"><span class="returnvalue">GObject</span></GTKDOCLINK> *           <a class="link" href="ags-AgsFile.html#ags-file-find-id-ref-by-reference" title="ags_file_find_id_ref_by_reference ()">ags_file_find_id_ref_by_reference</a>   (<em class="parameter"><code><a class="link" href="ags-AgsFile.html#AgsFile" title="struct AgsFile"><span class="type">AgsFile</span></a> *file</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gpointer"><span class="type">gpointer</span></GTKDOCLINK> ref</code></em>);
+<GTKDOCLINK HREF="GObject"><span class="returnvalue">GObject</span></GTKDOCLINK> *           <a class="link" href="ags-AgsFile.html#ags-file-find-id-ref-by-xpath" title="ags_file_find_id_ref_by_xpath ()">ags_file_find_id_ref_by_xpath</a>       (<em class="parameter"><code><a class="link" href="ags-AgsFile.html#AgsFile" title="struct AgsFile"><span class="type">AgsFile</span></a> *file</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *xpath</code></em>);
+<a class="link" href="ags-AgsFile.html#AgsFile" title="struct AgsFile"><span class="returnvalue">AgsFile</span></a> *           <a class="link" href="ags-AgsFile.html#ags-file-new" title="ags_file_new ()">ags_file_new</a>                        ();
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsFile.html#ags-file-read" title="ags_file_read ()">ags_file_read</a>                       (<em class="parameter"><code><a class="link" href="ags-AgsFile.html#AgsFile" title="struct AgsFile"><span class="type">AgsFile</span></a> *file</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsFile.html#ags-file-read-main" title="ags_file_read_main ()">ags_file_read_main</a>                  (<em class="parameter"><code><a class="link" href="ags-AgsFile.html#AgsFile" title="struct AgsFile"><span class="type">AgsFile</span></a> *file</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *node</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> **main</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsFile.html#ags-file-read-resolve" title="ags_file_read_resolve ()">ags_file_read_resolve</a>               (<em class="parameter"><code><a class="link" href="ags-AgsFile.html#AgsFile" title="struct AgsFile"><span class="type">AgsFile</span></a> *file</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsFile.html#ags-file-read-server" title="ags_file_read_server ()">ags_file_read_server</a>                (<em class="parameter"><code><a class="link" href="ags-AgsFile.html#AgsFile" title="struct AgsFile"><span class="type">AgsFile</span></a> *file</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *node</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> **server</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsFile.html#ags-file-read-start" title="ags_file_read_start ()">ags_file_read_start</a>                 (<em class="parameter"><code><a class="link" href="ags-AgsFile.html#AgsFile" title="struct AgsFile"><span class="type">AgsFile</span></a> *file</code></em>);
+<GTKDOCLINK HREF="gchar"><span class="returnvalue">gchar</span></GTKDOCLINK> *             <a class="link" href="ags-AgsFile.html#ags-file-str2md5" title="ags_file_str2md5 ()">ags_file_str2md5</a>                    (<em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *content</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> strlen</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsFile.html#ags-file-write" title="ags_file_write ()">ags_file_write</a>                      (<em class="parameter"><code><a class="link" href="ags-AgsFile.html#AgsFile" title="struct AgsFile"><span class="type">AgsFile</span></a> *file</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsFile.html#ags-file-write-concurrent" title="ags_file_write_concurrent ()">ags_file_write_concurrent</a>           (<em class="parameter"><code><a class="link" href="ags-AgsFile.html#AgsFile" title="struct AgsFile"><span class="type">AgsFile</span></a> *file</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsFile.html#ags-file-write-main" title="ags_file_write_main ()">ags_file_write_main</a>                 (<em class="parameter"><code><a class="link" href="ags-AgsFile.html#AgsFile" title="struct AgsFile"><span class="type">AgsFile</span></a> *file</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *parent</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *main</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsFile.html#ags-file-write-resolve" title="ags_file_write_resolve ()">ags_file_write_resolve</a>              (<em class="parameter"><code><a class="link" href="ags-AgsFile.html#AgsFile" title="struct AgsFile"><span class="type">AgsFile</span></a> *file</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsFile.html#ags-file-write-server" title="ags_file_write_server ()">ags_file_write_server</a>               (<em class="parameter"><code><a class="link" href="ags-AgsFile.html#AgsFile" title="struct AgsFile"><span class="type">AgsFile</span></a> *file</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *parent</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *server</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="ags-AgsFile.description"></a><h2>Description</h2>
+<p>
+</p>
+</div>
+<div class="refsect1">
+<a name="ags-AgsFile.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AGS-FILE-CHECKSUM-LENGTH:CAPS"></a><h3>AGS_FILE_CHECKSUM_LENGTH</h3>
+<pre class="programlisting">#define AGS_FILE_CHECKSUM_LENGTH (g_checksum_type_get_length(G_CHECKSUM_MD5))
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-FILE-DEFAULT-AUDIO-ENCODING:CAPS"></a><h3>AGS_FILE_DEFAULT_AUDIO_ENCODING</h3>
+<pre class="programlisting">#define AGS_FILE_DEFAULT_AUDIO_ENCODING "base64\0"
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-FILE-DEFAULT-AUDIO-FORMAT:CAPS"></a><h3>AGS_FILE_DEFAULT_AUDIO_FORMAT</h3>
+<pre class="programlisting">#define AGS_FILE_DEFAULT_AUDIO_FORMAT "raw\0"
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-FILE-DEFAULT-DTD:CAPS"></a><h3>AGS_FILE_DEFAULT_DTD</h3>
+<pre class="programlisting">#define AGS_FILE_DEFAULT_DTD "ags_file.dtd\0"
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-FILE-DEFAULT-ENCODING:CAPS"></a><h3>AGS_FILE_DEFAULT_ENCODING</h3>
+<pre class="programlisting">#define AGS_FILE_DEFAULT_ENCODING "UTF-8\0"
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsFile"></a><h3>struct AgsFile</h3>
+<pre class="programlisting">struct AgsFile {
+  GObject object;
+
+  guint flags;
+
+  gchar *filename;
+  gchar *encoding;
+  gchar *dtd;
+
+  gchar *audio_format;
+  gchar *audio_encoding;
+
+  xmlDoc *doc;
+
+  GList *id_refs;
+  GList *lookup;
+  GList *launch;
+
+  GObject *ags_main;
+
+  GObject *clipboard;
+  GList *property;
+  GList *script;
+  GObject *cluster;
+  GObject *client;
+  GObject *server;
+
+  GObject *history;
+
+  GList *embedded_audio;
+  GList *file_link;
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsFileClass"></a><h3>struct AgsFileClass</h3>
+<pre class="programlisting">struct AgsFileClass {
+  GObjectClass object;
+
+  void (*write)(AgsFile *file);
+  void (*write_concurrent)(AgsFile *file);
+  void (*write_resolve)(AgsFile *file);
+
+  void (*read)(AgsFile *file);
+  void (*read_resolve)(AgsFile *file);
+  void (*read_start)(AgsFile *file);
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsFileFlags"></a><h3>enum AgsFileFlags</h3>
+<pre class="programlisting">typedef enum {
+  AGS_FILE_READ                    = 1,
+  AGS_FILE_READ_AUDIO_SIGNAL       = 1 &lt;&lt; 1,
+  AGS_FILE_READ_EMBEDDED_AUDIO     = 1 &lt;&lt; 2,
+  AGS_FILE_WRITE                   = 1 &lt;&lt; 3,
+  AGS_FILE_WRITE_AUDIO_SIGNAL      = 1 &lt;&lt; 4,
+  AGS_FILE_WRITE_EMBEDDED_AUDIO    = 1 &lt;&lt; 5,
+} AgsFileFlags;
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-add-id-ref"></a><h3>ags_file_add_id_ref ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_file_add_id_ref                 (<em class="parameter"><code><a class="link" href="ags-AgsFile.html#AgsFile" title="struct AgsFile"><span class="type">AgsFile</span></a> *file</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *id_ref</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-add-launch"></a><h3>ags_file_add_launch ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_file_add_launch                 (<em class="parameter"><code><a class="link" href="ags-AgsFile.html#AgsFile" title="struct AgsFile"><span class="type">AgsFile</span></a> *file</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *file_launch</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-add-lookup"></a><h3>ags_file_add_lookup ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_file_add_lookup                 (<em class="parameter"><code><a class="link" href="ags-AgsFile.html#AgsFile" title="struct AgsFile"><span class="type">AgsFile</span></a> *file</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *file_lookup</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-find-id-ref-by-node"></a><h3>ags_file_find_id_ref_by_node ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="GObject"><span class="returnvalue">GObject</span></GTKDOCLINK> *           ags_file_find_id_ref_by_node        (<em class="parameter"><code><a class="link" href="ags-AgsFile.html#AgsFile" title="struct AgsFile"><span class="type">AgsFile</span></a> *file</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *node</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-find-id-ref-by-reference"></a><h3>ags_file_find_id_ref_by_reference ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="GObject"><span class="returnvalue">GObject</span></GTKDOCLINK> *           ags_file_find_id_ref_by_reference   (<em class="parameter"><code><a class="link" href="ags-AgsFile.html#AgsFile" title="struct AgsFile"><span class="type">AgsFile</span></a> *file</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gpointer"><span class="type">gpointer</span></GTKDOCLINK> ref</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-find-id-ref-by-xpath"></a><h3>ags_file_find_id_ref_by_xpath ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="GObject"><span class="returnvalue">GObject</span></GTKDOCLINK> *           ags_file_find_id_ref_by_xpath       (<em class="parameter"><code><a class="link" href="ags-AgsFile.html#AgsFile" title="struct AgsFile"><span class="type">AgsFile</span></a> *file</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *xpath</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-new"></a><h3>ags_file_new ()</h3>
+<pre class="programlisting"><a class="link" href="ags-AgsFile.html#AgsFile" title="struct AgsFile"><span class="returnvalue">AgsFile</span></a> *           ags_file_new                        ();</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read"></a><h3>ags_file_read ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_file_read                       (<em class="parameter"><code><a class="link" href="ags-AgsFile.html#AgsFile" title="struct AgsFile"><span class="type">AgsFile</span></a> *file</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-main"></a><h3>ags_file_read_main ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_file_read_main                  (<em class="parameter"><code><a class="link" href="ags-AgsFile.html#AgsFile" title="struct AgsFile"><span class="type">AgsFile</span></a> *file</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *node</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> **main</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-resolve"></a><h3>ags_file_read_resolve ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_file_read_resolve               (<em class="parameter"><code><a class="link" href="ags-AgsFile.html#AgsFile" title="struct AgsFile"><span class="type">AgsFile</span></a> *file</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-server"></a><h3>ags_file_read_server ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_file_read_server                (<em class="parameter"><code><a class="link" href="ags-AgsFile.html#AgsFile" title="struct AgsFile"><span class="type">AgsFile</span></a> *file</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *node</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> **server</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-start"></a><h3>ags_file_read_start ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_file_read_start                 (<em class="parameter"><code><a class="link" href="ags-AgsFile.html#AgsFile" title="struct AgsFile"><span class="type">AgsFile</span></a> *file</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-str2md5"></a><h3>ags_file_str2md5 ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="gchar"><span class="returnvalue">gchar</span></GTKDOCLINK> *             ags_file_str2md5                    (<em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *content</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> strlen</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write"></a><h3>ags_file_write ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_file_write                      (<em class="parameter"><code><a class="link" href="ags-AgsFile.html#AgsFile" title="struct AgsFile"><span class="type">AgsFile</span></a> *file</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-concurrent"></a><h3>ags_file_write_concurrent ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_file_write_concurrent           (<em class="parameter"><code><a class="link" href="ags-AgsFile.html#AgsFile" title="struct AgsFile"><span class="type">AgsFile</span></a> *file</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-main"></a><h3>ags_file_write_main ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_file_write_main                 (<em class="parameter"><code><a class="link" href="ags-AgsFile.html#AgsFile" title="struct AgsFile"><span class="type">AgsFile</span></a> *file</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *parent</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *main</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-resolve"></a><h3>ags_file_write_resolve ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_file_write_resolve              (<em class="parameter"><code><a class="link" href="ags-AgsFile.html#AgsFile" title="struct AgsFile"><span class="type">AgsFile</span></a> *file</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-server"></a><h3>ags_file_write_server ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_file_write_server               (<em class="parameter"><code><a class="link" href="ags-AgsFile.html#AgsFile" title="struct AgsFile"><span class="type">AgsFile</span></a> *file</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *parent</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *server</code></em>);</pre>
+<p>
+</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

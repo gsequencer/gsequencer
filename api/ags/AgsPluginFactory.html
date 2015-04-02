@@ -1,0 +1,225 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsPluginFactory</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="plugin.html" title="Part IV. Plugin - API of plugins">
+<link rel="prev" href="AgsLadspaManager.html" title="AgsLadspaManager">
+<link rel="next" href="ags-ags-plugin-stock.html" title="ags_plugin_stock">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="AgsLadspaManager.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="plugin.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="ags-ags-plugin-stock.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#AgsPluginFactory.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#AgsPluginFactory.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#AgsPluginFactory.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#AgsPluginFactory.signals" class="shortcut">Signals</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="AgsPluginFactory"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="AgsPluginFactory.top_of_page"></a>AgsPluginFactory</span></h2>
+<p>AgsPluginFactory</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="AgsPluginFactory.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">struct              <a class="link" href="AgsPluginFactory.html#AgsPluginFactory-struct" title="struct AgsPluginFactory">AgsPluginFactory</a>;
+struct              <a class="link" href="AgsPluginFactory.html#AgsPluginFactoryClass" title="struct AgsPluginFactoryClass">AgsPluginFactoryClass</a>;
+struct              <a class="link" href="AgsPluginFactory.html#AgsPluginMetadata" title="struct AgsPluginMetadata">AgsPluginMetadata</a>;
+<span class="returnvalue">void</span>                <a class="link" href="AgsPluginFactory.html#ags-plugin-factory-add" title="ags_plugin_factory_add ()">ags_plugin_factory_add</a>              (<em class="parameter"><code><a class="link" href="AgsPluginFactory.html" title="AgsPluginFactory"><span class="type">AgsPluginFactory</span></a> *plugin_factory</code></em>,
+                                                         <em class="parameter"><code><a href="../gobject/gobject-Type-Information.html#GType"><span class="type">GType</span></a> plugin_type</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *plugin_name</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *version</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *build_id</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *xml_type</code></em>,
+                                                         <em class="parameter"><code><a href="../gobject/gobject-The-Base-Object-Type.html#GParameter"><span class="type">GParameter</span></a> *control</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> control_count</code></em>);
+<a class="link" href="AgsPlugin.html" title="AgsPlugin"><span class="returnvalue">AgsPlugin</span></a> *         <a class="link" href="AgsPluginFactory.html#ags-plugin-factory-create" title="ags_plugin_factory_create ()">ags_plugin_factory_create</a>           (<em class="parameter"><code><a class="link" href="AgsPluginFactory.html" title="AgsPluginFactory"><span class="type">AgsPluginFactory</span></a> *plugin_factory</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *plugin_name</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *version</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *build_id</code></em>);
+<a class="link" href="AgsPluginFactory.html" title="AgsPluginFactory"><span class="returnvalue">AgsPluginFactory</span></a> *  <a class="link" href="AgsPluginFactory.html#ags-plugin-factory-get-instance" title="ags_plugin_factory_get_instance ()">ags_plugin_factory_get_instance</a>     ();
+<a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="returnvalue">GList</span></a> *             <a class="link" href="AgsPluginFactory.html#ags-plugin-factory-list-by-name" title="ags_plugin_factory_list_by_name ()">ags_plugin_factory_list_by_name</a>     (<em class="parameter"><code><a class="link" href="AgsPluginFactory.html" title="AgsPluginFactory"><span class="type">AgsPluginFactory</span></a> *plugin_factory</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *plugin_name</code></em>);
+<a class="link" href="AgsPluginFactory.html" title="AgsPluginFactory"><span class="returnvalue">AgsPluginFactory</span></a> *  <a class="link" href="AgsPluginFactory.html#ags-plugin-factory-new" title="ags_plugin_factory_new ()">ags_plugin_factory_new</a>              ();
+<a class="link" href="AgsPluginFactory.html" title="AgsPluginFactory"><span class="returnvalue">AgsPluginFactory</span></a> *  <a class="link" href="AgsPluginFactory.html#ags-plugin-factory-new-from-file" title="ags_plugin_factory_new_from_file ()">ags_plugin_factory_new_from_file</a>    (<em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *path</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsPluginFactory.html#ags-plugin-factory-read-file" title="ags_plugin_factory_read_file ()">ags_plugin_factory_read_file</a>        (<em class="parameter"><code><a class="link" href="AgsPluginFactory.html" title="AgsPluginFactory"><span class="type">AgsPluginFactory</span></a> *plugin_factory</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *path</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsPluginFactory.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  <a href="../gobject/gobject-The-Base-Object-Type.html#GObject">GObject</a>
+   +----AgsPluginFactory
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsPluginFactory.signals"></a><h2>Signals</h2>
+<pre class="synopsis">
+  "<a class="link" href="AgsPluginFactory.html#AgsPluginFactory-add" title='The "add" signal'>add</a>"                                            : <a href="../gobject/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></a>
+  "<a class="link" href="AgsPluginFactory.html#AgsPluginFactory-create" title='The "create" signal'>create</a>"                                         : <a href="../gobject/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></a>
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsPluginFactory.description"></a><h2>Description</h2>
+<p>
+</p>
+</div>
+<div class="refsect1">
+<a name="AgsPluginFactory.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AgsPluginFactory-struct"></a><h3>struct AgsPluginFactory</h3>
+<pre class="programlisting">struct AgsPluginFactory;</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsPluginFactoryClass"></a><h3>struct AgsPluginFactoryClass</h3>
+<pre class="programlisting">struct AgsPluginFactoryClass {
+  GObjectClass object;
+
+  void (*add)(AgsPluginFactory *plugin_factory,
+	      GType plugin_type,
+	      gchar *plugin_name,
+	      gchar *version, gchar *build_id,
+	      gchar *xml_type,
+	      GParameter *control, guint control_count);
+
+  AgsPlugin* (*create)(AgsPluginFactory *plugin_factory,
+		       gchar *xml_type);
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsPluginMetadata"></a><h3>struct AgsPluginMetadata</h3>
+<pre class="programlisting">struct AgsPluginMetadata {
+  GType plugin_type;
+  gchar *plugin_name;
+
+  gchar *version;
+  gchar *build_id;
+
+  gchar *xml_type;
+
+  GParameter *control;
+  guint control_count;
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-plugin-factory-add"></a><h3>ags_plugin_factory_add ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_plugin_factory_add              (<em class="parameter"><code><a class="link" href="AgsPluginFactory.html" title="AgsPluginFactory"><span class="type">AgsPluginFactory</span></a> *plugin_factory</code></em>,
+                                                         <em class="parameter"><code><a href="../gobject/gobject-Type-Information.html#GType"><span class="type">GType</span></a> plugin_type</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *plugin_name</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *version</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *build_id</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *xml_type</code></em>,
+                                                         <em class="parameter"><code><a href="../gobject/gobject-The-Base-Object-Type.html#GParameter"><span class="type">GParameter</span></a> *control</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> control_count</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-plugin-factory-create"></a><h3>ags_plugin_factory_create ()</h3>
+<pre class="programlisting"><a class="link" href="AgsPlugin.html" title="AgsPlugin"><span class="returnvalue">AgsPlugin</span></a> *         ags_plugin_factory_create           (<em class="parameter"><code><a class="link" href="AgsPluginFactory.html" title="AgsPluginFactory"><span class="type">AgsPluginFactory</span></a> *plugin_factory</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *plugin_name</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *version</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *build_id</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-plugin-factory-get-instance"></a><h3>ags_plugin_factory_get_instance ()</h3>
+<pre class="programlisting"><a class="link" href="AgsPluginFactory.html" title="AgsPluginFactory"><span class="returnvalue">AgsPluginFactory</span></a> *  ags_plugin_factory_get_instance     ();</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-plugin-factory-list-by-name"></a><h3>ags_plugin_factory_list_by_name ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="returnvalue">GList</span></a> *             ags_plugin_factory_list_by_name     (<em class="parameter"><code><a class="link" href="AgsPluginFactory.html" title="AgsPluginFactory"><span class="type">AgsPluginFactory</span></a> *plugin_factory</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *plugin_name</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-plugin-factory-new"></a><h3>ags_plugin_factory_new ()</h3>
+<pre class="programlisting"><a class="link" href="AgsPluginFactory.html" title="AgsPluginFactory"><span class="returnvalue">AgsPluginFactory</span></a> *  ags_plugin_factory_new              ();</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-plugin-factory-new-from-file"></a><h3>ags_plugin_factory_new_from_file ()</h3>
+<pre class="programlisting"><a class="link" href="AgsPluginFactory.html" title="AgsPluginFactory"><span class="returnvalue">AgsPluginFactory</span></a> *  ags_plugin_factory_new_from_file    (<em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *path</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-plugin-factory-read-file"></a><h3>ags_plugin_factory_read_file ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_plugin_factory_read_file        (<em class="parameter"><code><a class="link" href="AgsPluginFactory.html" title="AgsPluginFactory"><span class="type">AgsPluginFactory</span></a> *plugin_factory</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *path</code></em>);</pre>
+<p>
+</p>
+</div>
+</div>
+<div class="refsect1">
+<a name="AgsPluginFactory.signal-details"></a><h2>Signal Details</h2>
+<div class="refsect2">
+<a name="AgsPluginFactory-add"></a><h3>The <code class="literal">"add"</code> signal</h3>
+<pre class="programlisting"><a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="returnvalue">GObject</span></a>*            user_function                      (<a class="link" href="AgsPluginFactory.html" title="AgsPluginFactory"><span class="type">AgsPluginFactory</span></a> *agspluginfactory,
+                                                        <a href="../glib/glib-Basic-Types.html#gulong"><span class="type">gulong</span></a>            arg1,
+                                                        <a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a>            *arg2,
+                                                        <a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a>            *arg3,
+                                                        <a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a>            *arg4,
+                                                        <a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a>            *arg5,
+                                                        <a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a>             arg6,
+                                                        <a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a>          arg7,
+                                                        <a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a>          user_data)             : <a href="../gobject/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></a></pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsPluginFactory-create"></a><h3>The <code class="literal">"create"</code> signal</h3>
+<pre class="programlisting"><a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="returnvalue">GObject</span></a>*            user_function                      (<a class="link" href="AgsPluginFactory.html" title="AgsPluginFactory"><span class="type">AgsPluginFactory</span></a> *agspluginfactory,
+                                                        <a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a>            *arg1,
+                                                        <a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a>            *arg2,
+                                                        <a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a>            *arg3,
+                                                        <a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a>          user_data)             : <a href="../gobject/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></a></pre>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

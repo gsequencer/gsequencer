@@ -1,0 +1,1355 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Advanced Gtk+ Sequencer Reference Manual: ags_file_gui</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="xml-io.html" title="Part IX. XML Input/Output - Persist project">
+<link rel="prev" href="ags-AgsFileLaunch.html" title="AgsFileLaunch">
+<link rel="next" href="ags-ags-file-sound.html" title="ags_file_sound">
+<meta name="generator" content="GTK-Doc V1.21 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#ags-ags-file-gui.description" class="shortcut">Description</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="xml-io.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="ags-AgsFileLaunch.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="ags-ags-file-sound.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry">
+<a name="ags-ags-file-gui"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="ags-ags-file-gui.top_of_page"></a>ags_file_gui</span></h2>
+<p>ags_file_gui</p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1">
+<a name="ags-ags-file-gui.functions"></a><h2>Functions</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="functions_return">
+<col class="functions_name">
+</colgroup>
+<tbody>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-gui.html#ags-file-read-widget" title="ags_file_read_widget ()">ags_file_read_widget</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-gui.html#ags-file-write-widget" title="ags_file_write_widget ()">ags_file_write_widget</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-gui.html#ags-file-read-window" title="ags_file_read_window ()">ags_file_read_window</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-gui.html#ags-file-write-window" title="ags_file_write_window ()">ags_file_write_window</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-gui.html#ags-file-read-menu-bar" title="ags_file_read_menu_bar ()">ags_file_read_menu_bar</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-gui.html#ags-file-write-menu-bar" title="ags_file_write_menu_bar ()">ags_file_write_menu_bar</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-gui.html#ags-file-read-machine-counter" title="ags_file_read_machine_counter ()">ags_file_read_machine_counter</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-gui.html#ags-file-write-machine-counter" title="ags_file_write_machine_counter ()">ags_file_write_machine_counter</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-gui.html#ags-file-read-machine-counter-list" title="ags_file_read_machine_counter_list ()">ags_file_read_machine_counter_list</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-gui.html#ags-file-write-machine-counter-list" title="ags_file_write_machine_counter_list ()">ags_file_write_machine_counter_list</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-gui.html#ags-file-read-machine" title="ags_file_read_machine ()">ags_file_read_machine</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-gui.html#ags-file-write-machine" title="ags_file_write_machine ()">ags_file_write_machine</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-gui.html#ags-file-read-machine-list" title="ags_file_read_machine_list ()">ags_file_read_machine_list</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-gui.html#ags-file-write-machine-list" title="ags_file_write_machine_list ()">ags_file_write_machine_list</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-gui.html#ags-file-read-machine-resolve-audio" title="ags_file_read_machine_resolve_audio ()">ags_file_read_machine_resolve_audio</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-gui.html#ags-file-read-pad" title="ags_file_read_pad ()">ags_file_read_pad</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-gui.html#ags-file-write-pad" title="ags_file_write_pad ()">ags_file_write_pad</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-gui.html#ags-file-read-pad-list" title="ags_file_read_pad_list ()">ags_file_read_pad_list</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-gui.html#ags-file-write-pad-list" title="ags_file_write_pad_list ()">ags_file_write_pad_list</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-gui.html#ags-file-read-mixer-input-pad" title="ags_file_read_mixer_input_pad ()">ags_file_read_mixer_input_pad</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-gui.html#ags-file-write-mixer-input-pad" title="ags_file_write_mixer_input_pad ()">ags_file_write_mixer_input_pad</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-gui.html#ags-file-read-mixer-output-pad" title="ags_file_read_mixer_output_pad ()">ags_file_read_mixer_output_pad</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-gui.html#ags-file-write-mixer-output-pad" title="ags_file_write_mixer_output_pad ()">ags_file_write_mixer_output_pad</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-gui.html#ags-file-read-line" title="ags_file_read_line ()">ags_file_read_line</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-gui.html#ags-file-write-line" title="ags_file_write_line ()">ags_file_write_line</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-gui.html#ags-file-read-line-list" title="ags_file_read_line_list ()">ags_file_read_line_list</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-gui.html#ags-file-write-line-list" title="ags_file_write_line_list ()">ags_file_write_line_list</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-gui.html#ags-file-read-line-member" title="ags_file_read_line_member ()">ags_file_read_line_member</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-gui.html#ags-file-write-line-member" title="ags_file_write_line_member ()">ags_file_write_line_member</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-gui.html#ags-file-read-line-member-list" title="ags_file_read_line_member_list ()">ags_file_read_line_member_list</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-gui.html#ags-file-write-line-member-list" title="ags_file_write_line_member_list ()">ags_file_write_line_member_list</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-gui.html#ags-file-read-dialog" title="ags_file_read_dialog ()">ags_file_read_dialog</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-gui.html#ags-file-write-dialog" title="ags_file_write_dialog ()">ags_file_write_dialog</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-gui.html#ags-file-read-dialog-list" title="ags_file_read_dialog_list ()">ags_file_read_dialog_list</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-gui.html#ags-file-write-dialog-list" title="ags_file_write_dialog_list ()">ags_file_write_dialog_list</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-gui.html#ags-file-read-machine-editor" title="ags_file_read_machine_editor ()">ags_file_read_machine_editor</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-gui.html#ags-file-write-machine-editor" title="ags_file_write_machine_editor ()">ags_file_write_machine_editor</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-gui.html#ags-file-read-machine-editor-list" title="ags_file_read_machine_editor_list ()">ags_file_read_machine_editor_list</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-gui.html#ags-file-write-machine-editor-list" title="ags_file_write_machine_editor_list ()">ags_file_write_machine_editor_list</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-gui.html#ags-file-read-pad-editor" title="ags_file_read_pad_editor ()">ags_file_read_pad_editor</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-gui.html#ags-file-write-pad-editor" title="ags_file_write_pad_editor ()">ags_file_write_pad_editor</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-gui.html#ags-file-read-line-editor" title="ags_file_read_line_editor ()">ags_file_read_line_editor</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-gui.html#ags-file-write-line-editor" title="ags_file_write_line_editor ()">ags_file_write_line_editor</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-gui.html#ags-file-read-link-editor" title="ags_file_read_link_editor ()">ags_file_read_link_editor</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-gui.html#ags-file-write-link-editor" title="ags_file_write_link_editor ()">ags_file_write_link_editor</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-gui.html#ags-file-read-line-member-editor" title="ags_file_read_line_member_editor ()">ags_file_read_line_member_editor</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-gui.html#ags-file-write-line-member-editor" title="ags_file_write_line_member_editor ()">ags_file_write_line_member_editor</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-gui.html#ags-file-read-link-collection-editor" title="ags_file_read_link_collection_editor ()">ags_file_read_link_collection_editor</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-gui.html#ags-file-write-link-collection-editor" title="ags_file_write_link_collection_editor ()">ags_file_write_link_collection_editor</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-gui.html#ags-file-read-resize-editor" title="ags_file_read_resize_editor ()">ags_file_read_resize_editor</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-gui.html#ags-file-write-resize-editor" title="ags_file_write_resize_editor ()">ags_file_write_resize_editor</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-gui.html#ags-file-read-editor" title="ags_file_read_editor ()">ags_file_read_editor</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-gui.html#ags-file-write-editor" title="ags_file_write_editor ()">ags_file_write_editor</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-gui.html#ags-file-read-toolbar" title="ags_file_read_toolbar ()">ags_file_read_toolbar</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-gui.html#ags-file-write-toolbar" title="ags_file_write_toolbar ()">ags_file_write_toolbar</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-gui.html#ags-file-read-machine-selector" title="ags_file_read_machine_selector ()">ags_file_read_machine_selector</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-gui.html#ags-file-write-machine-selector" title="ags_file_write_machine_selector ()">ags_file_write_machine_selector</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-gui.html#ags-file-read-notebook" title="ags_file_read_notebook ()">ags_file_read_notebook</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-gui.html#ags-file-write-notebook" title="ags_file_write_notebook ()">ags_file_write_notebook</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-gui.html#ags-file-read-notebook-tab-list" title="ags_file_read_notebook_tab_list ()">ags_file_read_notebook_tab_list</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-gui.html#ags-file-write-notebook-tab-list" title="ags_file_write_notebook_tab_list ()">ags_file_write_notebook_tab_list</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-gui.html#ags-file-read-notebook-tab" title="ags_file_read_notebook_tab ()">ags_file_read_notebook_tab</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-gui.html#ags-file-write-notebook-tab" title="ags_file_write_notebook_tab ()">ags_file_write_notebook_tab</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-gui.html#ags-file-read-navigation" title="ags_file_read_navigation ()">ags_file_read_navigation</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-gui.html#ags-file-write-navigation" title="ags_file_write_navigation ()">ags_file_write_navigation</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="ags-ags-file-gui.description"></a><h2>Description</h2>
+<p>
+</p>
+</div>
+<div class="refsect1">
+<a name="ags-ags-file-gui.functions_details"></a><h2>Functions</h2>
+<div class="refsect2">
+<a name="ags-file-read-widget"></a><h3>ags_file_read_widget ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_file_read_widget (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                      <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *node</code></em>,
+                      <em class="parameter"><code><GTKDOCLINK HREF="GtkWidget"><span class="type">GtkWidget</span></GTKDOCLINK> *widget</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-widget"></a><h3>ags_file_write_widget ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+ags_file_write_widget (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                       <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *parent</code></em>,
+                       <em class="parameter"><code><GTKDOCLINK HREF="GtkWidget"><span class="type">GtkWidget</span></GTKDOCLINK> *widget</code></em>);</pre>
+<p>
+</p>
+<div class="refsect3">
+<a name="id-1.11.8.5.3.5"></a><h4>Returns</h4>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-window"></a><h3>ags_file_read_window ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_file_read_window (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                      <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *node</code></em>,
+                      <em class="parameter"><code><GTKDOCLINK HREF="AgsWindow"><span class="type">AgsWindow</span></GTKDOCLINK> **window</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-window"></a><h3>ags_file_write_window ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+ags_file_write_window (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                       <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *parent</code></em>,
+                       <em class="parameter"><code><GTKDOCLINK HREF="AgsWindow"><span class="type">AgsWindow</span></GTKDOCLINK> *window</code></em>);</pre>
+<p>
+</p>
+<div class="refsect3">
+<a name="id-1.11.8.5.5.5"></a><h4>Returns</h4>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-menu-bar"></a><h3>ags_file_read_menu_bar ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_file_read_menu_bar (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                        <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *node</code></em>,
+                        <em class="parameter"><code><GTKDOCLINK HREF="AgsMenuBar"><span class="type">AgsMenuBar</span></GTKDOCLINK> **menu_bar</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-menu-bar"></a><h3>ags_file_write_menu_bar ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+ags_file_write_menu_bar (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                         <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *parent</code></em>,
+                         <em class="parameter"><code><GTKDOCLINK HREF="AgsMenuBar"><span class="type">AgsMenuBar</span></GTKDOCLINK> *menu_bar</code></em>);</pre>
+<p>
+</p>
+<div class="refsect3">
+<a name="id-1.11.8.5.7.5"></a><h4>Returns</h4>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-machine-counter"></a><h3>ags_file_read_machine_counter ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_file_read_machine_counter (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                               <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *node</code></em>,
+                               <em class="parameter"><code><a class="link" href="ags-AgsWindow.html#AgsMachineCounter" title="struct AgsMachineCounter"><span class="type">AgsMachineCounter</span></a> **machine_counter</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-machine-counter"></a><h3>ags_file_write_machine_counter ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+ags_file_write_machine_counter (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                                <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *parent</code></em>,
+                                <em class="parameter"><code><a class="link" href="ags-AgsWindow.html#AgsMachineCounter" title="struct AgsMachineCounter"><span class="type">AgsMachineCounter</span></a> *machine_counter</code></em>);</pre>
+<p>
+</p>
+<div class="refsect3">
+<a name="id-1.11.8.5.9.5"></a><h4>Returns</h4>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-machine-counter-list"></a><h3>ags_file_read_machine_counter_list ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_file_read_machine_counter_list (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                                    <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *node</code></em>,
+                                    <em class="parameter"><code><GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> **machine_counter</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-machine-counter-list"></a><h3>ags_file_write_machine_counter_list ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+ags_file_write_machine_counter_list (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                                     <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *parent</code></em>,
+                                     <em class="parameter"><code><GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> *machine_counter</code></em>);</pre>
+<p>
+</p>
+<div class="refsect3">
+<a name="id-1.11.8.5.11.5"></a><h4>Returns</h4>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-machine"></a><h3>ags_file_read_machine ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_file_read_machine (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                       <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *node</code></em>,
+                       <em class="parameter"><code><GTKDOCLINK HREF="AgsMachine"><span class="type">AgsMachine</span></GTKDOCLINK> **machine</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-machine"></a><h3>ags_file_write_machine ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+ags_file_write_machine (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                        <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *parent</code></em>,
+                        <em class="parameter"><code><GTKDOCLINK HREF="AgsMachine"><span class="type">AgsMachine</span></GTKDOCLINK> *machine</code></em>);</pre>
+<p>
+</p>
+<div class="refsect3">
+<a name="id-1.11.8.5.13.5"></a><h4>Returns</h4>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-machine-list"></a><h3>ags_file_read_machine_list ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_file_read_machine_list (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                            <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *node</code></em>,
+                            <em class="parameter"><code><GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> **machine</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-machine-list"></a><h3>ags_file_write_machine_list ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+ags_file_write_machine_list (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                             <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *parent</code></em>,
+                             <em class="parameter"><code><GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> *machine</code></em>);</pre>
+<p>
+</p>
+<div class="refsect3">
+<a name="id-1.11.8.5.15.5"></a><h4>Returns</h4>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-machine-resolve-audio"></a><h3>ags_file_read_machine_resolve_audio ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_file_read_machine_resolve_audio (<em class="parameter"><code><GTKDOCLINK HREF="AgsFileLookup"><span class="type">AgsFileLookup</span></GTKDOCLINK> *file_lookup</code></em>,
+                                     <em class="parameter"><code><GTKDOCLINK HREF="AgsMachine"><span class="type">AgsMachine</span></GTKDOCLINK> *machine</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-pad"></a><h3>ags_file_read_pad ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_file_read_pad (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                   <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *node</code></em>,
+                   <em class="parameter"><code><GTKDOCLINK HREF="AgsPad"><span class="type">AgsPad</span></GTKDOCLINK> **pad</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-pad"></a><h3>ags_file_write_pad ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+ags_file_write_pad (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                    <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *parent</code></em>,
+                    <em class="parameter"><code><GTKDOCLINK HREF="AgsPad"><span class="type">AgsPad</span></GTKDOCLINK> *pad</code></em>);</pre>
+<p>
+</p>
+<div class="refsect3">
+<a name="id-1.11.8.5.18.5"></a><h4>Returns</h4>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-pad-list"></a><h3>ags_file_read_pad_list ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_file_read_pad_list (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                        <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *node</code></em>,
+                        <em class="parameter"><code><GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> **pad</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-pad-list"></a><h3>ags_file_write_pad_list ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+ags_file_write_pad_list (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                         <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *parent</code></em>,
+                         <em class="parameter"><code><GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> *pad</code></em>);</pre>
+<p>
+</p>
+<div class="refsect3">
+<a name="id-1.11.8.5.20.5"></a><h4>Returns</h4>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-mixer-input-pad"></a><h3>ags_file_read_mixer_input_pad ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_file_read_mixer_input_pad (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                               <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *node</code></em>,
+                               <em class="parameter"><code><GTKDOCLINK HREF="AgsPad"><span class="type">AgsPad</span></GTKDOCLINK> *mixer_input_pad</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-mixer-input-pad"></a><h3>ags_file_write_mixer_input_pad ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+ags_file_write_mixer_input_pad (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                                <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *parent</code></em>,
+                                <em class="parameter"><code><GTKDOCLINK HREF="AgsPad"><span class="type">AgsPad</span></GTKDOCLINK> *mixer_input_pad</code></em>);</pre>
+<p>
+</p>
+<div class="refsect3">
+<a name="id-1.11.8.5.22.5"></a><h4>Returns</h4>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-mixer-output-pad"></a><h3>ags_file_read_mixer_output_pad ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_file_read_mixer_output_pad (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                                <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *node</code></em>,
+                                <em class="parameter"><code><GTKDOCLINK HREF="AgsPad"><span class="type">AgsPad</span></GTKDOCLINK> *mixer_output_pad</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-mixer-output-pad"></a><h3>ags_file_write_mixer_output_pad ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+ags_file_write_mixer_output_pad (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                                 <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *parent</code></em>,
+                                 <em class="parameter"><code><GTKDOCLINK HREF="AgsPad"><span class="type">AgsPad</span></GTKDOCLINK> *mixer_output_pad</code></em>);</pre>
+<p>
+</p>
+<div class="refsect3">
+<a name="id-1.11.8.5.24.5"></a><h4>Returns</h4>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-line"></a><h3>ags_file_read_line ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_file_read_line (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                    <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *node</code></em>,
+                    <em class="parameter"><code><GTKDOCLINK HREF="AgsLine"><span class="type">AgsLine</span></GTKDOCLINK> **line</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-line"></a><h3>ags_file_write_line ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+ags_file_write_line (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                     <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *parent</code></em>,
+                     <em class="parameter"><code><GTKDOCLINK HREF="AgsLine"><span class="type">AgsLine</span></GTKDOCLINK> *line</code></em>);</pre>
+<p>
+</p>
+<div class="refsect3">
+<a name="id-1.11.8.5.26.5"></a><h4>Returns</h4>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-line-list"></a><h3>ags_file_read_line_list ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_file_read_line_list (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                         <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *node</code></em>,
+                         <em class="parameter"><code><GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> **line</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-line-list"></a><h3>ags_file_write_line_list ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+ags_file_write_line_list (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                          <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *parent</code></em>,
+                          <em class="parameter"><code><GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> *line</code></em>);</pre>
+<p>
+</p>
+<div class="refsect3">
+<a name="id-1.11.8.5.28.5"></a><h4>Returns</h4>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-line-member"></a><h3>ags_file_read_line_member ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_file_read_line_member (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                           <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *node</code></em>,
+                           <em class="parameter"><code><GTKDOCLINK HREF="AgsLineMember"><span class="type">AgsLineMember</span></GTKDOCLINK> **line_member</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-line-member"></a><h3>ags_file_write_line_member ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+ags_file_write_line_member (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                            <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *parent</code></em>,
+                            <em class="parameter"><code><GTKDOCLINK HREF="AgsLineMember"><span class="type">AgsLineMember</span></GTKDOCLINK> *line_member</code></em>);</pre>
+<p>
+</p>
+<div class="refsect3">
+<a name="id-1.11.8.5.30.5"></a><h4>Returns</h4>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-line-member-list"></a><h3>ags_file_read_line_member_list ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_file_read_line_member_list (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                                <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *node</code></em>,
+                                <em class="parameter"><code><GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> **line_member</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-line-member-list"></a><h3>ags_file_write_line_member_list ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+ags_file_write_line_member_list (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                                 <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *parent</code></em>,
+                                 <em class="parameter"><code><GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> *line_member</code></em>);</pre>
+<p>
+</p>
+<div class="refsect3">
+<a name="id-1.11.8.5.32.5"></a><h4>Returns</h4>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-dialog"></a><h3>ags_file_read_dialog ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_file_read_dialog (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                      <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *node</code></em>,
+                      <em class="parameter"><code><GTKDOCLINK HREF="GtkDialog"><span class="type">GtkDialog</span></GTKDOCLINK> **dialog</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-dialog"></a><h3>ags_file_write_dialog ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+ags_file_write_dialog (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                       <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *parent</code></em>,
+                       <em class="parameter"><code><GTKDOCLINK HREF="GtkDialog"><span class="type">GtkDialog</span></GTKDOCLINK> *dialog</code></em>);</pre>
+<p>
+</p>
+<div class="refsect3">
+<a name="id-1.11.8.5.34.5"></a><h4>Returns</h4>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-dialog-list"></a><h3>ags_file_read_dialog_list ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_file_read_dialog_list (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                           <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *node</code></em>,
+                           <em class="parameter"><code><GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> **dialog</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-dialog-list"></a><h3>ags_file_write_dialog_list ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+ags_file_write_dialog_list (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                            <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *parent</code></em>,
+                            <em class="parameter"><code><GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> *dialog</code></em>);</pre>
+<p>
+</p>
+<div class="refsect3">
+<a name="id-1.11.8.5.36.5"></a><h4>Returns</h4>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-machine-editor"></a><h3>ags_file_read_machine_editor ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_file_read_machine_editor (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                              <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *node</code></em>,
+                              <em class="parameter"><code><GTKDOCLINK HREF="AgsMachineEditor"><span class="type">AgsMachineEditor</span></GTKDOCLINK> **machine_editor</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-machine-editor"></a><h3>ags_file_write_machine_editor ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+ags_file_write_machine_editor (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                               <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *parent</code></em>,
+                               <em class="parameter"><code><GTKDOCLINK HREF="AgsMachineEditor"><span class="type">AgsMachineEditor</span></GTKDOCLINK> *machine_editor</code></em>);</pre>
+<p>
+</p>
+<div class="refsect3">
+<a name="id-1.11.8.5.38.5"></a><h4>Returns</h4>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-machine-editor-list"></a><h3>ags_file_read_machine_editor_list ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_file_read_machine_editor_list (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                                   <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *node</code></em>,
+                                   <em class="parameter"><code><GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> **machine_editor</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-machine-editor-list"></a><h3>ags_file_write_machine_editor_list ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+ags_file_write_machine_editor_list (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                                    <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *parent</code></em>,
+                                    <em class="parameter"><code><GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> *machine_editor</code></em>);</pre>
+<p>
+</p>
+<div class="refsect3">
+<a name="id-1.11.8.5.40.5"></a><h4>Returns</h4>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-pad-editor"></a><h3>ags_file_read_pad_editor ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_file_read_pad_editor (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                          <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *node</code></em>,
+                          <em class="parameter"><code><GTKDOCLINK HREF="AgsPadEditor"><span class="type">AgsPadEditor</span></GTKDOCLINK> **pad_editor</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-pad-editor"></a><h3>ags_file_write_pad_editor ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+ags_file_write_pad_editor (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                           <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *parent</code></em>,
+                           <em class="parameter"><code><GTKDOCLINK HREF="AgsPadEditor"><span class="type">AgsPadEditor</span></GTKDOCLINK> *pad_editor</code></em>);</pre>
+<p>
+</p>
+<div class="refsect3">
+<a name="id-1.11.8.5.42.5"></a><h4>Returns</h4>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-line-editor"></a><h3>ags_file_read_line_editor ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_file_read_line_editor (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                           <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *node</code></em>,
+                           <em class="parameter"><code><GTKDOCLINK HREF="AgsLineEditor"><span class="type">AgsLineEditor</span></GTKDOCLINK> **line_editor</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-line-editor"></a><h3>ags_file_write_line_editor ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+ags_file_write_line_editor (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                            <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *parent</code></em>,
+                            <em class="parameter"><code><GTKDOCLINK HREF="AgsLineEditor"><span class="type">AgsLineEditor</span></GTKDOCLINK> *line_editor</code></em>);</pre>
+<p>
+</p>
+<div class="refsect3">
+<a name="id-1.11.8.5.44.5"></a><h4>Returns</h4>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-link-editor"></a><h3>ags_file_read_link_editor ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_file_read_link_editor (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                           <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *node</code></em>,
+                           <em class="parameter"><code><GTKDOCLINK HREF="AgsLinkEditor"><span class="type">AgsLinkEditor</span></GTKDOCLINK> **link_editor</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-link-editor"></a><h3>ags_file_write_link_editor ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+ags_file_write_link_editor (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                            <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *parent</code></em>,
+                            <em class="parameter"><code><GTKDOCLINK HREF="AgsLinkEditor"><span class="type">AgsLinkEditor</span></GTKDOCLINK> *link_editor</code></em>);</pre>
+<p>
+</p>
+<div class="refsect3">
+<a name="id-1.11.8.5.46.5"></a><h4>Returns</h4>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-line-member-editor"></a><h3>ags_file_read_line_member_editor ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_file_read_line_member_editor (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                                  <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *node</code></em>,
+                                  <em class="parameter"><code><GTKDOCLINK HREF="AgsLineMemberEditor"><span class="type">AgsLineMemberEditor</span></GTKDOCLINK> **line_member_editor</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-line-member-editor"></a><h3>ags_file_write_line_member_editor ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+ags_file_write_line_member_editor (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                                   <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *parent</code></em>,
+                                   <em class="parameter"><code><GTKDOCLINK HREF="AgsLineMemberEditor"><span class="type">AgsLineMemberEditor</span></GTKDOCLINK> *line_member_editor</code></em>);</pre>
+<p>
+</p>
+<div class="refsect3">
+<a name="id-1.11.8.5.48.5"></a><h4>Returns</h4>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-link-collection-editor"></a><h3>ags_file_read_link_collection_editor ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_file_read_link_collection_editor (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                                      <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *node</code></em>,
+                                      <em class="parameter"><code><GTKDOCLINK HREF="AgsLinkCollectionEditor"><span class="type">AgsLinkCollectionEditor</span></GTKDOCLINK> **link_collection_editor</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-link-collection-editor"></a><h3>ags_file_write_link_collection_editor ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+ags_file_write_link_collection_editor (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                                       <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *parent</code></em>,
+                                       <em class="parameter"><code><GTKDOCLINK HREF="AgsLinkCollectionEditor"><span class="type">AgsLinkCollectionEditor</span></GTKDOCLINK> *link_collection_editor</code></em>);</pre>
+<p>
+</p>
+<div class="refsect3">
+<a name="id-1.11.8.5.50.5"></a><h4>Returns</h4>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-resize-editor"></a><h3>ags_file_read_resize_editor ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_file_read_resize_editor (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                             <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *node</code></em>,
+                             <em class="parameter"><code><GTKDOCLINK HREF="AgsResizeEditor"><span class="type">AgsResizeEditor</span></GTKDOCLINK> **resize_editor</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-resize-editor"></a><h3>ags_file_write_resize_editor ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+ags_file_write_resize_editor (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                              <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *parent</code></em>,
+                              <em class="parameter"><code><GTKDOCLINK HREF="AgsResizeEditor"><span class="type">AgsResizeEditor</span></GTKDOCLINK> *resize_editor</code></em>);</pre>
+<p>
+</p>
+<div class="refsect3">
+<a name="id-1.11.8.5.52.5"></a><h4>Returns</h4>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-editor"></a><h3>ags_file_read_editor ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_file_read_editor (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                      <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *node</code></em>,
+                      <em class="parameter"><code><GTKDOCLINK HREF="AgsEditor"><span class="type">AgsEditor</span></GTKDOCLINK> **editor</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-editor"></a><h3>ags_file_write_editor ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+ags_file_write_editor (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                       <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *parent</code></em>,
+                       <em class="parameter"><code><GTKDOCLINK HREF="AgsEditor"><span class="type">AgsEditor</span></GTKDOCLINK> *editor</code></em>);</pre>
+<p>
+</p>
+<div class="refsect3">
+<a name="id-1.11.8.5.54.5"></a><h4>Returns</h4>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-toolbar"></a><h3>ags_file_read_toolbar ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_file_read_toolbar (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                       <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *node</code></em>,
+                       <em class="parameter"><code><GTKDOCLINK HREF="AgsToolbar"><span class="type">AgsToolbar</span></GTKDOCLINK> **toolbar</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-toolbar"></a><h3>ags_file_write_toolbar ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+ags_file_write_toolbar (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                        <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *parent</code></em>,
+                        <em class="parameter"><code><GTKDOCLINK HREF="AgsToolbar"><span class="type">AgsToolbar</span></GTKDOCLINK> *toolbar</code></em>);</pre>
+<p>
+</p>
+<div class="refsect3">
+<a name="id-1.11.8.5.56.5"></a><h4>Returns</h4>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-machine-selector"></a><h3>ags_file_read_machine_selector ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_file_read_machine_selector (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                                <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *parent</code></em>,
+                                <em class="parameter"><code><GTKDOCLINK HREF="AgsMachineSelector"><span class="type">AgsMachineSelector</span></GTKDOCLINK> **machine_selector</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-machine-selector"></a><h3>ags_file_write_machine_selector ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+ags_file_write_machine_selector (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                                 <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *node</code></em>,
+                                 <em class="parameter"><code><GTKDOCLINK HREF="AgsMachineSelector"><span class="type">AgsMachineSelector</span></GTKDOCLINK> *machine_selector</code></em>);</pre>
+<p>
+</p>
+<div class="refsect3">
+<a name="id-1.11.8.5.58.5"></a><h4>Returns</h4>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-notebook"></a><h3>ags_file_read_notebook ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_file_read_notebook (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                        <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *node</code></em>,
+                        <em class="parameter"><code><GTKDOCLINK HREF="AgsNotebook"><span class="type">AgsNotebook</span></GTKDOCLINK> **notebook</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-notebook"></a><h3>ags_file_write_notebook ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+ags_file_write_notebook (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                         <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *parent</code></em>,
+                         <em class="parameter"><code><GTKDOCLINK HREF="AgsNotebook"><span class="type">AgsNotebook</span></GTKDOCLINK> *notebook</code></em>);</pre>
+<p>
+</p>
+<div class="refsect3">
+<a name="id-1.11.8.5.60.5"></a><h4>Returns</h4>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-notebook-tab-list"></a><h3>ags_file_read_notebook_tab_list ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_file_read_notebook_tab_list (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                                 <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *node</code></em>,
+                                 <em class="parameter"><code><GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> **notebook_tab_list</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-notebook-tab-list"></a><h3>ags_file_write_notebook_tab_list ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+ags_file_write_notebook_tab_list (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                                  <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *parent</code></em>,
+                                  <em class="parameter"><code><GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> *notebook_tab_list</code></em>);</pre>
+<p>
+</p>
+<div class="refsect3">
+<a name="id-1.11.8.5.62.5"></a><h4>Returns</h4>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-notebook-tab"></a><h3>ags_file_read_notebook_tab ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_file_read_notebook_tab (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                            <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *node</code></em>,
+                            <em class="parameter"><code><a class="link" href="ags-AgsNotebook.html#AgsNotebookTab" title="struct AgsNotebookTab"><span class="type">AgsNotebookTab</span></a> **notebook_tab</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-notebook-tab"></a><h3>ags_file_write_notebook_tab ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+ags_file_write_notebook_tab (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                             <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *parent</code></em>,
+                             <em class="parameter"><code><a class="link" href="ags-AgsNotebook.html#AgsNotebookTab" title="struct AgsNotebookTab"><span class="type">AgsNotebookTab</span></a> *notebook_tab</code></em>);</pre>
+<p>
+</p>
+<div class="refsect3">
+<a name="id-1.11.8.5.64.5"></a><h4>Returns</h4>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-navigation"></a><h3>ags_file_read_navigation ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_file_read_navigation (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                          <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *node</code></em>,
+                          <em class="parameter"><code><GTKDOCLINK HREF="AgsNavigation"><span class="type">AgsNavigation</span></GTKDOCLINK> **navigation</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-navigation"></a><h3>ags_file_write_navigation ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+ags_file_write_navigation (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                           <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *parent</code></em>,
+                           <em class="parameter"><code><GTKDOCLINK HREF="AgsNavigation"><span class="type">AgsNavigation</span></GTKDOCLINK> *navigation</code></em>);</pre>
+<p>
+</p>
+<div class="refsect3">
+<a name="id-1.11.8.5.66.5"></a><h4>Returns</h4>
+<p></p>
+</div>
+</div>
+</div>
+<div class="refsect1">
+<a name="ags-ags-file-gui.other_details"></a><h2>Types and Values</h2>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.21</div>
+</body>
+</html>

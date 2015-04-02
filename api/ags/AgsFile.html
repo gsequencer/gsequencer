@@ -1,0 +1,439 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsFile</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="xml-io.html" title="Part IX. XML Input/Output - Persist project">
+<link rel="prev" href="ags-ags-file-stock.html" title="ags_file_stock">
+<link rel="next" href="AgsFileIdRef.html" title="AgsFileIdRef">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="ags-ags-file-stock.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="xml-io.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="AgsFileIdRef.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#AgsFile.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#AgsFile.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#AgsFile.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#AgsFile.properties" class="shortcut">Properties</a>
+                   | 
+                  <a href="#AgsFile.signals" class="shortcut">Signals</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="AgsFile"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="AgsFile.top_of_page"></a>AgsFile</span></h2>
+<p>AgsFile — read/write XML file</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="AgsFile.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">
+#include &lt;ags/file/ags_file.h&gt;
+
+#define             <a class="link" href="AgsFile.html#AGS-FILE-CHECKSUM-LENGTH:CAPS" title="AGS_FILE_CHECKSUM_LENGTH">AGS_FILE_CHECKSUM_LENGTH</a>
+#define             <a class="link" href="AgsFile.html#AGS-FILE-DEFAULT-AUDIO-ENCODING:CAPS" title="AGS_FILE_DEFAULT_AUDIO_ENCODING">AGS_FILE_DEFAULT_AUDIO_ENCODING</a>
+#define             <a class="link" href="AgsFile.html#AGS-FILE-DEFAULT-AUDIO-FORMAT:CAPS" title="AGS_FILE_DEFAULT_AUDIO_FORMAT">AGS_FILE_DEFAULT_AUDIO_FORMAT</a>
+#define             <a class="link" href="AgsFile.html#AGS-FILE-DEFAULT-DTD:CAPS" title="AGS_FILE_DEFAULT_DTD">AGS_FILE_DEFAULT_DTD</a>
+#define             <a class="link" href="AgsFile.html#AGS-FILE-DEFAULT-ENCODING:CAPS" title="AGS_FILE_DEFAULT_ENCODING">AGS_FILE_DEFAULT_ENCODING</a>
+struct              <a class="link" href="AgsFile.html#AgsFile-struct" title="struct AgsFile">AgsFile</a>;
+struct              <a class="link" href="AgsFile.html#AgsFileClass" title="struct AgsFileClass">AgsFileClass</a>;
+enum                <a class="link" href="AgsFile.html#AgsFileFlags" title="enum AgsFileFlags">AgsFileFlags</a>;
+<span class="returnvalue">void</span>                <a class="link" href="AgsFile.html#ags-file-add-id-ref" title="ags_file_add_id_ref ()">ags_file_add_id_ref</a>                 (<em class="parameter"><code><a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a> *file</code></em>,
+                                                         <em class="parameter"><code><a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a> *id_ref</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsFile.html#ags-file-add-launch" title="ags_file_add_launch ()">ags_file_add_launch</a>                 (<em class="parameter"><code><a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a> *file</code></em>,
+                                                         <em class="parameter"><code><a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a> *file_launch</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsFile.html#ags-file-add-lookup" title="ags_file_add_lookup ()">ags_file_add_lookup</a>                 (<em class="parameter"><code><a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a> *file</code></em>,
+                                                         <em class="parameter"><code><a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a> *file_lookup</code></em>);
+<a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="returnvalue">GObject</span></a> *           <a class="link" href="AgsFile.html#ags-file-find-id-ref-by-node" title="ags_file_find_id_ref_by_node ()">ags_file_find_id_ref_by_node</a>        (<em class="parameter"><code><a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>);
+<a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="returnvalue">GObject</span></a> *           <a class="link" href="AgsFile.html#ags-file-find-id-ref-by-reference" title="ags_file_find_id_ref_by_reference ()">ags_file_find_id_ref_by_reference</a>   (<em class="parameter"><code><a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a> *file</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a> ref</code></em>);
+<a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="returnvalue">GObject</span></a> *           <a class="link" href="AgsFile.html#ags-file-find-id-ref-by-xpath" title="ags_file_find_id_ref_by_xpath ()">ags_file_find_id_ref_by_xpath</a>       (<em class="parameter"><code><a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a> *file</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *xpath</code></em>);
+<a class="link" href="AgsFile.html" title="AgsFile"><span class="returnvalue">AgsFile</span></a> *           <a class="link" href="AgsFile.html#ags-file-new" title="ags_file_new ()">ags_file_new</a>                        ();
+<span class="returnvalue">void</span>                <a class="link" href="AgsFile.html#ags-file-read" title="ags_file_read ()">ags_file_read</a>                       (<em class="parameter"><code><a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a> *file</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsFile.html#ags-file-read-main" title="ags_file_read_main ()">ags_file_read_main</a>                  (<em class="parameter"><code><a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a> **main</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsFile.html#ags-file-read-resolve" title="ags_file_read_resolve ()">ags_file_read_resolve</a>               (<em class="parameter"><code><a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a> *file</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsFile.html#ags-file-read-server" title="ags_file_read_server ()">ags_file_read_server</a>                (<em class="parameter"><code><a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a> **server</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsFile.html#ags-file-read-start" title="ags_file_read_start ()">ags_file_read_start</a>                 (<em class="parameter"><code><a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a> *file</code></em>);
+<a href="../glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *             <a class="link" href="AgsFile.html#ags-file-str2md5" title="ags_file_str2md5 ()">ags_file_str2md5</a>                    (<em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *content</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> strlen</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsFile.html#ags-file-write" title="ags_file_write ()">ags_file_write</a>                      (<em class="parameter"><code><a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a> *file</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsFile.html#ags-file-write-concurrent" title="ags_file_write_concurrent ()">ags_file_write_concurrent</a>           (<em class="parameter"><code><a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a> *file</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsFile.html#ags-file-write-main" title="ags_file_write_main ()">ags_file_write_main</a>                 (<em class="parameter"><code><a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a> *main</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsFile.html#ags-file-write-resolve" title="ags_file_write_resolve ()">ags_file_write_resolve</a>              (<em class="parameter"><code><a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a> *file</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsFile.html#ags-file-write-server" title="ags_file_write_server ()">ags_file_write_server</a>               (<em class="parameter"><code><a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a> *server</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsFile.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  <a href="../gobject/gobject-The-Base-Object-Type.html#GObject">GObject</a>
+   +----AgsFile
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsFile.properties"></a><h2>Properties</h2>
+<pre class="synopsis">
+  "<a class="link" href="AgsFile.html#AgsFile--audio-encoding" title='The "audio-encoding" property'>audio-encoding</a>"           <a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a>*                : Read / Write
+  "<a class="link" href="AgsFile.html#AgsFile--audio-format" title='The "audio-format" property'>audio-format</a>"             <a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a>*                : Read / Write
+  "<a class="link" href="AgsFile.html#AgsFile--encoding" title='The "encoding" property'>encoding</a>"                 <a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a>*                : Read / Write
+  "<a class="link" href="AgsFile.html#AgsFile--filename" title='The "filename" property'>filename</a>"                 <a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a>*                : Read / Write
+  "<a class="link" href="AgsFile.html#AgsFile--main" title='The "main" property'>main</a>"                     <a class="link" href="AgsMain.html" title="AgsMain"><span class="type">AgsMain</span></a>*              : Read / Write
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsFile.signals"></a><h2>Signals</h2>
+<pre class="synopsis">
+  "<a class="link" href="AgsFile.html#AgsFile-read" title='The "read" signal'>read</a>"                                           : <a href="../gobject/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></a>
+  "<a class="link" href="AgsFile.html#AgsFile-read-resolve" title='The "read-resolve" signal'>read-resolve</a>"                                   : <a href="../gobject/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></a>
+  "<a class="link" href="AgsFile.html#AgsFile-read-start" title='The "read-start" signal'>read-start</a>"                                     : <a href="../gobject/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></a>
+  "<a class="link" href="AgsFile.html#AgsFile-write" title='The "write" signal'>write</a>"                                          : <a href="../gobject/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></a>
+  "<a class="link" href="AgsFile.html#AgsFile-write-concurrent" title='The "write-concurrent" signal'>write-concurrent</a>"                               : <a href="../gobject/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></a>
+  "<a class="link" href="AgsFile.html#AgsFile-write-resolve" title='The "write-resolve" signal'>write-resolve</a>"                                  : <a href="../gobject/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></a>
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsFile.description"></a><h2>Description</h2>
+<p>
+The <a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a> is an object to read or write files using XML. It
+is the persisting layer of Advanced Gtk+ Sequencer.
+</p>
+</div>
+<div class="refsect1">
+<a name="AgsFile.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AGS-FILE-CHECKSUM-LENGTH:CAPS"></a><h3>AGS_FILE_CHECKSUM_LENGTH</h3>
+<pre class="programlisting">#define AGS_FILE_CHECKSUM_LENGTH (g_checksum_type_get_length(G_CHECKSUM_MD5))
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-FILE-DEFAULT-AUDIO-ENCODING:CAPS"></a><h3>AGS_FILE_DEFAULT_AUDIO_ENCODING</h3>
+<pre class="programlisting">#define AGS_FILE_DEFAULT_AUDIO_ENCODING "base64\0"
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-FILE-DEFAULT-AUDIO-FORMAT:CAPS"></a><h3>AGS_FILE_DEFAULT_AUDIO_FORMAT</h3>
+<pre class="programlisting">#define AGS_FILE_DEFAULT_AUDIO_FORMAT "raw\0"
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-FILE-DEFAULT-DTD:CAPS"></a><h3>AGS_FILE_DEFAULT_DTD</h3>
+<pre class="programlisting">#define AGS_FILE_DEFAULT_DTD "ags_file.dtd\0"
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-FILE-DEFAULT-ENCODING:CAPS"></a><h3>AGS_FILE_DEFAULT_ENCODING</h3>
+<pre class="programlisting">#define AGS_FILE_DEFAULT_ENCODING "UTF-8\0"
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsFile-struct"></a><h3>struct AgsFile</h3>
+<pre class="programlisting">struct AgsFile;</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsFileClass"></a><h3>struct AgsFileClass</h3>
+<pre class="programlisting">struct AgsFileClass {
+  GObjectClass object;
+
+  void (*write)(AgsFile *file);
+  void (*write_concurrent)(AgsFile *file);
+  void (*write_resolve)(AgsFile *file);
+
+  void (*read)(AgsFile *file);
+  void (*read_resolve)(AgsFile *file);
+  void (*read_start)(AgsFile *file);
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsFileFlags"></a><h3>enum AgsFileFlags</h3>
+<pre class="programlisting">typedef enum {
+  AGS_FILE_READ                    = 1,
+  AGS_FILE_READ_AUDIO_SIGNAL       = 1 &lt;&lt; 1,
+  AGS_FILE_READ_EMBEDDED_AUDIO     = 1 &lt;&lt; 2,
+  AGS_FILE_WRITE                   = 1 &lt;&lt; 3,
+  AGS_FILE_WRITE_AUDIO_SIGNAL      = 1 &lt;&lt; 4,
+  AGS_FILE_WRITE_EMBEDDED_AUDIO    = 1 &lt;&lt; 5,
+} AgsFileFlags;
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-add-id-ref"></a><h3>ags_file_add_id_ref ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_file_add_id_ref                 (<em class="parameter"><code><a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a> *file</code></em>,
+                                                         <em class="parameter"><code><a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a> *id_ref</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-add-launch"></a><h3>ags_file_add_launch ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_file_add_launch                 (<em class="parameter"><code><a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a> *file</code></em>,
+                                                         <em class="parameter"><code><a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a> *file_launch</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-add-lookup"></a><h3>ags_file_add_lookup ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_file_add_lookup                 (<em class="parameter"><code><a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a> *file</code></em>,
+                                                         <em class="parameter"><code><a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a> *file_lookup</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-find-id-ref-by-node"></a><h3>ags_file_find_id_ref_by_node ()</h3>
+<pre class="programlisting"><a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="returnvalue">GObject</span></a> *           ags_file_find_id_ref_by_node        (<em class="parameter"><code><a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-find-id-ref-by-reference"></a><h3>ags_file_find_id_ref_by_reference ()</h3>
+<pre class="programlisting"><a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="returnvalue">GObject</span></a> *           ags_file_find_id_ref_by_reference   (<em class="parameter"><code><a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a> *file</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a> ref</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-find-id-ref-by-xpath"></a><h3>ags_file_find_id_ref_by_xpath ()</h3>
+<pre class="programlisting"><a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="returnvalue">GObject</span></a> *           ags_file_find_id_ref_by_xpath       (<em class="parameter"><code><a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a> *file</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *xpath</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-new"></a><h3>ags_file_new ()</h3>
+<pre class="programlisting"><a class="link" href="AgsFile.html" title="AgsFile"><span class="returnvalue">AgsFile</span></a> *           ags_file_new                        ();</pre>
+<p>
+Creates an <a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new <a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a>
+</td>
+</tr></tbody>
+</table></div>
+<p class="since">Since 0.3</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read"></a><h3>ags_file_read ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_file_read                       (<em class="parameter"><code><a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a> *file</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-main"></a><h3>ags_file_read_main ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_file_read_main                  (<em class="parameter"><code><a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a> **main</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-resolve"></a><h3>ags_file_read_resolve ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_file_read_resolve               (<em class="parameter"><code><a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a> *file</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-server"></a><h3>ags_file_read_server ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_file_read_server                (<em class="parameter"><code><a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a> **server</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-start"></a><h3>ags_file_read_start ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_file_read_start                 (<em class="parameter"><code><a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a> *file</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-str2md5"></a><h3>ags_file_str2md5 ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *             ags_file_str2md5                    (<em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *content</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> strlen</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write"></a><h3>ags_file_write ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_file_write                      (<em class="parameter"><code><a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a> *file</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-concurrent"></a><h3>ags_file_write_concurrent ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_file_write_concurrent           (<em class="parameter"><code><a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a> *file</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-main"></a><h3>ags_file_write_main ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_file_write_main                 (<em class="parameter"><code><a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a> *main</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-resolve"></a><h3>ags_file_write_resolve ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_file_write_resolve              (<em class="parameter"><code><a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a> *file</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-server"></a><h3>ags_file_write_server ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_file_write_server               (<em class="parameter"><code><a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a> *server</code></em>);</pre>
+<p>
+</p>
+</div>
+</div>
+<div class="refsect1">
+<a name="AgsFile.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="AgsFile--audio-encoding"></a><h3>The <code class="literal">"audio-encoding"</code> property</h3>
+<pre class="programlisting">  "audio-encoding"           <a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a>*                : Read / Write</pre>
+<p>The audio encoding used to embedded audio.</p>
+<p>Default value: "base64"</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsFile--audio-format"></a><h3>The <code class="literal">"audio-format"</code> property</h3>
+<pre class="programlisting">  "audio-format"             <a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a>*                : Read / Write</pre>
+<p>The audio format used to embedded audio.</p>
+<p>Default value: "raw"</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsFile--encoding"></a><h3>The <code class="literal">"encoding"</code> property</h3>
+<pre class="programlisting">  "encoding"                 <a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a>*                : Read / Write</pre>
+<p>The encoding of the XML document.</p>
+<p>Default value: NULL</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsFile--filename"></a><h3>The <code class="literal">"filename"</code> property</h3>
+<pre class="programlisting">  "filename"                 <a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a>*                : Read / Write</pre>
+<p>The filename to read or write to.</p>
+<p>Default value: NULL</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsFile--main"></a><h3>The <code class="literal">"main"</code> property</h3>
+<pre class="programlisting">  "main"                     <a class="link" href="AgsMain.html" title="AgsMain"><span class="type">AgsMain</span></a>*              : Read / Write</pre>
+<p>The main object to write to file.</p>
+</div>
+</div>
+<div class="refsect1">
+<a name="AgsFile.signal-details"></a><h2>Signal Details</h2>
+<div class="refsect2">
+<a name="AgsFile-read"></a><h3>The <code class="literal">"read"</code> signal</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                user_function                      (<a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a> *agsfile,
+                                                        <a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a> user_data)      : <a href="../gobject/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></a></pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsFile-read-resolve"></a><h3>The <code class="literal">"read-resolve"</code> signal</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                user_function                      (<a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a> *agsfile,
+                                                        <a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a> user_data)      : <a href="../gobject/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></a></pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsFile-read-start"></a><h3>The <code class="literal">"read-start"</code> signal</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                user_function                      (<a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a> *agsfile,
+                                                        <a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a> user_data)      : <a href="../gobject/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></a></pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsFile-write"></a><h3>The <code class="literal">"write"</code> signal</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                user_function                      (<a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a> *agsfile,
+                                                        <a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a> user_data)      : <a href="../gobject/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></a></pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsFile-write-concurrent"></a><h3>The <code class="literal">"write-concurrent"</code> signal</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                user_function                      (<a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a> *agsfile,
+                                                        <a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a> user_data)      : <a href="../gobject/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></a></pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsFile-write-resolve"></a><h3>The <code class="literal">"write-resolve"</code> signal</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                user_function                      (<a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a> *agsfile,
+                                                        <a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a> user_data)      : <a href="../gobject/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></a></pre>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

@@ -1,0 +1,134 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsCopyPatternChannel</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="recall.html" title="Recalls - Effect processors">
+<link rel="prev" href="AgsCopyPatternAudioRun.html" title="AgsCopyPatternAudioRun">
+<link rel="next" href="AgsCopyPatternChannelRun.html" title="AgsCopyPatternChannelRun">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="AgsCopyPatternAudioRun.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="recall.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="AgsCopyPatternChannelRun.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#AgsCopyPatternChannel.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#AgsCopyPatternChannel.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#AgsCopyPatternChannel.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#AgsCopyPatternChannel.implemented-interfaces" class="shortcut">Implemented Interfaces</a>
+                   | 
+                  <a href="#AgsCopyPatternChannel.properties" class="shortcut">Properties</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="AgsCopyPatternChannel"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="AgsCopyPatternChannel.top_of_page"></a>AgsCopyPatternChannel</span></h2>
+<p>AgsCopyPatternChannel</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="AgsCopyPatternChannel.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">struct              <a class="link" href="AgsCopyPatternChannel.html#AgsCopyPatternChannel-struct" title="struct AgsCopyPatternChannel">AgsCopyPatternChannel</a>;
+struct              <a class="link" href="AgsCopyPatternChannel.html#AgsCopyPatternChannelClass" title="struct AgsCopyPatternChannelClass">AgsCopyPatternChannelClass</a>;
+<a class="link" href="AgsCopyPatternChannel.html" title="AgsCopyPatternChannel"><span class="returnvalue">AgsCopyPatternChannel</span></a> * <a class="link" href="AgsCopyPatternChannel.html#ags-copy-pattern-channel-new" title="ags_copy_pattern_channel_new ()">ags_copy_pattern_channel_new</a>    (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *destination</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *source</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsPort.html" title="AgsPort"><span class="type">AgsPort</span></a> *pattern</code></em>);
+<GTKDOCLINK HREF="GList"><span class="returnvalue">GList</span></GTKDOCLINK> *             <a class="link" href="AgsCopyPatternChannel.html#ags-copy-pattern-channel-template-find-source-and-destination" title="ags_copy_pattern_channel_template_find_source_and_destination ()">ags_copy_pattern_channel_template_find_source_and_destination</a>
+                                                        (<em class="parameter"><code><GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> *recall</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *destination</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *source</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsCopyPatternChannel.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  <GTKDOCLINK HREF="GObject">GObject</GTKDOCLINK>
+   +----<a class="link" href="AgsRecall.html" title="AgsRecall">AgsRecall</a>
+         +----<a class="link" href="AgsRecallChannel.html" title="AgsRecallChannel">AgsRecallChannel</a>
+               +----AgsCopyPatternChannel
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsCopyPatternChannel.implemented-interfaces"></a><h2>Implemented Interfaces</h2>
+<p>
+AgsCopyPatternChannel implements
+ <GTKDOCLINK HREF="AgsConnectable">AgsConnectable</GTKDOCLINK>,  <a class="link" href="AgsPackable.html" title="AgsPackable">AgsPackable</a>,  <a class="link" href="AgsDynamicConnectable.html" title="AgsDynamicConnectable">AgsDynamicConnectable</a> and  <a class="link" href="AgsPlugin.html" title="AgsPlugin">AgsPlugin</a>.</p>
+</div>
+<div class="refsect1">
+<a name="AgsCopyPatternChannel.properties"></a><h2>Properties</h2>
+<pre class="synopsis">
+  "<a class="link" href="AgsCopyPatternChannel.html#AgsCopyPatternChannel--pattern" title='The "pattern" property'>pattern</a>"                  <a class="link" href="AgsPort.html" title="AgsPort"><span class="type">AgsPort</span></a>*              : Read / Write
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsCopyPatternChannel.description"></a><h2>Description</h2>
+<p>
+</p>
+</div>
+<div class="refsect1">
+<a name="AgsCopyPatternChannel.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AgsCopyPatternChannel-struct"></a><h3>struct AgsCopyPatternChannel</h3>
+<pre class="programlisting">struct AgsCopyPatternChannel;</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsCopyPatternChannelClass"></a><h3>struct AgsCopyPatternChannelClass</h3>
+<pre class="programlisting">struct AgsCopyPatternChannelClass {
+  AgsRecallChannelClass recall_channel;
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-copy-pattern-channel-new"></a><h3>ags_copy_pattern_channel_new ()</h3>
+<pre class="programlisting"><a class="link" href="AgsCopyPatternChannel.html" title="AgsCopyPatternChannel"><span class="returnvalue">AgsCopyPatternChannel</span></a> * ags_copy_pattern_channel_new    (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *destination</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *source</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsPort.html" title="AgsPort"><span class="type">AgsPort</span></a> *pattern</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-copy-pattern-channel-template-find-source-and-destination"></a><h3>ags_copy_pattern_channel_template_find_source_and_destination ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="GList"><span class="returnvalue">GList</span></GTKDOCLINK> *             ags_copy_pattern_channel_template_find_source_and_destination
+                                                        (<em class="parameter"><code><GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> *recall</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *destination</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *source</code></em>);</pre>
+<p>
+</p>
+</div>
+</div>
+<div class="refsect1">
+<a name="AgsCopyPatternChannel.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="AgsCopyPatternChannel--pattern"></a><h3>The <code class="literal">"pattern"</code> property</h3>
+<pre class="programlisting">  "pattern"                  <a class="link" href="AgsPort.html" title="AgsPort"><span class="type">AgsPort</span></a>*              : Read / Write</pre>
+<p>The pattern which has to be played.</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsAppendRecall</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="task.html" title="Task - Data exchanged between Audio and GUI">
+<link rel="prev" href="AgsAppendChannel.html" title="AgsAppendChannel">
+<link rel="next" href="AgsApplyBpm.html" title="AgsApplyBpm">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="AgsAppendChannel.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="task.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="AgsApplyBpm.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#AgsAppendRecall.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#AgsAppendRecall.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#AgsAppendRecall.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#AgsAppendRecall.implemented-interfaces" class="shortcut">Implemented Interfaces</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="AgsAppendRecall"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="AgsAppendRecall.top_of_page"></a>AgsAppendRecall</span></h2>
+<p>AgsAppendRecall</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="AgsAppendRecall.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">struct              <a class="link" href="AgsAppendRecall.html#AgsAppendRecall-struct" title="struct AgsAppendRecall">AgsAppendRecall</a>;
+struct              <a class="link" href="AgsAppendRecall.html#AgsAppendRecallClass" title="struct AgsAppendRecallClass">AgsAppendRecallClass</a>;
+<a class="link" href="AgsAppendRecall.html" title="AgsAppendRecall"><span class="returnvalue">AgsAppendRecall</span></a> *   <a class="link" href="AgsAppendRecall.html#ags-append-recall-new" title="ags_append_recall_new ()">ags_append_recall_new</a>               (<em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *audio_loop</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsDevout.html#AgsDevoutPlay" title="struct AgsDevoutPlay"><span class="type">AgsDevoutPlay</span></a> *devout_play</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsAppendRecall.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  <GTKDOCLINK HREF="GObject">GObject</GTKDOCLINK>
+   +----<a class="link" href="AgsTask.html" title="AgsTask">AgsTask</a>
+         +----AgsAppendRecall
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsAppendRecall.implemented-interfaces"></a><h2>Implemented Interfaces</h2>
+<p>
+AgsAppendRecall implements
+ <GTKDOCLINK HREF="AgsConnectable">AgsConnectable</GTKDOCLINK>.</p>
+</div>
+<div class="refsect1">
+<a name="AgsAppendRecall.description"></a><h2>Description</h2>
+<p>
+</p>
+</div>
+<div class="refsect1">
+<a name="AgsAppendRecall.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AgsAppendRecall-struct"></a><h3>struct AgsAppendRecall</h3>
+<pre class="programlisting">struct AgsAppendRecall;</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsAppendRecallClass"></a><h3>struct AgsAppendRecallClass</h3>
+<pre class="programlisting">struct AgsAppendRecallClass {
+  AgsTaskClass task;
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-append-recall-new"></a><h3>ags_append_recall_new ()</h3>
+<pre class="programlisting"><a class="link" href="AgsAppendRecall.html" title="AgsAppendRecall"><span class="returnvalue">AgsAppendRecall</span></a> *   ags_append_recall_new               (<em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *audio_loop</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsDevout.html#AgsDevoutPlay" title="struct AgsDevoutPlay"><span class="type">AgsDevoutPlay</span></a> *devout_play</code></em>);</pre>
+<p>
+</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

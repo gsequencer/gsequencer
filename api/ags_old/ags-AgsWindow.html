@@ -1,0 +1,192 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsWindow</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="composite-widgets.html" title="Composite widgets">
+<link rel="prev" href="ags-AgsServerPreferences.html" title="AgsServerPreferences">
+<link rel="next" href="ags-ags-window-callbacks.html" title="ags_window_callbacks">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="ags-AgsServerPreferences.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="composite-widgets.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="ags-ags-window-callbacks.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#ags-AgsWindow.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#ags-AgsWindow.description" class="shortcut">Description</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="ags-AgsWindow"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="ags-AgsWindow.top_of_page"></a>AgsWindow</span></h2>
+<p>AgsWindow</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="ags-AgsWindow.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">#define             <a class="link" href="ags-AgsWindow.html#AGS-MACHINE-COUNTER:CAPS" title="AGS_MACHINE_COUNTER()">AGS_MACHINE_COUNTER</a>                 (ptr)
+struct              <a class="link" href="ags-AgsWindow.html#AgsMachineCounter" title="struct AgsMachineCounter">AgsMachineCounter</a>;
+struct              <a class="link" href="ags-AgsWindow.html#AgsWindow" title="struct AgsWindow">AgsWindow</a>;
+struct              <a class="link" href="ags-AgsWindow.html#AgsWindowClass" title="struct AgsWindowClass">AgsWindowClass</a>;
+enum                <a class="link" href="ags-AgsWindow.html#AgsWindowFlags" title="enum AgsWindowFlags">AgsWindowFlags</a>;
+<a class="link" href="ags-AgsWindow.html#AgsMachineCounter" title="struct AgsMachineCounter"><span class="returnvalue">AgsMachineCounter</span></a> * <a class="link" href="ags-AgsWindow.html#ags-machine-counter-alloc" title="ags_machine_counter_alloc ()">ags_machine_counter_alloc</a>           (<em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *version</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *build_id</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GType"><span class="type">GType</span></GTKDOCLINK> machine_type</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> initial_value</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsWindow.html#ags-window-decrement-machine-counter" title="ags_window_decrement_machine_counter ()">ags_window_decrement_machine_counter</a>
+                                                        (<em class="parameter"><code><a class="link" href="ags-AgsWindow.html#AgsWindow" title="struct AgsWindow"><span class="type">AgsWindow</span></a> *window</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GType"><span class="type">GType</span></GTKDOCLINK> machine_type</code></em>);
+<a class="link" href="ags-AgsWindow.html#AgsMachineCounter" title="struct AgsMachineCounter"><span class="returnvalue">AgsMachineCounter</span></a> * <a class="link" href="ags-AgsWindow.html#ags-window-find-machine-counter" title="ags_window_find_machine_counter ()">ags_window_find_machine_counter</a>     (<em class="parameter"><code><a class="link" href="ags-AgsWindow.html#AgsWindow" title="struct AgsWindow"><span class="type">AgsWindow</span></a> *window</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GType"><span class="type">GType</span></GTKDOCLINK> machine_type</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsWindow.html#ags-window-increment-machine-counter" title="ags_window_increment_machine_counter ()">ags_window_increment_machine_counter</a>
+                                                        (<em class="parameter"><code><a class="link" href="ags-AgsWindow.html#AgsWindow" title="struct AgsWindow"><span class="type">AgsWindow</span></a> *window</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GType"><span class="type">GType</span></GTKDOCLINK> machine_type</code></em>);
+<a class="link" href="ags-AgsWindow.html#AgsWindow" title="struct AgsWindow"><span class="returnvalue">AgsWindow</span></a> *         <a class="link" href="ags-AgsWindow.html#ags-window-new" title="ags_window_new ()">ags_window_new</a>                      (<em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *ags_main</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="ags-AgsWindow.description"></a><h2>Description</h2>
+<p>
+</p>
+</div>
+<div class="refsect1">
+<a name="ags-AgsWindow.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AGS-MACHINE-COUNTER:CAPS"></a><h3>AGS_MACHINE_COUNTER()</h3>
+<pre class="programlisting">#define AGS_MACHINE_COUNTER(ptr) ((AgsMachineCounter *)(ptr))
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsMachineCounter"></a><h3>struct AgsMachineCounter</h3>
+<pre class="programlisting">struct AgsMachineCounter {
+  gchar *version;
+  gchar *build_id;
+
+  GType machine_type;
+  guint counter;
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsWindow"></a><h3>struct AgsWindow</h3>
+<pre class="programlisting">struct AgsWindow {
+  GtkWindow window;
+
+  guint flags;
+
+  GObject *ags_main;
+
+  AgsDevout *devout;
+
+  char *name;
+
+  AgsMenuBar *menu_bar;
+
+  GtkVPaned *paned;
+
+  GtkVBox *machines;
+  GList *machine_counter;
+  AgsMachine *selected;
+
+  AgsEditor *editor;
+  AgsNavigation *navigation;
+
+  AgsExportWindow *export_window;
+  AgsPreferences *preferences;
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsWindowClass"></a><h3>struct AgsWindowClass</h3>
+<pre class="programlisting">struct AgsWindowClass {
+  GtkWindowClass window;
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsWindowFlags"></a><h3>enum AgsWindowFlags</h3>
+<pre class="programlisting">typedef enum {
+  AGS_WINDOW_READY        = 1,
+  AGS_WINDOW_LOADING      = 1 &lt;&lt; 1,
+  AGS_WINDOW_SAVING       = 1 &lt;&lt; 2,
+  AGS_WINDOW_TERMINATING  = 1 &lt;&lt; 3,
+} AgsWindowFlags;
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-machine-counter-alloc"></a><h3>ags_machine_counter_alloc ()</h3>
+<pre class="programlisting"><a class="link" href="ags-AgsWindow.html#AgsMachineCounter" title="struct AgsMachineCounter"><span class="returnvalue">AgsMachineCounter</span></a> * ags_machine_counter_alloc           (<em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *version</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *build_id</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GType"><span class="type">GType</span></GTKDOCLINK> machine_type</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> initial_value</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-window-decrement-machine-counter"></a><h3>ags_window_decrement_machine_counter ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_window_decrement_machine_counter
+                                                        (<em class="parameter"><code><a class="link" href="ags-AgsWindow.html#AgsWindow" title="struct AgsWindow"><span class="type">AgsWindow</span></a> *window</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GType"><span class="type">GType</span></GTKDOCLINK> machine_type</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-window-find-machine-counter"></a><h3>ags_window_find_machine_counter ()</h3>
+<pre class="programlisting"><a class="link" href="ags-AgsWindow.html#AgsMachineCounter" title="struct AgsMachineCounter"><span class="returnvalue">AgsMachineCounter</span></a> * ags_window_find_machine_counter     (<em class="parameter"><code><a class="link" href="ags-AgsWindow.html#AgsWindow" title="struct AgsWindow"><span class="type">AgsWindow</span></a> *window</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GType"><span class="type">GType</span></GTKDOCLINK> machine_type</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-window-increment-machine-counter"></a><h3>ags_window_increment_machine_counter ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_window_increment_machine_counter
+                                                        (<em class="parameter"><code><a class="link" href="ags-AgsWindow.html#AgsWindow" title="struct AgsWindow"><span class="type">AgsWindow</span></a> *window</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GType"><span class="type">GType</span></GTKDOCLINK> machine_type</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-window-new"></a><h3>ags_window_new ()</h3>
+<pre class="programlisting"><a class="link" href="ags-AgsWindow.html#AgsWindow" title="struct AgsWindow"><span class="returnvalue">AgsWindow</span></a> *         ags_window_new                      (<em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *ags_main</code></em>);</pre>
+<p>
+</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

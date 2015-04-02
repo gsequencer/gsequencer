@@ -1,0 +1,122 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsRemoteTask</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="xml-rpc.html" title="Part X. XML-RPC - planned server">
+<link rel="prev" href="AgsRegistry.html" title="AgsRegistry">
+<link rel="next" href="AgsServer.html" title="AgsServer">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="AgsRegistry.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="xml-rpc.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="AgsServer.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#AgsRemoteTask.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#AgsRemoteTask.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#AgsRemoteTask.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#AgsRemoteTask.implemented-interfaces" class="shortcut">Implemented Interfaces</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="AgsRemoteTask"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="AgsRemoteTask.top_of_page"></a>AgsRemoteTask</span></h2>
+<p>AgsRemoteTask</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="AgsRemoteTask.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">struct              <a class="link" href="AgsRemoteTask.html#AgsRemoteTask-struct" title="struct AgsRemoteTask">AgsRemoteTask</a>;
+struct              <a class="link" href="AgsRemoteTask.html#AgsRemoteTaskClass" title="struct AgsRemoteTaskClass">AgsRemoteTaskClass</a>;
+<span class="returnvalue">xmlrpc_value</span> *      <a class="link" href="AgsRemoteTask.html#ags-remote-task-launch" title="ags_remote_task_launch ()">ags_remote_task_launch</a>              (<em class="parameter"><code><span class="type">xmlrpc_env</span> *env</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlrpc_value</span> *param_array</code></em>,
+                                                         <em class="parameter"><code><span class="type">void</span> *server_info</code></em>);
+<span class="returnvalue">xmlrpc_value</span> *      <a class="link" href="AgsRemoteTask.html#ags-remote-task-launch-timed" title="ags_remote_task_launch_timed ()">ags_remote_task_launch_timed</a>        (<em class="parameter"><code><span class="type">xmlrpc_env</span> *env</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlrpc_value</span> *param_array</code></em>,
+                                                         <em class="parameter"><code><span class="type">void</span> *server_info</code></em>);
+<a class="link" href="AgsRemoteTask.html" title="AgsRemoteTask"><span class="returnvalue">AgsRemoteTask</span></a> *     <a class="link" href="AgsRemoteTask.html#ags-remote-task-new" title="ags_remote_task_new ()">ags_remote_task_new</a>                 ();
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsRemoteTask.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  <a href="../gobject/gobject-The-Base-Object-Type.html#GObject">GObject</a>
+   +----AgsRemoteTask
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsRemoteTask.implemented-interfaces"></a><h2>Implemented Interfaces</h2>
+<p>
+AgsRemoteTask implements
+ AgsConnectable.</p>
+</div>
+<div class="refsect1">
+<a name="AgsRemoteTask.description"></a><h2>Description</h2>
+<p>
+</p>
+</div>
+<div class="refsect1">
+<a name="AgsRemoteTask.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AgsRemoteTask-struct"></a><h3>struct AgsRemoteTask</h3>
+<pre class="programlisting">struct AgsRemoteTask;</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsRemoteTaskClass"></a><h3>struct AgsRemoteTaskClass</h3>
+<pre class="programlisting">struct AgsRemoteTaskClass {
+  GObjectClass object;
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-remote-task-launch"></a><h3>ags_remote_task_launch ()</h3>
+<pre class="programlisting"><span class="returnvalue">xmlrpc_value</span> *      ags_remote_task_launch              (<em class="parameter"><code><span class="type">xmlrpc_env</span> *env</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlrpc_value</span> *param_array</code></em>,
+                                                         <em class="parameter"><code><span class="type">void</span> *server_info</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-remote-task-launch-timed"></a><h3>ags_remote_task_launch_timed ()</h3>
+<pre class="programlisting"><span class="returnvalue">xmlrpc_value</span> *      ags_remote_task_launch_timed        (<em class="parameter"><code><span class="type">xmlrpc_env</span> *env</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlrpc_value</span> *param_array</code></em>,
+                                                         <em class="parameter"><code><span class="type">void</span> *server_info</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-remote-task-new"></a><h3>ags_remote_task_new ()</h3>
+<pre class="programlisting"><a class="link" href="AgsRemoteTask.html" title="AgsRemoteTask"><span class="returnvalue">AgsRemoteTask</span></a> *     ags_remote_task_new                 ();</pre>
+<p>
+</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

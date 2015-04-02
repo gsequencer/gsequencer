@@ -1,0 +1,148 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsSF2Chooser</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="editor.html" title="Editor - Piano roll and its controls">
+<link rel="prev" href="ags-ags-note-edit-callbacks.html" title="ags_note_edit_callbacks">
+<link rel="next" href="ags-ags-sf2-chooser-callbacks.html" title="ags_sf2_chooser_callbacks">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="ags-ags-note-edit-callbacks.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="editor.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="ags-ags-sf2-chooser-callbacks.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#AgsSF2Chooser.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#AgsSF2Chooser.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#AgsSF2Chooser.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#AgsSF2Chooser.implemented-interfaces" class="shortcut">Implemented Interfaces</a>
+                   | 
+                  <a href="#AgsSF2Chooser.properties" class="shortcut">Properties</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="AgsSF2Chooser"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="AgsSF2Chooser.top_of_page"></a>AgsSF2Chooser</span></h2>
+<p>AgsSF2Chooser</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="AgsSF2Chooser.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">struct              <a class="link" href="AgsSF2Chooser.html#AgsSF2Chooser-struct" title="struct AgsSF2Chooser">AgsSF2Chooser</a>;
+struct              <a class="link" href="AgsSF2Chooser.html#AgsSF2ChooserClass" title="struct AgsSF2ChooserClass">AgsSF2ChooserClass</a>;
+<a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            <a class="link" href="AgsSF2Chooser.html#ags-sf2-chooser-completed" title="ags_sf2_chooser_completed ()">ags_sf2_chooser_completed</a>           (<em class="parameter"><code><a class="link" href="AgsSF2Chooser.html" title="AgsSF2Chooser"><span class="type">AgsSF2Chooser</span></a> *sf2_chooser</code></em>);
+<a class="link" href="AgsSF2Chooser.html" title="AgsSF2Chooser"><span class="returnvalue">AgsSF2Chooser</span></a> *     <a class="link" href="AgsSF2Chooser.html#ags-sf2-chooser-new" title="ags_sf2_chooser_new ()">ags_sf2_chooser_new</a>                 ();
+<span class="returnvalue">void</span>                <a class="link" href="AgsSF2Chooser.html#ags-sf2-chooser-open" title="ags_sf2_chooser_open ()">ags_sf2_chooser_open</a>                (<em class="parameter"><code><a class="link" href="AgsSF2Chooser.html" title="AgsSF2Chooser"><span class="type">AgsSF2Chooser</span></a> *sf2_chooser</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *filename</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsSF2Chooser.html#ags-sf2-chooser-remove-all-from-combo" title="ags_sf2_chooser_remove_all_from_combo ()">ags_sf2_chooser_remove_all_from_combo</a>
+                                                        (<em class="parameter"><code><a href="../gtk3/GtkComboBoxText.html"><span class="type">GtkComboBoxText</span></a> *combo</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsSF2Chooser.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  <a href="../gobject/gobject-The-Base-Object-Type.html#GObject">GObject</a>
+   +----<a href="../gobject/gobject-The-Base-Object-Type.html#GInitiallyUnowned">GInitiallyUnowned</a>
+         +----<a href="../gtk/GtkObject.html">GtkObject</a>
+               +----<a href="../gtk3/GtkWidget.html">GtkWidget</a>
+                     +----<a href="../gtk3/GtkContainer.html">GtkContainer</a>
+                           +----<a href="../gtk3/GtkBox.html">GtkBox</a>
+                                 +----<a href="../gtk3/GtkVBox.html">GtkVBox</a>
+                                       +----AgsSF2Chooser
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsSF2Chooser.implemented-interfaces"></a><h2>Implemented Interfaces</h2>
+<p>
+AgsSF2Chooser implements
+ AtkImplementorIface,  <a href="../gtk3/GtkBuildable.html">GtkBuildable</a>,  <a href="../gtk3/gtk3-Orientable.html#GtkOrientable">GtkOrientable</a> and  AgsConnectable.</p>
+</div>
+<div class="refsect1">
+<a name="AgsSF2Chooser.properties"></a><h2>Properties</h2>
+<pre class="synopsis">
+  "<a class="link" href="AgsSF2Chooser.html#AgsSF2Chooser--ipatch" title='The "ipatch" property'>ipatch</a>"                   <a class="link" href="AgsIpatch.html" title="AgsIpatch"><span class="type">AgsIpatch</span></a>*            : Read / Write
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsSF2Chooser.description"></a><h2>Description</h2>
+<p>
+</p>
+</div>
+<div class="refsect1">
+<a name="AgsSF2Chooser.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AgsSF2Chooser-struct"></a><h3>struct AgsSF2Chooser</h3>
+<pre class="programlisting">struct AgsSF2Chooser;</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsSF2ChooserClass"></a><h3>struct AgsSF2ChooserClass</h3>
+<pre class="programlisting">struct AgsSF2ChooserClass {
+  GtkVBoxClass vbox;
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-sf2-chooser-completed"></a><h3>ags_sf2_chooser_completed ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            ags_sf2_chooser_completed           (<em class="parameter"><code><a class="link" href="AgsSF2Chooser.html" title="AgsSF2Chooser"><span class="type">AgsSF2Chooser</span></a> *sf2_chooser</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-sf2-chooser-new"></a><h3>ags_sf2_chooser_new ()</h3>
+<pre class="programlisting"><a class="link" href="AgsSF2Chooser.html" title="AgsSF2Chooser"><span class="returnvalue">AgsSF2Chooser</span></a> *     ags_sf2_chooser_new                 ();</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-sf2-chooser-open"></a><h3>ags_sf2_chooser_open ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_sf2_chooser_open                (<em class="parameter"><code><a class="link" href="AgsSF2Chooser.html" title="AgsSF2Chooser"><span class="type">AgsSF2Chooser</span></a> *sf2_chooser</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *filename</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-sf2-chooser-remove-all-from-combo"></a><h3>ags_sf2_chooser_remove_all_from_combo ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_sf2_chooser_remove_all_from_combo
+                                                        (<em class="parameter"><code><a href="../gtk3/GtkComboBoxText.html"><span class="type">GtkComboBoxText</span></a> *combo</code></em>);</pre>
+<p>
+</p>
+</div>
+</div>
+<div class="refsect1">
+<a name="AgsSF2Chooser.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="AgsSF2Chooser--ipatch"></a><h3>The <code class="literal">"ipatch"</code> property</h3>
+<pre class="programlisting">  "ipatch"                   <a class="link" href="AgsIpatch.html" title="AgsIpatch"><span class="type">AgsIpatch</span></a>*            : Read / Write</pre>
+<p>The current AgsIpatch.</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsAddAudioSignal</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="task.html" title="Task - Data exchanged between Audio and GUI">
+<link rel="prev" href="ags-AgsAddAudio.html" title="AgsAddAudio">
+<link rel="next" href="ags-AgsAddLineMember.html" title="AgsAddLineMember">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="ags-AgsAddAudio.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="task.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="ags-AgsAddLineMember.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#ags-AgsAddAudioSignal.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#ags-AgsAddAudioSignal.description" class="shortcut">Description</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="ags-AgsAddAudioSignal"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="ags-AgsAddAudioSignal.top_of_page"></a>AgsAddAudioSignal</span></h2>
+<p>AgsAddAudioSignal</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="ags-AgsAddAudioSignal.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">struct              <a class="link" href="ags-AgsAddAudioSignal.html#AgsAddAudioSignal" title="struct AgsAddAudioSignal">AgsAddAudioSignal</a>;
+struct              <a class="link" href="ags-AgsAddAudioSignal.html#AgsAddAudioSignalClass" title="struct AgsAddAudioSignalClass">AgsAddAudioSignalClass</a>;
+<a class="link" href="ags-AgsAddAudioSignal.html#AgsAddAudioSignal" title="struct AgsAddAudioSignal"><span class="returnvalue">AgsAddAudioSignal</span></a> * <a class="link" href="ags-AgsAddAudioSignal.html#ags-add-audio-signal-new" title="ags_add_audio_signal_new ()">ags_add_audio_signal_new</a>            (<em class="parameter"><code><a class="link" href="ags-AgsRecycling.html#AgsRecycling" title="struct AgsRecycling"><span class="type">AgsRecycling</span></a> *recycling</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsAudioSignal.html#AgsAudioSignal" title="struct AgsAudioSignal"><span class="type">AgsAudioSignal</span></a> *audio_signal</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsDevout.html#AgsDevout" title="struct AgsDevout"><span class="type">AgsDevout</span></a> *devout</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsRecallID.html#AgsRecallID" title="struct AgsRecallID"><span class="type">AgsRecallID</span></a> *recall_id</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> audio_signal_flags</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="ags-AgsAddAudioSignal.description"></a><h2>Description</h2>
+<p>
+</p>
+</div>
+<div class="refsect1">
+<a name="ags-AgsAddAudioSignal.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AgsAddAudioSignal"></a><h3>struct AgsAddAudioSignal</h3>
+<pre class="programlisting">struct AgsAddAudioSignal {
+  AgsTask task;
+
+  AgsRecycling *recycling;
+  AgsAudioSignal *audio_signal;
+  AgsDevout *devout;
+  AgsRecallID *recall_id;
+  guint audio_signal_flags;
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsAddAudioSignalClass"></a><h3>struct AgsAddAudioSignalClass</h3>
+<pre class="programlisting">struct AgsAddAudioSignalClass {
+  AgsTaskClass task;
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-add-audio-signal-new"></a><h3>ags_add_audio_signal_new ()</h3>
+<pre class="programlisting"><a class="link" href="ags-AgsAddAudioSignal.html#AgsAddAudioSignal" title="struct AgsAddAudioSignal"><span class="returnvalue">AgsAddAudioSignal</span></a> * ags_add_audio_signal_new            (<em class="parameter"><code><a class="link" href="ags-AgsRecycling.html#AgsRecycling" title="struct AgsRecycling"><span class="type">AgsRecycling</span></a> *recycling</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsAudioSignal.html#AgsAudioSignal" title="struct AgsAudioSignal"><span class="type">AgsAudioSignal</span></a> *audio_signal</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsDevout.html#AgsDevout" title="struct AgsDevout"><span class="type">AgsDevout</span></a> *devout</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsRecallID.html#AgsRecallID" title="struct AgsRecallID"><span class="type">AgsRecallID</span></a> *recall_id</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> audio_signal_flags</code></em>);</pre>
+<p>
+</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

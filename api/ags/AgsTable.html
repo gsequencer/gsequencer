@@ -1,0 +1,108 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsTable</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="widget.html" title="Part IV. Widget - GUI elements">
+<link rel="prev" href="AgsVIndicator.html" title="AgsVIndicator">
+<link rel="next" href="thread.html" title="Part V. Thread - Multi-threaded tree">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="AgsVIndicator.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="widget.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="thread.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#AgsTable.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#AgsTable.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#AgsTable.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#AgsTable.implemented-interfaces" class="shortcut">Implemented Interfaces</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="AgsTable"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="AgsTable.top_of_page"></a>AgsTable</span></h2>
+<p>AgsTable</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="AgsTable.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">struct              <a class="link" href="AgsTable.html#AgsTable-struct" title="struct AgsTable">AgsTable</a>;
+struct              <a class="link" href="AgsTable.html#AgsTableClass" title="struct AgsTableClass">AgsTableClass</a>;
+<a class="link" href="AgsTable.html" title="AgsTable"><span class="returnvalue">AgsTable</span></a> *          <a class="link" href="AgsTable.html#ags-table-new" title="ags_table_new ()">ags_table_new</a>                       (<em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> row</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> columns</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gboolean"><span class="type">gboolean</span></GTKDOCLINK> homogeneous</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsTable.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  <GTKDOCLINK HREF="GObject">GObject</GTKDOCLINK>
+   +----<GTKDOCLINK HREF="GInitiallyUnowned">GInitiallyUnowned</GTKDOCLINK>
+         +----<GTKDOCLINK HREF="GtkObject">GtkObject</GTKDOCLINK>
+               +----<GTKDOCLINK HREF="GtkWidget">GtkWidget</GTKDOCLINK>
+                     +----<GTKDOCLINK HREF="GtkContainer">GtkContainer</GTKDOCLINK>
+                           +----<GTKDOCLINK HREF="GtkTable">GtkTable</GTKDOCLINK>
+                                 +----AgsTable
+                                       +----<a class="link" href="AgsMenuItem.html" title="AgsMenuItem">AgsMenuItem</a>
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsTable.implemented-interfaces"></a><h2>Implemented Interfaces</h2>
+<p>
+AgsTable implements
+ <GTKDOCLINK HREF="AtkImplementorIface">AtkImplementorIface</GTKDOCLINK> and  <GTKDOCLINK HREF="GtkBuildable">GtkBuildable</GTKDOCLINK>.</p>
+</div>
+<div class="refsect1">
+<a name="AgsTable.description"></a><h2>Description</h2>
+<p>
+</p>
+</div>
+<div class="refsect1">
+<a name="AgsTable.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AgsTable-struct"></a><h3>struct AgsTable</h3>
+<pre class="programlisting">struct AgsTable;</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsTableClass"></a><h3>struct AgsTableClass</h3>
+<pre class="programlisting">struct AgsTableClass {
+  GtkTableClass table;
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-table-new"></a><h3>ags_table_new ()</h3>
+<pre class="programlisting"><a class="link" href="AgsTable.html" title="AgsTable"><span class="returnvalue">AgsTable</span></a> *          ags_table_new                       (<em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> row</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> columns</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gboolean"><span class="type">gboolean</span></GTKDOCLINK> homogeneous</code></em>);</pre>
+<p>
+</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

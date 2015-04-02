@@ -1,0 +1,162 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Advanced Gtk+ Sequencer Reference Manual: AgsApplicable</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="object.html" title="Part III. Object - Interfaces and marshallers">
+<link rel="prev" href="object.html" title="Part III. Object - Interfaces and marshallers">
+<link rel="next" href="ags-AgsCountable.html" title="AgsCountable">
+<meta name="generator" content="GTK-Doc V1.21 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#ags-AgsApplicable.description" class="shortcut">Description</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="object.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="object.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="ags-AgsCountable.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry">
+<a name="ags-AgsApplicable"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="ags-AgsApplicable.top_of_page"></a>AgsApplicable</span></h2>
+<p>AgsApplicable — unique access to dialogs</p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1">
+<a name="ags-AgsApplicable.functions"></a><h2>Functions</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="functions_return">
+<col class="functions_name">
+</colgroup>
+<tbody>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="ags-AgsApplicable.html#ags-applicable-set-update" title="ags_applicable_set_update ()">ags_applicable_set_update</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="ags-AgsApplicable.html#ags-applicable-apply" title="ags_applicable_apply ()">ags_applicable_apply</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="ags-AgsApplicable.html#ags-applicable-reset" title="ags_applicable_reset ()">ags_applicable_reset</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="ags-AgsApplicable.includes"></a><h2>Includes</h2>
+<pre class="synopsis">#include &lt;ags/object/ags_applicable.h&gt;
+</pre>
+</div>
+<div class="refsect1">
+<a name="ags-AgsApplicable.description"></a><h2>Description</h2>
+<p>The <GTKDOCLINK HREF="AgsApplicable"><span class="type">AgsApplicable</span></GTKDOCLINK> interface gives you a unique access to dialogs.</p>
+</div>
+<div class="refsect1">
+<a name="ags-AgsApplicable.functions_details"></a><h2>Functions</h2>
+<div class="refsect2">
+<a name="ags-applicable-set-update"></a><h3>ags_applicable_set_update ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_applicable_set_update (<em class="parameter"><code><GTKDOCLINK HREF="AgsApplicable"><span class="type">AgsApplicable</span></GTKDOCLINK> *applicable</code></em>,
+                           <em class="parameter"><code><GTKDOCLINK HREF="gboolean"><span class="type">gboolean</span></GTKDOCLINK> update</code></em>);</pre>
+<p>Update behaviour.</p>
+<div class="refsect3">
+<a name="id-1.5.2.6.2.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>applicable</p></td>
+<td class="parameter_description"><p>an <GTKDOCLINK HREF="AgsApplicable"><span class="type">AgsApplicable</span></GTKDOCLINK></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>update</p></td>
+<td class="parameter_description"><p>if <GTKDOCLINK HREF="TRUE:CAPS"><code class="literal">TRUE</code></GTKDOCLINK> do ::reset after ::update</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-applicable-apply"></a><h3>ags_applicable_apply ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_applicable_apply (<em class="parameter"><code><GTKDOCLINK HREF="AgsApplicable"><span class="type">AgsApplicable</span></GTKDOCLINK> *applicable</code></em>);</pre>
+<p>Apply.</p>
+<div class="refsect3">
+<a name="id-1.5.2.6.3.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>applicable</p></td>
+<td class="parameter_description"><p>an <GTKDOCLINK HREF="AgsApplicable"><span class="type">AgsApplicable</span></GTKDOCLINK></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-applicable-reset"></a><h3>ags_applicable_reset ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_applicable_reset (<em class="parameter"><code><GTKDOCLINK HREF="AgsApplicable"><span class="type">AgsApplicable</span></GTKDOCLINK> *applicable</code></em>);</pre>
+<p>Reset.</p>
+<div class="refsect3">
+<a name="id-1.5.2.6.4.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>applicable</p></td>
+<td class="parameter_description"><p>an <GTKDOCLINK HREF="AgsApplicable"><span class="type">AgsApplicable</span></GTKDOCLINK></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+</div>
+<div class="refsect1">
+<a name="ags-AgsApplicable.other_details"></a><h2>Types and Values</h2>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.21</div>
+</body>
+</html>

@@ -1,0 +1,338 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsNoteEdit</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="editor.html" title="Editor - Piano roll and its controls">
+<link rel="prev" href="ags-ags-meter-callbacks.html" title="ags_meter_callbacks">
+<link rel="next" href="ags-ags-note-edit-callbacks.html" title="ags_note_edit_callbacks">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="ags-ags-meter-callbacks.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="editor.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="ags-ags-note-edit-callbacks.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#AgsNoteEdit.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#AgsNoteEdit.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#AgsNoteEdit.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#AgsNoteEdit.implemented-interfaces" class="shortcut">Implemented Interfaces</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="AgsNoteEdit"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="AgsNoteEdit.top_of_page"></a>AgsNoteEdit</span></h2>
+<p>AgsNoteEdit — edit notes</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="AgsNoteEdit.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">
+#include &lt;ags/X/editor/ags_note_edit.h&gt;
+
+#define             <a class="link" href="AgsNoteEdit.html#AGS-NOTE-EDIT-MAX-CONTROLS:CAPS" title="AGS_NOTE_EDIT_MAX_CONTROLS">AGS_NOTE_EDIT_MAX_CONTROLS</a>
+struct              <a class="link" href="AgsNoteEdit.html#AgsNoteEdit-struct" title="struct AgsNoteEdit">AgsNoteEdit</a>;
+struct              <a class="link" href="AgsNoteEdit.html#AgsNoteEditClass" title="struct AgsNoteEditClass">AgsNoteEditClass</a>;
+enum                <a class="link" href="AgsNoteEdit.html#AgsNoteEditFlags" title="enum AgsNoteEditFlags">AgsNoteEditFlags</a>;
+enum                <a class="link" href="AgsNoteEdit.html#AgsNoteEditResetFlags" title="enum AgsNoteEditResetFlags">AgsNoteEditResetFlags</a>;
+<span class="returnvalue">void</span>                <a class="link" href="AgsNoteEdit.html#ags-note-edit-draw-notation" title="ags_note_edit_draw_notation ()">ags_note_edit_draw_notation</a>         (<em class="parameter"><code><a class="link" href="AgsNoteEdit.html" title="AgsNoteEdit"><span class="type">AgsNoteEdit</span></a> *note_edit</code></em>,
+                                                         <em class="parameter"><code><a href="../cairo/cairo-cairo-t.html#cairo-t"><span class="type">cairo_t</span></a> *cr</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsNoteEdit.html#ags-note-edit-draw-position" title="ags_note_edit_draw_position ()">ags_note_edit_draw_position</a>         (<em class="parameter"><code><a class="link" href="AgsNoteEdit.html" title="AgsNoteEdit"><span class="type">AgsNoteEdit</span></a> *note_edit</code></em>,
+                                                         <em class="parameter"><code><a href="../cairo/cairo-cairo-t.html#cairo-t"><span class="type">cairo_t</span></a> *cr</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsNoteEdit.html#ags-note-edit-draw-scroll" title="ags_note_edit_draw_scroll ()">ags_note_edit_draw_scroll</a>           (<em class="parameter"><code><a class="link" href="AgsNoteEdit.html" title="AgsNoteEdit"><span class="type">AgsNoteEdit</span></a> *note_edit</code></em>,
+                                                         <em class="parameter"><code><a href="../cairo/cairo-cairo-t.html#cairo-t"><span class="type">cairo_t</span></a> *cr</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gdouble"><span class="type">gdouble</span></a> position</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsNoteEdit.html#ags-note-edit-draw-segment" title="ags_note_edit_draw_segment ()">ags_note_edit_draw_segment</a>          (<em class="parameter"><code><a class="link" href="AgsNoteEdit.html" title="AgsNoteEdit"><span class="type">AgsNoteEdit</span></a> *note_edit</code></em>,
+                                                         <em class="parameter"><code><a href="../cairo/cairo-cairo-t.html#cairo-t"><span class="type">cairo_t</span></a> *cr</code></em>);
+<a class="link" href="AgsNoteEdit.html" title="AgsNoteEdit"><span class="returnvalue">AgsNoteEdit</span></a> *       <a class="link" href="AgsNoteEdit.html#ags-note-edit-new" title="ags_note_edit_new ()">ags_note_edit_new</a>                   ();
+<span class="returnvalue">void</span>                <a class="link" href="AgsNoteEdit.html#ags-note-edit-reset-horizontally" title="ags_note_edit_reset_horizontally ()">ags_note_edit_reset_horizontally</a>    (<em class="parameter"><code><a class="link" href="AgsNoteEdit.html" title="AgsNoteEdit"><span class="type">AgsNoteEdit</span></a> *note_edit</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> flags</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsNoteEdit.html#ags-note-edit-reset-vertically" title="ags_note_edit_reset_vertically ()">ags_note_edit_reset_vertically</a>      (<em class="parameter"><code><a class="link" href="AgsNoteEdit.html" title="AgsNoteEdit"><span class="type">AgsNoteEdit</span></a> *note_edit</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> flags</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsNoteEdit.html#ags-note-edit-set-map-height" title="ags_note_edit_set_map_height ()">ags_note_edit_set_map_height</a>        (<em class="parameter"><code><a class="link" href="AgsNoteEdit.html" title="AgsNoteEdit"><span class="type">AgsNoteEdit</span></a> *note_edit</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> map_height</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsNoteEdit.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  <a href="../gobject/gobject-The-Base-Object-Type.html#GObject">GObject</a>
+   +----<a href="../gobject/gobject-The-Base-Object-Type.html#GInitiallyUnowned">GInitiallyUnowned</a>
+         +----<a href="../gtk/GtkObject.html">GtkObject</a>
+               +----<a href="../gtk3/GtkWidget.html">GtkWidget</a>
+                     +----<a href="../gtk3/GtkContainer.html">GtkContainer</a>
+                           +----<a href="../gtk3/GtkTable.html">GtkTable</a>
+                                 +----AgsNoteEdit
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsNoteEdit.implemented-interfaces"></a><h2>Implemented Interfaces</h2>
+<p>
+AgsNoteEdit implements
+ AtkImplementorIface,  <a href="../gtk3/GtkBuildable.html">GtkBuildable</a> and  AgsConnectable.</p>
+</div>
+<div class="refsect1">
+<a name="AgsNoteEdit.description"></a><h2>Description</h2>
+<p>
+The <a class="link" href="AgsNoteEdit.html" title="AgsNoteEdit"><span class="type">AgsNoteEdit</span></a> lets you edit notes.
+</p>
+</div>
+<div class="refsect1">
+<a name="AgsNoteEdit.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AGS-NOTE-EDIT-MAX-CONTROLS:CAPS"></a><h3>AGS_NOTE_EDIT_MAX_CONTROLS</h3>
+<pre class="programlisting">#define AGS_NOTE_EDIT_MAX_CONTROLS 1200
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsNoteEdit-struct"></a><h3>struct AgsNoteEdit</h3>
+<pre class="programlisting">struct AgsNoteEdit;</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsNoteEditClass"></a><h3>struct AgsNoteEditClass</h3>
+<pre class="programlisting">struct AgsNoteEditClass {
+  GtkTableClass table;
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsNoteEditFlags"></a><h3>enum AgsNoteEditFlags</h3>
+<pre class="programlisting">typedef enum {
+  AGS_NOTE_EDIT_RESETING_VERTICALLY    = 1,
+  AGS_NOTE_EDIT_RESETING_HORIZONTALLY  = 1 &lt;&lt;  1,
+  AGS_NOTE_EDIT_POSITION_CURSOR        = 1 &lt;&lt;  2,
+  AGS_NOTE_EDIT_ADDING_NOTE            = 1 &lt;&lt;  3,
+  AGS_NOTE_EDIT_DELETING_NOTE          = 1 &lt;&lt;  4,
+  AGS_NOTE_EDIT_SELECTING_NOTES        = 1 &lt;&lt;  5,
+} AgsNoteEditFlags;
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsNoteEditResetFlags"></a><h3>enum AgsNoteEditResetFlags</h3>
+<pre class="programlisting">typedef enum {
+  AGS_NOTE_EDIT_RESET_VSCROLLBAR   = 1,
+  AGS_NOTE_EDIT_RESET_HSCROLLBAR   = 1 &lt;&lt;  1,
+  AGS_NOTE_EDIT_RESET_WIDTH        = 1 &lt;&lt;  2,
+  AGS_NOTE_EDIT_RESET_HEIGHT       = 1 &lt;&lt;  3, // reserved
+} AgsNoteEditResetFlags;
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-note-edit-draw-notation"></a><h3>ags_note_edit_draw_notation ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_note_edit_draw_notation         (<em class="parameter"><code><a class="link" href="AgsNoteEdit.html" title="AgsNoteEdit"><span class="type">AgsNoteEdit</span></a> *note_edit</code></em>,
+                                                         <em class="parameter"><code><a href="../cairo/cairo-cairo-t.html#cairo-t"><span class="type">cairo_t</span></a> *cr</code></em>);</pre>
+<p>
+Draw the <a class="link" href="AgsNotation.html" title="AgsNotation"><span class="type">AgsNotation</span></a> of selected <a class="link" href="AgsMachine.html" title="AgsMachine"><span class="type">AgsMachine</span></a> on <em class="parameter"><code>note_edit</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>note_edit</code></em> :</span></p></td>
+<td>the <a class="link" href="AgsNoteEdit.html" title="AgsNoteEdit"><span class="type">AgsNoteEdit</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>cr</code></em> :</span></p></td>
+<td>the <a href="../cairo/cairo-cairo-t.html#cairo-t"><span class="type">cairo_t</span></a> surface</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-note-edit-draw-position"></a><h3>ags_note_edit_draw_position ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_note_edit_draw_position         (<em class="parameter"><code><a class="link" href="AgsNoteEdit.html" title="AgsNoteEdit"><span class="type">AgsNoteEdit</span></a> *note_edit</code></em>,
+                                                         <em class="parameter"><code><a href="../cairo/cairo-cairo-t.html#cairo-t"><span class="type">cairo_t</span></a> *cr</code></em>);</pre>
+<p>
+Draws the cursor.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>note_edit</code></em> :</span></p></td>
+<td>the <a class="link" href="AgsNoteEdit.html" title="AgsNoteEdit"><span class="type">AgsNoteEdit</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>cr</code></em> :</span></p></td>
+<td>the <a href="../cairo/cairo-cairo-t.html#cairo-t"><span class="type">cairo_t</span></a> surface</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-note-edit-draw-scroll"></a><h3>ags_note_edit_draw_scroll ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_note_edit_draw_scroll           (<em class="parameter"><code><a class="link" href="AgsNoteEdit.html" title="AgsNoteEdit"><span class="type">AgsNoteEdit</span></a> *note_edit</code></em>,
+                                                         <em class="parameter"><code><a href="../cairo/cairo-cairo-t.html#cairo-t"><span class="type">cairo_t</span></a> *cr</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gdouble"><span class="type">gdouble</span></a> position</code></em>);</pre>
+<p>
+Change visible x-position of <em class="parameter"><code>note_edit</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>note_edit</code></em> :</span></p></td>
+<td>the <a class="link" href="AgsNoteEdit.html" title="AgsNoteEdit"><span class="type">AgsNoteEdit</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>cr</code></em> :</span></p></td>
+<td>the <a href="../cairo/cairo-cairo-t.html#cairo-t"><span class="type">cairo_t</span></a> surface</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>position</code></em> :</span></p></td>
+<td>the new position</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-note-edit-draw-segment"></a><h3>ags_note_edit_draw_segment ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_note_edit_draw_segment          (<em class="parameter"><code><a class="link" href="AgsNoteEdit.html" title="AgsNoteEdit"><span class="type">AgsNoteEdit</span></a> *note_edit</code></em>,
+                                                         <em class="parameter"><code><a href="../cairo/cairo-cairo-t.html#cairo-t"><span class="type">cairo_t</span></a> *cr</code></em>);</pre>
+<p>
+Draws horizontal and vertical lines.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>note_edit</code></em> :</span></p></td>
+<td>the <a class="link" href="AgsNoteEdit.html" title="AgsNoteEdit"><span class="type">AgsNoteEdit</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>cr</code></em> :</span></p></td>
+<td>the <a href="../cairo/cairo-cairo-t.html#cairo-t"><span class="type">cairo_t</span></a> surface</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-note-edit-new"></a><h3>ags_note_edit_new ()</h3>
+<pre class="programlisting"><a class="link" href="AgsNoteEdit.html" title="AgsNoteEdit"><span class="returnvalue">AgsNoteEdit</span></a> *       ags_note_edit_new                   ();</pre>
+<p>
+Create a new <a class="link" href="AgsNoteEdit.html" title="AgsNoteEdit"><span class="type">AgsNoteEdit</span></a>.
+</p>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-note-edit-reset-horizontally"></a><h3>ags_note_edit_reset_horizontally ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_note_edit_reset_horizontally    (<em class="parameter"><code><a class="link" href="AgsNoteEdit.html" title="AgsNoteEdit"><span class="type">AgsNoteEdit</span></a> *note_edit</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> flags</code></em>);</pre>
+<p>
+Reset <em class="parameter"><code>note_edit</code></em> as configured horizontally.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>note_edit</code></em> :</span></p></td>
+<td>the <a class="link" href="AgsNoteEdit.html" title="AgsNoteEdit"><span class="type">AgsNoteEdit</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>flags</code></em> :</span></p></td>
+<td>the <a class="link" href="AgsNoteEdit.html#AgsNoteEditResetFlags" title="enum AgsNoteEditResetFlags"><span class="type">AgsNoteEditResetFlags</span></a>
+</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-note-edit-reset-vertically"></a><h3>ags_note_edit_reset_vertically ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_note_edit_reset_vertically      (<em class="parameter"><code><a class="link" href="AgsNoteEdit.html" title="AgsNoteEdit"><span class="type">AgsNoteEdit</span></a> *note_edit</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> flags</code></em>);</pre>
+<p>
+Reset <em class="parameter"><code>note_edit</code></em> as configured vertically.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>note_edit</code></em> :</span></p></td>
+<td>the <a class="link" href="AgsNoteEdit.html" title="AgsNoteEdit"><span class="type">AgsNoteEdit</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>flags</code></em> :</span></p></td>
+<td>the <a class="link" href="AgsNoteEdit.html#AgsNoteEditResetFlags" title="enum AgsNoteEditResetFlags"><span class="type">AgsNoteEditResetFlags</span></a>
+</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-note-edit-set-map-height"></a><h3>ags_note_edit_set_map_height ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_note_edit_set_map_height        (<em class="parameter"><code><a class="link" href="AgsNoteEdit.html" title="AgsNoteEdit"><span class="type">AgsNoteEdit</span></a> *note_edit</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> map_height</code></em>);</pre>
+<p>
+Set the map height in pixel.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>note_edit</code></em> :</span></p></td>
+<td>the <a class="link" href="AgsNoteEdit.html" title="AgsNoteEdit"><span class="type">AgsNoteEdit</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>map_height</code></em> :</span></p></td>
+<td>the new height</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

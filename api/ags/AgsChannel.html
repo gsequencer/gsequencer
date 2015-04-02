@@ -1,0 +1,1201 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsChannel</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="audio.html" title="Part VII. The audio layer">
+<link rel="prev" href="AgsAudioSignal.html" title="AgsAudioSignal">
+<link rel="next" href="AgsConfig.html" title="AgsConfig">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="AgsAudioSignal.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="audio.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="AgsConfig.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#AgsChannel.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#AgsChannel.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#AgsChannel.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#AgsChannel.implemented-interfaces" class="shortcut">Implemented Interfaces</a>
+                   | 
+                  <a href="#AgsChannel.properties" class="shortcut">Properties</a>
+                   | 
+                  <a href="#AgsChannel.signals" class="shortcut">Signals</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="AgsChannel"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="AgsChannel.top_of_page"></a>AgsChannel</span></h2>
+<p>AgsChannel — Acts as entry point to the audio tree.</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="AgsChannel.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">
+#include &lt;ags/audio/ags_channel.h&gt;
+
+#define             <a class="link" href="AgsChannel.html#AGS-CHANNEL-ERROR:CAPS" title="AGS_CHANNEL_ERROR">AGS_CHANNEL_ERROR</a>
+struct              <a class="link" href="AgsChannel.html#AgsChannel-struct" title="struct AgsChannel">AgsChannel</a>;
+struct              <a class="link" href="AgsChannel.html#AgsChannelClass" title="struct AgsChannelClass">AgsChannelClass</a>;
+enum                <a class="link" href="AgsChannel.html#AgsChannelError" title="enum AgsChannelError">AgsChannelError</a>;
+enum                <a class="link" href="AgsChannel.html#AgsChannelFlags" title="enum AgsChannelFlags">AgsChannelFlags</a>;
+enum                <a class="link" href="AgsChannel.html#AgsChannelRecallIDMode" title="enum AgsChannelRecallIDMode">AgsChannelRecallIDMode</a>;
+<span class="returnvalue">void</span>                <a class="link" href="AgsChannel.html#ags-channel-add-recall" title="ags_channel_add_recall ()">ags_channel_add_recall</a>              (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a> *recall</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a> play</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsChannel.html#ags-channel-add-recall-container" title="ags_channel_add_recall_container ()">ags_channel_add_recall_container</a>    (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a> *recall_container</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsChannel.html#ags-channel-add-recall-id" title="ags_channel_add_recall_id ()">ags_channel_add_recall_id</a>           (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecallID.html" title="AgsRecallID"><span class="type">AgsRecallID</span></a> *recall_id</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsChannel.html#ags-channel-cancel" title="ags_channel_cancel ()">ags_channel_cancel</a>                  (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecallID.html" title="AgsRecallID"><span class="type">AgsRecallID</span></a> *recall_id</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsChannel.html#ags-channel-done" title="ags_channel_done ()">ags_channel_done</a>                    (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecallID.html" title="AgsRecallID"><span class="type">AgsRecallID</span></a> *recall_id</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsChannel.html#ags-channel-duplicate-recall" title="ags_channel_duplicate_recall ()">ags_channel_duplicate_recall</a>        (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecallID.html" title="AgsRecallID"><span class="type">AgsRecallID</span></a> *recall_id</code></em>);
+<a href="../glib/glib-Quarks.html#GQuark"><span class="returnvalue">GQuark</span></a>              <a class="link" href="AgsChannel.html#ags-channel-error-quark" title="ags_channel_error_quark ()">ags_channel_error_quark</a>             ();
+<a class="link" href="AgsRecall.html" title="AgsRecall"><span class="returnvalue">AgsRecall</span></a> *         <a class="link" href="AgsChannel.html#ags-channel-find-recall" title="ags_channel_find_recall ()">ags_channel_find_recall</a>             (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><span class="type">char</span> *effect</code></em>,
+                                                         <em class="parameter"><code><span class="type">char</span> *name</code></em>);
+<a class="link" href="AgsChannel.html" title="AgsChannel"><span class="returnvalue">AgsChannel</span></a> *        <a class="link" href="AgsChannel.html#ags-channel-first" title="ags_channel_first ()">ags_channel_first</a>                   (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>);
+<a class="link" href="AgsChannel.html" title="AgsChannel"><span class="returnvalue">AgsChannel</span></a> *        <a class="link" href="AgsChannel.html#ags-channel-first-with-recycling" title="ags_channel_first_with_recycling ()">ags_channel_first_with_recycling</a>    (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsChannel.html#ags-channel-init-recall" title="ags_channel_init_recall ()">ags_channel_init_recall</a>             (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gint"><span class="type">gint</span></a> stage</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecallID.html" title="AgsRecallID"><span class="type">AgsRecallID</span></a> *recall_id</code></em>);
+<a class="link" href="AgsChannel.html" title="AgsChannel"><span class="returnvalue">AgsChannel</span></a> *        <a class="link" href="AgsChannel.html#ags-channel-last" title="ags_channel_last ()">ags_channel_last</a>                    (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>);
+<a class="link" href="AgsChannel.html" title="AgsChannel"><span class="returnvalue">AgsChannel</span></a> *        <a class="link" href="AgsChannel.html#ags-channel-last-with-recycling" title="ags_channel_last_with_recycling ()">ags_channel_last_with_recycling</a>     (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>);
+<a class="link" href="AgsChannel.html" title="AgsChannel"><span class="returnvalue">AgsChannel</span></a> *        <a class="link" href="AgsChannel.html#ags-channel-new" title="ags_channel_new ()">ags_channel_new</a>                     (<em class="parameter"><code><a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a> *audio</code></em>);
+<a class="link" href="AgsChannel.html" title="AgsChannel"><span class="returnvalue">AgsChannel</span></a> *        <a class="link" href="AgsChannel.html#ags-channel-nth" title="ags_channel_nth ()">ags_channel_nth</a>                     (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> nth</code></em>);
+<a class="link" href="AgsChannel.html" title="AgsChannel"><span class="returnvalue">AgsChannel</span></a> *        <a class="link" href="AgsChannel.html#ags-channel-pad-first" title="ags_channel_pad_first ()">ags_channel_pad_first</a>               (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>);
+<a class="link" href="AgsChannel.html" title="AgsChannel"><span class="returnvalue">AgsChannel</span></a> *        <a class="link" href="AgsChannel.html#ags-channel-pad-last" title="ags_channel_pad_last ()">ags_channel_pad_last</a>                (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>);
+<a class="link" href="AgsChannel.html" title="AgsChannel"><span class="returnvalue">AgsChannel</span></a> *        <a class="link" href="AgsChannel.html#ags-channel-pad-nth" title="ags_channel_pad_nth ()">ags_channel_pad_nth</a>                 (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> nth</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsChannel.html#ags-channel-play" title="ags_channel_play ()">ags_channel_play</a>                    (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecallID.html" title="AgsRecallID"><span class="type">AgsRecallID</span></a> *recall_id</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gint"><span class="type">gint</span></a> stage</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsChannel.html#ags-channel-recall-id-set" title="ags_channel_recall_id_set ()">ags_channel_recall_id_set</a>           (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *output</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecallID.html" title="AgsRecallID"><span class="type">AgsRecallID</span></a> *recall_id</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a> ommit_own_channel</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> mode</code></em>,
+                                                         <em class="parameter"><code>...</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsChannel.html#ags-channel-recursive-play" title="ags_channel_recursive_play ()">ags_channel_recursive_play</a>          (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecallID.html" title="AgsRecallID"><span class="type">AgsRecallID</span></a> *recall_id</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gint"><span class="type">gint</span></a> stage</code></em>);
+<a class="link" href="AgsRecallID.html" title="AgsRecallID"><span class="returnvalue">AgsRecallID</span></a> *       <a class="link" href="AgsChannel.html#ags-channel-recursive-play-init" title="ags_channel_recursive_play_init ()">ags_channel_recursive_play_init</a>     (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gint"><span class="type">gint</span></a> stage</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a> arrange_recall_id</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a> duplicate_templates</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a> playback</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a> sequencer</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a> notation</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a> resolve_dependencies</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecallID.html" title="AgsRecallID"><span class="type">AgsRecallID</span></a> *recall_id</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsChannel.html#ags-channel-recursive-play-threaded" title="ags_channel_recursive_play_threaded ()">ags_channel_recursive_play_threaded</a> (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecallID.html" title="AgsRecallID"><span class="type">AgsRecallID</span></a> *recall_id</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gint"><span class="type">gint</span></a> stage</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsChannel.html#ags-channel-recursive-reset-recall-ids" title="ags_channel_recursive_reset_recall_ids ()">ags_channel_recursive_reset_recall_ids</a>
+                                                        (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *link</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *old_channel_link</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *old_link_link</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsChannel.html#ags-channel-recycling-changed" title="ags_channel_recycling_changed ()">ags_channel_recycling_changed</a>       (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a> *old_start_region</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a> *old_end_region</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a> *new_start_region</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a> *new_end_region</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a> *old_start_changed_region</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a> *old_end_changed_region</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a> *new_start_changed_region</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a> *new_end_changed_region</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsChannel.html#ags-channel-remove-recall" title="ags_channel_remove_recall ()">ags_channel_remove_recall</a>           (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a> *recall</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a> play</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsChannel.html#ags-channel-remove-recall-id" title="ags_channel_remove_recall_id ()">ags_channel_remove_recall_id</a>        (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecallID.html" title="AgsRecallID"><span class="type">AgsRecallID</span></a> *recall_id</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsChannel.html#ags-channel-resolve-recall" title="ags_channel_resolve_recall ()">ags_channel_resolve_recall</a>          (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecallID.html" title="AgsRecallID"><span class="type">AgsRecallID</span></a> *recall_id</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsChannel.html#ags-channel-safe-resize-audio-signal" title="ags_channel_safe_resize_audio_signal ()">ags_channel_safe_resize_audio_signal</a>
+                                                        (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> size</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsChannel.html#ags-channel-set-devout" title="ags_channel_set_devout ()">ags_channel_set_devout</a>              (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a> *devout</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsChannel.html#ags-channel-set-link" title="ags_channel_set_link ()">ags_channel_set_link</a>                (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *link</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Error-Reporting.html#GError"><span class="type">GError</span></a> **error</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsChannel.html#ags-channel-set-recycling" title="ags_channel_set_recycling ()">ags_channel_set_recycling</a>           (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a> *first_recycling</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a> *last_recycling</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a> update</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a> destroy_old</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsChannel.html#ags-channel-tillrecycling-cancel" title="ags_channel_tillrecycling_cancel ()">ags_channel_tillrecycling_cancel</a>    (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecallID.html" title="AgsRecallID"><span class="type">AgsRecallID</span></a> *recall_id</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsChannel.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  <a href="../gobject/gobject-The-Base-Object-Type.html#GObject">GObject</a>
+   +----AgsChannel
+         +----<a class="link" href="AgsInput.html" title="AgsInput">AgsInput</a>
+         +----<a class="link" href="AgsOutput.html" title="AgsOutput">AgsOutput</a>
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsChannel.implemented-interfaces"></a><h2>Implemented Interfaces</h2>
+<p>
+AgsChannel implements
+ AgsConnectable.</p>
+</div>
+<div class="refsect1">
+<a name="AgsChannel.properties"></a><h2>Properties</h2>
+<pre class="synopsis">
+  "<a class="link" href="AgsChannel.html#AgsChannel--audio" title='The "audio" property'>audio</a>"                    <a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a>*              : Read / Write
+  "<a class="link" href="AgsChannel.html#AgsChannel--devout" title='The "devout" property'>devout</a>"                   <a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a>*              : Read / Write
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsChannel.signals"></a><h2>Signals</h2>
+<pre class="synopsis">
+  "<a class="link" href="AgsChannel.html#AgsChannel-done" title='The "done" signal'>done</a>"                                           : <a href="../gobject/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></a>
+  "<a class="link" href="AgsChannel.html#AgsChannel-recycling-changed" title='The "recycling-changed" signal'>recycling-changed</a>"                              : <a href="../gobject/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></a>
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsChannel.description"></a><h2>Description</h2>
+<p>
+<a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> is the entry point to the entire audio tree and its nested
+recycling tree.
+</p>
+<p>
+Every channel has its own <a class="link" href="AgsRecallID.html" title="AgsRecallID"><span class="type">AgsRecallID</span></a>. As modifying link a new <a class="link" href="AgsRecyclingContainer.html" title="AgsRecyclingContainer"><span class="type">AgsRecyclingContainer</span></a>
+is indicated, since it acts as a kind of recall id tree context.
+</p>
+</div>
+<div class="refsect1">
+<a name="AgsChannel.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AGS-CHANNEL-ERROR:CAPS"></a><h3>AGS_CHANNEL_ERROR</h3>
+<pre class="programlisting">#define AGS_CHANNEL_ERROR (ags_channel_error_quark())
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsChannel-struct"></a><h3>struct AgsChannel</h3>
+<pre class="programlisting">struct AgsChannel;</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsChannelClass"></a><h3>struct AgsChannelClass</h3>
+<pre class="programlisting">struct AgsChannelClass {
+  GObjectClass object;
+
+  void (*recycling_changed)(AgsChannel *channel,
+			    AgsRecycling *old_start_region, AgsRecycling *old_end_region,
+			    AgsRecycling *new_start_region, AgsRecycling *new_end_region,
+			    AgsRecycling *old_start_changed_region, AgsRecycling *old_end_changed_region,
+			    AgsRecycling *new_start_changed_region, AgsRecycling *new_end_changed_region);
+
+  void (*done)(AgsChannel *channel,
+	       AgsRecallID *recall_id);
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsChannelError"></a><h3>enum AgsChannelError</h3>
+<pre class="programlisting">typedef enum {
+  AGS_CHANNEL_ERROR_LOOP_IN_LINK,
+} AgsChannelError;
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsChannelFlags"></a><h3>enum AgsChannelFlags</h3>
+<pre class="programlisting">typedef enum {
+  AGS_CHANNEL_RUNNING        = 1,
+} AgsChannelFlags;
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsChannelRecallIDMode"></a><h3>enum AgsChannelRecallIDMode</h3>
+<pre class="programlisting">typedef enum {
+  AGS_CHANNEL_RECALL_ID_RUN_STAGE,
+  AGS_CHANNEL_RECALL_ID_CANCEL,
+} AgsChannelRecallIDMode;
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-channel-add-recall"></a><h3>ags_channel_add_recall ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_channel_add_recall              (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a> *recall</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a> play</code></em>);</pre>
+<p>
+Adds a recall.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>channel</code></em> :</span></p></td>
+<td>an <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>play</code></em> :</span></p></td>
+<td>
+<a href="../glib/glib-Standard-Macros.html#TRUE:CAPS"><code class="literal">TRUE</code></a> if simple playback.</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-channel-add-recall-container"></a><h3>ags_channel_add_recall_container ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_channel_add_recall_container    (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a> *recall_container</code></em>);</pre>
+<p>
+Adds a recall container.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>channel</code></em> :</span></p></td>
+<td>an <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>recall_container</code></em> :</span></p></td>
+<td>the <a class="link" href="AgsRecallContainer.html" title="AgsRecallContainer"><span class="type">AgsRecallContainer</span></a>
+</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-channel-add-recall-id"></a><h3>ags_channel_add_recall_id ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_channel_add_recall_id           (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecallID.html" title="AgsRecallID"><span class="type">AgsRecallID</span></a> *recall_id</code></em>);</pre>
+<p>
+Adds a recall id.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>channel</code></em> :</span></p></td>
+<td>an <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>recall_id</code></em> :</span></p></td>
+<td>the <a class="link" href="AgsRecallID.html" title="AgsRecallID"><span class="type">AgsRecallID</span></a>
+</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-channel-cancel"></a><h3>ags_channel_cancel ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_channel_cancel                  (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecallID.html" title="AgsRecallID"><span class="type">AgsRecallID</span></a> *recall_id</code></em>);</pre>
+<p>
+Calls for every matching <em class="parameter"><code>recall_id</code></em> <a class="link" href="AgsRecall.html#ags-recall-cancel" title="ags_recall_cancel ()"><code class="function">ags_recall_cancel()</code></a>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>channel</code></em> :</span></p></td>
+<td>an <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>recall_id</code></em> :</span></p></td>
+<td>and <a class="link" href="AgsRecallID.html" title="AgsRecallID"><span class="type">AgsRecallID</span></a>
+</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.3</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-channel-done"></a><h3>ags_channel_done ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_channel_done                    (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecallID.html" title="AgsRecallID"><span class="type">AgsRecallID</span></a> *recall_id</code></em>);</pre>
+<p>
+Is emitted as playing channel is done.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>channel</code></em> :</span></p></td>
+<td>an <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>recall_id</code></em> :</span></p></td>
+<td>the current <a class="link" href="AgsRecallID.html" title="AgsRecallID"><span class="type">AgsRecallID</span></a>
+</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-channel-duplicate-recall"></a><h3>ags_channel_duplicate_recall ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_channel_duplicate_recall        (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecallID.html" title="AgsRecallID"><span class="type">AgsRecallID</span></a> *recall_id</code></em>);</pre>
+<p>
+Duplicate <a class="link" href="AgsRecall.html" title="AgsRecall"><span class="type">AgsRecall</span></a> templates for use with <a class="link" href="AgsChannel.html#ags-channel-recursive-play" title="ags_channel_recursive_play ()"><code class="function">ags_channel_recursive_play()</code></a>,
+but <a class="link" href="AgsChannel.html#ags-channel-recursive-play-init" title="ags_channel_recursive_play_init ()"><code class="function">ags_channel_recursive_play_init()</code></a> may call this function for you.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>channel</code></em> :</span></p></td>
+<td>an <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> that contains the <a class="link" href="AgsRecall.html" title="AgsRecall"><span class="type">AgsRecall</span></a> templates</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>recall_id</code></em> :</span></p></td>
+<td>the <a class="link" href="AgsRecallID.html" title="AgsRecallID"><span class="type">AgsRecallID</span></a> the newly allocated <a class="link" href="AgsRecall.html" title="AgsRecall"><span class="type">AgsRecall</span></a> objects belongs to</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.3</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-channel-error-quark"></a><h3>ags_channel_error_quark ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Quarks.html#GQuark"><span class="returnvalue">GQuark</span></a>              ags_channel_error_quark             ();</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-channel-find-recall"></a><h3>ags_channel_find_recall ()</h3>
+<pre class="programlisting"><a class="link" href="AgsRecall.html" title="AgsRecall"><span class="returnvalue">AgsRecall</span></a> *         ags_channel_find_recall             (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><span class="type">char</span> *effect</code></em>,
+                                                         <em class="parameter"><code><span class="type">char</span> *name</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-channel-first"></a><h3>ags_channel_first ()</h3>
+<pre class="programlisting"><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="returnvalue">AgsChannel</span></a> *        ags_channel_first                   (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>);</pre>
+<p>
+Iterates until the first <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> was found.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>channel</code></em> :</span></p></td>
+<td>an <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the first <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a>
+</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.3</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-channel-first-with-recycling"></a><h3>ags_channel_first_with_recycling ()</h3>
+<pre class="programlisting"><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="returnvalue">AgsChannel</span></a> *        ags_channel_first_with_recycling    (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>);</pre>
+<p>
+Iterates over pads forwards as long as there is no <a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a> on the <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>channel</code></em> :</span></p></td>
+<td>an <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the first channel with an <a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a>
+</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.3</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-channel-init-recall"></a><h3>ags_channel_init_recall ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_channel_init_recall             (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gint"><span class="type">gint</span></a> stage</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecallID.html" title="AgsRecallID"><span class="type">AgsRecallID</span></a> *recall_id</code></em>);</pre>
+<p>
+Prepare <a class="link" href="AgsRecall.html" title="AgsRecall"><span class="type">AgsRecall</span></a> objects to become runnning, <a class="link" href="AgsChannel.html#ags-channel-recursive-play-init" title="ags_channel_recursive_play_init ()"><code class="function">ags_channel_recursive_play_init()</code></a>
+may call this function for you.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>channel</code></em> :</span></p></td>
+<td>an <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> that contains the recalls</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>recall_id</code></em> :</span></p></td>
+<td>the <span class="type">AgsRecallId</span> this recall belongs to</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.3</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-channel-last"></a><h3>ags_channel_last ()</h3>
+<pre class="programlisting"><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="returnvalue">AgsChannel</span></a> *        ags_channel_last                    (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>);</pre>
+<p>
+Iterates until the last <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> was found.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>channel</code></em> :</span></p></td>
+<td>an <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the last <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a>
+</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.3</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-channel-last-with-recycling"></a><h3>ags_channel_last_with_recycling ()</h3>
+<pre class="programlisting"><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="returnvalue">AgsChannel</span></a> *        ags_channel_last_with_recycling     (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>);</pre>
+<p>
+Iterates over pads backwards as long as there is no <a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a> on the <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>channel</code></em> :</span></p></td>
+<td>an <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the last channel with an <a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a>
+</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.3</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-channel-new"></a><h3>ags_channel_new ()</h3>
+<pre class="programlisting"><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="returnvalue">AgsChannel</span></a> *        ags_channel_new                     (<em class="parameter"><code><a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a> *audio</code></em>);</pre>
+<p>
+Creates a <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a>, linking tree to <em class="parameter"><code>audio</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>audio</code></em> :</span></p></td>
+<td>the <a class="link" href="AgsAudio.html" title="AgsAudio"><span class="type">AgsAudio</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a>
+</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.3</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-channel-nth"></a><h3>ags_channel_nth ()</h3>
+<pre class="programlisting"><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="returnvalue">AgsChannel</span></a> *        ags_channel_nth                     (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> nth</code></em>);</pre>
+<p>
+Iterates <em class="parameter"><code>nth</code></em> times forward.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>channel</code></em> :</span></p></td>
+<td>an <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>nth</code></em> :</span></p></td>
+<td>the count to iterate</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the nth <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a>
+</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.3</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-channel-pad-first"></a><h3>ags_channel_pad_first ()</h3>
+<pre class="programlisting"><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="returnvalue">AgsChannel</span></a> *        ags_channel_pad_first               (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>);</pre>
+<p>
+Iterates until the first pad has been reached.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>channel</code></em> :</span></p></td>
+<td>an <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the first <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> with the same audio_channel as <em class="parameter"><code>channel</code></em>
+</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.3</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-channel-pad-last"></a><h3>ags_channel_pad_last ()</h3>
+<pre class="programlisting"><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="returnvalue">AgsChannel</span></a> *        ags_channel_pad_last                (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>);</pre>
+<p>
+Iterates until the last pad has been reached.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>channel</code></em> :</span></p></td>
+<td>an <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the last <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> with the same audio_channel as <em class="parameter"><code>channel</code></em>
+</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.3</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-channel-pad-nth"></a><h3>ags_channel_pad_nth ()</h3>
+<pre class="programlisting"><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="returnvalue">AgsChannel</span></a> *        ags_channel_pad_nth                 (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> nth</code></em>);</pre>
+<p>
+Iterates nth times.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>channel</code></em> :</span></p></td>
+<td>an <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>nth</code></em> :</span></p></td>
+<td>the count of pads to step</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the nth pad</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.3</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-channel-play"></a><h3>ags_channel_play ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_channel_play                    (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecallID.html" title="AgsRecallID"><span class="type">AgsRecallID</span></a> *recall_id</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gint"><span class="type">gint</span></a> stage</code></em>);</pre>
+<p>
+Play one single run of <em class="parameter"><code>stage</code></em> step.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>channel</code></em> :</span></p></td>
+<td>an <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>recall_id</code></em> :</span></p></td>
+<td>appropriate <a class="link" href="AgsRecallID.html" title="AgsRecallID"><span class="type">AgsRecallID</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>stage</code></em> :</span></p></td>
+<td>run_pre, run_inter or run_post</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.3</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-channel-recall-id-set"></a><h3>ags_channel_recall_id_set ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_channel_recall_id_set           (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *output</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecallID.html" title="AgsRecallID"><span class="type">AgsRecallID</span></a> *recall_id</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a> ommit_own_channel</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> mode</code></em>,
+                                                         <em class="parameter"><code>...</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-channel-recursive-play"></a><h3>ags_channel_recursive_play ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_channel_recursive_play          (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecallID.html" title="AgsRecallID"><span class="type">AgsRecallID</span></a> *recall_id</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gint"><span class="type">gint</span></a> stage</code></em>);</pre>
+<p>
+Call recursively <a class="link" href="AgsChannel.html#ags-channel-play" title="ags_channel_play ()"><code class="function">ags_channel_play()</code></a> and <a class="link" href="AgsAudio.html#ags-audio-play" title="ags_audio_play ()"><code class="function">ags_audio_play()</code></a>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>channel</code></em> :</span></p></td>
+<td>an <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>recall_id</code></em> :</span></p></td>
+<td>appropriate <a class="link" href="AgsRecallID.html" title="AgsRecallID"><span class="type">AgsRecallID</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>stage</code></em> :</span></p></td>
+<td>run_pre, run_inter or run_post</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.3</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-channel-recursive-play-init"></a><h3>ags_channel_recursive_play_init ()</h3>
+<pre class="programlisting"><a class="link" href="AgsRecallID.html" title="AgsRecallID"><span class="returnvalue">AgsRecallID</span></a> *       ags_channel_recursive_play_init     (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gint"><span class="type">gint</span></a> stage</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a> arrange_recall_id</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a> duplicate_templates</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a> playback</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a> sequencer</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a> notation</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a> resolve_dependencies</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecallID.html" title="AgsRecallID"><span class="type">AgsRecallID</span></a> *recall_id</code></em>);</pre>
+<p>
+Make the tree ready for a new <a class="link" href="AgsDevout.html#AgsDevoutPlay" title="struct AgsDevoutPlay"><span class="type">AgsDevoutPlay</span></a>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>channel</code></em> :</span></p></td>
+<td>the <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> to prepare</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>stage</code></em> :</span></p></td>
+<td>valid values for <em class="parameter"><code>stage</code></em> are: -1 for running all three stages, or the stages 0 through 2 to run
+just the specified stage. With stage is meant the <a class="link" href="AgsRecall.html" title="AgsRecall"><span class="type">AgsRecall</span></a> run_init_pre, <a class="link" href="AgsRecall.html" title="AgsRecall"><span class="type">AgsRecall</span></a> run_init_inter
+and <a class="link" href="AgsRecall.html" title="AgsRecall"><span class="type">AgsRecall</span></a> run_init_post stages.</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>arrange_recall_id</code></em> :</span></p></td>
+<td>
+<a href="../glib/glib-Standard-Macros.html#TRUE:CAPS"><code class="literal">TRUE</code></a> if new <a class="link" href="AgsRecallID.html" title="AgsRecallID"><span class="type">AgsRecallID</span></a> objects should be created</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>duplicate_templates</code></em> :</span></p></td>
+<td>
+<a href="../glib/glib-Standard-Macros.html#TRUE:CAPS"><code class="literal">TRUE</code></a> if the <a class="link" href="AgsRecall.html" title="AgsRecall"><span class="type">AgsRecall</span></a> templates should be duplicated</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>playback</code></em> :</span></p></td>
+<td>
+<a href="../glib/glib-Standard-Macros.html#TRUE:CAPS"><code class="literal">TRUE</code></a> if the purpose is a simple playback of the tree, this option is used to omit the
+duplication of <a class="link" href="AgsRecall.html" title="AgsRecall"><span class="type">AgsRecall</span></a> templates which haven't set <code class="literal">AGS_RECALL_PLAYBACK</code> flag</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>sequencer</code></em> :</span></p></td>
+<td>
+<a href="../glib/glib-Standard-Macros.html#TRUE:CAPS"><code class="literal">TRUE</code></a> if the purpose is playing the tree for a sequencer, this option is used to omit the
+duplication of <a class="link" href="AgsRecall.html" title="AgsRecall"><span class="type">AgsRecall</span></a> templates which haven't set the <code class="literal">AGS_RECALL_SEQUENCER</code> flag</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>notation</code></em> :</span></p></td>
+<td>
+<a href="../glib/glib-Standard-Macros.html#TRUE:CAPS"><code class="literal">TRUE</code></a> if the purpose is playing the tree for a notation, this option is used to omit the
+duplication of <a class="link" href="AgsRecall.html" title="AgsRecall"><span class="type">AgsRecall</span></a> templates which haven't set the <code class="literal">AGS_RECALL_NOTATION</code> flag</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>resolve_dependencies</code></em> :</span></p></td>
+<td>
+<a href="../glib/glib-Standard-Macros.html#TRUE:CAPS"><code class="literal">TRUE</code></a> if the</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>recall_id</code></em> :</span></p></td>
+<td>the initial recall id or <a href="../glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a>
+</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.3</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-channel-recursive-play-threaded"></a><h3>ags_channel_recursive_play_threaded ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_channel_recursive_play_threaded (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecallID.html" title="AgsRecallID"><span class="type">AgsRecallID</span></a> *recall_id</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gint"><span class="type">gint</span></a> stage</code></em>);</pre>
+<p>
+Super-threaded version of play one single run of <em class="parameter"><code>stage</code></em> step.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>channel</code></em> :</span></p></td>
+<td>an <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>recall_id</code></em> :</span></p></td>
+<td>appropriate <a class="link" href="AgsRecallID.html" title="AgsRecallID"><span class="type">AgsRecallID</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>stage</code></em> :</span></p></td>
+<td>run_pre, run_inter or run_post</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-channel-recursive-reset-recall-ids"></a><h3>ags_channel_recursive_reset_recall_ids ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_channel_recursive_reset_recall_ids
+                                                        (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *link</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *old_channel_link</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *old_link_link</code></em>);</pre>
+<p>
+Called by <a class="link" href="AgsChannel.html#ags-channel-set-link" title="ags_channel_set_link ()"><code class="function">ags_channel_set_link()</code></a> to handle running <a class="link" href="AgsAudio.html" title="AgsAudio"><span class="type">AgsAudio</span></a> objects correctly.
+This function destroys <a class="link" href="AgsRecall.html" title="AgsRecall"><span class="type">AgsRecall</span></a> objects which were uneeded because they became
+invalid due to unlinking. By the way it destroys the uneeded <a class="link" href="AgsRecallID.html" title="AgsRecallID"><span class="type">AgsRecallID</span></a> objects, too.
+Additionally it creates <a class="link" href="AgsRecall.html" title="AgsRecall"><span class="type">AgsRecall</span></a> and <a class="link" href="AgsRecallID.html" title="AgsRecallID"><span class="type">AgsRecallID</span></a> objects to prepare becoming a
+running object (<a class="link" href="AgsAudio.html" title="AgsAudio"><span class="type">AgsAudio</span></a> or <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a>).
+By the clean up the invalid <a class="link" href="AgsRecall.html" title="AgsRecall"><span class="type">AgsRecall</span></a> objects will be removed.
+Once the clean up has done <a class="link" href="AgsChannel.html#ags-channel-recursive-play-init" title="ags_channel_recursive_play_init ()"><code class="function">ags_channel_recursive_play_init()</code></a> will be called for every
+playing instance that was found.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>channel</code></em> :</span></p></td>
+<td>an <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> that was linked with <em class="parameter"><code>link</code></em>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>link</code></em> :</span></p></td>
+<td>an <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> that was linked with <em class="parameter"><code>channel</code></em>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>old_channel_link</code></em> :</span></p></td>
+<td>the old link of <em class="parameter"><code>channel</code></em>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>old_link_link</code></em> :</span></p></td>
+<td>the old link of <em class="parameter"><code>link</code></em>
+</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-channel-recycling-changed"></a><h3>ags_channel_recycling_changed ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_channel_recycling_changed       (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a> *old_start_region</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a> *old_end_region</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a> *new_start_region</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a> *new_end_region</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a> *old_start_changed_region</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a> *old_end_changed_region</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a> *new_start_changed_region</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a> *new_end_changed_region</code></em>);</pre>
+<p>
+Modify recycling.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>channel</code></em> :</span></p></td>
+<td>the object recycling changed</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>old_start_region</code></em> :</span></p></td>
+<td>first recycling</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>old_end_region</code></em> :</span></p></td>
+<td>last recycling</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>new_start_region</code></em> :</span></p></td>
+<td>new first recycling</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>new_end_region</code></em> :</span></p></td>
+<td>new last recycling</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>old_start_changed_region</code></em> :</span></p></td>
+<td>modified link recycling start</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>old_end_changed_region</code></em> :</span></p></td>
+<td>modified link recyclig end</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>new_start_changed_region</code></em> :</span></p></td>
+<td>replacing link recycling start</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>new_end_changed_region</code></em> :</span></p></td>
+<td>replacing link recycling end</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.3</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-channel-remove-recall"></a><h3>ags_channel_remove_recall ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_channel_remove_recall           (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a> *recall</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a> play</code></em>);</pre>
+<p>
+Removes a recall.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>channel</code></em> :</span></p></td>
+<td>an <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>play</code></em> :</span></p></td>
+<td>
+<a href="../glib/glib-Standard-Macros.html#TRUE:CAPS"><code class="literal">TRUE</code></a> if simple playback.</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-channel-remove-recall-id"></a><h3>ags_channel_remove_recall_id ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_channel_remove_recall_id        (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecallID.html" title="AgsRecallID"><span class="type">AgsRecallID</span></a> *recall_id</code></em>);</pre>
+<p>
+Removes a recall id.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>channel</code></em> :</span></p></td>
+<td>an <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>recall_id</code></em> :</span></p></td>
+<td>the <a class="link" href="AgsRecallID.html" title="AgsRecallID"><span class="type">AgsRecallID</span></a>
+</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-channel-resolve-recall"></a><h3>ags_channel_resolve_recall ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_channel_resolve_recall          (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecallID.html" title="AgsRecallID"><span class="type">AgsRecallID</span></a> *recall_id</code></em>);</pre>
+<p>
+Resolve step of initialization.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>channel</code></em> :</span></p></td>
+<td>an <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>recall_id</code></em> :</span></p></td>
+<td>appropriate <a class="link" href="AgsRecallID.html" title="AgsRecallID"><span class="type">AgsRecallID</span></a>
+</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-channel-safe-resize-audio-signal"></a><h3>ags_channel_safe_resize_audio_signal ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_channel_safe_resize_audio_signal
+                                                        (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> size</code></em>);</pre>
+<p>
+Resize audio data.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><em class="parameter"><code>channel</code></em> :</span></p></td>
+<td>an <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a>
+</td>
+</tr></tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-channel-set-devout"></a><h3>ags_channel_set_devout ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_channel_set_devout              (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a> *devout</code></em>);</pre>
+<p>
+Sets devout.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>channel</code></em> :</span></p></td>
+<td>an <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>devout</code></em> :</span></p></td>
+<td>an <a class="link" href="AgsDevout.html" title="AgsDevout"><span class="type">AgsDevout</span></a>
+</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-channel-set-link"></a><h3>ags_channel_set_link ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_channel_set_link                (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *link</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Error-Reporting.html#GError"><span class="type">GError</span></a> **error</code></em>);</pre>
+<p>
+Change the linking of <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> objects.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>channel</code></em> :</span></p></td>
+<td>an <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> to link</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>link</code></em> :</span></p></td>
+<td>an other <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> to link with</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>error</code></em> :</span></p></td>
+<td>you may retrieve a AGS_CHANNEL_ERROR_LOOP_IN_LINK error</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.3</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-channel-set-recycling"></a><h3>ags_channel_set_recycling ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_channel_set_recycling           (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a> *first_recycling</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a> *last_recycling</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a> update</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a> destroy_old</code></em>);</pre>
+<p>
+Called by <a class="link" href="AgsChannel.html#ags-channel-set-link" title="ags_channel_set_link ()"><code class="function">ags_channel_set_link()</code></a> to handle outdated <a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a> references.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>channel</code></em> :</span></p></td>
+<td>the channel to reset</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>first_recycling</code></em> :</span></p></td>
+<td>the recycling to set for channel-&gt;first_recycling</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>last_recycling</code></em> :</span></p></td>
+<td>the recycling to set for channel-&gt;last_recycling</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>update</code></em> :</span></p></td>
+<td>reset allthough the AgsRecyclings are still the same</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>destroy_old</code></em> :</span></p></td>
+<td>destroy old AgsRecyclings</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.3</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-channel-tillrecycling-cancel"></a><h3>ags_channel_tillrecycling_cancel ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_channel_tillrecycling_cancel    (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecallID.html" title="AgsRecallID"><span class="type">AgsRecallID</span></a> *recall_id</code></em>);</pre>
+<p>
+Traverses the tree down and up and calls <a class="link" href="AgsChannel.html#ags-channel-cancel" title="ags_channel_cancel ()"><code class="function">ags_channel_cancel()</code></a> for corresponding
+<em class="parameter"><code>recall_id</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>channel</code></em> :</span></p></td>
+<td>an <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>recall_id</code></em> :</span></p></td>
+<td>an <a class="link" href="AgsRecallID.html" title="AgsRecallID"><span class="type">AgsRecallID</span></a>
+</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+</div>
+<div class="refsect1">
+<a name="AgsChannel.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="AgsChannel--audio"></a><h3>The <code class="literal">"audio"</code> property</h3>
+<pre class="programlisting">  "audio"                    <a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a>*              : Read / Write</pre>
+<p>The audio it is assigned with.</p>
+<p class="since">Since 0.4.0</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsChannel--devout"></a><h3>The <code class="literal">"devout"</code> property</h3>
+<pre class="programlisting">  "devout"                   <a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a>*              : Read / Write</pre>
+<p>The devout it is assigned with.</p>
+<p class="since">Since 0.4.0</p>
+</div>
+</div>
+<div class="refsect1">
+<a name="AgsChannel.signal-details"></a><h2>Signal Details</h2>
+<div class="refsect2">
+<a name="AgsChannel-done"></a><h3>The <code class="literal">"done"</code> signal</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                user_function                      (<a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel,
+                                                        <a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a>    user_data)      : <a href="../gobject/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></a></pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsChannel-recycling-changed"></a><h3>The <code class="literal">"recycling-changed"</code> signal</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                user_function                      (<a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *old_start_region,
+                                                        <a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a>    *old_end_region,
+                                                        <a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a>    *new_start_region,
+                                                        <a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a>    *new_end_region,
+                                                        <a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a>    *old_start_changed_region,
+                                                        <a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a>    *old_end_changed_region,
+                                                        <a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a>    *new_start_changed_region,
+                                                        <a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a>    *new_end_changed_region,
+                                                        <a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a>    *arg8,
+                                                        <a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a>    user_data)                     : <a href="../gobject/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></a></pre>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

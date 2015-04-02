@@ -1,0 +1,112 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsLinkChannel</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="composite-widgets.html" title="Composite widgets">
+<link rel="prev" href="ags-ags-line-member-editor-callbacks.html" title="ags_line_member_editor_callbacks">
+<link rel="next" href="ags-AgsLinkCollectionEditor.html" title="AgsLinkCollectionEditor">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="ags-ags-line-member-editor-callbacks.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="composite-widgets.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="ags-AgsLinkCollectionEditor.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#ags-AgsLinkChannel.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#ags-AgsLinkChannel.description" class="shortcut">Description</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="ags-AgsLinkChannel"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="ags-AgsLinkChannel.top_of_page"></a>AgsLinkChannel</span></h2>
+<p>AgsLinkChannel — link channel object</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="ags-AgsLinkChannel.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">
+#include &lt;ags/audio/task/ags_link_channel.h&gt;
+
+struct              <a class="link" href="ags-AgsLinkChannel.html#AgsLinkChannel" title="struct AgsLinkChannel">AgsLinkChannel</a>;
+struct              <a class="link" href="ags-AgsLinkChannel.html#AgsLinkChannelClass" title="struct AgsLinkChannelClass">AgsLinkChannelClass</a>;
+<a class="link" href="ags-AgsLinkChannel.html#AgsLinkChannel" title="struct AgsLinkChannel"><span class="returnvalue">AgsLinkChannel</span></a> *    <a class="link" href="ags-AgsLinkChannel.html#ags-link-channel-new" title="ags_link_channel_new ()">ags_link_channel_new</a>                (<em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *link</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="ags-AgsLinkChannel.description"></a><h2>Description</h2>
+<p>
+The <a class="link" href="ags-AgsLinkChannel.html#AgsLinkChannel" title="struct AgsLinkChannel"><span class="type">AgsLinkChannel</span></a> task links <a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a>.
+</p>
+</div>
+<div class="refsect1">
+<a name="ags-AgsLinkChannel.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AgsLinkChannel"></a><h3>struct AgsLinkChannel</h3>
+<pre class="programlisting">struct AgsLinkChannel {
+  AgsTask task;
+
+  AgsChannel *channel;
+  AgsChannel *link;
+
+  GError *error;
+};
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsLinkChannelClass"></a><h3>struct AgsLinkChannelClass</h3>
+<pre class="programlisting">struct AgsLinkChannelClass {
+  AgsTaskClass task;
+};
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-link-channel-new"></a><h3>ags_link_channel_new ()</h3>
+<pre class="programlisting"><a class="link" href="ags-AgsLinkChannel.html#AgsLinkChannel" title="struct AgsLinkChannel"><span class="returnvalue">AgsLinkChannel</span></a> *    ags_link_channel_new                (<em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *link</code></em>);</pre>
+<p>
+Creates an <a class="link" href="ags-AgsLinkChannel.html#AgsLinkChannel" title="struct AgsLinkChannel"><span class="type">AgsLinkChannel</span></a>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>channel</code></em> :</span></p></td>
+<td>the <a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>play_pad</code></em> :</span></p></td>
+<td>the <a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> to be linked, may be <GTKDOCLINK HREF="NULL:CAPS"><code class="literal">NULL</code></GTKDOCLINK>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>an new <a class="link" href="ags-AgsLinkChannel.html#AgsLinkChannel" title="struct AgsLinkChannel"><span class="type">AgsLinkChannel</span></a>.</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

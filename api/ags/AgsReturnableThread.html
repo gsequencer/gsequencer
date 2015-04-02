@@ -1,0 +1,224 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsReturnableThread</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="thread.html" title="Part VI. Thread - Multi-threaded tree">
+<link rel="prev" href="ags-ags-recycling-thread-callbacks.html" title="ags_recycling_thread_callbacks">
+<link rel="next" href="AgsTaskThread.html" title="AgsTaskThread">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="ags-ags-recycling-thread-callbacks.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="thread.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="AgsTaskThread.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#AgsReturnableThread.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#AgsReturnableThread.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#AgsReturnableThread.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#AgsReturnableThread.implemented-interfaces" class="shortcut">Implemented Interfaces</a>
+                   | 
+                  <a href="#AgsReturnableThread.signals" class="shortcut">Signals</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="AgsReturnableThread"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="AgsReturnableThread.top_of_page"></a>AgsReturnableThread</span></h2>
+<p>AgsReturnableThread — returnable thread</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="AgsReturnableThread.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">
+#include &lt;ags/thread/ags_returnable_thread.h&gt;
+
+#define             <a class="link" href="AgsReturnableThread.html#AGS-RETURNABLE-THREAD-DEFAULT-JIFFIE:CAPS" title="AGS_RETURNABLE_THREAD_DEFAULT_JIFFIE">AGS_RETURNABLE_THREAD_DEFAULT_JIFFIE</a>
+struct              <a class="link" href="AgsReturnableThread.html#AgsReturnableThread-struct" title="struct AgsReturnableThread">AgsReturnableThread</a>;
+<span class="returnvalue">void</span>                (<a class="link" href="AgsReturnableThread.html#AgsReturnableThreadCallback" title="AgsReturnableThreadCallback ()">*AgsReturnableThreadCallback</a>)      (<em class="parameter"><code><a class="link" href="AgsReturnableThread.html" title="AgsReturnableThread"><span class="type">AgsReturnableThread</span></a> *returnable_thread</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a> data</code></em>);
+struct              <a class="link" href="AgsReturnableThread.html#AgsReturnableThreadClass" title="struct AgsReturnableThreadClass">AgsReturnableThreadClass</a>;
+enum                <a class="link" href="AgsReturnableThread.html#AgsReturnableThreadFlags" title="enum AgsReturnableThreadFlags">AgsReturnableThreadFlags</a>;
+<span class="returnvalue">void</span>                <a class="link" href="AgsReturnableThread.html#ags-returnable-thread-connect-safe-run" title="ags_returnable_thread_connect_safe_run ()">ags_returnable_thread_connect_safe_run</a>
+                                                        (<em class="parameter"><code><a class="link" href="AgsReturnableThread.html" title="AgsReturnableThread"><span class="type">AgsReturnableThread</span></a> *returnable_thread</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsReturnableThread.html#AgsReturnableThreadCallback" title="AgsReturnableThreadCallback ()"><span class="type">AgsReturnableThreadCallback</span></a> callback</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsReturnableThread.html#ags-returnable-thread-disconnect-safe-run" title="ags_returnable_thread_disconnect_safe_run ()">ags_returnable_thread_disconnect_safe_run</a>
+                                                        (<em class="parameter"><code><a class="link" href="AgsReturnableThread.html" title="AgsReturnableThread"><span class="type">AgsReturnableThread</span></a> *returnable_thread</code></em>);
+<a class="link" href="AgsReturnableThread.html" title="AgsReturnableThread"><span class="returnvalue">AgsReturnableThread</span></a> * <a class="link" href="AgsReturnableThread.html#ags-returnable-thread-new" title="ags_returnable_thread_new ()">ags_returnable_thread_new</a>         (<em class="parameter"><code><a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a> *thread_pool</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsReturnableThread.html#ags-returnable-thread-safe-run" title="ags_returnable_thread_safe_run ()">ags_returnable_thread_safe_run</a>      (<em class="parameter"><code><a class="link" href="AgsReturnableThread.html" title="AgsReturnableThread"><span class="type">AgsReturnableThread</span></a> *returnable_thread</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsReturnableThread.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  <a href="../gobject/gobject-The-Base-Object-Type.html#GObject">GObject</a>
+   +----<a class="link" href="AgsThread.html" title="AgsThread">AgsThread</a>
+         +----AgsReturnableThread
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsReturnableThread.implemented-interfaces"></a><h2>Implemented Interfaces</h2>
+<p>
+AgsReturnableThread implements
+ AgsTreeIterator,  AgsConnectable and  <a class="link" href="AgsStackable.html" title="AgsStackable">AgsStackable</a>.</p>
+</div>
+<div class="refsect1">
+<a name="AgsReturnableThread.signals"></a><h2>Signals</h2>
+<pre class="synopsis">
+  "<a class="link" href="AgsReturnableThread.html#AgsReturnableThread-safe-run" title='The "safe-run" signal'>safe-run</a>"                                       : <a href="../gobject/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></a>
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsReturnableThread.description"></a><h2>Description</h2>
+<p>
+The <a class="link" href="AgsReturnableThread.html" title="AgsReturnableThread"><span class="type">AgsReturnableThread</span></a> acts as thread. It should return after a short
+while because of limited thread pool.
+</p>
+</div>
+<div class="refsect1">
+<a name="AgsReturnableThread.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AGS-RETURNABLE-THREAD-DEFAULT-JIFFIE:CAPS"></a><h3>AGS_RETURNABLE_THREAD_DEFAULT_JIFFIE</h3>
+<pre class="programlisting">#define AGS_RETURNABLE_THREAD_DEFAULT_JIFFIE (1000)
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsReturnableThread-struct"></a><h3>struct AgsReturnableThread</h3>
+<pre class="programlisting">struct AgsReturnableThread;</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsReturnableThreadCallback"></a><h3>AgsReturnableThreadCallback ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                (*AgsReturnableThreadCallback)      (<em class="parameter"><code><a class="link" href="AgsReturnableThread.html" title="AgsReturnableThread"><span class="type">AgsReturnableThread</span></a> *returnable_thread</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a> data</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsReturnableThreadClass"></a><h3>struct AgsReturnableThreadClass</h3>
+<pre class="programlisting">struct AgsReturnableThreadClass {
+  AgsThreadClass thread;
+
+  void (*safe_run)(AgsReturnableThread *returnable_thread);
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsReturnableThreadFlags"></a><h3>enum AgsReturnableThreadFlags</h3>
+<pre class="programlisting">typedef enum {
+  AGS_RETURNABLE_THREAD_IN_USE              = 1,
+  AGS_RETURNABLE_THREAD_RESET               = 1 &lt;&lt; 1,
+} AgsReturnableThreadFlags;
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-returnable-thread-connect-safe-run"></a><h3>ags_returnable_thread_connect_safe_run ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_returnable_thread_connect_safe_run
+                                                        (<em class="parameter"><code><a class="link" href="AgsReturnableThread.html" title="AgsReturnableThread"><span class="type">AgsReturnableThread</span></a> *returnable_thread</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsReturnableThread.html#AgsReturnableThreadCallback" title="AgsReturnableThreadCallback ()"><span class="type">AgsReturnableThreadCallback</span></a> callback</code></em>);</pre>
+<p>
+Connects <em class="parameter"><code>callback</code></em> to <em class="parameter"><code>thread</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>returnable_thread</code></em> :</span></p></td>
+<td>the thread to connect</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>callback</code></em> :</span></p></td>
+<td>the callback</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-returnable-thread-disconnect-safe-run"></a><h3>ags_returnable_thread_disconnect_safe_run ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_returnable_thread_disconnect_safe_run
+                                                        (<em class="parameter"><code><a class="link" href="AgsReturnableThread.html" title="AgsReturnableThread"><span class="type">AgsReturnableThread</span></a> *returnable_thread</code></em>);</pre>
+<p>
+Disconnects callback of <em class="parameter"><code>thread</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><em class="parameter"><code>returnable_thread</code></em> :</span></p></td>
+<td>the thread to disconnect</td>
+</tr></tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-returnable-thread-new"></a><h3>ags_returnable_thread_new ()</h3>
+<pre class="programlisting"><a class="link" href="AgsReturnableThread.html" title="AgsReturnableThread"><span class="returnvalue">AgsReturnableThread</span></a> * ags_returnable_thread_new         (<em class="parameter"><code><a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a> *thread_pool</code></em>);</pre>
+<p>
+Create a new <a class="link" href="AgsReturnableThread.html" title="AgsReturnableThread"><span class="type">AgsReturnableThread</span></a>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>thread_pool</code></em> :</span></p></td>
+<td>the <a class="link" href="AgsThreadPool.html" title="AgsThreadPool"><span class="type">AgsThreadPool</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the new <a class="link" href="AgsReturnableThread.html" title="AgsReturnableThread"><span class="type">AgsReturnableThread</span></a>
+</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-returnable-thread-safe-run"></a><h3>ags_returnable_thread_safe_run ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_returnable_thread_safe_run      (<em class="parameter"><code><a class="link" href="AgsReturnableThread.html" title="AgsReturnableThread"><span class="type">AgsReturnableThread</span></a> *returnable_thread</code></em>);</pre>
+<p>
+</p>
+</div>
+</div>
+<div class="refsect1">
+<a name="AgsReturnableThread.signal-details"></a><h2>Signal Details</h2>
+<div class="refsect2">
+<a name="AgsReturnableThread-safe-run"></a><h3>The <code class="literal">"safe-run"</code> signal</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                user_function                      (<a class="link" href="AgsReturnableThread.html" title="AgsReturnableThread"><span class="type">AgsReturnableThread</span></a> *agsreturnablethread,
+                                                        <a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a>             user_data)                : <a href="../gobject/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></a></pre>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

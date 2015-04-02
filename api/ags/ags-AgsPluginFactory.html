@@ -1,0 +1,166 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsPluginFactory</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="plugin.html" title="Part III. Plugin - API of plugins">
+<link rel="prev" href="ags-AgsLadspaManager.html" title="AgsLadspaManager">
+<link rel="next" href="ags-ags-plugin-stock.html" title="ags_plugin_stock">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="ags-AgsLadspaManager.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="plugin.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="ags-ags-plugin-stock.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#ags-AgsPluginFactory.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#ags-AgsPluginFactory.description" class="shortcut">Description</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="ags-AgsPluginFactory"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="ags-AgsPluginFactory.top_of_page"></a>AgsPluginFactory</span></h2>
+<p>AgsPluginFactory</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="ags-AgsPluginFactory.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">struct              <a class="link" href="ags-AgsPluginFactory.html#AgsPluginFactory" title="struct AgsPluginFactory">AgsPluginFactory</a>;
+struct              <a class="link" href="ags-AgsPluginFactory.html#AgsPluginFactoryClass" title="struct AgsPluginFactoryClass">AgsPluginFactoryClass</a>;
+struct              <a class="link" href="ags-AgsPluginFactory.html#AgsPluginMetadata" title="struct AgsPluginMetadata">AgsPluginMetadata</a>;
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsPluginFactory.html#ags-plugin-factory-add" title="ags_plugin_factory_add ()">ags_plugin_factory_add</a>              (<em class="parameter"><code><a class="link" href="ags-AgsPluginFactory.html#AgsPluginFactory" title="struct AgsPluginFactory"><span class="type">AgsPluginFactory</span></a> *plugin_factory</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GType"><span class="type">GType</span></GTKDOCLINK> plugin_type</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *plugin_name</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *version</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *build_id</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *xml_type</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GParameter"><span class="type">GParameter</span></GTKDOCLINK> *control</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> control_count</code></em>);
+<a class="link" href="ags-AgsPlugin.html#AgsPlugin" title="AgsPlugin"><span class="returnvalue">AgsPlugin</span></a> *         <a class="link" href="ags-AgsPluginFactory.html#ags-plugin-factory-create" title="ags_plugin_factory_create ()">ags_plugin_factory_create</a>           (<em class="parameter"><code><a class="link" href="ags-AgsPluginFactory.html#AgsPluginFactory" title="struct AgsPluginFactory"><span class="type">AgsPluginFactory</span></a> *plugin_factory</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *plugin_name</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *version</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *build_id</code></em>);
+<a class="link" href="ags-AgsPluginFactory.html#AgsPluginFactory" title="struct AgsPluginFactory"><span class="returnvalue">AgsPluginFactory</span></a> *  <a class="link" href="ags-AgsPluginFactory.html#ags-plugin-factory-get-instance" title="ags_plugin_factory_get_instance ()">ags_plugin_factory_get_instance</a>     ();
+<GTKDOCLINK HREF="GList"><span class="returnvalue">GList</span></GTKDOCLINK> *             <a class="link" href="ags-AgsPluginFactory.html#ags-plugin-factory-list-by-name" title="ags_plugin_factory_list_by_name ()">ags_plugin_factory_list_by_name</a>     (<em class="parameter"><code><a class="link" href="ags-AgsPluginFactory.html#AgsPluginFactory" title="struct AgsPluginFactory"><span class="type">AgsPluginFactory</span></a> *plugin_factory</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *plugin_name</code></em>);
+<a class="link" href="ags-AgsPluginFactory.html#AgsPluginFactory" title="struct AgsPluginFactory"><span class="returnvalue">AgsPluginFactory</span></a> *  <a class="link" href="ags-AgsPluginFactory.html#ags-plugin-factory-new" title="ags_plugin_factory_new ()">ags_plugin_factory_new</a>              ();
+<a class="link" href="ags-AgsPluginFactory.html#AgsPluginFactory" title="struct AgsPluginFactory"><span class="returnvalue">AgsPluginFactory</span></a> *  <a class="link" href="ags-AgsPluginFactory.html#ags-plugin-factory-new-from-file" title="ags_plugin_factory_new_from_file ()">ags_plugin_factory_new_from_file</a>    (<em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *path</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsPluginFactory.html#ags-plugin-factory-read-file" title="ags_plugin_factory_read_file ()">ags_plugin_factory_read_file</a>        (<em class="parameter"><code><a class="link" href="ags-AgsPluginFactory.html#AgsPluginFactory" title="struct AgsPluginFactory"><span class="type">AgsPluginFactory</span></a> *plugin_factory</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *path</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="ags-AgsPluginFactory.description"></a><h2>Description</h2>
+</div>
+<div class="refsect1">
+<a name="ags-AgsPluginFactory.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AgsPluginFactory"></a><h3>struct AgsPluginFactory</h3>
+<pre class="programlisting">struct AgsPluginFactory {
+  GObject object;
+
+  GList *plugin;
+};
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsPluginFactoryClass"></a><h3>struct AgsPluginFactoryClass</h3>
+<pre class="programlisting">struct AgsPluginFactoryClass {
+  GObjectClass object;
+
+  void (*add)(AgsPluginFactory *plugin_factory,
+	      GType plugin_type,
+	      gchar *plugin_name,
+	      gchar *version, gchar *build_id,
+	      gchar *xml_type,
+	      GParameter *control, guint control_count);
+
+  AgsPlugin* (*create)(AgsPluginFactory *plugin_factory,
+		       gchar *xml_type);
+};
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsPluginMetadata"></a><h3>struct AgsPluginMetadata</h3>
+<pre class="programlisting">struct AgsPluginMetadata {
+  GType plugin_type;
+  gchar *plugin_name;
+
+  gchar *version;
+  gchar *build_id;
+
+  gchar *xml_type;
+
+  GParameter *control;
+  guint control_count;
+};
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-plugin-factory-add"></a><h3>ags_plugin_factory_add ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_plugin_factory_add              (<em class="parameter"><code><a class="link" href="ags-AgsPluginFactory.html#AgsPluginFactory" title="struct AgsPluginFactory"><span class="type">AgsPluginFactory</span></a> *plugin_factory</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GType"><span class="type">GType</span></GTKDOCLINK> plugin_type</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *plugin_name</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *version</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *build_id</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *xml_type</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GParameter"><span class="type">GParameter</span></GTKDOCLINK> *control</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> control_count</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-plugin-factory-create"></a><h3>ags_plugin_factory_create ()</h3>
+<pre class="programlisting"><a class="link" href="ags-AgsPlugin.html#AgsPlugin" title="AgsPlugin"><span class="returnvalue">AgsPlugin</span></a> *         ags_plugin_factory_create           (<em class="parameter"><code><a class="link" href="ags-AgsPluginFactory.html#AgsPluginFactory" title="struct AgsPluginFactory"><span class="type">AgsPluginFactory</span></a> *plugin_factory</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *plugin_name</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *version</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *build_id</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-plugin-factory-get-instance"></a><h3>ags_plugin_factory_get_instance ()</h3>
+<pre class="programlisting"><a class="link" href="ags-AgsPluginFactory.html#AgsPluginFactory" title="struct AgsPluginFactory"><span class="returnvalue">AgsPluginFactory</span></a> *  ags_plugin_factory_get_instance     ();</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-plugin-factory-list-by-name"></a><h3>ags_plugin_factory_list_by_name ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="GList"><span class="returnvalue">GList</span></GTKDOCLINK> *             ags_plugin_factory_list_by_name     (<em class="parameter"><code><a class="link" href="ags-AgsPluginFactory.html#AgsPluginFactory" title="struct AgsPluginFactory"><span class="type">AgsPluginFactory</span></a> *plugin_factory</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *plugin_name</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-plugin-factory-new"></a><h3>ags_plugin_factory_new ()</h3>
+<pre class="programlisting"><a class="link" href="ags-AgsPluginFactory.html#AgsPluginFactory" title="struct AgsPluginFactory"><span class="returnvalue">AgsPluginFactory</span></a> *  ags_plugin_factory_new              ();</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-plugin-factory-new-from-file"></a><h3>ags_plugin_factory_new_from_file ()</h3>
+<pre class="programlisting"><a class="link" href="ags-AgsPluginFactory.html#AgsPluginFactory" title="struct AgsPluginFactory"><span class="returnvalue">AgsPluginFactory</span></a> *  ags_plugin_factory_new_from_file    (<em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *path</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-plugin-factory-read-file"></a><h3>ags_plugin_factory_read_file ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_plugin_factory_read_file        (<em class="parameter"><code><a class="link" href="ags-AgsPluginFactory.html#AgsPluginFactory" title="struct AgsPluginFactory"><span class="type">AgsPluginFactory</span></a> *plugin_factory</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *path</code></em>);</pre>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

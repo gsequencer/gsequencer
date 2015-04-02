@@ -1,0 +1,174 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsIpatch</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="audio-file.html" title="Audio files - Reading/Writing audio data from disk">
+<link rel="prev" href="AgsAudioFile.html" title="AgsAudioFile">
+<link rel="next" href="AgsIpatchSF2Reader.html" title="AgsIpatchSF2Reader">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="AgsAudioFile.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="audio-file.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="AgsIpatchSF2Reader.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#AgsIpatch.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#AgsIpatch.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#AgsIpatch.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#AgsIpatch.implemented-interfaces" class="shortcut">Implemented Interfaces</a>
+                   | 
+                  <a href="#AgsIpatch.properties" class="shortcut">Properties</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="AgsIpatch"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="AgsIpatch.top_of_page"></a>AgsIpatch</span></h2>
+<p>AgsIpatch — Libinstpatch wrapper</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="AgsIpatch.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">
+#include &lt;ags/audio/file/ags_ipatch.h&gt;
+
+#define             <a class="link" href="AgsIpatch.html#AGS-IPATCH-DEFAULT-CHANNELS:CAPS" title="AGS_IPATCH_DEFAULT_CHANNELS">AGS_IPATCH_DEFAULT_CHANNELS</a>
+#define             <a class="link" href="AgsIpatch.html#AGS-IPATCH-READ:CAPS" title="AGS_IPATCH_READ">AGS_IPATCH_READ</a>
+#define             <a class="link" href="AgsIpatch.html#AGS-IPATCH-WRITE:CAPS" title="AGS_IPATCH_WRITE">AGS_IPATCH_WRITE</a>
+struct              <a class="link" href="AgsIpatch.html#AgsIpatch-struct" title="struct AgsIpatch">AgsIpatch</a>;
+struct              <a class="link" href="AgsIpatch.html#AgsIpatchClass" title="struct AgsIpatchClass">AgsIpatchClass</a>;
+enum                <a class="link" href="AgsIpatch.html#AgsIpatchFlags" title="enum AgsIpatchFlags">AgsIpatchFlags</a>;
+<a class="link" href="AgsIpatch.html" title="AgsIpatch"><span class="returnvalue">AgsIpatch</span></a> *         <a class="link" href="AgsIpatch.html#ags-ipatch-new" title="ags_ipatch_new ()">ags_ipatch_new</a>                      ();
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsIpatch.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  <a href="../gobject/gobject-The-Base-Object-Type.html#GObject">GObject</a>
+   +----AgsIpatch
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsIpatch.implemented-interfaces"></a><h2>Implemented Interfaces</h2>
+<p>
+AgsIpatch implements
+ AgsConnectable and  <a class="link" href="AgsPlayable.html" title="AgsPlayable">AgsPlayable</a>.</p>
+</div>
+<div class="refsect1">
+<a name="AgsIpatch.properties"></a><h2>Properties</h2>
+<pre class="synopsis">
+  "<a class="link" href="AgsIpatch.html#AgsIpatch--filename" title='The "filename" property'>filename</a>"                 <a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a>              : Read / Write
+  "<a class="link" href="AgsIpatch.html#AgsIpatch--mode" title='The "mode" property'>mode</a>"                     <a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a>              : Read / Write
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsIpatch.description"></a><h2>Description</h2>
+<p>
+<a class="link" href="AgsIpatch.html" title="AgsIpatch"><span class="type">AgsIpatch</span></a> is the base object to ineract with libinstpatch.
+</p>
+</div>
+<div class="refsect1">
+<a name="AgsIpatch.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AGS-IPATCH-DEFAULT-CHANNELS:CAPS"></a><h3>AGS_IPATCH_DEFAULT_CHANNELS</h3>
+<pre class="programlisting">#define AGS_IPATCH_DEFAULT_CHANNELS 2
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-IPATCH-READ:CAPS"></a><h3>AGS_IPATCH_READ</h3>
+<pre class="programlisting">#define AGS_IPATCH_READ "r"
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-IPATCH-WRITE:CAPS"></a><h3>AGS_IPATCH_WRITE</h3>
+<pre class="programlisting">#define AGS_IPATCH_WRITE "w"
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsIpatch-struct"></a><h3>struct AgsIpatch</h3>
+<pre class="programlisting">struct AgsIpatch;</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsIpatchClass"></a><h3>struct AgsIpatchClass</h3>
+<pre class="programlisting">struct AgsIpatchClass {
+  GObjectClass object;
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsIpatchFlags"></a><h3>enum AgsIpatchFlags</h3>
+<pre class="programlisting">typedef enum {
+  AGS_IPATCH_DLS2   = 1,
+  AGS_IPATCH_SF2    = 1 &lt;&lt; 1,
+  AGS_IPATCH_GIG    = 1 &lt;&lt; 2,
+} AgsIpatchFlags;
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-ipatch-new"></a><h3>ags_ipatch_new ()</h3>
+<pre class="programlisting"><a class="link" href="AgsIpatch.html" title="AgsIpatch"><span class="returnvalue">AgsIpatch</span></a> *         ags_ipatch_new                      ();</pre>
+<p>
+Creates an <a class="link" href="AgsIpatch.html" title="AgsIpatch"><span class="type">AgsIpatch</span></a>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>an empty <a class="link" href="AgsIpatch.html" title="AgsIpatch"><span class="type">AgsIpatch</span></a>.</td>
+</tr></tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+</div>
+<div class="refsect1">
+<a name="AgsIpatch.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="AgsIpatch--filename"></a><h3>The <code class="literal">"filename"</code> property</h3>
+<pre class="programlisting">  "filename"                 <a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a>              : Read / Write</pre>
+<p>The filename to open.</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsIpatch--mode"></a><h3>The <code class="literal">"mode"</code> property</h3>
+<pre class="programlisting">  "mode"                     <a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a>              : Read / Write</pre>
+<p>The mode to open the file.</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

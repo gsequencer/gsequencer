@@ -1,0 +1,136 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsRecallAudio</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="audio.html" title="Part VII. The audio layer">
+<link rel="prev" href="AgsRecall.html" title="AgsRecall">
+<link rel="next" href="AgsRecallAudioRun.html" title="AgsRecallAudioRun">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="AgsRecall.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="audio.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="AgsRecallAudioRun.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#AgsRecallAudio.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#AgsRecallAudio.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#AgsRecallAudio.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#AgsRecallAudio.implemented-interfaces" class="shortcut">Implemented Interfaces</a>
+                   | 
+                  <a href="#AgsRecallAudio.properties" class="shortcut">Properties</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="AgsRecallAudio"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="AgsRecallAudio.top_of_page"></a>AgsRecallAudio</span></h2>
+<p>AgsRecallAudio — audio context of recall</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="AgsRecallAudio.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">
+#include &lt;ags/audio/ags_recall_audio.h&gt;
+
+struct              <a class="link" href="AgsRecallAudio.html#AgsRecallAudio-struct" title="struct AgsRecallAudio">AgsRecallAudio</a>;
+struct              <a class="link" href="AgsRecallAudio.html#AgsRecallAudioClass" title="struct AgsRecallAudioClass">AgsRecallAudioClass</a>;
+<a class="link" href="AgsRecallAudio.html" title="AgsRecallAudio"><span class="returnvalue">AgsRecallAudio</span></a> *    <a class="link" href="AgsRecallAudio.html#ags-recall-audio-new" title="ags_recall_audio_new ()">ags_recall_audio_new</a>                (<em class="parameter"><code><a class="link" href="AgsAudio.html" title="AgsAudio"><span class="type">AgsAudio</span></a> *audio</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsRecallAudio.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  <a href="../gobject/gobject-The-Base-Object-Type.html#GObject">GObject</a>
+   +----<a class="link" href="AgsRecall.html" title="AgsRecall">AgsRecall</a>
+         +----AgsRecallAudio
+               +----<a class="link" href="AgsCopyNotationAudio.html" title="AgsCopyNotationAudio">AgsCopyNotationAudio</a>
+               +----<a class="link" href="AgsCopyPatternAudio.html" title="AgsCopyPatternAudio">AgsCopyPatternAudio</a>
+               +----<a class="link" href="AgsCountBeatsAudio.html" title="AgsCountBeatsAudio">AgsCountBeatsAudio</a>
+               +----<a class="link" href="AgsDelayAudio.html" title="AgsDelayAudio">AgsDelayAudio</a>
+               +----<a class="link" href="AgsMuteAudio.html" title="AgsMuteAudio">AgsMuteAudio</a>
+               +----<a class="link" href="AgsPlayAudio.html" title="AgsPlayAudio">AgsPlayAudio</a>
+               +----<a class="link" href="AgsPlayNotationAudio.html" title="AgsPlayNotationAudio">AgsPlayNotationAudio</a>
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsRecallAudio.implemented-interfaces"></a><h2>Implemented Interfaces</h2>
+<p>
+AgsRecallAudio implements
+ AgsConnectable,  <a class="link" href="AgsPackable.html" title="AgsPackable">AgsPackable</a>,  <a class="link" href="AgsDynamicConnectable.html" title="AgsDynamicConnectable">AgsDynamicConnectable</a> and  <a class="link" href="AgsPlugin.html" title="AgsPlugin">AgsPlugin</a>.</p>
+</div>
+<div class="refsect1">
+<a name="AgsRecallAudio.properties"></a><h2>Properties</h2>
+<pre class="synopsis">
+  "<a class="link" href="AgsRecallAudio.html#AgsRecallAudio--audio" title='The "audio" property'>audio</a>"                    <a class="link" href="AgsAudio.html" title="AgsAudio"><span class="type">AgsAudio</span></a>*             : Read / Write
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsRecallAudio.description"></a><h2>Description</h2>
+<p>
+<a class="link" href="AgsRecallAudio.html" title="AgsRecallAudio"><span class="type">AgsRecallAudio</span></a> acts as audio recall.
+</p>
+</div>
+<div class="refsect1">
+<a name="AgsRecallAudio.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AgsRecallAudio-struct"></a><h3>struct AgsRecallAudio</h3>
+<pre class="programlisting">struct AgsRecallAudio;</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsRecallAudioClass"></a><h3>struct AgsRecallAudioClass</h3>
+<pre class="programlisting">struct AgsRecallAudioClass {
+  AgsRecallClass recall;
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-recall-audio-new"></a><h3>ags_recall_audio_new ()</h3>
+<pre class="programlisting"><a class="link" href="AgsRecallAudio.html" title="AgsRecallAudio"><span class="returnvalue">AgsRecallAudio</span></a> *    ags_recall_audio_new                (<em class="parameter"><code><a class="link" href="AgsAudio.html" title="AgsAudio"><span class="type">AgsAudio</span></a> *audio</code></em>);</pre>
+<p>
+Creates an <a class="link" href="AgsRecallAudio.html" title="AgsRecallAudio"><span class="type">AgsRecallAudio</span></a>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new <a class="link" href="AgsRecallAudio.html" title="AgsRecallAudio"><span class="type">AgsRecallAudio</span></a>.</td>
+</tr></tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+</div>
+<div class="refsect1">
+<a name="AgsRecallAudio.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="AgsRecallAudio--audio"></a><h3>The <code class="literal">"audio"</code> property</h3>
+<pre class="programlisting">  "audio"                    <a class="link" href="AgsAudio.html" title="AgsAudio"><span class="type">AgsAudio</span></a>*             : Read / Write</pre>
+<p>The audio object it is assigned to.</p>
+<p class="since">Since 0.4.0</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

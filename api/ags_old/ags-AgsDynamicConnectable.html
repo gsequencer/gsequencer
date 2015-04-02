@@ -1,0 +1,93 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsDynamicConnectable</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="object.html" title="Part II. Object - Interfaces and marshallers">
+<link rel="prev" href="ags-AgsCountable.html" title="AgsCountable">
+<link rel="next" href="ags-AgsMainLoop.html" title="AgsMainLoop">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="ags-AgsCountable.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="object.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="ags-AgsMainLoop.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#ags-AgsDynamicConnectable.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#ags-AgsDynamicConnectable.description" class="shortcut">Description</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="ags-AgsDynamicConnectable"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="ags-AgsDynamicConnectable.top_of_page"></a>AgsDynamicConnectable</span></h2>
+<p>AgsDynamicConnectable</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="ags-AgsDynamicConnectable.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">typedef             <a class="link" href="ags-AgsDynamicConnectable.html#AgsDynamicConnectable" title="AgsDynamicConnectable">AgsDynamicConnectable</a>;
+struct              <a class="link" href="ags-AgsDynamicConnectable.html#AgsDynamicConnectableInterface" title="struct AgsDynamicConnectableInterface">AgsDynamicConnectableInterface</a>;
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsDynamicConnectable.html#ags-dynamic-connectable-connect" title="ags_dynamic_connectable_connect ()">ags_dynamic_connectable_connect</a>     (<em class="parameter"><code><a class="link" href="ags-AgsDynamicConnectable.html#AgsDynamicConnectable" title="AgsDynamicConnectable"><span class="type">AgsDynamicConnectable</span></a> *connectable</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsDynamicConnectable.html#ags-dynamic-connectable-disconnect" title="ags_dynamic_connectable_disconnect ()">ags_dynamic_connectable_disconnect</a>  (<em class="parameter"><code><a class="link" href="ags-AgsDynamicConnectable.html#AgsDynamicConnectable" title="AgsDynamicConnectable"><span class="type">AgsDynamicConnectable</span></a> *connectable</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="ags-AgsDynamicConnectable.description"></a><h2>Description</h2>
+<p>
+</p>
+</div>
+<div class="refsect1">
+<a name="ags-AgsDynamicConnectable.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AgsDynamicConnectable"></a><h3>AgsDynamicConnectable</h3>
+<pre class="programlisting">typedef void AgsDynamicConnectable;
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsDynamicConnectableInterface"></a><h3>struct AgsDynamicConnectableInterface</h3>
+<pre class="programlisting">struct AgsDynamicConnectableInterface {
+  GTypeInterface interface;
+
+  void (*connect_dynamic)(AgsDynamicConnectable *connectable);
+  void (*disconnect_dynamic)(AgsDynamicConnectable *connectable);
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-dynamic-connectable-connect"></a><h3>ags_dynamic_connectable_connect ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_dynamic_connectable_connect     (<em class="parameter"><code><a class="link" href="ags-AgsDynamicConnectable.html#AgsDynamicConnectable" title="AgsDynamicConnectable"><span class="type">AgsDynamicConnectable</span></a> *connectable</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-dynamic-connectable-disconnect"></a><h3>ags_dynamic_connectable_disconnect ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_dynamic_connectable_disconnect  (<em class="parameter"><code><a class="link" href="ags-AgsDynamicConnectable.html#AgsDynamicConnectable" title="AgsDynamicConnectable"><span class="type">AgsDynamicConnectable</span></a> *connectable</code></em>);</pre>
+<p>
+</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

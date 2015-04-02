@@ -1,0 +1,254 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsLineMember</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="composite-widgets.html" title="Composite widgets">
+<link rel="prev" href="ags-ags-line-editor-callbacks.html" title="ags_line_editor_callbacks">
+<link rel="next" href="ags-ags-line-member-callbacks.html" title="ags_line_member_callbacks">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="ags-ags-line-editor-callbacks.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="composite-widgets.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="ags-ags-line-member-callbacks.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#AgsLineMember.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#AgsLineMember.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#AgsLineMember.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#AgsLineMember.implemented-interfaces" class="shortcut">Implemented Interfaces</a>
+                   | 
+                  <a href="#AgsLineMember.properties" class="shortcut">Properties</a>
+                   | 
+                  <a href="#AgsLineMember.signals" class="shortcut">Signals</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="AgsLineMember"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="AgsLineMember.top_of_page"></a>AgsLineMember</span></h2>
+<p>AgsLineMember</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="AgsLineMember.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">struct              <a class="link" href="AgsLineMember.html#AgsLineMember-struct" title="struct AgsLineMember">AgsLineMember</a>;
+struct              <a class="link" href="AgsLineMember.html#AgsLineMemberClass" title="struct AgsLineMemberClass">AgsLineMemberClass</a>;
+enum                <a class="link" href="AgsLineMember.html#AgsLineMemberFlags" title="enum AgsLineMemberFlags">AgsLineMemberFlags</a>;
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="AgsLineMember.html#ags-line-member-change-port" title="ags_line_member_change_port ()">ags_line_member_change_port</a>         (<em class="parameter"><code><a class="link" href="AgsLineMember.html" title="AgsLineMember"><span class="type">AgsLineMember</span></a> *line_member</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gpointer"><span class="type">gpointer</span></GTKDOCLINK> port_data</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="AgsLineMember.html#ags-line-member-find-port" title="ags_line_member_find_port ()">ags_line_member_find_port</a>           (<em class="parameter"><code><a class="link" href="AgsLineMember.html" title="AgsLineMember"><span class="type">AgsLineMember</span></a> *line_member</code></em>);
+<GTKDOCLINK HREF="GtkWidget"><span class="returnvalue">GtkWidget</span></GTKDOCLINK> *         <a class="link" href="AgsLineMember.html#ags-line-member-get-widget" title="ags_line_member_get_widget ()">ags_line_member_get_widget</a>          (<em class="parameter"><code><a class="link" href="AgsLineMember.html" title="AgsLineMember"><span class="type">AgsLineMember</span></a> *line_member</code></em>);
+<a class="link" href="AgsLineMember.html" title="AgsLineMember"><span class="returnvalue">AgsLineMember</span></a> *     <a class="link" href="AgsLineMember.html#ags-line-member-new" title="ags_line_member_new ()">ags_line_member_new</a>                 ();
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="AgsLineMember.html#ags-line-member-set-label" title="ags_line_member_set_label ()">ags_line_member_set_label</a>           (<em class="parameter"><code><a class="link" href="AgsLineMember.html" title="AgsLineMember"><span class="type">AgsLineMember</span></a> *line_member</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *label</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsLineMember.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  <GTKDOCLINK HREF="GObject">GObject</GTKDOCLINK>
+   +----<GTKDOCLINK HREF="GInitiallyUnowned">GInitiallyUnowned</GTKDOCLINK>
+         +----<GTKDOCLINK HREF="GtkObject">GtkObject</GTKDOCLINK>
+               +----<GTKDOCLINK HREF="GtkWidget">GtkWidget</GTKDOCLINK>
+                     +----<GTKDOCLINK HREF="GtkContainer">GtkContainer</GTKDOCLINK>
+                           +----<GTKDOCLINK HREF="GtkBin">GtkBin</GTKDOCLINK>
+                                 +----<GTKDOCLINK HREF="GtkFrame">GtkFrame</GTKDOCLINK>
+                                       +----AgsLineMember
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsLineMember.implemented-interfaces"></a><h2>Implemented Interfaces</h2>
+<p>
+AgsLineMember implements
+ <GTKDOCLINK HREF="AtkImplementorIface">AtkImplementorIface</GTKDOCLINK>,  <GTKDOCLINK HREF="GtkBuildable">GtkBuildable</GTKDOCLINK> and  <GTKDOCLINK HREF="AgsConnectable">AgsConnectable</GTKDOCLINK>.</p>
+</div>
+<div class="refsect1">
+<a name="AgsLineMember.properties"></a><h2>Properties</h2>
+<pre class="synopsis">
+  "<a class="link" href="AgsLineMember.html#AgsLineMember--control-port" title='The "control-port" property'>control-port</a>"             <GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK>*                : Read / Write
+  "<a class="link" href="AgsLineMember.html#AgsLineMember--plugin-name" title='The "plugin-name" property'>plugin-name</a>"              <GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK>*                : Read / Write
+  "<a class="link" href="AgsLineMember.html#AgsLineMember--port" title='The "port" property'>port</a>"                     <a class="link" href="AgsPort.html" title="AgsPort"><span class="type">AgsPort</span></a>*              : Read / Write
+  "<a class="link" href="AgsLineMember.html#AgsLineMember--port-data" title='The "port-data" property'>port-data</a>"                <GTKDOCLINK HREF="gpointer"><span class="type">gpointer</span></GTKDOCLINK>              : Read / Write
+  "<a class="link" href="AgsLineMember.html#AgsLineMember--recall-port" title='The "recall-port" property'>recall-port</a>"              <a class="link" href="AgsPort.html" title="AgsPort"><span class="type">AgsPort</span></a>*              : Read / Write
+  "<a class="link" href="AgsLineMember.html#AgsLineMember--recall-port-data" title='The "recall-port-data" property'>recall-port-data</a>"         <GTKDOCLINK HREF="gpointer"><span class="type">gpointer</span></GTKDOCLINK>              : Read / Write
+  "<a class="link" href="AgsLineMember.html#AgsLineMember--specifier" title='The "specifier" property'>specifier</a>"                <GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK>*                : Read / Write
+  "<a class="link" href="AgsLineMember.html#AgsLineMember--widget-label" title='The "widget-label" property'>widget-label</a>"             <GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK>*                : Read / Write
+  "<a class="link" href="AgsLineMember.html#AgsLineMember--widget-type" title='The "widget-type" property'>widget-type</a>"              <GTKDOCLINK HREF="gulong"><span class="type">gulong</span></GTKDOCLINK>                : Read / Write
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsLineMember.signals"></a><h2>Signals</h2>
+<pre class="synopsis">
+  "<a class="link" href="AgsLineMember.html#AgsLineMember-change-port" title='The "change-port" signal'>change-port</a>"                                    : <GTKDOCLINK HREF="G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></GTKDOCLINK>
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsLineMember.description"></a><h2>Description</h2>
+<p>
+</p>
+</div>
+<div class="refsect1">
+<a name="AgsLineMember.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AgsLineMember-struct"></a><h3>struct AgsLineMember</h3>
+<pre class="programlisting">struct AgsLineMember;</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsLineMemberClass"></a><h3>struct AgsLineMemberClass</h3>
+<pre class="programlisting">struct AgsLineMemberClass {
+  GtkFrameClass frame;
+
+  void (*change_port)(AgsLineMember *line_member,
+		      gpointer port_data);
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsLineMemberFlags"></a><h3>enum AgsLineMemberFlags</h3>
+<pre class="programlisting">typedef enum {
+  AGS_LINE_MEMBER_DEFAULT_TEMPLATE      = 1,
+  AGS_LINE_MEMBER_RESET_BY_ATOMIC       = 1 &lt;&lt; 1,
+  AGS_LINE_MEMBER_RESET_BY_TASK         = 1 &lt;&lt; 2,
+  AGS_LINE_MEMBER_APPLY_RECALL          = 1 &lt;&lt; 3,
+  AGS_LINE_MEMBER_PLAY_CALLBACK_WRITE   = 1 &lt;&lt; 4,
+  AGS_LINE_MEMBER_RECALL_CALLBACK_WRITE = 1 &lt;&lt; 5,
+  AGS_LINE_MEMBER_CALLBACK_READ_BLOCK   = 1 &lt;&lt; 6,
+  AGS_LINE_MEMBER_CALLBACK_WRITE_BLOCK  = 1 &lt;&lt; 7,
+} AgsLineMemberFlags;
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-line-member-change-port"></a><h3>ags_line_member_change_port ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_line_member_change_port         (<em class="parameter"><code><a class="link" href="AgsLineMember.html" title="AgsLineMember"><span class="type">AgsLineMember</span></a> *line_member</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gpointer"><span class="type">gpointer</span></GTKDOCLINK> port_data</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-line-member-find-port"></a><h3>ags_line_member_find_port ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_line_member_find_port           (<em class="parameter"><code><a class="link" href="AgsLineMember.html" title="AgsLineMember"><span class="type">AgsLineMember</span></a> *line_member</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-line-member-get-widget"></a><h3>ags_line_member_get_widget ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="GtkWidget"><span class="returnvalue">GtkWidget</span></GTKDOCLINK> *         ags_line_member_get_widget          (<em class="parameter"><code><a class="link" href="AgsLineMember.html" title="AgsLineMember"><span class="type">AgsLineMember</span></a> *line_member</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-line-member-new"></a><h3>ags_line_member_new ()</h3>
+<pre class="programlisting"><a class="link" href="AgsLineMember.html" title="AgsLineMember"><span class="returnvalue">AgsLineMember</span></a> *     ags_line_member_new                 ();</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-line-member-set-label"></a><h3>ags_line_member_set_label ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_line_member_set_label           (<em class="parameter"><code><a class="link" href="AgsLineMember.html" title="AgsLineMember"><span class="type">AgsLineMember</span></a> *line_member</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *label</code></em>);</pre>
+<p>
+</p>
+</div>
+</div>
+<div class="refsect1">
+<a name="AgsLineMember.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="AgsLineMember--control-port"></a><h3>The <code class="literal">"control-port"</code> property</h3>
+<pre class="programlisting">  "control-port"             <GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK>*                : Read / Write</pre>
+<p>The index of the port to control.</p>
+<p>Default value: NULL</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsLineMember--plugin-name"></a><h3>The <code class="literal">"plugin-name"</code> property</h3>
+<pre class="programlisting">  "plugin-name"              <GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK>*                : Read / Write</pre>
+<p>The plugin's name to control.</p>
+<p>Default value: NULL</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsLineMember--port"></a><h3>The <code class="literal">"port"</code> property</h3>
+<pre class="programlisting">  "port"                     <a class="link" href="AgsPort.html" title="AgsPort"><span class="type">AgsPort</span></a>*              : Read / Write</pre>
+<p>The port to apply.</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsLineMember--port-data"></a><h3>The <code class="literal">"port-data"</code> property</h3>
+<pre class="programlisting">  "port-data"                <GTKDOCLINK HREF="gpointer"><span class="type">gpointer</span></GTKDOCLINK>              : Read / Write</pre>
+<p>The port data.</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsLineMember--recall-port"></a><h3>The <code class="literal">"recall-port"</code> property</h3>
+<pre class="programlisting">  "recall-port"              <a class="link" href="AgsPort.html" title="AgsPort"><span class="type">AgsPort</span></a>*              : Read / Write</pre>
+<p>The recall port to apply.</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsLineMember--recall-port-data"></a><h3>The <code class="literal">"recall-port-data"</code> property</h3>
+<pre class="programlisting">  "recall-port-data"         <GTKDOCLINK HREF="gpointer"><span class="type">gpointer</span></GTKDOCLINK>              : Read / Write</pre>
+<p>The recall port data.</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsLineMember--specifier"></a><h3>The <code class="literal">"specifier"</code> property</h3>
+<pre class="programlisting">  "specifier"                <GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK>*                : Read / Write</pre>
+<p>The specifier of the port.</p>
+<p>Default value: NULL</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsLineMember--widget-label"></a><h3>The <code class="literal">"widget-label"</code> property</h3>
+<pre class="programlisting">  "widget-label"             <GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK>*                : Read / Write</pre>
+<p>The label to display.</p>
+<p>Default value: NULL</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsLineMember--widget-type"></a><h3>The <code class="literal">"widget-type"</code> property</h3>
+<pre class="programlisting">  "widget-type"              <GTKDOCLINK HREF="gulong"><span class="type">gulong</span></GTKDOCLINK>                : Read / Write</pre>
+<p>The widget type this line member packs.</p>
+</div>
+</div>
+<div class="refsect1">
+<a name="AgsLineMember.signal-details"></a><h2>Signal Details</h2>
+<div class="refsect2">
+<a name="AgsLineMember-change-port"></a><h3>The <code class="literal">"change-port"</code> signal</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                user_function                      (<a class="link" href="AgsLineMember.html" title="AgsLineMember"><span class="type">AgsLineMember</span></a> *agslinemember,
+                                                        <GTKDOCLINK HREF="gpointer"><span class="type">gpointer</span></GTKDOCLINK>       arg1,
+                                                        <GTKDOCLINK HREF="gpointer"><span class="type">gpointer</span></GTKDOCLINK>       user_data)          : <GTKDOCLINK HREF="G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></GTKDOCLINK></pre>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

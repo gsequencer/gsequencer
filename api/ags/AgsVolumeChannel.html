@@ -1,0 +1,130 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsVolumeChannel</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="recall.html" title="Recalls - Effect processors">
+<link rel="prev" href="AgsVolumeAudioSignal.html" title="AgsVolumeAudioSignal">
+<link rel="next" href="AgsVolumeChannelRun.html" title="AgsVolumeChannelRun">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="AgsVolumeAudioSignal.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="recall.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="AgsVolumeChannelRun.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#AgsVolumeChannel.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#AgsVolumeChannel.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#AgsVolumeChannel.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#AgsVolumeChannel.implemented-interfaces" class="shortcut">Implemented Interfaces</a>
+                   | 
+                  <a href="#AgsVolumeChannel.properties" class="shortcut">Properties</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="AgsVolumeChannel"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="AgsVolumeChannel.top_of_page"></a>AgsVolumeChannel</span></h2>
+<p>AgsVolumeChannel — volumes channel</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="AgsVolumeChannel.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">
+#include &lt;ags/audio/recall/ags_volume_channel.h&gt;
+
+struct              <a class="link" href="AgsVolumeChannel.html#AgsVolumeChannel-struct" title="struct AgsVolumeChannel">AgsVolumeChannel</a>;
+struct              <a class="link" href="AgsVolumeChannel.html#AgsVolumeChannelClass" title="struct AgsVolumeChannelClass">AgsVolumeChannelClass</a>;
+<a class="link" href="AgsVolumeChannel.html" title="AgsVolumeChannel"><span class="returnvalue">AgsVolumeChannel</span></a> *  <a class="link" href="AgsVolumeChannel.html#ags-volume-channel-new" title="ags_volume_channel_new ()">ags_volume_channel_new</a>              ();
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsVolumeChannel.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  <a href="../gobject/gobject-The-Base-Object-Type.html#GObject">GObject</a>
+   +----<a class="link" href="AgsRecall.html" title="AgsRecall">AgsRecall</a>
+         +----<a class="link" href="AgsRecallChannel.html" title="AgsRecallChannel">AgsRecallChannel</a>
+               +----AgsVolumeChannel
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsVolumeChannel.implemented-interfaces"></a><h2>Implemented Interfaces</h2>
+<p>
+AgsVolumeChannel implements
+ AgsConnectable,  <a class="link" href="AgsPackable.html" title="AgsPackable">AgsPackable</a>,  <a class="link" href="AgsDynamicConnectable.html" title="AgsDynamicConnectable">AgsDynamicConnectable</a> and  <a class="link" href="AgsPlugin.html" title="AgsPlugin">AgsPlugin</a>.</p>
+</div>
+<div class="refsect1">
+<a name="AgsVolumeChannel.properties"></a><h2>Properties</h2>
+<pre class="synopsis">
+  "<a class="link" href="AgsVolumeChannel.html#AgsVolumeChannel--volume" title='The "volume" property'>volume</a>"                   <a class="link" href="AgsPort.html" title="AgsPort"><span class="type">AgsPort</span></a>*              : Read / Write
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsVolumeChannel.description"></a><h2>Description</h2>
+<p>
+The <a class="link" href="AgsVolumeChannel.html" title="AgsVolumeChannel"><span class="type">AgsVolumeChannel</span></a> class provides ports to the effect processor.
+</p>
+</div>
+<div class="refsect1">
+<a name="AgsVolumeChannel.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AgsVolumeChannel-struct"></a><h3>struct AgsVolumeChannel</h3>
+<pre class="programlisting">struct AgsVolumeChannel;</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsVolumeChannelClass"></a><h3>struct AgsVolumeChannelClass</h3>
+<pre class="programlisting">struct AgsVolumeChannelClass {
+  AgsRecallChannelClass recall_channel;
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-volume-channel-new"></a><h3>ags_volume_channel_new ()</h3>
+<pre class="programlisting"><a class="link" href="AgsVolumeChannel.html" title="AgsVolumeChannel"><span class="returnvalue">AgsVolumeChannel</span></a> *  ags_volume_channel_new              ();</pre>
+<p>
+Creates an <a class="link" href="AgsVolumeChannel.html" title="AgsVolumeChannel"><span class="type">AgsVolumeChannel</span></a>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new <a class="link" href="AgsVolumeChannel.html" title="AgsVolumeChannel"><span class="type">AgsVolumeChannel</span></a>
+</td>
+</tr></tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+</div>
+<div class="refsect1">
+<a name="AgsVolumeChannel.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="AgsVolumeChannel--volume"></a><h3>The <code class="literal">"volume"</code> property</h3>
+<pre class="programlisting">  "volume"                   <a class="link" href="AgsPort.html" title="AgsPort"><span class="type">AgsPort</span></a>*              : Read / Write</pre>
+<p>The volume to apply on the channel.</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

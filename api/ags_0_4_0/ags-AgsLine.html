@@ -1,0 +1,148 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsLine</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer">
+<link rel="up" href="ch01.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td> </td>
+<td><a accesskey="u" href="ch01.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer</th>
+<td> </td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#ags-AgsLine.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#ags-AgsLine.description" class="shortcut">Description</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="ags-AgsLine"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="ags-AgsLine.top_of_page"></a>AgsLine</span></h2>
+<p>AgsLine</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="ags-AgsLine.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">#define             <a href="ags-AgsLine.html#AGS-LINE-DEFAULT-BUILD-ID:CAPS">AGS_LINE_DEFAULT_BUILD_ID</a>
+#define             <a href="ags-AgsLine.html#AGS-LINE-DEFAULT-VERSION:CAPS">AGS_LINE_DEFAULT_VERSION</a>
+struct              <a href="ags-AgsLine.html#AgsLine">AgsLine</a>;
+struct              <a href="ags-AgsLine.html#AgsLineClass">AgsLineClass</a>;
+enum                <a href="ags-AgsLine.html#AgsLineFlags">AgsLineFlags</a>;
+<a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="returnvalue">GList</span></a> *             <a href="ags-AgsLine.html#ags-line-find-next-grouped">ags_line_find_next_grouped</a>          (<em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> *line</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-AgsLine.html#ags-line-find-port">ags_line_find_port</a>                  (<em class="parameter"><code><a href="ags-AgsLine.html#AgsLine"><span class="type">AgsLine</span></a> *line</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-AgsLine.html#ags-line-group-changed">ags_line_group_changed</a>              (<em class="parameter"><code><a href="ags-AgsLine.html#AgsLine"><span class="type">AgsLine</span></a> *line</code></em>);
+<a href="ags-AgsLine.html#AgsLine"><span class="returnvalue">AgsLine</span></a> *           <a href="ags-AgsLine.html#ags-line-new">ags_line_new</a>                        (<em class="parameter"><code><a href="../gtk3/GtkWidget.html"><span class="type">GtkWidget</span></a> *pad</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsChannel.html#AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-AgsLine.html#ags-line-set-channel">ags_line_set_channel</a>                (<em class="parameter"><code><a href="ags-AgsLine.html#AgsLine"><span class="type">AgsLine</span></a> *line</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsChannel.html#AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="ags-AgsLine.description"></a><h2>Description</h2>
+</div>
+<div class="refsect1">
+<a name="ags-AgsLine.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AGS-LINE-DEFAULT-BUILD-ID:CAPS"></a><h3>AGS_LINE_DEFAULT_BUILD_ID</h3>
+<pre class="programlisting">#define AGS_LINE_DEFAULT_BUILD_ID "CEST 22-06-2014 03:07\0"
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-LINE-DEFAULT-VERSION:CAPS"></a><h3>AGS_LINE_DEFAULT_VERSION</h3>
+<pre class="programlisting">#define AGS_LINE_DEFAULT_VERSION "0.4.0\0"
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsLine"></a><h3>struct AgsLine</h3>
+<pre class="programlisting">struct AgsLine {
+  GtkVBox vbox;
+
+  guint flags;
+
+  gchar *version;
+  gchar *build_id;
+
+  gchar *name;
+
+  AgsChannel *channel;
+
+  GtkWidget *pad;
+
+  GtkLabel *label;
+  GtkToggleButton *group;
+
+  AgsExpander *expander;
+};
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsLineClass"></a><h3>struct AgsLineClass</h3>
+<pre class="programlisting">struct AgsLineClass {
+  GtkVBoxClass vbox;
+
+  void (*set_channel)(AgsLine *line, AgsChannel *channel);
+
+  void (*group_changed)(AgsLine *line);
+};
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsLineFlags"></a><h3>enum AgsLineFlags</h3>
+<pre class="programlisting">typedef enum {
+  AGS_LINE_CONNECTED         = 1,
+  AGS_LINE_GROUPED           = 1 &lt;&lt; 1,
+  AGS_LINE_MAPPED_RECALL     = 1 &lt;&lt; 2,
+  AGS_LINE_PREMAPPED_RECALL  = 1 &lt;&lt; 3,
+} AgsLineFlags;
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-line-find-next-grouped"></a><h3>ags_line_find_next_grouped ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="returnvalue">GList</span></a> *             ags_line_find_next_grouped          (<em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> *line</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-line-find-port"></a><h3>ags_line_find_port ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_line_find_port                  (<em class="parameter"><code><a href="ags-AgsLine.html#AgsLine"><span class="type">AgsLine</span></a> *line</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-line-group-changed"></a><h3>ags_line_group_changed ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_line_group_changed              (<em class="parameter"><code><a href="ags-AgsLine.html#AgsLine"><span class="type">AgsLine</span></a> *line</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-line-new"></a><h3>ags_line_new ()</h3>
+<pre class="programlisting"><a href="ags-AgsLine.html#AgsLine"><span class="returnvalue">AgsLine</span></a> *           ags_line_new                        (<em class="parameter"><code><a href="../gtk3/GtkWidget.html"><span class="type">GtkWidget</span></a> *pad</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsChannel.html#AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-line-set-channel"></a><h3>ags_line_set_channel ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_line_set_channel                (<em class="parameter"><code><a href="ags-AgsLine.html#AgsLine"><span class="type">AgsLine</span></a> *line</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsChannel.html#AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>);</pre>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

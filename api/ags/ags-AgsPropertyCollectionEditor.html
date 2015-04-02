@@ -1,0 +1,116 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsPropertyCollectionEditor</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="composite-widgets.html" title="Composite widgets">
+<link rel="prev" href="ags-ags-preferences-callbacks.html" title="ags_preferences_callbacks">
+<link rel="next" href="ags-ags-property-collection-editor-callbacks.html" title="ags_property_collection_editor_callbacks">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="ags-ags-preferences-callbacks.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="composite-widgets.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="ags-ags-property-collection-editor-callbacks.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#ags-AgsPropertyCollectionEditor.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#ags-AgsPropertyCollectionEditor.description" class="shortcut">Description</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="ags-AgsPropertyCollectionEditor"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="ags-AgsPropertyCollectionEditor.top_of_page"></a>AgsPropertyCollectionEditor</span></h2>
+<p>AgsPropertyCollectionEditor — Edit propertys in bulk mode.</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="ags-AgsPropertyCollectionEditor.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">
+#include &lt;ags/X/ags_property_collection_editor.h&gt;
+
+struct              <a class="link" href="ags-AgsPropertyCollectionEditor.html#AgsPropertyCollectionEditor" title="struct AgsPropertyCollectionEditor">AgsPropertyCollectionEditor</a>;
+struct              <a class="link" href="ags-AgsPropertyCollectionEditor.html#AgsPropertyCollectionEditorClass" title="struct AgsPropertyCollectionEditorClass">AgsPropertyCollectionEditorClass</a>;
+<a class="link" href="ags-AgsPropertyCollectionEditor.html#AgsPropertyCollectionEditor" title="struct AgsPropertyCollectionEditor"><span class="returnvalue">AgsPropertyCollectionEditor</span></a> * <a class="link" href="ags-AgsPropertyCollectionEditor.html#ags-property-collection-editor-new" title="ags_property_collection_editor_new ()">ags_property_collection_editor_new</a>
+                                                        (<em class="parameter"><code><GTKDOCLINK HREF="GType"><span class="type">GType</span></GTKDOCLINK> child_type</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> child_parameter_count</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GParameter"><span class="type">GParameter</span></GTKDOCLINK> *child_parameter</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="ags-AgsPropertyCollectionEditor.description"></a><h2>Description</h2>
+<p>
+<a class="link" href="ags-AgsPropertyCollectionEditor.html#AgsPropertyCollectionEditor" title="struct AgsPropertyCollectionEditor"><span class="type">AgsPropertyCollectionEditor</span></a> is a composite widget to modify propertys in bulk mode. A property collection
+editor should be packed by a <a class="link" href="ags-AgsMachineEditor.html#AgsMachineEditor" title="struct AgsMachineEditor"><span class="type">AgsMachineEditor</span></a>.
+</p>
+</div>
+<div class="refsect1">
+<a name="ags-AgsPropertyCollectionEditor.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AgsPropertyCollectionEditor"></a><h3>struct AgsPropertyCollectionEditor</h3>
+<pre class="programlisting">struct AgsPropertyCollectionEditor {
+  AgsPropertyEditor property_editor;
+
+  GType child_type;
+  guint child_parameter_count;
+  GParameter *child_parameter;
+
+  GtkVBox *child;
+
+  GtkButton *add_collection;
+};
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsPropertyCollectionEditorClass"></a><h3>struct AgsPropertyCollectionEditorClass</h3>
+<pre class="programlisting">struct AgsPropertyCollectionEditorClass {
+  AgsPropertyEditorClass property_editor;
+};
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-property-collection-editor-new"></a><h3>ags_property_collection_editor_new ()</h3>
+<pre class="programlisting"><a class="link" href="ags-AgsPropertyCollectionEditor.html#AgsPropertyCollectionEditor" title="struct AgsPropertyCollectionEditor"><span class="returnvalue">AgsPropertyCollectionEditor</span></a> * ags_property_collection_editor_new
+                                                        (<em class="parameter"><code><GTKDOCLINK HREF="GType"><span class="type">GType</span></GTKDOCLINK> child_type</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> child_parameter_count</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GParameter"><span class="type">GParameter</span></GTKDOCLINK> *child_parameter</code></em>);</pre>
+<p>
+Creates an <a class="link" href="ags-AgsPropertyCollectionEditor.html#AgsPropertyCollectionEditor" title="struct AgsPropertyCollectionEditor"><span class="type">AgsPropertyCollectionEditor</span></a>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>channel_type</code></em> :</span></p></td>
+<td>either <GTKDOCLINK HREF="AGS-TYPE-INPUT:CAPS"><code class="literal">AGS_TYPE_INPUT</code></GTKDOCLINK> or <GTKDOCLINK HREF="AGS-TYPE-OUTPUT:CAPS"><code class="literal">AGS_TYPE_OUTPUT</code></GTKDOCLINK>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new <a class="link" href="ags-AgsPropertyCollectionEditor.html#AgsPropertyCollectionEditor" title="struct AgsPropertyCollectionEditor"><span class="type">AgsPropertyCollectionEditor</span></a>
+</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.3</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

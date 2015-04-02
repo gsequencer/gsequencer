@@ -1,0 +1,118 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsCopyChannel</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="recall.html" title="Recalls - Effect processors">
+<link rel="prev" href="AgsCopyAudioSignal.html" title="AgsCopyAudioSignal">
+<link rel="next" href="AgsCopyChannelRun.html" title="AgsCopyChannelRun">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="AgsCopyAudioSignal.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="recall.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="AgsCopyChannelRun.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#AgsCopyChannel.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#AgsCopyChannel.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#AgsCopyChannel.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#AgsCopyChannel.implemented-interfaces" class="shortcut">Implemented Interfaces</a>
+                   | 
+                  <a href="#AgsCopyChannel.properties" class="shortcut">Properties</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="AgsCopyChannel"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="AgsCopyChannel.top_of_page"></a>AgsCopyChannel</span></h2>
+<p>AgsCopyChannel</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="AgsCopyChannel.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">struct              <a class="link" href="AgsCopyChannel.html#AgsCopyChannel-struct" title="struct AgsCopyChannel">AgsCopyChannel</a>;
+struct              <a class="link" href="AgsCopyChannel.html#AgsCopyChannelClass" title="struct AgsCopyChannelClass">AgsCopyChannelClass</a>;
+<a class="link" href="AgsCopyChannel.html" title="AgsCopyChannel"><span class="returnvalue">AgsCopyChannel</span></a> *    <a class="link" href="AgsCopyChannel.html#ags-copy-channel-new" title="ags_copy_channel_new ()">ags_copy_channel_new</a>                (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *destination</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *source</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsCopyChannel.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  <GTKDOCLINK HREF="GObject">GObject</GTKDOCLINK>
+   +----<a class="link" href="AgsRecall.html" title="AgsRecall">AgsRecall</a>
+         +----<a class="link" href="AgsRecallChannel.html" title="AgsRecallChannel">AgsRecallChannel</a>
+               +----AgsCopyChannel
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsCopyChannel.implemented-interfaces"></a><h2>Implemented Interfaces</h2>
+<p>
+AgsCopyChannel implements
+ <GTKDOCLINK HREF="AgsConnectable">AgsConnectable</GTKDOCLINK>,  <a class="link" href="AgsPackable.html" title="AgsPackable">AgsPackable</a>,  <a class="link" href="AgsDynamicConnectable.html" title="AgsDynamicConnectable">AgsDynamicConnectable</a>,  <a class="link" href="AgsPlugin.html" title="AgsPlugin">AgsPlugin</a> and  <a class="link" href="AgsMutable.html" title="AgsMutable">AgsMutable</a>.</p>
+</div>
+<div class="refsect1">
+<a name="AgsCopyChannel.properties"></a><h2>Properties</h2>
+<pre class="synopsis">
+  "<a class="link" href="AgsCopyChannel.html#AgsCopyChannel--muted" title='The "muted" property'>muted</a>"                    <a class="link" href="AgsPort.html" title="AgsPort"><span class="type">AgsPort</span></a>*              : Read / Write
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsCopyChannel.description"></a><h2>Description</h2>
+<p>
+</p>
+</div>
+<div class="refsect1">
+<a name="AgsCopyChannel.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AgsCopyChannel-struct"></a><h3>struct AgsCopyChannel</h3>
+<pre class="programlisting">struct AgsCopyChannel;</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsCopyChannelClass"></a><h3>struct AgsCopyChannelClass</h3>
+<pre class="programlisting">struct AgsCopyChannelClass {
+  AgsRecallChannelClass recall_channel;
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-copy-channel-new"></a><h3>ags_copy_channel_new ()</h3>
+<pre class="programlisting"><a class="link" href="AgsCopyChannel.html" title="AgsCopyChannel"><span class="returnvalue">AgsCopyChannel</span></a> *    ags_copy_channel_new                (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *destination</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *source</code></em>);</pre>
+<p>
+</p>
+</div>
+</div>
+<div class="refsect1">
+<a name="AgsCopyChannel.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="AgsCopyChannel--muted"></a><h3>The <code class="literal">"muted"</code> property</h3>
+<pre class="programlisting">  "muted"                    <a class="link" href="AgsPort.html" title="AgsPort"><span class="type">AgsPort</span></a>*              : Read / Write</pre>
+<p>Mute the channel.</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

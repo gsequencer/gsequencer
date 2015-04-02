@@ -1,0 +1,117 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsMainLoop</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer">
+<link rel="up" href="ch01.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td> </td>
+<td><a accesskey="u" href="ch01.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer</th>
+<td> </td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#ags-AgsMainLoop.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#ags-AgsMainLoop.description" class="shortcut">Description</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="ags-AgsMainLoop"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="ags-AgsMainLoop.top_of_page"></a>AgsMainLoop</span></h2>
+<p>AgsMainLoop</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="ags-AgsMainLoop.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">typedef             <a href="ags-AgsMainLoop.html#AgsMainLoop">AgsMainLoop</a>;
+struct              <a href="ags-AgsMainLoop.html#AgsMainLoopInterface">AgsMainLoopInterface</a>;
+<a href="ags-AgsAsyncQueue.html#AgsAsyncQueue"><span class="returnvalue">AgsAsyncQueue</span></a> *     <a href="ags-AgsMainLoop.html#ags-main-loop-get-async-queue">ags_main_loop_get_async_queue</a>       (<em class="parameter"><code><a href="ags-AgsMainLoop.html#AgsMainLoop"><span class="type">AgsMainLoop</span></a> *main_loop</code></em>);
+<a href="../glib/glib-Basic-Types.html#guint"><span class="returnvalue">guint</span></a>               <a href="ags-AgsMainLoop.html#ags-main-loop-get-last-sync">ags_main_loop_get_last_sync</a>         (<em class="parameter"><code><a href="ags-AgsMainLoop.html#AgsMainLoop"><span class="type">AgsMainLoop</span></a> *main_loop</code></em>);
+<a href="../glib/glib-Basic-Types.html#guint"><span class="returnvalue">guint</span></a>               <a href="ags-AgsMainLoop.html#ags-main-loop-get-tic">ags_main_loop_get_tic</a>               (<em class="parameter"><code><a href="ags-AgsMainLoop.html#AgsMainLoop"><span class="type">AgsMainLoop</span></a> *main_loop</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-AgsMainLoop.html#ags-main-loop-set-async-queue">ags_main_loop_set_async_queue</a>       (<em class="parameter"><code><a href="ags-AgsMainLoop.html#AgsMainLoop"><span class="type">AgsMainLoop</span></a> *main_loop</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsAsyncQueue.html#AgsAsyncQueue"><span class="type">AgsAsyncQueue</span></a> *async_queue</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-AgsMainLoop.html#ags-main-loop-set-last-sync">ags_main_loop_set_last_sync</a>         (<em class="parameter"><code><a href="ags-AgsMainLoop.html#AgsMainLoop"><span class="type">AgsMainLoop</span></a> *main_loop</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> last_sync</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-AgsMainLoop.html#ags-main-loop-set-tic">ags_main_loop_set_tic</a>               (<em class="parameter"><code><a href="ags-AgsMainLoop.html#AgsMainLoop"><span class="type">AgsMainLoop</span></a> *main_loop</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> tic</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="ags-AgsMainLoop.description"></a><h2>Description</h2>
+</div>
+<div class="refsect1">
+<a name="ags-AgsMainLoop.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AgsMainLoop"></a><h3>AgsMainLoop</h3>
+<pre class="programlisting">typedef void AgsMainLoop;
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsMainLoopInterface"></a><h3>struct AgsMainLoopInterface</h3>
+<pre class="programlisting">struct AgsMainLoopInterface {
+  GTypeInterface interface;
+
+  void (*set_async_queue)(AgsMainLoop *main_loop, AgsAsyncQueue *async_queue);
+  AgsAsyncQueue* (*get_async_queue)(AgsMainLoop *main_loop);
+  
+  void (*set_tic)(AgsMainLoop *main_loop, guint tic);
+  guint (*get_tic)(AgsMainLoop *main_loop);
+
+  void (*set_last_sync)(AgsMainLoop *main_loop, guint last_sync);
+  guint (*get_last_sync)(AgsMainLoop *main_loop);
+};
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-main-loop-get-async-queue"></a><h3>ags_main_loop_get_async_queue ()</h3>
+<pre class="programlisting"><a href="ags-AgsAsyncQueue.html#AgsAsyncQueue"><span class="returnvalue">AgsAsyncQueue</span></a> *     ags_main_loop_get_async_queue       (<em class="parameter"><code><a href="ags-AgsMainLoop.html#AgsMainLoop"><span class="type">AgsMainLoop</span></a> *main_loop</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-main-loop-get-last-sync"></a><h3>ags_main_loop_get_last_sync ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#guint"><span class="returnvalue">guint</span></a>               ags_main_loop_get_last_sync         (<em class="parameter"><code><a href="ags-AgsMainLoop.html#AgsMainLoop"><span class="type">AgsMainLoop</span></a> *main_loop</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-main-loop-get-tic"></a><h3>ags_main_loop_get_tic ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#guint"><span class="returnvalue">guint</span></a>               ags_main_loop_get_tic               (<em class="parameter"><code><a href="ags-AgsMainLoop.html#AgsMainLoop"><span class="type">AgsMainLoop</span></a> *main_loop</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-main-loop-set-async-queue"></a><h3>ags_main_loop_set_async_queue ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_main_loop_set_async_queue       (<em class="parameter"><code><a href="ags-AgsMainLoop.html#AgsMainLoop"><span class="type">AgsMainLoop</span></a> *main_loop</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsAsyncQueue.html#AgsAsyncQueue"><span class="type">AgsAsyncQueue</span></a> *async_queue</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-main-loop-set-last-sync"></a><h3>ags_main_loop_set_last_sync ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_main_loop_set_last_sync         (<em class="parameter"><code><a href="ags-AgsMainLoop.html#AgsMainLoop"><span class="type">AgsMainLoop</span></a> *main_loop</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> last_sync</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-main-loop-set-tic"></a><h3>ags_main_loop_set_tic ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_main_loop_set_tic               (<em class="parameter"><code><a href="ags-AgsMainLoop.html#AgsMainLoop"><span class="type">AgsMainLoop</span></a> *main_loop</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> tic</code></em>);</pre>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

@@ -1,0 +1,112 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsPackable</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="object.html" title="Part II. Object - Interfaces and marshallers">
+<link rel="prev" href="AgsMutable.html" title="AgsMutable">
+<link rel="next" href="AgsPortlet.html" title="AgsPortlet">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="AgsMutable.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="object.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="AgsPortlet.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#AgsPackable.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#AgsPackable.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#AgsPackable.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#AgsPackable.implementations" class="shortcut">Known Implementations</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="AgsPackable"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="AgsPackable.top_of_page"></a>AgsPackable</span></h2>
+<p>AgsPackable</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="AgsPackable.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">typedef             <a class="link" href="AgsPackable.html" title="AgsPackable">AgsPackable</a>;
+struct              <a class="link" href="AgsPackable.html#AgsPackableInterface" title="struct AgsPackableInterface">AgsPackableInterface</a>;
+<GTKDOCLINK HREF="gboolean"><span class="returnvalue">gboolean</span></GTKDOCLINK>            <a class="link" href="AgsPackable.html#ags-packable-pack" title="ags_packable_pack ()">ags_packable_pack</a>                   (<em class="parameter"><code><a class="link" href="AgsPackable.html" title="AgsPackable"><span class="type">AgsPackable</span></a> *packable</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *container</code></em>);
+<GTKDOCLINK HREF="gboolean"><span class="returnvalue">gboolean</span></GTKDOCLINK>            <a class="link" href="AgsPackable.html#ags-packable-unpack" title="ags_packable_unpack ()">ags_packable_unpack</a>                 (<em class="parameter"><code><a class="link" href="AgsPackable.html" title="AgsPackable"><span class="type">AgsPackable</span></a> *packable</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsPackable.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  <GTKDOCLINK HREF="GInterface">GInterface</GTKDOCLINK>
+   +----AgsPackable
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsPackable.implementations"></a><h2>Known Implementations</h2>
+<p>
+AgsPackable is implemented by
+ <a class="link" href="AgsBufferAudioSignal.html" title="AgsBufferAudioSignal">AgsBufferAudioSignal</a>,  <a class="link" href="AgsBufferChannel.html" title="AgsBufferChannel">AgsBufferChannel</a>,  <a class="link" href="AgsBufferChannelRun.html" title="AgsBufferChannelRun">AgsBufferChannelRun</a>,  <a class="link" href="AgsBufferRecycling.html" title="AgsBufferRecycling">AgsBufferRecycling</a>,  <a class="link" href="AgsCopyAudioSignal.html" title="AgsCopyAudioSignal">AgsCopyAudioSignal</a>,  <a class="link" href="AgsCopyChannel.html" title="AgsCopyChannel">AgsCopyChannel</a>,  <a class="link" href="AgsCopyChannelRun.html" title="AgsCopyChannelRun">AgsCopyChannelRun</a>,  <a class="link" href="AgsCopyNotationAudio.html" title="AgsCopyNotationAudio">AgsCopyNotationAudio</a>,  <a class="link" href="AgsCopyNotationAudioRun.html" title="AgsCopyNotationAudioRun">AgsCopyNotationAudioRun</a>,  <a class="link" href="AgsCopyPatternAudio.html" title="AgsCopyPatternAudio">AgsCopyPatternAudio</a>,  <a class="link" href="AgsCopyPatternAudioRun.html" title="AgsCopyPatternAudioRun">AgsCopyPatternAudioRun</a>,  <a class="link" href="AgsCopyPatternChannel.html" title="AgsCopyPatternChannel">AgsCopyPatternChannel</a>,  <a class="link" href="AgsCopyPatternChannelRun.html" title="AgsCopyPatternChannelRun">AgsCopyPatternChannelRun</a>,  <a class="link" href="AgsCopyRecycling.html" title="AgsCopyRecycling">AgsCopyRecycling</a>,  <a class="link" href="AgsCountBeatsAudio.html" title="AgsCountBeatsAudio">AgsCountBeatsAudio</a>,  <a class="link" href="AgsCountBeatsAudioRun.html" title="AgsCountBeatsAudioRun">AgsCountBeatsAudioRun</a>,  <a class="link" href="AgsDelayAudio.html" title="AgsDelayAudio">AgsDelayAudio</a>,  <a class="link" href="AgsDelayAudioRun.html" title="AgsDelayAudioRun">AgsDelayAudioRun</a>,  <a class="link" href="AgsLoopChannel.html" title="AgsLoopChannel">AgsLoopChannel</a>,  <a class="link" href="AgsLoopChannelRun.html" title="AgsLoopChannelRun">AgsLoopChannelRun</a>,  <a class="link" href="AgsMuteAudio.html" title="AgsMuteAudio">AgsMuteAudio</a>,  <a class="link" href="AgsMuteAudioSignal.html" title="AgsMuteAudioSignal">AgsMuteAudioSignal</a>,  <a class="link" href="AgsMuteChannel.html" title="AgsMuteChannel">AgsMuteChannel</a>,  <a class="link" href="AgsMuteChannelRun.html" title="AgsMuteChannelRun">AgsMuteChannelRun</a>,  <a class="link" href="AgsMuteRecycling.html" title="AgsMuteRecycling">AgsMuteRecycling</a>,  <a class="link" href="AgsPeakChannel.html" title="AgsPeakChannel">AgsPeakChannel</a>,  <a class="link" href="AgsPeakChannelRun.html" title="AgsPeakChannelRun">AgsPeakChannelRun</a>,  <a class="link" href="AgsPlayAudio.html" title="AgsPlayAudio">AgsPlayAudio</a>,  <a class="link" href="AgsPlayAudioFile.html" title="AgsPlayAudioFile">AgsPlayAudioFile</a>,  <a class="link" href="AgsPlayAudioSignal.html" title="AgsPlayAudioSignal">AgsPlayAudioSignal</a>,  <a class="link" href="AgsPlayChannel.html" title="AgsPlayChannel">AgsPlayChannel</a>,  <a class="link" href="AgsPlayChannelRun.html" title="AgsPlayChannelRun">AgsPlayChannelRun</a>,  <a class="link" href="AgsPlayChannelRunMaster.html" title="AgsPlayChannelRunMaster">AgsPlayChannelRunMaster</a>,  <a class="link" href="AgsPlayNotationAudio.html" title="AgsPlayNotationAudio">AgsPlayNotationAudio</a>,  <a class="link" href="AgsPlayNotationAudioRun.html" title="AgsPlayNotationAudioRun">AgsPlayNotationAudioRun</a>,  <a class="link" href="AgsPlayNote.html" title="AgsPlayNote">AgsPlayNote</a>,  <a class="link" href="AgsPlayPattern.html" title="AgsPlayPattern">AgsPlayPattern</a>,  <a class="link" href="AgsPlayRecycling.html" title="AgsPlayRecycling">AgsPlayRecycling</a>,  <a class="link" href="AgsRecall.html" title="AgsRecall">AgsRecall</a>,  <a class="link" href="AgsRecallAudio.html" title="AgsRecallAudio">AgsRecallAudio</a>,  <a class="link" href="AgsRecallAudioRun.html" title="AgsRecallAudioRun">AgsRecallAudioRun</a>,  <a class="link" href="AgsRecallAudioSignal.html" title="AgsRecallAudioSignal">AgsRecallAudioSignal</a>,  <a class="link" href="AgsRecallChannel.html" title="AgsRecallChannel">AgsRecallChannel</a>,  <a class="link" href="AgsRecallChannelRun.html" title="AgsRecallChannelRun">AgsRecallChannelRun</a>,  <a class="link" href="AgsRecallChannelRunDummy.html" title="AgsRecallChannelRunDummy">AgsRecallChannelRunDummy</a>,  <a class="link" href="AgsRecallLadspa.html" title="AgsRecallLadspa">AgsRecallLadspa</a>,  <a class="link" href="AgsRecallLadspaRun.html" title="AgsRecallLadspaRun">AgsRecallLadspaRun</a>,  <a class="link" href="AgsRecallRecycling.html" title="AgsRecallRecycling">AgsRecallRecycling</a>,  <a class="link" href="AgsRecallRecyclingDummy.html" title="AgsRecallRecyclingDummy">AgsRecallRecyclingDummy</a>,  <a class="link" href="AgsStreamAudioSignal.html" title="AgsStreamAudioSignal">AgsStreamAudioSignal</a>,  <a class="link" href="AgsStreamChannel.html" title="AgsStreamChannel">AgsStreamChannel</a>,  <a class="link" href="AgsStreamChannelRun.html" title="AgsStreamChannelRun">AgsStreamChannelRun</a>,  <a class="link" href="AgsStreamRecycling.html" title="AgsStreamRecycling">AgsStreamRecycling</a>,  <a class="link" href="AgsVolumeAudioSignal.html" title="AgsVolumeAudioSignal">AgsVolumeAudioSignal</a>,  <a class="link" href="AgsVolumeChannel.html" title="AgsVolumeChannel">AgsVolumeChannel</a>,  <a class="link" href="AgsVolumeChannelRun.html" title="AgsVolumeChannelRun">AgsVolumeChannelRun</a> and  <a class="link" href="AgsVolumeRecycling.html" title="AgsVolumeRecycling">AgsVolumeRecycling</a>.</p>
+</div>
+<div class="refsect1">
+<a name="AgsPackable.description"></a><h2>Description</h2>
+<p>
+</p>
+</div>
+<div class="refsect1">
+<a name="AgsPackable.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AgsPackable"></a><h3>AgsPackable</h3>
+<pre class="programlisting">typedef void AgsPackable;
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsPackableInterface"></a><h3>struct AgsPackableInterface</h3>
+<pre class="programlisting">struct AgsPackableInterface {
+  GTypeInterface interface;
+
+  gboolean (*pack)(AgsPackable *packable, GObject *container);
+  gboolean (*unpack)(AgsPackable *packable);
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-packable-pack"></a><h3>ags_packable_pack ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="gboolean"><span class="returnvalue">gboolean</span></GTKDOCLINK>            ags_packable_pack                   (<em class="parameter"><code><a class="link" href="AgsPackable.html" title="AgsPackable"><span class="type">AgsPackable</span></a> *packable</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *container</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-packable-unpack"></a><h3>ags_packable_unpack ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="gboolean"><span class="returnvalue">gboolean</span></GTKDOCLINK>            ags_packable_unpack                 (<em class="parameter"><code><a class="link" href="AgsPackable.html" title="AgsPackable"><span class="type">AgsPackable</span></a> *packable</code></em>);</pre>
+<p>
+</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

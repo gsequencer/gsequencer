@@ -1,0 +1,34 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>AgsTaskThread</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="ags Reference Manual"><link rel="up" href="ch01.html" title="Chapter 1. [Insert title here]"><link rel="prev" href="re265.html" title="AgsTask"><link rel="next" href="re267.html" title="AgsThread"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="ags-AgsTaskThread"></a><div class="titlepage"></div><div class="refnamediv"><h2>Name</h2><p>AgsTaskThread</p></div><div class="refsynopsisdiv"><a name="ags-AgsTaskThread.synopsis"></a><h2>Synopsis</h2><pre class="synopsis">struct              <a class="link" href="re266.html#AgsTaskThread" title="struct AgsTaskThread">AgsTaskThread</a>;
+struct              <a class="link" href="re266.html#AgsTaskThreadClass" title="struct AgsTaskThreadClass">AgsTaskThreadClass</a>;
+struct              <a class="link" href="re266.html#AgsTaskThreadAppend" title="struct AgsTaskThreadAppend">AgsTaskThreadAppend</a>;
+<a class="link" href=""><span class="returnvalue">void</span></a>                <a class="link" href="re266.html#ags-task-thread-append-task" title="ags_task_thread_append_task ()">ags_task_thread_append_task</a>         (<em class="parameter"><code><a class="link" href="re266.html#AgsTaskThread" title="struct AgsTaskThread"><span class="type">AgsTaskThread</span></a> *task_thread</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="re265.html#AgsTask" title="struct AgsTask"><span class="type">AgsTask</span></a> *task</code></em>);
+<a class="link" href=""><span class="returnvalue">void</span></a>                <a class="link" href="re266.html#ags-task-thread-append-tasks" title="ags_task_thread_append_tasks ()">ags_task_thread_append_tasks</a>        (<em class="parameter"><code><a class="link" href="re266.html#AgsTaskThread" title="struct AgsTaskThread"><span class="type">AgsTaskThread</span></a> *task_thread</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">GList</span></a> *list</code></em>);
+<a class="link" href="re266.html#AgsTaskThread" title="struct AgsTaskThread"><span class="returnvalue">AgsTaskThread</span></a> *     <a class="link" href="re266.html#ags-task-thread-new" title="ags_task_thread_new ()">ags_task_thread_new</a>                 (<em class="parameter"><code><a class="link" href=""><span class="type">GObject</span></a> *devout</code></em>);
+</pre></div><div class="refsect1"><a name="ags-AgsTaskThread.description"></a><h2>Description</h2></div><div class="refsect1"><a name="ags-AgsTaskThread.details"></a><h2>Details</h2><div class="refsect2"><a name="AgsTaskThread"></a><h3>struct AgsTaskThread</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsTaskThread"></OBJECT><pre class="programlisting">struct AgsTaskThread {
+  AgsThread thread;
+
+  guint flags;
+
+  pthread_mutex_t read_mutex;
+  pthread_mutex_t launch_mutex;
+
+  guint queued;
+  guint pending;
+
+  GList *exec;
+  GList *queue;
+
+  AgsThreadPool *thread_pool;
+};
+</pre></div><div class="refsect2"><a name="AgsTaskThreadClass"></a><h3>struct AgsTaskThreadClass</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsTaskThreadClass"></OBJECT><pre class="programlisting">struct AgsTaskThreadClass {
+  AgsThreadClass thread;
+};
+</pre></div><div class="refsect2"><a name="AgsTaskThreadAppend"></a><h3>struct AgsTaskThreadAppend</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsTaskThreadAppend"></OBJECT><pre class="programlisting">struct AgsTaskThreadAppend {
+  AgsTaskThread *task_thread;
+  gpointer data;
+};
+</pre></div><div class="refsect2"><a name="ags-task-thread-append-task"></a><h3>ags_task_thread_append_task ()</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="ags_task_thread_append_task"></OBJECT><pre class="programlisting"><a class="link" href=""><span class="returnvalue">void</span></a>                ags_task_thread_append_task         (<em class="parameter"><code><a class="link" href="re266.html#AgsTaskThread" title="struct AgsTaskThread"><span class="type">AgsTaskThread</span></a> *task_thread</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="re265.html#AgsTask" title="struct AgsTask"><span class="type">AgsTask</span></a> *task</code></em>);</pre></div><div class="refsect2"><a name="ags-task-thread-append-tasks"></a><h3>ags_task_thread_append_tasks ()</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="ags_task_thread_append_tasks"></OBJECT><pre class="programlisting"><a class="link" href=""><span class="returnvalue">void</span></a>                ags_task_thread_append_tasks        (<em class="parameter"><code><a class="link" href="re266.html#AgsTaskThread" title="struct AgsTaskThread"><span class="type">AgsTaskThread</span></a> *task_thread</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">GList</span></a> *list</code></em>);</pre></div><div class="refsect2"><a name="ags-task-thread-new"></a><h3>ags_task_thread_new ()</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="ags_task_thread_new"></OBJECT><pre class="programlisting"><a class="link" href="re266.html#AgsTaskThread" title="struct AgsTaskThread"><span class="returnvalue">AgsTaskThread</span></a> *     ags_task_thread_new                 (<em class="parameter"><code><a class="link" href=""><span class="type">GObject</span></a> *devout</code></em>);</pre></div></div></div></body></html>

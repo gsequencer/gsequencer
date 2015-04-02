@@ -1,0 +1,217 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsDelayAudio</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="recall.html" title="Recalls - Effect processors">
+<link rel="prev" href="AgsCountBeatsAudioRun.html" title="AgsCountBeatsAudioRun">
+<link rel="next" href="AgsDelayAudioRun.html" title="AgsDelayAudioRun">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="AgsCountBeatsAudioRun.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="recall.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="AgsDelayAudioRun.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#AgsDelayAudio.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#AgsDelayAudio.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#AgsDelayAudio.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#AgsDelayAudio.implemented-interfaces" class="shortcut">Implemented Interfaces</a>
+                   | 
+                  <a href="#AgsDelayAudio.properties" class="shortcut">Properties</a>
+                   | 
+                  <a href="#AgsDelayAudio.signals" class="shortcut">Signals</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="AgsDelayAudio"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="AgsDelayAudio.top_of_page"></a>AgsDelayAudio</span></h2>
+<p>AgsDelayAudio — delay audio</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="AgsDelayAudio.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">
+#include &lt;ags/audio/recall/ags_delay_audio.h&gt;
+
+struct              <a class="link" href="AgsDelayAudio.html#AgsDelayAudio-struct" title="struct AgsDelayAudio">AgsDelayAudio</a>;
+struct              <a class="link" href="AgsDelayAudio.html#AgsDelayAudioClass" title="struct AgsDelayAudioClass">AgsDelayAudioClass</a>;
+<a class="link" href="AgsDelayAudio.html" title="AgsDelayAudio"><span class="returnvalue">AgsDelayAudio</span></a> *     <a class="link" href="AgsDelayAudio.html#ags-delay-audio-new" title="ags_delay_audio_new ()">ags_delay_audio_new</a>                 ();
+<span class="returnvalue">void</span>                <a class="link" href="AgsDelayAudio.html#ags-delay-audio-notation-duration-changed" title="ags_delay_audio_notation_duration_changed ()">ags_delay_audio_notation_duration_changed</a>
+                                                        (<em class="parameter"><code><a class="link" href="AgsDelayAudio.html" title="AgsDelayAudio"><span class="type">AgsDelayAudio</span></a> *delay_audio</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsDelayAudio.html#ags-delay-audio-sequencer-duration-changed" title="ags_delay_audio_sequencer_duration_changed ()">ags_delay_audio_sequencer_duration_changed</a>
+                                                        (<em class="parameter"><code><a class="link" href="AgsDelayAudio.html" title="AgsDelayAudio"><span class="type">AgsDelayAudio</span></a> *delay_audio</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsDelayAudio.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  <a href="../gobject/gobject-The-Base-Object-Type.html#GObject">GObject</a>
+   +----<a class="link" href="AgsRecall.html" title="AgsRecall">AgsRecall</a>
+         +----<a class="link" href="AgsRecallAudio.html" title="AgsRecallAudio">AgsRecallAudio</a>
+               +----AgsDelayAudio
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsDelayAudio.implemented-interfaces"></a><h2>Implemented Interfaces</h2>
+<p>
+AgsDelayAudio implements
+ AgsConnectable,  <a class="link" href="AgsPackable.html" title="AgsPackable">AgsPackable</a>,  <a class="link" href="AgsDynamicConnectable.html" title="AgsDynamicConnectable">AgsDynamicConnectable</a>,  <a class="link" href="AgsPlugin.html" title="AgsPlugin">AgsPlugin</a> and  <a class="link" href="AgsTactable.html" title="AgsTactable">AgsTactable</a>.</p>
+</div>
+<div class="refsect1">
+<a name="AgsDelayAudio.properties"></a><h2>Properties</h2>
+<pre class="synopsis">
+  "<a class="link" href="AgsDelayAudio.html#AgsDelayAudio--bpm" title='The "bpm" property'>bpm</a>"                      <a class="link" href="AgsPort.html" title="AgsPort"><span class="type">AgsPort</span></a>*              : Read / Write
+  "<a class="link" href="AgsDelayAudio.html#AgsDelayAudio--notation-delay" title='The "notation-delay" property'>notation-delay</a>"           <a class="link" href="AgsPort.html" title="AgsPort"><span class="type">AgsPort</span></a>*              : Read / Write
+  "<a class="link" href="AgsDelayAudio.html#AgsDelayAudio--notation-duration" title='The "notation-duration" property'>notation-duration</a>"        <a class="link" href="AgsPort.html" title="AgsPort"><span class="type">AgsPort</span></a>*              : Read / Write
+  "<a class="link" href="AgsDelayAudio.html#AgsDelayAudio--sequencer-delay" title='The "sequencer-delay" property'>sequencer-delay</a>"          <a class="link" href="AgsPort.html" title="AgsPort"><span class="type">AgsPort</span></a>*              : Read / Write
+  "<a class="link" href="AgsDelayAudio.html#AgsDelayAudio--sequencer-duration" title='The "sequencer-duration" property'>sequencer-duration</a>"       <a class="link" href="AgsPort.html" title="AgsPort"><span class="type">AgsPort</span></a>*              : Read / Write
+  "<a class="link" href="AgsDelayAudio.html#AgsDelayAudio--tact" title='The "tact" property'>tact</a>"                     <a class="link" href="AgsPort.html" title="AgsPort"><span class="type">AgsPort</span></a>*              : Read / Write
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsDelayAudio.signals"></a><h2>Signals</h2>
+<pre class="synopsis">
+  "<a class="link" href="AgsDelayAudio.html#AgsDelayAudio-notation-duration-changed" title='The "notation-duration-changed" signal'>notation-duration-changed</a>"                      : <a href="../gobject/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></a>
+  "<a class="link" href="AgsDelayAudio.html#AgsDelayAudio-sequencer-duration-changed" title='The "sequencer-duration-changed" signal'>sequencer-duration-changed</a>"                     : <a href="../gobject/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></a>
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsDelayAudio.description"></a><h2>Description</h2>
+<p>
+The <a class="link" href="AgsDelayAudio.html" title="AgsDelayAudio"><span class="type">AgsDelayAudio</span></a> class provides ports to the effect processor.
+</p>
+</div>
+<div class="refsect1">
+<a name="AgsDelayAudio.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AgsDelayAudio-struct"></a><h3>struct AgsDelayAudio</h3>
+<pre class="programlisting">struct AgsDelayAudio;</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsDelayAudioClass"></a><h3>struct AgsDelayAudioClass</h3>
+<pre class="programlisting">struct AgsDelayAudioClass {
+  AgsRecallAudioClass recall_audio;
+
+  void (*notation_duration_changed)(AgsDelayAudio *delay_audio);
+  void (*sequencer_duration_changed)(AgsDelayAudio *delay_audio);
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-delay-audio-new"></a><h3>ags_delay_audio_new ()</h3>
+<pre class="programlisting"><a class="link" href="AgsDelayAudio.html" title="AgsDelayAudio"><span class="returnvalue">AgsDelayAudio</span></a> *     ags_delay_audio_new                 ();</pre>
+<p>
+Creates an <a class="link" href="AgsDelayAudio.html" title="AgsDelayAudio"><span class="type">AgsDelayAudio</span></a>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new <a class="link" href="AgsDelayAudio.html" title="AgsDelayAudio"><span class="type">AgsDelayAudio</span></a>
+</td>
+</tr></tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-delay-audio-notation-duration-changed"></a><h3>ags_delay_audio_notation_duration_changed ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_delay_audio_notation_duration_changed
+                                                        (<em class="parameter"><code><a class="link" href="AgsDelayAudio.html" title="AgsDelayAudio"><span class="type">AgsDelayAudio</span></a> *delay_audio</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-delay-audio-sequencer-duration-changed"></a><h3>ags_delay_audio_sequencer_duration_changed ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_delay_audio_sequencer_duration_changed
+                                                        (<em class="parameter"><code><a class="link" href="AgsDelayAudio.html" title="AgsDelayAudio"><span class="type">AgsDelayAudio</span></a> *delay_audio</code></em>);</pre>
+<p>
+</p>
+</div>
+</div>
+<div class="refsect1">
+<a name="AgsDelayAudio.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="AgsDelayAudio--bpm"></a><h3>The <code class="literal">"bpm"</code> property</h3>
+<pre class="programlisting">  "bpm"                      <a class="link" href="AgsPort.html" title="AgsPort"><span class="type">AgsPort</span></a>*              : Read / Write</pre>
+<p>The recall's bpm.</p>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsDelayAudio--notation-delay"></a><h3>The <code class="literal">"notation-delay"</code> property</h3>
+<pre class="programlisting">  "notation-delay"           <a class="link" href="AgsPort.html" title="AgsPort"><span class="type">AgsPort</span></a>*              : Read / Write</pre>
+<p>The delay of the notation.</p>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsDelayAudio--notation-duration"></a><h3>The <code class="literal">"notation-duration"</code> property</h3>
+<pre class="programlisting">  "notation-duration"        <a class="link" href="AgsPort.html" title="AgsPort"><span class="type">AgsPort</span></a>*              : Read / Write</pre>
+<p>The duration of the notation.</p>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsDelayAudio--sequencer-delay"></a><h3>The <code class="literal">"sequencer-delay"</code> property</h3>
+<pre class="programlisting">  "sequencer-delay"          <a class="link" href="AgsPort.html" title="AgsPort"><span class="type">AgsPort</span></a>*              : Read / Write</pre>
+<p>The delay of the sequencer.</p>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsDelayAudio--sequencer-duration"></a><h3>The <code class="literal">"sequencer-duration"</code> property</h3>
+<pre class="programlisting">  "sequencer-duration"       <a class="link" href="AgsPort.html" title="AgsPort"><span class="type">AgsPort</span></a>*              : Read / Write</pre>
+<p>The duration of the sequencer.</p>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsDelayAudio--tact"></a><h3>The <code class="literal">"tact"</code> property</h3>
+<pre class="programlisting">  "tact"                     <a class="link" href="AgsPort.html" title="AgsPort"><span class="type">AgsPort</span></a>*              : Read / Write</pre>
+<p>The recall's tact.</p>
+<p class="since">Since 0.4</p>
+</div>
+</div>
+<div class="refsect1">
+<a name="AgsDelayAudio.signal-details"></a><h2>Signal Details</h2>
+<div class="refsect2">
+<a name="AgsDelayAudio-notation-duration-changed"></a><h3>The <code class="literal">"notation-duration-changed"</code> signal</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                user_function                      (<a class="link" href="AgsDelayAudio.html" title="AgsDelayAudio"><span class="type">AgsDelayAudio</span></a> *delay_audio,
+                                                        <a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a>       user_data)        : <a href="../gobject/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></a></pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsDelayAudio-sequencer-duration-changed"></a><h3>The <code class="literal">"sequencer-duration-changed"</code> signal</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                user_function                      (<a class="link" href="AgsDelayAudio.html" title="AgsDelayAudio"><span class="type">AgsDelayAudio</span></a> *delay_audio,
+                                                        <a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a>       user_data)        : <a href="../gobject/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></a></pre>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

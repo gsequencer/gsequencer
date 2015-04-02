@@ -1,0 +1,163 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsRegistry</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="xml-rpc.html" title="Part IX. XML-RPC - planned server">
+<link rel="prev" href="xml-rpc.html" title="Part IX. XML-RPC - planned server">
+<link rel="next" href="ags-AgsRemoteTask.html" title="AgsRemoteTask">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="xml-rpc.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="xml-rpc.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="ags-AgsRemoteTask.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#ags-AgsRegistry.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#ags-AgsRegistry.description" class="shortcut">Description</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="ags-AgsRegistry"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="ags-AgsRegistry.top_of_page"></a>AgsRegistry</span></h2>
+<p>AgsRegistry</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="ags-AgsRegistry.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">#define             <a class="link" href="ags-AgsRegistry.html#AGS-REGISTRY-DEFAULT-ID-LENGTH:CAPS" title="AGS_REGISTRY_DEFAULT_ID_LENGTH">AGS_REGISTRY_DEFAULT_ID_LENGTH</a>
+struct              <a class="link" href="ags-AgsRegistry.html#AgsRegistry" title="struct AgsRegistry">AgsRegistry</a>;
+struct              <a class="link" href="ags-AgsRegistry.html#AgsRegistryClass" title="struct AgsRegistryClass">AgsRegistryClass</a>;
+struct              <a class="link" href="ags-AgsRegistry.html#AgsRegistryEntry" title="struct AgsRegistryEntry">AgsRegistryEntry</a>;
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsRegistry.html#ags-registry-add" title="ags_registry_add ()">ags_registry_add</a>                    (<em class="parameter"><code><a class="link" href="ags-AgsRegistry.html#AgsRegistry" title="struct AgsRegistry"><span class="type">AgsRegistry</span></a> *registry</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsRegistry.html#AgsRegistryEntry" title="struct AgsRegistryEntry"><span class="type">AgsRegistryEntry</span></a> *registry_entry</code></em>);
+<a class="link" href="ags-AgsRegistry.html#AgsRegistryEntry" title="struct AgsRegistryEntry"><span class="returnvalue">AgsRegistryEntry</span></a> *  <a class="link" href="ags-AgsRegistry.html#ags-registry-entry-alloc" title="ags_registry_entry_alloc ()">ags_registry_entry_alloc</a>            (<em class="parameter"><code><a class="link" href="ags-AgsRegistry.html#AgsRegistry" title="struct AgsRegistry"><span class="type">AgsRegistry</span></a> *registry</code></em>);
+<GTKDOCLINK HREF="xmlrpc-value"><span class="returnvalue">xmlrpc_value</span></GTKDOCLINK> *      <a class="link" href="ags-AgsRegistry.html#ags-registry-entry-bulk" title="ags_registry_entry_bulk ()">ags_registry_entry_bulk</a>             (<em class="parameter"><code><GTKDOCLINK HREF="xmlrpc-env"><span class="type">xmlrpc_env</span></GTKDOCLINK> *env</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="xmlrpc-value"><span class="type">xmlrpc_value</span></GTKDOCLINK> *param_array</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="void"><span class="type">void</span></GTKDOCLINK> *server_info</code></em>);
+<a class="link" href="ags-AgsRegistry.html#AgsRegistryEntry" title="struct AgsRegistryEntry"><span class="returnvalue">AgsRegistryEntry</span></a> *  <a class="link" href="ags-AgsRegistry.html#ags-registry-entry-find" title="ags_registry_entry_find ()">ags_registry_entry_find</a>             (<em class="parameter"><code><a class="link" href="ags-AgsRegistry.html#AgsRegistry" title="struct AgsRegistry"><span class="type">AgsRegistry</span></a> *registry</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *id</code></em>);
+<a class="link" href="ags-AgsRegistry.html#AgsRegistry" title="struct AgsRegistry"><span class="returnvalue">AgsRegistry</span></a> *       <a class="link" href="ags-AgsRegistry.html#ags-registry-new" title="ags_registry_new ()">ags_registry_new</a>                    ();
+</pre>
+</div>
+<div class="refsect1">
+<a name="ags-AgsRegistry.description"></a><h2>Description</h2>
+<p>
+</p>
+</div>
+<div class="refsect1">
+<a name="ags-AgsRegistry.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AGS-REGISTRY-DEFAULT-ID-LENGTH:CAPS"></a><h3>AGS_REGISTRY_DEFAULT_ID_LENGTH</h3>
+<pre class="programlisting">#define AGS_REGISTRY_DEFAULT_ID_LENGTH 16
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsRegistry"></a><h3>struct AgsRegistry</h3>
+<pre class="programlisting">struct AgsRegistry {
+  GObject object;
+
+  guint flags;
+
+  pthread_mutex_t mutex;
+
+  AgsFile *previous;
+  AgsFile *current;
+
+#ifdef AGS_WITH_XMLRPC_C
+  xmlrpc_registry *registry;
+#endif
+
+  GObject *server;
+
+  guint id_length;
+  guint counter;
+
+  GList *entry;
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsRegistryClass"></a><h3>struct AgsRegistryClass</h3>
+<pre class="programlisting">struct AgsRegistryClass {
+  GObjectClass object;
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsRegistryEntry"></a><h3>struct AgsRegistryEntry</h3>
+<pre class="programlisting">struct AgsRegistryEntry {
+  gchar *id;
+  GValue entry;
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-registry-add"></a><h3>ags_registry_add ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_registry_add                    (<em class="parameter"><code><a class="link" href="ags-AgsRegistry.html#AgsRegistry" title="struct AgsRegistry"><span class="type">AgsRegistry</span></a> *registry</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsRegistry.html#AgsRegistryEntry" title="struct AgsRegistryEntry"><span class="type">AgsRegistryEntry</span></a> *registry_entry</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-registry-entry-alloc"></a><h3>ags_registry_entry_alloc ()</h3>
+<pre class="programlisting"><a class="link" href="ags-AgsRegistry.html#AgsRegistryEntry" title="struct AgsRegistryEntry"><span class="returnvalue">AgsRegistryEntry</span></a> *  ags_registry_entry_alloc            (<em class="parameter"><code><a class="link" href="ags-AgsRegistry.html#AgsRegistry" title="struct AgsRegistry"><span class="type">AgsRegistry</span></a> *registry</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-registry-entry-bulk"></a><h3>ags_registry_entry_bulk ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="xmlrpc-value"><span class="returnvalue">xmlrpc_value</span></GTKDOCLINK> *      ags_registry_entry_bulk             (<em class="parameter"><code><GTKDOCLINK HREF="xmlrpc-env"><span class="type">xmlrpc_env</span></GTKDOCLINK> *env</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="xmlrpc-value"><span class="type">xmlrpc_value</span></GTKDOCLINK> *param_array</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="void"><span class="type">void</span></GTKDOCLINK> *server_info</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-registry-entry-find"></a><h3>ags_registry_entry_find ()</h3>
+<pre class="programlisting"><a class="link" href="ags-AgsRegistry.html#AgsRegistryEntry" title="struct AgsRegistryEntry"><span class="returnvalue">AgsRegistryEntry</span></a> *  ags_registry_entry_find             (<em class="parameter"><code><a class="link" href="ags-AgsRegistry.html#AgsRegistry" title="struct AgsRegistry"><span class="type">AgsRegistry</span></a> *registry</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *id</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-registry-new"></a><h3>ags_registry_new ()</h3>
+<pre class="programlisting"><a class="link" href="ags-AgsRegistry.html#AgsRegistry" title="struct AgsRegistry"><span class="returnvalue">AgsRegistry</span></a> *       ags_registry_new                    ();</pre>
+<p>
+</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

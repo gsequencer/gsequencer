@@ -1,0 +1,22 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>AgsPreferences</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="ags Reference Manual"><link rel="up" href="ch01.html" title="Chapter 1. [Insert title here]"><link rel="prev" href="re200.html" title="AgsPortlet"><link rel="next" href="re202.html" title="ags_preferences_callbacks"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="ags-AgsPreferences"></a><div class="titlepage"></div><div class="refnamediv"><h2>Name</h2><p>AgsPreferences</p></div><div class="refsynopsisdiv"><a name="ags-AgsPreferences.synopsis"></a><h2>Synopsis</h2><pre class="synopsis">enum                <a class="link" href="re201.html#AgsPreferencesFlags" title="enum AgsPreferencesFlags">AgsPreferencesFlags</a>;
+struct              <a class="link" href="re201.html#AgsPreferences" title="struct AgsPreferences">AgsPreferences</a>;
+struct              <a class="link" href="re201.html#AgsPreferencesClass" title="struct AgsPreferencesClass">AgsPreferencesClass</a>;
+<a class="link" href="re201.html#AgsPreferences" title="struct AgsPreferences"><span class="returnvalue">AgsPreferences</span></a> *    <a class="link" href="re201.html#ags-preferences-new" title="ags_preferences_new ()">ags_preferences_new</a>                 ();
+</pre></div><div class="refsect1"><a name="ags-AgsPreferences.description"></a><h2>Description</h2></div><div class="refsect1"><a name="ags-AgsPreferences.details"></a><h2>Details</h2><div class="refsect2"><a name="AgsPreferencesFlags"></a><h3>enum AgsPreferencesFlags</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsPreferencesFlags"></OBJECT><pre class="programlisting">typedef enum {
+  AGS_PREFERENCES_SHUTDOWN               = 1,
+} AgsPreferencesFlags;
+</pre><div class="variablelist"><dl class="variablelist"><dt><a name="AGS-PREFERENCES-SHUTDOWN:CAPS"></a><span class="term"><code class="literal">AGS_PREFERENCES_SHUTDOWN</code></span></dt><dd></dd></dl></div></div><div class="refsect2"><a name="AgsPreferences"></a><h3>struct AgsPreferences</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsPreferences"></OBJECT><pre class="programlisting">struct AgsPreferences {
+  GtkDialog dialog;
+
+  guint flags;
+
+  GtkWindow *window;
+
+  AgsAudioPreferences *audio_preferences;
+  AgsPerformancePreferences *performance_preferences;
+  AgsServerPreferences *server_preferences;
+};
+</pre></div><div class="refsect2"><a name="AgsPreferencesClass"></a><h3>struct AgsPreferencesClass</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsPreferencesClass"></OBJECT><pre class="programlisting">struct AgsPreferencesClass {
+  GtkDialogClass dialog;
+};
+</pre></div><div class="refsect2"><a name="ags-preferences-new"></a><h3>ags_preferences_new ()</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="ags_preferences_new"></OBJECT><pre class="programlisting"><a class="link" href="re201.html#AgsPreferences" title="struct AgsPreferences"><span class="returnvalue">AgsPreferences</span></a> *    ags_preferences_new                 ();</pre></div></div></div></body></html>

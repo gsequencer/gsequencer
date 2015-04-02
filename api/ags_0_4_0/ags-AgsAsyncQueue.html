@@ -1,0 +1,245 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsAsyncQueue</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer">
+<link rel="up" href="ch01.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td> </td>
+<td><a accesskey="u" href="ch01.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer</th>
+<td> </td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#ags-AgsAsyncQueue.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#ags-AgsAsyncQueue.description" class="shortcut">Description</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="ags-AgsAsyncQueue"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="ags-AgsAsyncQueue.top_of_page"></a>AgsAsyncQueue</span></h2>
+<p>AgsAsyncQueue</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="ags-AgsAsyncQueue.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">#define             <a href="ags-AgsAsyncQueue.html#AGS-ASYNC-QUEUE-CLOCK-ID:CAPS">AGS_ASYNC_QUEUE_CLOCK_ID</a>
+#define             <a href="ags-AgsAsyncQueue.html#AGS-ASYNC-QUEUE-DEFAULT-SYSTEM-JIFFIE:CAPS">AGS_ASYNC_QUEUE_DEFAULT_SYSTEM_JIFFIE</a>
+#define             <a href="ags-AgsAsyncQueue.html#AGS-ASYNC-QUEUE-SIGNAL-HIGH:CAPS">AGS_ASYNC_QUEUE_SIGNAL_HIGH</a>
+#define             <a href="ags-AgsAsyncQueue.html#AGS-ASYNC-QUEUE-SIGNAL-LOW:CAPS">AGS_ASYNC_QUEUE_SIGNAL_LOW</a>
+struct              <a href="ags-AgsAsyncQueue.html#AgsAsyncQueue">AgsAsyncQueue</a>;
+struct              <a href="ags-AgsAsyncQueue.html#AgsAsyncQueueClass">AgsAsyncQueueClass</a>;
+enum                <a href="ags-AgsAsyncQueue.html#AgsAsyncQueueFlags">AgsAsyncQueueFlags</a>;
+struct              <a href="ags-AgsAsyncQueue.html#AgsContext">AgsContext</a>;
+struct              <a href="ags-AgsAsyncQueue.html#AgsTimer">AgsTimer</a>;
+<span class="returnvalue">void</span>                <a href="ags-AgsAsyncQueue.html#ags-async-queue-add">ags_async_queue_add</a>                 (<em class="parameter"><code><a href="ags-AgsAsyncQueue.html#AgsAsyncQueue"><span class="type">AgsAsyncQueue</span></a> *async_queue</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsStackable.html#AgsStackable"><span class="type">AgsStackable</span></a> *stackable</code></em>);
+<a href="ags-AgsAsyncQueue.html#AgsContext"><span class="returnvalue">AgsContext</span></a> *        <a href="ags-AgsAsyncQueue.html#ags-async-queue-find-context">ags_async_queue_find_context</a>        (<em class="parameter"><code><a href="ags-AgsAsyncQueue.html#AgsAsyncQueue"><span class="type">AgsAsyncQueue</span></a> *async_queue</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsStackable.html#AgsStackable"><span class="type">AgsStackable</span></a> *stackable</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-AgsAsyncQueue.html#ags-async-queue-idle">ags_async_queue_idle</a>                (<em class="parameter"><code><a href="ags-AgsAsyncQueue.html#AgsAsyncQueue"><span class="type">AgsAsyncQueue</span></a> *async_queue</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-AgsAsyncQueue.html#ags-async-queue-initerrupt">ags_async_queue_initerrupt</a>          (<em class="parameter"><code><a href="ags-AgsAsyncQueue.html#AgsAsyncQueue"><span class="type">AgsAsyncQueue</span></a> *async_queue</code></em>);
+<a href="ags-AgsAsyncQueue.html#AgsAsyncQueue"><span class="returnvalue">AgsAsyncQueue</span></a> *     <a href="ags-AgsAsyncQueue.html#ags-async-queue-new">ags_async_queue_new</a>                 ();
+<a href="../glib/glib-Basic-Types.html#guint"><span class="returnvalue">guint</span></a>               <a href="ags-AgsAsyncQueue.html#ags-async-queue-next-interval">ags_async_queue_next_interval</a>       (<em class="parameter"><code><a href="ags-AgsAsyncQueue.html#AgsAsyncQueue"><span class="type">AgsAsyncQueue</span></a> *async_queue</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-AgsAsyncQueue.html#ags-async-queue-pop-context">ags_async_queue_pop_context</a>         (<em class="parameter"><code><a href="ags-AgsAsyncQueue.html#AgsAsyncQueue"><span class="type">AgsAsyncQueue</span></a> *async_queue</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsAsyncQueue.html#AgsContext"><span class="type">AgsContext</span></a> *context</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-AgsAsyncQueue.html#ags-async-queue-push-context">ags_async_queue_push_context</a>        (<em class="parameter"><code><a href="ags-AgsAsyncQueue.html#AgsAsyncQueue"><span class="type">AgsAsyncQueue</span></a> *async_queue</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsAsyncQueue.html#AgsContext"><span class="type">AgsContext</span></a> *context</code></em>);
+<a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            <a href="ags-AgsAsyncQueue.html#ags-async-queue-remove">ags_async_queue_remove</a>              (<em class="parameter"><code><a href="ags-AgsAsyncQueue.html#AgsAsyncQueue"><span class="type">AgsAsyncQueue</span></a> *async_queue</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsStackable.html#AgsStackable"><span class="type">AgsStackable</span></a> *stackable</code></em>);
+<span class="returnvalue">void</span> *              <a href="ags-AgsAsyncQueue.html#ags-async-queue-worker">ags_async_queue_worker</a>              (<em class="parameter"><code><span class="type">void</span> *ptr</code></em>);
+<a href="ags-AgsAsyncQueue.html#AgsContext"><span class="returnvalue">AgsContext</span></a> *        <a href="ags-AgsAsyncQueue.html#ags-context-alloc">ags_context_alloc</a>                   (<em class="parameter"><code><a href="../glib/glib-Double-ended-Queues.html#GQueue"><span class="type">GQueue</span></a> *stack</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Hash-Tables.html#GHashTable"><span class="type">GHashTable</span></a> *timer</code></em>);
+<a href="ags-AgsAsyncQueue.html#AgsTimer"><span class="returnvalue">AgsTimer</span></a> *          <a href="ags-AgsAsyncQueue.html#ags-timer-alloc">ags_timer_alloc</a>                     (<em class="parameter"><code><span class="type">time_t</span> tv_sec</code></em>,
+                                                         <em class="parameter"><code>long <span class="type">tv_nsec</span> Param2</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="ags-AgsAsyncQueue.description"></a><h2>Description</h2>
+</div>
+<div class="refsect1">
+<a name="ags-AgsAsyncQueue.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AGS-ASYNC-QUEUE-CLOCK-ID:CAPS"></a><h3>AGS_ASYNC_QUEUE_CLOCK_ID</h3>
+<pre class="programlisting">#define AGS_ASYNC_QUEUE_CLOCK_ID CLOCK_REALTIME
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-ASYNC-QUEUE-DEFAULT-SYSTEM-JIFFIE:CAPS"></a><h3>AGS_ASYNC_QUEUE_DEFAULT_SYSTEM_JIFFIE</h3>
+<pre class="programlisting">#define AGS_ASYNC_QUEUE_DEFAULT_SYSTEM_JIFFIE (250)
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-ASYNC-QUEUE-SIGNAL-HIGH:CAPS"></a><h3>AGS_ASYNC_QUEUE_SIGNAL_HIGH</h3>
+<pre class="programlisting">#define AGS_ASYNC_QUEUE_SIGNAL_HIGH SIGRTMAX
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-ASYNC-QUEUE-SIGNAL-LOW:CAPS"></a><h3>AGS_ASYNC_QUEUE_SIGNAL_LOW</h3>
+<pre class="programlisting">#define AGS_ASYNC_QUEUE_SIGNAL_LOW SIGRTMIN
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsAsyncQueue"></a><h3>struct AgsAsyncQueue</h3>
+<pre class="programlisting">struct AgsAsyncQueue {
+  GObject object;
+
+  guint flags;
+
+  guint output_sum;
+  guint systemrate;
+  guint interval;
+
+  timer_t timerid;
+
+  GQueue *stack;
+  GHashTable *timer;
+
+  union{
+    //    atomic_t monitor;
+    pthread_mutex_t mutex;
+  }lock;
+
+  GList *context;
+};
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsAsyncQueueClass"></a><h3>struct AgsAsyncQueueClass</h3>
+<pre class="programlisting">struct AgsAsyncQueueClass {
+  GObjectClass object;
+
+  void (*interrupt)(AgsAsyncQueue *async_queue);
+  
+  void (*push_context)(AgsAsyncQueue *async_queue,
+		       AgsContext *context);
+  void (*pop_context)(AgsAsyncQueue *async_queue,
+		      AgsContext *context);
+};
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsAsyncQueueFlags"></a><h3>enum AgsAsyncQueueFlags</h3>
+<pre class="programlisting">typedef enum {
+  AGS_ASYNC_QUEUE_LINUX_THREADS     = 1,
+  AGS_ASYNC_QUEUE_POSIX_THREADS     = 1 &lt;&lt; 1,
+  AGS_ASYNC_QUEUE_WORKER_RUNNING    = 1 &lt;&lt; 2,
+  AGS_ASYNC_QUEUE_INTERRUPT_OWN     = 1 &lt;&lt; 2,
+  AGS_ASYNC_QUEUE_INTERRUPT_OTHER   = 1 &lt;&lt; 3,
+  AGS_ASYNC_QUEUE_STOP_BIT_0        = 1 &lt;&lt; 4,
+  AGS_ASYNC_QUEUE_STOP_BIT_1        = 1 &lt;&lt; 5,
+} AgsAsyncQueueFlags;
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsContext"></a><h3>struct AgsContext</h3>
+<pre class="programlisting">struct AgsContext {
+  GQueue *stack;
+  GHashTable *timer;
+};
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsTimer"></a><h3>struct AgsTimer</h3>
+<pre class="programlisting">struct AgsTimer {
+  struct timespec run_delay;
+
+  //NOTE: not supported for now
+  gboolean record_history;
+  gpointer history;
+};
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-async-queue-add"></a><h3>ags_async_queue_add ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_async_queue_add                 (<em class="parameter"><code><a href="ags-AgsAsyncQueue.html#AgsAsyncQueue"><span class="type">AgsAsyncQueue</span></a> *async_queue</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsStackable.html#AgsStackable"><span class="type">AgsStackable</span></a> *stackable</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-async-queue-find-context"></a><h3>ags_async_queue_find_context ()</h3>
+<pre class="programlisting"><a href="ags-AgsAsyncQueue.html#AgsContext"><span class="returnvalue">AgsContext</span></a> *        ags_async_queue_find_context        (<em class="parameter"><code><a href="ags-AgsAsyncQueue.html#AgsAsyncQueue"><span class="type">AgsAsyncQueue</span></a> *async_queue</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsStackable.html#AgsStackable"><span class="type">AgsStackable</span></a> *stackable</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-async-queue-idle"></a><h3>ags_async_queue_idle ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_async_queue_idle                (<em class="parameter"><code><a href="ags-AgsAsyncQueue.html#AgsAsyncQueue"><span class="type">AgsAsyncQueue</span></a> *async_queue</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-async-queue-initerrupt"></a><h3>ags_async_queue_initerrupt ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_async_queue_initerrupt          (<em class="parameter"><code><a href="ags-AgsAsyncQueue.html#AgsAsyncQueue"><span class="type">AgsAsyncQueue</span></a> *async_queue</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-async-queue-new"></a><h3>ags_async_queue_new ()</h3>
+<pre class="programlisting"><a href="ags-AgsAsyncQueue.html#AgsAsyncQueue"><span class="returnvalue">AgsAsyncQueue</span></a> *     ags_async_queue_new                 ();</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-async-queue-next-interval"></a><h3>ags_async_queue_next_interval ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#guint"><span class="returnvalue">guint</span></a>               ags_async_queue_next_interval       (<em class="parameter"><code><a href="ags-AgsAsyncQueue.html#AgsAsyncQueue"><span class="type">AgsAsyncQueue</span></a> *async_queue</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-async-queue-pop-context"></a><h3>ags_async_queue_pop_context ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_async_queue_pop_context         (<em class="parameter"><code><a href="ags-AgsAsyncQueue.html#AgsAsyncQueue"><span class="type">AgsAsyncQueue</span></a> *async_queue</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsAsyncQueue.html#AgsContext"><span class="type">AgsContext</span></a> *context</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-async-queue-push-context"></a><h3>ags_async_queue_push_context ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_async_queue_push_context        (<em class="parameter"><code><a href="ags-AgsAsyncQueue.html#AgsAsyncQueue"><span class="type">AgsAsyncQueue</span></a> *async_queue</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsAsyncQueue.html#AgsContext"><span class="type">AgsContext</span></a> *context</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-async-queue-remove"></a><h3>ags_async_queue_remove ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            ags_async_queue_remove              (<em class="parameter"><code><a href="ags-AgsAsyncQueue.html#AgsAsyncQueue"><span class="type">AgsAsyncQueue</span></a> *async_queue</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsStackable.html#AgsStackable"><span class="type">AgsStackable</span></a> *stackable</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-async-queue-worker"></a><h3>ags_async_queue_worker ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span> *              ags_async_queue_worker              (<em class="parameter"><code><span class="type">void</span> *ptr</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-context-alloc"></a><h3>ags_context_alloc ()</h3>
+<pre class="programlisting"><a href="ags-AgsAsyncQueue.html#AgsContext"><span class="returnvalue">AgsContext</span></a> *        ags_context_alloc                   (<em class="parameter"><code><a href="../glib/glib-Double-ended-Queues.html#GQueue"><span class="type">GQueue</span></a> *stack</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Hash-Tables.html#GHashTable"><span class="type">GHashTable</span></a> *timer</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-timer-alloc"></a><h3>ags_timer_alloc ()</h3>
+<pre class="programlisting"><a href="ags-AgsAsyncQueue.html#AgsTimer"><span class="returnvalue">AgsTimer</span></a> *          ags_timer_alloc                     (<em class="parameter"><code><span class="type">time_t</span> tv_sec</code></em>,
+                                                         <em class="parameter"><code>long <span class="type">tv_nsec</span> Param2</code></em>);</pre>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

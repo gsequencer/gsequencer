@@ -1,0 +1,49 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>AgsRecyclingThread</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="ags Reference Manual"><link rel="up" href="ch01.html" title="Chapter 1. [Insert title here]"><link rel="prev" href="re220.html" title="AgsRecyclingContainer"><link rel="next" href="re222.html" title="ags_recycling_thread_callbacks"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="ags-AgsRecyclingThread"></a><div class="titlepage"></div><div class="refnamediv"><h2>Name</h2><p>AgsRecyclingThread</p></div><div class="refsynopsisdiv"><a name="ags-AgsRecyclingThread.synopsis"></a><h2>Synopsis</h2><pre class="synopsis">enum                <a class="link" href="re221.html#AgsRecyclingThreadFlags" title="enum AgsRecyclingThreadFlags">AgsRecyclingThreadFlags</a>;
+struct              <a class="link" href="re221.html#AgsRecyclingThread" title="struct AgsRecyclingThread">AgsRecyclingThread</a>;
+struct              <a class="link" href="re221.html#AgsRecyclingThreadClass" title="struct AgsRecyclingThreadClass">AgsRecyclingThreadClass</a>;
+<a class="link" href=""><span class="returnvalue">void</span></a>                <a class="link" href="re221.html#ags-recycling-thread-play-channel" title="ags_recycling_thread_play_channel ()">ags_recycling_thread_play_channel</a>   (<em class="parameter"><code><a class="link" href="re221.html#AgsRecyclingThread" title="struct AgsRecyclingThread"><span class="type">AgsRecyclingThread</span></a> *recycling_thread</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">GObject</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="re217.html#AgsRecallID" title="struct AgsRecallID"><span class="type">AgsRecallID</span></a> *recall_id</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">gint</span></a> stage</code></em>);
+<a class="link" href=""><span class="returnvalue">void</span></a>                <a class="link" href="re221.html#ags-recycling-thread-play-audio" title="ags_recycling_thread_play_audio ()">ags_recycling_thread_play_audio</a>     (<em class="parameter"><code><a class="link" href="re221.html#AgsRecyclingThread" title="struct AgsRecyclingThread"><span class="type">AgsRecyclingThread</span></a> *recycling_thread</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">GObject</span></a> *output</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">GObject</span></a> *audio</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="re217.html#AgsRecallID" title="struct AgsRecallID"><span class="type">AgsRecallID</span></a> *recall_id</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">gint</span></a> stage</code></em>);
+<a class="link" href="re221.html#AgsRecyclingThread" title="struct AgsRecyclingThread"><span class="returnvalue">AgsRecyclingThread</span></a> * <a class="link" href="re221.html#ags-recycling-thread-new" title="ags_recycling_thread_new ()">ags_recycling_thread_new</a>           ();
+</pre></div><div class="refsect1"><a name="ags-AgsRecyclingThread.description"></a><h2>Description</h2></div><div class="refsect1"><a name="ags-AgsRecyclingThread.details"></a><h2>Details</h2><div class="refsect2"><a name="AgsRecyclingThreadFlags"></a><h3>enum AgsRecyclingThreadFlags</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsRecyclingThreadFlags"></OBJECT><pre class="programlisting">typedef enum {
+  AGS_RECYCLING_THREAD_RUNNING   = 1,
+  AGS_RECYCLING_THREAD_WAIT      = 1 &lt;&lt; 1,
+  AGS_RECYCLING_THREAD_DONE      = 1 &lt;&lt; 2,
+} AgsRecyclingThreadFlags;
+</pre><div class="variablelist"><dl class="variablelist"><dt><a name="AGS-RECYCLING-THREAD-RUNNING:CAPS"></a><span class="term"><code class="literal">AGS_RECYCLING_THREAD_RUNNING</code></span></dt><dd></dd><dt><a name="AGS-RECYCLING-THREAD-WAIT:CAPS"></a><span class="term"><code class="literal">AGS_RECYCLING_THREAD_WAIT</code></span></dt><dd></dd><dt><a name="AGS-RECYCLING-THREAD-DONE:CAPS"></a><span class="term"><code class="literal">AGS_RECYCLING_THREAD_DONE</code></span></dt><dd></dd></dl></div></div><div class="refsect2"><a name="AgsRecyclingThread"></a><h3>struct AgsRecyclingThread</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsRecyclingThread"></OBJECT><pre class="programlisting">struct AgsRecyclingThread {
+  AgsThread thread;
+
+  guint flags;
+
+  AgsThread *iterator_thread;
+
+  pthread_mutex_t iteration_mutex;
+  pthread_cond_t iteration_cond;
+};
+</pre></div><div class="refsect2"><a name="AgsRecyclingThreadClass"></a><h3>struct AgsRecyclingThreadClass</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsRecyclingThreadClass"></OBJECT><pre class="programlisting">struct AgsRecyclingThreadClass {
+  AgsThreadClass thread;
+
+  void (*play_channel)(AgsRecyclingThread *recycling_thread,
+		       GObject *channel,
+		       AgsRecallID *recall_id,
+		       gint stage);
+
+  void (*play_audio)(AgsRecyclingThread *recycling_thread,
+		     GObject *output, GObject *audio,
+		     AgsRecallID *recall_id,
+		     gint stage);
+};
+</pre></div><div class="refsect2"><a name="ags-recycling-thread-play-channel"></a><h3>ags_recycling_thread_play_channel ()</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="ags_recycling_thread_play_channel"></OBJECT><pre class="programlisting"><a class="link" href=""><span class="returnvalue">void</span></a>                ags_recycling_thread_play_channel   (<em class="parameter"><code><a class="link" href="re221.html#AgsRecyclingThread" title="struct AgsRecyclingThread"><span class="type">AgsRecyclingThread</span></a> *recycling_thread</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">GObject</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="re217.html#AgsRecallID" title="struct AgsRecallID"><span class="type">AgsRecallID</span></a> *recall_id</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">gint</span></a> stage</code></em>);</pre></div><div class="refsect2"><a name="ags-recycling-thread-play-audio"></a><h3>ags_recycling_thread_play_audio ()</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="ags_recycling_thread_play_audio"></OBJECT><pre class="programlisting"><a class="link" href=""><span class="returnvalue">void</span></a>                ags_recycling_thread_play_audio     (<em class="parameter"><code><a class="link" href="re221.html#AgsRecyclingThread" title="struct AgsRecyclingThread"><span class="type">AgsRecyclingThread</span></a> *recycling_thread</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">GObject</span></a> *output</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">GObject</span></a> *audio</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="re217.html#AgsRecallID" title="struct AgsRecallID"><span class="type">AgsRecallID</span></a> *recall_id</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">gint</span></a> stage</code></em>);</pre></div><div class="refsect2"><a name="ags-recycling-thread-new"></a><h3>ags_recycling_thread_new ()</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="ags_recycling_thread_new"></OBJECT><pre class="programlisting"><a class="link" href="re221.html#AgsRecyclingThread" title="struct AgsRecyclingThread"><span class="returnvalue">AgsRecyclingThread</span></a> * ags_recycling_thread_new           ();</pre></div></div></div></body></html>

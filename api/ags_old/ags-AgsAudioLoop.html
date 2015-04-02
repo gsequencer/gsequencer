@@ -1,0 +1,211 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsAudioLoop</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="thread.html" title="Part V. Thread - Multi-Threaded tree">
+<link rel="prev" href="thread.html" title="Part V. Thread - Multi-Threaded tree">
+<link rel="next" href="ags-AgsAutosaveThread.html" title="AgsAutosaveThread">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="thread.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="thread.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="ags-AgsAutosaveThread.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#ags-AgsAudioLoop.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#ags-AgsAudioLoop.description" class="shortcut">Description</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="ags-AgsAudioLoop"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="ags-AgsAudioLoop.top_of_page"></a>AgsAudioLoop</span></h2>
+<p>AgsAudioLoop</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="ags-AgsAudioLoop.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">#define             <a class="link" href="ags-AgsAudioLoop.html#AGS-AUDIO-LOOP-DEFAULT-JIFFIE:CAPS" title="AGS_AUDIO_LOOP_DEFAULT_JIFFIE">AGS_AUDIO_LOOP_DEFAULT_JIFFIE</a>
+struct              <a class="link" href="ags-AgsAudioLoop.html#AgsAudioLoop" title="struct AgsAudioLoop">AgsAudioLoop</a>;
+struct              <a class="link" href="ags-AgsAudioLoop.html#AgsAudioLoopClass" title="struct AgsAudioLoopClass">AgsAudioLoopClass</a>;
+enum                <a class="link" href="ags-AgsAudioLoop.html#AgsAudioLoopFlags" title="enum AgsAudioLoopFlags">AgsAudioLoopFlags</a>;
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsAudioLoop.html#ags-audio-loop-add-audio" title="ags_audio_loop_add_audio ()">ags_audio_loop_add_audio</a>            (<em class="parameter"><code><a class="link" href="ags-AgsAudioLoop.html#AgsAudioLoop" title="struct AgsAudioLoop"><span class="type">AgsAudioLoop</span></a> *audio_loop</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *audio</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsAudioLoop.html#ags-audio-loop-add-channel" title="ags_audio_loop_add_channel ()">ags_audio_loop_add_channel</a>          (<em class="parameter"><code><a class="link" href="ags-AgsAudioLoop.html#AgsAudioLoop" title="struct AgsAudioLoop"><span class="type">AgsAudioLoop</span></a> *audio_loop</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *channel</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsAudioLoop.html#ags-audio-loop-add-recall" title="ags_audio_loop_add_recall ()">ags_audio_loop_add_recall</a>           (<em class="parameter"><code><a class="link" href="ags-AgsAudioLoop.html#AgsAudioLoop" title="struct AgsAudioLoop"><span class="type">AgsAudioLoop</span></a> *audio_loop</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *recall</code></em>);
+<a class="link" href="ags-AgsAudioLoop.html#AgsAudioLoop" title="struct AgsAudioLoop"><span class="returnvalue">AgsAudioLoop</span></a> *      <a class="link" href="ags-AgsAudioLoop.html#ags-audio-loop-new" title="ags_audio_loop_new ()">ags_audio_loop_new</a>                  (<em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *devout</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *ags_main</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsAudioLoop.html#ags-audio-loop-remove-audio" title="ags_audio_loop_remove_audio ()">ags_audio_loop_remove_audio</a>         (<em class="parameter"><code><a class="link" href="ags-AgsAudioLoop.html#AgsAudioLoop" title="struct AgsAudioLoop"><span class="type">AgsAudioLoop</span></a> *audio_loop</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *audio</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsAudioLoop.html#ags-audio-loop-remove-channel" title="ags_audio_loop_remove_channel ()">ags_audio_loop_remove_channel</a>       (<em class="parameter"><code><a class="link" href="ags-AgsAudioLoop.html#AgsAudioLoop" title="struct AgsAudioLoop"><span class="type">AgsAudioLoop</span></a> *audio_loop</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *channel</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsAudioLoop.html#ags-audio-loop-remove-recall" title="ags_audio_loop_remove_recall ()">ags_audio_loop_remove_recall</a>        (<em class="parameter"><code><a class="link" href="ags-AgsAudioLoop.html#AgsAudioLoop" title="struct AgsAudioLoop"><span class="type">AgsAudioLoop</span></a> *audio_loop</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *recall</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="ags-AgsAudioLoop.description"></a><h2>Description</h2>
+<p>
+</p>
+</div>
+<div class="refsect1">
+<a name="ags-AgsAudioLoop.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AGS-AUDIO-LOOP-DEFAULT-JIFFIE:CAPS"></a><h3>AGS_AUDIO_LOOP_DEFAULT_JIFFIE</h3>
+<pre class="programlisting">#define AGS_AUDIO_LOOP_DEFAULT_JIFFIE (48.0)
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsAudioLoop"></a><h3>struct AgsAudioLoop</h3>
+<pre class="programlisting">struct AgsAudioLoop {
+  AgsThread thread;
+
+  guint flags;
+
+  volatile guint tic;
+  volatile guint last_sync;
+
+  GCond cond;
+  GMutex mutex;
+
+  gdouble frequency;
+
+  GObject *ags_main;
+
+  AgsAsyncQueue *async_queue;
+  
+  AgsThread *task_thread;
+  AgsThread *gui_thread;
+  AgsThread *devout_thread;
+  AgsThread *export_thread;
+
+  pthread_mutex_t recall_mutex;
+
+  guint play_recall_ref;
+  GList *play_recall; // play AgsRecall
+
+  guint play_channel_ref;
+  GList *play_channel; // play AgsChannel
+
+  guint play_audio_ref;
+  GList *play_audio; // play AgsAudio
+
+  guint play_notation_ref;
+  GList *play_notation;
+
+  GList *tree_sanity;
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsAudioLoopClass"></a><h3>struct AgsAudioLoopClass</h3>
+<pre class="programlisting">struct AgsAudioLoopClass {
+  AgsThreadClass thread;
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsAudioLoopFlags"></a><h3>enum AgsAudioLoopFlags</h3>
+<pre class="programlisting">typedef enum {
+  AGS_AUDIO_LOOP_PLAY_RECALL                    = 1,
+  AGS_AUDIO_LOOP_PLAYING_RECALL                 = 1 &lt;&lt; 1,
+  AGS_AUDIO_LOOP_PLAY_RECALL_TERMINATING        = 1 &lt;&lt; 2,
+  AGS_AUDIO_LOOP_PLAY_CHANNEL                   = 1 &lt;&lt; 3,
+  AGS_AUDIO_LOOP_PLAYING_CHANNEL                = 1 &lt;&lt; 4,
+  AGS_AUDIO_LOOP_PLAY_CHANNEL_TERMINATING       = 1 &lt;&lt; 5,
+  AGS_AUDIO_LOOP_PLAY_AUDIO                     = 1 &lt;&lt; 6,
+  AGS_AUDIO_LOOP_PLAYING_AUDIO                  = 1 &lt;&lt; 7,
+  AGS_AUDIO_LOOP_PLAY_NOTATION                  = 1 &lt;&lt; 8,
+  AGS_AUDIO_LOOP_PLAYING_NOTATION               = 1 &lt;&lt; 9,
+  AGS_AUDIO_LOOP_PLAY_AUDIO_TERMINATING         = 1 &lt;&lt; 10,
+} AgsAudioLoopFlags;
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-audio-loop-add-audio"></a><h3>ags_audio_loop_add_audio ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_audio_loop_add_audio            (<em class="parameter"><code><a class="link" href="ags-AgsAudioLoop.html#AgsAudioLoop" title="struct AgsAudioLoop"><span class="type">AgsAudioLoop</span></a> *audio_loop</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *audio</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-audio-loop-add-channel"></a><h3>ags_audio_loop_add_channel ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_audio_loop_add_channel          (<em class="parameter"><code><a class="link" href="ags-AgsAudioLoop.html#AgsAudioLoop" title="struct AgsAudioLoop"><span class="type">AgsAudioLoop</span></a> *audio_loop</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *channel</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-audio-loop-add-recall"></a><h3>ags_audio_loop_add_recall ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_audio_loop_add_recall           (<em class="parameter"><code><a class="link" href="ags-AgsAudioLoop.html#AgsAudioLoop" title="struct AgsAudioLoop"><span class="type">AgsAudioLoop</span></a> *audio_loop</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *recall</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-audio-loop-new"></a><h3>ags_audio_loop_new ()</h3>
+<pre class="programlisting"><a class="link" href="ags-AgsAudioLoop.html#AgsAudioLoop" title="struct AgsAudioLoop"><span class="returnvalue">AgsAudioLoop</span></a> *      ags_audio_loop_new                  (<em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *devout</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *ags_main</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-audio-loop-remove-audio"></a><h3>ags_audio_loop_remove_audio ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_audio_loop_remove_audio         (<em class="parameter"><code><a class="link" href="ags-AgsAudioLoop.html#AgsAudioLoop" title="struct AgsAudioLoop"><span class="type">AgsAudioLoop</span></a> *audio_loop</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *audio</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-audio-loop-remove-channel"></a><h3>ags_audio_loop_remove_channel ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_audio_loop_remove_channel       (<em class="parameter"><code><a class="link" href="ags-AgsAudioLoop.html#AgsAudioLoop" title="struct AgsAudioLoop"><span class="type">AgsAudioLoop</span></a> *audio_loop</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *channel</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-audio-loop-remove-recall"></a><h3>ags_audio_loop_remove_recall ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_audio_loop_remove_recall        (<em class="parameter"><code><a class="link" href="ags-AgsAudioLoop.html#AgsAudioLoop" title="struct AgsAudioLoop"><span class="type">AgsAudioLoop</span></a> *audio_loop</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *recall</code></em>);</pre>
+<p>
+</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

@@ -1,0 +1,326 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Part VII. GUI - Graphical user interface</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="prev" href="AgsUnrefAudioSignal.html" title="AgsUnrefAudioSignal">
+<link rel="next" href="composite-widgets.html" title="Composite widgets">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2"><tr valign="middle">
+<td><a accesskey="p" href="AgsUnrefAudioSignal.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td> </td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="composite-widgets.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="part">
+<div class="titlepage"><div><div><h1 class="title">
+<a name="idp5492176"></a>Part VII. GUI - Graphical user interface</h1></div></div></div>
+<div class="toc">
+<p><b>Table of Contents</b></p>
+<dl>
+<dt><span class="chapter"><a href="composite-widgets.html">Composite widgets</a></span></dt>
+<dd><dl>
+<dt>
+<span class="refentrytitle"><a href="AgsAudioPreferences.html">AgsAudioPreferences</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-audio-preferences-callbacks.html">ags_audio_preferences_callbacks</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsEditor.html">AgsEditor</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-editor-callbacks.html">ags_editor_callbacks</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsExportWindow.html">AgsExportWindow</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-export-window-callbacks.html">ags_export_window_callbacks</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsInlinePlayer.html">AgsInlinePlayer</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsLadspaBrowser.html">AgsLadspaBrowser</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-ladspa-browser-callbacks.html">ags_ladspa_browser_callbacks</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsLine.html">AgsLine</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-line-callbacks.html">ags_line_callbacks</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsLineEditor.html">AgsLineEditor</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-line-editor-callbacks.html">ags_line_editor_callbacks</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsLineMember.html">AgsLineMember</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-line-member-callbacks.html">ags_line_member_callbacks</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsLineMemberEditor.html">AgsLineMemberEditor</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-line-member-editor-callbacks.html">ags_line_member_editor_callbacks</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsLinkChannel.html">AgsLinkChannel</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsLinkCollectionEditor.html">AgsLinkCollectionEditor</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-link-collection-editor-callbacks.html">ags_link_collection_editor_callbacks</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsLinkEditor.html">AgsLinkEditor</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-link-editor-callbacks.html">ags_link_editor_callbacks</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsListingEditor.html">AgsListingEditor</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-listing-editor-callbacks.html">ags_listing_editor_callbacks</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsMachine.html">AgsMachine</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-machine-callbacks.html">ags_machine_callbacks</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsMachineEditor.html">AgsMachineEditor</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-machine-editor-callbacks.html">ags_machine_editor_callbacks</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsMachineRadioButton.html">AgsMachineRadioButton</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsMachineSelection.html">AgsMachineSelection</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsMachineSelector.html">AgsMachineSelector</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-machine-selector-callbacks.html">ags_machine_selector_callbacks</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsMenuBar.html">AgsMenuBar</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-menu-bar-callbacks.html">ags_menu_bar_callbacks</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsNavigation.html">AgsNavigation</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-navigation-callbacks.html">ags_navigation_callbacks</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsPad.html">AgsPad</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-pad-callbacks.html">ags_pad_callbacks</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsPadEditor.html">AgsPadEditor</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-pad-editor-callbacks.html">ags_pad_editor_callbacks</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsPerformancePreferences.html">AgsPerformancePreferences</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsPluginPreferences.html">AgsPluginPreferences</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsPreferences.html">AgsPreferences</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-preferences-callbacks.html">ags_preferences_callbacks</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsPropertyCollectionEditor.html">AgsPropertyCollectionEditor</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-property-collection-editor-callbacks.html">ags_property_collection_editor_callbacks</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsPropertyEditor.html">AgsPropertyEditor</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-property-editor-callbacks.html">ags_property_editor_callbacks</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsPropertyListingEditor.html">AgsPropertyListingEditor</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-AgsResizeEditor.html">AgsResizeEditor</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsRuler.html">AgsRuler</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-ruler-callbacks.html">ags_ruler_callbacks</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsServerPreferences.html">AgsServerPreferences</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsWindow.html">AgsWindow</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-window-callbacks.html">ags_window_callbacks</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsSF2Chooser.html">AgsSF2Chooser</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-sf2-chooser-callbacks.html">ags_sf2_chooser_callbacks</a></span><span class="refpurpose"></span>
+</dt>
+</dl></dd>
+<dt><span class="chapter"><a href="editor.html">Editor - Piano roll and its controls</a></span></dt>
+<dd><dl>
+<dt>
+<span class="refentrytitle"><a href="AgsMeter.html">AgsMeter</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-meter-callbacks.html">ags_meter_callbacks</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsNoteEdit.html">AgsNoteEdit</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-note-edit-callbacks.html">ags_note_edit_callbacks</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsNotebook.html">AgsNotebook</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-notebook-callbacks.html">ags_notebook_callbacks</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsToolbar.html">AgsToolbar</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-toolbar-callbacks.html">ags_toolbar_callbacks</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-toolbar-mode-stock.html">ags_toolbar_mode_stock</a></span><span class="refpurpose"></span>
+</dt>
+</dl></dd>
+<dt><span class="chapter"><a href="engines.html">Engines - Composite widgets with audio set up</a></span></dt>
+<dd><dl>
+<dt>
+<span class="refentrytitle"><a href="AgsDrum.html">AgsDrum</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-drum-callbacks.html">ags_drum_callbacks</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsDrumInputLine.html">AgsDrumInputLine</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-drum-input-line-callbacks.html">ags_drum_input_line_callbacks</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsDrumInputPad.html">AgsDrumInputPad</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-drum-input-pad-callbacks.html">ags_drum_input_pad_callbacks</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsDrumOutputLine.html">AgsDrumOutputLine</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-drum-output-line-callbacks.html">ags_drum_output_line_callbacks</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsDrumOutputPad.html">AgsDrumOutputPad</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-drum-output-pad-callbacks.html">ags_drum_output_pad_callbacks</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsFFPlayer.html">AgsFFPlayer</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-ffplayer-callbacks.html">ags_ffplayer_callbacks</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsMatrix.html">AgsMatrix</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-matrix-callbacks.html">ags_matrix_callbacks</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsMixer.html">AgsMixer</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-mixer-callbacks.html">ags_mixer_callbacks</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsMixerInputLine.html">AgsMixerInputLine</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsMixerInputPad.html">AgsMixerInputPad</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsOscillator.html">AgsOscillator</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-oscillator-callbacks.html">ags_oscillator_callbacks</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsPanel.html">AgsPanel</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-panel-callbacks.html">ags_panel_callbacks</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsPanelInputLine.html">AgsPanelInputLine</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsPanelInputPad.html">AgsPanelInputPad</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsSynth.html">AgsSynth</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-synth-callbacks.html">ags_synth_callbacks</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsSynthInputLine.html">AgsSynthInputLine</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsSynthInputPad.html">AgsSynthInputPad</a></span><span class="refpurpose"></span>
+</dt>
+</dl></dd>
+</dl>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

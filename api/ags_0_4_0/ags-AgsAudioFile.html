@@ -1,0 +1,145 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsAudioFile</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer">
+<link rel="up" href="ch01.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td> </td>
+<td><a accesskey="u" href="ch01.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer</th>
+<td> </td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#ags-AgsAudioFile.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#ags-AgsAudioFile.description" class="shortcut">Description</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="ags-AgsAudioFile"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="ags-AgsAudioFile.top_of_page"></a>AgsAudioFile</span></h2>
+<p>AgsAudioFile</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="ags-AgsAudioFile.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">struct              <a href="ags-AgsAudioFile.html#AgsAudioFile">AgsAudioFile</a>;
+struct              <a href="ags-AgsAudioFile.html#AgsAudioFileClass">AgsAudioFileClass</a>;
+<span class="returnvalue">void</span>                <a href="ags-AgsAudioFile.html#ags-audio-file-close">ags_audio_file_close</a>                (<em class="parameter"><code><a href="ags-AgsAudioFile.html#AgsAudioFile"><span class="type">AgsAudioFile</span></a> *audio_file</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-AgsAudioFile.html#ags-audio-file-flush">ags_audio_file_flush</a>                (<em class="parameter"><code><a href="ags-AgsAudioFile.html#AgsAudioFile"><span class="type">AgsAudioFile</span></a> *audio_file</code></em>);
+<a href="ags-AgsAudioFile.html#AgsAudioFile"><span class="returnvalue">AgsAudioFile</span></a> *      <a href="ags-AgsAudioFile.html#ags-audio-file-new">ags_audio_file_new</a>                  (<em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *name</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsDevout.html#AgsDevout"><span class="type">AgsDevout</span></a> *devout</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> start_channel</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> audio_channels</code></em>);
+<a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            <a href="ags-AgsAudioFile.html#ags-audio-file-open">ags_audio_file_open</a>                 (<em class="parameter"><code><a href="ags-AgsAudioFile.html#AgsAudioFile"><span class="type">AgsAudioFile</span></a> *audio_file</code></em>);
+<a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            <a href="ags-AgsAudioFile.html#ags-audio-file-open-from-data">ags_audio_file_open_from_data</a>       (<em class="parameter"><code><a href="ags-AgsAudioFile.html#AgsAudioFile"><span class="type">AgsAudioFile</span></a> *audio_file</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *data</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-AgsAudioFile.html#ags-audio-file-read-audio-signal">ags_audio_file_read_audio_signal</a>    (<em class="parameter"><code><a href="ags-AgsAudioFile.html#AgsAudioFile"><span class="type">AgsAudioFile</span></a> *audio_file</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-AgsAudioFile.html#ags-audio-file-seek">ags_audio_file_seek</a>                 (<em class="parameter"><code><a href="ags-AgsAudioFile.html#AgsAudioFile"><span class="type">AgsAudioFile</span></a> *audio_file</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> frames</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gint"><span class="type">gint</span></a> whence</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-AgsAudioFile.html#ags-audio-file-write">ags_audio_file_write</a>                (<em class="parameter"><code><a href="ags-AgsAudioFile.html#AgsAudioFile"><span class="type">AgsAudioFile</span></a> *audio_file</code></em>,
+                                                         <em class="parameter"><code>signed <span class="type">short</span> *buffer</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> buffer_size</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="ags-AgsAudioFile.description"></a><h2>Description</h2>
+</div>
+<div class="refsect1">
+<a name="ags-AgsAudioFile.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AgsAudioFile"></a><h3>struct AgsAudioFile</h3>
+<pre class="programlisting">struct AgsAudioFile {
+  GObject object;
+
+  AgsDevout *devout;
+
+  gchar *name;
+  guint frames;
+  guint channels;
+
+  guint start_channel;
+  guint audio_channels;
+
+  GList *audio_signal;
+
+  GObject *file;
+};
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsAudioFileClass"></a><h3>struct AgsAudioFileClass</h3>
+<pre class="programlisting">struct AgsAudioFileClass {
+  GObjectClass object;
+};
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-audio-file-close"></a><h3>ags_audio_file_close ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_audio_file_close                (<em class="parameter"><code><a href="ags-AgsAudioFile.html#AgsAudioFile"><span class="type">AgsAudioFile</span></a> *audio_file</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-audio-file-flush"></a><h3>ags_audio_file_flush ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_audio_file_flush                (<em class="parameter"><code><a href="ags-AgsAudioFile.html#AgsAudioFile"><span class="type">AgsAudioFile</span></a> *audio_file</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-audio-file-new"></a><h3>ags_audio_file_new ()</h3>
+<pre class="programlisting"><a href="ags-AgsAudioFile.html#AgsAudioFile"><span class="returnvalue">AgsAudioFile</span></a> *      ags_audio_file_new                  (<em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *name</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsDevout.html#AgsDevout"><span class="type">AgsDevout</span></a> *devout</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> start_channel</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> audio_channels</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-audio-file-open"></a><h3>ags_audio_file_open ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            ags_audio_file_open                 (<em class="parameter"><code><a href="ags-AgsAudioFile.html#AgsAudioFile"><span class="type">AgsAudioFile</span></a> *audio_file</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-audio-file-open-from-data"></a><h3>ags_audio_file_open_from_data ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            ags_audio_file_open_from_data       (<em class="parameter"><code><a href="ags-AgsAudioFile.html#AgsAudioFile"><span class="type">AgsAudioFile</span></a> *audio_file</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *data</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-audio-file-read-audio-signal"></a><h3>ags_audio_file_read_audio_signal ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_audio_file_read_audio_signal    (<em class="parameter"><code><a href="ags-AgsAudioFile.html#AgsAudioFile"><span class="type">AgsAudioFile</span></a> *audio_file</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-audio-file-seek"></a><h3>ags_audio_file_seek ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_audio_file_seek                 (<em class="parameter"><code><a href="ags-AgsAudioFile.html#AgsAudioFile"><span class="type">AgsAudioFile</span></a> *audio_file</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> frames</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gint"><span class="type">gint</span></a> whence</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-audio-file-write"></a><h3>ags_audio_file_write ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_audio_file_write                (<em class="parameter"><code><a href="ags-AgsAudioFile.html#AgsAudioFile"><span class="type">AgsAudioFile</span></a> *audio_file</code></em>,
+                                                         <em class="parameter"><code>signed <span class="type">short</span> *buffer</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> buffer_size</code></em>);</pre>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

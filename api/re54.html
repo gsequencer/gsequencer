@@ -1,0 +1,82 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>AgsDelayAudioRun</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="ags Reference Manual"><link rel="up" href="ch01.html" title="Chapter 1. [Insert title here]"><link rel="prev" href="re53.html" title="AgsDelayAudio"><link rel="next" href="re55.html" title="AgsDevout"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="ags-AgsDelayAudioRun"></a><div class="titlepage"></div><div class="refnamediv"><h2>Name</h2><p>AgsDelayAudioRun</p></div><div class="refsynopsisdiv"><a name="ags-AgsDelayAudioRun.synopsis"></a><h2>Synopsis</h2><pre class="synopsis">struct              <a class="link" href="re54.html#AgsDelayAudioRun" title="struct AgsDelayAudioRun">AgsDelayAudioRun</a>;
+struct              <a class="link" href="re54.html#AgsDelayAudioRunClass" title="struct AgsDelayAudioRunClass">AgsDelayAudioRunClass</a>;
+<a class="link" href=""><span class="returnvalue">void</span></a>                <a class="link" href="re54.html#ags-delay-audio-run-notation-alloc-output" title="ags_delay_audio_run_notation_alloc_output ()">ags_delay_audio_run_notation_alloc_output</a>
+                                                        (<em class="parameter"><code><a class="link" href="re54.html#AgsDelayAudioRun" title="struct AgsDelayAudioRun"><span class="type">AgsDelayAudioRun</span></a> *delay_audio_run</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">guint</span></a> run_order</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">guint</span></a> delay</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">guint</span></a> attack</code></em>);
+<a class="link" href=""><span class="returnvalue">void</span></a>                <a class="link" href="re54.html#ags-delay-audio-run-notation-alloc-input" title="ags_delay_audio_run_notation_alloc_input ()">ags_delay_audio_run_notation_alloc_input</a>
+                                                        (<em class="parameter"><code><a class="link" href="re54.html#AgsDelayAudioRun" title="struct AgsDelayAudioRun"><span class="type">AgsDelayAudioRun</span></a> *delay_audio_run</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">guint</span></a> run_order</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">guint</span></a> delay</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">guint</span></a> attack</code></em>);
+<a class="link" href=""><span class="returnvalue">void</span></a>                <a class="link" href="re54.html#ags-delay-audio-run-notation-count" title="ags_delay_audio_run_notation_count ()">ags_delay_audio_run_notation_count</a>  (<em class="parameter"><code><a class="link" href="re54.html#AgsDelayAudioRun" title="struct AgsDelayAudioRun"><span class="type">AgsDelayAudioRun</span></a> *delay_audio_run</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">guint</span></a> run_order</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">guint</span></a> delay</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">guint</span></a> attack</code></em>);
+<a class="link" href=""><span class="returnvalue">void</span></a>                <a class="link" href="re54.html#ags-delay-audio-run-sequencer-alloc-output" title="ags_delay_audio_run_sequencer_alloc_output ()">ags_delay_audio_run_sequencer_alloc_output</a>
+                                                        (<em class="parameter"><code><a class="link" href="re54.html#AgsDelayAudioRun" title="struct AgsDelayAudioRun"><span class="type">AgsDelayAudioRun</span></a> *delay_audio_run</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">guint</span></a> run_order</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">guint</span></a> delay</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">guint</span></a> attack</code></em>);
+<a class="link" href=""><span class="returnvalue">void</span></a>                <a class="link" href="re54.html#ags-delay-audio-run-sequencer-alloc-input" title="ags_delay_audio_run_sequencer_alloc_input ()">ags_delay_audio_run_sequencer_alloc_input</a>
+                                                        (<em class="parameter"><code><a class="link" href="re54.html#AgsDelayAudioRun" title="struct AgsDelayAudioRun"><span class="type">AgsDelayAudioRun</span></a> *delay_audio_run</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">guint</span></a> run_order</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">guint</span></a> delay</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">guint</span></a> attack</code></em>);
+<a class="link" href=""><span class="returnvalue">void</span></a>                <a class="link" href="re54.html#ags-delay-audio-run-sequencer-count" title="ags_delay_audio_run_sequencer_count ()">ags_delay_audio_run_sequencer_count</a> (<em class="parameter"><code><a class="link" href="re54.html#AgsDelayAudioRun" title="struct AgsDelayAudioRun"><span class="type">AgsDelayAudioRun</span></a> *delay_audio_run</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">guint</span></a> run_order</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">guint</span></a> delay</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">guint</span></a> attack</code></em>);
+<a class="link" href="re54.html#AgsDelayAudioRun" title="struct AgsDelayAudioRun"><span class="returnvalue">AgsDelayAudioRun</span></a> *  <a class="link" href="re54.html#ags-delay-audio-run-new" title="ags_delay_audio_run_new ()">ags_delay_audio_run_new</a>             ();
+</pre></div><div class="refsect1"><a name="ags-AgsDelayAudioRun.description"></a><h2>Description</h2></div><div class="refsect1"><a name="ags-AgsDelayAudioRun.details"></a><h2>Details</h2><div class="refsect2"><a name="AgsDelayAudioRun"></a><h3>struct AgsDelayAudioRun</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsDelayAudioRun"></OBJECT><pre class="programlisting">struct AgsDelayAudioRun {
+  AgsRecallAudioRun recall_audio_run;
+
+  guint dependency_ref;
+
+  guint hide_ref;
+  guint hide_ref_counter;
+  
+  guint notation_counter;
+  guint sequencer_counter;
+};
+</pre></div><div class="refsect2"><a name="AgsDelayAudioRunClass"></a><h3>struct AgsDelayAudioRunClass</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsDelayAudioRunClass"></OBJECT><pre class="programlisting">struct AgsDelayAudioRunClass {
+  AgsRecallAudioRunClass recall_audio_run;
+
+  void (*notation_alloc_output)(AgsDelayAudioRun *delay_audio_run, guint run_order,
+				guint delay, guint attack);
+  void (*notation_alloc_input)(AgsDelayAudioRun *delay_audio_run, guint run_order,
+			       guint delay, guint attack);
+  void (*notation_count)(AgsDelayAudioRun *delay_audio_run, guint run_order,
+			 guint delay, guint attack);
+
+  void (*sequencer_alloc_output)(AgsDelayAudioRun *delay_audio_run, guint run_order,
+				 guint delay, guint attack);
+  void (*sequencer_alloc_input)(AgsDelayAudioRun *delay_audio_run, guint run_order,
+				guint delay, guint attack);
+  void (*sequencer_count)(AgsDelayAudioRun *delay_audio_run, guint run_order,
+			  guint delay, guint attack);
+};
+</pre></div><div class="refsect2"><a name="ags-delay-audio-run-notation-alloc-output"></a><h3>ags_delay_audio_run_notation_alloc_output ()</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="ags_delay_audio_run_notation_alloc_output"></OBJECT><pre class="programlisting"><a class="link" href=""><span class="returnvalue">void</span></a>                ags_delay_audio_run_notation_alloc_output
+                                                        (<em class="parameter"><code><a class="link" href="re54.html#AgsDelayAudioRun" title="struct AgsDelayAudioRun"><span class="type">AgsDelayAudioRun</span></a> *delay_audio_run</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">guint</span></a> run_order</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">guint</span></a> delay</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">guint</span></a> attack</code></em>);</pre></div><div class="refsect2"><a name="ags-delay-audio-run-notation-alloc-input"></a><h3>ags_delay_audio_run_notation_alloc_input ()</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="ags_delay_audio_run_notation_alloc_input"></OBJECT><pre class="programlisting"><a class="link" href=""><span class="returnvalue">void</span></a>                ags_delay_audio_run_notation_alloc_input
+                                                        (<em class="parameter"><code><a class="link" href="re54.html#AgsDelayAudioRun" title="struct AgsDelayAudioRun"><span class="type">AgsDelayAudioRun</span></a> *delay_audio_run</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">guint</span></a> run_order</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">guint</span></a> delay</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">guint</span></a> attack</code></em>);</pre></div><div class="refsect2"><a name="ags-delay-audio-run-notation-count"></a><h3>ags_delay_audio_run_notation_count ()</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="ags_delay_audio_run_notation_count"></OBJECT><pre class="programlisting"><a class="link" href=""><span class="returnvalue">void</span></a>                ags_delay_audio_run_notation_count  (<em class="parameter"><code><a class="link" href="re54.html#AgsDelayAudioRun" title="struct AgsDelayAudioRun"><span class="type">AgsDelayAudioRun</span></a> *delay_audio_run</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">guint</span></a> run_order</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">guint</span></a> delay</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">guint</span></a> attack</code></em>);</pre></div><div class="refsect2"><a name="ags-delay-audio-run-sequencer-alloc-output"></a><h3>ags_delay_audio_run_sequencer_alloc_output ()</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="ags_delay_audio_run_sequencer_alloc_output"></OBJECT><pre class="programlisting"><a class="link" href=""><span class="returnvalue">void</span></a>                ags_delay_audio_run_sequencer_alloc_output
+                                                        (<em class="parameter"><code><a class="link" href="re54.html#AgsDelayAudioRun" title="struct AgsDelayAudioRun"><span class="type">AgsDelayAudioRun</span></a> *delay_audio_run</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">guint</span></a> run_order</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">guint</span></a> delay</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">guint</span></a> attack</code></em>);</pre></div><div class="refsect2"><a name="ags-delay-audio-run-sequencer-alloc-input"></a><h3>ags_delay_audio_run_sequencer_alloc_input ()</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="ags_delay_audio_run_sequencer_alloc_input"></OBJECT><pre class="programlisting"><a class="link" href=""><span class="returnvalue">void</span></a>                ags_delay_audio_run_sequencer_alloc_input
+                                                        (<em class="parameter"><code><a class="link" href="re54.html#AgsDelayAudioRun" title="struct AgsDelayAudioRun"><span class="type">AgsDelayAudioRun</span></a> *delay_audio_run</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">guint</span></a> run_order</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">guint</span></a> delay</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">guint</span></a> attack</code></em>);</pre></div><div class="refsect2"><a name="ags-delay-audio-run-sequencer-count"></a><h3>ags_delay_audio_run_sequencer_count ()</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="ags_delay_audio_run_sequencer_count"></OBJECT><pre class="programlisting"><a class="link" href=""><span class="returnvalue">void</span></a>                ags_delay_audio_run_sequencer_count (<em class="parameter"><code><a class="link" href="re54.html#AgsDelayAudioRun" title="struct AgsDelayAudioRun"><span class="type">AgsDelayAudioRun</span></a> *delay_audio_run</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">guint</span></a> run_order</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">guint</span></a> delay</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">guint</span></a> attack</code></em>);</pre></div><div class="refsect2"><a name="ags-delay-audio-run-new"></a><h3>ags_delay_audio_run_new ()</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="ags_delay_audio_run_new"></OBJECT><pre class="programlisting"><a class="link" href="re54.html#AgsDelayAudioRun" title="struct AgsDelayAudioRun"><span class="returnvalue">AgsDelayAudioRun</span></a> *  ags_delay_audio_run_new             ();</pre></div></div></div></body></html>

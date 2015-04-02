@@ -1,0 +1,137 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Advanced Gtk+ Sequencer Reference Manual: AgsTogglePatternBit</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="task.html" title="Task - Data exchanged between Audio and GUI">
+<link rel="prev" href="ags-AgsToggleLed.html" title="AgsToggleLed">
+<link rel="next" href="ags-AgsUnrefAudioSignal.html" title="AgsUnrefAudioSignal">
+<meta name="generator" content="GTK-Doc V1.21 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#ags-AgsTogglePatternBit.description" class="shortcut">Description</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="task.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="ags-AgsToggleLed.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="ags-AgsUnrefAudioSignal.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry">
+<a name="ags-AgsTogglePatternBit"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="ags-AgsTogglePatternBit.top_of_page"></a>AgsTogglePatternBit</span></h2>
+<p>AgsTogglePatternBit — toggles the pattern</p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1">
+<a name="ags-AgsTogglePatternBit.functions"></a><h2>Functions</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="functions_return">
+<col class="functions_name">
+</colgroup>
+<tbody>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="ags-AgsTogglePatternBit.html#ags-toggle-pattern-bit-refresh-gui" title="ags_toggle_pattern_bit_refresh_gui ()">ags_toggle_pattern_bit_refresh_gui</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="AgsTogglePatternBit"><span class="returnvalue">AgsTogglePatternBit</span></GTKDOCLINK> *
+</td>
+<td class="function_name">
+<a class="link" href="ags-AgsTogglePatternBit.html#ags-toggle-pattern-bit-new" title="ags_toggle_pattern_bit_new ()">ags_toggle_pattern_bit_new</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="ags-AgsTogglePatternBit.includes"></a><h2>Includes</h2>
+<pre class="synopsis">#include &lt;ags/audio/task/ags_toggle_pattern_bit.h&gt;
+</pre>
+</div>
+<div class="refsect1">
+<a name="ags-AgsTogglePatternBit.description"></a><h2>Description</h2>
+<p>The <GTKDOCLINK HREF="AgsTogglePatternBit"><span class="type">AgsTogglePatternBit</span></GTKDOCLINK> task toggles the specified <GTKDOCLINK HREF="AgsPattern"><span class="type">AgsPattern</span></GTKDOCLINK>.</p>
+</div>
+<div class="refsect1">
+<a name="ags-AgsTogglePatternBit.functions_details"></a><h2>Functions</h2>
+<div class="refsect2">
+<a name="ags-toggle-pattern-bit-refresh-gui"></a><h3>ags_toggle_pattern_bit_refresh_gui ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_toggle_pattern_bit_refresh_gui (<em class="parameter"><code><GTKDOCLINK HREF="AgsTogglePatternBit"><span class="type">AgsTogglePatternBit</span></GTKDOCLINK> *toggle_pattern_bit</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-toggle-pattern-bit-new"></a><h3>ags_toggle_pattern_bit_new ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="AgsTogglePatternBit"><span class="returnvalue">AgsTogglePatternBit</span></GTKDOCLINK> *
+ags_toggle_pattern_bit_new (<em class="parameter"><code><GTKDOCLINK HREF="AgsPattern"><span class="type">AgsPattern</span></GTKDOCLINK> *pattern</code></em>,
+                            <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> line</code></em>,
+                            <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> index_i</code></em>,
+                            <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> index_j</code></em>,
+                            <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> bit</code></em>);</pre>
+<p>Creates an <GTKDOCLINK HREF="AgsTogglePatternBit"><span class="type">AgsTogglePatternBit</span></GTKDOCLINK>.</p>
+<div class="refsect3">
+<a name="id-1.9.36.53.6.3.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>pattern</p></td>
+<td class="parameter_description"><p>the <GTKDOCLINK HREF="AgsPattern"><span class="type">AgsPattern</span></GTKDOCLINK> to toggle</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>index_i</p></td>
+<td class="parameter_description"><p>bank 0</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>index_j</p></td>
+<td class="parameter_description"><p>bank 1</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>bit</p></td>
+<td class="parameter_description"><p>the index within pattern</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.9.36.53.6.3.6"></a><h4>Returns</h4>
+<p> an new <GTKDOCLINK HREF="AgsTogglePatternBit"><span class="type">AgsTogglePatternBit</span></GTKDOCLINK>.</p>
+<p></p>
+</div>
+<p class="since">Since 0.4</p>
+</div>
+</div>
+<div class="refsect1">
+<a name="ags-AgsTogglePatternBit.other_details"></a><h2>Types and Values</h2>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.21</div>
+</body>
+</html>

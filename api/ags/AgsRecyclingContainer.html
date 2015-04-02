@@ -1,0 +1,476 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsRecyclingContainer</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="audio.html" title="Part VII. The audio layer">
+<link rel="prev" href="AgsRecycling.html" title="AgsRecycling">
+<link rel="next" href="AgsTask.html" title="AgsTask">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="AgsRecycling.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="audio.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="AgsTask.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#AgsRecyclingContainer.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#AgsRecyclingContainer.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#AgsRecyclingContainer.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#AgsRecyclingContainer.properties" class="shortcut">Properties</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="AgsRecyclingContainer"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="AgsRecyclingContainer.top_of_page"></a>AgsRecyclingContainer</span></h2>
+<p>AgsRecyclingContainer — A container of recycling acting as dynamic context.</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="AgsRecyclingContainer.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">
+#include &lt;ags/audio/ags_recycling_container.h&gt;
+
+struct              <a class="link" href="AgsRecyclingContainer.html#AgsRecyclingContainer-struct" title="struct AgsRecyclingContainer">AgsRecyclingContainer</a>;
+struct              <a class="link" href="AgsRecyclingContainer.html#AgsRecyclingContainerClass" title="struct AgsRecyclingContainerClass">AgsRecyclingContainerClass</a>;
+<a class="link" href="AgsRecyclingContainer.html" title="AgsRecyclingContainer"><span class="returnvalue">AgsRecyclingContainer</span></a> * <a class="link" href="AgsRecyclingContainer.html#ags-recycling-container-add" title="ags_recycling_container_add ()">ags_recycling_container_add</a>     (<em class="parameter"><code><a class="link" href="AgsRecyclingContainer.html" title="AgsRecyclingContainer"><span class="type">AgsRecyclingContainer</span></a> *recycling_container</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a> *recycling</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsRecyclingContainer.html#ags-recycling-container-add-child" title="ags_recycling_container_add_child ()">ags_recycling_container_add_child</a>   (<em class="parameter"><code><a class="link" href="AgsRecyclingContainer.html" title="AgsRecyclingContainer"><span class="type">AgsRecyclingContainer</span></a> *parent</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecyclingContainer.html" title="AgsRecyclingContainer"><span class="type">AgsRecyclingContainer</span></a> *child</code></em>);
+<a href="../glib/glib-Basic-Types.html#gint"><span class="returnvalue">gint</span></a>                <a class="link" href="AgsRecyclingContainer.html#ags-recycling-container-find" title="ags_recycling_container_find ()">ags_recycling_container_find</a>        (<em class="parameter"><code><a class="link" href="AgsRecyclingContainer.html" title="AgsRecyclingContainer"><span class="type">AgsRecyclingContainer</span></a> *recycling_container</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a> *recycling</code></em>);
+<a href="../glib/glib-Basic-Types.html#gint"><span class="returnvalue">gint</span></a>                <a class="link" href="AgsRecyclingContainer.html#ags-recycling-container-find-child" title="ags_recycling_container_find_child ()">ags_recycling_container_find_child</a>  (<em class="parameter"><code><a class="link" href="AgsRecyclingContainer.html" title="AgsRecyclingContainer"><span class="type">AgsRecyclingContainer</span></a> *recycling_container</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a> *recycling</code></em>);
+<a href="../glib/glib-Basic-Types.html#gint"><span class="returnvalue">gint</span></a>                <a class="link" href="AgsRecyclingContainer.html#ags-recycling-container-find-parent" title="ags_recycling_container_find_parent ()">ags_recycling_container_find_parent</a> (<em class="parameter"><code><a class="link" href="AgsRecyclingContainer.html" title="AgsRecyclingContainer"><span class="type">AgsRecyclingContainer</span></a> *recycling_container</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a> *recycling</code></em>);
+<a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="returnvalue">GList</span></a> *             <a class="link" href="AgsRecyclingContainer.html#ags-recycling-container-get-child-recall-id" title="ags_recycling_container_get_child_recall_id ()">ags_recycling_container_get_child_recall_id</a>
+                                                        (<em class="parameter"><code><a class="link" href="AgsRecyclingContainer.html" title="AgsRecyclingContainer"><span class="type">AgsRecyclingContainer</span></a> *recycling_container</code></em>);
+<a class="link" href="AgsRecyclingContainer.html" title="AgsRecyclingContainer"><span class="returnvalue">AgsRecyclingContainer</span></a> * <a class="link" href="AgsRecyclingContainer.html#ags-recycling-container-get-toplevel" title="ags_recycling_container_get_toplevel ()">ags_recycling_container_get_toplevel</a>
+                                                        (<em class="parameter"><code><a class="link" href="AgsRecyclingContainer.html" title="AgsRecyclingContainer"><span class="type">AgsRecyclingContainer</span></a> *recycling_container</code></em>);
+<a class="link" href="AgsRecyclingContainer.html" title="AgsRecyclingContainer"><span class="returnvalue">AgsRecyclingContainer</span></a> * <a class="link" href="AgsRecyclingContainer.html#ags-recycling-container-insert" title="ags_recycling_container_insert ()">ags_recycling_container_insert</a>  (<em class="parameter"><code><a class="link" href="AgsRecyclingContainer.html" title="AgsRecyclingContainer"><span class="type">AgsRecyclingContainer</span></a> *recycling_container</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a> *recycling</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gint"><span class="type">gint</span></a> position</code></em>);
+<a class="link" href="AgsRecyclingContainer.html" title="AgsRecyclingContainer"><span class="returnvalue">AgsRecyclingContainer</span></a> * <a class="link" href="AgsRecyclingContainer.html#ags-recycling-container-new" title="ags_recycling_container_new ()">ags_recycling_container_new</a>     (<em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gint"><span class="type">gint</span></a> length</code></em>);
+<a class="link" href="AgsRecyclingContainer.html" title="AgsRecyclingContainer"><span class="returnvalue">AgsRecyclingContainer</span></a> * <a class="link" href="AgsRecyclingContainer.html#ags-recycling-container-remove" title="ags_recycling_container_remove ()">ags_recycling_container_remove</a>  (<em class="parameter"><code><a class="link" href="AgsRecyclingContainer.html" title="AgsRecyclingContainer"><span class="type">AgsRecyclingContainer</span></a> *recycling_container</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a> *recycling</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsRecyclingContainer.html#ags-recycling-container-remove-child" title="ags_recycling_container_remove_child ()">ags_recycling_container_remove_child</a>
+                                                        (<em class="parameter"><code><a class="link" href="AgsRecyclingContainer.html" title="AgsRecyclingContainer"><span class="type">AgsRecyclingContainer</span></a> *parent</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecyclingContainer.html" title="AgsRecyclingContainer"><span class="type">AgsRecyclingContainer</span></a> *child</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsRecyclingContainer.html#ags-recycling-container-replace" title="ags_recycling_container_replace ()">ags_recycling_container_replace</a>     (<em class="parameter"><code><a class="link" href="AgsRecyclingContainer.html" title="AgsRecyclingContainer"><span class="type">AgsRecyclingContainer</span></a> *recycling_container</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a> *recycling</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gint"><span class="type">gint</span></a> position</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsRecyclingContainer.html#ags-recycling-container-reset-recycling" title="ags_recycling_container_reset_recycling ()">ags_recycling_container_reset_recycling</a>
+                                                        (<em class="parameter"><code><a class="link" href="AgsRecyclingContainer.html" title="AgsRecyclingContainer"><span class="type">AgsRecyclingContainer</span></a> *recycling_container</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a> *old_first_recycling</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a> *old_last_recycling</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a> *new_first_recycling</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a> *new_last_recycling</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsRecyclingContainer.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  <a href="../gobject/gobject-The-Base-Object-Type.html#GObject">GObject</a>
+   +----AgsRecyclingContainer
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsRecyclingContainer.properties"></a><h2>Properties</h2>
+<pre class="synopsis">
+  "<a class="link" href="AgsRecyclingContainer.html#AgsRecyclingContainer--length" title='The "length" property'>length</a>"                   <span class="type">guint64</span>               : Read / Write
+  "<a class="link" href="AgsRecyclingContainer.html#AgsRecyclingContainer--parent" title='The "parent" property'>parent</a>"                   <a class="link" href="AgsRecyclingContainer.html" title="AgsRecyclingContainer"><span class="type">AgsRecyclingContainer</span></a>*  : Read / Write
+  "<a class="link" href="AgsRecyclingContainer.html#AgsRecyclingContainer--recall-id" title='The "recall-id" property'>recall-id</a>"                <a class="link" href="AgsRecallID.html" title="AgsRecallID"><span class="type">AgsRecallID</span></a>*          : Read / Write
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsRecyclingContainer.description"></a><h2>Description</h2>
+<p>
+<a class="link" href="AgsRecyclingContainer.html" title="AgsRecyclingContainer"><span class="type">AgsRecyclingContainer</span></a> organizes <a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a> objects as dynamic context
+within nested tree.
+</p>
+</div>
+<div class="refsect1">
+<a name="AgsRecyclingContainer.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AgsRecyclingContainer-struct"></a><h3>struct AgsRecyclingContainer</h3>
+<pre class="programlisting">struct AgsRecyclingContainer;</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsRecyclingContainerClass"></a><h3>struct AgsRecyclingContainerClass</h3>
+<pre class="programlisting">struct AgsRecyclingContainerClass {
+  GObjectClass object;
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-recycling-container-add"></a><h3>ags_recycling_container_add ()</h3>
+<pre class="programlisting"><a class="link" href="AgsRecyclingContainer.html" title="AgsRecyclingContainer"><span class="returnvalue">AgsRecyclingContainer</span></a> * ags_recycling_container_add     (<em class="parameter"><code><a class="link" href="AgsRecyclingContainer.html" title="AgsRecyclingContainer"><span class="type">AgsRecyclingContainer</span></a> *recycling_container</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a> *recycling</code></em>);</pre>
+<p>
+Removes a recycling to a container.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>recycling_container</code></em> :</span></p></td>
+<td>the <a class="link" href="AgsRecyclingContainer.html" title="AgsRecyclingContainer"><span class="type">AgsRecyclingContainer</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>recycling</code></em> :</span></p></td>
+<td>the <a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a> to remove</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the new recycling container</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-recycling-container-add-child"></a><h3>ags_recycling_container_add_child ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_recycling_container_add_child   (<em class="parameter"><code><a class="link" href="AgsRecyclingContainer.html" title="AgsRecyclingContainer"><span class="type">AgsRecyclingContainer</span></a> *parent</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecyclingContainer.html" title="AgsRecyclingContainer"><span class="type">AgsRecyclingContainer</span></a> *child</code></em>);</pre>
+<p>
+Adds a recycling container as child.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>parent</code></em> :</span></p></td>
+<td>the parental <a class="link" href="AgsRecyclingContainer.html" title="AgsRecyclingContainer"><span class="type">AgsRecyclingContainer</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>child</code></em> :</span></p></td>
+<td>the child</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-recycling-container-find"></a><h3>ags_recycling_container_find ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#gint"><span class="returnvalue">gint</span></a>                ags_recycling_container_find        (<em class="parameter"><code><a class="link" href="AgsRecyclingContainer.html" title="AgsRecyclingContainer"><span class="type">AgsRecyclingContainer</span></a> *recycling_container</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a> *recycling</code></em>);</pre>
+<p>
+Find position of recycling within array.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>recycling_container</code></em> :</span></p></td>
+<td>the <a class="link" href="AgsRecyclingContainer.html" title="AgsRecyclingContainer"><span class="type">AgsRecyclingContainer</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>recycling</code></em> :</span></p></td>
+<td>the <a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a> to look up</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>recycling array index</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-recycling-container-find-child"></a><h3>ags_recycling_container_find_child ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#gint"><span class="returnvalue">gint</span></a>                ags_recycling_container_find_child  (<em class="parameter"><code><a class="link" href="AgsRecyclingContainer.html" title="AgsRecyclingContainer"><span class="type">AgsRecyclingContainer</span></a> *recycling_container</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a> *recycling</code></em>);</pre>
+<p>
+Find position of recycling within arrays.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>recycling_container</code></em> :</span></p></td>
+<td>the <a class="link" href="AgsRecyclingContainer.html" title="AgsRecyclingContainer"><span class="type">AgsRecyclingContainer</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>recycling</code></em> :</span></p></td>
+<td>the <a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a> to look up</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>recycling array index</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-recycling-container-find-parent"></a><h3>ags_recycling_container_find_parent ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#gint"><span class="returnvalue">gint</span></a>                ags_recycling_container_find_parent (<em class="parameter"><code><a class="link" href="AgsRecyclingContainer.html" title="AgsRecyclingContainer"><span class="type">AgsRecyclingContainer</span></a> *recycling_container</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a> *recycling</code></em>);</pre>
+<p>
+Find position of recycling within array.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>recycling_container</code></em> :</span></p></td>
+<td>the <a class="link" href="AgsRecyclingContainer.html" title="AgsRecyclingContainer"><span class="type">AgsRecyclingContainer</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>recycling</code></em> :</span></p></td>
+<td>the <a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a> to look up</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>recycling array index</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-recycling-container-get-child-recall-id"></a><h3>ags_recycling_container_get_child_recall_id ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="returnvalue">GList</span></a> *             ags_recycling_container_get_child_recall_id
+                                                        (<em class="parameter"><code><a class="link" href="AgsRecyclingContainer.html" title="AgsRecyclingContainer"><span class="type">AgsRecyclingContainer</span></a> *recycling_container</code></em>);</pre>
+<p>
+Retrieve all child recall ids.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>recycling_container</code></em> :</span></p></td>
+<td>the <a class="link" href="AgsRecyclingContainer.html" title="AgsRecyclingContainer"><span class="type">AgsRecyclingContainer</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the <a class="link" href="AgsRecallID.html" title="AgsRecallID"><span class="type">AgsRecallID</span></a> as <a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a>
+</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-recycling-container-get-toplevel"></a><h3>ags_recycling_container_get_toplevel ()</h3>
+<pre class="programlisting"><a class="link" href="AgsRecyclingContainer.html" title="AgsRecyclingContainer"><span class="returnvalue">AgsRecyclingContainer</span></a> * ags_recycling_container_get_toplevel
+                                                        (<em class="parameter"><code><a class="link" href="AgsRecyclingContainer.html" title="AgsRecyclingContainer"><span class="type">AgsRecyclingContainer</span></a> *recycling_container</code></em>);</pre>
+<p>
+Iterates the tree up to highest level.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>recycling_container</code></em> :</span></p></td>
+<td>the <a class="link" href="AgsRecyclingContainer.html" title="AgsRecyclingContainer"><span class="type">AgsRecyclingContainer</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the topmost recycling container</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-recycling-container-insert"></a><h3>ags_recycling_container_insert ()</h3>
+<pre class="programlisting"><a class="link" href="AgsRecyclingContainer.html" title="AgsRecyclingContainer"><span class="returnvalue">AgsRecyclingContainer</span></a> * ags_recycling_container_insert  (<em class="parameter"><code><a class="link" href="AgsRecyclingContainer.html" title="AgsRecyclingContainer"><span class="type">AgsRecyclingContainer</span></a> *recycling_container</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a> *recycling</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gint"><span class="type">gint</span></a> position</code></em>);</pre>
+<p>
+Removes a recycling to a container.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>recycling_container</code></em> :</span></p></td>
+<td>the <a class="link" href="AgsRecyclingContainer.html" title="AgsRecyclingContainer"><span class="type">AgsRecyclingContainer</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>recycling</code></em> :</span></p></td>
+<td>the <a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a> to insert</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>position</code></em> :</span></p></td>
+<td>the index to insert at</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the new recycling container</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-recycling-container-new"></a><h3>ags_recycling_container_new ()</h3>
+<pre class="programlisting"><a class="link" href="AgsRecyclingContainer.html" title="AgsRecyclingContainer"><span class="returnvalue">AgsRecyclingContainer</span></a> * ags_recycling_container_new     (<em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gint"><span class="type">gint</span></a> length</code></em>);</pre>
+<p>
+Creates a <a class="link" href="AgsRecyclingContainer.html" title="AgsRecyclingContainer"><span class="type">AgsRecyclingContainer</span></a>, boundaries are specified by <em class="parameter"><code>length</code></em>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>length</code></em> :</span></p></td>
+<td>array dimension of context</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new <a class="link" href="AgsRecyclingContainer.html" title="AgsRecyclingContainer"><span class="type">AgsRecyclingContainer</span></a>
+</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-recycling-container-remove"></a><h3>ags_recycling_container_remove ()</h3>
+<pre class="programlisting"><a class="link" href="AgsRecyclingContainer.html" title="AgsRecyclingContainer"><span class="returnvalue">AgsRecyclingContainer</span></a> * ags_recycling_container_remove  (<em class="parameter"><code><a class="link" href="AgsRecyclingContainer.html" title="AgsRecyclingContainer"><span class="type">AgsRecyclingContainer</span></a> *recycling_container</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a> *recycling</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-recycling-container-remove-child"></a><h3>ags_recycling_container_remove_child ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_recycling_container_remove_child
+                                                        (<em class="parameter"><code><a class="link" href="AgsRecyclingContainer.html" title="AgsRecyclingContainer"><span class="type">AgsRecyclingContainer</span></a> *parent</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecyclingContainer.html" title="AgsRecyclingContainer"><span class="type">AgsRecyclingContainer</span></a> *child</code></em>);</pre>
+<p>
+Removes a recycling container of its parent.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>parent</code></em> :</span></p></td>
+<td>the <a class="link" href="AgsRecyclingContainer.html" title="AgsRecyclingContainer"><span class="type">AgsRecyclingContainer</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>child</code></em> :</span></p></td>
+<td>the child to remove</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-recycling-container-replace"></a><h3>ags_recycling_container_replace ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_recycling_container_replace     (<em class="parameter"><code><a class="link" href="AgsRecyclingContainer.html" title="AgsRecyclingContainer"><span class="type">AgsRecyclingContainer</span></a> *recycling_container</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a> *recycling</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gint"><span class="type">gint</span></a> position</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-recycling-container-reset-recycling"></a><h3>ags_recycling_container_reset_recycling ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_recycling_container_reset_recycling
+                                                        (<em class="parameter"><code><a class="link" href="AgsRecyclingContainer.html" title="AgsRecyclingContainer"><span class="type">AgsRecyclingContainer</span></a> *recycling_container</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a> *old_first_recycling</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a> *old_last_recycling</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a> *new_first_recycling</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a> *new_last_recycling</code></em>);</pre>
+<p>
+Modify recycling of container.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>recycling_container</code></em> :</span></p></td>
+<td>the <a class="link" href="AgsRecyclingContainer.html" title="AgsRecyclingContainer"><span class="type">AgsRecyclingContainer</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>old_first_recycling</code></em> :</span></p></td>
+<td>the first recycling to replace</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>old_last_recycling</code></em> :</span></p></td>
+<td>the last recycling to replace</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>new_first_recycling</code></em> :</span></p></td>
+<td>the first recycling to insert</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>new_last_recycling</code></em> :</span></p></td>
+<td>the last recycling to insert</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+</div>
+<div class="refsect1">
+<a name="AgsRecyclingContainer.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="AgsRecyclingContainer--length"></a><h3>The <code class="literal">"length"</code> property</h3>
+<pre class="programlisting">  "length"                   <span class="type">guint64</span>               : Read / Write</pre>
+<p>The recycling array length.</p>
+<p>Default value: 0</p>
+<p class="since">Since 0.4.0</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsRecyclingContainer--parent"></a><h3>The <code class="literal">"parent"</code> property</h3>
+<pre class="programlisting">  "parent"                   <a class="link" href="AgsRecyclingContainer.html" title="AgsRecyclingContainer"><span class="type">AgsRecyclingContainer</span></a>*  : Read / Write</pre>
+<p>The container this one is packed into.</p>
+<p class="since">Since 0.4.0</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsRecyclingContainer--recall-id"></a><h3>The <code class="literal">"recall-id"</code> property</h3>
+<pre class="programlisting">  "recall-id"                <a class="link" href="AgsRecallID.html" title="AgsRecallID"><span class="type">AgsRecallID</span></a>*          : Read / Write</pre>
+<p>The recall id located in audio object as destiny.</p>
+<p class="since">Since 0.4.0</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

@@ -1,0 +1,176 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Advanced Gtk+ Sequencer Reference Manual: AgsRecyclingThread</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="thread.html" title="Part VI. Thread - Multi-threaded tree">
+<link rel="prev" href="ags-AgsIteratorThread.html" title="AgsIteratorThread">
+<link rel="next" href="ags-ags-recycling-thread-callbacks.html" title="ags_recycling_thread_callbacks">
+<meta name="generator" content="GTK-Doc V1.21 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#ags-AgsRecyclingThread.description" class="shortcut">Description</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="thread.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="ags-AgsIteratorThread.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="ags-ags-recycling-thread-callbacks.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry">
+<a name="ags-AgsRecyclingThread"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="ags-AgsRecyclingThread.top_of_page"></a>AgsRecyclingThread</span></h2>
+<p>AgsRecyclingThread</p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1">
+<a name="ags-AgsRecyclingThread.functions"></a><h2>Functions</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="functions_return">
+<col class="functions_name">
+</colgroup>
+<tbody>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a class="link" href="ags-AgsRecyclingThread.html#AGS-RECYCLING-THREAD-DEFAULT-JIFFIE:CAPS" title="AGS_RECYCLING_THREAD_DEFAULT_JIFFIE">AGS_RECYCLING_THREAD_DEFAULT_JIFFIE</a></td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="ags-AgsRecyclingThread.html#ags-recycling-thread-play-channel" title="ags_recycling_thread_play_channel ()">ags_recycling_thread_play_channel</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="ags-AgsRecyclingThread.html#ags-recycling-thread-play-audio" title="ags_recycling_thread_play_audio ()">ags_recycling_thread_play_audio</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="AgsRecyclingThread"><span class="returnvalue">AgsRecyclingThread</span></GTKDOCLINK> *
+</td>
+<td class="function_name">
+<a class="link" href="ags-AgsRecyclingThread.html#ags-recycling-thread-new" title="ags_recycling_thread_new ()">ags_recycling_thread_new</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="ags-AgsRecyclingThread.other"></a><h2>Types and Values</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="name">
+<col class="description">
+</colgroup>
+<tbody><tr>
+<td class="datatype_keyword">enum</td>
+<td class="function_name"><a class="link" href="ags-AgsRecyclingThread.html#AgsRecyclingThreadFlags" title="enum AgsRecyclingThreadFlags">AgsRecyclingThreadFlags</a></td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="ags-AgsRecyclingThread.description"></a><h2>Description</h2>
+<p>
+</p>
+</div>
+<div class="refsect1">
+<a name="ags-AgsRecyclingThread.functions_details"></a><h2>Functions</h2>
+<div class="refsect2">
+<a name="AGS-RECYCLING-THREAD-DEFAULT-JIFFIE:CAPS"></a><h3>AGS_RECYCLING_THREAD_DEFAULT_JIFFIE</h3>
+<pre class="programlisting">#define AGS_RECYCLING_THREAD_DEFAULT_JIFFIE (100)
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-recycling-thread-play-channel"></a><h3>ags_recycling_thread_play_channel ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_recycling_thread_play_channel (<em class="parameter"><code><GTKDOCLINK HREF="AgsRecyclingThread"><span class="type">AgsRecyclingThread</span></GTKDOCLINK> *recycling_thread</code></em>,
+                                   <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *channel</code></em>,
+                                   <em class="parameter"><code><GTKDOCLINK HREF="AgsRecallID"><span class="type">AgsRecallID</span></GTKDOCLINK> *recall_id</code></em>,
+                                   <em class="parameter"><code><GTKDOCLINK HREF="gint"><span class="type">gint</span></GTKDOCLINK> stage</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-recycling-thread-play-audio"></a><h3>ags_recycling_thread_play_audio ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_recycling_thread_play_audio (<em class="parameter"><code><GTKDOCLINK HREF="AgsRecyclingThread"><span class="type">AgsRecyclingThread</span></GTKDOCLINK> *recycling_thread</code></em>,
+                                 <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *output</code></em>,
+                                 <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *audio</code></em>,
+                                 <em class="parameter"><code><GTKDOCLINK HREF="AgsRecallID"><span class="type">AgsRecallID</span></GTKDOCLINK> *recall_id</code></em>,
+                                 <em class="parameter"><code><GTKDOCLINK HREF="gint"><span class="type">gint</span></GTKDOCLINK> stage</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-recycling-thread-new"></a><h3>ags_recycling_thread_new ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="AgsRecyclingThread"><span class="returnvalue">AgsRecyclingThread</span></GTKDOCLINK> *
+ags_recycling_thread_new ();</pre>
+<p>
+</p>
+<div class="refsect3">
+<a name="id-1.8.8.6.5.5"></a><h4>Returns</h4>
+<p></p>
+</div>
+</div>
+</div>
+<div class="refsect1">
+<a name="ags-AgsRecyclingThread.other_details"></a><h2>Types and Values</h2>
+<div class="refsect2">
+<a name="AgsRecyclingThreadFlags"></a><h3>enum AgsRecyclingThreadFlags</h3>
+<p>
+</p>
+<div class="refsect3">
+<a name="id-1.8.8.7.2.4"></a><h4>Members</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="300px" class="enum_members_name">
+<col class="enum_members_description">
+<col width="200px" class="enum_members_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="enum_member_name"><p><a name="AGS-RECYCLING-THREAD-RUNNING:CAPS"></a>AGS_RECYCLING_THREAD_RUNNING</p></td>
+<td class="enum_member_description"> </td>
+<td class="enum_member_annotations"> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="AGS-RECYCLING-THREAD-WAIT:CAPS"></a>AGS_RECYCLING_THREAD_WAIT</p></td>
+<td class="enum_member_description"> </td>
+<td class="enum_member_annotations"> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="AGS-RECYCLING-THREAD-DONE:CAPS"></a>AGS_RECYCLING_THREAD_DONE</p></td>
+<td class="enum_member_description"> </td>
+<td class="enum_member_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.21</div>
+</body>
+</html>

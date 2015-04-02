@@ -1,0 +1,770 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsNotation</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="audio.html" title="Part VII. The audio layer">
+<link rel="prev" href="AgsInput.html" title="AgsInput">
+<link rel="next" href="AgsNote.html" title="AgsNote">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="AgsInput.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="audio.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="AgsNote.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#AgsNotation.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#AgsNotation.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#AgsNotation.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#AgsNotation.implemented-interfaces" class="shortcut">Implemented Interfaces</a>
+                   | 
+                  <a href="#AgsNotation.properties" class="shortcut">Properties</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="AgsNotation"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="AgsNotation.top_of_page"></a>AgsNotation</span></h2>
+<p>AgsNotation — Notation class supporting selection and clipboard.</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="AgsNotation.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">
+#include &lt;ags/audio/ags_notation.h&gt;
+
+#define             <a class="link" href="AgsNotation.html#AGS-NOTATION-DEFAULT-BPM:CAPS" title="AGS_NOTATION_DEFAULT_BPM">AGS_NOTATION_DEFAULT_BPM</a>
+#define             <a class="link" href="AgsNotation.html#AGS-NOTATION-DEFAULT-DURATION:CAPS" title="AGS_NOTATION_DEFAULT_DURATION">AGS_NOTATION_DEFAULT_DURATION</a>
+#define             <a class="link" href="AgsNotation.html#AGS-NOTATION-DEFAULT-JIFFIE:CAPS" title="AGS_NOTATION_DEFAULT_JIFFIE">AGS_NOTATION_DEFAULT_JIFFIE</a>
+#define             <a class="link" href="AgsNotation.html#AGS-NOTATION-DEFAULT-LENGTH:CAPS" title="AGS_NOTATION_DEFAULT_LENGTH">AGS_NOTATION_DEFAULT_LENGTH</a>
+#define             <a class="link" href="AgsNotation.html#AGS-NOTATION-MAXIMUM-NOTE-LENGTH:CAPS" title="AGS_NOTATION_MAXIMUM_NOTE_LENGTH">AGS_NOTATION_MAXIMUM_NOTE_LENGTH</a>
+#define             <a class="link" href="AgsNotation.html#AGS-NOTATION-MINIMUM-NOTE-LENGTH:CAPS" title="AGS_NOTATION_MINIMUM_NOTE_LENGTH">AGS_NOTATION_MINIMUM_NOTE_LENGTH</a>
+#define             <a class="link" href="AgsNotation.html#AGS-NOTATION-TICS-PER-BEAT:CAPS" title="AGS_NOTATION_TICS_PER_BEAT">AGS_NOTATION_TICS_PER_BEAT</a>
+struct              <a class="link" href="AgsNotation.html#AgsNotation-struct" title="struct AgsNotation">AgsNotation</a>;
+struct              <a class="link" href="AgsNotation.html#AgsNotationClass" title="struct AgsNotationClass">AgsNotationClass</a>;
+enum                <a class="link" href="AgsNotation.html#AgsNotationFlags" title="enum AgsNotationFlags">AgsNotationFlags</a>;
+<span class="returnvalue">void</span>                <a class="link" href="AgsNotation.html#ags-notation-add-note" title="ags_notation_add_note ()">ags_notation_add_note</a>               (<em class="parameter"><code><a class="link" href="AgsNotation.html" title="AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsNote.html" title="AgsNote"><span class="type">AgsNote</span></a> *note</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a> use_selection_list</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsNotation.html#ags-notation-add-point-to-selection" title="ags_notation_add_point_to_selection ()">ags_notation_add_point_to_selection</a> (<em class="parameter"><code><a class="link" href="AgsNotation.html" title="AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> x</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> y</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a> replace_current_selection</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsNotation.html#ags-notation-add-region-to-selection" title="ags_notation_add_region_to_selection ()">ags_notation_add_region_to_selection</a>
+                                                        (<em class="parameter"><code><a class="link" href="AgsNotation.html" title="AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> x0</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> y0</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> x1</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> y1</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a> replace_current_selection</code></em>);
+<span class="returnvalue">xmlNodePtr</span>          <a class="link" href="AgsNotation.html#ags-notation-copy-selection" title="ags_notation_copy_selection ()">ags_notation_copy_selection</a>         (<em class="parameter"><code><a class="link" href="AgsNotation.html" title="AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>);
+<span class="returnvalue">xmlNodePtr</span>          <a class="link" href="AgsNotation.html#ags-notation-cut-selection" title="ags_notation_cut_selection ()">ags_notation_cut_selection</a>          (<em class="parameter"><code><a class="link" href="AgsNotation.html" title="AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>);
+<a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="returnvalue">GList</span></a> *             <a class="link" href="AgsNotation.html#ags-notation-find-near-timestamp" title="ags_notation_find_near_timestamp ()">ags_notation_find_near_timestamp</a>    (<em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> *notation</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> audio_channel</code></em>,
+                                                         <em class="parameter"><code><a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a> *timestamp</code></em>);
+<a class="link" href="AgsNote.html" title="AgsNote"><span class="returnvalue">AgsNote</span></a> *           <a class="link" href="AgsNotation.html#ags-notation-find-point" title="ags_notation_find_point ()">ags_notation_find_point</a>             (<em class="parameter"><code><a class="link" href="AgsNotation.html" title="AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> x</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> y</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a> use_selection_list</code></em>);
+<a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="returnvalue">GList</span></a> *             <a class="link" href="AgsNotation.html#ags-notation-find-region" title="ags_notation_find_region ()">ags_notation_find_region</a>            (<em class="parameter"><code><a class="link" href="AgsNotation.html" title="AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> x0</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> y0</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> x1</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> y1</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a> use_selection_list</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsNotation.html#ags-notation-free-selection" title="ags_notation_free_selection ()">ags_notation_free_selection</a>         (<em class="parameter"><code><a class="link" href="AgsNotation.html" title="AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>);
+<a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="returnvalue">GList</span></a> *             <a class="link" href="AgsNotation.html#ags-notation-get-current" title="ags_notation_get_current ()">ags_notation_get_current</a>            (<em class="parameter"><code><a class="link" href="AgsNotation.html" title="AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>);
+<a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="returnvalue">GList</span></a> *             <a class="link" href="AgsNotation.html#ags-notation-get-selection" title="ags_notation_get_selection ()">ags_notation_get_selection</a>          (<em class="parameter"><code><a class="link" href="AgsNotation.html" title="AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsNotation.html#ags-notation-insert-from-clipboard" title="ags_notation_insert_from_clipboard ()">ags_notation_insert_from_clipboard</a>  (<em class="parameter"><code><a class="link" href="AgsNotation.html" title="AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNodePtr</span> content</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a> reset_x_offset</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> x_offset</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a> reset_y_offset</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> y_offset</code></em>);
+<a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            <a class="link" href="AgsNotation.html#ags-notation-is-note-selected" title="ags_notation_is_note_selected ()">ags_notation_is_note_selected</a>       (<em class="parameter"><code><a class="link" href="AgsNotation.html" title="AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsNote.html" title="AgsNote"><span class="type">AgsNote</span></a> *note</code></em>);
+<a class="link" href="AgsNotation.html" title="AgsNotation"><span class="returnvalue">AgsNotation</span></a> *       <a class="link" href="AgsNotation.html#ags-notation-new" title="ags_notation_new ()">ags_notation_new</a>                    (<em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> audio_channel</code></em>);
+<a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            <a class="link" href="AgsNotation.html#ags-notation-remove-note-at-position" title="ags_notation_remove_note_at_position ()">ags_notation_remove_note_at_position</a>
+                                                        (<em class="parameter"><code><a class="link" href="AgsNotation.html" title="AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> x</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> y</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsNotation.html#ags-notation-remove-point-from-selection" title="ags_notation_remove_point_from_selection ()">ags_notation_remove_point_from_selection</a>
+                                                        (<em class="parameter"><code><a class="link" href="AgsNotation.html" title="AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> x</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> y</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsNotation.html#ags-notation-remove-region-from-selection" title="ags_notation_remove_region_from_selection ()">ags_notation_remove_region_from_selection</a>
+                                                        (<em class="parameter"><code><a class="link" href="AgsNotation.html" title="AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> x0</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> y0</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> x1</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> y1</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsNotation.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  <a href="../gobject/gobject-The-Base-Object-Type.html#GObject">GObject</a>
+   +----AgsNotation
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsNotation.implemented-interfaces"></a><h2>Implemented Interfaces</h2>
+<p>
+AgsNotation implements
+ AgsConnectable,  <a class="link" href="AgsTactable.html" title="AgsTactable">AgsTactable</a> and  <a class="link" href="AgsPortlet.html" title="AgsPortlet">AgsPortlet</a>.</p>
+</div>
+<div class="refsect1">
+<a name="AgsNotation.properties"></a><h2>Properties</h2>
+<pre class="synopsis">
+  "<a class="link" href="AgsNotation.html#AgsNotation--current-notes" title='The "current-notes" property'>current-notes</a>"            <a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a>              : Read / Write
+  "<a class="link" href="AgsNotation.html#AgsNotation--next-notes" title='The "next-notes" property'>next-notes</a>"               <a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a>              : Read / Write
+  "<a class="link" href="AgsNotation.html#AgsNotation--port" title='The "port" property'>port</a>"                     <a class="link" href="AgsPort.html" title="AgsPort"><span class="type">AgsPort</span></a>*              : Read / Write
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsNotation.description"></a><h2>Description</h2>
+<p>
+<a class="link" href="AgsNotation.html" title="AgsNotation"><span class="type">AgsNotation</span></a> acts as a container of <a class="link" href="AgsNote.html" title="AgsNote"><span class="type">AgsNote</span></a>.
+</p>
+</div>
+<div class="refsect1">
+<a name="AgsNotation.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AGS-NOTATION-DEFAULT-BPM:CAPS"></a><h3>AGS_NOTATION_DEFAULT_BPM</h3>
+<pre class="programlisting">#define AGS_NOTATION_DEFAULT_BPM (120.0)
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-NOTATION-DEFAULT-DURATION:CAPS"></a><h3>AGS_NOTATION_DEFAULT_DURATION</h3>
+<pre class="programlisting">#define AGS_NOTATION_DEFAULT_DURATION (AGS_NOTATION_DEFAULT_LENGTH * AGS_NOTATION_DEFAULT_JIFFIE * AGS_MICROSECONDS_PER_SECOND)
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-NOTATION-DEFAULT-JIFFIE:CAPS"></a><h3>AGS_NOTATION_DEFAULT_JIFFIE</h3>
+<pre class="programlisting">#define AGS_NOTATION_DEFAULT_JIFFIE (60.0 / AGS_NOTATION_DEFAULT_BPM / AGS_NOTATION_TICS_PER_BEAT)
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-NOTATION-DEFAULT-LENGTH:CAPS"></a><h3>AGS_NOTATION_DEFAULT_LENGTH</h3>
+<pre class="programlisting">#define AGS_NOTATION_DEFAULT_LENGTH (65535.0 / AGS_NOTATION_TICS_PER_BEAT - AGS_NOTATION_MAXIMUM_NOTE_LENGTH)
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-NOTATION-MAXIMUM-NOTE-LENGTH:CAPS"></a><h3>AGS_NOTATION_MAXIMUM_NOTE_LENGTH</h3>
+<pre class="programlisting">#define AGS_NOTATION_MAXIMUM_NOTE_LENGTH (16.0)
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-NOTATION-MINIMUM-NOTE-LENGTH:CAPS"></a><h3>AGS_NOTATION_MINIMUM_NOTE_LENGTH</h3>
+<pre class="programlisting">#define AGS_NOTATION_MINIMUM_NOTE_LENGTH (1.0 / 16.0)
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-NOTATION-TICS-PER-BEAT:CAPS"></a><h3>AGS_NOTATION_TICS_PER_BEAT</h3>
+<pre class="programlisting">#define AGS_NOTATION_TICS_PER_BEAT (4.0)
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsNotation-struct"></a><h3>struct AgsNotation</h3>
+<pre class="programlisting">struct AgsNotation;</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsNotationClass"></a><h3>struct AgsNotationClass</h3>
+<pre class="programlisting">struct AgsNotationClass {
+  GObjectClass object;
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsNotationFlags"></a><h3>enum AgsNotationFlags</h3>
+<pre class="programlisting">typedef enum {
+  AGS_NOTATION_STICKY              =  1,
+  AGS_NOTATION_INDICATED_LENGTH    =  1 &lt;&lt;  1,
+} AgsNotationFlags;
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-notation-add-note"></a><h3>ags_notation_add_note ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_notation_add_note               (<em class="parameter"><code><a class="link" href="AgsNotation.html" title="AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsNote.html" title="AgsNote"><span class="type">AgsNote</span></a> *note</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a> use_selection_list</code></em>);</pre>
+<p>
+Adds a note to notation.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>notation</code></em> :</span></p></td>
+<td>an <a class="link" href="AgsNotation.html" title="AgsNotation"><span class="type">AgsNotation</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>note</code></em> :</span></p></td>
+<td>the <a class="link" href="AgsNote.html" title="AgsNote"><span class="type">AgsNote</span></a> to add</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>use_selection_list</code></em> :</span></p></td>
+<td>if <a href="../glib/glib-Standard-Macros.html#TRUE:CAPS"><code class="literal">TRUE</code></a> add to selection, else to default notation</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-notation-add-point-to-selection"></a><h3>ags_notation_add_point_to_selection ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_notation_add_point_to_selection (<em class="parameter"><code><a class="link" href="AgsNotation.html" title="AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> x</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> y</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a> replace_current_selection</code></em>);</pre>
+<p>
+Select notes at position.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>notation</code></em> :</span></p></td>
+<td>an <a class="link" href="AgsNotation.html" title="AgsNotation"><span class="type">AgsNotation</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>x</code></em> :</span></p></td>
+<td>offset</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>y</code></em> :</span></p></td>
+<td>tone</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>replace_current_selection</code></em> :</span></p></td>
+<td>if <a href="../glib/glib-Standard-Macros.html#TRUE:CAPS"><code class="literal">TRUE</code></a> selection is replaced</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-notation-add-region-to-selection"></a><h3>ags_notation_add_region_to_selection ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_notation_add_region_to_selection
+                                                        (<em class="parameter"><code><a class="link" href="AgsNotation.html" title="AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> x0</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> y0</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> x1</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> y1</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a> replace_current_selection</code></em>);</pre>
+<p>
+Select notes within region.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>notation</code></em> :</span></p></td>
+<td>an <a class="link" href="AgsNotation.html" title="AgsNotation"><span class="type">AgsNotation</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>x0</code></em> :</span></p></td>
+<td>start offset</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>y0</code></em> :</span></p></td>
+<td>start tone</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>x1</code></em> :</span></p></td>
+<td>end offset</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>y1</code></em> :</span></p></td>
+<td>end tone</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>replace_current_selection</code></em> :</span></p></td>
+<td>if <a href="../glib/glib-Standard-Macros.html#TRUE:CAPS"><code class="literal">TRUE</code></a> selection is replaced</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-notation-copy-selection"></a><h3>ags_notation_copy_selection ()</h3>
+<pre class="programlisting"><span class="returnvalue">xmlNodePtr</span>          ags_notation_copy_selection         (<em class="parameter"><code><a class="link" href="AgsNotation.html" title="AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>);</pre>
+<p>
+Copy selection to clipboard.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>notation</code></em> :</span></p></td>
+<td>an <a class="link" href="AgsNotation.html" title="AgsNotation"><span class="type">AgsNotation</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the selection as XML.</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-notation-cut-selection"></a><h3>ags_notation_cut_selection ()</h3>
+<pre class="programlisting"><span class="returnvalue">xmlNodePtr</span>          ags_notation_cut_selection          (<em class="parameter"><code><a class="link" href="AgsNotation.html" title="AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>);</pre>
+<p>
+Cut selection to clipboard.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>notation</code></em> :</span></p></td>
+<td>an <a class="link" href="AgsNotation.html" title="AgsNotation"><span class="type">AgsNotation</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the selection as XML.</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-notation-find-near-timestamp"></a><h3>ags_notation_find_near_timestamp ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="returnvalue">GList</span></a> *             ags_notation_find_near_timestamp    (<em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> *notation</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> audio_channel</code></em>,
+                                                         <em class="parameter"><code><a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a> *timestamp</code></em>);</pre>
+<p>
+Retrieve appropriate notation for timestamp.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>notation</code></em> :</span></p></td>
+<td>a <a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> containing <a class="link" href="AgsNotation.html" title="AgsNotation"><span class="type">AgsNotation</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>audio_channel</code></em> :</span></p></td>
+<td>the matching audio channel</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>timestamp</code></em> :</span></p></td>
+<td>the matching timestamp</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>Next match.</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-notation-find-point"></a><h3>ags_notation_find_point ()</h3>
+<pre class="programlisting"><a class="link" href="AgsNote.html" title="AgsNote"><span class="returnvalue">AgsNote</span></a> *           ags_notation_find_point             (<em class="parameter"><code><a class="link" href="AgsNotation.html" title="AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> x</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> y</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a> use_selection_list</code></em>);</pre>
+<p>
+Find note by offset and tone.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>notation</code></em> :</span></p></td>
+<td>an <a class="link" href="AgsNotation.html" title="AgsNotation"><span class="type">AgsNotation</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>x</code></em> :</span></p></td>
+<td>offset</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>y</code></em> :</span></p></td>
+<td>note</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>use_selection_list</code></em> :</span></p></td>
+<td>if <a href="../glib/glib-Standard-Macros.html#TRUE:CAPS"><code class="literal">TRUE</code></a> selection is searched</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the matching note.</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-notation-find-region"></a><h3>ags_notation_find_region ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="returnvalue">GList</span></a> *             ags_notation_find_region            (<em class="parameter"><code><a class="link" href="AgsNotation.html" title="AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> x0</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> y0</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> x1</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> y1</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a> use_selection_list</code></em>);</pre>
+<p>
+Find notes by offset and tone region.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>notation</code></em> :</span></p></td>
+<td>an <a class="link" href="AgsNotation.html" title="AgsNotation"><span class="type">AgsNotation</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>x0</code></em> :</span></p></td>
+<td>start offset</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>y0</code></em> :</span></p></td>
+<td>start tone</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>x1</code></em> :</span></p></td>
+<td>end offset</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>y1</code></em> :</span></p></td>
+<td>end tone</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the matching notes as <a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a>.</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-notation-free-selection"></a><h3>ags_notation_free_selection ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_notation_free_selection         (<em class="parameter"><code><a class="link" href="AgsNotation.html" title="AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>);</pre>
+<p>
+Clear selection.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><em class="parameter"><code>notation</code></em> :</span></p></td>
+<td>an <a class="link" href="AgsNotation.html" title="AgsNotation"><span class="type">AgsNotation</span></a>
+</td>
+</tr></tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-notation-get-current"></a><h3>ags_notation_get_current ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="returnvalue">GList</span></a> *             ags_notation_get_current            (<em class="parameter"><code><a class="link" href="AgsNotation.html" title="AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-notation-get-selection"></a><h3>ags_notation_get_selection ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="returnvalue">GList</span></a> *             ags_notation_get_selection          (<em class="parameter"><code><a class="link" href="AgsNotation.html" title="AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>);</pre>
+<p>
+Retrieve selection.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>notation</code></em> :</span></p></td>
+<td>the <a class="link" href="AgsNotation.html" title="AgsNotation"><span class="type">AgsNotation</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the selection.</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-notation-insert-from-clipboard"></a><h3>ags_notation_insert_from_clipboard ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_notation_insert_from_clipboard  (<em class="parameter"><code><a class="link" href="AgsNotation.html" title="AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNodePtr</span> content</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a> reset_x_offset</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> x_offset</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a> reset_y_offset</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> y_offset</code></em>);</pre>
+<p>
+Paste previously copied notes.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>notation</code></em> :</span></p></td>
+<td>an <a class="link" href="AgsNotation.html" title="AgsNotation"><span class="type">AgsNotation</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>reset_x_offset</code></em> :</span></p></td>
+<td>if <a href="../glib/glib-Standard-Macros.html#TRUE:CAPS"><code class="literal">TRUE</code></a> <em class="parameter"><code>x_offset</code></em> used as cursor</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>x_offset</code></em> :</span></p></td>
+<td>region start cursor offset</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>reset_y_offset</code></em> :</span></p></td>
+<td>if <a href="../glib/glib-Standard-Macros.html#TRUE:CAPS"><code class="literal">TRUE</code></a> <em class="parameter"><code>y_offset</code></em> used as cursor</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>y_offset</code></em> :</span></p></td>
+<td>region start cursor tone</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-notation-is-note-selected"></a><h3>ags_notation_is_note_selected ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            ags_notation_is_note_selected       (<em class="parameter"><code><a class="link" href="AgsNotation.html" title="AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsNote.html" title="AgsNote"><span class="type">AgsNote</span></a> *note</code></em>);</pre>
+<p>
+Check selection for note.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>notation</code></em> :</span></p></td>
+<td>the <a class="link" href="AgsNotation.html" title="AgsNotation"><span class="type">AgsNotation</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>note</code></em> :</span></p></td>
+<td>the <a class="link" href="AgsNote.html" title="AgsNote"><span class="type">AgsNote</span></a> to check for</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>
+<a href="../glib/glib-Standard-Macros.html#TRUE:CAPS"><code class="literal">TRUE</code></a> if selected</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-notation-new"></a><h3>ags_notation_new ()</h3>
+<pre class="programlisting"><a class="link" href="AgsNotation.html" title="AgsNotation"><span class="returnvalue">AgsNotation</span></a> *       ags_notation_new                    (<em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> audio_channel</code></em>);</pre>
+<p>
+Creates a <a class="link" href="AgsNotation.html" title="AgsNotation"><span class="type">AgsNotation</span></a>, assigned to <em class="parameter"><code>audio_channel</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>audio_channel</code></em> :</span></p></td>
+<td>the audio channel to be used</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new <a class="link" href="AgsNotation.html" title="AgsNotation"><span class="type">AgsNotation</span></a>
+</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-notation-remove-note-at-position"></a><h3>ags_notation_remove_note_at_position ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            ags_notation_remove_note_at_position
+                                                        (<em class="parameter"><code><a class="link" href="AgsNotation.html" title="AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> x</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> y</code></em>);</pre>
+<p>
+Removes one <a class="link" href="AgsNote.html" title="AgsNote"><span class="type">AgsNote</span></a> of notation.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>notation</code></em> :</span></p></td>
+<td>an <a class="link" href="AgsNotation.html" title="AgsNotation"><span class="type">AgsNotation</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>x</code></em> :</span></p></td>
+<td>offset</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>y</code></em> :</span></p></td>
+<td>note</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>
+<a href="../glib/glib-Standard-Macros.html#TRUE:CAPS"><code class="literal">TRUE</code></a> if successfully removed note.</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-notation-remove-point-from-selection"></a><h3>ags_notation_remove_point_from_selection ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_notation_remove_point_from_selection
+                                                        (<em class="parameter"><code><a class="link" href="AgsNotation.html" title="AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> x</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> y</code></em>);</pre>
+<p>
+Remove notes at position of selection.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>notation</code></em> :</span></p></td>
+<td>an <a class="link" href="AgsNotation.html" title="AgsNotation"><span class="type">AgsNotation</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>x</code></em> :</span></p></td>
+<td>offset</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>y</code></em> :</span></p></td>
+<td>tone</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-notation-remove-region-from-selection"></a><h3>ags_notation_remove_region_from_selection ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_notation_remove_region_from_selection
+                                                        (<em class="parameter"><code><a class="link" href="AgsNotation.html" title="AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> x0</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> y0</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> x1</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> y1</code></em>);</pre>
+<p>
+Remove notes within region of selection.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>notation</code></em> :</span></p></td>
+<td>an <a class="link" href="AgsNotation.html" title="AgsNotation"><span class="type">AgsNotation</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>x0</code></em> :</span></p></td>
+<td>start offset</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>y0</code></em> :</span></p></td>
+<td>start tone</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>x1</code></em> :</span></p></td>
+<td>end offset</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>y1</code></em> :</span></p></td>
+<td>end tone</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+</div>
+<div class="refsect1">
+<a name="AgsNotation.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="AgsNotation--current-notes"></a><h3>The <code class="literal">"current-notes"</code> property</h3>
+<pre class="programlisting">  "current-notes"            <a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a>              : Read / Write</pre>
+<p>The current notes for offset.</p>
+<p class="since">Since 0.4.0</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsNotation--next-notes"></a><h3>The <code class="literal">"next-notes"</code> property</h3>
+<pre class="programlisting">  "next-notes"               <a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a>              : Read / Write</pre>
+<p>The next notes for offset.</p>
+<p class="since">Since 0.4.0</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsNotation--port"></a><h3>The <code class="literal">"port"</code> property</h3>
+<pre class="programlisting">  "port"                     <a class="link" href="AgsPort.html" title="AgsPort"><span class="type">AgsPort</span></a>*              : Read / Write</pre>
+<p>The port of notation.</p>
+<p class="since">Since 0.4.0</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

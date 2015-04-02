@@ -1,0 +1,196 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>ags_matrix_callbacks</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer">
+<link rel="up" href="ch01.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td> </td>
+<td><a accesskey="u" href="ch01.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer</th>
+<td> </td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#ags-ags-matrix-callbacks.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#ags-ags-matrix-callbacks.description" class="shortcut">Description</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="ags-ags-matrix-callbacks"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="ags-ags-matrix-callbacks.top_of_page"></a>ags_matrix_callbacks</span></h2>
+<p>ags_matrix_callbacks</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="ags-ags-matrix-callbacks.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis"><span class="returnvalue">void</span>                <a href="ags-ags-matrix-callbacks.html#ags-matrix-adjustment-value-changed-callback">ags_matrix_adjustment_value_changed_callback</a>
+                                                        (<em class="parameter"><code><a href="../gtk3/GtkWidget.html"><span class="type">GtkWidget</span></a> *widget</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsMatrix.html#AgsMatrix"><span class="type">AgsMatrix</span></a> *matrix</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-ags-matrix-callbacks.html#ags-matrix-bpm-callback">ags_matrix_bpm_callback</a>             (<em class="parameter"><code><a href="../gtk3/GtkWidget.html"><span class="type">GtkWidget</span></a> *spin_button</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsMatrix.html#AgsMatrix"><span class="type">AgsMatrix</span></a> *matrix</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-ags-matrix-callbacks.html#ags-matrix-copy-pattern-cancel">ags_matrix_copy_pattern_cancel</a>      (<em class="parameter"><code><a href="ags-AgsRecall.html#AgsRecall"><span class="type">AgsRecall</span></a> *recall</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsMatrix.html#AgsMatrix"><span class="type">AgsMatrix</span></a> *matrix</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-ags-matrix-callbacks.html#ags-matrix-copy-pattern-done">ags_matrix_copy_pattern_done</a>        (<em class="parameter"><code><a href="ags-AgsRecall.html#AgsRecall"><span class="type">AgsRecall</span></a> *recall</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsMatrix.html#AgsMatrix"><span class="type">AgsMatrix</span></a> *matrix</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-ags-matrix-callbacks.html#ags-matrix-copy-pattern-loop">ags_matrix_copy_pattern_loop</a>        (<em class="parameter"><code><a href="ags-AgsRecall.html#AgsRecall"><span class="type">AgsRecall</span></a> *recall</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsMatrix.html#AgsMatrix"><span class="type">AgsMatrix</span></a> *matrix</code></em>);
+<a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            <a href="ags-ags-matrix-callbacks.html#ags-matrix-drawing-area-button-press-callback">ags_matrix_drawing_area_button_press_callback</a>
+                                                        (<em class="parameter"><code><a href="../gtk3/GtkWidget.html"><span class="type">GtkWidget</span></a> *widget</code></em>,
+                                                         <em class="parameter"><code><a href="../gdk3/gdk3-Event-Structures.html#GdkEventButton"><span class="type">GdkEventButton</span></a> *event</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsMatrix.html#AgsMatrix"><span class="type">AgsMatrix</span></a> *matrix</code></em>);
+<a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            <a href="ags-ags-matrix-callbacks.html#ags-matrix-drawing-area-expose-callback">ags_matrix_drawing_area_expose_callback</a>
+                                                        (<em class="parameter"><code><a href="../gtk3/GtkWidget.html"><span class="type">GtkWidget</span></a> *widget</code></em>,
+                                                         <em class="parameter"><code><a href="../gdk3/gdk3-Event-Structures.html#GdkEventExpose"><span class="type">GdkEventExpose</span></a> *event</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsMatrix.html#AgsMatrix"><span class="type">AgsMatrix</span></a> *matrix</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-ags-matrix-callbacks.html#ags-matrix-index-callback">ags_matrix_index_callback</a>           (<em class="parameter"><code><a href="../gtk3/GtkWidget.html"><span class="type">GtkWidget</span></a> *widget</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsMatrix.html#AgsMatrix"><span class="type">AgsMatrix</span></a> *matrix</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-ags-matrix-callbacks.html#ags-matrix-length-spin-callback">ags_matrix_length_spin_callback</a>     (<em class="parameter"><code><a href="../gtk3/GtkWidget.html"><span class="type">GtkWidget</span></a> *spin_button</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsMatrix.html#AgsMatrix"><span class="type">AgsMatrix</span></a> *matrix</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-ags-matrix-callbacks.html#ags-matrix-loop-button-callback">ags_matrix_loop_button_callback</a>     (<em class="parameter"><code><a href="../gtk3/GtkWidget.html"><span class="type">GtkWidget</span></a> *button</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsMatrix.html#AgsMatrix"><span class="type">AgsMatrix</span></a> *matrix</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-ags-matrix-callbacks.html#ags-matrix-parent-set-callback">ags_matrix_parent_set_callback</a>      (<em class="parameter"><code><a href="../gtk3/GtkWidget.html"><span class="type">GtkWidget</span></a> *widget</code></em>,
+                                                         <em class="parameter"><code><span class="type">GtkObject</span> *old_parent</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsMatrix.html#AgsMatrix"><span class="type">AgsMatrix</span></a> *matrix</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-ags-matrix-callbacks.html#ags-matrix-play-cancel">ags_matrix_play_cancel</a>              (<em class="parameter"><code><a href="ags-AgsRecall.html#AgsRecall"><span class="type">AgsRecall</span></a> *recall</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsMatrix.html#AgsMatrix"><span class="type">AgsMatrix</span></a> *matrix</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-ags-matrix-callbacks.html#ags-matrix-play-done">ags_matrix_play_done</a>                (<em class="parameter"><code><a href="ags-AgsRecall.html#AgsRecall"><span class="type">AgsRecall</span></a> *recall</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsMatrix.html#AgsMatrix"><span class="type">AgsMatrix</span></a> *matrix</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-ags-matrix-callbacks.html#ags-matrix-run-callback">ags_matrix_run_callback</a>             (<em class="parameter"><code><a href="../gtk3/GtkWidget.html"><span class="type">GtkWidget</span></a> *widget</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsMatrix.html#AgsMatrix"><span class="type">AgsMatrix</span></a> *matrix</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-ags-matrix-callbacks.html#ags-matrix-run-delay-done">ags_matrix_run_delay_done</a>           (<em class="parameter"><code><a href="ags-AgsRecall.html#AgsRecall"><span class="type">AgsRecall</span></a> *recall</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsMatrix.html#AgsMatrix"><span class="type">AgsMatrix</span></a> *matrix</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-ags-matrix-callbacks.html#ags-matrix-sequencer-count-callback">ags_matrix_sequencer_count_callback</a> (<em class="parameter"><code><a href="ags-AgsDelayAudioRun.html#AgsDelayAudioRun"><span class="type">AgsDelayAudioRun</span></a> *delay_audio_run</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> nth_run</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> delay</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> attack</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsMatrix.html#AgsMatrix"><span class="type">AgsMatrix</span></a> *matrix</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="ags-ags-matrix-callbacks.description"></a><h2>Description</h2>
+</div>
+<div class="refsect1">
+<a name="ags-ags-matrix-callbacks.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="ags-matrix-adjustment-value-changed-callback"></a><h3>ags_matrix_adjustment_value_changed_callback ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_matrix_adjustment_value_changed_callback
+                                                        (<em class="parameter"><code><a href="../gtk3/GtkWidget.html"><span class="type">GtkWidget</span></a> *widget</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsMatrix.html#AgsMatrix"><span class="type">AgsMatrix</span></a> *matrix</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-matrix-bpm-callback"></a><h3>ags_matrix_bpm_callback ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_matrix_bpm_callback             (<em class="parameter"><code><a href="../gtk3/GtkWidget.html"><span class="type">GtkWidget</span></a> *spin_button</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsMatrix.html#AgsMatrix"><span class="type">AgsMatrix</span></a> *matrix</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-matrix-copy-pattern-cancel"></a><h3>ags_matrix_copy_pattern_cancel ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_matrix_copy_pattern_cancel      (<em class="parameter"><code><a href="ags-AgsRecall.html#AgsRecall"><span class="type">AgsRecall</span></a> *recall</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsMatrix.html#AgsMatrix"><span class="type">AgsMatrix</span></a> *matrix</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-matrix-copy-pattern-done"></a><h3>ags_matrix_copy_pattern_done ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_matrix_copy_pattern_done        (<em class="parameter"><code><a href="ags-AgsRecall.html#AgsRecall"><span class="type">AgsRecall</span></a> *recall</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsMatrix.html#AgsMatrix"><span class="type">AgsMatrix</span></a> *matrix</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-matrix-copy-pattern-loop"></a><h3>ags_matrix_copy_pattern_loop ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_matrix_copy_pattern_loop        (<em class="parameter"><code><a href="ags-AgsRecall.html#AgsRecall"><span class="type">AgsRecall</span></a> *recall</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsMatrix.html#AgsMatrix"><span class="type">AgsMatrix</span></a> *matrix</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-matrix-drawing-area-button-press-callback"></a><h3>ags_matrix_drawing_area_button_press_callback ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            ags_matrix_drawing_area_button_press_callback
+                                                        (<em class="parameter"><code><a href="../gtk3/GtkWidget.html"><span class="type">GtkWidget</span></a> *widget</code></em>,
+                                                         <em class="parameter"><code><a href="../gdk3/gdk3-Event-Structures.html#GdkEventButton"><span class="type">GdkEventButton</span></a> *event</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsMatrix.html#AgsMatrix"><span class="type">AgsMatrix</span></a> *matrix</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-matrix-drawing-area-expose-callback"></a><h3>ags_matrix_drawing_area_expose_callback ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            ags_matrix_drawing_area_expose_callback
+                                                        (<em class="parameter"><code><a href="../gtk3/GtkWidget.html"><span class="type">GtkWidget</span></a> *widget</code></em>,
+                                                         <em class="parameter"><code><a href="../gdk3/gdk3-Event-Structures.html#GdkEventExpose"><span class="type">GdkEventExpose</span></a> *event</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsMatrix.html#AgsMatrix"><span class="type">AgsMatrix</span></a> *matrix</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-matrix-index-callback"></a><h3>ags_matrix_index_callback ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_matrix_index_callback           (<em class="parameter"><code><a href="../gtk3/GtkWidget.html"><span class="type">GtkWidget</span></a> *widget</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsMatrix.html#AgsMatrix"><span class="type">AgsMatrix</span></a> *matrix</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-matrix-length-spin-callback"></a><h3>ags_matrix_length_spin_callback ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_matrix_length_spin_callback     (<em class="parameter"><code><a href="../gtk3/GtkWidget.html"><span class="type">GtkWidget</span></a> *spin_button</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsMatrix.html#AgsMatrix"><span class="type">AgsMatrix</span></a> *matrix</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-matrix-loop-button-callback"></a><h3>ags_matrix_loop_button_callback ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_matrix_loop_button_callback     (<em class="parameter"><code><a href="../gtk3/GtkWidget.html"><span class="type">GtkWidget</span></a> *button</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsMatrix.html#AgsMatrix"><span class="type">AgsMatrix</span></a> *matrix</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-matrix-parent-set-callback"></a><h3>ags_matrix_parent_set_callback ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_matrix_parent_set_callback      (<em class="parameter"><code><a href="../gtk3/GtkWidget.html"><span class="type">GtkWidget</span></a> *widget</code></em>,
+                                                         <em class="parameter"><code><span class="type">GtkObject</span> *old_parent</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsMatrix.html#AgsMatrix"><span class="type">AgsMatrix</span></a> *matrix</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-matrix-play-cancel"></a><h3>ags_matrix_play_cancel ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_matrix_play_cancel              (<em class="parameter"><code><a href="ags-AgsRecall.html#AgsRecall"><span class="type">AgsRecall</span></a> *recall</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsMatrix.html#AgsMatrix"><span class="type">AgsMatrix</span></a> *matrix</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-matrix-play-done"></a><h3>ags_matrix_play_done ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_matrix_play_done                (<em class="parameter"><code><a href="ags-AgsRecall.html#AgsRecall"><span class="type">AgsRecall</span></a> *recall</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsMatrix.html#AgsMatrix"><span class="type">AgsMatrix</span></a> *matrix</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-matrix-run-callback"></a><h3>ags_matrix_run_callback ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_matrix_run_callback             (<em class="parameter"><code><a href="../gtk3/GtkWidget.html"><span class="type">GtkWidget</span></a> *widget</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsMatrix.html#AgsMatrix"><span class="type">AgsMatrix</span></a> *matrix</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-matrix-run-delay-done"></a><h3>ags_matrix_run_delay_done ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_matrix_run_delay_done           (<em class="parameter"><code><a href="ags-AgsRecall.html#AgsRecall"><span class="type">AgsRecall</span></a> *recall</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsMatrix.html#AgsMatrix"><span class="type">AgsMatrix</span></a> *matrix</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-matrix-sequencer-count-callback"></a><h3>ags_matrix_sequencer_count_callback ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_matrix_sequencer_count_callback (<em class="parameter"><code><a href="ags-AgsDelayAudioRun.html#AgsDelayAudioRun"><span class="type">AgsDelayAudioRun</span></a> *delay_audio_run</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> nth_run</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> delay</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> attack</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsMatrix.html#AgsMatrix"><span class="type">AgsMatrix</span></a> *matrix</code></em>);</pre>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

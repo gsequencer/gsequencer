@@ -1,0 +1,743 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsDevout</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="audio.html" title="Part VII. The audio layer">
+<link rel="prev" href="AgsConfig.html" title="AgsConfig">
+<link rel="next" href="AgsInput.html" title="AgsInput">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="AgsConfig.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="audio.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="AgsInput.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#AgsDevout.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#AgsDevout.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#AgsDevout.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#AgsDevout.implemented-interfaces" class="shortcut">Implemented Interfaces</a>
+                   | 
+                  <a href="#AgsDevout.properties" class="shortcut">Properties</a>
+                   | 
+                  <a href="#AgsDevout.signals" class="shortcut">Signals</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="AgsDevout"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="AgsDevout.top_of_page"></a>AgsDevout</span></h2>
+<p>AgsDevout — Outputting to soundcard</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="AgsDevout.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">
+#include &lt;ags/audio/ags_devout.h&gt;
+
+#define             <a class="link" href="AgsDevout.html#AGS-DEVOUT-DEFAULT-BPM:CAPS" title="AGS_DEVOUT_DEFAULT_BPM">AGS_DEVOUT_DEFAULT_BPM</a>
+#define             <a class="link" href="AgsDevout.html#AGS-DEVOUT-DEFAULT-BUFFER-SIZE:CAPS" title="AGS_DEVOUT_DEFAULT_BUFFER_SIZE">AGS_DEVOUT_DEFAULT_BUFFER_SIZE</a>
+#define             <a class="link" href="AgsDevout.html#AGS-DEVOUT-DEFAULT-DELAY:CAPS" title="AGS_DEVOUT_DEFAULT_DELAY">AGS_DEVOUT_DEFAULT_DELAY</a>
+#define             <a class="link" href="AgsDevout.html#AGS-DEVOUT-DEFAULT-FORMAT:CAPS" title="AGS_DEVOUT_DEFAULT_FORMAT">AGS_DEVOUT_DEFAULT_FORMAT</a>
+#define             <a class="link" href="AgsDevout.html#AGS-DEVOUT-DEFAULT-JIFFIE:CAPS" title="AGS_DEVOUT_DEFAULT_JIFFIE">AGS_DEVOUT_DEFAULT_JIFFIE</a>
+#define             <a class="link" href="AgsDevout.html#AGS-DEVOUT-DEFAULT-SAMPLERATE:CAPS" title="AGS_DEVOUT_DEFAULT_SAMPLERATE">AGS_DEVOUT_DEFAULT_SAMPLERATE</a>
+#define             <a class="link" href="AgsDevout.html#AGS-DEVOUT-DEFAULT-SCALE:CAPS" title="AGS_DEVOUT_DEFAULT_SCALE">AGS_DEVOUT_DEFAULT_SCALE</a>
+#define             <a class="link" href="AgsDevout.html#AGS-DEVOUT-DEFAULT-TACT:CAPS" title="AGS_DEVOUT_DEFAULT_TACT">AGS_DEVOUT_DEFAULT_TACT</a>
+#define             <a class="link" href="AgsDevout.html#AGS-DEVOUT-DEFAULT-TACTRATE:CAPS" title="AGS_DEVOUT_DEFAULT_TACTRATE">AGS_DEVOUT_DEFAULT_TACTRATE</a>
+#define             <a class="link" href="AgsDevout.html#AGS-DEVOUT-DEFAULT-TACT-JIFFIE:CAPS" title="AGS_DEVOUT_DEFAULT_TACT_JIFFIE">AGS_DEVOUT_DEFAULT_TACT_JIFFIE</a>
+#define             <a class="link" href="AgsDevout.html#AGS-DEVOUT-ERROR:CAPS" title="AGS_DEVOUT_ERROR">AGS_DEVOUT_ERROR</a>
+#define             <a class="link" href="AgsDevout.html#AGS-DEVOUT-PLAY:CAPS" title="AGS_DEVOUT_PLAY()">AGS_DEVOUT_PLAY</a>                     (ptr)
+#define             <a class="link" href="AgsDevout.html#AGS-DEVOUT-PLAY-DOMAIN:CAPS" title="AGS_DEVOUT_PLAY_DOMAIN()">AGS_DEVOUT_PLAY_DOMAIN</a>              (ptr)
+struct              <a class="link" href="AgsDevout.html#AgsDevout-struct" title="struct AgsDevout">AgsDevout</a>;
+struct              <a class="link" href="AgsDevout.html#AgsDevoutClass" title="struct AgsDevoutClass">AgsDevoutClass</a>;
+enum                <a class="link" href="AgsDevout.html#AgsDevoutError" title="enum AgsDevoutError">AgsDevoutError</a>;
+enum                <a class="link" href="AgsDevout.html#AgsDevoutFlags" title="enum AgsDevoutFlags">AgsDevoutFlags</a>;
+struct              <a class="link" href="AgsDevout.html#AgsDevoutPlay" title="struct AgsDevoutPlay">AgsDevoutPlay</a>;
+struct              <a class="link" href="AgsDevout.html#AgsDevoutPlayDomain" title="struct AgsDevoutPlayDomain">AgsDevoutPlayDomain</a>;
+enum                <a class="link" href="AgsDevout.html#AgsDevoutPlayFlags" title="enum AgsDevoutPlayFlags">AgsDevoutPlayFlags</a>;
+enum                <a class="link" href="AgsDevout.html#AgsDevoutResolutionMode" title="enum AgsDevoutResolutionMode">AgsDevoutResolutionMode</a>;
+<a href="../glib/glib-Quarks.html#GQuark"><span class="returnvalue">GQuark</span></a>              <a class="link" href="AgsDevout.html#ags-devout-error-quark" title="ags_devout_error_quark ()">ags_devout_error_quark</a>              ();
+<span class="returnvalue">void</span>                <a class="link" href="AgsDevout.html#ags-devout-list-cards" title="ags_devout_list_cards ()">ags_devout_list_cards</a>               (<em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> **card_id</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> **card_name</code></em>);
+<a class="link" href="AgsDevout.html" title="AgsDevout"><span class="returnvalue">AgsDevout</span></a> *         <a class="link" href="AgsDevout.html#ags-devout-new" title="ags_devout_new ()">ags_devout_new</a>                      (<em class="parameter"><code><a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a> *ags_main</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsDevout.html#ags-devout-note-offset-changed" title="ags_devout_note_offset_changed ()">ags_devout_note_offset_changed</a>      (<em class="parameter"><code><a class="link" href="AgsDevout.html" title="AgsDevout"><span class="type">AgsDevout</span></a> *devout</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> note_offset</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsDevout.html#ags-devout-pcm-info" title="ags_devout_pcm_info ()">ags_devout_pcm_info</a>                 (<em class="parameter"><code><span class="type">char</span> *card_id</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> *channels_min</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> *channels_max</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> *rate_min</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> *rate_max</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> *buffer_size_min</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> *buffer_size_max</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Error-Reporting.html#GError"><span class="type">GError</span></a> **error</code></em>);
+<a class="link" href="AgsDevout.html#AgsDevoutPlay" title="struct AgsDevoutPlay"><span class="returnvalue">AgsDevoutPlay</span></a> *     <a class="link" href="AgsDevout.html#ags-devout-play-alloc" title="ags_devout_play_alloc ()">ags_devout_play_alloc</a>               ();
+<a class="link" href="AgsDevout.html#AgsDevoutPlayDomain" title="struct AgsDevoutPlayDomain"><span class="returnvalue">AgsDevoutPlayDomain</span></a> * <a class="link" href="AgsDevout.html#ags-devout-play-domain-alloc" title="ags_devout_play_domain_alloc ()">ags_devout_play_domain_alloc</a>      ();
+<span class="returnvalue">void</span>                <a class="link" href="AgsDevout.html#ags-devout-play-domain-free" title="ags_devout_play_domain_free ()">ags_devout_play_domain_free</a>         (<em class="parameter"><code><a class="link" href="AgsDevout.html#AgsDevoutPlayDomain" title="struct AgsDevoutPlayDomain"><span class="type">AgsDevoutPlayDomain</span></a> *devout_play_domain</code></em>);
+<a class="link" href="AgsDevout.html#AgsDevoutPlay" title="struct AgsDevoutPlay"><span class="returnvalue">AgsDevoutPlay</span></a> *     <a class="link" href="AgsDevout.html#ags-devout-play-find-source" title="ags_devout_play_find_source ()">ags_devout_play_find_source</a>         (<em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> *devout_play</code></em>,
+                                                         <em class="parameter"><code><a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a> *source</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsDevout.html#ags-devout-play-free" title="ags_devout_play_free ()">ags_devout_play_free</a>                (<em class="parameter"><code><a class="link" href="AgsDevout.html#AgsDevoutPlay" title="struct AgsDevoutPlay"><span class="type">AgsDevoutPlay</span></a> *devout_play</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsDevout.html#ags-devout-tic" title="ags_devout_tic ()">ags_devout_tic</a>                      (<em class="parameter"><code><a class="link" href="AgsDevout.html" title="AgsDevout"><span class="type">AgsDevout</span></a> *devout</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsDevout.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  <a href="../gobject/gobject-The-Base-Object-Type.html#GObject">GObject</a>
+   +----AgsDevout
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsDevout.implemented-interfaces"></a><h2>Implemented Interfaces</h2>
+<p>
+AgsDevout implements
+ AgsConnectable.</p>
+</div>
+<div class="refsect1">
+<a name="AgsDevout.properties"></a><h2>Properties</h2>
+<pre class="synopsis">
+  "<a class="link" href="AgsDevout.html#AgsDevout--attack" title='The "attack" property'>attack</a>"                   <a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a>              : Read
+  "<a class="link" href="AgsDevout.html#AgsDevout--bits" title='The "bits" property'>bits</a>"                     <a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a>                 : Read / Write
+  "<a class="link" href="AgsDevout.html#AgsDevout--bpm" title='The "bpm" property'>bpm</a>"                      <a href="../glib/glib-Basic-Types.html#gdouble"><span class="type">gdouble</span></a>               : Read / Write
+  "<a class="link" href="AgsDevout.html#AgsDevout--buffer" title='The "buffer" property'>buffer</a>"                   <a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a>              : Read
+  "<a class="link" href="AgsDevout.html#AgsDevout--buffer-size" title='The "buffer-size" property'>buffer-size</a>"              <a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a>                 : Read / Write
+  "<a class="link" href="AgsDevout.html#AgsDevout--device" title='The "device" property'>device</a>"                   <a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a>*                : Read / Write
+  "<a class="link" href="AgsDevout.html#AgsDevout--dsp-channels" title='The "dsp-channels" property'>dsp-channels</a>"             <a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a>                 : Read / Write
+  "<a class="link" href="AgsDevout.html#AgsDevout--frequency" title='The "frequency" property'>frequency</a>"                <a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a>                 : Read / Write
+  "<a class="link" href="AgsDevout.html#AgsDevout--main" title='The "main" property'>main</a>"                     <a class="link" href="AgsMain.html" title="AgsMain"><span class="type">AgsMain</span></a>*              : Read / Write
+  "<a class="link" href="AgsDevout.html#AgsDevout--pcm-channels" title='The "pcm-channels" property'>pcm-channels</a>"             <a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a>                 : Read / Write
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsDevout.signals"></a><h2>Signals</h2>
+<pre class="synopsis">
+  "<a class="link" href="AgsDevout.html#AgsDevout-tic" title='The "tic" signal'>tic</a>"                                            : <a href="../gobject/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></a>
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsDevout.description"></a><h2>Description</h2>
+<p>
+<a class="link" href="AgsDevout.html" title="AgsDevout"><span class="type">AgsDevout</span></a> represents a soundcard and supports output.
+</p>
+</div>
+<div class="refsect1">
+<a name="AgsDevout.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AGS-DEVOUT-DEFAULT-BPM:CAPS"></a><h3>AGS_DEVOUT_DEFAULT_BPM</h3>
+<pre class="programlisting">#define AGS_DEVOUT_DEFAULT_BPM (120.0)
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-DEVOUT-DEFAULT-BUFFER-SIZE:CAPS"></a><h3>AGS_DEVOUT_DEFAULT_BUFFER_SIZE</h3>
+<pre class="programlisting">#define AGS_DEVOUT_DEFAULT_BUFFER_SIZE (944)
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-DEVOUT-DEFAULT-DELAY:CAPS"></a><h3>AGS_DEVOUT_DEFAULT_DELAY</h3>
+<pre class="programlisting">#define AGS_DEVOUT_DEFAULT_DELAY (AGS_DEVOUT_DEFAULT_JIFFIE * (60.0 / AGS_DEVOUT_DEFAULT_BPM))
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-DEVOUT-DEFAULT-FORMAT:CAPS"></a><h3>AGS_DEVOUT_DEFAULT_FORMAT</h3>
+<pre class="programlisting">#define AGS_DEVOUT_DEFAULT_FORMAT (16)
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-DEVOUT-DEFAULT-JIFFIE:CAPS"></a><h3>AGS_DEVOUT_DEFAULT_JIFFIE</h3>
+<pre class="programlisting">#define AGS_DEVOUT_DEFAULT_JIFFIE ((double) AGS_DEVOUT_DEFAULT_SAMPLERATE / (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE)
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-DEVOUT-DEFAULT-SAMPLERATE:CAPS"></a><h3>AGS_DEVOUT_DEFAULT_SAMPLERATE</h3>
+<pre class="programlisting">#define AGS_DEVOUT_DEFAULT_SAMPLERATE (44100.0)
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-DEVOUT-DEFAULT-SCALE:CAPS"></a><h3>AGS_DEVOUT_DEFAULT_SCALE</h3>
+<pre class="programlisting">#define AGS_DEVOUT_DEFAULT_SCALE (1.0)
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-DEVOUT-DEFAULT-TACT:CAPS"></a><h3>AGS_DEVOUT_DEFAULT_TACT</h3>
+<pre class="programlisting">#define AGS_DEVOUT_DEFAULT_TACT (1.0 / 1.0)
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-DEVOUT-DEFAULT-TACTRATE:CAPS"></a><h3>AGS_DEVOUT_DEFAULT_TACTRATE</h3>
+<pre class="programlisting">#define AGS_DEVOUT_DEFAULT_TACTRATE (1.0 / AGS_DEVOUT_DEFAULT_TACT_JIFFIE)
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-DEVOUT-DEFAULT-TACT-JIFFIE:CAPS"></a><h3>AGS_DEVOUT_DEFAULT_TACT_JIFFIE</h3>
+<pre class="programlisting">#define AGS_DEVOUT_DEFAULT_TACT_JIFFIE (60.0 / AGS_DEVOUT_DEFAULT_BPM * AGS_DEVOUT_DEFAULT_TACT)
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-DEVOUT-ERROR:CAPS"></a><h3>AGS_DEVOUT_ERROR</h3>
+<pre class="programlisting">#define AGS_DEVOUT_ERROR (ags_devout_error_quark())
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-DEVOUT-PLAY:CAPS"></a><h3>AGS_DEVOUT_PLAY()</h3>
+<pre class="programlisting">#define AGS_DEVOUT_PLAY(ptr)           ((AgsDevoutPlay *)(ptr))
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-DEVOUT-PLAY-DOMAIN:CAPS"></a><h3>AGS_DEVOUT_PLAY_DOMAIN()</h3>
+<pre class="programlisting">#define AGS_DEVOUT_PLAY_DOMAIN(ptr)    ((AgsDevoutPlayDomain *)(ptr))
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsDevout-struct"></a><h3>struct AgsDevout</h3>
+<pre class="programlisting">struct AgsDevout;</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsDevoutClass"></a><h3>struct AgsDevoutClass</h3>
+<pre class="programlisting">struct AgsDevoutClass {
+  GObjectClass object;
+
+  void (*play_init)(AgsDevout *devout,
+		    GError **error);
+  void (*play)(AgsDevout *devout,
+	       GError **error);
+  void (*stop)(AgsDevout *devout);
+
+  void (*tic)(AgsDevout *devout);
+
+  void (*note_offset_changed)(AgsDevout *devout, guint note_offset);
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsDevoutError"></a><h3>enum AgsDevoutError</h3>
+<pre class="programlisting">typedef enum {
+  AGS_DEVOUT_ERROR_LOCKED_SOUNDCARD,
+} AgsDevoutError;
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsDevoutFlags"></a><h3>enum AgsDevoutFlags</h3>
+<pre class="programlisting">typedef enum {
+  AGS_DEVOUT_BUFFER0                        = 1,
+  AGS_DEVOUT_BUFFER1                        = 1 &lt;&lt; 1,
+  AGS_DEVOUT_BUFFER2                        = 1 &lt;&lt; 2,
+  AGS_DEVOUT_BUFFER3                        = 1 &lt;&lt; 3,
+
+  AGS_DEVOUT_ATTACK_FIRST                   = 1 &lt;&lt; 4,
+
+  AGS_DEVOUT_PLAY                           = 1 &lt;&lt; 5,
+
+  AGS_DEVOUT_LIBAO                          = 1 &lt;&lt; 6,
+  AGS_DEVOUT_OSS                            = 1 &lt;&lt; 7,
+  AGS_DEVOUT_ALSA                           = 1 &lt;&lt; 8,
+
+  AGS_DEVOUT_SHUTDOWN                       = 1 &lt;&lt; 9,
+  AGS_DEVOUT_START_PLAY                     = 1 &lt;&lt; 10,
+
+  AGS_DEVOUT_NONBLOCKING                    = 1 &lt;&lt; 11,
+
+  AGS_DEVOUT_TIMING_SET_0                   = 1 &lt;&lt; 12,
+  AGS_DEVOUT_TIMING_SET_1                   = 1 &lt;&lt; 13,
+} AgsDevoutFlags;
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsDevoutPlay"></a><h3>struct AgsDevoutPlay</h3>
+<pre class="programlisting">struct AgsDevoutPlay {
+  guint flags;
+
+  AgsIteratorThread **iterator_thread;
+
+  GObject *source;
+  guint audio_channel;
+
+  AgsRecallID **recall_id;
+};
+</pre>
+<p>
+A <span class="type">AgsDevoutPlay</span> represents the play/recall in <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> or <a class="link" href="AgsRecall.html" title="AgsRecall"><span class="type">AgsRecall</span></a>
+scope to do output to device.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> <em class="structfield"><code><a name="AgsDevoutPlay.flags"></a>flags</code></em>;</span></p></td>
+<td>the internal state</td>
+</tr>
+<tr>
+<td><p><span class="term"><a class="link" href="AgsIteratorThread.html" title="AgsIteratorThread"><span class="type">AgsIteratorThread</span></a> **<em class="structfield"><code><a name="AgsDevoutPlay.iterator-thread"></a>iterator_thread</code></em>;</span></p></td>
+<td>Super-threaded related <a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a>. Index 0 playback, 1 sequencer and 2 notation.</td>
+</tr>
+<tr>
+<td><p><span class="term"><a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a> *<em class="structfield"><code><a name="AgsDevoutPlay.source"></a>source</code></em>;</span></p></td>
+<td>either <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> or <a class="link" href="AgsRecall.html" title="AgsRecall"><span class="type">AgsRecall</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> <em class="structfield"><code><a name="AgsDevoutPlay.audio-channel"></a>audio_channel</code></em>;</span></p></td>
+<td>destination audio channel</td>
+</tr>
+<tr>
+<td><p><span class="term"><a class="link" href="AgsRecallID.html" title="AgsRecallID"><span class="type">AgsRecallID</span></a> **<em class="structfield"><code><a name="AgsDevoutPlay.recall-id"></a>recall_id</code></em>;</span></p></td>
+<td>array pointing to appropriate <a class="link" href="AgsRecallID.html" title="AgsRecallID"><span class="type">AgsRecallID</span></a>. Index 0 playback, 1 sequencer and 2 notation.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsDevoutPlayDomain"></a><h3>struct AgsDevoutPlayDomain</h3>
+<pre class="programlisting">struct AgsDevoutPlayDomain {
+  GObject *domain;
+  
+  gboolean playback;
+  gboolean sequencer;
+  gboolean notation;
+
+  GList *devout_play;
+};
+</pre>
+<p>
+A <span class="type">AgsDevoutPlayDomain</span> represents the entire possible play/recall
+context.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a> *<em class="structfield"><code><a name="AgsDevoutPlayDomain.domain"></a>domain</code></em>;</span></p></td>
+<td>the source</td>
+</tr>
+<tr>
+<td><p><span class="term"><a href="../glib/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a> <em class="structfield"><code><a name="AgsDevoutPlayDomain.playback"></a>playback</code></em>;</span></p></td>
+<td>if <a href="../glib/glib-Standard-Macros.html#TRUE:CAPS"><code class="literal">TRUE</code></a> playback is on</td>
+</tr>
+<tr>
+<td><p><span class="term"><a href="../glib/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a> <em class="structfield"><code><a name="AgsDevoutPlayDomain.sequencer"></a>sequencer</code></em>;</span></p></td>
+<td>if <a href="../glib/glib-Standard-Macros.html#TRUE:CAPS"><code class="literal">TRUE</code></a> sequencer is on</td>
+</tr>
+<tr>
+<td><p><span class="term"><a href="../glib/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a> <em class="structfield"><code><a name="AgsDevoutPlayDomain.notation"></a>notation</code></em>;</span></p></td>
+<td>if <a href="../glib/glib-Standard-Macros.html#TRUE:CAPS"><code class="literal">TRUE</code></a> notation is on</td>
+</tr>
+<tr>
+<td><p><span class="term"><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> *<em class="structfield"><code><a name="AgsDevoutPlayDomain.devout-play"></a>devout_play</code></em>;</span></p></td>
+<td>a <a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> of <span class="type">AgsDevoutPlay</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsDevoutPlayFlags"></a><h3>enum AgsDevoutPlayFlags</h3>
+<pre class="programlisting">typedef enum {
+  AGS_DEVOUT_PLAY_DONE              = 1,
+  AGS_DEVOUT_PLAY_REMOVE            = 1 &lt;&lt;  1,
+  AGS_DEVOUT_PLAY_CHANNEL           = 1 &lt;&lt;  2,
+  AGS_DEVOUT_PLAY_PAD               = 1 &lt;&lt;  3,
+  AGS_DEVOUT_PLAY_AUDIO             = 1 &lt;&lt;  4,
+  AGS_DEVOUT_PLAY_PLAYBACK          = 1 &lt;&lt;  5,
+  AGS_DEVOUT_PLAY_SEQUENCER         = 1 &lt;&lt;  6,
+  AGS_DEVOUT_PLAY_NOTATION          = 1 &lt;&lt;  7,
+  AGS_DEVOUT_PLAY_SUPER_THREADED    = 1 &lt;&lt;  8,
+} AgsDevoutPlayFlags;
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsDevoutResolutionMode"></a><h3>enum AgsDevoutResolutionMode</h3>
+<pre class="programlisting">typedef enum {
+  AGS_DEVOUT_RESOLUTION_8_BIT    = 8,
+  AGS_DEVOUT_RESOLUTION_16_BIT   = 16,
+  AGS_DEVOUT_RESOLUTION_24_BIT   = 24,
+  AGS_DEVOUT_RESOLUTION_32_BIT   = 32,
+  AGS_DEVOUT_RESOLUTION_64_BIT   = 64,
+} AgsDevoutResolutionMode;
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-devout-error-quark"></a><h3>ags_devout_error_quark ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Quarks.html#GQuark"><span class="returnvalue">GQuark</span></a>              ags_devout_error_quark              ();</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-devout-list-cards"></a><h3>ags_devout_list_cards ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_devout_list_cards               (<em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> **card_id</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> **card_name</code></em>);</pre>
+<p>
+List available soundcards.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>card_id</code></em> :</span></p></td>
+<td>alsa identifier</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>card_name</code></em> :</span></p></td>
+<td>card name</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-devout-new"></a><h3>ags_devout_new ()</h3>
+<pre class="programlisting"><a class="link" href="AgsDevout.html" title="AgsDevout"><span class="returnvalue">AgsDevout</span></a> *         ags_devout_new                      (<em class="parameter"><code><a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a> *ags_main</code></em>);</pre>
+<p>
+Creates an <a class="link" href="AgsDevout.html" title="AgsDevout"><span class="type">AgsDevout</span></a>, refering to <em class="parameter"><code>ags_main</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>ags_main</code></em> :</span></p></td>
+<td>the <a class="link" href="AgsMain.html" title="AgsMain"><span class="type">AgsMain</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new <a class="link" href="AgsDevout.html" title="AgsDevout"><span class="type">AgsDevout</span></a>
+</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.3</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-devout-note-offset-changed"></a><h3>ags_devout_note_offset_changed ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_devout_note_offset_changed      (<em class="parameter"><code><a class="link" href="AgsDevout.html" title="AgsDevout"><span class="type">AgsDevout</span></a> *devout</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> note_offset</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-devout-pcm-info"></a><h3>ags_devout_pcm_info ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_devout_pcm_info                 (<em class="parameter"><code><span class="type">char</span> *card_id</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> *channels_min</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> *channels_max</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> *rate_min</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> *rate_max</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> *buffer_size_min</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> *buffer_size_max</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Error-Reporting.html#GError"><span class="type">GError</span></a> **error</code></em>);</pre>
+<p>
+List soundcard settings.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>card_id</code></em> :</span></p></td>
+<td>alsa identifier</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>channels_min</code></em> :</span></p></td>
+<td>minimum channels supported</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>channels_max</code></em> :</span></p></td>
+<td>maximum channels supported</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>rate_min</code></em> :</span></p></td>
+<td>minimum samplerate supported</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>rate_max</code></em> :</span></p></td>
+<td>maximum samplerate supported</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>buffer_size_min</code></em> :</span></p></td>
+<td>minimum buffer size supported
+<em class="parameter"><code>buffer_size_max</code></em> maximum buffer size supported</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>error</code></em> :</span></p></td>
+<td>on success <a href="../glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a>
+</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-devout-play-alloc"></a><h3>ags_devout_play_alloc ()</h3>
+<pre class="programlisting"><a class="link" href="AgsDevout.html#AgsDevoutPlay" title="struct AgsDevoutPlay"><span class="returnvalue">AgsDevoutPlay</span></a> *     ags_devout_play_alloc               ();</pre>
+<p>
+Allocs an <a class="link" href="AgsDevout.html#AgsDevoutPlay" title="struct AgsDevoutPlay"><span class="type">AgsDevoutPlay</span></a>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the devout play</td>
+</tr></tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-devout-play-domain-alloc"></a><h3>ags_devout_play_domain_alloc ()</h3>
+<pre class="programlisting"><a class="link" href="AgsDevout.html#AgsDevoutPlayDomain" title="struct AgsDevoutPlayDomain"><span class="returnvalue">AgsDevoutPlayDomain</span></a> * ags_devout_play_domain_alloc      ();</pre>
+<p>
+Allocs an <a class="link" href="AgsDevout.html#AgsDevoutPlayDomain" title="struct AgsDevoutPlayDomain"><span class="type">AgsDevoutPlayDomain</span></a>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the devout play domain</td>
+</tr></tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-devout-play-domain-free"></a><h3>ags_devout_play_domain_free ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_devout_play_domain_free         (<em class="parameter"><code><a class="link" href="AgsDevout.html#AgsDevoutPlayDomain" title="struct AgsDevoutPlayDomain"><span class="type">AgsDevoutPlayDomain</span></a> *devout_play_domain</code></em>);</pre>
+<p>
+Frees an <a class="link" href="AgsDevout.html#AgsDevoutPlayDomain" title="struct AgsDevoutPlayDomain"><span class="type">AgsDevoutPlayDomain</span></a>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><em class="parameter"><code>devout_play_domain</code></em> :</span></p></td>
+<td>the devout play domain</td>
+</tr></tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-devout-play-find-source"></a><h3>ags_devout_play_find_source ()</h3>
+<pre class="programlisting"><a class="link" href="AgsDevout.html#AgsDevoutPlay" title="struct AgsDevoutPlay"><span class="returnvalue">AgsDevoutPlay</span></a> *     ags_devout_play_find_source         (<em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> *devout_play</code></em>,
+                                                         <em class="parameter"><code><a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a> *source</code></em>);</pre>
+<p>
+Find source
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>devout_play</code></em> :</span></p></td>
+<td>a <a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> containing <span class="type">AgsDevoutPlay</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the matching devout play</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-devout-play-free"></a><h3>ags_devout_play_free ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_devout_play_free                (<em class="parameter"><code><a class="link" href="AgsDevout.html#AgsDevoutPlay" title="struct AgsDevoutPlay"><span class="type">AgsDevoutPlay</span></a> *devout_play</code></em>);</pre>
+<p>
+Frees an <a class="link" href="AgsDevout.html#AgsDevoutPlay" title="struct AgsDevoutPlay"><span class="type">AgsDevoutPlay</span></a>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><em class="parameter"><code>devout_play</code></em> :</span></p></td>
+<td>the devout play</td>
+</tr></tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-devout-tic"></a><h3>ags_devout_tic ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_devout_tic                      (<em class="parameter"><code><a class="link" href="AgsDevout.html" title="AgsDevout"><span class="type">AgsDevout</span></a> *devout</code></em>);</pre>
+<p>
+The tic of devout.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><em class="parameter"><code>devout</code></em> :</span></p></td>
+<td>an <a class="link" href="AgsDevout.html" title="AgsDevout"><span class="type">AgsDevout</span></a>
+</td>
+</tr></tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+</div>
+<div class="refsect1">
+<a name="AgsDevout.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="AgsDevout--attack"></a><h3>The <code class="literal">"attack"</code> property</h3>
+<pre class="programlisting">  "attack"                   <a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a>              : Read</pre>
+<p>The attack to use for the buffer.</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsDevout--bits"></a><h3>The <code class="literal">"bits"</code> property</h3>
+<pre class="programlisting">  "bits"                     <a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a>                 : Read / Write</pre>
+<p>The precision to use for a frame.</p>
+<p>Allowed values: [1,64]</p>
+<p>Default value: 16</p>
+<p class="since">Since 0.4.0</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsDevout--bpm"></a><h3>The <code class="literal">"bpm"</code> property</h3>
+<pre class="programlisting">  "bpm"                      <a href="../glib/glib-Basic-Types.html#gdouble"><span class="type">gdouble</span></a>               : Read / Write</pre>
+<p>Beats per minute to use.</p>
+<p>Allowed values: [1,240]</p>
+<p>Default value: 120</p>
+<p class="since">Since 0.4.0</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsDevout--buffer"></a><h3>The <code class="literal">"buffer"</code> property</h3>
+<pre class="programlisting">  "buffer"                   <a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a>              : Read</pre>
+<p>The buffer to play.</p>
+<p class="since">Since 0.4.0</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsDevout--buffer-size"></a><h3>The <code class="literal">"buffer-size"</code> property</h3>
+<pre class="programlisting">  "buffer-size"              <a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a>                 : Read / Write</pre>
+<p>The count of frames a buffer contains.</p>
+<p>Allowed values: [1,44100]</p>
+<p>Default value: 940</p>
+<p class="since">Since 0.4.0</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsDevout--device"></a><h3>The <code class="literal">"device"</code> property</h3>
+<pre class="programlisting">  "device"                   <a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a>*                : Read / Write</pre>
+<p>The device to perform output to.</p>
+<p>Default value: "hw:0"</p>
+<p class="since">Since 0.4.0</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsDevout--dsp-channels"></a><h3>The <code class="literal">"dsp-channels"</code> property</h3>
+<pre class="programlisting">  "dsp-channels"             <a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a>                 : Read / Write</pre>
+<p>The count of DSP channels to use.</p>
+<p>Allowed values: [1,64]</p>
+<p>Default value: 2</p>
+<p class="since">Since 0.4.0</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsDevout--frequency"></a><h3>The <code class="literal">"frequency"</code> property</h3>
+<pre class="programlisting">  "frequency"                <a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a>                 : Read / Write</pre>
+<p>The frames count played during a second.</p>
+<p>Allowed values: [8000,96000]</p>
+<p>Default value: 44100</p>
+<p class="since">Since 0.4.0</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsDevout--main"></a><h3>The <code class="literal">"main"</code> property</h3>
+<pre class="programlisting">  "main"                     <a class="link" href="AgsMain.html" title="AgsMain"><span class="type">AgsMain</span></a>*              : Read / Write</pre>
+<p>The main object.</p>
+<p class="since">Since 0.4.0</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsDevout--pcm-channels"></a><h3>The <code class="literal">"pcm-channels"</code> property</h3>
+<pre class="programlisting">  "pcm-channels"             <a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a>                 : Read / Write</pre>
+<p>The count of PCM channels to use.</p>
+<p>Allowed values: [1,64]</p>
+<p>Default value: 2</p>
+<p class="since">Since 0.4.0</p>
+</div>
+</div>
+<div class="refsect1">
+<a name="AgsDevout.signal-details"></a><h2>Signal Details</h2>
+<div class="refsect2">
+<a name="AgsDevout-tic"></a><h3>The <code class="literal">"tic"</code> signal</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                user_function                      (<a class="link" href="AgsDevout.html" title="AgsDevout"><span class="type">AgsDevout</span></a> *devout,
+                                                        <a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a>   user_data)      : <a href="../gobject/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></a></pre>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

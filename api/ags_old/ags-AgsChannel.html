@@ -1,0 +1,542 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsChannel</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="process-tree.html" title="audio processing tree">
+<link rel="prev" href="ags-AgsAudioSignal.html" title="AgsAudioSignal">
+<link rel="next" href="ags-AgsConfig.html" title="AgsConfig">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="ags-AgsAudioSignal.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="process-tree.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="ags-AgsConfig.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#ags-AgsChannel.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#ags-AgsChannel.description" class="shortcut">Description</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="ags-AgsChannel"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="ags-AgsChannel.top_of_page"></a>AgsChannel</span></h2>
+<p>AgsChannel</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="ags-AgsChannel.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">#define             <a class="link" href="ags-AgsChannel.html#AGS-CHANNEL-ERROR:CAPS" title="AGS_CHANNEL_ERROR">AGS_CHANNEL_ERROR</a>
+struct              <a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel">AgsChannel</a>;
+struct              <a class="link" href="ags-AgsChannel.html#AgsChannelClass" title="struct AgsChannelClass">AgsChannelClass</a>;
+enum                <a class="link" href="ags-AgsChannel.html#AgsChannelError" title="enum AgsChannelError">AgsChannelError</a>;
+enum                <a class="link" href="ags-AgsChannel.html#AgsChannelFlags" title="enum AgsChannelFlags">AgsChannelFlags</a>;
+enum                <a class="link" href="ags-AgsChannel.html#AgsChannelRecallIDMode" title="enum AgsChannelRecallIDMode">AgsChannelRecallIDMode</a>;
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsChannel.html#ags-channel-add-recall" title="ags_channel_add_recall ()">ags_channel_add_recall</a>              (<em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *recall</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gboolean"><span class="type">gboolean</span></GTKDOCLINK> play</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsChannel.html#ags-channel-add-recall-container" title="ags_channel_add_recall_container ()">ags_channel_add_recall_container</a>    (<em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *recall_container</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsChannel.html#ags-channel-add-recall-id" title="ags_channel_add_recall_id ()">ags_channel_add_recall_id</a>           (<em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsRecallID.html#AgsRecallID" title="struct AgsRecallID"><span class="type">AgsRecallID</span></a> *recall_id</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsChannel.html#ags-channel-cancel" title="ags_channel_cancel ()">ags_channel_cancel</a>                  (<em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsRecallID.html#AgsRecallID" title="struct AgsRecallID"><span class="type">AgsRecallID</span></a> *recall_id</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsChannel.html#ags-channel-done" title="ags_channel_done ()">ags_channel_done</a>                    (<em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsRecallID.html#AgsRecallID" title="struct AgsRecallID"><span class="type">AgsRecallID</span></a> *recall_id</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsChannel.html#ags-channel-duplicate-recall" title="ags_channel_duplicate_recall ()">ags_channel_duplicate_recall</a>        (<em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsRecallID.html#AgsRecallID" title="struct AgsRecallID"><span class="type">AgsRecallID</span></a> *recall_id</code></em>);
+<GTKDOCLINK HREF="GQuark"><span class="returnvalue">GQuark</span></GTKDOCLINK>              <a class="link" href="ags-AgsChannel.html#ags-channel-error-quark" title="ags_channel_error_quark ()">ags_channel_error_quark</a>             ();
+<a class="link" href="ags-AgsRecall.html#AgsRecall" title="struct AgsRecall"><span class="returnvalue">AgsRecall</span></a> *         <a class="link" href="ags-AgsChannel.html#ags-channel-find-recall" title="ags_channel_find_recall ()">ags_channel_find_recall</a>             (<em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="char"><span class="type">char</span></GTKDOCLINK> *effect</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="char"><span class="type">char</span></GTKDOCLINK> *name</code></em>);
+<a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="returnvalue">AgsChannel</span></a> *        <a class="link" href="ags-AgsChannel.html#ags-channel-first" title="ags_channel_first ()">ags_channel_first</a>                   (<em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>);
+<a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="returnvalue">AgsChannel</span></a> *        <a class="link" href="ags-AgsChannel.html#ags-channel-first-with-recycling" title="ags_channel_first_with_recycling ()">ags_channel_first_with_recycling</a>    (<em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsChannel.html#ags-channel-init-recall" title="ags_channel_init_recall ()">ags_channel_init_recall</a>             (<em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gint"><span class="type">gint</span></GTKDOCLINK> stage</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsRecallID.html#AgsRecallID" title="struct AgsRecallID"><span class="type">AgsRecallID</span></a> *recall_id</code></em>);
+<a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="returnvalue">AgsChannel</span></a> *        <a class="link" href="ags-AgsChannel.html#ags-channel-last" title="ags_channel_last ()">ags_channel_last</a>                    (<em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>);
+<a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="returnvalue">AgsChannel</span></a> *        <a class="link" href="ags-AgsChannel.html#ags-channel-last-with-recycling" title="ags_channel_last_with_recycling ()">ags_channel_last_with_recycling</a>     (<em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>);
+<a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="returnvalue">AgsChannel</span></a> *        <a class="link" href="ags-AgsChannel.html#ags-channel-new" title="ags_channel_new ()">ags_channel_new</a>                     (<em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *audio</code></em>);
+<a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="returnvalue">AgsChannel</span></a> *        <a class="link" href="ags-AgsChannel.html#ags-channel-nth" title="ags_channel_nth ()">ags_channel_nth</a>                     (<em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> nth</code></em>);
+<a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="returnvalue">AgsChannel</span></a> *        <a class="link" href="ags-AgsChannel.html#ags-channel-pad-first" title="ags_channel_pad_first ()">ags_channel_pad_first</a>               (<em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>);
+<a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="returnvalue">AgsChannel</span></a> *        <a class="link" href="ags-AgsChannel.html#ags-channel-pad-last" title="ags_channel_pad_last ()">ags_channel_pad_last</a>                (<em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>);
+<a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="returnvalue">AgsChannel</span></a> *        <a class="link" href="ags-AgsChannel.html#ags-channel-pad-nth" title="ags_channel_pad_nth ()">ags_channel_pad_nth</a>                 (<em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> nth</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsChannel.html#ags-channel-play" title="ags_channel_play ()">ags_channel_play</a>                    (<em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsRecallID.html#AgsRecallID" title="struct AgsRecallID"><span class="type">AgsRecallID</span></a> *recall_id</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gint"><span class="type">gint</span></GTKDOCLINK> stage</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsChannel.html#ags-channel-recall-id-set" title="ags_channel_recall_id_set ()">ags_channel_recall_id_set</a>           (<em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *output</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsRecallID.html#AgsRecallID" title="struct AgsRecallID"><span class="type">AgsRecallID</span></a> *recall_id</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gboolean"><span class="type">gboolean</span></GTKDOCLINK> ommit_own_channel</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> mode</code></em>,
+                                                         <em class="parameter"><code>...</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsChannel.html#ags-channel-recursive-play" title="ags_channel_recursive_play ()">ags_channel_recursive_play</a>          (<em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsRecallID.html#AgsRecallID" title="struct AgsRecallID"><span class="type">AgsRecallID</span></a> *recall_id</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gint"><span class="type">gint</span></GTKDOCLINK> stage</code></em>);
+<a class="link" href="ags-AgsRecallID.html#AgsRecallID" title="struct AgsRecallID"><span class="returnvalue">AgsRecallID</span></a> *       <a class="link" href="ags-AgsChannel.html#ags-channel-recursive-play-init" title="ags_channel_recursive_play_init ()">ags_channel_recursive_play_init</a>     (<em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gint"><span class="type">gint</span></GTKDOCLINK> stage</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gboolean"><span class="type">gboolean</span></GTKDOCLINK> arrange_recall_id</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gboolean"><span class="type">gboolean</span></GTKDOCLINK> duplicate_templates</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gboolean"><span class="type">gboolean</span></GTKDOCLINK> playback</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gboolean"><span class="type">gboolean</span></GTKDOCLINK> sequencer</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gboolean"><span class="type">gboolean</span></GTKDOCLINK> notation</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gboolean"><span class="type">gboolean</span></GTKDOCLINK> resolve_dependencies</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsRecallID.html#AgsRecallID" title="struct AgsRecallID"><span class="type">AgsRecallID</span></a> *recall_id</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsChannel.html#ags-channel-recursive-play-threaded" title="ags_channel_recursive_play_threaded ()">ags_channel_recursive_play_threaded</a> (<em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsRecallID.html#AgsRecallID" title="struct AgsRecallID"><span class="type">AgsRecallID</span></a> *recall_id</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gint"><span class="type">gint</span></GTKDOCLINK> stage</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsChannel.html#ags-channel-recursive-reset-recall-ids" title="ags_channel_recursive_reset_recall_ids ()">ags_channel_recursive_reset_recall_ids</a>
+                                                        (<em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *link</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *old_channel_link</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *old_link_link</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsChannel.html#ags-channel-recycling-changed" title="ags_channel_recycling_changed ()">ags_channel_recycling_changed</a>       (<em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsRecycling.html#AgsRecycling" title="struct AgsRecycling"><span class="type">AgsRecycling</span></a> *old_start_region</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsRecycling.html#AgsRecycling" title="struct AgsRecycling"><span class="type">AgsRecycling</span></a> *old_end_region</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsRecycling.html#AgsRecycling" title="struct AgsRecycling"><span class="type">AgsRecycling</span></a> *new_start_region</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsRecycling.html#AgsRecycling" title="struct AgsRecycling"><span class="type">AgsRecycling</span></a> *new_end_region</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsRecycling.html#AgsRecycling" title="struct AgsRecycling"><span class="type">AgsRecycling</span></a> *old_start_changed_region</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsRecycling.html#AgsRecycling" title="struct AgsRecycling"><span class="type">AgsRecycling</span></a> *old_end_changed_region</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsRecycling.html#AgsRecycling" title="struct AgsRecycling"><span class="type">AgsRecycling</span></a> *new_start_changed_region</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsRecycling.html#AgsRecycling" title="struct AgsRecycling"><span class="type">AgsRecycling</span></a> *new_end_changed_region</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsChannel.html#ags-channel-remove-recall" title="ags_channel_remove_recall ()">ags_channel_remove_recall</a>           (<em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *recall</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gboolean"><span class="type">gboolean</span></GTKDOCLINK> play</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsChannel.html#ags-channel-remove-recall-id" title="ags_channel_remove_recall_id ()">ags_channel_remove_recall_id</a>        (<em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsRecallID.html#AgsRecallID" title="struct AgsRecallID"><span class="type">AgsRecallID</span></a> *recall_id</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsChannel.html#ags-channel-resolve-recall" title="ags_channel_resolve_recall ()">ags_channel_resolve_recall</a>          (<em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsRecallID.html#AgsRecallID" title="struct AgsRecallID"><span class="type">AgsRecallID</span></a> *recall_id</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsChannel.html#ags-channel-safe-resize-audio-signal" title="ags_channel_safe_resize_audio_signal ()">ags_channel_safe_resize_audio_signal</a>
+                                                        (<em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> size</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsChannel.html#ags-channel-set-devout" title="ags_channel_set_devout ()">ags_channel_set_devout</a>              (<em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *devout</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsChannel.html#ags-channel-set-link" title="ags_channel_set_link ()">ags_channel_set_link</a>                (<em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *link</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GError"><span class="type">GError</span></GTKDOCLINK> **error</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsChannel.html#ags-channel-set-recycling" title="ags_channel_set_recycling ()">ags_channel_set_recycling</a>           (<em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsRecycling.html#AgsRecycling" title="struct AgsRecycling"><span class="type">AgsRecycling</span></a> *first_recycling</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsRecycling.html#AgsRecycling" title="struct AgsRecycling"><span class="type">AgsRecycling</span></a> *last_recycling</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gboolean"><span class="type">gboolean</span></GTKDOCLINK> update</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gboolean"><span class="type">gboolean</span></GTKDOCLINK> destroy_old</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsChannel.html#ags-channel-tillrecycling-cancel" title="ags_channel_tillrecycling_cancel ()">ags_channel_tillrecycling_cancel</a>    (<em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsRecallID.html#AgsRecallID" title="struct AgsRecallID"><span class="type">AgsRecallID</span></a> *recall_id</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="ags-AgsChannel.description"></a><h2>Description</h2>
+<p>
+</p>
+</div>
+<div class="refsect1">
+<a name="ags-AgsChannel.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AGS-CHANNEL-ERROR:CAPS"></a><h3>AGS_CHANNEL_ERROR</h3>
+<pre class="programlisting">#define AGS_CHANNEL_ERROR (ags_channel_error_quark())
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsChannel"></a><h3>struct AgsChannel</h3>
+<pre class="programlisting">struct AgsChannel {
+  GObject object;
+
+  guint flags;
+
+  GObject *audio;
+  GObject *devout;
+
+  AgsChannel *prev;
+  AgsChannel *prev_pad;
+  AgsChannel *next;
+  AgsChannel *next_pad;
+
+  guint pad;
+  guint audio_channel;
+  guint line;
+
+  char *note;
+
+  gpointer devout_play;
+
+  // GObject *recycling_container; // contains child recycling
+  GList *recall_id; // there may be several recall's running
+  GList *container;
+
+  GList *recall;
+  GList *play;
+
+  AgsChannel *link;
+  AgsRecycling *first_recycling;
+  AgsRecycling *last_recycling;
+  GObject *recycling_thread;
+
+  GList *pattern;
+  AgsNotation *notation;
+
+  GtkWidget *line_widget;
+  gpointer file_data;
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsChannelClass"></a><h3>struct AgsChannelClass</h3>
+<pre class="programlisting">struct AgsChannelClass {
+  GObjectClass object;
+
+  void (*recycling_changed)(AgsChannel *channel,
+			    AgsRecycling *old_start_region, AgsRecycling *old_end_region,
+			    AgsRecycling *new_start_region, AgsRecycling *new_end_region,
+			    AgsRecycling *old_start_changed_region, AgsRecycling *old_end_changed_region,
+			    AgsRecycling *new_start_changed_region, AgsRecycling *new_end_changed_region);
+
+  void (*done)(AgsChannel *channel,
+	       AgsRecallID *recall_id);
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsChannelError"></a><h3>enum AgsChannelError</h3>
+<pre class="programlisting">typedef enum {
+  AGS_CHANNEL_ERROR_LOOP_IN_LINK,
+} AgsChannelError;
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsChannelFlags"></a><h3>enum AgsChannelFlags</h3>
+<pre class="programlisting">typedef enum {
+  AGS_CHANNEL_RUNNING        = 1,
+} AgsChannelFlags;
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsChannelRecallIDMode"></a><h3>enum AgsChannelRecallIDMode</h3>
+<pre class="programlisting">typedef enum {
+  AGS_CHANNEL_RECALL_ID_RUN_STAGE,
+  AGS_CHANNEL_RECALL_ID_CANCEL,
+} AgsChannelRecallIDMode;
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-channel-add-recall"></a><h3>ags_channel_add_recall ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_channel_add_recall              (<em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *recall</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gboolean"><span class="type">gboolean</span></GTKDOCLINK> play</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-channel-add-recall-container"></a><h3>ags_channel_add_recall_container ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_channel_add_recall_container    (<em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *recall_container</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-channel-add-recall-id"></a><h3>ags_channel_add_recall_id ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_channel_add_recall_id           (<em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsRecallID.html#AgsRecallID" title="struct AgsRecallID"><span class="type">AgsRecallID</span></a> *recall_id</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-channel-cancel"></a><h3>ags_channel_cancel ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_channel_cancel                  (<em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsRecallID.html#AgsRecallID" title="struct AgsRecallID"><span class="type">AgsRecallID</span></a> *recall_id</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-channel-done"></a><h3>ags_channel_done ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_channel_done                    (<em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsRecallID.html#AgsRecallID" title="struct AgsRecallID"><span class="type">AgsRecallID</span></a> *recall_id</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-channel-duplicate-recall"></a><h3>ags_channel_duplicate_recall ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_channel_duplicate_recall        (<em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsRecallID.html#AgsRecallID" title="struct AgsRecallID"><span class="type">AgsRecallID</span></a> *recall_id</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-channel-error-quark"></a><h3>ags_channel_error_quark ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="GQuark"><span class="returnvalue">GQuark</span></GTKDOCLINK>              ags_channel_error_quark             ();</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-channel-find-recall"></a><h3>ags_channel_find_recall ()</h3>
+<pre class="programlisting"><a class="link" href="ags-AgsRecall.html#AgsRecall" title="struct AgsRecall"><span class="returnvalue">AgsRecall</span></a> *         ags_channel_find_recall             (<em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="char"><span class="type">char</span></GTKDOCLINK> *effect</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="char"><span class="type">char</span></GTKDOCLINK> *name</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-channel-first"></a><h3>ags_channel_first ()</h3>
+<pre class="programlisting"><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="returnvalue">AgsChannel</span></a> *        ags_channel_first                   (<em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-channel-first-with-recycling"></a><h3>ags_channel_first_with_recycling ()</h3>
+<pre class="programlisting"><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="returnvalue">AgsChannel</span></a> *        ags_channel_first_with_recycling    (<em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-channel-init-recall"></a><h3>ags_channel_init_recall ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_channel_init_recall             (<em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gint"><span class="type">gint</span></GTKDOCLINK> stage</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsRecallID.html#AgsRecallID" title="struct AgsRecallID"><span class="type">AgsRecallID</span></a> *recall_id</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-channel-last"></a><h3>ags_channel_last ()</h3>
+<pre class="programlisting"><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="returnvalue">AgsChannel</span></a> *        ags_channel_last                    (<em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-channel-last-with-recycling"></a><h3>ags_channel_last_with_recycling ()</h3>
+<pre class="programlisting"><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="returnvalue">AgsChannel</span></a> *        ags_channel_last_with_recycling     (<em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-channel-new"></a><h3>ags_channel_new ()</h3>
+<pre class="programlisting"><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="returnvalue">AgsChannel</span></a> *        ags_channel_new                     (<em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *audio</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-channel-nth"></a><h3>ags_channel_nth ()</h3>
+<pre class="programlisting"><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="returnvalue">AgsChannel</span></a> *        ags_channel_nth                     (<em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> nth</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-channel-pad-first"></a><h3>ags_channel_pad_first ()</h3>
+<pre class="programlisting"><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="returnvalue">AgsChannel</span></a> *        ags_channel_pad_first               (<em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-channel-pad-last"></a><h3>ags_channel_pad_last ()</h3>
+<pre class="programlisting"><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="returnvalue">AgsChannel</span></a> *        ags_channel_pad_last                (<em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-channel-pad-nth"></a><h3>ags_channel_pad_nth ()</h3>
+<pre class="programlisting"><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="returnvalue">AgsChannel</span></a> *        ags_channel_pad_nth                 (<em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> nth</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-channel-play"></a><h3>ags_channel_play ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_channel_play                    (<em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsRecallID.html#AgsRecallID" title="struct AgsRecallID"><span class="type">AgsRecallID</span></a> *recall_id</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gint"><span class="type">gint</span></GTKDOCLINK> stage</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-channel-recall-id-set"></a><h3>ags_channel_recall_id_set ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_channel_recall_id_set           (<em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *output</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsRecallID.html#AgsRecallID" title="struct AgsRecallID"><span class="type">AgsRecallID</span></a> *recall_id</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gboolean"><span class="type">gboolean</span></GTKDOCLINK> ommit_own_channel</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> mode</code></em>,
+                                                         <em class="parameter"><code>...</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-channel-recursive-play"></a><h3>ags_channel_recursive_play ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_channel_recursive_play          (<em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsRecallID.html#AgsRecallID" title="struct AgsRecallID"><span class="type">AgsRecallID</span></a> *recall_id</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gint"><span class="type">gint</span></GTKDOCLINK> stage</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-channel-recursive-play-init"></a><h3>ags_channel_recursive_play_init ()</h3>
+<pre class="programlisting"><a class="link" href="ags-AgsRecallID.html#AgsRecallID" title="struct AgsRecallID"><span class="returnvalue">AgsRecallID</span></a> *       ags_channel_recursive_play_init     (<em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gint"><span class="type">gint</span></GTKDOCLINK> stage</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gboolean"><span class="type">gboolean</span></GTKDOCLINK> arrange_recall_id</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gboolean"><span class="type">gboolean</span></GTKDOCLINK> duplicate_templates</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gboolean"><span class="type">gboolean</span></GTKDOCLINK> playback</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gboolean"><span class="type">gboolean</span></GTKDOCLINK> sequencer</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gboolean"><span class="type">gboolean</span></GTKDOCLINK> notation</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gboolean"><span class="type">gboolean</span></GTKDOCLINK> resolve_dependencies</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsRecallID.html#AgsRecallID" title="struct AgsRecallID"><span class="type">AgsRecallID</span></a> *recall_id</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-channel-recursive-play-threaded"></a><h3>ags_channel_recursive_play_threaded ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_channel_recursive_play_threaded (<em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsRecallID.html#AgsRecallID" title="struct AgsRecallID"><span class="type">AgsRecallID</span></a> *recall_id</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gint"><span class="type">gint</span></GTKDOCLINK> stage</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-channel-recursive-reset-recall-ids"></a><h3>ags_channel_recursive_reset_recall_ids ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_channel_recursive_reset_recall_ids
+                                                        (<em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *link</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *old_channel_link</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *old_link_link</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-channel-recycling-changed"></a><h3>ags_channel_recycling_changed ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_channel_recycling_changed       (<em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsRecycling.html#AgsRecycling" title="struct AgsRecycling"><span class="type">AgsRecycling</span></a> *old_start_region</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsRecycling.html#AgsRecycling" title="struct AgsRecycling"><span class="type">AgsRecycling</span></a> *old_end_region</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsRecycling.html#AgsRecycling" title="struct AgsRecycling"><span class="type">AgsRecycling</span></a> *new_start_region</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsRecycling.html#AgsRecycling" title="struct AgsRecycling"><span class="type">AgsRecycling</span></a> *new_end_region</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsRecycling.html#AgsRecycling" title="struct AgsRecycling"><span class="type">AgsRecycling</span></a> *old_start_changed_region</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsRecycling.html#AgsRecycling" title="struct AgsRecycling"><span class="type">AgsRecycling</span></a> *old_end_changed_region</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsRecycling.html#AgsRecycling" title="struct AgsRecycling"><span class="type">AgsRecycling</span></a> *new_start_changed_region</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsRecycling.html#AgsRecycling" title="struct AgsRecycling"><span class="type">AgsRecycling</span></a> *new_end_changed_region</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-channel-remove-recall"></a><h3>ags_channel_remove_recall ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_channel_remove_recall           (<em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *recall</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gboolean"><span class="type">gboolean</span></GTKDOCLINK> play</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-channel-remove-recall-id"></a><h3>ags_channel_remove_recall_id ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_channel_remove_recall_id        (<em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsRecallID.html#AgsRecallID" title="struct AgsRecallID"><span class="type">AgsRecallID</span></a> *recall_id</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-channel-resolve-recall"></a><h3>ags_channel_resolve_recall ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_channel_resolve_recall          (<em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsRecallID.html#AgsRecallID" title="struct AgsRecallID"><span class="type">AgsRecallID</span></a> *recall_id</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-channel-safe-resize-audio-signal"></a><h3>ags_channel_safe_resize_audio_signal ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_channel_safe_resize_audio_signal
+                                                        (<em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> size</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-channel-set-devout"></a><h3>ags_channel_set_devout ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_channel_set_devout              (<em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *devout</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-channel-set-link"></a><h3>ags_channel_set_link ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_channel_set_link                (<em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *link</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GError"><span class="type">GError</span></GTKDOCLINK> **error</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-channel-set-recycling"></a><h3>ags_channel_set_recycling ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_channel_set_recycling           (<em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsRecycling.html#AgsRecycling" title="struct AgsRecycling"><span class="type">AgsRecycling</span></a> *first_recycling</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsRecycling.html#AgsRecycling" title="struct AgsRecycling"><span class="type">AgsRecycling</span></a> *last_recycling</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gboolean"><span class="type">gboolean</span></GTKDOCLINK> update</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gboolean"><span class="type">gboolean</span></GTKDOCLINK> destroy_old</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-channel-tillrecycling-cancel"></a><h3>ags_channel_tillrecycling_cancel ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_channel_tillrecycling_cancel    (<em class="parameter"><code><a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsRecallID.html#AgsRecallID" title="struct AgsRecallID"><span class="type">AgsRecallID</span></a> *recall_id</code></em>);</pre>
+<p>
+</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

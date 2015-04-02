@@ -1,0 +1,38 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>AgsOscillator</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="ags Reference Manual"><link rel="up" href="ch01.html" title="Chapter 1. [Insert title here]"><link rel="prev" href="re166.html" title="AgsOptionMenu"><link rel="next" href="re168.html" title="ags_oscillator_callbacks"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="ags-AgsOscillator"></a><div class="titlepage"></div><div class="refnamediv"><h2>Name</h2><p>AgsOscillator</p></div><div class="refsynopsisdiv"><a name="ags-AgsOscillator.synopsis"></a><h2>Synopsis</h2><pre class="synopsis">struct              <a class="link" href="re167.html#AgsOscillator" title="struct AgsOscillator">AgsOscillator</a>;
+struct              <a class="link" href="re167.html#AgsOscillatorClass" title="struct AgsOscillatorClass">AgsOscillatorClass</a>;
+<a class="link" href=""><span class="returnvalue">void</span></a>                <a class="link" href="re167.html#ags-file-read-oscillator" title="ags_file_read_oscillator ()">ags_file_read_oscillator</a>            (<em class="parameter"><code><a class="link" href="re82.html#AgsFile" title="struct AgsFile"><span class="type">AgsFile</span></a> *file</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">xmlNode</span></a> *node</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="re167.html#AgsOscillator" title="struct AgsOscillator"><span class="type">AgsOscillator</span></a> **oscillator</code></em>);
+<a class="link" href=""><span class="returnvalue">xmlNode</span></a> *           <a class="link" href="re167.html#ags-file-write-oscillator" title="ags_file_write_oscillator ()">ags_file_write_oscillator</a>           (<em class="parameter"><code><a class="link" href="re82.html#AgsFile" title="struct AgsFile"><span class="type">AgsFile</span></a> *file</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">xmlNode</span></a> *parent</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="re167.html#AgsOscillator" title="struct AgsOscillator"><span class="type">AgsOscillator</span></a> *oscillator</code></em>);
+<a class="link" href="re167.html#AgsOscillator" title="struct AgsOscillator"><span class="returnvalue">AgsOscillator</span></a> *     <a class="link" href="re167.html#ags-oscillator-new" title="ags_oscillator_new ()">ags_oscillator_new</a>                  ();
+</pre></div><div class="refsect1"><a name="ags-AgsOscillator.description"></a><h2>Description</h2></div><div class="refsect1"><a name="ags-AgsOscillator.details"></a><h2>Details</h2><div class="refsect2"><a name="AgsOscillator"></a><h3>struct AgsOscillator</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsOscillator"></OBJECT><pre class="programlisting">struct AgsOscillator {
+  GtkFrame frame;
+
+  GtkComboBox *wave;
+  gulong wave_handler;
+
+  GtkSpinButton *attack;
+  gulong attack_handler;
+
+  GtkSpinButton *frame_count;
+  gulong frame_count_handler;
+
+  GtkSpinButton *frequency;
+  gulong frequency_handler;
+
+  GtkSpinButton *phase;
+  gulong phase_handler;
+
+  GtkSpinButton *volume;
+  gulong volume_handler;
+};
+</pre></div><div class="refsect2"><a name="AgsOscillatorClass"></a><h3>struct AgsOscillatorClass</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsOscillatorClass"></OBJECT><pre class="programlisting">struct AgsOscillatorClass {
+  GtkFrameClass frame;
+};
+</pre></div><div class="refsect2"><a name="ags-file-read-oscillator"></a><h3>ags_file_read_oscillator ()</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="ags_file_read_oscillator"></OBJECT><pre class="programlisting"><a class="link" href=""><span class="returnvalue">void</span></a>                ags_file_read_oscillator            (<em class="parameter"><code><a class="link" href="re82.html#AgsFile" title="struct AgsFile"><span class="type">AgsFile</span></a> *file</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">xmlNode</span></a> *node</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="re167.html#AgsOscillator" title="struct AgsOscillator"><span class="type">AgsOscillator</span></a> **oscillator</code></em>);</pre></div><div class="refsect2"><a name="ags-file-write-oscillator"></a><h3>ags_file_write_oscillator ()</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="ags_file_write_oscillator"></OBJECT><pre class="programlisting"><a class="link" href=""><span class="returnvalue">xmlNode</span></a> *           ags_file_write_oscillator           (<em class="parameter"><code><a class="link" href="re82.html#AgsFile" title="struct AgsFile"><span class="type">AgsFile</span></a> *file</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">xmlNode</span></a> *parent</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="re167.html#AgsOscillator" title="struct AgsOscillator"><span class="type">AgsOscillator</span></a> *oscillator</code></em>);</pre></div><div class="refsect2"><a name="ags-oscillator-new"></a><h3>ags_oscillator_new ()</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="ags_oscillator_new"></OBJECT><pre class="programlisting"><a class="link" href="re167.html#AgsOscillator" title="struct AgsOscillator"><span class="returnvalue">AgsOscillator</span></a> *     ags_oscillator_new                  ();</pre></div></div></div></body></html>

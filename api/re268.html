@@ -1,0 +1,41 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>AgsThreadPool</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="ags Reference Manual"><link rel="up" href="ch01.html" title="Chapter 1. [Insert title here]"><link rel="prev" href="re267.html" title="AgsThread"><link rel="next" href="re269.html" title="AgsTimebar"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="ags-AgsThreadPool"></a><div class="titlepage"></div><div class="refnamediv"><h2>Name</h2><p>AgsThreadPool</p></div><div class="refsynopsisdiv"><a name="ags-AgsThreadPool.synopsis"></a><h2>Synopsis</h2><pre class="synopsis">enum                <a class="link" href="re268.html#AgsThreadPoolFlags" title="enum AgsThreadPoolFlags">AgsThreadPoolFlags</a>;
+struct              <a class="link" href="re268.html#AgsThreadPool" title="struct AgsThreadPool">AgsThreadPool</a>;
+struct              <a class="link" href="re268.html#AgsThreadPoolClass" title="struct AgsThreadPoolClass">AgsThreadPoolClass</a>;
+<a class="link" href="re267.html#AgsThread" title="struct AgsThread"><span class="returnvalue">AgsThread</span></a> *         <a class="link" href="re268.html#ags-thread-pool-pull" title="ags_thread_pool_pull ()">ags_thread_pool_pull</a>                (<em class="parameter"><code><a class="link" href="re268.html#AgsThreadPool" title="struct AgsThreadPool"><span class="type">AgsThreadPool</span></a> *thread_pool</code></em>);
+<a class="link" href=""><span class="returnvalue">void</span></a>                <a class="link" href="re268.html#ags-thread-pool-start" title="ags_thread_pool_start ()">ags_thread_pool_start</a>               (<em class="parameter"><code><a class="link" href="re268.html#AgsThreadPool" title="struct AgsThreadPool"><span class="type">AgsThreadPool</span></a> *thread_pool</code></em>);
+<a class="link" href="re268.html#AgsThreadPool" title="struct AgsThreadPool"><span class="returnvalue">AgsThreadPool</span></a> *     <a class="link" href="re268.html#ags-thread-pool-new" title="ags_thread_pool_new ()">ags_thread_pool_new</a>                 (<em class="parameter"><code><a class="link" href="re267.html#AgsThread" title="struct AgsThread"><span class="type">AgsThread</span></a> *parent</code></em>);
+</pre></div><div class="refsect1"><a name="ags-AgsThreadPool.description"></a><h2>Description</h2></div><div class="refsect1"><a name="ags-AgsThreadPool.details"></a><h2>Details</h2><div class="refsect2"><a name="AgsThreadPoolFlags"></a><h3>enum AgsThreadPoolFlags</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsThreadPoolFlags"></OBJECT><pre class="programlisting">typedef enum {
+  AGS_THREAD_POOL_RUNNING  = 1,
+  AGS_THREAD_POOL_READY    = 1 &lt;&lt; 1,
+} AgsThreadPoolFlags;
+</pre><div class="variablelist"><dl class="variablelist"><dt><a name="AGS-THREAD-POOL-RUNNING:CAPS"></a><span class="term"><code class="literal">AGS_THREAD_POOL_RUNNING</code></span></dt><dd></dd><dt><a name="AGS-THREAD-POOL-READY:CAPS"></a><span class="term"><code class="literal">AGS_THREAD_POOL_READY</code></span></dt><dd></dd></dl></div></div><div class="refsect2"><a name="AgsThreadPool"></a><h3>struct AgsThreadPool</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsThreadPool"></OBJECT><pre class="programlisting">struct AgsThreadPool {
+  GObject object;
+
+  volatile guint flags;
+
+  volatile guint max_unused_threads;
+  volatile guint max_threads;
+
+  pthread_t thread;
+
+  pthread_mutex_t creation_mutex;
+  pthread_cond_t creation_cond;
+
+  volatile guint newly_pulled;
+  volatile guint queued;
+
+  AgsThread *parent;
+  GList *returnable_thread;
+  GList *running_thread;
+
+  pthread_mutex_t pull_mutex;
+
+  pthread_mutex_t return_mutex;
+  pthread_cond_t return_cond;
+};
+</pre></div><div class="refsect2"><a name="AgsThreadPoolClass"></a><h3>struct AgsThreadPoolClass</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsThreadPoolClass"></OBJECT><pre class="programlisting">struct AgsThreadPoolClass {
+  GObjectClass object;
+
+  void (*start)(AgsThreadPool *thread_pool);
+};
+</pre></div><div class="refsect2"><a name="ags-thread-pool-pull"></a><h3>ags_thread_pool_pull ()</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="ags_thread_pool_pull"></OBJECT><pre class="programlisting"><a class="link" href="re267.html#AgsThread" title="struct AgsThread"><span class="returnvalue">AgsThread</span></a> *         ags_thread_pool_pull                (<em class="parameter"><code><a class="link" href="re268.html#AgsThreadPool" title="struct AgsThreadPool"><span class="type">AgsThreadPool</span></a> *thread_pool</code></em>);</pre></div><div class="refsect2"><a name="ags-thread-pool-start"></a><h3>ags_thread_pool_start ()</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="ags_thread_pool_start"></OBJECT><pre class="programlisting"><a class="link" href=""><span class="returnvalue">void</span></a>                ags_thread_pool_start               (<em class="parameter"><code><a class="link" href="re268.html#AgsThreadPool" title="struct AgsThreadPool"><span class="type">AgsThreadPool</span></a> *thread_pool</code></em>);</pre></div><div class="refsect2"><a name="ags-thread-pool-new"></a><h3>ags_thread_pool_new ()</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="ags_thread_pool_new"></OBJECT><pre class="programlisting"><a class="link" href="re268.html#AgsThreadPool" title="struct AgsThreadPool"><span class="returnvalue">AgsThreadPool</span></a> *     ags_thread_pool_new                 (<em class="parameter"><code><a class="link" href="re267.html#AgsThread" title="struct AgsThread"><span class="type">AgsThread</span></a> *parent</code></em>);</pre></div></div></div></body></html>

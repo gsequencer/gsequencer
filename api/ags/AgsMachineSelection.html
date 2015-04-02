@@ -1,0 +1,135 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsMachineSelection</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="editor.html" title="Editor - Piano roll and its controls">
+<link rel="prev" href="ags-ags-toolbar-callbacks.html" title="ags_toolbar_callbacks">
+<link rel="next" href="AgsMachineSelector.html" title="AgsMachineSelector">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="ags-ags-toolbar-callbacks.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="editor.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="AgsMachineSelector.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#AgsMachineSelection.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#AgsMachineSelection.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#AgsMachineSelection.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#AgsMachineSelection.implemented-interfaces" class="shortcut">Implemented Interfaces</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="AgsMachineSelection"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="AgsMachineSelection.top_of_page"></a>AgsMachineSelection</span></h2>
+<p>AgsMachineSelection — machine radio buttons</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="AgsMachineSelection.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">
+#include &lt;ags/X/editor/ags_machine_selection.h&gt;
+
+struct              <a class="link" href="AgsMachineSelection.html#AgsMachineSelection-struct" title="struct AgsMachineSelection">AgsMachineSelection</a>;
+struct              <a class="link" href="AgsMachineSelection.html#AgsMachineSelectionClass" title="struct AgsMachineSelectionClass">AgsMachineSelectionClass</a>;
+<a class="link" href="AgsMachineSelection.html" title="AgsMachineSelection"><span class="returnvalue">AgsMachineSelection</span></a> * <a class="link" href="AgsMachineSelection.html#ags-machine-selection-new" title="ags_machine_selection_new ()">ags_machine_selection_new</a>         (<em class="parameter"><code><a class="link" href="AgsWindow.html" title="AgsWindow"><span class="type">AgsWindow</span></a> *window</code></em>);
+<a class="link" href="AgsMachine.html" title="AgsMachine"><span class="returnvalue">AgsMachine</span></a> *        <a class="link" href="AgsMachineSelection.html#ags-machine-selection-run" title="ags_machine_selection_run ()">ags_machine_selection_run</a>           (<em class="parameter"><code><a class="link" href="AgsMachineSelection.html" title="AgsMachineSelection"><span class="type">AgsMachineSelection</span></a> *machine_selection</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsMachineSelection.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  <a href="../gobject/gobject-The-Base-Object-Type.html#GObject">GObject</a>
+   +----<a href="../gobject/gobject-The-Base-Object-Type.html#GInitiallyUnowned">GInitiallyUnowned</a>
+         +----<a href="../gtk/GtkObject.html">GtkObject</a>
+               +----<a href="../gtk3/GtkWidget.html">GtkWidget</a>
+                     +----<a href="../gtk3/GtkContainer.html">GtkContainer</a>
+                           +----<a href="../gtk3/GtkBin.html">GtkBin</a>
+                                 +----<a href="../gtk3/GtkWindow.html">GtkWindow</a>
+                                       +----<a href="../gtk3/GtkDialog.html">GtkDialog</a>
+                                             +----AgsMachineSelection
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsMachineSelection.implemented-interfaces"></a><h2>Implemented Interfaces</h2>
+<p>
+AgsMachineSelection implements
+ AtkImplementorIface,  <a href="../gtk3/GtkBuildable.html">GtkBuildable</a> and  AgsConnectable.</p>
+</div>
+<div class="refsect1">
+<a name="AgsMachineSelection.description"></a><h2>Description</h2>
+<p>
+The <a class="link" href="AgsMachineSelection.html" title="AgsMachineSelection"><span class="type">AgsMachineSelection</span></a> enables you make choice of an <a class="link" href="AgsMachine.html" title="AgsMachine"><span class="type">AgsMachine</span></a>.
+</p>
+</div>
+<div class="refsect1">
+<a name="AgsMachineSelection.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AgsMachineSelection-struct"></a><h3>struct AgsMachineSelection</h3>
+<pre class="programlisting">struct AgsMachineSelection;</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsMachineSelectionClass"></a><h3>struct AgsMachineSelectionClass</h3>
+<pre class="programlisting">struct AgsMachineSelectionClass {
+  GtkDialogClass dialog;
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-machine-selection-new"></a><h3>ags_machine_selection_new ()</h3>
+<pre class="programlisting"><a class="link" href="AgsMachineSelection.html" title="AgsMachineSelection"><span class="returnvalue">AgsMachineSelection</span></a> * ags_machine_selection_new         (<em class="parameter"><code><a class="link" href="AgsWindow.html" title="AgsWindow"><span class="type">AgsWindow</span></a> *window</code></em>);</pre>
+<p>
+Create a new <a class="link" href="AgsMachineSelection.html" title="AgsMachineSelection"><span class="type">AgsMachineSelection</span></a>.
+</p>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-machine-selection-run"></a><h3>ags_machine_selection_run ()</h3>
+<pre class="programlisting"><a class="link" href="AgsMachine.html" title="AgsMachine"><span class="returnvalue">AgsMachine</span></a> *        ags_machine_selection_run           (<em class="parameter"><code><a class="link" href="AgsMachineSelection.html" title="AgsMachineSelection"><span class="type">AgsMachineSelection</span></a> *machine_selection</code></em>);</pre>
+<p>
+Run the dialog.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>machine_selection</code></em> :</span></p></td>
+<td>the <a class="link" href="AgsMachineSelection.html" title="AgsMachineSelection"><span class="type">AgsMachineSelection</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the <a class="link" href="AgsMachine.html" title="AgsMachine"><span class="type">AgsMachine</span></a>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

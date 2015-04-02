@@ -1,0 +1,434 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Advanced Gtk+ Sequencer Reference Manual: ags_file_util</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="xml-io.html" title="Part IX. XML Input/Output - Persist project">
+<link rel="prev" href="ags-ags-file-sound.html" title="ags_file_sound">
+<link rel="next" href="ags-ags-file-thread.html" title="ags_file_thread">
+<meta name="generator" content="GTK-Doc V1.21 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#ags-ags-file-util.description" class="shortcut">Description</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="xml-io.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="ags-ags-file-sound.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="ags-ags-file-thread.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry">
+<a name="ags-ags-file-util"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="ags-ags-file-util.top_of_page"></a>ags_file_util</span></h2>
+<p>ags_file_util</p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1">
+<a name="ags-ags-file-util.functions"></a><h2>Functions</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="functions_return">
+<col class="functions_name">
+</colgroup>
+<tbody>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-util.html#ags-file-util-read-value" title="ags_file_util_read_value ()">ags_file_util_read_value</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-util.html#ags-file-util-write-value" title="ags_file_util_write_value ()">ags_file_util_write_value</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-util.html#ags-file-util-read-parameter" title="ags_file_util_read_parameter ()">ags_file_util_read_parameter</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-util.html#ags-file-util-write-parameter" title="ags_file_util_write_parameter ()">ags_file_util_write_parameter</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-util.html#ags-file-util-read-dependency" title="ags_file_util_read_dependency ()">ags_file_util_read_dependency</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-util.html#ags-file-util-write-dependency" title="ags_file_util_write_dependency ()">ags_file_util_write_dependency</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-util.html#ags-file-util-read-object" title="ags_file_util_read_object ()">ags_file_util_read_object</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-util.html#ags-file-util-write-object" title="ags_file_util_write_object ()">ags_file_util_write_object</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-util.html#ags-file-util-read-history" title="ags_file_util_read_history ()">ags_file_util_read_history</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-util.html#ags-file-util-write-history" title="ags_file_util_write_history ()">ags_file_util_write_history</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-util.html#ags-file-read-embedded-audio" title="ags_file_read_embedded_audio ()">ags_file_read_embedded_audio</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-util.html#ags-file-write-embedded-audio" title="ags_file_write_embedded_audio ()">ags_file_write_embedded_audio</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-util.html#ags-file-read-embedded-audio-list" title="ags_file_read_embedded_audio_list ()">ags_file_read_embedded_audio_list</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-util.html#ags-file-write-embedded-audio-list" title="ags_file_write_embedded_audio_list ()">ags_file_write_embedded_audio_list</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-sound.html#ags-file-read-file-link" title="ags_file_read_file_link ()">ags_file_read_file_link</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-sound.html#ags-file-write-file-link" title="ags_file_write_file_link ()">ags_file_write_file_link</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-util.html#ags-file-read-file-link-list" title="ags_file_read_file_link_list ()">ags_file_read_file_link_list</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-file-util.html#ags-file-write-file-link-list" title="ags_file_write_file_link_list ()">ags_file_write_file_link_list</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="ags-ags-file-util.description"></a><h2>Description</h2>
+<p>
+</p>
+</div>
+<div class="refsect1">
+<a name="ags-ags-file-util.functions_details"></a><h2>Functions</h2>
+<div class="refsect2">
+<a name="ags-file-util-read-value"></a><h3>ags_file_util_read_value ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_file_util_read_value (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                          <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *node</code></em>,
+                          <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> **id</code></em>,
+                          <em class="parameter"><code><GTKDOCLINK HREF="GValue"><span class="type">GValue</span></GTKDOCLINK> *value</code></em>,
+                          <em class="parameter"><code><GTKDOCLINK HREF="xmlChar"><span class="type">xmlChar</span></GTKDOCLINK> **xpath</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-util-write-value"></a><h3>ags_file_util_write_value ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+ags_file_util_write_value (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                           <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *parent</code></em>,
+                           <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *id</code></em>,
+                           <em class="parameter"><code><GTKDOCLINK HREF="GValue"><span class="type">GValue</span></GTKDOCLINK> *value</code></em>,
+                           <em class="parameter"><code><GTKDOCLINK HREF="GType"><span class="type">GType</span></GTKDOCLINK> pointer_type</code></em>,
+                           <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> arr_length</code></em>);</pre>
+<p>
+</p>
+<div class="refsect3">
+<a name="id-1.11.10.5.3.5"></a><h4>Returns</h4>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-util-read-parameter"></a><h3>ags_file_util_read_parameter ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_file_util_read_parameter (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                              <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *node</code></em>,
+                              <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> **id</code></em>,
+                              <em class="parameter"><code><GTKDOCLINK HREF="GParameter"><span class="type">GParameter</span></GTKDOCLINK> **parameter</code></em>,
+                              <em class="parameter"><code><GTKDOCLINK HREF="gint"><span class="type">gint</span></GTKDOCLINK> *n_params</code></em>,
+                              <em class="parameter"><code><GTKDOCLINK HREF="xmlChar"><span class="type">xmlChar</span></GTKDOCLINK> ***xpath</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-util-write-parameter"></a><h3>ags_file_util_write_parameter ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+ags_file_util_write_parameter (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                               <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *parent</code></em>,
+                               <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *id</code></em>,
+                               <em class="parameter"><code><GTKDOCLINK HREF="GParameter"><span class="type">GParameter</span></GTKDOCLINK> *parameter</code></em>,
+                               <em class="parameter"><code><GTKDOCLINK HREF="gint"><span class="type">gint</span></GTKDOCLINK> n_params</code></em>);</pre>
+<p>
+</p>
+<div class="refsect3">
+<a name="id-1.11.10.5.5.5"></a><h4>Returns</h4>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-util-read-dependency"></a><h3>ags_file_util_read_dependency ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_file_util_read_dependency (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                               <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *node</code></em>,
+                               <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> **id</code></em>,
+                               <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> **name</code></em>,
+                               <em class="parameter"><code><GTKDOCLINK HREF="xmlChar"><span class="type">xmlChar</span></GTKDOCLINK> **xpath</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-util-write-dependency"></a><h3>ags_file_util_write_dependency ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+ags_file_util_write_dependency (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                                <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *parent</code></em>,
+                                <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *id</code></em>,
+                                <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *name</code></em>,
+                                <em class="parameter"><code><GTKDOCLINK HREF="xmlChar"><span class="type">xmlChar</span></GTKDOCLINK> *xpath</code></em>);</pre>
+<p>
+</p>
+<div class="refsect3">
+<a name="id-1.11.10.5.7.5"></a><h4>Returns</h4>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-util-read-object"></a><h3>ags_file_util_read_object ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_file_util_read_object (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                           <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *node</code></em>,
+                           <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> **gobject</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-util-write-object"></a><h3>ags_file_util_write_object ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+ags_file_util_write_object (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                            <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *parent</code></em>,
+                            <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *gobject</code></em>);</pre>
+<p>
+</p>
+<div class="refsect3">
+<a name="id-1.11.10.5.9.5"></a><h4>Returns</h4>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-util-read-history"></a><h3>ags_file_util_read_history ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_file_util_read_history (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                            <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *node</code></em>,
+                            <em class="parameter"><code><GTKDOCLINK HREF="AgsHistory"><span class="type">AgsHistory</span></GTKDOCLINK> **history</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-util-write-history"></a><h3>ags_file_util_write_history ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+ags_file_util_write_history (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                             <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *parent</code></em>,
+                             <em class="parameter"><code><GTKDOCLINK HREF="AgsHistory"><span class="type">AgsHistory</span></GTKDOCLINK> *history</code></em>);</pre>
+<p>
+</p>
+<div class="refsect3">
+<a name="id-1.11.10.5.11.5"></a><h4>Returns</h4>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-embedded-audio"></a><h3>ags_file_read_embedded_audio ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_file_read_embedded_audio (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                              <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *node</code></em>,
+                              <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> **embedded_audio</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-embedded-audio"></a><h3>ags_file_write_embedded_audio ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+ags_file_write_embedded_audio (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                               <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *parent</code></em>,
+                               <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *embedded_audio</code></em>);</pre>
+<p>
+</p>
+<div class="refsect3">
+<a name="id-1.11.10.5.13.5"></a><h4>Returns</h4>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-embedded-audio-list"></a><h3>ags_file_read_embedded_audio_list ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_file_read_embedded_audio_list (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                                   <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *node</code></em>,
+                                   <em class="parameter"><code><GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> **embedded_audio</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-embedded-audio-list"></a><h3>ags_file_write_embedded_audio_list ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+ags_file_write_embedded_audio_list (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                                    <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *parent</code></em>,
+                                    <em class="parameter"><code><GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> *embedded_audio</code></em>);</pre>
+<p>
+</p>
+<div class="refsect3">
+<a name="id-1.11.10.5.15.5"></a><h4>Returns</h4>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-file-link"></a><h3>ags_file_read_file_link ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_file_read_file_link (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                         <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *node</code></em>,
+                         <em class="parameter"><code><GTKDOCLINK HREF="AgsFileLink"><span class="type">AgsFileLink</span></GTKDOCLINK> **file_link</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-file-link"></a><h3>ags_file_write_file_link ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+ags_file_write_file_link (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                          <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *parent</code></em>,
+                          <em class="parameter"><code><GTKDOCLINK HREF="AgsFileLink"><span class="type">AgsFileLink</span></GTKDOCLINK> *file_link</code></em>);</pre>
+<p>
+</p>
+<div class="refsect3">
+<a name="id-1.11.10.5.17.5"></a><h4>Returns</h4>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-file-link-list"></a><h3>ags_file_read_file_link_list ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_file_read_file_link_list (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                              <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *node</code></em>,
+                              <em class="parameter"><code><GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> **file_link</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-file-link-list"></a><h3>ags_file_write_file_link_list ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *
+ags_file_write_file_link_list (<em class="parameter"><code><GTKDOCLINK HREF="AgsFile"><span class="type">AgsFile</span></GTKDOCLINK> *file</code></em>,
+                               <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *parent</code></em>,
+                               <em class="parameter"><code><GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> *file_link</code></em>);</pre>
+<p>
+</p>
+<div class="refsect3">
+<a name="id-1.11.10.5.19.5"></a><h4>Returns</h4>
+<p></p>
+</div>
+</div>
+</div>
+<div class="refsect1">
+<a name="ags-ags-file-util.other_details"></a><h2>Types and Values</h2>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.21</div>
+</body>
+</html>

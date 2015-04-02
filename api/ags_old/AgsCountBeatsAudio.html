@@ -1,0 +1,144 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsCountBeatsAudio</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="recall.html" title="Recalls - Effect processors">
+<link rel="prev" href="AgsCopyRecycling.html" title="AgsCopyRecycling">
+<link rel="next" href="AgsCountBeatsAudioRun.html" title="AgsCountBeatsAudioRun">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="AgsCopyRecycling.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="recall.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="AgsCountBeatsAudioRun.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#AgsCountBeatsAudio.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#AgsCountBeatsAudio.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#AgsCountBeatsAudio.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#AgsCountBeatsAudio.implemented-interfaces" class="shortcut">Implemented Interfaces</a>
+                   | 
+                  <a href="#AgsCountBeatsAudio.properties" class="shortcut">Properties</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="AgsCountBeatsAudio"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="AgsCountBeatsAudio.top_of_page"></a>AgsCountBeatsAudio</span></h2>
+<p>AgsCountBeatsAudio</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="AgsCountBeatsAudio.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">struct              <a class="link" href="AgsCountBeatsAudio.html#AgsCountBeatsAudio-struct" title="struct AgsCountBeatsAudio">AgsCountBeatsAudio</a>;
+struct              <a class="link" href="AgsCountBeatsAudio.html#AgsCountBeatsAudioClass" title="struct AgsCountBeatsAudioClass">AgsCountBeatsAudioClass</a>;
+<a class="link" href="AgsCountBeatsAudio.html" title="AgsCountBeatsAudio"><span class="returnvalue">AgsCountBeatsAudio</span></a> * <a class="link" href="AgsCountBeatsAudio.html#ags-count-beats-audio-new" title="ags_count_beats_audio_new ()">ags_count_beats_audio_new</a>          (<em class="parameter"><code><GTKDOCLINK HREF="gboolean"><span class="type">gboolean</span></GTKDOCLINK> loop</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsCountBeatsAudio.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  <GTKDOCLINK HREF="GObject">GObject</GTKDOCLINK>
+   +----<a class="link" href="AgsRecall.html" title="AgsRecall">AgsRecall</a>
+         +----<a class="link" href="AgsRecallAudio.html" title="AgsRecallAudio">AgsRecallAudio</a>
+               +----AgsCountBeatsAudio
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsCountBeatsAudio.implemented-interfaces"></a><h2>Implemented Interfaces</h2>
+<p>
+AgsCountBeatsAudio implements
+ <GTKDOCLINK HREF="AgsConnectable">AgsConnectable</GTKDOCLINK>,  <a class="link" href="AgsPackable.html" title="AgsPackable">AgsPackable</a>,  <a class="link" href="AgsDynamicConnectable.html" title="AgsDynamicConnectable">AgsDynamicConnectable</a> and  <a class="link" href="AgsPlugin.html" title="AgsPlugin">AgsPlugin</a>.</p>
+</div>
+<div class="refsect1">
+<a name="AgsCountBeatsAudio.properties"></a><h2>Properties</h2>
+<pre class="synopsis">
+  "<a class="link" href="AgsCountBeatsAudio.html#AgsCountBeatsAudio--loop" title='The "loop" property'>loop</a>"                     <a class="link" href="AgsPort.html" title="AgsPort"><span class="type">AgsPort</span></a>*              : Read / Write
+  "<a class="link" href="AgsCountBeatsAudio.html#AgsCountBeatsAudio--notation-loop-end" title='The "notation-loop-end" property'>notation-loop-end</a>"        <a class="link" href="AgsPort.html" title="AgsPort"><span class="type">AgsPort</span></a>*              : Read / Write
+  "<a class="link" href="AgsCountBeatsAudio.html#AgsCountBeatsAudio--notation-loop-start" title='The "notation-loop-start" property'>notation-loop-start</a>"      <a class="link" href="AgsPort.html" title="AgsPort"><span class="type">AgsPort</span></a>*              : Read / Write
+  "<a class="link" href="AgsCountBeatsAudio.html#AgsCountBeatsAudio--sequencer-loop-end" title='The "sequencer-loop-end" property'>sequencer-loop-end</a>"       <a class="link" href="AgsPort.html" title="AgsPort"><span class="type">AgsPort</span></a>*              : Read / Write
+  "<a class="link" href="AgsCountBeatsAudio.html#AgsCountBeatsAudio--sequencer-loop-start" title='The "sequencer-loop-start" property'>sequencer-loop-start</a>"     <a class="link" href="AgsPort.html" title="AgsPort"><span class="type">AgsPort</span></a>*              : Read / Write
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsCountBeatsAudio.description"></a><h2>Description</h2>
+<p>
+</p>
+</div>
+<div class="refsect1">
+<a name="AgsCountBeatsAudio.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AgsCountBeatsAudio-struct"></a><h3>struct AgsCountBeatsAudio</h3>
+<pre class="programlisting">struct AgsCountBeatsAudio;</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsCountBeatsAudioClass"></a><h3>struct AgsCountBeatsAudioClass</h3>
+<pre class="programlisting">struct AgsCountBeatsAudioClass {
+  AgsRecallAudioClass recall_audio;
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-count-beats-audio-new"></a><h3>ags_count_beats_audio_new ()</h3>
+<pre class="programlisting"><a class="link" href="AgsCountBeatsAudio.html" title="AgsCountBeatsAudio"><span class="returnvalue">AgsCountBeatsAudio</span></a> * ags_count_beats_audio_new          (<em class="parameter"><code><GTKDOCLINK HREF="gboolean"><span class="type">gboolean</span></GTKDOCLINK> loop</code></em>);</pre>
+<p>
+</p>
+</div>
+</div>
+<div class="refsect1">
+<a name="AgsCountBeatsAudio.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="AgsCountBeatsAudio--loop"></a><h3>The <code class="literal">"loop"</code> property</h3>
+<pre class="programlisting">  "loop"                     <a class="link" href="AgsPort.html" title="AgsPort"><span class="type">AgsPort</span></a>*              : Read / Write</pre>
+<p>Play in a endless loop.</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsCountBeatsAudio--notation-loop-end"></a><h3>The <code class="literal">"notation-loop-end"</code> property</h3>
+<pre class="programlisting">  "notation-loop-end"        <a class="link" href="AgsPort.html" title="AgsPort"><span class="type">AgsPort</span></a>*              : Read / Write</pre>
+<p>The end beat of the notation loop.</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsCountBeatsAudio--notation-loop-start"></a><h3>The <code class="literal">"notation-loop-start"</code> property</h3>
+<pre class="programlisting">  "notation-loop-start"      <a class="link" href="AgsPort.html" title="AgsPort"><span class="type">AgsPort</span></a>*              : Read / Write</pre>
+<p>The start beat of the notation loop.</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsCountBeatsAudio--sequencer-loop-end"></a><h3>The <code class="literal">"sequencer-loop-end"</code> property</h3>
+<pre class="programlisting">  "sequencer-loop-end"       <a class="link" href="AgsPort.html" title="AgsPort"><span class="type">AgsPort</span></a>*              : Read / Write</pre>
+<p>The end beat of the sequencer loop.</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsCountBeatsAudio--sequencer-loop-start"></a><h3>The <code class="literal">"sequencer-loop-start"</code> property</h3>
+<pre class="programlisting">  "sequencer-loop-start"     <a class="link" href="AgsPort.html" title="AgsPort"><span class="type">AgsPort</span></a>*              : Read / Write</pre>
+<p>The start beat of the sequencer loop.</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

@@ -1,0 +1,18 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>AgsToggleLed</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="ags Reference Manual"><link rel="up" href="ch01.html" title="Chapter 1. [Insert title here]"><link rel="prev" href="re272.html" title="AgsTimestampThread"><link rel="next" href="re274.html" title="AgsTogglePatternBit"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="ags-AgsToggleLed"></a><div class="titlepage"></div><div class="refnamediv"><h2>Name</h2><p>AgsToggleLed</p></div><div class="refsynopsisdiv"><a name="ags-AgsToggleLed.synopsis"></a><h2>Synopsis</h2><pre class="synopsis">struct              <a class="link" href="re273.html#AgsToggleLed" title="struct AgsToggleLed">AgsToggleLed</a>;
+struct              <a class="link" href="re273.html#AgsToggleLedClass" title="struct AgsToggleLedClass">AgsToggleLedClass</a>;
+<a class="link" href="re273.html#AgsToggleLed" title="struct AgsToggleLed"><span class="returnvalue">AgsToggleLed</span></a> *      <a class="link" href="re273.html#ags-toggle-led-new" title="ags_toggle_led_new ()">ags_toggle_led_new</a>                  (<em class="parameter"><code><a class="link" href=""><span class="type">GList</span></a> *led</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">guint</span></a> set_active</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">guint</span></a> unset_active</code></em>);
+</pre></div><div class="refsect1"><a name="ags-AgsToggleLed.description"></a><h2>Description</h2></div><div class="refsect1"><a name="ags-AgsToggleLed.details"></a><h2>Details</h2><div class="refsect2"><a name="AgsToggleLed"></a><h3>struct AgsToggleLed</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsToggleLed"></OBJECT><pre class="programlisting">struct AgsToggleLed {
+  AgsTask task;
+
+  GList *led;
+  guint set_active;
+  guint unset_active;
+};
+</pre></div><div class="refsect2"><a name="AgsToggleLedClass"></a><h3>struct AgsToggleLedClass</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsToggleLedClass"></OBJECT><pre class="programlisting">struct AgsToggleLedClass {
+  AgsTaskClass task;
+};
+</pre></div><div class="refsect2"><a name="ags-toggle-led-new"></a><h3>ags_toggle_led_new ()</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="ags_toggle_led_new"></OBJECT><pre class="programlisting"><a class="link" href="re273.html#AgsToggleLed" title="struct AgsToggleLed"><span class="returnvalue">AgsToggleLed</span></a> *      ags_toggle_led_new                  (<em class="parameter"><code><a class="link" href=""><span class="type">GList</span></a> *led</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">guint</span></a> set_active</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">guint</span></a> unset_active</code></em>);</pre></div></div></div></body></html>

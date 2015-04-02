@@ -1,0 +1,17 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>AgsCountBeatsAudio</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="ags Reference Manual"><link rel="up" href="ch01.html" title="Chapter 1. [Insert title here]"><link rel="prev" href="re49.html" title="AgsCopyRecycling"><link rel="next" href="re51.html" title="AgsCountBeatsAudioRun"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="ags-AgsCountBeatsAudio"></a><div class="titlepage"></div><div class="refnamediv"><h2>Name</h2><p>AgsCountBeatsAudio</p></div><div class="refsynopsisdiv"><a name="ags-AgsCountBeatsAudio.synopsis"></a><h2>Synopsis</h2><pre class="synopsis">struct              <a class="link" href="re50.html#AgsCountBeatsAudio" title="struct AgsCountBeatsAudio">AgsCountBeatsAudio</a>;
+struct              <a class="link" href="re50.html#AgsCountBeatsAudioClass" title="struct AgsCountBeatsAudioClass">AgsCountBeatsAudioClass</a>;
+<a class="link" href="re50.html#AgsCountBeatsAudio" title="struct AgsCountBeatsAudio"><span class="returnvalue">AgsCountBeatsAudio</span></a> * <a class="link" href="re50.html#ags-count-beats-audio-new" title="ags_count_beats_audio_new ()">ags_count_beats_audio_new</a>          (<em class="parameter"><code><a class="link" href=""><span class="type">gboolean</span></a> loop</code></em>);
+</pre></div><div class="refsect1"><a name="ags-AgsCountBeatsAudio.description"></a><h2>Description</h2></div><div class="refsect1"><a name="ags-AgsCountBeatsAudio.details"></a><h2>Details</h2><div class="refsect2"><a name="AgsCountBeatsAudio"></a><h3>struct AgsCountBeatsAudio</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsCountBeatsAudio"></OBJECT><pre class="programlisting">struct AgsCountBeatsAudio {
+  AgsRecallAudio recall_audio;
+
+  AgsPort *loop;
+
+  AgsPort *notation_loop_start;
+  AgsPort *notation_loop_end;
+  AgsPort *sequencer_loop_start;
+  AgsPort *sequencer_loop_end;
+};
+</pre></div><div class="refsect2"><a name="AgsCountBeatsAudioClass"></a><h3>struct AgsCountBeatsAudioClass</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsCountBeatsAudioClass"></OBJECT><pre class="programlisting">struct AgsCountBeatsAudioClass {
+  AgsRecallAudioClass recall_audio;
+};
+</pre></div><div class="refsect2"><a name="ags-count-beats-audio-new"></a><h3>ags_count_beats_audio_new ()</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="ags_count_beats_audio_new"></OBJECT><pre class="programlisting"><a class="link" href="re50.html#AgsCountBeatsAudio" title="struct AgsCountBeatsAudio"><span class="returnvalue">AgsCountBeatsAudio</span></a> * ags_count_beats_audio_new          (<em class="parameter"><code><a class="link" href=""><span class="type">gboolean</span></a> loop</code></em>);</pre></div></div></div></body></html>

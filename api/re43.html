@@ -1,0 +1,25 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>AgsCopyNotationAudio</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="ags Reference Manual"><link rel="up" href="ch01.html" title="Chapter 1. [Insert title here]"><link rel="prev" href="re42.html" title="AgsCopyChannelRun"><link rel="next" href="re44.html" title="AgsCopyNotationAudioRun"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="ags-AgsCopyNotationAudio"></a><div class="titlepage"></div><div class="refnamediv"><h2>Name</h2><p>AgsCopyNotationAudio</p></div><div class="refsynopsisdiv"><a name="ags-AgsCopyNotationAudio.synopsis"></a><h2>Synopsis</h2><pre class="synopsis">enum                <a class="link" href="re43.html#AgsCopyNotationAudioFlags" title="enum AgsCopyNotationAudioFlags">AgsCopyNotationAudioFlags</a>;
+struct              <a class="link" href="re43.html#AgsCopyNotationAudio" title="struct AgsCopyNotationAudio">AgsCopyNotationAudio</a>;
+struct              <a class="link" href="re43.html#AgsCopyNotationAudioClass" title="struct AgsCopyNotationAudioClass">AgsCopyNotationAudioClass</a>;
+<a class="link" href="re43.html#AgsCopyNotationAudio" title="struct AgsCopyNotationAudio"><span class="returnvalue">AgsCopyNotationAudio</span></a> * <a class="link" href="re43.html#ags-copy-notation-audio-new" title="ags_copy_notation_audio_new ()">ags_copy_notation_audio_new</a>      (<em class="parameter"><code><a class="link" href="re55.html#AgsDevout" title="struct AgsDevout"><span class="type">AgsDevout</span></a> *devout</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="re158.html#AgsNotation" title="struct AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">guint</span></a> audio_channel</code></em>);
+</pre></div><div class="refsect1"><a name="ags-AgsCopyNotationAudio.description"></a><h2>Description</h2></div><div class="refsect1"><a name="ags-AgsCopyNotationAudio.details"></a><h2>Details</h2><div class="refsect2"><a name="AgsCopyNotationAudioFlags"></a><h3>enum AgsCopyNotationAudioFlags</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsCopyNotationAudioFlags"></OBJECT><pre class="programlisting">typedef enum {
+  AGS_COPY_NOTATION_AUDIO_FIT_AUDIO_SIGNAL  = 1,
+} AgsCopyNotationAudioFlags;
+</pre><div class="variablelist"><dl class="variablelist"><dt><a name="AGS-COPY-NOTATION-AUDIO-FIT-AUDIO-SIGNAL:CAPS"></a><span class="term"><code class="literal">AGS_COPY_NOTATION_AUDIO_FIT_AUDIO_SIGNAL</code></span></dt><dd></dd></dl></div></div><div class="refsect2"><a name="AgsCopyNotationAudio"></a><h3>struct AgsCopyNotationAudio</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsCopyNotationAudio"></OBJECT><pre class="programlisting">struct AgsCopyNotationAudio {
+  AgsRecallAudio recall_audio;
+
+  guint flags;
+
+  AgsDevout *devout;
+
+  AgsNotation *notation;
+  guint audio_channel;
+};
+</pre></div><div class="refsect2"><a name="AgsCopyNotationAudioClass"></a><h3>struct AgsCopyNotationAudioClass</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsCopyNotationAudioClass"></OBJECT><pre class="programlisting">struct AgsCopyNotationAudioClass {
+  AgsRecallAudioClass recall_audio;
+};
+</pre></div><div class="refsect2"><a name="ags-copy-notation-audio-new"></a><h3>ags_copy_notation_audio_new ()</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="ags_copy_notation_audio_new"></OBJECT><pre class="programlisting"><a class="link" href="re43.html#AgsCopyNotationAudio" title="struct AgsCopyNotationAudio"><span class="returnvalue">AgsCopyNotationAudio</span></a> * ags_copy_notation_audio_new      (<em class="parameter"><code><a class="link" href="re55.html#AgsDevout" title="struct AgsDevout"><span class="type">AgsDevout</span></a> *devout</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="re158.html#AgsNotation" title="struct AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">guint</span></a> audio_channel</code></em>);</pre></div></div></div></body></html>

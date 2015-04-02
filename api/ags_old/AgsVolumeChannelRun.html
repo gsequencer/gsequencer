@@ -1,0 +1,100 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsVolumeChannelRun</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="recall.html" title="Recalls - Effect processors">
+<link rel="prev" href="AgsVolumeChannel.html" title="AgsVolumeChannel">
+<link rel="next" href="AgsVolumeRecycling.html" title="AgsVolumeRecycling">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="AgsVolumeChannel.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="recall.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="AgsVolumeRecycling.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#AgsVolumeChannelRun.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#AgsVolumeChannelRun.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#AgsVolumeChannelRun.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#AgsVolumeChannelRun.implemented-interfaces" class="shortcut">Implemented Interfaces</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="AgsVolumeChannelRun"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="AgsVolumeChannelRun.top_of_page"></a>AgsVolumeChannelRun</span></h2>
+<p>AgsVolumeChannelRun</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="AgsVolumeChannelRun.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">struct              <a class="link" href="AgsVolumeChannelRun.html#AgsVolumeChannelRun-struct" title="struct AgsVolumeChannelRun">AgsVolumeChannelRun</a>;
+struct              <a class="link" href="AgsVolumeChannelRun.html#AgsVolumeChannelRunClass" title="struct AgsVolumeChannelRunClass">AgsVolumeChannelRunClass</a>;
+<a class="link" href="AgsVolumeChannelRun.html" title="AgsVolumeChannelRun"><span class="returnvalue">AgsVolumeChannelRun</span></a> * <a class="link" href="AgsVolumeChannelRun.html#ags-volume-channel-run-new" title="ags_volume_channel_run_new ()">ags_volume_channel_run_new</a>        (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsVolumeChannelRun.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  <GTKDOCLINK HREF="GObject">GObject</GTKDOCLINK>
+   +----<a class="link" href="AgsRecall.html" title="AgsRecall">AgsRecall</a>
+         +----<a class="link" href="AgsRecallChannelRun.html" title="AgsRecallChannelRun">AgsRecallChannelRun</a>
+               +----AgsVolumeChannelRun
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsVolumeChannelRun.implemented-interfaces"></a><h2>Implemented Interfaces</h2>
+<p>
+AgsVolumeChannelRun implements
+ <GTKDOCLINK HREF="AgsConnectable">AgsConnectable</GTKDOCLINK>,  <a class="link" href="AgsPackable.html" title="AgsPackable">AgsPackable</a>,  <a class="link" href="AgsDynamicConnectable.html" title="AgsDynamicConnectable">AgsDynamicConnectable</a> and  <a class="link" href="AgsPlugin.html" title="AgsPlugin">AgsPlugin</a>.</p>
+</div>
+<div class="refsect1">
+<a name="AgsVolumeChannelRun.description"></a><h2>Description</h2>
+<p>
+</p>
+</div>
+<div class="refsect1">
+<a name="AgsVolumeChannelRun.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AgsVolumeChannelRun-struct"></a><h3>struct AgsVolumeChannelRun</h3>
+<pre class="programlisting">struct AgsVolumeChannelRun;</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsVolumeChannelRunClass"></a><h3>struct AgsVolumeChannelRunClass</h3>
+<pre class="programlisting">struct AgsVolumeChannelRunClass {
+  AgsRecallChannelRunClass recall_channel_run;
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-volume-channel-run-new"></a><h3>ags_volume_channel_run_new ()</h3>
+<pre class="programlisting"><a class="link" href="AgsVolumeChannelRun.html" title="AgsVolumeChannelRun"><span class="returnvalue">AgsVolumeChannelRun</span></a> * ags_volume_channel_run_new        (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>);</pre>
+<p>
+</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

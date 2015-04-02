@@ -1,0 +1,165 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsNotebook</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer">
+<link rel="up" href="ch01.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td> </td>
+<td><a accesskey="u" href="ch01.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer</th>
+<td> </td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#ags-AgsNotebook.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#ags-AgsNotebook.description" class="shortcut">Description</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="ags-AgsNotebook"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="ags-AgsNotebook.top_of_page"></a>AgsNotebook</span></h2>
+<p>AgsNotebook</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="ags-AgsNotebook.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">#define             <a href="ags-AgsNotebook.html#AGS-NOTEBOOK-TAB:CAPS">AGS_NOTEBOOK_TAB</a>                    (x)
+struct              <a href="ags-AgsNotebook.html#AgsNotebook">AgsNotebook</a>;
+struct              <a href="ags-AgsNotebook.html#AgsNotebookClass">AgsNotebookClass</a>;
+struct              <a href="ags-AgsNotebook.html#AgsNotebookTab">AgsNotebookTab</a>;
+enum                <a href="ags-AgsNotebook.html#AgsNotebookTabFlags">AgsNotebookTabFlags</a>;
+<span class="returnvalue">void</span>                <a href="ags-AgsNotebook.html#ags-notebook-add-child">ags_notebook_add_child</a>              (<em class="parameter"><code><a href="ags-AgsNotebook.html#AgsNotebook"><span class="type">AgsNotebook</span></a> *notebook</code></em>,
+                                                         <em class="parameter"><code><a href="../gtk3/GtkWidget.html"><span class="type">GtkWidget</span></a> *child</code></em>);
+<a href="../glib/glib-Basic-Types.html#gint"><span class="returnvalue">gint</span></a>                <a href="ags-AgsNotebook.html#ags-notebook-add-tab">ags_notebook_add_tab</a>                (<em class="parameter"><code><a href="ags-AgsNotebook.html#AgsNotebook"><span class="type">AgsNotebook</span></a> *notebook</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-AgsNotebook.html#ags-notebook-insert-tab">ags_notebook_insert_tab</a>             (<em class="parameter"><code><a href="ags-AgsNotebook.html#AgsNotebook"><span class="type">AgsNotebook</span></a> *notebook</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gint"><span class="type">gint</span></a> position</code></em>);
+<a href="ags-AgsNotebook.html#AgsNotebook"><span class="returnvalue">AgsNotebook</span></a> *       <a href="ags-AgsNotebook.html#ags-notebook-new">ags_notebook_new</a>                    ();
+<a href="../glib/glib-Basic-Types.html#gint"><span class="returnvalue">gint</span></a>                <a href="ags-AgsNotebook.html#ags-notebook-next-active-tab">ags_notebook_next_active_tab</a>        (<em class="parameter"><code><a href="ags-AgsNotebook.html#AgsNotebook"><span class="type">AgsNotebook</span></a> *notebook</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gint"><span class="type">gint</span></a> position</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-AgsNotebook.html#ags-notebook-remove-child">ags_notebook_remove_child</a>           (<em class="parameter"><code><a href="ags-AgsNotebook.html#AgsNotebook"><span class="type">AgsNotebook</span></a> *notebook</code></em>,
+                                                         <em class="parameter"><code><a href="../gtk3/GtkWidget.html"><span class="type">GtkWidget</span></a> *child</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-AgsNotebook.html#ags-notebook-remove-tab">ags_notebook_remove_tab</a>             (<em class="parameter"><code><a href="ags-AgsNotebook.html#AgsNotebook"><span class="type">AgsNotebook</span></a> *notebook</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gint"><span class="type">gint</span></a> nth</code></em>);
+<a href="../glib/glib-Basic-Types.html#gint"><span class="returnvalue">gint</span></a>                <a href="ags-AgsNotebook.html#ags-notebook-tab-index">ags_notebook_tab_index</a>              (<em class="parameter"><code><a href="ags-AgsNotebook.html#AgsNotebook"><span class="type">AgsNotebook</span></a> *notebook</code></em>,
+                                                         <em class="parameter"><code><a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a> *notation</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="ags-AgsNotebook.description"></a><h2>Description</h2>
+</div>
+<div class="refsect1">
+<a name="ags-AgsNotebook.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AGS-NOTEBOOK-TAB:CAPS"></a><h3>AGS_NOTEBOOK_TAB()</h3>
+<pre class="programlisting">#define AGS_NOTEBOOK_TAB(x) ((AgsNotebookTab *)(x))
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsNotebook"></a><h3>struct AgsNotebook</h3>
+<pre class="programlisting">struct AgsNotebook {
+  GtkVBox vbox;
+
+  guint flags;
+
+  GtkHBox *hbox;
+
+  GList *tabs;
+  GtkWidget *child;
+};
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsNotebookClass"></a><h3>struct AgsNotebookClass</h3>
+<pre class="programlisting">struct AgsNotebookClass {
+  GtkVBoxClass vbox;
+};
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsNotebookTab"></a><h3>struct AgsNotebookTab</h3>
+<pre class="programlisting">struct AgsNotebookTab {
+  guint flags;
+
+  GtkToggleButton *toggle;
+  GObject *notation;
+};
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsNotebookTabFlags"></a><h3>enum AgsNotebookTabFlags</h3>
+<pre class="programlisting">typedef enum {
+  AGS_NOTEBOOK_TAB_VISIBLE           = 1,
+  AGS_NOTEBOOK_TAB_MODE_NORMAL       = 1 &lt;&lt; 1,
+  AGS_NOTEBOOK_TAB_MODE_OVERLAY      = 1 &lt;&lt; 2,
+} AgsNotebookTabFlags;
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-notebook-add-child"></a><h3>ags_notebook_add_child ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_notebook_add_child              (<em class="parameter"><code><a href="ags-AgsNotebook.html#AgsNotebook"><span class="type">AgsNotebook</span></a> *notebook</code></em>,
+                                                         <em class="parameter"><code><a href="../gtk3/GtkWidget.html"><span class="type">GtkWidget</span></a> *child</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-notebook-add-tab"></a><h3>ags_notebook_add_tab ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#gint"><span class="returnvalue">gint</span></a>                ags_notebook_add_tab                (<em class="parameter"><code><a href="ags-AgsNotebook.html#AgsNotebook"><span class="type">AgsNotebook</span></a> *notebook</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-notebook-insert-tab"></a><h3>ags_notebook_insert_tab ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_notebook_insert_tab             (<em class="parameter"><code><a href="ags-AgsNotebook.html#AgsNotebook"><span class="type">AgsNotebook</span></a> *notebook</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gint"><span class="type">gint</span></a> position</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-notebook-new"></a><h3>ags_notebook_new ()</h3>
+<pre class="programlisting"><a href="ags-AgsNotebook.html#AgsNotebook"><span class="returnvalue">AgsNotebook</span></a> *       ags_notebook_new                    ();</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-notebook-next-active-tab"></a><h3>ags_notebook_next_active_tab ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#gint"><span class="returnvalue">gint</span></a>                ags_notebook_next_active_tab        (<em class="parameter"><code><a href="ags-AgsNotebook.html#AgsNotebook"><span class="type">AgsNotebook</span></a> *notebook</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gint"><span class="type">gint</span></a> position</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-notebook-remove-child"></a><h3>ags_notebook_remove_child ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_notebook_remove_child           (<em class="parameter"><code><a href="ags-AgsNotebook.html#AgsNotebook"><span class="type">AgsNotebook</span></a> *notebook</code></em>,
+                                                         <em class="parameter"><code><a href="../gtk3/GtkWidget.html"><span class="type">GtkWidget</span></a> *child</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-notebook-remove-tab"></a><h3>ags_notebook_remove_tab ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_notebook_remove_tab             (<em class="parameter"><code><a href="ags-AgsNotebook.html#AgsNotebook"><span class="type">AgsNotebook</span></a> *notebook</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gint"><span class="type">gint</span></a> nth</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-notebook-tab-index"></a><h3>ags_notebook_tab_index ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#gint"><span class="returnvalue">gint</span></a>                ags_notebook_tab_index              (<em class="parameter"><code><a href="ags-AgsNotebook.html#AgsNotebook"><span class="type">AgsNotebook</span></a> *notebook</code></em>,
+                                                         <em class="parameter"><code><a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a> *notation</code></em>);</pre>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

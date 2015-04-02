@@ -1,0 +1,19 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>AgsSndfile</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="ags Reference Manual"><link rel="up" href="ch01.html" title="Chapter 1. [Insert title here]"><link rel="prev" href="re250.html" title="AgsSingleThread"><link rel="next" href="re252.html" title="AgsStartDevout"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="ags-AgsSndfile"></a><div class="titlepage"></div><div class="refnamediv"><h2>Name</h2><p>AgsSndfile</p></div><div class="refsynopsisdiv"><a name="ags-AgsSndfile.synopsis"></a><h2>Synopsis</h2><pre class="synopsis">enum                <a class="link" href="re251.html#AgsSndfileFlags" title="enum AgsSndfileFlags">AgsSndfileFlags</a>;
+struct              <a class="link" href="re251.html#AgsSndfile" title="struct AgsSndfile">AgsSndfile</a>;
+struct              <a class="link" href="re251.html#AgsSndfileClass" title="struct AgsSndfileClass">AgsSndfileClass</a>;
+<a class="link" href="re251.html#AgsSndfile" title="struct AgsSndfile"><span class="returnvalue">AgsSndfile</span></a> *        <a class="link" href="re251.html#ags-sndfile-new" title="ags_sndfile_new ()">ags_sndfile_new</a>                     ();
+</pre></div><div class="refsect1"><a name="ags-AgsSndfile.description"></a><h2>Description</h2></div><div class="refsect1"><a name="ags-AgsSndfile.details"></a><h2>Details</h2><div class="refsect2"><a name="AgsSndfileFlags"></a><h3>enum AgsSndfileFlags</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsSndfileFlags"></OBJECT><pre class="programlisting">typedef enum {
+  AGS_SNDFILE_ITER_START    = 1,
+} AgsSndfileFlags;
+</pre><div class="variablelist"><dl class="variablelist"><dt><a name="AGS-SNDFILE-ITER-START:CAPS"></a><span class="term"><code class="literal">AGS_SNDFILE_ITER_START</code></span></dt><dd></dd></dl></div></div><div class="refsect2"><a name="AgsSndfile"></a><h3>struct AgsSndfile</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsSndfile"></OBJECT><pre class="programlisting">struct AgsSndfile {
+  GObject object;
+
+  guint flags;
+
+  SF_INFO *info;
+  SNDFILE *file;
+};
+</pre></div><div class="refsect2"><a name="AgsSndfileClass"></a><h3>struct AgsSndfileClass</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsSndfileClass"></OBJECT><pre class="programlisting">struct AgsSndfileClass {
+  GObjectClass object;
+};
+</pre></div><div class="refsect2"><a name="ags-sndfile-new"></a><h3>ags_sndfile_new ()</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="ags_sndfile_new"></OBJECT><pre class="programlisting"><a class="link" href="re251.html#AgsSndfile" title="struct AgsSndfile"><span class="returnvalue">AgsSndfile</span></a> *        ags_sndfile_new                     ();</pre></div></div></div></body></html>

@@ -1,0 +1,17 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>AgsSingleThread</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="ags Reference Manual"><link rel="up" href="ch01.html" title="Chapter 1. [Insert title here]"><link rel="prev" href="re249.html" title="ags_sf2_chooser_callbacks"><link rel="next" href="re251.html" title="AgsSndfile"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="ags-AgsSingleThread"></a><div class="titlepage"></div><div class="refnamediv"><h2>Name</h2><p>AgsSingleThread</p></div><div class="refsynopsisdiv"><a name="ags-AgsSingleThread.synopsis"></a><h2>Synopsis</h2><pre class="synopsis">#define             <a class="link" href="re250.html#AGS-SINGLE-THREAD-DEFAULT-GUI-JIFFIE:CAPS" title="AGS_SINGLE_THREAD_DEFAULT_GUI_JIFFIE">AGS_SINGLE_THREAD_DEFAULT_GUI_JIFFIE</a>
+struct              <a class="link" href="re250.html#AgsSingleThread" title="struct AgsSingleThread">AgsSingleThread</a>;
+struct              <a class="link" href="re250.html#AgsSingleThreadClass" title="struct AgsSingleThreadClass">AgsSingleThreadClass</a>;
+<a class="link" href="re250.html#AgsSingleThread" title="struct AgsSingleThread"><span class="returnvalue">AgsSingleThread</span></a> *   <a class="link" href="re250.html#ags-single-thread-new" title="ags_single_thread_new ()">ags_single_thread_new</a>               ();
+</pre></div><div class="refsect1"><a name="ags-AgsSingleThread.description"></a><h2>Description</h2></div><div class="refsect1"><a name="ags-AgsSingleThread.details"></a><h2>Details</h2><div class="refsect2"><a name="AGS-SINGLE-THREAD-DEFAULT-GUI-JIFFIE:CAPS"></a><h3>AGS_SINGLE_THREAD_DEFAULT_GUI_JIFFIE</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AGS_SINGLE_THREAD_DEFAULT_GUI_JIFFIE"></OBJECT><pre class="programlisting">#define AGS_SINGLE_THREAD_DEFAULT_GUI_JIFFIE (30)
+</pre></div><div class="refsect2"><a name="AgsSingleThread"></a><h3>struct AgsSingleThread</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsSingleThread"></OBJECT><pre class="programlisting">struct AgsSingleThread {
+  AgsThread thread;
+
+  AgsAudioLoop *audio_loop;
+  AgsDevoutThread *devout_thread;
+  AgsTaskThread *task_thread;
+  AgsGuiThread *gui_thread;
+};
+</pre></div><div class="refsect2"><a name="AgsSingleThreadClass"></a><h3>struct AgsSingleThreadClass</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsSingleThreadClass"></OBJECT><pre class="programlisting">struct AgsSingleThreadClass {
+  AgsThreadClass thread;
+};
+</pre></div><div class="refsect2"><a name="ags-single-thread-new"></a><h3>ags_single_thread_new ()</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="ags_single_thread_new"></OBJECT><pre class="programlisting"><a class="link" href="re250.html#AgsSingleThread" title="struct AgsSingleThread"><span class="returnvalue">AgsSingleThread</span></a> *   ags_single_thread_new               ();</pre></div></div></div></body></html>

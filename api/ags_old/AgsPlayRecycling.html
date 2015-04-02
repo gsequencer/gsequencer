@@ -1,0 +1,104 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsPlayRecycling</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="recall.html" title="Recalls - Effect processors">
+<link rel="prev" href="AgsPlayPattern.html" title="AgsPlayPattern">
+<link rel="next" href="AgsStream.html" title="AgsStream">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="AgsPlayPattern.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="recall.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="AgsStream.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#AgsPlayRecycling.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#AgsPlayRecycling.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#AgsPlayRecycling.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#AgsPlayRecycling.implemented-interfaces" class="shortcut">Implemented Interfaces</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="AgsPlayRecycling"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="AgsPlayRecycling.top_of_page"></a>AgsPlayRecycling</span></h2>
+<p>AgsPlayRecycling</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="AgsPlayRecycling.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">struct              <a class="link" href="AgsPlayRecycling.html#AgsPlayRecycling-struct" title="struct AgsPlayRecycling">AgsPlayRecycling</a>;
+struct              <a class="link" href="AgsPlayRecycling.html#AgsPlayRecyclingClass" title="struct AgsPlayRecyclingClass">AgsPlayRecyclingClass</a>;
+<a class="link" href="AgsPlayRecycling.html" title="AgsPlayRecycling"><span class="returnvalue">AgsPlayRecycling</span></a> *  <a class="link" href="AgsPlayRecycling.html#ags-play-recycling-new" title="ags_play_recycling_new ()">ags_play_recycling_new</a>              (<em class="parameter"><code><a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a> *source</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsDevout.html" title="AgsDevout"><span class="type">AgsDevout</span></a> *devout</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> audio_channel</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsPlayRecycling.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  <GTKDOCLINK HREF="GObject">GObject</GTKDOCLINK>
+   +----<a class="link" href="AgsRecall.html" title="AgsRecall">AgsRecall</a>
+         +----<a class="link" href="AgsRecallRecycling.html" title="AgsRecallRecycling">AgsRecallRecycling</a>
+               +----AgsPlayRecycling
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsPlayRecycling.implemented-interfaces"></a><h2>Implemented Interfaces</h2>
+<p>
+AgsPlayRecycling implements
+ <GTKDOCLINK HREF="AgsConnectable">AgsConnectable</GTKDOCLINK>,  <a class="link" href="AgsPackable.html" title="AgsPackable">AgsPackable</a>,  <a class="link" href="AgsDynamicConnectable.html" title="AgsDynamicConnectable">AgsDynamicConnectable</a> and  <a class="link" href="AgsPlugin.html" title="AgsPlugin">AgsPlugin</a>.</p>
+</div>
+<div class="refsect1">
+<a name="AgsPlayRecycling.description"></a><h2>Description</h2>
+<p>
+</p>
+</div>
+<div class="refsect1">
+<a name="AgsPlayRecycling.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AgsPlayRecycling-struct"></a><h3>struct AgsPlayRecycling</h3>
+<pre class="programlisting">struct AgsPlayRecycling;</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsPlayRecyclingClass"></a><h3>struct AgsPlayRecyclingClass</h3>
+<pre class="programlisting">struct AgsPlayRecyclingClass {
+  AgsRecallRecyclingClass recall_recycling;
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-play-recycling-new"></a><h3>ags_play_recycling_new ()</h3>
+<pre class="programlisting"><a class="link" href="AgsPlayRecycling.html" title="AgsPlayRecycling"><span class="returnvalue">AgsPlayRecycling</span></a> *  ags_play_recycling_new              (<em class="parameter"><code><a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a> *source</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsDevout.html" title="AgsDevout"><span class="type">AgsDevout</span></a> *devout</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> audio_channel</code></em>);</pre>
+<p>
+</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

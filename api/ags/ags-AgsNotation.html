@@ -1,0 +1,737 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsNotation</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="process-tree.html" title="audio processing tree">
+<link rel="prev" href="ags-AgsInput.html" title="AgsInput">
+<link rel="next" href="ags-AgsNote.html" title="AgsNote">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="ags-AgsInput.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="process-tree.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="ags-AgsNote.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#ags-AgsNotation.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#ags-AgsNotation.description" class="shortcut">Description</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="ags-AgsNotation"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="ags-AgsNotation.top_of_page"></a>AgsNotation</span></h2>
+<p>AgsNotation — Notation class supporting selection and clipboard.</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="ags-AgsNotation.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">
+#include &lt;ags/audio/ags_notation.h&gt;
+
+#define             <a class="link" href="ags-AgsNotation.html#AGS-NOTATION-DEFAULT-BPM:CAPS" title="AGS_NOTATION_DEFAULT_BPM">AGS_NOTATION_DEFAULT_BPM</a>
+#define             <a class="link" href="ags-AgsNotation.html#AGS-NOTATION-DEFAULT-DURATION:CAPS" title="AGS_NOTATION_DEFAULT_DURATION">AGS_NOTATION_DEFAULT_DURATION</a>
+#define             <a class="link" href="ags-AgsNotation.html#AGS-NOTATION-DEFAULT-JIFFIE:CAPS" title="AGS_NOTATION_DEFAULT_JIFFIE">AGS_NOTATION_DEFAULT_JIFFIE</a>
+#define             <a class="link" href="ags-AgsNotation.html#AGS-NOTATION-DEFAULT-LENGTH:CAPS" title="AGS_NOTATION_DEFAULT_LENGTH">AGS_NOTATION_DEFAULT_LENGTH</a>
+#define             <a class="link" href="ags-AgsNotation.html#AGS-NOTATION-MAXIMUM-NOTE-LENGTH:CAPS" title="AGS_NOTATION_MAXIMUM_NOTE_LENGTH">AGS_NOTATION_MAXIMUM_NOTE_LENGTH</a>
+#define             <a class="link" href="ags-AgsNotation.html#AGS-NOTATION-MINIMUM-NOTE-LENGTH:CAPS" title="AGS_NOTATION_MINIMUM_NOTE_LENGTH">AGS_NOTATION_MINIMUM_NOTE_LENGTH</a>
+#define             <a class="link" href="ags-AgsNotation.html#AGS-NOTATION-TICS-PER-BEAT:CAPS" title="AGS_NOTATION_TICS_PER_BEAT">AGS_NOTATION_TICS_PER_BEAT</a>
+struct              <a class="link" href="ags-AgsNotation.html#AgsNotation" title="struct AgsNotation">AgsNotation</a>;
+struct              <a class="link" href="ags-AgsNotation.html#AgsNotationClass" title="struct AgsNotationClass">AgsNotationClass</a>;
+enum                <a class="link" href="ags-AgsNotation.html#AgsNotationFlags" title="enum AgsNotationFlags">AgsNotationFlags</a>;
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsNotation.html#ags-notation-add-note" title="ags_notation_add_note ()">ags_notation_add_note</a>               (<em class="parameter"><code><a class="link" href="ags-AgsNotation.html#AgsNotation" title="struct AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsNote.html#AgsNote" title="struct AgsNote"><span class="type">AgsNote</span></a> *note</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gboolean"><span class="type">gboolean</span></GTKDOCLINK> use_selection_list</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsNotation.html#ags-notation-add-point-to-selection" title="ags_notation_add_point_to_selection ()">ags_notation_add_point_to_selection</a> (<em class="parameter"><code><a class="link" href="ags-AgsNotation.html#AgsNotation" title="struct AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> x</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> y</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gboolean"><span class="type">gboolean</span></GTKDOCLINK> replace_current_selection</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsNotation.html#ags-notation-add-region-to-selection" title="ags_notation_add_region_to_selection ()">ags_notation_add_region_to_selection</a>
+                                                        (<em class="parameter"><code><a class="link" href="ags-AgsNotation.html#AgsNotation" title="struct AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> x0</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> y0</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> x1</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> y1</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gboolean"><span class="type">gboolean</span></GTKDOCLINK> replace_current_selection</code></em>);
+<GTKDOCLINK HREF="xmlNodePtr"><span class="returnvalue">xmlNodePtr</span></GTKDOCLINK>          <a class="link" href="ags-AgsNotation.html#ags-notation-copy-selection" title="ags_notation_copy_selection ()">ags_notation_copy_selection</a>         (<em class="parameter"><code><a class="link" href="ags-AgsNotation.html#AgsNotation" title="struct AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>);
+<GTKDOCLINK HREF="xmlNodePtr"><span class="returnvalue">xmlNodePtr</span></GTKDOCLINK>          <a class="link" href="ags-AgsNotation.html#ags-notation-cut-selection" title="ags_notation_cut_selection ()">ags_notation_cut_selection</a>          (<em class="parameter"><code><a class="link" href="ags-AgsNotation.html#AgsNotation" title="struct AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>);
+<GTKDOCLINK HREF="GList"><span class="returnvalue">GList</span></GTKDOCLINK> *             <a class="link" href="ags-AgsNotation.html#ags-notation-find-near-timestamp" title="ags_notation_find_near_timestamp ()">ags_notation_find_near_timestamp</a>    (<em class="parameter"><code><GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> *notation</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> audio_channel</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *timestamp</code></em>);
+<a class="link" href="ags-AgsNote.html#AgsNote" title="struct AgsNote"><span class="returnvalue">AgsNote</span></a> *           <a class="link" href="ags-AgsNotation.html#ags-notation-find-point" title="ags_notation_find_point ()">ags_notation_find_point</a>             (<em class="parameter"><code><a class="link" href="ags-AgsNotation.html#AgsNotation" title="struct AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> x</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> y</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gboolean"><span class="type">gboolean</span></GTKDOCLINK> use_selection_list</code></em>);
+<GTKDOCLINK HREF="GList"><span class="returnvalue">GList</span></GTKDOCLINK> *             <a class="link" href="ags-AgsNotation.html#ags-notation-find-region" title="ags_notation_find_region ()">ags_notation_find_region</a>            (<em class="parameter"><code><a class="link" href="ags-AgsNotation.html#AgsNotation" title="struct AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> x0</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> y0</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> x1</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> y1</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gboolean"><span class="type">gboolean</span></GTKDOCLINK> use_selection_list</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsNotation.html#ags-notation-free-selection" title="ags_notation_free_selection ()">ags_notation_free_selection</a>         (<em class="parameter"><code><a class="link" href="ags-AgsNotation.html#AgsNotation" title="struct AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>);
+<GTKDOCLINK HREF="GList"><span class="returnvalue">GList</span></GTKDOCLINK> *             <a class="link" href="ags-AgsNotation.html#ags-notation-get-current" title="ags_notation_get_current ()">ags_notation_get_current</a>            (<em class="parameter"><code><a class="link" href="ags-AgsNotation.html#AgsNotation" title="struct AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>);
+<GTKDOCLINK HREF="GList"><span class="returnvalue">GList</span></GTKDOCLINK> *             <a class="link" href="ags-AgsNotation.html#ags-notation-get-selection" title="ags_notation_get_selection ()">ags_notation_get_selection</a>          (<em class="parameter"><code><a class="link" href="ags-AgsNotation.html#AgsNotation" title="struct AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsNotation.html#ags-notation-insert-from-clipboard" title="ags_notation_insert_from_clipboard ()">ags_notation_insert_from_clipboard</a>  (<em class="parameter"><code><a class="link" href="ags-AgsNotation.html#AgsNotation" title="struct AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="xmlNodePtr"><span class="type">xmlNodePtr</span></GTKDOCLINK> content</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gboolean"><span class="type">gboolean</span></GTKDOCLINK> reset_x_offset</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> x_offset</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gboolean"><span class="type">gboolean</span></GTKDOCLINK> reset_y_offset</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> y_offset</code></em>);
+<GTKDOCLINK HREF="gboolean"><span class="returnvalue">gboolean</span></GTKDOCLINK>            <a class="link" href="ags-AgsNotation.html#ags-notation-is-note-selected" title="ags_notation_is_note_selected ()">ags_notation_is_note_selected</a>       (<em class="parameter"><code><a class="link" href="ags-AgsNotation.html#AgsNotation" title="struct AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsNote.html#AgsNote" title="struct AgsNote"><span class="type">AgsNote</span></a> *note</code></em>);
+<a class="link" href="ags-AgsNotation.html#AgsNotation" title="struct AgsNotation"><span class="returnvalue">AgsNotation</span></a> *       <a class="link" href="ags-AgsNotation.html#ags-notation-new" title="ags_notation_new ()">ags_notation_new</a>                    (<em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> audio_channel</code></em>);
+<GTKDOCLINK HREF="gboolean"><span class="returnvalue">gboolean</span></GTKDOCLINK>            <a class="link" href="ags-AgsNotation.html#ags-notation-remove-note-at-position" title="ags_notation_remove_note_at_position ()">ags_notation_remove_note_at_position</a>
+                                                        (<em class="parameter"><code><a class="link" href="ags-AgsNotation.html#AgsNotation" title="struct AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> x</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> y</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsNotation.html#ags-notation-remove-point-from-selection" title="ags_notation_remove_point_from_selection ()">ags_notation_remove_point_from_selection</a>
+                                                        (<em class="parameter"><code><a class="link" href="ags-AgsNotation.html#AgsNotation" title="struct AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> x</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> y</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsNotation.html#ags-notation-remove-region-from-selection" title="ags_notation_remove_region_from_selection ()">ags_notation_remove_region_from_selection</a>
+                                                        (<em class="parameter"><code><a class="link" href="ags-AgsNotation.html#AgsNotation" title="struct AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> x0</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> y0</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> x1</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> y1</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="ags-AgsNotation.description"></a><h2>Description</h2>
+<p>
+<a class="link" href="ags-AgsNotation.html#AgsNotation" title="struct AgsNotation"><span class="type">AgsNotation</span></a> acts as a container of <a class="link" href="ags-AgsNote.html#AgsNote" title="struct AgsNote"><span class="type">AgsNote</span></a>.
+</p>
+</div>
+<div class="refsect1">
+<a name="ags-AgsNotation.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AGS-NOTATION-DEFAULT-BPM:CAPS"></a><h3>AGS_NOTATION_DEFAULT_BPM</h3>
+<pre class="programlisting">#define AGS_NOTATION_DEFAULT_BPM (120.0)
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-NOTATION-DEFAULT-DURATION:CAPS"></a><h3>AGS_NOTATION_DEFAULT_DURATION</h3>
+<pre class="programlisting">#define AGS_NOTATION_DEFAULT_DURATION (AGS_NOTATION_DEFAULT_LENGTH * AGS_NOTATION_DEFAULT_JIFFIE * AGS_MICROSECONDS_PER_SECOND)
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-NOTATION-DEFAULT-JIFFIE:CAPS"></a><h3>AGS_NOTATION_DEFAULT_JIFFIE</h3>
+<pre class="programlisting">#define AGS_NOTATION_DEFAULT_JIFFIE (60.0 / AGS_NOTATION_DEFAULT_BPM / AGS_NOTATION_TICS_PER_BEAT)
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-NOTATION-DEFAULT-LENGTH:CAPS"></a><h3>AGS_NOTATION_DEFAULT_LENGTH</h3>
+<pre class="programlisting">#define AGS_NOTATION_DEFAULT_LENGTH (65535.0 / AGS_NOTATION_TICS_PER_BEAT - AGS_NOTATION_MAXIMUM_NOTE_LENGTH)
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-NOTATION-MAXIMUM-NOTE-LENGTH:CAPS"></a><h3>AGS_NOTATION_MAXIMUM_NOTE_LENGTH</h3>
+<pre class="programlisting">#define AGS_NOTATION_MAXIMUM_NOTE_LENGTH (16.0)
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-NOTATION-MINIMUM-NOTE-LENGTH:CAPS"></a><h3>AGS_NOTATION_MINIMUM_NOTE_LENGTH</h3>
+<pre class="programlisting">#define AGS_NOTATION_MINIMUM_NOTE_LENGTH (1.0 / 16.0)
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-NOTATION-TICS-PER-BEAT:CAPS"></a><h3>AGS_NOTATION_TICS_PER_BEAT</h3>
+<pre class="programlisting">#define AGS_NOTATION_TICS_PER_BEAT (1.0)
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsNotation"></a><h3>struct AgsNotation</h3>
+<pre class="programlisting">struct AgsNotation {
+  GObject object;
+
+  guint flags;
+
+  GObject *timestamp;
+
+  guint audio_channel;
+  GObject *audio;
+
+  gchar *key;
+  gdouble base_frequency;
+
+  gdouble tact;
+  gdouble bpm;
+
+  gdouble maximum_note_length;
+
+  GList *notes;
+  
+  gdouble start_loop;
+  gdouble end_loop;
+  gdouble offset;
+
+  GList *selection;
+
+  GObject *port;
+
+  GList *current_notes;
+  GList *next_notes;
+};
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsNotationClass"></a><h3>struct AgsNotationClass</h3>
+<pre class="programlisting">struct AgsNotationClass {
+  GObjectClass object;
+};
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsNotationFlags"></a><h3>enum AgsNotationFlags</h3>
+<pre class="programlisting">typedef enum {
+  AGS_NOTATION_STICKY              =  1,
+  AGS_NOTATION_INDICATED_LENGTH    =  1 &lt;&lt;  1,
+} AgsNotationFlags;
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-notation-add-note"></a><h3>ags_notation_add_note ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_notation_add_note               (<em class="parameter"><code><a class="link" href="ags-AgsNotation.html#AgsNotation" title="struct AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsNote.html#AgsNote" title="struct AgsNote"><span class="type">AgsNote</span></a> *note</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gboolean"><span class="type">gboolean</span></GTKDOCLINK> use_selection_list</code></em>);</pre>
+<p>
+Adds a note to notation.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>notation</code></em> :</span></p></td>
+<td>an <a class="link" href="ags-AgsNotation.html#AgsNotation" title="struct AgsNotation"><span class="type">AgsNotation</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>note</code></em> :</span></p></td>
+<td>the <a class="link" href="ags-AgsNote.html#AgsNote" title="struct AgsNote"><span class="type">AgsNote</span></a> to add</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>use_selection_list</code></em> :</span></p></td>
+<td>if <GTKDOCLINK HREF="TRUE:CAPS"><code class="literal">TRUE</code></GTKDOCLINK> add to selection, else to default notation</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-notation-add-point-to-selection"></a><h3>ags_notation_add_point_to_selection ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_notation_add_point_to_selection (<em class="parameter"><code><a class="link" href="ags-AgsNotation.html#AgsNotation" title="struct AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> x</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> y</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gboolean"><span class="type">gboolean</span></GTKDOCLINK> replace_current_selection</code></em>);</pre>
+<p>
+Select notes at position.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>notation</code></em> :</span></p></td>
+<td>an <a class="link" href="ags-AgsNotation.html#AgsNotation" title="struct AgsNotation"><span class="type">AgsNotation</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>x</code></em> :</span></p></td>
+<td>offset</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>y</code></em> :</span></p></td>
+<td>tone</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>replace_current_selection</code></em> :</span></p></td>
+<td>if <GTKDOCLINK HREF="TRUE:CAPS"><code class="literal">TRUE</code></GTKDOCLINK> selection is replaced</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-notation-add-region-to-selection"></a><h3>ags_notation_add_region_to_selection ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_notation_add_region_to_selection
+                                                        (<em class="parameter"><code><a class="link" href="ags-AgsNotation.html#AgsNotation" title="struct AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> x0</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> y0</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> x1</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> y1</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gboolean"><span class="type">gboolean</span></GTKDOCLINK> replace_current_selection</code></em>);</pre>
+<p>
+Select notes within region.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>notation</code></em> :</span></p></td>
+<td>an <a class="link" href="ags-AgsNotation.html#AgsNotation" title="struct AgsNotation"><span class="type">AgsNotation</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>x0</code></em> :</span></p></td>
+<td>start offset</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>y0</code></em> :</span></p></td>
+<td>start tone</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>x1</code></em> :</span></p></td>
+<td>end offset</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>y1</code></em> :</span></p></td>
+<td>end tone</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>replace_current_selection</code></em> :</span></p></td>
+<td>if <GTKDOCLINK HREF="TRUE:CAPS"><code class="literal">TRUE</code></GTKDOCLINK> selection is replaced</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-notation-copy-selection"></a><h3>ags_notation_copy_selection ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="xmlNodePtr"><span class="returnvalue">xmlNodePtr</span></GTKDOCLINK>          ags_notation_copy_selection         (<em class="parameter"><code><a class="link" href="ags-AgsNotation.html#AgsNotation" title="struct AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>);</pre>
+<p>
+Copy selection to clipboard.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>notation</code></em> :</span></p></td>
+<td>an <a class="link" href="ags-AgsNotation.html#AgsNotation" title="struct AgsNotation"><span class="type">AgsNotation</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the selection as XML.</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-notation-cut-selection"></a><h3>ags_notation_cut_selection ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="xmlNodePtr"><span class="returnvalue">xmlNodePtr</span></GTKDOCLINK>          ags_notation_cut_selection          (<em class="parameter"><code><a class="link" href="ags-AgsNotation.html#AgsNotation" title="struct AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>);</pre>
+<p>
+Cut selection to clipboard.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>notation</code></em> :</span></p></td>
+<td>an <a class="link" href="ags-AgsNotation.html#AgsNotation" title="struct AgsNotation"><span class="type">AgsNotation</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the selection as XML.</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-notation-find-near-timestamp"></a><h3>ags_notation_find_near_timestamp ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="GList"><span class="returnvalue">GList</span></GTKDOCLINK> *             ags_notation_find_near_timestamp    (<em class="parameter"><code><GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> *notation</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> audio_channel</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *timestamp</code></em>);</pre>
+<p>
+Retrieve appropriate notation for timestamp.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>notation</code></em> :</span></p></td>
+<td>a <GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> containing <a class="link" href="ags-AgsNotation.html#AgsNotation" title="struct AgsNotation"><span class="type">AgsNotation</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>audio_channel</code></em> :</span></p></td>
+<td>the matching audio channel</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>timestamp</code></em> :</span></p></td>
+<td>the matching timestamp</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>Next match.</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-notation-find-point"></a><h3>ags_notation_find_point ()</h3>
+<pre class="programlisting"><a class="link" href="ags-AgsNote.html#AgsNote" title="struct AgsNote"><span class="returnvalue">AgsNote</span></a> *           ags_notation_find_point             (<em class="parameter"><code><a class="link" href="ags-AgsNotation.html#AgsNotation" title="struct AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> x</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> y</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gboolean"><span class="type">gboolean</span></GTKDOCLINK> use_selection_list</code></em>);</pre>
+<p>
+Find note by offset and tone.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>notation</code></em> :</span></p></td>
+<td>an <a class="link" href="ags-AgsNotation.html#AgsNotation" title="struct AgsNotation"><span class="type">AgsNotation</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>x</code></em> :</span></p></td>
+<td>offset</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>y</code></em> :</span></p></td>
+<td>note</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>use_selection_list</code></em> :</span></p></td>
+<td>if <GTKDOCLINK HREF="TRUE:CAPS"><code class="literal">TRUE</code></GTKDOCLINK> selection is searched</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the matching note.</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-notation-find-region"></a><h3>ags_notation_find_region ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="GList"><span class="returnvalue">GList</span></GTKDOCLINK> *             ags_notation_find_region            (<em class="parameter"><code><a class="link" href="ags-AgsNotation.html#AgsNotation" title="struct AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> x0</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> y0</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> x1</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> y1</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gboolean"><span class="type">gboolean</span></GTKDOCLINK> use_selection_list</code></em>);</pre>
+<p>
+Find notes by offset and tone region.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>notation</code></em> :</span></p></td>
+<td>an <a class="link" href="ags-AgsNotation.html#AgsNotation" title="struct AgsNotation"><span class="type">AgsNotation</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>x0</code></em> :</span></p></td>
+<td>start offset</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>y0</code></em> :</span></p></td>
+<td>start tone</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>x1</code></em> :</span></p></td>
+<td>end offset</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>y1</code></em> :</span></p></td>
+<td>end tone</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>use_selection</code></em> :</span></p></td>
+<td>_list if <GTKDOCLINK HREF="TRUE:CAPS"><code class="literal">TRUE</code></GTKDOCLINK> selection is searched</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the matching notes as <GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK>.</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-notation-free-selection"></a><h3>ags_notation_free_selection ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_notation_free_selection         (<em class="parameter"><code><a class="link" href="ags-AgsNotation.html#AgsNotation" title="struct AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>);</pre>
+<p>
+Clear selection.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><em class="parameter"><code>notation</code></em> :</span></p></td>
+<td>an <a class="link" href="ags-AgsNotation.html#AgsNotation" title="struct AgsNotation"><span class="type">AgsNotation</span></a>
+</td>
+</tr></tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-notation-get-current"></a><h3>ags_notation_get_current ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="GList"><span class="returnvalue">GList</span></GTKDOCLINK> *             ags_notation_get_current            (<em class="parameter"><code><a class="link" href="ags-AgsNotation.html#AgsNotation" title="struct AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-notation-get-selection"></a><h3>ags_notation_get_selection ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="GList"><span class="returnvalue">GList</span></GTKDOCLINK> *             ags_notation_get_selection          (<em class="parameter"><code><a class="link" href="ags-AgsNotation.html#AgsNotation" title="struct AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>);</pre>
+<p>
+Retrieve selection.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>notation</code></em> :</span></p></td>
+<td>the <a class="link" href="ags-AgsNotation.html#AgsNotation" title="struct AgsNotation"><span class="type">AgsNotation</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the selection.</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-notation-insert-from-clipboard"></a><h3>ags_notation_insert_from_clipboard ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_notation_insert_from_clipboard  (<em class="parameter"><code><a class="link" href="ags-AgsNotation.html#AgsNotation" title="struct AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="xmlNodePtr"><span class="type">xmlNodePtr</span></GTKDOCLINK> content</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gboolean"><span class="type">gboolean</span></GTKDOCLINK> reset_x_offset</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> x_offset</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gboolean"><span class="type">gboolean</span></GTKDOCLINK> reset_y_offset</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> y_offset</code></em>);</pre>
+<p>
+Paste previously copied notes.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>notation</code></em> :</span></p></td>
+<td>an <a class="link" href="ags-AgsNotation.html#AgsNotation" title="struct AgsNotation"><span class="type">AgsNotation</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>notation_node</code></em> :</span></p></td>
+<td>the clipboard XML data</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>reset_x_offset</code></em> :</span></p></td>
+<td>if <GTKDOCLINK HREF="TRUE:CAPS"><code class="literal">TRUE</code></GTKDOCLINK> <em class="parameter"><code>x_offset</code></em> used as cursor</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>x_offset</code></em> :</span></p></td>
+<td>region start cursor offset</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>reset_y_offset</code></em> :</span></p></td>
+<td>if <GTKDOCLINK HREF="TRUE:CAPS"><code class="literal">TRUE</code></GTKDOCLINK> <em class="parameter"><code>y_offset</code></em> used as cursor</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>y_offset</code></em> :</span></p></td>
+<td>region start cursor tone</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-notation-is-note-selected"></a><h3>ags_notation_is_note_selected ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="gboolean"><span class="returnvalue">gboolean</span></GTKDOCLINK>            ags_notation_is_note_selected       (<em class="parameter"><code><a class="link" href="ags-AgsNotation.html#AgsNotation" title="struct AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsNote.html#AgsNote" title="struct AgsNote"><span class="type">AgsNote</span></a> *note</code></em>);</pre>
+<p>
+Check selection for note.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>notation</code></em> :</span></p></td>
+<td>the <a class="link" href="ags-AgsNotation.html#AgsNotation" title="struct AgsNotation"><span class="type">AgsNotation</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>note</code></em> :</span></p></td>
+<td>the <a class="link" href="ags-AgsNote.html#AgsNote" title="struct AgsNote"><span class="type">AgsNote</span></a> to check for</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>
+<GTKDOCLINK HREF="TRUE:CAPS"><code class="literal">TRUE</code></GTKDOCLINK> if selected</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-notation-new"></a><h3>ags_notation_new ()</h3>
+<pre class="programlisting"><a class="link" href="ags-AgsNotation.html#AgsNotation" title="struct AgsNotation"><span class="returnvalue">AgsNotation</span></a> *       ags_notation_new                    (<em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> audio_channel</code></em>);</pre>
+<p>
+Creates a <a class="link" href="ags-AgsNotation.html#AgsNotation" title="struct AgsNotation"><span class="type">AgsNotation</span></a>, assigned to <em class="parameter"><code>audio_channel</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>audio_channel</code></em> :</span></p></td>
+<td>the audio channel to be used</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new <a class="link" href="ags-AgsNotation.html#AgsNotation" title="struct AgsNotation"><span class="type">AgsNotation</span></a>
+</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-notation-remove-note-at-position"></a><h3>ags_notation_remove_note_at_position ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="gboolean"><span class="returnvalue">gboolean</span></GTKDOCLINK>            ags_notation_remove_note_at_position
+                                                        (<em class="parameter"><code><a class="link" href="ags-AgsNotation.html#AgsNotation" title="struct AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> x</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> y</code></em>);</pre>
+<p>
+Removes one <a class="link" href="ags-AgsNote.html#AgsNote" title="struct AgsNote"><span class="type">AgsNote</span></a> of notation.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>notation</code></em> :</span></p></td>
+<td>an <a class="link" href="ags-AgsNotation.html#AgsNotation" title="struct AgsNotation"><span class="type">AgsNotation</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>x</code></em> :</span></p></td>
+<td>offset</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>y</code></em> :</span></p></td>
+<td>note</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>
+<GTKDOCLINK HREF="TRUE:CAPS"><code class="literal">TRUE</code></GTKDOCLINK> if successfully removed note.</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-notation-remove-point-from-selection"></a><h3>ags_notation_remove_point_from_selection ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_notation_remove_point_from_selection
+                                                        (<em class="parameter"><code><a class="link" href="ags-AgsNotation.html#AgsNotation" title="struct AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> x</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> y</code></em>);</pre>
+<p>
+Remove notes at position of selection.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>notation</code></em> :</span></p></td>
+<td>an <a class="link" href="ags-AgsNotation.html#AgsNotation" title="struct AgsNotation"><span class="type">AgsNotation</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>x</code></em> :</span></p></td>
+<td>offset</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>y</code></em> :</span></p></td>
+<td>tone</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-notation-remove-region-from-selection"></a><h3>ags_notation_remove_region_from_selection ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_notation_remove_region_from_selection
+                                                        (<em class="parameter"><code><a class="link" href="ags-AgsNotation.html#AgsNotation" title="struct AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> x0</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> y0</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> x1</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> y1</code></em>);</pre>
+<p>
+Remove notes within region of selection.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>notation</code></em> :</span></p></td>
+<td>an <a class="link" href="ags-AgsNotation.html#AgsNotation" title="struct AgsNotation"><span class="type">AgsNotation</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>x0</code></em> :</span></p></td>
+<td>start offset</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>y0</code></em> :</span></p></td>
+<td>start tone</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>x1</code></em> :</span></p></td>
+<td>end offset</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>y1</code></em> :</span></p></td>
+<td>end tone</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

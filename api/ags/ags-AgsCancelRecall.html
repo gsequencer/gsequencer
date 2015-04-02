@@ -1,0 +1,110 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsCancelRecall</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="task.html" title="Task - Data exchanged between Audio and GUI">
+<link rel="prev" href="ags-AgsCancelChannel.html" title="AgsCancelChannel">
+<link rel="next" href="ags-AgsChangeIndicator.html" title="AgsChangeIndicator">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="ags-AgsCancelChannel.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="task.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="ags-AgsChangeIndicator.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#ags-AgsCancelRecall.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#ags-AgsCancelRecall.description" class="shortcut">Description</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="ags-AgsCancelRecall"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="ags-AgsCancelRecall.top_of_page"></a>AgsCancelRecall</span></h2>
+<p>AgsCancelRecall — cancel recall object</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="ags-AgsCancelRecall.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">
+#include &lt;ags/audio/task/ags_cancel_recall.h&gt;
+
+struct              <a class="link" href="ags-AgsCancelRecall.html#AgsCancelRecall" title="struct AgsCancelRecall">AgsCancelRecall</a>;
+struct              <a class="link" href="ags-AgsCancelRecall.html#AgsCancelRecallClass" title="struct AgsCancelRecallClass">AgsCancelRecallClass</a>;
+<a class="link" href="ags-AgsCancelRecall.html#AgsCancelRecall" title="struct AgsCancelRecall"><span class="returnvalue">AgsCancelRecall</span></a> *   <a class="link" href="ags-AgsCancelRecall.html#ags-cancel-recall-new" title="ags_cancel_recall_new ()">ags_cancel_recall_new</a>               (<em class="parameter"><code><a class="link" href="ags-AgsRecall.html#AgsRecall" title="struct AgsRecall"><span class="type">AgsRecall</span></a> *recall</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsDevout.html#AgsDevoutPlay" title="struct AgsDevoutPlay"><span class="type">AgsDevoutPlay</span></a> *play</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="ags-AgsCancelRecall.description"></a><h2>Description</h2>
+<p>
+The <a class="link" href="ags-AgsCancelRecall.html#AgsCancelRecall" title="struct AgsCancelRecall"><span class="type">AgsCancelRecall</span></a> task cancels <a class="link" href="ags-AgsRecall.html#AgsRecall" title="struct AgsRecall"><span class="type">AgsRecall</span></a> playback.
+</p>
+</div>
+<div class="refsect1">
+<a name="ags-AgsCancelRecall.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AgsCancelRecall"></a><h3>struct AgsCancelRecall</h3>
+<pre class="programlisting">struct AgsCancelRecall {
+  AgsTask task;
+
+  AgsRecall *recall;
+
+  AgsDevoutPlay *play;
+};
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsCancelRecallClass"></a><h3>struct AgsCancelRecallClass</h3>
+<pre class="programlisting">struct AgsCancelRecallClass {
+  AgsTaskClass task;
+};
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-cancel-recall-new"></a><h3>ags_cancel_recall_new ()</h3>
+<pre class="programlisting"><a class="link" href="ags-AgsCancelRecall.html#AgsCancelRecall" title="struct AgsCancelRecall"><span class="returnvalue">AgsCancelRecall</span></a> *   ags_cancel_recall_new               (<em class="parameter"><code><a class="link" href="ags-AgsRecall.html#AgsRecall" title="struct AgsRecall"><span class="type">AgsRecall</span></a> *recall</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsDevout.html#AgsDevoutPlay" title="struct AgsDevoutPlay"><span class="type">AgsDevoutPlay</span></a> *play</code></em>);</pre>
+<p>
+Creates an <a class="link" href="ags-AgsCancelRecall.html#AgsCancelRecall" title="struct AgsCancelRecall"><span class="type">AgsCancelRecall</span></a>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>recall</code></em> :</span></p></td>
+<td>the <a class="link" href="ags-AgsRecall.html#AgsRecall" title="struct AgsRecall"><span class="type">AgsRecall</span></a> to cancel</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>play</code></em> :</span></p></td>
+<td>the <GTKDOCLINK HREF="AgsDevoutPlay-struct"><span class="type">AgsDevoutPlay</span></GTKDOCLINK>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>an new <a class="link" href="ags-AgsCancelRecall.html#AgsCancelRecall" title="struct AgsCancelRecall"><span class="type">AgsCancelRecall</span></a>.</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

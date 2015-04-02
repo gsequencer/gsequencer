@@ -1,0 +1,264 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsPlayable</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer">
+<link rel="up" href="ch01.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td> </td>
+<td><a accesskey="u" href="ch01.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer</th>
+<td> </td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#ags-AgsPlayable.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#ags-AgsPlayable.description" class="shortcut">Description</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="ags-AgsPlayable"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="ags-AgsPlayable.top_of_page"></a>AgsPlayable</span></h2>
+<p>AgsPlayable</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="ags-AgsPlayable.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">#define             <a href="ags-AgsPlayable.html#AGS-PLAYABLE-ERROR:CAPS">AGS_PLAYABLE_ERROR</a>
+typedef             <a href="ags-AgsPlayable.html#AgsPlayable">AgsPlayable</a>;
+enum                <a href="ags-AgsPlayable.html#AgsPlayableError">AgsPlayableError</a>;
+struct              <a href="ags-AgsPlayable.html#AgsPlayableInterface">AgsPlayableInterface</a>;
+<span class="returnvalue">void</span>                <a href="ags-AgsPlayable.html#ags-playable-close">ags_playable_close</a>                  (<em class="parameter"><code><a href="ags-AgsPlayable.html#AgsPlayable"><span class="type">AgsPlayable</span></a> *playable</code></em>);
+<a href="../glib/glib-Quarks.html#GQuark"><span class="returnvalue">GQuark</span></a>              <a href="ags-AgsPlayable.html#ags-playable-error-quark">ags_playable_error_quark</a>            ();
+<span class="returnvalue">void</span>                <a href="ags-AgsPlayable.html#ags-playable-flush">ags_playable_flush</a>                  (<em class="parameter"><code><a href="ags-AgsPlayable.html#AgsPlayable"><span class="type">AgsPlayable</span></a> *playable</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-AgsPlayable.html#ags-playable-info">ags_playable_info</a>                   (<em class="parameter"><code><a href="ags-AgsPlayable.html#AgsPlayable"><span class="type">AgsPlayable</span></a> *playable</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> *channels</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> *frames</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> *loop_start</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> *loop_end</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Error-Reporting.html#GError"><span class="type">GError</span></a> **error</code></em>);
+<a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            <a href="ags-AgsPlayable.html#ags-playable-iter-next">ags_playable_iter_next</a>              (<em class="parameter"><code><a href="ags-AgsPlayable.html#AgsPlayable"><span class="type">AgsPlayable</span></a> *playable</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-AgsPlayable.html#ags-playable-iter-start">ags_playable_iter_start</a>             (<em class="parameter"><code><a href="ags-AgsPlayable.html#AgsPlayable"><span class="type">AgsPlayable</span></a> *playable</code></em>);
+<a href="../glib/glib-Basic-Types.html#guint"><span class="returnvalue">guint</span></a>               <a href="ags-AgsPlayable.html#ags-playable-level-count">ags_playable_level_count</a>            (<em class="parameter"><code><a href="ags-AgsPlayable.html#AgsPlayable"><span class="type">AgsPlayable</span></a> *playable</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-AgsPlayable.html#ags-playable-level-select">ags_playable_level_select</a>           (<em class="parameter"><code><a href="ags-AgsPlayable.html#AgsPlayable"><span class="type">AgsPlayable</span></a> *playable</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> nth_level</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *sublevel_name</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Error-Reporting.html#GError"><span class="type">GError</span></a> **error</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-AgsPlayable.html#ags-playable-level-up">ags_playable_level_up</a>               (<em class="parameter"><code><a href="ags-AgsPlayable.html#AgsPlayable"><span class="type">AgsPlayable</span></a> *playable</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> levels</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Error-Reporting.html#GError"><span class="type">GError</span></a> **error</code></em>);
+<a href="../glib/glib-Basic-Types.html#guint"><span class="returnvalue">guint</span></a>               <a href="ags-AgsPlayable.html#ags-playable-nth-level">ags_playable_nth_level</a>              (<em class="parameter"><code><a href="ags-AgsPlayable.html#AgsPlayable"><span class="type">AgsPlayable</span></a> *playable</code></em>);
+<a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            <a href="ags-AgsPlayable.html#ags-playable-open">ags_playable_open</a>                   (<em class="parameter"><code><a href="ags-AgsPlayable.html#AgsPlayable"><span class="type">AgsPlayable</span></a> *playable</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *name</code></em>);
+signed <span class="returnvalue">short</span> *      <a href="ags-AgsPlayable.html#ags-playable-read">ags_playable_read</a>                   (<em class="parameter"><code><a href="ags-AgsPlayable.html#AgsPlayable"><span class="type">AgsPlayable</span></a> *playable</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> channel</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Error-Reporting.html#GError"><span class="type">GError</span></a> **error</code></em>);
+<a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="returnvalue">GList</span></a> *             <a href="ags-AgsPlayable.html#ags-playable-read-audio-signal">ags_playable_read_audio_signal</a>      (<em class="parameter"><code><a href="ags-AgsPlayable.html#AgsPlayable"><span class="type">AgsPlayable</span></a> *playable</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsDevout.html#AgsDevout"><span class="type">AgsDevout</span></a> *devout</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> start_channel</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> channels</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-AgsPlayable.html#ags-playable-seek">ags_playable_seek</a>                   (<em class="parameter"><code><a href="ags-AgsPlayable.html#AgsPlayable"><span class="type">AgsPlayable</span></a> *playable</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> frames</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gint"><span class="type">gint</span></a> whence</code></em>);
+<a href="../glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *             <a href="ags-AgsPlayable.html#ags-playable-selected-level">ags_playable_selected_level</a>         (<em class="parameter"><code><a href="ags-AgsPlayable.html#AgsPlayable"><span class="type">AgsPlayable</span></a> *playable</code></em>);
+<a href="../glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> **            <a href="ags-AgsPlayable.html#ags-playable-sublevel-names">ags_playable_sublevel_names</a>         (<em class="parameter"><code><a href="ags-AgsPlayable.html#AgsPlayable"><span class="type">AgsPlayable</span></a> *playable</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-AgsPlayable.html#ags-playable-write">ags_playable_write</a>                  (<em class="parameter"><code><a href="ags-AgsPlayable.html#AgsPlayable"><span class="type">AgsPlayable</span></a> *playable</code></em>,
+                                                         <em class="parameter"><code>signed <span class="type">short</span> *buffer</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> buffer_length</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="ags-AgsPlayable.description"></a><h2>Description</h2>
+</div>
+<div class="refsect1">
+<a name="ags-AgsPlayable.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AGS-PLAYABLE-ERROR:CAPS"></a><h3>AGS_PLAYABLE_ERROR</h3>
+<pre class="programlisting">#define AGS_PLAYABLE_ERROR (ags_playable_error_quark())
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsPlayable"></a><h3>AgsPlayable</h3>
+<pre class="programlisting">typedef void AgsPlayable;
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsPlayableError"></a><h3>enum AgsPlayableError</h3>
+<pre class="programlisting">typedef enum {
+  AGS_PLAYABLE_ERROR_NO_SUCH_LEVEL,
+  AGS_PLAYABLE_ERROR_NO_SAMPLE,
+} AgsPlayableError;
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsPlayableInterface"></a><h3>struct AgsPlayableInterface</h3>
+<pre class="programlisting">struct AgsPlayableInterface {
+  GTypeInterface interface;
+
+  gboolean (*open)(AgsPlayable *playable, gchar *name);
+
+  /* these functions are especially for soundfonts */
+  guint (*level_count)(AgsPlayable *playable);
+  guint (*nth_level)(AgsPlayable *playable);
+  gchar* (*selected_level)(AgsPlayable *playable);
+
+  gchar** (*sublevel_names)(AgsPlayable *playable);
+  void (*level_select)(AgsPlayable *playable,
+		       guint nth_level, gchar *sublevel_name,
+		       GError **error);
+  void (*level_up)(AgsPlayable *playable,
+		   guint levels,
+		   GError **error);
+
+  void (*iter_start)(AgsPlayable *playable);
+  gboolean (*iter_next)(AgsPlayable *playable);
+
+  /* read sample data */
+  void (*info)(AgsPlayable *playable,
+	       guint *channels, guint *frames,
+	       guint *loop_start, guint *loop_end,
+	       GError **error);
+  signed short* (*read)(AgsPlayable *playable,
+			guint channel,
+			GError **error);
+
+  /* write sample data */
+  void (*write)(AgsPlayable *playable,
+		signed short *buffer, guint buffer_length);
+  void (*flush)(AgsPlayable *playable);
+
+  /* position */
+  void (*seek)(AgsPlayable *playable,
+	       guint frames, gint whence);
+
+  /* close */
+  void (*close)(AgsPlayable *playable);
+};
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-playable-close"></a><h3>ags_playable_close ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_playable_close                  (<em class="parameter"><code><a href="ags-AgsPlayable.html#AgsPlayable"><span class="type">AgsPlayable</span></a> *playable</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-playable-error-quark"></a><h3>ags_playable_error_quark ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Quarks.html#GQuark"><span class="returnvalue">GQuark</span></a>              ags_playable_error_quark            ();</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-playable-flush"></a><h3>ags_playable_flush ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_playable_flush                  (<em class="parameter"><code><a href="ags-AgsPlayable.html#AgsPlayable"><span class="type">AgsPlayable</span></a> *playable</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-playable-info"></a><h3>ags_playable_info ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_playable_info                   (<em class="parameter"><code><a href="ags-AgsPlayable.html#AgsPlayable"><span class="type">AgsPlayable</span></a> *playable</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> *channels</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> *frames</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> *loop_start</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> *loop_end</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Error-Reporting.html#GError"><span class="type">GError</span></a> **error</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-playable-iter-next"></a><h3>ags_playable_iter_next ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            ags_playable_iter_next              (<em class="parameter"><code><a href="ags-AgsPlayable.html#AgsPlayable"><span class="type">AgsPlayable</span></a> *playable</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-playable-iter-start"></a><h3>ags_playable_iter_start ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_playable_iter_start             (<em class="parameter"><code><a href="ags-AgsPlayable.html#AgsPlayable"><span class="type">AgsPlayable</span></a> *playable</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-playable-level-count"></a><h3>ags_playable_level_count ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#guint"><span class="returnvalue">guint</span></a>               ags_playable_level_count            (<em class="parameter"><code><a href="ags-AgsPlayable.html#AgsPlayable"><span class="type">AgsPlayable</span></a> *playable</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-playable-level-select"></a><h3>ags_playable_level_select ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_playable_level_select           (<em class="parameter"><code><a href="ags-AgsPlayable.html#AgsPlayable"><span class="type">AgsPlayable</span></a> *playable</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> nth_level</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *sublevel_name</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Error-Reporting.html#GError"><span class="type">GError</span></a> **error</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-playable-level-up"></a><h3>ags_playable_level_up ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_playable_level_up               (<em class="parameter"><code><a href="ags-AgsPlayable.html#AgsPlayable"><span class="type">AgsPlayable</span></a> *playable</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> levels</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Error-Reporting.html#GError"><span class="type">GError</span></a> **error</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-playable-nth-level"></a><h3>ags_playable_nth_level ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#guint"><span class="returnvalue">guint</span></a>               ags_playable_nth_level              (<em class="parameter"><code><a href="ags-AgsPlayable.html#AgsPlayable"><span class="type">AgsPlayable</span></a> *playable</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-playable-open"></a><h3>ags_playable_open ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            ags_playable_open                   (<em class="parameter"><code><a href="ags-AgsPlayable.html#AgsPlayable"><span class="type">AgsPlayable</span></a> *playable</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *name</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-playable-read"></a><h3>ags_playable_read ()</h3>
+<pre class="programlisting">signed <span class="returnvalue">short</span> *      ags_playable_read                   (<em class="parameter"><code><a href="ags-AgsPlayable.html#AgsPlayable"><span class="type">AgsPlayable</span></a> *playable</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> channel</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Error-Reporting.html#GError"><span class="type">GError</span></a> **error</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-playable-read-audio-signal"></a><h3>ags_playable_read_audio_signal ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="returnvalue">GList</span></a> *             ags_playable_read_audio_signal      (<em class="parameter"><code><a href="ags-AgsPlayable.html#AgsPlayable"><span class="type">AgsPlayable</span></a> *playable</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsDevout.html#AgsDevout"><span class="type">AgsDevout</span></a> *devout</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> start_channel</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> channels</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-playable-seek"></a><h3>ags_playable_seek ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_playable_seek                   (<em class="parameter"><code><a href="ags-AgsPlayable.html#AgsPlayable"><span class="type">AgsPlayable</span></a> *playable</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> frames</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gint"><span class="type">gint</span></a> whence</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-playable-selected-level"></a><h3>ags_playable_selected_level ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *             ags_playable_selected_level         (<em class="parameter"><code><a href="ags-AgsPlayable.html#AgsPlayable"><span class="type">AgsPlayable</span></a> *playable</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-playable-sublevel-names"></a><h3>ags_playable_sublevel_names ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> **            ags_playable_sublevel_names         (<em class="parameter"><code><a href="ags-AgsPlayable.html#AgsPlayable"><span class="type">AgsPlayable</span></a> *playable</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-playable-write"></a><h3>ags_playable_write ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_playable_write                  (<em class="parameter"><code><a href="ags-AgsPlayable.html#AgsPlayable"><span class="type">AgsPlayable</span></a> *playable</code></em>,
+                                                         <em class="parameter"><code>signed <span class="type">short</span> *buffer</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> buffer_length</code></em>);</pre>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

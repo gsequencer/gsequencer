@@ -1,0 +1,25 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>AgsSynth</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="ags Reference Manual"><link rel="up" href="ch01.html" title="Chapter 1. [Insert title here]"><link rel="prev" href="re257.html" title="AgsStreamRecycling"><link rel="next" href="re259.html" title="ags_synth_callbacks"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="ags-AgsSynth"></a><div class="titlepage"></div><div class="refnamediv"><h2>Name</h2><p>AgsSynth</p></div><div class="refsynopsisdiv"><a name="ags-AgsSynth.synopsis"></a><h2>Synopsis</h2><pre class="synopsis">enum                <a class="link" href="re258.html#AgsSynthFlags" title="enum AgsSynthFlags">AgsSynthFlags</a>;
+struct              <a class="link" href="re258.html#AgsSynth" title="struct AgsSynth">AgsSynth</a>;
+struct              <a class="link" href="re258.html#AgsSynthClass" title="struct AgsSynthClass">AgsSynthClass</a>;
+<a class="link" href="re258.html#AgsSynth" title="struct AgsSynth"><span class="returnvalue">AgsSynth</span></a> *          <a class="link" href="re258.html#ags-synth-new" title="ags_synth_new ()">ags_synth_new</a>                       (<em class="parameter"><code><a class="link" href=""><span class="type">GObject</span></a> *devout</code></em>);
+</pre></div><div class="refsect1"><a name="ags-AgsSynth.description"></a><h2>Description</h2></div><div class="refsect1"><a name="ags-AgsSynth.details"></a><h2>Details</h2><div class="refsect2"><a name="AgsSynthFlags"></a><h3>enum AgsSynthFlags</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsSynthFlags"></OBJECT><pre class="programlisting">typedef enum {
+  AGS_SYNTH_AUTO_UPDATE          = 1,
+} AgsSynthFlags;
+</pre><div class="variablelist"><dl class="variablelist"><dt><a name="AGS-SYNTH-AUTO-UPDATE:CAPS"></a><span class="term"><code class="literal">AGS_SYNTH_AUTO_UPDATE</code></span></dt><dd></dd></dl></div></div><div class="refsect2"><a name="AgsSynth"></a><h3>struct AgsSynth</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsSynth"></OBJECT><pre class="programlisting">struct AgsSynth {
+  AgsMachine machine;
+
+  guint flags;
+
+  GtkVBox *input_pad;
+
+  GtkSpinButton *lower; // how many channels until to lowest freq
+  GtkSpinButton *loop_start;
+  GtkSpinButton *loop_end;
+
+  GtkCheckButton *auto_update;
+  GtkButton *update;
+};
+</pre></div><div class="refsect2"><a name="AgsSynthClass"></a><h3>struct AgsSynthClass</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsSynthClass"></OBJECT><pre class="programlisting">struct AgsSynthClass {
+  AgsMachineClass machine;
+};
+</pre></div><div class="refsect2"><a name="ags-synth-new"></a><h3>ags_synth_new ()</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="ags_synth_new"></OBJECT><pre class="programlisting"><a class="link" href="re258.html#AgsSynth" title="struct AgsSynth"><span class="returnvalue">AgsSynth</span></a> *          ags_synth_new                       (<em class="parameter"><code><a class="link" href=""><span class="type">GObject</span></a> *devout</code></em>);</pre></div></div></div></body></html>

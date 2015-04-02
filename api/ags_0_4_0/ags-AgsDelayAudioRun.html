@@ -1,0 +1,176 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsDelayAudioRun</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer">
+<link rel="up" href="ch01.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td> </td>
+<td><a accesskey="u" href="ch01.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer</th>
+<td> </td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#ags-AgsDelayAudioRun.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#ags-AgsDelayAudioRun.description" class="shortcut">Description</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="ags-AgsDelayAudioRun"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="ags-AgsDelayAudioRun.top_of_page"></a>AgsDelayAudioRun</span></h2>
+<p>AgsDelayAudioRun</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="ags-AgsDelayAudioRun.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">struct              <a href="ags-AgsDelayAudioRun.html#AgsDelayAudioRun">AgsDelayAudioRun</a>;
+struct              <a href="ags-AgsDelayAudioRun.html#AgsDelayAudioRunClass">AgsDelayAudioRunClass</a>;
+<a href="ags-AgsDelayAudioRun.html#AgsDelayAudioRun"><span class="returnvalue">AgsDelayAudioRun</span></a> *  <a href="ags-AgsDelayAudioRun.html#ags-delay-audio-run-new">ags_delay_audio_run_new</a>             ();
+<span class="returnvalue">void</span>                <a href="ags-AgsDelayAudioRun.html#ags-delay-audio-run-notation-alloc-input">ags_delay_audio_run_notation_alloc_input</a>
+                                                        (<em class="parameter"><code><a href="ags-AgsDelayAudioRun.html#AgsDelayAudioRun"><span class="type">AgsDelayAudioRun</span></a> *delay_audio_run</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> run_order</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> delay</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> attack</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-AgsDelayAudioRun.html#ags-delay-audio-run-notation-alloc-output">ags_delay_audio_run_notation_alloc_output</a>
+                                                        (<em class="parameter"><code><a href="ags-AgsDelayAudioRun.html#AgsDelayAudioRun"><span class="type">AgsDelayAudioRun</span></a> *delay_audio_run</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> run_order</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> delay</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> attack</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-AgsDelayAudioRun.html#ags-delay-audio-run-notation-count">ags_delay_audio_run_notation_count</a>  (<em class="parameter"><code><a href="ags-AgsDelayAudioRun.html#AgsDelayAudioRun"><span class="type">AgsDelayAudioRun</span></a> *delay_audio_run</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> run_order</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> delay</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> attack</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-AgsDelayAudioRun.html#ags-delay-audio-run-sequencer-alloc-input">ags_delay_audio_run_sequencer_alloc_input</a>
+                                                        (<em class="parameter"><code><a href="ags-AgsDelayAudioRun.html#AgsDelayAudioRun"><span class="type">AgsDelayAudioRun</span></a> *delay_audio_run</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> run_order</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> delay</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> attack</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-AgsDelayAudioRun.html#ags-delay-audio-run-sequencer-alloc-output">ags_delay_audio_run_sequencer_alloc_output</a>
+                                                        (<em class="parameter"><code><a href="ags-AgsDelayAudioRun.html#AgsDelayAudioRun"><span class="type">AgsDelayAudioRun</span></a> *delay_audio_run</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> run_order</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> delay</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> attack</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-AgsDelayAudioRun.html#ags-delay-audio-run-sequencer-count">ags_delay_audio_run_sequencer_count</a> (<em class="parameter"><code><a href="ags-AgsDelayAudioRun.html#AgsDelayAudioRun"><span class="type">AgsDelayAudioRun</span></a> *delay_audio_run</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> run_order</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> delay</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> attack</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="ags-AgsDelayAudioRun.description"></a><h2>Description</h2>
+</div>
+<div class="refsect1">
+<a name="ags-AgsDelayAudioRun.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AgsDelayAudioRun"></a><h3>struct AgsDelayAudioRun</h3>
+<pre class="programlisting">struct AgsDelayAudioRun {
+  AgsRecallAudioRun recall_audio_run;
+
+  guint dependency_ref;
+
+  guint hide_ref;
+  guint hide_ref_counter;
+  
+  guint notation_counter;
+  guint sequencer_counter;
+};
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsDelayAudioRunClass"></a><h3>struct AgsDelayAudioRunClass</h3>
+<pre class="programlisting">struct AgsDelayAudioRunClass {
+  AgsRecallAudioRunClass recall_audio_run;
+
+  void (*notation_alloc_output)(AgsDelayAudioRun *delay_audio_run, guint run_order,
+				guint delay, guint attack);
+  void (*notation_alloc_input)(AgsDelayAudioRun *delay_audio_run, guint run_order,
+			       guint delay, guint attack);
+  void (*notation_count)(AgsDelayAudioRun *delay_audio_run, guint run_order,
+			 guint delay, guint attack);
+
+  void (*sequencer_alloc_output)(AgsDelayAudioRun *delay_audio_run, guint run_order,
+				 guint delay, guint attack);
+  void (*sequencer_alloc_input)(AgsDelayAudioRun *delay_audio_run, guint run_order,
+				guint delay, guint attack);
+  void (*sequencer_count)(AgsDelayAudioRun *delay_audio_run, guint run_order,
+			  guint delay, guint attack);
+};
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-delay-audio-run-new"></a><h3>ags_delay_audio_run_new ()</h3>
+<pre class="programlisting"><a href="ags-AgsDelayAudioRun.html#AgsDelayAudioRun"><span class="returnvalue">AgsDelayAudioRun</span></a> *  ags_delay_audio_run_new             ();</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-delay-audio-run-notation-alloc-input"></a><h3>ags_delay_audio_run_notation_alloc_input ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_delay_audio_run_notation_alloc_input
+                                                        (<em class="parameter"><code><a href="ags-AgsDelayAudioRun.html#AgsDelayAudioRun"><span class="type">AgsDelayAudioRun</span></a> *delay_audio_run</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> run_order</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> delay</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> attack</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-delay-audio-run-notation-alloc-output"></a><h3>ags_delay_audio_run_notation_alloc_output ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_delay_audio_run_notation_alloc_output
+                                                        (<em class="parameter"><code><a href="ags-AgsDelayAudioRun.html#AgsDelayAudioRun"><span class="type">AgsDelayAudioRun</span></a> *delay_audio_run</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> run_order</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> delay</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> attack</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-delay-audio-run-notation-count"></a><h3>ags_delay_audio_run_notation_count ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_delay_audio_run_notation_count  (<em class="parameter"><code><a href="ags-AgsDelayAudioRun.html#AgsDelayAudioRun"><span class="type">AgsDelayAudioRun</span></a> *delay_audio_run</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> run_order</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> delay</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> attack</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-delay-audio-run-sequencer-alloc-input"></a><h3>ags_delay_audio_run_sequencer_alloc_input ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_delay_audio_run_sequencer_alloc_input
+                                                        (<em class="parameter"><code><a href="ags-AgsDelayAudioRun.html#AgsDelayAudioRun"><span class="type">AgsDelayAudioRun</span></a> *delay_audio_run</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> run_order</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> delay</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> attack</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-delay-audio-run-sequencer-alloc-output"></a><h3>ags_delay_audio_run_sequencer_alloc_output ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_delay_audio_run_sequencer_alloc_output
+                                                        (<em class="parameter"><code><a href="ags-AgsDelayAudioRun.html#AgsDelayAudioRun"><span class="type">AgsDelayAudioRun</span></a> *delay_audio_run</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> run_order</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> delay</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> attack</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-delay-audio-run-sequencer-count"></a><h3>ags_delay_audio_run_sequencer_count ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_delay_audio_run_sequencer_count (<em class="parameter"><code><a href="ags-AgsDelayAudioRun.html#AgsDelayAudioRun"><span class="type">AgsDelayAudioRun</span></a> *delay_audio_run</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> run_order</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> delay</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> attack</code></em>);</pre>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

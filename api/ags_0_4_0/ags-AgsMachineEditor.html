@@ -1,0 +1,168 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsMachineEditor</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer">
+<link rel="up" href="ch01.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td> </td>
+<td><a accesskey="u" href="ch01.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer</th>
+<td> </td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#ags-AgsMachineEditor.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#ags-AgsMachineEditor.description" class="shortcut">Description</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="ags-AgsMachineEditor"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="ags-AgsMachineEditor.top_of_page"></a>AgsMachineEditor</span></h2>
+<p>AgsMachineEditor</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="ags-AgsMachineEditor.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">#define             <a href="ags-AgsMachineEditor.html#AGS-MACHINE-EDITOR-DEFAULT-BUILD-ID:CAPS">AGS_MACHINE_EDITOR_DEFAULT_BUILD_ID</a>
+#define             <a href="ags-AgsMachineEditor.html#AGS-MACHINE-EDITOR-DEFAULT-VERSION:CAPS">AGS_MACHINE_EDITOR_DEFAULT_VERSION</a>
+struct              <a href="ags-AgsMachineEditor.html#AgsMachineEditor">AgsMachineEditor</a>;
+struct              <a href="ags-AgsMachineEditor.html#AgsMachineEditorClass">AgsMachineEditorClass</a>;
+enum                <a href="ags-AgsMachineEditor.html#AgsMachineEditorFlags">AgsMachineEditorFlags</a>;
+<span class="returnvalue">void</span>                <a href="ags-AgsMachineEditor.html#ags-machine-editor-add-children">ags_machine_editor_add_children</a>     (<em class="parameter"><code><a href="ags-AgsMachineEditor.html#AgsMachineEditor"><span class="type">AgsMachineEditor</span></a> *machine_editor</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-AgsMachineEditor.html#ags-machine-editor-add-input">ags_machine_editor_add_input</a>        (<em class="parameter"><code><a href="ags-AgsMachineEditor.html#AgsMachineEditor"><span class="type">AgsMachineEditor</span></a> *machine_editor</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-AgsMachineEditor.html#ags-machine-editor-add-output">ags_machine_editor_add_output</a>       (<em class="parameter"><code><a href="ags-AgsMachineEditor.html#AgsMachineEditor"><span class="type">AgsMachineEditor</span></a> *machine_editor</code></em>);
+<a href="ags-AgsMachineEditor.html#AgsMachineEditor"><span class="returnvalue">AgsMachineEditor</span></a> *  <a href="ags-AgsMachineEditor.html#ags-machine-editor-new">ags_machine_editor_new</a>              (<em class="parameter"><code><a href="ags-AgsMachine.html#AgsMachine"><span class="type">AgsMachine</span></a> *machine</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-AgsMachineEditor.html#ags-machine-editor-remove-input">ags_machine_editor_remove_input</a>     (<em class="parameter"><code><a href="ags-AgsMachineEditor.html#AgsMachineEditor"><span class="type">AgsMachineEditor</span></a> *machine_editor</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-AgsMachineEditor.html#ags-machine-editor-remove-output">ags_machine_editor_remove_output</a>    (<em class="parameter"><code><a href="ags-AgsMachineEditor.html#AgsMachineEditor"><span class="type">AgsMachineEditor</span></a> *machine_editor</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-AgsMachineEditor.html#ags-machine-editor-set-machine">ags_machine_editor_set_machine</a>      (<em class="parameter"><code><a href="ags-AgsMachineEditor.html#AgsMachineEditor"><span class="type">AgsMachineEditor</span></a> *machine_editor</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsMachine.html#AgsMachine"><span class="type">AgsMachine</span></a> *machine</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="ags-AgsMachineEditor.description"></a><h2>Description</h2>
+</div>
+<div class="refsect1">
+<a name="ags-AgsMachineEditor.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AGS-MACHINE-EDITOR-DEFAULT-BUILD-ID:CAPS"></a><h3>AGS_MACHINE_EDITOR_DEFAULT_BUILD_ID</h3>
+<pre class="programlisting">#define AGS_MACHINE_EDITOR_DEFAULT_BUILD_ID "0.4.0\0"
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-MACHINE-EDITOR-DEFAULT-VERSION:CAPS"></a><h3>AGS_MACHINE_EDITOR_DEFAULT_VERSION</h3>
+<pre class="programlisting">#define AGS_MACHINE_EDITOR_DEFAULT_VERSION "0.4.0\0"
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsMachineEditor"></a><h3>struct AgsMachineEditor</h3>
+<pre class="programlisting">struct AgsMachineEditor {
+  GtkDialog dialog;
+
+  guint flags;
+
+  gchar *version;
+  gchar *build_id;
+
+  AgsMachine *machine;
+
+  GtkNotebook *notebook;
+
+  GtkScrolledWindow *output_scrolled_window;
+  AgsListingEditor *output_editor;
+
+  GtkScrolledWindow *input_scrolled_window;
+  AgsListingEditor *input_editor;
+
+  GtkScrolledWindow *output_link_editor_scrolled_window;
+  AgsPropertyCollectionEditor *output_link_editor;
+
+  GtkScrolledWindow *input_link_editor_scrolled_window;
+  AgsPropertyCollectionEditor *input_link_editor;
+
+  GtkScrolledWindow *resize_editor_scrolled_window;
+  AgsResizeEditor *resize_editor;
+
+  GtkButton *add;
+  GtkButton *remove;
+  GtkButton *apply;
+  GtkButton *ok;
+  GtkButton *cancel;
+};
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsMachineEditorClass"></a><h3>struct AgsMachineEditorClass</h3>
+<pre class="programlisting">struct AgsMachineEditorClass {
+  GtkDialogClass dialog;
+
+  void (*set_machine)(AgsMachineEditor *machine_editor,
+		      AgsMachine *machine);
+};
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsMachineEditorFlags"></a><h3>enum AgsMachineEditorFlags</h3>
+<pre class="programlisting">typedef enum {
+  AGS_MACHINE_EDITOR_CLOSING   =  1,
+} AgsMachineEditorFlags;
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-machine-editor-add-children"></a><h3>ags_machine_editor_add_children ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_machine_editor_add_children     (<em class="parameter"><code><a href="ags-AgsMachineEditor.html#AgsMachineEditor"><span class="type">AgsMachineEditor</span></a> *machine_editor</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-machine-editor-add-input"></a><h3>ags_machine_editor_add_input ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_machine_editor_add_input        (<em class="parameter"><code><a href="ags-AgsMachineEditor.html#AgsMachineEditor"><span class="type">AgsMachineEditor</span></a> *machine_editor</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-machine-editor-add-output"></a><h3>ags_machine_editor_add_output ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_machine_editor_add_output       (<em class="parameter"><code><a href="ags-AgsMachineEditor.html#AgsMachineEditor"><span class="type">AgsMachineEditor</span></a> *machine_editor</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-machine-editor-new"></a><h3>ags_machine_editor_new ()</h3>
+<pre class="programlisting"><a href="ags-AgsMachineEditor.html#AgsMachineEditor"><span class="returnvalue">AgsMachineEditor</span></a> *  ags_machine_editor_new              (<em class="parameter"><code><a href="ags-AgsMachine.html#AgsMachine"><span class="type">AgsMachine</span></a> *machine</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-machine-editor-remove-input"></a><h3>ags_machine_editor_remove_input ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_machine_editor_remove_input     (<em class="parameter"><code><a href="ags-AgsMachineEditor.html#AgsMachineEditor"><span class="type">AgsMachineEditor</span></a> *machine_editor</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-machine-editor-remove-output"></a><h3>ags_machine_editor_remove_output ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_machine_editor_remove_output    (<em class="parameter"><code><a href="ags-AgsMachineEditor.html#AgsMachineEditor"><span class="type">AgsMachineEditor</span></a> *machine_editor</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-machine-editor-set-machine"></a><h3>ags_machine_editor_set_machine ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_machine_editor_set_machine      (<em class="parameter"><code><a href="ags-AgsMachineEditor.html#AgsMachineEditor"><span class="type">AgsMachineEditor</span></a> *machine_editor</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsMachine.html#AgsMachine"><span class="type">AgsMachine</span></a> *machine</code></em>);</pre>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

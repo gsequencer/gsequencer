@@ -1,0 +1,146 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>ags_ffplayer_callbacks</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="engines.html" title="Engines - Composite widgets with audio set up">
+<link rel="prev" href="ags-AgsFFPlayer.html" title="AgsFFPlayer">
+<link rel="next" href="ags-AgsMatrix.html" title="AgsMatrix">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="ags-AgsFFPlayer.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="engines.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="ags-AgsMatrix.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#ags-ags-ffplayer-callbacks.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#ags-ags-ffplayer-callbacks.description" class="shortcut">Description</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="ags-ags-ffplayer-callbacks"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="ags-ags-ffplayer-callbacks.top_of_page"></a>ags_ffplayer_callbacks</span></h2>
+<p>ags_ffplayer_callbacks</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="ags-ags-ffplayer-callbacks.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis"><GTKDOCLINK HREF="gboolean"><span class="returnvalue">gboolean</span></GTKDOCLINK>            <a class="link" href="ags-ags-ffplayer-callbacks.html#ags-ffplayer-drawing-area-button-press-callback" title="ags_ffplayer_drawing_area_button_press_callback ()">ags_ffplayer_drawing_area_button_press_callback</a>
+                                                        (<em class="parameter"><code><GTKDOCLINK HREF="GtkWidget"><span class="type">GtkWidget</span></GTKDOCLINK> *widget</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsFFPlayer.html#AgsFFPlayer" title="struct AgsFFPlayer"><span class="type">AgsFFPlayer</span></a> *ffplayer</code></em>);
+<GTKDOCLINK HREF="gboolean"><span class="returnvalue">gboolean</span></GTKDOCLINK>            <a class="link" href="ags-ags-ffplayer-callbacks.html#ags-ffplayer-drawing-area-configure-callback" title="ags_ffplayer_drawing_area_configure_callback ()">ags_ffplayer_drawing_area_configure_callback</a>
+                                                        (<em class="parameter"><code><GTKDOCLINK HREF="GtkWidget"><span class="type">GtkWidget</span></GTKDOCLINK> *widget</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GdkEventConfigure"><span class="type">GdkEventConfigure</span></GTKDOCLINK> *event</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsFFPlayer.html#AgsFFPlayer" title="struct AgsFFPlayer"><span class="type">AgsFFPlayer</span></a> *ffplayer</code></em>);
+<GTKDOCLINK HREF="gboolean"><span class="returnvalue">gboolean</span></GTKDOCLINK>            <a class="link" href="ags-ags-ffplayer-callbacks.html#ags-ffplayer-drawing-area-expose-callback" title="ags_ffplayer_drawing_area_expose_callback ()">ags_ffplayer_drawing_area_expose_callback</a>
+                                                        (<em class="parameter"><code><GTKDOCLINK HREF="GtkWidget"><span class="type">GtkWidget</span></GTKDOCLINK> *widget</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GdkEventExpose"><span class="type">GdkEventExpose</span></GTKDOCLINK> *event</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsFFPlayer.html#AgsFFPlayer" title="struct AgsFFPlayer"><span class="type">AgsFFPlayer</span></a> *ffplayer</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-ags-ffplayer-callbacks.html#ags-ffplayer-hscrollbar-value-changed" title="ags_ffplayer_hscrollbar_value_changed ()">ags_ffplayer_hscrollbar_value_changed</a>
+                                                        (<em class="parameter"><code><GTKDOCLINK HREF="GtkAdjustment"><span class="type">GtkAdjustment</span></GTKDOCLINK> *adjustment</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsFFPlayer.html#AgsFFPlayer" title="struct AgsFFPlayer"><span class="type">AgsFFPlayer</span></a> *ffplayers</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-ags-ffplayer-callbacks.html#ags-ffplayer-instrument-changed-callback" title="ags_ffplayer_instrument_changed_callback ()">ags_ffplayer_instrument_changed_callback</a>
+                                                        (<em class="parameter"><code><GTKDOCLINK HREF="GtkComboBox"><span class="type">GtkComboBox</span></GTKDOCLINK> *instrument</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsFFPlayer.html#AgsFFPlayer" title="struct AgsFFPlayer"><span class="type">AgsFFPlayer</span></a> *ffplayer</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-ags-ffplayer-callbacks.html#ags-ffplayer-open-clicked-callback" title="ags_ffplayer_open_clicked_callback ()">ags_ffplayer_open_clicked_callback</a>  (<em class="parameter"><code><GTKDOCLINK HREF="GtkWidget"><span class="type">GtkWidget</span></GTKDOCLINK> *widget</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsFFPlayer.html#AgsFFPlayer" title="struct AgsFFPlayer"><span class="type">AgsFFPlayer</span></a> *ffplayer</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-ags-ffplayer-callbacks.html#ags-ffplayer-open-dialog-response-callback" title="ags_ffplayer_open_dialog_response_callback ()">ags_ffplayer_open_dialog_response_callback</a>
+                                                        (<em class="parameter"><code><GTKDOCLINK HREF="GtkWidget"><span class="type">GtkWidget</span></GTKDOCLINK> *widget</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gint"><span class="type">gint</span></GTKDOCLINK> response</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsMachine.html#AgsMachine" title="struct AgsMachine"><span class="type">AgsMachine</span></a> *machine</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-ags-ffplayer-callbacks.html#ags-ffplayer-parent-set-callback" title="ags_ffplayer_parent_set_callback ()">ags_ffplayer_parent_set_callback</a>    (<em class="parameter"><code><GTKDOCLINK HREF="GtkWidget"><span class="type">GtkWidget</span></GTKDOCLINK> *widget</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GtkObject"><span class="type">GtkObject</span></GTKDOCLINK> *old_parent</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsFFPlayer.html#AgsFFPlayer" title="struct AgsFFPlayer"><span class="type">AgsFFPlayer</span></a> *ffplayer</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-ags-ffplayer-callbacks.html#ags-ffplayer-preset-changed-callback" title="ags_ffplayer_preset_changed_callback ()">ags_ffplayer_preset_changed_callback</a>
+                                                        (<em class="parameter"><code><GTKDOCLINK HREF="GtkComboBox"><span class="type">GtkComboBox</span></GTKDOCLINK> *preset</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsFFPlayer.html#AgsFFPlayer" title="struct AgsFFPlayer"><span class="type">AgsFFPlayer</span></a> *ffplayer</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="ags-ags-ffplayer-callbacks.description"></a><h2>Description</h2>
+</div>
+<div class="refsect1">
+<a name="ags-ags-ffplayer-callbacks.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="ags-ffplayer-drawing-area-button-press-callback"></a><h3>ags_ffplayer_drawing_area_button_press_callback ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="gboolean"><span class="returnvalue">gboolean</span></GTKDOCLINK>            ags_ffplayer_drawing_area_button_press_callback
+                                                        (<em class="parameter"><code><GTKDOCLINK HREF="GtkWidget"><span class="type">GtkWidget</span></GTKDOCLINK> *widget</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsFFPlayer.html#AgsFFPlayer" title="struct AgsFFPlayer"><span class="type">AgsFFPlayer</span></a> *ffplayer</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-ffplayer-drawing-area-configure-callback"></a><h3>ags_ffplayer_drawing_area_configure_callback ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="gboolean"><span class="returnvalue">gboolean</span></GTKDOCLINK>            ags_ffplayer_drawing_area_configure_callback
+                                                        (<em class="parameter"><code><GTKDOCLINK HREF="GtkWidget"><span class="type">GtkWidget</span></GTKDOCLINK> *widget</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GdkEventConfigure"><span class="type">GdkEventConfigure</span></GTKDOCLINK> *event</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsFFPlayer.html#AgsFFPlayer" title="struct AgsFFPlayer"><span class="type">AgsFFPlayer</span></a> *ffplayer</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-ffplayer-drawing-area-expose-callback"></a><h3>ags_ffplayer_drawing_area_expose_callback ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="gboolean"><span class="returnvalue">gboolean</span></GTKDOCLINK>            ags_ffplayer_drawing_area_expose_callback
+                                                        (<em class="parameter"><code><GTKDOCLINK HREF="GtkWidget"><span class="type">GtkWidget</span></GTKDOCLINK> *widget</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GdkEventExpose"><span class="type">GdkEventExpose</span></GTKDOCLINK> *event</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsFFPlayer.html#AgsFFPlayer" title="struct AgsFFPlayer"><span class="type">AgsFFPlayer</span></a> *ffplayer</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-ffplayer-hscrollbar-value-changed"></a><h3>ags_ffplayer_hscrollbar_value_changed ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_ffplayer_hscrollbar_value_changed
+                                                        (<em class="parameter"><code><GTKDOCLINK HREF="GtkAdjustment"><span class="type">GtkAdjustment</span></GTKDOCLINK> *adjustment</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsFFPlayer.html#AgsFFPlayer" title="struct AgsFFPlayer"><span class="type">AgsFFPlayer</span></a> *ffplayers</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-ffplayer-instrument-changed-callback"></a><h3>ags_ffplayer_instrument_changed_callback ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_ffplayer_instrument_changed_callback
+                                                        (<em class="parameter"><code><GTKDOCLINK HREF="GtkComboBox"><span class="type">GtkComboBox</span></GTKDOCLINK> *instrument</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsFFPlayer.html#AgsFFPlayer" title="struct AgsFFPlayer"><span class="type">AgsFFPlayer</span></a> *ffplayer</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-ffplayer-open-clicked-callback"></a><h3>ags_ffplayer_open_clicked_callback ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_ffplayer_open_clicked_callback  (<em class="parameter"><code><GTKDOCLINK HREF="GtkWidget"><span class="type">GtkWidget</span></GTKDOCLINK> *widget</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsFFPlayer.html#AgsFFPlayer" title="struct AgsFFPlayer"><span class="type">AgsFFPlayer</span></a> *ffplayer</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-ffplayer-open-dialog-response-callback"></a><h3>ags_ffplayer_open_dialog_response_callback ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_ffplayer_open_dialog_response_callback
+                                                        (<em class="parameter"><code><GTKDOCLINK HREF="GtkWidget"><span class="type">GtkWidget</span></GTKDOCLINK> *widget</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gint"><span class="type">gint</span></GTKDOCLINK> response</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsMachine.html#AgsMachine" title="struct AgsMachine"><span class="type">AgsMachine</span></a> *machine</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-ffplayer-parent-set-callback"></a><h3>ags_ffplayer_parent_set_callback ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_ffplayer_parent_set_callback    (<em class="parameter"><code><GTKDOCLINK HREF="GtkWidget"><span class="type">GtkWidget</span></GTKDOCLINK> *widget</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GtkObject"><span class="type">GtkObject</span></GTKDOCLINK> *old_parent</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsFFPlayer.html#AgsFFPlayer" title="struct AgsFFPlayer"><span class="type">AgsFFPlayer</span></a> *ffplayer</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-ffplayer-preset-changed-callback"></a><h3>ags_ffplayer_preset_changed_callback ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_ffplayer_preset_changed_callback
+                                                        (<em class="parameter"><code><GTKDOCLINK HREF="GtkComboBox"><span class="type">GtkComboBox</span></GTKDOCLINK> *preset</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsFFPlayer.html#AgsFFPlayer" title="struct AgsFFPlayer"><span class="type">AgsFFPlayer</span></a> *ffplayer</code></em>);</pre>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

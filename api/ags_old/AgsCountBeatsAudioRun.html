@@ -1,0 +1,277 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsCountBeatsAudioRun</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="recall.html" title="Recalls - Effect processors">
+<link rel="prev" href="AgsCountBeatsAudio.html" title="AgsCountBeatsAudio">
+<link rel="next" href="AgsDelayAudio.html" title="AgsDelayAudio">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="AgsCountBeatsAudio.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="recall.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="AgsDelayAudio.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#AgsCountBeatsAudioRun.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#AgsCountBeatsAudioRun.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#AgsCountBeatsAudioRun.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#AgsCountBeatsAudioRun.implemented-interfaces" class="shortcut">Implemented Interfaces</a>
+                   | 
+                  <a href="#AgsCountBeatsAudioRun.properties" class="shortcut">Properties</a>
+                   | 
+                  <a href="#AgsCountBeatsAudioRun.signals" class="shortcut">Signals</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="AgsCountBeatsAudioRun"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="AgsCountBeatsAudioRun.top_of_page"></a>AgsCountBeatsAudioRun</span></h2>
+<p>AgsCountBeatsAudioRun</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="AgsCountBeatsAudioRun.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">struct              <a class="link" href="AgsCountBeatsAudioRun.html#AgsCountBeatsAudioRun-struct" title="struct AgsCountBeatsAudioRun">AgsCountBeatsAudioRun</a>;
+struct              <a class="link" href="AgsCountBeatsAudioRun.html#AgsCountBeatsAudioRunClass" title="struct AgsCountBeatsAudioRunClass">AgsCountBeatsAudioRunClass</a>;
+<a class="link" href="AgsCountBeatsAudioRun.html" title="AgsCountBeatsAudioRun"><span class="returnvalue">AgsCountBeatsAudioRun</span></a> * <a class="link" href="AgsCountBeatsAudioRun.html#ags-count-beats-audio-run-new" title="ags_count_beats_audio_run_new ()">ags_count_beats_audio_run_new</a>   (<em class="parameter"><code><a class="link" href="AgsDelayAudioRun.html" title="AgsDelayAudioRun"><span class="type">AgsDelayAudioRun</span></a> *delay_audio_run</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="AgsCountBeatsAudioRun.html#ags-count-beats-audio-run-notation-loop" title="ags_count_beats_audio_run_notation_loop ()">ags_count_beats_audio_run_notation_loop</a>
+                                                        (<em class="parameter"><code><a class="link" href="AgsCountBeatsAudioRun.html" title="AgsCountBeatsAudioRun"><span class="type">AgsCountBeatsAudioRun</span></a> *count_beats_audio_run</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> run_order</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="AgsCountBeatsAudioRun.html#ags-count-beats-audio-run-notation-start" title="ags_count_beats_audio_run_notation_start ()">ags_count_beats_audio_run_notation_start</a>
+                                                        (<em class="parameter"><code><a class="link" href="AgsCountBeatsAudioRun.html" title="AgsCountBeatsAudioRun"><span class="type">AgsCountBeatsAudioRun</span></a> *count_beats_audio_run</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> run_order</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="AgsCountBeatsAudioRun.html#ags-count-beats-audio-run-notation-stop" title="ags_count_beats_audio_run_notation_stop ()">ags_count_beats_audio_run_notation_stop</a>
+                                                        (<em class="parameter"><code><a class="link" href="AgsCountBeatsAudioRun.html" title="AgsCountBeatsAudioRun"><span class="type">AgsCountBeatsAudioRun</span></a> *count_beats_audio_run</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> run_order</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="AgsCountBeatsAudioRun.html#ags-count-beats-audio-run-sequencer-loop" title="ags_count_beats_audio_run_sequencer_loop ()">ags_count_beats_audio_run_sequencer_loop</a>
+                                                        (<em class="parameter"><code><a class="link" href="AgsCountBeatsAudioRun.html" title="AgsCountBeatsAudioRun"><span class="type">AgsCountBeatsAudioRun</span></a> *count_beats_audio_run</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> run_order</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="AgsCountBeatsAudioRun.html#ags-count-beats-audio-run-sequencer-start" title="ags_count_beats_audio_run_sequencer_start ()">ags_count_beats_audio_run_sequencer_start</a>
+                                                        (<em class="parameter"><code><a class="link" href="AgsCountBeatsAudioRun.html" title="AgsCountBeatsAudioRun"><span class="type">AgsCountBeatsAudioRun</span></a> *count_beats_audio_run</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> run_order</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="AgsCountBeatsAudioRun.html#ags-count-beats-audio-run-sequencer-stop" title="ags_count_beats_audio_run_sequencer_stop ()">ags_count_beats_audio_run_sequencer_stop</a>
+                                                        (<em class="parameter"><code><a class="link" href="AgsCountBeatsAudioRun.html" title="AgsCountBeatsAudioRun"><span class="type">AgsCountBeatsAudioRun</span></a> *count_beats_audio_run</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> run_order</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsCountBeatsAudioRun.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  <GTKDOCLINK HREF="GObject">GObject</GTKDOCLINK>
+   +----<a class="link" href="AgsRecall.html" title="AgsRecall">AgsRecall</a>
+         +----<a class="link" href="AgsRecallAudioRun.html" title="AgsRecallAudioRun">AgsRecallAudioRun</a>
+               +----AgsCountBeatsAudioRun
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsCountBeatsAudioRun.implemented-interfaces"></a><h2>Implemented Interfaces</h2>
+<p>
+AgsCountBeatsAudioRun implements
+ <GTKDOCLINK HREF="AgsConnectable">AgsConnectable</GTKDOCLINK>,  <a class="link" href="AgsPackable.html" title="AgsPackable">AgsPackable</a>,  <a class="link" href="AgsDynamicConnectable.html" title="AgsDynamicConnectable">AgsDynamicConnectable</a>,  <a class="link" href="AgsPlugin.html" title="AgsPlugin">AgsPlugin</a> and  <a class="link" href="AgsCountable.html" title="AgsCountable">AgsCountable</a>.</p>
+</div>
+<div class="refsect1">
+<a name="AgsCountBeatsAudioRun.properties"></a><h2>Properties</h2>
+<pre class="synopsis">
+  "<a class="link" href="AgsCountBeatsAudioRun.html#AgsCountBeatsAudioRun--delay-audio-run" title='The "delay-audio-run" property'>delay-audio-run</a>"          <a class="link" href="AgsDelayAudioRun.html" title="AgsDelayAudioRun"><span class="type">AgsDelayAudioRun</span></a>*     : Read / Write
+  "<a class="link" href="AgsCountBeatsAudioRun.html#AgsCountBeatsAudioRun--notation-counter" title='The "notation-counter" property'>notation-counter</a>"         <GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK>                 : Read / Write
+  "<a class="link" href="AgsCountBeatsAudioRun.html#AgsCountBeatsAudioRun--sequencer-counter" title='The "sequencer-counter" property'>sequencer-counter</a>"        <GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK>                 : Read / Write
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsCountBeatsAudioRun.signals"></a><h2>Signals</h2>
+<pre class="synopsis">
+  "<a class="link" href="AgsCountBeatsAudioRun.html#AgsCountBeatsAudioRun-notation-loop" title='The "notation-loop" signal'>notation-loop</a>"                                  : <GTKDOCLINK HREF="G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></GTKDOCLINK>
+  "<a class="link" href="AgsCountBeatsAudioRun.html#AgsCountBeatsAudioRun-notation-start" title='The "notation-start" signal'>notation-start</a>"                                 : <GTKDOCLINK HREF="G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></GTKDOCLINK>
+  "<a class="link" href="AgsCountBeatsAudioRun.html#AgsCountBeatsAudioRun-notation-stop" title='The "notation-stop" signal'>notation-stop</a>"                                  : <GTKDOCLINK HREF="G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></GTKDOCLINK>
+  "<a class="link" href="AgsCountBeatsAudioRun.html#AgsCountBeatsAudioRun-sequencer-loop" title='The "sequencer-loop" signal'>sequencer-loop</a>"                                 : <GTKDOCLINK HREF="G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></GTKDOCLINK>
+  "<a class="link" href="AgsCountBeatsAudioRun.html#AgsCountBeatsAudioRun-sequencer-start" title='The "sequencer-start" signal'>sequencer-start</a>"                                : <GTKDOCLINK HREF="G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></GTKDOCLINK>
+  "<a class="link" href="AgsCountBeatsAudioRun.html#AgsCountBeatsAudioRun-sequencer-stop" title='The "sequencer-stop" signal'>sequencer-stop</a>"                                 : <GTKDOCLINK HREF="G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></GTKDOCLINK>
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsCountBeatsAudioRun.description"></a><h2>Description</h2>
+<p>
+</p>
+</div>
+<div class="refsect1">
+<a name="AgsCountBeatsAudioRun.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AgsCountBeatsAudioRun-struct"></a><h3>struct AgsCountBeatsAudioRun</h3>
+<pre class="programlisting">struct AgsCountBeatsAudioRun;</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsCountBeatsAudioRunClass"></a><h3>struct AgsCountBeatsAudioRunClass</h3>
+<pre class="programlisting">struct AgsCountBeatsAudioRunClass {
+  AgsRecallAudioRunClass recall_audio_run;
+  
+  void (*notation_start)(AgsCountBeatsAudioRun *count_beats_audio_run,
+			 guint run_order);
+  void (*notation_loop)(AgsCountBeatsAudioRun *count_beats_audio_run,
+			guint run_order);
+  void (*notation_stop)(AgsCountBeatsAudioRun *count_beats_audio_run,
+			guint run_order);
+  
+  void (*sequencer_start)(AgsCountBeatsAudioRun *count_beats_audio_run,
+			  guint run_order);
+  void (*sequencer_loop)(AgsCountBeatsAudioRun *count_beats_audio_run,
+			 guint run_order);
+  void (*sequencer_stop)(AgsCountBeatsAudioRun *count_beats_audio_run,
+			 guint run_order);
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-count-beats-audio-run-new"></a><h3>ags_count_beats_audio_run_new ()</h3>
+<pre class="programlisting"><a class="link" href="AgsCountBeatsAudioRun.html" title="AgsCountBeatsAudioRun"><span class="returnvalue">AgsCountBeatsAudioRun</span></a> * ags_count_beats_audio_run_new   (<em class="parameter"><code><a class="link" href="AgsDelayAudioRun.html" title="AgsDelayAudioRun"><span class="type">AgsDelayAudioRun</span></a> *delay_audio_run</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-count-beats-audio-run-notation-loop"></a><h3>ags_count_beats_audio_run_notation_loop ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_count_beats_audio_run_notation_loop
+                                                        (<em class="parameter"><code><a class="link" href="AgsCountBeatsAudioRun.html" title="AgsCountBeatsAudioRun"><span class="type">AgsCountBeatsAudioRun</span></a> *count_beats_audio_run</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> run_order</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-count-beats-audio-run-notation-start"></a><h3>ags_count_beats_audio_run_notation_start ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_count_beats_audio_run_notation_start
+                                                        (<em class="parameter"><code><a class="link" href="AgsCountBeatsAudioRun.html" title="AgsCountBeatsAudioRun"><span class="type">AgsCountBeatsAudioRun</span></a> *count_beats_audio_run</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> run_order</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-count-beats-audio-run-notation-stop"></a><h3>ags_count_beats_audio_run_notation_stop ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_count_beats_audio_run_notation_stop
+                                                        (<em class="parameter"><code><a class="link" href="AgsCountBeatsAudioRun.html" title="AgsCountBeatsAudioRun"><span class="type">AgsCountBeatsAudioRun</span></a> *count_beats_audio_run</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> run_order</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-count-beats-audio-run-sequencer-loop"></a><h3>ags_count_beats_audio_run_sequencer_loop ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_count_beats_audio_run_sequencer_loop
+                                                        (<em class="parameter"><code><a class="link" href="AgsCountBeatsAudioRun.html" title="AgsCountBeatsAudioRun"><span class="type">AgsCountBeatsAudioRun</span></a> *count_beats_audio_run</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> run_order</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-count-beats-audio-run-sequencer-start"></a><h3>ags_count_beats_audio_run_sequencer_start ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_count_beats_audio_run_sequencer_start
+                                                        (<em class="parameter"><code><a class="link" href="AgsCountBeatsAudioRun.html" title="AgsCountBeatsAudioRun"><span class="type">AgsCountBeatsAudioRun</span></a> *count_beats_audio_run</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> run_order</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-count-beats-audio-run-sequencer-stop"></a><h3>ags_count_beats_audio_run_sequencer_stop ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_count_beats_audio_run_sequencer_stop
+                                                        (<em class="parameter"><code><a class="link" href="AgsCountBeatsAudioRun.html" title="AgsCountBeatsAudioRun"><span class="type">AgsCountBeatsAudioRun</span></a> *count_beats_audio_run</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> run_order</code></em>);</pre>
+<p>
+</p>
+</div>
+</div>
+<div class="refsect1">
+<a name="AgsCountBeatsAudioRun.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="AgsCountBeatsAudioRun--delay-audio-run"></a><h3>The <code class="literal">"delay-audio-run"</code> property</h3>
+<pre class="programlisting">  "delay-audio-run"          <a class="link" href="AgsDelayAudioRun.html" title="AgsDelayAudioRun"><span class="type">AgsDelayAudioRun</span></a>*     : Read / Write</pre>
+<p>The AgsDelayAudioRun which emits sequencer_alloc_output sequencer_count signal.</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsCountBeatsAudioRun--notation-counter"></a><h3>The <code class="literal">"notation-counter"</code> property</h3>
+<pre class="programlisting">  "notation-counter"         <GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK>                 : Read / Write</pre>
+<p>The notation counter indicates the offset in the notation.</p>
+<p>Allowed values: &lt;= 65535</p>
+<p>Default value: 0</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsCountBeatsAudioRun--sequencer-counter"></a><h3>The <code class="literal">"sequencer-counter"</code> property</h3>
+<pre class="programlisting">  "sequencer-counter"        <GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK>                 : Read / Write</pre>
+<p>The sequenecer counter indicates the offset in the sequencer.</p>
+<p>Allowed values: &lt;= 65535</p>
+<p>Default value: 0</p>
+</div>
+</div>
+<div class="refsect1">
+<a name="AgsCountBeatsAudioRun.signal-details"></a><h2>Signal Details</h2>
+<div class="refsect2">
+<a name="AgsCountBeatsAudioRun-notation-loop"></a><h3>The <code class="literal">"notation-loop"</code> signal</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                user_function                      (<a class="link" href="AgsCountBeatsAudioRun.html" title="AgsCountBeatsAudioRun"><span class="type">AgsCountBeatsAudioRun</span></a> *agscountbeatsaudiorun,
+                                                        <GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK>                  arg1,
+                                                        <GTKDOCLINK HREF="gpointer"><span class="type">gpointer</span></GTKDOCLINK>               user_data)                  : <GTKDOCLINK HREF="G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></GTKDOCLINK></pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsCountBeatsAudioRun-notation-start"></a><h3>The <code class="literal">"notation-start"</code> signal</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                user_function                      (<a class="link" href="AgsCountBeatsAudioRun.html" title="AgsCountBeatsAudioRun"><span class="type">AgsCountBeatsAudioRun</span></a> *agscountbeatsaudiorun,
+                                                        <GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK>                  arg1,
+                                                        <GTKDOCLINK HREF="gpointer"><span class="type">gpointer</span></GTKDOCLINK>               user_data)                  : <GTKDOCLINK HREF="G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></GTKDOCLINK></pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsCountBeatsAudioRun-notation-stop"></a><h3>The <code class="literal">"notation-stop"</code> signal</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                user_function                      (<a class="link" href="AgsCountBeatsAudioRun.html" title="AgsCountBeatsAudioRun"><span class="type">AgsCountBeatsAudioRun</span></a> *agscountbeatsaudiorun,
+                                                        <GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK>                  arg1,
+                                                        <GTKDOCLINK HREF="gpointer"><span class="type">gpointer</span></GTKDOCLINK>               user_data)                  : <GTKDOCLINK HREF="G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></GTKDOCLINK></pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsCountBeatsAudioRun-sequencer-loop"></a><h3>The <code class="literal">"sequencer-loop"</code> signal</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                user_function                      (<a class="link" href="AgsCountBeatsAudioRun.html" title="AgsCountBeatsAudioRun"><span class="type">AgsCountBeatsAudioRun</span></a> *agscountbeatsaudiorun,
+                                                        <GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK>                  arg1,
+                                                        <GTKDOCLINK HREF="gpointer"><span class="type">gpointer</span></GTKDOCLINK>               user_data)                  : <GTKDOCLINK HREF="G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></GTKDOCLINK></pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsCountBeatsAudioRun-sequencer-start"></a><h3>The <code class="literal">"sequencer-start"</code> signal</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                user_function                      (<a class="link" href="AgsCountBeatsAudioRun.html" title="AgsCountBeatsAudioRun"><span class="type">AgsCountBeatsAudioRun</span></a> *agscountbeatsaudiorun,
+                                                        <GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK>                  arg1,
+                                                        <GTKDOCLINK HREF="gpointer"><span class="type">gpointer</span></GTKDOCLINK>               user_data)                  : <GTKDOCLINK HREF="G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></GTKDOCLINK></pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsCountBeatsAudioRun-sequencer-stop"></a><h3>The <code class="literal">"sequencer-stop"</code> signal</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                user_function                      (<a class="link" href="AgsCountBeatsAudioRun.html" title="AgsCountBeatsAudioRun"><span class="type">AgsCountBeatsAudioRun</span></a> *agscountbeatsaudiorun,
+                                                        <GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK>                  arg1,
+                                                        <GTKDOCLINK HREF="gpointer"><span class="type">gpointer</span></GTKDOCLINK>               user_data)                  : <GTKDOCLINK HREF="G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></GTKDOCLINK></pre>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

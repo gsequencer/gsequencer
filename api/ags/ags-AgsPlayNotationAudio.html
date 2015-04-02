@@ -1,0 +1,97 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsPlayNotationAudio</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="recall.html" title="Recalls - Effect processors">
+<link rel="prev" href="ags-AgsPlayChannelRunMaster.html" title="AgsPlayChannelRunMaster">
+<link rel="next" href="ags-AgsPlayNotationAudioRun.html" title="AgsPlayNotationAudioRun">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="ags-AgsPlayChannelRunMaster.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="recall.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="ags-AgsPlayNotationAudioRun.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#ags-AgsPlayNotationAudio.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#ags-AgsPlayNotationAudio.description" class="shortcut">Description</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="ags-AgsPlayNotationAudio"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="ags-AgsPlayNotationAudio.top_of_page"></a>AgsPlayNotationAudio</span></h2>
+<p>AgsPlayNotationAudio — play audio notation</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="ags-AgsPlayNotationAudio.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">
+#include &lt;ags/audio/recall/ags_play_notation_audio.h&gt;
+
+struct              <a class="link" href="ags-AgsPlayNotationAudio.html#AgsPlayNotationAudio" title="struct AgsPlayNotationAudio">AgsPlayNotationAudio</a>;
+struct              <a class="link" href="ags-AgsPlayNotationAudio.html#AgsPlayNotationAudioClass" title="struct AgsPlayNotationAudioClass">AgsPlayNotationAudioClass</a>;
+<a class="link" href="ags-AgsPlayNotationAudio.html#AgsPlayNotationAudio" title="struct AgsPlayNotationAudio"><span class="returnvalue">AgsPlayNotationAudio</span></a> * <a class="link" href="ags-AgsPlayNotationAudio.html#ags-play-notation-audio-new" title="ags_play_notation_audio_new ()">ags_play_notation_audio_new</a>      ();
+</pre>
+</div>
+<div class="refsect1">
+<a name="ags-AgsPlayNotationAudio.description"></a><h2>Description</h2>
+<p>
+The <a class="link" href="ags-AgsPlayNotationAudio.html#AgsPlayNotationAudio" title="struct AgsPlayNotationAudio"><span class="type">AgsPlayNotationAudio</span></a> class provides ports to the effect processor.
+</p>
+</div>
+<div class="refsect1">
+<a name="ags-AgsPlayNotationAudio.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AgsPlayNotationAudio"></a><h3>struct AgsPlayNotationAudio</h3>
+<pre class="programlisting">struct AgsPlayNotationAudio {
+  AgsRecallAudio recall_audio;
+
+  AgsPort *notation;
+  AgsPort *monotonic;
+};
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsPlayNotationAudioClass"></a><h3>struct AgsPlayNotationAudioClass</h3>
+<pre class="programlisting">struct AgsPlayNotationAudioClass {
+  AgsRecallAudioClass recall_audio;
+};
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-play-notation-audio-new"></a><h3>ags_play_notation_audio_new ()</h3>
+<pre class="programlisting"><a class="link" href="ags-AgsPlayNotationAudio.html#AgsPlayNotationAudio" title="struct AgsPlayNotationAudio"><span class="returnvalue">AgsPlayNotationAudio</span></a> * ags_play_notation_audio_new      ();</pre>
+<p>
+Creates an <a class="link" href="ags-AgsPlayNotationAudio.html#AgsPlayNotationAudio" title="struct AgsPlayNotationAudio"><span class="type">AgsPlayNotationAudio</span></a>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new <a class="link" href="ags-AgsPlayNotationAudio.html#AgsPlayNotationAudio" title="struct AgsPlayNotationAudio"><span class="type">AgsPlayNotationAudio</span></a>
+</td>
+</tr></tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

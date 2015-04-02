@@ -1,0 +1,184 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsLadspaManager</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="plugin.html" title="Part III. Plugin - API of plugins">
+<link rel="prev" href="plugin.html" title="Part III. Plugin - API of plugins">
+<link rel="next" href="AgsPluginFactory.html" title="AgsPluginFactory">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="plugin.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="plugin.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="AgsPluginFactory.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#AgsLadspaManager.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#AgsLadspaManager.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#AgsLadspaManager.object-hierarchy" class="shortcut">Object Hierarchy</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="AgsLadspaManager"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="AgsLadspaManager.top_of_page"></a>AgsLadspaManager</span></h2>
+<p>AgsLadspaManager</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="AgsLadspaManager.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">#define             <a class="link" href="AgsLadspaManager.html#AGS-LADSPA-PLUGIN:CAPS" title="AGS_LADSPA_PLUGIN()">AGS_LADSPA_PLUGIN</a>                   (ptr)
+struct              <a class="link" href="AgsLadspaManager.html#AgsLadspaManager-struct" title="struct AgsLadspaManager">AgsLadspaManager</a>;
+struct              <a class="link" href="AgsLadspaManager.html#AgsLadspaManagerClass" title="struct AgsLadspaManagerClass">AgsLadspaManagerClass</a>;
+struct              <a class="link" href="AgsLadspaManager.html#AgsLadspaPlugin" title="struct AgsLadspaPlugin">AgsLadspaPlugin</a>;
+enum                <a class="link" href="AgsLadspaManager.html#AgsLadspaPluginFlags" title="enum AgsLadspaPluginFlags">AgsLadspaPluginFlags</a>;
+<a class="link" href="AgsLadspaManager.html#AgsLadspaPlugin" title="struct AgsLadspaPlugin"><span class="returnvalue">AgsLadspaPlugin</span></a> *   <a class="link" href="AgsLadspaManager.html#ags-ladspa-manager-find-ladspa-plugin" title="ags_ladspa_manager_find_ladspa_plugin ()">ags_ladspa_manager_find_ladspa_plugin</a>
+                                                        (<em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *filename</code></em>);
+<GTKDOCLINK HREF="gchar"><span class="returnvalue">gchar</span></GTKDOCLINK> **            <a class="link" href="AgsLadspaManager.html#ags-ladspa-manager-get-filenames" title="ags_ladspa_manager_get_filenames ()">ags_ladspa_manager_get_filenames</a>    ();
+<a class="link" href="AgsLadspaManager.html" title="AgsLadspaManager"><span class="returnvalue">AgsLadspaManager</span></a> *  <a class="link" href="AgsLadspaManager.html#ags-ladspa-manager-get-instance" title="ags_ladspa_manager_get_instance ()">ags_ladspa_manager_get_instance</a>     ();
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="AgsLadspaManager.html#ags-ladspa-manager-load-default-directory" title="ags_ladspa_manager_load_default_directory ()">ags_ladspa_manager_load_default_directory</a>
+                                                        ();
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="AgsLadspaManager.html#ags-ladspa-manager-load-file" title="ags_ladspa_manager_load_file ()">ags_ladspa_manager_load_file</a>        (<em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *filename</code></em>);
+<a class="link" href="AgsLadspaManager.html" title="AgsLadspaManager"><span class="returnvalue">AgsLadspaManager</span></a> *  <a class="link" href="AgsLadspaManager.html#ags-ladspa-manager-new" title="ags_ladspa_manager_new ()">ags_ladspa_manager_new</a>              ();
+<a class="link" href="AgsLadspaManager.html#AgsLadspaPlugin" title="struct AgsLadspaPlugin"><span class="returnvalue">AgsLadspaPlugin</span></a> *   <a class="link" href="AgsLadspaManager.html#ags-ladspa-plugin-alloc" title="ags_ladspa_plugin_alloc ()">ags_ladspa_plugin_alloc</a>             ();
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="AgsLadspaManager.html#ags-ladspa-plugin-free" title="ags_ladspa_plugin_free ()">ags_ladspa_plugin_free</a>              (<em class="parameter"><code><a class="link" href="AgsLadspaManager.html#AgsLadspaPlugin" title="struct AgsLadspaPlugin"><span class="type">AgsLadspaPlugin</span></a> *ladspa_plugin</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsLadspaManager.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  <GTKDOCLINK HREF="GObject">GObject</GTKDOCLINK>
+   +----AgsLadspaManager
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsLadspaManager.description"></a><h2>Description</h2>
+<p>
+</p>
+</div>
+<div class="refsect1">
+<a name="AgsLadspaManager.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AGS-LADSPA-PLUGIN:CAPS"></a><h3>AGS_LADSPA_PLUGIN()</h3>
+<pre class="programlisting">#define AGS_LADSPA_PLUGIN(ptr) ((AgsLadspaPlugin *)(ptr))
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsLadspaManager-struct"></a><h3>struct AgsLadspaManager</h3>
+<pre class="programlisting">struct AgsLadspaManager;</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsLadspaManagerClass"></a><h3>struct AgsLadspaManagerClass</h3>
+<pre class="programlisting">struct AgsLadspaManagerClass {
+  GObjectClass object;
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsLadspaPlugin"></a><h3>struct AgsLadspaPlugin</h3>
+<pre class="programlisting">struct AgsLadspaPlugin {
+  guint flags;
+
+  gchar *filename;
+  void *plugin_so;
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsLadspaPluginFlags"></a><h3>enum AgsLadspaPluginFlags</h3>
+<pre class="programlisting">typedef enum {
+  AGS_LADSPA_PLUGIN_IS_LOADED    = 1,
+} AgsLadspaPluginFlags;
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-ladspa-manager-find-ladspa-plugin"></a><h3>ags_ladspa_manager_find_ladspa_plugin ()</h3>
+<pre class="programlisting"><a class="link" href="AgsLadspaManager.html#AgsLadspaPlugin" title="struct AgsLadspaPlugin"><span class="returnvalue">AgsLadspaPlugin</span></a> *   ags_ladspa_manager_find_ladspa_plugin
+                                                        (<em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *filename</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-ladspa-manager-get-filenames"></a><h3>ags_ladspa_manager_get_filenames ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="gchar"><span class="returnvalue">gchar</span></GTKDOCLINK> **            ags_ladspa_manager_get_filenames    ();</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-ladspa-manager-get-instance"></a><h3>ags_ladspa_manager_get_instance ()</h3>
+<pre class="programlisting"><a class="link" href="AgsLadspaManager.html" title="AgsLadspaManager"><span class="returnvalue">AgsLadspaManager</span></a> *  ags_ladspa_manager_get_instance     ();</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-ladspa-manager-load-default-directory"></a><h3>ags_ladspa_manager_load_default_directory ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_ladspa_manager_load_default_directory
+                                                        ();</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-ladspa-manager-load-file"></a><h3>ags_ladspa_manager_load_file ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_ladspa_manager_load_file        (<em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *filename</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-ladspa-manager-new"></a><h3>ags_ladspa_manager_new ()</h3>
+<pre class="programlisting"><a class="link" href="AgsLadspaManager.html" title="AgsLadspaManager"><span class="returnvalue">AgsLadspaManager</span></a> *  ags_ladspa_manager_new              ();</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-ladspa-plugin-alloc"></a><h3>ags_ladspa_plugin_alloc ()</h3>
+<pre class="programlisting"><a class="link" href="AgsLadspaManager.html#AgsLadspaPlugin" title="struct AgsLadspaPlugin"><span class="returnvalue">AgsLadspaPlugin</span></a> *   ags_ladspa_plugin_alloc             ();</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-ladspa-plugin-free"></a><h3>ags_ladspa_plugin_free ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_ladspa_plugin_free              (<em class="parameter"><code><a class="link" href="AgsLadspaManager.html#AgsLadspaPlugin" title="struct AgsLadspaPlugin"><span class="type">AgsLadspaPlugin</span></a> *ladspa_plugin</code></em>);</pre>
+<p>
+</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

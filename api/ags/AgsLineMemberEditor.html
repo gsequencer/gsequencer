@@ -1,0 +1,120 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsLineMemberEditor</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="pt08.html" title="Part VIII. Graphical user interface">
+<link rel="prev" href="ags-ags-line-member-callbacks.html" title="ags_line_member_callbacks">
+<link rel="next" href="ags-ags-line-member-editor-callbacks.html" title="ags_line_member_editor_callbacks">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="ags-ags-line-member-callbacks.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="pt08.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="ags-ags-line-member-editor-callbacks.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#AgsLineMemberEditor.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#AgsLineMemberEditor.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#AgsLineMemberEditor.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#AgsLineMemberEditor.implemented-interfaces" class="shortcut">Implemented Interfaces</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="AgsLineMemberEditor"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="AgsLineMemberEditor.top_of_page"></a>AgsLineMemberEditor</span></h2>
+<p>AgsLineMemberEditor — Edit line member's aspects.</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="AgsLineMemberEditor.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">
+#include &lt;ags/X/ags_line_member_editor.h&gt;
+
+struct              <a class="link" href="AgsLineMemberEditor.html#AgsLineMemberEditor-struct" title="struct AgsLineMemberEditor">AgsLineMemberEditor</a>;
+struct              <a class="link" href="AgsLineMemberEditor.html#AgsLineMemberEditorClass" title="struct AgsLineMemberEditorClass">AgsLineMemberEditorClass</a>;
+<a class="link" href="AgsLineMemberEditor.html" title="AgsLineMemberEditor"><span class="returnvalue">AgsLineMemberEditor</span></a> * <a class="link" href="AgsLineMemberEditor.html#ags-line-member-editor-new" title="ags_line_member_editor_new ()">ags_line_member_editor_new</a>        ();
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsLineMemberEditor.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  <a href="../gobject/gobject-The-Base-Object-Type.html#GObject">GObject</a>
+   +----<a href="../gobject/gobject-The-Base-Object-Type.html#GInitiallyUnowned">GInitiallyUnowned</a>
+         +----<a href="../gtk/GtkObject.html">GtkObject</a>
+               +----<a href="../gtk3/GtkWidget.html">GtkWidget</a>
+                     +----<a href="../gtk3/GtkContainer.html">GtkContainer</a>
+                           +----<a href="../gtk3/GtkBox.html">GtkBox</a>
+                                 +----<a href="../gtk3/GtkVBox.html">GtkVBox</a>
+                                       +----AgsLineMemberEditor
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsLineMemberEditor.implemented-interfaces"></a><h2>Implemented Interfaces</h2>
+<p>
+AgsLineMemberEditor implements
+ AtkImplementorIface,  <a href="../gtk3/GtkBuildable.html">GtkBuildable</a>,  <a href="../gtk3/gtk3-Orientable.html#GtkOrientable">GtkOrientable</a>,  AgsConnectable and  <a class="link" href="AgsApplicable.html" title="AgsApplicable">AgsApplicable</a>.</p>
+</div>
+<div class="refsect1">
+<a name="AgsLineMemberEditor.description"></a><h2>Description</h2>
+<p>
+<a class="link" href="AgsLineMemberEditor.html" title="AgsLineMemberEditor"><span class="type">AgsLineMemberEditor</span></a> is a composite widget to modify line member. A line member
+editor should be packed by a <a class="link" href="AgsLineEditor.html" title="AgsLineEditor"><span class="type">AgsLineEditor</span></a>. You may add/remove plugins with this
+editor.
+</p>
+</div>
+<div class="refsect1">
+<a name="AgsLineMemberEditor.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AgsLineMemberEditor-struct"></a><h3>struct AgsLineMemberEditor</h3>
+<pre class="programlisting">struct AgsLineMemberEditor;</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsLineMemberEditorClass"></a><h3>struct AgsLineMemberEditorClass</h3>
+<pre class="programlisting">struct AgsLineMemberEditorClass {
+  GtkVBoxClass vbox;
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-line-member-editor-new"></a><h3>ags_line_member_editor_new ()</h3>
+<pre class="programlisting"><a class="link" href="AgsLineMemberEditor.html" title="AgsLineMemberEditor"><span class="returnvalue">AgsLineMemberEditor</span></a> * ags_line_member_editor_new        ();</pre>
+<p>
+Creates an <a class="link" href="AgsLineMemberEditor.html" title="AgsLineMemberEditor"><span class="type">AgsLineMemberEditor</span></a>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new <a class="link" href="AgsLineMemberEditor.html" title="AgsLineMemberEditor"><span class="type">AgsLineMemberEditor</span></a>
+</td>
+</tr></tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

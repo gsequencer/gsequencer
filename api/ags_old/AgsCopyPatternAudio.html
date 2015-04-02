@@ -1,0 +1,129 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsCopyPatternAudio</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="recall.html" title="Recalls - Effect processors">
+<link rel="prev" href="AgsCopyNotationAudioRun.html" title="AgsCopyNotationAudioRun">
+<link rel="next" href="AgsCopyPatternAudioRun.html" title="AgsCopyPatternAudioRun">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="AgsCopyNotationAudioRun.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="recall.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="AgsCopyPatternAudioRun.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#AgsCopyPatternAudio.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#AgsCopyPatternAudio.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#AgsCopyPatternAudio.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#AgsCopyPatternAudio.implemented-interfaces" class="shortcut">Implemented Interfaces</a>
+                   | 
+                  <a href="#AgsCopyPatternAudio.properties" class="shortcut">Properties</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="AgsCopyPatternAudio"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="AgsCopyPatternAudio.top_of_page"></a>AgsCopyPatternAudio</span></h2>
+<p>AgsCopyPatternAudio</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="AgsCopyPatternAudio.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">struct              <a class="link" href="AgsCopyPatternAudio.html#AgsCopyPatternAudio-struct" title="struct AgsCopyPatternAudio">AgsCopyPatternAudio</a>;
+struct              <a class="link" href="AgsCopyPatternAudio.html#AgsCopyPatternAudioClass" title="struct AgsCopyPatternAudioClass">AgsCopyPatternAudioClass</a>;
+<a class="link" href="AgsCopyPatternAudio.html" title="AgsCopyPatternAudio"><span class="returnvalue">AgsCopyPatternAudio</span></a> * <a class="link" href="AgsCopyPatternAudio.html#ags-copy-pattern-audio-new" title="ags_copy_pattern_audio_new ()">ags_copy_pattern_audio_new</a>        (<em class="parameter"><code><a class="link" href="AgsDevout.html" title="AgsDevout"><span class="type">AgsDevout</span></a> *devout</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gdouble"><span class="type">gdouble</span></GTKDOCLINK> tact</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> i</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> j</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsCopyPatternAudio.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  <GTKDOCLINK HREF="GObject">GObject</GTKDOCLINK>
+   +----<a class="link" href="AgsRecall.html" title="AgsRecall">AgsRecall</a>
+         +----<a class="link" href="AgsRecallAudio.html" title="AgsRecallAudio">AgsRecallAudio</a>
+               +----AgsCopyPatternAudio
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsCopyPatternAudio.implemented-interfaces"></a><h2>Implemented Interfaces</h2>
+<p>
+AgsCopyPatternAudio implements
+ <GTKDOCLINK HREF="AgsConnectable">AgsConnectable</GTKDOCLINK>,  <a class="link" href="AgsPackable.html" title="AgsPackable">AgsPackable</a>,  <a class="link" href="AgsDynamicConnectable.html" title="AgsDynamicConnectable">AgsDynamicConnectable</a> and  <a class="link" href="AgsPlugin.html" title="AgsPlugin">AgsPlugin</a>.</p>
+</div>
+<div class="refsect1">
+<a name="AgsCopyPatternAudio.properties"></a><h2>Properties</h2>
+<pre class="synopsis">
+  "<a class="link" href="AgsCopyPatternAudio.html#AgsCopyPatternAudio--bank-index-0" title='The "bank-index-0" property'>bank-index-0</a>"             <a class="link" href="AgsPort.html" title="AgsPort"><span class="type">AgsPort</span></a>*              : Read / Write
+  "<a class="link" href="AgsCopyPatternAudio.html#AgsCopyPatternAudio--bank-index-1" title='The "bank-index-1" property'>bank-index-1</a>"             <a class="link" href="AgsPort.html" title="AgsPort"><span class="type">AgsPort</span></a>*              : Read / Write
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsCopyPatternAudio.description"></a><h2>Description</h2>
+<p>
+</p>
+</div>
+<div class="refsect1">
+<a name="AgsCopyPatternAudio.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AgsCopyPatternAudio-struct"></a><h3>struct AgsCopyPatternAudio</h3>
+<pre class="programlisting">struct AgsCopyPatternAudio;</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsCopyPatternAudioClass"></a><h3>struct AgsCopyPatternAudioClass</h3>
+<pre class="programlisting">struct AgsCopyPatternAudioClass {
+  AgsRecallAudioClass recall_audio;
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-copy-pattern-audio-new"></a><h3>ags_copy_pattern_audio_new ()</h3>
+<pre class="programlisting"><a class="link" href="AgsCopyPatternAudio.html" title="AgsCopyPatternAudio"><span class="returnvalue">AgsCopyPatternAudio</span></a> * ags_copy_pattern_audio_new        (<em class="parameter"><code><a class="link" href="AgsDevout.html" title="AgsDevout"><span class="type">AgsDevout</span></a> *devout</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gdouble"><span class="type">gdouble</span></GTKDOCLINK> tact</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> i</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> j</code></em>);</pre>
+<p>
+</p>
+</div>
+</div>
+<div class="refsect1">
+<a name="AgsCopyPatternAudio.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="AgsCopyPatternAudio--bank-index-0"></a><h3>The <code class="literal">"bank-index-0"</code> property</h3>
+<pre class="programlisting">  "bank-index-0"             <a class="link" href="AgsPort.html" title="AgsPort"><span class="type">AgsPort</span></a>*              : Read / Write</pre>
+<p>The current bank index 0 of the AgsPattern.</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsCopyPatternAudio--bank-index-1"></a><h3>The <code class="literal">"bank-index-1"</code> property</h3>
+<pre class="programlisting">  "bank-index-1"             <a class="link" href="AgsPort.html" title="AgsPort"><span class="type">AgsPort</span></a>*              : Read / Write</pre>
+<p>The current bank index 1 of the AgsPattern.</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

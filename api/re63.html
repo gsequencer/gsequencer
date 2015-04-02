@@ -1,0 +1,27 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>AgsDrumInputPad</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="ags Reference Manual"><link rel="up" href="ch01.html" title="Chapter 1. [Insert title here]"><link rel="prev" href="re62.html" title="ags_drum_input_line_callbacks"><link rel="next" href="re64.html" title="ags_drum_input_pad_callbacks"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="ags-AgsDrumInputPad"></a><div class="titlepage"></div><div class="refnamediv"><h2>Name</h2><p>AgsDrumInputPad</p></div><div class="refsynopsisdiv"><a name="ags-AgsDrumInputPad.synopsis"></a><h2>Synopsis</h2><pre class="synopsis">enum                <a class="link" href="re63.html#AgsDrumInputPadFlags" title="enum AgsDrumInputPadFlags">AgsDrumInputPadFlags</a>;
+struct              <a class="link" href="re63.html#AgsDrumInputPad" title="struct AgsDrumInputPad">AgsDrumInputPad</a>;
+struct              <a class="link" href="re63.html#AgsDrumInputPadClass" title="struct AgsDrumInputPadClass">AgsDrumInputPadClass</a>;
+<a class="link" href="re63.html#AgsDrumInputPad" title="struct AgsDrumInputPad"><span class="returnvalue">AgsDrumInputPad</span></a> *   <a class="link" href="re63.html#ags-drum-input-pad-new" title="ags_drum_input_pad_new ()">ags_drum_input_pad_new</a>              (<em class="parameter"><code><a class="link" href="re33.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>);
+</pre></div><div class="refsect1"><a name="ags-AgsDrumInputPad.description"></a><h2>Description</h2></div><div class="refsect1"><a name="ags-AgsDrumInputPad.details"></a><h2>Details</h2><div class="refsect2"><a name="AgsDrumInputPadFlags"></a><h3>enum AgsDrumInputPadFlags</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsDrumInputPadFlags"></OBJECT><pre class="programlisting">typedef enum {
+  AGS_DRUM_INPUT_PAD_OPEN_PLAY_DONE   = 1,
+} AgsDrumInputPadFlags;
+</pre><div class="variablelist"><dl class="variablelist"><dt><a name="AGS-DRUM-INPUT-PAD-OPEN-PLAY-DONE:CAPS"></a><span class="term"><code class="literal">AGS_DRUM_INPUT_PAD_OPEN_PLAY_DONE</code></span></dt><dd></dd></dl></div></div><div class="refsect2"><a name="AgsDrumInputPad"></a><h3>struct AgsDrumInputPad</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsDrumInputPad"></OBJECT><pre class="programlisting">struct AgsDrumInputPad {
+  AgsPad pad;
+
+  guint flags;
+
+  GtkButton *open;
+  GtkToggleButton *play;
+  GtkToggleButton *edit;
+
+  GList *pad_open_recalls;
+  guint pad_open_play_ref;
+
+  GtkFileChooserDialog *file_chooser;
+
+  guint pad_play_ref;
+};
+</pre></div><div class="refsect2"><a name="AgsDrumInputPadClass"></a><h3>struct AgsDrumInputPadClass</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsDrumInputPadClass"></OBJECT><pre class="programlisting">struct AgsDrumInputPadClass {
+  AgsPadClass pad;
+};
+</pre></div><div class="refsect2"><a name="ags-drum-input-pad-new"></a><h3>ags_drum_input_pad_new ()</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="ags_drum_input_pad_new"></OBJECT><pre class="programlisting"><a class="link" href="re63.html#AgsDrumInputPad" title="struct AgsDrumInputPad"><span class="returnvalue">AgsDrumInputPad</span></a> *   ags_drum_input_pad_new              (<em class="parameter"><code><a class="link" href="re33.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>);</pre></div></div></div></body></html>

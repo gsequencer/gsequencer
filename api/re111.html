@@ -1,0 +1,34 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>AgsIpatchSF2Reader</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="ags Reference Manual"><link rel="up" href="ch01.html" title="Chapter 1. [Insert title here]"><link rel="prev" href="re110.html" title="AgsIpatch"><link rel="next" href="re112.html" title="AgsIteratorThread"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="ags-AgsIpatchSF2Reader"></a><div class="titlepage"></div><div class="refnamediv"><h2>Name</h2><p>AgsIpatchSF2Reader</p></div><div class="refsynopsisdiv"><a name="ags-AgsIpatchSF2Reader.synopsis"></a><h2>Synopsis</h2><pre class="synopsis">enum                <a class="link" href="re111.html#AgsSF2Levels" title="enum AgsSF2Levels">AgsSF2Levels</a>;
+struct              <a class="link" href="re111.html#AgsIpatchSF2Reader" title="struct AgsIpatchSF2Reader">AgsIpatchSF2Reader</a>;
+struct              <a class="link" href="re111.html#AgsIpatchSF2ReaderClass" title="struct AgsIpatchSF2ReaderClass">AgsIpatchSF2ReaderClass</a>;
+<a class="link" href="re111.html#AgsIpatchSF2Reader" title="struct AgsIpatchSF2Reader"><span class="returnvalue">AgsIpatchSF2Reader</span></a> * <a class="link" href="re111.html#ags-ipatch-sf2-reader-new" title="ags_ipatch_sf2_reader_new ()">ags_ipatch_sf2_reader_new</a>          ();
+</pre></div><div class="refsect1"><a name="ags-AgsIpatchSF2Reader.description"></a><h2>Description</h2></div><div class="refsect1"><a name="ags-AgsIpatchSF2Reader.details"></a><h2>Details</h2><div class="refsect2"><a name="AgsSF2Levels"></a><h3>enum AgsSF2Levels</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsSF2Levels"></OBJECT><pre class="programlisting">typedef enum {
+  AGS_SF2_FILENAME = 0,
+  AGS_SF2_PHDR = 1,
+  AGS_SF2_IHDR = 2,
+  AGS_SF2_SHDR = 3,
+} AgsSF2Levels;
+</pre><div class="variablelist"><dl class="variablelist"><dt><a name="AGS-SF2-FILENAME:CAPS"></a><span class="term"><code class="literal">AGS_SF2_FILENAME</code></span></dt><dd></dd><dt><a name="AGS-SF2-PHDR:CAPS"></a><span class="term"><code class="literal">AGS_SF2_PHDR</code></span></dt><dd></dd><dt><a name="AGS-SF2-IHDR:CAPS"></a><span class="term"><code class="literal">AGS_SF2_IHDR</code></span></dt><dd></dd><dt><a name="AGS-SF2-SHDR:CAPS"></a><span class="term"><code class="literal">AGS_SF2_SHDR</code></span></dt><dd></dd></dl></div></div><div class="refsect2"><a name="AgsIpatchSF2Reader"></a><h3>struct AgsIpatchSF2Reader</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsIpatchSF2Reader"></OBJECT><pre class="programlisting">struct AgsIpatchSF2Reader {
+  GObject object;
+
+  AgsIpatch *ipatch;
+
+  guint nth_level;
+  gchar **selected;
+
+  IpatchSF2Reader *reader;
+
+  IpatchSF2 *sf2;
+
+  int bank;
+  int program;
+  gchar *selected_sublevel_name;
+
+  IpatchSF2Zone *zone;
+  int count;
+  GList *iter;
+};
+</pre></div><div class="refsect2"><a name="AgsIpatchSF2ReaderClass"></a><h3>struct AgsIpatchSF2ReaderClass</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsIpatchSF2ReaderClass"></OBJECT><pre class="programlisting">struct AgsIpatchSF2ReaderClass {
+  GObjectClass object;
+};
+</pre></div><div class="refsect2"><a name="ags-ipatch-sf2-reader-new"></a><h3>ags_ipatch_sf2_reader_new ()</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="ags_ipatch_sf2_reader_new"></OBJECT><pre class="programlisting"><a class="link" href="re111.html#AgsIpatchSF2Reader" title="struct AgsIpatchSF2Reader"><span class="returnvalue">AgsIpatchSF2Reader</span></a> * ags_ipatch_sf2_reader_new          ();</pre></div></div></div></body></html>

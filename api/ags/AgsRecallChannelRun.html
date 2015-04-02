@@ -1,0 +1,232 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsRecallChannelRun</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="audio.html" title="Part VII. The audio layer">
+<link rel="prev" href="AgsRecallChannel.html" title="AgsRecallChannel">
+<link rel="next" href="AgsRecallChannelRunDummy.html" title="AgsRecallChannelRunDummy">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="AgsRecallChannel.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="audio.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="AgsRecallChannelRunDummy.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#AgsRecallChannelRun.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#AgsRecallChannelRun.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#AgsRecallChannelRun.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#AgsRecallChannelRun.implemented-interfaces" class="shortcut">Implemented Interfaces</a>
+                   | 
+                  <a href="#AgsRecallChannelRun.properties" class="shortcut">Properties</a>
+                   | 
+                  <a href="#AgsRecallChannelRun.signals" class="shortcut">Signals</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="AgsRecallChannelRun"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="AgsRecallChannelRun.top_of_page"></a>AgsRecallChannelRun</span></h2>
+<p>AgsRecallChannelRun — dynamic channel context of recall</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="AgsRecallChannelRun.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">
+#include &lt;ags/audio/ags_recall_channel_run.h&gt;
+
+struct              <a class="link" href="AgsRecallChannelRun.html#AgsRecallChannelRun-struct" title="struct AgsRecallChannelRun">AgsRecallChannelRun</a>;
+struct              <a class="link" href="AgsRecallChannelRun.html#AgsRecallChannelRunClass" title="struct AgsRecallChannelRunClass">AgsRecallChannelRunClass</a>;
+<a href="../glib/glib-Basic-Types.html#guint"><span class="returnvalue">guint</span></a>               <a class="link" href="AgsRecallChannelRun.html#ags-recall-channel-run-get-run-order" title="ags_recall_channel_run_get_run_order ()">ags_recall_channel_run_get_run_order</a>
+                                                        (<em class="parameter"><code><a class="link" href="AgsRecallChannelRun.html" title="AgsRecallChannelRun"><span class="type">AgsRecallChannelRun</span></a> *recall_channel_run</code></em>);
+<a class="link" href="AgsRecallChannelRun.html" title="AgsRecallChannelRun"><span class="returnvalue">AgsRecallChannelRun</span></a> * <a class="link" href="AgsRecallChannelRun.html#ags-recall-channel-run-new" title="ags_recall_channel_run_new ()">ags_recall_channel_run_new</a>        ();
+<span class="returnvalue">void</span>                <a class="link" href="AgsRecallChannelRun.html#ags-recall-channel-run-run-order-changed" title="ags_recall_channel_run_run_order_changed ()">ags_recall_channel_run_run_order_changed</a>
+                                                        (<em class="parameter"><code><a class="link" href="AgsRecallChannelRun.html" title="AgsRecallChannelRun"><span class="type">AgsRecallChannelRun</span></a> *recall_channel_run</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> run_order</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsRecallChannelRun.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  <a href="../gobject/gobject-The-Base-Object-Type.html#GObject">GObject</a>
+   +----<a class="link" href="AgsRecall.html" title="AgsRecall">AgsRecall</a>
+         +----AgsRecallChannelRun
+               +----<a class="link" href="AgsBufferChannelRun.html" title="AgsBufferChannelRun">AgsBufferChannelRun</a>
+               +----<a class="link" href="AgsCopyChannelRun.html" title="AgsCopyChannelRun">AgsCopyChannelRun</a>
+               +----<a class="link" href="AgsCopyPatternChannelRun.html" title="AgsCopyPatternChannelRun">AgsCopyPatternChannelRun</a>
+               +----<a class="link" href="AgsLoopChannelRun.html" title="AgsLoopChannelRun">AgsLoopChannelRun</a>
+               +----<a class="link" href="AgsMuteChannelRun.html" title="AgsMuteChannelRun">AgsMuteChannelRun</a>
+               +----<a class="link" href="AgsPeakChannelRun.html" title="AgsPeakChannelRun">AgsPeakChannelRun</a>
+               +----<a class="link" href="AgsPlayChannelRun.html" title="AgsPlayChannel">AgsPlayChannelRun</a>
+               +----<a class="link" href="AgsPlayChannelRunMaster.html" title="AgsPlayChannelRunMaster">AgsPlayChannelRunMaster</a>
+               +----<a class="link" href="AgsRecallChannelRunDummy.html" title="AgsRecallChannelRunDummy">AgsRecallChannelRunDummy</a>
+               +----<a class="link" href="AgsStreamChannelRun.html" title="AgsStreamChannelRun">AgsStreamChannelRun</a>
+               +----<a class="link" href="AgsVolumeChannelRun.html" title="AgsVolumeChannelRun">AgsVolumeChannelRun</a>
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsRecallChannelRun.implemented-interfaces"></a><h2>Implemented Interfaces</h2>
+<p>
+AgsRecallChannelRun implements
+ AgsConnectable,  <a class="link" href="AgsPackable.html" title="AgsPackable">AgsPackable</a>,  <a class="link" href="AgsDynamicConnectable.html" title="AgsDynamicConnectable">AgsDynamicConnectable</a> and  <a class="link" href="AgsPlugin.html" title="AgsPlugin">AgsPlugin</a>.</p>
+</div>
+<div class="refsect1">
+<a name="AgsRecallChannelRun.properties"></a><h2>Properties</h2>
+<pre class="synopsis">
+  "<a class="link" href="AgsRecallChannelRun.html#AgsRecallChannelRun--audio-channel" title='The "audio-channel" property'>audio-channel</a>"            <a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a>                 : Read / Write
+  "<a class="link" href="AgsRecallChannelRun.html#AgsRecallChannelRun--destination" title='The "destination" property'>destination</a>"              <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a>*           : Read / Write
+  "<a class="link" href="AgsRecallChannelRun.html#AgsRecallChannelRun--recall-audio-run" title='The "recall-audio-run" property'>recall-audio-run</a>"         <a class="link" href="AgsRecallAudioRun.html" title="AgsRecallAudioRun"><span class="type">AgsRecallAudioRun</span></a>*    : Read / Write
+  "<a class="link" href="AgsRecallChannelRun.html#AgsRecallChannelRun--recall-channel" title='The "recall-channel" property'>recall-channel</a>"           <a class="link" href="AgsRecallChannel.html" title="AgsRecallChannel"><span class="type">AgsRecallChannel</span></a>*     : Read / Write
+  "<a class="link" href="AgsRecallChannelRun.html#AgsRecallChannelRun--source" title='The "source" property'>source</a>"                   <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a>*           : Read / Write
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsRecallChannelRun.signals"></a><h2>Signals</h2>
+<pre class="synopsis">
+  "<a class="link" href="AgsRecallChannelRun.html#AgsRecallChannelRun-run-order-changed" title='The "run-order-changed" signal'>run-order-changed</a>"                              : <a href="../gobject/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></a>
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsRecallChannelRun.description"></a><h2>Description</h2>
+<p>
+<a class="link" href="AgsRecallChannelRun.html" title="AgsRecallChannelRun"><span class="type">AgsRecallChannelRun</span></a> acts as channel recall run.
+</p>
+</div>
+<div class="refsect1">
+<a name="AgsRecallChannelRun.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AgsRecallChannelRun-struct"></a><h3>struct AgsRecallChannelRun</h3>
+<pre class="programlisting">struct AgsRecallChannelRun;</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsRecallChannelRunClass"></a><h3>struct AgsRecallChannelRunClass</h3>
+<pre class="programlisting">struct AgsRecallChannelRunClass {
+  AgsRecallClass recall;
+
+  void (*run_order_changed)(AgsRecallChannelRun *recall_channel_run, guint nth_run);
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-recall-channel-run-get-run-order"></a><h3>ags_recall_channel_run_get_run_order ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#guint"><span class="returnvalue">guint</span></a>               ags_recall_channel_run_get_run_order
+                                                        (<em class="parameter"><code><a class="link" href="AgsRecallChannelRun.html" title="AgsRecallChannelRun"><span class="type">AgsRecallChannelRun</span></a> *recall_channel_run</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-recall-channel-run-new"></a><h3>ags_recall_channel_run_new ()</h3>
+<pre class="programlisting"><a class="link" href="AgsRecallChannelRun.html" title="AgsRecallChannelRun"><span class="returnvalue">AgsRecallChannelRun</span></a> * ags_recall_channel_run_new        ();</pre>
+<p>
+Creates an <a class="link" href="AgsRecallChannelRun.html" title="AgsRecallChannelRun"><span class="type">AgsRecallChannelRun</span></a>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new <a class="link" href="AgsRecallChannelRun.html" title="AgsRecallChannelRun"><span class="type">AgsRecallChannelRun</span></a>
+</td>
+</tr></tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-recall-channel-run-run-order-changed"></a><h3>ags_recall_channel_run_run_order_changed ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_recall_channel_run_run_order_changed
+                                                        (<em class="parameter"><code><a class="link" href="AgsRecallChannelRun.html" title="AgsRecallChannelRun"><span class="type">AgsRecallChannelRun</span></a> *recall_channel_run</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> run_order</code></em>);</pre>
+<p>
+Modify run order.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>recall_channel_run</code></em> :</span></p></td>
+<td>an <a class="link" href="AgsRecallChannelRun.html" title="AgsRecallChannelRun"><span class="type">AgsRecallChannelRun</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>run_order</code></em> :</span></p></td>
+<td>the run order</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+</div>
+<div class="refsect1">
+<a name="AgsRecallChannelRun.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="AgsRecallChannelRun--audio-channel"></a><h3>The <code class="literal">"audio-channel"</code> property</h3>
+<pre class="programlisting">  "audio-channel"            <a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a>                 : Read / Write</pre>
+<p>The audio channel this recall is assigned to.</p>
+<p>Allowed values: &lt;= 65535</p>
+<p>Default value: 0</p>
+<p class="since">Since 0.4.0</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsRecallChannelRun--destination"></a><h3>The <code class="literal">"destination"</code> property</h3>
+<pre class="programlisting">  "destination"              <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a>*           : Read / Write</pre>
+<p>The destination AgsChannel where it will output to.</p>
+<p class="since">Since 0.4.0</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsRecallChannelRun--recall-audio-run"></a><h3>The <code class="literal">"recall-audio-run"</code> property</h3>
+<pre class="programlisting">  "recall-audio-run"         <a class="link" href="AgsRecallAudioRun.html" title="AgsRecallAudioRun"><span class="type">AgsRecallAudioRun</span></a>*    : Read / Write</pre>
+<p>The AgsRecallAudioRun which this recall needs.</p>
+<p class="since">Since 0.4.0</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsRecallChannelRun--recall-channel"></a><h3>The <code class="literal">"recall-channel"</code> property</h3>
+<pre class="programlisting">  "recall-channel"           <a class="link" href="AgsRecallChannel.html" title="AgsRecallChannel"><span class="type">AgsRecallChannel</span></a>*     : Read / Write</pre>
+<p>The AgsRecallChannel which this recall needs.</p>
+<p class="since">Since 0.4.0</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsRecallChannelRun--source"></a><h3>The <code class="literal">"source"</code> property</h3>
+<pre class="programlisting">  "source"                   <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a>*           : Read / Write</pre>
+<p>The source AgsChannel where it will take the input from.</p>
+<p class="since">Since 0.4.0</p>
+</div>
+</div>
+<div class="refsect1">
+<a name="AgsRecallChannelRun.signal-details"></a><h2>Signal Details</h2>
+<div class="refsect2">
+<a name="AgsRecallChannelRun-run-order-changed"></a><h3>The <code class="literal">"run-order-changed"</code> signal</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                user_function                      (<a class="link" href="AgsRecallChannelRun.html" title="AgsRecallChannelRun"><span class="type">AgsRecallChannelRun</span></a> *recall_channel_run,
+                                                        <a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a>                run_order,
+                                                        <a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a>             user_data)               : <a href="../gobject/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></a></pre>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

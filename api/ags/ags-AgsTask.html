@@ -1,0 +1,159 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsTask</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="process-tree.html" title="audio processing tree">
+<link rel="prev" href="ags-AgsRecyclingContainer.html" title="AgsRecyclingContainer">
+<link rel="next" href="ags-AgsTimestamp.html" title="AgsTimestamp">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="ags-AgsRecyclingContainer.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="process-tree.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="ags-AgsTimestamp.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#ags-AgsTask.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#ags-AgsTask.description" class="shortcut">Description</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="ags-AgsTask"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="ags-AgsTask.top_of_page"></a>AgsTask</span></h2>
+<p>AgsTask — Perform operations in a thread safe context.</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="ags-AgsTask.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">
+#include &lt;ags/audio/ags_task.h&gt;
+
+struct              <a class="link" href="ags-AgsTask.html#AgsTask" title="struct AgsTask">AgsTask</a>;
+struct              <a class="link" href="ags-AgsTask.html#AgsTaskClass" title="struct AgsTaskClass">AgsTaskClass</a>;
+enum                <a class="link" href="ags-AgsTask.html#AgsTaskFlags" title="enum AgsTaskFlags">AgsTaskFlags</a>;
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsTask.html#ags-task-failure" title="ags_task_failure ()">ags_task_failure</a>                    (<em class="parameter"><code><a class="link" href="ags-AgsTask.html#AgsTask" title="struct AgsTask"><span class="type">AgsTask</span></a> *task</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GError"><span class="type">GError</span></GTKDOCLINK> *error</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsTask.html#ags-task-launch" title="ags_task_launch ()">ags_task_launch</a>                     (<em class="parameter"><code><a class="link" href="ags-AgsTask.html#AgsTask" title="struct AgsTask"><span class="type">AgsTask</span></a> *task</code></em>);
+<a class="link" href="ags-AgsTask.html#AgsTask" title="struct AgsTask"><span class="returnvalue">AgsTask</span></a> *           <a class="link" href="ags-AgsTask.html#ags-task-new" title="ags_task_new ()">ags_task_new</a>                        ();
+</pre>
+</div>
+<div class="refsect1">
+<a name="ags-AgsTask.description"></a><h2>Description</h2>
+<p>
+<a class="link" href="ags-AgsTask.html#AgsTask" title="struct AgsTask"><span class="type">AgsTask</span></a> object acts an interceptor in a thread safe context.
+</p>
+</div>
+<div class="refsect1">
+<a name="ags-AgsTask.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AgsTask"></a><h3>struct AgsTask</h3>
+<pre class="programlisting">struct AgsTask {
+  GObject object;
+
+  guint flags;
+
+  char *name;
+
+  guint delay;
+
+  pthread_cond_t wait_sync_task_cond;
+};
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsTaskClass"></a><h3>struct AgsTaskClass</h3>
+<pre class="programlisting">struct AgsTaskClass {
+  GObjectClass object;
+
+  void (*launch)(AgsTask *task);
+
+  void (*failure)(AgsTask *task, GError *error);
+};
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsTaskFlags"></a><h3>enum AgsTaskFlags</h3>
+<pre class="programlisting">typedef enum {
+  AGS_TASK_LOCKED = 1,
+} AgsTaskFlags;
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-task-failure"></a><h3>ags_task_failure ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_task_failure                    (<em class="parameter"><code><a class="link" href="ags-AgsTask.html#AgsTask" title="struct AgsTask"><span class="type">AgsTask</span></a> *task</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GError"><span class="type">GError</span></GTKDOCLINK> *error</code></em>);</pre>
+<p>
+Signals failure of task.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>task</code></em> :</span></p></td>
+<td>an <a class="link" href="ags-AgsTask.html#AgsTask" title="struct AgsTask"><span class="type">AgsTask</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>error</code></em> :</span></p></td>
+<td>is <GTKDOCLINK HREF="NULL:CAPS"><code class="literal">NULL</code></GTKDOCLINK> on success</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-task-launch"></a><h3>ags_task_launch ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_task_launch                     (<em class="parameter"><code><a class="link" href="ags-AgsTask.html#AgsTask" title="struct AgsTask"><span class="type">AgsTask</span></a> *task</code></em>);</pre>
+<p>
+Intercept task.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><em class="parameter"><code>task</code></em> :</span></p></td>
+<td>an <a class="link" href="ags-AgsTask.html#AgsTask" title="struct AgsTask"><span class="type">AgsTask</span></a>
+</td>
+</tr></tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-task-new"></a><h3>ags_task_new ()</h3>
+<pre class="programlisting"><a class="link" href="ags-AgsTask.html#AgsTask" title="struct AgsTask"><span class="returnvalue">AgsTask</span></a> *           ags_task_new                        ();</pre>
+<p>
+Creates a <a class="link" href="ags-AgsTask.html#AgsTask" title="struct AgsTask"><span class="type">AgsTask</span></a>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new <a class="link" href="ags-AgsTask.html#AgsTask" title="struct AgsTask"><span class="type">AgsTask</span></a>
+</td>
+</tr></tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

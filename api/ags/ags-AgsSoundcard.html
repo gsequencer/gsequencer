@@ -1,0 +1,155 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsSoundcard</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="ags Reference Manual">
+<link rel="up" href="ch01.html" title="[Insert title here]">
+<link rel="prev" href="ags-AgsSndfile.html" title="AgsSndfile">
+<link rel="next" href="ags-AgsStackable.html" title="AgsStackable">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="ags-AgsSndfile.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="ch01.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">ags Reference Manual</th>
+<td><a accesskey="n" href="ags-AgsStackable.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#ags-AgsSoundcard.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#ags-AgsSoundcard.description" class="shortcut">Description</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="ags-AgsSoundcard"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="ags-AgsSoundcard.top_of_page"></a>AgsSoundcard</span></h2>
+<p>AgsSoundcard</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="ags-AgsSoundcard.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">typedef             <a class="link" href="ags-AgsSoundcard.html#AgsSoundcard" title="AgsSoundcard">AgsSoundcard</a>;
+struct              <a class="link" href="ags-AgsSoundcard.html#AgsSoundcardInterface" title="struct AgsSoundcardInterface">AgsSoundcardInterface</a>;
+signed <GTKDOCLINK HREF="short"><span class="returnvalue">short</span></GTKDOCLINK> *      <a class="link" href="ags-AgsSoundcard.html#ags-soundcard-get-buffer" title="ags_soundcard_get_buffer ()">ags_soundcard_get_buffer</a>            (<em class="parameter"><code><a class="link" href="ags-AgsSoundcard.html#AgsSoundcard" title="AgsSoundcard"><span class="type">AgsSoundcard</span></a> *soundcard</code></em>);
+signed <GTKDOCLINK HREF="short"><span class="returnvalue">short</span></GTKDOCLINK> *      <a class="link" href="ags-AgsSoundcard.html#ags-soundcard-get-next-buffer" title="ags_soundcard_get_next_buffer ()">ags_soundcard_get_next_buffer</a>       (<em class="parameter"><code><a class="link" href="ags-AgsSoundcard.html#AgsSoundcard" title="AgsSoundcard"><span class="type">AgsSoundcard</span></a> *soundcard</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsSoundcard.html#ags-soundcard-list-cards" title="ags_soundcard_list_cards ()">ags_soundcard_list_cards</a>            (<em class="parameter"><code><a class="link" href="ags-AgsSoundcard.html#AgsSoundcard" title="AgsSoundcard"><span class="type">AgsSoundcard</span></a> *soundcard</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> **card_id</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> **card_name</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsSoundcard.html#ags-soundcard-offset-changed" title="ags_soundcard_offset_changed ()">ags_soundcard_offset_changed</a>        (<em class="parameter"><code><a class="link" href="ags-AgsSoundcard.html#AgsSoundcard" title="AgsSoundcard"><span class="type">AgsSoundcard</span></a> *soundcard</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> note_offset</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsSoundcard.html#ags-soundcard-pcm-info" title="ags_soundcard_pcm_info ()">ags_soundcard_pcm_info</a>              (<em class="parameter"><code><a class="link" href="ags-AgsSoundcard.html#AgsSoundcard" title="AgsSoundcard"><span class="type">AgsSoundcard</span></a> *soundcard</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *card_id</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> *channels_min</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> *channels_max</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> *rate_min</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> *rate_max</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> *buffer_size_min</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> *buffer_size_max</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GError"><span class="type">GError</span></GTKDOCLINK> **error</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsSoundcard.html#ags-soundcard-tic" title="ags_soundcard_tic ()">ags_soundcard_tic</a>                   (<em class="parameter"><code><a class="link" href="ags-AgsSoundcard.html#AgsSoundcard" title="AgsSoundcard"><span class="type">AgsSoundcard</span></a> *soundcard</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="ags-AgsSoundcard.description"></a><h2>Description</h2>
+</div>
+<div class="refsect1">
+<a name="ags-AgsSoundcard.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AgsSoundcard"></a><h3>AgsSoundcard</h3>
+<pre class="programlisting">typedef void AgsSoundcard;
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsSoundcardInterface"></a><h3>struct AgsSoundcardInterface</h3>
+<pre class="programlisting">struct AgsSoundcardInterface {
+  GTypeInterface interface;
+
+  void (*list_cards)(AgsSoundcard *soundcard,
+		     GList **card_id, GList **card_name);
+  void (*pcm_info)(AgsSoundcard *soundcard, gchar *card_id,
+		   guint *channels_min, guint *channels_max,
+		   guint *rate_min, guint *rate_max,
+		   guint *buffer_size_min, guint *buffer_size_max,
+		   GError **error);
+
+  void (*play_init)(AgsSoundcard *soundcard,
+		    GError **error);
+  void (*play)(AgsSoundcard *soundcard,
+	       GError **error);
+  void (*stop)(AgsSoundcard *soundcard);
+
+  void (*tic)(AgsSoundcard *soundcard);
+  void (*offset_changed)(AgsSoundcard *soundcard, guint note_offset);
+
+  signed short* (*get_buffer)(AgsSoundcard *soundcard);
+  signed short* (*get_next_buffer)(AgsSoundcard *soundcard);  
+};
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-soundcard-get-buffer"></a><h3>ags_soundcard_get_buffer ()</h3>
+<pre class="programlisting">signed <GTKDOCLINK HREF="short"><span class="returnvalue">short</span></GTKDOCLINK> *      ags_soundcard_get_buffer            (<em class="parameter"><code><a class="link" href="ags-AgsSoundcard.html#AgsSoundcard" title="AgsSoundcard"><span class="type">AgsSoundcard</span></a> *soundcard</code></em>);</pre>
+<p>
+Get current playback buffer.
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-soundcard-get-next-buffer"></a><h3>ags_soundcard_get_next_buffer ()</h3>
+<pre class="programlisting">signed <GTKDOCLINK HREF="short"><span class="returnvalue">short</span></GTKDOCLINK> *      ags_soundcard_get_next_buffer       (<em class="parameter"><code><a class="link" href="ags-AgsSoundcard.html#AgsSoundcard" title="AgsSoundcard"><span class="type">AgsSoundcard</span></a> *soundcard</code></em>);</pre>
+<p>
+Get future playback buffer.
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-soundcard-list-cards"></a><h3>ags_soundcard_list_cards ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_soundcard_list_cards            (<em class="parameter"><code><a class="link" href="ags-AgsSoundcard.html#AgsSoundcard" title="AgsSoundcard"><span class="type">AgsSoundcard</span></a> *soundcard</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> **card_id</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> **card_name</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-soundcard-offset-changed"></a><h3>ags_soundcard_offset_changed ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_soundcard_offset_changed        (<em class="parameter"><code><a class="link" href="ags-AgsSoundcard.html#AgsSoundcard" title="AgsSoundcard"><span class="type">AgsSoundcard</span></a> *soundcard</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> note_offset</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-soundcard-pcm-info"></a><h3>ags_soundcard_pcm_info ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_soundcard_pcm_info              (<em class="parameter"><code><a class="link" href="ags-AgsSoundcard.html#AgsSoundcard" title="AgsSoundcard"><span class="type">AgsSoundcard</span></a> *soundcard</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *card_id</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> *channels_min</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> *channels_max</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> *rate_min</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> *rate_max</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> *buffer_size_min</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> *buffer_size_max</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GError"><span class="type">GError</span></GTKDOCLINK> **error</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-soundcard-tic"></a><h3>ags_soundcard_tic ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_soundcard_tic                   (<em class="parameter"><code><a class="link" href="ags-AgsSoundcard.html#AgsSoundcard" title="AgsSoundcard"><span class="type">AgsSoundcard</span></a> *soundcard</code></em>);</pre>
+<p>
+Callback when counter expires minor note offset.
+</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

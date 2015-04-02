@@ -1,0 +1,201 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Composite widgets</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="pt07.html" title="Part VII. GUI - Graphical user interface">
+<link rel="prev" href="pt07.html" title="Part VII. GUI - Graphical user interface">
+<link rel="next" href="ags-AgsAudioPreferences.html" title="AgsAudioPreferences">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2"><tr valign="middle">
+<td><a accesskey="p" href="pt07.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="pt07.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="ags-AgsAudioPreferences.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="chapter">
+<div class="titlepage"><div><div><h2 class="title">
+<a name="composite-widgets"></a>Composite widgets</h2></div></div></div>
+<div class="toc"><dl>
+<dt>
+<span class="refentrytitle"><a href="ags-AgsAudioPreferences.html">AgsAudioPreferences</a></span><span class="refpurpose"> — A composite widget to do audio related preferences</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-audio-preferences-callbacks.html">ags_audio_preferences_callbacks</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-AgsEditor.html">AgsEditor</a></span><span class="refpurpose"> — A composite widget to edit notes</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-editor-callbacks.html">ags_editor_callbacks</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-AgsExportWindow.html">AgsExportWindow</a></span><span class="refpurpose"> — The export dialog</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-export-window-callbacks.html">ags_export_window_callbacks</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-AgsInlinePlayer.html">AgsInlinePlayer</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-AgsLadspaBrowser.html">AgsLadspaBrowser</a></span><span class="refpurpose"> — A composite to select ladspa effect.</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-ladspa-browser-callbacks.html">ags_ladspa_browser_callbacks</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-AgsLine.html">AgsLine</a></span><span class="refpurpose"> — A composite widget to visualize <a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-line-callbacks.html">ags_line_callbacks</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-AgsLineEditor.html">AgsLineEditor</a></span><span class="refpurpose"> — A composite widget to edit <a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-line-editor-callbacks.html">ags_line_editor_callbacks</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-AgsLineMember.html">AgsLineMember</a></span><span class="refpurpose"> — Modify assigned recall's port</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-line-member-callbacks.html">ags_line_member_callbacks</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-AgsLineMemberEditor.html">AgsLineMemberEditor</a></span><span class="refpurpose"> — Edit line member's aspects.</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-line-member-editor-callbacks.html">ags_line_member_editor_callbacks</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-AgsLinkChannel.html">AgsLinkChannel</a></span><span class="refpurpose"> — link channel object</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-AgsLinkCollectionEditor.html">AgsLinkCollectionEditor</a></span><span class="refpurpose"> — Edit links in bulk mode.</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-link-collection-editor-callbacks.html">ags_link_collection_editor_callbacks</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-AgsLinkEditor.html">AgsLinkEditor</a></span><span class="refpurpose"> — Edit links.</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-link-editor-callbacks.html">ags_link_editor_callbacks</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-AgsListingEditor.html">AgsListingEditor</a></span><span class="refpurpose"> — pack pad editors.</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-listing-editor-callbacks.html">ags_listing_editor_callbacks</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-AgsMachine.html">AgsMachine</a></span><span class="refpurpose"> — visualize audio object.</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-machine-callbacks.html">ags_machine_callbacks</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-AgsMachineEditor.html">AgsMachineEditor</a></span><span class="refpurpose"> — pack pad editors.</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-machine-editor-callbacks.html">ags_machine_editor_callbacks</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-AgsMachineRadioButton.html">AgsMachineRadioButton</a></span><span class="refpurpose"> — machine radio buttons</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-AgsMachineSelection.html">AgsMachineSelection</a></span><span class="refpurpose"> — machine radio buttons</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-AgsMachineSelector.html">AgsMachineSelector</a></span><span class="refpurpose"> — machine radio buttons</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-machine-selector-callbacks.html">ags_machine_selector_callbacks</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-AgsMenuBar.html">AgsMenuBar</a></span><span class="refpurpose"> — the menu bar.</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-menu-bar-callbacks.html">ags_menu_bar_callbacks</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-AgsNavigation.html">AgsNavigation</a></span><span class="refpurpose"> — control audio object's playback.</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-navigation-callbacks.html">ags_navigation_callbacks</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-AgsPad.html">AgsPad</a></span><span class="refpurpose"> — A composite widget to visualize a bunch of <a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-pad-callbacks.html">ags_pad_callbacks</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-AgsPadEditor.html">AgsPadEditor</a></span><span class="refpurpose"> — A composite widget to edit <a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-pad-editor-callbacks.html">ags_pad_editor_callbacks</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-AgsPerformancePreferences.html">AgsPerformancePreferences</a></span><span class="refpurpose"> — A composite widget to do performance related preferences</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-AgsPluginPreferences.html">AgsPluginPreferences</a></span><span class="refpurpose"> — A composite widget to do plugin related preferences</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-AgsPreferences.html">AgsPluginPreferences</a></span><span class="refpurpose"> — A dialog to do preferences</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-preferences-callbacks.html">ags_preferences_callbacks</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-AgsPropertyCollectionEditor.html">AgsPropertyCollectionEditor</a></span><span class="refpurpose"> — Edit propertys in bulk mode.</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-property-collection-editor-callbacks.html">ags_property_collection_editor_callbacks</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-AgsPropertyEditor.html">AgsPropertyEditor</a></span><span class="refpurpose"> — Property of audio, channels or pads in bulk mode.</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-property-editor-callbacks.html">ags_property_editor_callbacks</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-AgsPropertyListingEditor.html">AgsPropertyListingEditor</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-AgsResizeEditor.html">AgsResizeEditor</a></span><span class="refpurpose"> — Resize audio channels or pads.</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-AgsRuler.html">AgsRuler</a></span><span class="refpurpose"> — A ruler widget</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-AgsServerPreferences.html">AgsServerPreferences</a></span><span class="refpurpose"> — A composite widget to do server related preferences</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-AgsWindow.html">AgsWindow</a></span><span class="refpurpose"> — The window object.</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-window-callbacks.html">ags_window_callbacks</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-AgsSF2Chooser.html">AgsSF2Chooser</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-sf2-chooser-callbacks.html">ags_sf2_chooser_callbacks</a></span><span class="refpurpose"></span>
+</dt>
+</dl></div>
+<span style="color: red">&lt;xi:include&gt;&lt;/xi:include&gt;</span>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

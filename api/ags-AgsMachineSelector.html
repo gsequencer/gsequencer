@@ -1,0 +1,121 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Advanced Gtk+ Sequencer Reference Manual: AgsMachineSelector</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="editor.html" title="Editor - Piano roll and its controls">
+<link rel="prev" href="ags-AgsMachineSelection.html" title="AgsMachineSelection">
+<link rel="next" href="ags-ags-machine-selector-callbacks.html" title="ags_machine_selector_callbacks">
+<meta name="generator" content="GTK-Doc V1.21 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#ags-AgsMachineSelector.description" class="shortcut">Description</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="editor.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="ags-AgsMachineSelection.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="ags-ags-machine-selector-callbacks.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry">
+<a name="ags-AgsMachineSelector"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="ags-AgsMachineSelector.top_of_page"></a>AgsMachineSelector</span></h2>
+<p>AgsMachineSelector — machine radio buttons</p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1">
+<a name="ags-AgsMachineSelector.functions"></a><h2>Functions</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="functions_return">
+<col class="functions_name">
+</colgroup>
+<tbody>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="ags-AgsMachineSelector.html#ags-machine-selector-changed" title="ags_machine_selector_changed ()">ags_machine_selector_changed</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="GtkMenu"><span class="returnvalue">GtkMenu</span></GTKDOCLINK> *
+</td>
+<td class="function_name">
+<a class="link" href="ags-AgsMachineSelector.html#ags-machine-selector-popup-new" title="ags_machine_selector_popup_new ()">ags_machine_selector_popup_new</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="AgsMachineSelector"><span class="returnvalue">AgsMachineSelector</span></GTKDOCLINK> *
+</td>
+<td class="function_name">
+<a class="link" href="ags-AgsMachineSelector.html#ags-machine-selector-new" title="ags_machine_selector_new ()">ags_machine_selector_new</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="ags-AgsMachineSelector.includes"></a><h2>Includes</h2>
+<pre class="synopsis">#include &lt;ags/X/editor/ags_machine_selector.h&gt;
+</pre>
+</div>
+<div class="refsect1">
+<a name="ags-AgsMachineSelector.description"></a><h2>Description</h2>
+<p>The <GTKDOCLINK HREF="AgsMachineSelector"><span class="type">AgsMachineSelector</span></GTKDOCLINK> enables you make choice of an <GTKDOCLINK HREF="AgsMachine"><span class="type">AgsMachine</span></GTKDOCLINK>.</p>
+</div>
+<div class="refsect1">
+<a name="ags-AgsMachineSelector.functions_details"></a><h2>Functions</h2>
+<div class="refsect2">
+<a name="ags-machine-selector-changed"></a><h3>ags_machine_selector_changed ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_machine_selector_changed (<em class="parameter"><code><GTKDOCLINK HREF="AgsMachineSelector"><span class="type">AgsMachineSelector</span></GTKDOCLINK> *machine_selector</code></em>,
+                              <em class="parameter"><code><GTKDOCLINK HREF="AgsMachine"><span class="type">AgsMachine</span></GTKDOCLINK> *machine</code></em>);</pre>
+<p>Emitted as <GTKDOCLINK HREF="AgsMachineSelector"><span class="type">AgsMachineSelector</span></GTKDOCLINK> modified.</p>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-machine-selector-popup-new"></a><h3>ags_machine_selector_popup_new ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="GtkMenu"><span class="returnvalue">GtkMenu</span></GTKDOCLINK> *
+ags_machine_selector_popup_new (<em class="parameter"><code><GTKDOCLINK HREF="AgsMachineSelector"><span class="type">AgsMachineSelector</span></GTKDOCLINK> *machine_selector</code></em>);</pre>
+<p>Create a new <GTKDOCLINK HREF="AgsMachineSelectorPopup"><span class="type">AgsMachineSelectorPopup</span></GTKDOCLINK>.</p>
+<div class="refsect3">
+<a name="id-1.10.53.6.6.3.5"></a><h4>Returns</h4>
+<p></p>
+</div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-machine-selector-new"></a><h3>ags_machine_selector_new ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="AgsMachineSelector"><span class="returnvalue">AgsMachineSelector</span></GTKDOCLINK> *
+ags_machine_selector_new ();</pre>
+<p>Create a new <GTKDOCLINK HREF="AgsMachineSelector"><span class="type">AgsMachineSelector</span></GTKDOCLINK>.</p>
+<div class="refsect3">
+<a name="id-1.10.53.6.6.4.5"></a><h4>Returns</h4>
+<p></p>
+</div>
+<p class="since">Since 0.4</p>
+</div>
+</div>
+<div class="refsect1">
+<a name="ags-AgsMachineSelector.other_details"></a><h2>Types and Values</h2>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.21</div>
+</body>
+</html>

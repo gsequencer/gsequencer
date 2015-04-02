@@ -1,0 +1,28 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>AgsNote</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="ags Reference Manual"><link rel="up" href="ch01.html" title="Chapter 1. [Insert title here]"><link rel="prev" href="re158.html" title="AgsNotation"><link rel="next" href="re160.html" title="AgsNoteEdit"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="ags-AgsNote"></a><div class="titlepage"></div><div class="refnamediv"><h2>Name</h2><p>AgsNote</p></div><div class="refsynopsisdiv"><a name="ags-AgsNote.synopsis"></a><h2>Synopsis</h2><pre class="synopsis">enum                <a class="link" href="re159.html#AgsNoteFlags" title="enum AgsNoteFlags">AgsNoteFlags</a>;
+struct              <a class="link" href="re159.html#AgsNote" title="struct AgsNote">AgsNote</a>;
+struct              <a class="link" href="re159.html#AgsNoteClass" title="struct AgsNoteClass">AgsNoteClass</a>;
+<a class="link" href="re159.html#AgsNote" title="struct AgsNote"><span class="returnvalue">AgsNote</span></a> *           <a class="link" href="re159.html#ags-note-duplicate" title="ags_note_duplicate ()">ags_note_duplicate</a>                  (<em class="parameter"><code><a class="link" href="re159.html#AgsNote" title="struct AgsNote"><span class="type">AgsNote</span></a> *note</code></em>);
+<a class="link" href="re159.html#AgsNote" title="struct AgsNote"><span class="returnvalue">AgsNote</span></a> *           <a class="link" href="re159.html#ags-note-new" title="ags_note_new ()">ags_note_new</a>                        ();
+</pre></div><div class="refsect1"><a name="ags-AgsNote.description"></a><h2>Description</h2></div><div class="refsect1"><a name="ags-AgsNote.details"></a><h2>Details</h2><div class="refsect2"><a name="AgsNoteFlags"></a><h3>enum AgsNoteFlags</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsNoteFlags"></OBJECT><pre class="programlisting">typedef enum {
+  AGS_NOTE_GUI             =  1,
+  AGS_NOTE_RUNTIME         =  1 &lt;&lt;  1,
+  AGS_NOTE_HUMAN_READABLE  =  1 &lt;&lt;  2,
+  AGS_NOTE_DEFAULT_LENGTH  =  1 &lt;&lt;  3,
+  AGS_NOTE_IS_SELECTED     =  1 &lt;&lt;  4,
+} AgsNoteFlags;
+</pre><div class="variablelist"><dl class="variablelist"><dt><a name="AGS-NOTE-GUI:CAPS"></a><span class="term"><code class="literal">AGS_NOTE_GUI</code></span></dt><dd></dd><dt><a name="AGS-NOTE-RUNTIME:CAPS"></a><span class="term"><code class="literal">AGS_NOTE_RUNTIME</code></span></dt><dd></dd><dt><a name="AGS-NOTE-HUMAN-READABLE:CAPS"></a><span class="term"><code class="literal">AGS_NOTE_HUMAN_READABLE</code></span></dt><dd></dd><dt><a name="AGS-NOTE-DEFAULT-LENGTH:CAPS"></a><span class="term"><code class="literal">AGS_NOTE_DEFAULT_LENGTH</code></span></dt><dd></dd><dt><a name="AGS-NOTE-IS-SELECTED:CAPS"></a><span class="term"><code class="literal">AGS_NOTE_IS_SELECTED</code></span></dt><dd></dd></dl></div></div><div class="refsect2"><a name="AgsNote"></a><h3>struct AgsNote</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsNote"></OBJECT><pre class="programlisting">struct AgsNote {
+  GObject object;
+
+  guint flags;
+
+  // gui format, convert easy to visualization
+  guint x[2];
+  guint y;
+
+  gchar *name;
+  gdouble frequency;
+};
+</pre></div><div class="refsect2"><a name="AgsNoteClass"></a><h3>struct AgsNoteClass</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsNoteClass"></OBJECT><pre class="programlisting">struct AgsNoteClass {
+  GObjectClass object;
+};
+</pre></div><div class="refsect2"><a name="ags-note-duplicate"></a><h3>ags_note_duplicate ()</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="ags_note_duplicate"></OBJECT><pre class="programlisting"><a class="link" href="re159.html#AgsNote" title="struct AgsNote"><span class="returnvalue">AgsNote</span></a> *           ags_note_duplicate                  (<em class="parameter"><code><a class="link" href="re159.html#AgsNote" title="struct AgsNote"><span class="type">AgsNote</span></a> *note</code></em>);</pre></div><div class="refsect2"><a name="ags-note-new"></a><h3>ags_note_new ()</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="ags_note_new"></OBJECT><pre class="programlisting"><a class="link" href="re159.html#AgsNote" title="struct AgsNote"><span class="returnvalue">AgsNote</span></a> *           ags_note_new                        ();</pre></div></div></div></body></html>

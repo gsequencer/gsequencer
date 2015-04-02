@@ -1,0 +1,29 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>AgsInitChannel</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="ags Reference Manual"><link rel="up" href="ch01.html" title="Chapter 1. [Insert title here]"><link rel="prev" href="re106.html" title="AgsInitAudio"><link rel="next" href="re108.html" title="AgsInlinePlayer"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="ags-AgsInitChannel"></a><div class="titlepage"></div><div class="refnamediv"><h2>Name</h2><p>AgsInitChannel</p></div><div class="refsynopsisdiv"><a name="ags-AgsInitChannel.synopsis"></a><h2>Synopsis</h2><pre class="synopsis">struct              <a class="link" href="re107.html#AgsInitChannel" title="struct AgsInitChannel">AgsInitChannel</a>;
+struct              <a class="link" href="re107.html#AgsInitChannelClass" title="struct AgsInitChannelClass">AgsInitChannelClass</a>;
+<a class="link" href="re107.html#AgsInitChannel" title="struct AgsInitChannel"><span class="returnvalue">AgsInitChannel</span></a> *    <a class="link" href="re107.html#ags-init-channel-new" title="ags_init_channel_new ()">ags_init_channel_new</a>                (<em class="parameter"><code><a class="link" href="re33.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">gboolean</span></a> play_pad</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="re217.html#AgsRecallID" title="struct AgsRecallID"><span class="type">AgsRecallID</span></a> *recall_id[3]</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">gboolean</span></a> playback</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">gboolean</span></a> sequencer</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">gboolean</span></a> notation</code></em>);
+</pre></div><div class="refsect1"><a name="ags-AgsInitChannel.description"></a><h2>Description</h2></div><div class="refsect1"><a name="ags-AgsInitChannel.details"></a><h2>Details</h2><div class="refsect2"><a name="AgsInitChannel"></a><h3>struct AgsInitChannel</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsInitChannel"></OBJECT><pre class="programlisting">struct AgsInitChannel {
+  AgsTask task;
+
+  AgsChannel *channel;
+  gboolean play_pad;
+
+  AgsRecallID *recall_id[3];
+
+  gboolean playback;
+  gboolean sequencer;
+  gboolean notation;
+};
+</pre></div><div class="refsect2"><a name="AgsInitChannelClass"></a><h3>struct AgsInitChannelClass</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsInitChannelClass"></OBJECT><pre class="programlisting">struct AgsInitChannelClass {
+  AgsTaskClass task;
+};
+</pre></div><div class="refsect2"><a name="ags-init-channel-new"></a><h3>ags_init_channel_new ()</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="ags_init_channel_new"></OBJECT><pre class="programlisting"><a class="link" href="re107.html#AgsInitChannel" title="struct AgsInitChannel"><span class="returnvalue">AgsInitChannel</span></a> *    ags_init_channel_new                (<em class="parameter"><code><a class="link" href="re33.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">gboolean</span></a> play_pad</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="re217.html#AgsRecallID" title="struct AgsRecallID"><span class="type">AgsRecallID</span></a> *recall_id[3]</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">gboolean</span></a> playback</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">gboolean</span></a> sequencer</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">gboolean</span></a> notation</code></em>);</pre></div></div></div></body></html>

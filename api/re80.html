@@ -1,0 +1,25 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>AgsFFPlayer</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="ags Reference Manual"><link rel="up" href="ch01.html" title="Chapter 1. [Insert title here]"><link rel="prev" href="re79.html" title="AgsExportThread"><link rel="next" href="re81.html" title="ags_ffplayer_callbacks"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="ags-AgsFFPlayer"></a><div class="titlepage"></div><div class="refnamediv"><h2>Name</h2><p>AgsFFPlayer</p></div><div class="refsynopsisdiv"><a name="ags-AgsFFPlayer.synopsis"></a><h2>Synopsis</h2><pre class="synopsis">struct              <a class="link" href="re80.html#AgsFFPlayer" title="struct AgsFFPlayer">AgsFFPlayer</a>;
+struct              <a class="link" href="re80.html#AgsFFPlayerClass" title="struct AgsFFPlayerClass">AgsFFPlayerClass</a>;
+<a class="link" href=""><span class="returnvalue">void</span></a>                <a class="link" href="re80.html#ags-ffplayer-paint" title="ags_ffplayer_paint ()">ags_ffplayer_paint</a>                  (<em class="parameter"><code><a class="link" href="re80.html#AgsFFPlayer" title="struct AgsFFPlayer"><span class="type">AgsFFPlayer</span></a> *ffplayer</code></em>);
+<a class="link" href="re80.html#AgsFFPlayer" title="struct AgsFFPlayer"><span class="returnvalue">AgsFFPlayer</span></a> *       <a class="link" href="re80.html#ags-ffplayer-new" title="ags_ffplayer_new ()">ags_ffplayer_new</a>                    (<em class="parameter"><code><a class="link" href=""><span class="type">GObject</span></a> *devout</code></em>);
+</pre></div><div class="refsect1"><a name="ags-AgsFFPlayer.description"></a><h2>Description</h2></div><div class="refsect1"><a name="ags-AgsFFPlayer.details"></a><h2>Details</h2><div class="refsect2"><a name="AgsFFPlayer"></a><h3>struct AgsFFPlayer</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsFFPlayer"></OBJECT><pre class="programlisting">struct AgsFFPlayer {
+  AgsMachine machine;
+
+  guint mapped_output_pad;
+  guint mapped_input_pad;
+
+  GtkButton *open;
+
+  guint control_width;
+  guint control_height;
+  
+  GtkDrawingArea *drawing_area;
+  GtkAdjustment *hadjustment;
+
+  AgsIpatch *ipatch;
+  GtkComboBoxText *instrument;
+};
+</pre></div><div class="refsect2"><a name="AgsFFPlayerClass"></a><h3>struct AgsFFPlayerClass</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsFFPlayerClass"></OBJECT><pre class="programlisting">struct AgsFFPlayerClass {
+  AgsMachineClass machine;
+};
+</pre></div><div class="refsect2"><a name="ags-ffplayer-paint"></a><h3>ags_ffplayer_paint ()</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="ags_ffplayer_paint"></OBJECT><pre class="programlisting"><a class="link" href=""><span class="returnvalue">void</span></a>                ags_ffplayer_paint                  (<em class="parameter"><code><a class="link" href="re80.html#AgsFFPlayer" title="struct AgsFFPlayer"><span class="type">AgsFFPlayer</span></a> *ffplayer</code></em>);</pre></div><div class="refsect2"><a name="ags-ffplayer-new"></a><h3>ags_ffplayer_new ()</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="ags_ffplayer_new"></OBJECT><pre class="programlisting"><a class="link" href="re80.html#AgsFFPlayer" title="struct AgsFFPlayer"><span class="returnvalue">AgsFFPlayer</span></a> *       ags_ffplayer_new                    (<em class="parameter"><code><a class="link" href=""><span class="type">GObject</span></a> *devout</code></em>);</pre></div></div></div></body></html>

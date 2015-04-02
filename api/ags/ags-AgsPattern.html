@@ -1,0 +1,254 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsPattern</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="process-tree.html" title="audio processing tree">
+<link rel="prev" href="ags-AgsOutput.html" title="AgsOutput">
+<link rel="next" href="ags-AgsPort.html" title="AgsPort">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="ags-AgsOutput.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="process-tree.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="ags-AgsPort.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#ags-AgsPattern.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#ags-AgsPattern.description" class="shortcut">Description</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="ags-AgsPattern"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="ags-AgsPattern.top_of_page"></a>AgsPattern</span></h2>
+<p>AgsPattern — Pattern representing tones</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="ags-AgsPattern.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">
+#include &lt;ags/audio/ags_pattern.h&gt;
+
+struct              <a class="link" href="ags-AgsPattern.html#AgsPattern" title="struct AgsPattern">AgsPattern</a>;
+struct              <a class="link" href="ags-AgsPattern.html#AgsPatternClass" title="struct AgsPatternClass">AgsPatternClass</a>;
+<GTKDOCLINK HREF="gboolean"><span class="returnvalue">gboolean</span></GTKDOCLINK>            <a class="link" href="ags-AgsPattern.html#ags-pattern-get-bit" title="ags_pattern_get_bit ()">ags_pattern_get_bit</a>                 (<em class="parameter"><code><a class="link" href="ags-AgsPattern.html#AgsPattern" title="struct AgsPattern"><span class="type">AgsPattern</span></a> *pattern</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> i</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> j</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> bit</code></em>);
+<a class="link" href="ags-AgsPattern.html#AgsPattern" title="struct AgsPattern"><span class="returnvalue">AgsPattern</span></a> *        <a class="link" href="ags-AgsPattern.html#ags-pattern-get-by-timestamp" title="ags_pattern_get_by_timestamp ()">ags_pattern_get_by_timestamp</a>        (<em class="parameter"><code><GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> *list</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *timestamp</code></em>);
+<a class="link" href="ags-AgsPattern.html#AgsPattern" title="struct AgsPattern"><span class="returnvalue">AgsPattern</span></a> *        <a class="link" href="ags-AgsPattern.html#ags-pattern-new" title="ags_pattern_new ()">ags_pattern_new</a>                     ();
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsPattern.html#ags-pattern-set-dim" title="ags_pattern_set_dim ()">ags_pattern_set_dim</a>                 (<em class="parameter"><code><a class="link" href="ags-AgsPattern.html#AgsPattern" title="struct AgsPattern"><span class="type">AgsPattern</span></a> *pattern</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> dim0</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> dim1</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> lenght</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsPattern.html#ags-pattern-toggle-bit" title="ags_pattern_toggle_bit ()">ags_pattern_toggle_bit</a>              (<em class="parameter"><code><a class="link" href="ags-AgsPattern.html#AgsPattern" title="struct AgsPattern"><span class="type">AgsPattern</span></a> *pattern</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> i</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> j</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> bit</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="ags-AgsPattern.description"></a><h2>Description</h2>
+<p>
+<a class="link" href="ags-AgsPattern.html#AgsPattern" title="struct AgsPattern"><span class="type">AgsPattern</span></a> represents an audio pattern of tones.
+</p>
+</div>
+<div class="refsect1">
+<a name="ags-AgsPattern.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AgsPattern"></a><h3>struct AgsPattern</h3>
+<pre class="programlisting">struct AgsPattern {
+  GObject object;
+
+  GObject *timestamp;
+
+  guint dim[3];
+  guint ***pattern;
+
+  GObject *port;
+
+  guint i;
+  guint j;
+  guint bit;
+};
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsPatternClass"></a><h3>struct AgsPatternClass</h3>
+<pre class="programlisting">struct AgsPatternClass {
+  GObjectClass object;
+};
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-pattern-get-bit"></a><h3>ags_pattern_get_bit ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="gboolean"><span class="returnvalue">gboolean</span></GTKDOCLINK>            ags_pattern_get_bit                 (<em class="parameter"><code><a class="link" href="ags-AgsPattern.html#AgsPattern" title="struct AgsPattern"><span class="type">AgsPattern</span></a> *pattern</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> i</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> j</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> bit</code></em>);</pre>
+<p>
+Check for tic to be played.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>pattern</code></em> :</span></p></td>
+<td>an <a class="link" href="ags-AgsPattern.html#AgsPattern" title="struct AgsPattern"><span class="type">AgsPattern</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>i</code></em> :</span></p></td>
+<td>bank index 0</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>j</code></em> :</span></p></td>
+<td>bank index 1</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>bit</code></em> :</span></p></td>
+<td>the tic to check</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>
+<GTKDOCLINK HREF="TRUE:CAPS"><code class="literal">TRUE</code></GTKDOCLINK> if tone is enabled.</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.3</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-pattern-get-by-timestamp"></a><h3>ags_pattern_get_by_timestamp ()</h3>
+<pre class="programlisting"><a class="link" href="ags-AgsPattern.html#AgsPattern" title="struct AgsPattern"><span class="returnvalue">AgsPattern</span></a> *        ags_pattern_get_by_timestamp        (<em class="parameter"><code><GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> *list</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *timestamp</code></em>);</pre>
+<p>
+Retrieve appropriate pattern for timestamp.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>pattern</code></em> :</span></p></td>
+<td>a <GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> containing <a class="link" href="ags-AgsPattern.html#AgsPattern" title="struct AgsPattern"><span class="type">AgsPattern</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>timestamp</code></em> :</span></p></td>
+<td>the matching timestamp</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the matching pattern.</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-pattern-new"></a><h3>ags_pattern_new ()</h3>
+<pre class="programlisting"><a class="link" href="ags-AgsPattern.html#AgsPattern" title="struct AgsPattern"><span class="returnvalue">AgsPattern</span></a> *        ags_pattern_new                     ();</pre>
+<p>
+Creates an <a class="link" href="ags-AgsPattern.html#AgsPattern" title="struct AgsPattern"><span class="type">AgsPattern</span></a>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new <a class="link" href="ags-AgsPattern.html#AgsPattern" title="struct AgsPattern"><span class="type">AgsPattern</span></a>
+</td>
+</tr></tbody>
+</table></div>
+<p class="since">Since 0.3</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-pattern-set-dim"></a><h3>ags_pattern_set_dim ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_pattern_set_dim                 (<em class="parameter"><code><a class="link" href="ags-AgsPattern.html#AgsPattern" title="struct AgsPattern"><span class="type">AgsPattern</span></a> *pattern</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> dim0</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> dim1</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> lenght</code></em>);</pre>
+<p>
+Reallocates the pattern's dimensions.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>pattern</code></em> :</span></p></td>
+<td>an <a class="link" href="ags-AgsPattern.html#AgsPattern" title="struct AgsPattern"><span class="type">AgsPattern</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>dim0</code></em> :</span></p></td>
+<td>bank 0 size</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>dim1</code></em> :</span></p></td>
+<td>bank 1 size</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>length</code></em> :</span></p></td>
+<td>amount of beats</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.3</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-pattern-toggle-bit"></a><h3>ags_pattern_toggle_bit ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_pattern_toggle_bit              (<em class="parameter"><code><a class="link" href="ags-AgsPattern.html#AgsPattern" title="struct AgsPattern"><span class="type">AgsPattern</span></a> *pattern</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> i</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> j</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> bit</code></em>);</pre>
+<p>
+Toggle tone.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>pattern</code></em> :</span></p></td>
+<td>an <a class="link" href="ags-AgsPattern.html#AgsPattern" title="struct AgsPattern"><span class="type">AgsPattern</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>i</code></em> :</span></p></td>
+<td>bank index 0</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>j</code></em> :</span></p></td>
+<td>bank index 1</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>bit</code></em> :</span></p></td>
+<td>the tic to toggle</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.3</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

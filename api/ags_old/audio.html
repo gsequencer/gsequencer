@@ -1,0 +1,446 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Part VI. Audio - The audio processing tree</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="prev" href="AgsSingleThread.html" title="AgsSingleThread">
+<link rel="next" href="process-tree.html" title="audio processing tree">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2"><tr valign="middle">
+<td><a accesskey="p" href="AgsSingleThread.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td> </td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="process-tree.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="part">
+<div class="titlepage"><div><div><h1 class="title">
+<a name="audio"></a>Part VI. Audio - The audio processing tree</h1></div></div></div>
+<div class="toc">
+<p><b>Table of Contents</b></p>
+<dl>
+<dt><span class="chapter"><a href="process-tree.html">audio processing tree</a></span></dt>
+<dd><dl>
+<dt>
+<span class="refentrytitle"><a href="AgsAudio.html">AgsAudio</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsAudioSignal.html">AgsAudioSignal</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsChannel.html">AgsChannel</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsConfig.html">AgsConfig</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-container.html">ags_container</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsDevout.html">AgsDevout</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsInput.html">AgsInput</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsNotation.html">AgsNotation</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsNote.html">AgsNote</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsOutput.html">AgsOutput</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsPattern.html">AgsPattern</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsPort.html">AgsPort</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsRecall.html">AgsRecall</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsRecallAudio.html">AgsRecallAudio</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsRecallAudioRun.html">AgsRecallAudioRun</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsRecallAudioSignal.html">AgsRecallAudioSignal</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsRecallChannel.html">AgsRecallChannel</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsRecallChannelRun.html">AgsRecallChannelRun</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsRecallChannelRunDummy.html">AgsRecallChannelRunDummy</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsRecallContainer.html">AgsRecallContainer</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsRecallDependency.html">AgsRecallDependency</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsRecallFactory.html">AgsRecallFactory</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsRecallID.html">AgsRecallID</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsRecallLadspa.html">AgsRecallLadspa</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsRecallLadspaRun.html">AgsRecallLadspaRun</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsRecallRecycling.html">AgsRecallRecycling</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsRecallRecyclingDummy.html">AgsRecallRecyclingDummy</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsRecycling.html">AgsRecycling</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsRecyclingContainer.html">AgsRecyclingContainer</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsTask.html">AgsTask</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsTimestamp.html">AgsTimestamp</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsTimestampFactory.html">AgsTimestampFactory</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-synths.html">ags_synths</a></span><span class="refpurpose"></span>
+</dt>
+</dl></dd>
+<dt><span class="chapter"><a href="audio-file.html">Audio files - Reading/Writing audio data from disk</a></span></dt>
+<dd><dl>
+<dt>
+<span class="refentrytitle"><a href="AgsAudioFile.html">AgsAudioFile</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsIpatch.html">AgsIpatch</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsIpatchSF2Reader.html">AgsIpatchSF2Reader</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsSndfile.html">AgsSndfile</a></span><span class="refpurpose"></span>
+</dt>
+</dl></dd>
+<dt><span class="chapter"><a href="recall.html">Recalls - Effect processors</a></span></dt>
+<dd><dl>
+<dt>
+<span class="refentrytitle"><a href="AgsAudioFile.html">AgsAudioFile</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsBufferAudioSignal.html">AgsBufferAudioSignal</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsBufferChannel.html">AgsBufferChannel</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsBufferChannelRun.html">AgsBufferChannelRun</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsBufferRecycling.html">AgsBufferRecycling</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsCopyAudioSignal.html">AgsCopyAudioSignal</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsCopyChannel.html">AgsCopyChannel</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsCopyChannelRun.html">AgsCopyChannelRun</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsCopyNotationAudio.html">AgsCopyNotationAudio</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsCopyNotationAudioRun.html">AgsCopyNotationAudioRun</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsCopyPatternAudio.html">AgsCopyPatternAudio</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsCopyPatternAudioRun.html">AgsCopyPatternAudioRun</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsCopyPatternChannel.html">AgsCopyPatternChannel</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsCopyPatternChannelRun.html">AgsCopyPatternChannelRun</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsCopyRecycling.html">AgsCopyRecycling</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsCountBeatsAudio.html">AgsCountBeatsAudio</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsCountBeatsAudioRun.html">AgsCountBeatsAudioRun</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsDelayAudio.html">AgsDelayAudio</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsDelayAudioRun.html">AgsDelayAudioRun</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsLoopChannel.html">AgsLoopChannel</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsLoopChannelRun.html">AgsLoopChannelRun</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsPeakChannel.html">AgsPeakChannel</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsPeakChannelRun.html">AgsPeakChannelRun</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsVolumeAudioSignal.html">AgsVolumeAudioSignal</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsVolumeChannel.html">AgsVolumeChannel</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsVolumeChannelRun.html">AgsVolumeChannelRun</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsVolumeRecycling.html">AgsVolumeRecycling</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsPlayAudio.html">AgsPlayAudio</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsPlayAudioFile.html">AgsPlayAudioFile</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsPlayAudioSignal.html">AgsPlayAudioSignal</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsPlayChannel.html">AgsPlayChannel</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsPlayChannelRun.html">AgsPlayChannelRun</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsPlayChannelRunMaster.html">AgsPlayChannelRunMaster</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsPlayNotationAudio.html">AgsPlayNotationAudio</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsPlayNotationAudioRun.html">AgsPlayNotationAudioRun</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsPlayNote.html">AgsPlayNote</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsPlayPattern.html">AgsPlayPattern</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsPlayRecycling.html">AgsPlayRecycling</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsStream.html">AgsStream</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsStreamAudioSignal.html">AgsStreamAudioSignal</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsStreamChannel.html">AgsStreamChannel</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsStreamChannelRun.html">AgsStreamChannelRun</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsStreamRecycling.html">AgsStreamRecycling</a></span><span class="refpurpose"></span>
+</dt>
+</dl></dd>
+<dt><span class="chapter"><a href="task.html">Task - Data exchanged between Audio and GUI</a></span></dt>
+<dd><dl>
+<dt>
+<span class="refentrytitle"><a href="AgsAddAudio.html">AgsAddAudio</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsAddAudioSignal.html">AgsAddAudioSignal</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsAddLineMember.html">AgsAddLineMember</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsAddNote.html">AgsAddNote</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsAddPointToSelection.html">AgsAddPointToSelection</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsAddRecall.html">AgsAddRecall</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsAddRegionToSelection.html">AgsAddRegionToSelection</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsAppendAudio.html">AgsAppendAudio</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-AgsAppendAudioThreaded.html">AgsAppendAudioThreaded</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsAppendChannel.html">AgsAppendChannel</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsAppendRecall.html">AgsAppendRecall</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsApplyBpm.html">AgsApplyBpm</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsApplySequencerLength.html">AgsApplySequencerLength</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsApplySynth.html">AgsApplySynth</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsApplyTact.html">AgsApplyTact</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsApplyWavetable.html">AgsApplyWavetable</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsAudioSetRecycling.html">AgsAudioSetRecycling</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsCancelAudio.html">AgsCancelAudio</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsCancelChannel.html">AgsCancelChannel</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsCancelRecall.html">AgsCancelRecall</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsChangeIndicator.html">AgsChangeIndicator</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsChangeTact.html">AgsChangeTact</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsChannelSetRecycling.html">AgsChannelSetRecycling</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsDisplayTact.html">AgsDisplayTact</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsExportOutput.html">AgsExportOutput</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsFreeSelection.html">AgsFreeSelection</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsInitAudio.html">AgsInitAudio</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsInitChannel.html">AgsInitChannel</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsMuteAudio.html">AgsMuteAudio</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsMuteAudioSignal.html">AgsMuteAudioSignal</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsMuteChannel.html">AgsMuteChannel</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsMuteChannelRun.html">AgsMuteChannelRun</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsMuteRecycling.html">AgsMuteRecycling</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsOpenFile.html">AgsOpenFile</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsOpenSingleFile.html">AgsOpenSingleFile</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsRemoveAudio.html">AgsRemoveAudio</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsRemoveAudioSignal.html">AgsRemoveAudioSignal</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsRemoveNote.html">AgsRemoveNote</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsRemovePointFromSelection.html">AgsRemovePointFromSelection</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsRemoveRecall.html">AgsRemoveRecall</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsRemoveRegionFromSelection.html">AgsRemoveRegionFromSelection</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsSaveFile.html">AgsSaveFile</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsScrollOnPlay.html">AgsScrollOnPlay</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsSetAudioChannels.html">AgsSetAudioChannels</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsSetBufferSize.html">AgsSetBufferSize</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsSetDevoutPlayFlags.html">AgsSetDevoutPlayFlags</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsSetMuted.html">AgsSetMuted</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsSetOutputDevice.html">AgsSetOutputDevice</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsSetSamplerate.html">AgsSetSamplerate</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsStartDevout.html">AgsStartDevout</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsToggleLed.html">AgsToggleLed</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsTogglePatternBit.html">AgsTogglePatternBit</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsUnrefAudioSignal.html">AgsUnrefAudioSignal</a></span><span class="refpurpose"></span>
+</dt>
+</dl></dd>
+</dl>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

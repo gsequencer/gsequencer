@@ -1,0 +1,283 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsConfig</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="audio.html" title="Part VII. The audio layer">
+<link rel="prev" href="AgsChannel.html" title="AgsChannel">
+<link rel="next" href="AgsDevout.html" title="AgsDevout">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="AgsChannel.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="audio.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="AgsDevout.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#AgsConfig.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#AgsConfig.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#AgsConfig.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#AgsConfig.implemented-interfaces" class="shortcut">Implemented Interfaces</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="AgsConfig"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="AgsConfig.top_of_page"></a>AgsConfig</span></h2>
+<p>AgsConfig — Config Advanced Gtk+ Sequencer</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="AgsConfig.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">
+#include &lt;ags/audio/ags_config.h&gt;
+
+#define             <a class="link" href="AgsConfig.html#AGS-CONFIG-DEFAULT-BUILD-ID:CAPS" title="AGS_CONFIG_DEFAULT_BUILD_ID">AGS_CONFIG_DEFAULT_BUILD_ID</a>
+#define             <a class="link" href="AgsConfig.html#AGS-CONFIG-DEFAULT-VERSION:CAPS" title="AGS_CONFIG_DEFAULT_VERSION">AGS_CONFIG_DEFAULT_VERSION</a>
+#define             <a class="link" href="AgsConfig.html#AGS-CONFIG-DEVOUT:CAPS" title="AGS_CONFIG_DEVOUT">AGS_CONFIG_DEVOUT</a>
+#define             <a class="link" href="AgsConfig.html#AGS-CONFIG-THREAD:CAPS" title="AGS_CONFIG_THREAD">AGS_CONFIG_THREAD</a>
+struct              <a class="link" href="AgsConfig.html#AgsConfig-struct" title="struct AgsConfig">AgsConfig</a>;
+struct              <a class="link" href="AgsConfig.html#AgsConfigClass" title="struct AgsConfigClass">AgsConfigClass</a>;
+<a href="../glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *             <a class="link" href="AgsConfig.html#ags-config-get" title="ags_config_get ()">ags_config_get</a>                      (<em class="parameter"><code><a class="link" href="AgsConfig.html" title="AgsConfig"><span class="type">AgsConfig</span></a> *config</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *group</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *key</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsConfig.html#ags-config-load-defaults" title="ags_config_load_defaults ()">ags_config_load_defaults</a>            (<em class="parameter"><code><a class="link" href="AgsConfig.html" title="AgsConfig"><span class="type">AgsConfig</span></a> *config</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsConfig.html#ags-config-load-from-file" title="ags_config_load_from_file ()">ags_config_load_from_file</a>           (<em class="parameter"><code><a class="link" href="AgsConfig.html" title="AgsConfig"><span class="type">AgsConfig</span></a> *config</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *filename</code></em>);
+<a class="link" href="AgsConfig.html" title="AgsConfig"><span class="returnvalue">AgsConfig</span></a> *         <a class="link" href="AgsConfig.html#ags-config-new" title="ags_config_new ()">ags_config_new</a>                      ();
+<span class="returnvalue">void</span>                <a class="link" href="AgsConfig.html#ags-config-save" title="ags_config_save ()">ags_config_save</a>                     (<em class="parameter"><code><a class="link" href="AgsConfig.html" title="AgsConfig"><span class="type">AgsConfig</span></a> *config</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsConfig.html#ags-config-set" title="ags_config_set ()">ags_config_set</a>                      (<em class="parameter"><code><a class="link" href="AgsConfig.html" title="AgsConfig"><span class="type">AgsConfig</span></a> *config</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *group</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *key</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *value</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsConfig.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  <a href="../gobject/gobject-The-Base-Object-Type.html#GObject">GObject</a>
+   +----AgsConfig
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsConfig.implemented-interfaces"></a><h2>Implemented Interfaces</h2>
+<p>
+AgsConfig implements
+ AgsConnectable.</p>
+</div>
+<div class="refsect1">
+<a name="AgsConfig.description"></a><h2>Description</h2>
+<p>
+<a class="link" href="AgsConfig.html" title="AgsConfig"><span class="type">AgsConfig</span></a> provides configuration to Advanced Gtk+ Sequencer.
+</p>
+</div>
+<div class="refsect1">
+<a name="AgsConfig.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AGS-CONFIG-DEFAULT-BUILD-ID:CAPS"></a><h3>AGS_CONFIG_DEFAULT_BUILD_ID</h3>
+<pre class="programlisting">#define AGS_CONFIG_DEFAULT_BUILD_ID "CEST 02-10-2014 19:36\0"
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-CONFIG-DEFAULT-VERSION:CAPS"></a><h3>AGS_CONFIG_DEFAULT_VERSION</h3>
+<pre class="programlisting">#define AGS_CONFIG_DEFAULT_VERSION "0.4.2\0"
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-CONFIG-DEVOUT:CAPS"></a><h3>AGS_CONFIG_DEVOUT</h3>
+<pre class="programlisting">#define AGS_CONFIG_DEVOUT "device\0"
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-CONFIG-THREAD:CAPS"></a><h3>AGS_CONFIG_THREAD</h3>
+<pre class="programlisting">#define AGS_CONFIG_THREAD "thread\0"
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsConfig-struct"></a><h3>struct AgsConfig</h3>
+<pre class="programlisting">struct AgsConfig;</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsConfigClass"></a><h3>struct AgsConfigClass</h3>
+<pre class="programlisting">struct AgsConfigClass {
+  GObjectClass object;
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-config-get"></a><h3>ags_config_get ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *             ags_config_get                      (<em class="parameter"><code><a class="link" href="AgsConfig.html" title="AgsConfig"><span class="type">AgsConfig</span></a> *config</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *group</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *key</code></em>);</pre>
+<p>
+Retrieve config by <em class="parameter"><code>group</code></em> and <em class="parameter"><code>key</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>config</code></em> :</span></p></td>
+<td>the <a class="link" href="AgsConfig.html" title="AgsConfig"><span class="type">AgsConfig</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>group</code></em> :</span></p></td>
+<td>the config group identifier</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>key</code></em> :</span></p></td>
+<td>the key of the property</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the property's value</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-config-load-defaults"></a><h3>ags_config_load_defaults ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_config_load_defaults            (<em class="parameter"><code><a class="link" href="AgsConfig.html" title="AgsConfig"><span class="type">AgsConfig</span></a> *config</code></em>);</pre>
+<p>
+Load configuration from default values.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><em class="parameter"><code>config</code></em> :</span></p></td>
+<td>the <a class="link" href="AgsConfig.html" title="AgsConfig"><span class="type">AgsConfig</span></a>
+</td>
+</tr></tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-config-load-from-file"></a><h3>ags_config_load_from_file ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_config_load_from_file           (<em class="parameter"><code><a class="link" href="AgsConfig.html" title="AgsConfig"><span class="type">AgsConfig</span></a> *config</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *filename</code></em>);</pre>
+<p>
+Load configuration from <em class="parameter"><code>filename</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>config</code></em> :</span></p></td>
+<td>the <a class="link" href="AgsConfig.html" title="AgsConfig"><span class="type">AgsConfig</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>filename</code></em> :</span></p></td>
+<td>the configuration file</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-config-new"></a><h3>ags_config_new ()</h3>
+<pre class="programlisting"><a class="link" href="AgsConfig.html" title="AgsConfig"><span class="returnvalue">AgsConfig</span></a> *         ags_config_new                      ();</pre>
+<p>
+Creates an <a class="link" href="AgsConfig.html" title="AgsConfig"><span class="type">AgsConfig</span></a>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new <a class="link" href="AgsConfig.html" title="AgsConfig"><span class="type">AgsConfig</span></a>.</td>
+</tr></tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-config-save"></a><h3>ags_config_save ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_config_save                     (<em class="parameter"><code><a class="link" href="AgsConfig.html" title="AgsConfig"><span class="type">AgsConfig</span></a> *config</code></em>);</pre>
+<p>
+Save configuration.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><em class="parameter"><code>config</code></em> :</span></p></td>
+<td>the <a class="link" href="AgsConfig.html" title="AgsConfig"><span class="type">AgsConfig</span></a>
+</td>
+</tr></tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-config-set"></a><h3>ags_config_set ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_config_set                      (<em class="parameter"><code><a class="link" href="AgsConfig.html" title="AgsConfig"><span class="type">AgsConfig</span></a> *config</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *group</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *key</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *value</code></em>);</pre>
+<p>
+Set config by <em class="parameter"><code>group</code></em> and <em class="parameter"><code>key</code></em>, applying <em class="parameter"><code>value</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>config</code></em> :</span></p></td>
+<td>the <a class="link" href="AgsConfig.html" title="AgsConfig"><span class="type">AgsConfig</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>group</code></em> :</span></p></td>
+<td>the config group identifier</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>key</code></em> :</span></p></td>
+<td>the key of the property</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>value</code></em> :</span></p></td>
+<td>the value to set</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

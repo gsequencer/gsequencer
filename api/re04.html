@@ -1,0 +1,23 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>AgsAddPointToSelection</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="ags Reference Manual"><link rel="up" href="ch01.html" title="Chapter 1. [Insert title here]"><link rel="prev" href="re03.html" title="AgsAddNote"><link rel="next" href="re05.html" title="AgsAddRegionToSelection"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="ags-AgsAddPointToSelection"></a><div class="titlepage"></div><div class="refnamediv"><h2>Name</h2><p>AgsAddPointToSelection</p></div><div class="refsynopsisdiv"><a name="ags-AgsAddPointToSelection.synopsis"></a><h2>Synopsis</h2><pre class="synopsis">struct              <a class="link" href="re04.html#AgsAddPointToSelection" title="struct AgsAddPointToSelection">AgsAddPointToSelection</a>;
+struct              <a class="link" href="re04.html#AgsAddPointToSelectionClass" title="struct AgsAddPointToSelectionClass">AgsAddPointToSelectionClass</a>;
+<a class="link" href="re04.html#AgsAddPointToSelection" title="struct AgsAddPointToSelection"><span class="returnvalue">AgsAddPointToSelection</span></a> * <a class="link" href="re04.html#ags-add-point-to-selection-new" title="ags_add_point_to_selection_new ()">ags_add_point_to_selection_new</a> (<em class="parameter"><code><a class="link" href="re158.html#AgsNotation" title="struct AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">guint</span></a> x</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">guint</span></a> y</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">gboolean</span></a> replace_current_selection</code></em>);
+</pre></div><div class="refsect1"><a name="ags-AgsAddPointToSelection.description"></a><h2>Description</h2></div><div class="refsect1"><a name="ags-AgsAddPointToSelection.details"></a><h2>Details</h2><div class="refsect2"><a name="AgsAddPointToSelection"></a><h3>struct AgsAddPointToSelection</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsAddPointToSelection"></OBJECT><pre class="programlisting">struct AgsAddPointToSelection {
+  AgsTask task;
+
+  AgsNotation *notation;
+
+  guint x;
+  guint y;
+
+  gboolean replace_current_selection;
+};
+</pre></div><div class="refsect2"><a name="AgsAddPointToSelectionClass"></a><h3>struct AgsAddPointToSelectionClass</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsAddPointToSelectionClass"></OBJECT><pre class="programlisting">struct AgsAddPointToSelectionClass {
+  AgsTaskClass task;
+};
+</pre></div><div class="refsect2"><a name="ags-add-point-to-selection-new"></a><h3>ags_add_point_to_selection_new ()</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="ags_add_point_to_selection_new"></OBJECT><pre class="programlisting"><a class="link" href="re04.html#AgsAddPointToSelection" title="struct AgsAddPointToSelection"><span class="returnvalue">AgsAddPointToSelection</span></a> * ags_add_point_to_selection_new (<em class="parameter"><code><a class="link" href="re158.html#AgsNotation" title="struct AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">guint</span></a> x</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">guint</span></a> y</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">gboolean</span></a> replace_current_selection</code></em>);</pre></div></div></div></body></html>

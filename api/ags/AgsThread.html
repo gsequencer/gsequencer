@@ -1,0 +1,816 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsThread</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="thread.html" title="Part VI. Thread - Multi-threaded tree">
+<link rel="prev" href="AgsTimestampThread.html" title="AgsTimestampThread">
+<link rel="next" href="AgsThreadPool.html" title="AgsThreadPool">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="AgsTimestampThread.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="thread.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="AgsThreadPool.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#AgsThread.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#AgsThread.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#AgsThread.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#AgsThread.implemented-interfaces" class="shortcut">Implemented Interfaces</a>
+                   | 
+                  <a href="#AgsThread.properties" class="shortcut">Properties</a>
+                   | 
+                  <a href="#AgsThread.signals" class="shortcut">Signals</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="AgsThread"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="AgsThread.top_of_page"></a>AgsThread</span></h2>
+<p>AgsThread — threads</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="AgsThread.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">
+#include &lt;ags/thread/ags_thread.h&gt;
+
+#define             <a class="link" href="AgsThread.html#AGS-ACCOUNTING-TABLE:CAPS" title="AGS_ACCOUNTING_TABLE()">AGS_ACCOUNTING_TABLE</a>                (ptr)
+#define             <a class="link" href="AgsThread.html#AGS-THREAD-DEFAULT-ATTACK:CAPS" title="AGS_THREAD_DEFAULT_ATTACK">AGS_THREAD_DEFAULT_ATTACK</a>
+#define             <a class="link" href="AgsThread.html#AGS-THREAD-DEFAULT-JIFFIE:CAPS" title="AGS_THREAD_DEFAULT_JIFFIE">AGS_THREAD_DEFAULT_JIFFIE</a>
+#define             <a class="link" href="AgsThread.html#AGS-THREAD-MAX-PRECISION:CAPS" title="AGS_THREAD_MAX_PRECISION">AGS_THREAD_MAX_PRECISION</a>
+#define             <a class="link" href="AgsThread.html#AGS-THREAD-RESUME-SIG:CAPS" title="AGS_THREAD_RESUME_SIG">AGS_THREAD_RESUME_SIG</a>
+#define             <a class="link" href="AgsThread.html#AGS-THREAD-SUSPEND-SIG:CAPS" title="AGS_THREAD_SUSPEND_SIG">AGS_THREAD_SUSPEND_SIG</a>
+struct              <a class="link" href="AgsThread.html#AgsAccountingTable" title="struct AgsAccountingTable">AgsAccountingTable</a>;
+struct              <a class="link" href="AgsThread.html#AgsThread-struct" title="struct AgsThread">AgsThread</a>;
+struct              <a class="link" href="AgsThread.html#AgsThreadClass" title="struct AgsThreadClass">AgsThreadClass</a>;
+enum                <a class="link" href="AgsThread.html#AgsThreadFlags" title="enum AgsThreadFlags">AgsThreadFlags</a>;
+#define             <a class="link" href="AgsThread.html#MSEC-PER-SEC:CAPS" title="MSEC_PER_SEC">MSEC_PER_SEC</a>
+#define             <a class="link" href="AgsThread.html#NSEC-PER-SEC:CAPS" title="NSEC_PER_SEC">NSEC_PER_SEC</a>
+<a class="link" href="AgsThread.html#AgsAccountingTable" title="struct AgsAccountingTable"><span class="returnvalue">AgsAccountingTable</span></a> * <a class="link" href="AgsThread.html#ags-accounting-table-alloc" title="ags_accounting_table_alloc ()">ags_accounting_table_alloc</a>         (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsThread.html#ags-accounting-table-set-sanity" title="ags_accounting_table_set_sanity ()">ags_accounting_table_set_sanity</a>     (<em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> *table</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gdouble"><span class="type">gdouble</span></a> sanity</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsThread.html#ags-thread-add-child" title="ags_thread_add_child ()">ags_thread_add_child</a>                (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *child</code></em>);
+<a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            <a class="link" href="AgsThread.html#ags-thread-children-is-locked" title="ags_thread_children_is_locked ()">ags_thread_children_is_locked</a>       (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);
+<a class="link" href="AgsThread.html" title="AgsThread"><span class="returnvalue">AgsThread</span></a> *         <a class="link" href="AgsThread.html#ags-thread-first" title="ags_thread_first ()">ags_thread_first</a>                    (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);
+<a class="link" href="AgsThread.html" title="AgsThread"><span class="returnvalue">AgsThread</span></a> *         <a class="link" href="AgsThread.html#ags-thread-get-toplevel" title="ags_thread_get_toplevel ()">ags_thread_get_toplevel</a>             (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsThread.html#ags-thread-hangcheck" title="ags_thread_hangcheck ()">ags_thread_hangcheck</a>                (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);
+<a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            <a class="link" href="AgsThread.html#ags-thread-is-current-ready" title="ags_thread_is_current_ready ()">ags_thread_is_current_ready</a>         (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *current</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> tic</code></em>);
+<a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            <a class="link" href="AgsThread.html#ags-thread-is-tree-ready" title="ags_thread_is_tree_ready ()">ags_thread_is_tree_ready</a>            (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> tic</code></em>);
+<a class="link" href="AgsThread.html" title="AgsThread"><span class="returnvalue">AgsThread</span></a> *         <a class="link" href="AgsThread.html#ags-thread-last" title="ags_thread_last ()">ags_thread_last</a>                     (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsThread.html#ags-thread-lock" title="ags_thread_lock ()">ags_thread_lock</a>                     (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsThread.html#ags-thread-lock-all" title="ags_thread_lock_all ()">ags_thread_lock_all</a>                 (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsThread.html#ags-thread-lock-children" title="ags_thread_lock_children ()">ags_thread_lock_children</a>            (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsThread.html#ags-thread-lock-parent" title="ags_thread_lock_parent ()">ags_thread_lock_parent</a>              (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *parent</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsThread.html#ags-thread-lock-sibling" title="ags_thread_lock_sibling ()">ags_thread_lock_sibling</a>             (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);
+<a class="link" href="AgsThread.html" title="AgsThread"><span class="returnvalue">AgsThread</span></a> *         <a class="link" href="AgsThread.html#ags-thread-new" title="ags_thread_new ()">ags_thread_new</a>                      (<em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a> data</code></em>);
+<a class="link" href="AgsThread.html" title="AgsThread"><span class="returnvalue">AgsThread</span></a> *         <a class="link" href="AgsThread.html#ags-thread-next-children-locked" title="ags_thread_next_children_locked ()">ags_thread_next_children_locked</a>     (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);
+<a class="link" href="AgsThread.html" title="AgsThread"><span class="returnvalue">AgsThread</span></a> *         <a class="link" href="AgsThread.html#ags-thread-next-parent-locked" title="ags_thread_next_parent_locked ()">ags_thread_next_parent_locked</a>       (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *parent</code></em>);
+<a class="link" href="AgsThread.html" title="AgsThread"><span class="returnvalue">AgsThread</span></a> *         <a class="link" href="AgsThread.html#ags-thread-next-sibling-locked" title="ags_thread_next_sibling_locked ()">ags_thread_next_sibling_locked</a>      (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);
+<a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            <a class="link" href="AgsThread.html#ags-thread-parental-is-locked" title="ags_thread_parental_is_locked ()">ags_thread_parental_is_locked</a>       (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *parent</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsThread.html#ags-thread-remove-child" title="ags_thread_remove_child ()">ags_thread_remove_child</a>             (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *child</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsThread.html#ags-thread-resume" title="ags_thread_resume ()">ags_thread_resume</a>                   (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsThread.html#ags-thread-run" title="ags_thread_run ()">ags_thread_run</a>                      (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsThread.html#ags-thread-set-sync" title="ags_thread_set_sync ()">ags_thread_set_sync</a>                 (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> tic</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsThread.html#ags-thread-set-sync-all" title="ags_thread_set_sync_all ()">ags_thread_set_sync_all</a>             (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> tic</code></em>);
+<a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            <a class="link" href="AgsThread.html#ags-thread-sibling-is-locked" title="ags_thread_sibling_is_locked ()">ags_thread_sibling_is_locked</a>        (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsThread.html#ags-thread-signal-children" title="ags_thread_signal_children ()">ags_thread_signal_children</a>          (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a> broadcast</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsThread.html#ags-thread-signal-parent" title="ags_thread_signal_parent ()">ags_thread_signal_parent</a>            (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a> broadcast</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsThread.html#ags-thread-signal-sibling" title="ags_thread_signal_sibling ()">ags_thread_signal_sibling</a>           (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a> broadcast</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsThread.html#ags-thread-start" title="ags_thread_start ()">ags_thread_start</a>                    (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsThread.html#ags-thread-stop" title="ags_thread_stop ()">ags_thread_stop</a>                     (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsThread.html#ags-thread-suspend" title="ags_thread_suspend ()">ags_thread_suspend</a>                  (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsThread.html#ags-thread-timelock" title="ags_thread_timelock ()">ags_thread_timelock</a>                 (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);
+<a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            <a class="link" href="AgsThread.html#ags-thread-trylock" title="ags_thread_trylock ()">ags_thread_trylock</a>                  (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsThread.html#ags-thread-unlock" title="ags_thread_unlock ()">ags_thread_unlock</a>                   (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsThread.html#ags-thread-unlock-all" title="ags_thread_unlock_all ()">ags_thread_unlock_all</a>               (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsThread.html#ags-thread-unlock-children" title="ags_thread_unlock_children ()">ags_thread_unlock_children</a>          (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsThread.html#ags-thread-unlock-parent" title="ags_thread_unlock_parent ()">ags_thread_unlock_parent</a>            (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *parent</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsThread.html#ags-thread-unlock-sibling" title="ags_thread_unlock_sibling ()">ags_thread_unlock_sibling</a>           (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsThread.html#ags-thread-wait-children" title="ags_thread_wait_children ()">ags_thread_wait_children</a>            (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsThread.html#ags-thread-wait-parent" title="ags_thread_wait_parent ()">ags_thread_wait_parent</a>              (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *parent</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsThread.html#ags-thread-wait-sibling" title="ags_thread_wait_sibling ()">ags_thread_wait_sibling</a>             (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsThread.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  <a href="../gobject/gobject-The-Base-Object-Type.html#GObject">GObject</a>
+   +----AgsThread
+         +----<a class="link" href="AgsAudioLoop.html" title="AgsAudioLoop">AgsAudioLoop</a>
+         +----<a class="link" href="AgsAutosaveThread.html" title="AgsAutosaveThread">AgsAutosaveThread</a>
+         +----<a class="link" href="AgsDevoutThread.html" title="AgsDevoutThread">AgsDevoutThread</a>
+         +----<a class="link" href="AgsExportThread.html" title="AgsExportThread">AgsExportThread</a>
+         +----<a class="link" href="AgsTaskThread.html" title="AgsTaskThread">AgsTaskThread</a>
+         +----<a class="link" href="AgsGuiThread.html" title="AgsGuiThread">AgsGuiThread</a>
+         +----<a class="link" href="AgsIteratorThread.html" title="AgsIteratorThread">AgsIteratorThread</a>
+         +----<a class="link" href="AgsRecyclingThread.html" title="AgsRecyclingThread">AgsRecyclingThread</a>
+         +----<a class="link" href="AgsReturnableThread.html" title="AgsReturnableThread">AgsReturnableThread</a>
+         +----<a class="link" href="AgsSingleThread.html" title="AgsSingleThread">AgsSingleThread</a>
+         +----<a class="link" href="AgsTimestampThread.html" title="AgsTimestampThread">AgsTimestampThread</a>
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsThread.implemented-interfaces"></a><h2>Implemented Interfaces</h2>
+<p>
+AgsThread implements
+ AgsTreeIterator,  AgsConnectable and  <a class="link" href="AgsStackable.html" title="AgsStackable">AgsStackable</a>.</p>
+</div>
+<div class="refsect1">
+<a name="AgsThread.properties"></a><h2>Properties</h2>
+<pre class="synopsis">
+  "<a class="link" href="AgsThread.html#AgsThread--devout" title='The "devout" property'>devout</a>"                   <a class="link" href="AgsDevout.html" title="AgsDevout"><span class="type">AgsDevout</span></a>*            : Write
+  "<a class="link" href="AgsThread.html#AgsThread--frequency" title='The "frequency" property'>frequency</a>"                <a href="../glib/glib-Basic-Types.html#gdouble"><span class="type">gdouble</span></a>               : Read / Write
+  "<a class="link" href="AgsThread.html#AgsThread--devout" title='The "devout" property'>devout</a>"                   <a class="link" href="AgsDevout.html" title="AgsDevout"><span class="type">AgsDevout</span></a>*            : Write
+  "<a class="link" href="AgsThread.html#AgsThread--frequency" title='The "frequency" property'>frequency</a>"                <a href="../glib/glib-Basic-Types.html#gdouble"><span class="type">gdouble</span></a>               : Read / Write
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsThread.signals"></a><h2>Signals</h2>
+<pre class="synopsis">
+  "<a class="link" href="AgsThread.html#AgsThread-resume" title='The "resume" signal'>resume</a>"                                         : <a href="../gobject/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></a>
+  "<a class="link" href="AgsThread.html#AgsThread-run" title='The "run" signal'>run</a>"                                            : <a href="../gobject/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></a>
+  "<a class="link" href="AgsThread.html#AgsThread-start" title='The "start" signal'>start</a>"                                          : <a href="../gobject/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></a>
+  "<a class="link" href="AgsThread.html#AgsThread-stop" title='The "stop" signal'>stop</a>"                                           : <a href="../gobject/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></a>
+  "<a class="link" href="AgsThread.html#AgsThread-suspend" title='The "suspend" signal'>suspend</a>"                                        : <a href="../gobject/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></a>
+  "<a class="link" href="AgsThread.html#AgsThread-timelock" title='The "timelock" signal'>timelock</a>"                                       : <a href="../gobject/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></a>
+  "<a class="link" href="AgsThread.html#AgsThread-resume" title='The "resume" signal'>resume</a>"                                         : <a href="../gobject/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></a>
+  "<a class="link" href="AgsThread.html#AgsThread-run" title='The "run" signal'>run</a>"                                            : <a href="../gobject/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></a>
+  "<a class="link" href="AgsThread.html#AgsThread-start" title='The "start" signal'>start</a>"                                          : <a href="../gobject/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></a>
+  "<a class="link" href="AgsThread.html#AgsThread-stop" title='The "stop" signal'>stop</a>"                                           : <a href="../gobject/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></a>
+  "<a class="link" href="AgsThread.html#AgsThread-suspend" title='The "suspend" signal'>suspend</a>"                                        : <a href="../gobject/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></a>
+  "<a class="link" href="AgsThread.html#AgsThread-timelock" title='The "timelock" signal'>timelock</a>"                                       : <a href="../gobject/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></a>
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsThread.description"></a><h2>Description</h2>
+<p>
+The <a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> base class. It supports organizing them within a tree,
+perform syncing and frequencies.
+</p>
+</div>
+<div class="refsect1">
+<a name="AgsThread.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AGS-ACCOUNTING-TABLE:CAPS"></a><h3>AGS_ACCOUNTING_TABLE()</h3>
+<pre class="programlisting">#define AGS_ACCOUNTING_TABLE(ptr) ((AgsAccountingTable *)(ptr))
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-THREAD-DEFAULT-ATTACK:CAPS"></a><h3>AGS_THREAD_DEFAULT_ATTACK</h3>
+<pre class="programlisting">#define AGS_THREAD_DEFAULT_ATTACK (1.0)
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-THREAD-DEFAULT-JIFFIE:CAPS"></a><h3>AGS_THREAD_DEFAULT_JIFFIE</h3>
+<pre class="programlisting">#define AGS_THREAD_DEFAULT_JIFFIE (250)
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-THREAD-MAX-PRECISION:CAPS"></a><h3>AGS_THREAD_MAX_PRECISION</h3>
+<pre class="programlisting">#define AGS_THREAD_MAX_PRECISION (1000)
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-THREAD-RESUME-SIG:CAPS"></a><h3>AGS_THREAD_RESUME_SIG</h3>
+<pre class="programlisting">#define             AGS_THREAD_RESUME_SIG</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-THREAD-SUSPEND-SIG:CAPS"></a><h3>AGS_THREAD_SUSPEND_SIG</h3>
+<pre class="programlisting">#define             AGS_THREAD_SUSPEND_SIG</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsAccountingTable"></a><h3>struct AgsAccountingTable</h3>
+<pre class="programlisting">struct AgsAccountingTable {
+  AgsThread *thread;
+  gdouble sanity;
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsThread-struct"></a><h3>struct AgsThread</h3>
+<pre class="programlisting">struct AgsThread;</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsThreadClass"></a><h3>struct AgsThreadClass</h3>
+<pre class="programlisting">struct AgsThreadClass {
+  GObjectClass object;
+
+  void (*start)(AgsThread *thread);
+  void (*run)(AgsThread *thread);
+  void (*suspend)(AgsThread *thread);
+  void (*resume)(AgsThread *thread);
+  void (*timelock)(AgsThread *thread);
+  void (*stop)(AgsThread *thread);
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsThreadFlags"></a><h3>enum AgsThreadFlags</h3>
+<pre class="programlisting">typedef enum {
+  AGS_THREAD_RUNNING                 = 1,
+  AGS_THREAD_IDLE                    = 1 &lt;&lt; 1,
+  AGS_THREAD_LOCKED                  = 1 &lt;&lt; 2,
+  AGS_THREAD_WAIT_FOR_PARENT         = 1 &lt;&lt; 3,
+  AGS_THREAD_WAIT_FOR_SIBLING        = 1 &lt;&lt; 4,
+  AGS_THREAD_WAIT_FOR_CHILDREN       = 1 &lt;&lt; 5,
+  AGS_THREAD_WAIT_FOR_BARRIER        = 1 &lt;&lt; 6,
+  AGS_THREAD_WAITING_FOR_PARENT      = 1 &lt;&lt; 7,
+  AGS_THREAD_WAITING_FOR_SIBLING     = 1 &lt;&lt; 8,
+  AGS_THREAD_WAITING_FOR_CHILDREN    = 1 &lt;&lt; 9,
+  AGS_THREAD_WAITING_FOR_BARRIER     = 1 &lt;&lt; 10,
+  AGS_THREAD_BROADCAST_PARENT        = 1 &lt;&lt; 11,
+  AGS_THREAD_BROADCAST_SIBLING       = 1 &lt;&lt; 12,
+  AGS_THREAD_BROADCAST_CHILDREN      = 1 &lt;&lt; 13,
+  AGS_THREAD_INITIAL_RUN             = 1 &lt;&lt; 14,
+  AGS_THREAD_TREE_SYNC_0             = 1 &lt;&lt; 15,
+  AGS_THREAD_WAIT_0                  = 1 &lt;&lt; 16,
+  AGS_THREAD_TREE_SYNC_1             = 1 &lt;&lt; 17,
+  AGS_THREAD_WAIT_1                  = 1 &lt;&lt; 18,
+  AGS_THREAD_TREE_SYNC_2             = 1 &lt;&lt; 19,
+  AGS_THREAD_WAIT_2                  = 1 &lt;&lt; 20,
+  AGS_THREAD_TIMELOCK_RUN            = 1 &lt;&lt; 21,
+  AGS_THREAD_TIMELOCK_WAIT           = 1 &lt;&lt; 22,
+  AGS_THREAD_TIMELOCK_RESUME         = 1 &lt;&lt; 23,
+  /*
+   * prefered way would be unlocking greedy_locks
+   * and the suspend to not become greedy
+   * but while pthread_suspend and pthread_resume
+   * are missing you need this as work-around
+   */
+  AGS_THREAD_SKIP_NON_GREEDY         = 1 &lt;&lt; 24,
+  AGS_THREAD_SKIPPED_BY_TIMELOCK     = 1 &lt;&lt; 25,
+  AGS_THREAD_LOCK_GREEDY_RUN_MUTEX   = 1 &lt;&lt; 26,
+  AGS_THREAD_SUSPENDED               = 1 &lt;&lt; 27,
+  AGS_THREAD_SINGLE_LOOP             = 1 &lt;&lt; 28,
+  AGS_THREAD_READY                   = 1 &lt;&lt; 29,
+  AGS_THREAD_UNREF_ON_EXIT           = 1 &lt;&lt; 30,
+} AgsThreadFlags;
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="MSEC-PER-SEC:CAPS"></a><h3>MSEC_PER_SEC</h3>
+<pre class="programlisting">#define             MSEC_PER_SEC</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="NSEC-PER-SEC:CAPS"></a><h3>NSEC_PER_SEC</h3>
+<pre class="programlisting">#define             NSEC_PER_SEC</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-accounting-table-alloc"></a><h3>ags_accounting_table_alloc ()</h3>
+<pre class="programlisting"><a class="link" href="AgsThread.html#AgsAccountingTable" title="struct AgsAccountingTable"><span class="returnvalue">AgsAccountingTable</span></a> * ags_accounting_table_alloc         (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-accounting-table-set-sanity"></a><h3>ags_accounting_table_set_sanity ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_accounting_table_set_sanity     (<em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> *table</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gdouble"><span class="type">gdouble</span></a> sanity</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-thread-add-child"></a><h3>ags_thread_add_child ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_thread_add_child                (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *child</code></em>);</pre>
+<p>
+Add child to thread.
+</p>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-thread-children-is-locked"></a><h3>ags_thread_children_is_locked ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            ags_thread_children_is_locked       (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);</pre>
+<p>
+Check the AGS_THREAD_LOCKED flag within sibling.
+</p>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-thread-first"></a><h3>ags_thread_first ()</h3>
+<pre class="programlisting"><a class="link" href="AgsThread.html" title="AgsThread"><span class="returnvalue">AgsThread</span></a> *         ags_thread_first                    (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);</pre>
+<p>
+Retrieve first sibling.
+</p>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-thread-get-toplevel"></a><h3>ags_thread_get_toplevel ()</h3>
+<pre class="programlisting"><a class="link" href="AgsThread.html" title="AgsThread"><span class="returnvalue">AgsThread</span></a> *         ags_thread_get_toplevel             (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);</pre>
+<p>
+Retrieve toplevel thread.
+</p>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-thread-hangcheck"></a><h3>ags_thread_hangcheck ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_thread_hangcheck                (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);</pre>
+<p>
+Performs hangcheck of thread.
+</p>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-thread-is-current-ready"></a><h3>ags_thread_is_current_ready ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            ags_thread_is_current_ready         (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *current</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> tic</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-thread-is-tree-ready"></a><h3>ags_thread_is_tree_ready ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            ags_thread_is_tree_ready            (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> tic</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-thread-last"></a><h3>ags_thread_last ()</h3>
+<pre class="programlisting"><a class="link" href="AgsThread.html" title="AgsThread"><span class="returnvalue">AgsThread</span></a> *         ags_thread_last                     (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);</pre>
+<p>
+Retrieve last sibling.
+</p>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-thread-lock"></a><h3>ags_thread_lock ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_thread_lock                     (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);</pre>
+<p>
+Locks the threads own mutex and sets the appropriate flag.
+</p>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-thread-lock-all"></a><h3>ags_thread_lock_all ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_thread_lock_all                 (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-thread-lock-children"></a><h3>ags_thread_lock_children ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_thread_lock_children            (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);</pre>
+<p>
+Lock child tree structure.
+</p>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-thread-lock-parent"></a><h3>ags_thread_lock_parent ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_thread_lock_parent              (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *parent</code></em>);</pre>
+<p>
+Lock parent tree structure.
+</p>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-thread-lock-sibling"></a><h3>ags_thread_lock_sibling ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_thread_lock_sibling             (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);</pre>
+<p>
+Lock sibling tree structure.
+</p>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-thread-new"></a><h3>ags_thread_new ()</h3>
+<pre class="programlisting"><a class="link" href="AgsThread.html" title="AgsThread"><span class="returnvalue">AgsThread</span></a> *         ags_thread_new                      (<em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a> data</code></em>);</pre>
+<p>
+Create a new <a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> you may provide a <a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a> as <em class="parameter"><code>data</code></em>
+to your thread routine.
+</p>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-thread-next-children-locked"></a><h3>ags_thread_next_children_locked ()</h3>
+<pre class="programlisting"><a class="link" href="AgsThread.html" title="AgsThread"><span class="returnvalue">AgsThread</span></a> *         ags_thread_next_children_locked     (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);</pre>
+<p>
+Retrieve next locked thread following <em class="parameter"><code>thread</code></em>
+</p>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-thread-next-parent-locked"></a><h3>ags_thread_next_parent_locked ()</h3>
+<pre class="programlisting"><a class="link" href="AgsThread.html" title="AgsThread"><span class="returnvalue">AgsThread</span></a> *         ags_thread_next_parent_locked       (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *parent</code></em>);</pre>
+<p>
+Retrieve next locked thread above <em class="parameter"><code>thread</code></em>.
+</p>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-thread-next-sibling-locked"></a><h3>ags_thread_next_sibling_locked ()</h3>
+<pre class="programlisting"><a class="link" href="AgsThread.html" title="AgsThread"><span class="returnvalue">AgsThread</span></a> *         ags_thread_next_sibling_locked      (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);</pre>
+<p>
+Retrieve next locked thread neighbooring <em class="parameter"><code>thread</code></em>
+</p>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-thread-parental-is-locked"></a><h3>ags_thread_parental_is_locked ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            ags_thread_parental_is_locked       (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *parent</code></em>);</pre>
+<p>
+Check the AGS_THREAD_LOCKED flag in parental levels.
+</p>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-thread-remove-child"></a><h3>ags_thread_remove_child ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_thread_remove_child             (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *child</code></em>);</pre>
+<p>
+Remove child of thread.
+</p>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-thread-resume"></a><h3>ags_thread_resume ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_thread_resume                   (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-thread-run"></a><h3>ags_thread_run ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_thread_run                      (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);</pre>
+<p>
+Only for internal use of ags_thread_loop but you may want to set the your very own
+class function namely your thread's routine.
+</p>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-thread-set-sync"></a><h3>ags_thread_set_sync ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_thread_set_sync                 (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> tic</code></em>);</pre>
+<p>
+Calls <a class="link" href="AgsThread.html#ags-thread-set-sync" title="ags_thread_set_sync ()"><code class="function">ags_thread_set_sync()</code></a> on all threads.
+</p>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-thread-set-sync-all"></a><h3>ags_thread_set_sync_all ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_thread_set_sync_all             (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> tic</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-thread-sibling-is-locked"></a><h3>ags_thread_sibling_is_locked ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            ags_thread_sibling_is_locked        (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);</pre>
+<p>
+Check the AGS_THREAD_LOCKED flag within sibling.
+</p>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-thread-signal-children"></a><h3>ags_thread_signal_children ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_thread_signal_children          (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a> broadcast</code></em>);</pre>
+<p>
+Signals the tree in lower levels.
+</p>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-thread-signal-parent"></a><h3>ags_thread_signal_parent ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_thread_signal_parent            (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a> broadcast</code></em>);</pre>
+<p>
+Signals the tree in higher levels.
+</p>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-thread-signal-sibling"></a><h3>ags_thread_signal_sibling ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_thread_signal_sibling           (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a> broadcast</code></em>);</pre>
+<p>
+Signals the tree on same level.
+</p>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-thread-start"></a><h3>ags_thread_start ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_thread_start                    (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);</pre>
+<p>
+Start the thread.
+</p>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-thread-stop"></a><h3>ags_thread_stop ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_thread_stop                     (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);</pre>
+<p>
+Stop the threads loop by unsetting AGS_THREAD_RUNNING flag.
+</p>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-thread-suspend"></a><h3>ags_thread_suspend ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_thread_suspend                  (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-thread-timelock"></a><h3>ags_thread_timelock ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_thread_timelock                 (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-thread-trylock"></a><h3>ags_thread_trylock ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            ags_thread_trylock                  (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);</pre>
+<p>
+Locks the threads own mutex if available and sets the
+appropriate flag and returning <a href="../glib/glib-Standard-Macros.html#TRUE:CAPS"><code class="literal">TRUE</code></a>. Otherwise return <a href="../glib/glib-Standard-Macros.html#FALSE:CAPS"><code class="literal">FALSE</code></a>
+without lock.
+</p>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-thread-unlock"></a><h3>ags_thread_unlock ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_thread_unlock                   (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);</pre>
+<p>
+Unlocks the threads own mutex and unsets the appropriate flag.
+</p>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-thread-unlock-all"></a><h3>ags_thread_unlock_all ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_thread_unlock_all               (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-thread-unlock-children"></a><h3>ags_thread_unlock_children ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_thread_unlock_children          (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);</pre>
+<p>
+Unlock child tree structure.
+</p>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-thread-unlock-parent"></a><h3>ags_thread_unlock_parent ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_thread_unlock_parent            (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *parent</code></em>);</pre>
+<p>
+Unlock parent tree structure.
+</p>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-thread-unlock-sibling"></a><h3>ags_thread_unlock_sibling ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_thread_unlock_sibling           (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);</pre>
+<p>
+Unlock sibling tree structure.
+</p>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-thread-wait-children"></a><h3>ags_thread_wait_children ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_thread_wait_children            (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);</pre>
+<p>
+Wait on child tree structure.
+</p>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-thread-wait-parent"></a><h3>ags_thread_wait_parent ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_thread_wait_parent              (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *parent</code></em>);</pre>
+<p>
+Wait on parent tree structure.
+</p>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-thread-wait-sibling"></a><h3>ags_thread_wait_sibling ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_thread_wait_sibling             (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);</pre>
+<p>
+Wait on sibling tree structure.
+</p>
+<p class="since">Since 0.4</p>
+</div>
+</div>
+<div class="refsect1">
+<a name="AgsThread.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="AgsThread--devout"></a><h3>The <code class="literal">"devout"</code> property</h3>
+<pre class="programlisting">  "devout"                   <a class="link" href="AgsDevout.html" title="AgsDevout"><span class="type">AgsDevout</span></a>*            : Write</pre>
+<p>The AgsDevout it is assigned to.</p>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsThread--frequency"></a><h3>The <code class="literal">"frequency"</code> property</h3>
+<pre class="programlisting">  "frequency"                <a href="../glib/glib-Basic-Types.html#gdouble"><span class="type">gdouble</span></a>               : Read / Write</pre>
+<p>JIFFIE.</p>
+<p>Allowed values: [0.01,1000]</p>
+<p>Default value: 1000</p>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsThread--devout"></a><h3>The <code class="literal">"devout"</code> property</h3>
+<pre class="programlisting">  "devout"                   <a class="link" href="AgsDevout.html" title="AgsDevout"><span class="type">AgsDevout</span></a>*            : Write</pre>
+<p>The AgsDevout it is assigned to.</p>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsThread--frequency"></a><h3>The <code class="literal">"frequency"</code> property</h3>
+<pre class="programlisting">  "frequency"                <a href="../glib/glib-Basic-Types.html#gdouble"><span class="type">gdouble</span></a>               : Read / Write</pre>
+<p>JIFFIE.</p>
+<p>Allowed values: [0.01,1000]</p>
+<p>Default value: 1000</p>
+<p class="since">Since 0.4</p>
+</div>
+</div>
+<div class="refsect1">
+<a name="AgsThread.signal-details"></a><h2>Signal Details</h2>
+<div class="refsect2">
+<a name="AgsThread-resume"></a><h3>The <code class="literal">"resume"</code> signal</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                user_function                      (<a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread,
+                                                        <a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a>   user_data)      : <a href="../gobject/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></a></pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsThread-run"></a><h3>The <code class="literal">"run"</code> signal</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                user_function                      (<a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread,
+                                                        <a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a>   user_data)      : <a href="../gobject/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></a></pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsThread-start"></a><h3>The <code class="literal">"start"</code> signal</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                user_function                      (<a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread,
+                                                        <a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a>   user_data)      : <a href="../gobject/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></a></pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsThread-stop"></a><h3>The <code class="literal">"stop"</code> signal</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                user_function                      (<a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread,
+                                                        <a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a>   user_data)      : <a href="../gobject/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></a></pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsThread-suspend"></a><h3>The <code class="literal">"suspend"</code> signal</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                user_function                      (<a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread,
+                                                        <a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a>   user_data)      : <a href="../gobject/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></a></pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsThread-timelock"></a><h3>The <code class="literal">"timelock"</code> signal</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                user_function                      (<a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread,
+                                                        <a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a>   user_data)      : <a href="../gobject/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></a></pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsThread-resume"></a><h3>The <code class="literal">"resume"</code> signal</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                user_function                      (<a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread,
+                                                        <a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a>   user_data)      : <a href="../gobject/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></a></pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsThread-run"></a><h3>The <code class="literal">"run"</code> signal</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                user_function                      (<a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread,
+                                                        <a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a>   user_data)      : <a href="../gobject/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></a></pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsThread-start"></a><h3>The <code class="literal">"start"</code> signal</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                user_function                      (<a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread,
+                                                        <a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a>   user_data)      : <a href="../gobject/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></a></pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsThread-stop"></a><h3>The <code class="literal">"stop"</code> signal</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                user_function                      (<a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread,
+                                                        <a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a>   user_data)      : <a href="../gobject/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></a></pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsThread-suspend"></a><h3>The <code class="literal">"suspend"</code> signal</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                user_function                      (<a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread,
+                                                        <a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a>   user_data)      : <a href="../gobject/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></a></pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsThread-timelock"></a><h3>The <code class="literal">"timelock"</code> signal</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                user_function                      (<a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread,
+                                                        <a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a>   user_data)      : <a href="../gobject/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></a></pre>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

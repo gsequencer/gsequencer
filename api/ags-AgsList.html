@@ -1,0 +1,151 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Advanced Gtk+ Sequencer Reference Manual: AgsList</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="util.html" title="Part I. Library - Completion routines">
+<link rel="prev" href="ags-AgsComboBoxText.html" title="AgsComboBoxText">
+<link rel="next" href="ags-AgsParameter.html" title="AgsParameter">
+<meta name="generator" content="GTK-Doc V1.21 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#ags-AgsList.description" class="shortcut">Description</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="util.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="ags-AgsComboBoxText.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="ags-AgsParameter.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry">
+<a name="ags-AgsList"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="ags-AgsList.top_of_page"></a>AgsList</span></h2>
+<p>AgsList — Complete GList</p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1">
+<a name="ags-AgsList.functions"></a><h2>Functions</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="functions_return">
+<col class="functions_name">
+</colgroup>
+<tbody>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="ags-AgsList.html#ags-list-free-and-free-link" title="ags_list_free_and_free_link ()">ags_list_free_and_free_link</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="ags-AgsList.html#ags-list-free-and-unref-link" title="ags_list_free_and_unref_link ()">ags_list_free_and_unref_link</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="ags-AgsList.html#ags-list-duplicate-list" title="ags_list_duplicate_list ()">ags_list_duplicate_list</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="ags-AgsList.includes"></a><h2>Includes</h2>
+<pre class="synopsis">#include &lt;ags/lib/ags_list.h&gt;
+</pre>
+</div>
+<div class="refsect1">
+<a name="ags-AgsList.description"></a><h2>Description</h2>
+<p>Functions completing <GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> API.</p>
+</div>
+<div class="refsect1">
+<a name="ags-AgsList.functions_details"></a><h2>Functions</h2>
+<div class="refsect2">
+<a name="ags-list-free-and-free-link"></a><h3>ags_list_free_and_free_link ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_list_free_and_free_link (<em class="parameter"><code><GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> *list</code></em>);</pre>
+<div class="warning">
+<p><code class="literal">ags_list_free_and_free_link</code> is deprecated and should not be used in newly-written code.</p>
+<p>Use <GTKDOCLINK HREF="g-list-free-full"><code class="function">g_list_free_full()</code></GTKDOCLINK> with <GTKDOCLINK HREF="g-free"><code class="function">g_free()</code></GTKDOCLINK> instead</p>
+</div>
+<p>Free list and free data.</p>
+<div class="refsect3">
+<a name="id-1.3.3.6.2.7"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>list</p></td>
+<td class="parameter_description"><p>the <GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<p class="since">Since 0.3</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-list-free-and-unref-link"></a><h3>ags_list_free_and_unref_link ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_list_free_and_unref_link (<em class="parameter"><code><GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> *list</code></em>);</pre>
+<div class="warning">
+<p><code class="literal">ags_list_free_and_unref_link</code> is deprecated and should not be used in newly-written code.</p>
+<p>Use <GTKDOCLINK HREF="g-list-free-full"><code class="function">g_list_free_full()</code></GTKDOCLINK> with <GTKDOCLINK HREF="g-ojbect-unref"><code class="function">g_ojbect_unref()</code></GTKDOCLINK> instead</p>
+</div>
+<p>Free list and unref data.</p>
+<div class="refsect3">
+<a name="id-1.3.3.6.3.7"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>list</p></td>
+<td class="parameter_description"><p>the <GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<p class="since">Since 0.3</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-list-duplicate-list"></a><h3>ags_list_duplicate_list ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_list_duplicate_list (<em class="parameter"><code><GTKDOCLINK HREF="gpointer"><span class="type">gpointer</span></GTKDOCLINK> entry</code></em>,
+                         <em class="parameter"><code><GTKDOCLINK HREF="gpointer"><span class="type">gpointer</span></GTKDOCLINK> target</code></em>);</pre>
+<p>
+</p>
+</div>
+</div>
+<div class="refsect1">
+<a name="ags-AgsList.other_details"></a><h2>Types and Values</h2>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.21</div>
+</body>
+</html>

@@ -1,0 +1,233 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsWindow</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="pt08.html" title="Part VIII. Graphical user interface">
+<link rel="prev" href="AgsServerPreferences.html" title="AgsServerPreferences">
+<link rel="next" href="ags-ags-window-callbacks.html" title="ags_window_callbacks">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="AgsServerPreferences.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="pt08.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="ags-ags-window-callbacks.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#AgsWindow.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#AgsWindow.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#AgsWindow.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#AgsWindow.implemented-interfaces" class="shortcut">Implemented Interfaces</a>
+                   | 
+                  <a href="#AgsWindow.properties" class="shortcut">Properties</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="AgsWindow"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="AgsWindow.top_of_page"></a>AgsWindow</span></h2>
+<p>AgsWindow — The window object.</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="AgsWindow.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">
+#include &lt;ags/X/ags_window.h&gt;
+
+#define             <a class="link" href="AgsWindow.html#AGS-MACHINE-COUNTER:CAPS" title="AGS_MACHINE_COUNTER()">AGS_MACHINE_COUNTER</a>                 (ptr)
+struct              <a class="link" href="AgsWindow.html#AgsMachineCounter" title="struct AgsMachineCounter">AgsMachineCounter</a>;
+struct              <a class="link" href="AgsWindow.html#AgsWindow-struct" title="struct AgsWindow">AgsWindow</a>;
+struct              <a class="link" href="AgsWindow.html#AgsWindowClass" title="struct AgsWindowClass">AgsWindowClass</a>;
+enum                <a class="link" href="AgsWindow.html#AgsWindowFlags" title="enum AgsWindowFlags">AgsWindowFlags</a>;
+<a class="link" href="AgsWindow.html#AgsMachineCounter" title="struct AgsMachineCounter"><span class="returnvalue">AgsMachineCounter</span></a> * <a class="link" href="AgsWindow.html#ags-machine-counter-alloc" title="ags_machine_counter_alloc ()">ags_machine_counter_alloc</a>           (<em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *version</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *build_id</code></em>,
+                                                         <em class="parameter"><code><a href="../gobject/gobject-Type-Information.html#GType"><span class="type">GType</span></a> machine_type</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> initial_value</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsWindow.html#ags-window-decrement-machine-counter" title="ags_window_decrement_machine_counter ()">ags_window_decrement_machine_counter</a>
+                                                        (<em class="parameter"><code><a class="link" href="AgsWindow.html" title="AgsWindow"><span class="type">AgsWindow</span></a> *window</code></em>,
+                                                         <em class="parameter"><code><a href="../gobject/gobject-Type-Information.html#GType"><span class="type">GType</span></a> machine_type</code></em>);
+<a class="link" href="AgsWindow.html#AgsMachineCounter" title="struct AgsMachineCounter"><span class="returnvalue">AgsMachineCounter</span></a> * <a class="link" href="AgsWindow.html#ags-window-find-machine-counter" title="ags_window_find_machine_counter ()">ags_window_find_machine_counter</a>     (<em class="parameter"><code><a class="link" href="AgsWindow.html" title="AgsWindow"><span class="type">AgsWindow</span></a> *window</code></em>,
+                                                         <em class="parameter"><code><a href="../gobject/gobject-Type-Information.html#GType"><span class="type">GType</span></a> machine_type</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsWindow.html#ags-window-increment-machine-counter" title="ags_window_increment_machine_counter ()">ags_window_increment_machine_counter</a>
+                                                        (<em class="parameter"><code><a class="link" href="AgsWindow.html" title="AgsWindow"><span class="type">AgsWindow</span></a> *window</code></em>,
+                                                         <em class="parameter"><code><a href="../gobject/gobject-Type-Information.html#GType"><span class="type">GType</span></a> machine_type</code></em>);
+<a class="link" href="AgsWindow.html" title="AgsWindow"><span class="returnvalue">AgsWindow</span></a> *         <a class="link" href="AgsWindow.html#ags-window-new" title="ags_window_new ()">ags_window_new</a>                      (<em class="parameter"><code><a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a> *ags_main</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsWindow.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  <a href="../gobject/gobject-The-Base-Object-Type.html#GObject">GObject</a>
+   +----<a href="../gobject/gobject-The-Base-Object-Type.html#GInitiallyUnowned">GInitiallyUnowned</a>
+         +----<a href="../gtk/GtkObject.html">GtkObject</a>
+               +----<a href="../gtk3/GtkWidget.html">GtkWidget</a>
+                     +----<a href="../gtk3/GtkContainer.html">GtkContainer</a>
+                           +----<a href="../gtk3/GtkBin.html">GtkBin</a>
+                                 +----<a href="../gtk3/GtkWindow.html">GtkWindow</a>
+                                       +----AgsWindow
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsWindow.implemented-interfaces"></a><h2>Implemented Interfaces</h2>
+<p>
+AgsWindow implements
+ AtkImplementorIface,  <a href="../gtk3/GtkBuildable.html">GtkBuildable</a> and  AgsConnectable.</p>
+</div>
+<div class="refsect1">
+<a name="AgsWindow.properties"></a><h2>Properties</h2>
+<pre class="synopsis">
+  "<a class="link" href="AgsWindow.html#AgsWindow--ags-main" title='The "ags-main" property'>ags-main</a>"                 <a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a>*              : Read / Write
+  "<a class="link" href="AgsWindow.html#AgsWindow--devout" title='The "devout" property'>devout</a>"                   <a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a>*              : Read / Write
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsWindow.description"></a><h2>Description</h2>
+<p>
+<a class="link" href="AgsWindow.html" title="AgsWindow"><span class="type">AgsWindow</span></a> is a composite toplevel widget.
+</p>
+</div>
+<div class="refsect1">
+<a name="AgsWindow.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AGS-MACHINE-COUNTER:CAPS"></a><h3>AGS_MACHINE_COUNTER()</h3>
+<pre class="programlisting">#define AGS_MACHINE_COUNTER(ptr) ((AgsMachineCounter *)(ptr))
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsMachineCounter"></a><h3>struct AgsMachineCounter</h3>
+<pre class="programlisting">struct AgsMachineCounter {
+  gchar *version;
+  gchar *build_id;
+
+  GType machine_type;
+  guint counter;
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsWindow-struct"></a><h3>struct AgsWindow</h3>
+<pre class="programlisting">struct AgsWindow;</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsWindowClass"></a><h3>struct AgsWindowClass</h3>
+<pre class="programlisting">struct AgsWindowClass {
+  GtkWindowClass window;
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsWindowFlags"></a><h3>enum AgsWindowFlags</h3>
+<pre class="programlisting">typedef enum {
+  AGS_WINDOW_READY        = 1,
+  AGS_WINDOW_LOADING      = 1 &lt;&lt; 1,
+  AGS_WINDOW_SAVING       = 1 &lt;&lt; 2,
+  AGS_WINDOW_TERMINATING  = 1 &lt;&lt; 3,
+} AgsWindowFlags;
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-machine-counter-alloc"></a><h3>ags_machine_counter_alloc ()</h3>
+<pre class="programlisting"><a class="link" href="AgsWindow.html#AgsMachineCounter" title="struct AgsMachineCounter"><span class="returnvalue">AgsMachineCounter</span></a> * ags_machine_counter_alloc           (<em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *version</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *build_id</code></em>,
+                                                         <em class="parameter"><code><a href="../gobject/gobject-Type-Information.html#GType"><span class="type">GType</span></a> machine_type</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> initial_value</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-window-decrement-machine-counter"></a><h3>ags_window_decrement_machine_counter ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_window_decrement_machine_counter
+                                                        (<em class="parameter"><code><a class="link" href="AgsWindow.html" title="AgsWindow"><span class="type">AgsWindow</span></a> *window</code></em>,
+                                                         <em class="parameter"><code><a href="../gobject/gobject-Type-Information.html#GType"><span class="type">GType</span></a> machine_type</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-window-find-machine-counter"></a><h3>ags_window_find_machine_counter ()</h3>
+<pre class="programlisting"><a class="link" href="AgsWindow.html#AgsMachineCounter" title="struct AgsMachineCounter"><span class="returnvalue">AgsMachineCounter</span></a> * ags_window_find_machine_counter     (<em class="parameter"><code><a class="link" href="AgsWindow.html" title="AgsWindow"><span class="type">AgsWindow</span></a> *window</code></em>,
+                                                         <em class="parameter"><code><a href="../gobject/gobject-Type-Information.html#GType"><span class="type">GType</span></a> machine_type</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-window-increment-machine-counter"></a><h3>ags_window_increment_machine_counter ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_window_increment_machine_counter
+                                                        (<em class="parameter"><code><a class="link" href="AgsWindow.html" title="AgsWindow"><span class="type">AgsWindow</span></a> *window</code></em>,
+                                                         <em class="parameter"><code><a href="../gobject/gobject-Type-Information.html#GType"><span class="type">GType</span></a> machine_type</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-window-new"></a><h3>ags_window_new ()</h3>
+<pre class="programlisting"><a class="link" href="AgsWindow.html" title="AgsWindow"><span class="returnvalue">AgsWindow</span></a> *         ags_window_new                      (<em class="parameter"><code><a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a> *ags_main</code></em>);</pre>
+<p>
+Creates an <a class="link" href="AgsWindow.html" title="AgsWindow"><span class="type">AgsWindow</span></a>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>ags_main</code></em> :</span></p></td>
+<td>the application object.</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new <a class="link" href="AgsWindow.html" title="AgsWindow"><span class="type">AgsWindow</span></a>
+</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.3</p>
+</div>
+</div>
+<div class="refsect1">
+<a name="AgsWindow.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="AgsWindow--ags-main"></a><h3>The <code class="literal">"ags-main"</code> property</h3>
+<pre class="programlisting">  "ags-main"                 <a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a>*              : Read / Write</pre>
+<p>The AgsMain it is assigned with.</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsWindow--devout"></a><h3>The <code class="literal">"devout"</code> property</h3>
+<pre class="programlisting">  "devout"                   <a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a>*              : Read / Write</pre>
+<p>The devout it is assigned with.</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

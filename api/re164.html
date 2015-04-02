@@ -1,0 +1,23 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>AgsOpenFile</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="ags Reference Manual"><link rel="up" href="ch01.html" title="Chapter 1. [Insert title here]"><link rel="prev" href="re163.html" title="ags_notebook_callbacks"><link rel="next" href="re165.html" title="AgsOpenSingleFile"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="ags-AgsOpenFile"></a><div class="titlepage"></div><div class="refnamediv"><h2>Name</h2><p>AgsOpenFile</p></div><div class="refsynopsisdiv"><a name="ags-AgsOpenFile.synopsis"></a><h2>Synopsis</h2><pre class="synopsis">struct              <a class="link" href="re164.html#AgsOpenFile" title="struct AgsOpenFile">AgsOpenFile</a>;
+struct              <a class="link" href="re164.html#AgsOpenFileClass" title="struct AgsOpenFileClass">AgsOpenFileClass</a>;
+<a class="link" href="re164.html#AgsOpenFile" title="struct AgsOpenFile"><span class="returnvalue">AgsOpenFile</span></a> *       <a class="link" href="re164.html#ags-open-file-new" title="ags_open_file_new ()">ags_open_file_new</a>                   (<em class="parameter"><code><a class="link" href="re17.html#AgsAudio" title="struct AgsAudio"><span class="type">AgsAudio</span></a> *audio</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">GSList</span></a> *filenames</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">gboolean</span></a> overwrite_channels</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">gboolean</span></a> create_channels</code></em>);
+</pre></div><div class="refsect1"><a name="ags-AgsOpenFile.description"></a><h2>Description</h2></div><div class="refsect1"><a name="ags-AgsOpenFile.details"></a><h2>Details</h2><div class="refsect2"><a name="AgsOpenFile"></a><h3>struct AgsOpenFile</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsOpenFile"></OBJECT><pre class="programlisting">struct AgsOpenFile {
+  AgsTask task;
+
+  AgsAudio *audio;
+
+  GSList *filenames;
+
+  gboolean overwrite_channels;
+  gboolean create_channels;
+};
+</pre></div><div class="refsect2"><a name="AgsOpenFileClass"></a><h3>struct AgsOpenFileClass</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsOpenFileClass"></OBJECT><pre class="programlisting">struct AgsOpenFileClass {
+  AgsTaskClass task;
+};
+</pre></div><div class="refsect2"><a name="ags-open-file-new"></a><h3>ags_open_file_new ()</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="ags_open_file_new"></OBJECT><pre class="programlisting"><a class="link" href="re164.html#AgsOpenFile" title="struct AgsOpenFile"><span class="returnvalue">AgsOpenFile</span></a> *       ags_open_file_new                   (<em class="parameter"><code><a class="link" href="re17.html#AgsAudio" title="struct AgsAudio"><span class="type">AgsAudio</span></a> *audio</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">GSList</span></a> *filenames</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">gboolean</span></a> overwrite_channels</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">gboolean</span></a> create_channels</code></em>);</pre></div></div></div></body></html>

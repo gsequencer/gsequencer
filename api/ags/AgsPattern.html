@@ -1,0 +1,293 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsPattern</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="audio.html" title="Part VII. The audio layer">
+<link rel="prev" href="AgsOutput.html" title="AgsOutput">
+<link rel="next" href="AgsPort.html" title="AgsPort">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="AgsOutput.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="audio.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="AgsPort.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#AgsPattern.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#AgsPattern.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#AgsPattern.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#AgsPattern.implemented-interfaces" class="shortcut">Implemented Interfaces</a>
+                   | 
+                  <a href="#AgsPattern.properties" class="shortcut">Properties</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="AgsPattern"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="AgsPattern.top_of_page"></a>AgsPattern</span></h2>
+<p>AgsPattern — Pattern representing tones</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="AgsPattern.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">
+#include &lt;ags/audio/ags_pattern.h&gt;
+
+struct              <a class="link" href="AgsPattern.html#AgsPattern-struct" title="struct AgsPattern">AgsPattern</a>;
+struct              <a class="link" href="AgsPattern.html#AgsPatternClass" title="struct AgsPatternClass">AgsPatternClass</a>;
+<a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            <a class="link" href="AgsPattern.html#ags-pattern-get-bit" title="ags_pattern_get_bit ()">ags_pattern_get_bit</a>                 (<em class="parameter"><code><a class="link" href="AgsPattern.html" title="AgsPattern"><span class="type">AgsPattern</span></a> *pattern</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> i</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> j</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> bit</code></em>);
+<a class="link" href="AgsPattern.html" title="AgsPattern"><span class="returnvalue">AgsPattern</span></a> *        <a class="link" href="AgsPattern.html#ags-pattern-get-by-timestamp" title="ags_pattern_get_by_timestamp ()">ags_pattern_get_by_timestamp</a>        (<em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> *list</code></em>,
+                                                         <em class="parameter"><code><a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a> *timestamp</code></em>);
+<a class="link" href="AgsPattern.html" title="AgsPattern"><span class="returnvalue">AgsPattern</span></a> *        <a class="link" href="AgsPattern.html#ags-pattern-new" title="ags_pattern_new ()">ags_pattern_new</a>                     ();
+<span class="returnvalue">void</span>                <a class="link" href="AgsPattern.html#ags-pattern-set-dim" title="ags_pattern_set_dim ()">ags_pattern_set_dim</a>                 (<em class="parameter"><code><a class="link" href="AgsPattern.html" title="AgsPattern"><span class="type">AgsPattern</span></a> *pattern</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> dim0</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> dim1</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> lenght</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsPattern.html#ags-pattern-toggle-bit" title="ags_pattern_toggle_bit ()">ags_pattern_toggle_bit</a>              (<em class="parameter"><code><a class="link" href="AgsPattern.html" title="AgsPattern"><span class="type">AgsPattern</span></a> *pattern</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> i</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> j</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> bit</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsPattern.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  <a href="../gobject/gobject-The-Base-Object-Type.html#GObject">GObject</a>
+   +----AgsPattern
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsPattern.implemented-interfaces"></a><h2>Implemented Interfaces</h2>
+<p>
+AgsPattern implements
+ AgsConnectable,  <a class="link" href="AgsTactable.html" title="AgsTactable">AgsTactable</a> and  <a class="link" href="AgsPortlet.html" title="AgsPortlet">AgsPortlet</a>.</p>
+</div>
+<div class="refsect1">
+<a name="AgsPattern.properties"></a><h2>Properties</h2>
+<pre class="synopsis">
+  "<a class="link" href="AgsPattern.html#AgsPattern--current-bit" title='The "current-bit" property'>current-bit</a>"              <a href="../glib/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a>              : Read
+  "<a class="link" href="AgsPattern.html#AgsPattern--first-index" title='The "first-index" property'>first-index</a>"              <a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a>                 : Read / Write
+  "<a class="link" href="AgsPattern.html#AgsPattern--offset" title='The "offset" property'>offset</a>"                   <a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a>                 : Read / Write
+  "<a class="link" href="AgsPattern.html#AgsPattern--port" title='The "port" property'>port</a>"                     <a class="link" href="AgsPort.html" title="AgsPort"><span class="type">AgsPort</span></a>*              : Read / Write
+  "<a class="link" href="AgsPattern.html#AgsPattern--second-index" title='The "second-index" property'>second-index</a>"             <a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a>                 : Read / Write
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsPattern.description"></a><h2>Description</h2>
+<p>
+<a class="link" href="AgsPattern.html" title="AgsPattern"><span class="type">AgsPattern</span></a> represents an audio pattern of tones.
+</p>
+</div>
+<div class="refsect1">
+<a name="AgsPattern.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AgsPattern-struct"></a><h3>struct AgsPattern</h3>
+<pre class="programlisting">struct AgsPattern;</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsPatternClass"></a><h3>struct AgsPatternClass</h3>
+<pre class="programlisting">struct AgsPatternClass {
+  GObjectClass object;
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-pattern-get-bit"></a><h3>ags_pattern_get_bit ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            ags_pattern_get_bit                 (<em class="parameter"><code><a class="link" href="AgsPattern.html" title="AgsPattern"><span class="type">AgsPattern</span></a> *pattern</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> i</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> j</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> bit</code></em>);</pre>
+<p>
+Check for tic to be played.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>pattern</code></em> :</span></p></td>
+<td>an <a class="link" href="AgsPattern.html" title="AgsPattern"><span class="type">AgsPattern</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>i</code></em> :</span></p></td>
+<td>bank index 0</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>j</code></em> :</span></p></td>
+<td>bank index 1</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>bit</code></em> :</span></p></td>
+<td>the tic to check</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>
+<a href="../glib/glib-Standard-Macros.html#TRUE:CAPS"><code class="literal">TRUE</code></a> if tone is enabled.</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.3</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-pattern-get-by-timestamp"></a><h3>ags_pattern_get_by_timestamp ()</h3>
+<pre class="programlisting"><a class="link" href="AgsPattern.html" title="AgsPattern"><span class="returnvalue">AgsPattern</span></a> *        ags_pattern_get_by_timestamp        (<em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> *list</code></em>,
+                                                         <em class="parameter"><code><a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a> *timestamp</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-pattern-new"></a><h3>ags_pattern_new ()</h3>
+<pre class="programlisting"><a class="link" href="AgsPattern.html" title="AgsPattern"><span class="returnvalue">AgsPattern</span></a> *        ags_pattern_new                     ();</pre>
+<p>
+Creates an <a class="link" href="AgsPattern.html" title="AgsPattern"><span class="type">AgsPattern</span></a>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new <a class="link" href="AgsPattern.html" title="AgsPattern"><span class="type">AgsPattern</span></a>
+</td>
+</tr></tbody>
+</table></div>
+<p class="since">Since 0.3</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-pattern-set-dim"></a><h3>ags_pattern_set_dim ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_pattern_set_dim                 (<em class="parameter"><code><a class="link" href="AgsPattern.html" title="AgsPattern"><span class="type">AgsPattern</span></a> *pattern</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> dim0</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> dim1</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> lenght</code></em>);</pre>
+<p>
+Reallocates the pattern's dimensions.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>pattern</code></em> :</span></p></td>
+<td>an <a class="link" href="AgsPattern.html" title="AgsPattern"><span class="type">AgsPattern</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>dim0</code></em> :</span></p></td>
+<td>bank 0 size</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>dim1</code></em> :</span></p></td>
+<td>bank 1 size</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.3</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-pattern-toggle-bit"></a><h3>ags_pattern_toggle_bit ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_pattern_toggle_bit              (<em class="parameter"><code><a class="link" href="AgsPattern.html" title="AgsPattern"><span class="type">AgsPattern</span></a> *pattern</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> i</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> j</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> bit</code></em>);</pre>
+<p>
+Toggle tone.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>pattern</code></em> :</span></p></td>
+<td>an <a class="link" href="AgsPattern.html" title="AgsPattern"><span class="type">AgsPattern</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>i</code></em> :</span></p></td>
+<td>bank index 0</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>j</code></em> :</span></p></td>
+<td>bank index 1</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>bit</code></em> :</span></p></td>
+<td>the tic to toggle</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.3</p>
+</div>
+</div>
+<div class="refsect1">
+<a name="AgsPattern.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="AgsPattern--current-bit"></a><h3>The <code class="literal">"current-bit"</code> property</h3>
+<pre class="programlisting">  "current-bit"              <a href="../glib/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a>              : Read</pre>
+<p>The current bit for offset.</p>
+<p>Default value: FALSE</p>
+<p class="since">Since 0.4.0</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsPattern--first-index"></a><h3>The <code class="literal">"first-index"</code> property</h3>
+<pre class="programlisting">  "first-index"              <a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a>                 : Read / Write</pre>
+<p>The first index to select pattern.</p>
+<p>Allowed values: &lt;= 256</p>
+<p>Default value: 0</p>
+<p class="since">Since 0.4.0</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsPattern--offset"></a><h3>The <code class="literal">"offset"</code> property</h3>
+<pre class="programlisting">  "offset"                   <a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a>                 : Read / Write</pre>
+<p>The offset within the pattern.</p>
+<p>Allowed values: &lt;= 65535</p>
+<p>Default value: 0</p>
+<p class="since">Since 0.4.0</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsPattern--port"></a><h3>The <code class="literal">"port"</code> property</h3>
+<pre class="programlisting">  "port"                     <a class="link" href="AgsPort.html" title="AgsPort"><span class="type">AgsPort</span></a>*              : Read / Write</pre>
+<p>The port of pattern.</p>
+<p class="since">Since 0.4.0</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsPattern--second-index"></a><h3>The <code class="literal">"second-index"</code> property</h3>
+<pre class="programlisting">  "second-index"             <a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a>                 : Read / Write</pre>
+<p>The second index to select pattern.</p>
+<p>Allowed values: &lt;= 256</p>
+<p>Default value: 0</p>
+<p class="since">Since 0.4.0</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

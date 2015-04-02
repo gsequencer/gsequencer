@@ -1,0 +1,109 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsRemoveRegionFromSelection</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="task.html" title="Task - Data exchanged between Audio and GUI">
+<link rel="prev" href="AgsRemoveRecall.html" title="AgsRemoveRecall">
+<link rel="next" href="AgsSaveFile.html" title="AgsSaveFile">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="AgsRemoveRecall.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="task.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="AgsSaveFile.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#AgsRemoveRegionFromSelection.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#AgsRemoveRegionFromSelection.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#AgsRemoveRegionFromSelection.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#AgsRemoveRegionFromSelection.implemented-interfaces" class="shortcut">Implemented Interfaces</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="AgsRemoveRegionFromSelection"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="AgsRemoveRegionFromSelection.top_of_page"></a>AgsRemoveRegionFromSelection</span></h2>
+<p>AgsRemoveRegionFromSelection</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="AgsRemoveRegionFromSelection.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">struct              <a class="link" href="AgsRemoveRegionFromSelection.html#AgsRemoveRegionFromSelection-struct" title="struct AgsRemoveRegionFromSelection">AgsRemoveRegionFromSelection</a>;
+struct              <a class="link" href="AgsRemoveRegionFromSelection.html#AgsRemoveRegionFromSelectionClass" title="struct AgsRemoveRegionFromSelectionClass">AgsRemoveRegionFromSelectionClass</a>;
+<a class="link" href="AgsRemoveRegionFromSelection.html" title="AgsRemoveRegionFromSelection"><span class="returnvalue">AgsRemoveRegionFromSelection</span></a> * <a class="link" href="AgsRemoveRegionFromSelection.html#ags-remove-region-from-selection-new" title="ags_remove_region_from_selection_new ()">ags_remove_region_from_selection_new</a>
+                                                        (<em class="parameter"><code><a class="link" href="AgsNotation.html" title="AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> x0</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> y0</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> x1</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> y1</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsRemoveRegionFromSelection.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  <a href="../gobject/gobject-The-Base-Object-Type.html#GObject">GObject</a>
+   +----<a class="link" href="AgsTask.html" title="AgsTask">AgsTask</a>
+         +----AgsRemoveRegionFromSelection
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsRemoveRegionFromSelection.implemented-interfaces"></a><h2>Implemented Interfaces</h2>
+<p>
+AgsRemoveRegionFromSelection implements
+ AgsConnectable.</p>
+</div>
+<div class="refsect1">
+<a name="AgsRemoveRegionFromSelection.description"></a><h2>Description</h2>
+<p>
+</p>
+</div>
+<div class="refsect1">
+<a name="AgsRemoveRegionFromSelection.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AgsRemoveRegionFromSelection-struct"></a><h3>struct AgsRemoveRegionFromSelection</h3>
+<pre class="programlisting">struct AgsRemoveRegionFromSelection;</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsRemoveRegionFromSelectionClass"></a><h3>struct AgsRemoveRegionFromSelectionClass</h3>
+<pre class="programlisting">struct AgsRemoveRegionFromSelectionClass {
+  AgsTaskClass task;
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-remove-region-from-selection-new"></a><h3>ags_remove_region_from_selection_new ()</h3>
+<pre class="programlisting"><a class="link" href="AgsRemoveRegionFromSelection.html" title="AgsRemoveRegionFromSelection"><span class="returnvalue">AgsRemoveRegionFromSelection</span></a> * ags_remove_region_from_selection_new
+                                                        (<em class="parameter"><code><a class="link" href="AgsNotation.html" title="AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> x0</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> y0</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> x1</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> y1</code></em>);</pre>
+<p>
+</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

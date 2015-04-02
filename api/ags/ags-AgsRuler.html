@@ -1,0 +1,127 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsRuler</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="composite-widgets.html" title="Composite widgets">
+<link rel="prev" href="ags-AgsResizeEditor.html" title="AgsResizeEditor">
+<link rel="next" href="ags-AgsServerPreferences.html" title="AgsServerPreferences">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="ags-AgsResizeEditor.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="composite-widgets.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="ags-AgsServerPreferences.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#ags-AgsRuler.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#ags-AgsRuler.description" class="shortcut">Description</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="ags-AgsRuler"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="ags-AgsRuler.top_of_page"></a>AgsRuler</span></h2>
+<p>AgsRuler — A ruler widget</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="ags-AgsRuler.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">
+#include &lt;ags/widget/ags_ruler.h&gt;
+
+#define             <a class="link" href="ags-AgsRuler.html#AGS-RULER-DEFAULT-STEP:CAPS" title="AGS_RULER_DEFAULT_STEP">AGS_RULER_DEFAULT_STEP</a>
+#define             <a class="link" href="ags-AgsRuler.html#AGS-RULER-LARGE-STEP:CAPS" title="AGS_RULER_LARGE_STEP">AGS_RULER_LARGE_STEP</a>
+#define             <a class="link" href="ags-AgsRuler.html#AGS-RULER-SMALL-STEP:CAPS" title="AGS_RULER_SMALL_STEP">AGS_RULER_SMALL_STEP</a>
+struct              <a class="link" href="ags-AgsRuler.html#AgsRuler" title="struct AgsRuler">AgsRuler</a>;
+struct              <a class="link" href="ags-AgsRuler.html#AgsRulerClass" title="struct AgsRulerClass">AgsRulerClass</a>;
+<a class="link" href="ags-AgsRuler.html#AgsRuler" title="struct AgsRuler"><span class="returnvalue">AgsRuler</span></a> *          <a class="link" href="ags-AgsRuler.html#ags-ruler-new" title="ags_ruler_new ()">ags_ruler_new</a>                       ();
+</pre>
+</div>
+<div class="refsect1">
+<a name="ags-AgsRuler.description"></a><h2>Description</h2>
+<p>
+<a class="link" href="ags-AgsRuler.html#AgsRuler" title="struct AgsRuler"><span class="type">AgsRuler</span></a> is a widget representing a <GTKDOCLINK HREF="GtkAdjustment"><span class="type">GtkAdjustment</span></GTKDOCLINK>.
+</p>
+</div>
+<div class="refsect1">
+<a name="ags-AgsRuler.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AGS-RULER-DEFAULT-STEP:CAPS"></a><h3>AGS_RULER_DEFAULT_STEP</h3>
+<pre class="programlisting">#define AGS_RULER_DEFAULT_STEP (16)
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-RULER-LARGE-STEP:CAPS"></a><h3>AGS_RULER_LARGE_STEP</h3>
+<pre class="programlisting">#define AGS_RULER_LARGE_STEP (8.0)
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-RULER-SMALL-STEP:CAPS"></a><h3>AGS_RULER_SMALL_STEP</h3>
+<pre class="programlisting">#define AGS_RULER_SMALL_STEP (6.0)
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsRuler"></a><h3>struct AgsRuler</h3>
+<pre class="programlisting">struct AgsRuler {
+  GtkWidget widget;
+
+  guint flags;
+
+  guint font_size;
+
+  GtkAdjustment *adjustment;
+
+  guint step;
+
+  gdouble factor;
+  gdouble precision;
+  gdouble scale_precision;
+};
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsRulerClass"></a><h3>struct AgsRulerClass</h3>
+<pre class="programlisting">struct AgsRulerClass {
+  GtkWidgetClass widget;
+};
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-ruler-new"></a><h3>ags_ruler_new ()</h3>
+<pre class="programlisting"><a class="link" href="ags-AgsRuler.html#AgsRuler" title="struct AgsRuler"><span class="returnvalue">AgsRuler</span></a> *          ags_ruler_new                       ();</pre>
+<p>
+Creates an <a class="link" href="ags-AgsRuler.html#AgsRuler" title="struct AgsRuler"><span class="type">AgsRuler</span></a>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new <a class="link" href="ags-AgsRuler.html#AgsRuler" title="struct AgsRuler"><span class="type">AgsRuler</span></a>
+</td>
+</tr></tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

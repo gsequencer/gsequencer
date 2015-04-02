@@ -1,0 +1,157 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsDial</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="widget.html" title="Part V. Widget - GUI elements">
+<link rel="prev" href="widget.html" title="Part V. Widget - GUI elements">
+<link rel="next" href="AgsExpander.html" title="AgsExpander">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="widget.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="widget.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="AgsExpander.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#AgsDial.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#AgsDial.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#AgsDial.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#AgsDial.implemented-interfaces" class="shortcut">Implemented Interfaces</a>
+                   | 
+                  <a href="#AgsDial.properties" class="shortcut">Properties</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="AgsDial"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="AgsDial.top_of_page"></a>AgsDial</span></h2>
+<p>AgsDial — A dial widget</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="AgsDial.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">
+#include &lt;ags/widget/ags_dial.h&gt;
+
+#define             <a class="link" href="AgsDial.html#AGS-DIAL-DEFAULT-PRECISION:CAPS" title="AGS_DIAL_DEFAULT_PRECISION">AGS_DIAL_DEFAULT_PRECISION</a>
+struct              <a class="link" href="AgsDial.html#AgsDial-struct" title="struct AgsDial">AgsDial</a>;
+struct              <a class="link" href="AgsDial.html#AgsDialClass" title="struct AgsDialClass">AgsDialClass</a>;
+enum                <a class="link" href="AgsDial.html#AgsDialFlags" title="enum AgsDialFlags">AgsDialFlags</a>;
+<a class="link" href="AgsDial.html" title="AgsDial"><span class="returnvalue">AgsDial</span></a> *           <a class="link" href="AgsDial.html#ags-dial-new" title="ags_dial_new ()">ags_dial_new</a>                        ();
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsDial.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  <a href="../gobject/gobject-The-Base-Object-Type.html#GObject">GObject</a>
+   +----<a href="../gobject/gobject-The-Base-Object-Type.html#GInitiallyUnowned">GInitiallyUnowned</a>
+         +----<a href="../gtk/GtkObject.html">GtkObject</a>
+               +----<a href="../gtk3/GtkWidget.html">GtkWidget</a>
+                     +----AgsDial
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsDial.implemented-interfaces"></a><h2>Implemented Interfaces</h2>
+<p>
+AgsDial implements
+ AtkImplementorIface and  <a href="../gtk3/GtkBuildable.html">GtkBuildable</a>.</p>
+</div>
+<div class="refsect1">
+<a name="AgsDial.properties"></a><h2>Properties</h2>
+<pre class="synopsis">
+  "<a class="link" href="AgsDial.html#AgsDial--adjustment" title='The "adjustment" property'>adjustment</a>"               <a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a>*              : Read / Write
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsDial.description"></a><h2>Description</h2>
+<p>
+<a class="link" href="AgsDial.html" title="AgsDial"><span class="type">AgsDial</span></a> is a widget representing a <a href="../gtk3/GtkAdjustment.html"><span class="type">GtkAdjustment</span></a>.
+</p>
+</div>
+<div class="refsect1">
+<a name="AgsDial.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AGS-DIAL-DEFAULT-PRECISION:CAPS"></a><h3>AGS_DIAL_DEFAULT_PRECISION</h3>
+<pre class="programlisting">#define AGS_DIAL_DEFAULT_PRECISION (8.0)
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsDial-struct"></a><h3>struct AgsDial</h3>
+<pre class="programlisting">struct AgsDial;</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsDialClass"></a><h3>struct AgsDialClass</h3>
+<pre class="programlisting">struct AgsDialClass {
+  GtkWidgetClass widget;
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsDialFlags"></a><h3>enum AgsDialFlags</h3>
+<pre class="programlisting">typedef enum {
+  AGS_DIAL_WITH_BUTTONS           = 1,
+  AGS_DIAL_MOUSE_BUTTON_PRESSED   = 1 &lt;&lt;  1,
+  AGS_DIAL_BUTTON_DOWN_PRESSED    = 1 &lt;&lt;  2,
+  AGS_DIAL_BUTTON_UP_PRESSED      = 1 &lt;&lt;  3,
+  AGS_DIAL_MOTION_CAPTURING_INIT  = 1 &lt;&lt;  4,
+  AGS_DIAL_MOTION_CAPTURING       = 1 &lt;&lt;  5,
+  AGS_DIAL_IDLE                   = 1 &lt;&lt;  6,
+} AgsDialFlags;
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-dial-new"></a><h3>ags_dial_new ()</h3>
+<pre class="programlisting"><a class="link" href="AgsDial.html" title="AgsDial"><span class="returnvalue">AgsDial</span></a> *           ags_dial_new                        ();</pre>
+<p>
+Creates an <a class="link" href="AgsDial.html" title="AgsDial"><span class="type">AgsDial</span></a>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new <a class="link" href="AgsDial.html" title="AgsDial"><span class="type">AgsDial</span></a>
+</td>
+</tr></tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+</div>
+<div class="refsect1">
+<a name="AgsDial.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="AgsDial--adjustment"></a><h3>The <code class="literal">"adjustment"</code> property</h3>
+<pre class="programlisting">  "adjustment"               <a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a>*              : Read / Write</pre>
+<p>The adjustment it is assigned with.</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

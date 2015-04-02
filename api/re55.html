@@ -1,0 +1,179 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>AgsDevout</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="ags Reference Manual"><link rel="up" href="ch01.html" title="Chapter 1. [Insert title here]"><link rel="prev" href="re54.html" title="AgsDelayAudioRun"><link rel="next" href="re56.html" title="AgsDevoutThread"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="ags-AgsDevout"></a><div class="titlepage"></div><div class="refnamediv"><h2>Name</h2><p>AgsDevout</p></div><div class="refsynopsisdiv"><a name="ags-AgsDevout.synopsis"></a><h2>Synopsis</h2><pre class="synopsis">#define             <a class="link" href="re55.html#ALSA-PCM-NEW-HW-PARAMS-API:CAPS" title="ALSA_PCM_NEW_HW_PARAMS_API">ALSA_PCM_NEW_HW_PARAMS_API</a>
+#define             <a class="link" href="re55.html#AGS-DEVOUT-PLAY-DOMAIN:CAPS" title="AGS_DEVOUT_PLAY_DOMAIN()">AGS_DEVOUT_PLAY_DOMAIN</a>              (ptr)
+#define             <a class="link" href="re55.html#AGS-DEVOUT-PLAY:CAPS" title="AGS_DEVOUT_PLAY()">AGS_DEVOUT_PLAY</a>                     (ptr)
+#define             <a class="link" href="re55.html#AGS-DEVOUT-DEFAULT-SAMPLERATE:CAPS" title="AGS_DEVOUT_DEFAULT_SAMPLERATE">AGS_DEVOUT_DEFAULT_SAMPLERATE</a>
+#define             <a class="link" href="re55.html#AGS-DEVOUT-DEFAULT-BUFFER-SIZE:CAPS" title="AGS_DEVOUT_DEFAULT_BUFFER_SIZE">AGS_DEVOUT_DEFAULT_BUFFER_SIZE</a>
+#define             <a class="link" href="re55.html#AGS-DEVOUT-DEFAULT-BPM:CAPS" title="AGS_DEVOUT_DEFAULT_BPM">AGS_DEVOUT_DEFAULT_BPM</a>
+#define             <a class="link" href="re55.html#AGS-DEVOUT-DEFAULT-JIFFIE:CAPS" title="AGS_DEVOUT_DEFAULT_JIFFIE">AGS_DEVOUT_DEFAULT_JIFFIE</a>
+#define             <a class="link" href="re55.html#AGS-DEVOUT-DEFAULT-TACT:CAPS" title="AGS_DEVOUT_DEFAULT_TACT">AGS_DEVOUT_DEFAULT_TACT</a>
+#define             <a class="link" href="re55.html#AGS-DEVOUT-DEFAULT-TACT-JIFFIE:CAPS" title="AGS_DEVOUT_DEFAULT_TACT_JIFFIE">AGS_DEVOUT_DEFAULT_TACT_JIFFIE</a>
+#define             <a class="link" href="re55.html#AGS-DEVOUT-DEFAULT-TACTRATE:CAPS" title="AGS_DEVOUT_DEFAULT_TACTRATE">AGS_DEVOUT_DEFAULT_TACTRATE</a>
+#define             <a class="link" href="re55.html#AGS-DEVOUT-DEFAULT-DELAY:CAPS" title="AGS_DEVOUT_DEFAULT_DELAY">AGS_DEVOUT_DEFAULT_DELAY</a>
+enum                <a class="link" href="re55.html#AgsDevoutFlags" title="enum AgsDevoutFlags">AgsDevoutFlags</a>;
+enum                <a class="link" href="re55.html#AgsDevoutPlayFlags" title="enum AgsDevoutPlayFlags">AgsDevoutPlayFlags</a>;
+enum                <a class="link" href="re55.html#AgsDevoutResolutionMode" title="enum AgsDevoutResolutionMode">AgsDevoutResolutionMode</a>;
+#define             <a class="link" href="re55.html#AGS-DEVOUT-ERROR:CAPS" title="AGS_DEVOUT_ERROR">AGS_DEVOUT_ERROR</a>
+enum                <a class="link" href="re55.html#AgsDevoutError" title="enum AgsDevoutError">AgsDevoutError</a>;
+struct              <a class="link" href="re55.html#AgsDevout" title="struct AgsDevout">AgsDevout</a>;
+struct              <a class="link" href="re55.html#AgsDevoutClass" title="struct AgsDevoutClass">AgsDevoutClass</a>;
+struct              <a class="link" href="re55.html#AgsDevoutPlayDomain" title="struct AgsDevoutPlayDomain">AgsDevoutPlayDomain</a>;
+struct              <a class="link" href="re55.html#AgsDevoutPlay" title="struct AgsDevoutPlay">AgsDevoutPlay</a>;
+<a class="link" href=""><span class="returnvalue">GQuark</span></a>              <a class="link" href="re55.html#ags-devout-error-quark" title="ags_devout_error_quark ()">ags_devout_error_quark</a>              ();
+<a class="link" href="re55.html#AgsDevoutPlayDomain" title="struct AgsDevoutPlayDomain"><span class="returnvalue">AgsDevoutPlayDomain</span></a> * <a class="link" href="re55.html#ags-devout-play-domain-alloc" title="ags_devout_play_domain_alloc ()">ags_devout_play_domain_alloc</a>      ();
+<a class="link" href=""><span class="returnvalue">void</span></a>                <a class="link" href="re55.html#ags-devout-play-domain-free" title="ags_devout_play_domain_free ()">ags_devout_play_domain_free</a>         (<em class="parameter"><code><a class="link" href="re55.html#AgsDevoutPlayDomain" title="struct AgsDevoutPlayDomain"><span class="type">AgsDevoutPlayDomain</span></a> *devout_play_domain</code></em>);
+<a class="link" href="re55.html#AgsDevoutPlay" title="struct AgsDevoutPlay"><span class="returnvalue">AgsDevoutPlay</span></a> *     <a class="link" href="re55.html#ags-devout-play-alloc" title="ags_devout_play_alloc ()">ags_devout_play_alloc</a>               ();
+<a class="link" href=""><span class="returnvalue">void</span></a>                <a class="link" href="re55.html#ags-devout-play-free" title="ags_devout_play_free ()">ags_devout_play_free</a>                (<em class="parameter"><code><a class="link" href="re55.html#AgsDevoutPlay" title="struct AgsDevoutPlay"><span class="type">AgsDevoutPlay</span></a> *devout_play</code></em>);
+<a class="link" href=""><span class="returnvalue">void</span></a>                <a class="link" href="re55.html#ags-devout-list-cards" title="ags_devout_list_cards ()">ags_devout_list_cards</a>               (<em class="parameter"><code><a class="link" href=""><span class="type">GList</span></a> **card_id</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">GList</span></a> **card_name</code></em>);
+<a class="link" href=""><span class="returnvalue">void</span></a>                <a class="link" href="re55.html#ags-devout-pcm-info" title="ags_devout_pcm_info ()">ags_devout_pcm_info</a>                 (<em class="parameter"><code><a class="link" href=""><span class="type">char</span></a> *card_id</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">guint</span></a> *channels_min</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">guint</span></a> *channels_max</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">guint</span></a> *rate_min</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">guint</span></a> *rate_max</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">guint</span></a> *buffer_size_min</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">guint</span></a> *buffer_size_max</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">GError</span></a> **error</code></em>);
+<a class="link" href=""><span class="returnvalue">void</span></a>                <a class="link" href="re55.html#ags-devout-tic" title="ags_devout_tic ()">ags_devout_tic</a>                      (<em class="parameter"><code><a class="link" href="re55.html#AgsDevout" title="struct AgsDevout"><span class="type">AgsDevout</span></a> *devout</code></em>);
+<a class="link" href=""><span class="returnvalue">void</span></a>                <a class="link" href="re55.html#ags-devout-note-offset-changed" title="ags_devout_note_offset_changed ()">ags_devout_note_offset_changed</a>      (<em class="parameter"><code><a class="link" href="re55.html#AgsDevout" title="struct AgsDevout"><span class="type">AgsDevout</span></a> *devout</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">guint</span></a> note_offset</code></em>);
+<a class="link" href="re55.html#AgsDevout" title="struct AgsDevout"><span class="returnvalue">AgsDevout</span></a> *         <a class="link" href="re55.html#ags-devout-new" title="ags_devout_new ()">ags_devout_new</a>                      (<em class="parameter"><code><a class="link" href=""><span class="type">GObject</span></a> *ags_main</code></em>);
+</pre></div><div class="refsect1"><a name="ags-AgsDevout.description"></a><h2>Description</h2></div><div class="refsect1"><a name="ags-AgsDevout.details"></a><h2>Details</h2><div class="refsect2"><a name="ALSA-PCM-NEW-HW-PARAMS-API:CAPS"></a><h3>ALSA_PCM_NEW_HW_PARAMS_API</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="ALSA_PCM_NEW_HW_PARAMS_API"></OBJECT><pre class="programlisting">#define ALSA_PCM_NEW_HW_PARAMS_API
+</pre></div><div class="refsect2"><a name="AGS-DEVOUT-PLAY-DOMAIN:CAPS"></a><h3>AGS_DEVOUT_PLAY_DOMAIN()</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AGS_DEVOUT_PLAY_DOMAIN"></OBJECT><pre class="programlisting">#define AGS_DEVOUT_PLAY_DOMAIN(ptr)    ((AgsDevoutPlayDomain *)(ptr))
+</pre></div><div class="refsect2"><a name="AGS-DEVOUT-PLAY:CAPS"></a><h3>AGS_DEVOUT_PLAY()</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AGS_DEVOUT_PLAY"></OBJECT><pre class="programlisting">#define AGS_DEVOUT_PLAY(ptr)           ((AgsDevoutPlay *)(ptr))
+</pre></div><div class="refsect2"><a name="AGS-DEVOUT-DEFAULT-SAMPLERATE:CAPS"></a><h3>AGS_DEVOUT_DEFAULT_SAMPLERATE</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AGS_DEVOUT_DEFAULT_SAMPLERATE"></OBJECT><pre class="programlisting">#define AGS_DEVOUT_DEFAULT_SAMPLERATE (44100)
+</pre></div><div class="refsect2"><a name="AGS-DEVOUT-DEFAULT-BUFFER-SIZE:CAPS"></a><h3>AGS_DEVOUT_DEFAULT_BUFFER_SIZE</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AGS_DEVOUT_DEFAULT_BUFFER_SIZE"></OBJECT><pre class="programlisting">#define AGS_DEVOUT_DEFAULT_BUFFER_SIZE (256)
+</pre></div><div class="refsect2"><a name="AGS-DEVOUT-DEFAULT-BPM:CAPS"></a><h3>AGS_DEVOUT_DEFAULT_BPM</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AGS_DEVOUT_DEFAULT_BPM"></OBJECT><pre class="programlisting">#define AGS_DEVOUT_DEFAULT_BPM (120.0)
+</pre></div><div class="refsect2"><a name="AGS-DEVOUT-DEFAULT-JIFFIE:CAPS"></a><h3>AGS_DEVOUT_DEFAULT_JIFFIE</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AGS_DEVOUT_DEFAULT_JIFFIE"></OBJECT><pre class="programlisting">#define AGS_DEVOUT_DEFAULT_JIFFIE ((double) AGS_DEVOUT_DEFAULT_SAMPLERATE / (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE)
+</pre></div><div class="refsect2"><a name="AGS-DEVOUT-DEFAULT-TACT:CAPS"></a><h3>AGS_DEVOUT_DEFAULT_TACT</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AGS_DEVOUT_DEFAULT_TACT"></OBJECT><pre class="programlisting">#define AGS_DEVOUT_DEFAULT_TACT (1.0)
+</pre></div><div class="refsect2"><a name="AGS-DEVOUT-DEFAULT-TACT-JIFFIE:CAPS"></a><h3>AGS_DEVOUT_DEFAULT_TACT_JIFFIE</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AGS_DEVOUT_DEFAULT_TACT_JIFFIE"></OBJECT><pre class="programlisting">#define AGS_DEVOUT_DEFAULT_TACT_JIFFIE (60.0 / AGS_DEVOUT_DEFAULT_BPM * AGS_DEVOUT_DEFAULT_TACT)
+</pre></div><div class="refsect2"><a name="AGS-DEVOUT-DEFAULT-TACTRATE:CAPS"></a><h3>AGS_DEVOUT_DEFAULT_TACTRATE</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AGS_DEVOUT_DEFAULT_TACTRATE"></OBJECT><pre class="programlisting">#define AGS_DEVOUT_DEFAULT_TACTRATE (1.0 / AGS_DEVOUT_DEFAULT_TACT_JIFFIE)
+</pre></div><div class="refsect2"><a name="AGS-DEVOUT-DEFAULT-DELAY:CAPS"></a><h3>AGS_DEVOUT_DEFAULT_DELAY</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AGS_DEVOUT_DEFAULT_DELAY"></OBJECT><pre class="programlisting">#define AGS_DEVOUT_DEFAULT_DELAY (AGS_DEVOUT_DEFAULT_JIFFIE / AGS_DEVOUT_DEFAULT_TACTRATE)
+</pre></div><div class="refsect2"><a name="AgsDevoutFlags"></a><h3>enum AgsDevoutFlags</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsDevoutFlags"></OBJECT><pre class="programlisting">typedef enum {
+  AGS_DEVOUT_BUFFER0                        = 1,
+  AGS_DEVOUT_BUFFER1                        = 1 &lt;&lt; 1,
+  AGS_DEVOUT_BUFFER2                        = 1 &lt;&lt; 2,
+  AGS_DEVOUT_BUFFER3                        = 1 &lt;&lt; 3,
+
+  AGS_DEVOUT_ATTACK_FIRST                   = 1 &lt;&lt; 4,
+
+  AGS_DEVOUT_PLAY                           = 1 &lt;&lt; 5,
+
+  AGS_DEVOUT_LIBAO                          = 1 &lt;&lt; 6,
+  AGS_DEVOUT_OSS                            = 1 &lt;&lt; 7,
+  AGS_DEVOUT_ALSA                           = 1 &lt;&lt; 8,
+
+  AGS_DEVOUT_SHUTDOWN                       = 1 &lt;&lt; 9,
+  AGS_DEVOUT_START_PLAY                     = 1 &lt;&lt; 10,
+
+  AGS_DEVOUT_NONBLOCKING                    = 1 &lt;&lt; 11,
+
+  AGS_DEVOUT_TIMING_SET_0                   = 1 &lt;&lt; 12,
+  AGS_DEVOUT_TIMING_SET_1                   = 1 &lt;&lt; 13,
+} AgsDevoutFlags;
+</pre><div class="variablelist"><dl class="variablelist"><dt><a name="AGS-DEVOUT-BUFFER0:CAPS"></a><span class="term"><code class="literal">AGS_DEVOUT_BUFFER0</code></span></dt><dd></dd><dt><a name="AGS-DEVOUT-BUFFER1:CAPS"></a><span class="term"><code class="literal">AGS_DEVOUT_BUFFER1</code></span></dt><dd></dd><dt><a name="AGS-DEVOUT-BUFFER2:CAPS"></a><span class="term"><code class="literal">AGS_DEVOUT_BUFFER2</code></span></dt><dd></dd><dt><a name="AGS-DEVOUT-BUFFER3:CAPS"></a><span class="term"><code class="literal">AGS_DEVOUT_BUFFER3</code></span></dt><dd></dd><dt><a name="AGS-DEVOUT-ATTACK-FIRST:CAPS"></a><span class="term"><code class="literal">AGS_DEVOUT_ATTACK_FIRST</code></span></dt><dd></dd><dt><a name="AGS-DEVOUT-PLAY:CAPS"></a><span class="term"><code class="literal">AGS_DEVOUT_PLAY</code></span></dt><dd></dd><dt><a name="AGS-DEVOUT-LIBAO:CAPS"></a><span class="term"><code class="literal">AGS_DEVOUT_LIBAO</code></span></dt><dd></dd><dt><a name="AGS-DEVOUT-OSS:CAPS"></a><span class="term"><code class="literal">AGS_DEVOUT_OSS</code></span></dt><dd></dd><dt><a name="AGS-DEVOUT-ALSA:CAPS"></a><span class="term"><code class="literal">AGS_DEVOUT_ALSA</code></span></dt><dd></dd><dt><a name="AGS-DEVOUT-SHUTDOWN:CAPS"></a><span class="term"><code class="literal">AGS_DEVOUT_SHUTDOWN</code></span></dt><dd></dd><dt><a name="AGS-DEVOUT-START-PLAY:CAPS"></a><span class="term"><code class="literal">AGS_DEVOUT_START_PLAY</code></span></dt><dd></dd><dt><a name="AGS-DEVOUT-NONBLOCKING:CAPS"></a><span class="term"><code class="literal">AGS_DEVOUT_NONBLOCKING</code></span></dt><dd></dd><dt><a name="AGS-DEVOUT-TIMING-SET-0:CAPS"></a><span class="term"><code class="literal">AGS_DEVOUT_TIMING_SET_0</code></span></dt><dd></dd><dt><a name="AGS-DEVOUT-TIMING-SET-1:CAPS"></a><span class="term"><code class="literal">AGS_DEVOUT_TIMING_SET_1</code></span></dt><dd></dd></dl></div></div><div class="refsect2"><a name="AgsDevoutPlayFlags"></a><h3>enum AgsDevoutPlayFlags</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsDevoutPlayFlags"></OBJECT><pre class="programlisting">typedef enum {
+  AGS_DEVOUT_PLAY_DONE              = 1,
+  AGS_DEVOUT_PLAY_REMOVE            = 1 &lt;&lt;  1,
+  AGS_DEVOUT_PLAY_CHANNEL           = 1 &lt;&lt;  2,
+  AGS_DEVOUT_PLAY_PAD               = 1 &lt;&lt;  3,
+  AGS_DEVOUT_PLAY_AUDIO             = 1 &lt;&lt;  4,
+  AGS_DEVOUT_PLAY_PLAYBACK          = 1 &lt;&lt;  5,
+  AGS_DEVOUT_PLAY_SEQUENCER         = 1 &lt;&lt;  6,
+  AGS_DEVOUT_PLAY_NOTATION          = 1 &lt;&lt;  7,
+  AGS_DEVOUT_PLAY_SUPER_THREADED    = 1 &lt;&lt;  8,
+} AgsDevoutPlayFlags;
+</pre><div class="variablelist"><dl class="variablelist"><dt><a name="AGS-DEVOUT-PLAY-DONE:CAPS"></a><span class="term"><code class="literal">AGS_DEVOUT_PLAY_DONE</code></span></dt><dd></dd><dt><a name="AGS-DEVOUT-PLAY-REMOVE:CAPS"></a><span class="term"><code class="literal">AGS_DEVOUT_PLAY_REMOVE</code></span></dt><dd></dd><dt><a name="AGS-DEVOUT-PLAY-CHANNEL:CAPS"></a><span class="term"><code class="literal">AGS_DEVOUT_PLAY_CHANNEL</code></span></dt><dd></dd><dt><a name="AGS-DEVOUT-PLAY-PAD:CAPS"></a><span class="term"><code class="literal">AGS_DEVOUT_PLAY_PAD</code></span></dt><dd></dd><dt><a name="AGS-DEVOUT-PLAY-AUDIO:CAPS"></a><span class="term"><code class="literal">AGS_DEVOUT_PLAY_AUDIO</code></span></dt><dd></dd><dt><a name="AGS-DEVOUT-PLAY-PLAYBACK:CAPS"></a><span class="term"><code class="literal">AGS_DEVOUT_PLAY_PLAYBACK</code></span></dt><dd></dd><dt><a name="AGS-DEVOUT-PLAY-SEQUENCER:CAPS"></a><span class="term"><code class="literal">AGS_DEVOUT_PLAY_SEQUENCER</code></span></dt><dd></dd><dt><a name="AGS-DEVOUT-PLAY-NOTATION:CAPS"></a><span class="term"><code class="literal">AGS_DEVOUT_PLAY_NOTATION</code></span></dt><dd></dd><dt><a name="AGS-DEVOUT-PLAY-SUPER-THREADED:CAPS"></a><span class="term"><code class="literal">AGS_DEVOUT_PLAY_SUPER_THREADED</code></span></dt><dd></dd></dl></div></div><div class="refsect2"><a name="AgsDevoutResolutionMode"></a><h3>enum AgsDevoutResolutionMode</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsDevoutResolutionMode"></OBJECT><pre class="programlisting">typedef enum {
+  AGS_DEVOUT_RESOLUTION_8_BIT    = 8,
+  AGS_DEVOUT_RESOLUTION_16_BIT   = 16,
+  AGS_DEVOUT_RESOLUTION_24_BIT   = 24,
+  AGS_DEVOUT_RESOLUTION_32_BIT   = 32,
+  AGS_DEVOUT_RESOLUTION_64_BIT   = 64,
+} AgsDevoutResolutionMode;
+</pre><div class="variablelist"><dl class="variablelist"><dt><a name="AGS-DEVOUT-RESOLUTION-8-BIT:CAPS"></a><span class="term"><code class="literal">AGS_DEVOUT_RESOLUTION_8_BIT</code></span></dt><dd></dd><dt><a name="AGS-DEVOUT-RESOLUTION-16-BIT:CAPS"></a><span class="term"><code class="literal">AGS_DEVOUT_RESOLUTION_16_BIT</code></span></dt><dd></dd><dt><a name="AGS-DEVOUT-RESOLUTION-24-BIT:CAPS"></a><span class="term"><code class="literal">AGS_DEVOUT_RESOLUTION_24_BIT</code></span></dt><dd></dd><dt><a name="AGS-DEVOUT-RESOLUTION-32-BIT:CAPS"></a><span class="term"><code class="literal">AGS_DEVOUT_RESOLUTION_32_BIT</code></span></dt><dd></dd><dt><a name="AGS-DEVOUT-RESOLUTION-64-BIT:CAPS"></a><span class="term"><code class="literal">AGS_DEVOUT_RESOLUTION_64_BIT</code></span></dt><dd></dd></dl></div></div><div class="refsect2"><a name="AGS-DEVOUT-ERROR:CAPS"></a><h3>AGS_DEVOUT_ERROR</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AGS_DEVOUT_ERROR"></OBJECT><pre class="programlisting">#define AGS_DEVOUT_ERROR (ags_devout_error_quark())
+</pre></div><div class="refsect2"><a name="AgsDevoutError"></a><h3>enum AgsDevoutError</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsDevoutError"></OBJECT><pre class="programlisting">typedef enum {
+  AGS_DEVOUT_ERROR_LOCKED_SOUNDCARD,
+} AgsDevoutError;
+</pre><div class="variablelist"><dl class="variablelist"><dt><a name="AGS-DEVOUT-ERROR-LOCKED-SOUNDCARD:CAPS"></a><span class="term"><code class="literal">AGS_DEVOUT_ERROR_LOCKED_SOUNDCARD</code></span></dt><dd></dd></dl></div></div><div class="refsect2"><a name="AgsDevout"></a><h3>struct AgsDevout</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsDevout"></OBJECT><pre class="programlisting">struct AgsDevout {
+  GObject object;
+
+  guint flags;
+
+  guint dsp_channels;
+  guint pcm_channels;
+  guint bits;
+  guint buffer_size;
+  guint frequency; // sample_rate
+
+  signed short** buffer;
+
+  double bpm; // beats per minute
+
+  guint *delay; // delay between tic change
+  guint *attack; // where currently tic resides in the stream's offset, measured in 1/64 of bpm
+
+  guint delay_counter; // next time attack changeing when delay_counter == delay
+  guint tic_counter;
+
+  union{
+    struct _AgsAO{
+      ao_device *device;
+      ao_sample_format *format;
+      int driver_ao;
+    }ao;
+    struct _AgsOss{
+      int device_fd;
+      char *device;
+    }oss;
+    struct _AgsAlsa{
+      char *device;
+      int rc;
+      snd_pcm_t *handle;
+      snd_pcm_hw_params_t *params;
+    }alsa;
+  }out;
+
+  GObject *ags_main;
+  
+  GList *audio;
+};
+</pre></div><div class="refsect2"><a name="AgsDevoutClass"></a><h3>struct AgsDevoutClass</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsDevoutClass"></OBJECT><pre class="programlisting">struct AgsDevoutClass {
+  GObjectClass object;
+
+  void (*play_init)(AgsDevout *devout,
+		    GError **error);
+  void (*play)(AgsDevout *devout,
+	       GError **error);
+  void (*stop)(AgsDevout *devout);
+
+  void (*tic)(AgsDevout *devout);
+
+  void (*note_offset_changed)(AgsDevout *devout, guint note_offset);
+};
+</pre></div><div class="refsect2"><a name="AgsDevoutPlayDomain"></a><h3>struct AgsDevoutPlayDomain</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsDevoutPlayDomain"></OBJECT><pre class="programlisting">struct AgsDevoutPlayDomain {
+  GObject *domain;
+  
+  gboolean playback;
+  gboolean sequencer;
+  gboolean notation;
+
+  GList *devout_play;
+};
+</pre></div><div class="refsect2"><a name="AgsDevoutPlay"></a><h3>struct AgsDevoutPlay</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsDevoutPlay"></OBJECT><pre class="programlisting">struct AgsDevoutPlay {
+  guint flags;
+
+  AgsIteratorThread **iterator_thread;
+
+  GObject *source;
+  guint audio_channel;
+
+  AgsRecallID *recall_id[3];
+};
+</pre></div><div class="refsect2"><a name="ags-devout-error-quark"></a><h3>ags_devout_error_quark ()</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="ags_devout_error_quark"></OBJECT><pre class="programlisting"><a class="link" href=""><span class="returnvalue">GQuark</span></a>              ags_devout_error_quark              ();</pre></div><div class="refsect2"><a name="ags-devout-play-domain-alloc"></a><h3>ags_devout_play_domain_alloc ()</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="ags_devout_play_domain_alloc"></OBJECT><pre class="programlisting"><a class="link" href="re55.html#AgsDevoutPlayDomain" title="struct AgsDevoutPlayDomain"><span class="returnvalue">AgsDevoutPlayDomain</span></a> * ags_devout_play_domain_alloc      ();</pre></div><div class="refsect2"><a name="ags-devout-play-domain-free"></a><h3>ags_devout_play_domain_free ()</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="ags_devout_play_domain_free"></OBJECT><pre class="programlisting"><a class="link" href=""><span class="returnvalue">void</span></a>                ags_devout_play_domain_free         (<em class="parameter"><code><a class="link" href="re55.html#AgsDevoutPlayDomain" title="struct AgsDevoutPlayDomain"><span class="type">AgsDevoutPlayDomain</span></a> *devout_play_domain</code></em>);</pre></div><div class="refsect2"><a name="ags-devout-play-alloc"></a><h3>ags_devout_play_alloc ()</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="ags_devout_play_alloc"></OBJECT><pre class="programlisting"><a class="link" href="re55.html#AgsDevoutPlay" title="struct AgsDevoutPlay"><span class="returnvalue">AgsDevoutPlay</span></a> *     ags_devout_play_alloc               ();</pre></div><div class="refsect2"><a name="ags-devout-play-free"></a><h3>ags_devout_play_free ()</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="ags_devout_play_free"></OBJECT><pre class="programlisting"><a class="link" href=""><span class="returnvalue">void</span></a>                ags_devout_play_free                (<em class="parameter"><code><a class="link" href="re55.html#AgsDevoutPlay" title="struct AgsDevoutPlay"><span class="type">AgsDevoutPlay</span></a> *devout_play</code></em>);</pre></div><div class="refsect2"><a name="ags-devout-list-cards"></a><h3>ags_devout_list_cards ()</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="ags_devout_list_cards"></OBJECT><pre class="programlisting"><a class="link" href=""><span class="returnvalue">void</span></a>                ags_devout_list_cards               (<em class="parameter"><code><a class="link" href=""><span class="type">GList</span></a> **card_id</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">GList</span></a> **card_name</code></em>);</pre></div><div class="refsect2"><a name="ags-devout-pcm-info"></a><h3>ags_devout_pcm_info ()</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="ags_devout_pcm_info"></OBJECT><pre class="programlisting"><a class="link" href=""><span class="returnvalue">void</span></a>                ags_devout_pcm_info                 (<em class="parameter"><code><a class="link" href=""><span class="type">char</span></a> *card_id</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">guint</span></a> *channels_min</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">guint</span></a> *channels_max</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">guint</span></a> *rate_min</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">guint</span></a> *rate_max</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">guint</span></a> *buffer_size_min</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">guint</span></a> *buffer_size_max</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">GError</span></a> **error</code></em>);</pre></div><div class="refsect2"><a name="ags-devout-tic"></a><h3>ags_devout_tic ()</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="ags_devout_tic"></OBJECT><pre class="programlisting"><a class="link" href=""><span class="returnvalue">void</span></a>                ags_devout_tic                      (<em class="parameter"><code><a class="link" href="re55.html#AgsDevout" title="struct AgsDevout"><span class="type">AgsDevout</span></a> *devout</code></em>);</pre></div><div class="refsect2"><a name="ags-devout-note-offset-changed"></a><h3>ags_devout_note_offset_changed ()</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="ags_devout_note_offset_changed"></OBJECT><pre class="programlisting"><a class="link" href=""><span class="returnvalue">void</span></a>                ags_devout_note_offset_changed      (<em class="parameter"><code><a class="link" href="re55.html#AgsDevout" title="struct AgsDevout"><span class="type">AgsDevout</span></a> *devout</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">guint</span></a> note_offset</code></em>);</pre></div><div class="refsect2"><a name="ags-devout-new"></a><h3>ags_devout_new ()</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="ags_devout_new"></OBJECT><pre class="programlisting"><a class="link" href="re55.html#AgsDevout" title="struct AgsDevout"><span class="returnvalue">AgsDevout</span></a> *         ags_devout_new                      (<em class="parameter"><code><a class="link" href=""><span class="type">GObject</span></a> *ags_main</code></em>);</pre></div></div></div></body></html>

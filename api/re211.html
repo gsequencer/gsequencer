@@ -1,0 +1,26 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>AgsRecallAudioSignal</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="ags Reference Manual"><link rel="up" href="ch01.html" title="Chapter 1. [Insert title here]"><link rel="prev" href="re210.html" title="AgsRecallAudioRun"><link rel="next" href="re212.html" title="AgsRecallChannel"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="ags-AgsRecallAudioSignal"></a><div class="titlepage"></div><div class="refnamediv"><h2>Name</h2><p>AgsRecallAudioSignal</p></div><div class="refsynopsisdiv"><a name="ags-AgsRecallAudioSignal.synopsis"></a><h2>Synopsis</h2><pre class="synopsis">enum                <a class="link" href="re211.html#AgsRecallAudioSignalFlags" title="enum AgsRecallAudioSignalFlags">AgsRecallAudioSignalFlags</a>;
+struct              <a class="link" href="re211.html#AgsRecallAudioSignal" title="struct AgsRecallAudioSignal">AgsRecallAudioSignal</a>;
+struct              <a class="link" href="re211.html#AgsRecallAudioSignalClass" title="struct AgsRecallAudioSignalClass">AgsRecallAudioSignalClass</a>;
+<a class="link" href="re211.html#AgsRecallAudioSignal" title="struct AgsRecallAudioSignal"><span class="returnvalue">AgsRecallAudioSignal</span></a> * <a class="link" href="re211.html#ags-recall-audio-signal-new" title="ags_recall_audio_signal_new ()">ags_recall_audio_signal_new</a>      (<em class="parameter"><code><a class="link" href="re24.html#AgsAudioSignal" title="struct AgsAudioSignal"><span class="type">AgsAudioSignal</span></a> *destination</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="re24.html#AgsAudioSignal" title="struct AgsAudioSignal"><span class="type">AgsAudioSignal</span></a> *source</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="re55.html#AgsDevout" title="struct AgsDevout"><span class="type">AgsDevout</span></a> *devout</code></em>);
+</pre></div><div class="refsect1"><a name="ags-AgsRecallAudioSignal.description"></a><h2>Description</h2></div><div class="refsect1"><a name="ags-AgsRecallAudioSignal.details"></a><h2>Details</h2><div class="refsect2"><a name="AgsRecallAudioSignalFlags"></a><h3>enum AgsRecallAudioSignalFlags</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsRecallAudioSignalFlags"></OBJECT><pre class="programlisting">typedef enum {
+  AGS_RECALL_AUDIO_SIGNAL_INITIAL_RUN      = 1,
+} AgsRecallAudioSignalFlags;
+</pre><div class="variablelist"><dl class="variablelist"><dt><a name="AGS-RECALL-AUDIO-SIGNAL-INITIAL-RUN:CAPS"></a><span class="term"><code class="literal">AGS_RECALL_AUDIO_SIGNAL_INITIAL_RUN</code></span></dt><dd></dd></dl></div></div><div class="refsect2"><a name="AgsRecallAudioSignal"></a><h3>struct AgsRecallAudioSignal</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsRecallAudioSignal"></OBJECT><pre class="programlisting">struct AgsRecallAudioSignal {
+  AgsRecall recall;
+
+  guint flags;
+
+  guint audio_channel;
+
+  AgsAudioSignal *destination;
+
+  AgsAudioSignal *source;
+};
+</pre></div><div class="refsect2"><a name="AgsRecallAudioSignalClass"></a><h3>struct AgsRecallAudioSignalClass</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsRecallAudioSignalClass"></OBJECT><pre class="programlisting">struct AgsRecallAudioSignalClass {
+  AgsRecallClass recall;
+};
+</pre></div><div class="refsect2"><a name="ags-recall-audio-signal-new"></a><h3>ags_recall_audio_signal_new ()</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="ags_recall_audio_signal_new"></OBJECT><pre class="programlisting"><a class="link" href="re211.html#AgsRecallAudioSignal" title="struct AgsRecallAudioSignal"><span class="returnvalue">AgsRecallAudioSignal</span></a> * ags_recall_audio_signal_new      (<em class="parameter"><code><a class="link" href="re24.html#AgsAudioSignal" title="struct AgsAudioSignal"><span class="type">AgsAudioSignal</span></a> *destination</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="re24.html#AgsAudioSignal" title="struct AgsAudioSignal"><span class="type">AgsAudioSignal</span></a> *source</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="re55.html#AgsDevout" title="struct AgsDevout"><span class="type">AgsDevout</span></a> *devout</code></em>);</pre></div></div></div></body></html>

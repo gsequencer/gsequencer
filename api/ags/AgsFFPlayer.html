@@ -1,0 +1,133 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsFFPlayer</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="engines.html" title="Engines - Composite widgets with audio set up">
+<link rel="prev" href="ags-ags-oscillator-callbacks.html" title="ags_oscillator_callbacks">
+<link rel="next" href="ags-ags-ffplayer-callbacks.html" title="ags_ffplayer_callbacks">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="ags-ags-oscillator-callbacks.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="engines.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="ags-ags-ffplayer-callbacks.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#AgsFFPlayer.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#AgsFFPlayer.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#AgsFFPlayer.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#AgsFFPlayer.implemented-interfaces" class="shortcut">Implemented Interfaces</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="AgsFFPlayer"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="AgsFFPlayer.top_of_page"></a>AgsFFPlayer</span></h2>
+<p>AgsFFPlayer — ffplayer notation</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="AgsFFPlayer.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">
+#include &lt;ags/X/machine/ags_ffplayer.h&gt;
+
+struct              <a class="link" href="AgsFFPlayer.html#AgsFFPlayer-struct" title="struct AgsFFPlayer">AgsFFPlayer</a>;
+struct              <a class="link" href="AgsFFPlayer.html#AgsFFPlayerClass" title="struct AgsFFPlayerClass">AgsFFPlayerClass</a>;
+<a class="link" href="AgsFFPlayer.html" title="AgsFFPlayer"><span class="returnvalue">AgsFFPlayer</span></a> *       <a class="link" href="AgsFFPlayer.html#ags-ffplayer-new" title="ags_ffplayer_new ()">ags_ffplayer_new</a>                    (<em class="parameter"><code><a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a> *devout</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="AgsFFPlayer.html#ags-ffplayer-paint" title="ags_ffplayer_paint ()">ags_ffplayer_paint</a>                  (<em class="parameter"><code><a class="link" href="AgsFFPlayer.html" title="AgsFFPlayer"><span class="type">AgsFFPlayer</span></a> *ffplayer</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsFFPlayer.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  <a href="../gobject/gobject-The-Base-Object-Type.html#GObject">GObject</a>
+   +----<a href="../gobject/gobject-The-Base-Object-Type.html#GInitiallyUnowned">GInitiallyUnowned</a>
+         +----<a href="../gtk/GtkObject.html">GtkObject</a>
+               +----<a href="../gtk3/GtkWidget.html">GtkWidget</a>
+                     +----<a href="../gtk3/GtkContainer.html">GtkContainer</a>
+                           +----<a href="../gtk3/GtkBin.html">GtkBin</a>
+                                 +----<a href="../gtk3/GtkHandleBox.html">GtkHandleBox</a>
+                                       +----<a class="link" href="AgsMachine.html" title="AgsMachine">AgsMachine</a>
+                                             +----AgsFFPlayer
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsFFPlayer.implemented-interfaces"></a><h2>Implemented Interfaces</h2>
+<p>
+AgsFFPlayer implements
+ AtkImplementorIface,  <a href="../gtk3/GtkBuildable.html">GtkBuildable</a>,  AgsConnectable and  <a class="link" href="AgsPlugin.html" title="AgsPlugin">AgsPlugin</a>.</p>
+</div>
+<div class="refsect1">
+<a name="AgsFFPlayer.description"></a><h2>Description</h2>
+<p>
+The <span class="type">AgsFfplayer</span> is a composite widget to act as soundfont2 notation player.
+</p>
+</div>
+<div class="refsect1">
+<a name="AgsFFPlayer.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AgsFFPlayer-struct"></a><h3>struct AgsFFPlayer</h3>
+<pre class="programlisting">struct AgsFFPlayer;</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsFFPlayerClass"></a><h3>struct AgsFFPlayerClass</h3>
+<pre class="programlisting">struct AgsFFPlayerClass {
+  AgsMachineClass machine;
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-ffplayer-new"></a><h3>ags_ffplayer_new ()</h3>
+<pre class="programlisting"><a class="link" href="AgsFFPlayer.html" title="AgsFFPlayer"><span class="returnvalue">AgsFFPlayer</span></a> *       ags_ffplayer_new                    (<em class="parameter"><code><a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a> *devout</code></em>);</pre>
+<p>
+Creates an <a class="link" href="AgsFFPlayer.html" title="AgsFFPlayer"><span class="type">AgsFFPlayer</span></a>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>devout</code></em> :</span></p></td>
+<td>the assigned devout.</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new <a class="link" href="AgsFFPlayer.html" title="AgsFFPlayer"><span class="type">AgsFFPlayer</span></a>
+</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.3</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-ffplayer-paint"></a><h3>ags_ffplayer_paint ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_ffplayer_paint                  (<em class="parameter"><code><a class="link" href="AgsFFPlayer.html" title="AgsFFPlayer"><span class="type">AgsFFPlayer</span></a> *ffplayer</code></em>);</pre>
+<p>
+</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

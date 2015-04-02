@@ -1,0 +1,75 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>AgsMachine</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="ags Reference Manual"><link rel="up" href="ch01.html" title="Chapter 1. [Insert title here]"><link rel="prev" href="re131.html" title="AgsLoopChannelRun"><link rel="next" href="re133.html" title="ags_machine_callbacks"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="ags-AgsMachine"></a><div class="titlepage"></div><div class="refnamediv"><h2>Name</h2><p>AgsMachine</p></div><div class="refsynopsisdiv"><a name="ags-AgsMachine.synopsis"></a><h2>Synopsis</h2><pre class="synopsis">#define             <a class="link" href="re132.html#AGS-MACHINE-DEFAULT-VERSION:CAPS" title="AGS_MACHINE_DEFAULT_VERSION">AGS_MACHINE_DEFAULT_VERSION</a>
+#define             <a class="link" href="re132.html#AGS-MACHINE-DEFAULT-BUILD-ID:CAPS" title="AGS_MACHINE_DEFAULT_BUILD_ID">AGS_MACHINE_DEFAULT_BUILD_ID</a>
+enum                <a class="link" href="re132.html#AgsMachineFlags" title="enum AgsMachineFlags">AgsMachineFlags</a>;
+enum                <a class="link" href="re132.html#AgsMachineFileInputFlags" title="enum AgsMachineFileInputFlags">AgsMachineFileInputFlags</a>;
+struct              <a class="link" href="re132.html#AgsMachine" title="struct AgsMachine">AgsMachine</a>;
+struct              <a class="link" href="re132.html#AgsMachineClass" title="struct AgsMachineClass">AgsMachineClass</a>;
+<a class="link" href=""><span class="returnvalue">void</span></a>                <a class="link" href="re132.html#ags-machine-add-default-recalls" title="ags_machine_add_default_recalls ()">ags_machine_add_default_recalls</a>     (<em class="parameter"><code><a class="link" href="re132.html#AgsMachine" title="struct AgsMachine"><span class="type">AgsMachine</span></a> *machine</code></em>);
+<a class="link" href=""><span class="returnvalue">GtkListStore</span></a> *      <a class="link" href="re132.html#ags-machine-get-possible-links" title="ags_machine_get_possible_links ()">ags_machine_get_possible_links</a>      (<em class="parameter"><code><a class="link" href="re132.html#AgsMachine" title="struct AgsMachine"><span class="type">AgsMachine</span></a> *machine</code></em>);
+<a class="link" href="re132.html#AgsMachine" title="struct AgsMachine"><span class="returnvalue">AgsMachine</span></a> *        <a class="link" href="re132.html#ags-machine-find-by-name" title="ags_machine_find_by_name ()">ags_machine_find_by_name</a>            (<em class="parameter"><code><a class="link" href=""><span class="type">GList</span></a> *list</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">char</span></a> *name</code></em>);
+<a class="link" href=""><span class="returnvalue">GtkFileChooserDialog</span></a> * <a class="link" href="re132.html#ags-machine-file-chooser-dialog-new" title="ags_machine_file_chooser_dialog_new ()">ags_machine_file_chooser_dialog_new</a>
+                                                        (<em class="parameter"><code><a class="link" href="re132.html#AgsMachine" title="struct AgsMachine"><span class="type">AgsMachine</span></a> *machine</code></em>);
+<a class="link" href=""><span class="returnvalue">void</span></a>                <a class="link" href="re132.html#ags-machine-open-files" title="ags_machine_open_files ()">ags_machine_open_files</a>              (<em class="parameter"><code><a class="link" href="re132.html#AgsMachine" title="struct AgsMachine"><span class="type">AgsMachine</span></a> *machine</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">GSList</span></a> *filenames</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">gboolean</span></a> overwrite_channels</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">gboolean</span></a> create_channels</code></em>);
+<a class="link" href="re132.html#AgsMachine" title="struct AgsMachine"><span class="returnvalue">AgsMachine</span></a> *        <a class="link" href="re132.html#ags-machine-new" title="ags_machine_new ()">ags_machine_new</a>                     (<em class="parameter"><code><a class="link" href=""><span class="type">GObject</span></a> *devout</code></em>);
+</pre></div><div class="refsect1"><a name="ags-AgsMachine.description"></a><h2>Description</h2></div><div class="refsect1"><a name="ags-AgsMachine.details"></a><h2>Details</h2><div class="refsect2"><a name="AGS-MACHINE-DEFAULT-VERSION:CAPS"></a><h3>AGS_MACHINE_DEFAULT_VERSION</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AGS_MACHINE_DEFAULT_VERSION"></OBJECT><pre class="programlisting">#define AGS_MACHINE_DEFAULT_VERSION "0.4.0-beta\0"
+</pre></div><div class="refsect2"><a name="AGS-MACHINE-DEFAULT-BUILD-ID:CAPS"></a><h3>AGS_MACHINE_DEFAULT_BUILD_ID</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AGS_MACHINE_DEFAULT_BUILD_ID"></OBJECT><pre class="programlisting">#define AGS_MACHINE_DEFAULT_BUILD_ID "0.4.0-beta\0"
+</pre></div><div class="refsect2"><a name="AgsMachineFlags"></a><h3>enum AgsMachineFlags</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsMachineFlags"></OBJECT><pre class="programlisting">typedef enum {
+  AGS_MACHINE_SOLO              = 1,
+  AGS_MACHINE_IS_EFFECT         = 1 &lt;&lt;  1,
+  AGS_MACHINE_IS_SEQUENCER      = 1 &lt;&lt;  2,
+  AGS_MACHINE_IS_SYNTHESIZER    = 1 &lt;&lt;  3,
+  AGS_MACHINE_TAKES_FILE_INPUT  = 1 &lt;&lt;  4,
+  AGS_MACHINE_MAPPED_RECALL     = 1 &lt;&lt;  5,
+  AGS_MACHINE_PREMAPPED_RECALL  = 1 &lt;&lt;  5,
+} AgsMachineFlags;
+</pre><div class="variablelist"><dl class="variablelist"><dt><a name="AGS-MACHINE-SOLO:CAPS"></a><span class="term"><code class="literal">AGS_MACHINE_SOLO</code></span></dt><dd></dd><dt><a name="AGS-MACHINE-IS-EFFECT:CAPS"></a><span class="term"><code class="literal">AGS_MACHINE_IS_EFFECT</code></span></dt><dd></dd><dt><a name="AGS-MACHINE-IS-SEQUENCER:CAPS"></a><span class="term"><code class="literal">AGS_MACHINE_IS_SEQUENCER</code></span></dt><dd></dd><dt><a name="AGS-MACHINE-IS-SYNTHESIZER:CAPS"></a><span class="term"><code class="literal">AGS_MACHINE_IS_SYNTHESIZER</code></span></dt><dd></dd><dt><a name="AGS-MACHINE-TAKES-FILE-INPUT:CAPS"></a><span class="term"><code class="literal">AGS_MACHINE_TAKES_FILE_INPUT</code></span></dt><dd></dd><dt><a name="AGS-MACHINE-MAPPED-RECALL:CAPS"></a><span class="term"><code class="literal">AGS_MACHINE_MAPPED_RECALL</code></span></dt><dd></dd><dt><a name="AGS-MACHINE-PREMAPPED-RECALL:CAPS"></a><span class="term"><code class="literal">AGS_MACHINE_PREMAPPED_RECALL</code></span></dt><dd></dd></dl></div></div><div class="refsect2"><a name="AgsMachineFileInputFlags"></a><h3>enum AgsMachineFileInputFlags</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsMachineFileInputFlags"></OBJECT><pre class="programlisting">typedef enum {
+  AGS_MACHINE_ACCEPT_WAV          = 1,
+  AGS_MACHINE_ACCEPT_OGG          = 1 &lt;&lt;  1,
+  AGS_MACHINE_ACCEPT_SOUNDFONT2   = 1 &lt;&lt;  2,
+} AgsMachineFileInputFlags;
+</pre><div class="variablelist"><dl class="variablelist"><dt><a name="AGS-MACHINE-ACCEPT-WAV:CAPS"></a><span class="term"><code class="literal">AGS_MACHINE_ACCEPT_WAV</code></span></dt><dd></dd><dt><a name="AGS-MACHINE-ACCEPT-OGG:CAPS"></a><span class="term"><code class="literal">AGS_MACHINE_ACCEPT_OGG</code></span></dt><dd></dd><dt><a name="AGS-MACHINE-ACCEPT-SOUNDFONT2:CAPS"></a><span class="term"><code class="literal">AGS_MACHINE_ACCEPT_SOUNDFONT2</code></span></dt><dd></dd></dl></div></div><div class="refsect2"><a name="AgsMachine"></a><h3>struct AgsMachine</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsMachine"></OBJECT><pre class="programlisting">struct AgsMachine {
+  GtkHandleBox handle_box;
+
+  GObject *ags_main;
+
+  gchar *version;
+  gchar *build_id;
+
+  gchar *xml_type;
+
+  guint flags;
+  guint file_input_flags;
+
+  char *name;
+
+  AgsAudio *audio;
+
+  GType output_pad_type;
+  GType output_line_type;
+  GtkContainer *output;
+
+  GType input_pad_type;
+  GType input_line_type;
+  GtkContainer *input;
+
+  GList *port;
+
+  GtkMenu *popup;
+  GtkDialog *properties;
+  GtkDialog *rename;
+};
+</pre></div><div class="refsect2"><a name="AgsMachineClass"></a><h3>struct AgsMachineClass</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsMachineClass"></OBJECT><pre class="programlisting">struct AgsMachineClass {
+  GtkHandleBoxClass handle_box;
+
+  void (*add_default_recalls)(AgsMachine *machine);
+};
+</pre></div><div class="refsect2"><a name="ags-machine-add-default-recalls"></a><h3>ags_machine_add_default_recalls ()</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="ags_machine_add_default_recalls"></OBJECT><pre class="programlisting"><a class="link" href=""><span class="returnvalue">void</span></a>                ags_machine_add_default_recalls     (<em class="parameter"><code><a class="link" href="re132.html#AgsMachine" title="struct AgsMachine"><span class="type">AgsMachine</span></a> *machine</code></em>);</pre></div><div class="refsect2"><a name="ags-machine-get-possible-links"></a><h3>ags_machine_get_possible_links ()</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="ags_machine_get_possible_links"></OBJECT><pre class="programlisting"><a class="link" href=""><span class="returnvalue">GtkListStore</span></a> *      ags_machine_get_possible_links      (<em class="parameter"><code><a class="link" href="re132.html#AgsMachine" title="struct AgsMachine"><span class="type">AgsMachine</span></a> *machine</code></em>);</pre></div><div class="refsect2"><a name="ags-machine-find-by-name"></a><h3>ags_machine_find_by_name ()</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="ags_machine_find_by_name"></OBJECT><pre class="programlisting"><a class="link" href="re132.html#AgsMachine" title="struct AgsMachine"><span class="returnvalue">AgsMachine</span></a> *        ags_machine_find_by_name            (<em class="parameter"><code><a class="link" href=""><span class="type">GList</span></a> *list</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">char</span></a> *name</code></em>);</pre></div><div class="refsect2"><a name="ags-machine-file-chooser-dialog-new"></a><h3>ags_machine_file_chooser_dialog_new ()</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="ags_machine_file_chooser_dialog_new"></OBJECT><pre class="programlisting"><a class="link" href=""><span class="returnvalue">GtkFileChooserDialog</span></a> * ags_machine_file_chooser_dialog_new
+                                                        (<em class="parameter"><code><a class="link" href="re132.html#AgsMachine" title="struct AgsMachine"><span class="type">AgsMachine</span></a> *machine</code></em>);</pre></div><div class="refsect2"><a name="ags-machine-open-files"></a><h3>ags_machine_open_files ()</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="ags_machine_open_files"></OBJECT><pre class="programlisting"><a class="link" href=""><span class="returnvalue">void</span></a>                ags_machine_open_files              (<em class="parameter"><code><a class="link" href="re132.html#AgsMachine" title="struct AgsMachine"><span class="type">AgsMachine</span></a> *machine</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">GSList</span></a> *filenames</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">gboolean</span></a> overwrite_channels</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">gboolean</span></a> create_channels</code></em>);</pre></div><div class="refsect2"><a name="ags-machine-new"></a><h3>ags_machine_new ()</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="ags_machine_new"></OBJECT><pre class="programlisting"><a class="link" href="re132.html#AgsMachine" title="struct AgsMachine"><span class="returnvalue">AgsMachine</span></a> *        ags_machine_new                     (<em class="parameter"><code><a class="link" href=""><span class="type">GObject</span></a> *devout</code></em>);</pre></div></div></div></body></html>

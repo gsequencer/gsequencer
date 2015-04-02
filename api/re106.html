@@ -1,0 +1,21 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>AgsInitAudio</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="ags Reference Manual"><link rel="up" href="ch01.html" title="Chapter 1. [Insert title here]"><link rel="prev" href="re105.html" title="AgsIndicator"><link rel="next" href="re107.html" title="AgsInitChannel"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="ags-AgsInitAudio"></a><div class="titlepage"></div><div class="refnamediv"><h2>Name</h2><p>AgsInitAudio</p></div><div class="refsynopsisdiv"><a name="ags-AgsInitAudio.synopsis"></a><h2>Synopsis</h2><pre class="synopsis">struct              <a class="link" href="re106.html#AgsInitAudio" title="struct AgsInitAudio">AgsInitAudio</a>;
+struct              <a class="link" href="re106.html#AgsInitAudioClass" title="struct AgsInitAudioClass">AgsInitAudioClass</a>;
+<a class="link" href="re106.html#AgsInitAudio" title="struct AgsInitAudio"><span class="returnvalue">AgsInitAudio</span></a> *      <a class="link" href="re106.html#ags-init-audio-new" title="ags_init_audio_new ()">ags_init_audio_new</a>                  (<em class="parameter"><code><a class="link" href="re17.html#AgsAudio" title="struct AgsAudio"><span class="type">AgsAudio</span></a> *audio</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">gboolean</span></a> playback</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">gboolean</span></a> sequencer</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">gboolean</span></a> notation</code></em>);
+</pre></div><div class="refsect1"><a name="ags-AgsInitAudio.description"></a><h2>Description</h2></div><div class="refsect1"><a name="ags-AgsInitAudio.details"></a><h2>Details</h2><div class="refsect2"><a name="AgsInitAudio"></a><h3>struct AgsInitAudio</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsInitAudio"></OBJECT><pre class="programlisting">struct AgsInitAudio {
+  AgsTask task;
+
+  AgsAudio *audio;
+  gboolean playback;
+  gboolean sequencer;
+  gboolean notation;
+};
+</pre></div><div class="refsect2"><a name="AgsInitAudioClass"></a><h3>struct AgsInitAudioClass</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsInitAudioClass"></OBJECT><pre class="programlisting">struct AgsInitAudioClass {
+  AgsTaskClass task;
+};
+</pre></div><div class="refsect2"><a name="ags-init-audio-new"></a><h3>ags_init_audio_new ()</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="ags_init_audio_new"></OBJECT><pre class="programlisting"><a class="link" href="re106.html#AgsInitAudio" title="struct AgsInitAudio"><span class="returnvalue">AgsInitAudio</span></a> *      ags_init_audio_new                  (<em class="parameter"><code><a class="link" href="re17.html#AgsAudio" title="struct AgsAudio"><span class="type">AgsAudio</span></a> *audio</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">gboolean</span></a> playback</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">gboolean</span></a> sequencer</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">gboolean</span></a> notation</code></em>);</pre></div></div></div></body></html>

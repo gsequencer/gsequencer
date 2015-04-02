@@ -1,0 +1,170 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsFileSelection</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer">
+<link rel="up" href="ch01.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td> </td>
+<td><a accesskey="u" href="ch01.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer</th>
+<td> </td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#ags-AgsFileSelection.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#ags-AgsFileSelection.description" class="shortcut">Description</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="ags-AgsFileSelection"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="ags-AgsFileSelection.top_of_page"></a>AgsFileSelection</span></h2>
+<p>AgsFileSelection</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="ags-AgsFileSelection.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">#define             <a href="ags-AgsFileSelection.html#AGS-FILE-SELECTION-ENTRY:CAPS">AGS_FILE_SELECTION_ENTRY</a>            (strct)
+struct              <a href="ags-AgsFileSelection.html#AgsFileSelection">AgsFileSelection</a>;
+struct              <a href="ags-AgsFileSelection.html#AgsFileSelectionClass">AgsFileSelectionClass</a>;
+struct              <a href="ags-AgsFileSelection.html#AgsFileSelectionEntry">AgsFileSelectionEntry</a>;
+enum                <a href="ags-AgsFileSelection.html#AgsFileSelectionFlags">AgsFileSelectionFlags</a>;
+<span class="returnvalue">void</span>                <a href="ags-AgsFileSelection.html#ags-file-selection-add-entry">ags_file_selection_add_entry</a>        (<em class="parameter"><code><a href="ags-AgsFileSelection.html#AgsFileSelection"><span class="type">AgsFileSelection</span></a> *file_selection</code></em>,
+                                                         <em class="parameter"><code><a href="../gtk3/GtkWidget.html"><span class="type">GtkWidget</span></a> *widget</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-AgsFileSelection.html#ags-file-selection-completed">ags_file_selection_completed</a>        (<em class="parameter"><code><a href="ags-AgsFileSelection.html#AgsFileSelection"><span class="type">AgsFileSelection</span></a> *file_selection</code></em>);
+<a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            <a href="ags-AgsFileSelection.html#ags-file-selection-contains-file">ags_file_selection_contains_file</a>    (<em class="parameter"><code><a href="ags-AgsFileSelection.html#AgsFileSelection"><span class="type">AgsFileSelection</span></a> *file_selection</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *filename</code></em>);
+<a href="ags-AgsFileSelection.html#AgsFileSelectionEntry"><span class="returnvalue">AgsFileSelectionEntry</span></a> * <a href="ags-AgsFileSelection.html#ags-file-selection-entry-alloc">ags_file_selection_entry_alloc</a>  ();
+<a href="ags-AgsFileSelection.html#AgsFileSelection"><span class="returnvalue">AgsFileSelection</span></a> *  <a href="ags-AgsFileSelection.html#ags-file-selection-new">ags_file_selection_new</a>              ();
+<span class="returnvalue">void</span>                <a href="ags-AgsFileSelection.html#ags-file-selection-remove-entry">ags_file_selection_remove_entry</a>     (<em class="parameter"><code><a href="ags-AgsFileSelection.html#AgsFileSelection"><span class="type">AgsFileSelection</span></a> *file_selection</code></em>,
+                                                         <em class="parameter"><code><a href="../gtk3/GtkWidget.html"><span class="type">GtkWidget</span></a> *widget</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-AgsFileSelection.html#ags-file-selection-set-entry">ags_file_selection_set_entry</a>        (<em class="parameter"><code><a href="ags-AgsFileSelection.html#AgsFileSelection"><span class="type">AgsFileSelection</span></a> *file_selection</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> *entry</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="ags-AgsFileSelection.description"></a><h2>Description</h2>
+</div>
+<div class="refsect1">
+<a name="ags-AgsFileSelection.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AGS-FILE-SELECTION-ENTRY:CAPS"></a><h3>AGS_FILE_SELECTION_ENTRY()</h3>
+<pre class="programlisting">#define AGS_FILE_SELECTION_ENTRY(strct)        ((AgsFileSelectionEntry *) (strct))
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsFileSelection"></a><h3>struct AgsFileSelection</h3>
+<pre class="programlisting">struct AgsFileSelection {
+  GtkVBox vbox;
+  
+  guint flags;
+
+  gchar *directory;
+
+  guint entry_count;
+  GList *entry;
+
+  GtkLabel *chosed;
+  GtkLabel *selected;
+};
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsFileSelectionClass"></a><h3>struct AgsFileSelectionClass</h3>
+<pre class="programlisting">struct AgsFileSelectionClass {
+  GtkVBoxClass vbox;
+
+  void (*add_entry)(AgsFileSelection *file_selection, GtkWidget *widget);
+  void (*remove_entry)(AgsFileSelection *file_selection, GtkWidget *widget);
+
+  void (*completed)(AgsFileSelection *file_selection);
+};
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsFileSelectionEntry"></a><h3>struct AgsFileSelectionEntry</h3>
+<pre class="programlisting">struct AgsFileSelectionEntry {
+  GtkTable *table;
+
+  GtkWidget *entry;
+
+  gboolean chosed;
+  gchar *filename;
+
+  GtkSpinButton *nth_sample;
+  GtkSpinButton *nth_channel;
+  GtkSpinButton *count;
+};
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsFileSelectionFlags"></a><h3>enum AgsFileSelectionFlags</h3>
+<pre class="programlisting">typedef enum {
+  AGS_FILE_SELECTION_COMPLETED   = 1,
+} AgsFileSelectionFlags;
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-selection-add-entry"></a><h3>ags_file_selection_add_entry ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_file_selection_add_entry        (<em class="parameter"><code><a href="ags-AgsFileSelection.html#AgsFileSelection"><span class="type">AgsFileSelection</span></a> *file_selection</code></em>,
+                                                         <em class="parameter"><code><a href="../gtk3/GtkWidget.html"><span class="type">GtkWidget</span></a> *widget</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-selection-completed"></a><h3>ags_file_selection_completed ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_file_selection_completed        (<em class="parameter"><code><a href="ags-AgsFileSelection.html#AgsFileSelection"><span class="type">AgsFileSelection</span></a> *file_selection</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-selection-contains-file"></a><h3>ags_file_selection_contains_file ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            ags_file_selection_contains_file    (<em class="parameter"><code><a href="ags-AgsFileSelection.html#AgsFileSelection"><span class="type">AgsFileSelection</span></a> *file_selection</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *filename</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-selection-entry-alloc"></a><h3>ags_file_selection_entry_alloc ()</h3>
+<pre class="programlisting"><a href="ags-AgsFileSelection.html#AgsFileSelectionEntry"><span class="returnvalue">AgsFileSelectionEntry</span></a> * ags_file_selection_entry_alloc  ();</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-selection-new"></a><h3>ags_file_selection_new ()</h3>
+<pre class="programlisting"><a href="ags-AgsFileSelection.html#AgsFileSelection"><span class="returnvalue">AgsFileSelection</span></a> *  ags_file_selection_new              ();</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-selection-remove-entry"></a><h3>ags_file_selection_remove_entry ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_file_selection_remove_entry     (<em class="parameter"><code><a href="ags-AgsFileSelection.html#AgsFileSelection"><span class="type">AgsFileSelection</span></a> *file_selection</code></em>,
+                                                         <em class="parameter"><code><a href="../gtk3/GtkWidget.html"><span class="type">GtkWidget</span></a> *widget</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-selection-set-entry"></a><h3>ags_file_selection_set_entry ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_file_selection_set_entry        (<em class="parameter"><code><a href="ags-AgsFileSelection.html#AgsFileSelection"><span class="type">AgsFileSelection</span></a> *file_selection</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> *entry</code></em>);</pre>
+<p>
+Add new entries to the <a href="ags-AgsFileSelection.html#AgsFileSelection"><span class="type">AgsFileSelection</span></a>.
+</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

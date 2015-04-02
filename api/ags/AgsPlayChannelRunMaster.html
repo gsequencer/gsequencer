@@ -1,0 +1,176 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsPlayChannelRunMaster</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="recall.html" title="Recalls - Effect processors">
+<link rel="prev" href="AgsPlayChannelRun.html" title="AgsPlayChannel">
+<link rel="next" href="AgsPlayNotationAudio.html" title="AgsPlayNotationAudio">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="AgsPlayChannelRun.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="recall.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="AgsPlayNotationAudio.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#AgsPlayChannelRunMaster.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#AgsPlayChannelRunMaster.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#AgsPlayChannelRunMaster.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#AgsPlayChannelRunMaster.implemented-interfaces" class="shortcut">Implemented Interfaces</a>
+                   | 
+                  <a href="#AgsPlayChannelRunMaster.properties" class="shortcut">Properties</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="AgsPlayChannelRunMaster"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="AgsPlayChannelRunMaster.top_of_page"></a>AgsPlayChannelRunMaster</span></h2>
+<p>AgsPlayChannelRunMaster</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="AgsPlayChannelRunMaster.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">#define             <a class="link" href="AgsPlayChannelRunMaster.html#AGS-PLAY-CHANNEL-RUN-MASTER-STREAMER:CAPS" title="AGS_PLAY_CHANNEL_RUN_MASTER_STREAMER()">AGS_PLAY_CHANNEL_RUN_MASTER_STREAMER</a>(strct)
+struct              <a class="link" href="AgsPlayChannelRunMaster.html#AgsPlayChannelRunMaster-struct" title="struct AgsPlayChannelRunMaster">AgsPlayChannelRunMaster</a>;
+struct              <a class="link" href="AgsPlayChannelRunMaster.html#AgsPlayChannelRunMasterClass" title="struct AgsPlayChannelRunMasterClass">AgsPlayChannelRunMasterClass</a>;
+enum                <a class="link" href="AgsPlayChannelRunMaster.html#AgsPlayChannelRunMasterFlags" title="enum AgsPlayChannelRunMasterFlags">AgsPlayChannelRunMasterFlags</a>;
+struct              <a class="link" href="AgsPlayChannelRunMaster.html#AgsPlayChannelRunMasterStreamer" title="struct AgsPlayChannelRunMasterStreamer">AgsPlayChannelRunMasterStreamer</a>;
+<a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="returnvalue">GList</span></a> *             <a class="link" href="AgsPlayChannelRunMaster.html#ags-play-channel-run-master-find-streamer" title="ags_play_channel_run_master_find_streamer ()">ags_play_channel_run_master_find_streamer</a>
+                                                        (<em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> *list</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsStreamChannelRun.html" title="AgsStreamChannelRun"><span class="type">AgsStreamChannelRun</span></a> *stream_channel_run</code></em>);
+<a class="link" href="AgsPlayChannelRunMaster.html" title="AgsPlayChannelRunMaster"><span class="returnvalue">AgsPlayChannelRunMaster</span></a> * <a class="link" href="AgsPlayChannelRunMaster.html#ags-play-channel-run-master-new" title="ags_play_channel_run_master_new ()">ags_play_channel_run_master_new</a>
+                                                        ();
+<a class="link" href="AgsPlayChannelRunMaster.html#AgsPlayChannelRunMasterStreamer" title="struct AgsPlayChannelRunMasterStreamer"><span class="returnvalue">AgsPlayChannelRunMasterStreamer</span></a> * <a class="link" href="AgsPlayChannelRunMaster.html#ags-play-channel-run-master-streamer-alloc" title="ags_play_channel_run_master_streamer_alloc ()">ags_play_channel_run_master_streamer_alloc</a>
+                                                        (<em class="parameter"><code><a class="link" href="AgsPlayChannelRunMaster.html" title="AgsPlayChannelRunMaster"><span class="type">AgsPlayChannelRunMaster</span></a> *play_channel_run_master</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsStreamChannelRun.html" title="AgsStreamChannelRun"><span class="type">AgsStreamChannelRun</span></a> *stream_channel_run</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsPlayChannelRunMaster.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  <a href="../gobject/gobject-The-Base-Object-Type.html#GObject">GObject</a>
+   +----<a class="link" href="AgsRecall.html" title="AgsRecall">AgsRecall</a>
+         +----<a class="link" href="AgsRecallChannelRun.html" title="AgsRecallChannelRun">AgsRecallChannelRun</a>
+               +----AgsPlayChannelRunMaster
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsPlayChannelRunMaster.implemented-interfaces"></a><h2>Implemented Interfaces</h2>
+<p>
+AgsPlayChannelRunMaster implements
+ AgsConnectable,  <a class="link" href="AgsPackable.html" title="AgsPackable">AgsPackable</a>,  <a class="link" href="AgsDynamicConnectable.html" title="AgsDynamicConnectable">AgsDynamicConnectable</a> and  <a class="link" href="AgsPlugin.html" title="AgsPlugin">AgsPlugin</a>.</p>
+</div>
+<div class="refsect1">
+<a name="AgsPlayChannelRunMaster.properties"></a><h2>Properties</h2>
+<pre class="synopsis">
+  "<a class="link" href="AgsPlayChannelRunMaster.html#AgsPlayChannelRunMaster--stream-channel-run" title='The "stream-channel-run" property'>stream-channel-run</a>"       <a class="link" href="AgsStreamChannelRun.html" title="AgsStreamChannelRun"><span class="type">AgsStreamChannelRun</span></a>*  : Write
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsPlayChannelRunMaster.description"></a><h2>Description</h2>
+<p>
+</p>
+</div>
+<div class="refsect1">
+<a name="AgsPlayChannelRunMaster.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AGS-PLAY-CHANNEL-RUN-MASTER-STREAMER:CAPS"></a><h3>AGS_PLAY_CHANNEL_RUN_MASTER_STREAMER()</h3>
+<pre class="programlisting">#define AGS_PLAY_CHANNEL_RUN_MASTER_STREAMER(strct)     ((AgsPlayChannelRunMasterStreamer *)(strct))
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsPlayChannelRunMaster-struct"></a><h3>struct AgsPlayChannelRunMaster</h3>
+<pre class="programlisting">struct AgsPlayChannelRunMaster;</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsPlayChannelRunMasterClass"></a><h3>struct AgsPlayChannelRunMasterClass</h3>
+<pre class="programlisting">struct AgsPlayChannelRunMasterClass {
+  AgsRecallChannelRunClass recall_channel_run;
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsPlayChannelRunMasterFlags"></a><h3>enum AgsPlayChannelRunMasterFlags</h3>
+<pre class="programlisting">typedef enum {
+  AGS_PLAY_CHANNEL_RUN_MASTER_TERMINATING        = 1,
+} AgsPlayChannelRunMasterFlags;
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsPlayChannelRunMasterStreamer"></a><h3>struct AgsPlayChannelRunMasterStreamer</h3>
+<pre class="programlisting">struct AgsPlayChannelRunMasterStreamer {
+  AgsPlayChannelRunMaster *play_channel_run_master;
+
+  AgsStreamChannelRun *stream_channel_run;
+  gulong done_handler;
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-play-channel-run-master-find-streamer"></a><h3>ags_play_channel_run_master_find_streamer ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="returnvalue">GList</span></a> *             ags_play_channel_run_master_find_streamer
+                                                        (<em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> *list</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsStreamChannelRun.html" title="AgsStreamChannelRun"><span class="type">AgsStreamChannelRun</span></a> *stream_channel_run</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-play-channel-run-master-new"></a><h3>ags_play_channel_run_master_new ()</h3>
+<pre class="programlisting"><a class="link" href="AgsPlayChannelRunMaster.html" title="AgsPlayChannelRunMaster"><span class="returnvalue">AgsPlayChannelRunMaster</span></a> * ags_play_channel_run_master_new
+                                                        ();</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-play-channel-run-master-streamer-alloc"></a><h3>ags_play_channel_run_master_streamer_alloc ()</h3>
+<pre class="programlisting"><a class="link" href="AgsPlayChannelRunMaster.html#AgsPlayChannelRunMasterStreamer" title="struct AgsPlayChannelRunMasterStreamer"><span class="returnvalue">AgsPlayChannelRunMasterStreamer</span></a> * ags_play_channel_run_master_streamer_alloc
+                                                        (<em class="parameter"><code><a class="link" href="AgsPlayChannelRunMaster.html" title="AgsPlayChannelRunMaster"><span class="type">AgsPlayChannelRunMaster</span></a> *play_channel_run_master</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsStreamChannelRun.html" title="AgsStreamChannelRun"><span class="type">AgsStreamChannelRun</span></a> *stream_channel_run</code></em>);</pre>
+<p>
+</p>
+</div>
+</div>
+<div class="refsect1">
+<a name="AgsPlayChannelRunMaster.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="AgsPlayChannelRunMaster--stream-channel-run"></a><h3>The <code class="literal">"stream-channel-run"</code> property</h3>
+<pre class="programlisting">  "stream-channel-run"       <a class="link" href="AgsStreamChannelRun.html" title="AgsStreamChannelRun"><span class="type">AgsStreamChannelRun</span></a>*  : Write</pre>
+<p>an assigned AgsStreamChannelRun.</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

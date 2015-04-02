@@ -1,0 +1,129 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsPlayAudioSignal</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="recall.html" title="Recalls - Effect processors">
+<link rel="prev" href="AgsPlayAudioFile.html" title="AgsPlayAudioFile">
+<link rel="next" href="AgsPlayChannel.html" title="AgsPlayChannel">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="AgsPlayAudioFile.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="recall.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="AgsPlayChannel.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#AgsPlayAudioSignal.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#AgsPlayAudioSignal.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#AgsPlayAudioSignal.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#AgsPlayAudioSignal.implemented-interfaces" class="shortcut">Implemented Interfaces</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="AgsPlayAudioSignal"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="AgsPlayAudioSignal.top_of_page"></a>AgsPlayAudioSignal</span></h2>
+<p>AgsPlayAudioSignal — plays audio signal</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="AgsPlayAudioSignal.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">
+#include &lt;ags/audio/recall/ags_play_audio_signal.h&gt;
+
+struct              <a class="link" href="AgsPlayAudioSignal.html#AgsPlayAudioSignal-struct" title="struct AgsPlayAudioSignal">AgsPlayAudioSignal</a>;
+struct              <a class="link" href="AgsPlayAudioSignal.html#AgsPlayAudioSignalClass" title="struct AgsPlayAudioSignalClass">AgsPlayAudioSignalClass</a>;
+<a class="link" href="AgsPlayAudioSignal.html" title="AgsPlayAudioSignal"><span class="returnvalue">AgsPlayAudioSignal</span></a> * <a class="link" href="AgsPlayAudioSignal.html#ags-play-audio-signal-new" title="ags_play_audio_signal_new ()">ags_play_audio_signal_new</a>          (<em class="parameter"><code><a class="link" href="AgsAudioSignal.html" title="AgsAudioSignal"><span class="type">AgsAudioSignal</span></a> *source</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsDevout.html" title="AgsDevout"><span class="type">AgsDevout</span></a> *devout</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> audio_channel</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsPlayAudioSignal.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  <a href="../gobject/gobject-The-Base-Object-Type.html#GObject">GObject</a>
+   +----<a class="link" href="AgsRecall.html" title="AgsRecall">AgsRecall</a>
+         +----<a class="link" href="AgsRecallAudioSignal.html" title="AgsRecallAudioSignal">AgsRecallAudioSignal</a>
+               +----AgsPlayAudioSignal
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsPlayAudioSignal.implemented-interfaces"></a><h2>Implemented Interfaces</h2>
+<p>
+AgsPlayAudioSignal implements
+ AgsConnectable,  <a class="link" href="AgsPackable.html" title="AgsPackable">AgsPackable</a>,  <a class="link" href="AgsDynamicConnectable.html" title="AgsDynamicConnectable">AgsDynamicConnectable</a> and  <a class="link" href="AgsPlugin.html" title="AgsPlugin">AgsPlugin</a>.</p>
+</div>
+<div class="refsect1">
+<a name="AgsPlayAudioSignal.description"></a><h2>Description</h2>
+<p>
+The <a class="link" href="AgsPlayAudioSignal.html" title="AgsPlayAudioSignal"><span class="type">AgsPlayAudioSignal</span></a> class plays the audio signal.
+</p>
+</div>
+<div class="refsect1">
+<a name="AgsPlayAudioSignal.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AgsPlayAudioSignal-struct"></a><h3>struct AgsPlayAudioSignal</h3>
+<pre class="programlisting">struct AgsPlayAudioSignal;</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsPlayAudioSignalClass"></a><h3>struct AgsPlayAudioSignalClass</h3>
+<pre class="programlisting">struct AgsPlayAudioSignalClass {
+  AgsRecallAudioSignalClass recall_audio_signal;
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-play-audio-signal-new"></a><h3>ags_play_audio_signal_new ()</h3>
+<pre class="programlisting"><a class="link" href="AgsPlayAudioSignal.html" title="AgsPlayAudioSignal"><span class="returnvalue">AgsPlayAudioSignal</span></a> * ags_play_audio_signal_new          (<em class="parameter"><code><a class="link" href="AgsAudioSignal.html" title="AgsAudioSignal"><span class="type">AgsAudioSignal</span></a> *source</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsDevout.html" title="AgsDevout"><span class="type">AgsDevout</span></a> *devout</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> audio_channel</code></em>);</pre>
+<p>
+Creates an <a class="link" href="AgsPlayAudioSignal.html" title="AgsPlayAudioSignal"><span class="type">AgsPlayAudioSignal</span></a>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>source</code></em> :</span></p></td>
+<td>the source <a class="link" href="AgsAudioSignal.html" title="AgsAudioSignal"><span class="type">AgsAudioSignal</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>devout</code></em> :</span></p></td>
+<td>the <a class="link" href="AgsDevout.html" title="AgsDevout"><span class="type">AgsDevout</span></a> outputting to</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new <a class="link" href="AgsPlayAudioSignal.html" title="AgsPlayAudioSignal"><span class="type">AgsPlayAudioSignal</span></a>
+</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

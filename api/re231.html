@@ -1,0 +1,15 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>AgsResizeEditor</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="ags Reference Manual"><link rel="up" href="ch01.html" title="Chapter 1. [Insert title here]"><link rel="prev" href="re230.html" title="AgsRemoveRegionFromSelection"><link rel="next" href="re232.html" title="AgsReturnableThread"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="ags-AgsResizeEditor"></a><div class="titlepage"></div><div class="refnamediv"><h2>Name</h2><p>AgsResizeEditor</p></div><div class="refsynopsisdiv"><a name="ags-AgsResizeEditor.synopsis"></a><h2>Synopsis</h2><pre class="synopsis">struct              <a class="link" href="re231.html#AgsResizeEditor" title="struct AgsResizeEditor">AgsResizeEditor</a>;
+struct              <a class="link" href="re231.html#AgsResizeEditorClass" title="struct AgsResizeEditorClass">AgsResizeEditorClass</a>;
+<a class="link" href="re231.html#AgsResizeEditor" title="struct AgsResizeEditor"><span class="returnvalue">AgsResizeEditor</span></a> *   <a class="link" href="re231.html#ags-resize-editor-new" title="ags_resize_editor_new ()">ags_resize_editor_new</a>               ();
+</pre></div><div class="refsect1"><a name="ags-AgsResizeEditor.description"></a><h2>Description</h2></div><div class="refsect1"><a name="ags-AgsResizeEditor.details"></a><h2>Details</h2><div class="refsect2"><a name="AgsResizeEditor"></a><h3>struct AgsResizeEditor</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsResizeEditor"></OBJECT><pre class="programlisting">struct AgsResizeEditor {
+  AgsPropertyEditor property_editor;
+
+  GtkSpinButton *audio_channels;
+
+  GtkSpinButton *input_pads;
+  GtkSpinButton *output_pads;
+};
+</pre></div><div class="refsect2"><a name="AgsResizeEditorClass"></a><h3>struct AgsResizeEditorClass</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsResizeEditorClass"></OBJECT><pre class="programlisting">struct AgsResizeEditorClass {
+  AgsPropertyEditorClass property_editor;
+};
+</pre></div><div class="refsect2"><a name="ags-resize-editor-new"></a><h3>ags_resize_editor_new ()</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="ags_resize_editor_new"></OBJECT><pre class="programlisting"><a class="link" href="re231.html#AgsResizeEditor" title="struct AgsResizeEditor"><span class="returnvalue">AgsResizeEditor</span></a> *   ags_resize_editor_new               ();</pre></div></div></div></body></html>

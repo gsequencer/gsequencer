@@ -1,0 +1,211 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsFileIdRef</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="xml-io.html" title="Part IX. XML Input/Output - Persist project">
+<link rel="prev" href="AgsFile.html" title="AgsFile">
+<link rel="next" href="AgsFileLink.html" title="AgsFileLink">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="AgsFile.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="xml-io.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="AgsFileLink.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#AgsFileIdRef.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#AgsFileIdRef.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#AgsFileIdRef.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#AgsFileIdRef.properties" class="shortcut">Properties</a>
+                   | 
+                  <a href="#AgsFileIdRef.signals" class="shortcut">Signals</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="AgsFileIdRef"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="AgsFileIdRef.top_of_page"></a>AgsFileIdRef</span></h2>
+<p>AgsFileIdRef — file id reference</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="AgsFileIdRef.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">
+#include &lt;ags/file/ags_file_id_ref.h&gt;
+
+#define             <a class="link" href="AgsFileIdRef.html#AGS-FILE-ID-REF-RESOLVE-DATA:CAPS" title="AGS_FILE_ID_REF_RESOLVE_DATA">AGS_FILE_ID_REF_RESOLVE_DATA</a>
+#define             <a class="link" href="AgsFileIdRef.html#AGS-FILE-ID-REF-SERIALIZE-DATA:CAPS" title="AGS_FILE_ID_REF_SERIALIZE_DATA">AGS_FILE_ID_REF_SERIALIZE_DATA</a>
+#define             <a class="link" href="AgsFileIdRef.html#AGS-FILE-RESOLVE:CAPS" title="AGS_FILE_RESOLVE()">AGS_FILE_RESOLVE</a>                    (f)
+struct              <a class="link" href="AgsFileIdRef.html#AgsFileIdRef-struct" title="struct AgsFileIdRef">AgsFileIdRef</a>;
+struct              <a class="link" href="AgsFileIdRef.html#AgsFileIdRefClass" title="struct AgsFileIdRefClass">AgsFileIdRefClass</a>;
+<span class="returnvalue">void</span>                (<a class="link" href="AgsFileIdRef.html#AgsFileResolve" title="AgsFileResolve ()">*AgsFileResolve</a>)                   (<em class="parameter"><code><span class="type">void</span></code></em>);
+<a class="link" href="AgsFileIdRef.html" title="AgsFileIdRef"><span class="returnvalue">AgsFileIdRef</span></a> *      <a class="link" href="AgsFileIdRef.html#ags-file-id-ref-new" title="ags_file_id_ref_new ()">ags_file_id_ref_new</a>                 ();
+<span class="returnvalue">void</span>                <a class="link" href="AgsFileIdRef.html#ags-file-id-ref-resolved" title="ags_file_id_ref_resolved ()">ags_file_id_ref_resolved</a>            (<em class="parameter"><code><a class="link" href="AgsFileIdRef.html" title="AgsFileIdRef"><span class="type">AgsFileIdRef</span></a> *file_id_ref</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsFileIdRef.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  <a href="../gobject/gobject-The-Base-Object-Type.html#GObject">GObject</a>
+   +----AgsFileIdRef
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsFileIdRef.properties"></a><h2>Properties</h2>
+<pre class="synopsis">
+  "<a class="link" href="AgsFileIdRef.html#AgsFileIdRef--file" title='The "file" property'>file</a>"                     <a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a>*              : Read / Write
+  "<a class="link" href="AgsFileIdRef.html#AgsFileIdRef--main" title='The "main" property'>main</a>"                     <a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a>*              : Read / Write
+  "<a class="link" href="AgsFileIdRef.html#AgsFileIdRef--node" title='The "node" property'>node</a>"                     <a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a>              : Read / Write
+  "<a class="link" href="AgsFileIdRef.html#AgsFileIdRef--reference" title='The "reference" property'>reference</a>"                <a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a>              : Read / Write
+  "<a class="link" href="AgsFileIdRef.html#AgsFileIdRef--xpath" title='The "xpath" property'>xpath</a>"                    <a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a>*                : Read / Write
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsFileIdRef.signals"></a><h2>Signals</h2>
+<pre class="synopsis">
+  "<a class="link" href="AgsFileIdRef.html#AgsFileIdRef-resolved" title='The "resolved" signal'>resolved</a>"                                       : <a href="../gobject/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></a>
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsFileIdRef.description"></a><h2>Description</h2>
+<p>
+The <a class="link" href="AgsFileIdRef.html" title="AgsFileIdRef"><span class="type">AgsFileIdRef</span></a> referes a XML node by its ID. It's used
+to perform XPath lookup.
+</p>
+</div>
+<div class="refsect1">
+<a name="AgsFileIdRef.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AGS-FILE-ID-REF-RESOLVE-DATA:CAPS"></a><h3>AGS_FILE_ID_REF_RESOLVE_DATA</h3>
+<pre class="programlisting">#define AGS_FILE_ID_REF_RESOLVE_DATA "ags-file-id-ref-resolve-data\0"
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-FILE-ID-REF-SERIALIZE-DATA:CAPS"></a><h3>AGS_FILE_ID_REF_SERIALIZE_DATA</h3>
+<pre class="programlisting">#define AGS_FILE_ID_REF_SERIALIZE_DATA "ags-file-id-ref-serizalize-data\0"
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-FILE-RESOLVE:CAPS"></a><h3>AGS_FILE_RESOLVE()</h3>
+<pre class="programlisting">#define AGS_FILE_RESOLVE(f)          ((AgsFileResolve)(f))
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsFileIdRef-struct"></a><h3>struct AgsFileIdRef</h3>
+<pre class="programlisting">struct AgsFileIdRef;</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsFileIdRefClass"></a><h3>struct AgsFileIdRefClass</h3>
+<pre class="programlisting">struct AgsFileIdRefClass {
+  GObjectClass object;
+
+  void (*resolved)(AgsFileIdRef *file_id_ref);
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsFileResolve"></a><h3>AgsFileResolve ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                (*AgsFileResolve)                   (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-id-ref-new"></a><h3>ags_file_id_ref_new ()</h3>
+<pre class="programlisting"><a class="link" href="AgsFileIdRef.html" title="AgsFileIdRef"><span class="returnvalue">AgsFileIdRef</span></a> *      ags_file_id_ref_new                 ();</pre>
+<p>
+Creates an <a class="link" href="AgsFileIdRef.html" title="AgsFileIdRef"><span class="type">AgsFileIdRef</span></a>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new <a class="link" href="AgsFileIdRef.html" title="AgsFileIdRef"><span class="type">AgsFileIdRef</span></a>
+</td>
+</tr></tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-id-ref-resolved"></a><h3>ags_file_id_ref_resolved ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_file_id_ref_resolved            (<em class="parameter"><code><a class="link" href="AgsFileIdRef.html" title="AgsFileIdRef"><span class="type">AgsFileIdRef</span></a> *file_id_ref</code></em>);</pre>
+<p>
+</p>
+</div>
+</div>
+<div class="refsect1">
+<a name="AgsFileIdRef.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="AgsFileIdRef--file"></a><h3>The <code class="literal">"file"</code> property</h3>
+<pre class="programlisting">  "file"                     <a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a>*              : Read / Write</pre>
+<p>The entire file assigned to.</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsFileIdRef--main"></a><h3>The <code class="literal">"main"</code> property</h3>
+<pre class="programlisting">  "main"                     <a href="../gobject/gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a>*              : Read / Write</pre>
+<p>The main object to access the tree.</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsFileIdRef--node"></a><h3>The <code class="literal">"node"</code> property</h3>
+<pre class="programlisting">  "node"                     <a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a>              : Read / Write</pre>
+<p>The node to find the element.</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsFileIdRef--reference"></a><h3>The <code class="literal">"reference"</code> property</h3>
+<pre class="programlisting">  "reference"                <a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a>              : Read / Write</pre>
+<p>The reference resulted by the xpath locator.</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsFileIdRef--xpath"></a><h3>The <code class="literal">"xpath"</code> property</h3>
+<pre class="programlisting">  "xpath"                    <a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a>*                : Read / Write</pre>
+<p>The xpath to find the element.</p>
+<p>Default value: NULL</p>
+</div>
+</div>
+<div class="refsect1">
+<a name="AgsFileIdRef.signal-details"></a><h2>Signal Details</h2>
+<div class="refsect2">
+<a name="AgsFileIdRef-resolved"></a><h3>The <code class="literal">"resolved"</code> signal</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                user_function                      (<a class="link" href="AgsFileIdRef.html" title="AgsFileIdRef"><span class="type">AgsFileIdRef</span></a> *agsfileidref,
+                                                        <a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a>      user_data)         : <a href="../gobject/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></a></pre>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

@@ -1,0 +1,132 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsCopyNotationAudioRun</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="recall.html" title="Recalls - Effect processors">
+<link rel="prev" href="AgsCopyNotationAudio.html" title="AgsCopyNotationAudio">
+<link rel="next" href="AgsCopyPatternAudio.html" title="AgsCopyPatternAudio">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="AgsCopyNotationAudio.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="recall.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="AgsCopyPatternAudio.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#AgsCopyNotationAudioRun.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#AgsCopyNotationAudioRun.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#AgsCopyNotationAudioRun.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#AgsCopyNotationAudioRun.implemented-interfaces" class="shortcut">Implemented Interfaces</a>
+                   | 
+                  <a href="#AgsCopyNotationAudioRun.properties" class="shortcut">Properties</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="AgsCopyNotationAudioRun"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="AgsCopyNotationAudioRun.top_of_page"></a>AgsCopyNotationAudioRun</span></h2>
+<p>AgsCopyNotationAudioRun — copy notations</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="AgsCopyNotationAudioRun.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">
+#include &lt;ags/audio/recall/ags_copy_notation_audio_run.h&gt;
+
+struct              <a class="link" href="AgsCopyNotationAudioRun.html#AgsCopyNotationAudioRun-struct" title="struct AgsCopyNotationAudioRun">AgsCopyNotationAudioRun</a>;
+struct              <a class="link" href="AgsCopyNotationAudioRun.html#AgsCopyNotationAudioRunClass" title="struct AgsCopyNotationAudioRunClass">AgsCopyNotationAudioRunClass</a>;
+<a class="link" href="AgsCopyNotationAudioRun.html" title="AgsCopyNotationAudioRun"><span class="returnvalue">AgsCopyNotationAudioRun</span></a> * <a class="link" href="AgsCopyNotationAudioRun.html#ags-copy-notation-audio-run-new" title="ags_copy_notation_audio_run_new ()">ags_copy_notation_audio_run_new</a>
+                                                        (<em class="parameter"><code><a class="link" href="AgsCountBeatsAudioRun.html" title="AgsCountBeatsAudioRun"><span class="type">AgsCountBeatsAudioRun</span></a> *count_beats_audio_run</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsCopyNotationAudioRun.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  <a href="../gobject/gobject-The-Base-Object-Type.html#GObject">GObject</a>
+   +----<a class="link" href="AgsRecall.html" title="AgsRecall">AgsRecall</a>
+         +----<a class="link" href="AgsRecallAudioRun.html" title="AgsRecallAudioRun">AgsRecallAudioRun</a>
+               +----AgsCopyNotationAudioRun
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsCopyNotationAudioRun.implemented-interfaces"></a><h2>Implemented Interfaces</h2>
+<p>
+AgsCopyNotationAudioRun implements
+ AgsConnectable,  <a class="link" href="AgsPackable.html" title="AgsPackable">AgsPackable</a>,  <a class="link" href="AgsDynamicConnectable.html" title="AgsDynamicConnectable">AgsDynamicConnectable</a> and  <a class="link" href="AgsPlugin.html" title="AgsPlugin">AgsPlugin</a>.</p>
+</div>
+<div class="refsect1">
+<a name="AgsCopyNotationAudioRun.properties"></a><h2>Properties</h2>
+<pre class="synopsis">
+  "<a class="link" href="AgsCopyNotationAudioRun.html#AgsCopyNotationAudioRun--count-beats-audio-run" title='The "count-beats-audio-run" property'>count-beats-audio-run</a>"    <a class="link" href="AgsCountBeatsAudioRun.html" title="AgsCountBeatsAudioRun"><span class="type">AgsCountBeatsAudioRun</span></a>*  : Read / Write
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsCopyNotationAudioRun.description"></a><h2>Description</h2>
+<p>
+The <a class="link" href="AgsCopyNotationAudioRun.html" title="AgsCopyNotationAudioRun"><span class="type">AgsCopyNotationAudioRun</span></a> class copy notations.
+</p>
+</div>
+<div class="refsect1">
+<a name="AgsCopyNotationAudioRun.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AgsCopyNotationAudioRun-struct"></a><h3>struct AgsCopyNotationAudioRun</h3>
+<pre class="programlisting">struct AgsCopyNotationAudioRun;</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsCopyNotationAudioRunClass"></a><h3>struct AgsCopyNotationAudioRunClass</h3>
+<pre class="programlisting">struct AgsCopyNotationAudioRunClass {
+  AgsRecallAudioRunClass recall_audio_run;
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-copy-notation-audio-run-new"></a><h3>ags_copy_notation_audio_run_new ()</h3>
+<pre class="programlisting"><a class="link" href="AgsCopyNotationAudioRun.html" title="AgsCopyNotationAudioRun"><span class="returnvalue">AgsCopyNotationAudioRun</span></a> * ags_copy_notation_audio_run_new
+                                                        (<em class="parameter"><code><a class="link" href="AgsCountBeatsAudioRun.html" title="AgsCountBeatsAudioRun"><span class="type">AgsCountBeatsAudioRun</span></a> *count_beats_audio_run</code></em>);</pre>
+<p>
+Creates an <a class="link" href="AgsCopyNotationAudioRun.html" title="AgsCopyNotationAudioRun"><span class="type">AgsCopyNotationAudioRun</span></a>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new <a class="link" href="AgsCopyNotationAudioRun.html" title="AgsCopyNotationAudioRun"><span class="type">AgsCopyNotationAudioRun</span></a>
+</td>
+</tr></tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+</div>
+<div class="refsect1">
+<a name="AgsCopyNotationAudioRun.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="AgsCopyNotationAudioRun--count-beats-audio-run"></a><h3>The <code class="literal">"count-beats-audio-run"</code> property</h3>
+<pre class="programlisting">  "count-beats-audio-run"    <a class="link" href="AgsCountBeatsAudioRun.html" title="AgsCountBeatsAudioRun"><span class="type">AgsCountBeatsAudioRun</span></a>*  : Read / Write</pre>
+<p>The AgsCountBeatsAudioRun which emits beat signal.</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

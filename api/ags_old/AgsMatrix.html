@@ -1,0 +1,215 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsMatrix</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="engines.html" title="Engines - Composite widgets with audio set up">
+<link rel="prev" href="ags-ags-ffplayer-callbacks.html" title="ags_ffplayer_callbacks">
+<link rel="next" href="ags-ags-matrix-callbacks.html" title="ags_matrix_callbacks">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="ags-ags-ffplayer-callbacks.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="engines.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="ags-ags-matrix-callbacks.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#AgsMatrix.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#AgsMatrix.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#AgsMatrix.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#AgsMatrix.implemented-interfaces" class="shortcut">Implemented Interfaces</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="AgsMatrix"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="AgsMatrix.top_of_page"></a>AgsMatrix</span></h2>
+<p>AgsMatrix</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="AgsMatrix.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">#define             <a class="link" href="AgsMatrix.html#AGS-MATRIX-CELL-HEIGHT:CAPS" title="AGS_MATRIX_CELL_HEIGHT">AGS_MATRIX_CELL_HEIGHT</a>
+#define             <a class="link" href="AgsMatrix.html#AGS-MATRIX-CELL-WIDTH:CAPS" title="AGS_MATRIX_CELL_WIDTH">AGS_MATRIX_CELL_WIDTH</a>
+#define             <a class="link" href="AgsMatrix.html#AGS-MATRIX-OCTAVE:CAPS" title="AGS_MATRIX_OCTAVE">AGS_MATRIX_OCTAVE</a>
+#define             <a class="link" href="AgsMatrix.html#AGS-MATRIX-PATTERN-CONTROLS:CAPS" title="AGS_MATRIX_PATTERN_CONTROLS">AGS_MATRIX_PATTERN_CONTROLS</a>
+struct              <a class="link" href="AgsMatrix.html#AgsMatrix-struct" title="struct AgsMatrix">AgsMatrix</a>;
+struct              <a class="link" href="AgsMatrix.html#AgsMatrixClass" title="struct AgsMatrixClass">AgsMatrixClass</a>;
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="AgsMatrix.html#ags-matrix-draw-gutter" title="ags_matrix_draw_gutter ()">ags_matrix_draw_gutter</a>              (<em class="parameter"><code><a class="link" href="AgsMatrix.html" title="AgsMatrix"><span class="type">AgsMatrix</span></a> *matrix</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="AgsMatrix.html#ags-matrix-draw-matrix" title="ags_matrix_draw_matrix ()">ags_matrix_draw_matrix</a>              (<em class="parameter"><code><a class="link" href="AgsMatrix.html" title="AgsMatrix"><span class="type">AgsMatrix</span></a> *matrix</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="AgsMatrix.html#ags-matrix-highlight-gutter-point" title="ags_matrix_highlight_gutter_point ()">ags_matrix_highlight_gutter_point</a>   (<em class="parameter"><code><a class="link" href="AgsMatrix.html" title="AgsMatrix"><span class="type">AgsMatrix</span></a> *matrix</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> j</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> i</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="AgsMatrix.html#ags-matrix-input-map-recall" title="ags_matrix_input_map_recall ()">ags_matrix_input_map_recall</a>         (<em class="parameter"><code><a class="link" href="AgsMatrix.html" title="AgsMatrix"><span class="type">AgsMatrix</span></a> *matrix</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> input_pad_start</code></em>);
+<a class="link" href="AgsMatrix.html" title="AgsMatrix"><span class="returnvalue">AgsMatrix</span></a> *         <a class="link" href="AgsMatrix.html#ags-matrix-new" title="ags_matrix_new ()">ags_matrix_new</a>                      (<em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *devout</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="AgsMatrix.html#ags-matrix-output-map-recall" title="ags_matrix_output_map_recall ()">ags_matrix_output_map_recall</a>        (<em class="parameter"><code><a class="link" href="AgsMatrix.html" title="AgsMatrix"><span class="type">AgsMatrix</span></a> *matrix</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> output_pad_start</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="AgsMatrix.html#ags-matrix-redraw-gutter-point" title="ags_matrix_redraw_gutter_point ()">ags_matrix_redraw_gutter_point</a>      (<em class="parameter"><code><a class="link" href="AgsMatrix.html" title="AgsMatrix"><span class="type">AgsMatrix</span></a> *matrix</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> j</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> i</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="AgsMatrix.html#ags-matrix-unpaint-gutter-point" title="ags_matrix_unpaint_gutter_point ()">ags_matrix_unpaint_gutter_point</a>     (<em class="parameter"><code><a class="link" href="AgsMatrix.html" title="AgsMatrix"><span class="type">AgsMatrix</span></a> *matrix</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> j</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> i</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsMatrix.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  <GTKDOCLINK HREF="GObject">GObject</GTKDOCLINK>
+   +----<GTKDOCLINK HREF="GInitiallyUnowned">GInitiallyUnowned</GTKDOCLINK>
+         +----<GTKDOCLINK HREF="GtkObject">GtkObject</GTKDOCLINK>
+               +----<GTKDOCLINK HREF="GtkWidget">GtkWidget</GTKDOCLINK>
+                     +----<GTKDOCLINK HREF="GtkContainer">GtkContainer</GTKDOCLINK>
+                           +----<GTKDOCLINK HREF="GtkBin">GtkBin</GTKDOCLINK>
+                                 +----<GTKDOCLINK HREF="GtkHandleBox">GtkHandleBox</GTKDOCLINK>
+                                       +----<a class="link" href="AgsMachine.html" title="AgsMachine">AgsMachine</a>
+                                             +----AgsMatrix
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsMatrix.implemented-interfaces"></a><h2>Implemented Interfaces</h2>
+<p>
+AgsMatrix implements
+ <GTKDOCLINK HREF="AtkImplementorIface">AtkImplementorIface</GTKDOCLINK>,  <GTKDOCLINK HREF="GtkBuildable">GtkBuildable</GTKDOCLINK>,  <GTKDOCLINK HREF="AgsConnectable">AgsConnectable</GTKDOCLINK> and  <a class="link" href="AgsPlugin.html" title="AgsPlugin">AgsPlugin</a>.</p>
+</div>
+<div class="refsect1">
+<a name="AgsMatrix.description"></a><h2>Description</h2>
+<p>
+</p>
+</div>
+<div class="refsect1">
+<a name="AgsMatrix.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AGS-MATRIX-CELL-HEIGHT:CAPS"></a><h3>AGS_MATRIX_CELL_HEIGHT</h3>
+<pre class="programlisting">#define AGS_MATRIX_CELL_HEIGHT  10
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-MATRIX-CELL-WIDTH:CAPS"></a><h3>AGS_MATRIX_CELL_WIDTH</h3>
+<pre class="programlisting">#define AGS_MATRIX_CELL_WIDTH   12
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-MATRIX-OCTAVE:CAPS"></a><h3>AGS_MATRIX_OCTAVE</h3>
+<pre class="programlisting">#define AGS_MATRIX_OCTAVE 10
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-MATRIX-PATTERN-CONTROLS:CAPS"></a><h3>AGS_MATRIX_PATTERN_CONTROLS</h3>
+<pre class="programlisting">#define AGS_MATRIX_PATTERN_CONTROLS (16)
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsMatrix-struct"></a><h3>struct AgsMatrix</h3>
+<pre class="programlisting">struct AgsMatrix;</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsMatrixClass"></a><h3>struct AgsMatrixClass</h3>
+<pre class="programlisting">struct AgsMatrixClass {
+  AgsMachineClass machine;
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-matrix-draw-gutter"></a><h3>ags_matrix_draw_gutter ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_matrix_draw_gutter              (<em class="parameter"><code><a class="link" href="AgsMatrix.html" title="AgsMatrix"><span class="type">AgsMatrix</span></a> *matrix</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-matrix-draw-matrix"></a><h3>ags_matrix_draw_matrix ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_matrix_draw_matrix              (<em class="parameter"><code><a class="link" href="AgsMatrix.html" title="AgsMatrix"><span class="type">AgsMatrix</span></a> *matrix</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-matrix-highlight-gutter-point"></a><h3>ags_matrix_highlight_gutter_point ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_matrix_highlight_gutter_point   (<em class="parameter"><code><a class="link" href="AgsMatrix.html" title="AgsMatrix"><span class="type">AgsMatrix</span></a> *matrix</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> j</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> i</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-matrix-input-map-recall"></a><h3>ags_matrix_input_map_recall ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_matrix_input_map_recall         (<em class="parameter"><code><a class="link" href="AgsMatrix.html" title="AgsMatrix"><span class="type">AgsMatrix</span></a> *matrix</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> input_pad_start</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-matrix-new"></a><h3>ags_matrix_new ()</h3>
+<pre class="programlisting"><a class="link" href="AgsMatrix.html" title="AgsMatrix"><span class="returnvalue">AgsMatrix</span></a> *         ags_matrix_new                      (<em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *devout</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-matrix-output-map-recall"></a><h3>ags_matrix_output_map_recall ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_matrix_output_map_recall        (<em class="parameter"><code><a class="link" href="AgsMatrix.html" title="AgsMatrix"><span class="type">AgsMatrix</span></a> *matrix</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> output_pad_start</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-matrix-redraw-gutter-point"></a><h3>ags_matrix_redraw_gutter_point ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_matrix_redraw_gutter_point      (<em class="parameter"><code><a class="link" href="AgsMatrix.html" title="AgsMatrix"><span class="type">AgsMatrix</span></a> *matrix</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> j</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> i</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-matrix-unpaint-gutter-point"></a><h3>ags_matrix_unpaint_gutter_point ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_matrix_unpaint_gutter_point     (<em class="parameter"><code><a class="link" href="AgsMatrix.html" title="AgsMatrix"><span class="type">AgsMatrix</span></a> *matrix</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> j</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> i</code></em>);</pre>
+<p>
+</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

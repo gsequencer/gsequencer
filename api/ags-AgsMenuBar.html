@@ -1,0 +1,166 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Advanced Gtk+ Sequencer Reference Manual: AgsMenuBar</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="pt08.html" title="Part VIII. Graphical user interface">
+<link rel="prev" href="ags-ags-machine-editor-callbacks.html" title="ags_machine_editor_callbacks">
+<link rel="next" href="ags-ags-menu-bar-callbacks.html" title="ags_menu_bar_callbacks">
+<meta name="generator" content="GTK-Doc V1.21 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#ags-AgsMenuBar.description" class="shortcut">Description</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="pt08.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="ags-ags-machine-editor-callbacks.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="ags-ags-menu-bar-callbacks.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry">
+<a name="ags-AgsMenuBar"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="ags-AgsMenuBar.top_of_page"></a>AgsMenuBar</span></h2>
+<p>AgsMenuBar — the menu bar.</p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1">
+<a name="ags-AgsMenuBar.functions"></a><h2>Functions</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="functions_return">
+<col class="functions_name">
+</colgroup>
+<tbody>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="AgsMenuBar"><span class="returnvalue">AgsMenuBar</span></GTKDOCLINK> *
+</td>
+<td class="function_name">
+<a class="link" href="ags-AgsMenuBar.html#ags-menu-bar-new" title="ags_menu_bar_new ()">ags_menu_bar_new</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="GtkMenu"><span class="returnvalue">GtkMenu</span></GTKDOCLINK> *
+</td>
+<td class="function_name">
+<a class="link" href="ags-AgsMenuBar.html#ags-zoom-menu-new" title="ags_zoom_menu_new ()">ags_zoom_menu_new</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="GtkMenu"><span class="returnvalue">GtkMenu</span></GTKDOCLINK> *
+</td>
+<td class="function_name">
+<a class="link" href="ags-AgsMenuBar.html#ags-tact-menu-new" title="ags_tact_menu_new ()">ags_tact_menu_new</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="GtkComboBox"><span class="returnvalue">GtkComboBox</span></GTKDOCLINK> *
+</td>
+<td class="function_name">
+<a class="link" href="ags-AgsMenuBar.html#ags-zoom-combo-box-new" title="ags_zoom_combo_box_new ()">ags_zoom_combo_box_new</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="GtkComboBox"><span class="returnvalue">GtkComboBox</span></GTKDOCLINK> *
+</td>
+<td class="function_name">
+<a class="link" href="ags-AgsMenuBar.html#ags-tact-combo-box-new" title="ags_tact_combo_box_new ()">ags_tact_combo_box_new</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="ags-AgsMenuBar.includes"></a><h2>Includes</h2>
+<pre class="synopsis">#include &lt;ags/X/ags_menu_bar.h&gt;
+</pre>
+</div>
+<div class="refsect1">
+<a name="ags-AgsMenuBar.description"></a><h2>Description</h2>
+<p><GTKDOCLINK HREF="AgsMenuBar"><span class="type">AgsMenuBar</span></GTKDOCLINK> is a composite widget to be used as application's menu bar.</p>
+</div>
+<div class="refsect1">
+<a name="ags-AgsMenuBar.functions_details"></a><h2>Functions</h2>
+<div class="refsect2">
+<a name="ags-menu-bar-new"></a><h3>ags_menu_bar_new ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="AgsMenuBar"><span class="returnvalue">AgsMenuBar</span></GTKDOCLINK> *
+ags_menu_bar_new ();</pre>
+<p>Creates an <GTKDOCLINK HREF="AgsMenuBar"><span class="type">AgsMenuBar</span></GTKDOCLINK></p>
+<div class="refsect3">
+<a name="id-1.10.32.6.2.5"></a><h4>Returns</h4>
+<p> a new <GTKDOCLINK HREF="AgsMenuBar"><span class="type">AgsMenuBar</span></GTKDOCLINK></p>
+<p></p>
+</div>
+<p class="since">Since 0.3</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-zoom-menu-new"></a><h3>ags_zoom_menu_new ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="GtkMenu"><span class="returnvalue">GtkMenu</span></GTKDOCLINK> *
+ags_zoom_menu_new ();</pre>
+<p>
+</p>
+<div class="refsect3">
+<a name="id-1.10.32.6.3.5"></a><h4>Returns</h4>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-tact-menu-new"></a><h3>ags_tact_menu_new ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="GtkMenu"><span class="returnvalue">GtkMenu</span></GTKDOCLINK> *
+ags_tact_menu_new ();</pre>
+<p>
+</p>
+<div class="refsect3">
+<a name="id-1.10.32.6.4.5"></a><h4>Returns</h4>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-zoom-combo-box-new"></a><h3>ags_zoom_combo_box_new ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="GtkComboBox"><span class="returnvalue">GtkComboBox</span></GTKDOCLINK> *
+ags_zoom_combo_box_new ();</pre>
+<p>Creates an <GTKDOCLINK HREF="GtkComboBox"><span class="type">GtkComboBox</span></GTKDOCLINK> to select tact</p>
+<div class="refsect3">
+<a name="id-1.10.32.6.5.5"></a><h4>Returns</h4>
+<p> a new <GTKDOCLINK HREF="GtkComboBox"><span class="type">GtkComboBox</span></GTKDOCLINK></p>
+<p></p>
+</div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-tact-combo-box-new"></a><h3>ags_tact_combo_box_new ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="GtkComboBox"><span class="returnvalue">GtkComboBox</span></GTKDOCLINK> *
+ags_tact_combo_box_new ();</pre>
+<p>
+</p>
+<div class="refsect3">
+<a name="id-1.10.32.6.6.5"></a><h4>Returns</h4>
+<p></p>
+</div>
+</div>
+</div>
+<div class="refsect1">
+<a name="ags-AgsMenuBar.other_details"></a><h2>Types and Values</h2>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.21</div>
+</body>
+</html>

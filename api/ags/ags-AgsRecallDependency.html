@@ -1,0 +1,198 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsRecallDependency</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="process-tree.html" title="audio processing tree">
+<link rel="prev" href="ags-AgsRecallContainer.html" title="AgsRecallContainer">
+<link rel="next" href="ags-AgsRecallFactory.html" title="AgsRecallFactory">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="ags-AgsRecallContainer.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="process-tree.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="ags-AgsRecallFactory.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#ags-AgsRecallDependency.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#ags-AgsRecallDependency.description" class="shortcut">Description</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="ags-AgsRecallDependency"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="ags-AgsRecallDependency.top_of_page"></a>AgsRecallDependency</span></h2>
+<p>AgsRecallDependency — Object specifing dependency</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="ags-AgsRecallDependency.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">
+#include &lt;ags/audio/ags_recall_dependency.h&gt;
+
+struct              <a class="link" href="ags-AgsRecallDependency.html#AgsRecallDependency" title="struct AgsRecallDependency">AgsRecallDependency</a>;
+struct              <a class="link" href="ags-AgsRecallDependency.html#AgsRecallDependencyClass" title="struct AgsRecallDependencyClass">AgsRecallDependencyClass</a>;
+<GTKDOCLINK HREF="GList"><span class="returnvalue">GList</span></GTKDOCLINK> *             <a class="link" href="ags-AgsRecallDependency.html#ags-recall-dependency-find-dependency" title="ags_recall_dependency_find_dependency ()">ags_recall_dependency_find_dependency</a>
+                                                        (<em class="parameter"><code><GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> *recall_dependencies</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *dependency</code></em>);
+<GTKDOCLINK HREF="GList"><span class="returnvalue">GList</span></GTKDOCLINK> *             <a class="link" href="ags-AgsRecallDependency.html#ags-recall-dependency-find-dependency-by-provider" title="ags_recall_dependency_find_dependency_by_provider ()">ags_recall_dependency_find_dependency_by_provider</a>
+                                                        (<em class="parameter"><code><GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> *recall_dependencies</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *provider</code></em>);
+<a class="link" href="ags-AgsRecallDependency.html#AgsRecallDependency" title="struct AgsRecallDependency"><span class="returnvalue">AgsRecallDependency</span></a> * <a class="link" href="ags-AgsRecallDependency.html#ags-recall-dependency-new" title="ags_recall_dependency_new ()">ags_recall_dependency_new</a>         (<em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *dependency</code></em>);
+<GTKDOCLINK HREF="GObject"><span class="returnvalue">GObject</span></GTKDOCLINK> *           <a class="link" href="ags-AgsRecallDependency.html#ags-recall-dependency-resolve" title="ags_recall_dependency_resolve ()">ags_recall_dependency_resolve</a>       (<em class="parameter"><code><a class="link" href="ags-AgsRecallDependency.html#AgsRecallDependency" title="struct AgsRecallDependency"><span class="type">AgsRecallDependency</span></a> *recall_dependency</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsRecallID.html#AgsRecallID" title="struct AgsRecallID"><span class="type">AgsRecallID</span></a> *recall_id</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="ags-AgsRecallDependency.description"></a><h2>Description</h2>
+<p>
+<a class="link" href="ags-AgsRecallDependency.html#AgsRecallDependency" title="struct AgsRecallDependency"><span class="type">AgsRecallDependency</span></a> specifies dependencies on other recalls. Dependencies
+are resolved during initialization.
+</p>
+</div>
+<div class="refsect1">
+<a name="ags-AgsRecallDependency.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AgsRecallDependency"></a><h3>struct AgsRecallDependency</h3>
+<pre class="programlisting">struct AgsRecallDependency {
+  GObject object;
+
+  GObject *dependency;
+};
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsRecallDependencyClass"></a><h3>struct AgsRecallDependencyClass</h3>
+<pre class="programlisting">struct AgsRecallDependencyClass {
+  GObjectClass object;
+};
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-recall-dependency-find-dependency"></a><h3>ags_recall_dependency_find_dependency ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="GList"><span class="returnvalue">GList</span></GTKDOCLINK> *             ags_recall_dependency_find_dependency
+                                                        (<em class="parameter"><code><GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> *recall_dependencies</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *dependency</code></em>);</pre>
+<p>
+Retrieve dependency.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>recall_dependencies</code></em> :</span></p></td>
+<td>a <GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> containing  <a class="link" href="ags-AgsRecallDependency.html#AgsRecallDependency" title="struct AgsRecallDependency"><span class="type">AgsRecallDependency</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>dependency</code></em> :</span></p></td>
+<td>the <a class="link" href="ags-AgsRecall.html#AgsRecall" title="struct AgsRecall"><span class="type">AgsRecall</span></a> depending on</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>Next match.</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4.0</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-recall-dependency-find-dependency-by-provider"></a><h3>ags_recall_dependency_find_dependency_by_provider ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="GList"><span class="returnvalue">GList</span></GTKDOCLINK> *             ags_recall_dependency_find_dependency_by_provider
+                                                        (<em class="parameter"><code><GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> *recall_dependencies</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *provider</code></em>);</pre>
+<p>
+Retrieve dependency by provider.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>recall_dependencies</code></em> :</span></p></td>
+<td>a <GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> containing  <a class="link" href="ags-AgsRecallDependency.html#AgsRecallDependency" title="struct AgsRecallDependency"><span class="type">AgsRecallDependency</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>provider</code></em> :</span></p></td>
+<td>the object providing recall, like <a class="link" href="ags-AgsAudio.html#AgsAudio" title="struct AgsAudio"><span class="type">AgsAudio</span></a> or <a class="link" href="ags-AgsChannel.html#AgsChannel" title="struct AgsChannel"><span class="type">AgsChannel</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>Next match.</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4.0</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-recall-dependency-new"></a><h3>ags_recall_dependency_new ()</h3>
+<pre class="programlisting"><a class="link" href="ags-AgsRecallDependency.html#AgsRecallDependency" title="struct AgsRecallDependency"><span class="returnvalue">AgsRecallDependency</span></a> * ags_recall_dependency_new         (<em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *dependency</code></em>);</pre>
+<p>
+Creates a <a class="link" href="ags-AgsRecallDependency.html#AgsRecallDependency" title="struct AgsRecallDependency"><span class="type">AgsRecallDependency</span></a>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>dependency</code></em> :</span></p></td>
+<td>the <a class="link" href="ags-AgsRecall.html#AgsRecall" title="struct AgsRecall"><span class="type">AgsRecall</span></a> depending on</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new <a class="link" href="ags-AgsRecallDependency.html#AgsRecallDependency" title="struct AgsRecallDependency"><span class="type">AgsRecallDependency</span></a>
+</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4.0</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-recall-dependency-resolve"></a><h3>ags_recall_dependency_resolve ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="GObject"><span class="returnvalue">GObject</span></GTKDOCLINK> *           ags_recall_dependency_resolve       (<em class="parameter"><code><a class="link" href="ags-AgsRecallDependency.html#AgsRecallDependency" title="struct AgsRecallDependency"><span class="type">AgsRecallDependency</span></a> *recall_dependency</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ags-AgsRecallID.html#AgsRecallID" title="struct AgsRecallID"><span class="type">AgsRecallID</span></a> *recall_id</code></em>);</pre>
+<p>
+Resolve dependency.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>recall_dependeny</code></em> :</span></p></td>
+<td>an <a class="link" href="ags-AgsRecallDependency.html#AgsRecallDependency" title="struct AgsRecallDependency"><span class="type">AgsRecallDependency</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>recall_id</code></em> :</span></p></td>
+<td>the <a class="link" href="ags-AgsRecallID.html#AgsRecallID" title="struct AgsRecallID"><span class="type">AgsRecallID</span></a> refering to</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the <a class="link" href="ags-AgsRecall.html#AgsRecall" title="struct AgsRecall"><span class="type">AgsRecall</span></a> dependency.</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4.0</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

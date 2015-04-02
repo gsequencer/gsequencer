@@ -1,0 +1,180 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsRecallLadspa</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="process-tree.html" title="audio processing tree">
+<link rel="prev" href="AgsRecallID.html" title="AgsRecallID">
+<link rel="next" href="AgsRecallLadspaRun.html" title="AgsRecallLadspaRun">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="AgsRecallID.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="process-tree.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="AgsRecallLadspaRun.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#AgsRecallLadspa.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#AgsRecallLadspa.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#AgsRecallLadspa.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#AgsRecallLadspa.implemented-interfaces" class="shortcut">Implemented Interfaces</a>
+                   | 
+                  <a href="#AgsRecallLadspa.properties" class="shortcut">Properties</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="AgsRecallLadspa"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="AgsRecallLadspa.top_of_page"></a>AgsRecallLadspa</span></h2>
+<p>AgsRecallLadspa</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="AgsRecallLadspa.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">struct              <a class="link" href="AgsRecallLadspa.html#AgsRecallLadspa-struct" title="struct AgsRecallLadspa">AgsRecallLadspa</a>;
+struct              <a class="link" href="AgsRecallLadspa.html#AgsRecallLadspaClass" title="struct AgsRecallLadspaClass">AgsRecallLadspaClass</a>;
+<GTKDOCLINK HREF="GList"><span class="returnvalue">GList</span></GTKDOCLINK> *             <a class="link" href="AgsRecallLadspa.html#ags-recall-ladpsa-find" title="ags_recall_ladpsa_find ()">ags_recall_ladpsa_find</a>              (<em class="parameter"><code><GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> *recall</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *filename</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *effect</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="AgsRecallLadspa.html#ags-recall-ladspa-float-to-short" title="ags_recall_ladspa_float_to_short ()">ags_recall_ladspa_float_to_short</a>    (<em class="parameter"><code><GTKDOCLINK HREF="float"><span class="type">float</span></GTKDOCLINK> *buffer</code></em>,
+                                                         <em class="parameter"><code>signed <GTKDOCLINK HREF="short"><span class="type">short</span></GTKDOCLINK> *destination</code></em>);
+<GTKDOCLINK HREF="GList"><span class="returnvalue">GList</span></GTKDOCLINK> *             <a class="link" href="AgsRecallLadspa.html#ags-recall-ladspa-load-ports" title="ags_recall_ladspa_load_ports ()">ags_recall_ladspa_load_ports</a>        (<em class="parameter"><code><a class="link" href="AgsRecallLadspa.html" title="AgsRecallLadspa"><span class="type">AgsRecallLadspa</span></a> *recall_ladspa</code></em>);
+<a class="link" href="AgsRecallLadspa.html" title="AgsRecallLadspa"><span class="returnvalue">AgsRecallLadspa</span></a> *   <a class="link" href="AgsRecallLadspa.html#ags-recall-ladspa-new" title="ags_recall_ladspa_new ()">ags_recall_ladspa_new</a>               (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *source</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *filename</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *effect</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> index</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="AgsRecallLadspa.html#ags-recall-ladspa-short-to-float" title="ags_recall_ladspa_short_to_float ()">ags_recall_ladspa_short_to_float</a>    (<em class="parameter"><code>signed <GTKDOCLINK HREF="short"><span class="type">short</span></GTKDOCLINK> *buffer</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="float"><span class="type">float</span></GTKDOCLINK> *destination</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsRecallLadspa.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  <GTKDOCLINK HREF="GObject">GObject</GTKDOCLINK>
+   +----<a class="link" href="AgsRecall.html" title="AgsRecall">AgsRecall</a>
+         +----<a class="link" href="AgsRecallChannel.html" title="AgsRecallChannel">AgsRecallChannel</a>
+               +----AgsRecallLadspa
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsRecallLadspa.implemented-interfaces"></a><h2>Implemented Interfaces</h2>
+<p>
+AgsRecallLadspa implements
+ <GTKDOCLINK HREF="AgsConnectable">AgsConnectable</GTKDOCLINK>,  <a class="link" href="AgsPackable.html" title="AgsPackable">AgsPackable</a>,  <a class="link" href="AgsDynamicConnectable.html" title="AgsDynamicConnectable">AgsDynamicConnectable</a> and  <a class="link" href="AgsPlugin.html" title="AgsPlugin">AgsPlugin</a>.</p>
+</div>
+<div class="refsect1">
+<a name="AgsRecallLadspa.properties"></a><h2>Properties</h2>
+<pre class="synopsis">
+  "<a class="link" href="AgsRecallLadspa.html#AgsRecallLadspa--effect" title='The "effect" property'>effect</a>"                   <GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK>*                : Read / Write
+  "<a class="link" href="AgsRecallLadspa.html#AgsRecallLadspa--filename" title='The "filename" property'>filename</a>"                 <GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK>*                : Read / Write
+  "<a class="link" href="AgsRecallLadspa.html#AgsRecallLadspa--index" title='The "index" property'>index</a>"                    <GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK>                 : Read / Write
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsRecallLadspa.description"></a><h2>Description</h2>
+<p>
+</p>
+</div>
+<div class="refsect1">
+<a name="AgsRecallLadspa.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AgsRecallLadspa-struct"></a><h3>struct AgsRecallLadspa</h3>
+<pre class="programlisting">struct AgsRecallLadspa;</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsRecallLadspaClass"></a><h3>struct AgsRecallLadspaClass</h3>
+<pre class="programlisting">struct AgsRecallLadspaClass {
+  AgsRecallChannelClass recall_channel;
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-recall-ladpsa-find"></a><h3>ags_recall_ladpsa_find ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="GList"><span class="returnvalue">GList</span></GTKDOCLINK> *             ags_recall_ladpsa_find              (<em class="parameter"><code><GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> *recall</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *filename</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *effect</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-recall-ladspa-float-to-short"></a><h3>ags_recall_ladspa_float_to_short ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_recall_ladspa_float_to_short    (<em class="parameter"><code><GTKDOCLINK HREF="float"><span class="type">float</span></GTKDOCLINK> *buffer</code></em>,
+                                                         <em class="parameter"><code>signed <GTKDOCLINK HREF="short"><span class="type">short</span></GTKDOCLINK> *destination</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-recall-ladspa-load-ports"></a><h3>ags_recall_ladspa_load_ports ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="GList"><span class="returnvalue">GList</span></GTKDOCLINK> *             ags_recall_ladspa_load_ports        (<em class="parameter"><code><a class="link" href="AgsRecallLadspa.html" title="AgsRecallLadspa"><span class="type">AgsRecallLadspa</span></a> *recall_ladspa</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-recall-ladspa-new"></a><h3>ags_recall_ladspa_new ()</h3>
+<pre class="programlisting"><a class="link" href="AgsRecallLadspa.html" title="AgsRecallLadspa"><span class="returnvalue">AgsRecallLadspa</span></a> *   ags_recall_ladspa_new               (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *source</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *filename</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *effect</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> index</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-recall-ladspa-short-to-float"></a><h3>ags_recall_ladspa_short_to_float ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_recall_ladspa_short_to_float    (<em class="parameter"><code>signed <GTKDOCLINK HREF="short"><span class="type">short</span></GTKDOCLINK> *buffer</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="float"><span class="type">float</span></GTKDOCLINK> *destination</code></em>);</pre>
+<p>
+</p>
+</div>
+</div>
+<div class="refsect1">
+<a name="AgsRecallLadspa.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="AgsRecallLadspa--effect"></a><h3>The <code class="literal">"effect"</code> property</h3>
+<pre class="programlisting">  "effect"                   <GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK>*                : Read / Write</pre>
+<p>The effect's string representation.</p>
+<p>Default value: NULL</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsRecallLadspa--filename"></a><h3>The <code class="literal">"filename"</code> property</h3>
+<pre class="programlisting">  "filename"                 <GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK>*                : Read / Write</pre>
+<p>The filename as string of object file.</p>
+<p>Default value: NULL</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsRecallLadspa--index"></a><h3>The <code class="literal">"index"</code> property</h3>
+<pre class="programlisting">  "index"                    <GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK>                 : Read / Write</pre>
+<p>The numerical index of effect.</p>
+<p>Allowed values: &lt;= 65535</p>
+<p>Default value: 0</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

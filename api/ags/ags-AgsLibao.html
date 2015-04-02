@@ -1,0 +1,363 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsLibao</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="ags Reference Manual">
+<link rel="up" href="ch01.html" title="[Insert title here]">
+<link rel="prev" href="ags-AgsLed.html" title="AgsLed">
+<link rel="next" href="ags-AgsLine.html" title="AgsLine">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="ags-AgsLed.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="ch01.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">ags Reference Manual</th>
+<td><a accesskey="n" href="ags-AgsLine.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#ags-AgsLibao.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#ags-AgsLibao.description" class="shortcut">Description</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="ags-AgsLibao"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="ags-AgsLibao.top_of_page"></a>AgsLibao</span></h2>
+<p>AgsLibao</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="ags-AgsLibao.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">#define             <a class="link" href="ags-AgsLibao.html#AGS-LIBAO-DEFAULT-BPM:CAPS" title="AGS_LIBAO_DEFAULT_BPM">AGS_LIBAO_DEFAULT_BPM</a>
+#define             <a class="link" href="ags-AgsLibao.html#AGS-LIBAO-DEFAULT-BUFFER-SIZE:CAPS" title="AGS_LIBAO_DEFAULT_BUFFER_SIZE">AGS_LIBAO_DEFAULT_BUFFER_SIZE</a>
+#define             <a class="link" href="ags-AgsLibao.html#AGS-LIBAO-DEFAULT-DELAY:CAPS" title="AGS_LIBAO_DEFAULT_DELAY">AGS_LIBAO_DEFAULT_DELAY</a>
+#define             <a class="link" href="ags-AgsLibao.html#AGS-LIBAO-DEFAULT-JIFFIE:CAPS" title="AGS_LIBAO_DEFAULT_JIFFIE">AGS_LIBAO_DEFAULT_JIFFIE</a>
+#define             <a class="link" href="ags-AgsLibao.html#AGS-LIBAO-DEFAULT-SAMPLERATE:CAPS" title="AGS_LIBAO_DEFAULT_SAMPLERATE">AGS_LIBAO_DEFAULT_SAMPLERATE</a>
+#define             <a class="link" href="ags-AgsLibao.html#AGS-LIBAO-DEFAULT-TACT:CAPS" title="AGS_LIBAO_DEFAULT_TACT">AGS_LIBAO_DEFAULT_TACT</a>
+#define             <a class="link" href="ags-AgsLibao.html#AGS-LIBAO-DEFAULT-TACTRATE:CAPS" title="AGS_LIBAO_DEFAULT_TACTRATE">AGS_LIBAO_DEFAULT_TACTRATE</a>
+#define             <a class="link" href="ags-AgsLibao.html#AGS-LIBAO-DEFAULT-TACT-JIFFIE:CAPS" title="AGS_LIBAO_DEFAULT_TACT_JIFFIE">AGS_LIBAO_DEFAULT_TACT_JIFFIE</a>
+#define             <a class="link" href="ags-AgsLibao.html#AGS-LIBAO-ERROR:CAPS" title="AGS_LIBAO_ERROR">AGS_LIBAO_ERROR</a>
+#define             <a class="link" href="ags-AgsLibao.html#AGS-LIBAO-PLAY:CAPS" title="AGS_LIBAO_PLAY()">AGS_LIBAO_PLAY</a>                      (ptr)
+#define             <a class="link" href="ags-AgsLibao.html#AGS-LIBAO-PLAY-DOMAIN:CAPS" title="AGS_LIBAO_PLAY_DOMAIN()">AGS_LIBAO_PLAY_DOMAIN</a>               (ptr)
+struct              <a class="link" href="ags-AgsLibao.html#AgsLibao" title="struct AgsLibao">AgsLibao</a>;
+struct              <a class="link" href="ags-AgsLibao.html#AgsLibaoClass" title="struct AgsLibaoClass">AgsLibaoClass</a>;
+enum                <a class="link" href="ags-AgsLibao.html#AgsLibaoError" title="enum AgsLibaoError">AgsLibaoError</a>;
+enum                <a class="link" href="ags-AgsLibao.html#AgsLibaoFlags" title="enum AgsLibaoFlags">AgsLibaoFlags</a>;
+struct              <a class="link" href="ags-AgsLibao.html#AgsLibaoPlay" title="struct AgsLibaoPlay">AgsLibaoPlay</a>;
+struct              <a class="link" href="ags-AgsLibao.html#AgsLibaoPlayDomain" title="struct AgsLibaoPlayDomain">AgsLibaoPlayDomain</a>;
+enum                <a class="link" href="ags-AgsLibao.html#AgsLibaoPlayFlags" title="enum AgsLibaoPlayFlags">AgsLibaoPlayFlags</a>;
+enum                <a class="link" href="ags-AgsLibao.html#AgsLibaoResolutionMode" title="enum AgsLibaoResolutionMode">AgsLibaoResolutionMode</a>;
+<GTKDOCLINK HREF="GQuark"><span class="returnvalue">GQuark</span></GTKDOCLINK>              <a class="link" href="ags-AgsLibao.html#ags-libao-error-quark" title="ags_libao_error_quark ()">ags_libao_error_quark</a>               ();
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsLibao.html#ags-libao-list-cards" title="ags_libao_list_cards ()">ags_libao_list_cards</a>                (<em class="parameter"><code><GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> **card_id</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> **card_name</code></em>);
+<a class="link" href="ags-AgsLibao.html#AgsLibao" title="struct AgsLibao"><span class="returnvalue">AgsLibao</span></a> *          <a class="link" href="ags-AgsLibao.html#ags-libao-new" title="ags_libao_new ()">ags_libao_new</a>                       (<em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *ags_main</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsLibao.html#ags-libao-note-offset-changed" title="ags_libao_note_offset_changed ()">ags_libao_note_offset_changed</a>       (<em class="parameter"><code><a class="link" href="ags-AgsLibao.html#AgsLibao" title="struct AgsLibao"><span class="type">AgsLibao</span></a> *libao</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> note_offset</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsLibao.html#ags-libao-pcm-info" title="ags_libao_pcm_info ()">ags_libao_pcm_info</a>                  (<em class="parameter"><code><GTKDOCLINK HREF="char"><span class="type">char</span></GTKDOCLINK> *card_id</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> *channels_min</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> *channels_max</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> *rate_min</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> *rate_max</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> *buffer_size_min</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> *buffer_size_max</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GError"><span class="type">GError</span></GTKDOCLINK> **error</code></em>);
+<a class="link" href="ags-AgsLibao.html#AgsLibaoPlay" title="struct AgsLibaoPlay"><span class="returnvalue">AgsLibaoPlay</span></a> *      <a class="link" href="ags-AgsLibao.html#ags-libao-play-alloc" title="ags_libao_play_alloc ()">ags_libao_play_alloc</a>                ();
+<a class="link" href="ags-AgsLibao.html#AgsLibaoPlayDomain" title="struct AgsLibaoPlayDomain"><span class="returnvalue">AgsLibaoPlayDomain</span></a> * <a class="link" href="ags-AgsLibao.html#ags-libao-play-domain-alloc" title="ags_libao_play_domain_alloc ()">ags_libao_play_domain_alloc</a>        ();
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsLibao.html#ags-libao-play-domain-free" title="ags_libao_play_domain_free ()">ags_libao_play_domain_free</a>          (<em class="parameter"><code><a class="link" href="ags-AgsLibao.html#AgsLibaoPlayDomain" title="struct AgsLibaoPlayDomain"><span class="type">AgsLibaoPlayDomain</span></a> *libao_play_domain</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsLibao.html#ags-libao-play-free" title="ags_libao_play_free ()">ags_libao_play_free</a>                 (<em class="parameter"><code><a class="link" href="ags-AgsLibao.html#AgsLibaoPlay" title="struct AgsLibaoPlay"><span class="type">AgsLibaoPlay</span></a> *libao_play</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="ags-AgsLibao.html#ags-libao-tic" title="ags_libao_tic ()">ags_libao_tic</a>                       (<em class="parameter"><code><a class="link" href="ags-AgsLibao.html#AgsLibao" title="struct AgsLibao"><span class="type">AgsLibao</span></a> *libao</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="ags-AgsLibao.description"></a><h2>Description</h2>
+</div>
+<div class="refsect1">
+<a name="ags-AgsLibao.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AGS-LIBAO-DEFAULT-BPM:CAPS"></a><h3>AGS_LIBAO_DEFAULT_BPM</h3>
+<pre class="programlisting">#define AGS_LIBAO_DEFAULT_BPM (120.0)
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-LIBAO-DEFAULT-BUFFER-SIZE:CAPS"></a><h3>AGS_LIBAO_DEFAULT_BUFFER_SIZE</h3>
+<pre class="programlisting">#define AGS_LIBAO_DEFAULT_BUFFER_SIZE (940)
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-LIBAO-DEFAULT-DELAY:CAPS"></a><h3>AGS_LIBAO_DEFAULT_DELAY</h3>
+<pre class="programlisting">#define AGS_LIBAO_DEFAULT_DELAY (AGS_LIBAO_DEFAULT_JIFFIE / AGS_LIBAO_DEFAULT_TACTRATE)
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-LIBAO-DEFAULT-JIFFIE:CAPS"></a><h3>AGS_LIBAO_DEFAULT_JIFFIE</h3>
+<pre class="programlisting">#define AGS_LIBAO_DEFAULT_JIFFIE ((double) AGS_LIBAO_DEFAULT_SAMPLERATE / (double) AGS_LIBAO_DEFAULT_BUFFER_SIZE)
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-LIBAO-DEFAULT-SAMPLERATE:CAPS"></a><h3>AGS_LIBAO_DEFAULT_SAMPLERATE</h3>
+<pre class="programlisting">#define AGS_LIBAO_DEFAULT_SAMPLERATE (44100.0)
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-LIBAO-DEFAULT-TACT:CAPS"></a><h3>AGS_LIBAO_DEFAULT_TACT</h3>
+<pre class="programlisting">#define AGS_LIBAO_DEFAULT_TACT (1.0)
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-LIBAO-DEFAULT-TACTRATE:CAPS"></a><h3>AGS_LIBAO_DEFAULT_TACTRATE</h3>
+<pre class="programlisting">#define AGS_LIBAO_DEFAULT_TACTRATE (1.0 / AGS_LIBAO_DEFAULT_TACT_JIFFIE)
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-LIBAO-DEFAULT-TACT-JIFFIE:CAPS"></a><h3>AGS_LIBAO_DEFAULT_TACT_JIFFIE</h3>
+<pre class="programlisting">#define AGS_LIBAO_DEFAULT_TACT_JIFFIE (60.0 / AGS_LIBAO_DEFAULT_BPM * AGS_LIBAO_DEFAULT_TACT)
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-LIBAO-ERROR:CAPS"></a><h3>AGS_LIBAO_ERROR</h3>
+<pre class="programlisting">#define AGS_LIBAO_ERROR (ags_libao_error_quark())
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-LIBAO-PLAY:CAPS"></a><h3>AGS_LIBAO_PLAY()</h3>
+<pre class="programlisting">#define AGS_LIBAO_PLAY(ptr)           ((AgsLibaoPlay *)(ptr))
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-LIBAO-PLAY-DOMAIN:CAPS"></a><h3>AGS_LIBAO_PLAY_DOMAIN()</h3>
+<pre class="programlisting">#define AGS_LIBAO_PLAY_DOMAIN(ptr)    ((AgsLibaoPlayDomain *)(ptr))
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsLibao"></a><h3>struct AgsLibao</h3>
+<pre class="programlisting">struct AgsLibao {
+  GObject object;
+
+  guint flags;
+
+  guint dsp_channels;
+  guint pcm_channels;
+  guint bits;
+  guint buffer_size;
+  guint frequency; // sample_rate
+
+  signed short** buffer;
+
+  double bpm; // beats per minute
+
+  gdouble *delay; // count of tics within buffer size
+  guint *attack; // where currently tic resides in the stream's offset, measured in 1/64 of bpm
+
+  gdouble delay_counter; // next time attack changeing when delay_counter == delay
+  guint tic_counter;
+
+  union{
+    struct _AgsAO{
+      ao_device *device;
+      ao_sample_format *format;
+      int driver_ao;
+    }ao;
+  }out;
+
+  GObject *ags_main;
+  
+  GList *audio;
+};
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsLibaoClass"></a><h3>struct AgsLibaoClass</h3>
+<pre class="programlisting">struct AgsLibaoClass {
+  GObjectClass object;
+
+  void (*play_init)(AgsLibao *libao,
+		    GError **error);
+  void (*play)(AgsLibao *libao,
+	       GError **error);
+  void (*stop)(AgsLibao *libao);
+
+  void (*tic)(AgsLibao *libao);
+
+  void (*note_offset_changed)(AgsLibao *libao, guint note_offset);
+};
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsLibaoError"></a><h3>enum AgsLibaoError</h3>
+<pre class="programlisting">typedef enum {
+  AGS_LIBAO_ERROR_LOCKED_SOUNDCARD,
+} AgsLibaoError;
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsLibaoFlags"></a><h3>enum AgsLibaoFlags</h3>
+<pre class="programlisting">typedef enum {
+    AGS_LIBAO_BUFFER0                        = 1,
+    AGS_LIBAO_BUFFER1                        = 1 &lt;&lt; 1,
+    AGS_LIBAO_BUFFER2                        = 1 &lt;&lt; 2,
+    AGS_LIBAO_BUFFER3                        = 1 &lt;&lt; 3,
+
+    AGS_LIBAO_ATTACK_FIRST                   = 1 &lt;&lt; 4,
+
+    AGS_LIBAO_PLAY                           = 1 &lt;&lt; 5,
+
+    AGS_LIBAO_LIBAO                          = 1 &lt;&lt; 6,
+    AGS_LIBAO_OSS                            = 1 &lt;&lt; 7,
+    AGS_LIBAO_ALSA                           = 1 &lt;&lt; 8,
+
+    AGS_LIBAO_SHUTDOWN                       = 1 &lt;&lt; 9,
+    AGS_LIBAO_START_PLAY                     = 1 &lt;&lt; 10,
+
+    AGS_LIBAO_NONBLOCKING                    = 1 &lt;&lt; 11,
+
+    AGS_LIBAO_TIMING_SET_0                   = 1 &lt;&lt; 12,
+    AGS_LIBAO_TIMING_SET_1                   = 1 &lt;&lt; 13,
+} AgsLibaoFlags;
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsLibaoPlay"></a><h3>struct AgsLibaoPlay</h3>
+<pre class="programlisting">struct AgsLibaoPlay {
+  guint flags;
+
+  AgsIteratorThread **iterator_thread;
+
+  GObject *source;
+  guint audio_channel;
+
+  AgsRecallID *recall_id[3];
+};
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsLibaoPlayDomain"></a><h3>struct AgsLibaoPlayDomain</h3>
+<pre class="programlisting">struct AgsLibaoPlayDomain {
+  GObject *domain;
+  
+  gboolean playback;
+  gboolean sequencer;
+  gboolean notation;
+
+  GList *libao_play;
+};
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsLibaoPlayFlags"></a><h3>enum AgsLibaoPlayFlags</h3>
+<pre class="programlisting">typedef enum {
+    AGS_LIBAO_PLAY_DONE              = 1,
+    AGS_LIBAO_PLAY_REMOVE            = 1 &lt;&lt;  1,
+    AGS_LIBAO_PLAY_CHANNEL           = 1 &lt;&lt;  2,
+    AGS_LIBAO_PLAY_PAD               = 1 &lt;&lt;  3,
+    AGS_LIBAO_PLAY_AUDIO             = 1 &lt;&lt;  4,
+    AGS_LIBAO_PLAY_PLAYBACK          = 1 &lt;&lt;  5,
+    AGS_LIBAO_PLAY_SEQUENCER         = 1 &lt;&lt;  6,
+    AGS_LIBAO_PLAY_NOTATION          = 1 &lt;&lt;  7,
+    AGS_LIBAO_PLAY_SUPER_THREADED    = 1 &lt;&lt;  8,
+} AgsLibaoPlayFlags;
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsLibaoResolutionMode"></a><h3>enum AgsLibaoResolutionMode</h3>
+<pre class="programlisting">typedef enum {
+  AGS_LIBAO_RESOLUTION_8_BIT    = 8,
+  AGS_LIBAO_RESOLUTION_16_BIT   = 16,
+  AGS_LIBAO_RESOLUTION_24_BIT   = 24,
+  AGS_LIBAO_RESOLUTION_32_BIT   = 32,
+  AGS_LIBAO_RESOLUTION_64_BIT   = 64,
+} AgsLibaoResolutionMode;
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-libao-error-quark"></a><h3>ags_libao_error_quark ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="GQuark"><span class="returnvalue">GQuark</span></GTKDOCLINK>              ags_libao_error_quark               ();</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-libao-list-cards"></a><h3>ags_libao_list_cards ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_libao_list_cards                (<em class="parameter"><code><GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> **card_id</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> **card_name</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-libao-new"></a><h3>ags_libao_new ()</h3>
+<pre class="programlisting"><a class="link" href="ags-AgsLibao.html#AgsLibao" title="struct AgsLibao"><span class="returnvalue">AgsLibao</span></a> *          ags_libao_new                       (<em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *ags_main</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-libao-note-offset-changed"></a><h3>ags_libao_note_offset_changed ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_libao_note_offset_changed       (<em class="parameter"><code><a class="link" href="ags-AgsLibao.html#AgsLibao" title="struct AgsLibao"><span class="type">AgsLibao</span></a> *libao</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> note_offset</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-libao-pcm-info"></a><h3>ags_libao_pcm_info ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_libao_pcm_info                  (<em class="parameter"><code><GTKDOCLINK HREF="char"><span class="type">char</span></GTKDOCLINK> *card_id</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> *channels_min</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> *channels_max</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> *rate_min</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> *rate_max</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> *buffer_size_min</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> *buffer_size_max</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GError"><span class="type">GError</span></GTKDOCLINK> **error</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-libao-play-alloc"></a><h3>ags_libao_play_alloc ()</h3>
+<pre class="programlisting"><a class="link" href="ags-AgsLibao.html#AgsLibaoPlay" title="struct AgsLibaoPlay"><span class="returnvalue">AgsLibaoPlay</span></a> *      ags_libao_play_alloc                ();</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-libao-play-domain-alloc"></a><h3>ags_libao_play_domain_alloc ()</h3>
+<pre class="programlisting"><a class="link" href="ags-AgsLibao.html#AgsLibaoPlayDomain" title="struct AgsLibaoPlayDomain"><span class="returnvalue">AgsLibaoPlayDomain</span></a> * ags_libao_play_domain_alloc        ();</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-libao-play-domain-free"></a><h3>ags_libao_play_domain_free ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_libao_play_domain_free          (<em class="parameter"><code><a class="link" href="ags-AgsLibao.html#AgsLibaoPlayDomain" title="struct AgsLibaoPlayDomain"><span class="type">AgsLibaoPlayDomain</span></a> *libao_play_domain</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-libao-play-free"></a><h3>ags_libao_play_free ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_libao_play_free                 (<em class="parameter"><code><a class="link" href="ags-AgsLibao.html#AgsLibaoPlay" title="struct AgsLibaoPlay"><span class="type">AgsLibaoPlay</span></a> *libao_play</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-libao-tic"></a><h3>ags_libao_tic ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_libao_tic                       (<em class="parameter"><code><a class="link" href="ags-AgsLibao.html#AgsLibao" title="struct AgsLibao"><span class="type">AgsLibao</span></a> *libao</code></em>);</pre>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

@@ -1,0 +1,142 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsSegment</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer">
+<link rel="up" href="ch01.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td> </td>
+<td><a accesskey="u" href="ch01.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer</th>
+<td> </td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#ags-AgsSegment.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#ags-AgsSegment.description" class="shortcut">Description</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="ags-AgsSegment"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="ags-AgsSegment.top_of_page"></a>AgsSegment</span></h2>
+<p>AgsSegment</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="ags-AgsSegment.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">enum                <a href="ags-AgsSegment.html#AGS-SEGMENT-FLAGS:CAPS">AGS_SEGMENT_FLAGS</a>;
+struct              <a href="ags-AgsSegment.html#AgsSegment">AgsSegment</a>;
+struct              <a href="ags-AgsSegment.html#AgsSegmentClass">AgsSegmentClass</a>;
+enum                <a href="ags-AgsSegment.html#AgsSegmentFields">AgsSegmentFields</a>;
+<span class="returnvalue">void</span>                <a href="ags-AgsSegment.html#ags-segment-draw-string">ags_segment_draw_string</a>             (<em class="parameter"><code><a href="ags-AgsSegment.html#AgsSegment"><span class="type">AgsSegment</span></a> *segment</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> **string</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-AgsSegment.html#ags-segment-field-off">ags_segment_field_off</a>               (<em class="parameter"><code><a href="ags-AgsSegment.html#AgsSegment"><span class="type">AgsSegment</span></a> *segment</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> field</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-AgsSegment.html#ags-segment-field-on">ags_segment_field_on</a>                (<em class="parameter"><code><a href="ags-AgsSegment.html#AgsSegment"><span class="type">AgsSegment</span></a> *segment</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> field</code></em>);
+<a href="ags-AgsSegment.html#AgsSegment"><span class="returnvalue">AgsSegment</span></a> *        <a href="ags-AgsSegment.html#ags-segment-new">ags_segment_new</a>                     ();
+</pre>
+</div>
+<div class="refsect1">
+<a name="ags-AgsSegment.description"></a><h2>Description</h2>
+</div>
+<div class="refsect1">
+<a name="ags-AgsSegment.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AGS-SEGMENT-FLAGS:CAPS"></a><h3>enum AGS_SEGMENT_FLAGS</h3>
+<pre class="programlisting">typedef enum {
+  AGS_SEGMENT_MONOCHROME      = 1,
+  AGS_SEGMENT_COLOR_RED       = 1 &lt;&lt;  1,
+  AGS_SEGMENT_COLOR_BLUE      = 1 &lt;&lt;  2,
+  AGS_SGEMENT_COLOR_GREEN     = 1 &lt;&lt;  3,
+} AGS_SEGMENT_FLAGS;
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsSegment"></a><h3>struct AgsSegment</h3>
+<pre class="programlisting">struct AgsSegment {
+  GtkWidget widget;
+
+  guint flags;
+
+  guint count;
+};
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsSegmentClass"></a><h3>struct AgsSegmentClass</h3>
+<pre class="programlisting">struct AgsSegmentClass {
+  GtkWidgetClass widget;
+};
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsSegmentFields"></a><h3>enum AgsSegmentFields</h3>
+<pre class="programlisting">typedef enum {
+  AGS_SEGMENT_UPPER_LEFT                = 1,
+  AGS_SEGMENT_UPPER_RIGHT               = 1 &lt;&lt;  1,
+  AGS_SEGMENT_LOWER_LEFT                = 1 &lt;&lt;  2,
+  AGS_SEGMENT_LOWER_RIGHT               = 1 &lt;&lt;  3,
+  AGS_SEGMENT_LEFT_UPPER_1              = 1 &lt;&lt;  4,
+  AGS_SEGMENT_LEFT_UPPER_2              = 1 &lt;&lt;  5,
+  AGS_SEGMENT_LEFT_LOWER_1              = 1 &lt;&lt;  6,
+  AGS_SEGMENT_LEFT_LOWER_2              = 1 &lt;&lt;  7,
+  AGS_SEGMENT_RIGHT_UPPER_1             = 1 &lt;&lt;  8,
+  AGS_SEGMENT_RIGHT_UPPER_2             = 1 &lt;&lt;  9,
+  AGS_SEGMENT_RIGHT_LOWER_1             = 1 &lt;&lt; 10,
+  AGS_SEGMENT_RIGHT_LOWER_2             = 1 &lt;&lt; 11,
+  AGS_SEGMENT_DIAGONAL_UPPER_LEFT_1     = 1 &lt;&lt; 12,
+  AGS_SEGMENT_DIAGONAL_UPPER_LEFT_2     = 1 &lt;&lt; 13,
+  AGS_SEGMENT_DIAGONAL_UPPER_RIGHT_1    = 1 &lt;&lt; 14,
+  AGS_SEGMENT_DIAGONAL_UPPER_RIGHT_2    = 1 &lt;&lt; 15,
+  AGS_SEGMENT_DIAGONAL_LOWER_LEFT_1     = 1 &lt;&lt; 16,
+  AGS_SEGMENT_DIAGONAL_LOWER_LEFT_2     = 1 &lt;&lt; 17,
+  AGS_SEGMENT_DIAGONAL_LOWER_RIGHT_1    = 1 &lt;&lt; 18,
+  AGS_SEGMENT_DIAGONAL_LOWER_RIGHT_2    = 1 &lt;&lt; 19,
+} AgsSegmentFields;
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-segment-draw-string"></a><h3>ags_segment_draw_string ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_segment_draw_string             (<em class="parameter"><code><a href="ags-AgsSegment.html#AgsSegment"><span class="type">AgsSegment</span></a> *segment</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> **string</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-segment-field-off"></a><h3>ags_segment_field_off ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_segment_field_off               (<em class="parameter"><code><a href="ags-AgsSegment.html#AgsSegment"><span class="type">AgsSegment</span></a> *segment</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> field</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-segment-field-on"></a><h3>ags_segment_field_on ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_segment_field_on                (<em class="parameter"><code><a href="ags-AgsSegment.html#AgsSegment"><span class="type">AgsSegment</span></a> *segment</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> field</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-segment-new"></a><h3>ags_segment_new ()</h3>
+<pre class="programlisting"><a href="ags-AgsSegment.html#AgsSegment"><span class="returnvalue">AgsSegment</span></a> *        ags_segment_new                     ();</pre>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

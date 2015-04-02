@@ -1,0 +1,130 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>ags_note_edit_callbacks</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer">
+<link rel="up" href="ch01.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td> </td>
+<td><a accesskey="u" href="ch01.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer</th>
+<td> </td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#ags-ags-note-edit-callbacks.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#ags-ags-note-edit-callbacks.description" class="shortcut">Description</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="ags-ags-note-edit-callbacks"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="ags-ags-note-edit-callbacks.top_of_page"></a>ags_note_edit_callbacks</span></h2>
+<p>ags_note_edit_callbacks</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="ags-ags-note-edit-callbacks.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis"><a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            <a href="ags-ags-note-edit-callbacks.html#ags-note-edit-drawing-area-button-press-event">ags_note_edit_drawing_area_button_press_event</a>
+                                                        (<em class="parameter"><code><a href="../gtk3/GtkWidget.html"><span class="type">GtkWidget</span></a> *widget</code></em>,
+                                                         <em class="parameter"><code><a href="../gdk3/gdk3-Event-Structures.html#GdkEventButton"><span class="type">GdkEventButton</span></a> *event</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsNoteEdit.html#AgsNoteEdit"><span class="type">AgsNoteEdit</span></a> *note_edit</code></em>);
+<a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            <a href="ags-ags-note-edit-callbacks.html#ags-note-edit-drawing-area-button-release-event">ags_note_edit_drawing_area_button_release_event</a>
+                                                        (<em class="parameter"><code><a href="../gtk3/GtkWidget.html"><span class="type">GtkWidget</span></a> *widget</code></em>,
+                                                         <em class="parameter"><code><a href="../gdk3/gdk3-Event-Structures.html#GdkEventButton"><span class="type">GdkEventButton</span></a> *event</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsNoteEdit.html#AgsNoteEdit"><span class="type">AgsNoteEdit</span></a> *note_edit</code></em>);
+<a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            <a href="ags-ags-note-edit-callbacks.html#ags-note-edit-drawing-area-configure-event">ags_note_edit_drawing_area_configure_event</a>
+                                                        (<em class="parameter"><code><a href="../gtk3/GtkWidget.html"><span class="type">GtkWidget</span></a> *widget</code></em>,
+                                                         <em class="parameter"><code><a href="../gdk3/gdk3-Event-Structures.html#GdkEventConfigure"><span class="type">GdkEventConfigure</span></a> *event</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsNoteEdit.html#AgsNoteEdit"><span class="type">AgsNoteEdit</span></a> *note_edit</code></em>);
+<a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            <a href="ags-ags-note-edit-callbacks.html#ags-note-edit-drawing-area-expose-event">ags_note_edit_drawing_area_expose_event</a>
+                                                        (<em class="parameter"><code><a href="../gtk3/GtkWidget.html"><span class="type">GtkWidget</span></a> *widget</code></em>,
+                                                         <em class="parameter"><code><a href="../gdk3/gdk3-Event-Structures.html#GdkEventExpose"><span class="type">GdkEventExpose</span></a> *event</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsNoteEdit.html#AgsNoteEdit"><span class="type">AgsNoteEdit</span></a> *note_edit</code></em>);
+<a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            <a href="ags-ags-note-edit-callbacks.html#ags-note-edit-drawing-area-motion-notify-event">ags_note_edit_drawing_area_motion_notify_event</a>
+                                                        (<em class="parameter"><code><a href="../gtk3/GtkWidget.html"><span class="type">GtkWidget</span></a> *widget</code></em>,
+                                                         <em class="parameter"><code><a href="../gdk3/gdk3-Event-Structures.html#GdkEventMotion"><span class="type">GdkEventMotion</span></a> *event</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsNoteEdit.html#AgsNoteEdit"><span class="type">AgsNoteEdit</span></a> *note_edit</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-ags-note-edit-callbacks.html#ags-note-edit-hscrollbar-value-changed">ags_note_edit_hscrollbar_value_changed</a>
+                                                        (<em class="parameter"><code><a href="../gtk3/GtkRange.html"><span class="type">GtkRange</span></a> *range</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsNoteEdit.html#AgsNoteEdit"><span class="type">AgsNoteEdit</span></a> *note_edit</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-ags-note-edit-callbacks.html#ags-note-edit-vscrollbar-value-changed">ags_note_edit_vscrollbar_value_changed</a>
+                                                        (<em class="parameter"><code><a href="../gtk3/GtkRange.html"><span class="type">GtkRange</span></a> *range</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsNoteEdit.html#AgsNoteEdit"><span class="type">AgsNoteEdit</span></a> *note_edit</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="ags-ags-note-edit-callbacks.description"></a><h2>Description</h2>
+</div>
+<div class="refsect1">
+<a name="ags-ags-note-edit-callbacks.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="ags-note-edit-drawing-area-button-press-event"></a><h3>ags_note_edit_drawing_area_button_press_event ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            ags_note_edit_drawing_area_button_press_event
+                                                        (<em class="parameter"><code><a href="../gtk3/GtkWidget.html"><span class="type">GtkWidget</span></a> *widget</code></em>,
+                                                         <em class="parameter"><code><a href="../gdk3/gdk3-Event-Structures.html#GdkEventButton"><span class="type">GdkEventButton</span></a> *event</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsNoteEdit.html#AgsNoteEdit"><span class="type">AgsNoteEdit</span></a> *note_edit</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-note-edit-drawing-area-button-release-event"></a><h3>ags_note_edit_drawing_area_button_release_event ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            ags_note_edit_drawing_area_button_release_event
+                                                        (<em class="parameter"><code><a href="../gtk3/GtkWidget.html"><span class="type">GtkWidget</span></a> *widget</code></em>,
+                                                         <em class="parameter"><code><a href="../gdk3/gdk3-Event-Structures.html#GdkEventButton"><span class="type">GdkEventButton</span></a> *event</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsNoteEdit.html#AgsNoteEdit"><span class="type">AgsNoteEdit</span></a> *note_edit</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-note-edit-drawing-area-configure-event"></a><h3>ags_note_edit_drawing_area_configure_event ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            ags_note_edit_drawing_area_configure_event
+                                                        (<em class="parameter"><code><a href="../gtk3/GtkWidget.html"><span class="type">GtkWidget</span></a> *widget</code></em>,
+                                                         <em class="parameter"><code><a href="../gdk3/gdk3-Event-Structures.html#GdkEventConfigure"><span class="type">GdkEventConfigure</span></a> *event</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsNoteEdit.html#AgsNoteEdit"><span class="type">AgsNoteEdit</span></a> *note_edit</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-note-edit-drawing-area-expose-event"></a><h3>ags_note_edit_drawing_area_expose_event ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            ags_note_edit_drawing_area_expose_event
+                                                        (<em class="parameter"><code><a href="../gtk3/GtkWidget.html"><span class="type">GtkWidget</span></a> *widget</code></em>,
+                                                         <em class="parameter"><code><a href="../gdk3/gdk3-Event-Structures.html#GdkEventExpose"><span class="type">GdkEventExpose</span></a> *event</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsNoteEdit.html#AgsNoteEdit"><span class="type">AgsNoteEdit</span></a> *note_edit</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-note-edit-drawing-area-motion-notify-event"></a><h3>ags_note_edit_drawing_area_motion_notify_event ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            ags_note_edit_drawing_area_motion_notify_event
+                                                        (<em class="parameter"><code><a href="../gtk3/GtkWidget.html"><span class="type">GtkWidget</span></a> *widget</code></em>,
+                                                         <em class="parameter"><code><a href="../gdk3/gdk3-Event-Structures.html#GdkEventMotion"><span class="type">GdkEventMotion</span></a> *event</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsNoteEdit.html#AgsNoteEdit"><span class="type">AgsNoteEdit</span></a> *note_edit</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-note-edit-hscrollbar-value-changed"></a><h3>ags_note_edit_hscrollbar_value_changed ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_note_edit_hscrollbar_value_changed
+                                                        (<em class="parameter"><code><a href="../gtk3/GtkRange.html"><span class="type">GtkRange</span></a> *range</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsNoteEdit.html#AgsNoteEdit"><span class="type">AgsNoteEdit</span></a> *note_edit</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-note-edit-vscrollbar-value-changed"></a><h3>ags_note_edit_vscrollbar_value_changed ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_note_edit_vscrollbar_value_changed
+                                                        (<em class="parameter"><code><a href="../gtk3/GtkRange.html"><span class="type">GtkRange</span></a> *range</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsNoteEdit.html#AgsNoteEdit"><span class="type">AgsNoteEdit</span></a> *note_edit</code></em>);</pre>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

@@ -1,0 +1,125 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsSynthInputPad</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="engines.html" title="Engines - Composite widgets with audio set up">
+<link rel="prev" href="AgsSynthInputLine.html" title="AgsSynthInputLine">
+<link rel="next" href="AgsOscillator.html" title="AgsOscillator">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="AgsSynthInputLine.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="engines.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="AgsOscillator.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#AgsSynthInputPad.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#AgsSynthInputPad.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#AgsSynthInputPad.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#AgsSynthInputPad.implemented-interfaces" class="shortcut">Implemented Interfaces</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="AgsSynthInputPad"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="AgsSynthInputPad.top_of_page"></a>AgsSynthInputPad</span></h2>
+<p>AgsSynthInputPad — synth input pad</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="AgsSynthInputPad.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">
+#include &lt;ags/X/machine/ags_synth_input_pad.h&gt;
+
+struct              <a class="link" href="AgsSynthInputPad.html#AgsSynthInputPad-struct" title="struct AgsSynthInputPad">AgsSynthInputPad</a>;
+struct              <a class="link" href="AgsSynthInputPad.html#AgsSynthInputPadClass" title="struct AgsSynthInputPadClass">AgsSynthInputPadClass</a>;
+<a class="link" href="AgsSynthInputPad.html" title="AgsSynthInputPad"><span class="returnvalue">AgsSynthInputPad</span></a> *  <a class="link" href="AgsSynthInputPad.html#ags-synth-input-pad-new" title="ags_synth_input_pad_new ()">ags_synth_input_pad_new</a>             (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsSynthInputPad.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  <a href="../gobject/gobject-The-Base-Object-Type.html#GObject">GObject</a>
+   +----<a href="../gobject/gobject-The-Base-Object-Type.html#GInitiallyUnowned">GInitiallyUnowned</a>
+         +----<a href="../gtk/GtkObject.html">GtkObject</a>
+               +----<a href="../gtk3/GtkWidget.html">GtkWidget</a>
+                     +----<a href="../gtk3/GtkContainer.html">GtkContainer</a>
+                           +----<a href="../gtk3/GtkBox.html">GtkBox</a>
+                                 +----<a href="../gtk3/GtkVBox.html">GtkVBox</a>
+                                       +----<a class="link" href="AgsPad.html" title="AgsPad">AgsPad</a>
+                                             +----AgsSynthInputPad
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsSynthInputPad.implemented-interfaces"></a><h2>Implemented Interfaces</h2>
+<p>
+AgsSynthInputPad implements
+ AtkImplementorIface,  <a href="../gtk3/GtkBuildable.html">GtkBuildable</a>,  <a href="../gtk3/gtk3-Orientable.html#GtkOrientable">GtkOrientable</a>,  AgsConnectable and  <a class="link" href="AgsPlugin.html" title="AgsPlugin">AgsPlugin</a>.</p>
+</div>
+<div class="refsect1">
+<a name="AgsSynthInputPad.description"></a><h2>Description</h2>
+<p>
+The <a class="link" href="AgsSynthInputPad.html" title="AgsSynthInputPad"><span class="type">AgsSynthInputPad</span></a> is a composite widget to act as synth input pad.
+</p>
+</div>
+<div class="refsect1">
+<a name="AgsSynthInputPad.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AgsSynthInputPad-struct"></a><h3>struct AgsSynthInputPad</h3>
+<pre class="programlisting">struct AgsSynthInputPad;</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsSynthInputPadClass"></a><h3>struct AgsSynthInputPadClass</h3>
+<pre class="programlisting">struct AgsSynthInputPadClass {
+  AgsPadClass pad;
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-synth-input-pad-new"></a><h3>ags_synth_input_pad_new ()</h3>
+<pre class="programlisting"><a class="link" href="AgsSynthInputPad.html" title="AgsSynthInputPad"><span class="returnvalue">AgsSynthInputPad</span></a> *  ags_synth_input_pad_new             (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>);</pre>
+<p>
+Creates an <a class="link" href="AgsSynthInputPad.html" title="AgsSynthInputPad"><span class="type">AgsSynthInputPad</span></a>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>channel</code></em> :</span></p></td>
+<td>the assigned channel</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new <a class="link" href="AgsSynthInputPad.html" title="AgsSynthInputPad"><span class="type">AgsSynthInputPad</span></a>
+</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

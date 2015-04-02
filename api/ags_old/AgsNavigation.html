@@ -1,0 +1,218 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsNavigation</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="composite-widgets.html" title="Composite widgets">
+<link rel="prev" href="ags-ags-menu-bar-callbacks.html" title="ags_menu_bar_callbacks">
+<link rel="next" href="ags-ags-navigation-callbacks.html" title="ags_navigation_callbacks">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="ags-ags-menu-bar-callbacks.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="composite-widgets.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="ags-ags-navigation-callbacks.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#AgsNavigation.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#AgsNavigation.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#AgsNavigation.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#AgsNavigation.implemented-interfaces" class="shortcut">Implemented Interfaces</a>
+                   | 
+                  <a href="#AgsNavigation.properties" class="shortcut">Properties</a>
+                   | 
+                  <a href="#AgsNavigation.signals" class="shortcut">Signals</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="AgsNavigation"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="AgsNavigation.top_of_page"></a>AgsNavigation</span></h2>
+<p>AgsNavigation</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="AgsNavigation.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">#define             <a class="link" href="AgsNavigation.html#AGS-NAVIGATION-DEFAULT-TACT-STEP:CAPS" title="AGS_NAVIGATION_DEFAULT_TACT_STEP">AGS_NAVIGATION_DEFAULT_TACT_STEP</a>
+#define             <a class="link" href="AgsNavigation.html#AGS-NAVIGATION-REWIND-STEPS:CAPS" title="AGS_NAVIGATION_REWIND_STEPS">AGS_NAVIGATION_REWIND_STEPS</a>
+#define             <a class="link" href="AgsNavigation.html#AGS-NAVIGATION-SEEK-STEPS:CAPS" title="AGS_NAVIGATION_SEEK_STEPS">AGS_NAVIGATION_SEEK_STEPS</a>
+struct              <a class="link" href="AgsNavigation.html#AgsNavigation-struct" title="struct AgsNavigation">AgsNavigation</a>;
+struct              <a class="link" href="AgsNavigation.html#AgsNavigationClass" title="struct AgsNavigationClass">AgsNavigationClass</a>;
+enum                <a class="link" href="AgsNavigation.html#AgsNavigationFlags" title="enum AgsNavigationFlags">AgsNavigationFlags</a>;
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="AgsNavigation.html#ags-navigation-change-position" title="ags_navigation_change_position ()">ags_navigation_change_position</a>      (<em class="parameter"><code><a class="link" href="AgsNavigation.html" title="AgsNavigation"><span class="type">AgsNavigation</span></a> *navigation</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gdouble"><span class="type">gdouble</span></GTKDOCLINK> tact</code></em>);
+<a class="link" href="AgsNavigation.html" title="AgsNavigation"><span class="returnvalue">AgsNavigation</span></a> *     <a class="link" href="AgsNavigation.html#ags-navigation-new" title="ags_navigation_new ()">ags_navigation_new</a>                  ();
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="AgsNavigation.html#ags-navigation-set-seeking-sensitive" title="ags_navigation_set_seeking_sensitive ()">ags_navigation_set_seeking_sensitive</a>
+                                                        (<em class="parameter"><code><a class="link" href="AgsNavigation.html" title="AgsNavigation"><span class="type">AgsNavigation</span></a> *navigation</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gboolean"><span class="type">gboolean</span></GTKDOCLINK> enabled</code></em>);
+<GTKDOCLINK HREF="gchar"><span class="returnvalue">gchar</span></GTKDOCLINK> *             <a class="link" href="AgsNavigation.html#ags-navigation-tact-to-time-string" title="ags_navigation_tact_to_time_string ()">ags_navigation_tact_to_time_string</a>  (<em class="parameter"><code><GTKDOCLINK HREF="gdouble"><span class="type">gdouble</span></GTKDOCLINK> tact</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="AgsNavigation.html#ags-navigation-update-time-string" title="ags_navigation_update_time_string ()">ags_navigation_update_time_string</a>   (<em class="parameter"><code><GTKDOCLINK HREF="double"><span class="type">double</span></GTKDOCLINK> tact</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *time_string</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsNavigation.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  <GTKDOCLINK HREF="GObject">GObject</GTKDOCLINK>
+   +----<GTKDOCLINK HREF="GInitiallyUnowned">GInitiallyUnowned</GTKDOCLINK>
+         +----<GTKDOCLINK HREF="GtkObject">GtkObject</GTKDOCLINK>
+               +----<GTKDOCLINK HREF="GtkWidget">GtkWidget</GTKDOCLINK>
+                     +----<GTKDOCLINK HREF="GtkContainer">GtkContainer</GTKDOCLINK>
+                           +----<GTKDOCLINK HREF="GtkBox">GtkBox</GTKDOCLINK>
+                                 +----<GTKDOCLINK HREF="GtkVBox">GtkVBox</GTKDOCLINK>
+                                       +----AgsNavigation
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsNavigation.implemented-interfaces"></a><h2>Implemented Interfaces</h2>
+<p>
+AgsNavigation implements
+ <GTKDOCLINK HREF="AtkImplementorIface">AtkImplementorIface</GTKDOCLINK>,  <GTKDOCLINK HREF="GtkBuildable">GtkBuildable</GTKDOCLINK>,  <GTKDOCLINK HREF="GtkOrientable">GtkOrientable</GTKDOCLINK> and  <GTKDOCLINK HREF="AgsConnectable">AgsConnectable</GTKDOCLINK>.</p>
+</div>
+<div class="refsect1">
+<a name="AgsNavigation.properties"></a><h2>Properties</h2>
+<pre class="synopsis">
+  "<a class="link" href="AgsNavigation.html#AgsNavigation--devout" title='The "devout" property'>devout</a>"                   <GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK>*              : Read / Write
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsNavigation.signals"></a><h2>Signals</h2>
+<pre class="synopsis">
+  "<a class="link" href="AgsNavigation.html#AgsNavigation-change-position" title='The "change-position" signal'>change-position</a>"                                : <GTKDOCLINK HREF="G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></GTKDOCLINK>
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsNavigation.description"></a><h2>Description</h2>
+<p>
+</p>
+</div>
+<div class="refsect1">
+<a name="AgsNavigation.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AGS-NAVIGATION-DEFAULT-TACT-STEP:CAPS"></a><h3>AGS_NAVIGATION_DEFAULT_TACT_STEP</h3>
+<pre class="programlisting">#define AGS_NAVIGATION_DEFAULT_TACT_STEP (1.0)
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-NAVIGATION-REWIND-STEPS:CAPS"></a><h3>AGS_NAVIGATION_REWIND_STEPS</h3>
+<pre class="programlisting">#define AGS_NAVIGATION_REWIND_STEPS (4.0)
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-NAVIGATION-SEEK-STEPS:CAPS"></a><h3>AGS_NAVIGATION_SEEK_STEPS</h3>
+<pre class="programlisting">#define AGS_NAVIGATION_SEEK_STEPS (1.0)
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsNavigation-struct"></a><h3>struct AgsNavigation</h3>
+<pre class="programlisting">struct AgsNavigation;</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsNavigationClass"></a><h3>struct AgsNavigationClass</h3>
+<pre class="programlisting">struct AgsNavigationClass {
+  GtkVBoxClass vbox;
+
+  void (*change_position)(AgsNavigation *navigation,
+			  gdouble tact);
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsNavigationFlags"></a><h3>enum AgsNavigationFlags</h3>
+<pre class="programlisting">typedef enum {
+  AGS_NAVIGATION_BLOCK_TACT   = 1,
+} AgsNavigationFlags;
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-navigation-change-position"></a><h3>ags_navigation_change_position ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_navigation_change_position      (<em class="parameter"><code><a class="link" href="AgsNavigation.html" title="AgsNavigation"><span class="type">AgsNavigation</span></a> *navigation</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gdouble"><span class="type">gdouble</span></GTKDOCLINK> tact</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-navigation-new"></a><h3>ags_navigation_new ()</h3>
+<pre class="programlisting"><a class="link" href="AgsNavigation.html" title="AgsNavigation"><span class="returnvalue">AgsNavigation</span></a> *     ags_navigation_new                  ();</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-navigation-set-seeking-sensitive"></a><h3>ags_navigation_set_seeking_sensitive ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_navigation_set_seeking_sensitive
+                                                        (<em class="parameter"><code><a class="link" href="AgsNavigation.html" title="AgsNavigation"><span class="type">AgsNavigation</span></a> *navigation</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gboolean"><span class="type">gboolean</span></GTKDOCLINK> enabled</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-navigation-tact-to-time-string"></a><h3>ags_navigation_tact_to_time_string ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="gchar"><span class="returnvalue">gchar</span></GTKDOCLINK> *             ags_navigation_tact_to_time_string  (<em class="parameter"><code><GTKDOCLINK HREF="gdouble"><span class="type">gdouble</span></GTKDOCLINK> tact</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-navigation-update-time-string"></a><h3>ags_navigation_update_time_string ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_navigation_update_time_string   (<em class="parameter"><code><GTKDOCLINK HREF="double"><span class="type">double</span></GTKDOCLINK> tact</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *time_string</code></em>);</pre>
+<p>
+</p>
+</div>
+</div>
+<div class="refsect1">
+<a name="AgsNavigation.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="AgsNavigation--devout"></a><h3>The <code class="literal">"devout"</code> property</h3>
+<pre class="programlisting">  "devout"                   <GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK>*              : Read / Write</pre>
+<p>The devout it is assigned with.</p>
+</div>
+</div>
+<div class="refsect1">
+<a name="AgsNavigation.signal-details"></a><h2>Signal Details</h2>
+<div class="refsect2">
+<a name="AgsNavigation-change-position"></a><h3>The <code class="literal">"change-position"</code> signal</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                user_function                      (<a class="link" href="AgsNavigation.html" title="AgsNavigation"><span class="type">AgsNavigation</span></a> *agsnavigation,
+                                                        <GTKDOCLINK HREF="gdouble"><span class="type">gdouble</span></GTKDOCLINK>        arg1,
+                                                        <GTKDOCLINK HREF="gpointer"><span class="type">gpointer</span></GTKDOCLINK>       user_data)          : <GTKDOCLINK HREF="G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></GTKDOCLINK></pre>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

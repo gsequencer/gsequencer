@@ -1,0 +1,27 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>AgsRemoveRegionFromSelection</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="ags Reference Manual"><link rel="up" href="ch01.html" title="Chapter 1. [Insert title here]"><link rel="prev" href="re229.html" title="AgsRemoveRecall"><link rel="next" href="re231.html" title="AgsResizeEditor"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="refentry"><a name="ags-AgsRemoveRegionFromSelection"></a><div class="titlepage"></div><div class="refnamediv"><h2>Name</h2><p>AgsRemoveRegionFromSelection</p></div><div class="refsynopsisdiv"><a name="ags-AgsRemoveRegionFromSelection.synopsis"></a><h2>Synopsis</h2><pre class="synopsis">struct              <a class="link" href="re230.html#AgsRemoveRegionFromSelection" title="struct AgsRemoveRegionFromSelection">AgsRemoveRegionFromSelection</a>;
+struct              <a class="link" href="re230.html#AgsRemoveRegionFromSelectionClass" title="struct AgsRemoveRegionFromSelectionClass">AgsRemoveRegionFromSelectionClass</a>;
+<a class="link" href="re230.html#AgsRemoveRegionFromSelection" title="struct AgsRemoveRegionFromSelection"><span class="returnvalue">AgsRemoveRegionFromSelection</span></a> * <a class="link" href="re230.html#ags-remove-region-from-selection-new" title="ags_remove_region_from_selection_new ()">ags_remove_region_from_selection_new</a>
+                                                        (<em class="parameter"><code><a class="link" href="re158.html#AgsNotation" title="struct AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">guint</span></a> x0</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">guint</span></a> y0</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">guint</span></a> x1</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">guint</span></a> y1</code></em>);
+</pre></div><div class="refsect1"><a name="ags-AgsRemoveRegionFromSelection.description"></a><h2>Description</h2></div><div class="refsect1"><a name="ags-AgsRemoveRegionFromSelection.details"></a><h2>Details</h2><div class="refsect2"><a name="AgsRemoveRegionFromSelection"></a><h3>struct AgsRemoveRegionFromSelection</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsRemoveRegionFromSelection"></OBJECT><pre class="programlisting">struct AgsRemoveRegionFromSelection {
+  AgsTask task;
+
+  AgsNotation *notation;
+
+  guint x0;
+  guint y0;
+  guint x1;
+  guint y1;
+};
+</pre></div><div class="refsect2"><a name="AgsRemoveRegionFromSelectionClass"></a><h3>struct AgsRemoveRegionFromSelectionClass</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="AgsRemoveRegionFromSelectionClass"></OBJECT><pre class="programlisting">struct AgsRemoveRegionFromSelectionClass {
+  AgsTaskClass task;
+};
+</pre></div><div class="refsect2"><a name="ags-remove-region-from-selection-new"></a><h3>ags_remove_region_from_selection_new ()</h3><OBJECT type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e"><param name="Keyword" value="ags_remove_region_from_selection_new"></OBJECT><pre class="programlisting"><a class="link" href="re230.html#AgsRemoveRegionFromSelection" title="struct AgsRemoveRegionFromSelection"><span class="returnvalue">AgsRemoveRegionFromSelection</span></a> * ags_remove_region_from_selection_new
+                                                        (<em class="parameter"><code><a class="link" href="re158.html#AgsNotation" title="struct AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">guint</span></a> x0</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">guint</span></a> y0</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">guint</span></a> x1</code></em>,
+                                                         <em class="parameter"><code><a class="link" href=""><span class="type">guint</span></a> y1</code></em>);</pre></div></div></div></body></html>

@@ -1,0 +1,227 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsPlugin</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="object.html" title="Part II. Object - Interfaces and marshallers">
+<link rel="prev" href="AgsPlayable.html" title="AgsPlayable">
+<link rel="next" href="plugin.html" title="Part III. Plugin - API of plugins">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="AgsPlayable.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="object.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="plugin.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#AgsPlugin.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#AgsPlugin.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#AgsPlugin.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#AgsPlugin.implementations" class="shortcut">Known Implementations</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="AgsPlugin"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="AgsPlugin.top_of_page"></a>AgsPlugin</span></h2>
+<p>AgsPlugin</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="AgsPlugin.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">typedef             <a class="link" href="AgsPlugin.html" title="AgsPlugin">AgsPlugin</a>;
+struct              <a class="link" href="AgsPlugin.html#AgsPluginInterface" title="struct AgsPluginInterface">AgsPluginInterface</a>;
+<GTKDOCLINK HREF="gchar"><span class="returnvalue">gchar</span></GTKDOCLINK> *             <a class="link" href="AgsPlugin.html#ags-plugin-get-build-id" title="ags_plugin_get_build_id ()">ags_plugin_get_build_id</a>             (<em class="parameter"><code><a class="link" href="AgsPlugin.html" title="AgsPlugin"><span class="type">AgsPlugin</span></a> *plugin</code></em>);
+<GTKDOCLINK HREF="gchar"><span class="returnvalue">gchar</span></GTKDOCLINK> *             <a class="link" href="AgsPlugin.html#ags-plugin-get-name" title="ags_plugin_get_name ()">ags_plugin_get_name</a>                 (<em class="parameter"><code><a class="link" href="AgsPlugin.html" title="AgsPlugin"><span class="type">AgsPlugin</span></a> *plugin</code></em>);
+<GTKDOCLINK HREF="GList"><span class="returnvalue">GList</span></GTKDOCLINK> *             <a class="link" href="AgsPlugin.html#ags-plugin-get-ports" title="ags_plugin_get_ports ()">ags_plugin_get_ports</a>                (<em class="parameter"><code><a class="link" href="AgsPlugin.html" title="AgsPlugin"><span class="type">AgsPlugin</span></a> *plugin</code></em>);
+<GTKDOCLINK HREF="gchar"><span class="returnvalue">gchar</span></GTKDOCLINK> *             <a class="link" href="AgsPlugin.html#ags-plugin-get-version" title="ags_plugin_get_version ()">ags_plugin_get_version</a>              (<em class="parameter"><code><a class="link" href="AgsPlugin.html" title="AgsPlugin"><span class="type">AgsPlugin</span></a> *plugin</code></em>);
+<GTKDOCLINK HREF="gchar"><span class="returnvalue">gchar</span></GTKDOCLINK> *             <a class="link" href="AgsPlugin.html#ags-plugin-get-xml-type" title="ags_plugin_get_xml_type ()">ags_plugin_get_xml_type</a>             (<em class="parameter"><code><a class="link" href="AgsPlugin.html" title="AgsPlugin"><span class="type">AgsPlugin</span></a> *plugin</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="AgsPlugin.html#ags-plugin-read" title="ags_plugin_read ()">ags_plugin_read</a>                     (<em class="parameter"><code><a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a> *file</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *node</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsPlugin.html" title="AgsPlugin"><span class="type">AgsPlugin</span></a> *plugin</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="AgsPlugin.html#ags-plugin-set-build-id" title="ags_plugin_set_build_id ()">ags_plugin_set_build_id</a>             (<em class="parameter"><code><a class="link" href="AgsPlugin.html" title="AgsPlugin"><span class="type">AgsPlugin</span></a> *plugin</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *build_id</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="AgsPlugin.html#ags-plugin-set-name" title="ags_plugin_set_name ()">ags_plugin_set_name</a>                 (<em class="parameter"><code><a class="link" href="AgsPlugin.html" title="AgsPlugin"><span class="type">AgsPlugin</span></a> *plugin</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *name</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="AgsPlugin.html#ags-plugin-set-ports" title="ags_plugin_set_ports ()">ags_plugin_set_ports</a>                (<em class="parameter"><code><a class="link" href="AgsPlugin.html" title="AgsPlugin"><span class="type">AgsPlugin</span></a> *plugin</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> *ports</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="AgsPlugin.html#ags-plugin-set-version" title="ags_plugin_set_version ()">ags_plugin_set_version</a>              (<em class="parameter"><code><a class="link" href="AgsPlugin.html" title="AgsPlugin"><span class="type">AgsPlugin</span></a> *plugin</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *version</code></em>);
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                <a class="link" href="AgsPlugin.html#ags-plugin-set-xml-type" title="ags_plugin_set_xml_type ()">ags_plugin_set_xml_type</a>             (<em class="parameter"><code><a class="link" href="AgsPlugin.html" title="AgsPlugin"><span class="type">AgsPlugin</span></a> *plugin</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *xml_type</code></em>);
+<GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *           <a class="link" href="AgsPlugin.html#ags-plugin-write" title="ags_plugin_write ()">ags_plugin_write</a>                    (<em class="parameter"><code><a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a> *file</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *parent</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsPlugin.html" title="AgsPlugin"><span class="type">AgsPlugin</span></a> *plugin</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsPlugin.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  <GTKDOCLINK HREF="GInterface">GInterface</GTKDOCLINK>
+   +----AgsPlugin
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsPlugin.implementations"></a><h2>Known Implementations</h2>
+<p>
+AgsPlugin is implemented by
+ <a class="link" href="AgsBufferAudioSignal.html" title="AgsBufferAudioSignal">AgsBufferAudioSignal</a>,  <a class="link" href="AgsBufferChannel.html" title="AgsBufferChannel">AgsBufferChannel</a>,  <a class="link" href="AgsBufferChannelRun.html" title="AgsBufferChannelRun">AgsBufferChannelRun</a>,  <a class="link" href="AgsBufferRecycling.html" title="AgsBufferRecycling">AgsBufferRecycling</a>,  <a class="link" href="AgsCopyAudioSignal.html" title="AgsCopyAudioSignal">AgsCopyAudioSignal</a>,  <a class="link" href="AgsCopyChannel.html" title="AgsCopyChannel">AgsCopyChannel</a>,  <a class="link" href="AgsCopyChannelRun.html" title="AgsCopyChannelRun">AgsCopyChannelRun</a>,  <a class="link" href="AgsCopyNotationAudio.html" title="AgsCopyNotationAudio">AgsCopyNotationAudio</a>,  <a class="link" href="AgsCopyNotationAudioRun.html" title="AgsCopyNotationAudioRun">AgsCopyNotationAudioRun</a>,  <a class="link" href="AgsCopyPatternAudio.html" title="AgsCopyPatternAudio">AgsCopyPatternAudio</a>,  <a class="link" href="AgsCopyPatternAudioRun.html" title="AgsCopyPatternAudioRun">AgsCopyPatternAudioRun</a>,  <a class="link" href="AgsCopyPatternChannel.html" title="AgsCopyPatternChannel">AgsCopyPatternChannel</a>,  <a class="link" href="AgsCopyPatternChannelRun.html" title="AgsCopyPatternChannelRun">AgsCopyPatternChannelRun</a>,  <a class="link" href="AgsCopyRecycling.html" title="AgsCopyRecycling">AgsCopyRecycling</a>,  <a class="link" href="AgsCountBeatsAudio.html" title="AgsCountBeatsAudio">AgsCountBeatsAudio</a>,  <a class="link" href="AgsCountBeatsAudioRun.html" title="AgsCountBeatsAudioRun">AgsCountBeatsAudioRun</a>,  <a class="link" href="AgsDelayAudio.html" title="AgsDelayAudio">AgsDelayAudio</a>,  <a class="link" href="AgsDelayAudioRun.html" title="AgsDelayAudioRun">AgsDelayAudioRun</a>,  <a class="link" href="AgsDrum.html" title="AgsDrum">AgsDrum</a>,  <a class="link" href="AgsDrumInputLine.html" title="AgsDrumInputLine">AgsDrumInputLine</a>,  <a class="link" href="AgsDrumInputPad.html" title="AgsDrumInputPad">AgsDrumInputPad</a>,  <a class="link" href="AgsDrumOutputLine.html" title="AgsDrumOutputLine">AgsDrumOutputLine</a>,  <a class="link" href="AgsDrumOutputPad.html" title="AgsDrumOutputPad">AgsDrumOutputPad</a>,  <a class="link" href="AgsFFPlayer.html" title="AgsFFPlayer">AgsFFPlayer</a>,  <a class="link" href="AgsLine.html" title="AgsLine">AgsLine</a>,  <a class="link" href="AgsLoopChannel.html" title="AgsLoopChannel">AgsLoopChannel</a>,  <a class="link" href="AgsLoopChannelRun.html" title="AgsLoopChannelRun">AgsLoopChannelRun</a>,  <a class="link" href="AgsMachine.html" title="AgsMachine">AgsMachine</a>,  <a class="link" href="AgsMatrix.html" title="AgsMatrix">AgsMatrix</a>,  <a class="link" href="AgsMixer.html" title="AgsMixer">AgsMixer</a>,  <a class="link" href="AgsMixerInputLine.html" title="AgsMixerInputLine">AgsMixerInputLine</a>,  <a class="link" href="AgsMixerInputPad.html" title="AgsMixerInputPad">AgsMixerInputPad</a>,  <a class="link" href="AgsMuteAudio.html" title="AgsMuteAudio">AgsMuteAudio</a>,  <a class="link" href="AgsMuteAudioSignal.html" title="AgsMuteAudioSignal">AgsMuteAudioSignal</a>,  <a class="link" href="AgsMuteChannel.html" title="AgsMuteChannel">AgsMuteChannel</a>,  <a class="link" href="AgsMuteChannelRun.html" title="AgsMuteChannelRun">AgsMuteChannelRun</a>,  <a class="link" href="AgsMuteRecycling.html" title="AgsMuteRecycling">AgsMuteRecycling</a>,  <a class="link" href="AgsPad.html" title="AgsPad">AgsPad</a>,  <a class="link" href="AgsPanel.html" title="AgsPanel">AgsPanel</a>,  <a class="link" href="AgsPanelInputLine.html" title="AgsPanelInputLine">AgsPanelInputLine</a>,  <a class="link" href="AgsPanelInputPad.html" title="AgsPanelInputPad">AgsPanelInputPad</a>,  <a class="link" href="AgsPeakChannel.html" title="AgsPeakChannel">AgsPeakChannel</a>,  <a class="link" href="AgsPeakChannelRun.html" title="AgsPeakChannelRun">AgsPeakChannelRun</a>,  <a class="link" href="AgsPlayAudio.html" title="AgsPlayAudio">AgsPlayAudio</a>,  <a class="link" href="AgsPlayAudioFile.html" title="AgsPlayAudioFile">AgsPlayAudioFile</a>,  <a class="link" href="AgsPlayAudioSignal.html" title="AgsPlayAudioSignal">AgsPlayAudioSignal</a>,  <a class="link" href="AgsPlayChannel.html" title="AgsPlayChannel">AgsPlayChannel</a>,  <a class="link" href="AgsPlayChannelRun.html" title="AgsPlayChannelRun">AgsPlayChannelRun</a>,  <a class="link" href="AgsPlayChannelRunMaster.html" title="AgsPlayChannelRunMaster">AgsPlayChannelRunMaster</a>,  <a class="link" href="AgsPlayNotationAudio.html" title="AgsPlayNotationAudio">AgsPlayNotationAudio</a>,  <a class="link" href="AgsPlayNotationAudioRun.html" title="AgsPlayNotationAudioRun">AgsPlayNotationAudioRun</a>,  <a class="link" href="AgsPlayNote.html" title="AgsPlayNote">AgsPlayNote</a>,  <a class="link" href="AgsPlayPattern.html" title="AgsPlayPattern">AgsPlayPattern</a>,  <a class="link" href="AgsPlayRecycling.html" title="AgsPlayRecycling">AgsPlayRecycling</a>,  <a class="link" href="AgsRecall.html" title="AgsRecall">AgsRecall</a>,  <a class="link" href="AgsRecallAudio.html" title="AgsRecallAudio">AgsRecallAudio</a>,  <a class="link" href="AgsRecallAudioRun.html" title="AgsRecallAudioRun">AgsRecallAudioRun</a>,  <a class="link" href="AgsRecallAudioSignal.html" title="AgsRecallAudioSignal">AgsRecallAudioSignal</a>,  <a class="link" href="AgsRecallChannel.html" title="AgsRecallChannel">AgsRecallChannel</a>,  <a class="link" href="AgsRecallChannelRun.html" title="AgsRecallChannelRun">AgsRecallChannelRun</a>,  <a class="link" href="AgsRecallChannelRunDummy.html" title="AgsRecallChannelRunDummy">AgsRecallChannelRunDummy</a>,  <a class="link" href="AgsRecallLadspa.html" title="AgsRecallLadspa">AgsRecallLadspa</a>,  <a class="link" href="AgsRecallLadspaRun.html" title="AgsRecallLadspaRun">AgsRecallLadspaRun</a>,  <a class="link" href="AgsRecallRecycling.html" title="AgsRecallRecycling">AgsRecallRecycling</a>,  <a class="link" href="AgsRecallRecyclingDummy.html" title="AgsRecallRecyclingDummy">AgsRecallRecyclingDummy</a>,  <a class="link" href="AgsStreamAudioSignal.html" title="AgsStreamAudioSignal">AgsStreamAudioSignal</a>,  <a class="link" href="AgsStreamChannel.html" title="AgsStreamChannel">AgsStreamChannel</a>,  <a class="link" href="AgsStreamChannelRun.html" title="AgsStreamChannelRun">AgsStreamChannelRun</a>,  <a class="link" href="AgsStreamRecycling.html" title="AgsStreamRecycling">AgsStreamRecycling</a>,  <a class="link" href="AgsSynth.html" title="AgsSynth">AgsSynth</a>,  <a class="link" href="AgsSynthInputLine.html" title="AgsSynthInputLine">AgsSynthInputLine</a>,  <a class="link" href="AgsSynthInputPad.html" title="AgsSynthInputPad">AgsSynthInputPad</a>,  <a class="link" href="AgsVolumeAudioSignal.html" title="AgsVolumeAudioSignal">AgsVolumeAudioSignal</a>,  <a class="link" href="AgsVolumeChannel.html" title="AgsVolumeChannel">AgsVolumeChannel</a>,  <a class="link" href="AgsVolumeChannelRun.html" title="AgsVolumeChannelRun">AgsVolumeChannelRun</a> and  <a class="link" href="AgsVolumeRecycling.html" title="AgsVolumeRecycling">AgsVolumeRecycling</a>.</p>
+</div>
+<div class="refsect1">
+<a name="AgsPlugin.description"></a><h2>Description</h2>
+<p>
+</p>
+</div>
+<div class="refsect1">
+<a name="AgsPlugin.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AgsPlugin"></a><h3>AgsPlugin</h3>
+<pre class="programlisting">typedef void AgsPlugin;
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsPluginInterface"></a><h3>struct AgsPluginInterface</h3>
+<pre class="programlisting">struct AgsPluginInterface {
+  GTypeInterface interface;
+  
+  gchar* (*get_name)(AgsPlugin *plugin);
+  void (*set_name)(AgsPlugin *plugin, gchar *name);
+
+  gchar* (*get_version)(AgsPlugin *plugin);
+  void (*set_version)(AgsPlugin *plugin, gchar *version);
+
+  gchar* (*get_build_id)(AgsPlugin *plugin);
+  void (*set_build_id)(AgsPlugin *plugin, gchar *build_id);
+
+  gchar* (*get_xml_type)(AgsPlugin *plugin);
+  void (*set_xml_type)(AgsPlugin *plugin, gchar *xml_type);  
+
+  GList* (*get_ports)(AgsPlugin *plugin);
+  void (*set_ports)(AgsPlugin *plugin, GList *ports);
+
+  void (*read)(AgsFile *file,
+	       xmlNode *node,
+	       AgsPlugin *plugin);
+  xmlNode* (*write)(AgsFile *file,
+		    xmlNode *parent,
+		    AgsPlugin *plugin);
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-plugin-get-build-id"></a><h3>ags_plugin_get_build_id ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="gchar"><span class="returnvalue">gchar</span></GTKDOCLINK> *             ags_plugin_get_build_id             (<em class="parameter"><code><a class="link" href="AgsPlugin.html" title="AgsPlugin"><span class="type">AgsPlugin</span></a> *plugin</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-plugin-get-name"></a><h3>ags_plugin_get_name ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="gchar"><span class="returnvalue">gchar</span></GTKDOCLINK> *             ags_plugin_get_name                 (<em class="parameter"><code><a class="link" href="AgsPlugin.html" title="AgsPlugin"><span class="type">AgsPlugin</span></a> *plugin</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-plugin-get-ports"></a><h3>ags_plugin_get_ports ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="GList"><span class="returnvalue">GList</span></GTKDOCLINK> *             ags_plugin_get_ports                (<em class="parameter"><code><a class="link" href="AgsPlugin.html" title="AgsPlugin"><span class="type">AgsPlugin</span></a> *plugin</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-plugin-get-version"></a><h3>ags_plugin_get_version ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="gchar"><span class="returnvalue">gchar</span></GTKDOCLINK> *             ags_plugin_get_version              (<em class="parameter"><code><a class="link" href="AgsPlugin.html" title="AgsPlugin"><span class="type">AgsPlugin</span></a> *plugin</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-plugin-get-xml-type"></a><h3>ags_plugin_get_xml_type ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="gchar"><span class="returnvalue">gchar</span></GTKDOCLINK> *             ags_plugin_get_xml_type             (<em class="parameter"><code><a class="link" href="AgsPlugin.html" title="AgsPlugin"><span class="type">AgsPlugin</span></a> *plugin</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-plugin-read"></a><h3>ags_plugin_read ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_plugin_read                     (<em class="parameter"><code><a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a> *file</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *node</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsPlugin.html" title="AgsPlugin"><span class="type">AgsPlugin</span></a> *plugin</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-plugin-set-build-id"></a><h3>ags_plugin_set_build_id ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_plugin_set_build_id             (<em class="parameter"><code><a class="link" href="AgsPlugin.html" title="AgsPlugin"><span class="type">AgsPlugin</span></a> *plugin</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *build_id</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-plugin-set-name"></a><h3>ags_plugin_set_name ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_plugin_set_name                 (<em class="parameter"><code><a class="link" href="AgsPlugin.html" title="AgsPlugin"><span class="type">AgsPlugin</span></a> *plugin</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *name</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-plugin-set-ports"></a><h3>ags_plugin_set_ports ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_plugin_set_ports                (<em class="parameter"><code><a class="link" href="AgsPlugin.html" title="AgsPlugin"><span class="type">AgsPlugin</span></a> *plugin</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> *ports</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-plugin-set-version"></a><h3>ags_plugin_set_version ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_plugin_set_version              (<em class="parameter"><code><a class="link" href="AgsPlugin.html" title="AgsPlugin"><span class="type">AgsPlugin</span></a> *plugin</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *version</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-plugin-set-xml-type"></a><h3>ags_plugin_set_xml_type ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>                ags_plugin_set_xml_type             (<em class="parameter"><code><a class="link" href="AgsPlugin.html" title="AgsPlugin"><span class="type">AgsPlugin</span></a> *plugin</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *xml_type</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-plugin-write"></a><h3>ags_plugin_write ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="xmlNode"><span class="returnvalue">xmlNode</span></GTKDOCLINK> *           ags_plugin_write                    (<em class="parameter"><code><a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a> *file</code></em>,
+                                                         <em class="parameter"><code><GTKDOCLINK HREF="xmlNode"><span class="type">xmlNode</span></GTKDOCLINK> *parent</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsPlugin.html" title="AgsPlugin"><span class="type">AgsPlugin</span></a> *plugin</code></em>);</pre>
+<p>
+</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

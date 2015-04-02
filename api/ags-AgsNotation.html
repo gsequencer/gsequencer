@@ -1,0 +1,970 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Advanced Gtk+ Sequencer Reference Manual: AgsNotation</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="audio.html" title="Part VII. The audio layer">
+<link rel="prev" href="ags-AgsInput.html" title="AgsInput">
+<link rel="next" href="ags-AgsNote.html" title="AgsNote">
+<meta name="generator" content="GTK-Doc V1.21 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#ags-AgsNotation.description" class="shortcut">Description</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="audio.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="ags-AgsInput.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="ags-AgsNote.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry">
+<a name="ags-AgsNotation"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="ags-AgsNotation.top_of_page"></a>AgsNotation</span></h2>
+<p>AgsNotation — Notation class supporting selection and clipboard.</p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1">
+<a name="ags-AgsNotation.functions"></a><h2>Functions</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="functions_return">
+<col class="functions_name">
+</colgroup>
+<tbody>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a class="link" href="ags-AgsNotation.html#AGS-NOTATION-DEFAULT-BPM:CAPS" title="AGS_NOTATION_DEFAULT_BPM">AGS_NOTATION_DEFAULT_BPM</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a class="link" href="ags-AgsNotation.html#AGS-NOTATION-TICS-PER-BEAT:CAPS" title="AGS_NOTATION_TICS_PER_BEAT">AGS_NOTATION_TICS_PER_BEAT</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a class="link" href="ags-AgsNotation.html#AGS-NOTATION-MINIMUM-NOTE-LENGTH:CAPS" title="AGS_NOTATION_MINIMUM_NOTE_LENGTH">AGS_NOTATION_MINIMUM_NOTE_LENGTH</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a class="link" href="ags-AgsNotation.html#AGS-NOTATION-MAXIMUM-NOTE-LENGTH:CAPS" title="AGS_NOTATION_MAXIMUM_NOTE_LENGTH">AGS_NOTATION_MAXIMUM_NOTE_LENGTH</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a class="link" href="ags-AgsNotation.html#AGS-NOTATION-DEFAULT-LENGTH:CAPS" title="AGS_NOTATION_DEFAULT_LENGTH">AGS_NOTATION_DEFAULT_LENGTH</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a class="link" href="ags-AgsNotation.html#AGS-NOTATION-DEFAULT-JIFFIE:CAPS" title="AGS_NOTATION_DEFAULT_JIFFIE">AGS_NOTATION_DEFAULT_JIFFIE</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a class="link" href="ags-AgsNotation.html#AGS-NOTATION-DEFAULT-DURATION:CAPS" title="AGS_NOTATION_DEFAULT_DURATION">AGS_NOTATION_DEFAULT_DURATION</a></td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="GList"><span class="returnvalue">GList</span></GTKDOCLINK> *
+</td>
+<td class="function_name">
+<a class="link" href="ags-AgsNotation.html#ags-notation-find-near-timestamp" title="ags_notation_find_near_timestamp ()">ags_notation_find_near_timestamp</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="ags-AgsNotation.html#ags-notation-add-note" title="ags_notation_add_note ()">ags_notation_add_note</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="gboolean"><span class="returnvalue">gboolean</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="ags-AgsNotation.html#ags-notation-remove-note-at-position" title="ags_notation_remove_note_at_position ()">ags_notation_remove_note_at_position</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="GList"><span class="returnvalue">GList</span></GTKDOCLINK> *
+</td>
+<td class="function_name">
+<a class="link" href="ags-AgsNotation.html#ags-notation-get-selection" title="ags_notation_get_selection ()">ags_notation_get_selection</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="gboolean"><span class="returnvalue">gboolean</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="ags-AgsNotation.html#ags-notation-is-note-selected" title="ags_notation_is_note_selected ()">ags_notation_is_note_selected</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="AgsNote"><span class="returnvalue">AgsNote</span></GTKDOCLINK> *
+</td>
+<td class="function_name">
+<a class="link" href="ags-AgsNotation.html#ags-notation-find-point" title="ags_notation_find_point ()">ags_notation_find_point</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="GList"><span class="returnvalue">GList</span></GTKDOCLINK> *
+</td>
+<td class="function_name">
+<a class="link" href="ags-AgsNotation.html#ags-notation-find-region" title="ags_notation_find_region ()">ags_notation_find_region</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="ags-AgsNotation.html#ags-notation-free-selection" title="ags_notation_free_selection ()">ags_notation_free_selection</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="ags-AgsNotation.html#ags-notation-add-point-to-selection" title="ags_notation_add_point_to_selection ()">ags_notation_add_point_to_selection</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="ags-AgsNotation.html#ags-notation-remove-point-from-selection" title="ags_notation_remove_point_from_selection ()">ags_notation_remove_point_from_selection</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="ags-AgsNotation.html#ags-notation-add-region-to-selection" title="ags_notation_add_region_to_selection ()">ags_notation_add_region_to_selection</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="ags-AgsNotation.html#ags-notation-remove-region-from-selection" title="ags_notation_remove_region_from_selection ()">ags_notation_remove_region_from_selection</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="xmlNodePtr"><span class="returnvalue">xmlNodePtr</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="ags-AgsNotation.html#ags-notation-copy-selection" title="ags_notation_copy_selection ()">ags_notation_copy_selection</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="xmlNodePtr"><span class="returnvalue">xmlNodePtr</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="ags-AgsNotation.html#ags-notation-cut-selection" title="ags_notation_cut_selection ()">ags_notation_cut_selection</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="ags-AgsNotation.html#ags-notation-insert-from-clipboard" title="ags_notation_insert_from_clipboard ()">ags_notation_insert_from_clipboard</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="GList"><span class="returnvalue">GList</span></GTKDOCLINK> *
+</td>
+<td class="function_name">
+<a class="link" href="ags-AgsNotation.html#ags-notation-get-current" title="ags_notation_get_current ()">ags_notation_get_current</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="AgsNotation"><span class="returnvalue">AgsNotation</span></GTKDOCLINK> *
+</td>
+<td class="function_name">
+<a class="link" href="ags-AgsNotation.html#ags-notation-new" title="ags_notation_new ()">ags_notation_new</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="ags-AgsNotation.other"></a><h2>Types and Values</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="name">
+<col class="description">
+</colgroup>
+<tbody><tr>
+<td class="datatype_keyword">enum</td>
+<td class="function_name"><a class="link" href="ags-AgsNotation.html#AgsNotationFlags" title="enum AgsNotationFlags">AgsNotationFlags</a></td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="ags-AgsNotation.includes"></a><h2>Includes</h2>
+<pre class="synopsis">#include &lt;ags/audio/ags_notation.h&gt;
+</pre>
+</div>
+<div class="refsect1">
+<a name="ags-AgsNotation.description"></a><h2>Description</h2>
+<p><GTKDOCLINK HREF="AgsNotation"><span class="type">AgsNotation</span></GTKDOCLINK> acts as a container of <GTKDOCLINK HREF="AgsNote"><span class="type">AgsNote</span></GTKDOCLINK>.</p>
+</div>
+<div class="refsect1">
+<a name="ags-AgsNotation.functions_details"></a><h2>Functions</h2>
+<div class="refsect2">
+<a name="AGS-NOTATION-DEFAULT-BPM:CAPS"></a><h3>AGS_NOTATION_DEFAULT_BPM</h3>
+<pre class="programlisting">#define AGS_NOTATION_DEFAULT_BPM (120.0)
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-NOTATION-TICS-PER-BEAT:CAPS"></a><h3>AGS_NOTATION_TICS_PER_BEAT</h3>
+<pre class="programlisting">#define AGS_NOTATION_TICS_PER_BEAT (1.0)
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-NOTATION-MINIMUM-NOTE-LENGTH:CAPS"></a><h3>AGS_NOTATION_MINIMUM_NOTE_LENGTH</h3>
+<pre class="programlisting">#define AGS_NOTATION_MINIMUM_NOTE_LENGTH (1.0 / 16.0)
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-NOTATION-MAXIMUM-NOTE-LENGTH:CAPS"></a><h3>AGS_NOTATION_MAXIMUM_NOTE_LENGTH</h3>
+<pre class="programlisting">#define AGS_NOTATION_MAXIMUM_NOTE_LENGTH (16.0)
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-NOTATION-DEFAULT-LENGTH:CAPS"></a><h3>AGS_NOTATION_DEFAULT_LENGTH</h3>
+<pre class="programlisting">#define AGS_NOTATION_DEFAULT_LENGTH (65535.0 / AGS_NOTATION_TICS_PER_BEAT - AGS_NOTATION_MAXIMUM_NOTE_LENGTH)
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-NOTATION-DEFAULT-JIFFIE:CAPS"></a><h3>AGS_NOTATION_DEFAULT_JIFFIE</h3>
+<pre class="programlisting">#define AGS_NOTATION_DEFAULT_JIFFIE (60.0 / AGS_NOTATION_DEFAULT_BPM / AGS_NOTATION_TICS_PER_BEAT)
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-NOTATION-DEFAULT-DURATION:CAPS"></a><h3>AGS_NOTATION_DEFAULT_DURATION</h3>
+<pre class="programlisting">#define AGS_NOTATION_DEFAULT_DURATION (AGS_NOTATION_DEFAULT_LENGTH * AGS_NOTATION_DEFAULT_JIFFIE * AGS_MICROSECONDS_PER_SECOND)
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-notation-find-near-timestamp"></a><h3>ags_notation_find_near_timestamp ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="GList"><span class="returnvalue">GList</span></GTKDOCLINK> *
+ags_notation_find_near_timestamp (<em class="parameter"><code><GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> *notation</code></em>,
+                                  <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> audio_channel</code></em>,
+                                  <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *timestamp</code></em>);</pre>
+<p>Retrieve appropriate notation for timestamp.</p>
+<div class="refsect3">
+<a name="id-1.9.8.7.9.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>notation</p></td>
+<td class="parameter_description"><p>a <GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> containing <GTKDOCLINK HREF="AgsNotation"><span class="type">AgsNotation</span></GTKDOCLINK></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>audio_channel</p></td>
+<td class="parameter_description"><p>the matching audio channel</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>timestamp</p></td>
+<td class="parameter_description"><p>the matching timestamp</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.9.8.7.9.6"></a><h4>Returns</h4>
+<p> Next match.</p>
+<p></p>
+</div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-notation-add-note"></a><h3>ags_notation_add_note ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_notation_add_note (<em class="parameter"><code><GTKDOCLINK HREF="AgsNotation"><span class="type">AgsNotation</span></GTKDOCLINK> *notation</code></em>,
+                       <em class="parameter"><code><GTKDOCLINK HREF="AgsNote"><span class="type">AgsNote</span></GTKDOCLINK> *note</code></em>,
+                       <em class="parameter"><code><GTKDOCLINK HREF="gboolean"><span class="type">gboolean</span></GTKDOCLINK> use_selection_list</code></em>);</pre>
+<p>Adds a note to notation.</p>
+<div class="refsect3">
+<a name="id-1.9.8.7.10.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>notation</p></td>
+<td class="parameter_description"><p>an <GTKDOCLINK HREF="AgsNotation"><span class="type">AgsNotation</span></GTKDOCLINK></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>note</p></td>
+<td class="parameter_description"><p>the <GTKDOCLINK HREF="AgsNote"><span class="type">AgsNote</span></GTKDOCLINK> to add</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>use_selection_list</p></td>
+<td class="parameter_description"><p>if <GTKDOCLINK HREF="TRUE:CAPS"><code class="literal">TRUE</code></GTKDOCLINK> add to selection, else to default notation</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-notation-remove-note-at-position"></a><h3>ags_notation_remove_note_at_position ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="gboolean"><span class="returnvalue">gboolean</span></GTKDOCLINK>
+ags_notation_remove_note_at_position (<em class="parameter"><code><GTKDOCLINK HREF="AgsNotation"><span class="type">AgsNotation</span></GTKDOCLINK> *notation</code></em>,
+                                      <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> x</code></em>,
+                                      <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> y</code></em>);</pre>
+<p>Removes one <GTKDOCLINK HREF="AgsNote"><span class="type">AgsNote</span></GTKDOCLINK> of notation.</p>
+<div class="refsect3">
+<a name="id-1.9.8.7.11.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>notation</p></td>
+<td class="parameter_description"><p>an <GTKDOCLINK HREF="AgsNotation"><span class="type">AgsNotation</span></GTKDOCLINK></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>x</p></td>
+<td class="parameter_description"><p>offset</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>y</p></td>
+<td class="parameter_description"><p>note</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.9.8.7.11.6"></a><h4>Returns</h4>
+<p> <GTKDOCLINK HREF="TRUE:CAPS"><code class="literal">TRUE</code></GTKDOCLINK> if successfully removed note.</p>
+<p></p>
+</div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-notation-get-selection"></a><h3>ags_notation_get_selection ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="GList"><span class="returnvalue">GList</span></GTKDOCLINK> *
+ags_notation_get_selection (<em class="parameter"><code><GTKDOCLINK HREF="AgsNotation"><span class="type">AgsNotation</span></GTKDOCLINK> *notation</code></em>);</pre>
+<p>Retrieve selection.</p>
+<div class="refsect3">
+<a name="id-1.9.8.7.12.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>notation</p></td>
+<td class="parameter_description"><p>the <GTKDOCLINK HREF="AgsNotation"><span class="type">AgsNotation</span></GTKDOCLINK></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.9.8.7.12.6"></a><h4>Returns</h4>
+<p> the selection.</p>
+<p></p>
+</div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-notation-is-note-selected"></a><h3>ags_notation_is_note_selected ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="gboolean"><span class="returnvalue">gboolean</span></GTKDOCLINK>
+ags_notation_is_note_selected (<em class="parameter"><code><GTKDOCLINK HREF="AgsNotation"><span class="type">AgsNotation</span></GTKDOCLINK> *notation</code></em>,
+                               <em class="parameter"><code><GTKDOCLINK HREF="AgsNote"><span class="type">AgsNote</span></GTKDOCLINK> *note</code></em>);</pre>
+<p>Check selection for note.</p>
+<div class="refsect3">
+<a name="id-1.9.8.7.13.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>notation</p></td>
+<td class="parameter_description"><p>the <GTKDOCLINK HREF="AgsNotation"><span class="type">AgsNotation</span></GTKDOCLINK></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>note</p></td>
+<td class="parameter_description"><p>the <GTKDOCLINK HREF="AgsNote"><span class="type">AgsNote</span></GTKDOCLINK> to check for</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.9.8.7.13.6"></a><h4>Returns</h4>
+<p> <GTKDOCLINK HREF="TRUE:CAPS"><code class="literal">TRUE</code></GTKDOCLINK> if selected</p>
+<p></p>
+</div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-notation-find-point"></a><h3>ags_notation_find_point ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="AgsNote"><span class="returnvalue">AgsNote</span></GTKDOCLINK> *
+ags_notation_find_point (<em class="parameter"><code><GTKDOCLINK HREF="AgsNotation"><span class="type">AgsNotation</span></GTKDOCLINK> *notation</code></em>,
+                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> x</code></em>,
+                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> y</code></em>,
+                         <em class="parameter"><code><GTKDOCLINK HREF="gboolean"><span class="type">gboolean</span></GTKDOCLINK> use_selection_list</code></em>);</pre>
+<p>Find note by offset and tone.</p>
+<div class="refsect3">
+<a name="id-1.9.8.7.14.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>notation</p></td>
+<td class="parameter_description"><p>an <GTKDOCLINK HREF="AgsNotation"><span class="type">AgsNotation</span></GTKDOCLINK></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>x</p></td>
+<td class="parameter_description"><p>offset</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>y</p></td>
+<td class="parameter_description"><p>note</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>use_selection_list</p></td>
+<td class="parameter_description"><p>if <GTKDOCLINK HREF="TRUE:CAPS"><code class="literal">TRUE</code></GTKDOCLINK> selection is searched</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.9.8.7.14.6"></a><h4>Returns</h4>
+<p> the matching note.</p>
+<p></p>
+</div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-notation-find-region"></a><h3>ags_notation_find_region ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="GList"><span class="returnvalue">GList</span></GTKDOCLINK> *
+ags_notation_find_region (<em class="parameter"><code><GTKDOCLINK HREF="AgsNotation"><span class="type">AgsNotation</span></GTKDOCLINK> *notation</code></em>,
+                          <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> x0</code></em>,
+                          <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> y0</code></em>,
+                          <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> x1</code></em>,
+                          <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> y1</code></em>,
+                          <em class="parameter"><code><GTKDOCLINK HREF="gboolean"><span class="type">gboolean</span></GTKDOCLINK> use_selection_list</code></em>);</pre>
+<p>Find notes by offset and tone region.</p>
+<div class="refsect3">
+<a name="id-1.9.8.7.15.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>notation</p></td>
+<td class="parameter_description"><p>an <GTKDOCLINK HREF="AgsNotation"><span class="type">AgsNotation</span></GTKDOCLINK></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>x0</p></td>
+<td class="parameter_description"><p>start offset</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>y0</p></td>
+<td class="parameter_description"><p>start tone</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>x1</p></td>
+<td class="parameter_description"><p>end offset</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>y1</p></td>
+<td class="parameter_description"><p>end tone</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.9.8.7.15.6"></a><h4>Returns</h4>
+<p> the matching notes as <GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK>.</p>
+<p></p>
+</div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-notation-free-selection"></a><h3>ags_notation_free_selection ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_notation_free_selection (<em class="parameter"><code><GTKDOCLINK HREF="AgsNotation"><span class="type">AgsNotation</span></GTKDOCLINK> *notation</code></em>);</pre>
+<p>Clear selection.</p>
+<div class="refsect3">
+<a name="id-1.9.8.7.16.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>notation</p></td>
+<td class="parameter_description"><p>an <GTKDOCLINK HREF="AgsNotation"><span class="type">AgsNotation</span></GTKDOCLINK></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-notation-add-point-to-selection"></a><h3>ags_notation_add_point_to_selection ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_notation_add_point_to_selection (<em class="parameter"><code><GTKDOCLINK HREF="AgsNotation"><span class="type">AgsNotation</span></GTKDOCLINK> *notation</code></em>,
+                                     <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> x</code></em>,
+                                     <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> y</code></em>,
+                                     <em class="parameter"><code><GTKDOCLINK HREF="gboolean"><span class="type">gboolean</span></GTKDOCLINK> replace_current_selection</code></em>);</pre>
+<p>Select notes at position.</p>
+<div class="refsect3">
+<a name="id-1.9.8.7.17.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>notation</p></td>
+<td class="parameter_description"><p>an <GTKDOCLINK HREF="AgsNotation"><span class="type">AgsNotation</span></GTKDOCLINK></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>x</p></td>
+<td class="parameter_description"><p>offset</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>y</p></td>
+<td class="parameter_description"><p>tone</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>replace_current_selection</p></td>
+<td class="parameter_description"><p>if <GTKDOCLINK HREF="TRUE:CAPS"><code class="literal">TRUE</code></GTKDOCLINK> selection is replaced</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-notation-remove-point-from-selection"></a><h3>ags_notation_remove_point_from_selection ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_notation_remove_point_from_selection
+                               (<em class="parameter"><code><GTKDOCLINK HREF="AgsNotation"><span class="type">AgsNotation</span></GTKDOCLINK> *notation</code></em>,
+                                <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> x</code></em>,
+                                <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> y</code></em>);</pre>
+<p>Remove notes at position of selection.</p>
+<div class="refsect3">
+<a name="id-1.9.8.7.18.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>notation</p></td>
+<td class="parameter_description"><p>an <GTKDOCLINK HREF="AgsNotation"><span class="type">AgsNotation</span></GTKDOCLINK></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>x</p></td>
+<td class="parameter_description"><p>offset</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>y</p></td>
+<td class="parameter_description"><p>tone</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-notation-add-region-to-selection"></a><h3>ags_notation_add_region_to_selection ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_notation_add_region_to_selection (<em class="parameter"><code><GTKDOCLINK HREF="AgsNotation"><span class="type">AgsNotation</span></GTKDOCLINK> *notation</code></em>,
+                                      <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> x0</code></em>,
+                                      <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> y0</code></em>,
+                                      <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> x1</code></em>,
+                                      <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> y1</code></em>,
+                                      <em class="parameter"><code><GTKDOCLINK HREF="gboolean"><span class="type">gboolean</span></GTKDOCLINK> replace_current_selection</code></em>);</pre>
+<p>Select notes within region.</p>
+<div class="refsect3">
+<a name="id-1.9.8.7.19.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>notation</p></td>
+<td class="parameter_description"><p>an <GTKDOCLINK HREF="AgsNotation"><span class="type">AgsNotation</span></GTKDOCLINK></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>x0</p></td>
+<td class="parameter_description"><p>start offset</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>y0</p></td>
+<td class="parameter_description"><p>start tone</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>x1</p></td>
+<td class="parameter_description"><p>end offset</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>y1</p></td>
+<td class="parameter_description"><p>end tone</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>replace_current_selection</p></td>
+<td class="parameter_description"><p>if <GTKDOCLINK HREF="TRUE:CAPS"><code class="literal">TRUE</code></GTKDOCLINK> selection is replaced</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-notation-remove-region-from-selection"></a><h3>ags_notation_remove_region_from_selection ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_notation_remove_region_from_selection
+                               (<em class="parameter"><code><GTKDOCLINK HREF="AgsNotation"><span class="type">AgsNotation</span></GTKDOCLINK> *notation</code></em>,
+                                <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> x0</code></em>,
+                                <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> y0</code></em>,
+                                <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> x1</code></em>,
+                                <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> y1</code></em>);</pre>
+<p>Remove notes within region of selection.</p>
+<div class="refsect3">
+<a name="id-1.9.8.7.20.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>notation</p></td>
+<td class="parameter_description"><p>an <GTKDOCLINK HREF="AgsNotation"><span class="type">AgsNotation</span></GTKDOCLINK></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>x0</p></td>
+<td class="parameter_description"><p>start offset</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>y0</p></td>
+<td class="parameter_description"><p>start tone</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>x1</p></td>
+<td class="parameter_description"><p>end offset</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>y1</p></td>
+<td class="parameter_description"><p>end tone</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-notation-copy-selection"></a><h3>ags_notation_copy_selection ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="xmlNodePtr"><span class="returnvalue">xmlNodePtr</span></GTKDOCLINK>
+ags_notation_copy_selection (<em class="parameter"><code><GTKDOCLINK HREF="AgsNotation"><span class="type">AgsNotation</span></GTKDOCLINK> *notation</code></em>);</pre>
+<p>Copy selection to clipboard.</p>
+<div class="refsect3">
+<a name="id-1.9.8.7.21.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>notation</p></td>
+<td class="parameter_description"><p>an <GTKDOCLINK HREF="AgsNotation"><span class="type">AgsNotation</span></GTKDOCLINK></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.9.8.7.21.6"></a><h4>Returns</h4>
+<p> the selection as XML.</p>
+<p></p>
+</div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-notation-cut-selection"></a><h3>ags_notation_cut_selection ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="xmlNodePtr"><span class="returnvalue">xmlNodePtr</span></GTKDOCLINK>
+ags_notation_cut_selection (<em class="parameter"><code><GTKDOCLINK HREF="AgsNotation"><span class="type">AgsNotation</span></GTKDOCLINK> *notation</code></em>);</pre>
+<p>Cut selection to clipboard.</p>
+<div class="refsect3">
+<a name="id-1.9.8.7.22.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>notation</p></td>
+<td class="parameter_description"><p>an <GTKDOCLINK HREF="AgsNotation"><span class="type">AgsNotation</span></GTKDOCLINK></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.9.8.7.22.6"></a><h4>Returns</h4>
+<p> the selection as XML.</p>
+<p></p>
+</div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-notation-insert-from-clipboard"></a><h3>ags_notation_insert_from_clipboard ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_notation_insert_from_clipboard (<em class="parameter"><code><GTKDOCLINK HREF="AgsNotation"><span class="type">AgsNotation</span></GTKDOCLINK> *notation</code></em>,
+                                    <em class="parameter"><code><GTKDOCLINK HREF="xmlNodePtr"><span class="type">xmlNodePtr</span></GTKDOCLINK> content</code></em>,
+                                    <em class="parameter"><code><GTKDOCLINK HREF="gboolean"><span class="type">gboolean</span></GTKDOCLINK> reset_x_offset</code></em>,
+                                    <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> x_offset</code></em>,
+                                    <em class="parameter"><code><GTKDOCLINK HREF="gboolean"><span class="type">gboolean</span></GTKDOCLINK> reset_y_offset</code></em>,
+                                    <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> y_offset</code></em>);</pre>
+<p>Paste previously copied notes.</p>
+<div class="refsect3">
+<a name="id-1.9.8.7.23.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>notation</p></td>
+<td class="parameter_description"><p>an <GTKDOCLINK HREF="AgsNotation"><span class="type">AgsNotation</span></GTKDOCLINK></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>reset_x_offset</p></td>
+<td class="parameter_description"><p>if <GTKDOCLINK HREF="TRUE:CAPS"><code class="literal">TRUE</code></GTKDOCLINK> <em class="parameter"><code>x_offset</code></em>
+used as cursor</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>x_offset</p></td>
+<td class="parameter_description"><p>region start cursor offset</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>reset_y_offset</p></td>
+<td class="parameter_description"><p>if <GTKDOCLINK HREF="TRUE:CAPS"><code class="literal">TRUE</code></GTKDOCLINK> <em class="parameter"><code>y_offset</code></em>
+used as cursor</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>y_offset</p></td>
+<td class="parameter_description"><p>region start cursor tone</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-notation-get-current"></a><h3>ags_notation_get_current ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="GList"><span class="returnvalue">GList</span></GTKDOCLINK> *
+ags_notation_get_current (<em class="parameter"><code><GTKDOCLINK HREF="AgsNotation"><span class="type">AgsNotation</span></GTKDOCLINK> *notation</code></em>);</pre>
+<p>
+</p>
+<div class="refsect3">
+<a name="id-1.9.8.7.24.5"></a><h4>Returns</h4>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-notation-new"></a><h3>ags_notation_new ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="AgsNotation"><span class="returnvalue">AgsNotation</span></GTKDOCLINK> *
+ags_notation_new (<em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> audio_channel</code></em>);</pre>
+<p>Creates a <GTKDOCLINK HREF="AgsNotation"><span class="type">AgsNotation</span></GTKDOCLINK>, assigned to <em class="parameter"><code>audio_channel</code></em>
+.</p>
+<div class="refsect3">
+<a name="id-1.9.8.7.25.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>audio_channel</p></td>
+<td class="parameter_description"><p>the audio channel to be used</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.9.8.7.25.6"></a><h4>Returns</h4>
+<p> a new <GTKDOCLINK HREF="AgsNotation"><span class="type">AgsNotation</span></GTKDOCLINK></p>
+<p></p>
+</div>
+<p class="since">Since 0.4</p>
+</div>
+</div>
+<div class="refsect1">
+<a name="ags-AgsNotation.other_details"></a><h2>Types and Values</h2>
+<div class="refsect2">
+<a name="AgsNotationFlags"></a><h3>enum AgsNotationFlags</h3>
+<p>
+</p>
+<div class="refsect3">
+<a name="id-1.9.8.8.2.4"></a><h4>Members</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="300px" class="enum_members_name">
+<col class="enum_members_description">
+<col width="200px" class="enum_members_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="enum_member_name"><p><a name="AGS-NOTATION-STICKY:CAPS"></a>AGS_NOTATION_STICKY</p></td>
+<td class="enum_member_description"> </td>
+<td class="enum_member_annotations"> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="AGS-NOTATION-INDICATED-LENGTH:CAPS"></a>AGS_NOTATION_INDICATED_LENGTH</p></td>
+<td class="enum_member_description"> </td>
+<td class="enum_member_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.21</div>
+</body>
+</html>

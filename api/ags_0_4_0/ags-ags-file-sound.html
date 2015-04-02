@@ -1,0 +1,900 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>ags_file_sound</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer">
+<link rel="up" href="ch01.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td> </td>
+<td><a accesskey="u" href="ch01.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer</th>
+<td> </td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#ags-ags-file-sound.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#ags-ags-file-sound.description" class="shortcut">Description</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="ags-ags-file-sound"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="ags-ags-file-sound.top_of_page"></a>ags_file_sound</span></h2>
+<p>ags_file_sound</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="ags-ags-file-sound.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis"><span class="returnvalue">void</span>                <a href="ags-ags-file-sound.html#ags-file-read-audio">ags_file_read_audio</a>                 (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsAudio.html#AgsAudio"><span class="type">AgsAudio</span></a> **audio</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-ags-file-sound.html#ags-file-read-audio-list">ags_file_read_audio_list</a>            (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> **audio</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-ags-file-sound.html#ags-file-read-audio-signal">ags_file_read_audio_signal</a>          (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsAudioSignal.html#AgsAudioSignal"><span class="type">AgsAudioSignal</span></a> **audio_signal</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-ags-file-sound.html#ags-file-read-audio-signal-list">ags_file_read_audio_signal_list</a>     (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> **audio_signal</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-ags-file-sound.html#ags-file-read-channel">ags_file_read_channel</a>               (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsChannel.html#AgsChannel"><span class="type">AgsChannel</span></a> **channel</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-ags-file-sound.html#ags-file-read-channel-list">ags_file_read_channel_list</a>          (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> **channel</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-ags-file-sound.html#ags-file-read-devout">ags_file_read_devout</a>                (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsDevout.html#AgsDevout"><span class="type">AgsDevout</span></a> **devout</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-ags-file-sound.html#ags-file-read-devout-list">ags_file_read_devout_list</a>           (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> **devout</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-ags-file-sound.html#ags-file-read-devout-play">ags_file_read_devout_play</a>           (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsDevout.html#AgsDevoutPlay"><span class="type">AgsDevoutPlay</span></a> **play</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-ags-file-sound.html#ags-file-read-devout-play-list">ags_file_read_devout_play_list</a>      (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> **play</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-ags-file-util.html#ags-file-read-file-link">ags_file_read_file_link</a>             (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsFileLink.html#AgsFileLink"><span class="type">AgsFileLink</span></a> *file_link</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-ags-file-sound.html#ags-file-read-input">ags_file_read_input</a>                 (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsChannel.html#AgsChannel"><span class="type">AgsChannel</span></a> *input</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-ags-file-sound.html#ags-file-read-notation">ags_file_read_notation</a>              (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsNotation.html#AgsNotation"><span class="type">AgsNotation</span></a> **notation</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-ags-file-sound.html#ags-file-read-notation-list">ags_file_read_notation_list</a>         (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> **notation</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-ags-file-sound.html#ags-file-read-note">ags_file_read_note</a>                  (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsNote.html#AgsNote"><span class="type">AgsNote</span></a> **note</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-ags-file-sound.html#ags-file-read-note-list">ags_file_read_note_list</a>             (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> **note</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-ags-file-sound.html#ags-file-read-output">ags_file_read_output</a>                (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsChannel.html#AgsChannel"><span class="type">AgsChannel</span></a> *output</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-ags-file-sound.html#ags-file-read-pattern">ags_file_read_pattern</a>               (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsPattern.html#AgsPattern"><span class="type">AgsPattern</span></a> **pattern</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-ags-file-sound.html#ags-file-read-pattern-data">ags_file_read_pattern_data</a>          (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsPattern.html#AgsPattern"><span class="type">AgsPattern</span></a> *pattern</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> *i</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> *j</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> length</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-ags-file-sound.html#ags-file-read-pattern-data-list">ags_file_read_pattern_data_list</a>     (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsPattern.html#AgsPattern"><span class="type">AgsPattern</span></a> *pattern</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> length</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-ags-file-sound.html#ags-file-read-pattern-list">ags_file_read_pattern_list</a>          (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> **pattern</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-ags-file-sound.html#ags-file-read-port">ags_file_read_port</a>                  (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsPort.html#AgsPort"><span class="type">AgsPort</span></a> **port</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-ags-file-sound.html#ags-file-read-port-list">ags_file_read_port_list</a>             (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> **port</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-ags-file-sound.html#ags-file-read-recall">ags_file_read_recall</a>                (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsRecall.html#AgsRecall"><span class="type">AgsRecall</span></a> **recall</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-ags-file-sound.html#ags-file-read-recall-audio">ags_file_read_recall_audio</a>          (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsRecall.html#AgsRecall"><span class="type">AgsRecall</span></a> *recall</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-ags-file-sound.html#ags-file-read-recall-audio-run">ags_file_read_recall_audio_run</a>      (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsRecall.html#AgsRecall"><span class="type">AgsRecall</span></a> *recall</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-ags-file-sound.html#ags-file-read-recall-audio-signal">ags_file_read_recall_audio_signal</a>   (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsRecall.html#AgsRecall"><span class="type">AgsRecall</span></a> *recall</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-ags-file-sound.html#ags-file-read-recall-channel">ags_file_read_recall_channel</a>        (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsRecall.html#AgsRecall"><span class="type">AgsRecall</span></a> *recall</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-ags-file-sound.html#ags-file-read-recall-channel-run">ags_file_read_recall_channel_run</a>    (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsRecall.html#AgsRecall"><span class="type">AgsRecall</span></a> *recall</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-ags-file-sound.html#ags-file-read-recall-container">ags_file_read_recall_container</a>      (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsRecallContainer.html#AgsRecallContainer"><span class="type">AgsRecallContainer</span></a> **recall_container</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-ags-file-sound.html#ags-file-read-recall-container-list">ags_file_read_recall_container_list</a> (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> **recall_container</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-ags-file-sound.html#ags-file-read-recall-list">ags_file_read_recall_list</a>           (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> **recall</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-ags-file-sound.html#ags-file-read-recall-recycling">ags_file_read_recall_recycling</a>      (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsRecall.html#AgsRecall"><span class="type">AgsRecall</span></a> *recall</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-ags-file-sound.html#ags-file-read-recycling">ags_file_read_recycling</a>             (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsRecycling.html#AgsRecycling"><span class="type">AgsRecycling</span></a> **recycling</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-ags-file-sound.html#ags-file-read-recycling-list">ags_file_read_recycling_list</a>        (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> **recycling</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-ags-file-sound.html#ags-file-read-stream">ags_file_read_stream</a>                (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> **stream</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> *index</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> buffer_size</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-ags-file-sound.html#ags-file-read-stream-list">ags_file_read_stream_list</a>           (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> **stream</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> buffer_size</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-ags-file-sound.html#ags-file-read-task">ags_file_read_task</a>                  (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsTask.html#AgsTask"><span class="type">AgsTask</span></a> **task</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-ags-file-sound.html#ags-file-read-task-list">ags_file_read_task_list</a>             (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> **task</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-ags-file-sound.html#ags-file-read-timestamp">ags_file_read_timestamp</a>             (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsTimestamp.html#AgsTimestamp"><span class="type">AgsTimestamp</span></a> **timestamp</code></em>);
+<span class="returnvalue">void</span>                <a href="ags-ags-file-sound.html#ags-file-read-timestamp-list">ags_file_read_timestamp_list</a>        (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> **timestamp</code></em>);
+<span class="returnvalue">xmlNode</span> *           <a href="ags-ags-file-sound.html#ags-file-write-audio">ags_file_write_audio</a>                (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsAudio.html#AgsAudio"><span class="type">AgsAudio</span></a> *audio</code></em>);
+<span class="returnvalue">xmlNode</span> *           <a href="ags-ags-file-sound.html#ags-file-write-audio-list">ags_file_write_audio_list</a>           (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> *audio</code></em>);
+<span class="returnvalue">xmlNode</span> *           <a href="ags-ags-file-sound.html#ags-file-write-audio-signal">ags_file_write_audio_signal</a>         (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsAudioSignal.html#AgsAudioSignal"><span class="type">AgsAudioSignal</span></a> *audio_signal</code></em>);
+<span class="returnvalue">xmlNode</span> *           <a href="ags-ags-file-sound.html#ags-file-write-audio-signal-list">ags_file_write_audio_signal_list</a>    (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> *audio_signal</code></em>);
+<span class="returnvalue">xmlNode</span> *           <a href="ags-ags-file-sound.html#ags-file-write-channel">ags_file_write_channel</a>              (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsChannel.html#AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>);
+<span class="returnvalue">xmlNode</span> *           <a href="ags-ags-file-sound.html#ags-file-write-channel-list">ags_file_write_channel_list</a>         (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> *channel</code></em>);
+<span class="returnvalue">xmlNode</span> *           <a href="ags-ags-file-sound.html#ags-file-write-devout">ags_file_write_devout</a>               (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsDevout.html#AgsDevout"><span class="type">AgsDevout</span></a> *devout</code></em>);
+<span class="returnvalue">xmlNode</span> *           <a href="ags-ags-file-sound.html#ags-file-write-devout-list">ags_file_write_devout_list</a>          (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> *devout</code></em>);
+<span class="returnvalue">xmlNode</span> *           <a href="ags-ags-file-sound.html#ags-file-write-devout-play">ags_file_write_devout_play</a>          (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsDevout.html#AgsDevoutPlay"><span class="type">AgsDevoutPlay</span></a> *play</code></em>);
+<span class="returnvalue">xmlNode</span> *           <a href="ags-ags-file-sound.html#ags-file-write-devout-play-list">ags_file_write_devout_play_list</a>     (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> *play</code></em>);
+<span class="returnvalue">xmlNode</span> *           <a href="ags-ags-file-util.html#ags-file-write-file-link">ags_file_write_file_link</a>            (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsFileLink.html#AgsFileLink"><span class="type">AgsFileLink</span></a> *file_link</code></em>);
+<span class="returnvalue">xmlNode</span> *           <a href="ags-ags-file-sound.html#ags-file-write-input">ags_file_write_input</a>                (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsChannel.html#AgsChannel"><span class="type">AgsChannel</span></a> *input</code></em>);
+<span class="returnvalue">xmlNode</span> *           <a href="ags-ags-file-sound.html#ags-file-write-notation">ags_file_write_notation</a>             (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsNotation.html#AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>);
+<span class="returnvalue">xmlNode</span> *           <a href="ags-ags-file-sound.html#ags-file-write-notation-list">ags_file_write_notation_list</a>        (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> *notation</code></em>);
+<span class="returnvalue">xmlNode</span> *           <a href="ags-ags-file-sound.html#ags-file-write-note">ags_file_write_note</a>                 (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsNote.html#AgsNote"><span class="type">AgsNote</span></a> *note</code></em>);
+<span class="returnvalue">xmlNode</span> *           <a href="ags-ags-file-sound.html#ags-file-write-note-list">ags_file_write_note_list</a>            (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> *note</code></em>);
+<span class="returnvalue">xmlNode</span> *           <a href="ags-ags-file-sound.html#ags-file-write-output">ags_file_write_output</a>               (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsChannel.html#AgsChannel"><span class="type">AgsChannel</span></a> *output</code></em>);
+<span class="returnvalue">xmlNode</span> *           <a href="ags-ags-file-sound.html#ags-file-write-pattern">ags_file_write_pattern</a>              (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsPattern.html#AgsPattern"><span class="type">AgsPattern</span></a> *pattern</code></em>);
+<span class="returnvalue">xmlNode</span> *           <a href="ags-ags-file-sound.html#ags-file-write-pattern-data">ags_file_write_pattern_data</a>         (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsPattern.html#AgsPattern"><span class="type">AgsPattern</span></a> *pattern</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> i</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> j</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> length</code></em>);
+<span class="returnvalue">xmlNode</span> *           <a href="ags-ags-file-sound.html#ags-file-write-pattern-data-list">ags_file_write_pattern_data_list</a>    (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsPattern.html#AgsPattern"><span class="type">AgsPattern</span></a> *pattern</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> length</code></em>);
+<span class="returnvalue">xmlNode</span> *           <a href="ags-ags-file-sound.html#ags-file-write-pattern-list">ags_file_write_pattern_list</a>         (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> *pattern</code></em>);
+<span class="returnvalue">xmlNode</span> *           <a href="ags-ags-file-sound.html#ags-file-write-port">ags_file_write_port</a>                 (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsPort.html#AgsPort"><span class="type">AgsPort</span></a> *port</code></em>);
+<span class="returnvalue">xmlNode</span> *           <a href="ags-ags-file-sound.html#ags-file-write-port-list">ags_file_write_port_list</a>            (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> *port</code></em>);
+<span class="returnvalue">xmlNode</span> *           <a href="ags-ags-file-sound.html#ags-file-write-recall">ags_file_write_recall</a>               (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsRecall.html#AgsRecall"><span class="type">AgsRecall</span></a> *recall</code></em>);
+<span class="returnvalue">xmlNode</span> *           <a href="ags-ags-file-sound.html#ags-file-write-recall-audio">ags_file_write_recall_audio</a>         (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsRecall.html#AgsRecall"><span class="type">AgsRecall</span></a> *recall</code></em>);
+<span class="returnvalue">xmlNode</span> *           <a href="ags-ags-file-sound.html#ags-file-write-recall-audio-run">ags_file_write_recall_audio_run</a>     (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsRecall.html#AgsRecall"><span class="type">AgsRecall</span></a> *recall</code></em>);
+<span class="returnvalue">xmlNode</span> *           <a href="ags-ags-file-sound.html#ags-file-write-recall-audio-signal">ags_file_write_recall_audio_signal</a>  (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsRecall.html#AgsRecall"><span class="type">AgsRecall</span></a> *recall</code></em>);
+<span class="returnvalue">xmlNode</span> *           <a href="ags-ags-file-sound.html#ags-file-write-recall-channel">ags_file_write_recall_channel</a>       (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsRecall.html#AgsRecall"><span class="type">AgsRecall</span></a> *recall</code></em>);
+<span class="returnvalue">xmlNode</span> *           <a href="ags-ags-file-sound.html#ags-file-write-recall-channel-run">ags_file_write_recall_channel_run</a>   (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsRecall.html#AgsRecall"><span class="type">AgsRecall</span></a> *recall</code></em>);
+<span class="returnvalue">xmlNode</span> *           <a href="ags-ags-file-sound.html#ags-file-write-recall-container">ags_file_write_recall_container</a>     (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsRecallContainer.html#AgsRecallContainer"><span class="type">AgsRecallContainer</span></a> *recall_container</code></em>);
+<span class="returnvalue">xmlNode</span> *           <a href="ags-ags-file-sound.html#ags-file-write-recall-container-list">ags_file_write_recall_container_list</a>
+                                                        (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> *recall_container</code></em>);
+<span class="returnvalue">xmlNode</span> *           <a href="ags-ags-file-sound.html#ags-file-write-recall-list">ags_file_write_recall_list</a>          (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> *recall</code></em>);
+<span class="returnvalue">xmlNode</span> *           <a href="ags-ags-file-sound.html#ags-file-write-recall-recycling">ags_file_write_recall_recycling</a>     (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsRecall.html#AgsRecall"><span class="type">AgsRecall</span></a> *recall</code></em>);
+<span class="returnvalue">xmlNode</span> *           <a href="ags-ags-file-sound.html#ags-file-write-recycling">ags_file_write_recycling</a>            (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsRecycling.html#AgsRecycling"><span class="type">AgsRecycling</span></a> *recycling</code></em>);
+<span class="returnvalue">xmlNode</span> *           <a href="ags-ags-file-sound.html#ags-file-write-recycling-list">ags_file_write_recycling_list</a>       (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> *recycling</code></em>);
+<span class="returnvalue">xmlNode</span> *           <a href="ags-ags-file-sound.html#ags-file-write-stream">ags_file_write_stream</a>               (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> *stream</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> index</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> buffer_size</code></em>);
+<span class="returnvalue">xmlNode</span> *           <a href="ags-ags-file-sound.html#ags-file-write-stream-list">ags_file_write_stream_list</a>          (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> *stream</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> buffer_size</code></em>);
+<span class="returnvalue">xmlNode</span> *           <a href="ags-ags-file-sound.html#ags-file-write-task">ags_file_write_task</a>                 (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsTask.html#AgsTask"><span class="type">AgsTask</span></a> *task</code></em>);
+<span class="returnvalue">xmlNode</span> *           <a href="ags-ags-file-sound.html#ags-file-write-task-list">ags_file_write_task_list</a>            (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> *task</code></em>);
+<span class="returnvalue">xmlNode</span> *           <a href="ags-ags-file-sound.html#ags-file-write-timestamp">ags_file_write_timestamp</a>            (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsTimestamp.html#AgsTimestamp"><span class="type">AgsTimestamp</span></a> *timestamp</code></em>);
+<span class="returnvalue">xmlNode</span> *           <a href="ags-ags-file-sound.html#ags-file-write-timestamp-list">ags_file_write_timestamp_list</a>       (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> *timestamp</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="ags-ags-file-sound.description"></a><h2>Description</h2>
+</div>
+<div class="refsect1">
+<a name="ags-ags-file-sound.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="ags-file-read-audio"></a><h3>ags_file_read_audio ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_file_read_audio                 (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsAudio.html#AgsAudio"><span class="type">AgsAudio</span></a> **audio</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-audio-list"></a><h3>ags_file_read_audio_list ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_file_read_audio_list            (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> **audio</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-audio-signal"></a><h3>ags_file_read_audio_signal ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_file_read_audio_signal          (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsAudioSignal.html#AgsAudioSignal"><span class="type">AgsAudioSignal</span></a> **audio_signal</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-audio-signal-list"></a><h3>ags_file_read_audio_signal_list ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_file_read_audio_signal_list     (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> **audio_signal</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-channel"></a><h3>ags_file_read_channel ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_file_read_channel               (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsChannel.html#AgsChannel"><span class="type">AgsChannel</span></a> **channel</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-channel-list"></a><h3>ags_file_read_channel_list ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_file_read_channel_list          (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> **channel</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-devout"></a><h3>ags_file_read_devout ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_file_read_devout                (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsDevout.html#AgsDevout"><span class="type">AgsDevout</span></a> **devout</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-devout-list"></a><h3>ags_file_read_devout_list ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_file_read_devout_list           (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> **devout</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-devout-play"></a><h3>ags_file_read_devout_play ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_file_read_devout_play           (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsDevout.html#AgsDevoutPlay"><span class="type">AgsDevoutPlay</span></a> **play</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-devout-play-list"></a><h3>ags_file_read_devout_play_list ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_file_read_devout_play_list      (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> **play</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-file-link"></a><h3>ags_file_read_file_link ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_file_read_file_link             (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsFileLink.html#AgsFileLink"><span class="type">AgsFileLink</span></a> *file_link</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-input"></a><h3>ags_file_read_input ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_file_read_input                 (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsChannel.html#AgsChannel"><span class="type">AgsChannel</span></a> *input</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-notation"></a><h3>ags_file_read_notation ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_file_read_notation              (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsNotation.html#AgsNotation"><span class="type">AgsNotation</span></a> **notation</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-notation-list"></a><h3>ags_file_read_notation_list ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_file_read_notation_list         (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> **notation</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-note"></a><h3>ags_file_read_note ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_file_read_note                  (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsNote.html#AgsNote"><span class="type">AgsNote</span></a> **note</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-note-list"></a><h3>ags_file_read_note_list ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_file_read_note_list             (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> **note</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-output"></a><h3>ags_file_read_output ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_file_read_output                (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsChannel.html#AgsChannel"><span class="type">AgsChannel</span></a> *output</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-pattern"></a><h3>ags_file_read_pattern ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_file_read_pattern               (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsPattern.html#AgsPattern"><span class="type">AgsPattern</span></a> **pattern</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-pattern-data"></a><h3>ags_file_read_pattern_data ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_file_read_pattern_data          (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsPattern.html#AgsPattern"><span class="type">AgsPattern</span></a> *pattern</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> *i</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> *j</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> length</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-pattern-data-list"></a><h3>ags_file_read_pattern_data_list ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_file_read_pattern_data_list     (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsPattern.html#AgsPattern"><span class="type">AgsPattern</span></a> *pattern</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> length</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-pattern-list"></a><h3>ags_file_read_pattern_list ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_file_read_pattern_list          (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> **pattern</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-port"></a><h3>ags_file_read_port ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_file_read_port                  (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsPort.html#AgsPort"><span class="type">AgsPort</span></a> **port</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-port-list"></a><h3>ags_file_read_port_list ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_file_read_port_list             (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> **port</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-recall"></a><h3>ags_file_read_recall ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_file_read_recall                (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsRecall.html#AgsRecall"><span class="type">AgsRecall</span></a> **recall</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-recall-audio"></a><h3>ags_file_read_recall_audio ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_file_read_recall_audio          (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsRecall.html#AgsRecall"><span class="type">AgsRecall</span></a> *recall</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-recall-audio-run"></a><h3>ags_file_read_recall_audio_run ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_file_read_recall_audio_run      (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsRecall.html#AgsRecall"><span class="type">AgsRecall</span></a> *recall</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-recall-audio-signal"></a><h3>ags_file_read_recall_audio_signal ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_file_read_recall_audio_signal   (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsRecall.html#AgsRecall"><span class="type">AgsRecall</span></a> *recall</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-recall-channel"></a><h3>ags_file_read_recall_channel ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_file_read_recall_channel        (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsRecall.html#AgsRecall"><span class="type">AgsRecall</span></a> *recall</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-recall-channel-run"></a><h3>ags_file_read_recall_channel_run ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_file_read_recall_channel_run    (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsRecall.html#AgsRecall"><span class="type">AgsRecall</span></a> *recall</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-recall-container"></a><h3>ags_file_read_recall_container ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_file_read_recall_container      (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsRecallContainer.html#AgsRecallContainer"><span class="type">AgsRecallContainer</span></a> **recall_container</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-recall-container-list"></a><h3>ags_file_read_recall_container_list ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_file_read_recall_container_list (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> **recall_container</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-recall-list"></a><h3>ags_file_read_recall_list ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_file_read_recall_list           (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> **recall</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-recall-recycling"></a><h3>ags_file_read_recall_recycling ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_file_read_recall_recycling      (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsRecall.html#AgsRecall"><span class="type">AgsRecall</span></a> *recall</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-recycling"></a><h3>ags_file_read_recycling ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_file_read_recycling             (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsRecycling.html#AgsRecycling"><span class="type">AgsRecycling</span></a> **recycling</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-recycling-list"></a><h3>ags_file_read_recycling_list ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_file_read_recycling_list        (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> **recycling</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-stream"></a><h3>ags_file_read_stream ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_file_read_stream                (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> **stream</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> *index</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> buffer_size</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-stream-list"></a><h3>ags_file_read_stream_list ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_file_read_stream_list           (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> **stream</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> buffer_size</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-task"></a><h3>ags_file_read_task ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_file_read_task                  (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsTask.html#AgsTask"><span class="type">AgsTask</span></a> **task</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-task-list"></a><h3>ags_file_read_task_list ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_file_read_task_list             (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> **task</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-timestamp"></a><h3>ags_file_read_timestamp ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_file_read_timestamp             (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsTimestamp.html#AgsTimestamp"><span class="type">AgsTimestamp</span></a> **timestamp</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-read-timestamp-list"></a><h3>ags_file_read_timestamp_list ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                ags_file_read_timestamp_list        (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *node</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> **timestamp</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-audio"></a><h3>ags_file_write_audio ()</h3>
+<pre class="programlisting"><span class="returnvalue">xmlNode</span> *           ags_file_write_audio                (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsAudio.html#AgsAudio"><span class="type">AgsAudio</span></a> *audio</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-audio-list"></a><h3>ags_file_write_audio_list ()</h3>
+<pre class="programlisting"><span class="returnvalue">xmlNode</span> *           ags_file_write_audio_list           (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> *audio</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-audio-signal"></a><h3>ags_file_write_audio_signal ()</h3>
+<pre class="programlisting"><span class="returnvalue">xmlNode</span> *           ags_file_write_audio_signal         (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsAudioSignal.html#AgsAudioSignal"><span class="type">AgsAudioSignal</span></a> *audio_signal</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-audio-signal-list"></a><h3>ags_file_write_audio_signal_list ()</h3>
+<pre class="programlisting"><span class="returnvalue">xmlNode</span> *           ags_file_write_audio_signal_list    (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> *audio_signal</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-channel"></a><h3>ags_file_write_channel ()</h3>
+<pre class="programlisting"><span class="returnvalue">xmlNode</span> *           ags_file_write_channel              (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsChannel.html#AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-channel-list"></a><h3>ags_file_write_channel_list ()</h3>
+<pre class="programlisting"><span class="returnvalue">xmlNode</span> *           ags_file_write_channel_list         (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> *channel</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-devout"></a><h3>ags_file_write_devout ()</h3>
+<pre class="programlisting"><span class="returnvalue">xmlNode</span> *           ags_file_write_devout               (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsDevout.html#AgsDevout"><span class="type">AgsDevout</span></a> *devout</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-devout-list"></a><h3>ags_file_write_devout_list ()</h3>
+<pre class="programlisting"><span class="returnvalue">xmlNode</span> *           ags_file_write_devout_list          (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> *devout</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-devout-play"></a><h3>ags_file_write_devout_play ()</h3>
+<pre class="programlisting"><span class="returnvalue">xmlNode</span> *           ags_file_write_devout_play          (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsDevout.html#AgsDevoutPlay"><span class="type">AgsDevoutPlay</span></a> *play</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-devout-play-list"></a><h3>ags_file_write_devout_play_list ()</h3>
+<pre class="programlisting"><span class="returnvalue">xmlNode</span> *           ags_file_write_devout_play_list     (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> *play</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-file-link"></a><h3>ags_file_write_file_link ()</h3>
+<pre class="programlisting"><span class="returnvalue">xmlNode</span> *           ags_file_write_file_link            (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsFileLink.html#AgsFileLink"><span class="type">AgsFileLink</span></a> *file_link</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-input"></a><h3>ags_file_write_input ()</h3>
+<pre class="programlisting"><span class="returnvalue">xmlNode</span> *           ags_file_write_input                (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsChannel.html#AgsChannel"><span class="type">AgsChannel</span></a> *input</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-notation"></a><h3>ags_file_write_notation ()</h3>
+<pre class="programlisting"><span class="returnvalue">xmlNode</span> *           ags_file_write_notation             (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsNotation.html#AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-notation-list"></a><h3>ags_file_write_notation_list ()</h3>
+<pre class="programlisting"><span class="returnvalue">xmlNode</span> *           ags_file_write_notation_list        (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> *notation</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-note"></a><h3>ags_file_write_note ()</h3>
+<pre class="programlisting"><span class="returnvalue">xmlNode</span> *           ags_file_write_note                 (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsNote.html#AgsNote"><span class="type">AgsNote</span></a> *note</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-note-list"></a><h3>ags_file_write_note_list ()</h3>
+<pre class="programlisting"><span class="returnvalue">xmlNode</span> *           ags_file_write_note_list            (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> *note</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-output"></a><h3>ags_file_write_output ()</h3>
+<pre class="programlisting"><span class="returnvalue">xmlNode</span> *           ags_file_write_output               (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsChannel.html#AgsChannel"><span class="type">AgsChannel</span></a> *output</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-pattern"></a><h3>ags_file_write_pattern ()</h3>
+<pre class="programlisting"><span class="returnvalue">xmlNode</span> *           ags_file_write_pattern              (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsPattern.html#AgsPattern"><span class="type">AgsPattern</span></a> *pattern</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-pattern-data"></a><h3>ags_file_write_pattern_data ()</h3>
+<pre class="programlisting"><span class="returnvalue">xmlNode</span> *           ags_file_write_pattern_data         (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsPattern.html#AgsPattern"><span class="type">AgsPattern</span></a> *pattern</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> i</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> j</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> length</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-pattern-data-list"></a><h3>ags_file_write_pattern_data_list ()</h3>
+<pre class="programlisting"><span class="returnvalue">xmlNode</span> *           ags_file_write_pattern_data_list    (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsPattern.html#AgsPattern"><span class="type">AgsPattern</span></a> *pattern</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> length</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-pattern-list"></a><h3>ags_file_write_pattern_list ()</h3>
+<pre class="programlisting"><span class="returnvalue">xmlNode</span> *           ags_file_write_pattern_list         (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> *pattern</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-port"></a><h3>ags_file_write_port ()</h3>
+<pre class="programlisting"><span class="returnvalue">xmlNode</span> *           ags_file_write_port                 (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsPort.html#AgsPort"><span class="type">AgsPort</span></a> *port</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-port-list"></a><h3>ags_file_write_port_list ()</h3>
+<pre class="programlisting"><span class="returnvalue">xmlNode</span> *           ags_file_write_port_list            (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> *port</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-recall"></a><h3>ags_file_write_recall ()</h3>
+<pre class="programlisting"><span class="returnvalue">xmlNode</span> *           ags_file_write_recall               (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsRecall.html#AgsRecall"><span class="type">AgsRecall</span></a> *recall</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-recall-audio"></a><h3>ags_file_write_recall_audio ()</h3>
+<pre class="programlisting"><span class="returnvalue">xmlNode</span> *           ags_file_write_recall_audio         (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsRecall.html#AgsRecall"><span class="type">AgsRecall</span></a> *recall</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-recall-audio-run"></a><h3>ags_file_write_recall_audio_run ()</h3>
+<pre class="programlisting"><span class="returnvalue">xmlNode</span> *           ags_file_write_recall_audio_run     (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsRecall.html#AgsRecall"><span class="type">AgsRecall</span></a> *recall</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-recall-audio-signal"></a><h3>ags_file_write_recall_audio_signal ()</h3>
+<pre class="programlisting"><span class="returnvalue">xmlNode</span> *           ags_file_write_recall_audio_signal  (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsRecall.html#AgsRecall"><span class="type">AgsRecall</span></a> *recall</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-recall-channel"></a><h3>ags_file_write_recall_channel ()</h3>
+<pre class="programlisting"><span class="returnvalue">xmlNode</span> *           ags_file_write_recall_channel       (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsRecall.html#AgsRecall"><span class="type">AgsRecall</span></a> *recall</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-recall-channel-run"></a><h3>ags_file_write_recall_channel_run ()</h3>
+<pre class="programlisting"><span class="returnvalue">xmlNode</span> *           ags_file_write_recall_channel_run   (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsRecall.html#AgsRecall"><span class="type">AgsRecall</span></a> *recall</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-recall-container"></a><h3>ags_file_write_recall_container ()</h3>
+<pre class="programlisting"><span class="returnvalue">xmlNode</span> *           ags_file_write_recall_container     (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsRecallContainer.html#AgsRecallContainer"><span class="type">AgsRecallContainer</span></a> *recall_container</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-recall-container-list"></a><h3>ags_file_write_recall_container_list ()</h3>
+<pre class="programlisting"><span class="returnvalue">xmlNode</span> *           ags_file_write_recall_container_list
+                                                        (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> *recall_container</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-recall-list"></a><h3>ags_file_write_recall_list ()</h3>
+<pre class="programlisting"><span class="returnvalue">xmlNode</span> *           ags_file_write_recall_list          (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> *recall</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-recall-recycling"></a><h3>ags_file_write_recall_recycling ()</h3>
+<pre class="programlisting"><span class="returnvalue">xmlNode</span> *           ags_file_write_recall_recycling     (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsRecall.html#AgsRecall"><span class="type">AgsRecall</span></a> *recall</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-recycling"></a><h3>ags_file_write_recycling ()</h3>
+<pre class="programlisting"><span class="returnvalue">xmlNode</span> *           ags_file_write_recycling            (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsRecycling.html#AgsRecycling"><span class="type">AgsRecycling</span></a> *recycling</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-recycling-list"></a><h3>ags_file_write_recycling_list ()</h3>
+<pre class="programlisting"><span class="returnvalue">xmlNode</span> *           ags_file_write_recycling_list       (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> *recycling</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-stream"></a><h3>ags_file_write_stream ()</h3>
+<pre class="programlisting"><span class="returnvalue">xmlNode</span> *           ags_file_write_stream               (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> *stream</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> index</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> buffer_size</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-stream-list"></a><h3>ags_file_write_stream_list ()</h3>
+<pre class="programlisting"><span class="returnvalue">xmlNode</span> *           ags_file_write_stream_list          (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> *stream</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> buffer_size</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-task"></a><h3>ags_file_write_task ()</h3>
+<pre class="programlisting"><span class="returnvalue">xmlNode</span> *           ags_file_write_task                 (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsTask.html#AgsTask"><span class="type">AgsTask</span></a> *task</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-task-list"></a><h3>ags_file_write_task_list ()</h3>
+<pre class="programlisting"><span class="returnvalue">xmlNode</span> *           ags_file_write_task_list            (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> *task</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-timestamp"></a><h3>ags_file_write_timestamp ()</h3>
+<pre class="programlisting"><span class="returnvalue">xmlNode</span> *           ags_file_write_timestamp            (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="ags-AgsTimestamp.html#AgsTimestamp"><span class="type">AgsTimestamp</span></a> *timestamp</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-write-timestamp-list"></a><h3>ags_file_write_timestamp_list ()</h3>
+<pre class="programlisting"><span class="returnvalue">xmlNode</span> *           ags_file_write_timestamp_list       (<em class="parameter"><code><span class="type">AgsFile</span> *file</code></em>,
+                                                         <em class="parameter"><code><span class="type">xmlNode</span> *parent</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> *timestamp</code></em>);</pre>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

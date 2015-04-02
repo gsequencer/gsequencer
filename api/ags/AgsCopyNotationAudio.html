@@ -1,0 +1,164 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsCopyNotationAudio</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="recall.html" title="Recalls - Effect processors">
+<link rel="prev" href="AgsCopyChannelRun.html" title="AgsCopyChannelRun">
+<link rel="next" href="AgsCopyNotationAudioRun.html" title="AgsCopyNotationAudioRun">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="AgsCopyChannelRun.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="recall.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Advanced Gtk+ Sequencer Reference Manual</th>
+<td><a accesskey="n" href="AgsCopyNotationAudioRun.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#AgsCopyNotationAudio.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#AgsCopyNotationAudio.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#AgsCopyNotationAudio.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#AgsCopyNotationAudio.implemented-interfaces" class="shortcut">Implemented Interfaces</a>
+                   | 
+                  <a href="#AgsCopyNotationAudio.properties" class="shortcut">Properties</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="AgsCopyNotationAudio"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="AgsCopyNotationAudio.top_of_page"></a>AgsCopyNotationAudio</span></h2>
+<p>AgsCopyNotationAudio — copy notations audio</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="AgsCopyNotationAudio.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">
+#include &lt;ags/audio/recall/ags_copy_notation_audio.h&gt;
+
+struct              <a class="link" href="AgsCopyNotationAudio.html#AgsCopyNotationAudio-struct" title="struct AgsCopyNotationAudio">AgsCopyNotationAudio</a>;
+struct              <a class="link" href="AgsCopyNotationAudio.html#AgsCopyNotationAudioClass" title="struct AgsCopyNotationAudioClass">AgsCopyNotationAudioClass</a>;
+enum                <a class="link" href="AgsCopyNotationAudio.html#AgsCopyNotationAudioFlags" title="enum AgsCopyNotationAudioFlags">AgsCopyNotationAudioFlags</a>;
+<a class="link" href="AgsCopyNotationAudio.html" title="AgsCopyNotationAudio"><span class="returnvalue">AgsCopyNotationAudio</span></a> * <a class="link" href="AgsCopyNotationAudio.html#ags-copy-notation-audio-new" title="ags_copy_notation_audio_new ()">ags_copy_notation_audio_new</a>      (<em class="parameter"><code><a class="link" href="AgsDevout.html" title="AgsDevout"><span class="type">AgsDevout</span></a> *devout</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsNotation.html" title="AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> audio_channel</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsCopyNotationAudio.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  <a href="../gobject/gobject-The-Base-Object-Type.html#GObject">GObject</a>
+   +----<a class="link" href="AgsRecall.html" title="AgsRecall">AgsRecall</a>
+         +----<a class="link" href="AgsRecallAudio.html" title="AgsRecallAudio">AgsRecallAudio</a>
+               +----AgsCopyNotationAudio
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsCopyNotationAudio.implemented-interfaces"></a><h2>Implemented Interfaces</h2>
+<p>
+AgsCopyNotationAudio implements
+ AgsConnectable,  <a class="link" href="AgsPackable.html" title="AgsPackable">AgsPackable</a>,  <a class="link" href="AgsDynamicConnectable.html" title="AgsDynamicConnectable">AgsDynamicConnectable</a> and  <a class="link" href="AgsPlugin.html" title="AgsPlugin">AgsPlugin</a>.</p>
+</div>
+<div class="refsect1">
+<a name="AgsCopyNotationAudio.properties"></a><h2>Properties</h2>
+<pre class="synopsis">
+  "<a class="link" href="AgsCopyNotationAudio.html#AgsCopyNotationAudio--audio-channel" title='The "audio-channel" property'>audio-channel</a>"            <a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a>                 : Read / Write
+  "<a class="link" href="AgsCopyNotationAudio.html#AgsCopyNotationAudio--notation" title='The "notation" property'>notation</a>"                 <a class="link" href="AgsNotation.html" title="AgsNotation"><span class="type">AgsNotation</span></a>*          : Read / Write
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsCopyNotationAudio.description"></a><h2>Description</h2>
+<p>
+The <a class="link" href="AgsCopyNotationAudio.html" title="AgsCopyNotationAudio"><span class="type">AgsCopyNotationAudio</span></a> class provides ports to the effect processor.
+</p>
+</div>
+<div class="refsect1">
+<a name="AgsCopyNotationAudio.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="AgsCopyNotationAudio-struct"></a><h3>struct AgsCopyNotationAudio</h3>
+<pre class="programlisting">struct AgsCopyNotationAudio;</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsCopyNotationAudioClass"></a><h3>struct AgsCopyNotationAudioClass</h3>
+<pre class="programlisting">struct AgsCopyNotationAudioClass {
+  AgsRecallAudioClass recall_audio;
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsCopyNotationAudioFlags"></a><h3>enum AgsCopyNotationAudioFlags</h3>
+<pre class="programlisting">typedef enum {
+  AGS_COPY_NOTATION_AUDIO_FIT_AUDIO_SIGNAL  = 1,
+} AgsCopyNotationAudioFlags;
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-copy-notation-audio-new"></a><h3>ags_copy_notation_audio_new ()</h3>
+<pre class="programlisting"><a class="link" href="AgsCopyNotationAudio.html" title="AgsCopyNotationAudio"><span class="returnvalue">AgsCopyNotationAudio</span></a> * ags_copy_notation_audio_new      (<em class="parameter"><code><a class="link" href="AgsDevout.html" title="AgsDevout"><span class="type">AgsDevout</span></a> *devout</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="AgsNotation.html" title="AgsNotation"><span class="type">AgsNotation</span></a> *notation</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> audio_channel</code></em>);</pre>
+<p>
+Creates an <a class="link" href="AgsCopyNotationAudio.html" title="AgsCopyNotationAudio"><span class="type">AgsCopyNotationAudio</span></a>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>notation</code></em> :</span></p></td>
+<td>the notation</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>audio_channel</code></em> :</span></p></td>
+<td>the audio channel to use</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new <a class="link" href="AgsCopyNotationAudio.html" title="AgsCopyNotationAudio"><span class="type">AgsCopyNotationAudio</span></a>
+</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+</div>
+<div class="refsect1">
+<a name="AgsCopyNotationAudio.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="AgsCopyNotationAudio--audio-channel"></a><h3>The <code class="literal">"audio-channel"</code> property</h3>
+<pre class="programlisting">  "audio-channel"            <a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a>                 : Read / Write</pre>
+<p>The audio channel to play of audio object.</p>
+<p>Allowed values: &lt;= 65535</p>
+<p>Default value: 0</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsCopyNotationAudio--notation"></a><h3>The <code class="literal">"notation"</code> property</h3>
+<pre class="programlisting">  "notation"                 <a class="link" href="AgsNotation.html" title="AgsNotation"><span class="type">AgsNotation</span></a>*          : Read / Write</pre>
+<p>The AgsNotation it is assigned to.</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>
