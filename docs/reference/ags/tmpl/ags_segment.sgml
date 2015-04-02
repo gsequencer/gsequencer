@@ -1,0 +1,111 @@
+<!-- ##### SECTION Title ##### -->
+AgsSegment
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### ENUM AGS_SEGMENT_FLAGS ##### -->
+<para>
+
+</para>
+
+@AGS_SEGMENT_MONOCHROME: 
+@AGS_SEGMENT_COLOR_RED: 
+@AGS_SEGMENT_COLOR_BLUE: 
+@AGS_SGEMENT_COLOR_GREEN: 
+
+<!-- ##### STRUCT AgsSegment ##### -->
+<para>
+
+</para>
+
+@widget: 
+@flags: 
+@count: 
+
+<!-- ##### STRUCT AgsSegmentClass ##### -->
+<para>
+
+</para>
+
+@widget: 
+
+<!-- ##### ENUM AgsSegmentFields ##### -->
+<para>
+
+</para>
+
+@AGS_SEGMENT_UPPER_LEFT: 
+@AGS_SEGMENT_UPPER_RIGHT: 
+@AGS_SEGMENT_LOWER_LEFT: 
+@AGS_SEGMENT_LOWER_RIGHT: 
+@AGS_SEGMENT_LEFT_UPPER_1: 
+@AGS_SEGMENT_LEFT_UPPER_2: 
+@AGS_SEGMENT_LEFT_LOWER_1: 
+@AGS_SEGMENT_LEFT_LOWER_2: 
+@AGS_SEGMENT_RIGHT_UPPER_1: 
+@AGS_SEGMENT_RIGHT_UPPER_2: 
+@AGS_SEGMENT_RIGHT_LOWER_1: 
+@AGS_SEGMENT_RIGHT_LOWER_2: 
+@AGS_SEGMENT_DIAGONAL_UPPER_LEFT_1: 
+@AGS_SEGMENT_DIAGONAL_UPPER_LEFT_2: 
+@AGS_SEGMENT_DIAGONAL_UPPER_RIGHT_1: 
+@AGS_SEGMENT_DIAGONAL_UPPER_RIGHT_2: 
+@AGS_SEGMENT_DIAGONAL_LOWER_LEFT_1: 
+@AGS_SEGMENT_DIAGONAL_LOWER_LEFT_2: 
+@AGS_SEGMENT_DIAGONAL_LOWER_RIGHT_1: 
+@AGS_SEGMENT_DIAGONAL_LOWER_RIGHT_2: 
+
+<!-- ##### FUNCTION ags_segment_draw_string ##### -->
+<para>
+
+</para>
+
+@segment: 
+@string: 
+
+
+<!-- ##### FUNCTION ags_segment_field_off ##### -->
+<para>
+
+</para>
+
+@segment: 
+@field: 
+
+
+<!-- ##### FUNCTION ags_segment_field_on ##### -->
+<para>
+
+</para>
+
+@segment: 
+@field: 
+
+
+<!-- ##### FUNCTION ags_segment_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

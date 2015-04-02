@@ -1,0 +1,584 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsThread">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsThread.top_of_page">AgsThread</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsThread</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsThread.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>#define             <link linkend="AGS-ACCOUNTING-TABLE:CAPS">AGS_ACCOUNTING_TABLE</link>                (ptr)
+#define             <link linkend="AGS-THREAD-DEFAULT-ATTACK:CAPS">AGS_THREAD_DEFAULT_ATTACK</link>
+#define             <link linkend="AGS-THREAD-DEFAULT-JIFFIE:CAPS">AGS_THREAD_DEFAULT_JIFFIE</link>
+#define             <link linkend="AGS-THREAD-MAX-PRECISION:CAPS">AGS_THREAD_MAX_PRECISION</link>
+#define             <link linkend="AGS-THREAD-RESUME-SIG:CAPS">AGS_THREAD_RESUME_SIG</link>
+#define             <link linkend="AGS-THREAD-SUSPEND-SIG:CAPS">AGS_THREAD_SUSPEND_SIG</link>
+struct              <link linkend="AgsAccountingTable">AgsAccountingTable</link>;
+struct              <link linkend="AgsThread">AgsThread</link>;
+struct              <link linkend="AgsThreadClass">AgsThreadClass</link>;
+enum                <link linkend="AgsThreadFlags">AgsThreadFlags</link>;
+#define             <link linkend="MSEC-PER-SEC:CAPS">MSEC_PER_SEC</link>
+#define             <link linkend="NSEC-PER-SEC:CAPS">NSEC_PER_SEC</link>
+<link linkend="AgsAccountingTable"><returnvalue>AgsAccountingTable</returnvalue></link> * <link linkend="ags-accounting-table-alloc">ags_accounting_table_alloc</link>         (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-accounting-table-set-sanity">ags_accounting_table_set_sanity</link>     (<parameter><link linkend="GList"><type>GList</type></link> *table</parameter>,
+                                                         <parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>,
+                                                         <parameter><link linkend="gdouble"><type>gdouble</type></link> sanity</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-thread-add-child">ags_thread_add_child</link>                (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>,
+                                                         <parameter><link linkend="AgsThread"><type>AgsThread</type></link> *child</parameter>);
+<link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            <link linkend="ags-thread-children-is-locked">ags_thread_children_is_locked</link>       (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);
+<link linkend="AgsThread"><returnvalue>AgsThread</returnvalue></link> *         <link linkend="ags-thread-first">ags_thread_first</link>                    (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);
+<link linkend="AgsThread"><returnvalue>AgsThread</returnvalue></link> *         <link linkend="ags-thread-get-toplevel">ags_thread_get_toplevel</link>             (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-thread-hangcheck">ags_thread_hangcheck</link>                (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);
+<link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            <link linkend="ags-thread-is-current-ready">ags_thread_is_current_ready</link>         (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *current</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> tic</parameter>);
+<link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            <link linkend="ags-thread-is-tree-ready">ags_thread_is_tree_ready</link>            (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> tic</parameter>);
+<link linkend="AgsThread"><returnvalue>AgsThread</returnvalue></link> *         <link linkend="ags-thread-last">ags_thread_last</link>                     (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-thread-lock">ags_thread_lock</link>                     (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-thread-lock-all">ags_thread_lock_all</link>                 (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-thread-lock-children">ags_thread_lock_children</link>            (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-thread-lock-parent">ags_thread_lock_parent</link>              (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>,
+                                                         <parameter><link linkend="AgsThread"><type>AgsThread</type></link> *parent</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-thread-lock-sibling">ags_thread_lock_sibling</link>             (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);
+<link linkend="AgsThread"><returnvalue>AgsThread</returnvalue></link> *         <link linkend="ags-thread-new">ags_thread_new</link>                      (<parameter><link linkend="gpointer"><type>gpointer</type></link> data</parameter>);
+<link linkend="AgsThread"><returnvalue>AgsThread</returnvalue></link> *         <link linkend="ags-thread-next-children-locked">ags_thread_next_children_locked</link>     (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);
+<link linkend="AgsThread"><returnvalue>AgsThread</returnvalue></link> *         <link linkend="ags-thread-next-parent-locked">ags_thread_next_parent_locked</link>       (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>,
+                                                         <parameter><link linkend="AgsThread"><type>AgsThread</type></link> *parent</parameter>);
+<link linkend="AgsThread"><returnvalue>AgsThread</returnvalue></link> *         <link linkend="ags-thread-next-sibling-locked">ags_thread_next_sibling_locked</link>      (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);
+<link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            <link linkend="ags-thread-parental-is-locked">ags_thread_parental_is_locked</link>       (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>,
+                                                         <parameter><link linkend="AgsThread"><type>AgsThread</type></link> *parent</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-thread-remove-child">ags_thread_remove_child</link>             (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>,
+                                                         <parameter><link linkend="AgsThread"><type>AgsThread</type></link> *child</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-thread-resume">ags_thread_resume</link>                   (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-thread-run">ags_thread_run</link>                      (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-thread-set-sync">ags_thread_set_sync</link>                 (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> tic</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-thread-set-sync-all">ags_thread_set_sync_all</link>             (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> tic</parameter>);
+<link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            <link linkend="ags-thread-sibling-is-locked">ags_thread_sibling_is_locked</link>        (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-thread-signal-children">ags_thread_signal_children</link>          (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> broadcast</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-thread-signal-parent">ags_thread_signal_parent</link>            (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>,
+                                                         <parameter><link linkend="AgsThread"><type>AgsThread</type></link> *parent</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> broadcast</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-thread-signal-sibling">ags_thread_signal_sibling</link>           (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> broadcast</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-thread-start">ags_thread_start</link>                    (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-thread-stop">ags_thread_stop</link>                     (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-thread-suspend">ags_thread_suspend</link>                  (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-thread-timelock">ags_thread_timelock</link>                 (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);
+<link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            <link linkend="ags-thread-trylock">ags_thread_trylock</link>                  (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-thread-unlock">ags_thread_unlock</link>                   (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-thread-unlock-all">ags_thread_unlock_all</link>               (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-thread-unlock-children">ags_thread_unlock_children</link>          (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-thread-unlock-parent">ags_thread_unlock_parent</link>            (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>,
+                                                         <parameter><link linkend="AgsThread"><type>AgsThread</type></link> *parent</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-thread-unlock-sibling">ags_thread_unlock_sibling</link>           (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-thread-wait-children">ags_thread_wait_children</link>            (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-thread-wait-parent">ags_thread_wait_parent</link>              (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>,
+                                                         <parameter><link linkend="AgsThread"><type>AgsThread</type></link> *parent</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-thread-wait-sibling">ags_thread_wait_sibling</link>             (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsThread.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsThread.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AGS-ACCOUNTING-TABLE:CAPS" role="macro">
+<title>AGS_ACCOUNTING_TABLE()</title>
+<indexterm zone="AGS-ACCOUNTING-TABLE:CAPS"><primary>AGS_ACCOUNTING_TABLE</primary></indexterm>
+<programlisting>#define AGS_ACCOUNTING_TABLE(ptr) ((AgsAccountingTable *)(ptr))
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AGS-THREAD-DEFAULT-ATTACK:CAPS" role="macro">
+<title>AGS_THREAD_DEFAULT_ATTACK</title>
+<indexterm zone="AGS-THREAD-DEFAULT-ATTACK:CAPS"><primary>AGS_THREAD_DEFAULT_ATTACK</primary></indexterm>
+<programlisting>#define AGS_THREAD_DEFAULT_ATTACK (1.0)
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AGS-THREAD-DEFAULT-JIFFIE:CAPS" role="macro">
+<title>AGS_THREAD_DEFAULT_JIFFIE</title>
+<indexterm zone="AGS-THREAD-DEFAULT-JIFFIE:CAPS"><primary>AGS_THREAD_DEFAULT_JIFFIE</primary></indexterm>
+<programlisting>#define AGS_THREAD_DEFAULT_JIFFIE (250)
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AGS-THREAD-MAX-PRECISION:CAPS" role="macro">
+<title>AGS_THREAD_MAX_PRECISION</title>
+<indexterm zone="AGS-THREAD-MAX-PRECISION:CAPS"><primary>AGS_THREAD_MAX_PRECISION</primary></indexterm>
+<programlisting>#define AGS_THREAD_MAX_PRECISION (1000)
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AGS-THREAD-RESUME-SIG:CAPS" role="macro">
+<title>AGS_THREAD_RESUME_SIG</title>
+<indexterm zone="AGS-THREAD-RESUME-SIG:CAPS"><primary>AGS_THREAD_RESUME_SIG</primary></indexterm>
+<programlisting>#define             AGS_THREAD_RESUME_SIG</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AGS-THREAD-SUSPEND-SIG:CAPS" role="macro">
+<title>AGS_THREAD_SUSPEND_SIG</title>
+<indexterm zone="AGS-THREAD-SUSPEND-SIG:CAPS"><primary>AGS_THREAD_SUSPEND_SIG</primary></indexterm>
+<programlisting>#define             AGS_THREAD_SUSPEND_SIG</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsAccountingTable" role="struct">
+<title>struct AgsAccountingTable</title>
+<indexterm zone="AgsAccountingTable"><primary>AgsAccountingTable</primary></indexterm>
+<programlisting>struct AgsAccountingTable {
+  AgsThread *thread;
+  gdouble sanity;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsThread" role="struct">
+<title>struct AgsThread</title>
+<indexterm zone="AgsThread"><primary>AgsThread</primary></indexterm>
+<programlisting>struct AgsThread {
+  GObject object;
+
+  volatile guint flags;
+
+  sigset_t wait_mask;
+
+  pthread_t thread;
+  pthread_attr_t thread_attr;
+
+  gdouble freq;
+
+  pthread_mutex_t mutex;
+  pthread_mutexattr_t mutexattr;
+  pthread_cond_t cond;
+
+  pthread_mutex_t start_mutex;
+  pthread_cond_t start_cond;
+
+  pthread_barrier_t barrier[2];
+  gboolean first_barrier;
+  int wait_count[2];
+
+  pthread_t timelock_thread;
+  pthread_mutex_t timelock_mutex;
+  pthread_cond_t timelock_cond;
+
+  pthread_mutex_t greedy_mutex;
+  pthread_cond_t greedy_cond;
+  pthread_mutex_t greedy_run_mutex;
+  volatile guint locked_greedy;
+
+  struct timespec timelock;
+  GList *greedy_locks;
+
+  pthread_mutex_t suspend_mutex;
+  volatile gboolean critical_region;
+
+  GObject *devout;
+  AgsThread *parent;
+
+  AgsThread *next;
+  AgsThread *prev;
+
+  AgsThread *children;
+
+  gpointer data;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsThreadClass" role="struct">
+<title>struct AgsThreadClass</title>
+<indexterm zone="AgsThreadClass"><primary>AgsThreadClass</primary></indexterm>
+<programlisting>struct AgsThreadClass {
+  GObjectClass object;
+
+  void (*start)(AgsThread *thread);
+  void (*run)(AgsThread *thread);
+  void (*suspend)(AgsThread *thread);
+  void (*resume)(AgsThread *thread);
+  void (*timelock)(AgsThread *thread);
+  void (*stop)(AgsThread *thread);
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsThreadFlags" role="enum">
+<title>enum AgsThreadFlags</title>
+<indexterm zone="AgsThreadFlags"><primary>AgsThreadFlags</primary></indexterm>
+<programlisting>typedef enum {
+  AGS_THREAD_RUNNING                 = 1,
+  AGS_THREAD_IDLE                    = 1 &lt;&lt; 1,
+  AGS_THREAD_LOCKED                  = 1 &lt;&lt; 2,
+  AGS_THREAD_WAIT_FOR_PARENT         = 1 &lt;&lt; 3,
+  AGS_THREAD_WAIT_FOR_SIBLING        = 1 &lt;&lt; 4,
+  AGS_THREAD_WAIT_FOR_CHILDREN       = 1 &lt;&lt; 5,
+  AGS_THREAD_WAIT_FOR_BARRIER        = 1 &lt;&lt; 6,
+  AGS_THREAD_WAITING_FOR_PARENT      = 1 &lt;&lt; 7,
+  AGS_THREAD_WAITING_FOR_SIBLING     = 1 &lt;&lt; 8,
+  AGS_THREAD_WAITING_FOR_CHILDREN    = 1 &lt;&lt; 9,
+  AGS_THREAD_WAITING_FOR_BARRIER     = 1 &lt;&lt; 10,
+  AGS_THREAD_BROADCAST_PARENT        = 1 &lt;&lt; 11,
+  AGS_THREAD_BROADCAST_SIBLING       = 1 &lt;&lt; 12,
+  AGS_THREAD_BROADCAST_CHILDREN      = 1 &lt;&lt; 13,
+  AGS_THREAD_INITIAL_RUN             = 1 &lt;&lt; 14,
+  AGS_THREAD_TREE_SYNC_0             = 1 &lt;&lt; 15,
+  AGS_THREAD_WAIT_0                  = 1 &lt;&lt; 16,
+  AGS_THREAD_TREE_SYNC_1             = 1 &lt;&lt; 17,
+  AGS_THREAD_WAIT_1                  = 1 &lt;&lt; 18,
+  AGS_THREAD_TREE_SYNC_2             = 1 &lt;&lt; 19,
+  AGS_THREAD_WAIT_2                  = 1 &lt;&lt; 20,
+  AGS_THREAD_TIMELOCK_RUN            = 1 &lt;&lt; 21,
+  AGS_THREAD_TIMELOCK_WAIT           = 1 &lt;&lt; 22,
+  AGS_THREAD_TIMELOCK_RESUME         = 1 &lt;&lt; 23,
+  /*
+   * prefered way would be unlocking greedy_locks
+   * and the suspend to not become greedy
+   * but while pthread_suspend and pthread_resume
+   * are missing you need this as work-around
+   */
+  AGS_THREAD_SKIP_NON_GREEDY         = 1 &lt;&lt; 24,
+  AGS_THREAD_SKIPPED_BY_TIMELOCK     = 1 &lt;&lt; 25,
+  AGS_THREAD_LOCK_GREEDY_RUN_MUTEX   = 1 &lt;&lt; 26,
+  AGS_THREAD_SUSPENDED               = 1 &lt;&lt; 27,
+  AGS_THREAD_SINGLE_LOOP             = 1 &lt;&lt; 28,
+  AGS_THREAD_READY                   = 1 &lt;&lt; 29,
+  AGS_THREAD_UNREF_ON_EXIT           = 1 &lt;&lt; 30,
+} AgsThreadFlags;
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="MSEC-PER-SEC:CAPS" role="macro">
+<title>MSEC_PER_SEC</title>
+<indexterm zone="MSEC-PER-SEC:CAPS"><primary>MSEC_PER_SEC</primary></indexterm>
+<programlisting>#define             MSEC_PER_SEC</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="NSEC-PER-SEC:CAPS" role="macro">
+<title>NSEC_PER_SEC</title>
+<indexterm zone="NSEC-PER-SEC:CAPS"><primary>NSEC_PER_SEC</primary></indexterm>
+<programlisting>#define             NSEC_PER_SEC</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-accounting-table-alloc" role="function">
+<title>ags_accounting_table_alloc ()</title>
+<indexterm zone="ags-accounting-table-alloc"><primary>ags_accounting_table_alloc</primary></indexterm>
+<programlisting><link linkend="AgsAccountingTable"><returnvalue>AgsAccountingTable</returnvalue></link> * ags_accounting_table_alloc         (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-accounting-table-set-sanity" role="function">
+<title>ags_accounting_table_set_sanity ()</title>
+<indexterm zone="ags-accounting-table-set-sanity"><primary>ags_accounting_table_set_sanity</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_accounting_table_set_sanity     (<parameter><link linkend="GList"><type>GList</type></link> *table</parameter>,
+                                                         <parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>,
+                                                         <parameter><link linkend="gdouble"><type>gdouble</type></link> sanity</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-thread-add-child" role="function">
+<title>ags_thread_add_child ()</title>
+<indexterm zone="ags-thread-add-child"><primary>ags_thread_add_child</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_thread_add_child                (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>,
+                                                         <parameter><link linkend="AgsThread"><type>AgsThread</type></link> *child</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-thread-children-is-locked" role="function">
+<title>ags_thread_children_is_locked ()</title>
+<indexterm zone="ags-thread-children-is-locked"><primary>ags_thread_children_is_locked</primary></indexterm>
+<programlisting><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            ags_thread_children_is_locked       (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
+<para>
+Check the AGS_THREAD_LOCKED flag within sibling.
+</para></refsect2>
+<refsect2 id="ags-thread-first" role="function">
+<title>ags_thread_first ()</title>
+<indexterm zone="ags-thread-first"><primary>ags_thread_first</primary></indexterm>
+<programlisting><link linkend="AgsThread"><returnvalue>AgsThread</returnvalue></link> *         ags_thread_first                    (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
+<para>
+Retrieve first sibling.
+</para></refsect2>
+<refsect2 id="ags-thread-get-toplevel" role="function">
+<title>ags_thread_get_toplevel ()</title>
+<indexterm zone="ags-thread-get-toplevel"><primary>ags_thread_get_toplevel</primary></indexterm>
+<programlisting><link linkend="AgsThread"><returnvalue>AgsThread</returnvalue></link> *         ags_thread_get_toplevel             (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
+<para>
+Retrieve toplevel thread.
+</para></refsect2>
+<refsect2 id="ags-thread-hangcheck" role="function">
+<title>ags_thread_hangcheck ()</title>
+<indexterm zone="ags-thread-hangcheck"><primary>ags_thread_hangcheck</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_thread_hangcheck                (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
+<para>
+Performs hangcheck of thread.
+</para></refsect2>
+<refsect2 id="ags-thread-is-current-ready" role="function">
+<title>ags_thread_is_current_ready ()</title>
+<indexterm zone="ags-thread-is-current-ready"><primary>ags_thread_is_current_ready</primary></indexterm>
+<programlisting><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            ags_thread_is_current_ready         (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *current</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> tic</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-thread-is-tree-ready" role="function">
+<title>ags_thread_is_tree_ready ()</title>
+<indexterm zone="ags-thread-is-tree-ready"><primary>ags_thread_is_tree_ready</primary></indexterm>
+<programlisting><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            ags_thread_is_tree_ready            (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> tic</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-thread-last" role="function">
+<title>ags_thread_last ()</title>
+<indexterm zone="ags-thread-last"><primary>ags_thread_last</primary></indexterm>
+<programlisting><link linkend="AgsThread"><returnvalue>AgsThread</returnvalue></link> *         ags_thread_last                     (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
+<para>
+Retrieve last sibling.
+</para></refsect2>
+<refsect2 id="ags-thread-lock" role="function">
+<title>ags_thread_lock ()</title>
+<indexterm zone="ags-thread-lock"><primary>ags_thread_lock</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_thread_lock                     (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
+<para>
+Locks the threads own mutex and sets the appropriate flag.
+</para></refsect2>
+<refsect2 id="ags-thread-lock-all" role="function">
+<title>ags_thread_lock_all ()</title>
+<indexterm zone="ags-thread-lock-all"><primary>ags_thread_lock_all</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_thread_lock_all                 (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-thread-lock-children" role="function">
+<title>ags_thread_lock_children ()</title>
+<indexterm zone="ags-thread-lock-children"><primary>ags_thread_lock_children</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_thread_lock_children            (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
+<para>
+Lock child tree structure.
+</para></refsect2>
+<refsect2 id="ags-thread-lock-parent" role="function">
+<title>ags_thread_lock_parent ()</title>
+<indexterm zone="ags-thread-lock-parent"><primary>ags_thread_lock_parent</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_thread_lock_parent              (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>,
+                                                         <parameter><link linkend="AgsThread"><type>AgsThread</type></link> *parent</parameter>);</programlisting>
+<para>
+Lock parent tree structure.
+</para></refsect2>
+<refsect2 id="ags-thread-lock-sibling" role="function">
+<title>ags_thread_lock_sibling ()</title>
+<indexterm zone="ags-thread-lock-sibling"><primary>ags_thread_lock_sibling</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_thread_lock_sibling             (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
+<para>
+Lock sibling tree structure.
+</para></refsect2>
+<refsect2 id="ags-thread-new" role="function">
+<title>ags_thread_new ()</title>
+<indexterm zone="ags-thread-new"><primary>ags_thread_new</primary></indexterm>
+<programlisting><link linkend="AgsThread"><returnvalue>AgsThread</returnvalue></link> *         ags_thread_new                      (<parameter><link linkend="gpointer"><type>gpointer</type></link> data</parameter>);</programlisting>
+<para>
+Create a new <link linkend="AgsThread"><type>AgsThread</type></link> you may provide a <link linkend="gpointer"><type>gpointer</type></link> as <parameter>data</parameter>
+to your thread routine.
+</para></refsect2>
+<refsect2 id="ags-thread-next-children-locked" role="function">
+<title>ags_thread_next_children_locked ()</title>
+<indexterm zone="ags-thread-next-children-locked"><primary>ags_thread_next_children_locked</primary></indexterm>
+<programlisting><link linkend="AgsThread"><returnvalue>AgsThread</returnvalue></link> *         ags_thread_next_children_locked     (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
+<para>
+Retrieve next locked thread following <parameter>thread</parameter>
+</para></refsect2>
+<refsect2 id="ags-thread-next-parent-locked" role="function">
+<title>ags_thread_next_parent_locked ()</title>
+<indexterm zone="ags-thread-next-parent-locked"><primary>ags_thread_next_parent_locked</primary></indexterm>
+<programlisting><link linkend="AgsThread"><returnvalue>AgsThread</returnvalue></link> *         ags_thread_next_parent_locked       (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>,
+                                                         <parameter><link linkend="AgsThread"><type>AgsThread</type></link> *parent</parameter>);</programlisting>
+<para>
+Retrieve next locked thread above <parameter>thread</parameter>.
+</para></refsect2>
+<refsect2 id="ags-thread-next-sibling-locked" role="function">
+<title>ags_thread_next_sibling_locked ()</title>
+<indexterm zone="ags-thread-next-sibling-locked"><primary>ags_thread_next_sibling_locked</primary></indexterm>
+<programlisting><link linkend="AgsThread"><returnvalue>AgsThread</returnvalue></link> *         ags_thread_next_sibling_locked      (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
+<para>
+Retrieve next locked thread neighbooring <parameter>thread</parameter>
+</para></refsect2>
+<refsect2 id="ags-thread-parental-is-locked" role="function">
+<title>ags_thread_parental_is_locked ()</title>
+<indexterm zone="ags-thread-parental-is-locked"><primary>ags_thread_parental_is_locked</primary></indexterm>
+<programlisting><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            ags_thread_parental_is_locked       (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>,
+                                                         <parameter><link linkend="AgsThread"><type>AgsThread</type></link> *parent</parameter>);</programlisting>
+<para>
+Check the AGS_THREAD_LOCKED flag in parental levels.
+</para></refsect2>
+<refsect2 id="ags-thread-remove-child" role="function">
+<title>ags_thread_remove_child ()</title>
+<indexterm zone="ags-thread-remove-child"><primary>ags_thread_remove_child</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_thread_remove_child             (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>,
+                                                         <parameter><link linkend="AgsThread"><type>AgsThread</type></link> *child</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-thread-resume" role="function">
+<title>ags_thread_resume ()</title>
+<indexterm zone="ags-thread-resume"><primary>ags_thread_resume</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_thread_resume                   (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-thread-run" role="function">
+<title>ags_thread_run ()</title>
+<indexterm zone="ags-thread-run"><primary>ags_thread_run</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_thread_run                      (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
+<para>
+Only for internal use of ags_thread_loop but you may want to set the your very own
+class function namely your thread's routine.
+</para></refsect2>
+<refsect2 id="ags-thread-set-sync" role="function">
+<title>ags_thread_set_sync ()</title>
+<indexterm zone="ags-thread-set-sync"><primary>ags_thread_set_sync</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_thread_set_sync                 (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> tic</parameter>);</programlisting>
+<para>
+Calls <link linkend="ags-thread-set-sync"><function>ags_thread_set_sync()</function></link> on all threads.
+</para></refsect2>
+<refsect2 id="ags-thread-set-sync-all" role="function">
+<title>ags_thread_set_sync_all ()</title>
+<indexterm zone="ags-thread-set-sync-all"><primary>ags_thread_set_sync_all</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_thread_set_sync_all             (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> tic</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-thread-sibling-is-locked" role="function">
+<title>ags_thread_sibling_is_locked ()</title>
+<indexterm zone="ags-thread-sibling-is-locked"><primary>ags_thread_sibling_is_locked</primary></indexterm>
+<programlisting><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            ags_thread_sibling_is_locked        (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
+<para>
+Check the AGS_THREAD_LOCKED flag within sibling.
+</para></refsect2>
+<refsect2 id="ags-thread-signal-children" role="function">
+<title>ags_thread_signal_children ()</title>
+<indexterm zone="ags-thread-signal-children"><primary>ags_thread_signal_children</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_thread_signal_children          (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> broadcast</parameter>);</programlisting>
+<para>
+Signals the tree in lower levels.
+</para></refsect2>
+<refsect2 id="ags-thread-signal-parent" role="function">
+<title>ags_thread_signal_parent ()</title>
+<indexterm zone="ags-thread-signal-parent"><primary>ags_thread_signal_parent</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_thread_signal_parent            (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>,
+                                                         <parameter><link linkend="AgsThread"><type>AgsThread</type></link> *parent</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> broadcast</parameter>);</programlisting>
+<para>
+Signals the tree in higher levels.
+</para></refsect2>
+<refsect2 id="ags-thread-signal-sibling" role="function">
+<title>ags_thread_signal_sibling ()</title>
+<indexterm zone="ags-thread-signal-sibling"><primary>ags_thread_signal_sibling</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_thread_signal_sibling           (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> broadcast</parameter>);</programlisting>
+<para>
+Signals the tree on same level.
+</para></refsect2>
+<refsect2 id="ags-thread-start" role="function">
+<title>ags_thread_start ()</title>
+<indexterm zone="ags-thread-start"><primary>ags_thread_start</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_thread_start                    (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
+<para>
+Start the thread.
+</para></refsect2>
+<refsect2 id="ags-thread-stop" role="function">
+<title>ags_thread_stop ()</title>
+<indexterm zone="ags-thread-stop"><primary>ags_thread_stop</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_thread_stop                     (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
+<para>
+Stop the threads loop by unsetting AGS_THREAD_RUNNING flag.
+</para></refsect2>
+<refsect2 id="ags-thread-suspend" role="function">
+<title>ags_thread_suspend ()</title>
+<indexterm zone="ags-thread-suspend"><primary>ags_thread_suspend</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_thread_suspend                  (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-thread-timelock" role="function">
+<title>ags_thread_timelock ()</title>
+<indexterm zone="ags-thread-timelock"><primary>ags_thread_timelock</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_thread_timelock                 (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-thread-trylock" role="function">
+<title>ags_thread_trylock ()</title>
+<indexterm zone="ags-thread-trylock"><primary>ags_thread_trylock</primary></indexterm>
+<programlisting><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            ags_thread_trylock                  (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-thread-unlock" role="function">
+<title>ags_thread_unlock ()</title>
+<indexterm zone="ags-thread-unlock"><primary>ags_thread_unlock</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_thread_unlock                   (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
+<para>
+Unlocks the threads own mutex and unsets the appropriate flag.
+</para></refsect2>
+<refsect2 id="ags-thread-unlock-all" role="function">
+<title>ags_thread_unlock_all ()</title>
+<indexterm zone="ags-thread-unlock-all"><primary>ags_thread_unlock_all</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_thread_unlock_all               (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-thread-unlock-children" role="function">
+<title>ags_thread_unlock_children ()</title>
+<indexterm zone="ags-thread-unlock-children"><primary>ags_thread_unlock_children</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_thread_unlock_children          (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
+<para>
+Unlock child tree structure.
+</para></refsect2>
+<refsect2 id="ags-thread-unlock-parent" role="function">
+<title>ags_thread_unlock_parent ()</title>
+<indexterm zone="ags-thread-unlock-parent"><primary>ags_thread_unlock_parent</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_thread_unlock_parent            (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>,
+                                                         <parameter><link linkend="AgsThread"><type>AgsThread</type></link> *parent</parameter>);</programlisting>
+<para>
+Unlock parent tree structure.
+</para></refsect2>
+<refsect2 id="ags-thread-unlock-sibling" role="function">
+<title>ags_thread_unlock_sibling ()</title>
+<indexterm zone="ags-thread-unlock-sibling"><primary>ags_thread_unlock_sibling</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_thread_unlock_sibling           (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
+<para>
+Unlock sibling tree structure.
+</para></refsect2>
+<refsect2 id="ags-thread-wait-children" role="function">
+<title>ags_thread_wait_children ()</title>
+<indexterm zone="ags-thread-wait-children"><primary>ags_thread_wait_children</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_thread_wait_children            (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
+<para>
+Wait on child tree structure.
+</para></refsect2>
+<refsect2 id="ags-thread-wait-parent" role="function">
+<title>ags_thread_wait_parent ()</title>
+<indexterm zone="ags-thread-wait-parent"><primary>ags_thread_wait_parent</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_thread_wait_parent              (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>,
+                                                         <parameter><link linkend="AgsThread"><type>AgsThread</type></link> *parent</parameter>);</programlisting>
+<para>
+Wait on parent tree structure.
+</para></refsect2>
+<refsect2 id="ags-thread-wait-sibling" role="function">
+<title>ags_thread_wait_sibling ()</title>
+<indexterm zone="ags-thread-wait-sibling"><primary>ags_thread_wait_sibling</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_thread_wait_sibling             (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
+<para>
+Wait on sibling tree structure.
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

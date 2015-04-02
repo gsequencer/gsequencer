@@ -1,0 +1,66 @@
+<!-- ##### SECTION Title ##### -->
+AgsIpatchSF2Reader
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT AgsIpatchSF2Reader ##### -->
+<para>
+
+</para>
+
+@object: 
+@ipatch: 
+@selected: 
+@reader: 
+@sf2: 
+@bank: 
+@program: 
+@preset: 
+@instrument: 
+@sample: 
+@count: 
+
+<!-- ##### STRUCT AgsIpatchSF2ReaderClass ##### -->
+<para>
+
+</para>
+
+@object: 
+
+<!-- ##### ENUM AgsSF2Levels ##### -->
+<para>
+
+</para>
+
+@AGS_SF2_FILENAME: 
+@AGS_SF2_PHDR: 
+@AGS_SF2_IHDR: 
+@AGS_SF2_SHDR: 
+
+<!-- ##### FUNCTION ags_ipatch_sf2_reader_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

@@ -1,0 +1,47 @@
+<!-- ##### SECTION Title ##### -->
+AgsVolumeAudioSignal
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT AgsVolumeAudioSignal ##### -->
+<para>
+
+</para>
+
+@recall_audio_signal: 
+
+<!-- ##### STRUCT AgsVolumeAudioSignalClass ##### -->
+<para>
+
+</para>
+
+@recall_audio_signal: 
+
+<!-- ##### FUNCTION ags_volume_audio_signal_new ##### -->
+<para>
+
+</para>
+
+@audio_signal: 
+@Returns: 
+
+

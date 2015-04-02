@@ -1,0 +1,127 @@
+<!-- ##### SECTION Title ##### -->
+AgsLadspaManager
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### MACRO AGS_LADSPA_PLUGIN ##### -->
+<para>
+
+</para>
+
+@ptr: 
+
+
+<!-- ##### STRUCT AgsLadspaManager ##### -->
+<para>
+
+</para>
+
+@object: 
+@ladspa_plugin: 
+
+<!-- ##### STRUCT AgsLadspaManagerClass ##### -->
+<para>
+
+</para>
+
+@object: 
+
+<!-- ##### STRUCT AgsLadspaPlugin ##### -->
+<para>
+
+</para>
+
+@flags: 
+@filename: 
+@plugin_so: 
+
+<!-- ##### ENUM AgsLadspaPluginFlags ##### -->
+<para>
+
+</para>
+
+@AGS_LADSPA_PLUGIN_IS_LOADED: 
+
+<!-- ##### FUNCTION ags_ladspa_manager_find_ladspa_plugin ##### -->
+<para>
+
+</para>
+
+@filename: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_ladspa_manager_get_filenames ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_ladspa_manager_get_instance ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_ladspa_manager_load_default_directory ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### FUNCTION ags_ladspa_manager_load_file ##### -->
+<para>
+
+</para>
+
+@filename: 
+
+
+<!-- ##### FUNCTION ags_ladspa_manager_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_ladspa_plugin_alloc ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_ladspa_plugin_free ##### -->
+<para>
+
+</para>
+
+@ladspa_plugin: 
+
+

@@ -1,0 +1,153 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsRecallContainer">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsRecallContainer.top_of_page">AgsRecallContainer</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsRecallContainer</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsRecallContainer.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>struct              <link linkend="AgsRecallContainer">AgsRecallContainer</link>;
+struct              <link linkend="AgsRecallContainerClass">AgsRecallContainerClass</link>;
+enum                <link linkend="AgsRecallContainerFindFlags">AgsRecallContainerFindFlags</link>;
+enum                <link linkend="AgsRecallContainerFlags">AgsRecallContainerFlags</link>;
+<link linkend="GList"><returnvalue>GList</returnvalue></link> *             <link linkend="ags-recall-container-find">ags_recall_container_find</link>           (<parameter><link linkend="GList"><type>GList</type></link> *recall_container</parameter>,
+                                                         <parameter><link linkend="GType"><type>GType</type></link> type</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> find_flags</parameter>,
+                                                         <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>);
+<link linkend="AgsRecall"><returnvalue>AgsRecall</returnvalue></link> *         <link linkend="ags-recall-container-get-recall-audio">ags_recall_container_get_recall_audio</link>
+                                                        (<parameter><link linkend="AgsRecallContainer"><type>AgsRecallContainer</type></link> *container</parameter>);
+<link linkend="GList"><returnvalue>GList</returnvalue></link> *             <link linkend="ags-recall-container-get-recall-audio-run">ags_recall_container_get_recall_audio_run</link>
+                                                        (<parameter><link linkend="AgsRecallContainer"><type>AgsRecallContainer</type></link> *container</parameter>);
+<link linkend="GList"><returnvalue>GList</returnvalue></link> *             <link linkend="ags-recall-container-get-recall-channel">ags_recall_container_get_recall_channel</link>
+                                                        (<parameter><link linkend="AgsRecallContainer"><type>AgsRecallContainer</type></link> *container</parameter>);
+<link linkend="GList"><returnvalue>GList</returnvalue></link> *             <link linkend="ags-recall-container-get-recall-channel-run">ags_recall_container_get_recall_channel_run</link>
+                                                        (<parameter><link linkend="AgsRecallContainer"><type>AgsRecallContainer</type></link> *container</parameter>);
+<link linkend="AgsRecallContainer"><returnvalue>AgsRecallContainer</returnvalue></link> * <link linkend="ags-recall-container-new">ags_recall_container_new</link>           ();
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsRecallContainer.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsRecallContainer.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AgsRecallContainer" role="struct">
+<title>struct AgsRecallContainer</title>
+<indexterm zone="AgsRecallContainer"><primary>AgsRecallContainer</primary></indexterm>
+<programlisting>struct AgsRecallContainer {
+  GObject object;
+  
+  guint flags;
+
+  GType recall_audio_type;
+  AgsRecall *recall_audio;
+
+  GType recall_audio_run_type;
+  GList *recall_audio_run;
+
+  GType recall_channel_type;
+  GList *recall_channel;
+
+  GType recall_channel_run_type;
+  GList *recall_channel_run;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsRecallContainerClass" role="struct">
+<title>struct AgsRecallContainerClass</title>
+<indexterm zone="AgsRecallContainerClass"><primary>AgsRecallContainerClass</primary></indexterm>
+<programlisting>struct AgsRecallContainerClass {
+  GObjectClass object;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsRecallContainerFindFlags" role="enum">
+<title>enum AgsRecallContainerFindFlags</title>
+<indexterm zone="AgsRecallContainerFindFlags"><primary>AgsRecallContainerFindFlags</primary></indexterm>
+<programlisting>typedef enum {
+  AGS_RECALL_CONTAINER_FIND_TYPE,
+  AGS_RECALL_CONTAINER_FIND_TEMPLATE,
+  AGS_RECALL_CONTAINER_FIND_RECALL_ID,
+} AgsRecallContainerFindFlags;
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsRecallContainerFlags" role="enum">
+<title>enum AgsRecallContainerFlags</title>
+<indexterm zone="AgsRecallContainerFlags"><primary>AgsRecallContainerFlags</primary></indexterm>
+<programlisting>typedef enum {
+  AGS_RECALL_CONTAINER_PLAY    =  1,
+} AgsRecallContainerFlags;
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-recall-container-find" role="function">
+<title>ags_recall_container_find ()</title>
+<indexterm zone="ags-recall-container-find"><primary>ags_recall_container_find</primary></indexterm>
+<programlisting><link linkend="GList"><returnvalue>GList</returnvalue></link> *             ags_recall_container_find           (<parameter><link linkend="GList"><type>GList</type></link> *recall_container</parameter>,
+                                                         <parameter><link linkend="GType"><type>GType</type></link> type</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> find_flags</parameter>,
+                                                         <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>);</programlisting>
+<para>
+Finds <link linkend="AgsRecall"><type>AgsRecall</type></link> for appropriate search criteria.
+</para></refsect2>
+<refsect2 id="ags-recall-container-get-recall-audio" role="function">
+<title>ags_recall_container_get_recall_audio ()</title>
+<indexterm zone="ags-recall-container-get-recall-audio"><primary>ags_recall_container_get_recall_audio</primary></indexterm>
+<programlisting><link linkend="AgsRecall"><returnvalue>AgsRecall</returnvalue></link> *         ags_recall_container_get_recall_audio
+                                                        (<parameter><link linkend="AgsRecallContainer"><type>AgsRecallContainer</type></link> *container</parameter>);</programlisting>
+<para>
+Retrieve recall audio of container.
+</para></refsect2>
+<refsect2 id="ags-recall-container-get-recall-audio-run" role="function">
+<title>ags_recall_container_get_recall_audio_run ()</title>
+<indexterm zone="ags-recall-container-get-recall-audio-run"><primary>ags_recall_container_get_recall_audio_run</primary></indexterm>
+<programlisting><link linkend="GList"><returnvalue>GList</returnvalue></link> *             ags_recall_container_get_recall_audio_run
+                                                        (<parameter><link linkend="AgsRecallContainer"><type>AgsRecallContainer</type></link> *container</parameter>);</programlisting>
+<para>
+Retrieve recall audio run of container.
+</para></refsect2>
+<refsect2 id="ags-recall-container-get-recall-channel" role="function">
+<title>ags_recall_container_get_recall_channel ()</title>
+<indexterm zone="ags-recall-container-get-recall-channel"><primary>ags_recall_container_get_recall_channel</primary></indexterm>
+<programlisting><link linkend="GList"><returnvalue>GList</returnvalue></link> *             ags_recall_container_get_recall_channel
+                                                        (<parameter><link linkend="AgsRecallContainer"><type>AgsRecallContainer</type></link> *container</parameter>);</programlisting>
+<para>
+Retrieve the recall channel of container.
+</para></refsect2>
+<refsect2 id="ags-recall-container-get-recall-channel-run" role="function">
+<title>ags_recall_container_get_recall_channel_run ()</title>
+<indexterm zone="ags-recall-container-get-recall-channel-run"><primary>ags_recall_container_get_recall_channel_run</primary></indexterm>
+<programlisting><link linkend="GList"><returnvalue>GList</returnvalue></link> *             ags_recall_container_get_recall_channel_run
+                                                        (<parameter><link linkend="AgsRecallContainer"><type>AgsRecallContainer</type></link> *container</parameter>);</programlisting>
+<para>
+Retrieve the recall channel run of container.
+</para></refsect2>
+<refsect2 id="ags-recall-container-new" role="function">
+<title>ags_recall_container_new ()</title>
+<indexterm zone="ags-recall-container-new"><primary>ags_recall_container_new</primary></indexterm>
+<programlisting><link linkend="AgsRecallContainer"><returnvalue>AgsRecallContainer</returnvalue></link> * ags_recall_container_new           ();</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

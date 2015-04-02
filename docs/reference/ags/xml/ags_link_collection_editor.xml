@@ -1,0 +1,99 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsLinkCollectionEditor">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsLinkCollectionEditor.top_of_page">AgsLinkCollectionEditor</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsLinkCollectionEditor</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsLinkCollectionEditor.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>struct              <link linkend="AgsLinkCollectionEditor">AgsLinkCollectionEditor</link>;
+struct              <link linkend="AgsLinkCollectionEditorClass">AgsLinkCollectionEditorClass</link>;
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-link-collection-editor-check-count">ags_link_collection_editor_check_count</link>
+                                                        (<parameter><link linkend="AgsLinkCollectionEditor"><type>AgsLinkCollectionEditor</type></link> *link_collection_editor</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-link-collection-editor-check-first-line">ags_link_collection_editor_check_first_line</link>
+                                                        (<parameter><link linkend="AgsLinkCollectionEditor"><type>AgsLinkCollectionEditor</type></link> *link_collection_editor</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-link-collection-editor-check-first-link">ags_link_collection_editor_check_first_link</link>
+                                                        (<parameter><link linkend="AgsLinkCollectionEditor"><type>AgsLinkCollectionEditor</type></link> *link_collection_editor</parameter>);
+<link linkend="AgsLinkCollectionEditor"><returnvalue>AgsLinkCollectionEditor</returnvalue></link> * <link linkend="ags-link-collection-editor-new">ags_link_collection_editor_new</link>
+                                                        ();
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsLinkCollectionEditor.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsLinkCollectionEditor.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AgsLinkCollectionEditor" role="struct">
+<title>struct AgsLinkCollectionEditor</title>
+<indexterm zone="AgsLinkCollectionEditor"><primary>AgsLinkCollectionEditor</primary></indexterm>
+<programlisting>struct AgsLinkCollectionEditor {
+  GtkTable table;
+
+  GType channel_type;
+
+  GtkComboBox *link;
+  GtkSpinButton *first_line;
+  GtkSpinButton *first_link;
+  GtkSpinButton *count;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsLinkCollectionEditorClass" role="struct">
+<title>struct AgsLinkCollectionEditorClass</title>
+<indexterm zone="AgsLinkCollectionEditorClass"><primary>AgsLinkCollectionEditorClass</primary></indexterm>
+<programlisting>struct AgsLinkCollectionEditorClass {
+  GtkTableClass table;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-link-collection-editor-check-count" role="function">
+<title>ags_link_collection_editor_check_count ()</title>
+<indexterm zone="ags-link-collection-editor-check-count"><primary>ags_link_collection_editor_check_count</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_link_collection_editor_check_count
+                                                        (<parameter><link linkend="AgsLinkCollectionEditor"><type>AgsLinkCollectionEditor</type></link> *link_collection_editor</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-link-collection-editor-check-first-line" role="function">
+<title>ags_link_collection_editor_check_first_line ()</title>
+<indexterm zone="ags-link-collection-editor-check-first-line"><primary>ags_link_collection_editor_check_first_line</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_link_collection_editor_check_first_line
+                                                        (<parameter><link linkend="AgsLinkCollectionEditor"><type>AgsLinkCollectionEditor</type></link> *link_collection_editor</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-link-collection-editor-check-first-link" role="function">
+<title>ags_link_collection_editor_check_first_link ()</title>
+<indexterm zone="ags-link-collection-editor-check-first-link"><primary>ags_link_collection_editor_check_first_link</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_link_collection_editor_check_first_link
+                                                        (<parameter><link linkend="AgsLinkCollectionEditor"><type>AgsLinkCollectionEditor</type></link> *link_collection_editor</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-link-collection-editor-new" role="function">
+<title>ags_link_collection_editor_new ()</title>
+<indexterm zone="ags-link-collection-editor-new"><primary>ags_link_collection_editor_new</primary></indexterm>
+<programlisting><link linkend="AgsLinkCollectionEditor"><returnvalue>AgsLinkCollectionEditor</returnvalue></link> * ags_link_collection_editor_new
+                                                        ();</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

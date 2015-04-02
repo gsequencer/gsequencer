@@ -1,0 +1,227 @@
+<!-- ##### SECTION Title ##### -->
+ags_file_util
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### FUNCTION ags_file_read_embedded_audio ##### -->
+<para>
+
+</para>
+
+@file: 
+@node: 
+@embedded_audio: 
+
+
+<!-- ##### FUNCTION ags_file_read_embedded_audio_list ##### -->
+<para>
+
+</para>
+
+@file: 
+@node: 
+@embedded_audio: 
+
+
+<!-- ##### FUNCTION ags_file_read_file_link ##### -->
+<para>
+
+</para>
+
+@file: 
+@node: 
+@file_link: 
+
+
+<!-- ##### FUNCTION ags_file_read_file_link_list ##### -->
+<para>
+
+</para>
+
+@file: 
+@node: 
+@file_link: 
+
+
+<!-- ##### FUNCTION ags_file_util_read_dependency ##### -->
+<para>
+
+</para>
+
+@file: 
+@node: 
+@id: 
+@name: 
+@xpath: 
+
+
+<!-- ##### FUNCTION ags_file_util_read_history ##### -->
+<para>
+
+</para>
+
+@file: 
+@node: 
+@history: 
+
+
+<!-- ##### FUNCTION ags_file_util_read_object ##### -->
+<para>
+
+</para>
+
+@file: 
+@node: 
+@gobject: 
+
+
+<!-- ##### FUNCTION ags_file_util_read_parameter ##### -->
+<para>
+
+</para>
+
+@file: 
+@node: 
+@id: 
+@parameter: 
+@n_params: 
+@xpath: 
+
+
+<!-- ##### FUNCTION ags_file_util_read_value ##### -->
+<para>
+
+</para>
+
+@file: 
+@node: 
+@id: 
+@value: 
+@xpath: 
+
+
+<!-- ##### FUNCTION ags_file_util_write_dependency ##### -->
+<para>
+
+</para>
+
+@file: 
+@parent: 
+@id: 
+@name: 
+@xpath: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_file_util_write_history ##### -->
+<para>
+
+</para>
+
+@file: 
+@parent: 
+@history: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_file_util_write_object ##### -->
+<para>
+
+</para>
+
+@file: 
+@parent: 
+@gobject: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_file_util_write_parameter ##### -->
+<para>
+
+</para>
+
+@file: 
+@parent: 
+@id: 
+@parameter: 
+@n_params: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_file_util_write_value ##### -->
+<para>
+
+</para>
+
+@file: 
+@parent: 
+@id: 
+@value: 
+@pointer_type: 
+@arr_length: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_file_write_embedded_audio ##### -->
+<para>
+
+</para>
+
+@file: 
+@parent: 
+@embedded_audio: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_file_write_embedded_audio_list ##### -->
+<para>
+
+</para>
+
+@file: 
+@parent: 
+@embedded_audio: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_file_write_file_link ##### -->
+<para>
+
+</para>
+
+@file: 
+@parent: 
+@file_link: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_file_write_file_link_list ##### -->
+<para>
+
+</para>
+
+@file: 
+@parent: 
+@file_link: 
+@Returns: 
+
+

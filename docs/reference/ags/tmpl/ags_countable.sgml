@@ -1,0 +1,57 @@
+<!-- ##### SECTION Title ##### -->
+AgsCountable
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### TYPEDEF AgsCountable ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### STRUCT AgsCountableInterface ##### -->
+<para>
+
+</para>
+
+@interface: 
+@get_notation_counter: 
+@get_sequencer_counter: 
+
+<!-- ##### FUNCTION ags_countable_get_notation_counter ##### -->
+<para>
+
+</para>
+
+@countable: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_countable_get_sequencer_counter ##### -->
+<para>
+
+</para>
+
+@countable: 
+@Returns: 
+
+

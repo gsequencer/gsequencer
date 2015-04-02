@@ -1,0 +1,58 @@
+<!-- ##### SECTION Title ##### -->
+AgsAddRegionToSelection
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT AgsAddRegionToSelection ##### -->
+<para>
+
+</para>
+
+@task: 
+@notation: 
+@x0: 
+@y0: 
+@x1: 
+@y1: 
+@replace_current_selection: 
+
+<!-- ##### STRUCT AgsAddRegionToSelectionClass ##### -->
+<para>
+
+</para>
+
+@task: 
+
+<!-- ##### FUNCTION ags_add_region_to_selection_new ##### -->
+<para>
+
+</para>
+
+@notation: 
+@x0: 
+@y0: 
+@x1: 
+@y1: 
+@replace_current_selection: 
+@Returns: 
+
+

@@ -1,0 +1,57 @@
+<!-- ##### SECTION Title ##### -->
+AgsPeakChannel
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT AgsPeakChannel ##### -->
+<para>
+
+</para>
+
+@recall_channel: 
+@peak: 
+
+<!-- ##### STRUCT AgsPeakChannelClass ##### -->
+<para>
+
+</para>
+
+@recall_channel: 
+
+<!-- ##### FUNCTION ags_peak_channel_new ##### -->
+<para>
+
+</para>
+
+@source: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_peak_channel_retrieve_peak ##### -->
+<para>
+
+</para>
+
+@peak_channel: 
+@is_play: 
+
+

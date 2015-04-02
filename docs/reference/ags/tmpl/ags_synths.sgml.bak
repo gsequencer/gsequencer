@@ -1,0 +1,80 @@
+<!-- ##### SECTION Title ##### -->
+ags_synths
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### FUNCTION ags_synth_saw ##### -->
+<para>
+
+</para>
+
+@devout: 
+@buffer: 
+@offset: 
+@freq: 
+@phase: 
+@length: 
+@volume: 
+
+
+<!-- ##### FUNCTION ags_synth_sin ##### -->
+<para>
+
+</para>
+
+@devout: 
+@buffer: 
+@offset: 
+@freq: 
+@phase: 
+@length: 
+@volume: 
+
+
+<!-- ##### FUNCTION ags_synth_square ##### -->
+<para>
+
+</para>
+
+@devout: 
+@buffer: 
+@offset: 
+@freq: 
+@phase: 
+@length: 
+@volume: 
+
+
+<!-- ##### FUNCTION ags_synth_triangle ##### -->
+<para>
+
+</para>
+
+@devout: 
+@buffer: 
+@offset: 
+@freq: 
+@phase: 
+@length: 
+@volume: 
+
+

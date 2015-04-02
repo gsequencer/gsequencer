@@ -1,0 +1,110 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsFileIdRef">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsFileIdRef.top_of_page">AgsFileIdRef</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsFileIdRef</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsFileIdRef.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>#define             <link linkend="AGS-FILE-ID-REF-RESOLVE-DATA:CAPS">AGS_FILE_ID_REF_RESOLVE_DATA</link>
+#define             <link linkend="AGS-FILE-ID-REF-SERIALIZE-DATA:CAPS">AGS_FILE_ID_REF_SERIALIZE_DATA</link>
+#define             <link linkend="AGS-FILE-RESOLVE:CAPS">AGS_FILE_RESOLVE</link>                    (f)
+struct              <link linkend="AgsFileIdRef">AgsFileIdRef</link>;
+struct              <link linkend="AgsFileIdRefClass">AgsFileIdRefClass</link>;
+<link linkend="void"><returnvalue>void</returnvalue></link>                (<link linkend="AgsFileResolve">*AgsFileResolve</link>)                   (<parameter><type>void</type></parameter>);
+<link linkend="AgsFileIdRef"><returnvalue>AgsFileIdRef</returnvalue></link> *      <link linkend="ags-file-id-ref-new">ags_file_id_ref_new</link>                 ();
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-file-id-ref-resolved">ags_file_id_ref_resolved</link>            (<parameter><link linkend="AgsFileIdRef"><type>AgsFileIdRef</type></link> *file_id_ref</parameter>);
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsFileIdRef.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsFileIdRef.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AGS-FILE-ID-REF-RESOLVE-DATA:CAPS" role="macro">
+<title>AGS_FILE_ID_REF_RESOLVE_DATA</title>
+<indexterm zone="AGS-FILE-ID-REF-RESOLVE-DATA:CAPS"><primary>AGS_FILE_ID_REF_RESOLVE_DATA</primary></indexterm>
+<programlisting>#define AGS_FILE_ID_REF_RESOLVE_DATA "ags-file-id-ref-resolve-data\0"
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AGS-FILE-ID-REF-SERIALIZE-DATA:CAPS" role="macro">
+<title>AGS_FILE_ID_REF_SERIALIZE_DATA</title>
+<indexterm zone="AGS-FILE-ID-REF-SERIALIZE-DATA:CAPS"><primary>AGS_FILE_ID_REF_SERIALIZE_DATA</primary></indexterm>
+<programlisting>#define AGS_FILE_ID_REF_SERIALIZE_DATA "ags-file-id-ref-serizalize-data\0"
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AGS-FILE-RESOLVE:CAPS" role="macro">
+<title>AGS_FILE_RESOLVE()</title>
+<indexterm zone="AGS-FILE-RESOLVE:CAPS"><primary>AGS_FILE_RESOLVE</primary></indexterm>
+<programlisting>#define AGS_FILE_RESOLVE(f)          ((AgsFileResolve)(f))
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsFileIdRef" role="struct">
+<title>struct AgsFileIdRef</title>
+<indexterm zone="AgsFileIdRef"><primary>AgsFileIdRef</primary></indexterm>
+<programlisting>struct AgsFileIdRef {
+  GObject object;
+
+  GObject *main;
+  GObject *file;
+
+  xmlNode *node;
+  gchar *xpath;
+  gpointer ref;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsFileIdRefClass" role="struct">
+<title>struct AgsFileIdRefClass</title>
+<indexterm zone="AgsFileIdRefClass"><primary>AgsFileIdRefClass</primary></indexterm>
+<programlisting>struct AgsFileIdRefClass {
+  GObjectClass object;
+
+  void (*resolved)(AgsFileIdRef *file_id_ref);
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsFileResolve" role="function">
+<title>AgsFileResolve ()</title>
+<indexterm zone="AgsFileResolve"><primary>AgsFileResolve</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                (*AgsFileResolve)                   (<parameter><type>void</type></parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-file-id-ref-new" role="function">
+<title>ags_file_id_ref_new ()</title>
+<indexterm zone="ags-file-id-ref-new"><primary>ags_file_id_ref_new</primary></indexterm>
+<programlisting><link linkend="AgsFileIdRef"><returnvalue>AgsFileIdRef</returnvalue></link> *      ags_file_id_ref_new                 ();</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-file-id-ref-resolved" role="function">
+<title>ags_file_id_ref_resolved ()</title>
+<indexterm zone="ags-file-id-ref-resolved"><primary>ags_file_id_ref_resolved</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_file_id_ref_resolved            (<parameter><link linkend="AgsFileIdRef"><type>AgsFileIdRef</type></link> *file_id_ref</parameter>);</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

@@ -1,0 +1,51 @@
+<!-- ##### SECTION Title ##### -->
+AgsServerPreferences
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT AgsServerPreferences ##### -->
+<para>
+
+</para>
+
+@vbox: 
+@start: 
+@address: 
+@port: 
+@username: 
+@password: 
+
+<!-- ##### STRUCT AgsServerPreferencesClass ##### -->
+<para>
+
+</para>
+
+@vbox: 
+
+<!-- ##### FUNCTION ags_server_preferences_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

@@ -1,0 +1,70 @@
+<!-- ##### SECTION Title ##### -->
+AgsLed
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT AgsLed ##### -->
+<para>
+
+</para>
+
+@bin: 
+@flags: 
+
+<!-- ##### STRUCT AgsLedClass ##### -->
+<para>
+
+</para>
+
+@bin: 
+
+<!-- ##### ENUM AgsLedFlags ##### -->
+<para>
+
+</para>
+
+@AGS_LED_ACTIVE: 
+
+<!-- ##### FUNCTION ags_led_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_led_set_active ##### -->
+<para>
+
+</para>
+
+@led: 
+
+
+<!-- ##### FUNCTION ags_led_unset_active ##### -->
+<para>
+
+</para>
+
+@led: 
+
+

@@ -1,0 +1,138 @@
+<!-- ##### SECTION Title ##### -->
+AgsMachineEditor
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### MACRO AGS_MACHINE_EDITOR_DEFAULT_BUILD_ID ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO AGS_MACHINE_EDITOR_DEFAULT_VERSION ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### STRUCT AgsMachineEditor ##### -->
+<para>
+
+</para>
+
+@dialog: 
+@flags: 
+@version: 
+@build_id: 
+@machine: 
+@notebook: 
+@output_scrolled_window: 
+@output_editor: 
+@input_scrolled_window: 
+@input_editor: 
+@output_link_editor_scrolled_window: 
+@output_link_editor: 
+@input_link_editor_scrolled_window: 
+@input_link_editor: 
+@resize_editor_scrolled_window: 
+@resize_editor: 
+@add: 
+@remove: 
+@apply: 
+@ok: 
+@cancel: 
+
+<!-- ##### STRUCT AgsMachineEditorClass ##### -->
+<para>
+
+</para>
+
+@dialog: 
+@set_machine: 
+
+<!-- ##### ENUM AgsMachineEditorFlags ##### -->
+<para>
+
+</para>
+
+@AGS_MACHINE_EDITOR_CLOSING: 
+
+<!-- ##### FUNCTION ags_machine_editor_add_children ##### -->
+<para>
+
+</para>
+
+@machine_editor: 
+
+
+<!-- ##### FUNCTION ags_machine_editor_add_input ##### -->
+<para>
+
+</para>
+
+@machine_editor: 
+
+
+<!-- ##### FUNCTION ags_machine_editor_add_output ##### -->
+<para>
+
+</para>
+
+@machine_editor: 
+
+
+<!-- ##### FUNCTION ags_machine_editor_new ##### -->
+<para>
+
+</para>
+
+@machine: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_machine_editor_remove_input ##### -->
+<para>
+
+</para>
+
+@machine_editor: 
+
+
+<!-- ##### FUNCTION ags_machine_editor_remove_output ##### -->
+<para>
+
+</para>
+
+@machine_editor: 
+
+
+<!-- ##### FUNCTION ags_machine_editor_set_machine ##### -->
+<para>
+
+</para>
+
+@machine_editor: 
+@machine: 
+
+

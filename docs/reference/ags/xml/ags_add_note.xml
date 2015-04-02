@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsAddNote">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsAddNote.top_of_page">AgsAddNote</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsAddNote</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsAddNote.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>struct              <link linkend="AgsAddNote">AgsAddNote</link>;
+struct              <link linkend="AgsAddNoteClass">AgsAddNoteClass</link>;
+<link linkend="AgsAddNote"><returnvalue>AgsAddNote</returnvalue></link> *        <link linkend="ags-add-note-new">ags_add_note_new</link>                    (<parameter><link linkend="AgsNotation"><type>AgsNotation</type></link> *notation</parameter>,
+                                                         <parameter><link linkend="AgsNote"><type>AgsNote</type></link> *note</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> use_selection_list</parameter>);
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsAddNote.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsAddNote.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AgsAddNote" role="struct">
+<title>struct AgsAddNote</title>
+<indexterm zone="AgsAddNote"><primary>AgsAddNote</primary></indexterm>
+<programlisting>struct AgsAddNote {
+  AgsTask task;
+
+  AgsNotation *notation;
+
+  AgsNote *note;
+  gboolean use_selection_list;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsAddNoteClass" role="struct">
+<title>struct AgsAddNoteClass</title>
+<indexterm zone="AgsAddNoteClass"><primary>AgsAddNoteClass</primary></indexterm>
+<programlisting>struct AgsAddNoteClass {
+  AgsTaskClass task;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-add-note-new" role="function">
+<title>ags_add_note_new ()</title>
+<indexterm zone="ags-add-note-new"><primary>ags_add_note_new</primary></indexterm>
+<programlisting><link linkend="AgsAddNote"><returnvalue>AgsAddNote</returnvalue></link> *        ags_add_note_new                    (<parameter><link linkend="AgsNotation"><type>AgsNotation</type></link> *notation</parameter>,
+                                                         <parameter><link linkend="AgsNote"><type>AgsNote</type></link> *note</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> use_selection_list</parameter>);</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

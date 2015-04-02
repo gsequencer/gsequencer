@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsAppendChannel">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsAppendChannel.top_of_page">AgsAppendChannel</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsAppendChannel</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsAppendChannel.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>struct              <link linkend="AgsAppendChannel">AgsAppendChannel</link>;
+struct              <link linkend="AgsAppendChannelClass">AgsAppendChannelClass</link>;
+<link linkend="AgsAppendChannel"><returnvalue>AgsAppendChannel</returnvalue></link> *  <link linkend="ags-append-channel-new">ags_append_channel_new</link>              (<parameter><link linkend="GObject"><type>GObject</type></link> *audio_loop</parameter>,
+                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *channel</parameter>);
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsAppendChannel.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsAppendChannel.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AgsAppendChannel" role="struct">
+<title>struct AgsAppendChannel</title>
+<indexterm zone="AgsAppendChannel"><primary>AgsAppendChannel</primary></indexterm>
+<programlisting>struct AgsAppendChannel {
+  AgsTask task;
+
+  GObject *audio_loop;
+  GObject *channel;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsAppendChannelClass" role="struct">
+<title>struct AgsAppendChannelClass</title>
+<indexterm zone="AgsAppendChannelClass"><primary>AgsAppendChannelClass</primary></indexterm>
+<programlisting>struct AgsAppendChannelClass {
+  AgsTaskClass task;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-append-channel-new" role="function">
+<title>ags_append_channel_new ()</title>
+<indexterm zone="ags-append-channel-new"><primary>ags_append_channel_new</primary></indexterm>
+<programlisting><link linkend="AgsAppendChannel"><returnvalue>AgsAppendChannel</returnvalue></link> *  ags_append_channel_new              (<parameter><link linkend="GObject"><type>GObject</type></link> *audio_loop</parameter>,
+                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *channel</parameter>);</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

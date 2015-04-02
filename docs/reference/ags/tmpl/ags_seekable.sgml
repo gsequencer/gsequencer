@@ -1,0 +1,48 @@
+<!-- ##### SECTION Title ##### -->
+AgsSeekable
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### TYPEDEF AgsSeekable ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### STRUCT AgsSeekableInterface ##### -->
+<para>
+
+</para>
+
+@interface: 
+@seek: 
+
+<!-- ##### FUNCTION ags_seekable_seek ##### -->
+<para>
+
+</para>
+
+@seekable: 
+@steps: 
+@forward: 
+
+

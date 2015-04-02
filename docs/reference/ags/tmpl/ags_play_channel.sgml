@@ -1,0 +1,50 @@
+<!-- ##### SECTION Title ##### -->
+AgsPlayChannel
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT AgsPlayChannel ##### -->
+<para>
+
+</para>
+
+@recall_channel: 
+@audio_channel: 
+@muted: 
+
+<!-- ##### STRUCT AgsPlayChannelClass ##### -->
+<para>
+
+</para>
+
+@recall_channel: 
+
+<!-- ##### FUNCTION ags_play_channel_new ##### -->
+<para>
+
+</para>
+
+@devout: 
+@audio_channel: 
+@Returns: 
+
+

@@ -1,0 +1,60 @@
+<!-- ##### SECTION Title ##### -->
+AgsCopyNotationAudio
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT AgsCopyNotationAudio ##### -->
+<para>
+
+</para>
+
+@recall_audio: 
+@flags: 
+@devout: 
+@notation: 
+@audio_channel: 
+
+<!-- ##### STRUCT AgsCopyNotationAudioClass ##### -->
+<para>
+
+</para>
+
+@recall_audio: 
+
+<!-- ##### ENUM AgsCopyNotationAudioFlags ##### -->
+<para>
+
+</para>
+
+@AGS_COPY_NOTATION_AUDIO_FIT_AUDIO_SIGNAL: 
+
+<!-- ##### FUNCTION ags_copy_notation_audio_new ##### -->
+<para>
+
+</para>
+
+@devout: 
+@notation: 
+@audio_channel: 
+@Returns: 
+
+

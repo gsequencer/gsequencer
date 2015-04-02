@@ -1,0 +1,47 @@
+<!-- ##### SECTION Title ##### -->
+AgsGenericPreferences
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT AgsGenericPreferences ##### -->
+<para>
+
+</para>
+
+@vbox: 
+@audio_output_module: 
+
+<!-- ##### STRUCT AgsGenericPreferencesClass ##### -->
+<para>
+
+</para>
+
+@vbox: 
+
+<!-- ##### FUNCTION ags_generic_preferences_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
