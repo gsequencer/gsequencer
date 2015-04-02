@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsApplyBpm">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsApplyBpm.top_of_page">AgsApplyBpm</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsApplyBpm</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsApplyBpm.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>struct              <link linkend="AgsApplyBpm">AgsApplyBpm</link>;
+struct              <link linkend="AgsApplyBpmClass">AgsApplyBpmClass</link>;
+<link linkend="AgsApplyBpm"><returnvalue>AgsApplyBpm</returnvalue></link> *       <link linkend="ags-apply-bpm-new">ags_apply_bpm_new</link>                   (<parameter><link linkend="GObject"><type>GObject</type></link> *gobject</parameter>,
+                                                         <parameter><link linkend="gdouble"><type>gdouble</type></link> bpm</parameter>);
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsApplyBpm.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsApplyBpm.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AgsApplyBpm" role="struct">
+<title>struct AgsApplyBpm</title>
+<indexterm zone="AgsApplyBpm"><primary>AgsApplyBpm</primary></indexterm>
+<programlisting>struct AgsApplyBpm {
+  AgsTask task;
+
+  GObject *gobject;
+
+  gdouble bpm;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsApplyBpmClass" role="struct">
+<title>struct AgsApplyBpmClass</title>
+<indexterm zone="AgsApplyBpmClass"><primary>AgsApplyBpmClass</primary></indexterm>
+<programlisting>struct AgsApplyBpmClass {
+  AgsTaskClass task;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-apply-bpm-new" role="function">
+<title>ags_apply_bpm_new ()</title>
+<indexterm zone="ags-apply-bpm-new"><primary>ags_apply_bpm_new</primary></indexterm>
+<programlisting><link linkend="AgsApplyBpm"><returnvalue>AgsApplyBpm</returnvalue></link> *       ags_apply_bpm_new                   (<parameter><link linkend="GObject"><type>GObject</type></link> *gobject</parameter>,
+                                                         <parameter><link linkend="gdouble"><type>gdouble</type></link> bpm</parameter>);</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

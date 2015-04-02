@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<thread type="AgsAudioLoop">
+  <thread type="AgsThread">
+    <thread type="AgsThread">
+      <thread type="AgsThread">
+	<thread type="AgsThread">
+	  <thread type="AgsThread">
+	    <thread type="AgsThread">
+	      <thread type="AgsThread">
+		<thread type="AgsThread">
+		  <thread type="AgsThread">
+		    <thread type="AgsThread">
+		    </thread>
+		  </thread>
+		  <thread type="AgsThread">
+		  </thread>
+		  <thread type="AgsThread">
+		  </thread>
+		  <thread type="AgsThread">
+		  </thread>
+		  <thread type="AgsThread">
+		  </thread>
+		</thread>
+	      </thread>
+	    </thread>
+	  </thread>
+	  <thread type="AgsThread">
+	    <thread type="AgsThread">
+	      <thread type="AgsThread">
+	      </thread>
+	    </thread>
+	  </thread>
+	</thread>
+      </thread>
+    </thread>
+    <thread type="AgsThread">
+    </thread>
+    <thread type="AgsThread">
+    </thread>
+    <thread type="AgsThread">
+    </thread>
+    <thread type="AgsThread">
+    </thread>
+    <thread type="AgsThread">
+    </thread>
+    <thread type="AgsThread">
+    </thread>
+  </thread>  
+</thread>

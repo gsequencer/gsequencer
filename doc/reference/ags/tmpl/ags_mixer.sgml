@@ -1,0 +1,50 @@
+<!-- ##### SECTION Title ##### -->
+AgsMixer
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT AgsMixer ##### -->
+<para>
+
+</para>
+
+@machine: 
+@name: 
+@xml_type: 
+@input_pad: 
+
+<!-- ##### STRUCT AgsMixerClass ##### -->
+<para>
+
+</para>
+
+@machine: 
+
+<!-- ##### FUNCTION ags_mixer_new ##### -->
+<para>
+
+</para>
+
+@devout: 
+@Returns: 
+
+

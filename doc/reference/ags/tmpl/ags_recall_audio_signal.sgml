@@ -1,0 +1,60 @@
+<!-- ##### SECTION Title ##### -->
+AgsRecallAudioSignal
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT AgsRecallAudioSignal ##### -->
+<para>
+
+</para>
+
+@recall: 
+@flags: 
+@audio_channel: 
+@destination: 
+@source: 
+
+<!-- ##### STRUCT AgsRecallAudioSignalClass ##### -->
+<para>
+
+</para>
+
+@recall: 
+
+<!-- ##### ENUM AgsRecallAudioSignalFlags ##### -->
+<para>
+
+</para>
+
+@AGS_RECALL_AUDIO_SIGNAL_INITIAL_RUN: 
+
+<!-- ##### FUNCTION ags_recall_audio_signal_new ##### -->
+<para>
+
+</para>
+
+@destination: 
+@source: 
+@devout: 
+@Returns: 
+
+

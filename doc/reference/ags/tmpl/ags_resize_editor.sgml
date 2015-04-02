@@ -1,0 +1,49 @@
+<!-- ##### SECTION Title ##### -->
+AgsResizeEditor
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT AgsResizeEditor ##### -->
+<para>
+
+</para>
+
+@property_editor: 
+@audio_channels: 
+@input_pads: 
+@output_pads: 
+
+<!-- ##### STRUCT AgsResizeEditorClass ##### -->
+<para>
+
+</para>
+
+@property_editor: 
+
+<!-- ##### FUNCTION ags_resize_editor_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

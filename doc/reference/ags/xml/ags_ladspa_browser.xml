@@ -1,0 +1,110 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsLadspaBrowser">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsLadspaBrowser.top_of_page">AgsLadspaBrowser</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsLadspaBrowser</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsLadspaBrowser.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>struct              <link linkend="AgsLadspaBrowser">AgsLadspaBrowser</link>;
+struct              <link linkend="AgsLadspaBrowserClass">AgsLadspaBrowserClass</link>;
+<link linkend="GtkWidget"><returnvalue>GtkWidget</returnvalue></link> *         <link linkend="ags-ladspa-browser-combo-box-controls-new">ags_ladspa_browser_combo_box_controls_new</link>
+                                                        ();
+<link linkend="gchar"><returnvalue>gchar</returnvalue></link> *             <link linkend="ags-ladspa-browser-get-plugin-effect">ags_ladspa_browser_get_plugin_effect</link>
+                                                        (<parameter><link linkend="AgsLadspaBrowser"><type>AgsLadspaBrowser</type></link> *ladspa_browser</parameter>);
+<link linkend="gchar"><returnvalue>gchar</returnvalue></link> *             <link linkend="ags-ladspa-browser-get-plugin-filename">ags_ladspa_browser_get_plugin_filename</link>
+                                                        (<parameter><link linkend="AgsLadspaBrowser"><type>AgsLadspaBrowser</type></link> *ladspa_browser</parameter>);
+<link linkend="AgsLadspaBrowser"><returnvalue>AgsLadspaBrowser</returnvalue></link> *  <link linkend="ags-ladspa-browser-new">ags_ladspa_browser_new</link>              (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *parent</parameter>);
+<link linkend="GtkWidget"><returnvalue>GtkWidget</returnvalue></link> *         <link linkend="ags-ladspa-browser-preview-new">ags_ladspa_browser_preview_new</link>      ();
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsLadspaBrowser.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsLadspaBrowser.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AgsLadspaBrowser" role="struct">
+<title>struct AgsLadspaBrowser</title>
+<indexterm zone="AgsLadspaBrowser"><primary>AgsLadspaBrowser</primary></indexterm>
+<programlisting>struct AgsLadspaBrowser {
+  GtkDialog dialog;
+
+  GtkWidget *parent;
+
+  gchar *path;
+
+  GtkHBox *plugin;
+  GtkVBox *description;
+
+  GtkWidget *preview;
+
+  GtkButton *apply;
+  GtkButton *ok;
+  GtkButton *cancel;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsLadspaBrowserClass" role="struct">
+<title>struct AgsLadspaBrowserClass</title>
+<indexterm zone="AgsLadspaBrowserClass"><primary>AgsLadspaBrowserClass</primary></indexterm>
+<programlisting>struct AgsLadspaBrowserClass {
+  GtkDialogClass dialog;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-ladspa-browser-combo-box-controls-new" role="function">
+<title>ags_ladspa_browser_combo_box_controls_new ()</title>
+<indexterm zone="ags-ladspa-browser-combo-box-controls-new"><primary>ags_ladspa_browser_combo_box_controls_new</primary></indexterm>
+<programlisting><link linkend="GtkWidget"><returnvalue>GtkWidget</returnvalue></link> *         ags_ladspa_browser_combo_box_controls_new
+                                                        ();</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-ladspa-browser-get-plugin-effect" role="function">
+<title>ags_ladspa_browser_get_plugin_effect ()</title>
+<indexterm zone="ags-ladspa-browser-get-plugin-effect"><primary>ags_ladspa_browser_get_plugin_effect</primary></indexterm>
+<programlisting><link linkend="gchar"><returnvalue>gchar</returnvalue></link> *             ags_ladspa_browser_get_plugin_effect
+                                                        (<parameter><link linkend="AgsLadspaBrowser"><type>AgsLadspaBrowser</type></link> *ladspa_browser</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-ladspa-browser-get-plugin-filename" role="function">
+<title>ags_ladspa_browser_get_plugin_filename ()</title>
+<indexterm zone="ags-ladspa-browser-get-plugin-filename"><primary>ags_ladspa_browser_get_plugin_filename</primary></indexterm>
+<programlisting><link linkend="gchar"><returnvalue>gchar</returnvalue></link> *             ags_ladspa_browser_get_plugin_filename
+                                                        (<parameter><link linkend="AgsLadspaBrowser"><type>AgsLadspaBrowser</type></link> *ladspa_browser</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-ladspa-browser-new" role="function">
+<title>ags_ladspa_browser_new ()</title>
+<indexterm zone="ags-ladspa-browser-new"><primary>ags_ladspa_browser_new</primary></indexterm>
+<programlisting><link linkend="AgsLadspaBrowser"><returnvalue>AgsLadspaBrowser</returnvalue></link> *  ags_ladspa_browser_new              (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *parent</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-ladspa-browser-preview-new" role="function">
+<title>ags_ladspa_browser_preview_new ()</title>
+<indexterm zone="ags-ladspa-browser-preview-new"><primary>ags_ladspa_browser_preview_new</primary></indexterm>
+<programlisting><link linkend="GtkWidget"><returnvalue>GtkWidget</returnvalue></link> *         ags_ladspa_browser_preview_new      ();</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

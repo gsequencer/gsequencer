@@ -1,0 +1,52 @@
+<!-- ##### SECTION Title ##### -->
+ags_line_member_editor_callbacks
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### FUNCTION ags_line_member_editor_add_callback ##### -->
+<para>
+
+</para>
+
+@button: 
+@line_member_editor: 
+
+
+<!-- ##### FUNCTION ags_line_member_editor_ladspa_browser_response_callback ##### -->
+<para>
+
+</para>
+
+@dialog: 
+@response: 
+@line_member_editor: 
+
+
+<!-- ##### FUNCTION ags_line_member_editor_remove_callback ##### -->
+<para>
+
+</para>
+
+@button: 
+@line_member_editor: 
+
+

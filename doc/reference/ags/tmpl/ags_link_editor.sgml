@@ -1,0 +1,58 @@
+<!-- ##### SECTION Title ##### -->
+AgsLinkEditor
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT AgsLinkEditor ##### -->
+<para>
+
+</para>
+
+@hbox: 
+@flags: 
+@combo: 
+@spin_button: 
+@audio_file: 
+@file_chooser: 
+
+<!-- ##### STRUCT AgsLinkEditorClass ##### -->
+<para>
+
+</para>
+
+@hbox: 
+
+<!-- ##### ENUM AgsLinkEditorFlags ##### -->
+<para>
+
+</para>
+
+@AGS_LINK_EDITOR_FILE_CHOOSER_PLAY_DONE: 
+
+<!-- ##### FUNCTION ags_link_editor_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

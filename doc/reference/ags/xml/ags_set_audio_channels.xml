@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsSetAudioChannels">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsSetAudioChannels.top_of_page">AgsSetAudioChannels</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsSetAudioChannels</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsSetAudioChannels.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>struct              <link linkend="AgsSetAudioChannels">AgsSetAudioChannels</link>;
+struct              <link linkend="AgsSetAudioChannelsClass">AgsSetAudioChannelsClass</link>;
+<link linkend="AgsSetAudioChannels"><returnvalue>AgsSetAudioChannels</returnvalue></link> * <link linkend="ags-set-audio-channels-new">ags_set_audio_channels_new</link>        (<parameter><link linkend="AgsDevout"><type>AgsDevout</type></link> *devout</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> audio_channels</parameter>);
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsSetAudioChannels.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsSetAudioChannels.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AgsSetAudioChannels" role="struct">
+<title>struct AgsSetAudioChannels</title>
+<indexterm zone="AgsSetAudioChannels"><primary>AgsSetAudioChannels</primary></indexterm>
+<programlisting>struct AgsSetAudioChannels {
+  AgsTask task;
+
+  AgsDevout *devout;
+  guint audio_channels;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsSetAudioChannelsClass" role="struct">
+<title>struct AgsSetAudioChannelsClass</title>
+<indexterm zone="AgsSetAudioChannelsClass"><primary>AgsSetAudioChannelsClass</primary></indexterm>
+<programlisting>struct AgsSetAudioChannelsClass {
+  AgsTaskClass task;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-set-audio-channels-new" role="function">
+<title>ags_set_audio_channels_new ()</title>
+<indexterm zone="ags-set-audio-channels-new"><primary>ags_set_audio_channels_new</primary></indexterm>
+<programlisting><link linkend="AgsSetAudioChannels"><returnvalue>AgsSetAudioChannels</returnvalue></link> * ags_set_audio_channels_new        (<parameter><link linkend="AgsDevout"><type>AgsDevout</type></link> *devout</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> audio_channels</parameter>);</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

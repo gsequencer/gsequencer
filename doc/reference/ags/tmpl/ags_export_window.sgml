@@ -1,0 +1,64 @@
+<!-- ##### SECTION Title ##### -->
+AgsExportWindow
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT AgsExportWindow ##### -->
+<para>
+
+</para>
+
+@window: 
+@flags: 
+@ags_main: 
+@devout: 
+@live_export: 
+@filename: 
+@file_chooser_button: 
+@mode: 
+@tact: 
+@duration: 
+@output_format: 
+@export: 
+
+<!-- ##### STRUCT AgsExportWindowClass ##### -->
+<para>
+
+</para>
+
+@window: 
+
+<!-- ##### ENUM AgsExportWindowFlags ##### -->
+<para>
+
+</para>
+
+@AGS_EXPORT_WINDOW_LIVE_EXPORT: 
+
+<!-- ##### FUNCTION ags_export_window_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

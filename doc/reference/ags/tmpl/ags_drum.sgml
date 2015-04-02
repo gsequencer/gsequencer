@@ -1,0 +1,90 @@
+<!-- ##### SECTION Title ##### -->
+AgsDrum
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### MACRO AGS_DRUM_PATTERN_CONTROLS ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### STRUCT AgsDrum ##### -->
+<para>
+
+</para>
+
+@machine: 
+@flags: 
+@name: 
+@xml_type: 
+@open: 
+@loop_button: 
+@length_spin: 
+@run: 
+@vbox: 
+@input_pad: 
+@output_pad: 
+@selected_edit_button: 
+@selected_pad: 
+@selected_line: 
+@index0: 
+@selected0: 
+@index1: 
+@selected1: 
+@active_led: 
+@led: 
+@pattern: 
+@offset: 
+
+<!-- ##### STRUCT AgsDrumClass ##### -->
+<para>
+
+</para>
+
+@machine: 
+
+<!-- ##### ENUM AgsDrumFlags ##### -->
+<para>
+
+</para>
+
+@AGS_DRUM_BLOCK_PATTERN: 
+
+<!-- ##### FUNCTION ags_drum_new ##### -->
+<para>
+
+</para>
+
+@devout: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_drum_set_pattern ##### -->
+<para>
+
+</para>
+
+@drum: 
+
+

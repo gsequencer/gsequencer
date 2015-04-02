@@ -1,0 +1,93 @@
+<!-- ##### SECTION Title ##### -->
+AgsRecallFactory
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT AgsRecallFactory ##### -->
+<para>
+
+</para>
+
+@object: 
+
+<!-- ##### STRUCT AgsRecallFactoryClass ##### -->
+<para>
+
+</para>
+
+@object: 
+
+<!-- ##### ENUM AgsRecallFactoryCreateFlags ##### -->
+<para>
+
+</para>
+
+@AGS_RECALL_FACTORY_OUTPUT: 
+@AGS_RECALL_FACTORY_INPUT: 
+@AGS_RECALL_FACTORY_REMAP: 
+@AGS_RECALL_FACTORY_ADD: 
+@AGS_RECALL_FACTORY_PLAY: 
+@AGS_RECALL_FACTORY_RECALL: 
+
+<!-- ##### FUNCTION ags_recall_factory_create ##### -->
+<para>
+
+</para>
+
+@audio: 
+@play_container: 
+@recall_container: 
+@plugin_name: 
+@start_audio_channel: 
+@stop_audio_channel: 
+@start_pad: 
+@stop_pad: 
+@create_flags: 
+@recall_flags: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_recall_factory_get_instance ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_recall_factory_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_recall_factory_remove ##### -->
+<para>
+
+</para>
+
+@audio: 
+@recall_container: 
+
+

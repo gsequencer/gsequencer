@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsVolumeChannelRun">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsVolumeChannelRun.top_of_page">AgsVolumeChannelRun</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsVolumeChannelRun</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsVolumeChannelRun.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>struct              <link linkend="AgsVolumeChannelRun">AgsVolumeChannelRun</link>;
+struct              <link linkend="AgsVolumeChannelRunClass">AgsVolumeChannelRunClass</link>;
+<link linkend="AgsVolumeChannelRun"><returnvalue>AgsVolumeChannelRun</returnvalue></link> * <link linkend="ags-volume-channel-run-new">ags_volume_channel_run_new</link>        (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>);
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsVolumeChannelRun.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsVolumeChannelRun.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AgsVolumeChannelRun" role="struct">
+<title>struct AgsVolumeChannelRun</title>
+<indexterm zone="AgsVolumeChannelRun"><primary>AgsVolumeChannelRun</primary></indexterm>
+<programlisting>struct AgsVolumeChannelRun {
+  AgsRecallChannelRun recall_channel_run;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsVolumeChannelRunClass" role="struct">
+<title>struct AgsVolumeChannelRunClass</title>
+<indexterm zone="AgsVolumeChannelRunClass"><primary>AgsVolumeChannelRunClass</primary></indexterm>
+<programlisting>struct AgsVolumeChannelRunClass {
+  AgsRecallChannelRunClass recall_channel_run;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-volume-channel-run-new" role="function">
+<title>ags_volume_channel_run_new ()</title>
+<indexterm zone="ags-volume-channel-run-new"><primary>ags_volume_channel_run_new</primary></indexterm>
+<programlisting><link linkend="AgsVolumeChannelRun"><returnvalue>AgsVolumeChannelRun</returnvalue></link> * ags_volume_channel_run_new        (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>);</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

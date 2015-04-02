@@ -1,0 +1,49 @@
+<!-- ##### SECTION Title ##### -->
+AgsCopyRecycling
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT AgsCopyRecycling ##### -->
+<para>
+
+</para>
+
+@recall_recycling: 
+
+<!-- ##### STRUCT AgsCopyRecyclingClass ##### -->
+<para>
+
+</para>
+
+@recall_recycling: 
+
+<!-- ##### FUNCTION ags_copy_recycling_new ##### -->
+<para>
+
+</para>
+
+@destination: 
+@source: 
+@devout: 
+@Returns: 
+
+

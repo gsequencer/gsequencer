@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsOpenFile">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsOpenFile.top_of_page">AgsOpenFile</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsOpenFile</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsOpenFile.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>struct              <link linkend="AgsOpenFile">AgsOpenFile</link>;
+struct              <link linkend="AgsOpenFileClass">AgsOpenFileClass</link>;
+<link linkend="AgsOpenFile"><returnvalue>AgsOpenFile</returnvalue></link> *       <link linkend="ags-open-file-new">ags_open_file_new</link>                   (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
+                                                         <parameter><link linkend="GSList"><type>GSList</type></link> *filenames</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> overwrite_channels</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> create_channels</parameter>);
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsOpenFile.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsOpenFile.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AgsOpenFile" role="struct">
+<title>struct AgsOpenFile</title>
+<indexterm zone="AgsOpenFile"><primary>AgsOpenFile</primary></indexterm>
+<programlisting>struct AgsOpenFile {
+  AgsTask task;
+
+  AgsAudio *audio;
+
+  GSList *filenames;
+
+  gboolean overwrite_channels;
+  gboolean create_channels;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsOpenFileClass" role="struct">
+<title>struct AgsOpenFileClass</title>
+<indexterm zone="AgsOpenFileClass"><primary>AgsOpenFileClass</primary></indexterm>
+<programlisting>struct AgsOpenFileClass {
+  AgsTaskClass task;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-open-file-new" role="function">
+<title>ags_open_file_new ()</title>
+<indexterm zone="ags-open-file-new"><primary>ags_open_file_new</primary></indexterm>
+<programlisting><link linkend="AgsOpenFile"><returnvalue>AgsOpenFile</returnvalue></link> *       ags_open_file_new                   (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
+                                                         <parameter><link linkend="GSList"><type>GSList</type></link> *filenames</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> overwrite_channels</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> create_channels</parameter>);</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

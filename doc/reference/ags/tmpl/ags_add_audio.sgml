@@ -1,0 +1,50 @@
+<!-- ##### SECTION Title ##### -->
+AgsAddAudio
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT AgsAddAudio ##### -->
+<para>
+
+</para>
+
+@task: 
+@devout: 
+@audio: 
+
+<!-- ##### STRUCT AgsAddAudioClass ##### -->
+<para>
+
+</para>
+
+@task: 
+
+<!-- ##### FUNCTION ags_add_audio_new ##### -->
+<para>
+
+</para>
+
+@devout: 
+@audio: 
+@Returns: 
+
+

@@ -1,0 +1,160 @@
+<!-- ##### SECTION Title ##### -->
+AgsPlugin
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### TYPEDEF AgsPlugin ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### STRUCT AgsPluginInterface ##### -->
+<para>
+
+</para>
+
+@interface: 
+@get_name: 
+@set_name: 
+@get_version: 
+@set_version: 
+@get_build_id: 
+@set_build_id: 
+@get_xml_type: 
+@set_xml_type: 
+@get_ports: 
+@set_ports: 
+@read: 
+@write: 
+
+<!-- ##### FUNCTION ags_plugin_get_build_id ##### -->
+<para>
+
+</para>
+
+@plugin: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_plugin_get_name ##### -->
+<para>
+
+</para>
+
+@plugin: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_plugin_get_ports ##### -->
+<para>
+
+</para>
+
+@plugin: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_plugin_get_version ##### -->
+<para>
+
+</para>
+
+@plugin: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_plugin_get_xml_type ##### -->
+<para>
+
+</para>
+
+@plugin: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_plugin_read ##### -->
+<para>
+
+</para>
+
+@file: 
+@node: 
+@plugin: 
+
+
+<!-- ##### FUNCTION ags_plugin_set_build_id ##### -->
+<para>
+
+</para>
+
+@plugin: 
+@build_id: 
+
+
+<!-- ##### FUNCTION ags_plugin_set_name ##### -->
+<para>
+
+</para>
+
+@plugin: 
+@name: 
+
+
+<!-- ##### FUNCTION ags_plugin_set_ports ##### -->
+<para>
+
+</para>
+
+@plugin: 
+@ports: 
+
+
+<!-- ##### FUNCTION ags_plugin_set_version ##### -->
+<para>
+
+</para>
+
+@plugin: 
+@version: 
+
+
+<!-- ##### FUNCTION ags_plugin_set_xml_type ##### -->
+<para>
+
+</para>
+
+@plugin: 
+@xml_type: 
+
+
+<!-- ##### FUNCTION ags_plugin_write ##### -->
+<para>
+
+</para>
+
+@file: 
+@parent: 
+@plugin: 
+@Returns: 
+
+

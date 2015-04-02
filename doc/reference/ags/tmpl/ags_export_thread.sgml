@@ -1,0 +1,66 @@
+<!-- ##### SECTION Title ##### -->
+AgsExportThread
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### MACRO AGS_EXPORT_THREAD_BUFFER_TIME ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO AGS_EXPORT_THREAD_DEFAULT_JIFFIE ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### STRUCT AgsExportThread ##### -->
+<para>
+
+</para>
+
+@thread: 
+@flags: 
+@tic: 
+@counter: 
+@audio_file: 
+
+<!-- ##### STRUCT AgsExportThreadClass ##### -->
+<para>
+
+</para>
+
+@thread: 
+
+<!-- ##### FUNCTION ags_export_thread_new ##### -->
+<para>
+
+</para>
+
+@devout: 
+@audio_file: 
+@Returns: 
+
+

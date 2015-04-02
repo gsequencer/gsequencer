@@ -1,0 +1,135 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsLineMember">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsLineMember.top_of_page">AgsLineMember</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsLineMember</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsLineMember.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>struct              <link linkend="AgsLineMember">AgsLineMember</link>;
+struct              <link linkend="AgsLineMemberClass">AgsLineMemberClass</link>;
+enum                <link linkend="AgsLineMemberFlags">AgsLineMemberFlags</link>;
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-line-member-change-port">ags_line_member_change_port</link>         (<parameter><link linkend="AgsLineMember"><type>AgsLineMember</type></link> *line_member</parameter>,
+                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> port_data</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-line-member-find-port">ags_line_member_find_port</link>           (<parameter><link linkend="AgsLineMember"><type>AgsLineMember</type></link> *line_member</parameter>);
+<link linkend="GtkWidget"><returnvalue>GtkWidget</returnvalue></link> *         <link linkend="ags-line-member-get-widget">ags_line_member_get_widget</link>          (<parameter><link linkend="AgsLineMember"><type>AgsLineMember</type></link> *line_member</parameter>);
+<link linkend="AgsLineMember"><returnvalue>AgsLineMember</returnvalue></link> *     <link linkend="ags-line-member-new">ags_line_member_new</link>                 ();
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-line-member-set-label">ags_line_member_set_label</link>           (<parameter><link linkend="AgsLineMember"><type>AgsLineMember</type></link> *line_member</parameter>,
+                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *label</parameter>);
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsLineMember.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsLineMember.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AgsLineMember" role="struct">
+<title>struct AgsLineMember</title>
+<indexterm zone="AgsLineMember"><primary>AgsLineMember</primary></indexterm>
+<programlisting>struct AgsLineMember {
+  GtkFrame frame;
+
+  guint flags;
+
+  GType widget_type;
+  gchar *widget_label;
+
+  gchar *plugin_name;
+  gchar *specifier;
+
+  gchar *control_port;
+  
+  AgsPort *port;
+  gpointer port_data;
+  gboolean active;
+
+  AgsPort *recall_port;
+  gpointer recall_port_data;
+  gboolean recall_active;
+
+  GType task_type;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsLineMemberClass" role="struct">
+<title>struct AgsLineMemberClass</title>
+<indexterm zone="AgsLineMemberClass"><primary>AgsLineMemberClass</primary></indexterm>
+<programlisting>struct AgsLineMemberClass {
+  GtkFrameClass frame;
+
+  void (*change_port)(AgsLineMember *line_member,
+		      gpointer port_data);
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsLineMemberFlags" role="enum">
+<title>enum AgsLineMemberFlags</title>
+<indexterm zone="AgsLineMemberFlags"><primary>AgsLineMemberFlags</primary></indexterm>
+<programlisting>typedef enum {
+  AGS_LINE_MEMBER_DEFAULT_TEMPLATE      = 1,
+  AGS_LINE_MEMBER_RESET_BY_ATOMIC       = 1 &lt;&lt; 1,
+  AGS_LINE_MEMBER_RESET_BY_TASK         = 1 &lt;&lt; 2,
+  AGS_LINE_MEMBER_APPLY_RECALL          = 1 &lt;&lt; 3,
+  AGS_LINE_MEMBER_PLAY_CALLBACK_WRITE   = 1 &lt;&lt; 4,
+  AGS_LINE_MEMBER_RECALL_CALLBACK_WRITE = 1 &lt;&lt; 5,
+  AGS_LINE_MEMBER_CALLBACK_READ_BLOCK   = 1 &lt;&lt; 6,
+  AGS_LINE_MEMBER_CALLBACK_WRITE_BLOCK  = 1 &lt;&lt; 7,
+} AgsLineMemberFlags;
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-line-member-change-port" role="function">
+<title>ags_line_member_change_port ()</title>
+<indexterm zone="ags-line-member-change-port"><primary>ags_line_member_change_port</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_line_member_change_port         (<parameter><link linkend="AgsLineMember"><type>AgsLineMember</type></link> *line_member</parameter>,
+                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> port_data</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-line-member-find-port" role="function">
+<title>ags_line_member_find_port ()</title>
+<indexterm zone="ags-line-member-find-port"><primary>ags_line_member_find_port</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_line_member_find_port           (<parameter><link linkend="AgsLineMember"><type>AgsLineMember</type></link> *line_member</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-line-member-get-widget" role="function">
+<title>ags_line_member_get_widget ()</title>
+<indexterm zone="ags-line-member-get-widget"><primary>ags_line_member_get_widget</primary></indexterm>
+<programlisting><link linkend="GtkWidget"><returnvalue>GtkWidget</returnvalue></link> *         ags_line_member_get_widget          (<parameter><link linkend="AgsLineMember"><type>AgsLineMember</type></link> *line_member</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-line-member-new" role="function">
+<title>ags_line_member_new ()</title>
+<indexterm zone="ags-line-member-new"><primary>ags_line_member_new</primary></indexterm>
+<programlisting><link linkend="AgsLineMember"><returnvalue>AgsLineMember</returnvalue></link> *     ags_line_member_new                 ();</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-line-member-set-label" role="function">
+<title>ags_line_member_set_label ()</title>
+<indexterm zone="ags-line-member-set-label"><primary>ags_line_member_set_label</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_line_member_set_label           (<parameter><link linkend="AgsLineMember"><type>AgsLineMember</type></link> *line_member</parameter>,
+                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *label</parameter>);</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsPeakChannel">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsPeakChannel.top_of_page">AgsPeakChannel</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsPeakChannel</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsPeakChannel.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>struct              <link linkend="AgsPeakChannel">AgsPeakChannel</link>;
+struct              <link linkend="AgsPeakChannelClass">AgsPeakChannelClass</link>;
+<link linkend="AgsPeakChannel"><returnvalue>AgsPeakChannel</returnvalue></link> *    <link linkend="ags-peak-channel-new">ags_peak_channel_new</link>                (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *source</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-peak-channel-retrieve-peak">ags_peak_channel_retrieve_peak</link>      (<parameter><link linkend="AgsPeakChannel"><type>AgsPeakChannel</type></link> *peak_channel</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> is_play</parameter>);
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsPeakChannel.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsPeakChannel.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AgsPeakChannel" role="struct">
+<title>struct AgsPeakChannel</title>
+<indexterm zone="AgsPeakChannel"><primary>AgsPeakChannel</primary></indexterm>
+<programlisting>struct AgsPeakChannel {
+  AgsRecallChannel recall_channel;
+
+  AgsPort *peak;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsPeakChannelClass" role="struct">
+<title>struct AgsPeakChannelClass</title>
+<indexterm zone="AgsPeakChannelClass"><primary>AgsPeakChannelClass</primary></indexterm>
+<programlisting>struct AgsPeakChannelClass {
+  AgsRecallChannelClass recall_channel;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-peak-channel-new" role="function">
+<title>ags_peak_channel_new ()</title>
+<indexterm zone="ags-peak-channel-new"><primary>ags_peak_channel_new</primary></indexterm>
+<programlisting><link linkend="AgsPeakChannel"><returnvalue>AgsPeakChannel</returnvalue></link> *    ags_peak_channel_new                (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *source</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-peak-channel-retrieve-peak" role="function">
+<title>ags_peak_channel_retrieve_peak ()</title>
+<indexterm zone="ags-peak-channel-retrieve-peak"><primary>ags_peak_channel_retrieve_peak</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_peak_channel_retrieve_peak      (<parameter><link linkend="AgsPeakChannel"><type>AgsPeakChannel</type></link> *peak_channel</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> is_play</parameter>);</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

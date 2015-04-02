@@ -1,0 +1,81 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsPlayChannelRun">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsPlayChannelRun.top_of_page">AgsPlayChannelRun</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsPlayChannelRun</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsPlayChannelRun.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>struct              <link linkend="AgsPlayChannelRun">AgsPlayChannelRun</link>;
+struct              <link linkend="AgsPlayChannelRunClass">AgsPlayChannelRunClass</link>;
+enum                <link linkend="AgsPlayChannelRunFlags">AgsPlayChannelRunFlags</link>;
+<link linkend="AgsPlayChannelRun"><returnvalue>AgsPlayChannelRun</returnvalue></link> * <link linkend="ags-play-channel-run-new">ags_play_channel_run_new</link>            (<parameter><link linkend="AgsStreamChannelRun"><type>AgsStreamChannelRun</type></link> *stream_channel_run</parameter>);
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsPlayChannelRun.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsPlayChannelRun.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AgsPlayChannelRun" role="struct">
+<title>struct AgsPlayChannelRun</title>
+<indexterm zone="AgsPlayChannelRun"><primary>AgsPlayChannelRun</primary></indexterm>
+<programlisting>struct AgsPlayChannelRun {
+  AgsRecallChannelRun recall_channel_run;
+
+  guint flags;
+
+  AgsStreamChannelRun *stream_channel_run;
+  gulong done_handler;
+
+  gulong source_recycling_changed_handler;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsPlayChannelRunClass" role="struct">
+<title>struct AgsPlayChannelRunClass</title>
+<indexterm zone="AgsPlayChannelRunClass"><primary>AgsPlayChannelRunClass</primary></indexterm>
+<programlisting>struct AgsPlayChannelRunClass {
+  AgsRecallChannelRunClass recall_channel_run;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsPlayChannelRunFlags" role="enum">
+<title>enum AgsPlayChannelRunFlags</title>
+<indexterm zone="AgsPlayChannelRunFlags"><primary>AgsPlayChannelRunFlags</primary></indexterm>
+<programlisting>typedef enum {
+  AGS_PLAY_CHANNEL_RUN_TERMINATING        = 1,
+  AGS_PLAY_CHANNEL_RUN_INITIAL_RUN        = 1 &lt;&lt; 1,
+} AgsPlayChannelRunFlags;
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-play-channel-run-new" role="function">
+<title>ags_play_channel_run_new ()</title>
+<indexterm zone="ags-play-channel-run-new"><primary>ags_play_channel_run_new</primary></indexterm>
+<programlisting><link linkend="AgsPlayChannelRun"><returnvalue>AgsPlayChannelRun</returnvalue></link> * ags_play_channel_run_new            (<parameter><link linkend="AgsStreamChannelRun"><type>AgsStreamChannelRun</type></link> *stream_channel_run</parameter>);</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsBufferRecycling">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsBufferRecycling.top_of_page">AgsBufferRecycling</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsBufferRecycling</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsBufferRecycling.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>struct              <link linkend="AgsBufferRecycling">AgsBufferRecycling</link>;
+struct              <link linkend="AgsBufferRecyclingClass">AgsBufferRecyclingClass</link>;
+<link linkend="AgsBufferRecycling"><returnvalue>AgsBufferRecycling</returnvalue></link> * <link linkend="ags-buffer-recycling-new">ags_buffer_recycling_new</link>           (<parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *recycling</parameter>);
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsBufferRecycling.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsBufferRecycling.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AgsBufferRecycling" role="struct">
+<title>struct AgsBufferRecycling</title>
+<indexterm zone="AgsBufferRecycling"><primary>AgsBufferRecycling</primary></indexterm>
+<programlisting>struct AgsBufferRecycling {
+  AgsRecallRecycling recall_recycling;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsBufferRecyclingClass" role="struct">
+<title>struct AgsBufferRecyclingClass</title>
+<indexterm zone="AgsBufferRecyclingClass"><primary>AgsBufferRecyclingClass</primary></indexterm>
+<programlisting>struct AgsBufferRecyclingClass {
+  AgsRecallRecyclingClass recall_recycling;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-buffer-recycling-new" role="function">
+<title>ags_buffer_recycling_new ()</title>
+<indexterm zone="ags-buffer-recycling-new"><primary>ags_buffer_recycling_new</primary></indexterm>
+<programlisting><link linkend="AgsBufferRecycling"><returnvalue>AgsBufferRecycling</returnvalue></link> * ags_buffer_recycling_new           (<parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *recycling</parameter>);</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

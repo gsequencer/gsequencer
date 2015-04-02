@@ -1,0 +1,62 @@
+<!-- ##### SECTION Title ##### -->
+AgsMeter
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT AgsMeter ##### -->
+<para>
+
+</para>
+
+@drawing_area: 
+
+<!-- ##### STRUCT AgsMeterClass ##### -->
+<para>
+
+</para>
+
+@drawing_area: 
+
+<!-- ##### FUNCTION ags_meter_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_meter_paint ##### -->
+<para>
+
+</para>
+
+@meter: 
+
+
+<!-- ##### FUNCTION ags_meter_sound_string ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
