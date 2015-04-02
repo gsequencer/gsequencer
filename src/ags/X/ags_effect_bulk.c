@@ -819,7 +819,7 @@ ags_effect_bulk_real_add_effect(AgsEffectBulk *effect_bulk,
 						       "plugin-name\0", g_strdup_printf("ladspa-%lu\0", plugin_descriptor->UniqueID),
 						       "filename\0", filename,
 						       "effect\0", effect,
-						       "specifier\0", g_strdup(plugin_descriptor->PortNames[i]),
+						       "specifier\0", g_strdup(plugin_descriptor->PortNames[k]),
 						       "control-port\0", g_strdup_printf("%d/%d\0",
 											 k,
 											 plugin_descriptor->PortCount),
@@ -841,7 +841,7 @@ ags_effect_bulk_real_add_effect(AgsEffectBulk *effect_bulk,
 	  if(upper_bound >= 0.0 && lower_bound >= 0.0){
 	    step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
 	  }else if(upper_bound < 0.0 && lower_bound < 0.0){
-	    step = -1.0 * (upper_bound + lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
+	    step = -1.0 * (lower_bound - upper_bound) / AGS_DIAL_DEFAULT_PRECISION;
 	  }else{
 	    step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
 	  }
@@ -855,6 +855,8 @@ ags_effect_bulk_real_add_effect(AgsEffectBulk *effect_bulk,
 	  gtk_adjustment_set_value(adjustment,
 				   lower_bound);
 
+	  g_message("%f %f\0", lower_bound, upper_bound);
+	  
 	  /* create task */
 	  add_bulk_member = ags_add_bulk_member_new(effect_bulk,
 						    bulk_member,

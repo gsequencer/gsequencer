@@ -222,7 +222,6 @@ ags_update_bulk_member_launch(AgsTask *task)
 	
 	while((play = ags_recall_template_find_type(play, AGS_TYPE_RECALL_LADSPA)) != NULL){
 	  recall = ags_recall_template_find_type(recall, AGS_TYPE_RECALL_LADSPA);
-	  g_message("%s %s\0", AGS_RECALL_LADSPA(play->data)->filename, AGS_RECALL_LADSPA(play->data)->effect);
 	   
 	  if(AGS_IS_RECALL_LADSPA(play->data)){
 	  
@@ -233,8 +232,6 @@ ags_update_bulk_member_launch(AgsTask *task)
 	      port = AGS_RECALL(play->data)->port;
 	      recall_port = AGS_RECALL(recall->data)->port;
 
-	      g_message("found\0");
-	      
 	      while(port != NULL){
 		bulk_port = ags_bulk_port_alloc(port->data,
 						recall_port->data);
@@ -246,8 +243,6 @@ ags_update_bulk_member_launch(AgsTask *task)
 		  update_bulk_member->bulk_member->bulk_port = g_list_prepend(update_bulk_member->bulk_member->bulk_port,
 									      bulk_port);
 		}
-		
-		g_message("insert %d\0", k);
 		
 		k++;
 		port = port->next;

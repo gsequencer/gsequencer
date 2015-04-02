@@ -710,11 +710,16 @@ ags_dial_draw(AgsDial *dial)
   if(dial->adjustment->upper >= 0.0 && dial->adjustment->lower >= 0.0){
     range = (dial->adjustment->upper - dial->adjustment->lower);
   }else if(dial->adjustment->upper < 0.0 && dial->adjustment->lower < 0.0){
-    range = -1.0 * (dial->adjustment->upper + dial->adjustment->lower);
+    range = -1.0 * (dial->adjustment->lower - dial->adjustment->upper);
   }else{
     range = (dial->adjustment->upper - dial->adjustment->lower);
   }
 
+  if(range == 0.0){
+    g_warning("ags_dial.c: range = 0, lower = %f, upper = %f\0", dial->adjustment->lower, dial->adjustment->upper);
+    return;
+  }
+  
   if(dial->adjustment->lower < 0.0){
     translated_value = (gdouble) scale_precision * (dial->adjustment->value - dial->adjustment->lower) / range;
   }else{

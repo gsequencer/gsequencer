@@ -712,7 +712,7 @@ ags_line_real_add_effect(AgsLine *line,
 	  if(upper_bound >= 0.0 && lower_bound >= 0.0){
 	    step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
 	  }else if(upper_bound < 0.0 && lower_bound < 0.0){
-	    step = -1.0 * (upper_bound + lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
+	    step = -1.0 * (lower_bound - upper_bound) / AGS_DIAL_DEFAULT_PRECISION;
 	  }else{
 	    step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
 	  }
