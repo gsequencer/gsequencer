@@ -1,0 +1,119 @@
+<!-- ##### SECTION Title ##### -->
+AgsCountBeatsAudioRun
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT AgsCountBeatsAudioRun ##### -->
+<para>
+
+</para>
+
+@recall_audio_run: 
+@first_run: 
+@notation_counter: 
+@sequencer_counter: 
+@recall_ref: 
+@hide_ref: 
+@notation_hide_ref_counter: 
+@sequencer_hide_ref_counter: 
+@sequencer_alloc_output_handler: 
+@sequencer_count_handler: 
+@notation_alloc_output_handler: 
+@notation_count_handler: 
+@delay_audio_run: 
+
+<!-- ##### STRUCT AgsCountBeatsAudioRunClass ##### -->
+<para>
+
+</para>
+
+@recall_audio_run: 
+@notation_start: 
+@notation_loop: 
+@notation_stop: 
+@sequencer_start: 
+@sequencer_loop: 
+@sequencer_stop: 
+
+<!-- ##### FUNCTION ags_count_beats_audio_run_new ##### -->
+<para>
+
+</para>
+
+@delay_audio_run: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_count_beats_audio_run_notation_loop ##### -->
+<para>
+
+</para>
+
+@count_beats_audio_run: 
+@run_order: 
+
+
+<!-- ##### FUNCTION ags_count_beats_audio_run_notation_start ##### -->
+<para>
+
+</para>
+
+@count_beats_audio_run: 
+@run_order: 
+
+
+<!-- ##### FUNCTION ags_count_beats_audio_run_notation_stop ##### -->
+<para>
+
+</para>
+
+@count_beats_audio_run: 
+@run_order: 
+
+
+<!-- ##### FUNCTION ags_count_beats_audio_run_sequencer_loop ##### -->
+<para>
+
+</para>
+
+@count_beats_audio_run: 
+@run_order: 
+
+
+<!-- ##### FUNCTION ags_count_beats_audio_run_sequencer_start ##### -->
+<para>
+
+</para>
+
+@count_beats_audio_run: 
+@run_order: 
+
+
+<!-- ##### FUNCTION ags_count_beats_audio_run_sequencer_stop ##### -->
+<para>
+
+</para>
+
+@count_beats_audio_run: 
+@run_order: 
+
+

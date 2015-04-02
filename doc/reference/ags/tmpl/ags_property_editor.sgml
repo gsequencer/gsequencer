@@ -1,0 +1,56 @@
+<!-- ##### SECTION Title ##### -->
+AgsPropertyEditor
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT AgsPropertyEditor ##### -->
+<para>
+
+</para>
+
+@vbox: 
+@flags: 
+@enabled: 
+
+<!-- ##### STRUCT AgsPropertyEditorClass ##### -->
+<para>
+
+</para>
+
+@vbox: 
+@apply: 
+
+<!-- ##### ENUM AgsPropertyEditorFlags ##### -->
+<para>
+
+</para>
+
+@AGS_PROPERTY_EDITOR_ENABLED: 
+
+<!-- ##### FUNCTION ags_property_editor_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

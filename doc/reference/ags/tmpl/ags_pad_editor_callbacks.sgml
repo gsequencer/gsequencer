@@ -1,0 +1,66 @@
+<!-- ##### SECTION Title ##### -->
+ags_pad_editor_callbacks
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### FUNCTION ags_pad_editor_destroy_callback ##### -->
+<para>
+
+</para>
+
+@object: 
+@pad_editor: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_pad_editor_parent_set_callback ##### -->
+<para>
+
+</para>
+
+@widget: 
+@old_parent: 
+@pad_editor: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_pad_editor_set_audio_channels_callback ##### -->
+<para>
+
+</para>
+
+@audio: 
+@audio_channels: 
+@audio_channels_old: 
+@pad_editor: 
+
+
+<!-- ##### FUNCTION ags_pad_editor_show_callback ##### -->
+<para>
+
+</para>
+
+@widget: 
+@pad_editor: 
+@Returns: 
+
+

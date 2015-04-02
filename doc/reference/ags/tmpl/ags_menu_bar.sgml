@@ -1,0 +1,82 @@
+<!-- ##### SECTION Title ##### -->
+AgsMenuBar
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT AgsMenuBar ##### -->
+<para>
+
+</para>
+
+@menu_bar: 
+@file: 
+@edit: 
+@add: 
+@help: 
+
+<!-- ##### STRUCT AgsMenuBarClass ##### -->
+<para>
+
+</para>
+
+@menu_bar: 
+
+<!-- ##### FUNCTION ags_menu_bar_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_tact_combo_box_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_tact_menu_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_zoom_combo_box_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_zoom_menu_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

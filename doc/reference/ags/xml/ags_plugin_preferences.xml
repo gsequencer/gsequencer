@@ -1,0 +1,85 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsPluginPreferences">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsPluginPreferences.top_of_page">AgsPluginPreferences</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsPluginPreferences</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsPluginPreferences.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>struct              <link linkend="AgsLadspaPluginPreferences">AgsLadspaPluginPreferences</link>;
+struct              <link linkend="AgsPluginPreferences">AgsPluginPreferences</link>;
+struct              <link linkend="AgsPluginPreferencesClass">AgsPluginPreferencesClass</link>;
+<link linkend="AgsLadspaPluginPreferences"><returnvalue>AgsLadspaPluginPreferences</returnvalue></link> * <link linkend="ags-ladspa-plugin-preferences-alloc">ags_ladspa_plugin_preferences_alloc</link>
+                                                        ();
+<link linkend="AgsPluginPreferences"><returnvalue>AgsPluginPreferences</returnvalue></link> * <link linkend="ags-plugin-preferences-new">ags_plugin_preferences_new</link>       ();
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsPluginPreferences.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsPluginPreferences.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AgsLadspaPluginPreferences" role="struct">
+<title>struct AgsLadspaPluginPreferences</title>
+<indexterm zone="AgsLadspaPluginPreferences"><primary>AgsLadspaPluginPreferences</primary></indexterm>
+<programlisting>struct AgsLadspaPluginPreferences {
+  GtkEntry *ladspa_path;
+  GtkCellView *plugin_file;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsPluginPreferences" role="struct">
+<title>struct AgsPluginPreferences</title>
+<indexterm zone="AgsPluginPreferences"><primary>AgsPluginPreferences</primary></indexterm>
+<programlisting>struct AgsPluginPreferences {
+  GtkVBox vbox;
+
+  AgsLadspaPluginPreferences *ladspa_plugin_preferencens;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsPluginPreferencesClass" role="struct">
+<title>struct AgsPluginPreferencesClass</title>
+<indexterm zone="AgsPluginPreferencesClass"><primary>AgsPluginPreferencesClass</primary></indexterm>
+<programlisting>struct AgsPluginPreferencesClass {
+  GtkVBoxClass vbox;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-ladspa-plugin-preferences-alloc" role="function">
+<title>ags_ladspa_plugin_preferences_alloc ()</title>
+<indexterm zone="ags-ladspa-plugin-preferences-alloc"><primary>ags_ladspa_plugin_preferences_alloc</primary></indexterm>
+<programlisting><link linkend="AgsLadspaPluginPreferences"><returnvalue>AgsLadspaPluginPreferences</returnvalue></link> * ags_ladspa_plugin_preferences_alloc
+                                                        ();</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-plugin-preferences-new" role="function">
+<title>ags_plugin_preferences_new ()</title>
+<indexterm zone="ags-plugin-preferences-new"><primary>ags_plugin_preferences_new</primary></indexterm>
+<programlisting><link linkend="AgsPluginPreferences"><returnvalue>AgsPluginPreferences</returnvalue></link> * ags_plugin_preferences_new       ();</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

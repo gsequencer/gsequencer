@@ -1,0 +1,200 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsMachine">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsMachine.top_of_page">AgsMachine</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsMachine</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsMachine.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>#define             <link linkend="AGS-MACHINE-DEFAULT-BUILD-ID:CAPS">AGS_MACHINE_DEFAULT_BUILD_ID</link>
+#define             <link linkend="AGS-MACHINE-DEFAULT-VERSION:CAPS">AGS_MACHINE_DEFAULT_VERSION</link>
+struct              <link linkend="AgsMachine">AgsMachine</link>;
+struct              <link linkend="AgsMachineClass">AgsMachineClass</link>;
+enum                <link linkend="AgsMachineFileInputFlags">AgsMachineFileInputFlags</link>;
+enum                <link linkend="AgsMachineFlags">AgsMachineFlags</link>;
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-machine-add-default-recalls">ags_machine_add_default_recalls</link>     (<parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);
+<link linkend="GtkFileChooserDialog"><returnvalue>GtkFileChooserDialog</returnvalue></link> * <link linkend="ags-machine-file-chooser-dialog-new">ags_machine_file_chooser_dialog_new</link>
+                                                        (<parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);
+<link linkend="AgsMachine"><returnvalue>AgsMachine</returnvalue></link> *        <link linkend="ags-machine-find-by-name">ags_machine_find_by_name</link>            (<parameter><link linkend="GList"><type>GList</type></link> *list</parameter>,
+                                                         <parameter><link linkend="char"><type>char</type></link> *name</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-machine-find-port">ags_machine_find_port</link>               (<parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);
+<link linkend="GtkListStore"><returnvalue>GtkListStore</returnvalue></link> *      <link linkend="ags-machine-get-possible-links">ags_machine_get_possible_links</link>      (<parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);
+<link linkend="AgsMachine"><returnvalue>AgsMachine</returnvalue></link> *        <link linkend="ags-machine-new">ags_machine_new</link>                     (<parameter><link linkend="GObject"><type>GObject</type></link> *devout</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-machine-open-files">ags_machine_open_files</link>              (<parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>,
+                                                         <parameter><link linkend="GSList"><type>GSList</type></link> *filenames</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> overwrite_channels</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> create_channels</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-machine-set-run">ags_machine_set_run</link>                 (<parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> run</parameter>);
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsMachine.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsMachine.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AGS-MACHINE-DEFAULT-BUILD-ID:CAPS" role="macro">
+<title>AGS_MACHINE_DEFAULT_BUILD_ID</title>
+<indexterm zone="AGS-MACHINE-DEFAULT-BUILD-ID:CAPS"><primary>AGS_MACHINE_DEFAULT_BUILD_ID</primary></indexterm>
+<programlisting>#define AGS_MACHINE_DEFAULT_BUILD_ID "CEST 02-10-2014 19:36\0"
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AGS-MACHINE-DEFAULT-VERSION:CAPS" role="macro">
+<title>AGS_MACHINE_DEFAULT_VERSION</title>
+<indexterm zone="AGS-MACHINE-DEFAULT-VERSION:CAPS"><primary>AGS_MACHINE_DEFAULT_VERSION</primary></indexterm>
+<programlisting>#define AGS_MACHINE_DEFAULT_VERSION "0.4.2\0"
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsMachine" role="struct">
+<title>struct AgsMachine</title>
+<indexterm zone="AgsMachine"><primary>AgsMachine</primary></indexterm>
+<programlisting>struct AgsMachine {
+  GtkHandleBox handle_box;
+
+  GObject *ags_main;
+
+  char *name;
+
+  gchar *version;
+  gchar *build_id;
+
+  guint flags;
+  guint file_input_flags;
+
+  AgsAudio *audio;
+
+  GtkToggleButton *play;
+
+  GType output_pad_type;
+  GType output_line_type;
+  GtkContainer *output;
+
+  GType input_pad_type;
+  GType input_line_type;
+  GtkContainer *input;
+
+  GList *port;
+
+  GtkMenu *popup;
+  GtkDialog *properties;
+  GtkDialog *rename;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsMachineClass" role="struct">
+<title>struct AgsMachineClass</title>
+<indexterm zone="AgsMachineClass"><primary>AgsMachineClass</primary></indexterm>
+<programlisting>struct AgsMachineClass {
+  GtkHandleBoxClass handle_box;
+
+  void (*add_default_recalls)(AgsMachine *machine);
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsMachineFileInputFlags" role="enum">
+<title>enum AgsMachineFileInputFlags</title>
+<indexterm zone="AgsMachineFileInputFlags"><primary>AgsMachineFileInputFlags</primary></indexterm>
+<programlisting>typedef enum {
+  AGS_MACHINE_ACCEPT_WAV          = 1,
+  AGS_MACHINE_ACCEPT_OGG          = 1 &lt;&lt;  1,
+  AGS_MACHINE_ACCEPT_SOUNDFONT2   = 1 &lt;&lt;  2,
+} AgsMachineFileInputFlags;
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsMachineFlags" role="enum">
+<title>enum AgsMachineFlags</title>
+<indexterm zone="AgsMachineFlags"><primary>AgsMachineFlags</primary></indexterm>
+<programlisting>typedef enum {
+  AGS_MACHINE_SOLO              = 1,
+  AGS_MACHINE_IS_EFFECT         = 1 &lt;&lt;  1,
+  AGS_MACHINE_IS_SEQUENCER      = 1 &lt;&lt;  2,
+  AGS_MACHINE_IS_SYNTHESIZER    = 1 &lt;&lt;  3,
+  AGS_MACHINE_TAKES_FILE_INPUT  = 1 &lt;&lt;  4,
+  AGS_MACHINE_MAPPED_RECALL     = 1 &lt;&lt;  5,
+  AGS_MACHINE_PREMAPPED_RECALL  = 1 &lt;&lt;  6,
+  AGS_MACHINE_BLOCK_PLAY        = 1 &lt;&lt;  7,
+  AGS_MACHINE_BLOCK_STOP        = 1 &lt;&lt;  8,
+} AgsMachineFlags;
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-machine-add-default-recalls" role="function">
+<title>ags_machine_add_default_recalls ()</title>
+<indexterm zone="ags-machine-add-default-recalls"><primary>ags_machine_add_default_recalls</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_machine_add_default_recalls     (<parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-machine-file-chooser-dialog-new" role="function">
+<title>ags_machine_file_chooser_dialog_new ()</title>
+<indexterm zone="ags-machine-file-chooser-dialog-new"><primary>ags_machine_file_chooser_dialog_new</primary></indexterm>
+<programlisting><link linkend="GtkFileChooserDialog"><returnvalue>GtkFileChooserDialog</returnvalue></link> * ags_machine_file_chooser_dialog_new
+                                                        (<parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-machine-find-by-name" role="function">
+<title>ags_machine_find_by_name ()</title>
+<indexterm zone="ags-machine-find-by-name"><primary>ags_machine_find_by_name</primary></indexterm>
+<programlisting><link linkend="AgsMachine"><returnvalue>AgsMachine</returnvalue></link> *        ags_machine_find_by_name            (<parameter><link linkend="GList"><type>GList</type></link> *list</parameter>,
+                                                         <parameter><link linkend="char"><type>char</type></link> *name</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-machine-find-port" role="function">
+<title>ags_machine_find_port ()</title>
+<indexterm zone="ags-machine-find-port"><primary>ags_machine_find_port</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_machine_find_port               (<parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-machine-get-possible-links" role="function">
+<title>ags_machine_get_possible_links ()</title>
+<indexterm zone="ags-machine-get-possible-links"><primary>ags_machine_get_possible_links</primary></indexterm>
+<programlisting><link linkend="GtkListStore"><returnvalue>GtkListStore</returnvalue></link> *      ags_machine_get_possible_links      (<parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-machine-new" role="function">
+<title>ags_machine_new ()</title>
+<indexterm zone="ags-machine-new"><primary>ags_machine_new</primary></indexterm>
+<programlisting><link linkend="AgsMachine"><returnvalue>AgsMachine</returnvalue></link> *        ags_machine_new                     (<parameter><link linkend="GObject"><type>GObject</type></link> *devout</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-machine-open-files" role="function">
+<title>ags_machine_open_files ()</title>
+<indexterm zone="ags-machine-open-files"><primary>ags_machine_open_files</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_machine_open_files              (<parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>,
+                                                         <parameter><link linkend="GSList"><type>GSList</type></link> *filenames</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> overwrite_channels</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> create_channels</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-machine-set-run" role="function">
+<title>ags_machine_set_run ()</title>
+<indexterm zone="ags-machine-set-run"><primary>ags_machine_set_run</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_machine_set_run                 (<parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> run</parameter>);</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

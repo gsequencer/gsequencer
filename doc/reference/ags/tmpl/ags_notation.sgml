@@ -1,0 +1,292 @@
+<!-- ##### SECTION Title ##### -->
+AgsNotation
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### MACRO AGS_NOTATION_DEFAULT_BPM ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO AGS_NOTATION_DEFAULT_DURATION ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO AGS_NOTATION_DEFAULT_JIFFIE ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO AGS_NOTATION_DEFAULT_LENGTH ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO AGS_NOTATION_MAXIMUM_NOTE_LENGTH ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO AGS_NOTATION_MINIMUM_NOTE_LENGTH ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO AGS_NOTATION_TICS_PER_BEAT ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### STRUCT AgsNotation ##### -->
+<para>
+
+</para>
+
+@object: 
+@flags: 
+@timestamp: 
+@audio_channel: 
+@audio: 
+@key: 
+@base_frequency: 
+@tact: 
+@bpm: 
+@maximum_note_length: 
+@notes: 
+@start_loop: 
+@end_loop: 
+@offset: 
+@selection: 
+@port: 
+@current_notes: 
+@next_notes: 
+
+<!-- ##### STRUCT AgsNotationClass ##### -->
+<para>
+
+</para>
+
+@object: 
+
+<!-- ##### ENUM AgsNotationFlags ##### -->
+<para>
+
+</para>
+
+@AGS_NOTATION_STICKY: 
+@AGS_NOTATION_INDICATED_LENGTH: 
+
+<!-- ##### FUNCTION ags_notation_add_note ##### -->
+<para>
+
+</para>
+
+@notation: 
+@note: 
+@use_selection_list: 
+
+
+<!-- ##### FUNCTION ags_notation_add_point_to_selection ##### -->
+<para>
+
+</para>
+
+@notation: 
+@x: 
+@y: 
+@replace_current_selection: 
+
+
+<!-- ##### FUNCTION ags_notation_add_region_to_selection ##### -->
+<para>
+
+</para>
+
+@notation: 
+@x0: 
+@y0: 
+@x1: 
+@y1: 
+@replace_current_selection: 
+
+
+<!-- ##### FUNCTION ags_notation_copy_selection ##### -->
+<para>
+
+</para>
+
+@notation: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_notation_cut_selection ##### -->
+<para>
+
+</para>
+
+@notation: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_notation_find_near_timestamp ##### -->
+<para>
+
+</para>
+
+@notation: 
+@audio_channel: 
+@timestamp: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_notation_find_point ##### -->
+<para>
+
+</para>
+
+@notation: 
+@x: 
+@y: 
+@use_selection_list: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_notation_find_region ##### -->
+<para>
+
+</para>
+
+@notation: 
+@x0: 
+@y0: 
+@x1: 
+@y1: 
+@use_selection_list: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_notation_free_selection ##### -->
+<para>
+
+</para>
+
+@notation: 
+
+
+<!-- ##### FUNCTION ags_notation_get_current ##### -->
+<para>
+
+</para>
+
+@notation: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_notation_get_selection ##### -->
+<para>
+
+</para>
+
+@notation: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_notation_insert_from_clipboard ##### -->
+<para>
+
+</para>
+
+@notation: 
+@content: 
+@reset_x_offset: 
+@x_offset: 
+@reset_y_offset: 
+@y_offset: 
+
+
+<!-- ##### FUNCTION ags_notation_is_note_selected ##### -->
+<para>
+
+</para>
+
+@notation: 
+@note: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_notation_new ##### -->
+<para>
+
+</para>
+
+@audio_channel: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_notation_remove_note_at_position ##### -->
+<para>
+
+</para>
+
+@notation: 
+@x: 
+@y: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_notation_remove_point_from_selection ##### -->
+<para>
+
+</para>
+
+@notation: 
+@x: 
+@y: 
+
+
+<!-- ##### FUNCTION ags_notation_remove_region_from_selection ##### -->
+<para>
+
+</para>
+
+@notation: 
+@x0: 
+@y0: 
+@x1: 
+@y1: 
+
+

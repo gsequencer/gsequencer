@@ -1,0 +1,55 @@
+<!-- ##### SECTION Title ##### -->
+AgsDrumOutputLine
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT AgsDrumOutputLine ##### -->
+<para>
+
+</para>
+
+@line: 
+
+<!-- ##### STRUCT AgsDrumOutputLineClass ##### -->
+<para>
+
+</para>
+
+@line: 
+
+<!-- ##### FUNCTION ags_drum_output_line_add_default_recall ##### -->
+<para>
+
+</para>
+
+@drum_output_line: 
+
+
+<!-- ##### FUNCTION ags_drum_output_line_new ##### -->
+<para>
+
+</para>
+
+@channel: 
+@Returns: 
+
+

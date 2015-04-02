@@ -1,0 +1,108 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-ags-synths">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-ags-synths.top_of_page">ags_synths</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>ags_synths</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-ags-synths.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis><link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-synth-saw">ags_synth_saw</link>                       (<parameter><link linkend="AgsDevout"><type>AgsDevout</type></link> *devout</parameter>,
+                                                         <parameter>signed <link linkend="short"><type>short</type></link> *buffer</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> offset</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> freq</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> phase</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> length</parameter>,
+                                                         <parameter><link linkend="double"><type>double</type></link> volume</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-synth-sin">ags_synth_sin</link>                       (<parameter><link linkend="AgsDevout"><type>AgsDevout</type></link> *devout</parameter>,
+                                                         <parameter>signed <link linkend="short"><type>short</type></link> *buffer</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> offset</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> freq</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> phase</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> length</parameter>,
+                                                         <parameter><link linkend="double"><type>double</type></link> volume</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-synth-square">ags_synth_square</link>                    (<parameter><link linkend="AgsDevout"><type>AgsDevout</type></link> *devout</parameter>,
+                                                         <parameter>signed <link linkend="short"><type>short</type></link> *buffer</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> offset</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> freq</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> phase</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> length</parameter>,
+                                                         <parameter><link linkend="double"><type>double</type></link> volume</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-synth-triangle">ags_synth_triangle</link>                  (<parameter><link linkend="AgsDevout"><type>AgsDevout</type></link> *devout</parameter>,
+                                                         <parameter>signed <link linkend="short"><type>short</type></link> *buffer</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> offset</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> freq</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> phase</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> length</parameter>,
+                                                         <parameter><link linkend="double"><type>double</type></link> volume</parameter>);
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-ags-synths.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-ags-synths.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="ags-synth-saw" role="function">
+<title>ags_synth_saw ()</title>
+<indexterm zone="ags-synth-saw"><primary>ags_synth_saw</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_synth_saw                       (<parameter><link linkend="AgsDevout"><type>AgsDevout</type></link> *devout</parameter>,
+                                                         <parameter>signed <link linkend="short"><type>short</type></link> *buffer</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> offset</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> freq</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> phase</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> length</parameter>,
+                                                         <parameter><link linkend="double"><type>double</type></link> volume</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-synth-sin" role="function">
+<title>ags_synth_sin ()</title>
+<indexterm zone="ags-synth-sin"><primary>ags_synth_sin</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_synth_sin                       (<parameter><link linkend="AgsDevout"><type>AgsDevout</type></link> *devout</parameter>,
+                                                         <parameter>signed <link linkend="short"><type>short</type></link> *buffer</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> offset</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> freq</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> phase</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> length</parameter>,
+                                                         <parameter><link linkend="double"><type>double</type></link> volume</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-synth-square" role="function">
+<title>ags_synth_square ()</title>
+<indexterm zone="ags-synth-square"><primary>ags_synth_square</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_synth_square                    (<parameter><link linkend="AgsDevout"><type>AgsDevout</type></link> *devout</parameter>,
+                                                         <parameter>signed <link linkend="short"><type>short</type></link> *buffer</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> offset</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> freq</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> phase</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> length</parameter>,
+                                                         <parameter><link linkend="double"><type>double</type></link> volume</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-synth-triangle" role="function">
+<title>ags_synth_triangle ()</title>
+<indexterm zone="ags-synth-triangle"><primary>ags_synth_triangle</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_synth_triangle                  (<parameter><link linkend="AgsDevout"><type>AgsDevout</type></link> *devout</parameter>,
+                                                         <parameter>signed <link linkend="short"><type>short</type></link> *buffer</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> offset</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> freq</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> phase</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> length</parameter>,
+                                                         <parameter><link linkend="double"><type>double</type></link> volume</parameter>);</programlisting>
+</refsect2>
+
+</refsect1>
+
+</refentry>

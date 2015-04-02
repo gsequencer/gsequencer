@@ -1,0 +1,155 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsPort">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsPort.top_of_page">AgsPort</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsPort</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsPort.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>struct              <link linkend="AgsPort">AgsPort</link>;
+struct              <link linkend="AgsPortClass">AgsPortClass</link>;
+<link linkend="GList"><returnvalue>GList</returnvalue></link> *             <link linkend="ags-port-find-specifier">ags_port_find_specifier</link>             (<parameter><link linkend="GList"><type>GList</type></link> *port</parameter>,
+                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *specifier</parameter>);
+<link linkend="AgsPort"><returnvalue>AgsPort</returnvalue></link> *           <link linkend="ags-port-new">ags_port_new</link>                        ();
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-port-safe-get-property">ags_port_safe_get_property</link>          (<parameter><link linkend="AgsPort"><type>AgsPort</type></link> *port</parameter>,
+                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *property_name</parameter>,
+                                                         <parameter><link linkend="GValue"><type>GValue</type></link> *value</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-port-safe-read">ags_port_safe_read</link>                  (<parameter><link linkend="AgsPort"><type>AgsPort</type></link> *port</parameter>,
+                                                         <parameter><link linkend="GValue"><type>GValue</type></link> *value</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-port-safe-set-property">ags_port_safe_set_property</link>          (<parameter><link linkend="AgsPort"><type>AgsPort</type></link> *port</parameter>,
+                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *property_name</parameter>,
+                                                         <parameter><link linkend="GValue"><type>GValue</type></link> *value</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-port-safe-write">ags_port_safe_write</link>                 (<parameter><link linkend="AgsPort"><type>AgsPort</type></link> *port</parameter>,
+                                                         <parameter><link linkend="GValue"><type>GValue</type></link> *value</parameter>);
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsPort.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsPort.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AgsPort" role="struct">
+<title>struct AgsPort</title>
+<indexterm zone="AgsPort"><primary>AgsPort</primary></indexterm>
+<programlisting>struct AgsPort {
+  GObject object;
+
+  gchar *plugin_name;
+  gchar *specifier;
+
+  gchar *control_port;
+
+  gboolean port_value_is_pointer;
+  GType port_value_type;
+
+  guint port_value_size;
+  guint port_value_length;
+
+  pthread_mutex_t mutex;
+
+  union _AgsPortValue{
+    gboolean ags_port_boolean;
+    gint ags_port_int;
+    guint ags_port_uint;
+    gfloat ags_port_float;
+    gdouble ags_port_double;
+    gboolean *ags_port_boolean_ptr;
+    gint *ags_port_int_ptr;
+    guint *ags_port_uint_ptr;
+    gfloat *ags_port_float_ptr;
+    gdouble *ags_port_double_ptr;
+    gpointer ags_port_pointer;
+    GObject *ags_port_object;
+  }port_value;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsPortClass" role="struct">
+<title>struct AgsPortClass</title>
+<indexterm zone="AgsPortClass"><primary>AgsPortClass</primary></indexterm>
+<programlisting>struct AgsPortClass {
+  GObjectClass object;
+
+  void (*safe_read)(AgsPort *port, GValue *value);
+  void (*safe_write)(AgsPort *port, GValue *value);
+
+  void (*safe_get_property)(AgsPort *port, gchar *property_name, GValue *value);
+  void (*safe_set_property)(AgsPort *port, gchar *property_name, GValue *value);
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-port-find-specifier" role="function">
+<title>ags_port_find_specifier ()</title>
+<indexterm zone="ags-port-find-specifier"><primary>ags_port_find_specifier</primary></indexterm>
+<programlisting><link linkend="GList"><returnvalue>GList</returnvalue></link> *             ags_port_find_specifier             (<parameter><link linkend="GList"><type>GList</type></link> *port</parameter>,
+                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *specifier</parameter>);</programlisting>
+<para>
+Retrieve port by specifier.
+</para><variablelist role="params">
+<varlistentry><term><emphasis>Returns</emphasis>&#160;:</term><listitem><simpara>Next match.</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2 id="ags-port-new" role="function">
+<title>ags_port_new ()</title>
+<indexterm zone="ags-port-new"><primary>ags_port_new</primary></indexterm>
+<programlisting><link linkend="AgsPort"><returnvalue>AgsPort</returnvalue></link> *           ags_port_new                        ();</programlisting>
+<para>
+Creates an <link linkend="AgsPort"><type>AgsPort</type></link>.
+</para><variablelist role="params">
+<varlistentry><term><emphasis>Returns</emphasis>&#160;:</term><listitem><simpara>a new <link linkend="AgsPort"><type>AgsPort</type></link>.</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2 id="ags-port-safe-get-property" role="function">
+<title>ags_port_safe_get_property ()</title>
+<indexterm zone="ags-port-safe-get-property"><primary>ags_port_safe_get_property</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_port_safe_get_property          (<parameter><link linkend="AgsPort"><type>AgsPort</type></link> *port</parameter>,
+                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *property_name</parameter>,
+                                                         <parameter><link linkend="GValue"><type>GValue</type></link> *value</parameter>);</programlisting>
+<para>
+Perform safe get property.
+</para></refsect2>
+<refsect2 id="ags-port-safe-read" role="function">
+<title>ags_port_safe_read ()</title>
+<indexterm zone="ags-port-safe-read"><primary>ags_port_safe_read</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_port_safe_read                  (<parameter><link linkend="AgsPort"><type>AgsPort</type></link> *port</parameter>,
+                                                         <parameter><link linkend="GValue"><type>GValue</type></link> *value</parameter>);</programlisting>
+<para>
+Perform safe write.
+</para></refsect2>
+<refsect2 id="ags-port-safe-set-property" role="function">
+<title>ags_port_safe_set_property ()</title>
+<indexterm zone="ags-port-safe-set-property"><primary>ags_port_safe_set_property</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_port_safe_set_property          (<parameter><link linkend="AgsPort"><type>AgsPort</type></link> *port</parameter>,
+                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *property_name</parameter>,
+                                                         <parameter><link linkend="GValue"><type>GValue</type></link> *value</parameter>);</programlisting>
+<para>
+Perform safe set property.
+</para></refsect2>
+<refsect2 id="ags-port-safe-write" role="function">
+<title>ags_port_safe_write ()</title>
+<indexterm zone="ags-port-safe-write"><primary>ags_port_safe_write</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_port_safe_write                 (<parameter><link linkend="AgsPort"><type>AgsPort</type></link> *port</parameter>,
+                                                         <parameter><link linkend="GValue"><type>GValue</type></link> *value</parameter>);</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

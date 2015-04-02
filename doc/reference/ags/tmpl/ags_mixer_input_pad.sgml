@@ -1,0 +1,47 @@
+<!-- ##### SECTION Title ##### -->
+AgsMixerInputPad
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT AgsMixerInputPad ##### -->
+<para>
+
+</para>
+
+@pad: 
+
+<!-- ##### STRUCT AgsMixerInputPadClass ##### -->
+<para>
+
+</para>
+
+@pad: 
+
+<!-- ##### FUNCTION ags_mixer_input_pad_new ##### -->
+<para>
+
+</para>
+
+@channel: 
+@Returns: 
+
+

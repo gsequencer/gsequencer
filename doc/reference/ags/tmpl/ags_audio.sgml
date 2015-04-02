@@ -1,0 +1,313 @@
+<!-- ##### SECTION Title ##### -->
+AgsAudio
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT AgsAudio ##### -->
+<para>
+
+</para>
+
+@object: 
+@flags: 
+@devout: 
+@level: 
+@sequence_length: 
+@audio_channels: 
+@frequence: 
+@output_pads: 
+@output_lines: 
+@input_pads: 
+@input_lines: 
+@output: 
+@input: 
+@devout_play_domain: 
+@notation: 
+@recall_id: 
+@container: 
+@recall: 
+@play: 
+@recall_remove: 
+@play_remove: 
+@machine: 
+
+<!-- ##### STRUCT AgsAudioClass ##### -->
+<para>
+
+</para>
+
+@object: 
+@set_audio_channels: 
+@set_pads: 
+@init_run: 
+@tact: 
+@done: 
+
+<!-- ##### ENUM AgsAudioFlags ##### -->
+<para>
+
+</para>
+
+@AGS_AUDIO_OUTPUT_HAS_RECYCLING: 
+@AGS_AUDIO_INPUT_HAS_RECYCLING: 
+@AGS_AUDIO_INPUT_TAKES_FILE: 
+@AGS_AUDIO_HAS_NOTATION: 
+@AGS_AUDIO_SYNC: 
+@AGS_AUDIO_ASYNC: 
+@AGS_AUDIO_RUNNING: 
+@AGS_AUDIO_PLAYING: 
+@AGS_AUDIO_NOTATION_DEFAULT: 
+
+<!-- ##### FUNCTION ags_audio_add_recall ##### -->
+<para>
+
+</para>
+
+@audio: 
+@recall: 
+@play: 
+
+
+<!-- ##### FUNCTION ags_audio_add_recall_container ##### -->
+<para>
+
+</para>
+
+@audio: 
+@recall_container: 
+
+
+<!-- ##### FUNCTION ags_audio_add_recall_id ##### -->
+<para>
+
+</para>
+
+@audio: 
+@recall_id: 
+
+
+<!-- ##### FUNCTION ags_audio_cancel ##### -->
+<para>
+
+</para>
+
+@audio: 
+@recall_id: 
+
+
+<!-- ##### FUNCTION ags_audio_done ##### -->
+<para>
+
+</para>
+
+@audio: 
+@recall_id: 
+
+
+<!-- ##### FUNCTION ags_audio_duplicate_recall ##### -->
+<para>
+
+</para>
+
+@audio: 
+@recall_id: 
+
+
+<!-- ##### FUNCTION ags_audio_init_recall ##### -->
+<para>
+
+</para>
+
+@audio: 
+@stage: 
+@recall_id: 
+
+
+<!-- ##### FUNCTION ags_audio_init_run ##### -->
+<para>
+
+</para>
+
+@audio: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_audio_is_playing ##### -->
+<para>
+
+</para>
+
+@audio: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_audio_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_audio_open_files ##### -->
+<para>
+
+</para>
+
+@audio: 
+@filenames: 
+@overwrite_channels: 
+@create_channels: 
+
+
+<!-- ##### FUNCTION ags_audio_play ##### -->
+<para>
+
+</para>
+
+@audio: 
+@recall_id: 
+@stage: 
+
+
+<!-- ##### FUNCTION ags_audio_recall_change_state ##### -->
+<para>
+
+</para>
+
+@audio: 
+@enable: 
+
+
+<!-- ##### FUNCTION ags_audio_recursive_play_init ##### -->
+<para>
+
+</para>
+
+@audio: 
+@playback: 
+@sequencer: 
+@notation: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_audio_remove_recall ##### -->
+<para>
+
+</para>
+
+@audio: 
+@recall: 
+@play: 
+
+
+<!-- ##### FUNCTION ags_audio_remove_recall_container ##### -->
+<para>
+
+</para>
+
+@audio: 
+@recall_container: 
+
+
+<!-- ##### FUNCTION ags_audio_remove_recall_id ##### -->
+<para>
+
+</para>
+
+@audio: 
+@recall_id: 
+
+
+<!-- ##### FUNCTION ags_audio_resolve_recall ##### -->
+<para>
+
+</para>
+
+@audio: 
+@recall_id: 
+
+
+<!-- ##### FUNCTION ags_audio_set_audio_channels ##### -->
+<para>
+
+</para>
+
+@audio: 
+@audio_channels: 
+
+
+<!-- ##### FUNCTION ags_audio_set_devout ##### -->
+<para>
+
+</para>
+
+@audio: 
+@devout: 
+
+
+<!-- ##### FUNCTION ags_audio_set_flags ##### -->
+<para>
+
+</para>
+
+@audio: 
+@flags: 
+
+
+<!-- ##### FUNCTION ags_audio_set_pads ##### -->
+<para>
+
+</para>
+
+@audio: 
+@type: 
+@pads: 
+
+
+<!-- ##### FUNCTION ags_audio_set_sequence_length ##### -->
+<para>
+
+</para>
+
+@audio: 
+@sequence_length: 
+
+
+<!-- ##### FUNCTION ags_audio_tact ##### -->
+<para>
+
+</para>
+
+@audio: 
+@recall_id: 
+
+
+<!-- ##### FUNCTION ags_audio_unset_flags ##### -->
+<para>
+
+</para>
+
+@audio: 
+@flags: 
+
+

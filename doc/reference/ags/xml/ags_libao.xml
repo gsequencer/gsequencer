@@ -1,0 +1,387 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsLibao">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsLibao.top_of_page">AgsLibao</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsLibao</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsLibao.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>#define             <link linkend="AGS-LIBAO-DEFAULT-BPM:CAPS">AGS_LIBAO_DEFAULT_BPM</link>
+#define             <link linkend="AGS-LIBAO-DEFAULT-BUFFER-SIZE:CAPS">AGS_LIBAO_DEFAULT_BUFFER_SIZE</link>
+#define             <link linkend="AGS-LIBAO-DEFAULT-DELAY:CAPS">AGS_LIBAO_DEFAULT_DELAY</link>
+#define             <link linkend="AGS-LIBAO-DEFAULT-JIFFIE:CAPS">AGS_LIBAO_DEFAULT_JIFFIE</link>
+#define             <link linkend="AGS-LIBAO-DEFAULT-SAMPLERATE:CAPS">AGS_LIBAO_DEFAULT_SAMPLERATE</link>
+#define             <link linkend="AGS-LIBAO-DEFAULT-TACT:CAPS">AGS_LIBAO_DEFAULT_TACT</link>
+#define             <link linkend="AGS-LIBAO-DEFAULT-TACTRATE:CAPS">AGS_LIBAO_DEFAULT_TACTRATE</link>
+#define             <link linkend="AGS-LIBAO-DEFAULT-TACT-JIFFIE:CAPS">AGS_LIBAO_DEFAULT_TACT_JIFFIE</link>
+#define             <link linkend="AGS-LIBAO-ERROR:CAPS">AGS_LIBAO_ERROR</link>
+#define             <link linkend="AGS-LIBAO-PLAY:CAPS">AGS_LIBAO_PLAY</link>                      (ptr)
+#define             <link linkend="AGS-LIBAO-PLAY-DOMAIN:CAPS">AGS_LIBAO_PLAY_DOMAIN</link>               (ptr)
+struct              <link linkend="AgsLibao">AgsLibao</link>;
+struct              <link linkend="AgsLibaoClass">AgsLibaoClass</link>;
+enum                <link linkend="AgsLibaoError">AgsLibaoError</link>;
+enum                <link linkend="AgsLibaoFlags">AgsLibaoFlags</link>;
+struct              <link linkend="AgsLibaoPlay">AgsLibaoPlay</link>;
+struct              <link linkend="AgsLibaoPlayDomain">AgsLibaoPlayDomain</link>;
+enum                <link linkend="AgsLibaoPlayFlags">AgsLibaoPlayFlags</link>;
+enum                <link linkend="AgsLibaoResolutionMode">AgsLibaoResolutionMode</link>;
+<link linkend="GQuark"><returnvalue>GQuark</returnvalue></link>              <link linkend="ags-libao-error-quark">ags_libao_error_quark</link>               ();
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-libao-list-cards">ags_libao_list_cards</link>                (<parameter><link linkend="GList"><type>GList</type></link> **card_id</parameter>,
+                                                         <parameter><link linkend="GList"><type>GList</type></link> **card_name</parameter>);
+<link linkend="AgsLibao"><returnvalue>AgsLibao</returnvalue></link> *          <link linkend="ags-libao-new">ags_libao_new</link>                       (<parameter><link linkend="GObject"><type>GObject</type></link> *ags_main</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-libao-note-offset-changed">ags_libao_note_offset_changed</link>       (<parameter><link linkend="AgsLibao"><type>AgsLibao</type></link> *libao</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> note_offset</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-libao-pcm-info">ags_libao_pcm_info</link>                  (<parameter><link linkend="char"><type>char</type></link> *card_id</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> *channels_min</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> *channels_max</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> *rate_min</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> *rate_max</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> *buffer_size_min</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> *buffer_size_max</parameter>,
+                                                         <parameter><link linkend="GError"><type>GError</type></link> **error</parameter>);
+<link linkend="AgsLibaoPlay"><returnvalue>AgsLibaoPlay</returnvalue></link> *      <link linkend="ags-libao-play-alloc">ags_libao_play_alloc</link>                ();
+<link linkend="AgsLibaoPlayDomain"><returnvalue>AgsLibaoPlayDomain</returnvalue></link> * <link linkend="ags-libao-play-domain-alloc">ags_libao_play_domain_alloc</link>        ();
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-libao-play-domain-free">ags_libao_play_domain_free</link>          (<parameter><link linkend="AgsLibaoPlayDomain"><type>AgsLibaoPlayDomain</type></link> *libao_play_domain</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-libao-play-free">ags_libao_play_free</link>                 (<parameter><link linkend="AgsLibaoPlay"><type>AgsLibaoPlay</type></link> *libao_play</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-libao-tic">ags_libao_tic</link>                       (<parameter><link linkend="AgsLibao"><type>AgsLibao</type></link> *libao</parameter>);
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsLibao.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsLibao.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AGS-LIBAO-DEFAULT-BPM:CAPS" role="macro">
+<title>AGS_LIBAO_DEFAULT_BPM</title>
+<indexterm zone="AGS-LIBAO-DEFAULT-BPM:CAPS"><primary>AGS_LIBAO_DEFAULT_BPM</primary></indexterm>
+<programlisting>#define AGS_LIBAO_DEFAULT_BPM (120.0)
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AGS-LIBAO-DEFAULT-BUFFER-SIZE:CAPS" role="macro">
+<title>AGS_LIBAO_DEFAULT_BUFFER_SIZE</title>
+<indexterm zone="AGS-LIBAO-DEFAULT-BUFFER-SIZE:CAPS"><primary>AGS_LIBAO_DEFAULT_BUFFER_SIZE</primary></indexterm>
+<programlisting>#define AGS_LIBAO_DEFAULT_BUFFER_SIZE (940)
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AGS-LIBAO-DEFAULT-DELAY:CAPS" role="macro">
+<title>AGS_LIBAO_DEFAULT_DELAY</title>
+<indexterm zone="AGS-LIBAO-DEFAULT-DELAY:CAPS"><primary>AGS_LIBAO_DEFAULT_DELAY</primary></indexterm>
+<programlisting>#define AGS_LIBAO_DEFAULT_DELAY (AGS_LIBAO_DEFAULT_JIFFIE / AGS_LIBAO_DEFAULT_TACTRATE)
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AGS-LIBAO-DEFAULT-JIFFIE:CAPS" role="macro">
+<title>AGS_LIBAO_DEFAULT_JIFFIE</title>
+<indexterm zone="AGS-LIBAO-DEFAULT-JIFFIE:CAPS"><primary>AGS_LIBAO_DEFAULT_JIFFIE</primary></indexterm>
+<programlisting>#define AGS_LIBAO_DEFAULT_JIFFIE ((double) AGS_LIBAO_DEFAULT_SAMPLERATE / (double) AGS_LIBAO_DEFAULT_BUFFER_SIZE)
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AGS-LIBAO-DEFAULT-SAMPLERATE:CAPS" role="macro">
+<title>AGS_LIBAO_DEFAULT_SAMPLERATE</title>
+<indexterm zone="AGS-LIBAO-DEFAULT-SAMPLERATE:CAPS"><primary>AGS_LIBAO_DEFAULT_SAMPLERATE</primary></indexterm>
+<programlisting>#define AGS_LIBAO_DEFAULT_SAMPLERATE (44100.0)
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AGS-LIBAO-DEFAULT-TACT:CAPS" role="macro">
+<title>AGS_LIBAO_DEFAULT_TACT</title>
+<indexterm zone="AGS-LIBAO-DEFAULT-TACT:CAPS"><primary>AGS_LIBAO_DEFAULT_TACT</primary></indexterm>
+<programlisting>#define AGS_LIBAO_DEFAULT_TACT (1.0)
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AGS-LIBAO-DEFAULT-TACTRATE:CAPS" role="macro">
+<title>AGS_LIBAO_DEFAULT_TACTRATE</title>
+<indexterm zone="AGS-LIBAO-DEFAULT-TACTRATE:CAPS"><primary>AGS_LIBAO_DEFAULT_TACTRATE</primary></indexterm>
+<programlisting>#define AGS_LIBAO_DEFAULT_TACTRATE (1.0 / AGS_LIBAO_DEFAULT_TACT_JIFFIE)
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AGS-LIBAO-DEFAULT-TACT-JIFFIE:CAPS" role="macro">
+<title>AGS_LIBAO_DEFAULT_TACT_JIFFIE</title>
+<indexterm zone="AGS-LIBAO-DEFAULT-TACT-JIFFIE:CAPS"><primary>AGS_LIBAO_DEFAULT_TACT_JIFFIE</primary></indexterm>
+<programlisting>#define AGS_LIBAO_DEFAULT_TACT_JIFFIE (60.0 / AGS_LIBAO_DEFAULT_BPM * AGS_LIBAO_DEFAULT_TACT)
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AGS-LIBAO-ERROR:CAPS" role="macro">
+<title>AGS_LIBAO_ERROR</title>
+<indexterm zone="AGS-LIBAO-ERROR:CAPS"><primary>AGS_LIBAO_ERROR</primary></indexterm>
+<programlisting>#define AGS_LIBAO_ERROR (ags_libao_error_quark())
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AGS-LIBAO-PLAY:CAPS" role="macro">
+<title>AGS_LIBAO_PLAY()</title>
+<indexterm zone="AGS-LIBAO-PLAY:CAPS"><primary>AGS_LIBAO_PLAY</primary></indexterm>
+<programlisting>#define AGS_LIBAO_PLAY(ptr)           ((AgsLibaoPlay *)(ptr))
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AGS-LIBAO-PLAY-DOMAIN:CAPS" role="macro">
+<title>AGS_LIBAO_PLAY_DOMAIN()</title>
+<indexterm zone="AGS-LIBAO-PLAY-DOMAIN:CAPS"><primary>AGS_LIBAO_PLAY_DOMAIN</primary></indexterm>
+<programlisting>#define AGS_LIBAO_PLAY_DOMAIN(ptr)    ((AgsLibaoPlayDomain *)(ptr))
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsLibao" role="struct">
+<title>struct AgsLibao</title>
+<indexterm zone="AgsLibao"><primary>AgsLibao</primary></indexterm>
+<programlisting>struct AgsLibao {
+  GObject object;
+
+  guint flags;
+
+  guint dsp_channels;
+  guint pcm_channels;
+  guint bits;
+  guint buffer_size;
+  guint frequency; // sample_rate
+
+  signed short** buffer;
+
+  double bpm; // beats per minute
+
+  gdouble *delay; // count of tics within buffer size
+  guint *attack; // where currently tic resides in the stream's offset, measured in 1/64 of bpm
+
+  gdouble delay_counter; // next time attack changeing when delay_counter == delay
+  guint tic_counter;
+
+  union{
+    struct _AgsAO{
+      ao_device *device;
+      ao_sample_format *format;
+      int driver_ao;
+    }ao;
+    struct _AgsOss{
+      int device_fd;
+      char *device;
+    }oss;
+    struct _AgsAlsa{
+      char *device;
+      int rc;
+      snd_pcm_t *handle;
+      snd_async_handler_t *ahandler;
+      snd_pcm_hw_params_t *params;
+    }alsa;
+  }out;
+
+  GObject *ags_main;
+  
+  GList *audio;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsLibaoClass" role="struct">
+<title>struct AgsLibaoClass</title>
+<indexterm zone="AgsLibaoClass"><primary>AgsLibaoClass</primary></indexterm>
+<programlisting>struct AgsLibaoClass {
+  GObjectClass object;
+
+  void (*play_init)(AgsLibao *libao,
+		    GError **error);
+  void (*play)(AgsLibao *libao,
+	       GError **error);
+  void (*stop)(AgsLibao *libao);
+
+  void (*tic)(AgsLibao *libao);
+
+  void (*note_offset_changed)(AgsLibao *libao, guint note_offset);
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsLibaoError" role="enum">
+<title>enum AgsLibaoError</title>
+<indexterm zone="AgsLibaoError"><primary>AgsLibaoError</primary></indexterm>
+<programlisting>typedef enum {
+  AGS_LIBAO_ERROR_LOCKED_SOUNDCARD,
+} AgsLibaoError;
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsLibaoFlags" role="enum">
+<title>enum AgsLibaoFlags</title>
+<indexterm zone="AgsLibaoFlags"><primary>AgsLibaoFlags</primary></indexterm>
+<programlisting>typedef enum {
+    AGS_LIBAO_BUFFER0                        = 1,
+    AGS_LIBAO_BUFFER1                        = 1 &lt;&lt; 1,
+    AGS_LIBAO_BUFFER2                        = 1 &lt;&lt; 2,
+    AGS_LIBAO_BUFFER3                        = 1 &lt;&lt; 3,
+
+    AGS_LIBAO_ATTACK_FIRST                   = 1 &lt;&lt; 4,
+
+    AGS_LIBAO_PLAY                           = 1 &lt;&lt; 5,
+
+    AGS_LIBAO_LIBAO                          = 1 &lt;&lt; 6,
+    AGS_LIBAO_OSS                            = 1 &lt;&lt; 7,
+    AGS_LIBAO_ALSA                           = 1 &lt;&lt; 8,
+
+    AGS_LIBAO_SHUTDOWN                       = 1 &lt;&lt; 9,
+    AGS_LIBAO_START_PLAY                     = 1 &lt;&lt; 10,
+
+    AGS_LIBAO_NONBLOCKING                    = 1 &lt;&lt; 11,
+
+    AGS_LIBAO_TIMING_SET_0                   = 1 &lt;&lt; 12,
+    AGS_LIBAO_TIMING_SET_1                   = 1 &lt;&lt; 13,
+} AgsLibaoFlags;
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsLibaoPlay" role="struct">
+<title>struct AgsLibaoPlay</title>
+<indexterm zone="AgsLibaoPlay"><primary>AgsLibaoPlay</primary></indexterm>
+<programlisting>struct AgsLibaoPlay {
+  guint flags;
+
+  AgsIteratorThread **iterator_thread;
+
+  GObject *source;
+  guint audio_channel;
+
+  AgsRecallID *recall_id[3];
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsLibaoPlayDomain" role="struct">
+<title>struct AgsLibaoPlayDomain</title>
+<indexterm zone="AgsLibaoPlayDomain"><primary>AgsLibaoPlayDomain</primary></indexterm>
+<programlisting>struct AgsLibaoPlayDomain {
+  GObject *domain;
+  
+  gboolean playback;
+  gboolean sequencer;
+  gboolean notation;
+
+  GList *libao_play;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsLibaoPlayFlags" role="enum">
+<title>enum AgsLibaoPlayFlags</title>
+<indexterm zone="AgsLibaoPlayFlags"><primary>AgsLibaoPlayFlags</primary></indexterm>
+<programlisting>typedef enum {
+    AGS_LIBAO_PLAY_DONE              = 1,
+    AGS_LIBAO_PLAY_REMOVE            = 1 &lt;&lt;  1,
+    AGS_LIBAO_PLAY_CHANNEL           = 1 &lt;&lt;  2,
+    AGS_LIBAO_PLAY_PAD               = 1 &lt;&lt;  3,
+    AGS_LIBAO_PLAY_AUDIO             = 1 &lt;&lt;  4,
+    AGS_LIBAO_PLAY_PLAYBACK          = 1 &lt;&lt;  5,
+    AGS_LIBAO_PLAY_SEQUENCER         = 1 &lt;&lt;  6,
+    AGS_LIBAO_PLAY_NOTATION          = 1 &lt;&lt;  7,
+    AGS_LIBAO_PLAY_SUPER_THREADED    = 1 &lt;&lt;  8,
+} AgsLibaoPlayFlags;
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsLibaoResolutionMode" role="enum">
+<title>enum AgsLibaoResolutionMode</title>
+<indexterm zone="AgsLibaoResolutionMode"><primary>AgsLibaoResolutionMode</primary></indexterm>
+<programlisting>typedef enum {
+  AGS_LIBAO_RESOLUTION_8_BIT    = 8,
+  AGS_LIBAO_RESOLUTION_16_BIT   = 16,
+  AGS_LIBAO_RESOLUTION_24_BIT   = 24,
+  AGS_LIBAO_RESOLUTION_32_BIT   = 32,
+  AGS_LIBAO_RESOLUTION_64_BIT   = 64,
+} AgsLibaoResolutionMode;
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-libao-error-quark" role="function">
+<title>ags_libao_error_quark ()</title>
+<indexterm zone="ags-libao-error-quark"><primary>ags_libao_error_quark</primary></indexterm>
+<programlisting><link linkend="GQuark"><returnvalue>GQuark</returnvalue></link>              ags_libao_error_quark               ();</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-libao-list-cards" role="function">
+<title>ags_libao_list_cards ()</title>
+<indexterm zone="ags-libao-list-cards"><primary>ags_libao_list_cards</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_libao_list_cards                (<parameter><link linkend="GList"><type>GList</type></link> **card_id</parameter>,
+                                                         <parameter><link linkend="GList"><type>GList</type></link> **card_name</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-libao-new" role="function">
+<title>ags_libao_new ()</title>
+<indexterm zone="ags-libao-new"><primary>ags_libao_new</primary></indexterm>
+<programlisting><link linkend="AgsLibao"><returnvalue>AgsLibao</returnvalue></link> *          ags_libao_new                       (<parameter><link linkend="GObject"><type>GObject</type></link> *ags_main</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-libao-note-offset-changed" role="function">
+<title>ags_libao_note_offset_changed ()</title>
+<indexterm zone="ags-libao-note-offset-changed"><primary>ags_libao_note_offset_changed</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_libao_note_offset_changed       (<parameter><link linkend="AgsLibao"><type>AgsLibao</type></link> *libao</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> note_offset</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-libao-pcm-info" role="function">
+<title>ags_libao_pcm_info ()</title>
+<indexterm zone="ags-libao-pcm-info"><primary>ags_libao_pcm_info</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_libao_pcm_info                  (<parameter><link linkend="char"><type>char</type></link> *card_id</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> *channels_min</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> *channels_max</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> *rate_min</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> *rate_max</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> *buffer_size_min</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> *buffer_size_max</parameter>,
+                                                         <parameter><link linkend="GError"><type>GError</type></link> **error</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-libao-play-alloc" role="function">
+<title>ags_libao_play_alloc ()</title>
+<indexterm zone="ags-libao-play-alloc"><primary>ags_libao_play_alloc</primary></indexterm>
+<programlisting><link linkend="AgsLibaoPlay"><returnvalue>AgsLibaoPlay</returnvalue></link> *      ags_libao_play_alloc                ();</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-libao-play-domain-alloc" role="function">
+<title>ags_libao_play_domain_alloc ()</title>
+<indexterm zone="ags-libao-play-domain-alloc"><primary>ags_libao_play_domain_alloc</primary></indexterm>
+<programlisting><link linkend="AgsLibaoPlayDomain"><returnvalue>AgsLibaoPlayDomain</returnvalue></link> * ags_libao_play_domain_alloc        ();</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-libao-play-domain-free" role="function">
+<title>ags_libao_play_domain_free ()</title>
+<indexterm zone="ags-libao-play-domain-free"><primary>ags_libao_play_domain_free</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_libao_play_domain_free          (<parameter><link linkend="AgsLibaoPlayDomain"><type>AgsLibaoPlayDomain</type></link> *libao_play_domain</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-libao-play-free" role="function">
+<title>ags_libao_play_free ()</title>
+<indexterm zone="ags-libao-play-free"><primary>ags_libao_play_free</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_libao_play_free                 (<parameter><link linkend="AgsLibaoPlay"><type>AgsLibaoPlay</type></link> *libao_play</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-libao-tic" role="function">
+<title>ags_libao_tic ()</title>
+<indexterm zone="ags-libao-tic"><primary>ags_libao_tic</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_libao_tic                       (<parameter><link linkend="AgsLibao"><type>AgsLibao</type></link> *libao</parameter>);</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

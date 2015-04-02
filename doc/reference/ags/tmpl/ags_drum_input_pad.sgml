@@ -1,0 +1,64 @@
+<!-- ##### SECTION Title ##### -->
+AgsDrumInputPad
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT AgsDrumInputPad ##### -->
+<para>
+
+</para>
+
+@pad: 
+@flags: 
+@name: 
+@xml_type: 
+@open: 
+@play: 
+@edit: 
+@pad_open_recalls: 
+@pad_open_play_ref: 
+@file_chooser: 
+@pad_play_ref: 
+
+<!-- ##### STRUCT AgsDrumInputPadClass ##### -->
+<para>
+
+</para>
+
+@pad: 
+
+<!-- ##### ENUM AgsDrumInputPadFlags ##### -->
+<para>
+
+</para>
+
+@AGS_DRUM_INPUT_PAD_OPEN_PLAY_DONE: 
+
+<!-- ##### FUNCTION ags_drum_input_pad_new ##### -->
+<para>
+
+</para>
+
+@channel: 
+@Returns: 
+
+

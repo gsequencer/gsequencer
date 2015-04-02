@@ -1,0 +1,55 @@
+<!-- ##### SECTION Title ##### -->
+AgsDynamicConnectable
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### TYPEDEF AgsDynamicConnectable ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### STRUCT AgsDynamicConnectableInterface ##### -->
+<para>
+
+</para>
+
+@interface: 
+@connect_dynamic: 
+@disconnect_dynamic: 
+
+<!-- ##### FUNCTION ags_dynamic_connectable_connect ##### -->
+<para>
+
+</para>
+
+@connectable: 
+
+
+<!-- ##### FUNCTION ags_dynamic_connectable_disconnect ##### -->
+<para>
+
+</para>
+
+@connectable: 
+
+

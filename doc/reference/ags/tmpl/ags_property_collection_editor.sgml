@@ -1,0 +1,54 @@
+<!-- ##### SECTION Title ##### -->
+AgsPropertyCollectionEditor
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT AgsPropertyCollectionEditor ##### -->
+<para>
+
+</para>
+
+@property_editor: 
+@child_type: 
+@child_parameter_count: 
+@child_parameter: 
+@child: 
+@add_collection: 
+
+<!-- ##### STRUCT AgsPropertyCollectionEditorClass ##### -->
+<para>
+
+</para>
+
+@property_editor: 
+
+<!-- ##### FUNCTION ags_property_collection_editor_new ##### -->
+<para>
+
+</para>
+
+@child_type: 
+@child_parameter_count: 
+@child_parameter: 
+@Returns: 
+
+

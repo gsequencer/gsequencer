@@ -1,0 +1,379 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsNotation">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsNotation.top_of_page">AgsNotation</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsNotation</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsNotation.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>#define             <link linkend="AGS-NOTATION-DEFAULT-BPM:CAPS">AGS_NOTATION_DEFAULT_BPM</link>
+#define             <link linkend="AGS-NOTATION-DEFAULT-DURATION:CAPS">AGS_NOTATION_DEFAULT_DURATION</link>
+#define             <link linkend="AGS-NOTATION-DEFAULT-JIFFIE:CAPS">AGS_NOTATION_DEFAULT_JIFFIE</link>
+#define             <link linkend="AGS-NOTATION-DEFAULT-LENGTH:CAPS">AGS_NOTATION_DEFAULT_LENGTH</link>
+#define             <link linkend="AGS-NOTATION-MAXIMUM-NOTE-LENGTH:CAPS">AGS_NOTATION_MAXIMUM_NOTE_LENGTH</link>
+#define             <link linkend="AGS-NOTATION-MINIMUM-NOTE-LENGTH:CAPS">AGS_NOTATION_MINIMUM_NOTE_LENGTH</link>
+#define             <link linkend="AGS-NOTATION-TICS-PER-BEAT:CAPS">AGS_NOTATION_TICS_PER_BEAT</link>
+struct              <link linkend="AgsNotation">AgsNotation</link>;
+struct              <link linkend="AgsNotationClass">AgsNotationClass</link>;
+enum                <link linkend="AgsNotationFlags">AgsNotationFlags</link>;
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-notation-add-note">ags_notation_add_note</link>               (<parameter><link linkend="AgsNotation"><type>AgsNotation</type></link> *notation</parameter>,
+                                                         <parameter><link linkend="AgsNote"><type>AgsNote</type></link> *note</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> use_selection_list</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-notation-add-point-to-selection">ags_notation_add_point_to_selection</link> (<parameter><link linkend="AgsNotation"><type>AgsNotation</type></link> *notation</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> x</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> y</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> replace_current_selection</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-notation-add-region-to-selection">ags_notation_add_region_to_selection</link>
+                                                        (<parameter><link linkend="AgsNotation"><type>AgsNotation</type></link> *notation</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> x0</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> y0</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> x1</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> y1</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> replace_current_selection</parameter>);
+<link linkend="xmlNodePtr"><returnvalue>xmlNodePtr</returnvalue></link>          <link linkend="ags-notation-copy-selection">ags_notation_copy_selection</link>         (<parameter><link linkend="AgsNotation"><type>AgsNotation</type></link> *notation</parameter>);
+<link linkend="xmlNodePtr"><returnvalue>xmlNodePtr</returnvalue></link>          <link linkend="ags-notation-cut-selection">ags_notation_cut_selection</link>          (<parameter><link linkend="AgsNotation"><type>AgsNotation</type></link> *notation</parameter>);
+<link linkend="GList"><returnvalue>GList</returnvalue></link> *             <link linkend="ags-notation-find-near-timestamp">ags_notation_find_near_timestamp</link>    (<parameter><link linkend="GList"><type>GList</type></link> *notation</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> audio_channel</parameter>,
+                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *timestamp</parameter>);
+<link linkend="AgsNote"><returnvalue>AgsNote</returnvalue></link> *           <link linkend="ags-notation-find-point">ags_notation_find_point</link>             (<parameter><link linkend="AgsNotation"><type>AgsNotation</type></link> *notation</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> x</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> y</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> use_selection_list</parameter>);
+<link linkend="GList"><returnvalue>GList</returnvalue></link> *             <link linkend="ags-notation-find-region">ags_notation_find_region</link>            (<parameter><link linkend="AgsNotation"><type>AgsNotation</type></link> *notation</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> x0</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> y0</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> x1</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> y1</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> use_selection_list</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-notation-free-selection">ags_notation_free_selection</link>         (<parameter><link linkend="AgsNotation"><type>AgsNotation</type></link> *notation</parameter>);
+<link linkend="GList"><returnvalue>GList</returnvalue></link> *             <link linkend="ags-notation-get-current">ags_notation_get_current</link>            (<parameter><link linkend="AgsNotation"><type>AgsNotation</type></link> *notation</parameter>);
+<link linkend="GList"><returnvalue>GList</returnvalue></link> *             <link linkend="ags-notation-get-selection">ags_notation_get_selection</link>          (<parameter><link linkend="AgsNotation"><type>AgsNotation</type></link> *notation</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-notation-insert-from-clipboard">ags_notation_insert_from_clipboard</link>  (<parameter><link linkend="AgsNotation"><type>AgsNotation</type></link> *notation</parameter>,
+                                                         <parameter><link linkend="xmlNodePtr"><type>xmlNodePtr</type></link> content</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> reset_x_offset</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> x_offset</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> reset_y_offset</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> y_offset</parameter>);
+<link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            <link linkend="ags-notation-is-note-selected">ags_notation_is_note_selected</link>       (<parameter><link linkend="AgsNotation"><type>AgsNotation</type></link> *notation</parameter>,
+                                                         <parameter><link linkend="AgsNote"><type>AgsNote</type></link> *note</parameter>);
+<link linkend="AgsNotation"><returnvalue>AgsNotation</returnvalue></link> *       <link linkend="ags-notation-new">ags_notation_new</link>                    (<parameter><link linkend="guint"><type>guint</type></link> audio_channel</parameter>);
+<link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            <link linkend="ags-notation-remove-note-at-position">ags_notation_remove_note_at_position</link>
+                                                        (<parameter><link linkend="AgsNotation"><type>AgsNotation</type></link> *notation</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> x</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> y</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-notation-remove-point-from-selection">ags_notation_remove_point_from_selection</link>
+                                                        (<parameter><link linkend="AgsNotation"><type>AgsNotation</type></link> *notation</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> x</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> y</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-notation-remove-region-from-selection">ags_notation_remove_region_from_selection</link>
+                                                        (<parameter><link linkend="AgsNotation"><type>AgsNotation</type></link> *notation</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> x0</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> y0</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> x1</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> y1</parameter>);
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsNotation.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsNotation.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AGS-NOTATION-DEFAULT-BPM:CAPS" role="macro">
+<title>AGS_NOTATION_DEFAULT_BPM</title>
+<indexterm zone="AGS-NOTATION-DEFAULT-BPM:CAPS"><primary>AGS_NOTATION_DEFAULT_BPM</primary></indexterm>
+<programlisting>#define AGS_NOTATION_DEFAULT_BPM (120.0)
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AGS-NOTATION-DEFAULT-DURATION:CAPS" role="macro">
+<title>AGS_NOTATION_DEFAULT_DURATION</title>
+<indexterm zone="AGS-NOTATION-DEFAULT-DURATION:CAPS"><primary>AGS_NOTATION_DEFAULT_DURATION</primary></indexterm>
+<programlisting>#define AGS_NOTATION_DEFAULT_DURATION (AGS_NOTATION_DEFAULT_LENGTH * AGS_NOTATION_DEFAULT_JIFFIE * AGS_MICROSECONDS_PER_SECOND)
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AGS-NOTATION-DEFAULT-JIFFIE:CAPS" role="macro">
+<title>AGS_NOTATION_DEFAULT_JIFFIE</title>
+<indexterm zone="AGS-NOTATION-DEFAULT-JIFFIE:CAPS"><primary>AGS_NOTATION_DEFAULT_JIFFIE</primary></indexterm>
+<programlisting>#define AGS_NOTATION_DEFAULT_JIFFIE (60.0 / AGS_NOTATION_DEFAULT_BPM / AGS_NOTATION_TICS_PER_BEAT)
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AGS-NOTATION-DEFAULT-LENGTH:CAPS" role="macro">
+<title>AGS_NOTATION_DEFAULT_LENGTH</title>
+<indexterm zone="AGS-NOTATION-DEFAULT-LENGTH:CAPS"><primary>AGS_NOTATION_DEFAULT_LENGTH</primary></indexterm>
+<programlisting>#define AGS_NOTATION_DEFAULT_LENGTH (65535.0 / AGS_NOTATION_TICS_PER_BEAT - AGS_NOTATION_MAXIMUM_NOTE_LENGTH)
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AGS-NOTATION-MAXIMUM-NOTE-LENGTH:CAPS" role="macro">
+<title>AGS_NOTATION_MAXIMUM_NOTE_LENGTH</title>
+<indexterm zone="AGS-NOTATION-MAXIMUM-NOTE-LENGTH:CAPS"><primary>AGS_NOTATION_MAXIMUM_NOTE_LENGTH</primary></indexterm>
+<programlisting>#define AGS_NOTATION_MAXIMUM_NOTE_LENGTH (16.0)
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AGS-NOTATION-MINIMUM-NOTE-LENGTH:CAPS" role="macro">
+<title>AGS_NOTATION_MINIMUM_NOTE_LENGTH</title>
+<indexterm zone="AGS-NOTATION-MINIMUM-NOTE-LENGTH:CAPS"><primary>AGS_NOTATION_MINIMUM_NOTE_LENGTH</primary></indexterm>
+<programlisting>#define AGS_NOTATION_MINIMUM_NOTE_LENGTH (1.0 / 16.0)
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AGS-NOTATION-TICS-PER-BEAT:CAPS" role="macro">
+<title>AGS_NOTATION_TICS_PER_BEAT</title>
+<indexterm zone="AGS-NOTATION-TICS-PER-BEAT:CAPS"><primary>AGS_NOTATION_TICS_PER_BEAT</primary></indexterm>
+<programlisting>#define AGS_NOTATION_TICS_PER_BEAT (4.0)
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsNotation" role="struct">
+<title>struct AgsNotation</title>
+<indexterm zone="AgsNotation"><primary>AgsNotation</primary></indexterm>
+<programlisting>struct AgsNotation {
+  GObject object;
+
+  guint flags;
+
+  GObject *timestamp;
+
+  guint audio_channel;
+  GObject *audio;
+
+  gchar *key;
+  gdouble base_frequency;
+
+  gdouble tact;
+  gdouble bpm;
+
+  gdouble maximum_note_length;
+
+  GList *notes;
+  
+  gdouble start_loop;
+  gdouble end_loop;
+  gdouble offset;
+
+  GList *selection;
+
+  GObject *port;
+
+  GList *current_notes;
+  GList *next_notes;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsNotationClass" role="struct">
+<title>struct AgsNotationClass</title>
+<indexterm zone="AgsNotationClass"><primary>AgsNotationClass</primary></indexterm>
+<programlisting>struct AgsNotationClass {
+  GObjectClass object;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsNotationFlags" role="enum">
+<title>enum AgsNotationFlags</title>
+<indexterm zone="AgsNotationFlags"><primary>AgsNotationFlags</primary></indexterm>
+<programlisting>typedef enum {
+  AGS_NOTATION_STICKY              =  1,
+  AGS_NOTATION_INDICATED_LENGTH    =  1 &lt;&lt;  1,
+} AgsNotationFlags;
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-notation-add-note" role="function">
+<title>ags_notation_add_note ()</title>
+<indexterm zone="ags-notation-add-note"><primary>ags_notation_add_note</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_notation_add_note               (<parameter><link linkend="AgsNotation"><type>AgsNotation</type></link> *notation</parameter>,
+                                                         <parameter><link linkend="AgsNote"><type>AgsNote</type></link> *note</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> use_selection_list</parameter>);</programlisting>
+<para>
+Adds a note to notation.
+</para></refsect2>
+<refsect2 id="ags-notation-add-point-to-selection" role="function">
+<title>ags_notation_add_point_to_selection ()</title>
+<indexterm zone="ags-notation-add-point-to-selection"><primary>ags_notation_add_point_to_selection</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_notation_add_point_to_selection (<parameter><link linkend="AgsNotation"><type>AgsNotation</type></link> *notation</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> x</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> y</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> replace_current_selection</parameter>);</programlisting>
+<para>
+Select notes at position.
+</para></refsect2>
+<refsect2 id="ags-notation-add-region-to-selection" role="function">
+<title>ags_notation_add_region_to_selection ()</title>
+<indexterm zone="ags-notation-add-region-to-selection"><primary>ags_notation_add_region_to_selection</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_notation_add_region_to_selection
+                                                        (<parameter><link linkend="AgsNotation"><type>AgsNotation</type></link> *notation</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> x0</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> y0</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> x1</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> y1</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> replace_current_selection</parameter>);</programlisting>
+<para>
+Select notes within region.
+</para></refsect2>
+<refsect2 id="ags-notation-copy-selection" role="function">
+<title>ags_notation_copy_selection ()</title>
+<indexterm zone="ags-notation-copy-selection"><primary>ags_notation_copy_selection</primary></indexterm>
+<programlisting><link linkend="xmlNodePtr"><returnvalue>xmlNodePtr</returnvalue></link>          ags_notation_copy_selection         (<parameter><link linkend="AgsNotation"><type>AgsNotation</type></link> *notation</parameter>);</programlisting>
+<para>
+Copy selection to clipboard.
+</para><variablelist role="params">
+<varlistentry><term><emphasis>Returns</emphasis>&#160;:</term><listitem><simpara>the selection as XML.</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2 id="ags-notation-cut-selection" role="function">
+<title>ags_notation_cut_selection ()</title>
+<indexterm zone="ags-notation-cut-selection"><primary>ags_notation_cut_selection</primary></indexterm>
+<programlisting><link linkend="xmlNodePtr"><returnvalue>xmlNodePtr</returnvalue></link>          ags_notation_cut_selection          (<parameter><link linkend="AgsNotation"><type>AgsNotation</type></link> *notation</parameter>);</programlisting>
+<para>
+Cut selection to clipboard.
+</para><variablelist role="params">
+<varlistentry><term><emphasis>Returns</emphasis>&#160;:</term><listitem><simpara>the selection as XML.</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2 id="ags-notation-find-near-timestamp" role="function">
+<title>ags_notation_find_near_timestamp ()</title>
+<indexterm zone="ags-notation-find-near-timestamp"><primary>ags_notation_find_near_timestamp</primary></indexterm>
+<programlisting><link linkend="GList"><returnvalue>GList</returnvalue></link> *             ags_notation_find_near_timestamp    (<parameter><link linkend="GList"><type>GList</type></link> *notation</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> audio_channel</parameter>,
+                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *timestamp</parameter>);</programlisting>
+<para>
+Retrieve appropriate notation for timestamp.
+</para><variablelist role="params">
+<varlistentry><term><emphasis>Returns</emphasis>&#160;:</term><listitem><simpara>Next match.</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2 id="ags-notation-find-point" role="function">
+<title>ags_notation_find_point ()</title>
+<indexterm zone="ags-notation-find-point"><primary>ags_notation_find_point</primary></indexterm>
+<programlisting><link linkend="AgsNote"><returnvalue>AgsNote</returnvalue></link> *           ags_notation_find_point             (<parameter><link linkend="AgsNotation"><type>AgsNotation</type></link> *notation</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> x</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> y</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> use_selection_list</parameter>);</programlisting>
+<para>
+Find note by offset and tone.
+</para><variablelist role="params">
+<varlistentry><term><emphasis>Returns</emphasis>&#160;:</term><listitem><simpara>the matching note.</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2 id="ags-notation-find-region" role="function">
+<title>ags_notation_find_region ()</title>
+<indexterm zone="ags-notation-find-region"><primary>ags_notation_find_region</primary></indexterm>
+<programlisting><link linkend="GList"><returnvalue>GList</returnvalue></link> *             ags_notation_find_region            (<parameter><link linkend="AgsNotation"><type>AgsNotation</type></link> *notation</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> x0</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> y0</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> x1</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> y1</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> use_selection_list</parameter>);</programlisting>
+<para>
+Find notes by offset and tone region.
+</para><variablelist role="params">
+<varlistentry><term><emphasis>Returns</emphasis>&#160;:</term><listitem><simpara>the matching notes as <link linkend="GList"><type>GList</type></link>.</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2 id="ags-notation-free-selection" role="function">
+<title>ags_notation_free_selection ()</title>
+<indexterm zone="ags-notation-free-selection"><primary>ags_notation_free_selection</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_notation_free_selection         (<parameter><link linkend="AgsNotation"><type>AgsNotation</type></link> *notation</parameter>);</programlisting>
+<para>
+Clear selection.
+</para></refsect2>
+<refsect2 id="ags-notation-get-current" role="function">
+<title>ags_notation_get_current ()</title>
+<indexterm zone="ags-notation-get-current"><primary>ags_notation_get_current</primary></indexterm>
+<programlisting><link linkend="GList"><returnvalue>GList</returnvalue></link> *             ags_notation_get_current            (<parameter><link linkend="AgsNotation"><type>AgsNotation</type></link> *notation</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-notation-get-selection" role="function">
+<title>ags_notation_get_selection ()</title>
+<indexterm zone="ags-notation-get-selection"><primary>ags_notation_get_selection</primary></indexterm>
+<programlisting><link linkend="GList"><returnvalue>GList</returnvalue></link> *             ags_notation_get_selection          (<parameter><link linkend="AgsNotation"><type>AgsNotation</type></link> *notation</parameter>);</programlisting>
+<para>
+Retrieve selection.
+</para><variablelist role="params">
+<varlistentry><term><emphasis>Returns</emphasis>&#160;:</term><listitem><simpara>the selection.</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2 id="ags-notation-insert-from-clipboard" role="function">
+<title>ags_notation_insert_from_clipboard ()</title>
+<indexterm zone="ags-notation-insert-from-clipboard"><primary>ags_notation_insert_from_clipboard</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_notation_insert_from_clipboard  (<parameter><link linkend="AgsNotation"><type>AgsNotation</type></link> *notation</parameter>,
+                                                         <parameter><link linkend="xmlNodePtr"><type>xmlNodePtr</type></link> content</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> reset_x_offset</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> x_offset</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> reset_y_offset</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> y_offset</parameter>);</programlisting>
+<para>
+Paste previously copied notes.
+</para></refsect2>
+<refsect2 id="ags-notation-is-note-selected" role="function">
+<title>ags_notation_is_note_selected ()</title>
+<indexterm zone="ags-notation-is-note-selected"><primary>ags_notation_is_note_selected</primary></indexterm>
+<programlisting><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            ags_notation_is_note_selected       (<parameter><link linkend="AgsNotation"><type>AgsNotation</type></link> *notation</parameter>,
+                                                         <parameter><link linkend="AgsNote"><type>AgsNote</type></link> *note</parameter>);</programlisting>
+<para>
+Check selection for note.
+</para><variablelist role="params">
+<varlistentry><term><emphasis>Returns</emphasis>&#160;:</term><listitem><simpara><link linkend="TRUE:CAPS"><literal>TRUE</literal></link> if selected</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2 id="ags-notation-new" role="function">
+<title>ags_notation_new ()</title>
+<indexterm zone="ags-notation-new"><primary>ags_notation_new</primary></indexterm>
+<programlisting><link linkend="AgsNotation"><returnvalue>AgsNotation</returnvalue></link> *       ags_notation_new                    (<parameter><link linkend="guint"><type>guint</type></link> audio_channel</parameter>);</programlisting>
+<para>
+Creates a <link linkend="AgsNotation"><type>AgsNotation</type></link>, assigned to <parameter>audio_channel</parameter>.
+</para><variablelist role="params">
+<varlistentry><term><emphasis>Returns</emphasis>&#160;:</term><listitem><simpara>a new <link linkend="AgsNotation"><type>AgsNotation</type></link></simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2 id="ags-notation-remove-note-at-position" role="function">
+<title>ags_notation_remove_note_at_position ()</title>
+<indexterm zone="ags-notation-remove-note-at-position"><primary>ags_notation_remove_note_at_position</primary></indexterm>
+<programlisting><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            ags_notation_remove_note_at_position
+                                                        (<parameter><link linkend="AgsNotation"><type>AgsNotation</type></link> *notation</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> x</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> y</parameter>);</programlisting>
+<para>
+Removes one <link linkend="AgsNote"><type>AgsNote</type></link> of notation.
+</para><variablelist role="params">
+<varlistentry><term><emphasis>Returns</emphasis>&#160;:</term><listitem><simpara><link linkend="TRUE:CAPS"><literal>TRUE</literal></link> if successfully removed note.</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2 id="ags-notation-remove-point-from-selection" role="function">
+<title>ags_notation_remove_point_from_selection ()</title>
+<indexterm zone="ags-notation-remove-point-from-selection"><primary>ags_notation_remove_point_from_selection</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_notation_remove_point_from_selection
+                                                        (<parameter><link linkend="AgsNotation"><type>AgsNotation</type></link> *notation</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> x</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> y</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-notation-remove-region-from-selection" role="function">
+<title>ags_notation_remove_region_from_selection ()</title>
+<indexterm zone="ags-notation-remove-region-from-selection"><primary>ags_notation_remove_region_from_selection</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_notation_remove_region_from_selection
+                                                        (<parameter><link linkend="AgsNotation"><type>AgsNotation</type></link> *notation</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> x0</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> y0</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> x1</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> y1</parameter>);</programlisting>
+<para>
+Remove notes within region of selection.
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

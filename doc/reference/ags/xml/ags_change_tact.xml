@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsChangeTact">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsChangeTact.top_of_page">AgsChangeTact</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsChangeTact</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsChangeTact.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>struct              <link linkend="AgsChangeTact">AgsChangeTact</link>;
+struct              <link linkend="AgsChangeTactClass">AgsChangeTactClass</link>;
+<link linkend="AgsChangeTact"><returnvalue>AgsChangeTact</returnvalue></link> *     <link linkend="ags-change-tact-new">ags_change_tact_new</link>                 (<parameter><link linkend="AgsNavigation"><type>AgsNavigation</type></link> *navigation</parameter>);
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsChangeTact.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsChangeTact.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AgsChangeTact" role="struct">
+<title>struct AgsChangeTact</title>
+<indexterm zone="AgsChangeTact"><primary>AgsChangeTact</primary></indexterm>
+<programlisting>struct AgsChangeTact {
+  AgsTask task;
+
+  AgsNavigation *navigation;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsChangeTactClass" role="struct">
+<title>struct AgsChangeTactClass</title>
+<indexterm zone="AgsChangeTactClass"><primary>AgsChangeTactClass</primary></indexterm>
+<programlisting>struct AgsChangeTactClass {
+  AgsTaskClass task;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-change-tact-new" role="function">
+<title>ags_change_tact_new ()</title>
+<indexterm zone="ags-change-tact-new"><primary>ags_change_tact_new</primary></indexterm>
+<programlisting><link linkend="AgsChangeTact"><returnvalue>AgsChangeTact</returnvalue></link> *     ags_change_tact_new                 (<parameter><link linkend="AgsNavigation"><type>AgsNavigation</type></link> *navigation</parameter>);</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

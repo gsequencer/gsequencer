@@ -1,0 +1,47 @@
+<!-- ##### SECTION Title ##### -->
+AgsPanel
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT AgsPanel ##### -->
+<para>
+
+</para>
+
+@machine: 
+@vbox: 
+
+<!-- ##### STRUCT AgsPanelClass ##### -->
+<para>
+
+</para>
+
+@machine: 
+
+<!-- ##### FUNCTION ags_panel_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

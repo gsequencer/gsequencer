@@ -1,0 +1,94 @@
+<!-- ##### SECTION Title ##### -->
+AgsRecallLadspa
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT AgsRecallLadspa ##### -->
+<para>
+
+</para>
+
+@recall_channel: 
+@filename: 
+@effect: 
+@index: 
+@plugin_descriptor: 
+@input_port: 
+@output_port: 
+
+<!-- ##### STRUCT AgsRecallLadspaClass ##### -->
+<para>
+
+</para>
+
+@recall_channel: 
+
+<!-- ##### FUNCTION ags_recall_ladpsa_find ##### -->
+<para>
+
+</para>
+
+@recall: 
+@filename: 
+@effect: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_recall_ladspa_float_to_short ##### -->
+<para>
+
+</para>
+
+@buffer: 
+@destination: 
+
+
+<!-- ##### FUNCTION ags_recall_ladspa_load_ports ##### -->
+<para>
+
+</para>
+
+@recall_ladspa: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_recall_ladspa_new ##### -->
+<para>
+
+</para>
+
+@source: 
+@filename: 
+@effect: 
+@index: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_recall_ladspa_short_to_float ##### -->
+<para>
+
+</para>
+
+@buffer: 
+@destination: 
+
+

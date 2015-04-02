@@ -1,0 +1,89 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsDrumInputPad">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsDrumInputPad.top_of_page">AgsDrumInputPad</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsDrumInputPad</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsDrumInputPad.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>struct              <link linkend="AgsDrumInputPad">AgsDrumInputPad</link>;
+struct              <link linkend="AgsDrumInputPadClass">AgsDrumInputPadClass</link>;
+enum                <link linkend="AgsDrumInputPadFlags">AgsDrumInputPadFlags</link>;
+<link linkend="AgsDrumInputPad"><returnvalue>AgsDrumInputPad</returnvalue></link> *   <link linkend="ags-drum-input-pad-new">ags_drum_input_pad_new</link>              (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>);
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsDrumInputPad.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsDrumInputPad.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AgsDrumInputPad" role="struct">
+<title>struct AgsDrumInputPad</title>
+<indexterm zone="AgsDrumInputPad"><primary>AgsDrumInputPad</primary></indexterm>
+<programlisting>struct AgsDrumInputPad {
+  AgsPad pad;
+
+  guint flags;
+
+  gchar *name;
+  gchar *xml_type;
+
+  GtkButton *open;
+  GtkToggleButton *play;
+  GtkToggleButton *edit;
+
+  GList *pad_open_recalls;
+  guint pad_open_play_ref;
+
+  GtkFileChooserDialog *file_chooser;
+
+  guint pad_play_ref;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsDrumInputPadClass" role="struct">
+<title>struct AgsDrumInputPadClass</title>
+<indexterm zone="AgsDrumInputPadClass"><primary>AgsDrumInputPadClass</primary></indexterm>
+<programlisting>struct AgsDrumInputPadClass {
+  AgsPadClass pad;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsDrumInputPadFlags" role="enum">
+<title>enum AgsDrumInputPadFlags</title>
+<indexterm zone="AgsDrumInputPadFlags"><primary>AgsDrumInputPadFlags</primary></indexterm>
+<programlisting>typedef enum {
+  AGS_DRUM_INPUT_PAD_OPEN_PLAY_DONE   = 1,
+} AgsDrumInputPadFlags;
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-drum-input-pad-new" role="function">
+<title>ags_drum_input_pad_new ()</title>
+<indexterm zone="ags-drum-input-pad-new"><primary>ags_drum_input_pad_new</primary></indexterm>
+<programlisting><link linkend="AgsDrumInputPad"><returnvalue>AgsDrumInputPad</returnvalue></link> *   ags_drum_input_pad_new              (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>);</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

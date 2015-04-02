@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsGuiTaskThread">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsGuiTaskThread.top_of_page">AgsGuiTaskThread</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsGuiTaskThread</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsGuiTaskThread.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>struct              <link linkend="AgsGuiTaskThread">AgsGuiTaskThread</link>;
+struct              <link linkend="AgsGuiTaskThreadClass">AgsGuiTaskThreadClass</link>;
+<link linkend="AgsGuiTaskThread"><returnvalue>AgsGuiTaskThread</returnvalue></link> *  <link linkend="ags-gui-task-thread-new">ags_gui_task_thread_new</link>             (<parameter><link linkend="GObject"><type>GObject</type></link> *devout</parameter>);
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsGuiTaskThread.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsGuiTaskThread.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AgsGuiTaskThread" role="struct">
+<title>struct AgsGuiTaskThread</title>
+<indexterm zone="AgsGuiTaskThread"><primary>AgsGuiTaskThread</primary></indexterm>
+<programlisting>struct AgsGuiTaskThread {
+  AgsTaskThread task_thread;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsGuiTaskThreadClass" role="struct">
+<title>struct AgsGuiTaskThreadClass</title>
+<indexterm zone="AgsGuiTaskThreadClass"><primary>AgsGuiTaskThreadClass</primary></indexterm>
+<programlisting>struct AgsGuiTaskThreadClass {
+  AgsTaskThreadClass task_thread;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-gui-task-thread-new" role="function">
+<title>ags_gui_task_thread_new ()</title>
+<indexterm zone="ags-gui-task-thread-new"><primary>ags_gui_task_thread_new</primary></indexterm>
+<programlisting><link linkend="AgsGuiTaskThread"><returnvalue>AgsGuiTaskThread</returnvalue></link> *  ags_gui_task_thread_new             (<parameter><link linkend="GObject"><type>GObject</type></link> *devout</parameter>);</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsAudioFileXml">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsAudioFileXml.top_of_page">AgsAudioFileXml</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsAudioFileXml</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsAudioFileXml.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>struct              <link linkend="AgsAudioFileXml">AgsAudioFileXml</link>;
+struct              <link linkend="AgsAudioFileXmlClass">AgsAudioFileXmlClass</link>;
+<link linkend="AgsAudioFileXml"><returnvalue>AgsAudioFileXml</returnvalue></link> *   <link linkend="ags-audio-file-xml-new">ags_audio_file_xml_new</link>              (<parameter><link linkend="AgsAudioFile"><type>AgsAudioFile</type></link> *audio_file</parameter>);
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsAudioFileXml.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsAudioFileXml.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AgsAudioFileXml" role="struct">
+<title>struct AgsAudioFileXml</title>
+<indexterm zone="AgsAudioFileXml"><primary>AgsAudioFileXml</primary></indexterm>
+<programlisting>struct AgsAudioFileXml {
+  GObject object;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsAudioFileXmlClass" role="struct">
+<title>struct AgsAudioFileXmlClass</title>
+<indexterm zone="AgsAudioFileXmlClass"><primary>AgsAudioFileXmlClass</primary></indexterm>
+<programlisting>struct AgsAudioFileXmlClass {
+  GObjectClass object;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-audio-file-xml-new" role="function">
+<title>ags_audio_file_xml_new ()</title>
+<indexterm zone="ags-audio-file-xml-new"><primary>ags_audio_file_xml_new</primary></indexterm>
+<programlisting><link linkend="AgsAudioFileXml"><returnvalue>AgsAudioFileXml</returnvalue></link> *   ags_audio_file_xml_new              (<parameter><link linkend="AgsAudioFile"><type>AgsAudioFile</type></link> *audio_file</parameter>);</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

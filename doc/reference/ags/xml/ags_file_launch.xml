@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsFileLaunch">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsFileLaunch.top_of_page">AgsFileLaunch</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsFileLaunch</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsFileLaunch.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>struct              <link linkend="AgsFileLaunch">AgsFileLaunch</link>;
+struct              <link linkend="AgsFileLaunchClass">AgsFileLaunchClass</link>;
+<link linkend="AgsFileLaunch"><returnvalue>AgsFileLaunch</returnvalue></link> *     <link linkend="ags-file-launch-new">ags_file_launch_new</link>                 ();
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-file-launch-start">ags_file_launch_start</link>               (<parameter><link linkend="AgsFileLaunch"><type>AgsFileLaunch</type></link> *file_launch</parameter>);
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsFileLaunch.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsFileLaunch.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AgsFileLaunch" role="struct">
+<title>struct AgsFileLaunch</title>
+<indexterm zone="AgsFileLaunch"><primary>AgsFileLaunch</primary></indexterm>
+<programlisting>struct AgsFileLaunch {
+  GObject object;
+
+  xmlNode *node;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsFileLaunchClass" role="struct">
+<title>struct AgsFileLaunchClass</title>
+<indexterm zone="AgsFileLaunchClass"><primary>AgsFileLaunchClass</primary></indexterm>
+<programlisting>struct AgsFileLaunchClass {
+  GObjectClass object;
+
+  void (*start)(AgsFileLaunch *file_launch);
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-file-launch-new" role="function">
+<title>ags_file_launch_new ()</title>
+<indexterm zone="ags-file-launch-new"><primary>ags_file_launch_new</primary></indexterm>
+<programlisting><link linkend="AgsFileLaunch"><returnvalue>AgsFileLaunch</returnvalue></link> *     ags_file_launch_new                 ();</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-file-launch-start" role="function">
+<title>ags_file_launch_start ()</title>
+<indexterm zone="ags-file-launch-start"><primary>ags_file_launch_start</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_file_launch_start               (<parameter><link linkend="AgsFileLaunch"><type>AgsFileLaunch</type></link> *file_launch</parameter>);</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

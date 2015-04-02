@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsMuteAudio">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsMuteAudio.top_of_page">AgsMuteAudio</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsMuteAudio</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsMuteAudio.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>struct              <link linkend="AgsMuteAudio">AgsMuteAudio</link>;
+struct              <link linkend="AgsMuteAudioClass">AgsMuteAudioClass</link>;
+<link linkend="AgsMuteAudio"><returnvalue>AgsMuteAudio</returnvalue></link> *      <link linkend="ags-mute-audio-new">ags_mute_audio_new</link>                  ();
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsMuteAudio.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsMuteAudio.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AgsMuteAudio" role="struct">
+<title>struct AgsMuteAudio</title>
+<indexterm zone="AgsMuteAudio"><primary>AgsMuteAudio</primary></indexterm>
+<programlisting>struct AgsMuteAudio {
+  AgsRecallAudio recall_audio;
+
+  AgsPort *muted;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsMuteAudioClass" role="struct">
+<title>struct AgsMuteAudioClass</title>
+<indexterm zone="AgsMuteAudioClass"><primary>AgsMuteAudioClass</primary></indexterm>
+<programlisting>struct AgsMuteAudioClass {
+  AgsRecallAudioClass recall_audio;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-mute-audio-new" role="function">
+<title>ags_mute_audio_new ()</title>
+<indexterm zone="ags-mute-audio-new"><primary>ags_mute_audio_new</primary></indexterm>
+<programlisting><link linkend="AgsMuteAudio"><returnvalue>AgsMuteAudio</returnvalue></link> *      ags_mute_audio_new                  ();</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>
