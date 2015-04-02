@@ -5,8 +5,7 @@ AC_PREREQ([2.69])
 AC_INIT([gsequencer], [0.4.3], [weedlight@gmail.com])
 AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADERS([config.h])
-AC_CONFIG_SUBDIRS([.
-		   po
+AC_CONFIG_SUBDIRS([po
 		   doc
 		   src/ags
 		   src/ags/X

@@ -86,7 +86,10 @@ DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(srcdir)/config.h.in depcomp compile config.guess config.sub \
 	install-sh missing ltmain.sh
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/configure.ac
+am__aclocal_m4_deps = $(top_srcdir)/m4/libtool.m4 \
+	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
+	$(top_srcdir)/m4/ltversion.m4 $(top_srcdir)/m4/lt~obsolete.m4 \
+	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
@@ -769,7 +772,7 @@ psdir = ${docdir}
 sbindir = ${exec_prefix}/sbin
 sharedstatedir = ${prefix}/com
 srcdir = .
-subdirs =  . po doc src/ags src/ags/X src/ags/X/editor src/ags/X/machine src/ags/audio src/ags/audio/file src/ags/audio/recall src/ags/audio/task src/ags/audio/task/recall src/ags/file src/ags/lib src/ags/object src/ags/plugin src/ags/server src/ags/thread src/ags/util src/ags/widget
+subdirs =  po doc src/ags src/ags/X src/ags/X/editor src/ags/X/machine src/ags/audio src/ags/audio/file src/ags/audio/recall src/ags/audio/task src/ags/audio/task/recall src/ags/file src/ags/lib src/ags/object src/ags/plugin src/ags/server src/ags/thread src/ags/util src/ags/widget
 sysconfdir = ${prefix}/etc
 target_alias = 
 top_build_prefix = 
