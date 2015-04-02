@@ -1,0 +1,122 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsDrum">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsDrum.top_of_page">AgsDrum</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsDrum</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsDrum.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>#define             <link linkend="AGS-DRUM-PATTERN-CONTROLS:CAPS">AGS_DRUM_PATTERN_CONTROLS</link>
+struct              <link linkend="AgsDrum">AgsDrum</link>;
+struct              <link linkend="AgsDrumClass">AgsDrumClass</link>;
+enum                <link linkend="AgsDrumFlags">AgsDrumFlags</link>;
+<link linkend="AgsDrum"><returnvalue>AgsDrum</returnvalue></link> *           <link linkend="ags-drum-new">ags_drum_new</link>                        (<parameter><link linkend="GObject"><type>GObject</type></link> *devout</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-drum-set-pattern">ags_drum_set_pattern</link>                (<parameter><link linkend="AgsDrum"><type>AgsDrum</type></link> *drum</parameter>);
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsDrum.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsDrum.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AGS-DRUM-PATTERN-CONTROLS:CAPS" role="macro">
+<title>AGS_DRUM_PATTERN_CONTROLS</title>
+<indexterm zone="AGS-DRUM-PATTERN-CONTROLS:CAPS"><primary>AGS_DRUM_PATTERN_CONTROLS</primary></indexterm>
+<programlisting>#define AGS_DRUM_PATTERN_CONTROLS (16)
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsDrum" role="struct">
+<title>struct AgsDrum</title>
+<indexterm zone="AgsDrum"><primary>AgsDrum</primary></indexterm>
+<programlisting>struct AgsDrum {
+  AgsMachine machine;
+
+  guint flags;
+
+  gchar *name;
+  gchar *xml_type;
+
+  GtkButton *open;
+
+  GtkCheckButton *loop_button;
+  GtkSpinButton *length_spin;
+
+  GtkToggleButton *run;
+
+  GtkVBox *vbox;
+
+  GtkHBox *input_pad;
+  GtkVBox *output_pad;
+
+  GtkToggleButton *selected_edit_button;
+
+  AgsDrumInputPad *selected_pad;
+  AgsLine *selected_line;
+
+  GtkToggleButton *index0[4];
+  GtkToggleButton *selected0;
+
+  GtkToggleButton *index1[12];
+  GtkToggleButton *selected1;
+
+  guint active_led;
+  GtkHBox *led;
+  GtkHBox *pattern;
+
+  GtkVBox *offset;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsDrumClass" role="struct">
+<title>struct AgsDrumClass</title>
+<indexterm zone="AgsDrumClass"><primary>AgsDrumClass</primary></indexterm>
+<programlisting>struct AgsDrumClass {
+  AgsMachineClass machine;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsDrumFlags" role="enum">
+<title>enum AgsDrumFlags</title>
+<indexterm zone="AgsDrumFlags"><primary>AgsDrumFlags</primary></indexterm>
+<programlisting>typedef enum {
+  AGS_DRUM_BLOCK_PATTERN    =  1,
+} AgsDrumFlags;
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-drum-new" role="function">
+<title>ags_drum_new ()</title>
+<indexterm zone="ags-drum-new"><primary>ags_drum_new</primary></indexterm>
+<programlisting><link linkend="AgsDrum"><returnvalue>AgsDrum</returnvalue></link> *           ags_drum_new                        (<parameter><link linkend="GObject"><type>GObject</type></link> *devout</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-drum-set-pattern" role="function">
+<title>ags_drum_set_pattern ()</title>
+<indexterm zone="ags-drum-set-pattern"><primary>ags_drum_set_pattern</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_drum_set_pattern                (<parameter><link linkend="AgsDrum"><type>AgsDrum</type></link> *drum</parameter>);</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

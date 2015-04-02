@@ -1,0 +1,80 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsListingEditor">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsListingEditor.top_of_page">AgsListingEditor</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsListingEditor</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsListingEditor.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>struct              <link linkend="AgsListingEditor">AgsListingEditor</link>;
+struct              <link linkend="AgsListingEditorClass">AgsListingEditorClass</link>;
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-listing-editor-add-children">ags_listing_editor_add_children</link>     (<parameter><link linkend="AgsListingEditor"><type>AgsListingEditor</type></link> *listing_editor</parameter>,
+                                                         <parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> nth_channel</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> connect</parameter>);
+<link linkend="AgsListingEditor"><returnvalue>AgsListingEditor</returnvalue></link> *  <link linkend="ags-listing-editor-new">ags_listing_editor_new</link>              (<parameter><link linkend="GType"><type>GType</type></link> channel_type</parameter>);
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsListingEditor.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsListingEditor.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AgsListingEditor" role="struct">
+<title>struct AgsListingEditor</title>
+<indexterm zone="AgsListingEditor"><primary>AgsListingEditor</primary></indexterm>
+<programlisting>struct AgsListingEditor {
+  AgsPropertyListingEditor property_listing_editor;
+
+  GType channel_type;
+
+  GtkVBox *child;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsListingEditorClass" role="struct">
+<title>struct AgsListingEditorClass</title>
+<indexterm zone="AgsListingEditorClass"><primary>AgsListingEditorClass</primary></indexterm>
+<programlisting>struct AgsListingEditorClass {
+  AgsPropertyListingEditorClass property_listing_editor;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-listing-editor-add-children" role="function">
+<title>ags_listing_editor_add_children ()</title>
+<indexterm zone="ags-listing-editor-add-children"><primary>ags_listing_editor_add_children</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_listing_editor_add_children     (<parameter><link linkend="AgsListingEditor"><type>AgsListingEditor</type></link> *listing_editor</parameter>,
+                                                         <parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> nth_channel</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> connect</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-listing-editor-new" role="function">
+<title>ags_listing_editor_new ()</title>
+<indexterm zone="ags-listing-editor-new"><primary>ags_listing_editor_new</primary></indexterm>
+<programlisting><link linkend="AgsListingEditor"><returnvalue>AgsListingEditor</returnvalue></link> *  ags_listing_editor_new              (<parameter><link linkend="GType"><type>GType</type></link> channel_type</parameter>);</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

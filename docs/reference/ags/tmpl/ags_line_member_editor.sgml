@@ -1,0 +1,51 @@
+<!-- ##### SECTION Title ##### -->
+AgsLineMemberEditor
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT AgsLineMemberEditor ##### -->
+<para>
+
+</para>
+
+@vbox: 
+@line_member: 
+@add: 
+@popup: 
+@remove: 
+@ladspa_browser: 
+
+<!-- ##### STRUCT AgsLineMemberEditorClass ##### -->
+<para>
+
+</para>
+
+@vbox: 
+
+<!-- ##### FUNCTION ags_line_member_editor_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

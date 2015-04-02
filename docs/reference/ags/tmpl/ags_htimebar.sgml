@@ -1,0 +1,46 @@
+<!-- ##### SECTION Title ##### -->
+AgsHTimebar
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT AgsHTimebar ##### -->
+<para>
+
+</para>
+
+@range: 
+
+<!-- ##### STRUCT AgsHTimebarClass ##### -->
+<para>
+
+</para>
+
+@timebar: 
+
+<!-- ##### FUNCTION ags_htimebar_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

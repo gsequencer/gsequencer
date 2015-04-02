@@ -1,0 +1,89 @@
+<!-- ##### SECTION Title ##### -->
+AgsIpatch
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### MACRO AGS_IPATCH_DEFAULT_CHANNELS ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO AGS_IPATCH_READ ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO AGS_IPATCH_WRITE ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### STRUCT AgsIpatch ##### -->
+<para>
+
+</para>
+
+@object: 
+@flags: 
+@devout: 
+@audio_signal: 
+@file: 
+@filename: 
+@mode: 
+@handle: 
+@error: 
+@base: 
+@reader: 
+@samples: 
+@iter: 
+@nth_level: 
+
+<!-- ##### STRUCT AgsIpatchClass ##### -->
+<para>
+
+</para>
+
+@object: 
+
+<!-- ##### ENUM AgsIpatchFlags ##### -->
+<para>
+
+</para>
+
+@AGS_IPATCH_DLS2: 
+@AGS_IPATCH_SF2: 
+@AGS_IPATCH_GIG: 
+
+<!-- ##### FUNCTION ags_ipatch_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

@@ -1,0 +1,52 @@
+<!-- ##### SECTION Title ##### -->
+AgsRemoveRecall
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT AgsRemoveRecall ##### -->
+<para>
+
+</para>
+
+@task: 
+@context: 
+@recall: 
+@is_play: 
+
+<!-- ##### STRUCT AgsRemoveRecallClass ##### -->
+<para>
+
+</para>
+
+@task: 
+
+<!-- ##### FUNCTION ags_remove_recall_new ##### -->
+<para>
+
+</para>
+
+@context: 
+@recall: 
+@is_play: 
+@Returns: 
+
+

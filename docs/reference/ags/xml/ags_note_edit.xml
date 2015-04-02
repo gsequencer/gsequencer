@@ -1,0 +1,227 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsNoteEdit">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsNoteEdit.top_of_page">AgsNoteEdit</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsNoteEdit</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsNoteEdit.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>#define             <link linkend="AGS-NOTE-EDIT-MAX-CONTROLS:CAPS">AGS_NOTE_EDIT_MAX_CONTROLS</link>
+struct              <link linkend="AgsNoteEdit">AgsNoteEdit</link>;
+struct              <link linkend="AgsNoteEditClass">AgsNoteEditClass</link>;
+enum                <link linkend="AgsNoteEditFlags">AgsNoteEditFlags</link>;
+enum                <link linkend="AgsNoteEditResetFlags">AgsNoteEditResetFlags</link>;
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-note-edit-draw-notation">ags_note_edit_draw_notation</link>         (<parameter><link linkend="AgsNoteEdit"><type>AgsNoteEdit</type></link> *note_edit</parameter>,
+                                                         <parameter><link linkend="cairo-t"><type>cairo_t</type></link> *cr</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-note-edit-draw-position">ags_note_edit_draw_position</link>         (<parameter><link linkend="AgsNoteEdit"><type>AgsNoteEdit</type></link> *note_edit</parameter>,
+                                                         <parameter><link linkend="cairo-t"><type>cairo_t</type></link> *cr</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-note-edit-draw-scroll">ags_note_edit_draw_scroll</link>           (<parameter><link linkend="AgsNoteEdit"><type>AgsNoteEdit</type></link> *note_edit</parameter>,
+                                                         <parameter><link linkend="cairo-t"><type>cairo_t</type></link> *cr</parameter>,
+                                                         <parameter><link linkend="gdouble"><type>gdouble</type></link> position</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-note-edit-draw-segment">ags_note_edit_draw_segment</link>          (<parameter><link linkend="AgsNoteEdit"><type>AgsNoteEdit</type></link> *note_edit</parameter>,
+                                                         <parameter><link linkend="cairo-t"><type>cairo_t</type></link> *cr</parameter>);
+<link linkend="AgsNoteEdit"><returnvalue>AgsNoteEdit</returnvalue></link> *       <link linkend="ags-note-edit-new">ags_note_edit_new</link>                   ();
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-note-edit-reset-horizontally">ags_note_edit_reset_horizontally</link>    (<parameter><link linkend="AgsNoteEdit"><type>AgsNoteEdit</type></link> *note_edit</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> flags</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-note-edit-reset-vertically">ags_note_edit_reset_vertically</link>      (<parameter><link linkend="AgsNoteEdit"><type>AgsNoteEdit</type></link> *note_edit</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> flags</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-note-edit-set-map-height">ags_note_edit_set_map_height</link>        (<parameter><link linkend="AgsNoteEdit"><type>AgsNoteEdit</type></link> *note_edit</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> map_height</parameter>);
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsNoteEdit.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsNoteEdit.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AGS-NOTE-EDIT-MAX-CONTROLS:CAPS" role="macro">
+<title>AGS_NOTE_EDIT_MAX_CONTROLS</title>
+<indexterm zone="AGS-NOTE-EDIT-MAX-CONTROLS:CAPS"><primary>AGS_NOTE_EDIT_MAX_CONTROLS</primary></indexterm>
+<programlisting>#define AGS_NOTE_EDIT_MAX_CONTROLS 1200
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsNoteEdit" role="struct">
+<title>struct AgsNoteEdit</title>
+<indexterm zone="AgsNoteEdit"><primary>AgsNoteEdit</primary></indexterm>
+<programlisting>struct AgsNoteEdit {
+  GtkTable table;
+
+  guint flags;
+
+  GtkDrawingArea *drawing_area;
+
+  struct _AgsNoteEditControl{ // values retrieved by mouse pressed and released callback
+    AgsNote *note;
+
+    guint x0_offset;
+    guint y0_offset;
+    guint x0;
+    guint y0;
+
+    guint x1_offset;
+    guint y1_offset;
+    guint x1;
+    guint y1;
+  }control;
+
+  guint width;
+  guint height;
+  guint map_width;
+  guint map_height;
+
+  guint control_height;
+  guint control_margin_y;
+
+  guint control_width;
+
+  guint y0;
+  guint y1;
+
+  guint nth_y;
+  guint stop_y;
+
+  struct _AgsNoteEditControlCurrent{ // values for drawing refering to current tic and zoom
+    guint control_count;
+
+    guint control_width;
+
+    guint x0;
+    guint x1;
+
+    guint nth_x;
+  }control_current;
+
+  struct _AgsNoteEditControlUnit{ // values for drawing refering to smallest tic and current zoom
+    guint control_count;
+
+    guint control_width;
+
+    guint x0;
+    guint x1;
+
+    guint nth_x;
+    guint stop_x;
+  }control_unit;
+
+  guint selected_x;
+  guint selected_y;
+  
+  GtkVScrollbar *vscrollbar;
+  GtkHScrollbar *hscrollbar;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsNoteEditClass" role="struct">
+<title>struct AgsNoteEditClass</title>
+<indexterm zone="AgsNoteEditClass"><primary>AgsNoteEditClass</primary></indexterm>
+<programlisting>struct AgsNoteEditClass {
+  GtkTableClass table;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsNoteEditFlags" role="enum">
+<title>enum AgsNoteEditFlags</title>
+<indexterm zone="AgsNoteEditFlags"><primary>AgsNoteEditFlags</primary></indexterm>
+<programlisting>typedef enum {
+  AGS_NOTE_EDIT_RESETING_VERTICALLY    = 1,
+  AGS_NOTE_EDIT_RESETING_HORIZONTALLY  = 1 &lt;&lt;  1,
+  AGS_NOTE_EDIT_POSITION_CURSOR        = 1 &lt;&lt;  2,
+  AGS_NOTE_EDIT_ADDING_NOTE            = 1 &lt;&lt;  3,
+  AGS_NOTE_EDIT_DELETING_NOTE          = 1 &lt;&lt;  4,
+  AGS_NOTE_EDIT_SELECTING_NOTES        = 1 &lt;&lt;  5,
+} AgsNoteEditFlags;
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsNoteEditResetFlags" role="enum">
+<title>enum AgsNoteEditResetFlags</title>
+<indexterm zone="AgsNoteEditResetFlags"><primary>AgsNoteEditResetFlags</primary></indexterm>
+<programlisting>typedef enum {
+  AGS_NOTE_EDIT_RESET_VSCROLLBAR   = 1,
+  AGS_NOTE_EDIT_RESET_HSCROLLBAR   = 1 &lt;&lt;  1,
+  AGS_NOTE_EDIT_RESET_WIDTH        = 1 &lt;&lt;  2,
+  AGS_NOTE_EDIT_RESET_HEIGHT       = 1 &lt;&lt;  3, // reserved
+} AgsNoteEditResetFlags;
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-note-edit-draw-notation" role="function">
+<title>ags_note_edit_draw_notation ()</title>
+<indexterm zone="ags-note-edit-draw-notation"><primary>ags_note_edit_draw_notation</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_note_edit_draw_notation         (<parameter><link linkend="AgsNoteEdit"><type>AgsNoteEdit</type></link> *note_edit</parameter>,
+                                                         <parameter><link linkend="cairo-t"><type>cairo_t</type></link> *cr</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-note-edit-draw-position" role="function">
+<title>ags_note_edit_draw_position ()</title>
+<indexterm zone="ags-note-edit-draw-position"><primary>ags_note_edit_draw_position</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_note_edit_draw_position         (<parameter><link linkend="AgsNoteEdit"><type>AgsNoteEdit</type></link> *note_edit</parameter>,
+                                                         <parameter><link linkend="cairo-t"><type>cairo_t</type></link> *cr</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-note-edit-draw-scroll" role="function">
+<title>ags_note_edit_draw_scroll ()</title>
+<indexterm zone="ags-note-edit-draw-scroll"><primary>ags_note_edit_draw_scroll</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_note_edit_draw_scroll           (<parameter><link linkend="AgsNoteEdit"><type>AgsNoteEdit</type></link> *note_edit</parameter>,
+                                                         <parameter><link linkend="cairo-t"><type>cairo_t</type></link> *cr</parameter>,
+                                                         <parameter><link linkend="gdouble"><type>gdouble</type></link> position</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-note-edit-draw-segment" role="function">
+<title>ags_note_edit_draw_segment ()</title>
+<indexterm zone="ags-note-edit-draw-segment"><primary>ags_note_edit_draw_segment</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_note_edit_draw_segment          (<parameter><link linkend="AgsNoteEdit"><type>AgsNoteEdit</type></link> *note_edit</parameter>,
+                                                         <parameter><link linkend="cairo-t"><type>cairo_t</type></link> *cr</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-note-edit-new" role="function">
+<title>ags_note_edit_new ()</title>
+<indexterm zone="ags-note-edit-new"><primary>ags_note_edit_new</primary></indexterm>
+<programlisting><link linkend="AgsNoteEdit"><returnvalue>AgsNoteEdit</returnvalue></link> *       ags_note_edit_new                   ();</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-note-edit-reset-horizontally" role="function">
+<title>ags_note_edit_reset_horizontally ()</title>
+<indexterm zone="ags-note-edit-reset-horizontally"><primary>ags_note_edit_reset_horizontally</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_note_edit_reset_horizontally    (<parameter><link linkend="AgsNoteEdit"><type>AgsNoteEdit</type></link> *note_edit</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> flags</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-note-edit-reset-vertically" role="function">
+<title>ags_note_edit_reset_vertically ()</title>
+<indexterm zone="ags-note-edit-reset-vertically"><primary>ags_note_edit_reset_vertically</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_note_edit_reset_vertically      (<parameter><link linkend="AgsNoteEdit"><type>AgsNoteEdit</type></link> *note_edit</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> flags</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-note-edit-set-map-height" role="function">
+<title>ags_note_edit_set_map_height ()</title>
+<indexterm zone="ags-note-edit-set-map-height"><primary>ags_note_edit_set_map_height</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_note_edit_set_map_height        (<parameter><link linkend="AgsNoteEdit"><type>AgsNoteEdit</type></link> *note_edit</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> map_height</parameter>);</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

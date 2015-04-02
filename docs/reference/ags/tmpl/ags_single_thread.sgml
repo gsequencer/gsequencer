@@ -1,0 +1,57 @@
+<!-- ##### SECTION Title ##### -->
+AgsSingleThread
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### MACRO AGS_SINGLE_THREAD_DEFAULT_GUI_JIFFIE ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### STRUCT AgsSingleThread ##### -->
+<para>
+
+</para>
+
+@thread: 
+@audio_loop: 
+@devout_thread: 
+@task_thread: 
+@gui_thread: 
+
+<!-- ##### STRUCT AgsSingleThreadClass ##### -->
+<para>
+
+</para>
+
+@thread: 
+
+<!-- ##### FUNCTION ags_single_thread_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

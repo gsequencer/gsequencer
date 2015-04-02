@@ -1,0 +1,56 @@
+<!-- ##### SECTION Title ##### -->
+AgsAddAudioSignal
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT AgsAddAudioSignal ##### -->
+<para>
+
+</para>
+
+@task: 
+@recycling: 
+@audio_signal: 
+@devout: 
+@recall_id: 
+@audio_signal_flags: 
+
+<!-- ##### STRUCT AgsAddAudioSignalClass ##### -->
+<para>
+
+</para>
+
+@task: 
+
+<!-- ##### FUNCTION ags_add_audio_signal_new ##### -->
+<para>
+
+</para>
+
+@recycling: 
+@audio_signal: 
+@devout: 
+@recall_id: 
+@audio_signal_flags: 
+@Returns: 
+
+

@@ -1,0 +1,175 @@
+<?xml version='1.0' encoding="utf-8"?>
+<chapter xmlns="http://docbook.org/ns/docbook"
+	 xmlns:xi="http://www.w3.org/2001/XInclude" version="5.0">
+  <title>Linking</title>
+  <para>
+    In this section you get some knowledge about ags internals. Here you get an
+    overview of the audio layer. All code related to it is located in subdirectory 
+    &lt;ags/audio&gt;. Linking AgsChannel is a quiet complex thing but If you wish
+    to do so you can just call ags_channel_link() and this will the especially covered
+    here.
+  </para>
+
+  <sect1>
+    <title>Overview</title>
+    <para>
+      AgsAudio, AgsChannel and AgsRecycling are involved in linking. When talking about
+      linking we should view AgsChannel objects as networked and therefore exists an
+      additional nested network of AgsRecycling objects.
+    </para>
+    <para>
+      The AgsAudio object gives clarification about how AgsChannel has to be accessed
+      either synchronously or asynchronously. Further it tells us whether AgsOutput or
+      AgsInput has a new audio stream which causes in conjunction a dedicated
+      AgsRecycling associated with the appropriate AgsChannel.
+    </para>
+
+    <imagedata fileref="../images/AGS_linking.svg" />
+    <table>
+      <title>AGS network layer table</title>
+      <tgroup cols="2" align="left" colsep='1' rowsep='1'>
+	<thead>
+	  <row>
+	    <entry>object</entry>
+	    <entry>flags</entry>
+	  </row>
+	</thead>
+	<tbody>
+	  <row>
+	    <entry>Audio#0</entry>
+	    <entry>
+	      AGS_AUDIO_SYNC | AGS_AUDIO_OUTPUT_HAS_RECYCLING
+	    </entry>
+	  </row>
+	  <row>
+	    <entry>Audio#1</entry>
+	    <entry>
+	      AGS_AUDIO_ASYNC
+	    </entry>
+	  </row>
+	  <row>
+	    <entry>Audio#2</entry>
+	    <entry>
+	      AGS_AUDIO_ASYNC | AGS_AUDIO_OUTPUT_HAS_RECYCLING
+	    </entry>
+	  </row>
+	  <row>
+	    <entry>Audio#3</entry>
+	    <entry>
+	      AGS_AUDIO_ASYNC | AGS_AUDIO_OUTPUT_HAS_RECYCLING
+	    </entry>
+	  </row>
+	  <row>
+	    <entry>Audio#4</entry>
+	    <entry>
+	      AGS_AUDIO_ASYNC | AGS_AUDIO_OUTPUT_HAS_RECYCLING
+	    </entry>
+	  </row>
+	</tbody>
+      </tgroup>
+    </table>
+
+    <itemizedlist mark="bullet">
+      <listitem>
+	<para>
+	  green:
+	</para>
+
+	<itemizedlist mark="circle">
+	  <listitem>
+	    Bidirectional linked AgsChannel to an other AgsChannel.
+	  </listitem>
+	  <listitem>
+	    Generally you link an AgsOutput to an AgsInput.
+	  </listitem>
+	</itemizedlist>
+      </listitem>
+      <listitem>
+	<para>
+	  red:
+	</para>
+
+	<itemizedlist mark="circle">
+	  <listitem>
+	    Bidirectional linked AgsRecycling to an other AgsRecycling on the same
+	    level.
+	  </listitem>
+	  <listitem>
+	    They are linked across AgsAudio objects.
+	  </listitem>
+	  <listitem>
+	    Same level means the linked AgsRecycling are all child nodes of a parent
+	    AgsRecycling.
+	  </listitem>
+	</itemizedlist>
+      </listitem>
+      <listitem>
+	<para>
+	  yellow:
+	</para>
+
+	<itemizedlist mark="circle">
+	  <listitem>
+	    Unidirectional linked AgsRecycling to an AgsChannel.
+	  </listitem>
+	  <listitem>
+	    First AgsRecycling of an AgsOutput and last AgsRecycling of an (other)
+	    AgsOutput are linked to an AgsChannel.
+	  </listitem>
+	</itemizedlist>
+      </listitem>
+    </itemizedlist>
+  </sect1>
+
+  <sect1>
+    <title>Limitations</title>
+    <itemizedlist mark="bullet">
+      <listitem>
+	You may not create any kind of loops.
+      </listitem>
+      <listitem>
+	You may not set AGS_AUDIO_INPUT_HAS_RECYCLING without setting
+	AGS_AUDIO_OUTPUT_HAS_RECYCLING flag.
+      </listitem>
+    </itemizedlist>
+  </sect1>
+
+  <sect1>
+    <title>Hands-On</title>
+    <para>
+      There may be two ways how you can link AgsChannel objects.
+    </para>
+
+    <example>
+      <title>Prerequisites</title>
+      <programlisting language="C">
+<xi:include href="../listings/linking_prerequisites.c" parse="text" />
+      </programlisting>
+    </example>
+
+    <para>
+      Assumed you know really what you do, you may be interested in following code.
+    </para>
+
+    <example>
+      <title>Thread-Unsafe way</title>
+      <programlisting language="C">
+<xi:include href="../listings/linking_unsafe.c" parse="text" />
+      </programlisting>
+    </example>
+
+    <para>
+      But generally you wish to create an AgsTask object and let it to link the
+      AgsChannel for you.
+    </para>
+
+    <example>
+      <title>Multithread-Safe way</title>
+      <programlisting language="C">
+<xi:include href="../listings/linking_safe.c" parse="text" />
+      </programlisting>
+    </example>
+
+  </sect1>
+
+</chapter>

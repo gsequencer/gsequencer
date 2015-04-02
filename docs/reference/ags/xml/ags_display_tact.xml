@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsDisplayTact">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsDisplayTact.top_of_page">AgsDisplayTact</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsDisplayTact</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsDisplayTact.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>struct              <link linkend="AgsDisplayTact">AgsDisplayTact</link>;
+struct              <link linkend="AgsDisplayTactClass">AgsDisplayTactClass</link>;
+<link linkend="AgsDisplayTact"><returnvalue>AgsDisplayTact</returnvalue></link> *    <link linkend="ags-display-tact-new">ags_display_tact_new</link>                (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *navigation</parameter>);
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsDisplayTact.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsDisplayTact.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AgsDisplayTact" role="struct">
+<title>struct AgsDisplayTact</title>
+<indexterm zone="AgsDisplayTact"><primary>AgsDisplayTact</primary></indexterm>
+<programlisting>struct AgsDisplayTact {
+  AgsTask task;
+
+  GtkWidget *navigation;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsDisplayTactClass" role="struct">
+<title>struct AgsDisplayTactClass</title>
+<indexterm zone="AgsDisplayTactClass"><primary>AgsDisplayTactClass</primary></indexterm>
+<programlisting>struct AgsDisplayTactClass {
+  AgsTaskClass task;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-display-tact-new" role="function">
+<title>ags_display_tact_new ()</title>
+<indexterm zone="ags-display-tact-new"><primary>ags_display_tact_new</primary></indexterm>
+<programlisting><link linkend="AgsDisplayTact"><returnvalue>AgsDisplayTact</returnvalue></link> *    ags_display_tact_new                (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *navigation</parameter>);</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

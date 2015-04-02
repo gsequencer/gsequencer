@@ -1,0 +1,51 @@
+<!-- ##### SECTION Title ##### -->
+ags_export_window_callbacks
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### FUNCTION ags_export_window_export_callback ##### -->
+<para>
+
+</para>
+
+@toggle_button: 
+@export_window: 
+
+
+<!-- ##### FUNCTION ags_export_window_file_chooser_button_callback ##### -->
+<para>
+
+</para>
+
+@file_chooser_button: 
+@export_window: 
+
+
+<!-- ##### FUNCTION ags_export_window_tact_callback ##### -->
+<para>
+
+</para>
+
+@spin_button: 
+@export_window: 
+
+

@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsAppendAudio">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsAppendAudio.top_of_page">AgsAppendAudio</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsAppendAudio</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsAppendAudio.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>struct              <link linkend="AgsAppendAudio">AgsAppendAudio</link>;
+struct              <link linkend="AgsAppendAudioClass">AgsAppendAudioClass</link>;
+<link linkend="AgsAppendAudio"><returnvalue>AgsAppendAudio</returnvalue></link> *    <link linkend="ags-append-audio-new">ags_append_audio_new</link>                (<parameter><link linkend="GObject"><type>GObject</type></link> *audio_loop</parameter>,
+                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *audio</parameter>);
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsAppendAudio.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsAppendAudio.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AgsAppendAudio" role="struct">
+<title>struct AgsAppendAudio</title>
+<indexterm zone="AgsAppendAudio"><primary>AgsAppendAudio</primary></indexterm>
+<programlisting>struct AgsAppendAudio {
+  AgsTask task;
+
+  GObject *audio_loop;
+  GObject *audio;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsAppendAudioClass" role="struct">
+<title>struct AgsAppendAudioClass</title>
+<indexterm zone="AgsAppendAudioClass"><primary>AgsAppendAudioClass</primary></indexterm>
+<programlisting>struct AgsAppendAudioClass {
+  AgsTaskClass task;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-append-audio-new" role="function">
+<title>ags_append_audio_new ()</title>
+<indexterm zone="ags-append-audio-new"><primary>ags_append_audio_new</primary></indexterm>
+<programlisting><link linkend="AgsAppendAudio"><returnvalue>AgsAppendAudio</returnvalue></link> *    ags_append_audio_new                (<parameter><link linkend="GObject"><type>GObject</type></link> *audio_loop</parameter>,
+                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *audio</parameter>);</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

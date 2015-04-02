@@ -1,0 +1,42 @@
+<!-- ##### SECTION Title ##### -->
+ags_property_collection_editor_callbacks
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### FUNCTION ags_property_collection_editor_add_collection_callback ##### -->
+<para>
+
+</para>
+
+@button: 
+@property_collection_editor: 
+
+
+<!-- ##### FUNCTION ags_property_collection_editor_remove_collection_callback ##### -->
+<para>
+
+</para>
+
+@button: 
+@table: 
+
+

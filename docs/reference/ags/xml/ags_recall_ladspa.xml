@@ -1,0 +1,121 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsRecallLadspa">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsRecallLadspa.top_of_page">AgsRecallLadspa</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsRecallLadspa</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsRecallLadspa.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>struct              <link linkend="AgsRecallLadspa">AgsRecallLadspa</link>;
+struct              <link linkend="AgsRecallLadspaClass">AgsRecallLadspaClass</link>;
+<link linkend="GList"><returnvalue>GList</returnvalue></link> *             <link linkend="ags-recall-ladpsa-find">ags_recall_ladpsa_find</link>              (<parameter><link linkend="GList"><type>GList</type></link> *recall</parameter>,
+                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *filename</parameter>,
+                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *effect</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-recall-ladspa-float-to-short">ags_recall_ladspa_float_to_short</link>    (<parameter><link linkend="float"><type>float</type></link> *buffer</parameter>,
+                                                         <parameter>signed <link linkend="short"><type>short</type></link> *destination</parameter>);
+<link linkend="GList"><returnvalue>GList</returnvalue></link> *             <link linkend="ags-recall-ladspa-load-ports">ags_recall_ladspa_load_ports</link>        (<parameter><link linkend="AgsRecallLadspa"><type>AgsRecallLadspa</type></link> *recall_ladspa</parameter>);
+<link linkend="AgsRecallLadspa"><returnvalue>AgsRecallLadspa</returnvalue></link> *   <link linkend="ags-recall-ladspa-new">ags_recall_ladspa_new</link>               (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *source</parameter>,
+                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *filename</parameter>,
+                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *effect</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> index</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-recall-ladspa-short-to-float">ags_recall_ladspa_short_to_float</link>    (<parameter>signed <link linkend="short"><type>short</type></link> *buffer</parameter>,
+                                                         <parameter><link linkend="float"><type>float</type></link> *destination</parameter>);
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsRecallLadspa.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsRecallLadspa.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AgsRecallLadspa" role="struct">
+<title>struct AgsRecallLadspa</title>
+<indexterm zone="AgsRecallLadspa"><primary>AgsRecallLadspa</primary></indexterm>
+<programlisting>struct AgsRecallLadspa {
+  AgsRecallChannel recall_channel;
+
+  gchar *filename;
+  gchar *effect;
+  guint index;
+
+  LADSPA_Descriptor *plugin_descriptor;
+  guint input_port;
+  guint output_port;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsRecallLadspaClass" role="struct">
+<title>struct AgsRecallLadspaClass</title>
+<indexterm zone="AgsRecallLadspaClass"><primary>AgsRecallLadspaClass</primary></indexterm>
+<programlisting>struct AgsRecallLadspaClass {
+  AgsRecallChannelClass recall_channel;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-recall-ladpsa-find" role="function">
+<title>ags_recall_ladpsa_find ()</title>
+<indexterm zone="ags-recall-ladpsa-find"><primary>ags_recall_ladpsa_find</primary></indexterm>
+<programlisting><link linkend="GList"><returnvalue>GList</returnvalue></link> *             ags_recall_ladpsa_find              (<parameter><link linkend="GList"><type>GList</type></link> *recall</parameter>,
+                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *filename</parameter>,
+                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *effect</parameter>);</programlisting>
+<para>
+Retrieve LADSPA recall.
+</para><variablelist role="params">
+<varlistentry><term><emphasis>Returns</emphasis>&#160;:</term><listitem><simpara>Next match.</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2 id="ags-recall-ladspa-float-to-short" role="function">
+<title>ags_recall_ladspa_float_to_short ()</title>
+<indexterm zone="ags-recall-ladspa-float-to-short"><primary>ags_recall_ladspa_float_to_short</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_recall_ladspa_float_to_short    (<parameter><link linkend="float"><type>float</type></link> *buffer</parameter>,
+                                                         <parameter>signed <link linkend="short"><type>short</type></link> *destination</parameter>);</programlisting>
+<para>
+Convert data type.
+</para></refsect2>
+<refsect2 id="ags-recall-ladspa-load-ports" role="function">
+<title>ags_recall_ladspa_load_ports ()</title>
+<indexterm zone="ags-recall-ladspa-load-ports"><primary>ags_recall_ladspa_load_ports</primary></indexterm>
+<programlisting><link linkend="GList"><returnvalue>GList</returnvalue></link> *             ags_recall_ladspa_load_ports        (<parameter><link linkend="AgsRecallLadspa"><type>AgsRecallLadspa</type></link> *recall_ladspa</parameter>);</programlisting>
+<para>
+Set up LADSPA ports.
+</para><variablelist role="params">
+<varlistentry><term><emphasis>Returns</emphasis>&#160;:</term><listitem><simpara>a <link linkend="GList"><type>GList</type></link> containing <link linkend="AgsPort"><type>AgsPort</type></link>.</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2 id="ags-recall-ladspa-new" role="function">
+<title>ags_recall_ladspa_new ()</title>
+<indexterm zone="ags-recall-ladspa-new"><primary>ags_recall_ladspa_new</primary></indexterm>
+<programlisting><link linkend="AgsRecallLadspa"><returnvalue>AgsRecallLadspa</returnvalue></link> *   ags_recall_ladspa_new               (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *source</parameter>,
+                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *filename</parameter>,
+                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *effect</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> index</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-recall-ladspa-short-to-float" role="function">
+<title>ags_recall_ladspa_short_to_float ()</title>
+<indexterm zone="ags-recall-ladspa-short-to-float"><primary>ags_recall_ladspa_short_to_float</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_recall_ladspa_short_to_float    (<parameter>signed <link linkend="short"><type>short</type></link> *buffer</parameter>,
+                                                         <parameter><link linkend="float"><type>float</type></link> *destination</parameter>);</programlisting>
+<para>
+Convert data type.
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

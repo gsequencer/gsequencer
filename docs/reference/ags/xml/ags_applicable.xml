@@ -1,0 +1,81 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsApplicable">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsApplicable.top_of_page">AgsApplicable</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsApplicable</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsApplicable.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>typedef             <link linkend="AgsApplicable">AgsApplicable</link>;
+struct              <link linkend="AgsApplicableInterface">AgsApplicableInterface</link>;
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-applicable-apply">ags_applicable_apply</link>                (<parameter><link linkend="AgsApplicable"><type>AgsApplicable</type></link> *applicable</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-applicable-reset">ags_applicable_reset</link>                (<parameter><link linkend="AgsApplicable"><type>AgsApplicable</type></link> *applicable</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-applicable-set-update">ags_applicable_set_update</link>           (<parameter><link linkend="AgsApplicable"><type>AgsApplicable</type></link> *applicable</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> update</parameter>);
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsApplicable.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsApplicable.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AgsApplicable" role="typedef">
+<title>AgsApplicable</title>
+<indexterm zone="AgsApplicable"><primary>AgsApplicable</primary></indexterm>
+<programlisting>typedef void AgsApplicable;
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsApplicableInterface" role="struct">
+<title>struct AgsApplicableInterface</title>
+<indexterm zone="AgsApplicableInterface"><primary>AgsApplicableInterface</primary></indexterm>
+<programlisting>struct AgsApplicableInterface {
+  GTypeInterface interface;
+  
+  void (*set_update)(AgsApplicable *applicable, gboolean update);
+  void (*apply)(AgsApplicable *applicable);
+  void (*reset)(AgsApplicable *applicable);
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-applicable-apply" role="function">
+<title>ags_applicable_apply ()</title>
+<indexterm zone="ags-applicable-apply"><primary>ags_applicable_apply</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_applicable_apply                (<parameter><link linkend="AgsApplicable"><type>AgsApplicable</type></link> *applicable</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-applicable-reset" role="function">
+<title>ags_applicable_reset ()</title>
+<indexterm zone="ags-applicable-reset"><primary>ags_applicable_reset</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_applicable_reset                (<parameter><link linkend="AgsApplicable"><type>AgsApplicable</type></link> *applicable</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-applicable-set-update" role="function">
+<title>ags_applicable_set_update ()</title>
+<indexterm zone="ags-applicable-set-update"><primary>ags_applicable_set_update</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_applicable_set_update           (<parameter><link linkend="AgsApplicable"><type>AgsApplicable</type></link> *applicable</parameter>,
+                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> update</parameter>);</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

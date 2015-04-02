@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsInlinePlayer">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsInlinePlayer.top_of_page">AgsInlinePlayer</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsInlinePlayer</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsInlinePlayer.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>struct              <link linkend="AgsInlinePlayer">AgsInlinePlayer</link>;
+struct              <link linkend="AgsInlinePlayerClass">AgsInlinePlayerClass</link>;
+<link linkend="AgsInlinePlayer"><returnvalue>AgsInlinePlayer</returnvalue></link> *   <link linkend="ags-inline-player-new">ags_inline_player_new</link>               ();
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsInlinePlayer.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsInlinePlayer.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AgsInlinePlayer" role="struct">
+<title>struct AgsInlinePlayer</title>
+<indexterm zone="AgsInlinePlayer"><primary>AgsInlinePlayer</primary></indexterm>
+<programlisting>struct AgsInlinePlayer {
+  GtkHBox vbox;
+
+  AgsPlayable *playable;
+
+  GtkToggleButton *play;
+  GtkHScale *position;
+  GtkVolumeButton *volume;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsInlinePlayerClass" role="struct">
+<title>struct AgsInlinePlayerClass</title>
+<indexterm zone="AgsInlinePlayerClass"><primary>AgsInlinePlayerClass</primary></indexterm>
+<programlisting>struct AgsInlinePlayerClass {
+  GtkHBoxClass vbox;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-inline-player-new" role="function">
+<title>ags_inline_player_new ()</title>
+<indexterm zone="ags-inline-player-new"><primary>ags_inline_player_new</primary></indexterm>
+<programlisting><link linkend="AgsInlinePlayer"><returnvalue>AgsInlinePlayer</returnvalue></link> *   ags_inline_player_new               ();</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

@@ -1,0 +1,47 @@
+<!-- ##### SECTION Title ##### -->
+AgsPerformancePreferences
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT AgsPerformancePreferences ##### -->
+<para>
+
+</para>
+
+@vbox: 
+@super_threaded: 
+
+<!-- ##### STRUCT AgsPerformancePreferencesClass ##### -->
+<para>
+
+</para>
+
+@vbox: 
+
+<!-- ##### FUNCTION ags_performance_preferences_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

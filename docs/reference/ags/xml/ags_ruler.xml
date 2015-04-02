@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsRuler">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsRuler.top_of_page">AgsRuler</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsRuler</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsRuler.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>struct              <link linkend="AgsRuler">AgsRuler</link>;
+struct              <link linkend="AgsRulerClass">AgsRulerClass</link>;
+<link linkend="AgsRuler"><returnvalue>AgsRuler</returnvalue></link> *          <link linkend="ags-ruler-new">ags_ruler_new</link>                       ();
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsRuler.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsRuler.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AgsRuler" role="struct">
+<title>struct AgsRuler</title>
+<indexterm zone="AgsRuler"><primary>AgsRuler</primary></indexterm>
+<programlisting>struct AgsRuler {
+  GtkDrawingArea drawing_area;
+
+  /*
+  PangoLayout *layout;
+
+  char *font_name;
+  PangoFontDescription *font_desc;
+
+  PangoContext *context;
+  */
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsRulerClass" role="struct">
+<title>struct AgsRulerClass</title>
+<indexterm zone="AgsRulerClass"><primary>AgsRulerClass</primary></indexterm>
+<programlisting>struct AgsRulerClass {
+  GtkDrawingAreaClass drawing_area;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-ruler-new" role="function">
+<title>ags_ruler_new ()</title>
+<indexterm zone="ags-ruler-new"><primary>ags_ruler_new</primary></indexterm>
+<programlisting><link linkend="AgsRuler"><returnvalue>AgsRuler</returnvalue></link> *          ags_ruler_new                       ();</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

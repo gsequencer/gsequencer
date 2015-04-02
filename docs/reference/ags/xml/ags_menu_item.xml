@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsMenuItem">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsMenuItem.top_of_page">AgsMenuItem</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsMenuItem</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsMenuItem.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>struct              <link linkend="AgsMenuItem">AgsMenuItem</link>;
+struct              <link linkend="AgsMenuItemClass">AgsMenuItemClass</link>;
+<link linkend="AgsMenuItem"><returnvalue>AgsMenuItem</returnvalue></link> *       <link linkend="ags-menu-item-new">ags_menu_item_new</link>                   ();
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsMenuItem.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsMenuItem.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AgsMenuItem" role="struct">
+<title>struct AgsMenuItem</title>
+<indexterm zone="AgsMenuItem"><primary>AgsMenuItem</primary></indexterm>
+<programlisting>struct AgsMenuItem {
+  AgsTable table;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsMenuItemClass" role="struct">
+<title>struct AgsMenuItemClass</title>
+<indexterm zone="AgsMenuItemClass"><primary>AgsMenuItemClass</primary></indexterm>
+<programlisting>struct AgsMenuItemClass {
+  AgsTableClass table;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-menu-item-new" role="function">
+<title>ags_menu_item_new ()</title>
+<indexterm zone="ags-menu-item-new"><primary>ags_menu_item_new</primary></indexterm>
+<programlisting><link linkend="AgsMenuItem"><returnvalue>AgsMenuItem</returnvalue></link> *       ags_menu_item_new                   ();</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

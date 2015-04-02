@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsLinkChannel">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsLinkChannel.top_of_page">AgsLinkChannel</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsLinkChannel</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsLinkChannel.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>struct              <link linkend="AgsLinkChannel">AgsLinkChannel</link>;
+struct              <link linkend="AgsLinkChannelClass">AgsLinkChannelClass</link>;
+<link linkend="AgsLinkChannel"><returnvalue>AgsLinkChannel</returnvalue></link> *    <link linkend="ags-link-channel-new">ags_link_channel_new</link>                (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>,
+                                                         <parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *link</parameter>);
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsLinkChannel.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsLinkChannel.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AgsLinkChannel" role="struct">
+<title>struct AgsLinkChannel</title>
+<indexterm zone="AgsLinkChannel"><primary>AgsLinkChannel</primary></indexterm>
+<programlisting>struct AgsLinkChannel {
+  AgsTask task;
+
+  AgsChannel *channel;
+  AgsChannel *link;
+
+  GError *error;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsLinkChannelClass" role="struct">
+<title>struct AgsLinkChannelClass</title>
+<indexterm zone="AgsLinkChannelClass"><primary>AgsLinkChannelClass</primary></indexterm>
+<programlisting>struct AgsLinkChannelClass {
+  AgsTaskClass task;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-link-channel-new" role="function">
+<title>ags_link_channel_new ()</title>
+<indexterm zone="ags-link-channel-new"><primary>ags_link_channel_new</primary></indexterm>
+<programlisting><link linkend="AgsLinkChannel"><returnvalue>AgsLinkChannel</returnvalue></link> *    ags_link_channel_new                (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>,
+                                                         <parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *link</parameter>);</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

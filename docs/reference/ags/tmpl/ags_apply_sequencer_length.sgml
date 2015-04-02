@@ -1,0 +1,50 @@
+<!-- ##### SECTION Title ##### -->
+AgsApplySequencerLength
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT AgsApplySequencerLength ##### -->
+<para>
+
+</para>
+
+@task: 
+@gobject: 
+@length: 
+
+<!-- ##### STRUCT AgsApplySequencerLengthClass ##### -->
+<para>
+
+</para>
+
+@task: 
+
+<!-- ##### FUNCTION ags_apply_sequencer_length_new ##### -->
+<para>
+
+</para>
+
+@gobject: 
+@length: 
+@Returns: 
+
+

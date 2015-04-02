@@ -1,0 +1,189 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-ags-menu-bar-callbacks">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-ags-menu-bar-callbacks.top_of_page">ags_menu_bar_callbacks</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>ags_menu_bar_callbacks</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-ags-menu-bar-callbacks.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis><link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-menu-bar-about-callback">ags_menu_bar_about_callback</link>         (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *menu_item</parameter>,
+                                                         <parameter><link linkend="AgsMenuBar"><type>AgsMenuBar</type></link> *menu_bar</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-menu-bar-add-callback">ags_menu_bar_add_callback</link>           (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *menu_item</parameter>,
+                                                         <parameter><link linkend="AgsMenuBar"><type>AgsMenuBar</type></link> *menu_bar</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-menu-bar-add-drum-callback">ags_menu_bar_add_drum_callback</link>      (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *menu_item</parameter>,
+                                                         <parameter><link linkend="AgsMenuBar"><type>AgsMenuBar</type></link> *menu_bar</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-menu-bar-add-ffplayer-callback">ags_menu_bar_add_ffplayer_callback</link>  (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *menu_item</parameter>,
+                                                         <parameter><link linkend="AgsMenuBar"><type>AgsMenuBar</type></link> *menu_bar</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-menu-bar-add-matrix-callback">ags_menu_bar_add_matrix_callback</link>    (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *menu_item</parameter>,
+                                                         <parameter><link linkend="AgsMenuBar"><type>AgsMenuBar</type></link> *menu_bar</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-menu-bar-add-mixer-callback">ags_menu_bar_add_mixer_callback</link>     (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *menu_item</parameter>,
+                                                         <parameter><link linkend="AgsMenuBar"><type>AgsMenuBar</type></link> *menu_bar</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-menu-bar-add-panel-callback">ags_menu_bar_add_panel_callback</link>     (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *menu_item</parameter>,
+                                                         <parameter><link linkend="AgsMenuBar"><type>AgsMenuBar</type></link> *menu_bar</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-menu-bar-add-synth-callback">ags_menu_bar_add_synth_callback</link>     (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *menu_item</parameter>,
+                                                         <parameter><link linkend="AgsMenuBar"><type>AgsMenuBar</type></link> *menu_bar</parameter>);
+<link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            <link linkend="ags-menu-bar-destroy-callback">ags_menu_bar_destroy_callback</link>       (<parameter><link linkend="GtkObject"><type>GtkObject</type></link> *object</parameter>,
+                                                         <parameter><link linkend="AgsMenuBar"><type>AgsMenuBar</type></link> *menu_bar</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-menu-bar-export-callback">ags_menu_bar_export_callback</link>        (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *menu_item</parameter>,
+                                                         <parameter><link linkend="AgsMenuBar"><type>AgsMenuBar</type></link> *menu_bar</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-menu-bar-open-callback">ags_menu_bar_open_callback</link>          (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *menu_item</parameter>,
+                                                         <parameter><link linkend="AgsMenuBar"><type>AgsMenuBar</type></link> *menu_bar</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-menu-bar-preferences-callback">ags_menu_bar_preferences_callback</link>   (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *menu_item</parameter>,
+                                                         <parameter><link linkend="AgsMenuBar"><type>AgsMenuBar</type></link> *menu_bar</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-menu-bar-quit-callback">ags_menu_bar_quit_callback</link>          (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *menu_item</parameter>,
+                                                         <parameter><link linkend="AgsMenuBar"><type>AgsMenuBar</type></link> *menu_bar</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-menu-bar-remove-callback">ags_menu_bar_remove_callback</link>        (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *menu_item</parameter>,
+                                                         <parameter><link linkend="AgsMenuBar"><type>AgsMenuBar</type></link> *menu_bar</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-menu-bar-save-as-callback">ags_menu_bar_save_as_callback</link>       (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *menu_item</parameter>,
+                                                         <parameter><link linkend="AgsMenuBar"><type>AgsMenuBar</type></link> *menu_bar</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-menu-bar-save-callback">ags_menu_bar_save_callback</link>          (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *menu_item</parameter>,
+                                                         <parameter><link linkend="AgsMenuBar"><type>AgsMenuBar</type></link> *menu_bar</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-menu-bar-show-callback">ags_menu_bar_show_callback</link>          (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                                                         <parameter><link linkend="AgsMenuBar"><type>AgsMenuBar</type></link> *menu_bar</parameter>);
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-ags-menu-bar-callbacks.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-ags-menu-bar-callbacks.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="ags-menu-bar-about-callback" role="function">
+<title>ags_menu_bar_about_callback ()</title>
+<indexterm zone="ags-menu-bar-about-callback"><primary>ags_menu_bar_about_callback</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_menu_bar_about_callback         (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *menu_item</parameter>,
+                                                         <parameter><link linkend="AgsMenuBar"><type>AgsMenuBar</type></link> *menu_bar</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-menu-bar-add-callback" role="function">
+<title>ags_menu_bar_add_callback ()</title>
+<indexterm zone="ags-menu-bar-add-callback"><primary>ags_menu_bar_add_callback</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_menu_bar_add_callback           (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *menu_item</parameter>,
+                                                         <parameter><link linkend="AgsMenuBar"><type>AgsMenuBar</type></link> *menu_bar</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-menu-bar-add-drum-callback" role="function">
+<title>ags_menu_bar_add_drum_callback ()</title>
+<indexterm zone="ags-menu-bar-add-drum-callback"><primary>ags_menu_bar_add_drum_callback</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_menu_bar_add_drum_callback      (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *menu_item</parameter>,
+                                                         <parameter><link linkend="AgsMenuBar"><type>AgsMenuBar</type></link> *menu_bar</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-menu-bar-add-ffplayer-callback" role="function">
+<title>ags_menu_bar_add_ffplayer_callback ()</title>
+<indexterm zone="ags-menu-bar-add-ffplayer-callback"><primary>ags_menu_bar_add_ffplayer_callback</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_menu_bar_add_ffplayer_callback  (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *menu_item</parameter>,
+                                                         <parameter><link linkend="AgsMenuBar"><type>AgsMenuBar</type></link> *menu_bar</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-menu-bar-add-matrix-callback" role="function">
+<title>ags_menu_bar_add_matrix_callback ()</title>
+<indexterm zone="ags-menu-bar-add-matrix-callback"><primary>ags_menu_bar_add_matrix_callback</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_menu_bar_add_matrix_callback    (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *menu_item</parameter>,
+                                                         <parameter><link linkend="AgsMenuBar"><type>AgsMenuBar</type></link> *menu_bar</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-menu-bar-add-mixer-callback" role="function">
+<title>ags_menu_bar_add_mixer_callback ()</title>
+<indexterm zone="ags-menu-bar-add-mixer-callback"><primary>ags_menu_bar_add_mixer_callback</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_menu_bar_add_mixer_callback     (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *menu_item</parameter>,
+                                                         <parameter><link linkend="AgsMenuBar"><type>AgsMenuBar</type></link> *menu_bar</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-menu-bar-add-panel-callback" role="function">
+<title>ags_menu_bar_add_panel_callback ()</title>
+<indexterm zone="ags-menu-bar-add-panel-callback"><primary>ags_menu_bar_add_panel_callback</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_menu_bar_add_panel_callback     (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *menu_item</parameter>,
+                                                         <parameter><link linkend="AgsMenuBar"><type>AgsMenuBar</type></link> *menu_bar</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-menu-bar-add-synth-callback" role="function">
+<title>ags_menu_bar_add_synth_callback ()</title>
+<indexterm zone="ags-menu-bar-add-synth-callback"><primary>ags_menu_bar_add_synth_callback</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_menu_bar_add_synth_callback     (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *menu_item</parameter>,
+                                                         <parameter><link linkend="AgsMenuBar"><type>AgsMenuBar</type></link> *menu_bar</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-menu-bar-destroy-callback" role="function">
+<title>ags_menu_bar_destroy_callback ()</title>
+<indexterm zone="ags-menu-bar-destroy-callback"><primary>ags_menu_bar_destroy_callback</primary></indexterm>
+<programlisting><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            ags_menu_bar_destroy_callback       (<parameter><link linkend="GtkObject"><type>GtkObject</type></link> *object</parameter>,
+                                                         <parameter><link linkend="AgsMenuBar"><type>AgsMenuBar</type></link> *menu_bar</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-menu-bar-export-callback" role="function">
+<title>ags_menu_bar_export_callback ()</title>
+<indexterm zone="ags-menu-bar-export-callback"><primary>ags_menu_bar_export_callback</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_menu_bar_export_callback        (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *menu_item</parameter>,
+                                                         <parameter><link linkend="AgsMenuBar"><type>AgsMenuBar</type></link> *menu_bar</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-menu-bar-open-callback" role="function">
+<title>ags_menu_bar_open_callback ()</title>
+<indexterm zone="ags-menu-bar-open-callback"><primary>ags_menu_bar_open_callback</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_menu_bar_open_callback          (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *menu_item</parameter>,
+                                                         <parameter><link linkend="AgsMenuBar"><type>AgsMenuBar</type></link> *menu_bar</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-menu-bar-preferences-callback" role="function">
+<title>ags_menu_bar_preferences_callback ()</title>
+<indexterm zone="ags-menu-bar-preferences-callback"><primary>ags_menu_bar_preferences_callback</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_menu_bar_preferences_callback   (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *menu_item</parameter>,
+                                                         <parameter><link linkend="AgsMenuBar"><type>AgsMenuBar</type></link> *menu_bar</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-menu-bar-quit-callback" role="function">
+<title>ags_menu_bar_quit_callback ()</title>
+<indexterm zone="ags-menu-bar-quit-callback"><primary>ags_menu_bar_quit_callback</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_menu_bar_quit_callback          (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *menu_item</parameter>,
+                                                         <parameter><link linkend="AgsMenuBar"><type>AgsMenuBar</type></link> *menu_bar</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-menu-bar-remove-callback" role="function">
+<title>ags_menu_bar_remove_callback ()</title>
+<indexterm zone="ags-menu-bar-remove-callback"><primary>ags_menu_bar_remove_callback</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_menu_bar_remove_callback        (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *menu_item</parameter>,
+                                                         <parameter><link linkend="AgsMenuBar"><type>AgsMenuBar</type></link> *menu_bar</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-menu-bar-save-as-callback" role="function">
+<title>ags_menu_bar_save_as_callback ()</title>
+<indexterm zone="ags-menu-bar-save-as-callback"><primary>ags_menu_bar_save_as_callback</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_menu_bar_save_as_callback       (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *menu_item</parameter>,
+                                                         <parameter><link linkend="AgsMenuBar"><type>AgsMenuBar</type></link> *menu_bar</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-menu-bar-save-callback" role="function">
+<title>ags_menu_bar_save_callback ()</title>
+<indexterm zone="ags-menu-bar-save-callback"><primary>ags_menu_bar_save_callback</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_menu_bar_save_callback          (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *menu_item</parameter>,
+                                                         <parameter><link linkend="AgsMenuBar"><type>AgsMenuBar</type></link> *menu_bar</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-menu-bar-show-callback" role="function">
+<title>ags_menu_bar_show_callback ()</title>
+<indexterm zone="ags-menu-bar-show-callback"><primary>ags_menu_bar_show_callback</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_menu_bar_show_callback          (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                                                         <parameter><link linkend="AgsMenuBar"><type>AgsMenuBar</type></link> *menu_bar</parameter>);</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

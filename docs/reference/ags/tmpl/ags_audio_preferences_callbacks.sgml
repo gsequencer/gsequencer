@@ -1,0 +1,60 @@
+<!-- ##### SECTION Title ##### -->
+ags_audio_preferences_callbacks
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### FUNCTION ags_audio_preferences_audio_channels_changed ##### -->
+<para>
+
+</para>
+
+@spin_button: 
+@audio_preferences: 
+
+
+<!-- ##### FUNCTION ags_audio_preferences_buffer_size_changed ##### -->
+<para>
+
+</para>
+
+@spin_button: 
+@audio_preferences: 
+
+
+<!-- ##### FUNCTION ags_audio_preferences_card_changed_callback ##### -->
+<para>
+
+</para>
+
+@combo: 
+@audio_preferences: 
+
+
+<!-- ##### FUNCTION ags_audio_preferences_samplerate_changed ##### -->
+<para>
+
+</para>
+
+@spin_button: 
+@audio_preferences: 
+
+

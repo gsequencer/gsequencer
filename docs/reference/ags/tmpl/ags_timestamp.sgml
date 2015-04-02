@@ -1,0 +1,55 @@
+<!-- ##### SECTION Title ##### -->
+AgsTimestamp
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT AgsTimestamp ##### -->
+<para>
+
+</para>
+
+@object: 
+@flags: 
+
+<!-- ##### STRUCT AgsTimestampClass ##### -->
+<para>
+
+</para>
+
+@object: 
+
+<!-- ##### ENUM AgsTimestampFlags ##### -->
+<para>
+
+</para>
+
+@AGS_TIMESTAMP_UNIX: 
+@AGS_TIMESTAMP_OUTDATED: 
+
+<!-- ##### FUNCTION ags_timestamp_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

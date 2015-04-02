@@ -1,0 +1,50 @@
+<!-- ##### SECTION Title ##### -->
+AgsAppendAudioThreaded
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT AgsAppendAudioThreaded ##### -->
+<para>
+
+</para>
+
+@task: 
+@audio_loop: 
+@devout_play: 
+
+<!-- ##### STRUCT AgsAppendAudioThreadedClass ##### -->
+<para>
+
+</para>
+
+@task: 
+
+<!-- ##### FUNCTION ags_append_audio_threaded_new ##### -->
+<para>
+
+</para>
+
+@audio_loop: 
+@play: 
+@Returns: 
+
+

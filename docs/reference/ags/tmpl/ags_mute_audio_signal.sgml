@@ -1,0 +1,47 @@
+<!-- ##### SECTION Title ##### -->
+AgsMuteAudioSignal
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT AgsMuteAudioSignal ##### -->
+<para>
+
+</para>
+
+@recall_audio_signal: 
+
+<!-- ##### STRUCT AgsMuteAudioSignalClass ##### -->
+<para>
+
+</para>
+
+@recall_audio_signal: 
+
+<!-- ##### FUNCTION ags_mute_audio_signal_new ##### -->
+<para>
+
+</para>
+
+@source: 
+@Returns: 
+
+

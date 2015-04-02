@@ -1,0 +1,199 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsLog">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsLog.top_of_page">AgsLog</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsLog</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsLog.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>struct              <link linkend="AgsLog">AgsLog</link>;
+struct              <link linkend="AgsLogClass">AgsLogClass</link>;
+enum                <link linkend="AgsLogFlags">AgsLogFlags</link>;
+struct              <link linkend="AgsLogFormatedMessage">AgsLogFormatedMessage</link>;
+struct              <link linkend="AgsLogMessage">AgsLogMessage</link>;
+#define             <link linkend="ags-default-log">ags_default_log</link>
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-log-debug">ags_log_debug</link>                       (<parameter><link linkend="AgsLog"><type>AgsLog</type></link> *log</parameter>,
+                                                         <parameter><link linkend="char"><type>char</type></link> *format</parameter>,
+                                                         <parameter>...</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-log-message">ags_log_message</link>                     (<parameter><link linkend="AgsLog"><type>AgsLog</type></link> *log</parameter>,
+                                                         <parameter><link linkend="char"><type>char</type></link> *format</parameter>,
+                                                         <parameter>...</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-log-start-queue">ags_log_start_queue</link>                 (<parameter><link linkend="AgsLog"><type>AgsLog</type></link> *log</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-log-stop-queue">ags_log_stop_queue</link>                  (<parameter><link linkend="AgsLog"><type>AgsLog</type></link> *log</parameter>);
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsLog.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsLog.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AgsLog" role="struct">
+<title>struct AgsLog</title>
+<indexterm zone="AgsLog"><primary>AgsLog</primary></indexterm>
+<programlisting>struct AgsLog {
+  GObject object;
+
+  guint flags;
+
+  FILE *file;
+  pthread_mutex_t start_mutex;
+  pthread_cond_t start_wait_cond;
+
+  struct timespec *log_interval;
+  struct timespec *free_float;
+  pthread_t timer_thread;
+  pthread_attr_t timer_thread_attr;
+  pthread_mutex_t timer_mutex;
+  pthread_mutexattr_t timer_mutex_attr;
+  gboolean timer_started;
+  gboolean timer_active;
+  gboolean timer_awaken;
+  pthread_cond_t timer_wait_cond;
+
+  pthread_t broker_thread;
+  pthread_attr_t broker_thread_attr;
+  pthread_mutex_t broker_mutex;
+  pthread_mutexattr_t broker_mutex_attr;
+  gboolean broker_started;
+  gboolean broker_active;
+  gboolean broker_awaken;
+  gboolean signaled_timer;
+  gboolean signaled_log;
+  gboolean signaled_queue;
+  gboolean signaled_output;
+  pthread_cond_t broker_wait_cond;
+
+  GList *output_formated_message;
+  pthread_t output_thread;
+  pthread_attr_t output_thread_attr;
+  pthread_mutex_t output_mutex;
+  pthread_mutexattr_t output_mutex_attr;
+  gboolean output_started;
+  gboolean output_active;
+  gboolean output_awaken;
+  pthread_cond_t output_wait_cond;
+
+  GList *queue_formated_message;
+  GList *queue_message;
+  pthread_t queue_thread;
+  pthread_attr_t queue_thread_attr;
+  pthread_mutex_t queue_mutex;
+  pthread_mutexattr_t queue_mutex_attr;
+  gboolean queue_started;
+  gboolean queue_active;
+  gboolean queue_awaken;
+  pthread_cond_t queue_wait_cond;
+
+  GList *log;
+  guint active_logs;
+  guint suspended_logs;
+  pthread_cond_t log_wait_cond;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsLogClass" role="struct">
+<title>struct AgsLogClass</title>
+<indexterm zone="AgsLogClass"><primary>AgsLogClass</primary></indexterm>
+<programlisting>struct AgsLogClass {
+  GObjectClass object;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsLogFlags" role="enum">
+<title>enum AgsLogFlags</title>
+<indexterm zone="AgsLogFlags"><primary>AgsLogFlags</primary></indexterm>
+<programlisting>typedef enum {
+  AGS_LOG_STARTING                    = 1,
+  AGS_LOG_RUNNING                     = 1 &lt;&lt;  1,
+  AGS_LOG_TIMER_SLEEP                 = 1 &lt;&lt;  2,
+  AGS_LOG_OUTPUT_SUSPEND              = 1 &lt;&lt;  3,
+  AGS_LOG_OUTPUT_WAITS_FOR_QUEUE      = 1 &lt;&lt;  4,
+  AGS_LOG_QUEUE_SUSPEND               = 1 &lt;&lt;  5,
+  AGS_LOG_SUSPEND                     = 1 &lt;&lt;  6,
+  AGS_LOG_COPY_FROM_QUEUE_TO_OUTPUT   = 1 &lt;&lt;  7,
+  AGS_LOG_OMMIT_DEBUG                 = 1 &lt;&lt;  8,
+} AgsLogFlags;
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsLogFormatedMessage" role="struct">
+<title>struct AgsLogFormatedMessage</title>
+<indexterm zone="AgsLogFormatedMessage"><primary>AgsLogFormatedMessage</primary></indexterm>
+<programlisting>struct AgsLogFormatedMessage {
+  int length;
+  char *message;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsLogMessage" role="struct">
+<title>struct AgsLogMessage</title>
+<indexterm zone="AgsLogMessage"><primary>AgsLogMessage</primary></indexterm>
+<programlisting>struct AgsLogMessage {
+  gboolean debug;
+
+  struct timespec *time;
+  char *format;
+  va_list args;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-default-log" role="macro">
+<title>ags_default_log</title>
+<indexterm zone="ags-default-log"><primary>ags_default_log</primary></indexterm>
+<programlisting>#define ags_default_log ags_default_log
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-log-debug" role="function">
+<title>ags_log_debug ()</title>
+<indexterm zone="ags-log-debug"><primary>ags_log_debug</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_log_debug                       (<parameter><link linkend="AgsLog"><type>AgsLog</type></link> *log</parameter>,
+                                                         <parameter><link linkend="char"><type>char</type></link> *format</parameter>,
+                                                         <parameter>...</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-log-message" role="function">
+<title>ags_log_message ()</title>
+<indexterm zone="ags-log-message"><primary>ags_log_message</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_log_message                     (<parameter><link linkend="AgsLog"><type>AgsLog</type></link> *log</parameter>,
+                                                         <parameter><link linkend="char"><type>char</type></link> *format</parameter>,
+                                                         <parameter>...</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-log-start-queue" role="function">
+<title>ags_log_start_queue ()</title>
+<indexterm zone="ags-log-start-queue"><primary>ags_log_start_queue</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_log_start_queue                 (<parameter><link linkend="AgsLog"><type>AgsLog</type></link> *log</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-log-stop-queue" role="function">
+<title>ags_log_stop_queue ()</title>
+<indexterm zone="ags-log-stop-queue"><primary>ags_log_stop_queue</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_log_stop_queue                  (<parameter><link linkend="AgsLog"><type>AgsLog</type></link> *log</parameter>);</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

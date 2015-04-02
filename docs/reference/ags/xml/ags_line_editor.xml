@@ -1,0 +1,96 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsLineEditor">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsLineEditor.top_of_page">AgsLineEditor</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsLineEditor</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsLineEditor.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>#define             <link linkend="AGS-LINE-EDITOR-DEFAULT-BUILD-ID:CAPS">AGS_LINE_EDITOR_DEFAULT_BUILD_ID</link>
+#define             <link linkend="AGS-LINE-EDITOR-DEFAULT-VERSION:CAPS">AGS_LINE_EDITOR_DEFAULT_VERSION</link>
+struct              <link linkend="AgsLineEditor">AgsLineEditor</link>;
+struct              <link linkend="AgsLineEditorClass">AgsLineEditorClass</link>;
+<link linkend="AgsLineEditor"><returnvalue>AgsLineEditor</returnvalue></link> *     <link linkend="ags-line-editor-new">ags_line_editor_new</link>                 (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-line-editor-set-channel">ags_line_editor_set_channel</link>         (<parameter><link linkend="AgsLineEditor"><type>AgsLineEditor</type></link> *line_editor</parameter>,
+                                                         <parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>);
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsLineEditor.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsLineEditor.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AGS-LINE-EDITOR-DEFAULT-BUILD-ID:CAPS" role="macro">
+<title>AGS_LINE_EDITOR_DEFAULT_BUILD_ID</title>
+<indexterm zone="AGS-LINE-EDITOR-DEFAULT-BUILD-ID:CAPS"><primary>AGS_LINE_EDITOR_DEFAULT_BUILD_ID</primary></indexterm>
+<programlisting>#define AGS_LINE_EDITOR_DEFAULT_BUILD_ID "CEST 02-10-2014 19:36\0"
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AGS-LINE-EDITOR-DEFAULT-VERSION:CAPS" role="macro">
+<title>AGS_LINE_EDITOR_DEFAULT_VERSION</title>
+<indexterm zone="AGS-LINE-EDITOR-DEFAULT-VERSION:CAPS"><primary>AGS_LINE_EDITOR_DEFAULT_VERSION</primary></indexterm>
+<programlisting>#define AGS_LINE_EDITOR_DEFAULT_VERSION "0.4.2\0"
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsLineEditor" role="struct">
+<title>struct AgsLineEditor</title>
+<indexterm zone="AgsLineEditor"><primary>AgsLineEditor</primary></indexterm>
+<programlisting>struct AgsLineEditor {
+  GtkVBox vbox;
+
+  gchar *version;
+  gchar *build_id;
+
+  AgsChannel *channel;
+
+  AgsLinkEditor *link_editor;
+  AgsLineMemberEditor *member_editor;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsLineEditorClass" role="struct">
+<title>struct AgsLineEditorClass</title>
+<indexterm zone="AgsLineEditorClass"><primary>AgsLineEditorClass</primary></indexterm>
+<programlisting>struct AgsLineEditorClass {
+  GtkVBoxClass vbox;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-line-editor-new" role="function">
+<title>ags_line_editor_new ()</title>
+<indexterm zone="ags-line-editor-new"><primary>ags_line_editor_new</primary></indexterm>
+<programlisting><link linkend="AgsLineEditor"><returnvalue>AgsLineEditor</returnvalue></link> *     ags_line_editor_new                 (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-line-editor-set-channel" role="function">
+<title>ags_line_editor_set_channel ()</title>
+<indexterm zone="ags-line-editor-set-channel"><primary>ags_line_editor_set_channel</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_line_editor_set_channel         (<parameter><link linkend="AgsLineEditor"><type>AgsLineEditor</type></link> *line_editor</parameter>,
+                                                         <parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>);</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

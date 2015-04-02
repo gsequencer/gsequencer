@@ -1,0 +1,93 @@
+<!-- ##### SECTION Title ##### -->
+AgsPlayChannelRunMaster
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### MACRO AGS_PLAY_CHANNEL_RUN_MASTER_STREAMER ##### -->
+<para>
+
+</para>
+
+@strct: 
+
+
+<!-- ##### STRUCT AgsPlayChannelRunMaster ##### -->
+<para>
+
+</para>
+
+@recall_channel_run: 
+@flags: 
+@streamer: 
+@source_recycling_changed_handler: 
+
+<!-- ##### STRUCT AgsPlayChannelRunMasterClass ##### -->
+<para>
+
+</para>
+
+@recall_channel_run: 
+
+<!-- ##### ENUM AgsPlayChannelRunMasterFlags ##### -->
+<para>
+
+</para>
+
+@AGS_PLAY_CHANNEL_RUN_MASTER_TERMINATING: 
+
+<!-- ##### STRUCT AgsPlayChannelRunMasterStreamer ##### -->
+<para>
+
+</para>
+
+@play_channel_run_master: 
+@stream_channel_run: 
+@done_handler: 
+
+<!-- ##### FUNCTION ags_play_channel_run_master_find_streamer ##### -->
+<para>
+
+</para>
+
+@list: 
+@stream_channel_run: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_play_channel_run_master_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_play_channel_run_master_streamer_alloc ##### -->
+<para>
+
+</para>
+
+@play_channel_run_master: 
+@stream_channel_run: 
+@Returns: 
+
+

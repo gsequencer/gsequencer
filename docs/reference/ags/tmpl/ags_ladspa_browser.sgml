@@ -1,0 +1,89 @@
+<!-- ##### SECTION Title ##### -->
+AgsLadspaBrowser
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT AgsLadspaBrowser ##### -->
+<para>
+
+</para>
+
+@dialog: 
+@parent: 
+@path: 
+@plugin: 
+@description: 
+@preview: 
+@apply: 
+@ok: 
+@cancel: 
+
+<!-- ##### STRUCT AgsLadspaBrowserClass ##### -->
+<para>
+
+</para>
+
+@dialog: 
+
+<!-- ##### FUNCTION ags_ladspa_browser_combo_box_controls_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_ladspa_browser_get_plugin_effect ##### -->
+<para>
+
+</para>
+
+@ladspa_browser: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_ladspa_browser_get_plugin_filename ##### -->
+<para>
+
+</para>
+
+@ladspa_browser: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_ladspa_browser_new ##### -->
+<para>
+
+</para>
+
+@parent: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_ladspa_browser_preview_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

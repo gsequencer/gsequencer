@@ -1,0 +1,46 @@
+<!-- ##### SECTION Title ##### -->
+AgsVIndicator
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT AgsVIndicator ##### -->
+<para>
+
+</para>
+
+@indicator: 
+
+<!-- ##### STRUCT AgsVIndicatorClass ##### -->
+<para>
+
+</para>
+
+@indicator: 
+
+<!-- ##### FUNCTION ags_vindicator_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
