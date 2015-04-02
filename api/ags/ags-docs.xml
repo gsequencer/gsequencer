@@ -1,0 +1,395 @@
+<?xml version="1.0"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<book id="index">
+  <bookinfo>
+    <title>Advanced Gtk+ Sequencer Reference Manual</title>
+    <releaseinfo>
+      for Advanced Gtk+ Sequencer 0.4.2.
+      The latest version of this documentation can be found on-line at
+      <ulink role="online-location" url="http://ags.sourceforge.net/api/ags/index.html">http://ags.sourceforge.net/api/ags/</ulink>.
+    </releaseinfo>
+  </bookinfo>
+
+  <xi:include href="xml/main.xml"/>
+
+  <part id="util">
+    <title>Util - Helper functions</title>
+    <xi:include href="xml/ags_combo_box_text.xml"/>
+    <xi:include href="xml/ags_id_generator.xml"/>
+    <xi:include href="xml/ags_list.xml"/>
+    <xi:include href="xml/ags_menu.xml"/>
+    <xi:include href="xml/ags_menu_item.xml"/>
+    <xi:include href="xml/ags_option_menu.xml"/>
+    <xi:include href="xml/ags_parameter.xml"/>
+  </part>
+  
+  <part id="object">
+    <title>Object - Interfaces and marshallers</title>
+
+    <xi:include href="xml/ags_applicable.xml"/>
+    <xi:include href="xml/ags_countable.xml"/>
+    <xi:include href="xml/ags_dynamic_connectable.xml"/>
+    <xi:include href="xml/ags_main_loop.xml"/>
+    <xi:include href="xml/ags_marshal.xml"/>
+    <xi:include href="xml/ags_mutable.xml"/>
+    <xi:include href="xml/ags_packable.xml"/>
+    <xi:include href="xml/ags_portlet.xml"/>
+    <xi:include href="xml/ags_runnable.xml"/>
+    <xi:include href="xml/ags_seekable.xml"/>
+    <xi:include href="xml/ags_tactable.xml"/>
+    <xi:include href="xml/ags_stackable.xml"/>
+    <xi:include href="xml/ags_persistable.xml"/>
+    <xi:include href="xml/ags_playable.xml"/>
+    <xi:include href="xml/ags_plugin.xml"/>
+  </part>
+
+  <part id="plugin">
+    <title>Plugin - API of plugins</title>
+
+    <xi:include href="xml/ags_ladspa_manager.xml"/>
+    <xi:include href="xml/ags_plugin_factory.xml"/>
+    <xi:include href="xml/ags_plugin_stock.xml"/>
+  </part>
+
+  <part id="widget">
+    <title>Widget - GUI elements</title>
+
+    <xi:include href="xml/ags_dial.xml"/>
+    <xi:include href="xml/ags_expander.xml"/>
+    <xi:include href="xml/ags_expander_set.xml"/>
+    <xi:include href="xml/ags_indicator.xml"/>
+    <xi:include href="xml/ags_led.xml"/>
+    <xi:include href="xml/ags_vindicator.xml"/>
+    <xi:include href="xml/ags_table.xml"/>
+  </part>
+  
+  <part id="thread">
+    <title>Thread - Multi-Threaded tree</title>
+
+    <xi:include href="xml/ags_audio_loop.xml"/>
+    <xi:include href="xml/ags_autosave_thread.xml"/>
+    <xi:include href="xml/ags_devout_thread.xml"/>
+    <xi:include href="xml/ags_export_thread.xml"/>
+    <xi:include href="xml/ags_gui_thread.xml"/>
+    <xi:include href="xml/ags_iterator_thread.xml"/>
+    <xi:include href="xml/ags_recycling_thread.xml"/>
+    <xi:include href="xml/ags_recycling_thread_callbacks.xml"/>
+    <xi:include href="xml/ags_returnable_thread.xml"/>
+    <xi:include href="xml/ags_task_thread.xml"/>
+    <xi:include href="xml/ags_timestamp_thread.xml"/>
+    <xi:include href="xml/ags_thread-posix.xml"/>
+    <xi:include href="xml/ags_thread_pool.xml"/>
+    <xi:include href="xml/ags_single_thread.xml"/>
+  </part>
+
+  <part id="audio">
+    <title>Audio - The audio processing tree</title>
+    
+    <chapter id="process-tree">
+      <title>audio processing tree</title>
+
+      <xi:include href="xml/ags_audio.xml"/>
+      <xi:include href="xml/ags_audio_signal.xml"/>
+      <xi:include href="xml/ags_channel.xml"/>
+      <xi:include href="xml/ags_config.xml"/>
+      <xi:include href="xml/ags_container.xml"/>
+      <xi:include href="xml/ags_devout.xml"/>
+      <xi:include href="xml/ags_input.xml"/>
+      <xi:include href="xml/ags_notation.xml"/>
+      <xi:include href="xml/ags_note.xml"/>
+      <xi:include href="xml/ags_output.xml"/>
+      <xi:include href="xml/ags_pattern.xml"/>
+      <xi:include href="xml/ags_port.xml"/>
+      <xi:include href="xml/ags_recall.xml"/>
+      <xi:include href="xml/ags_recall_audio.xml"/>
+      <xi:include href="xml/ags_recall_audio_run.xml"/>
+      <xi:include href="xml/ags_recall_audio_signal.xml"/>
+      <xi:include href="xml/ags_recall_channel.xml"/>
+      <xi:include href="xml/ags_recall_channel_run.xml"/>
+      <xi:include href="xml/ags_recall_channel_run_dummy.xml"/>
+      <xi:include href="xml/ags_recall_container.xml"/>
+      <xi:include href="xml/ags_recall_dependency.xml"/>
+      <xi:include href="xml/ags_recall_factory.xml"/>
+      <xi:include href="xml/ags_recall_id.xml"/>
+      <xi:include href="xml/ags_recall_ladspa.xml"/>
+      <xi:include href="xml/ags_recall_ladspa_run.xml"/>
+      <xi:include href="xml/ags_recall_recycling.xml"/>
+      <xi:include href="xml/ags_recall_recycling_dummy.xml"/>
+      <xi:include href="xml/ags_recycling.xml"/>
+      <xi:include href="xml/ags_recycling_container.xml"/>
+      <xi:include href="xml/ags_task.xml"/>
+      <xi:include href="xml/ags_timestamp.xml"/>
+      <xi:include href="xml/ags_timestamp_factory.xml"/>
+      <xi:include href="xml/ags_synths.xml"/>
+    </chapter>
+
+    <chapter id="audio-file">
+      <title>Audio files - Reading/Writing audio data from disk</title>
+      
+      <xi:include href="xml/ags_audio_file.xml"/>
+      <xi:include href="xml/ags_ipatch.xml"/>
+      <xi:include href="xml/ags_ipatch_sf2_reader.xml"/>
+      <xi:include href="xml/ags_sndfile.xml"/>
+    </chapter>
+
+    <chapter id="recall">
+      <title>Recalls - Effect processors</title>
+
+      <xi:include href="xml/ags_audio_file.xml"/>
+      <xi:include href="xml/ags_buffer_audio_signal.xml"/>
+      <xi:include href="xml/ags_buffer_channel.xml"/>
+      <xi:include href="xml/ags_buffer_channel_run.xml"/>
+      <xi:include href="xml/ags_buffer_recycling.xml"/>
+      <xi:include href="xml/ags_copy_audio_signal.xml"/>
+      <xi:include href="xml/ags_copy_channel.xml"/>
+      <xi:include href="xml/ags_copy_channel_run.xml"/>
+      <xi:include href="xml/ags_copy_notation_audio.xml"/>
+      <xi:include href="xml/ags_copy_notation_audio_run.xml"/>
+      <xi:include href="xml/ags_copy_pattern_audio.xml"/>
+      <xi:include href="xml/ags_copy_pattern_audio_run.xml"/>
+      <xi:include href="xml/ags_copy_pattern_channel.xml"/>
+      <xi:include href="xml/ags_copy_pattern_channel_run.xml"/>
+      <xi:include href="xml/ags_copy_recycling.xml"/>
+      <xi:include href="xml/ags_count_beats_audio.xml"/>
+      <xi:include href="xml/ags_count_beats_audio_run.xml"/>
+      <xi:include href="xml/ags_delay_audio.xml"/>
+      <xi:include href="xml/ags_delay_audio_run.xml"/>
+      <xi:include href="xml/ags_loop_channel.xml"/>
+      <xi:include href="xml/ags_loop_channel_run.xml"/>
+      <xi:include href="xml/ags_peak_channel.xml"/>
+      <xi:include href="xml/ags_peak_channel_run.xml"/>
+      <xi:include href="xml/ags_volume_audio_signal.xml"/>
+      <xi:include href="xml/ags_volume_channel.xml"/>
+      <xi:include href="xml/ags_volume_channel_run.xml"/>
+      <xi:include href="xml/ags_volume_recycling.xml"/>
+      <xi:include href="xml/ags_play_audio.xml"/>
+      <xi:include href="xml/ags_play_audio_file.xml"/>
+      <xi:include href="xml/ags_play_audio_signal.xml"/>
+      <xi:include href="xml/ags_play_channel.xml"/>
+      <xi:include href="xml/ags_play_channel_run.xml"/>
+      <xi:include href="xml/ags_play_channel_run_master.xml"/>
+      <xi:include href="xml/ags_play_notation_audio.xml"/>
+      <xi:include href="xml/ags_play_notation_audio_run.xml"/>
+      <xi:include href="xml/ags_play_note.xml"/>
+      <xi:include href="xml/ags_play_pattern.xml"/>
+      <xi:include href="xml/ags_play_recycling.xml"/>
+      <xi:include href="xml/ags_stream.xml"/>
+      <xi:include href="xml/ags_stream_audio_signal.xml"/>
+      <xi:include href="xml/ags_stream_channel.xml"/>
+      <xi:include href="xml/ags_stream_channel_run.xml"/>
+      <xi:include href="xml/ags_stream_recycling.xml"/>
+    </chapter>
+
+    <chapter id="task">
+      <title>Task - Data exchanged between Audio and GUI</title>
+
+      <xi:include href="xml/ags_add_audio.xml"/>
+	  <xi:include href="xml/ags_add_audio_signal.xml"/>
+	  <xi:include href="xml/ags_add_line_member.xml"/>
+	  <xi:include href="xml/ags_add_note.xml"/>
+	  <xi:include href="xml/ags_add_point_to_selection.xml"/>
+	  <xi:include href="xml/ags_add_recall.xml"/>
+	  <xi:include href="xml/ags_add_region_to_selection.xml"/>
+	  <xi:include href="xml/ags_append_audio.xml"/>
+	  <xi:include href="xml/ags_append_audio_threaded.xml"/>
+	  <xi:include href="xml/ags_append_channel.xml"/>
+	  <xi:include href="xml/ags_append_recall.xml"/>
+	  <xi:include href="xml/ags_apply_bpm.xml"/>
+	  <xi:include href="xml/ags_apply_sequencer_length.xml"/>
+	  <xi:include href="xml/ags_apply_synth.xml"/>
+	  <xi:include href="xml/ags_apply_tact.xml"/>
+	  <xi:include href="xml/ags_apply_wavetable.xml"/>
+	  <xi:include href="xml/ags_audio_set_recycling.xml"/>
+	  <xi:include href="xml/ags_cancel_audio.xml"/>
+	  <xi:include href="xml/ags_cancel_channel.xml"/>
+	  <xi:include href="xml/ags_cancel_recall.xml"/>
+	  <xi:include href="xml/ags_change_indicator.xml"/>
+	  <xi:include href="xml/ags_change_tact.xml"/>
+	  <xi:include href="xml/ags_channel_set_recycling.xml"/>
+	  <xi:include href="xml/ags_display_tact.xml"/>
+	  <xi:include href="xml/ags_export_output.xml"/>
+	  <xi:include href="xml/ags_free_selection.xml"/>
+	  <xi:include href="xml/ags_init_audio.xml"/>
+	  <xi:include href="xml/ags_init_channel.xml"/>
+	  <xi:include href="xml/ags_mute_audio.xml"/>
+	  <xi:include href="xml/ags_mute_audio_signal.xml"/>
+	  <xi:include href="xml/ags_mute_channel.xml"/>
+	  <xi:include href="xml/ags_mute_channel_run.xml"/>
+	  <xi:include href="xml/ags_mute_recycling.xml"/>
+	  <xi:include href="xml/ags_open_file.xml"/>
+	  <xi:include href="xml/ags_open_single_file.xml"/>
+	  <xi:include href="xml/ags_remove_audio.xml"/>
+	  <xi:include href="xml/ags_remove_audio_signal.xml"/>
+	  <xi:include href="xml/ags_remove_note.xml"/>
+	  <xi:include href="xml/ags_remove_point_from_selection.xml"/>
+	  <xi:include href="xml/ags_remove_recall.xml"/>
+	  <xi:include href="xml/ags_remove_region_from_selection.xml"/>
+	  <xi:include href="xml/ags_save_file.xml"/>
+	  <xi:include href="xml/ags_scroll_on_play.xml"/>
+	  <xi:include href="xml/ags_set_audio_channels.xml"/>
+	  <xi:include href="xml/ags_set_buffer_size.xml"/>
+	  <xi:include href="xml/ags_set_devout_play_flags.xml"/>
+	  <xi:include href="xml/ags_set_muted.xml"/>
+	  <xi:include href="xml/ags_set_output_device.xml"/>
+	  <xi:include href="xml/ags_set_samplerate.xml"/>
+	  <xi:include href="xml/ags_start_devout.xml"/>
+	  <xi:include href="xml/ags_toggle_led.xml"/>
+	  <xi:include href="xml/ags_toggle_pattern_bit.xml"/>
+	  <xi:include href="xml/ags_unref_audio_signal.xml"/>
+    </chapter>
+  </part>
+
+  <part>
+    <title>GUI - Graphical user interface</title>
+
+    <chapter id="composite-widgets">
+      <title>Composite widgets</title>
+
+      <xi:include href="xml/ags_audio_preferences.xml"/>
+      <xi:include href="xml/ags_audio_preferences_callbacks.xml"/>
+      <xi:include href="xml/ags_editor.xml"/>
+      <xi:include href="xml/ags_editor_callbacks.xml"/>
+      <xi:include href="xml/ags_export_window.xml"/>
+      <xi:include href="xml/ags_export_window_callbacks.xml"/>
+      <xi:include href="xml/ags_inline_player.xml"/>
+      <xi:include href="xml/ags_ladspa_browser.xml"/>
+      <xi:include href="xml/ags_ladspa_browser_callbacks.xml"/>
+      <xi:include href="xml/ags_line.xml"/>
+      <xi:include href="xml/ags_line_callbacks.xml"/>
+      <xi:include href="xml/ags_line_editor.xml"/>
+      <xi:include href="xml/ags_line_editor_callbacks.xml"/>
+      <xi:include href="xml/ags_line_member.xml"/>
+      <xi:include href="xml/ags_line_member_callbacks.xml"/>
+      <xi:include href="xml/ags_line_member_editor.xml"/>
+      <xi:include href="xml/ags_line_member_editor_callbacks.xml"/>
+      <xi:include href="xml/ags_link_channel.xml"/>
+      <xi:include href="xml/ags_link_collection_editor.xml"/>
+      <xi:include href="xml/ags_link_collection_editor_callbacks.xml"/>
+      <xi:include href="xml/ags_link_editor.xml"/>
+      <xi:include href="xml/ags_link_editor_callbacks.xml"/>
+      <xi:include href="xml/ags_listing_editor.xml"/>
+      <xi:include href="xml/ags_listing_editor_callbacks.xml"/>
+      <xi:include href="xml/ags_machine.xml"/>
+      <xi:include href="xml/ags_machine_callbacks.xml"/>
+      <xi:include href="xml/ags_machine_editor.xml"/>
+      <xi:include href="xml/ags_machine_editor_callbacks.xml"/>
+      <xi:include href="xml/ags_machine_radio_button.xml"/>
+      <xi:include href="xml/ags_machine_selection.xml"/>
+      <xi:include href="xml/ags_machine_selector.xml"/>
+      <xi:include href="xml/ags_machine_selector_callbacks.xml"/>
+      <xi:include href="xml/ags_menu_bar.xml"/>
+      <xi:include href="xml/ags_menu_bar_callbacks.xml"/>
+      <xi:include href="xml/ags_navigation.xml"/>
+      <xi:include href="xml/ags_navigation_callbacks.xml"/>
+      <xi:include href="xml/ags_pad.xml"/>
+      <xi:include href="xml/ags_pad_callbacks.xml"/>
+      <xi:include href="xml/ags_pad_editor.xml"/>
+      <xi:include href="xml/ags_pad_editor_callbacks.xml"/>
+      <xi:include href="xml/ags_performance_preferences.xml"/>
+      <xi:include href="xml/ags_plugin_preferences.xml"/>
+      <xi:include href="xml/ags_preferences.xml"/>
+      <xi:include href="xml/ags_preferences_callbacks.xml"/>
+      <xi:include href="xml/ags_property_collection_editor.xml"/>
+      <xi:include href="xml/ags_property_collection_editor_callbacks.xml"/>
+      <xi:include href="xml/ags_property_editor.xml"/>
+      <xi:include href="xml/ags_property_editor_callbacks.xml"/>
+      <xi:include href="xml/ags_property_listing_editor.xml"/>
+      <xi:include href="xml/ags_resize_editor.xml"/>
+      <xi:include href="xml/ags_ruler.xml"/>
+      <xi:include href="xml/ags_ruler_callbacks.xml"/>
+      <xi:include href="xml/ags_server_preferences.xml"/>
+      <xi:include href="xml/ags_window.xml"/>
+      <xi:include href="xml/ags_window_callbacks.xml"/>
+      <xi:include href="xml/ags_sf2_chooser.xml"/>
+      <xi:include href="xml/ags_sf2_chooser_callbacks.xml"/>
+    </chapter>
+
+    <chapter id="editor">
+      <title>Editor - Piano roll and its controls</title>
+      
+      <xi:include href="xml/ags_meter.xml"/>
+      <xi:include href="xml/ags_meter_callbacks.xml"/>
+      <xi:include href="xml/ags_note_edit.xml"/>
+      <xi:include href="xml/ags_note_edit_callbacks.xml"/>
+      <xi:include href="xml/ags_notebook.xml"/>
+      <xi:include href="xml/ags_notebook_callbacks.xml"/>
+      <xi:include href="xml/ags_toolbar.xml"/>
+      <xi:include href="xml/ags_toolbar_callbacks.xml"/>
+      <xi:include href="xml/ags_toolbar_mode_stock.xml"/>
+    </chapter>
+
+    <chapter id="engines">
+      <title>Engines - Composite widgets with audio set up</title>
+
+      <xi:include href="xml/ags_drum.xml"/>
+      <xi:include href="xml/ags_drum_callbacks.xml"/>
+      <xi:include href="xml/ags_drum_input_line.xml"/>
+      <xi:include href="xml/ags_drum_input_line_callbacks.xml"/>
+      <xi:include href="xml/ags_drum_input_pad.xml"/>
+      <xi:include href="xml/ags_drum_input_pad_callbacks.xml"/>
+      <xi:include href="xml/ags_drum_output_line.xml"/>
+      <xi:include href="xml/ags_drum_output_line_callbacks.xml"/>
+      <xi:include href="xml/ags_drum_output_pad.xml"/>
+      <xi:include href="xml/ags_drum_output_pad_callbacks.xml"/>
+      <xi:include href="xml/ags_ffplayer.xml"/>
+      <xi:include href="xml/ags_ffplayer_callbacks.xml"/>
+      <xi:include href="xml/ags_matrix.xml"/>
+      <xi:include href="xml/ags_matrix_callbacks.xml"/>
+      <xi:include href="xml/ags_mixer.xml"/>
+      <xi:include href="xml/ags_mixer_callbacks.xml"/>
+      <xi:include href="xml/ags_mixer_input_line.xml"/>
+      <xi:include href="xml/ags_mixer_input_pad.xml"/>
+      <xi:include href="xml/ags_oscillator.xml"/>
+      <xi:include href="xml/ags_oscillator_callbacks.xml"/>
+      <xi:include href="xml/ags_panel.xml"/>
+      <xi:include href="xml/ags_panel_callbacks.xml"/>
+      <xi:include href="xml/ags_panel_input_line.xml"/>
+      <xi:include href="xml/ags_panel_input_pad.xml"/>
+      <xi:include href="xml/ags_synth.xml"/>
+      <xi:include href="xml/ags_synth_callbacks.xml"/>
+      <xi:include href="xml/ags_synth_input_line.xml"/>
+      <xi:include href="xml/ags_synth_input_pad.xml"/>
+    </chapter>
+  </part>
+  
+  <part id="xml-io">
+    <title>XML Input/Output - Persist project</title>
+    
+    <xi:include href="xml/ags_file.xml"/>
+    <xi:include href="xml/ags_file_gui.xml"/>
+    <xi:include href="xml/ags_file_id_ref.xml"/>
+    <xi:include href="xml/ags_file_launch.xml"/>
+    <xi:include href="xml/ags_file_link.xml"/>
+    <xi:include href="xml/ags_file_lookup.xml"/>
+    <xi:include href="xml/ags_file_read.xml"/>
+    <xi:include href="xml/ags_file_selection.xml"/>
+    <xi:include href="xml/ags_file_selection_callbacks.xml"/>
+    <xi:include href="xml/ags_file_sound.xml"/>
+    <xi:include href="xml/ags_file_stock.xml"/>
+    <xi:include href="xml/ags_file_util.xml"/>
+    <xi:include href="xml/ags_file_thread.xml"/>
+  </part>
+
+  <part id="xml-rpc">
+    <title>XML-RPC - planned server</title>
+
+    <xi:include href="xml/ags_registry.xml"/>
+    <xi:include href="xml/ags_remote_task.xml"/>
+    <xi:include href="xml/ags_server.xml"/>
+  </part>
+  
+  <index id="api-index-full">
+    <title>API Index</title>
+    <xi:include href="xml/api-index-full.xml"><xi:fallback /></xi:include>
+  </index>
+  <index id="deprecated-api-index" role="deprecated">
+    <title>Index of deprecated API</title>
+    <xi:include href="xml/api-index-deprecated.xml"><xi:fallback /></xi:include>
+  </index>
+  
+  <xi:include href="xml/annotation-glossary.xml"><xi:fallback /></xi:include>
+</book>

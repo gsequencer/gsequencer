@@ -1,0 +1,4 @@
+ags_audio_loop_add_recall(recall)
+ags_audio_loop_remove_recall(recall)
+ags_thread_is_current_ready(tic)
+ags_thread_is_tree_ready(tic)
