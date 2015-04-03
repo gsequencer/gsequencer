@@ -351,6 +351,12 @@ ags_peak_channel_retrieve_peak(AgsPeakChannel *peak_channel,
 
     recycling = recycling->next;
   }
+    
+  /* 
+   * The idea is that accoustics has it's highest pressure at 440 Hz that's why it is called harmonic oscillation in air pressure.
+   * The trigonemetric functions sin and atan are combined as alike average value. They should have many common points or at least
+   * near points what equals pressure = 1.0 and if not then rather = 0.0. Then you can scale using factor.
+   */
 
   /* calculate average value */
   current_value = 0.0;
@@ -358,7 +364,7 @@ ags_peak_channel_retrieve_peak(AgsPeakChannel *peak_channel,
   for(i = 0; i < buffer_size; i++){
     current_value +=  (1.0 / (1.0 / G_MAXUINT16 * buffer[i]));
   }
-  
+
   /* break down to scale */
   //TODO:JK: verify me
   current_value = scale_precision * (atan(1.0 / 440.0) / sin(current_value / 440.0));
