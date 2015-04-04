@@ -18,17 +18,18 @@
 
 #include <ags/audio/ags_audio.h>
 
-#include <ags-lib/object/ags_connectable.h>
-
-#include <ags/main.h>
-
 #include <ags/lib/ags_list.h>
 
+#include <ags/object/ags_application_context.h>
+#include <ags-lib/object/ags_connectable.h>
 #include <ags/object/ags_dynamic_connectable.h>
 #include <ags/object/ags_marshal.h>
 
 #include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_task_thread.h>
+
+#include <ags/server/ags_server_application_context.h>
+#include <ags/server/ags_server.h>
 
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_output.h>
@@ -427,7 +428,7 @@ ags_audio_finalize(GObject *gobject)
 void
 ags_audio_add_to_registry(AgsConnectable *connectable)
 {
-  AgsMain *ags_main;
+  AgsApplicationContext *application_context;
   AgsServer *server;
   AgsAudio *audio;
   AgsChannel *channel;
@@ -436,10 +437,20 @@ ags_audio_add_to_registry(AgsConnectable *connectable)
   
   audio = AGS_AUDIO(connectable);
 
-  ags_main = AGS_MAIN(AGS_DEVOUT(audio->devout)->ags_main);
+  application_context = AGS_APPLICATION_CONTEXT(AGS_DEVOUT(audio->devout)->application_context);
 
-  server = ags_main->server;
+  server = NULL;
+  list = application_context->sibling;
 
+  while(list != NULL){
+    if(AGS_IS_SERVER_APPLICATION_CONTEXT(list->data)){
+      server = AGS_SERVER_APPLICATION_CONTEXT(list->data)->server;
+      break;
+    }
+
+    list = list->next;
+  }
+  
   entry = ags_registry_entry_alloc(server->registry);
   g_value_set_object(&(entry->entry),
 		     (gpointer) audio);
@@ -660,7 +671,7 @@ ags_audio_set_flags(AgsAudio *audio, guint flags)
 						      parameter);
 
     /* append AgsAudioSetRecycling */
-    ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(audio->devout)->ags_main)->main_loop)->task_thread),
+    ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_APPLICATION_CONTEXT(AGS_DEVOUT(audio->devout)->application_context)->main_loop)->task_thread),
 				AGS_TASK(audio_set_recycling));
   }
 
@@ -754,7 +765,7 @@ ags_audio_unset_flags(AgsAudio *audio, guint flags)
 						      parameter);
 
     /* append AgsAudioSetRecycling */
-    ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(audio->devout)->ags_main)->main_loop)->task_thread),
+    ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_APPLICATION_CONTEXT(AGS_DEVOUT(audio->devout)->application_context)->main_loop)->task_thread),
 				AGS_TASK(audio_set_recycling));
   }
 

@@ -112,7 +112,10 @@ am__objects_3 = $(am__objects_1) libags_a-ags_connectable.$(OBJEXT) \
 	libags_a-ags_combo_box_text.$(OBJEXT) \
 	libags_a-ags_container.$(OBJEXT) libags_a-ags_list.$(OBJEXT) \
 	libags_a-ags_log.$(OBJEXT) libags_a-ags_parameter.$(OBJEXT)
-am__objects_4 = $(am__objects_1) libags_a-ags_applicable.$(OBJEXT) \
+am__objects_4 = $(am__objects_1) \
+	libags_a-ags_application_context.$(OBJEXT) \
+	libags_a-ags_config.$(OBJEXT) \
+	libags_a-ags_applicable.$(OBJEXT) \
 	libags_a-ags_countable.$(OBJEXT) \
 	libags_a-ags_dynamic_connectable.$(OBJEXT) \
 	libags_a-ags_effect.$(OBJEXT) libags_a-ags_main_loop.$(OBJEXT) \
@@ -136,6 +139,7 @@ am__objects_5 = libags_audio_a-ags_garbage_collector.$(OBJEXT) \
 	libags_audio_a-ags_timestamp.$(OBJEXT) \
 	libags_audio_a-ags_timestamp_factory.$(OBJEXT)
 am__objects_6 = $(am__objects_5) \
+	libags_audio_a-ags_audio_application_context.$(OBJEXT) \
 	libags_audio_a-ags_acceleration.$(OBJEXT) \
 	libags_audio_a-ags_playable.$(OBJEXT) \
 	libags_audio_a-ags_audio.$(OBJEXT) \
@@ -143,7 +147,6 @@ am__objects_6 = $(am__objects_5) \
 	libags_audio_a-ags_automation.$(OBJEXT) \
 	libags_audio_a-ags_channel.$(OBJEXT) \
 	libags_audio_a-ags_channel_iter.$(OBJEXT) \
-	libags_audio_a-ags_config.$(OBJEXT) \
 	libags_audio_a-ags_devout.$(OBJEXT) \
 	libags_audio_a-ags_input.$(OBJEXT) \
 	libags_audio_a-ags_notation.$(OBJEXT) \
@@ -300,12 +303,12 @@ libags_gui_a_OBJECTS = $(am_libags_gui_a_OBJECTS)
 libags_thread_a_AR = $(AR) $(ARFLAGS)
 libags_thread_a_DEPENDENCIES = libags.a
 am__objects_15 = $(am__objects_1) \
+	libags_thread_a-ags_thread_application_context.$(OBJEXT) \
 	libags_thread_a-ags_async_queue.$(OBJEXT) \
 	libags_thread_a-ags_audio_loop.$(OBJEXT) \
 	libags_thread_a-ags_autosave_thread.$(OBJEXT) \
 	libags_thread_a-ags_devout_thread.$(OBJEXT) \
 	libags_thread_a-ags_export_thread.$(OBJEXT) \
-	libags_thread_a-ags_gui_task_thread.$(OBJEXT) \
 	libags_thread_a-ags_gui_thread.$(OBJEXT) \
 	libags_thread_a-ags_iterator_thread.$(OBJEXT) \
 	libags_thread_a-ags_record_thread.$(OBJEXT) \
@@ -326,6 +329,7 @@ am__objects_17 = $(am__objects_1) gsequencer-ags_registry.$(OBJEXT) \
 	gsequencer-ags_remote_task.$(OBJEXT) \
 	gsequencer-ags_server.$(OBJEXT)
 am__objects_18 = $(am__objects_1) \
+	gsequencer-ags_xorg_application_context.$(OBJEXT) \
 	gsequencer-ags_audio_preferences_callbacks.$(OBJEXT) \
 	gsequencer-ags_audio_preferences.$(OBJEXT) \
 	gsequencer-ags_automation_editor_callbacks.$(OBJEXT) \
@@ -865,7 +869,9 @@ ags_util_c_sources = \
 deprecated_ags_object_h_sources = 
 ags_object_h_sources = \
 	$(deprecated_ags_object_h_sources) \
-	src/ags/object/ags_applicable.h		\
+	src/ags/object/ags_application_context.h	\
+	src/ags/object/ags_config.h			\
+	src/ags/object/ags_applicable.h			\
 	src/ags/object/ags_countable.h			\
 	src/ags/object/ags_dynamic_connectable.h	\
 	src/ags/object/ags_effect.h			\
@@ -887,7 +893,9 @@ ags_object_h_sources = \
 deprecated_ags_object_c_sources = 
 ags_object_c_sources = \
 	$(deprecated_ags_object_c_sources) \
-	src/ags/object/ags_applicable.c		\
+	src/ags/object/ags_application_context.c	\
+	src/ags/object/ags_config.c			\
+	src/ags/object/ags_applicable.c			\
 	src/ags/object/ags_countable.c			\
 	src/ags/object/ags_dynamic_connectable.c	\
 	src/ags/object/ags_effect.c			\
@@ -925,13 +933,13 @@ deprecated_ags_thread_h_sources = \
 
 ags_thread_h_sources = \
 	$(deprecated_ags_thread_h_sources) \
+	src/ags/thread/ags_thread_application_context.h	\
 	src/ags/thread/ags_async_queue.h		\
-	src/ags/thread/ags_audio_loop.h		\
+	src/ags/thread/ags_audio_loop.h			\
 	src/ags/thread/ags_autosave_thread.h		\
 	src/ags/thread/ags_devout_thread.h		\
 	src/ags/thread/ags_export_thread.h		\
-	src/ags/thread/ags_gui_task_thread.h		\
-	src/ags/thread/ags_gui_thread.h		\
+	src/ags/thread/ags_gui_thread.h			\
 	src/ags/thread/ags_iterator_thread.h		\
 	src/ags/thread/ags_record_thread.h		\
 	src/ags/thread/ags_recycling_thread_callbacks.h \
@@ -946,13 +954,13 @@ ags_thread_h_sources = \
 deprecated_ags_thread_c_sources = 
 ags_thread_c_sources = \
 	$(deprecated_ags_thread_c_sources) \
+	src/ags/thread/ags_thread_application_context.c	\
 	src/ags/thread/ags_async_queue.c		\
-	src/ags/thread/ags_audio_loop.c		\
+	src/ags/thread/ags_audio_loop.c			\
 	src/ags/thread/ags_autosave_thread.c		\
 	src/ags/thread/ags_devout_thread.c		\
 	src/ags/thread/ags_export_thread.c		\
-	src/ags/thread/ags_gui_task_thread.c		\
-	src/ags/thread/ags_gui_thread.c		\
+	src/ags/thread/ags_gui_thread.c			\
 	src/ags/thread/ags_iterator_thread.c		\
 	src/ags/thread/ags_record_thread.c		\
 	src/ags/thread/ags_recycling_thread_callbacks.c \
@@ -1019,13 +1027,13 @@ deprecated_ags_audio_h_sources = \
 
 ags_audio_h_sources = \
 	$(deprecated_ags_audio_h_sources) \
+	src/ags/audio/ags_audio_application_context.h	\
 	src/ags/audio/ags_acceleration.h	\
 	src/ags/audio/ags_audio.h		\
 	src/ags/audio/ags_audio_signal.h	\
-	src/ags/audio/ags_automation.h	\
+	src/ags/audio/ags_automation.h		\
 	src/ags/audio/ags_channel.h		\
 	src/ags/audio/ags_channel_iter.h	\
-	src/ags/audio/ags_config.h		\
 	src/ags/audio/ags_devout.h		\
 	src/ags/audio/ags_input.h		\
 	src/ags/audio/ags_notation.h		\
@@ -1063,14 +1071,14 @@ deprecated_ags_audio_c_sources = \
 
 ags_audio_c_sources = \
 	$(deprecated_ags_audio_c_sources) \
+	src/ags/audio/ags_audio_application_context.c	\
 	src/ags/audio/ags_acceleration.c	\
-	src/ags/object/ags_playable.c			\
+	src/ags/object/ags_playable.c		\
 	src/ags/audio/ags_audio.c		\
 	src/ags/audio/ags_audio_signal.c	\
-	src/ags/audio/ags_automation.c	\
+	src/ags/audio/ags_automation.c		\
 	src/ags/audio/ags_channel.c		\
 	src/ags/audio/ags_channel_iter.c	\
-	src/ags/audio/ags_config.c		\
 	src/ags/audio/ags_devout.c		\
 	src/ags/audio/ags_input.c		\
 	src/ags/audio/ags_notation.c		\
@@ -1388,6 +1396,7 @@ gsequencer_server_c_sources = \
 deprecated_gsequencer_xorg_h_sources = 
 gsequencer_xorg_h_sources = \
 	$(deprecated_gsequencer_xorg_h_sources)	\
+	src/ags/X/ags_xorg_application_context.h	\
 	src/ags/X/ags_audio_preferences_callbacks.h	\
 	src/ags/X/ags_audio_preferences.h		\
 	src/ags/X/ags_automation_editor_callbacks.h	\
@@ -1408,7 +1417,7 @@ gsequencer_xorg_h_sources = \
 	src/ags/X/ags_export_window.h			\
 	src/ags/X/ags_generic_preferences_callbacks.h	\
 	src/ags/X/ags_generic_preferences.h		\
-	src/ags/X/ags_ladspa_browser_callbacks.h		\
+	src/ags/X/ags_ladspa_browser_callbacks.h	\
 	src/ags/X/ags_ladspa_browser.h			\
 	src/ags/X/ags_line_callbacks.h 			\
 	src/ags/X/ags_line_editor_callbacks.h		\
@@ -1422,14 +1431,14 @@ gsequencer_xorg_h_sources = \
 	src/ags/X/ags_link_collection_editor.h		\
 	src/ags/X/ags_link_editor_callbacks.h		\
 	src/ags/X/ags_link_editor.h			\
-	src/ags/X/ags_listing_editor_callbacks.h		\
+	src/ags/X/ags_listing_editor_callbacks.h	\
 	src/ags/X/ags_listing_editor.h			\
-	src/ags/X/ags_machine_callbacks.h			\
-	src/ags/X/ags_machine_editor_callbacks.h		\
+	src/ags/X/ags_machine_callbacks.h		\
+	src/ags/X/ags_machine_editor_callbacks.h	\
 	src/ags/X/ags_machine_editor.h			\
 	src/ags/X/ags_machine.h				\
 	src/ags/X/ags_menu_bar_callbacks.h		\
-	src/ags/X/ags_menu_bar.h 				\
+	src/ags/X/ags_menu_bar.h 			\
 	src/ags/X/ags_navigation_callbacks.h		\
 	src/ags/X/ags_navigation.h			\
 	src/ags/X/ags_pad_callbacks.h			\
@@ -1444,81 +1453,82 @@ gsequencer_xorg_h_sources = \
 	src/ags/X/ags_preferences.h			\
 	src/ags/X/ags_property_collection_editor_callbacks.h \
 	src/ags/X/ags_property_collection_editor.h	\
-	src/ags/X/ags_property_editor_callbacks.h		\
+	src/ags/X/ags_property_editor_callbacks.h	\
 	src/ags/X/ags_property_editor.h			\
 	src/ags/X/ags_property_listing_editor.h		\
 	src/ags/X/ags_resize_editor.h			\
 	src/ags/X/ags_server_preferences_callbacks.h	\
 	src/ags/X/ags_server_preferences.h		\
-	src/ags/X/ags_window_callbacks.h			\
+	src/ags/X/ags_window_callbacks.h		\
 	src/ags/X/ags_window.h
 
 deprecated_gsequencer_xorg_c_sources = 
 gsequencer_xorg_c_sources = \
 	$(deprecated_gsequencer_xorg_c_sources) 	\
-	src/ags/X/ags_audio_preferences_callbacks.c		\
-	src/ags/X/ags_audio_preferences.c			\
-	src/ags/X/ags_automation_editor_callbacks.c		\
-	src/ags/X/ags_automation_editor.c			\
-	src/ags/X/ags_editor_callbacks.c			\
+	src/ags/X/ags_xorg_application_context.c	\
+	src/ags/X/ags_audio_preferences_callbacks.c	\
+	src/ags/X/ags_audio_preferences.c		\
+	src/ags/X/ags_automation_editor_callbacks.c	\
+	src/ags/X/ags_automation_editor.c		\
+	src/ags/X/ags_editor_callbacks.c		\
 	src/ags/X/ags_editor.c				\
 	src/ags/X/ags_effect_bridge_callbacks.c		\
 	src/ags/X/ags_effect_bridge.c			\
 	src/ags/X/ags_effect_bulk_callbacks.c		\
-	src/ags/X/ags_effect_bulk.c				\
-	src/ags/X/ags_bulk_member.c				\
-	src/ags/X/ags_bulk_member_callbacks.c				\
+	src/ags/X/ags_effect_bulk.c			\
+	src/ags/X/ags_bulk_member.c			\
+	src/ags/X/ags_bulk_member_callbacks.c		\
 	src/ags/X/ags_effect_line_callbacks.c		\
-	src/ags/X/ags_effect_line.c				\
+	src/ags/X/ags_effect_line.c			\
 	src/ags/X/ags_effect_pad_callbacks.c		\
-	src/ags/X/ags_effect_pad.c				\
+	src/ags/X/ags_effect_pad.c			\
 	src/ags/X/ags_export_window_callbacks.c		\
 	src/ags/X/ags_export_window.c			\
 	src/ags/X/ags_generic_preferences_callbacks.c	\
-	src/ags/X/ags_generic_preferences.c			\
-	src/ags/X/ags_ladspa_browser_callbacks.c		\
+	src/ags/X/ags_generic_preferences.c		\
+	src/ags/X/ags_ladspa_browser_callbacks.c	\
 	src/ags/X/ags_ladspa_browser.c			\
 	src/ags/X/ags_line_callbacks.c 			\
 	src/ags/X/ags_line_editor_callbacks.c		\
-	src/ags/X/ags_line_editor.c				\
+	src/ags/X/ags_line_editor.c			\
 	src/ags/X/ags_line.c				\
 	src/ags/X/ags_line_member_callbacks.c		\
 	src/ags/X/ags_line_member_editor_callbacks.c	\
-	src/ags/X/ags_line_member_editor.c			\
-	src/ags/X/ags_line_member.c				\
+	src/ags/X/ags_line_member_editor.c		\
+	src/ags/X/ags_line_member.c			\
 	src/ags/X/ags_link_collection_editor_callbacks.c	\
 	src/ags/X/ags_link_collection_editor.c		\
 	src/ags/X/ags_link_editor_callbacks.c		\
-	src/ags/X/ags_link_editor.c				\
-	src/ags/X/ags_listing_editor_callbacks.c		\
+	src/ags/X/ags_link_editor.c			\
+	src/ags/X/ags_listing_editor_callbacks.c	\
 	src/ags/X/ags_listing_editor.c			\
-	src/ags/X/ags_machine_callbacks.c			\
-	src/ags/X/ags_machine_editor_callbacks.c		\
+	src/ags/X/ags_machine_callbacks.c		\
+	src/ags/X/ags_machine_editor_callbacks.c	\
 	src/ags/X/ags_machine_editor.c			\
 	src/ags/X/ags_machine.c				\
-	src/ags/X/ags_menu_bar_callbacks.c			\
-	src/ags/X/ags_menu_bar.c 				\
+	src/ags/X/ags_menu_bar_callbacks.c		\
+	src/ags/X/ags_menu_bar.c 			\
 	src/ags/X/ags_navigation_callbacks.c		\
-	src/ags/X/ags_navigation.c				\
+	src/ags/X/ags_navigation.c			\
 	src/ags/X/ags_pad_callbacks.c			\
 	src/ags/X/ags_pad_editor_callbacks.c 		\
-	src/ags/X/ags_pad_editor.c				\
-	src/ags/X/ags_pad.c					\
+	src/ags/X/ags_pad_editor.c			\
+	src/ags/X/ags_pad.c				\
 	src/ags/X/ags_performance_preferences_callbacks.c	\
 	src/ags/X/ags_performance_preferences.c		\
 	src/ags/X/ags_plugin_preferences_callbacks.c	\
-	src/ags/X/ags_plugin_preferences.c			\
+	src/ags/X/ags_plugin_preferences.c		\
 	src/ags/X/ags_preferences_callbacks.c		\
-	src/ags/X/ags_preferences.c				\
+	src/ags/X/ags_preferences.c			\
 	src/ags/X/ags_property_collection_editor_callbacks.c \
-	src/ags/X/ags_property_collection_editor.c		\
-	src/ags/X/ags_property_editor_callbacks.c		\
+	src/ags/X/ags_property_collection_editor.c	\
+	src/ags/X/ags_property_editor_callbacks.c	\
 	src/ags/X/ags_property_editor.c			\
 	src/ags/X/ags_property_listing_editor.c		\
 	src/ags/X/ags_resize_editor.c			\
 	src/ags/X/ags_server_preferences_callbacks.c	\
-	src/ags/X/ags_server_preferences.c			\
-	src/ags/X/ags_window_callbacks.c			\
+	src/ags/X/ags_server_preferences.c		\
+	src/ags/X/ags_window_callbacks.c		\
 	src/ags/X/ags_window.c
 
 deprecated_gsequencer_machine_h_sources = 
@@ -1526,20 +1536,20 @@ gsequencer_machine_h_sources = \
 	$(deprecated_gsequencer_machine_h_sources) \
 	src/ags/X/machine/ags_drum_callbacks.h			\
 	src/ags/X/machine/ags_drum.h				\
-	src/ags/X/machine/ags_drum_input_line_callbacks.h		\
+	src/ags/X/machine/ags_drum_input_line_callbacks.h	\
 	src/ags/X/machine/ags_drum_input_line.h			\
-	src/ags/X/machine/ags_drum_input_pad_callbacks.h		\
+	src/ags/X/machine/ags_drum_input_pad_callbacks.h	\
 	src/ags/X/machine/ags_drum_input_pad.h			\
 	src/ags/X/machine/ags_drum_output_line_callbacks.h	\
-	src/ags/X/machine/ags_drum_output_line.h			\
-	src/ags/X/machine/ags_drum_output_pad_callbacks.h		\
+	src/ags/X/machine/ags_drum_output_line.h		\
+	src/ags/X/machine/ags_drum_output_pad_callbacks.h	\
 	src/ags/X/machine/ags_drum_output_pad.h			\
-	src/ags/X/machine/ags_ffplayer_bridge_callbacks.h		\
+	src/ags/X/machine/ags_ffplayer_bridge_callbacks.h	\
 	src/ags/X/machine/ags_ffplayer_bridge.h			\
 	src/ags/X/machine/ags_ffplayer_bulk_input_callbacks.h	\
 	src/ags/X/machine/ags_ffplayer_bulk_input.h		\
 	src/ags/X/machine/ags_ffplayer_callbacks.h		\
-	src/ags/X/machine/ags_ffplayer.h				\
+	src/ags/X/machine/ags_ffplayer.h			\
 	src/ags/X/machine/ags_ffplayer_input_line_callbacks.h	\
 	src/ags/X/machine/ags_ffplayer_input_line.h		\
 	src/ags/X/machine/ags_ffplayer_input_pad_callbacks.h	\
@@ -1549,29 +1559,29 @@ gsequencer_machine_h_sources = \
 	src/ags/X/machine/ags_matrix_bridge_callbacks.h		\
 	src/ags/X/machine/ags_matrix_bridge.h			\
 	src/ags/X/machine/ags_matrix_bulk_input_callbacks.h	\
-	src/ags/X/machine/ags_matrix_bulk_input.h			\
-	src/ags/X/machine/ags_matrix_callbacks.h			\
+	src/ags/X/machine/ags_matrix_bulk_input.h		\
+	src/ags/X/machine/ags_matrix_callbacks.h		\
 	src/ags/X/machine/ags_matrix.h				\
 	src/ags/X/machine/ags_mixer_callbacks.h			\
 	src/ags/X/machine/ags_mixer.h				\
-	src/ags/X/machine/ags_mixer_input_line.h			\
+	src/ags/X/machine/ags_mixer_input_line.h		\
 	src/ags/X/machine/ags_mixer_input_pad.h			\
 	src/ags/X/machine/ags_oscillator_callbacks.h		\
 	src/ags/X/machine/ags_oscillator.h			\
 	src/ags/X/machine/ags_panel_callbacks.h			\
 	src/ags/X/machine/ags_panel.h				\
-	src/ags/X/machine/ags_panel_input_line.h			\
+	src/ags/X/machine/ags_panel_input_line.h		\
 	src/ags/X/machine/ags_panel_input_pad.h			\
 	src/ags/X/machine/ags_synth_bridge_callbacks.h		\
 	src/ags/X/machine/ags_synth_bridge.h			\
 	src/ags/X/machine/ags_synth_bulk_output_callbacks.h	\
-	src/ags/X/machine/ags_synth_bulk_output.h			\
+	src/ags/X/machine/ags_synth_bulk_output.h		\
 	src/ags/X/machine/ags_synth_callbacks.h			\
 	src/ags/X/machine/ags_synth.h				\
-	src/ags/X/machine/ags_synth_input_line.h			\
+	src/ags/X/machine/ags_synth_input_line.h		\
 	src/ags/X/machine/ags_synth_input_pad.h			\
 	src/ags/X/machine/ags_synth_output_line_callbacks.h	\
-	src/ags/X/machine/ags_synth_output_line.h			\
+	src/ags/X/machine/ags_synth_output_line.h		\
 	src/ags/X/machine/ags_synth_output_pad_callbacks.h	\
 	src/ags/X/machine/ags_synth_output_pad.h
 
@@ -2035,9 +2045,12 @@ include ./$(DEPDIR)/gsequencer-ags_toolbar_callbacks.Po
 include ./$(DEPDIR)/gsequencer-ags_update_bulk_member.Po
 include ./$(DEPDIR)/gsequencer-ags_window.Po
 include ./$(DEPDIR)/gsequencer-ags_window_callbacks.Po
+include ./$(DEPDIR)/gsequencer-ags_xorg_application_context.Po
 include ./$(DEPDIR)/gsequencer-main.Po
 include ./$(DEPDIR)/libags_a-ags_applicable.Po
+include ./$(DEPDIR)/libags_a-ags_application_context.Po
 include ./$(DEPDIR)/libags_a-ags_combo_box_text.Po
+include ./$(DEPDIR)/libags_a-ags_config.Po
 include ./$(DEPDIR)/libags_a-ags_connectable.Po
 include ./$(DEPDIR)/libags_a-ags_container.Po
 include ./$(DEPDIR)/libags_a-ags_countable.Po
@@ -2076,6 +2089,7 @@ include ./$(DEPDIR)/libags_audio_a-ags_apply_sequencer_length.Po
 include ./$(DEPDIR)/libags_audio_a-ags_apply_synth.Po
 include ./$(DEPDIR)/libags_audio_a-ags_apply_tact.Po
 include ./$(DEPDIR)/libags_audio_a-ags_audio.Po
+include ./$(DEPDIR)/libags_audio_a-ags_audio_application_context.Po
 include ./$(DEPDIR)/libags_audio_a-ags_audio_file.Po
 include ./$(DEPDIR)/libags_audio_a-ags_audio_file_xml.Po
 include ./$(DEPDIR)/libags_audio_a-ags_audio_set_recycling.Po
@@ -2093,7 +2107,6 @@ include ./$(DEPDIR)/libags_audio_a-ags_channel_iter.Po
 include ./$(DEPDIR)/libags_audio_a-ags_channel_set_recycling.Po
 include ./$(DEPDIR)/libags_audio_a-ags_clone_channel.Po
 include ./$(DEPDIR)/libags_audio_a-ags_clone_channel_run.Po
-include ./$(DEPDIR)/libags_audio_a-ags_config.Po
 include ./$(DEPDIR)/libags_audio_a-ags_copy_audio_signal.Po
 include ./$(DEPDIR)/libags_audio_a-ags_copy_channel.Po
 include ./$(DEPDIR)/libags_audio_a-ags_copy_channel_run.Po
@@ -2217,7 +2230,6 @@ include ./$(DEPDIR)/libags_thread_a-ags_audio_loop.Po
 include ./$(DEPDIR)/libags_thread_a-ags_autosave_thread.Po
 include ./$(DEPDIR)/libags_thread_a-ags_devout_thread.Po
 include ./$(DEPDIR)/libags_thread_a-ags_export_thread.Po
-include ./$(DEPDIR)/libags_thread_a-ags_gui_task_thread.Po
 include ./$(DEPDIR)/libags_thread_a-ags_gui_thread.Po
 include ./$(DEPDIR)/libags_thread_a-ags_iterator_thread.Po
 include ./$(DEPDIR)/libags_thread_a-ags_record_thread.Po
@@ -2227,6 +2239,7 @@ include ./$(DEPDIR)/libags_thread_a-ags_returnable_thread.Po
 include ./$(DEPDIR)/libags_thread_a-ags_single_thread.Po
 include ./$(DEPDIR)/libags_thread_a-ags_task_thread.Po
 include ./$(DEPDIR)/libags_thread_a-ags_thread-posix.Po
+include ./$(DEPDIR)/libags_thread_a-ags_thread_application_context.Po
 include ./$(DEPDIR)/libags_thread_a-ags_thread_pool.Po
 include ./$(DEPDIR)/libags_thread_a-ags_timestamp_thread.Po
 
@@ -2348,6 +2361,34 @@ libags_a-ags_parameter.obj: src/ags/lib/ags_parameter.c
 #	$(AM_V_CC)source='src/ags/lib/ags_parameter.c' object='libags_a-ags_parameter.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -c -o libags_a-ags_parameter.obj `if test -f 'src/ags/lib/ags_parameter.c'; then $(CYGPATH_W) 'src/ags/lib/ags_parameter.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/lib/ags_parameter.c'; fi`
+
+libags_a-ags_application_context.o: src/ags/object/ags_application_context.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -MT libags_a-ags_application_context.o -MD -MP -MF $(DEPDIR)/libags_a-ags_application_context.Tpo -c -o libags_a-ags_application_context.o `test -f 'src/ags/object/ags_application_context.c' || echo '$(srcdir)/'`src/ags/object/ags_application_context.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_a-ags_application_context.Tpo $(DEPDIR)/libags_a-ags_application_context.Po
+#	$(AM_V_CC)source='src/ags/object/ags_application_context.c' object='libags_a-ags_application_context.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -c -o libags_a-ags_application_context.o `test -f 'src/ags/object/ags_application_context.c' || echo '$(srcdir)/'`src/ags/object/ags_application_context.c
+
+libags_a-ags_application_context.obj: src/ags/object/ags_application_context.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -MT libags_a-ags_application_context.obj -MD -MP -MF $(DEPDIR)/libags_a-ags_application_context.Tpo -c -o libags_a-ags_application_context.obj `if test -f 'src/ags/object/ags_application_context.c'; then $(CYGPATH_W) 'src/ags/object/ags_application_context.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/object/ags_application_context.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_a-ags_application_context.Tpo $(DEPDIR)/libags_a-ags_application_context.Po
+#	$(AM_V_CC)source='src/ags/object/ags_application_context.c' object='libags_a-ags_application_context.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -c -o libags_a-ags_application_context.obj `if test -f 'src/ags/object/ags_application_context.c'; then $(CYGPATH_W) 'src/ags/object/ags_application_context.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/object/ags_application_context.c'; fi`
+
+libags_a-ags_config.o: src/ags/object/ags_config.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -MT libags_a-ags_config.o -MD -MP -MF $(DEPDIR)/libags_a-ags_config.Tpo -c -o libags_a-ags_config.o `test -f 'src/ags/object/ags_config.c' || echo '$(srcdir)/'`src/ags/object/ags_config.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_a-ags_config.Tpo $(DEPDIR)/libags_a-ags_config.Po
+#	$(AM_V_CC)source='src/ags/object/ags_config.c' object='libags_a-ags_config.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -c -o libags_a-ags_config.o `test -f 'src/ags/object/ags_config.c' || echo '$(srcdir)/'`src/ags/object/ags_config.c
+
+libags_a-ags_config.obj: src/ags/object/ags_config.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -MT libags_a-ags_config.obj -MD -MP -MF $(DEPDIR)/libags_a-ags_config.Tpo -c -o libags_a-ags_config.obj `if test -f 'src/ags/object/ags_config.c'; then $(CYGPATH_W) 'src/ags/object/ags_config.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/object/ags_config.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_a-ags_config.Tpo $(DEPDIR)/libags_a-ags_config.Po
+#	$(AM_V_CC)source='src/ags/object/ags_config.c' object='libags_a-ags_config.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -c -o libags_a-ags_config.obj `if test -f 'src/ags/object/ags_config.c'; then $(CYGPATH_W) 'src/ags/object/ags_config.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/object/ags_config.c'; fi`
 
 libags_a-ags_applicable.o: src/ags/object/ags_applicable.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -MT libags_a-ags_applicable.o -MD -MP -MF $(DEPDIR)/libags_a-ags_applicable.Tpo -c -o libags_a-ags_applicable.o `test -f 'src/ags/object/ags_applicable.c' || echo '$(srcdir)/'`src/ags/object/ags_applicable.c
@@ -2643,6 +2684,20 @@ libags_audio_a-ags_timestamp_factory.obj: src/ags/audio/ags_timestamp_factory.c
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -c -o libags_audio_a-ags_timestamp_factory.obj `if test -f 'src/ags/audio/ags_timestamp_factory.c'; then $(CYGPATH_W) 'src/ags/audio/ags_timestamp_factory.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/ags_timestamp_factory.c'; fi`
 
+libags_audio_a-ags_audio_application_context.o: src/ags/audio/ags_audio_application_context.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -MT libags_audio_a-ags_audio_application_context.o -MD -MP -MF $(DEPDIR)/libags_audio_a-ags_audio_application_context.Tpo -c -o libags_audio_a-ags_audio_application_context.o `test -f 'src/ags/audio/ags_audio_application_context.c' || echo '$(srcdir)/'`src/ags/audio/ags_audio_application_context.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_a-ags_audio_application_context.Tpo $(DEPDIR)/libags_audio_a-ags_audio_application_context.Po
+#	$(AM_V_CC)source='src/ags/audio/ags_audio_application_context.c' object='libags_audio_a-ags_audio_application_context.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -c -o libags_audio_a-ags_audio_application_context.o `test -f 'src/ags/audio/ags_audio_application_context.c' || echo '$(srcdir)/'`src/ags/audio/ags_audio_application_context.c
+
+libags_audio_a-ags_audio_application_context.obj: src/ags/audio/ags_audio_application_context.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -MT libags_audio_a-ags_audio_application_context.obj -MD -MP -MF $(DEPDIR)/libags_audio_a-ags_audio_application_context.Tpo -c -o libags_audio_a-ags_audio_application_context.obj `if test -f 'src/ags/audio/ags_audio_application_context.c'; then $(CYGPATH_W) 'src/ags/audio/ags_audio_application_context.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/ags_audio_application_context.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_a-ags_audio_application_context.Tpo $(DEPDIR)/libags_audio_a-ags_audio_application_context.Po
+#	$(AM_V_CC)source='src/ags/audio/ags_audio_application_context.c' object='libags_audio_a-ags_audio_application_context.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -c -o libags_audio_a-ags_audio_application_context.obj `if test -f 'src/ags/audio/ags_audio_application_context.c'; then $(CYGPATH_W) 'src/ags/audio/ags_audio_application_context.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/ags_audio_application_context.c'; fi`
+
 libags_audio_a-ags_acceleration.o: src/ags/audio/ags_acceleration.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -MT libags_audio_a-ags_acceleration.o -MD -MP -MF $(DEPDIR)/libags_audio_a-ags_acceleration.Tpo -c -o libags_audio_a-ags_acceleration.o `test -f 'src/ags/audio/ags_acceleration.c' || echo '$(srcdir)/'`src/ags/audio/ags_acceleration.c
 	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_a-ags_acceleration.Tpo $(DEPDIR)/libags_audio_a-ags_acceleration.Po
@@ -2740,20 +2795,6 @@ libags_audio_a-ags_channel_iter.obj: src/ags/audio/ags_channel_iter.c
 #	$(AM_V_CC)source='src/ags/audio/ags_channel_iter.c' object='libags_audio_a-ags_channel_iter.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -c -o libags_audio_a-ags_channel_iter.obj `if test -f 'src/ags/audio/ags_channel_iter.c'; then $(CYGPATH_W) 'src/ags/audio/ags_channel_iter.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/ags_channel_iter.c'; fi`
-
-libags_audio_a-ags_config.o: src/ags/audio/ags_config.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -MT libags_audio_a-ags_config.o -MD -MP -MF $(DEPDIR)/libags_audio_a-ags_config.Tpo -c -o libags_audio_a-ags_config.o `test -f 'src/ags/audio/ags_config.c' || echo '$(srcdir)/'`src/ags/audio/ags_config.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_a-ags_config.Tpo $(DEPDIR)/libags_audio_a-ags_config.Po
-#	$(AM_V_CC)source='src/ags/audio/ags_config.c' object='libags_audio_a-ags_config.o' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -c -o libags_audio_a-ags_config.o `test -f 'src/ags/audio/ags_config.c' || echo '$(srcdir)/'`src/ags/audio/ags_config.c
-
-libags_audio_a-ags_config.obj: src/ags/audio/ags_config.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -MT libags_audio_a-ags_config.obj -MD -MP -MF $(DEPDIR)/libags_audio_a-ags_config.Tpo -c -o libags_audio_a-ags_config.obj `if test -f 'src/ags/audio/ags_config.c'; then $(CYGPATH_W) 'src/ags/audio/ags_config.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/ags_config.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_a-ags_config.Tpo $(DEPDIR)/libags_audio_a-ags_config.Po
-#	$(AM_V_CC)source='src/ags/audio/ags_config.c' object='libags_audio_a-ags_config.obj' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -c -o libags_audio_a-ags_config.obj `if test -f 'src/ags/audio/ags_config.c'; then $(CYGPATH_W) 'src/ags/audio/ags_config.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/ags_config.c'; fi`
 
 libags_audio_a-ags_devout.o: src/ags/audio/ags_devout.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -MT libags_audio_a-ags_devout.o -MD -MP -MF $(DEPDIR)/libags_audio_a-ags_devout.Tpo -c -o libags_audio_a-ags_devout.o `test -f 'src/ags/audio/ags_devout.c' || echo '$(srcdir)/'`src/ags/audio/ags_devout.c
@@ -4715,6 +4756,20 @@ libags_gui_a-ags_waveform.obj: src/ags/widget/ags_waveform.c
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_gui_a_CFLAGS) $(CFLAGS) -c -o libags_gui_a-ags_waveform.obj `if test -f 'src/ags/widget/ags_waveform.c'; then $(CYGPATH_W) 'src/ags/widget/ags_waveform.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/widget/ags_waveform.c'; fi`
 
+libags_thread_a-ags_thread_application_context.o: src/ags/thread/ags_thread_application_context.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -MT libags_thread_a-ags_thread_application_context.o -MD -MP -MF $(DEPDIR)/libags_thread_a-ags_thread_application_context.Tpo -c -o libags_thread_a-ags_thread_application_context.o `test -f 'src/ags/thread/ags_thread_application_context.c' || echo '$(srcdir)/'`src/ags/thread/ags_thread_application_context.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_thread_a-ags_thread_application_context.Tpo $(DEPDIR)/libags_thread_a-ags_thread_application_context.Po
+#	$(AM_V_CC)source='src/ags/thread/ags_thread_application_context.c' object='libags_thread_a-ags_thread_application_context.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -c -o libags_thread_a-ags_thread_application_context.o `test -f 'src/ags/thread/ags_thread_application_context.c' || echo '$(srcdir)/'`src/ags/thread/ags_thread_application_context.c
+
+libags_thread_a-ags_thread_application_context.obj: src/ags/thread/ags_thread_application_context.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -MT libags_thread_a-ags_thread_application_context.obj -MD -MP -MF $(DEPDIR)/libags_thread_a-ags_thread_application_context.Tpo -c -o libags_thread_a-ags_thread_application_context.obj `if test -f 'src/ags/thread/ags_thread_application_context.c'; then $(CYGPATH_W) 'src/ags/thread/ags_thread_application_context.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/thread/ags_thread_application_context.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_thread_a-ags_thread_application_context.Tpo $(DEPDIR)/libags_thread_a-ags_thread_application_context.Po
+#	$(AM_V_CC)source='src/ags/thread/ags_thread_application_context.c' object='libags_thread_a-ags_thread_application_context.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -c -o libags_thread_a-ags_thread_application_context.obj `if test -f 'src/ags/thread/ags_thread_application_context.c'; then $(CYGPATH_W) 'src/ags/thread/ags_thread_application_context.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/thread/ags_thread_application_context.c'; fi`
+
 libags_thread_a-ags_async_queue.o: src/ags/thread/ags_async_queue.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -MT libags_thread_a-ags_async_queue.o -MD -MP -MF $(DEPDIR)/libags_thread_a-ags_async_queue.Tpo -c -o libags_thread_a-ags_async_queue.o `test -f 'src/ags/thread/ags_async_queue.c' || echo '$(srcdir)/'`src/ags/thread/ags_async_queue.c
 	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_thread_a-ags_async_queue.Tpo $(DEPDIR)/libags_thread_a-ags_async_queue.Po
@@ -4784,20 +4839,6 @@ libags_thread_a-ags_export_thread.obj: src/ags/thread/ags_export_thread.c
 #	$(AM_V_CC)source='src/ags/thread/ags_export_thread.c' object='libags_thread_a-ags_export_thread.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -c -o libags_thread_a-ags_export_thread.obj `if test -f 'src/ags/thread/ags_export_thread.c'; then $(CYGPATH_W) 'src/ags/thread/ags_export_thread.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/thread/ags_export_thread.c'; fi`
-
-libags_thread_a-ags_gui_task_thread.o: src/ags/thread/ags_gui_task_thread.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -MT libags_thread_a-ags_gui_task_thread.o -MD -MP -MF $(DEPDIR)/libags_thread_a-ags_gui_task_thread.Tpo -c -o libags_thread_a-ags_gui_task_thread.o `test -f 'src/ags/thread/ags_gui_task_thread.c' || echo '$(srcdir)/'`src/ags/thread/ags_gui_task_thread.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_thread_a-ags_gui_task_thread.Tpo $(DEPDIR)/libags_thread_a-ags_gui_task_thread.Po
-#	$(AM_V_CC)source='src/ags/thread/ags_gui_task_thread.c' object='libags_thread_a-ags_gui_task_thread.o' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -c -o libags_thread_a-ags_gui_task_thread.o `test -f 'src/ags/thread/ags_gui_task_thread.c' || echo '$(srcdir)/'`src/ags/thread/ags_gui_task_thread.c
-
-libags_thread_a-ags_gui_task_thread.obj: src/ags/thread/ags_gui_task_thread.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -MT libags_thread_a-ags_gui_task_thread.obj -MD -MP -MF $(DEPDIR)/libags_thread_a-ags_gui_task_thread.Tpo -c -o libags_thread_a-ags_gui_task_thread.obj `if test -f 'src/ags/thread/ags_gui_task_thread.c'; then $(CYGPATH_W) 'src/ags/thread/ags_gui_task_thread.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/thread/ags_gui_task_thread.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_thread_a-ags_gui_task_thread.Tpo $(DEPDIR)/libags_thread_a-ags_gui_task_thread.Po
-#	$(AM_V_CC)source='src/ags/thread/ags_gui_task_thread.c' object='libags_thread_a-ags_gui_task_thread.obj' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -c -o libags_thread_a-ags_gui_task_thread.obj `if test -f 'src/ags/thread/ags_gui_task_thread.c'; then $(CYGPATH_W) 'src/ags/thread/ags_gui_task_thread.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/thread/ags_gui_task_thread.c'; fi`
 
 libags_thread_a-ags_gui_thread.o: src/ags/thread/ags_gui_thread.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -MT libags_thread_a-ags_gui_thread.o -MD -MP -MF $(DEPDIR)/libags_thread_a-ags_gui_thread.Tpo -c -o libags_thread_a-ags_gui_thread.o `test -f 'src/ags/thread/ags_gui_thread.c' || echo '$(srcdir)/'`src/ags/thread/ags_gui_thread.c
@@ -5008,6 +5049,20 @@ gsequencer-ags_server.obj: src/ags/server/ags_server.c
 #	$(AM_V_CC)source='src/ags/server/ags_server.c' object='gsequencer-ags_server.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_server.obj `if test -f 'src/ags/server/ags_server.c'; then $(CYGPATH_W) 'src/ags/server/ags_server.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/server/ags_server.c'; fi`
+
+gsequencer-ags_xorg_application_context.o: src/ags/X/ags_xorg_application_context.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_xorg_application_context.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_xorg_application_context.Tpo -c -o gsequencer-ags_xorg_application_context.o `test -f 'src/ags/X/ags_xorg_application_context.c' || echo '$(srcdir)/'`src/ags/X/ags_xorg_application_context.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_xorg_application_context.Tpo $(DEPDIR)/gsequencer-ags_xorg_application_context.Po
+#	$(AM_V_CC)source='src/ags/X/ags_xorg_application_context.c' object='gsequencer-ags_xorg_application_context.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_xorg_application_context.o `test -f 'src/ags/X/ags_xorg_application_context.c' || echo '$(srcdir)/'`src/ags/X/ags_xorg_application_context.c
+
+gsequencer-ags_xorg_application_context.obj: src/ags/X/ags_xorg_application_context.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_xorg_application_context.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_xorg_application_context.Tpo -c -o gsequencer-ags_xorg_application_context.obj `if test -f 'src/ags/X/ags_xorg_application_context.c'; then $(CYGPATH_W) 'src/ags/X/ags_xorg_application_context.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/ags_xorg_application_context.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_xorg_application_context.Tpo $(DEPDIR)/gsequencer-ags_xorg_application_context.Po
+#	$(AM_V_CC)source='src/ags/X/ags_xorg_application_context.c' object='gsequencer-ags_xorg_application_context.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_xorg_application_context.obj `if test -f 'src/ags/X/ags_xorg_application_context.c'; then $(CYGPATH_W) 'src/ags/X/ags_xorg_application_context.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/ags_xorg_application_context.c'; fi`
 
 gsequencer-ags_audio_preferences_callbacks.o: src/ags/X/ags_audio_preferences_callbacks.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_audio_preferences_callbacks.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_audio_preferences_callbacks.Tpo -c -o gsequencer-ags_audio_preferences_callbacks.o `test -f 'src/ags/X/ags_audio_preferences_callbacks.c' || echo '$(srcdir)/'`src/ags/X/ags_audio_preferences_callbacks.c

@@ -18,13 +18,14 @@
 
 #include <ags/audio/ags_devout.h>
 
+#include <ags/object/ags_application_context.h>
 #include <ags-lib/object/ags_connectable.h>
 
 #include <ags/main.h>
 
+#include <ags/object/ags_config.h>
 #include <ags/object/ags_soundcard.h>
 
-#include <ags/audio/ags_config.h>
 #include <ags/audio/ags_notation.h>
 
 #include <sys/stat.h>
@@ -105,7 +106,7 @@ enum{
   PROP_ATTACK,
 };
 
-extern AgsConfig *config;
+extern AgsConfig *ags_config;
 
 static gpointer ags_devout_parent_class = NULL;
 
@@ -179,14 +180,14 @@ ags_devout_class_init(AgsDevoutClass *devout)
   /**
    * AgsDevout:main:
    *
-   * The assigned #AgsMain
+   * The assigned #AgsApplicationContext
    * 
    * Since: 0.4.0
    */
   param_spec = g_param_spec_object("main\0",
 				   "the main object\0",
 				   "The main object\0",
-				   AGS_TYPE_MAIN,
+				   AGS_TYPE_APPLICATION_CONTEXT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_MAIN,
@@ -394,23 +395,23 @@ ags_devout_init(AgsDevout *devout)
   devout->flags = (AGS_DEVOUT_ALSA);
 
   /* quality */
-  devout->dsp_channels = g_ascii_strtoull(ags_config_get(config,
+  devout->dsp_channels = g_ascii_strtoull(ags_config_get(ags_config,
 							 AGS_CONFIG_DEVOUT,
 							 "dsp-channels\0"),
 					  NULL,
 					  10);
-  devout->pcm_channels = g_ascii_strtoull(ags_config_get(config,
+  devout->pcm_channels = g_ascii_strtoull(ags_config_get(ags_config,
 							 AGS_CONFIG_DEVOUT,
 							 "pcm-channels\0"),
 					  NULL,
 					  10);
   devout->bits = AGS_DEVOUT_DEFAULT_FORMAT;
-  devout->buffer_size = g_ascii_strtoull(ags_config_get(config,
+  devout->buffer_size = g_ascii_strtoull(ags_config_get(ags_config,
 							AGS_CONFIG_DEVOUT,
 							"buffer-size\0"),
 					 NULL,
 					 10);
-  devout->frequency = g_ascii_strtoull(ags_config_get(config,
+  devout->frequency = g_ascii_strtoull(ags_config_get(ags_config,
 						      AGS_CONFIG_DEVOUT,
 						      "samplerate\0"),
 				       NULL,
@@ -418,7 +419,7 @@ ags_devout_init(AgsDevout *devout)
 
   //  devout->out.oss.device = NULL;
   devout->out.alsa.handle = NULL;
-  devout->out.alsa.device = g_strdup(ags_config_get(config,
+  devout->out.alsa.device = g_strdup(ags_config_get(ags_config,
 						    AGS_CONFIG_DEVOUT,
 						    "alsa-handle\0"));
 
@@ -464,7 +465,7 @@ ags_devout_init(AgsDevout *devout)
   devout->tic_counter = 0;
 
   /* parent */
-  devout->ags_main = NULL;
+  devout->application_context = NULL;
 
   /* all AgsAudio */
   devout->audio = NULL;
@@ -485,23 +486,23 @@ ags_devout_set_property(GObject *gobject,
   switch(prop_id){
   case PROP_MAIN:
     {
-      AgsMain *ags_main;
+      AgsApplicationContext *application_context;
 
-      ags_main = g_value_get_object(value);
+      application_context = g_value_get_object(value);
 
-      if(devout->ags_main == ags_main){
+      if(devout->application_context == application_context){
 	return;
       }
 
-      if(devout->ags_main != NULL){
-	g_object_unref(G_OBJECT(devout->ags_main));
+      if(devout->application_context != NULL){
+	g_object_unref(G_OBJECT(devout->application_context));
       }
 
-      if(ags_main != NULL){
-	g_object_ref(G_OBJECT(ags_main));
+      if(application_context != NULL){
+	g_object_ref(G_OBJECT(application_context));
       }
 
-      devout->ags_main = ags_main;
+      devout->application_context = application_context;
     }
     break;
   case PROP_DEVICE:
@@ -1477,26 +1478,22 @@ ags_devout_remove_audio(AgsDevout *devout, GObject *audio)
 
 /**
  * ags_devout_new:
- * @ags_main: the #AgsMain
+ * @application_context: the #AgsApplicationContext
  *
- * Creates an #AgsDevout, refering to @ags_main.
+ * Creates an #AgsDevout, refering to @application_context.
  *
  * Returns: a new #AgsDevout
  *
  * Since: 0.3
  */
 AgsDevout*
-ags_devout_new(GObject *ags_main)
+ags_devout_new(GObject *application_context)
 {
   AgsDevout *devout;
 
-  devout = (AgsDevout *) g_object_new(AGS_TYPE_DEVOUT, NULL);
+  devout = (AgsDevout *) g_object_new(AGS_TYPE_DEVOUT,
+				      "application_context\0", application_context,
+				      NULL);
   
-  if(ags_main != NULL){
-    //TODO:JK: use set_property
-    g_object_ref(G_OBJECT(ags_main));
-    devout->ags_main = ags_main;
-  }
-
   return(devout);
 }

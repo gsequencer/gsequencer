@@ -154,7 +154,7 @@ struct _AgsDevout
     }alsa;
   }out;
 
-  GObject *ags_main;
+  GObject *application_context;
   
   GList *audio;
 };
@@ -228,6 +228,6 @@ void ags_devout_add_audio(AgsDevout *devout, GObject *audio);
 
 void ags_devout_remove_audio(AgsDevout *devout, GObject *audio);
 
-AgsDevout* ags_devout_new(GObject *ags_main);
+AgsDevout* ags_devout_new(GObject *application_context);
 
 #endif /*__AGS_DEVOUT_H__*/

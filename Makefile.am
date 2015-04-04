@@ -95,7 +95,9 @@ deprecated_ags_object_h_sources =
 
 ags_object_h_sources = \
 	$(deprecated_ags_object_h_sources) \
-	src/ags/object/ags_applicable.h		\
+	src/ags/object/ags_application_context.h	\
+	src/ags/object/ags_config.h			\
+	src/ags/object/ags_applicable.h			\
 	src/ags/object/ags_countable.h			\
 	src/ags/object/ags_dynamic_connectable.h	\
 	src/ags/object/ags_effect.h			\
@@ -118,7 +120,9 @@ deprecated_ags_object_c_sources =
 
 ags_object_c_sources = \
 	$(deprecated_ags_object_c_sources) \
-	src/ags/object/ags_applicable.c		\
+	src/ags/object/ags_application_context.c	\
+	src/ags/object/ags_config.c			\
+	src/ags/object/ags_applicable.c			\
 	src/ags/object/ags_countable.c			\
 	src/ags/object/ags_dynamic_connectable.c	\
 	src/ags/object/ags_effect.c			\
@@ -157,13 +161,13 @@ deprecated_ags_thread_h_sources = \
 
 ags_thread_h_sources = \
 	$(deprecated_ags_thread_h_sources) \
+	src/ags/thread/ags_thread_application_context.h	\
 	src/ags/thread/ags_async_queue.h		\
-	src/ags/thread/ags_audio_loop.h		\
+	src/ags/thread/ags_audio_loop.h			\
 	src/ags/thread/ags_autosave_thread.h		\
 	src/ags/thread/ags_devout_thread.h		\
 	src/ags/thread/ags_export_thread.h		\
-	src/ags/thread/ags_gui_task_thread.h		\
-	src/ags/thread/ags_gui_thread.h		\
+	src/ags/thread/ags_gui_thread.h			\
 	src/ags/thread/ags_iterator_thread.h		\
 	src/ags/thread/ags_record_thread.h		\
 	src/ags/thread/ags_recycling_thread_callbacks.h \
@@ -179,13 +183,13 @@ deprecated_ags_thread_c_sources =
 
 ags_thread_c_sources = \
 	$(deprecated_ags_thread_c_sources) \
+	src/ags/thread/ags_thread_application_context.c	\
 	src/ags/thread/ags_async_queue.c		\
-	src/ags/thread/ags_audio_loop.c		\
+	src/ags/thread/ags_audio_loop.c			\
 	src/ags/thread/ags_autosave_thread.c		\
 	src/ags/thread/ags_devout_thread.c		\
 	src/ags/thread/ags_export_thread.c		\
-	src/ags/thread/ags_gui_task_thread.c		\
-	src/ags/thread/ags_gui_thread.c		\
+	src/ags/thread/ags_gui_thread.c			\
 	src/ags/thread/ags_iterator_thread.c		\
 	src/ags/thread/ags_record_thread.c		\
 	src/ags/thread/ags_recycling_thread_callbacks.c \
@@ -252,13 +256,13 @@ deprecated_ags_audio_h_sources = \
 
 ags_audio_h_sources = 		\
 	$(deprecated_ags_audio_h_sources) \
+	src/ags/audio/ags_audio_application_context.h	\
 	src/ags/audio/ags_acceleration.h	\
 	src/ags/audio/ags_audio.h		\
 	src/ags/audio/ags_audio_signal.h	\
-	src/ags/audio/ags_automation.h	\
+	src/ags/audio/ags_automation.h		\
 	src/ags/audio/ags_channel.h		\
 	src/ags/audio/ags_channel_iter.h	\
-	src/ags/audio/ags_config.h		\
 	src/ags/audio/ags_devout.h		\
 	src/ags/audio/ags_input.h		\
 	src/ags/audio/ags_notation.h		\
@@ -296,14 +300,14 @@ deprecated_ags_audio_c_sources =  \
 
 ags_audio_c_sources =  		\
 	$(deprecated_ags_audio_c_sources) \
+	src/ags/audio/ags_audio_application_context.c	\
 	src/ags/audio/ags_acceleration.c	\
-	src/ags/object/ags_playable.c			\
+	src/ags/object/ags_playable.c		\
 	src/ags/audio/ags_audio.c		\
 	src/ags/audio/ags_audio_signal.c	\
-	src/ags/audio/ags_automation.c	\
+	src/ags/audio/ags_automation.c		\
 	src/ags/audio/ags_channel.c		\
 	src/ags/audio/ags_channel_iter.c	\
-	src/ags/audio/ags_config.c		\
 	src/ags/audio/ags_devout.c		\
 	src/ags/audio/ags_input.c		\
 	src/ags/audio/ags_notation.c		\
@@ -626,6 +630,7 @@ deprecated_gsequencer_xorg_h_sources =
 
 gsequencer_xorg_h_sources = \
 	$(deprecated_gsequencer_xorg_h_sources)	\
+	src/ags/X/ags_xorg_application_context.h	\
 	src/ags/X/ags_audio_preferences_callbacks.h	\
 	src/ags/X/ags_audio_preferences.h		\
 	src/ags/X/ags_automation_editor_callbacks.h	\
@@ -646,7 +651,7 @@ gsequencer_xorg_h_sources = \
 	src/ags/X/ags_export_window.h			\
 	src/ags/X/ags_generic_preferences_callbacks.h	\
 	src/ags/X/ags_generic_preferences.h		\
-	src/ags/X/ags_ladspa_browser_callbacks.h		\
+	src/ags/X/ags_ladspa_browser_callbacks.h	\
 	src/ags/X/ags_ladspa_browser.h			\
 	src/ags/X/ags_line_callbacks.h 			\
 	src/ags/X/ags_line_editor_callbacks.h		\
@@ -660,14 +665,14 @@ gsequencer_xorg_h_sources = \
 	src/ags/X/ags_link_collection_editor.h		\
 	src/ags/X/ags_link_editor_callbacks.h		\
 	src/ags/X/ags_link_editor.h			\
-	src/ags/X/ags_listing_editor_callbacks.h		\
+	src/ags/X/ags_listing_editor_callbacks.h	\
 	src/ags/X/ags_listing_editor.h			\
-	src/ags/X/ags_machine_callbacks.h			\
-	src/ags/X/ags_machine_editor_callbacks.h		\
+	src/ags/X/ags_machine_callbacks.h		\
+	src/ags/X/ags_machine_editor_callbacks.h	\
 	src/ags/X/ags_machine_editor.h			\
 	src/ags/X/ags_machine.h				\
 	src/ags/X/ags_menu_bar_callbacks.h		\
-	src/ags/X/ags_menu_bar.h 				\
+	src/ags/X/ags_menu_bar.h 			\
 	src/ags/X/ags_navigation_callbacks.h		\
 	src/ags/X/ags_navigation.h			\
 	src/ags/X/ags_pad_callbacks.h			\
@@ -682,82 +687,83 @@ gsequencer_xorg_h_sources = \
 	src/ags/X/ags_preferences.h			\
 	src/ags/X/ags_property_collection_editor_callbacks.h \
 	src/ags/X/ags_property_collection_editor.h	\
-	src/ags/X/ags_property_editor_callbacks.h		\
+	src/ags/X/ags_property_editor_callbacks.h	\
 	src/ags/X/ags_property_editor.h			\
 	src/ags/X/ags_property_listing_editor.h		\
 	src/ags/X/ags_resize_editor.h			\
 	src/ags/X/ags_server_preferences_callbacks.h	\
 	src/ags/X/ags_server_preferences.h		\
-	src/ags/X/ags_window_callbacks.h			\
+	src/ags/X/ags_window_callbacks.h		\
 	src/ags/X/ags_window.h
 
 deprecated_gsequencer_xorg_c_sources = 
 
 gsequencer_xorg_c_sources = \
 	$(deprecated_gsequencer_xorg_c_sources) 	\
-	src/ags/X/ags_audio_preferences_callbacks.c		\
-	src/ags/X/ags_audio_preferences.c			\
-	src/ags/X/ags_automation_editor_callbacks.c		\
-	src/ags/X/ags_automation_editor.c			\
-	src/ags/X/ags_editor_callbacks.c			\
+	src/ags/X/ags_xorg_application_context.c	\
+	src/ags/X/ags_audio_preferences_callbacks.c	\
+	src/ags/X/ags_audio_preferences.c		\
+	src/ags/X/ags_automation_editor_callbacks.c	\
+	src/ags/X/ags_automation_editor.c		\
+	src/ags/X/ags_editor_callbacks.c		\
 	src/ags/X/ags_editor.c				\
 	src/ags/X/ags_effect_bridge_callbacks.c		\
 	src/ags/X/ags_effect_bridge.c			\
 	src/ags/X/ags_effect_bulk_callbacks.c		\
-	src/ags/X/ags_effect_bulk.c				\
-	src/ags/X/ags_bulk_member.c				\
-	src/ags/X/ags_bulk_member_callbacks.c				\
+	src/ags/X/ags_effect_bulk.c			\
+	src/ags/X/ags_bulk_member.c			\
+	src/ags/X/ags_bulk_member_callbacks.c		\
 	src/ags/X/ags_effect_line_callbacks.c		\
-	src/ags/X/ags_effect_line.c				\
+	src/ags/X/ags_effect_line.c			\
 	src/ags/X/ags_effect_pad_callbacks.c		\
-	src/ags/X/ags_effect_pad.c				\
+	src/ags/X/ags_effect_pad.c			\
 	src/ags/X/ags_export_window_callbacks.c		\
 	src/ags/X/ags_export_window.c			\
 	src/ags/X/ags_generic_preferences_callbacks.c	\
-	src/ags/X/ags_generic_preferences.c			\
-	src/ags/X/ags_ladspa_browser_callbacks.c		\
+	src/ags/X/ags_generic_preferences.c		\
+	src/ags/X/ags_ladspa_browser_callbacks.c	\
 	src/ags/X/ags_ladspa_browser.c			\
 	src/ags/X/ags_line_callbacks.c 			\
 	src/ags/X/ags_line_editor_callbacks.c		\
-	src/ags/X/ags_line_editor.c				\
+	src/ags/X/ags_line_editor.c			\
 	src/ags/X/ags_line.c				\
 	src/ags/X/ags_line_member_callbacks.c		\
 	src/ags/X/ags_line_member_editor_callbacks.c	\
-	src/ags/X/ags_line_member_editor.c			\
-	src/ags/X/ags_line_member.c				\
+	src/ags/X/ags_line_member_editor.c		\
+	src/ags/X/ags_line_member.c			\
 	src/ags/X/ags_link_collection_editor_callbacks.c	\
 	src/ags/X/ags_link_collection_editor.c		\
 	src/ags/X/ags_link_editor_callbacks.c		\
-	src/ags/X/ags_link_editor.c				\
-	src/ags/X/ags_listing_editor_callbacks.c		\
+	src/ags/X/ags_link_editor.c			\
+	src/ags/X/ags_listing_editor_callbacks.c	\
 	src/ags/X/ags_listing_editor.c			\
-	src/ags/X/ags_machine_callbacks.c			\
-	src/ags/X/ags_machine_editor_callbacks.c		\
+	src/ags/X/ags_machine_callbacks.c		\
+	src/ags/X/ags_machine_editor_callbacks.c	\
 	src/ags/X/ags_machine_editor.c			\
 	src/ags/X/ags_machine.c				\
-	src/ags/X/ags_menu_bar_callbacks.c			\
-	src/ags/X/ags_menu_bar.c 				\
+	src/ags/X/ags_menu_bar_callbacks.c		\
+	src/ags/X/ags_menu_bar.c 			\
 	src/ags/X/ags_navigation_callbacks.c		\
-	src/ags/X/ags_navigation.c				\
+	src/ags/X/ags_navigation.c			\
 	src/ags/X/ags_pad_callbacks.c			\
 	src/ags/X/ags_pad_editor_callbacks.c 		\
-	src/ags/X/ags_pad_editor.c				\
-	src/ags/X/ags_pad.c					\
+	src/ags/X/ags_pad_editor.c			\
+	src/ags/X/ags_pad.c				\
 	src/ags/X/ags_performance_preferences_callbacks.c	\
 	src/ags/X/ags_performance_preferences.c		\
 	src/ags/X/ags_plugin_preferences_callbacks.c	\
-	src/ags/X/ags_plugin_preferences.c			\
+	src/ags/X/ags_plugin_preferences.c		\
 	src/ags/X/ags_preferences_callbacks.c		\
-	src/ags/X/ags_preferences.c				\
+	src/ags/X/ags_preferences.c			\
 	src/ags/X/ags_property_collection_editor_callbacks.c \
-	src/ags/X/ags_property_collection_editor.c		\
-	src/ags/X/ags_property_editor_callbacks.c		\
+	src/ags/X/ags_property_collection_editor.c	\
+	src/ags/X/ags_property_editor_callbacks.c	\
 	src/ags/X/ags_property_editor.c			\
 	src/ags/X/ags_property_listing_editor.c		\
 	src/ags/X/ags_resize_editor.c			\
 	src/ags/X/ags_server_preferences_callbacks.c	\
-	src/ags/X/ags_server_preferences.c			\
-	src/ags/X/ags_window_callbacks.c			\
+	src/ags/X/ags_server_preferences.c		\
+	src/ags/X/ags_window_callbacks.c		\
 	src/ags/X/ags_window.c
 
 deprecated_gsequencer_machine_h_sources =
@@ -766,20 +772,20 @@ gsequencer_machine_h_sources = \
 	$(deprecated_gsequencer_machine_h_sources) \
 	src/ags/X/machine/ags_drum_callbacks.h			\
 	src/ags/X/machine/ags_drum.h				\
-	src/ags/X/machine/ags_drum_input_line_callbacks.h		\
+	src/ags/X/machine/ags_drum_input_line_callbacks.h	\
 	src/ags/X/machine/ags_drum_input_line.h			\
-	src/ags/X/machine/ags_drum_input_pad_callbacks.h		\
+	src/ags/X/machine/ags_drum_input_pad_callbacks.h	\
 	src/ags/X/machine/ags_drum_input_pad.h			\
 	src/ags/X/machine/ags_drum_output_line_callbacks.h	\
-	src/ags/X/machine/ags_drum_output_line.h			\
-	src/ags/X/machine/ags_drum_output_pad_callbacks.h		\
+	src/ags/X/machine/ags_drum_output_line.h		\
+	src/ags/X/machine/ags_drum_output_pad_callbacks.h	\
 	src/ags/X/machine/ags_drum_output_pad.h			\
-	src/ags/X/machine/ags_ffplayer_bridge_callbacks.h		\
+	src/ags/X/machine/ags_ffplayer_bridge_callbacks.h	\
 	src/ags/X/machine/ags_ffplayer_bridge.h			\
 	src/ags/X/machine/ags_ffplayer_bulk_input_callbacks.h	\
 	src/ags/X/machine/ags_ffplayer_bulk_input.h		\
 	src/ags/X/machine/ags_ffplayer_callbacks.h		\
-	src/ags/X/machine/ags_ffplayer.h				\
+	src/ags/X/machine/ags_ffplayer.h			\
 	src/ags/X/machine/ags_ffplayer_input_line_callbacks.h	\
 	src/ags/X/machine/ags_ffplayer_input_line.h		\
 	src/ags/X/machine/ags_ffplayer_input_pad_callbacks.h	\
@@ -789,29 +795,29 @@ gsequencer_machine_h_sources = \
 	src/ags/X/machine/ags_matrix_bridge_callbacks.h		\
 	src/ags/X/machine/ags_matrix_bridge.h			\
 	src/ags/X/machine/ags_matrix_bulk_input_callbacks.h	\
-	src/ags/X/machine/ags_matrix_bulk_input.h			\
-	src/ags/X/machine/ags_matrix_callbacks.h			\
+	src/ags/X/machine/ags_matrix_bulk_input.h		\
+	src/ags/X/machine/ags_matrix_callbacks.h		\
 	src/ags/X/machine/ags_matrix.h				\
 	src/ags/X/machine/ags_mixer_callbacks.h			\
 	src/ags/X/machine/ags_mixer.h				\
-	src/ags/X/machine/ags_mixer_input_line.h			\
+	src/ags/X/machine/ags_mixer_input_line.h		\
 	src/ags/X/machine/ags_mixer_input_pad.h			\
 	src/ags/X/machine/ags_oscillator_callbacks.h		\
 	src/ags/X/machine/ags_oscillator.h			\
 	src/ags/X/machine/ags_panel_callbacks.h			\
 	src/ags/X/machine/ags_panel.h				\
-	src/ags/X/machine/ags_panel_input_line.h			\
+	src/ags/X/machine/ags_panel_input_line.h		\
 	src/ags/X/machine/ags_panel_input_pad.h			\
 	src/ags/X/machine/ags_synth_bridge_callbacks.h		\
 	src/ags/X/machine/ags_synth_bridge.h			\
 	src/ags/X/machine/ags_synth_bulk_output_callbacks.h	\
-	src/ags/X/machine/ags_synth_bulk_output.h			\
+	src/ags/X/machine/ags_synth_bulk_output.h		\
 	src/ags/X/machine/ags_synth_callbacks.h			\
 	src/ags/X/machine/ags_synth.h				\
-	src/ags/X/machine/ags_synth_input_line.h			\
+	src/ags/X/machine/ags_synth_input_line.h		\
 	src/ags/X/machine/ags_synth_input_pad.h			\
 	src/ags/X/machine/ags_synth_output_line_callbacks.h	\
-	src/ags/X/machine/ags_synth_output_line.h			\
+	src/ags/X/machine/ags_synth_output_line.h		\
 	src/ags/X/machine/ags_synth_output_pad_callbacks.h	\
 	src/ags/X/machine/ags_synth_output_pad.h
 

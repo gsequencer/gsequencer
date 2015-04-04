@@ -22,15 +22,19 @@
 
 #include <ags/lib/ags_list.h>
 
+#include <ags/object/ags_application_context.h>
+#include <ags/object/ags_marshal.h>
 #include <ags-lib/object/ags_connectable.h>
 #include <ags/object/ags_dynamic_connectable.h>
-#include <ags/object/ags_marshal.h>
 
 #include <ags/plugin/ags_ladspa_manager.h>
 
 #include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_task_thread.h>
 #include <ags/thread/ags_recycling_thread.h>
+
+#include <ags/server/ags_server_application_context.h>
+#include <ags/server/ags_server.h>
 
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
@@ -416,7 +420,7 @@ ags_channel_get_property(GObject *gobject,
 void
 ags_channel_add_to_registry(AgsConnectable *connectable)
 {
-  AgsMain *ags_main;
+  AgsApplicationContext *application_context;
   AgsServer *server;
   AgsChannel *channel;
   AgsRegistryEntry *entry;
@@ -424,9 +428,18 @@ ags_channel_add_to_registry(AgsConnectable *connectable)
   
   channel = AGS_CHANNEL(connectable);
 
-  ags_main = AGS_MAIN(AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout)->ags_main);
+  application_context = AGS_APPLICATION_CONTEXT(AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout)->application_context);
 
-  server = ags_main->server;
+  list = application_context->sibling;
+
+  while(list != NULL){
+    if(AGS_IS_SERVER_APPLICATION_CONTEXT(list->data)){
+      server = AGS_SERVER_APPLICATION_CONTEXT(list->data)->server;
+      break;
+    }
+
+    list = list->next;
+  }
 
   entry = ags_registry_entry_alloc(server->registry);
   g_value_set_object(&(entry->entry),
@@ -1020,7 +1033,7 @@ ags_channel_real_add_effect(AgsChannel *channel,
   LADSPA_Data lower_bound, upper_bound;
   unsigned long index;
 
-  audio_loop = (AgsAudioLoop *) AGS_MAIN(AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout)->ags_main)->main_loop;
+  audio_loop = (AgsAudioLoop *) AGS_APPLICATION_CONTEXT(AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout)->application_context)->main_loop;
   task_thread = (AgsTaskThread *) audio_loop->task_thread;
 
   index = ags_ladspa_manager_effect_index(filename,
@@ -1165,7 +1178,7 @@ ags_channel_real_remove_effect(AgsChannel *channel,
   GList *play_ladspa, *recall_ladspa;
   GList *task;
   
-  audio_loop = (AgsAudioLoop *) AGS_MAIN(AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout)->ags_main)->main_loop;
+  audio_loop = (AgsAudioLoop *) AGS_APPLICATION_CONTEXT(AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout)->application_context)->main_loop;
   task_thread = (AgsTaskThread *) audio_loop->task_thread;
 
   play_ladspa = ags_recall_template_find_type(channel->play,
