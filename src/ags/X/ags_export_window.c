@@ -61,7 +61,7 @@ gboolean ags_export_window_delete_event(GtkWidget *widget, GdkEventAny *event);
 enum{
   PROP_0,
   PROP_DEVOUT,
-  PROP_MAIN,
+  PROP_APPLICATION_CONTEXT,
 };
 
 static gpointer ags_export_window_parent_class = NULL;
@@ -137,19 +137,19 @@ ags_export_window_class_init(AgsExportWindowClass *export_window)
 				  param_spec);
 
   /**
-   * AgsExportWindow:ags-main:
+   * AgsExportWindow:ags-application-context:
    *
-   * The assigned #AgsMain to give control of application.
+   * The assigned #AgsApplicationContext to give control of application.
    * 
    * Since: 0.4
    */
-  param_spec = g_param_spec_object("ags-main\0",
-				   "assigned ags main\0",
-				   "The AgsMain it is assigned with\0",
+  param_spec = g_param_spec_object("ags-application-context\0",
+				   "assigned ags application context\0",
+				   "The AgsApplicationContext it is assigned with\0",
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_MAIN,
+				  PROP_APPLICATION_CONTEXT,
 				  param_spec);
 
 
@@ -309,7 +309,7 @@ ags_export_window_init(AgsExportWindow *export_window)
 		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
 		   0, 0);
 
-  bpm = AGS_DEVOUT_DEFAULT_BPM; // AGS_NAVIGATION(AGS_WINDOW(AGS_MAIN(export_window->ags_main)->window)->navigation)->bpm->adjustment->value
+  bpm = AGS_DEVOUT_DEFAULT_BPM; // AGS_NAVIGATION(AGS_WINDOW(AGS_APPLICATION_CONTEXT(export_window->application_context)->window)->navigation)->bpm->adjustment->value
   str = ags_navigation_tact_to_time_string(0.0,
 					   bpm);
   export_window->duration = gtk_label_new(str);
@@ -383,24 +383,24 @@ ags_export_window_set_property(GObject *gobject,
       export_window->devout = devout;
     }
     break;
-  case PROP_MAIN:
+  case PROP_APPLICATION_CONTEXT:
     {
-      AgsMain *ags_main;
+      AgsApplicationContext *application_context;
 
-      ags_main = g_value_get_object(value);
+      application_context = g_value_get_object(value);
 
-      if(export_window->ags_main == ags_main)
+      if(export_window->application_context == application_context)
 	return;
 
-      if(export_window->ags_main != NULL){
-	g_object_unref(export_window->ags_main);
+      if(export_window->application_context != NULL){
+	g_object_unref(export_window->application_context);
       }
 
-      if(ags_main != NULL){
-	g_object_ref(ags_main);
+      if(application_context != NULL){
+	g_object_ref(application_context);
       }
 
-      export_window->ags_main = ags_main;
+      export_window->application_context = application_context;
     }
     break;
   default:
@@ -423,8 +423,8 @@ ags_export_window_get_property(GObject *gobject,
   case PROP_DEVOUT:
     g_value_set_object(value, export_window->devout);
     break;
-  case PROP_MAIN:
-    g_value_set_object(value, export_window->ags_main);
+  case PROP_APPLICATION_CONTEXT:
+    g_value_set_object(value, export_window->application_context);
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);

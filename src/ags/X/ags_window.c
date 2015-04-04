@@ -1,4 +1,4 @@
-/* AGS - Advanced GTK Sequencer
+%%%%%/* AGS - Advanced GTK Sequencer
  * Copyright (C) 2005-2011 Joël Krähemann
  *
  * This program is free software; you can redistribute it and/or modify
@@ -64,7 +64,7 @@ static GList* ags_window_standard_machine_counter();
 enum{
   PROP_0,
   PROP_DEVOUT,
-  PROP_MAIN,
+  PROP_APPLICATION_CONTEXT,
 };
 
 static gpointer ags_window_parent_class = NULL;
@@ -132,13 +132,13 @@ ags_window_class_init(AgsWindowClass *window)
 				  PROP_DEVOUT,
 				  param_spec);
 
-  param_spec = g_param_spec_object("ags-main\0",
-				   "assigned ags_main\0",
-				   "The AgsMain it is assigned with\0",
+  param_spec = g_param_spec_object("application-context\0",
+				   "assigned application_context\0",
+				   "The AgsApplicationContext it is assigned with\0",
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_MAIN,
+				  PROP_APPLICATION_CONTEXT,
 				  param_spec);
 
 
@@ -173,7 +173,7 @@ ags_window_init(AgsWindow *window)
   	       "icon\0", gdk_pixbuf_new_from_file("./doc/images/jumper.png\0", &error),
   	       NULL);
 
-  window->ags_main = NULL;
+  window->application_context = NULL;
   window->devout = NULL;
 
   window->name = g_strdup("unnamed\0");
@@ -255,27 +255,27 @@ ags_window_set_property(GObject *gobject,
 		   NULL);
     }
     break;
-  case PROP_MAIN:
+  case PROP_APPLICATION_CONTEXT:
     {
-      AgsMain *ags_main;
+      AgsApplicationContext *application_context;
 
-      ags_main = g_value_get_object(value);
+      application_context = g_value_get_object(value);
 
-      if(window->ags_main == ags_main)
+      if(window->application_context == application_context)
 	return;
 
-      if(window->ags_main != NULL){
-	g_object_unref(window->ags_main);
+      if(window->application_context != NULL){
+	g_object_unref(window->application_context);
       }
 
-      if(ags_main != NULL){
-	g_object_ref(ags_main);
+      if(application_context != NULL){
+	g_object_ref(application_context);
       }
 
-      window->ags_main = ags_main;
+      window->application_context = application_context;
 
       g_object_set(G_OBJECT(window->export_window),
-		   "ags-main\0", ags_main,
+		   "application-context\0", application_context,
 		   NULL);
     }
     break;
@@ -299,8 +299,8 @@ ags_window_get_property(GObject *gobject,
   case PROP_DEVOUT:
     g_value_set_object(value, window->devout);
     break;
-  case PROP_MAIN:
-    g_value_set_object(value, window->ags_main);
+  case PROP_APPLICATION_CONTEXT:
+    g_value_set_object(value, window->application_context);
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
@@ -511,7 +511,7 @@ ags_machine_counter_alloc(gchar *version, gchar *build_id,
 
 /**
  * ags_window_new:
- * @ags_main: the application object.
+ * @application_context: the application object.
  *
  * Creates an #AgsWindow
  *
@@ -520,12 +520,12 @@ ags_machine_counter_alloc(gchar *version, gchar *build_id,
  * Since: 0.3
  */
 AgsWindow*
-ags_window_new(GObject *ags_main)
+ags_window_new(GObject *application_context)
 {
   AgsWindow *window;
 
   window = (AgsWindow *) g_object_new(AGS_TYPE_WINDOW,
-				      "ags-main", ags_main,
+				      "application-context", application_context,
 				      NULL);
 
   return(window);

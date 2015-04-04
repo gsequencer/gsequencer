@@ -424,7 +424,7 @@ ags_effect_line_real_add_effect(AgsEffectLine *effect_line,
   machine = gtk_widget_get_ancestor(effect_line,
 				    AGS_TYPE_MACHINE);
   
-  audio_loop = (AgsAudioLoop *) AGS_MAIN(AGS_DEVOUT(machine->audio->devout)->ags_main)->main_loop;
+  audio_loop = (AgsAudioLoop *) AGS_APPLICATION_CONTEXT(AGS_DEVOUT(machine->audio->devout)->application_context)->main_loop;
   task_thread = (AgsTaskThread *) audio_loop->task_thread;
 
   if(ags_recall_ladpsa_find(effect_line->channel->recall,

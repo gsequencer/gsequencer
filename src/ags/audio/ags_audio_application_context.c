@@ -394,6 +394,10 @@ ags_audio_application_context_set_value_callback(AgsConfig *config, gchar *group
 void
 ags_audio_application_context_register_types(AgsApplicationContext *application_context)
 {
+  ags_audio_loop_get_type();
+  ags_devout_thread_get_type();
+  ags_recycling_thread_get_type();
+
   /* register recalls */
   ags_play_audio_get_type();
   ags_play_channel_get_type();

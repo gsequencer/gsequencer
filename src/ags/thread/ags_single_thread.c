@@ -167,13 +167,13 @@ ags_single_thread_run(AgsThread *thread)
   single_thread = AGS_SINGLE_THREAD(thread);
 
   play_idle.tv_sec = 0;
-  play_idle.tv_nsec = floor((double) NSEC_PER_SEC / (double) AGS_AUDIO_LOOP_DEFAULT_JIFFIE);
+  play_idle.tv_nsec = floor((double) NSEC_PER_SEC / (double) AGS_SINGLE_THREAD_DEFAULT_JIFFIE);
 
   while((AGS_THREAD_RUNNING & (g_atomic_int_get(&thread->flags))) != 0){
     /* initial value to calculate timing */
     clock_gettime(CLOCK_MONOTONIC, &play_start);
 
-    list = single_thread->children;
+    list = AGS_THREAD(single_thread)->children;
 
     while(list != NULL){
       ags_thread_run(AGS_THREAD(list->data));
@@ -205,25 +205,25 @@ void
 ags_single_thread_stop(AgsThread *thread)
 {
   AgsSingleThread *single_thread;
-
+  GList *list;
+  
   single_thread = AGS_SINGLE_THREAD(thread);
 
-  ags_thread_stop((AgsThread *) single_thread->audio_loop);
+  list = AGS_THREAD(single_thread)->children;
 
-  ags_thread_stop((AgsThread *) single_thread->task_thread);
+  while(list != NULL){
+    ags_thread_run(AGS_THREAD(list->data));
 
-  ags_thread_stop((AgsThread *) single_thread->devout_thread);
-
-  ags_thread_stop((AgsThread *) single_thread->gui_thread);
+    list = list->next;
+  }    
 }
 
 AgsSingleThread*
-ags_single_thread_new(GObject *devout)
+ags_single_thread_new()
 {
   AgsSingleThread *single_thread;
 
   single_thread = (AgsSingleThread *) g_object_new(AGS_TYPE_SINGLE_THREAD,
-						   "devout\0", devout,
 						   NULL);
 
 
