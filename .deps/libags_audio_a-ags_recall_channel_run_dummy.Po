@@ -591,10 +591,11 @@ libags_audio_a-ags_recall_channel_run_dummy.o: \
  src/ags/thread/ags_devout_thread.h src/ags/thread/ags_iterator_thread.h \
  src/ags/audio/ags_recall_audio_run.h src/ags/audio/ags_recall_audio.h \
  src/ags/audio/ags_audio.h src/ags/audio/ags_recall_recycling_dummy.h \
- src/ags/audio/ags_recall_recycling.h \
- src/ags-lib/object/ags_connectable.h src/ags/main.h \
- src/ags/util/ags_id_generator.h src/ags/object/ags_dynamic_connectable.h \
- src/ags/object/ags_plugin.h src/ags/file/ags_file.h \
+ src/ags/audio/ags_recall_recycling.h src/ags/util/ags_id_generator.h \
+ src/ags/object/ags_application_context.h src/ags/lib/ags_log.h \
+ src/ags/object/ags_config.h src/ags/file/ags_file.h \
+ src/ags-lib/object/ags_connectable.h \
+ src/ags/object/ags_dynamic_connectable.h src/ags/object/ags_plugin.h \
  src/ags/file/ags_file_stock.h src/ags/widget/ags_led.h \
  src/ags/widget/ags_vindicator.h src/ags/widget/ags_indicator.h \
  src/ags/widget/ags_hindicator.h src/ags/widget/ags_waveform.h \
@@ -2047,17 +2048,21 @@ src/ags/audio/ags_recall_recycling_dummy.h:
 
 src/ags/audio/ags_recall_recycling.h:
 
-src/ags-lib/object/ags_connectable.h:
-
-src/ags/main.h:
-
 src/ags/util/ags_id_generator.h:
+
+src/ags/object/ags_application_context.h:
+
+src/ags/lib/ags_log.h:
+
+src/ags/object/ags_config.h:
+
+src/ags/file/ags_file.h:
+
+src/ags-lib/object/ags_connectable.h:
 
 src/ags/object/ags_dynamic_connectable.h:
 
 src/ags/object/ags_plugin.h:
-
-src/ags/file/ags_file.h:
 
 src/ags/file/ags_file_stock.h:
 

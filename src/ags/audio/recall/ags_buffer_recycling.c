@@ -150,8 +150,8 @@ void
 ags_buffer_recycling_init(AgsBufferRecycling *buffer_recycling)
 {
   AGS_RECALL(buffer_recycling)->name = "ags-buffer\0";
-  AGS_RECALL(buffer_recycling)->version = AGS_EFFECTS_DEFAULT_VERSION;
-  AGS_RECALL(buffer_recycling)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(buffer_recycling)->version = AGS_RECALL_DEFAULT_VERSION;
+  AGS_RECALL(buffer_recycling)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(buffer_recycling)->xml_type = "ags-buffer-recycling\0";
   AGS_RECALL(buffer_recycling)->port = NULL;
 

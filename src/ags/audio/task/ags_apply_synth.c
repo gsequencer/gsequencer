@@ -18,13 +18,12 @@
 
 #include <ags/audio/task/ags_apply_synth.h>
 
+#include <ags/object/ags_config.h>
 #include <ags-lib/object/ags_connectable.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_synths.h>
-
-#include <ags/audio/ags_config.h>
 
 #include <math.h>
 
@@ -37,7 +36,7 @@ void ags_apply_synth_finalize(GObject *gobject);
 
 void ags_apply_synth_launch(AgsTask *task);
 
-extern AgsConfig *config;
+extern AgsConfig *ags_config;
 
 /**
  * SECTION:ags_apply_synth
@@ -211,12 +210,12 @@ ags_apply_synth_launch(AgsTask *task)
   apply_synth = AGS_APPLY_SYNTH(task);
   channel = apply_synth->start_channel;
   devout = AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout);
-  buffer_size = g_ascii_strtoull(ags_config_get(config,
+  buffer_size = g_ascii_strtoull(ags_config_get(ags_config,
 						AGS_CONFIG_DEVOUT,
 						"buffer-size\0"),
 				 NULL,
 				 10);
-  samplerate = g_ascii_strtoull(ags_config_get(config,
+  samplerate = g_ascii_strtoull(ags_config_get(ags_config,
 					       AGS_CONFIG_DEVOUT,
 					       "samplerate\0"),
 				NULL,
