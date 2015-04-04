@@ -45,7 +45,7 @@ struct _AgsExportWindow
 
   guint flags;
 
-  GObject *ags_main;
+  GObject *application_context;
   AgsDevout *devout;
 
   GtkCheckButton *live_export;

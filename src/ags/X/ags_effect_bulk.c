@@ -651,7 +651,7 @@ ags_effect_bulk_real_add_effect(AgsEffectBulk *effect_bulk,
 				      ags_effect_bulk_plugin_alloc(filename,
 								   effect));
   
-  audio_loop = (AgsAudioLoop *) AGS_MAIN(AGS_DEVOUT(effect_bulk->audio->devout)->ags_main)->main_loop;
+  audio_loop = (AgsAudioLoop *) AGS_APPLICATION_CONTEXT(AGS_DEVOUT(effect_bulk->audio->devout)->application_context)->main_loop;
   task_thread = (AgsTaskThread *) audio_loop->task_thread;
 
   audio_channels = effect_bulk->audio->audio_channels;
@@ -1015,7 +1015,7 @@ ags_effect_bulk_real_resize_audio_channels(AgsEffectBulk *effect_bulk,
   guint pads;
   guint i, j;
 
-  audio_loop = (AgsAudioLoop *) AGS_MAIN(AGS_DEVOUT(effect_bulk->audio->devout)->ags_main)->main_loop;
+  audio_loop = (AgsAudioLoop *) AGS_APPLICATION_CONTEXT(AGS_DEVOUT(effect_bulk->audio->devout)->application_context)->main_loop;
   task_thread = (AgsTaskThread *) audio_loop->task_thread;
   
   /* retrieve channel */
@@ -1117,7 +1117,7 @@ ags_effect_bulk_real_resize_pads(AgsEffectBulk *effect_bulk,
   guint audio_channels;
   guint i, j;
 
-  audio_loop = (AgsAudioLoop *) AGS_MAIN(AGS_DEVOUT(effect_bulk->audio->devout)->ags_main)->main_loop;
+  audio_loop = (AgsAudioLoop *) AGS_APPLICATION_CONTEXT(AGS_DEVOUT(effect_bulk->audio->devout)->application_context)->main_loop;
   task_thread = (AgsTaskThread *) audio_loop->task_thread;
   
   audio_channels = effect_bulk->audio->audio_channels;

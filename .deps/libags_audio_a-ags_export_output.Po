@@ -605,7 +605,9 @@ libags_audio_a-ags_export_output.o: \
  src/ags/X/ags_audio_preferences.h \
  src/ags/X/ags_performance_preferences.h \
  src/ags/X/ags_server_preferences.h src/ags-lib/object/ags_connectable.h \
- src/ags/main.h
+ src/ags/main.h src/ags/object/ags_application_context.h \
+ src/ags/lib/ags_log.h src/ags/object/ags_config.h \
+ src/ags/file/ags_file.h
 
 /usr/include/stdc-predef.h:
 
@@ -2098,3 +2100,11 @@ src/ags/X/ags_server_preferences.h:
 src/ags-lib/object/ags_connectable.h:
 
 src/ags/main.h:
+
+src/ags/object/ags_application_context.h:
+
+src/ags/lib/ags_log.h:
+
+src/ags/object/ags_config.h:
+
+src/ags/file/ags_file.h:

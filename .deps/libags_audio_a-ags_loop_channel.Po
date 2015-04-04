@@ -556,9 +556,19 @@ libags_audio_a-ags_loop_channel.o: \
  src/ags/thread/ags_timestamp_thread.h src/ags/thread/ags_thread-posix.h \
  src/ags/audio/ags_timestamp.h src/ags/audio/ags_note.h \
  src/ags/audio/recall/ags_delay_audio.h src/ags/audio/ags_recall_audio.h \
- src/ags/audio/ags_audio.h src/ags/main.h src/ags/util/ags_id_generator.h \
- src/ags-lib/object/ags_connectable.h src/ags/object/ags_plugin.h \
- src/ags/file/ags_file.h src/ags/file/ags_file_stock.h \
+ src/ags/audio/ags_audio.h src/ags/main.h \
+ src/ags/object/ags_application_context.h src/ags/lib/ags_log.h \
+ src/ags/object/ags_config.h src/ags/object/ags_main_loop.h \
+ src/ags/thread/ags_async_queue.h /usr/include/linux/futex.h \
+ /usr/include/linux/types.h /usr/include/asm/types.h \
+ /usr/include/asm-generic/types.h /usr/include/asm-generic/int-ll64.h \
+ /usr/include/asm/bitsperlong.h /usr/include/asm-generic/bitsperlong.h \
+ /usr/include/linux/posix_types.h /usr/include/linux/stddef.h \
+ /usr/include/asm/posix_types.h /usr/include/asm/posix_types_64.h \
+ /usr/include/asm-generic/posix_types.h /usr/include/sys/time.h \
+ src/ags/object/ags_stackable.h src/ags/file/ags_file.h \
+ src/ags/util/ags_id_generator.h src/ags-lib/object/ags_connectable.h \
+ src/ags/object/ags_plugin.h src/ags/file/ags_file_stock.h \
  src/ags/widget/ags_led.h src/ags/widget/ags_vindicator.h \
  src/ags/widget/ags_indicator.h src/ags/widget/ags_hindicator.h \
  src/ags/widget/ags_waveform.h src/ags/widget/ags_dial.h \
@@ -1879,13 +1889,51 @@ src/ags/audio/ags_audio.h:
 
 src/ags/main.h:
 
+src/ags/object/ags_application_context.h:
+
+src/ags/lib/ags_log.h:
+
+src/ags/object/ags_config.h:
+
+src/ags/object/ags_main_loop.h:
+
+src/ags/thread/ags_async_queue.h:
+
+/usr/include/linux/futex.h:
+
+/usr/include/linux/types.h:
+
+/usr/include/asm/types.h:
+
+/usr/include/asm-generic/types.h:
+
+/usr/include/asm-generic/int-ll64.h:
+
+/usr/include/asm/bitsperlong.h:
+
+/usr/include/asm-generic/bitsperlong.h:
+
+/usr/include/linux/posix_types.h:
+
+/usr/include/linux/stddef.h:
+
+/usr/include/asm/posix_types.h:
+
+/usr/include/asm/posix_types_64.h:
+
+/usr/include/asm-generic/posix_types.h:
+
+/usr/include/sys/time.h:
+
+src/ags/object/ags_stackable.h:
+
+src/ags/file/ags_file.h:
+
 src/ags/util/ags_id_generator.h:
 
 src/ags-lib/object/ags_connectable.h:
 
 src/ags/object/ags_plugin.h:
-
-src/ags/file/ags_file.h:
 
 src/ags/file/ags_file_stock.h:
 

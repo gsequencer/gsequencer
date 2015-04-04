@@ -333,7 +333,15 @@ ags_thread_application_context_load_config(AgsApplicationContext *application_co
 void
 ags_thread_application_context_register_types(AgsApplicationContext *application_context)
 {
-  //TODO:JK: implement me  
+  ags_thread_get_type();
+
+  ags_task_thread_get_type();
+  ags_iterator_thread_get_type();
+
+  ags_timestamp_thread_get_type();
+
+  ags_thread_pool_get_type();
+  ags_returnable_thread_get_type();
 }
 
 void

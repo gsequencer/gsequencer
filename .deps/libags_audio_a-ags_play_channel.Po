@@ -588,8 +588,10 @@ libags_audio_a-ags_play_channel.o: \
  src/ags/object/ags_main_loop.h src/ags/audio/ags_task.h \
  src/ags/thread/ags_devout_thread.h src/ags/thread/ags_iterator_thread.h \
  src/ags-lib/object/ags_connectable.h src/ags/main.h \
+ src/ags/object/ags_application_context.h src/ags/lib/ags_log.h \
+ src/ags/object/ags_config.h src/ags/file/ags_file.h \
  src/ags/object/ags_mutable.h src/ags/object/ags_plugin.h \
- src/ags/file/ags_file.h src/ags/audio/ags_audio.h
+ src/ags/audio/ags_audio.h
 
 /usr/include/stdc-predef.h:
 
@@ -2029,10 +2031,16 @@ src/ags-lib/object/ags_connectable.h:
 
 src/ags/main.h:
 
+src/ags/object/ags_application_context.h:
+
+src/ags/lib/ags_log.h:
+
+src/ags/object/ags_config.h:
+
+src/ags/file/ags_file.h:
+
 src/ags/object/ags_mutable.h:
 
 src/ags/object/ags_plugin.h:
-
-src/ags/file/ags_file.h:
 
 src/ags/audio/ags_audio.h:

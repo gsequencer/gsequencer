@@ -594,6 +594,8 @@ libags_audio_a-ags_mute_channel_run.o: \
  src/ags/audio/recall/ags_mute_recycling.h \
  src/ags/audio/ags_recall_recycling.h \
  src/ags-lib/object/ags_connectable.h src/ags/main.h \
+ src/ags/object/ags_application_context.h src/ags/lib/ags_log.h \
+ src/ags/object/ags_config.h src/ags/file/ags_file.h \
  src/ags/object/ags_dynamic_connectable.h
 
 /usr/include/stdc-predef.h:
@@ -2045,5 +2047,13 @@ src/ags/audio/ags_recall_recycling.h:
 src/ags-lib/object/ags_connectable.h:
 
 src/ags/main.h:
+
+src/ags/object/ags_application_context.h:
+
+src/ags/lib/ags_log.h:
+
+src/ags/object/ags_config.h:
+
+src/ags/file/ags_file.h:
 
 src/ags/object/ags_dynamic_connectable.h:

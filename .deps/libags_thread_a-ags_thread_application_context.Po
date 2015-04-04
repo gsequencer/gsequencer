@@ -150,8 +150,7 @@ libags_thread_a-ags_thread_application_context.o: \
  /usr/include/unistd.h /usr/include/bits/posix_opt.h \
  /usr/include/bits/environments.h /usr/include/bits/confname.h \
  /usr/include/getopt.h src/ags/thread/ags_autosave_thread.h \
- src/ags/thread/ags_single_thread.h src/ags/thread/ags_devout_thread.h \
- src/ags/thread/ags_task_thread.h src/ags/audio/ags_task.h
+ src/ags/thread/ags_single_thread.h
 
 /usr/include/stdc-predef.h:
 
@@ -584,9 +583,3 @@ src/ags/thread/ags_gui_thread.h:
 src/ags/thread/ags_autosave_thread.h:
 
 src/ags/thread/ags_single_thread.h:
-
-src/ags/thread/ags_devout_thread.h:
-
-src/ags/thread/ags_task_thread.h:
-
-src/ags/audio/ags_task.h:

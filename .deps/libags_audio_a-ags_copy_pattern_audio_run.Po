@@ -594,14 +594,15 @@ libags_audio_a-ags_copy_pattern_audio_run.o: \
  src/ags/object/ags_main_loop.h src/ags/audio/ags_task.h \
  src/ags/thread/ags_devout_thread.h src/ags/thread/ags_iterator_thread.h \
  src/ags-lib/object/ags_connectable.h src/ags/main.h \
+ src/ags/object/ags_application_context.h src/ags/lib/ags_log.h \
+ src/ags/object/ags_config.h src/ags/file/ags_file.h \
  src/ags/util/ags_id_generator.h src/ags/object/ags_dynamic_connectable.h \
- src/ags/object/ags_plugin.h src/ags/file/ags_file.h \
- src/ags/file/ags_file_stock.h src/ags/widget/ags_led.h \
- src/ags/widget/ags_vindicator.h src/ags/widget/ags_indicator.h \
- src/ags/widget/ags_hindicator.h src/ags/widget/ags_waveform.h \
- src/ags/widget/ags_dial.h src/ags/widget/ags_cartesian.h \
- src/ags/file/ags_file_id_ref.h src/ags/file/ags_file_lookup.h \
- src/ags/audio/ags_recall_container.h
+ src/ags/object/ags_plugin.h src/ags/file/ags_file_stock.h \
+ src/ags/widget/ags_led.h src/ags/widget/ags_vindicator.h \
+ src/ags/widget/ags_indicator.h src/ags/widget/ags_hindicator.h \
+ src/ags/widget/ags_waveform.h src/ags/widget/ags_dial.h \
+ src/ags/widget/ags_cartesian.h src/ags/file/ags_file_id_ref.h \
+ src/ags/file/ags_file_lookup.h src/ags/audio/ags_recall_container.h
 
 /usr/include/stdc-predef.h:
 
@@ -2051,13 +2052,19 @@ src/ags-lib/object/ags_connectable.h:
 
 src/ags/main.h:
 
+src/ags/object/ags_application_context.h:
+
+src/ags/lib/ags_log.h:
+
+src/ags/object/ags_config.h:
+
+src/ags/file/ags_file.h:
+
 src/ags/util/ags_id_generator.h:
 
 src/ags/object/ags_dynamic_connectable.h:
 
 src/ags/object/ags_plugin.h:
-
-src/ags/file/ags_file.h:
 
 src/ags/file/ags_file_stock.h:
 

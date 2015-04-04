@@ -587,9 +587,11 @@ libags_audio_a-ags_recall_recycling.o: \
  /usr/include/libxml2/libxml/xmlIO.h /usr/include/libxml2/libxml/SAX.h \
  /usr/include/libxml2/libxml/xlink.h /usr/include/libxml2/libxml/SAX2.h \
  src/ags/thread/ags_timestamp_thread.h src/ags/audio/ags_timestamp.h \
- src/ags/audio/ags_note.h src/ags/main.h src/ags/lib/ags_list.h \
- src/ags/lib/ags_parameter.h src/ags/object/ags_marshal.h \
- src/ags-lib/object/ags_connectable.h \
+ src/ags/audio/ags_note.h src/ags/main.h \
+ src/ags/object/ags_application_context.h src/ags/lib/ags_log.h \
+ src/ags/object/ags_config.h src/ags/file/ags_file.h \
+ src/ags/lib/ags_list.h src/ags/lib/ags_parameter.h \
+ src/ags/object/ags_marshal.h src/ags-lib/object/ags_connectable.h \
  src/ags/object/ags_dynamic_connectable.h src/ags/audio/ags_audio.h \
  src/ags/audio/ags_output.h src/ags/audio/ags_input.h \
  /usr/include/glib-2.0/glib/gstdio.h /usr/include/glib-2.0/glib/gprintf.h \
@@ -2033,6 +2035,14 @@ src/ags/audio/ags_timestamp.h:
 src/ags/audio/ags_note.h:
 
 src/ags/main.h:
+
+src/ags/object/ags_application_context.h:
+
+src/ags/lib/ags_log.h:
+
+src/ags/object/ags_config.h:
+
+src/ags/file/ags_file.h:
 
 src/ags/lib/ags_list.h:
 
