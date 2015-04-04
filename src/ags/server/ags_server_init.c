@@ -16,25 +16,27 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <ags/object/ags_init.h>
+#include <ags/server/ags_server_init.h>
 
-#include <ags/object/ags_config.h>
+#include <ags/object/ags_application_context.h>
 
 extern AgsApplicationContext *ags_application_context = NULL;
-
-extern AgsConfig *ags_config;
+extern AgsServerApplicationContext *ags_server_application_context;
 
 void
-ags_init_context(int *argc, gchar ***argv)
+ags_server_init_context(int *argc, gchar ***argv)
 {
-  gchar *filename;
+  const char *error;
 
-  LIBXML_TEST_VERSION;
+#ifdef AGS_WITH_XMLRPC_C
+  AbyssInit(&error);
 
-  /* instantiate config */
-  ags_config = ags_config_new();
-  
+  xmlrpc_env_init(&(ags_main->env));
+#endif
+
   /* instantiate application context */
-  ags_audio_application_context = ags_audio_application_context_new(NULL,
-								    ags_config);
+  ags_server_application_context = ags_server_application_context_new(NULL,
+									NULL);
+  ags_application_context_add_sibling(ags_application_context,
+				      ags_server_application_context);
 }

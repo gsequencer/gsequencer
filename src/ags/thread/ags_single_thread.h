@@ -28,11 +28,6 @@
 #include <ags/thread/ags_thread-posix.h>
 #endif 
 
-#include <ags/thread/ags_audio_loop.h>
-#include <ags/thread/ags_devout_thread.h>
-#include <ags/thread/ags_task_thread.h>
-#include <ags/thread/ags_gui_thread.h>
-
 #include <unistd.h>
 
 #define AGS_TYPE_SINGLE_THREAD                (ags_single_thread_get_type())
@@ -50,11 +45,6 @@ typedef struct _AgsSingleThreadClass AgsSingleThreadClass;
 struct _AgsSingleThread
 {
   AgsThread thread;
-
-  AgsAudioLoop *audio_loop;
-  AgsDevoutThread *devout_thread;
-  AgsTaskThread *task_thread;
-  AgsGuiThread *gui_thread;
 };
 
 struct _AgsSingleThreadClass
