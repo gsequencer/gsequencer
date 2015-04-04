@@ -19,12 +19,10 @@
 #include <ags/audio/recall/ags_count_beats_audio_run.h>
 #include <ags/audio/recall/ags_count_beats_audio.h>
 
-#include <ags-lib/object/ags_connectable.h>
-
-#include <ags/main.h>
-
 #include <ags/util/ags_id_generator.h>
 
+#include <ags/object/ags_application_context.h>
+#include <ags-lib/object/ags_connectable.h>
 #include <ags/object/ags_dynamic_connectable.h>
 #include <ags/object/ags_countable.h>
 #include <ags/object/ags_seekable.h>
@@ -444,8 +442,8 @@ void
 ags_count_beats_audio_run_init(AgsCountBeatsAudioRun *count_beats_audio_run)
 {
   AGS_RECALL(count_beats_audio_run)->name = "ags-count-beats\0";
-  AGS_RECALL(count_beats_audio_run)->version = AGS_EFFECTS_DEFAULT_VERSION;
-  AGS_RECALL(count_beats_audio_run)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(count_beats_audio_run)->version = AGS_RECALL_DEFAULT_VERSION;
+  AGS_RECALL(count_beats_audio_run)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(count_beats_audio_run)->xml_type = "ags-count-beats-audio-run\0";
   AGS_RECALL(count_beats_audio_run)->port = NULL;
 
@@ -1374,7 +1372,7 @@ ags_count_beats_audio_run_stop(AgsCountBeatsAudioRun *count_beats_audio_run,
   gboolean all_done;
 
   audio = AGS_RECALL_AUDIO_RUN(count_beats_audio_run)->recall_audio->audio;
-  audio_loop = AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(audio->devout)->ags_main)->main_loop);
+  audio_loop = AGS_AUDIO_LOOP(AGS_APPLICATION_CONTEXT(AGS_DEVOUT(audio->devout)->application_context)->main_loop);
 
   channel = audio->output;
   devout_play = AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->devout_play;

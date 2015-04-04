@@ -20,10 +20,8 @@
 #include <ags/audio/recall/ags_buffer_recycling.h>
 #include <ags/audio/recall/ags_buffer_channel.h>
 
+#include <ags/object/ags_config.h>
 #include <ags-lib/object/ags_connectable.h>
-
-#include <ags/main.h>
-
 #include <ags/object/ags_dynamic_connectable.h>
 
 #include <ags/audio/ags_devout.h>
@@ -33,8 +31,6 @@
 #include <ags/audio/ags_recall_channel_run.h>
 #include <ags/audio/ags_recall_recycling.h>
 
-#include <ags/audio/ags_config.h>
- 
 void ags_buffer_audio_signal_class_init(AgsBufferAudioSignalClass *buffer_audio_signal);
 void ags_buffer_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_buffer_audio_signal_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
@@ -52,7 +48,7 @@ AgsRecall* ags_buffer_audio_signal_duplicate(AgsRecall *recall,
 					     AgsRecallID *recall_id,
 					     guint *n_params, GParameter *parameter);
 
-extern AgsConfig *config;
+extern AgsConfig *ags_config;
 
 /**
  * SECTION:ags_buffer_audio_signal
@@ -160,8 +156,8 @@ void
 ags_buffer_audio_signal_init(AgsBufferAudioSignal *buffer_audio_signal)
 {
   AGS_RECALL(buffer_audio_signal)->name = "ags-buffer\0";
-  AGS_RECALL(buffer_audio_signal)->version = AGS_EFFECTS_DEFAULT_VERSION;
-  AGS_RECALL(buffer_audio_signal)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(buffer_audio_signal)->version = AGS_RECALL_DEFAULT_VERSION;
+  AGS_RECALL(buffer_audio_signal)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(buffer_audio_signal)->xml_type = "ags-buffer-audio-signal\0";
   AGS_RECALL(buffer_audio_signal)->port = NULL;
 
@@ -231,12 +227,12 @@ ags_buffer_audio_signal_run_init_pre(AgsRecall *recall)
 
   devout = AGS_DEVOUT(AGS_RECALL(buffer_audio_signal)->devout);
 
-  buffer_size = g_ascii_strtoull(ags_config_get(config,
+  buffer_size = g_ascii_strtoull(ags_config_get(ags_config,
 						AGS_CONFIG_DEVOUT,
 						"buffer-size\0"),
 				 NULL,
 				 10);
-  samplerate = g_ascii_strtoull(ags_config_get(config,
+  samplerate = g_ascii_strtoull(ags_config_get(ags_config,
 					       AGS_CONFIG_DEVOUT,
 					       "samplerate\0"),
 				NULL,

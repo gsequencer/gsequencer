@@ -136,8 +136,8 @@ void
 ags_mute_channel_run_init(AgsMuteChannelRun *mute_channel_run)
 {
   AGS_RECALL(mute_channel_run)->name = "ags-mute\0";
-  AGS_RECALL(mute_channel_run)->version = AGS_EFFECTS_DEFAULT_VERSION;
-  AGS_RECALL(mute_channel_run)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(mute_channel_run)->version = AGS_RECALL_DEFAULT_VERSION;
+  AGS_RECALL(mute_channel_run)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(mute_channel_run)->xml_type = "ags-mute-channel-run\0";
   AGS_RECALL(mute_channel_run)->port = NULL;
 

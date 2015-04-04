@@ -159,8 +159,8 @@ void
 ags_copy_audio_signal_init(AgsCopyAudioSignal *copy_audio_signal)
 {
   AGS_RECALL(copy_audio_signal)->name = "ags-copy\0";
-  AGS_RECALL(copy_audio_signal)->version = AGS_EFFECTS_DEFAULT_VERSION;
-  AGS_RECALL(copy_audio_signal)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(copy_audio_signal)->version = AGS_RECALL_DEFAULT_VERSION;
+  AGS_RECALL(copy_audio_signal)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(copy_audio_signal)->xml_type = "ags-copy-audio-signal\0";
   AGS_RECALL(copy_audio_signal)->port = NULL;
 

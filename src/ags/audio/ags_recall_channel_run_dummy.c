@@ -19,12 +19,10 @@
 #include <ags/audio/ags_recall_channel_run_dummy.h>
 #include <ags/audio/ags_recall_recycling_dummy.h>
 
-#include <ags-lib/object/ags_connectable.h>
-
-#include <ags/main.h>
-
 #include <ags/util/ags_id_generator.h>
 
+#include <ags/object/ags_application_context.h>
+#include <ags-lib/object/ags_connectable.h>
 #include <ags/object/ags_dynamic_connectable.h>
 #include <ags/object/ags_plugin.h>
 
@@ -278,7 +276,7 @@ ags_recall_channel_run_dummy_read(AgsFile *file, xmlNode *node, AgsPlugin *plugi
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->ags_main,
+				   "application-context\0", file->application_context,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
@@ -308,7 +306,7 @@ ags_recall_channel_run_dummy_write(AgsFile *file, xmlNode *parent, AgsPlugin *pl
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->ags_main,
+				   "application-context\0", file->application_context,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
