@@ -60,7 +60,6 @@ enum{
 };
 
 static gpointer ags_application_context_parent_class = NULL;
-
 static guint application_context_signals[LAST_SIGNAL];
 
 AgsApplicationContext *ags_application_context = NULL;

@@ -16,25 +16,14 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <ags/object/ags_init.h>
+#ifndef __AGS_GUI_INIT_H__
+#define __AGS_GUI_INIT_H__
 
-#include <ags/object/ags_config.h>
+#include <glib.h>
+#include <glib-object.h>
 
-extern AgsApplicationContext *ags_application_context = NULL;
+#include <gtk/gtk.h>
 
-extern AgsConfig *ags_config;
+void ags_gui_init_context(int *argc, gchar ***argv);
 
-void
-ags_init_context(int *argc, gchar ***argv)
-{
-  gchar *filename;
-
-  LIBXML_TEST_VERSION;
-
-  /* instantiate config */
-  ags_config = ags_config_new();
-  
-  /* instantiate application context */
-  ags_audio_application_context = ags_audio_application_context_new(NULL,
-								    ags_config);
-}
+#endif /*__AGS_GUI_INIT_H__*/
