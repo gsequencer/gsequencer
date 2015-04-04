@@ -225,8 +225,8 @@ void
 ags_play_channel_run_master_init(AgsPlayChannelRunMaster *play_channel_run_master)
 {
   AGS_RECALL(play_channel_run_master)->name = "ags-play\0";
-  AGS_RECALL(play_channel_run_master)->version = AGS_EFFECTS_DEFAULT_VERSION;
-  AGS_RECALL(play_channel_run_master)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(play_channel_run_master)->version = AGS_RECALL_DEFAULT_VERSION;
+  AGS_RECALL(play_channel_run_master)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(play_channel_run_master)->xml_type = "ags-play-channel-run-master\0";
   AGS_RECALL(play_channel_run_master)->port = NULL;
 

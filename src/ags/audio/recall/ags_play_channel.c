@@ -207,8 +207,8 @@ ags_play_channel_init(AgsPlayChannel *play_channel)
   GList *port;
 
   AGS_RECALL(play_channel)->name = "ags-play\0";
-  AGS_RECALL(play_channel)->version = AGS_EFFECTS_DEFAULT_VERSION;
-  AGS_RECALL(play_channel)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(play_channel)->version = AGS_RECALL_DEFAULT_VERSION;
+  AGS_RECALL(play_channel)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(play_channel)->xml_type = "ags-play-channel\0";
 
   port = NULL;

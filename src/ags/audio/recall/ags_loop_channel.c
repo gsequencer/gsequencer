@@ -164,8 +164,8 @@ void
 ags_loop_channel_init(AgsLoopChannel *loop_channel)
 {
   AGS_RECALL(loop_channel)->name = "ags-loop\0";
-  AGS_RECALL(loop_channel)->version = AGS_EFFECTS_DEFAULT_VERSION;
-  AGS_RECALL(loop_channel)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(loop_channel)->version = AGS_RECALL_DEFAULT_VERSION;
+  AGS_RECALL(loop_channel)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(loop_channel)->xml_type = "ags-loop-channel\0";
   AGS_RECALL(loop_channel)->port = NULL;
 

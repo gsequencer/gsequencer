@@ -18,10 +18,8 @@
 
 #include <ags/audio/recall/ags_play_channel_run.h>
 
+#include <ags/object/ags_application_context.h>
 #include <ags-lib/object/ags_connectable.h>
-
-#include <ags/main.h>
-
 #include <ags/object/ags_dynamic_connectable.h>
 #include <ags/object/ags_plugin.h>
 
@@ -225,8 +223,8 @@ void
 ags_play_channel_run_init(AgsPlayChannelRun *play_channel_run)
 {
   AGS_RECALL(play_channel_run)->name = "ags-play\0";
-  AGS_RECALL(play_channel_run)->version = AGS_EFFECTS_DEFAULT_VERSION;
-  AGS_RECALL(play_channel_run)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(play_channel_run)->version = AGS_RECALL_DEFAULT_VERSION;
+  AGS_RECALL(play_channel_run)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(play_channel_run)->xml_type = "ags-play-channel-run\0";
   AGS_RECALL(play_channel_run)->port = NULL;
 
@@ -563,7 +561,7 @@ ags_play_channel_run_stop(AgsPlayChannelRun *play_channel_run)
   AgsCancelChannel *cancel_channel;
 
   channel = AGS_RECALL_CHANNEL_RUN(play_channel_run)->source;
-  task_thread = (AgsTaskThread *) AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout)->ags_main)->main_loop)->task_thread;
+  task_thread = (AgsTaskThread *) AGS_AUDIO_LOOP(AGS_APPLICATION_CONTEXT(AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout)->application_context)->main_loop)->task_thread;
 
   /* create append task */
   cancel_channel = ags_cancel_channel_new(channel,

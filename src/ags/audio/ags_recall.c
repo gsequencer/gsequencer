@@ -841,7 +841,7 @@ ags_recall_get_property(GObject *gobject,
 void
 ags_recall_add_to_registry(AgsConnectable *connectable)
 {
-  AgsApplicationContext *ags_application_context;
+  AgsApplicationContext *application_context;
   AgsServer *server;
   AgsRecall *recall;
   AgsRegistryEntry *entry;
@@ -849,7 +849,7 @@ ags_recall_add_to_registry(AgsConnectable *connectable)
   
   recall = AGS_RECALL(connectable);
 
-  ags_application_context = AGS_APPLICATION_CONTEXT(AGS_DEVOUT(recall->devout)->ags_application_context);
+  application_context = AGS_APPLICATION_CONTEXT(AGS_DEVOUT(recall->devout)->application_context);
 
   server = NULL;
   list = application_context->sibling;
