@@ -21,13 +21,12 @@
 
 #include <ags/main.h>
 
+#include <ags/object/ags_config.h>
 #include <ags-lib/object/ags_connectable.h>
-
 #include <ags/object/ags_applicable.h>
 #include <ags/object/ags_soundcard.h>
 
 #include <ags/audio/ags_devout.h>
-#include <ags/audio/ags_config.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_preferences.h>
@@ -56,6 +55,8 @@ void ags_audio_preferences_show(GtkWidget *widget);
  */
 
 static gpointer ags_audio_preferences_parent_class = NULL;
+
+extern AgsConfig *ags_config;
 
 GType
 ags_audio_preferences_get_type(void)
@@ -294,12 +295,11 @@ ags_audio_preferences_apply(AgsApplicable *applicable)
 
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
 							   AGS_TYPE_PREFERENCES);
-  config = AGS_CONFIG(AGS_MAIN(AGS_WINDOW(preferences->window)->ags_main)->config);
 
   /* samplerate */
   str = g_strdup_printf("%u\0",
 			(guint) gtk_spin_button_get_value(audio_preferences->samplerate));
-  ags_config_set(config,
+  ags_config_set(ags_config,
 		 AGS_CONFIG_DEVOUT,
 		 "samplerate\0",
 		 str);
@@ -308,7 +308,7 @@ ags_audio_preferences_apply(AgsApplicable *applicable)
   /* buffer size */
   str = g_strdup_printf("%u\0",
 			(guint) gtk_spin_button_get_value(audio_preferences->buffer_size));
-  ags_config_set(config,
+  ags_config_set(ags_config,
 		 AGS_CONFIG_DEVOUT,
 		 "buffer-size\0",
 		 str);
@@ -317,14 +317,14 @@ ags_audio_preferences_apply(AgsApplicable *applicable)
   /* dsp channels */
   str = g_strdup_printf("%u\0",
 			(guint) gtk_spin_button_get_value(audio_preferences->audio_channels));
-  ags_config_set(config,
+  ags_config_set(ags_config,
 		 AGS_CONFIG_DEVOUT,
 		 "dsp-channels\0",
 		 str);
   g_free(str);
 
   /* card */
-  ags_config_set(config,
+  ags_config_set(ags_config,
 		 AGS_CONFIG_DEVOUT,
 		 "alsa-handle\0",
 		 gtk_combo_box_text_get_active_text(audio_preferences->card));

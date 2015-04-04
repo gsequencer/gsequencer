@@ -23,7 +23,14 @@
 #define _GNU_SOURCE
 #define ALSA_PCM_NEW_HW_PARAMS_API
 
-void ags_main_init();
-void ags_main_quit();
+#include <glib.h>
+#include <glib-object.h>
+#include <gtk/gtk.h>
+
+#include <ags/object/ags_application_context.h>
+
+#define AGS_RT_PRIORITY (49)
+
+void ags_main_quit(AgsApplicationContext *application_context);
 
 #endif /*__AGS_MAIN_H__*/

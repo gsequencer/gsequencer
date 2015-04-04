@@ -16,12 +16,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include <ags/X/ags_xorg_application_context.h>
+
 #include <ags-lib/object/ags_connectable.h>
 
-#include <ags/xorg/ags_xorg_loop.h>
-#include <ags/xorg/ags_gui_xorg.h>
-#include <ags/xorg/ags_autosave_xorg.h>
-#include <ags/xorg/ags_single_xorg.h>
+#include <ags/thread/ags_gui_thread.h>
 
 void ags_xorg_application_context_class_init(AgsXorgApplicationContextClass *xorg_application_context);
 void ags_xorg_application_context_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -37,6 +36,9 @@ void ags_xorg_application_context_get_property(GObject *gobject,
 void ags_xorg_application_context_connect(AgsConnectable *connectable);
 void ags_xorg_application_context_disconnect(AgsConnectable *connectable);
 void ags_xorg_application_context_finalize(GObject *gobject);
+
+void ags_xorg_application_context_load_config(AgsApplicationContext *application_context);
+void ags_xorg_application_context_register_types(AgsApplicationContext *application_context);
 
 static gpointer ags_xorg_application_context_parent_class = NULL;
 static AgsConnectableInterface* ags_xorg_application_context_parent_connectable_interface;
@@ -90,11 +92,12 @@ ags_xorg_application_context_class_init(AgsXorgApplicationContextClass *xorg_app
 {
   GObjectClass *gobject;
   AgsApplicationContextClass *application_context;
+  GParamSpec *param_spec;
 
   ags_xorg_application_context_parent_class = g_type_class_peek_parent(ags_xorg_application_context);
 
   /* GObjectClass */
-  gobject = (GObjectClass *) ags_xorg_application_context;
+  gobject = (GObjectClass *) xorg_application_context;
 
   gobject->set_property = ags_xorg_application_context_set_property;
   gobject->get_property = ags_xorg_application_context_get_property;
@@ -118,7 +121,7 @@ ags_xorg_application_context_class_init(AgsXorgApplicationContextClass *xorg_app
 				  param_spec);
 
   /* AgsXorgApplicationContextClass */
-  application_context = (AgsApplicationContextClass *) xorg_application_context_class;
+  application_context = (AgsApplicationContextClass *) xorg_application_context;
   
   application_context->load_config = ags_xorg_application_context_load_config;
   application_context->register_types = ags_xorg_application_context_register_types;
@@ -136,9 +139,7 @@ ags_xorg_application_context_connectable_interface_init(AgsConnectableInterface 
 void
 ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_context)
 {
-  xorg_application_context->flags = 0;
-
-  application_context->window = NULL;
+  xorg_application_context->window = NULL;
 }
 
 void
@@ -205,7 +206,7 @@ ags_xorg_application_context_connect(AgsConnectable *connectable)
 
   xorg_application_context = AGS_XORG_APPLICATION_CONTEXT(connectable);
 
-  if((AGS_XORG_APPLICATION_CONTEXT_CONNECTED & (xorg_application_context->flags)) != 0){
+  if((AGS_APPLICATION_CONTEXT_CONNECTED & (AGS_APPLICATION_CONTEXT(xorg_application_context)->flags)) != 0){
     return;
   }
 
@@ -223,7 +224,7 @@ ags_xorg_application_context_disconnect(AgsConnectable *connectable)
 
   xorg_application_context = AGS_XORG_APPLICATION_CONTEXT(connectable);
 
-  if((AGS_XORG_APPLICATION_CONTEXT_CONNECTED & (xorg_application_context->flags)) == 0){
+  if((AGS_APPLICATION_CONTEXT_CONNECTED & (AGS_APPLICATION_CONTEXT(xorg_application_context)->flags)) == 0){
     return;
   }
 
@@ -241,9 +242,19 @@ ags_xorg_application_context_finalize(GObject *gobject)
 }
 
 void
+ags_audio_application_context_load_config(AgsApplicationContext *application_context)
+{
+  //TODO:JK: implement me
+}
+
+void
 ags_xorg_application_context_register_types(AgsApplicationContext *application_context)
 {
   ags_gui_thread_get_type();
+
+  /* gui */
+  //TODO:JK: move me
+  ags_dial_get_type();
 
   /* register machine */
   ags_panel_get_type();

@@ -48,8 +48,6 @@ AgsRecall* ags_buffer_audio_signal_duplicate(AgsRecall *recall,
 					     AgsRecallID *recall_id,
 					     guint *n_params, GParameter *parameter);
 
-extern AgsConfig *ags_config;
-
 /**
  * SECTION:ags_buffer_audio_signal
  * @short_description: buffers audio signal
@@ -63,6 +61,8 @@ extern AgsConfig *ags_config;
 static gpointer ags_buffer_audio_signal_parent_class = NULL;
 static AgsConnectableInterface *ags_buffer_audio_signal_parent_connectable_interface;
 static AgsDynamicConnectableInterface *ags_buffer_audio_signal_parent_dynamic_connectable_interface;
+
+extern AgsConfig *ags_config;
 
 GType
 ags_buffer_audio_signal_get_type()

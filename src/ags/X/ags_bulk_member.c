@@ -695,7 +695,7 @@ ags_bulk_member_real_change_port(AgsBulkMember *bulk_member,
     effect_bulk = (AgsEffectBulk *) gtk_widget_get_ancestor(GTK_WIDGET(bulk_member),
 							    AGS_TYPE_EFFECT_BULK);
     
-    task_thread = AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(effect_bulk->audio->devout)->ags_main)->main_loop)->task_thread);
+    task_thread = AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_APPLICATION_CONTEXT(AGS_DEVOUT(effect_bulk->audio->devout)->application_context)->main_loop)->task_thread);
 
     task = (AgsTask *) g_object_new(bulk_member->task_type,
 				    bulk_member->control_port, port_data,
