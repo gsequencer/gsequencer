@@ -39,7 +39,6 @@ void ags_colors_alloc();
 static void ags_signal_cleanup();
 void ags_signal_handler(int signr);
 
-static gpointer ags_main_parent_class = NULL;
 static sigset_t ags_wait_mask;
 
 static const gchar *ags_config_thread = AGS_CONFIG_THREAD;
@@ -299,57 +298,6 @@ ags_main_add_devout(AgsMain *ags_main,
 }
 
 void
-ags_main_register_recall_type()
-{
-  ags_play_audio_get_type();
-  ags_play_channel_get_type();
-  ags_play_channel_run_get_type();
-  ags_play_channel_run_master_get_type();
-
-  ags_stream_channel_get_type();
-  ags_stream_channel_run_get_type();
-
-  ags_loop_channel_get_type();
-  ags_loop_channel_run_get_type();
-
-  ags_copy_channel_get_type();
-  ags_copy_channel_run_get_type();
-
-  ags_volume_channel_get_type();
-  ags_volume_channel_run_get_type();
-
-  ags_peak_channel_get_type();
-  ags_peak_channel_run_get_type();
-
-  ags_recall_ladspa_get_type();
-  ags_recall_channel_run_dummy_get_type();
-  ags_recall_ladspa_run_get_type();
-
-  ags_delay_audio_get_type();
-  ags_delay_audio_run_get_type();
-
-  ags_count_beats_audio_get_type();
-  ags_count_beats_audio_run_get_type();
-
-  ags_copy_pattern_audio_get_type();
-  ags_copy_pattern_audio_run_get_type();
-  ags_copy_pattern_channel_get_type();
-  ags_copy_pattern_channel_run_get_type();
-
-  ags_buffer_channel_get_type();
-  ags_buffer_channel_run_get_type();
-
-  ags_play_notation_audio_get_type();
-  ags_play_notation_audio_run_get_type();
-}
-
-void
-ags_main_register_task_type()
-{
-  //TODO:JK: implement me
-}
-
-void
 ags_main_register_widget_type()
 {
   ags_dial_get_type();
@@ -402,17 +350,6 @@ void
 ags_main_quit(AgsMain *ags_main)
 {
   ags_thread_stop(AGS_AUDIO_LOOP(ags_main->main_loop)->gui_thread);
-}
-
-AgsMain*
-ags_main_new()
-{
-  AgsMain *ags_main;
-
-  ags_main = (AgsMain *) g_object_new(AGS_TYPE_MAIN,
-				      NULL);
-
-  return(ags_main);
 }
 
 void

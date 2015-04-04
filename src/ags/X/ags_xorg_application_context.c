@@ -38,7 +38,13 @@ void ags_xorg_application_context_connect(AgsConnectable *connectable);
 void ags_xorg_application_context_disconnect(AgsConnectable *connectable);
 void ags_xorg_application_context_finalize(GObject *gobject);
 
+static gpointer ags_xorg_application_context_parent_class = NULL;
 static AgsConnectableInterface* ags_xorg_application_context_parent_connectable_interface;
+
+enum{
+  PROP_0,
+  PROP_WINDOW,
+};
 
 GType
 ags_xorg_application_context_get_type()
@@ -92,6 +98,22 @@ ags_xorg_application_context_class_init(AgsXorgApplicationContextClass *xorg_app
   gobject->get_property = ags_xorg_application_context_get_property;
 
   gobject->finalize = ags_xorg_application_context_finalize;
+  
+  /**
+   * AgsXorgApplicationContext:window:
+   *
+   * The assigned window.
+   * 
+   * Since: 0.4
+   */
+  param_spec = g_param_spec_object("window\0",
+				   "window of xorg application context\0",
+				   "The window which this xorg application context assigned to\0",
+				   AGS_TYPE_WINDOW,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_WINDOW,
+				  param_spec);
 
   /* AgsXorgApplicationContextClass */
   application_context = (AgsApplicationContextClass *) xorg_application_context_class;
@@ -128,6 +150,24 @@ ags_xorg_application_context_set_property(GObject *gobject,
   xorg_application_context = AGS_XORG_APPLICATION_CONTEXT(gobject);
 
   switch(prop_id){
+  case PROP_WINDOW:
+    {
+      AgsWindow *window;
+      
+      window = (AgsWindow *) g_value_get_object(value);
+
+      if(window == xorg_application_context->window)
+	return;
+
+      if(xorg_application_context->window != NULL)
+	g_object_unref(xorg_application_context->window);
+
+      if(window != NULL)
+	g_object_ref(G_OBJECT(window));
+
+      xorg_application_context->window = window;
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -145,6 +185,11 @@ ags_xorg_application_context_get_property(GObject *gobject,
   xorg_application_context = AGS_XORG_APPLICATION_CONTEXT(gobject);
 
   switch(prop_id){
+  case PROP_WINDOW:
+    {
+      g_value_set_object(value, xorg_application_context->window);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -163,6 +208,10 @@ ags_xorg_application_context_connect(AgsConnectable *connectable)
   }
 
   ags_xorg_application_context_parent_connectable_interface->connect(connectable);
+
+  g_message("connecting gui\0");
+
+  ags_connectable_connect(AGS_CONNECTABLE(xorg_application_context->window));
 }
 
 void

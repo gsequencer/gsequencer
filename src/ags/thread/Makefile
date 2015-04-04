@@ -314,9 +314,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/ags/thread/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign src/ags/thread/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu src/ags/thread/Makefile
+	  $(AUTOMAKE) --foreign src/ags/thread/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \

@@ -24,6 +24,7 @@
 
 #include <ags/lib/ags_log.h>
 
+#include <ags/object/ags_config.h>
 #include <ags/object/ags_main_loop.h>
 
 #include <ags/file/ags_file.h>
@@ -71,7 +72,7 @@ struct _AgsApplicationContext
   AgsConfig *config;
 
   pthread_mutex_t mutex;
-  AgsMainLoop *main_loop;
+  GObject *main_loop;
 
   AgsFile *file;
 };
@@ -83,11 +84,17 @@ struct _AgsApplicationContextClass
   void (*load_config)(AgsApplicationContext *application_context);
   
   void (*register_types)(AgsApplicationContext *application_context);
+
+  void (*read)(AgsFile *file, xmlNode *node, GObject **gobject);
+  xmlNode* (*write)(AgsFile *file, xmlNode *parent, GObject *gobject);
 };
 
 GType ags_application_context_get_type();
 
 void ags_application_context_load_config(AgsApplicationContext *application_context);
+
+void ags_application_read(AgsFile *file, xmlNode *node, GObject **gobject);
+xmlNode* ags_application_write(AgsFile *file, xmlNode *parent, GObject *gobject);
 
 void ags_application_context_add_sibling(AgsApplicationContext *application_context,
 					 AgsApplicationContext *sibling);

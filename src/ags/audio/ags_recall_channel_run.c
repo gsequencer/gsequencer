@@ -18,11 +18,10 @@
 
 #include <ags/audio/ags_recall_channel_run.h>
 
-#include <ags/main.h>
-
 #include <ags/lib/ags_parameter.h>
 
 #include <ags/object/ags_marshal.h>
+#include <ags/object/ags_application_context.h>
 #include <ags-lib/object/ags_connectable.h>
 #include <ags/object/ags_packable.h>
 #include <ags/object/ags_dynamic_connectable.h>
@@ -943,7 +942,7 @@ ags_recall_channel_run_remap_child_source(AgsRecallChannelRun *recall_channel_ru
 	  cancel_recall = ags_cancel_recall_new(recall,
 						NULL);
 
-	  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop)->task_thread),
+	  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_APPLICATION_CONTEXT(devout->application_context)->main_loop)->task_thread),
 				      (AgsTask *) cancel_recall);
 	}
 
@@ -1009,7 +1008,7 @@ ags_recall_channel_run_remap_child_destination(AgsRecallChannelRun *recall_chann
 	  cancel_recall = ags_cancel_recall_new(recall,
 						NULL);
 
-	  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop)->task_thread),
+	  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_APPLICATION_CONTEXT(devout->application_context)->main_loop)->task_thread),
 				      (AgsTask *) cancel_recall);
 	}
 
