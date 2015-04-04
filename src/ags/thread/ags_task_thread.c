@@ -24,12 +24,13 @@
 
 #include <ags/lib/ags_list.h>
 
+#include <ags/object/ags_config.h>
+
+#include <ags/thread/ags_thread_application_context.h>
 #include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_returnable_thread.h>
 
 #include <ags/audio/ags_devout.h>
-
-#include <ags/audio/ags_config.h>
 
 #include <math.h>
 
@@ -46,7 +47,7 @@ void ags_task_thread_run(AgsThread *thread);
 void ags_task_thread_append_task_queue(AgsReturnableThread *returnable_thread, gpointer data);
 void ags_task_thread_append_tasks_queue(AgsReturnableThread *returnable_thread, gpointer data);
 
-extern AgsConfig *config;
+extern AgsConfig *ags_config;
 
 /**
  * SECTION:ags_task_thread
@@ -167,7 +168,7 @@ ags_task_thread_connect(AgsConnectable *connectable)
   ags_task_thread_parent_connectable_interface->connect(connectable);
 
   task_thread = AGS_TASK_THREAD(connectable);
-  task_thread->thread_pool = AGS_MAIN(AGS_AUDIO_LOOP(AGS_THREAD(task_thread)->parent)->ags_main)->thread_pool;
+  task_thread->thread_pool = AGS_THREAD_APPLICATION_CONTEXT(AGS_AUDIO_LOOP(AGS_THREAD(task_thread)->parent)->application_context)->thread_pool;
   task_thread->thread_pool->parent = task_thread;
 }
 
@@ -230,12 +231,12 @@ ags_task_thread_run(AgsThread *thread)
   task_thread = AGS_TASK_THREAD(thread);
   devout = AGS_DEVOUT(thread->devout);
 
-  buffer_size = g_ascii_strtoull(ags_config_get(config,
+  buffer_size = g_ascii_strtoull(ags_config_get(ags_config,
 						AGS_CONFIG_DEVOUT,
 						"buffer-size\0"),
 				 NULL,
 				 10);
-  samplerate = g_ascii_strtoull(ags_config_get(config,
+  samplerate = g_ascii_strtoull(ags_config_get(ags_config,
 					       AGS_CONFIG_DEVOUT,
 					       "samplerate\0"),
 				NULL,
