@@ -191,8 +191,8 @@ void
 ags_copy_pattern_channel_run_init(AgsCopyPatternChannelRun *copy_pattern_channel_run)
 {
   AGS_RECALL(copy_pattern_channel_run)->name = "ags-copy-pattern\0";
-  AGS_RECALL(copy_pattern_channel_run)->version = AGS_EFFECTS_DEFAULT_VERSION;
-  AGS_RECALL(copy_pattern_channel_run)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(copy_pattern_channel_run)->version = AGS_RECALL_DEFAULT_VERSION;
+  AGS_RECALL(copy_pattern_channel_run)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(copy_pattern_channel_run)->xml_type = "ags-copy-pattern-channel-run\0";
   AGS_RECALL(copy_pattern_channel_run)->port = NULL;
 

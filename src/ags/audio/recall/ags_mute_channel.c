@@ -177,8 +177,8 @@ ags_mute_channel_init(AgsMuteChannel *mute_channel)
   GList *port;
 
   AGS_RECALL(mute_channel)->name = "ags-mute\0";
-  AGS_RECALL(mute_channel)->version = AGS_EFFECTS_DEFAULT_VERSION;
-  AGS_RECALL(mute_channel)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(mute_channel)->version = AGS_RECALL_DEFAULT_VERSION;
+  AGS_RECALL(mute_channel)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(mute_channel)->xml_type = "ags-mute-channel\0";
 
   port = NULL;

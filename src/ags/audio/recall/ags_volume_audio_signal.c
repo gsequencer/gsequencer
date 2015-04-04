@@ -161,8 +161,8 @@ void
 ags_volume_audio_signal_init(AgsVolumeAudioSignal *volume_audio_signal)
 {
   AGS_RECALL(volume_audio_signal)->name = "ags-volume\0";
-  AGS_RECALL(volume_audio_signal)->version = AGS_EFFECTS_DEFAULT_VERSION;
-  AGS_RECALL(volume_audio_signal)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(volume_audio_signal)->version = AGS_RECALL_DEFAULT_VERSION;
+  AGS_RECALL(volume_audio_signal)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(volume_audio_signal)->xml_type = "ags-volume-audio-signal\0";
   AGS_RECALL(volume_audio_signal)->port = NULL;
 }

@@ -18,21 +18,18 @@
 
 #include <ags/audio/ags_recall_ladspa.h>
 
-#include <ags/main.h>
-
-#include <ags-lib/object/ags_connectable.h>
-
 #include <ags/util/ags_id_generator.h>
 
 #include <ags/plugin/ags_ladspa_manager.h>
 
+#include <ags/object/ags_application_context.h>
+#include <ags-lib/object/ags_connectable.h>
 #include <ags/object/ags_plugin.h>
 
 #include <ags/file/ags_file.h>
 #include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>
 
-#include <ags/audio/ags_config.h>
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_port.h>
 
@@ -83,8 +80,6 @@ enum{
   PROP_EFFECT,
   PROP_INDEX,
 };
-
-extern AgsConfig *config;
 
 static gpointer ags_recall_ladspa_parent_class = NULL;
 static AgsConnectableInterface* ags_recall_ladspa_parent_connectable_interface;
@@ -229,8 +224,8 @@ void
 ags_recall_ladspa_init(AgsRecallLadspa *recall_ladspa)
 {
   AGS_RECALL(recall_ladspa)->name = "ags-ladspa\0";
-  AGS_RECALL(recall_ladspa)->version = AGS_EFFECTS_DEFAULT_VERSION;
-  AGS_RECALL(recall_ladspa)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(recall_ladspa)->version = AGS_RECALL_DEFAULT_VERSION;
+  AGS_RECALL(recall_ladspa)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(recall_ladspa)->xml_type = "ags-recall-ladspa\0";
   AGS_RECALL(recall_ladspa)->port = NULL;
 
@@ -471,7 +466,7 @@ ags_recall_ladspa_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->ags_main,
+				   "application-context\0", file->application_context,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
@@ -517,7 +512,7 @@ ags_recall_ladspa_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->ags_main,
+				   "application-context\0", file->application_context,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),

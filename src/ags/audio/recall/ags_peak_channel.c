@@ -18,9 +18,8 @@
 
 #include <ags/audio/recall/ags_peak_channel.h>
 
+#include <ags/object/ags_config.h>
 #include <ags-lib/object/ags_connectable.h>
-
-#include <ags/main.h>
 
 #include <ags/object/ags_mutable.h>
 #include <ags/object/ags_plugin.h>
@@ -42,7 +41,7 @@ void ags_peak_channel_disconnect(AgsConnectable *connectable);
 void ags_peak_channel_set_ports(AgsPlugin *plugin, GList *port);
 void ags_peak_channel_finalize(GObject *gobject);
 
-extern AgsConfig *config;
+extern AgsConfig *ags_config;
 
 /**
  * SECTION:ags_peak_channel
@@ -172,8 +171,8 @@ ags_peak_channel_init(AgsPeakChannel *peak_channel)
   GList *port;
 
   AGS_RECALL(peak_channel)->name = "ags-peak\0";
-  AGS_RECALL(peak_channel)->version = AGS_EFFECTS_DEFAULT_VERSION;
-  AGS_RECALL(peak_channel)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(peak_channel)->version = AGS_RECALL_DEFAULT_VERSION;
+  AGS_RECALL(peak_channel)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(peak_channel)->xml_type = "ags-peak-channel\0";
 
   port = NULL;
@@ -322,7 +321,7 @@ ags_peak_channel_retrieve_peak(AgsPeakChannel *peak_channel,
   }
 
   recall = (AgsRecall *) peak_channel;
-  buffer_size = g_ascii_strtoull(ags_config_get(config,
+  buffer_size = g_ascii_strtoull(ags_config_get(ags_config,
 						AGS_CONFIG_DEVOUT,
 						"buffer-size\0"),
 				 NULL,

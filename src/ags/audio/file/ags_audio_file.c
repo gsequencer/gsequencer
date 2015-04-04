@@ -18,14 +18,13 @@
 
 #include <ags/audio/file/ags_audio_file.h>
 
+#include <ags/object/ags_config.h>
 #include <ags-lib/object/ags_connectable.h>
 #include <ags/object/ags_playable.h>
 
 #include <ags/audio/ags_audio_signal.h>
 
 #include <ags/audio/file/ags_sndfile.h>
-
-#include <ags/audio/ags_config.h>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -40,7 +39,7 @@ void ags_audio_file_connect(AgsConnectable *connectable);
 void ags_audio_file_disconnect(AgsConnectable *connectable);
 void ags_audio_file_finalize(GObject *object);
 
-extern AgsConfig *config;
+extern AgsConfig *ags_config;
 
 enum{
   READ_BUFFER,
@@ -125,7 +124,7 @@ ags_audio_file_init(AgsAudioFile *audio_file)
 
   audio_file->name = NULL;
 
-  audio_file->samplerate = g_ascii_strtoull(ags_config_get(config,
+  audio_file->samplerate = g_ascii_strtoull(ags_config_get(ags_config,
 							   AGS_CONFIG_DEVOUT,
 							   "samplerate\0"),
 					    NULL,

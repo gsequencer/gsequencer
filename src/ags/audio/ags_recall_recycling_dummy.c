@@ -149,8 +149,8 @@ void
 ags_recall_recycling_dummy_init(AgsRecallRecyclingDummy *recall_recycling_dummy)
 {
   AGS_RECALL(recall_recycling_dummy)->name = "ags-recall\0";
-  AGS_RECALL(recall_recycling_dummy)->version = AGS_EFFECTS_DEFAULT_VERSION;
-  AGS_RECALL(recall_recycling_dummy)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(recall_recycling_dummy)->version = AGS_RECALL_DEFAULT_VERSION;
+  AGS_RECALL(recall_recycling_dummy)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(recall_recycling_dummy)->xml_type = "ags-recall-recycling-dummy\0";
   AGS_RECALL(recall_recycling_dummy)->port = NULL;
 
