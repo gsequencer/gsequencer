@@ -15,6 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
+
 #include <ags/main.h>
 
 #include <gtk/gtk.h>
@@ -34,299 +35,22 @@
 
 #include <sys/mman.h>
 
-void ags_colors_alloc();
-
 static void ags_signal_cleanup();
 void ags_signal_handler(int signr);
-
-static sigset_t ags_wait_mask;
-
-static const gchar *ags_config_thread = AGS_CONFIG_THREAD;
-static const gchar *ags_config_devout = AGS_CONFIG_DEVOUT;
 
 extern void ags_thread_resume_handler(int sig);
 extern void ags_thread_suspend_handler(int sig);
 
-extern GtkStyle *matrix_style;
-extern GtkStyle *ffplayer_style;
-extern GtkStyle *editor_style;
-extern GtkStyle *notebook_style;
-extern GtkStyle *meter_style;
-extern GtkStyle *note_edit_style;
+static sigset_t ags_wait_mask;
 
 extern AgsLadspaManager *ags_ladspa_manager;
 
 struct sigaction ags_sigact;
 
 void
-ags_colors_alloc()
-{
-  static gboolean allocated = FALSE;
-
-  if(!allocated){
-    allocated = TRUE;
-
-    matrix_style = gtk_style_new();
-    matrix_style->fg[0].red = 120 * (65535/255);
-    matrix_style->fg[0].green = 220 * (65535/255);
-    matrix_style->fg[0].blue = 120 * (65535/255);
-    matrix_style->fg[0].pixel = (gulong)(120*65536 + 220*256 + 120);
-
-    matrix_style->light[0].red = 100 * (65535/255);
-    matrix_style->light[0].green = 200 * (65535/255);
-    matrix_style->light[0].blue = 100 * (65535/255);
-    matrix_style->light[0].pixel = (gulong)(100*65536 + 200*256 + 100);
-
-    matrix_style->bg[0].red = 0 * (65535/255);
-    matrix_style->bg[0].green = 80 * (65535/255);
-    matrix_style->bg[0].blue = 0 * (65535/255);
-    matrix_style->bg[0].pixel = (gulong)(0*65536 + 80*256 + 0);
-
-    matrix_style->bg[1].red = 120 * (65535/255);
-    matrix_style->bg[1].green = 220 * (65535/255);
-    matrix_style->bg[1].blue = 120 * (65535/255);
-    matrix_style->bg[1].pixel = (gulong)(120*65536 + 220*256 + 120);
-
-    matrix_style->bg[2].red = 120 * (65535/255);
-    matrix_style->bg[2].green = 220 * (65535/255);
-    matrix_style->bg[2].blue = 120 * (65535/255);
-    matrix_style->bg[2].pixel = (gulong)(120*65536 + 220*256 + 120);
-
-    matrix_style->base[0].red = 120 * (65535/255);
-    matrix_style->base[0].green = 220 * (65535/255);
-    matrix_style->base[0].blue = 120 * (65535/255);
-    matrix_style->base[0].pixel = (gulong)(120*65536 + 220*256 + 120);
-
-
-    /*  matrix_style->fg[1] = matrix_green;
-	matrix_style->fg[2] = matrix_green;
-	matrix_style->fg[3] = matrix_green;
-	matrix_style->fg[4] = matrix_green;
-
-	matrix_style->bg[0] = matrix_led_bg;
-	matrix_style->bg[1] = matrix_led_bg;
-	matrix_style->bg[2] = matrix_led_bg;
-	matrix_style->bg[2] = matrix_led_bg;
-	matrix_style->bg[3] = matrix_led_bg;
-	matrix_style->bg[4] = matrix_led_bg;
-    */
-
-    /* ffplayer style */
-    ffplayer_style = gtk_style_new();
-    ffplayer_style->fg[0].red = 180 * (65535/255);
-    ffplayer_style->fg[0].green = 180 * (65535/255);
-    ffplayer_style->fg[0].blue = 250 * (65535/255);
-    ffplayer_style->fg[0].pixel = (gulong)(120*65536 + 120*256 + 220);
-
-    ffplayer_style->bg[0].red = 4 * (65535/255);
-    ffplayer_style->bg[0].green = 8 * (65535/255);
-    ffplayer_style->bg[0].blue = 56 * (65535/255);
-    ffplayer_style->bg[0].pixel = (gulong)(4*65536 + 8*256 + 56);
-
-    ffplayer_style->bg[1].red = 120 * (65535/255);
-    ffplayer_style->bg[1].green = 120 *(65535/255);
-    ffplayer_style->bg[1].blue = 120 * (65535/255);
-    ffplayer_style->bg[1].pixel = (gulong)(120*65536 + 120*256 + 120);
-
-    ffplayer_style->bg[2].red = 120 * (65535/255);
-    ffplayer_style->bg[2].green = 120 *(65535/255);
-    ffplayer_style->bg[2].blue = 120 * (65535/255);
-    ffplayer_style->bg[2].pixel = (gulong)(255*65536 + 255*256 + 255);
-
-    ffplayer_style->mid[0].red = 4 * (65535/255);
-    ffplayer_style->mid[0].green = 8 * (65535/255);
-    ffplayer_style->mid[0].blue = 56 * (65535/255);
-    ffplayer_style->mid[0].pixel = (gulong)(4*65536 + 8*256 + 56);
-
-    ffplayer_style->light[0].red = 120 * (65535/255);
-    ffplayer_style->light[0].green = 120 * (65535/255);
-    ffplayer_style->light[0].blue = 220 * (65535/255);
-    ffplayer_style->light[0].pixel = (gulong)(120*65536 + 120*256 + 220);
-
-    ffplayer_style->base[0].red = 120 * (65535/255);
-    ffplayer_style->base[0].green = 120 * (65535/255);
-    ffplayer_style->base[0].blue = 220 * (65535/255);
-    ffplayer_style->base[0].pixel = (gulong)(120*65536 + 120*256 + 220);
-
-
-    /* editor style */
-    editor_style = gtk_style_new();
-    editor_style->fg[0].red = 255 * (65535/255);
-    editor_style->fg[0].green = 240 *(65535/255);
-    editor_style->fg[0].blue = 200 * (65535/255);
-    editor_style->fg[0].pixel = (gulong)(255*65536 + 240*256 + 200);
-
-    editor_style->bg[0].red = 255 * (65535/255);
-    editor_style->bg[0].green = 255 *(65535/255);
-    editor_style->bg[0].blue = 100 * (65535/255);
-    editor_style->bg[0].pixel = (gulong)(255*65536 + 255*256 + 255);
-
-    editor_style->mid[0].red = 250 * (65535/255);
-    editor_style->mid[0].green = 0 *(65535/255);
-    editor_style->mid[0].blue = 250 * (65535/255);
-    editor_style->mid[0].pixel = (gulong)(150*65536 + 150*256 + 250);
-
-
-    editor_style->base[0].red = 250 * (65535/255);
-    editor_style->base[0].green = 250 *(65535/255);
-    editor_style->base[0].blue = 250 * (65535/255);
-    editor_style->base[0].pixel = (gulong)(250*65536 + 250*256 + 250);
-
-
-    /* notebook style */
-    notebook_style = gtk_style_new();
-    notebook_style->fg[0].red = 255 * (65535/255);
-    notebook_style->fg[0].green = 255 *(65535/255);
-    notebook_style->fg[0].blue = 0 * (65535/255);
-    notebook_style->fg[0].pixel = (gulong)(255*65536 + 255*256 + 0);
-
-    notebook_style->bg[0].red = 40 * (65535/255);
-    notebook_style->bg[0].green = 40 *(65535/255);
-    notebook_style->bg[0].blue = 40 * (65535/255);
-    notebook_style->bg[0].pixel = (gulong)(40*65536 + 40*256 + 40);
-
-    notebook_style->mid[0].red = 10 * (65535/255);
-    notebook_style->mid[0].green = 20 *(65535/255);
-    notebook_style->mid[0].blue = 230 * (65535/255);
-    notebook_style->mid[0].pixel = (gulong)(10*65536 + 20*256 + 230);
-
-    notebook_style->dark[0].red = 192 * (65535/255);
-    notebook_style->dark[0].green = 192 *(65535/255);
-    notebook_style->dark[0].blue = 0 * (65535/255);
-    notebook_style->dark[0].pixel = (gulong)(150*65536 + 150*256 + 250);
-
-    notebook_style->light[0].red = 255 * (65535/255);
-    notebook_style->light[0].green = 255 *(65535/255);
-    notebook_style->light[0].blue = 63 * (65535/255);
-    notebook_style->light[0].pixel = (gulong)(255*65536 + 255*256 + 63);
-
-    notebook_style->base[0].red = 0 * (65535/255);
-    notebook_style->base[0].green = 0 *(65535/255);
-    notebook_style->base[0].blue = 0 * (65535/255);
-    notebook_style->base[0].pixel = (gulong)(0*65536 + 0*256 + 0);
-
-
-    /* ruler style */
-    //TODO:JK: deprecated
-    //    ruler_style = gtk_style_new();
-    //    ruler_style->fg[0].red = 255 * (65535/255);
-    //    ruler_style->fg[0].green = 240 *(65535/255);
-    //    ruler_style->fg[0].blue = 200 * (65535/255);
-    //    ruler_style->fg[0].pixel = (gulong)(255*65536 + 240*256 + 200);
-
-    //    ruler_style->bg[0].red = 40 * (65535/255);
-    //    ruler_style->bg[0].green = 40 *(65535/255);
-    //    ruler_style->bg[0].blue = 40 * (65535/255);
-    //    ruler_style->bg[0].pixel = (gulong)(40*65536 + 40*256 + 40);
-
-    //    ruler_style->mid[0].red = 250 * (65535/255);
-    //    ruler_style->mid[0].green = 0 *(65535/255);
-    //    ruler_style->mid[0].blue = 250 * (65535/255);
-    //    ruler_style->mid[0].pixel = (gulong)(150*65536 + 150*256 + 250);
-
-    //    ruler_style->base[0].red = 250 * (65535/255);
-    //    ruler_style->base[0].green = 250 *(65535/255);
-    //    ruler_style->base[0].blue = 250 * (65535/255);
-    //    ruler_style->base[0].pixel = (gulong)(250*65536 + 250*256 + 250);
-
-
-    /* meter style */
-    meter_style = gtk_style_new();
-    meter_style->fg[0].red = 100 * (65535/255);
-    meter_style->fg[0].green = 200 *(65535/255);
-    meter_style->fg[0].blue = 255 * (65535/255);
-    meter_style->fg[0].pixel = (gulong)(100*65536 + 200*256 + 255);
-
-    meter_style->bg[0].red = 40 * (65535/255);
-    meter_style->bg[0].green = 40 *(65535/255);
-    meter_style->bg[0].blue = 40 * (65535/255);
-    meter_style->bg[0].pixel = (gulong)(40*65536 + 40*256 + 40);
-
-    meter_style->mid[0].red = 10 * (65535/255);
-    meter_style->mid[0].green = 20 *(65535/255);
-    meter_style->mid[0].blue = 230 * (65535/255);
-    meter_style->mid[0].pixel = (gulong)(10*65536 + 20*256 + 230);
-
-    meter_style->light[0].red = 0 * (65535/255);
-    meter_style->light[0].green = 150 *(65535/255);
-    meter_style->light[0].blue = 255 * (65535/255);
-    meter_style->light[0].pixel = (gulong)(150*65536 + 150*256 + 250);
-
-    meter_style->base[0].red = 0 * (65535/255);
-    meter_style->base[0].green = 0 *(65535/255);
-    meter_style->base[0].blue = 0 * (65535/255);
-    meter_style->base[0].pixel = (gulong)(0*65536 + 0*256 + 0);
-
-
-    /* note_edit style */
-    note_edit_style = gtk_style_new();
-    note_edit_style->fg[0].red = 255 * (65535/255);
-    note_edit_style->fg[0].green = 240 *(65535/255);
-    note_edit_style->fg[0].blue = 200 * (65535/255);
-    note_edit_style->fg[0].pixel = (gulong)(255*65536 + 240*256 + 200);
-
-    note_edit_style->bg[0].red = 255 * (65535/255);
-    note_edit_style->bg[0].green = 255 *(65535/255);
-    note_edit_style->bg[0].blue = 100 * (65535/255);
-    note_edit_style->bg[0].pixel = (gulong)(255*65536 + 255*256 + 255);
-
-    note_edit_style->mid[0].red = 250 * (65535/255);
-    note_edit_style->mid[0].green = 0 *(65535/255);
-    note_edit_style->mid[0].blue = 250 * (65535/255);
-    note_edit_style->mid[0].pixel = (gulong)(150*65536 + 150*256 + 250);
-
-
-    note_edit_style->base[0].red = 250 * (65535/255);
-    note_edit_style->base[0].green = 250 *(65535/255);
-    note_edit_style->base[0].blue = 250 * (65535/255);
-    note_edit_style->base[0].pixel = (gulong)(250*65536 + 250*256 + 250);
-  }
-}
-
-void
-ags_main_add_devout(AgsMain *ags_main,
-		    AgsDevout *devout)
-{
-  if(ags_main == NULL ||
-     devout == NULL){
-    return;
-  }
-
-  g_object_ref(G_OBJECT(devout));
-  ags_main->devout = g_list_prepend(ags_main->devout,
-				    devout);
-}
-
-void
 ags_main_register_widget_type()
 {
   ags_dial_get_type();
-}
-
-void
-ags_main_register_machine_type()
-{
-  ags_panel_get_type();
-  ags_panel_input_pad_get_type();
-  ags_panel_input_line_get_type();
-
-  ags_mixer_get_type();
-  ags_mixer_input_pad_get_type();
-  ags_mixer_input_line_get_type();
-
-  ags_drum_get_type();
-  ags_drum_output_pad_get_type();
-  ags_drum_output_line_get_type();
-  ags_drum_input_pad_get_type();
-  ags_drum_input_line_get_type();
-
-  ags_matrix_get_type();
-
-  ags_synth_get_type();
-  ags_synth_input_pad_get_type();
-  ags_synth_input_line_get_type();
-
-  ags_ffplayer_get_type();
 }
 
 void
@@ -340,7 +64,6 @@ ags_main_register_thread_type()
   ags_iterator_thread_get_type();
   ags_recycling_thread_get_type();
   ags_timestamp_thread_get_type();
-  ags_gui_thread_get_type();
 
   ags_thread_pool_get_type();
   ags_returnable_thread_get_type();
@@ -377,25 +100,19 @@ ags_signal_cleanup()
 int
 main(int argc, char **argv)
 {
-  AgsApplicationContext *audio_application_context, *xorg_application_context;
   AgsGuiThread *gui_thread;
   GFile *autosave_file;
-
+    
   gchar *filename, *autosave_filename;
+  gboolean single_thread = FALSE;
+  guint i;
 
   struct sched_param param;
   struct rlimit rl;
   struct sigaction sa;
-  
-  struct passwd *pw;
-  uid_t uid;
-  gchar *wdir, *config_file;
-  int result;
-  
-  gboolean single_thread = FALSE;
-  guint i;
 
-  const char *error;
+  int result;
+
   const rlim_t kStackSize = 64L * 1024L * 1024L;   // min stack size = 64 Mb
 
   //  mtrace();
@@ -443,21 +160,19 @@ main(int argc, char **argv)
   sa.sa_handler = ags_thread_suspend_handler;
   sigaction(AGS_THREAD_SUSPEND_SIG, &sa, NULL);
 
-  /**/
-  LIBXML_TEST_VERSION;
+  /* init gsequencer */
+  ags_xorg_init_context(&argc, &argv);
 
-  XInitThreads();
+  /* Declare ourself as a real time task */
+  param.sched_priority = AGS_PRIORITY;
 
-  g_thread_init(NULL);
-  gdk_threads_init();
+  if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
+    perror("sched_setscheduler failed\0");
+  }
 
-  gtk_init(&argc, &argv);
-  ipatch_init();
+  mlockall(MCL_CURRENT | MCL_FUTURE);
 
-  ao_initialize();
-
-  ags_colors_alloc();
-
+  /* parse command line parameter */
   filename = NULL;
 
   for(i = 0; i < argc; i++){
@@ -469,24 +184,6 @@ main(int argc, char **argv)
     }
   }
 
-  config = ags_config_new();
-  uid = getuid();
-  pw = getpwuid(uid);
-
-  wdir = g_strdup_printf("%s/%s\0",
-			 pw->pw_dir,
-			 AGS_DEFAULT_DIRECTORY);
-
-  config_file = g_strdup_printf("%s/%s\0",
-				wdir,
-				AGS_DEFAULT_CONFIG);
-
-  ags_config_load_from_file(config,
-			    config_file);
-
-  g_free(wdir);
-  g_free(config_file);
-
   if(filename != NULL){
     AgsFile *file;
 
@@ -496,143 +193,121 @@ main(int argc, char **argv)
     ags_file_open(file);
     ags_file_read(file);
 
-    ags_main = AGS_MAIN(file->ags_main);
+    application_context = AGS_MAIN(file->application_context);
     ags_file_close(file);
+  }else{
+    AgsThread *audio_loop;
+    AgsDevout *devout;
+    AgsWindow *window;
+    AgsServer *server;
 
-    ags_thread_start(ags_main->main_loop);
+    struct passwd *pw;
+    uid_t uid;
+    gchar *wdir, *config_file;
+  
+    ags_config_load_from_file(ags_config,
+			      config_file);
+
+    uid = getuid();
+    pw = getpwuid(uid);
+
+    wdir = g_strdup_printf("%s/%s\0",
+			   pw->pw_dir,
+			   AGS_DEFAULT_DIRECTORY);
+
+    config_file = g_strdup_printf("%s/%s\0",
+				  wdir,
+				  AGS_DEFAULT_CONFIG);
+
+    g_free(wdir);
+    g_free(config_file);
+
+    /* AgsDevout */
+    devout = ags_devout_new();
+    g_object_set(ags_audio_application_context,
+		 "soundcard\0", devout,
+		 NULL);
+    
+      /* AgsWindow */
+    window = ags_window_new();
+    g_object_set(ags_xorg_application_context,
+		 "window\0", window,
+		 "soundcard\0", devout,
+		 NULL);
+    g_object_ref(G_OBJECT(window));
+
+    gtk_window_set_default_size((GtkWindow *) window, 500, 500);
+    gtk_paned_set_position((GtkPaned *) window->paned, 300);
+
+    ags_connectable_connect(AGS_CONNECTABLE(window));
+    gtk_widget_show_all((GtkWidget *) window);
+
+    /* AgsServer */
+    server = ags_server_new();
+    g_object_set(ags_server_application_context,
+		 "server\0", server,
+		 NULL);
+
+    /* AgsMainLoop */
+    audio_loop = (AgsThread *) ags_audio_loop_new((GObject *) devout);
+    g_object_set(ags_application_context,
+		 "main-loop\0", audio_loop,
+		 NULL);
+
+    g_object_ref(audio_loop);
+    ags_connectable_connect(AGS_CONNECTABLE(audio_loop));
+
+    /* start thread tree */
+    ags_thread_start(audio_loop);
 
     /* complete thread pool */
-    ags_main->thread_pool->parent = AGS_THREAD(ags_main->main_loop);
-    ags_thread_pool_start(ags_main->thread_pool);
+    ags_thread_pool_start(ags_thread_application_context->thread_pool);
+  }
 
+  if(!single_thread){
+    AgsGuiThread *gui_thread;
+    GList *list;
+
+    /* find gui thread */
+    list = AGS_THREAD(application_context->main_loop)->children;
+
+    while(list != NULL){
+      if(AGS_IS_GUI_THREAD(list->data)){
+	gui_thread = list->data;
+
+	break;
+      }
+
+      list = list->next;
+    }
+
+    /* start main loop */
+    ags_thread_start(AGS_THREAD(application_context->main_loop));
+
+    /* join gui thread */
 #ifdef _USE_PTH
-    pth_join(AGS_AUDIO_LOOP(ags_main->main_loop)->gui_thread->thread,
+    pth_join(gui_thread->thread,
 	     NULL);
 #else
-    pthread_join(AGS_AUDIO_LOOP(ags_main->main_loop)->gui_thread->thread,
+    pthread_join(gui_thread->thread,
 		 NULL);
 #endif
   }else{
-    ags_main = ags_main_new();
+    AgsSingleThread *single_thread;
 
-    if(single_thread){
-      ags_main->flags = AGS_MAIN_SINGLE_THREAD;
-    }
+    /* single thread */
+    single_thread = ags_single_thread_new((GObject *) ags_audio_application_context->soundcard->data);
 
-    /* Declare ourself as a real time task */
-    param.sched_priority = AGS_PRIORITY;
-
-    if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
-      perror("sched_setscheduler failed\0");
-    }
-
-    mlockall(MCL_CURRENT | MCL_FUTURE);
-
-    if((AGS_MAIN_SINGLE_THREAD & (ags_main->flags)) == 0){
-      //      GdkFrameClock *frame_clock;
-
-#ifdef AGS_WITH_XMLRPC_C
-      AbyssInit(&error);
-
-      xmlrpc_env_init(&(ags_main->env));
-#endif /* AGS_WITH_XMLRPC_C */
-
-      /* AgsDevout */
-      devout = ags_devout_new((GObject *) ags_main);
-      ags_main_add_devout(ags_main,
-			  devout);
-
-      /*  */
-      g_object_set(G_OBJECT(ags_main->autosave_thread),
-		   "devout\0", devout,
-		   NULL);
-
-      /* AgsWindow */
-      ags_main->window =
-	window = ags_window_new((GObject *) ags_main);
-      g_object_set(G_OBJECT(window),
-		   "devout\0", devout,
-		   NULL);
-      g_object_ref(G_OBJECT(window));
-
-      gtk_window_set_default_size((GtkWindow *) window, 500, 500);
-      gtk_paned_set_position((GtkPaned *) window->paned, 300);
-
-      ags_connectable_connect(window);
-      gtk_widget_show_all((GtkWidget *) window);
-
-      /* AgsServer */
-      ags_main->server = ags_server_new((GObject *) ags_main);
-
-      /* AgsMainLoop */
-      ags_main->main_loop = AGS_MAIN_LOOP(ags_audio_loop_new((GObject *) devout, (GObject *) ags_main));
-      g_object_ref(G_OBJECT(ags_main->main_loop));
-      ags_connectable_connect(AGS_CONNECTABLE(ags_main->main_loop));
-
-      /* start thread tree */
-      ags_thread_start(ags_main->main_loop);
-
-      /* complete thread pool */
-      ags_main->thread_pool->parent = AGS_THREAD(ags_main->main_loop);
-      ags_thread_pool_start(ags_main->thread_pool);
-    }else{
-      AgsSingleThread *single_thread;
-
-      devout = ags_devout_new((GObject *) ags_main);
-      ags_main_add_devout(ags_main,
-			  devout);
-
-      g_object_set(G_OBJECT(ags_main->autosave_thread),
-		   "devout\0", devout,
-		   NULL);
-
-      /* threads */
-      single_thread = ags_single_thread_new((GObject *) devout);
-
-      /* AgsWindow */
-      ags_main->window = 
-	window = ags_window_new((GObject *) ags_main);
-      g_object_set(G_OBJECT(window),
-		   "devout\0", devout,
-		   NULL);
-      gtk_window_set_default_size((GtkWindow *) window, 500, 500);
-      gtk_paned_set_position((GtkPaned *) window->paned, 300);
-
-      ags_connectable_connect(window);
-      gtk_widget_show_all((GtkWidget *) window);
-
-      /* AgsMainLoop */
-      ags_main->main_loop = AGS_MAIN_LOOP(ags_audio_loop_new((GObject *) devout, (GObject *) ags_main));
-      g_object_ref(G_OBJECT(ags_main->main_loop));
-
-      /* complete thread pool */
-      ags_main->thread_pool->parent = AGS_THREAD(ags_main->main_loop);
-      ags_thread_pool_start(ags_main->thread_pool);
-
-      /* start thread tree */
-      ags_thread_start((AgsThread *) single_thread);
-    }
-
-    if(!single_thread){
-      /* join gui thread */
-#ifdef _USE_PTH
-      pth_join(AGS_AUDIO_LOOP(ags_main->main_loop)->gui_thread->thread,
-	       NULL);
-#else
-      pthread_join(AGS_AUDIO_LOOP(ags_main->main_loop)->gui_thread->thread,
-		   NULL);
-#endif
-    }
+    /* start thread tree */
+    ags_thread_start((AgsThread *) single_thread);
   }
-
+    
   /* free managers */
   if(ags_ladspa_manager != NULL){
     g_object_unref(ags_ladspa_manager_get_instance());
   }
-
-  uid = getuid();
-  pw = getpwuid(uid);
   
+  /* delete autosave file */  
   autosave_filename = g_strdup_printf("%s/%s/%d-%s\0",
 				      pw->pw_dir,
 				      AGS_DEFAULT_DIRECTORY,

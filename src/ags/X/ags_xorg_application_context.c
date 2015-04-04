@@ -46,6 +46,8 @@ enum{
   PROP_WINDOW,
 };
 
+AgsXorgApplicationContext *ags_xorg_application_context = NULL;
+
 GType
 ags_xorg_application_context_get_type()
 {
@@ -236,6 +238,35 @@ ags_xorg_application_context_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_xorg_application_context_parent_class)->finalize(gobject);
 
   xorg_application_context = AGS_XORG_APPLICATION_CONTEXT(gobject);
+}
+
+void
+ags_xorg_application_context_register_types(AgsApplicationContext *application_context)
+{
+  ags_gui_thread_get_type();
+
+  /* register machine */
+  ags_panel_get_type();
+  ags_panel_input_pad_get_type();
+  ags_panel_input_line_get_type();
+
+  ags_mixer_get_type();
+  ags_mixer_input_pad_get_type();
+  ags_mixer_input_line_get_type();
+
+  ags_drum_get_type();
+  ags_drum_output_pad_get_type();
+  ags_drum_output_line_get_type();
+  ags_drum_input_pad_get_type();
+  ags_drum_input_line_get_type();
+
+  ags_matrix_get_type();
+
+  ags_synth_get_type();
+  ags_synth_input_pad_get_type();
+  ags_synth_input_line_get_type();
+
+  ags_ffplayer_get_type();
 }
 
 AgsXorgApplicationContext*

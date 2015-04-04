@@ -56,6 +56,7 @@ enum{
   PROP_THREAD_POOL,
 };
 
+AgsThreadApplicationContext *ags_thread_application_context = NULL;
 extern AgsConfig *ags_config;
 
 GType
@@ -168,12 +169,10 @@ ags_thread_application_context_init(AgsThreadApplicationContext *thread_applicat
 {
   thread_application_context->flags = 0;
 
-  /* AgsAutosaveThread */
-  thread_application_context->autosave_thread = NULL;
-  thread_application_context->autosave_thread = ags_autosave_thread_new(NULL, thread_application_context);
-  g_object_ref(G_OBJECT(thread_application_context->autosave_thread));
-  
-  thread_application_context->thread_pool = ags_thread_pool_new(NULL);
+  g_object_set(thread_application_context,
+	       "autosave-thread", ags_autosave_thread_new(NULL, NULL),
+	       "thread-pool\0", ags_thread_pool_new(NULL),
+	       NULL);
 }
 
 void

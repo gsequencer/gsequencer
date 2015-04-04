@@ -19,6 +19,9 @@
 #ifndef __AGS_INIT_H__
 #define __AGS_INIT_H__
 
+#include <glib.h>
 #include <glib-object.h>
+
+void ags_init_context(int *argc, gchar ***argv);
 
 #endif /*__AGS_INIT_H__*/

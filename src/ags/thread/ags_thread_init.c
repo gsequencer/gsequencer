@@ -16,25 +16,24 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <ags/object/ags_init.h>
+#include <ags/thread/ags_thread_init.h>
 
-#include <ags/object/ags_config.h>
+#include <ags/object/ags_init.h>
+#include <ags/object/ags_application_context.h>
 
 extern AgsApplicationContext *ags_application_context = NULL;
-
-extern AgsConfig *ags_config;
+extern AgsThreadApplicationContext *ags_thread_application_context;
 
 void
-ags_init_context(int *argc, gchar ***argv)
+ags_thread_init_context(int *argc, gchar ***argv)
 {
-  gchar *filename;
-
-  LIBXML_TEST_VERSION;
-
-  /* instantiate config */
-  ags_config = ags_config_new();
+  ags_init_context(argc, argv);
   
+  g_thread_init(NULL);
+
   /* instantiate application context */
-  ags_audio_application_context = ags_audio_application_context_new(NULL,
-								    ags_config);
+  ags_thread_application_context = ags_thread_application_context_new(NULL,
+								      NULL);
+  ags_application_context_add_sibling(ags_application_context,
+				      ags_thread_application_context);
 }
