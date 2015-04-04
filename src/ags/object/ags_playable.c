@@ -18,15 +18,14 @@
 
 #include <ags/object/ags_playable.h>
 
+#include <ags/object/ags_config.h>
 #include <ags-lib/object/ags_connectable.h>
-
-#include <ags/audio/ags_config.h>
 
 #include <math.h>
 
 void ags_playable_base_init(AgsPlayableInterface *interface);
 
-extern AgsConfig *config;
+extern AgsConfig *ags_config;
 
 /**
  * SECTION:ags_playable
@@ -457,12 +456,12 @@ ags_playable_read_audio_signal(AgsPlayable *playable,
 		    &loop_start, &loop_end,
 		    &error);
 
-  samplerate = g_ascii_strtoull(ags_config_get(config,
+  samplerate = g_ascii_strtoull(ags_config_get(ags_config,
 					       AGS_CONFIG_DEVOUT,
 					       "samplerate\0"),
 				NULL,
 				10);
-  buffer_size = g_ascii_strtoull(ags_config_get(config,
+  buffer_size = g_ascii_strtoull(ags_config_get(ags_config,
 						AGS_CONFIG_DEVOUT,
 						"buffer-size\0"),
 				 NULL,

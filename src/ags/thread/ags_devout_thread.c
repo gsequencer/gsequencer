@@ -26,7 +26,7 @@
 
 #include <ags/audio/ags_devout.h>
 
-#include <ags/audio/ags_config.h>
+#include <ags/object/ags_config.h>
 
 void ags_devout_thread_class_init(AgsDevoutThreadClass *devout_thread);
 void ags_devout_thread_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -39,7 +39,7 @@ void ags_devout_thread_start(AgsThread *thread);
 void ags_devout_thread_run(AgsThread *thread);
 void ags_devout_thread_stop(AgsThread *thread);
 
-extern AgsConfig *config;
+extern AgsConfig *ags_config;
 
 /**
  * SECTION:ags_devout_thread
@@ -130,12 +130,12 @@ ags_devout_thread_init(AgsDevoutThread *devout_thread)
 
   thread = AGS_THREAD(devout_thread);
 
-  buffer_size = g_ascii_strtoull(ags_config_get(config,
+  buffer_size = g_ascii_strtoull(ags_config_get(ags_config,
 						AGS_CONFIG_DEVOUT,
 						"buffer-size"),
 				 NULL,
 				 10);
-  samplerate = g_ascii_strtoull(ags_config_get(config,
+  samplerate = g_ascii_strtoull(ags_config_get(ags_config,
 					       AGS_CONFIG_DEVOUT,
 					       "samplerate"),
 				NULL,

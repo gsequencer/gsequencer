@@ -206,7 +206,7 @@ void ags_libao_pcm_info(char *card_id,
 void ags_libao_tic(AgsLibao *libao);
 
 void ags_libao_note_offset_changed(AgsLibao *libao, guint note_offset);
-
+MAIN
 AgsLibao* ags_libao_new(GObject *application_context);
 
 #endif /*__AGS_LIBAO_H__*/

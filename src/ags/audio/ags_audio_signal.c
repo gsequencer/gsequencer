@@ -18,10 +18,10 @@
 
 #include <ags/audio/ags_audio_signal.h>
 
+#include <ags/object/ags_config.h>
 #include <ags/object/ags_marshal.h>
 #include <ags-lib/object/ags_connectable.h>
 
-#include <ags/audio/ags_config.h>
 #include <ags/audio/ags_devout.h>
 
 #include <stdint.h>
@@ -72,7 +72,7 @@ enum{
   LAST_SIGNAL,
 };
 
-extern AgsConfig *config;
+extern AgsConfig *ags_config;
 
 static gpointer ags_audio_signal_parent_class = NULL;
 static guint audio_signal_signals[LAST_SIGNAL];
@@ -238,12 +238,12 @@ ags_audio_signal_init(AgsAudioSignal *audio_signal)
   audio_signal->recycling = NULL;
   audio_signal->recall_id = NULL;
 
-  audio_signal->samplerate = g_ascii_strtoull(ags_config_get(config,
+  audio_signal->samplerate = g_ascii_strtoull(ags_config_get(ags_config,
 							     AGS_CONFIG_DEVOUT,
 							     "samplerate\0"),
 					      NULL,
 					      10);
-  audio_signal->buffer_size = g_ascii_strtoull(ags_config_get(config,
+  audio_signal->buffer_size = g_ascii_strtoull(ags_config_get(ags_config,
 							      AGS_CONFIG_DEVOUT,
 							      "buffer-size\0"),
 					       NULL,

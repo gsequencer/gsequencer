@@ -17,7 +17,6 @@
  */
 
 #include <ags/thread/ags_gui_thread.h>
-#include <ags/thread/ags_gui_task_thread.h>
 
 #include <ags-lib/object/ags_connectable.h>
 

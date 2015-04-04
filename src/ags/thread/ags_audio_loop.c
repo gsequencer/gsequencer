@@ -18,6 +18,7 @@
 
 #include <ags/thread/ags_audio_loop.h>
 
+#include <ags/object/ags_application_context.h>
 #include <ags-lib/object/ags_connectable.h>
 #include <ags/object/ags_main_loop.h>
 
@@ -71,6 +72,7 @@ void ags_audio_loop_play_audio(AgsAudioLoop *audio_loop);
 
 enum{
   PROP_0,
+  PROP_APPLICATION_CONTEXT,
   PROP_TASK_THREAD,
   PROP_GUI_THREAD,
   PROP_DEVOUT_THREAD,
@@ -148,6 +150,22 @@ ags_audio_loop_class_init(AgsAudioLoopClass *audio_loop)
   gobject->finalize = ags_audio_loop_finalize;
 
   /* properties */
+  /**
+   * AgsAudioLoop:application-context:
+   *
+   * The assigned #AgsApplicationContext.
+   * 
+   * Since: 0.4
+   */
+  param_spec = g_param_spec_object("application-context\0",
+				   "task thread to run\0",
+				   "The task thread to run\0",
+				   AGS_TYPE_APPLICATION_CONTEXT,
+				   G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_TASK_THREAD,
+				  param_spec);
+
   /**
    * AgsAudioLoop:task-thread:
    *
@@ -306,7 +324,7 @@ ags_audio_loop_init(AgsAudioLoop *audio_loop)
   g_atomic_int_set(&(audio_loop->tic), 0);
   g_atomic_int_set(&(audio_loop->last_sync), 0);
 
-  audio_loop->ags_main = NULL;
+  audio_loop->application_context = NULL;
 
   /* AgsAsyncQueue */
   audio_loop->async_queue = ags_async_queue_new();
@@ -356,6 +374,23 @@ ags_audio_loop_set_property(GObject *gobject,
   audio_loop = AGS_AUDIO_LOOP(gobject);
 
   switch(prop_id){
+  case PROP_APPLICATION_CONTEXT:
+    {
+      AgsApplicationContext *application_context;
+
+      application_context = (AgsApplicationContext *) g_value_get_object(value);
+
+      if(audio_loop->application_context != NULL){
+	g_object_unref(G_OBJECT(audio_loop->application_context));
+      }
+
+      if(application_context != NULL){
+	g_object_ref(G_OBJECT(application_context));
+      }
+
+      audio_loop->application_context = application_context;
+    }
+    break;
   case PROP_TASK_THREAD:
     {
       AgsThread *thread;
@@ -477,6 +512,11 @@ ags_audio_loop_get_property(GObject *gobject,
   audio_loop = AGS_AUDIO_LOOP(gobject);
 
   switch(prop_id){
+  case PROP_APPLICATION_CONTEXT:
+    {
+      g_value_set_object(value, audio_loop->application_context);
+    }
+    break;
   case PROP_TASK_THREAD:
     {
       g_value_set_object(value, audio_loop->task_thread);
@@ -1109,7 +1149,7 @@ ags_audio_loop_remove_recall(AgsAudioLoop *audio_loop, gpointer devout_play)
 /**
  * ags_audio_loop_new:
  * @devout: the #AgsDevout
- * @ags_main: the #AgsMain
+ * @application_context: the #AgsMain
  *
  * Create a new #AgsAudioLoop.
  *
@@ -1118,18 +1158,14 @@ ags_audio_loop_remove_recall(AgsAudioLoop *audio_loop, gpointer devout_play)
  * Since: 0.4
  */
 AgsAudioLoop*
-ags_audio_loop_new(GObject *devout, GObject *ags_main)
+ags_audio_loop_new(GObject *devout, GObject *application_context)
 {
   AgsAudioLoop *audio_loop;
 
   audio_loop = (AgsAudioLoop *) g_object_new(AGS_TYPE_AUDIO_LOOP,
+					     "application-context\0", application_context,
 					     "devout\0", devout,
 					     NULL);
-
-  if(ags_main != NULL){
-    g_object_ref(G_OBJECT(ags_main));
-    audio_loop->ags_main = ags_main;
-  }
 
   return(audio_loop);
 }
