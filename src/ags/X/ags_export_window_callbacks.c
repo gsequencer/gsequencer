@@ -20,6 +20,8 @@
 
 #include <ags/main.h>
 
+#include <ags/object/ags_application_context.h>
+
 #include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_task_thread.h>
 #include <ags/thread/ags_export_thread.h>
@@ -28,11 +30,15 @@
 
 #include <ags/audio/task/ags_export_output.h>
 
+#include <ags/X/ags_xorg_application_context.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_navigation.h>
 
 void ags_export_window_stop_callback(AgsThread *thread,
 				     AgsExportWindow *export_window);
+
+extern AgsApplicationContext *ags_application_context;
+extern AgsXorgApplicationContext *ags_xorg_application_context;
 
 void
 ags_export_window_file_chooser_button_callback(GtkWidget *file_chooser_button,
@@ -63,7 +69,7 @@ ags_export_window_tact_callback(GtkWidget *spin_button,
 {
   gdouble bpm;
 
-  bpm = AGS_NAVIGATION(AGS_WINDOW(AGS_MAIN(export_window->ags_main)->window)->navigation)->bpm->adjustment->value;
+  bpm = AGS_NAVIGATION(AGS_WINDOW(ags_xorg_application_context->window)->navigation)->bpm->adjustment->value;
 
   gtk_label_set_text(export_window->duration,
 		     ags_navigation_tact_to_time_string(gtk_spin_button_get_value(export_window->tact),
@@ -83,8 +89,8 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
   guint tic_counter_incr;
   gboolean success;
 
-  window = AGS_MAIN(export_window->ags_main)->window;
-  audio_loop = AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop);
+  window = ags_xorg_application_context->window;
+  audio_loop = ags_application_context->main_loop;
   
   devout = window->devout;
   delay = AGS_DEVOUT_DEFAULT_DELAY;

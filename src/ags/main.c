@@ -18,6 +18,25 @@
 
 #include <ags/main.h>
 
+#include <ags/object/ags_application_context.h>
+#include <ags/object/ags_config.h>
+
+#include <ags/thread/ags_thread_application_context.h>
+#include <ags/thread/ags_thread-posix.h>
+#include <ags/thread/ags_single_thread.h>
+#include <ags/thread/ags_autosave_thread.h>
+
+#include <ags/server/ags_server_application_context.h>
+
+#include <ags/plugin/ags_ladspa_manager.h>
+
+#include <ags/audio/ags_audio_application_context.h>
+#include <ags/audio/ags_devout.h>
+
+#include <ags/X/ags_xorg_application_context.h>
+#include <ags/thread/ags_gui_thread.h>
+#include <ags/X/ags_window.h>
+
 #include <gtk/gtk.h>
 #include <libintl.h>
 #include <stdio.h>
@@ -43,37 +62,17 @@ extern void ags_thread_suspend_handler(int sig);
 
 static sigset_t ags_wait_mask;
 
+extern AgsApplicationContext *ags_application_context;
+extern AgsThreadApplicationContext *ags_thread_application_context;
+extern AgsServerApplicationContext *ags_server_application_context;
+extern AgsAudioApplicationContext *ags_audio_application_context;
+extern AgsXorgApplicationContext *ags_xorg_application_context;
+
+extern AgsConfig *ags_config;
+
 extern AgsLadspaManager *ags_ladspa_manager;
 
 struct sigaction ags_sigact;
-
-void
-ags_main_register_widget_type()
-{
-  ags_dial_get_type();
-}
-
-void
-ags_main_register_thread_type()
-{
-  ags_thread_get_type();
-
-  ags_audio_loop_get_type();
-  ags_task_thread_get_type();
-  ags_devout_thread_get_type();
-  ags_iterator_thread_get_type();
-  ags_recycling_thread_get_type();
-  ags_timestamp_thread_get_type();
-
-  ags_thread_pool_get_type();
-  ags_returnable_thread_get_type();
-}
-
-void
-ags_main_quit(AgsMain *ags_main)
-{
-  ags_thread_stop(AGS_AUDIO_LOOP(ags_main->main_loop)->gui_thread);
-}
 
 void
 ags_signal_handler(int signr)
@@ -97,15 +96,41 @@ ags_signal_cleanup()
   sigemptyset(&(ags_sigact.sa_mask));
 }
 
+void
+ags_main_quit(AgsApplicationContext *application_context)
+{
+  AgsThread *gui_thread;
+  AgsThread *children;
+
+  /* find gui thread */
+  children = AGS_THREAD(application_context->main_loop)->children;
+
+  while(children != NULL){
+    if(AGS_IS_GUI_THREAD(children)){
+      gui_thread = children;
+
+      break;
+    }
+
+    children = children->next;
+  }
+
+  ags_thread_stop(gui_thread);
+}
+
 int
 main(int argc, char **argv)
 {
-  AgsGuiThread *gui_thread;
+  AgsThread *audio_loop;
+  AgsThread *gui_thread;
   GFile *autosave_file;
     
   gchar *filename, *autosave_filename;
   gboolean single_thread = FALSE;
   guint i;
+
+  struct passwd *pw;
+  uid_t uid;
 
   struct sched_param param;
   struct rlimit rl;
@@ -146,7 +171,7 @@ main(int argc, char **argv)
   sigaction(SIGINT, &ags_sigact, (struct sigaction *) NULL);
   sigaction(SA_RESTART, &ags_sigact, (struct sigaction *) NULL);
 
-  /*  */
+  /* register signal handler */
   sigfillset(&(ags_wait_mask));
   sigdelset(&(ags_wait_mask), AGS_THREAD_SUSPEND_SIG);
   sigdelset(&(ags_wait_mask), AGS_THREAD_RESUME_SIG);
@@ -160,11 +185,15 @@ main(int argc, char **argv)
   sa.sa_handler = ags_thread_suspend_handler;
   sigaction(AGS_THREAD_SUSPEND_SIG, &sa, NULL);
 
+  /* get user info */
+  uid = getuid();
+  pw = getpwuid(uid);
+
   /* init gsequencer */
   ags_xorg_init_context(&argc, &argv);
 
   /* Declare ourself as a real time task */
-  param.sched_priority = AGS_PRIORITY;
+  param.sched_priority = AGS_RT_PRIORITY;
 
   if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
     perror("sched_setscheduler failed\0");
@@ -192,8 +221,6 @@ main(int argc, char **argv)
 			NULL);
     ags_file_open(file);
     ags_file_read(file);
-
-    application_context = AGS_MAIN(file->application_context);
     ags_file_close(file);
   }else{
     AgsThread *audio_loop;
@@ -223,13 +250,13 @@ main(int argc, char **argv)
     g_free(config_file);
 
     /* AgsDevout */
-    devout = ags_devout_new();
+    devout = ags_devout_new(ags_application_context);
     g_object_set(ags_audio_application_context,
 		 "soundcard\0", devout,
 		 NULL);
     
       /* AgsWindow */
-    window = ags_window_new();
+    window = ags_window_new(ags_application_context);
     g_object_set(ags_xorg_application_context,
 		 "window\0", window,
 		 "soundcard\0", devout,
@@ -243,13 +270,14 @@ main(int argc, char **argv)
     gtk_widget_show_all((GtkWidget *) window);
 
     /* AgsServer */
-    server = ags_server_new();
+    server = ags_server_new(ags_application_context);
     g_object_set(ags_server_application_context,
 		 "server\0", server,
 		 NULL);
 
     /* AgsMainLoop */
-    audio_loop = (AgsThread *) ags_audio_loop_new((GObject *) devout);
+    audio_loop = (AgsThread *) ags_audio_loop_new((GObject *) devout,
+						  ags_application_context);
     g_object_set(ags_application_context,
 		 "main-loop\0", audio_loop,
 		 NULL);
@@ -265,24 +293,23 @@ main(int argc, char **argv)
   }
 
   if(!single_thread){
-    AgsGuiThread *gui_thread;
-    GList *list;
+    GList *children;
 
     /* find gui thread */
-    list = AGS_THREAD(application_context->main_loop)->children;
+    children = AGS_THREAD(ags_application_context->main_loop)->children;
 
-    while(list != NULL){
-      if(AGS_IS_GUI_THREAD(list->data)){
-	gui_thread = list->data;
+    while(children != NULL){
+      if(AGS_IS_GUI_THREAD(children)){
+	gui_thread = children;
 
 	break;
       }
 
-      list = list->next;
+      children = children->next;
     }
 
     /* start main loop */
-    ags_thread_start(AGS_THREAD(application_context->main_loop));
+    ags_thread_start(AGS_THREAD(ags_application_context->main_loop));
 
     /* join gui thread */
 #ifdef _USE_PTH
@@ -298,6 +325,10 @@ main(int argc, char **argv)
     /* single thread */
     single_thread = ags_single_thread_new((GObject *) ags_audio_application_context->soundcard->data);
 
+    /* add known threads to single_thread */
+    ags_thread_add_child(AGS_THREAD(single_thread),
+			 audio_loop);
+    
     /* start thread tree */
     ags_thread_start((AgsThread *) single_thread);
   }
