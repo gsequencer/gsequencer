@@ -41,7 +41,8 @@ void ags_peak_channel_disconnect(AgsConnectable *connectable);
 void ags_peak_channel_set_ports(AgsPlugin *plugin, GList *port);
 void ags_peak_channel_finalize(GObject *gobject);
 
-extern AgsConfig *ags_config;
+extern pthread_key_t config;
+AgsConfig *ags_config =  pthread_getspecific(config);
 
 /**
  * SECTION:ags_peak_channel

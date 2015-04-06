@@ -52,7 +52,7 @@ struct _AgsAudio
 
   guint flags;
 
-  GObject *devout;
+  GObject *soundcard;
   guint level;
   
   guint sequence_length;
@@ -115,7 +115,7 @@ void ags_audio_done(AgsAudio *audio, AgsRecallID *recall_id);
 
 void ags_audio_set_sequence_length(AgsAudio *audio, guint sequence_length);
 
-void ags_audio_set_devout(AgsAudio *audio, GObject *devout);
+void ags_audio_set_soundcard(AgsAudio *audio, GObject *soundcard);
 
 void ags_audio_add_notation(AgsAudio *audio,
 			      GObject *notation);
@@ -169,6 +169,6 @@ void ags_audio_open_files(AgsAudio *audio,
 
 GList* ags_audio_find_port(AgsAudio *audio);
 
-AgsAudio* ags_audio_new();
+AgsAudio* ags_audio_new(GObject *soundcard);
 
 #endif /*__AGS_AUDIO_H__*/

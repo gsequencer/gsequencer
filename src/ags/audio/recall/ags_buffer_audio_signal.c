@@ -62,7 +62,8 @@ static gpointer ags_buffer_audio_signal_parent_class = NULL;
 static AgsConnectableInterface *ags_buffer_audio_signal_parent_connectable_interface;
 static AgsDynamicConnectableInterface *ags_buffer_audio_signal_parent_dynamic_connectable_interface;
 
-extern AgsConfig *ags_config;
+extern pthread_key_t config;
+AgsConfig *ags_config =  pthread_getspecific(config);
 
 GType
 ags_buffer_audio_signal_get_type()

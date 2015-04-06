@@ -39,7 +39,7 @@ void ags_devout_thread_start(AgsThread *thread);
 void ags_devout_thread_run(AgsThread *thread);
 void ags_devout_thread_stop(AgsThread *thread);
 
-extern AgsConfig *ags_config;
+extern pthread_key_t config;
 
 /**
  * SECTION:ags_devout_thread
@@ -125,17 +125,18 @@ void
 ags_devout_thread_init(AgsDevoutThread *devout_thread)
 {
   AgsThread *thread;
+  AgsConfig *ags_config = pthread_getspecific(config);
   guint buffer_size;
   guint samplerate;
 
   thread = AGS_THREAD(devout_thread);
 
-  buffer_size = g_ascii_strtoull(ags_config_get(ags_config,
+  buffer_size = g_ascii_strtoull(ags_config_get_value(ags_config,
 						AGS_CONFIG_DEVOUT,
 						"buffer-size"),
 				 NULL,
 				 10);
-  samplerate = g_ascii_strtoull(ags_config_get(ags_config,
+  samplerate = g_ascii_strtoull(ags_config_get_value(ags_config,
 					       AGS_CONFIG_DEVOUT,
 					       "samplerate"),
 				NULL,

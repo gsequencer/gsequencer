@@ -108,7 +108,8 @@ static AgsConnectableInterface *ags_ffplayer_parent_connectable_interface;
 
 GtkStyle *ffplayer_style;
 
-extern AgsApplicationContext *ags_application_context;
+extern pthread_key_t application_context;
+AgsApplicationContext *ags_application_context =  pthread_getspecific(application_context);
 
 GType
 ags_ffplayer_get_type(void)

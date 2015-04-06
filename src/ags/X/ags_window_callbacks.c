@@ -27,7 +27,8 @@
 
 #include <ags/audio/task/ags_save_file.h>
 
-extern AgsApplicationContext *ags_application_context;
+extern pthread_key_t application_context;
+AgsApplicationContext *ags_application_context =  pthread_getspecific(application_context);
 
 gboolean
 ags_window_delete_event_callback(GtkWidget *widget, gpointer data)

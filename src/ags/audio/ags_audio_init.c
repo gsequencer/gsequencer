@@ -18,29 +18,10 @@
 
 #include <ags/audio/ags_audio_init.h>
 
-#include <ags/object/ags_application_context.h>
-
-#include <ags/thread/ags_thread_init.h>
-
-extern AgsApplicationContext *ags_application_context = NULL;
-extern AgsAudioApplicationContext *ags_audio_application_context;
+#include <ags/audio/ags_audio_application_context.h>
 
 void
-ags_audio_init_context(int *argc, gchar ***argv)
+ags_audio_init_context(AgsApplicationContext *application_context)
 {
-  ags_thread_init(argc, argv);
-  
-  ao_initialize();
-
-  ipatch_init();
-
-  /* complete thread pool */
-  ags_thread_application_context->thread_pool->parent = AGS_THREAD(audio_loop);
-  ags_thread_pool_start(ags_main->thread_pool);
-
-  /* instantiate application context */
-  ags_audio_application_context = ags_audio_application_context_new(NULL,
-								    NULL);
-  ags_application_context_add_sibling(ags_application_context,
-				      ags_audio_application_context);
+  //TODO:JK: implement me
 }

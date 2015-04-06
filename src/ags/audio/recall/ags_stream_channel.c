@@ -58,7 +58,8 @@ static gpointer ags_stream_channel_parent_class = NULL;
 static AgsConnectableInterface *ags_stream_channel_parent_connectable_interface;
 static AgsPluginInterface *ags_stream_channel_parent_plugin_interface;
 
-extern AgsConfig *ags_config;
+extern pthread_key_t config;
+AgsConfig *ags_config =  pthread_getspecific(config);
 
 static const gchar *ags_stream_channel_plugin_name = "ags-stream\0";
 static const gchar *ags_stream_channel_plugin_specifier[] = {

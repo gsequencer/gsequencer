@@ -47,8 +47,6 @@ void ags_task_thread_run(AgsThread *thread);
 void ags_task_thread_append_task_queue(AgsReturnableThread *returnable_thread, gpointer data);
 void ags_task_thread_append_tasks_queue(AgsReturnableThread *returnable_thread, gpointer data);
 
-extern AgsConfig *ags_config;
-
 /**
  * SECTION:ags_task_thread
  * @short_description: task thread
@@ -61,8 +59,6 @@ extern AgsConfig *ags_config;
 
 static gpointer ags_task_thread_parent_class = NULL;
 static AgsConnectableInterface *ags_task_thread_parent_connectable_interface;
-
-static gboolean DEBUG;
 
 GType
 ags_task_thread_get_type()
@@ -220,6 +216,7 @@ ags_task_thread_run(AgsThread *thread)
 {
   AgsDevout *devout;
   AgsTaskThread *task_thread;
+  AgsConfig *ags_config;
   GList *list;
   guint buffer_size;
   guint samplerate;
@@ -231,14 +228,14 @@ ags_task_thread_run(AgsThread *thread)
   task_thread = AGS_TASK_THREAD(thread);
   devout = AGS_DEVOUT(thread->devout);
 
-  buffer_size = g_ascii_strtoull(ags_config_get(ags_config,
-						AGS_CONFIG_DEVOUT,
-						"buffer-size\0"),
+  buffer_size = g_ascii_strtoull(ags_config_get_value(ags_config,
+						      AGS_CONFIG_DEVOUT,
+						      "buffer-size\0"),
 				 NULL,
 				 10);
-  samplerate = g_ascii_strtoull(ags_config_get(ags_config,
-					       AGS_CONFIG_DEVOUT,
-					       "samplerate\0"),
+  samplerate = g_ascii_strtoull(ags_config_get_value(ags_config,
+						     AGS_CONFIG_DEVOUT,
+						     "samplerate\0"),
 				NULL,
 				10);
 

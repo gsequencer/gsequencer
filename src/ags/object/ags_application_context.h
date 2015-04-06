@@ -25,7 +25,6 @@
 #include <ags/lib/ags_log.h>
 
 #include <ags/object/ags_config.h>
-#include <ags/object/ags_main_loop.h>
 
 #include <ags/file/ags_file.h>
 
@@ -41,6 +40,8 @@
 
 #define AGS_DEFAULT_DIRECTORY ".gsequencer\0"
 #define AGS_DEFAULT_CONFIG "ags.conf\0"
+
+#define AGS_INIT_CONTEXT_TSD_APPLICATION_CONTEXT "ags-application-context\0"
 
 typedef struct _AgsApplicationContext AgsApplicationContext;
 typedef struct _AgsApplicationContextClass AgsApplicationContextClass;
@@ -104,8 +105,7 @@ void ags_application_context_remove_sibling(AgsApplicationContext *application_c
 AgsApplicationContext* ags_application_context_find_default(GList *application_context);
 GList* ags_application_context_find_main_loop(GList *application_context);
 
-AgsApplicationContext* ags_application_context_get_instance();
-AgsApplicationContext* ags_application_context_new(AgsMainLoop *main_loop,
+AgsApplicationContext* ags_application_context_new(GObject *main_loop,
 						   AgsConfig *config);
 
 #endif /*__AGS_APPLICATION_CONTEXT_H__*/

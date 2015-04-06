@@ -36,8 +36,6 @@ void ags_apply_synth_finalize(GObject *gobject);
 
 void ags_apply_synth_launch(AgsTask *task);
 
-extern AgsConfig *ags_config;
-
 /**
  * SECTION:ags_apply_synth
  * @short_description: apply synth to channel
@@ -160,10 +158,10 @@ ags_apply_synth_finalize(GObject *gobject)
 void
 ags_apply_synth_launch(AgsTask *task)
 {
-  AgsDevout *devout;
   AgsApplySynth *apply_synth;
   AgsChannel *channel;
   AgsAudioSignal *audio_signal;
+  GObject *soundcard;
   GList *stream;
   gint wave;
   guint attack, frame_count, stop, phase, frequency;
@@ -187,20 +185,20 @@ ags_apply_synth_launch(AgsTask *task)
 				    double volume){
     switch(wave){
     case AGS_APPLY_SYNTH_SIN:
-      ags_synth_sin(devout, (signed short *) stream->data,
+      ags_synth_sin(soundcard, (signed short *) stream->data,
 		    offset, frequency, phase, frame_count,
 		    volume);
       break;
     case AGS_APPLY_SYNTH_SAW:
-      ags_synth_saw(devout, (signed short *) stream->data,
+      ags_synth_saw(soundcard, (signed short *) stream->data,
 		    offset, frequency, phase, frame_count,
 		    volume);
       break;
     case AGS_APPLY_SYNTH_SQUARE:
-      ags_synth_square(devout, (signed short *) stream->data, offset, frequency, phase, frame_count, volume);
+      ags_synth_square(soundcard, (signed short *) stream->data, offset, frequency, phase, frame_count, volume);
       break;
     case AGS_APPLY_SYNTH_TRIANGLE:
-      ags_synth_triangle(devout, (signed short *) stream->data, offset, frequency, phase, frame_count, volume);
+      ags_synth_triangle(soundcard, (signed short *) stream->data, offset, frequency, phase, frame_count, volume);
       break;
     default:
       g_warning("ags_apply_synth_launch_write: warning no wave selected\n\0");
@@ -209,17 +207,12 @@ ags_apply_synth_launch(AgsTask *task)
 
   apply_synth = AGS_APPLY_SYNTH(task);
   channel = apply_synth->start_channel;
-  devout = AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout);
-  buffer_size = g_ascii_strtoull(ags_config_get_value(ags_config,
-						AGS_CONFIG_DEVOUT,
-						"buffer-size\0"),
-				 NULL,
-				 10);
-  samplerate = g_ascii_strtoull(ags_config_get_value(ags_config,
-					       AGS_CONFIG_DEVOUT,
-					       "samplerate\0"),
-				NULL,
-				10);
+  soundcard = AGS_AUDIO(channel->audio)->soundcard;
+  ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
+			    NULL,
+			    &samplerate,
+			    &buffer_size,
+			    NULL);
   
   wave = (gint) apply_synth->wave;
   g_message("wave = %d\n\0", wave);

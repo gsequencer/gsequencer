@@ -44,7 +44,8 @@ static guint server_signals[LAST_SIGNAL];
 
 static GList *ags_server_list = NULL;
 
-extern AgsApplicationContext *ags_application_context;
+extern pthread_key_t application_context;
+AgsApplicationContext *ags_application_context =  pthread_getspecific(application_context);
 extern AgsServerApplicationContext *ags_server_application_context;
 
 GType

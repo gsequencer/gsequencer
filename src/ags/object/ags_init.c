@@ -18,23 +18,38 @@
 
 #include <ags/object/ags_init.h>
 
+#include <ags/object/ags_application_context.h>
 #include <ags/object/ags_config.h>
 
-extern AgsApplicationContext *ags_application_context = NULL;
-
-extern AgsConfig *ags_config;
+static pthread_key_t config;
+static pthread_key_t application_context;
 
 void
 ags_init_context(int *argc, gchar ***argv)
 {
+  AgsApplicationContext *ags_application_context;
+  AgsConfig *ags_config;
   gchar *filename;
 
-  LIBXML_TEST_VERSION;
-
   /* instantiate config */
-  ags_config = ags_config_new();
+  ags_config = ags_config_new(NULL);
   
   /* instantiate application context */
-  ags_audio_application_context = ags_audio_application_context_new(NULL,
-								    ags_config);
+  ags_application_context = ags_application_context_new(NULL,
+							ags_config);
+  g_object_set(config,
+	       "application-context\0", ags_application_context,
+	       NULL);
+
+  /* set TSD-Data - application context */
+  pthread_key_create(application_context,
+		     NULL);
+  pthread_setspecific(application_context,
+		      ags_application_context);
+
+  /* set TSD-Data - config */
+  pthread_key_create(config,
+		     NULL);
+  pthread_setspecific(config,
+		      ags_config);
 }

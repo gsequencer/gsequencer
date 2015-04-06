@@ -57,7 +57,8 @@ void ags_file_read_audio_loop_resolve_devout_thread(AgsFileLookup *file_lookup,
 void ags_file_write_audio_loop_resolve_devout_thread(AgsFileLookup *file_lookup,
 						     AgsAudioLoop *audio_loop);
 
-extern AgsApplicationContext *ags_application_context;
+extern pthread_key_t application_context;
+AgsApplicationContext *ags_application_context =  pthread_getspecific(application_context);
 
 void
 ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread)
@@ -67,7 +68,6 @@ ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread)
   AgsThread *gobject;
   xmlNode *child;
   xmlChar *type_name;
-  static gboolean thread_type_is_registered = FALSE;
 
   if(*thread != NULL &&
      AGS_IS_RETURNABLE_THREAD(*thread)){
@@ -76,12 +76,6 @@ ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread)
 
   if(*thread == NULL){
     GType type;
-
-    if(!thread_type_is_registered){
-      ags_main_register_thread_type();
-
-      thread_type_is_registered = TRUE;
-    }
 
     type_name = xmlGetProp(node,
 			   AGS_FILE_TYPE_PROP);

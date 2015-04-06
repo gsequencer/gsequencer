@@ -73,7 +73,8 @@ enum{
 
 static gpointer ags_link_collection_editor_parent_class = NULL;
 
-extern AgsApplicationContext *ags_application_context;
+extern pthread_key_t application_context;
+AgsApplicationContext *ags_application_context =  pthread_getspecific(application_context);
 
 GType
 ags_link_collection_editor_get_type(void)
