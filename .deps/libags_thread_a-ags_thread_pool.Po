@@ -104,19 +104,13 @@ libags_thread_a-ags_thread_pool.o: src/ags/thread/ags_thread_pool.c \
  /usr/include/glib-2.0/gobject/gtypeplugin.h \
  /usr/include/glib-2.0/gobject/gvaluearray.h \
  /usr/include/glib-2.0/gobject/gvaluetypes.h \
- src/ags/object/ags_main_loop.h src/ags/thread/ags_async_queue.h \
- /usr/include/linux/futex.h /usr/include/linux/types.h \
- /usr/include/asm/types.h /usr/include/asm-generic/types.h \
- /usr/include/asm-generic/int-ll64.h /usr/include/asm/bitsperlong.h \
- /usr/include/asm-generic/bitsperlong.h /usr/include/linux/posix_types.h \
- /usr/include/linux/stddef.h /usr/include/asm/posix_types.h \
- /usr/include/asm/posix_types_64.h /usr/include/asm-generic/posix_types.h \
- /usr/include/sys/time.h src/ags/object/ags_stackable.h \
- src/ags/thread/ags_thread-posix.h src/ags-lib/object/ags_connectable.h \
- /usr/include/libxml2/libxml/tree.h /usr/include/stdio.h \
- /usr/include/libio.h /usr/include/_G_config.h /usr/include/wchar.h \
+ src/ags/object/ags_main_loop.h src/ags/object/ags_application_context.h \
+ src/ags/lib/ags_log.h /usr/include/stdio.h /usr/include/libio.h \
+ /usr/include/_G_config.h /usr/include/wchar.h \
  /usr/include/bits/stdio_lim.h /usr/include/bits/sys_errlist.h \
- /usr/include/bits/stdio.h /usr/include/libxml2/libxml/xmlversion.h \
+ /usr/include/bits/stdio.h src/ags/object/ags_config.h \
+ src/ags/file/ags_file.h /usr/include/libxml2/libxml/tree.h \
+ /usr/include/libxml2/libxml/xmlversion.h \
  /usr/include/libxml2/libxml/xmlexports.h \
  /usr/include/libxml2/libxml/xmlstring.h \
  /usr/include/libxml2/libxml/xmlregexp.h \
@@ -136,6 +130,7 @@ libags_thread_a-ags_thread_pool.o: src/ags/thread/ags_thread_pool.c \
  /usr/include/bits/waitstatus.h /usr/include/alloca.h \
  /usr/include/bits/stdlib-bsearch.h /usr/include/bits/stdlib-float.h \
  /usr/include/libxml2/libxml/xlink.h /usr/include/libxml2/libxml/SAX2.h \
+ src/ags/thread/ags_thread-posix.h src/ags-lib/object/ags_connectable.h \
  src/ags/thread/ags_returnable_thread.h
 
 /usr/include/stdc-predef.h:
@@ -420,41 +415,9 @@ src/ags/thread/ags_thread_pool.h:
 
 src/ags/object/ags_main_loop.h:
 
-src/ags/thread/ags_async_queue.h:
+src/ags/object/ags_application_context.h:
 
-/usr/include/linux/futex.h:
-
-/usr/include/linux/types.h:
-
-/usr/include/asm/types.h:
-
-/usr/include/asm-generic/types.h:
-
-/usr/include/asm-generic/int-ll64.h:
-
-/usr/include/asm/bitsperlong.h:
-
-/usr/include/asm-generic/bitsperlong.h:
-
-/usr/include/linux/posix_types.h:
-
-/usr/include/linux/stddef.h:
-
-/usr/include/asm/posix_types.h:
-
-/usr/include/asm/posix_types_64.h:
-
-/usr/include/asm-generic/posix_types.h:
-
-/usr/include/sys/time.h:
-
-src/ags/object/ags_stackable.h:
-
-src/ags/thread/ags_thread-posix.h:
-
-src/ags-lib/object/ags_connectable.h:
-
-/usr/include/libxml2/libxml/tree.h:
+src/ags/lib/ags_log.h:
 
 /usr/include/stdio.h:
 
@@ -469,6 +432,12 @@ src/ags-lib/object/ags_connectable.h:
 /usr/include/bits/sys_errlist.h:
 
 /usr/include/bits/stdio.h:
+
+src/ags/object/ags_config.h:
+
+src/ags/file/ags_file.h:
+
+/usr/include/libxml2/libxml/tree.h:
 
 /usr/include/libxml2/libxml/xmlversion.h:
 
@@ -523,5 +492,9 @@ src/ags-lib/object/ags_connectable.h:
 /usr/include/libxml2/libxml/xlink.h:
 
 /usr/include/libxml2/libxml/SAX2.h:
+
+src/ags/thread/ags_thread-posix.h:
+
+src/ags-lib/object/ags_connectable.h:
 
 src/ags/thread/ags_returnable_thread.h:

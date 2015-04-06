@@ -84,7 +84,8 @@ void ags_file_read_port_resolve_port_value(AgsFileLookup *file_lookup,
 void ags_file_read_task_resolve_parameter(AgsFileLookup *file_lookup,
 					  AgsTask *task);
 
-extern AgsApplicationContext *ags_application_context;
+extern pthread_key_t application_context;
+AgsApplicationContext *ags_application_context =  pthread_getspecific(application_context);
 
 void
 ags_file_read_devout(AgsFile *file, xmlNode *node, AgsDevout **devout)
@@ -1640,14 +1641,7 @@ ags_file_read_recall(AgsFile *file, xmlNode *node, AgsRecall **recall)
   AgsRecall *gobject;
   xmlNode *child;
   xmlChar *type_name;
-  static gboolean recall_type_is_registered = FALSE;
 
-  if(!recall_type_is_registered){
-    ags_main_register_recall_type();
-
-    recall_type_is_registered = TRUE;
-  }
-  
   if(*recall == NULL){
     GType type;
 
@@ -4846,19 +4840,12 @@ ags_file_read_task(AgsFile *file, xmlNode *node, AgsTask **task)
   xmlNode *child;
   xmlChar *type_name;
   guint n_params;
-  static gboolean task_type_is_registered = FALSE;
 
   if(*task == NULL){
     GType type;
 
     type_name = xmlGetProp(node,
 			   AGS_FILE_TYPE_PROP);
-
-    if(!task_type_is_registered){
-      ags_main_register_task_type();
-
-      task_type_is_registered = TRUE;
-    }
 
     type = g_type_from_name(type_name);
 

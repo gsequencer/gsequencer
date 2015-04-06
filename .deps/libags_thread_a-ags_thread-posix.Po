@@ -129,7 +129,9 @@ libags_thread_a-ags_thread-posix.o: src/ags/thread/ags_thread-posix.c \
  /usr/include/bits/stdlib-bsearch.h /usr/include/bits/stdlib-float.h \
  /usr/include/libxml2/libxml/xlink.h /usr/include/libxml2/libxml/SAX2.h \
  src/ags/object/ags_tree_iterator.h src/ags/object/ags_stackable.h \
- src/ags/object/ags_main_loop.h src/ags/thread/ags_async_queue.h \
+ src/ags/object/ags_main_loop.h src/ags/object/ags_application_context.h \
+ src/ags/lib/ags_log.h src/ags/object/ags_config.h \
+ src/ags/file/ags_file.h src/ags/thread/ags_async_queue.h \
  /usr/include/linux/futex.h /usr/include/linux/types.h \
  /usr/include/asm/types.h /usr/include/asm-generic/types.h \
  /usr/include/asm-generic/int-ll64.h /usr/include/asm/bitsperlong.h \
@@ -948,6 +950,14 @@ src/ags/object/ags_tree_iterator.h:
 src/ags/object/ags_stackable.h:
 
 src/ags/object/ags_main_loop.h:
+
+src/ags/object/ags_application_context.h:
+
+src/ags/lib/ags_log.h:
+
+src/ags/object/ags_config.h:
+
+src/ags/file/ags_file.h:
 
 src/ags/thread/ags_async_queue.h:
 

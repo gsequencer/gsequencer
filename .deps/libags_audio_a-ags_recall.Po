@@ -134,18 +134,10 @@ libags_audio_a-ags_recall.o: src/ags/audio/ags_recall.c \
  /usr/include/libxml2/libxml/xlink.h /usr/include/libxml2/libxml/SAX2.h \
  src/ags/util/ags_id_generator.h src/ags/lib/ags_parameter.h \
  src/ags/object/ags_application_context.h src/ags/lib/ags_log.h \
- src/ags/object/ags_config.h src/ags/object/ags_main_loop.h \
- src/ags/thread/ags_async_queue.h /usr/include/linux/futex.h \
- /usr/include/linux/types.h /usr/include/asm/types.h \
- /usr/include/asm-generic/types.h /usr/include/asm-generic/int-ll64.h \
- /usr/include/asm/bitsperlong.h /usr/include/asm-generic/bitsperlong.h \
- /usr/include/linux/posix_types.h /usr/include/linux/stddef.h \
- /usr/include/asm/posix_types.h /usr/include/asm/posix_types_64.h \
- /usr/include/asm-generic/posix_types.h /usr/include/sys/time.h \
- src/ags/object/ags_stackable.h src/ags/file/ags_file.h \
+ src/ags/object/ags_config.h src/ags/file/ags_file.h \
  src/ags/object/ags_marshal.h src/ags/object/ags_packable.h \
  src/ags/object/ags_dynamic_connectable.h src/ags/object/ags_plugin.h \
- src/ags/server/ags_server_application_context.h \
+ src/ags/object/ags_soundcard.h src/ags/server/ags_service_provider.h \
  src/ags/server/ags_server.h /usr/include/netinet/in.h \
  /usr/lib/gcc/x86_64-unknown-linux-gnu/4.9.2/include/stdint.h \
  /usr/include/stdint.h /usr/include/bits/wchar.h \
@@ -580,7 +572,13 @@ libags_audio_a-ags_recall.o: src/ags/audio/ags_recall.c \
  src/ags/widget/ags_vindicator.h src/ags/widget/ags_indicator.h \
  src/ags/widget/ags_hindicator.h src/ags/widget/ags_waveform.h \
  src/ags/widget/ags_dial.h src/ags/widget/ags_cartesian.h \
- src/ags/file/ags_file_id_ref.h src/ags/audio/ags_devout.h \
+ src/ags/file/ags_file_id_ref.h src/ags/audio/ags_audio.h \
+ src/ags/audio/ags_channel.h src/ags/audio/ags_notation.h \
+ src/ags/thread/ags_timestamp_thread.h src/ags/thread/ags_thread-posix.h \
+ src/ags/audio/ags_timestamp.h src/ags/audio/ags_note.h \
+ src/ags/audio/ags_recall_container.h src/ags/audio/ags_recall_audio.h \
+ src/ags/audio/ags_recall_audio_run.h src/ags/audio/ags_recall_channel.h \
+ src/ags/audio/ags_recall_channel_run.h src/ags/audio/ags_devout.h \
  /usr/include/alsa/asoundlib.h /usr/include/string.h \
  /usr/include/bits/string.h /usr/include/bits/string2.h \
  /usr/include/fcntl.h /usr/include/bits/fcntl.h \
@@ -602,16 +600,17 @@ libags_audio_a-ags_recall.o: src/ags/audio/ags_recall.c \
  /usr/include/bits/huge_valf.h /usr/include/bits/huge_vall.h \
  /usr/include/bits/inf.h /usr/include/bits/nan.h \
  /usr/include/bits/mathdef.h /usr/include/bits/mathcalls.h \
- /usr/include/bits/mathinline.h src/ags/thread/ags_thread-posix.h \
+ /usr/include/bits/mathinline.h src/ags/thread/ags_async_queue.h \
+ /usr/include/linux/futex.h /usr/include/linux/types.h \
+ /usr/include/asm/types.h /usr/include/asm-generic/types.h \
+ /usr/include/asm-generic/int-ll64.h /usr/include/asm/bitsperlong.h \
+ /usr/include/asm-generic/bitsperlong.h /usr/include/linux/posix_types.h \
+ /usr/include/linux/stddef.h /usr/include/asm/posix_types.h \
+ /usr/include/asm/posix_types_64.h /usr/include/asm-generic/posix_types.h \
+ /usr/include/sys/time.h src/ags/object/ags_stackable.h \
  src/ags/thread/ags_task_thread.h src/ags/thread/ags_thread_pool.h \
- src/ags/audio/ags_task.h src/ags/thread/ags_devout_thread.h \
- src/ags/thread/ags_iterator_thread.h src/ags/audio/ags_channel.h \
- src/ags/audio/ags_notation.h src/ags/thread/ags_timestamp_thread.h \
- src/ags/audio/ags_timestamp.h src/ags/audio/ags_note.h \
- src/ags/audio/ags_audio.h src/ags/audio/ags_recall_container.h \
- src/ags/audio/ags_recall_audio.h src/ags/audio/ags_recall_audio_run.h \
- src/ags/audio/ags_recall_channel.h \
- src/ags/audio/ags_recall_channel_run.h \
+ src/ags/object/ags_main_loop.h src/ags/audio/ags_task.h \
+ src/ags/thread/ags_devout_thread.h src/ags/thread/ags_iterator_thread.h \
  src/ags/audio/ags_recall_recycling.h \
  src/ags/audio/ags_recall_audio_signal.h
 
@@ -991,38 +990,6 @@ src/ags/lib/ags_log.h:
 
 src/ags/object/ags_config.h:
 
-src/ags/object/ags_main_loop.h:
-
-src/ags/thread/ags_async_queue.h:
-
-/usr/include/linux/futex.h:
-
-/usr/include/linux/types.h:
-
-/usr/include/asm/types.h:
-
-/usr/include/asm-generic/types.h:
-
-/usr/include/asm-generic/int-ll64.h:
-
-/usr/include/asm/bitsperlong.h:
-
-/usr/include/asm-generic/bitsperlong.h:
-
-/usr/include/linux/posix_types.h:
-
-/usr/include/linux/stddef.h:
-
-/usr/include/asm/posix_types.h:
-
-/usr/include/asm/posix_types_64.h:
-
-/usr/include/asm-generic/posix_types.h:
-
-/usr/include/sys/time.h:
-
-src/ags/object/ags_stackable.h:
-
 src/ags/file/ags_file.h:
 
 src/ags/object/ags_marshal.h:
@@ -1033,7 +1000,9 @@ src/ags/object/ags_dynamic_connectable.h:
 
 src/ags/object/ags_plugin.h:
 
-src/ags/server/ags_server_application_context.h:
+src/ags/object/ags_soundcard.h:
+
+src/ags/server/ags_service_provider.h:
 
 src/ags/server/ags_server.h:
 
@@ -2011,6 +1980,30 @@ src/ags/widget/ags_cartesian.h:
 
 src/ags/file/ags_file_id_ref.h:
 
+src/ags/audio/ags_audio.h:
+
+src/ags/audio/ags_channel.h:
+
+src/ags/audio/ags_notation.h:
+
+src/ags/thread/ags_timestamp_thread.h:
+
+src/ags/thread/ags_thread-posix.h:
+
+src/ags/audio/ags_timestamp.h:
+
+src/ags/audio/ags_note.h:
+
+src/ags/audio/ags_recall_container.h:
+
+src/ags/audio/ags_recall_audio.h:
+
+src/ags/audio/ags_recall_audio_run.h:
+
+src/ags/audio/ags_recall_channel.h:
+
+src/ags/audio/ags_recall_channel_run.h:
+
 src/ags/audio/ags_devout.h:
 
 /usr/include/alsa/asoundlib.h:
@@ -2101,39 +2094,47 @@ src/ags/thread/ags_audio_loop.h:
 
 /usr/include/bits/mathinline.h:
 
-src/ags/thread/ags_thread-posix.h:
+src/ags/thread/ags_async_queue.h:
+
+/usr/include/linux/futex.h:
+
+/usr/include/linux/types.h:
+
+/usr/include/asm/types.h:
+
+/usr/include/asm-generic/types.h:
+
+/usr/include/asm-generic/int-ll64.h:
+
+/usr/include/asm/bitsperlong.h:
+
+/usr/include/asm-generic/bitsperlong.h:
+
+/usr/include/linux/posix_types.h:
+
+/usr/include/linux/stddef.h:
+
+/usr/include/asm/posix_types.h:
+
+/usr/include/asm/posix_types_64.h:
+
+/usr/include/asm-generic/posix_types.h:
+
+/usr/include/sys/time.h:
+
+src/ags/object/ags_stackable.h:
 
 src/ags/thread/ags_task_thread.h:
 
 src/ags/thread/ags_thread_pool.h:
+
+src/ags/object/ags_main_loop.h:
 
 src/ags/audio/ags_task.h:
 
 src/ags/thread/ags_devout_thread.h:
 
 src/ags/thread/ags_iterator_thread.h:
-
-src/ags/audio/ags_channel.h:
-
-src/ags/audio/ags_notation.h:
-
-src/ags/thread/ags_timestamp_thread.h:
-
-src/ags/audio/ags_timestamp.h:
-
-src/ags/audio/ags_note.h:
-
-src/ags/audio/ags_audio.h:
-
-src/ags/audio/ags_recall_container.h:
-
-src/ags/audio/ags_recall_audio.h:
-
-src/ags/audio/ags_recall_audio_run.h:
-
-src/ags/audio/ags_recall_channel.h:
-
-src/ags/audio/ags_recall_channel_run.h:
 
 src/ags/audio/ags_recall_recycling.h:
 

@@ -161,7 +161,9 @@ libags_thread_a-ags_async_queue.o: src/ags/thread/ags_async_queue.c \
  /usr/include/bits/mathdef.h /usr/include/bits/mathcalls.h \
  /usr/include/bits/mathinline.h src/ags/thread/ags_thread-posix.h \
  src/ags/thread/ags_task_thread.h src/ags/thread/ags_thread_pool.h \
- src/ags/object/ags_main_loop.h src/ags/audio/ags_task.h \
+ src/ags/object/ags_main_loop.h src/ags/object/ags_application_context.h \
+ src/ags/lib/ags_log.h src/ags/object/ags_config.h \
+ src/ags/file/ags_file.h src/ags/audio/ags_task.h \
  src/ags/thread/ags_devout_thread.h src/ags/thread/ags_iterator_thread.h \
  src/ags/audio/ags_channel.h /usr/include/gtk-2.0/gtk/gtk.h \
  /usr/include/gtk-2.0/gdk/gdk.h \
@@ -1077,6 +1079,14 @@ src/ags/thread/ags_task_thread.h:
 src/ags/thread/ags_thread_pool.h:
 
 src/ags/object/ags_main_loop.h:
+
+src/ags/object/ags_application_context.h:
+
+src/ags/lib/ags_log.h:
+
+src/ags/object/ags_config.h:
+
+src/ags/file/ags_file.h:
 
 src/ags/audio/ags_task.h:
 

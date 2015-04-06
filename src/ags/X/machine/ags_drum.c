@@ -116,7 +116,8 @@ static AgsConnectableInterface *ags_drum_parent_connectable_interface;
 
 const char *AGS_DRUM_INDEX = "AgsDrumIndex";
 
-extern AgsApplicationContext *ags_application_context;
+extern pthread_key_t application_context;
+AgsApplicationContext *ags_application_context =  pthread_getspecific(application_context);
 
 GType
 ags_drum_get_type(void)

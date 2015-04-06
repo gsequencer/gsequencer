@@ -45,7 +45,8 @@ void ags_file_util_write_value_resolve(AgsFileLookup *file_lookup,
 void ags_file_util_read_file_link_launch(AgsFileLaunch *file_launch,
 					 AgsFileLink *file_link);
 
-extern AgsApplicationContext *ags_application_context;
+extern pthread_key_t application_context;
+AgsApplicationContext *ags_application_context =  pthread_getspecific(application_context);
 
 void
 ags_file_util_read_value(AgsFile *file,

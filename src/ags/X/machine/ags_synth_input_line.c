@@ -75,7 +75,8 @@ void ags_synth_input_line_map_recall(AgsLine *line,
 static gpointer ags_synth_input_line_parent_class = NULL;
 static AgsConnectableInterface *ags_synth_input_line_parent_connectable_interface;
 
-extern AgsApplicationContext *ags_application_context;
+extern pthread_key_t application_context;
+AgsApplicationContext *ags_application_context =  pthread_getspecific(application_context);
 
 GType
 ags_synth_input_line_get_type()

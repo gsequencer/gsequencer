@@ -106,12 +106,7 @@ enum{
   PROP_ATTACK,
 };
 
-extern AgsConfig *ags_config;
-
 static gpointer ags_devout_parent_class = NULL;
-
-/* dangerous - produces a lot of output */
-static gboolean DEBUG_DEVOUT = FALSE;
 
 GType
 ags_devout_get_type (void)
@@ -395,33 +390,15 @@ ags_devout_init(AgsDevout *devout)
   devout->flags = (AGS_DEVOUT_ALSA);
 
   /* quality */
-  devout->dsp_channels = g_ascii_strtoull(ags_config_get_value(ags_config,
-							 AGS_CONFIG_DEVOUT,
-							 "dsp-channels\0"),
-					  NULL,
-					  10);
-  devout->pcm_channels = g_ascii_strtoull(ags_config_get_value(ags_config,
-							 AGS_CONFIG_DEVOUT,
-							 "pcm-channels\0"),
-					  NULL,
-					  10);
+  devout->dsp_channels = AGS_DEVOUT_DEFAULT_DSP_CHANNELS;
+  devout->pcm_channels = AGS_DEVOUT_DEFAULT_PCM_CHANNELS;
   devout->bits = AGS_DEVOUT_DEFAULT_FORMAT;
-  devout->buffer_size = g_ascii_strtoull(ags_config_get_value(ags_config,
-							AGS_CONFIG_DEVOUT,
-							"buffer-size\0"),
-					 NULL,
-					 10);
-  devout->frequency = g_ascii_strtoull(ags_config_get_value(ags_config,
-						      AGS_CONFIG_DEVOUT,
-						      "samplerate\0"),
-				       NULL,
-				       10);
+  devout->buffer_size = AGS_DEVOUT_DEFAULT_BUFFER_SIZE;
+  devout->frequency = AGS_DEVOUT_DEFAULT_SAMPLERATE;
 
   //  devout->out.oss.device = NULL;
   devout->out.alsa.handle = NULL;
-  devout->out.alsa.device = g_strdup(ags_config_get_value(ags_config,
-						    AGS_CONFIG_DEVOUT,
-						    "alsa-handle\0"));
+  devout->out.alsa.device = AGS_DEVOUT_DEFAULT_DEVICE;
 
   /* buffer */
   devout->buffer = (signed short **) malloc(4 * sizeof(signed short*));
@@ -499,7 +476,39 @@ ags_devout_set_property(GObject *gobject,
       }
 
       if(application_context != NULL){
+	AgsConfig *config;
+	
 	g_object_ref(G_OBJECT(application_context));
+
+	config = AGS_APPLICATION_CONTEXT(devout->application_context)->config;
+	
+	devout->dsp_channels = g_ascii_strtoull(ags_config_get_value(config,
+								     AGS_CONFIG_DEVOUT,
+								     "dsp-channels\0"),
+						NULL,
+						10);
+	devout->pcm_channels = g_ascii_strtoull(ags_config_get_value(config,
+								     AGS_CONFIG_DEVOUT,
+								     "pcm-channels\0"),
+						NULL,
+						10);
+	devout->bits = AGS_DEVOUT_DEFAULT_FORMAT;
+	devout->buffer_size = g_ascii_strtoull(ags_config_get_value(config,
+								    AGS_CONFIG_DEVOUT,
+								    "buffer-size\0"),
+					       NULL,
+					       10);
+	devout->frequency = g_ascii_strtoull(ags_config_get_value(config,
+								  AGS_CONFIG_DEVOUT,
+								  "samplerate\0"),
+					     NULL,
+					     10);
+
+	//  devout->out.oss.device = NULL;
+	devout->out.alsa.handle = NULL;
+	devout->out.alsa.device = g_strdup(ags_config_get_value(config,
+								AGS_CONFIG_DEVOUT,
+								"alsa-handle\0"));
       }
 
       devout->application_context = application_context;

@@ -20,7 +20,11 @@
 
 #include <ags/object/ags_application_context.h>
 #include <ags/object/ags_config.h>
+#include <ags-lib/object/ags_connectable.h>
 
+#include <ags/server/ags_server_application_context.h>
+
+#include <ags/thread/ags_thread_init.h>
 #include <ags/thread/ags_thread_application_context.h>
 #include <ags/thread/ags_thread-posix.h>
 #include <ags/thread/ags_single_thread.h>
@@ -33,11 +37,11 @@
 #include <ags/audio/ags_audio_application_context.h>
 #include <ags/audio/ags_devout.h>
 
+#include <ags/X/ags_xorg_init.h>
 #include <ags/X/ags_xorg_application_context.h>
 #include <ags/thread/ags_gui_thread.h>
 #include <ags/X/ags_window.h>
 
-#include <gtk/gtk.h>
 #include <libintl.h>
 #include <stdio.h>
 #include <signal.h>
@@ -45,9 +49,17 @@
 #include <sys/resource.h>
 #include <mcheck.h>
 
+#include <ao/ao.h>
+#include <libinstpatch/libinstpatch.h>
+
 #include <X11/Xlib.h>
 
+#include <glib.h>
+#include <glib-object.h>
+#include <gio/gio.h>
+
 #include <gdk/gdk.h>
+#include <gtk/gtk.h>
 
 #include <sys/types.h>
 #include <pwd.h>
@@ -62,13 +74,12 @@ extern void ags_thread_suspend_handler(int sig);
 
 static sigset_t ags_wait_mask;
 
-extern AgsApplicationContext *ags_application_context;
+extern pthread_key_t application_context;
+AgsApplicationContext *ags_application_context =  pthread_getspecific(application_context);
 extern AgsThreadApplicationContext *ags_thread_application_context;
 extern AgsServerApplicationContext *ags_server_application_context;
 extern AgsAudioApplicationContext *ags_audio_application_context;
 extern AgsXorgApplicationContext *ags_xorg_application_context;
-
-extern AgsConfig *ags_config;
 
 extern AgsLadspaManager *ags_ladspa_manager;
 
@@ -190,13 +201,24 @@ main(int argc, char **argv)
   pw = getpwuid(uid);
 
   /* init gsequencer */
+  LIBXML_TEST_VERSION;
+  
+  ao_initialize();
+
+  g_thread_init(NULL);  
+  gtk_init(&argc, &argv);
+
+  ags_init_context(argc, argv);
+  ags_thread_init(argc, argv);
+  ags_audio_init_context(argc, argv);
+  ags_gui_init_context(argc, &argv);
   ags_xorg_init_context(&argc, &argv);
 
   /* Declare ourself as a real time task */
   param.sched_priority = AGS_RT_PRIORITY;
 
   if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
-    perror("sched_setscheduler failed\0");
+    //    perror("sched_setscheduler failed\0");
   }
 
   mlockall(MCL_CURRENT | MCL_FUTURE);
@@ -232,9 +254,6 @@ main(int argc, char **argv)
     uid_t uid;
     gchar *wdir, *config_file;
   
-    ags_config_load_from_file(ags_config,
-			      config_file);
-
     uid = getuid();
     pw = getpwuid(uid);
 
@@ -245,6 +264,9 @@ main(int argc, char **argv)
     config_file = g_strdup_printf("%s/%s\0",
 				  wdir,
 				  AGS_DEFAULT_CONFIG);
+
+    ags_config_load_from_file(ags_config,
+			      config_file);
 
     g_free(wdir);
     g_free(config_file);

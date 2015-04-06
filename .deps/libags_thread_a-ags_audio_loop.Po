@@ -119,8 +119,8 @@ libags_thread_a-ags_audio_loop.o: src/ags/thread/ags_audio_loop.c \
  /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h \
  /usr/include/wchar.h /usr/include/bits/stdio_lim.h \
  /usr/include/bits/sys_errlist.h /usr/include/bits/stdio.h \
- src/ags/object/ags_config.h src/ags/object/ags_main_loop.h \
- src/ags/file/ags_file.h /usr/include/libxml2/libxml/tree.h \
+ src/ags/object/ags_config.h src/ags/file/ags_file.h \
+ /usr/include/libxml2/libxml/tree.h \
  /usr/include/libxml2/libxml/xmlversion.h \
  /usr/include/libxml2/libxml/xmlexports.h \
  /usr/include/libxml2/libxml/xmlstring.h \
@@ -141,16 +141,17 @@ libags_thread_a-ags_audio_loop.o: src/ags/thread/ags_audio_loop.c \
  /usr/include/bits/waitstatus.h /usr/include/alloca.h \
  /usr/include/bits/stdlib-bsearch.h /usr/include/bits/stdlib-float.h \
  /usr/include/libxml2/libxml/xlink.h /usr/include/libxml2/libxml/SAX2.h \
- src/ags-lib/object/ags_connectable.h src/ags/thread/ags_export_thread.h \
- src/ags/audio/file/ags_audio_file.h src/ags/audio/ags_devout.h \
- /usr/include/alsa/asoundlib.h /usr/include/unistd.h \
+ src/ags-lib/object/ags_connectable.h src/ags/object/ags_main_loop.h \
+ src/ags/thread/ags_export_thread.h src/ags/audio/file/ags_audio_file.h \
+ src/ags/thread/ags_gui_thread.h /usr/include/unistd.h \
  /usr/include/bits/posix_opt.h /usr/include/bits/environments.h \
- /usr/include/bits/confname.h /usr/include/getopt.h /usr/include/string.h \
- /usr/include/bits/string.h /usr/include/bits/string2.h \
- /usr/include/fcntl.h /usr/include/bits/fcntl.h \
- /usr/include/bits/fcntl-linux.h /usr/include/bits/stat.h \
- /usr/include/assert.h /usr/include/sys/poll.h /usr/include/bits/poll.h \
- /usr/include/errno.h /usr/include/bits/errno.h \
+ /usr/include/bits/confname.h /usr/include/getopt.h \
+ src/ags/audio/ags_devout.h /usr/include/alsa/asoundlib.h \
+ /usr/include/string.h /usr/include/bits/string.h \
+ /usr/include/bits/string2.h /usr/include/fcntl.h \
+ /usr/include/bits/fcntl.h /usr/include/bits/fcntl-linux.h \
+ /usr/include/bits/stat.h /usr/include/assert.h /usr/include/sys/poll.h \
+ /usr/include/bits/poll.h /usr/include/errno.h /usr/include/bits/errno.h \
  /usr/include/linux/errno.h /usr/include/asm/errno.h \
  /usr/include/asm-generic/errno.h /usr/include/asm-generic/errno-base.h \
  /usr/include/alsa/asoundef.h /usr/include/alsa/version.h \
@@ -589,8 +590,7 @@ libags_thread_a-ags_audio_loop.o: src/ags/thread/ags_audio_loop.c \
  src/ags/audio/ags_port.h /usr/include/ladspa.h \
  src/ags/audio/ags_recall_dependency.h src/ags/audio/ags_notation.h \
  src/ags/thread/ags_timestamp_thread.h src/ags/audio/ags_timestamp.h \
- src/ags/audio/ags_note.h src/ags/thread/ags_gui_thread.h \
- src/ags/audio/ags_audio.h
+ src/ags/audio/ags_note.h src/ags/audio/ags_audio.h
 
 /usr/include/stdc-predef.h:
 
@@ -942,8 +942,6 @@ src/ags/lib/ags_log.h:
 
 src/ags/object/ags_config.h:
 
-src/ags/object/ags_main_loop.h:
-
 src/ags/file/ags_file.h:
 
 /usr/include/libxml2/libxml/tree.h:
@@ -1004,13 +1002,13 @@ src/ags/file/ags_file.h:
 
 src/ags-lib/object/ags_connectable.h:
 
+src/ags/object/ags_main_loop.h:
+
 src/ags/thread/ags_export_thread.h:
 
 src/ags/audio/file/ags_audio_file.h:
 
-src/ags/audio/ags_devout.h:
-
-/usr/include/alsa/asoundlib.h:
+src/ags/thread/ags_gui_thread.h:
 
 /usr/include/unistd.h:
 
@@ -1021,6 +1019,10 @@ src/ags/audio/ags_devout.h:
 /usr/include/bits/confname.h:
 
 /usr/include/getopt.h:
+
+src/ags/audio/ags_devout.h:
+
+/usr/include/alsa/asoundlib.h:
 
 /usr/include/string.h:
 
@@ -2035,7 +2037,5 @@ src/ags/thread/ags_timestamp_thread.h:
 src/ags/audio/ags_timestamp.h:
 
 src/ags/audio/ags_note.h:
-
-src/ags/thread/ags_gui_thread.h:
 
 src/ags/audio/ags_audio.h:

@@ -22,13 +22,6 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#ifndef AGS_USE_AO
-#include <ags/audio/ags_devout.h>
-#else
-#include <ags/audio/ags_libao.h>
-#endif
-
-
 #define AGS_TYPE_AUDIO_FILE                (ags_audio_file_get_type())
 #define AGS_AUDIO_FILE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_AUDIO_FILE, AgsAudioFile))
 #define AGS_AUDIO_FILE_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_AUDIO_FILE, AgsAudioFileClass))
@@ -43,8 +36,8 @@ struct _AgsAudioFile
 {
   GObject object;
 
-  AgsDevout *devout;
-
+  GObject *soundcard;
+  
   gchar *name;
   guint samplerate;
   guint frames;
@@ -79,7 +72,7 @@ void ags_audio_file_write(AgsAudioFile *audio_file,
 void ags_audio_file_flush(AgsAudioFile *audio_file);
 
 AgsAudioFile* ags_audio_file_new(gchar *name,
-				 AgsDevout *devout,
+				 GObject *soundcard,
 				 guint start_channel, guint audio_channels);
 
 #endif /*__AGS_AUDIO_FILE_H__*/

@@ -33,7 +33,8 @@
 
 #include <ags/X/ags_window.h>
 
-extern AgsApplicationContext *ags_application_context;
+extern pthread_key_t application_context;
+AgsApplicationContext *ags_application_context =  pthread_getspecific(application_context);
 
 void
 ags_navigation_parent_set_callback(GtkWidget *widget, GtkObject *old_parent,

@@ -60,25 +60,25 @@ ags_main_loop_base_init(AgsMainLoopInterface *interface)
 }
 
 void
-ags_main_loop_set_async_queue(AgsMainLoop *main_loop, AgsAsyncQueue *async_queue)
+ags_main_loop_set_application_context(AgsMainLoop *main_loop, AgsApplicationContext *application_context)
 {
   AgsMainLoopInterface *main_loop_interface;
 
   g_return_if_fail(AGS_IS_MAIN_LOOP(main_loop));
   main_loop_interface = AGS_MAIN_LOOP_GET_INTERFACE(main_loop);
-  g_return_if_fail(main_loop_interface->set_async_queue);
-  main_loop_interface->set_async_queue(main_loop, async_queue);
+  g_return_if_fail(main_loop_interface->set_application_context);
+  main_loop_interface->set_application_context(main_loop, application_context);
 }
 
-AgsAsyncQueue*
-ags_main_loop_get_async_queue(AgsMainLoop *main_loop)
+AgsApplicationContext*
+ags_main_loop_get_application_context(AgsMainLoop *main_loop)
 {
   AgsMainLoopInterface *main_loop_interface;
 
   g_return_val_if_fail(AGS_IS_MAIN_LOOP(main_loop), NULL);
   main_loop_interface = AGS_MAIN_LOOP_GET_INTERFACE(main_loop);
-  g_return_val_if_fail(main_loop_interface->get_async_queue, NULL);
-  main_loop_interface->get_async_queue(main_loop);
+  g_return_val_if_fail(main_loop_interface->get_application_context, NULL);
+  main_loop_interface->get_application_context(main_loop);
 }
 
 /**

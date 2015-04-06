@@ -558,9 +558,7 @@ gsequencer-main.o: src/ags/main.c /usr/include/stdc-predef.h \
  /usr/include/bits/waitstatus.h /usr/include/alloca.h \
  /usr/include/bits/stdlib-bsearch.h /usr/include/bits/stdlib-float.h \
  /usr/include/libxml2/libxml/xlink.h /usr/include/libxml2/libxml/SAX2.h \
- src/ags/thread/ags_thread_application_context.h \
- src/ags/thread/ags_thread-posix.h src/ags/thread/ags_thread_pool.h \
- src/ags/thread/ags_single_thread.h src/ags/thread/ags_autosave_thread.h \
+ src/ags-lib/object/ags_connectable.h \
  src/ags/server/ags_server_application_context.h \
  src/ags/server/ags_server.h /usr/include/netinet/in.h \
  /usr/lib/gcc/x86_64-unknown-linux-gnu/4.9.2/include/stdint.h \
@@ -571,6 +569,9 @@ gsequencer-main.o: src/ags/main.c /usr/include/stdc-predef.h \
  /usr/include/asm-generic/socket.h /usr/include/asm/sockios.h \
  /usr/include/asm-generic/sockios.h /usr/include/bits/in.h \
  src/ags/server/ags_registry.h src/ags/server/ags_remote_task.h \
+ src/ags/thread/ags_thread_application_context.h \
+ src/ags/thread/ags_thread-posix.h src/ags/thread/ags_thread_pool.h \
+ src/ags/thread/ags_single_thread.h src/ags/thread/ags_autosave_thread.h \
  src/ags/plugin/ags_ladspa_manager.h \
  src/ags/audio/ags_audio_application_context.h \
  src/ags/object/ags_soundcard.h src/ags/audio/ags_devout.h \
@@ -604,8 +605,8 @@ gsequencer-main.o: src/ags/main.c /usr/include/stdc-predef.h \
  /usr/include/ladspa.h src/ags/audio/ags_recall_dependency.h \
  src/ags/audio/ags_notation.h src/ags/thread/ags_timestamp_thread.h \
  src/ags/audio/ags_timestamp.h src/ags/audio/ags_note.h \
- src/ags/X/ags_xorg_application_context.h src/ags/X/ags_window.h \
- src/ags/X/ags_automation_editor.h \
+ src/ags/X/ags_xorg_init.h src/ags/X/ags_xorg_application_context.h \
+ src/ags/X/ags_window.h src/ags/X/ags_automation_editor.h \
  src/ags/X/editor/ags_automation_toolbar.h \
  src/ags/X/editor/ags_port_selection.h src/ags/X/editor/ags_notebook.h \
  src/ags/X/editor/ags_machine_selector.h src/ags/X/ags_machine.h \
@@ -622,10 +623,89 @@ gsequencer-main.o: src/ags/main.c /usr/include/stdc-predef.h \
  src/ags/X/ags_server_preferences.h src/ags/thread/ags_gui_thread.h \
  /usr/include/libintl.h /usr/include/locale.h /usr/include/bits/locale.h \
  /usr/include/sys/resource.h /usr/include/bits/resource.h \
- /usr/include/mcheck.h /usr/X11/include/X11/Xlib.h \
- /usr/X11/include/X11/X.h /usr/X11/include/X11/Xfuncproto.h \
- /usr/X11/include/X11/Xosdefs.h /usr/include/pwd.h \
- /usr/include/sys/mman.h /usr/include/bits/mman.h \
+ /usr/include/mcheck.h /usr/include/ao/ao.h /usr/include/ao/os_types.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/libinstpatch.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/builtin_enums.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchBase.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchFile.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchItem.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchIter.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchList.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchContainer.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchSF2Preset.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchSF2PZone.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchSF2Zone.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchSF2Gen.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchSF2Mod.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchSF2Inst.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchSF2IZone.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchSF2Sample.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchSampleData.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchSampleStore.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchSample.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchSampleTransform.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/sample.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchConverter.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchConverterSF2VoiceCache.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchConvert_DLS2.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchConvert_Gig.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchConvert_SF2.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchDLS2Conn.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchDLS2.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchDLSFile.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchRiff.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchDLS2Info.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchDLS2Inst.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchDLS2Sample.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchDLS2Region.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchDLSReader.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchGigInst.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchGigRegion.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchGigEffects.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchGigSample.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchGigDimension.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchGigSubRegion.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchDLSWriter.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchGigFile.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchGig.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchParamProp.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchPaste.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchRange.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchSampleStoreCache.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchSampleStoreFile.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchSampleStoreRam.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchSampleStoreRom.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchSampleStoreSndFile.h \
+ /usr/include/sndfile.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchSampleStoreSplit24.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchSampleStoreSwap.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchSampleStoreVirtual.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchSampleList.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchSF2File.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchSF2GenItem.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchSF2.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchSF2ModItem.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchSF2Reader.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchSF2VoiceCache.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchSF2Writer.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchSndFile.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchTypeProp.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchUnit.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchUnit_generic.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchUnit_DLS.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchUnit_SF2.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchVBank.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchVBankInst.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchVBankRegion.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchVirtualContainer.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchVirtualContainer_types.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchXml.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/IpatchXmlObject.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/misc.h \
+ /usr/include/libinstpatch-1.0/libinstpatch/version.h \
+ /usr/X11/include/X11/Xlib.h /usr/X11/include/X11/X.h \
+ /usr/X11/include/X11/Xfuncproto.h /usr/X11/include/X11/Xosdefs.h \
+ /usr/include/pwd.h /usr/include/sys/mman.h /usr/include/bits/mman.h \
  /usr/include/bits/mman-linux.h
 
 /usr/include/stdc-predef.h:
@@ -1944,15 +2024,7 @@ src/ags/file/ags_file.h:
 
 /usr/include/libxml2/libxml/SAX2.h:
 
-src/ags/thread/ags_thread_application_context.h:
-
-src/ags/thread/ags_thread-posix.h:
-
-src/ags/thread/ags_thread_pool.h:
-
-src/ags/thread/ags_single_thread.h:
-
-src/ags/thread/ags_autosave_thread.h:
+src/ags-lib/object/ags_connectable.h:
 
 src/ags/server/ags_server_application_context.h:
 
@@ -1991,6 +2063,16 @@ src/ags/server/ags_server.h:
 src/ags/server/ags_registry.h:
 
 src/ags/server/ags_remote_task.h:
+
+src/ags/thread/ags_thread_application_context.h:
+
+src/ags/thread/ags_thread-posix.h:
+
+src/ags/thread/ags_thread_pool.h:
+
+src/ags/thread/ags_single_thread.h:
+
+src/ags/thread/ags_autosave_thread.h:
 
 src/ags/plugin/ags_ladspa_manager.h:
 
@@ -2122,6 +2204,8 @@ src/ags/audio/ags_timestamp.h:
 
 src/ags/audio/ags_note.h:
 
+src/ags/X/ags_xorg_init.h:
+
 src/ags/X/ags_xorg_application_context.h:
 
 src/ags/X/ags_window.h:
@@ -2189,6 +2273,168 @@ src/ags/thread/ags_gui_thread.h:
 /usr/include/bits/resource.h:
 
 /usr/include/mcheck.h:
+
+/usr/include/ao/ao.h:
+
+/usr/include/ao/os_types.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/libinstpatch.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/builtin_enums.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchBase.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchFile.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchItem.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchIter.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchList.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchContainer.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchSF2Preset.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchSF2PZone.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchSF2Zone.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchSF2Gen.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchSF2Mod.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchSF2Inst.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchSF2IZone.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchSF2Sample.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchSampleData.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchSampleStore.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchSample.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchSampleTransform.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/sample.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchConverter.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchConverterSF2VoiceCache.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchConvert_DLS2.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchConvert_Gig.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchConvert_SF2.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchDLS2Conn.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchDLS2.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchDLSFile.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchRiff.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchDLS2Info.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchDLS2Inst.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchDLS2Sample.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchDLS2Region.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchDLSReader.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchGigInst.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchGigRegion.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchGigEffects.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchGigSample.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchGigDimension.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchGigSubRegion.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchDLSWriter.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchGigFile.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchGig.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchParamProp.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchPaste.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchRange.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchSampleStoreCache.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchSampleStoreFile.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchSampleStoreRam.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchSampleStoreRom.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchSampleStoreSndFile.h:
+
+/usr/include/sndfile.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchSampleStoreSplit24.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchSampleStoreSwap.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchSampleStoreVirtual.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchSampleList.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchSF2File.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchSF2GenItem.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchSF2.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchSF2ModItem.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchSF2Reader.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchSF2VoiceCache.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchSF2Writer.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchSndFile.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchTypeProp.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchUnit.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchUnit_generic.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchUnit_DLS.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchUnit_SF2.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchVBank.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchVBankInst.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchVBankRegion.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchVirtualContainer.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchVirtualContainer_types.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchXml.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/IpatchXmlObject.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/misc.h:
+
+/usr/include/libinstpatch-1.0/libinstpatch/version.h:
 
 /usr/X11/include/X11/Xlib.h:
 

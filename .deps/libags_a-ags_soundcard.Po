@@ -102,11 +102,14 @@ libags_a-ags_soundcard.o: src/ags/object/ags_soundcard.c \
  /usr/include/glib-2.0/gobject/gtypemodule.h \
  /usr/include/glib-2.0/gobject/gtypeplugin.h \
  /usr/include/glib-2.0/gobject/gvaluearray.h \
- /usr/include/glib-2.0/gobject/gvaluetypes.h src/ags/file/ags_file.h \
- /usr/include/libxml2/libxml/tree.h /usr/include/stdio.h \
- /usr/include/libio.h /usr/include/_G_config.h /usr/include/wchar.h \
- /usr/include/bits/stdio_lim.h /usr/include/bits/sys_errlist.h \
- /usr/include/bits/stdio.h /usr/include/libxml2/libxml/xmlversion.h \
+ /usr/include/glib-2.0/gobject/gvaluetypes.h \
+ src/ags/object/ags_application_context.h src/ags/lib/ags_log.h \
+ /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h \
+ /usr/include/wchar.h /usr/include/bits/stdio_lim.h \
+ /usr/include/bits/sys_errlist.h /usr/include/bits/stdio.h \
+ src/ags/object/ags_config.h src/ags/file/ags_file.h \
+ /usr/include/libxml2/libxml/tree.h \
+ /usr/include/libxml2/libxml/xmlversion.h \
  /usr/include/libxml2/libxml/xmlexports.h \
  /usr/include/libxml2/libxml/xmlstring.h \
  /usr/include/libxml2/libxml/xmlregexp.h \
@@ -412,9 +415,9 @@ src/ags/object/ags_soundcard.h:
 
 /usr/include/glib-2.0/gobject/gvaluetypes.h:
 
-src/ags/file/ags_file.h:
+src/ags/object/ags_application_context.h:
 
-/usr/include/libxml2/libxml/tree.h:
+src/ags/lib/ags_log.h:
 
 /usr/include/stdio.h:
 
@@ -429,6 +432,12 @@ src/ags/file/ags_file.h:
 /usr/include/bits/sys_errlist.h:
 
 /usr/include/bits/stdio.h:
+
+src/ags/object/ags_config.h:
+
+src/ags/file/ags_file.h:
+
+/usr/include/libxml2/libxml/tree.h:
 
 /usr/include/libxml2/libxml/xmlversion.h:
 

@@ -65,6 +65,7 @@ struct _AgsAudioApplicationContextClass
 
 GType ags_audio_application_context_get_type();
 
-AgsAudioApplicationContext* ags_audio_application_context_new();
+AgsAudioApplicationContext* ags_audio_application_context_new(GObject *main_loop,
+							      AgsConfig *config);
 
 #endif /*__AGS_AUDIO_APPLICATION_CONTEXT_H__*/

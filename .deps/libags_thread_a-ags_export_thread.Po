@@ -105,21 +105,38 @@ libags_thread_a-ags_export_thread.o: src/ags/thread/ags_export_thread.c \
  /usr/include/glib-2.0/gobject/gvaluearray.h \
  /usr/include/glib-2.0/gobject/gvaluetypes.h \
  src/ags/thread/ags_thread-posix.h src/ags/audio/file/ags_audio_file.h \
+ src/ags-lib/object/ags_connectable.h /usr/include/libxml2/libxml/tree.h \
+ /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h \
+ /usr/include/wchar.h /usr/include/bits/stdio_lim.h \
+ /usr/include/bits/sys_errlist.h /usr/include/bits/stdio.h \
+ /usr/include/libxml2/libxml/xmlversion.h \
+ /usr/include/libxml2/libxml/xmlexports.h \
+ /usr/include/libxml2/libxml/xmlstring.h \
+ /usr/include/libxml2/libxml/xmlregexp.h \
+ /usr/include/libxml2/libxml/dict.h \
+ /usr/include/libxml2/libxml/xmlmemory.h \
+ /usr/include/libxml2/libxml/threads.h \
+ /usr/include/libxml2/libxml/globals.h \
+ /usr/include/libxml2/libxml/parser.h /usr/include/libxml2/libxml/hash.h \
+ /usr/include/libxml2/libxml/valid.h \
+ /usr/include/libxml2/libxml/xmlerror.h \
+ /usr/include/libxml2/libxml/list.h \
+ /usr/include/libxml2/libxml/xmlautomata.h \
+ /usr/include/libxml2/libxml/entities.h \
+ /usr/include/libxml2/libxml/encoding.h /usr/include/iconv.h \
+ /usr/include/libxml2/libxml/xmlIO.h /usr/include/libxml2/libxml/SAX.h \
+ /usr/include/stdlib.h /usr/include/bits/waitflags.h \
+ /usr/include/bits/waitstatus.h /usr/include/alloca.h \
+ /usr/include/bits/stdlib-bsearch.h /usr/include/bits/stdlib-float.h \
+ /usr/include/libxml2/libxml/xlink.h /usr/include/libxml2/libxml/SAX2.h \
  src/ags/audio/ags_devout.h /usr/include/alsa/asoundlib.h \
  /usr/include/unistd.h /usr/include/bits/posix_opt.h \
  /usr/include/bits/environments.h /usr/include/bits/confname.h \
- /usr/include/getopt.h /usr/include/stdio.h /usr/include/libio.h \
- /usr/include/_G_config.h /usr/include/wchar.h \
- /usr/include/bits/stdio_lim.h /usr/include/bits/sys_errlist.h \
- /usr/include/bits/stdio.h /usr/include/stdlib.h \
- /usr/include/bits/waitflags.h /usr/include/bits/waitstatus.h \
- /usr/include/alloca.h /usr/include/bits/stdlib-bsearch.h \
- /usr/include/bits/stdlib-float.h /usr/include/string.h \
- /usr/include/bits/string.h /usr/include/bits/string2.h \
- /usr/include/fcntl.h /usr/include/bits/fcntl.h \
- /usr/include/bits/fcntl-linux.h /usr/include/bits/stat.h \
- /usr/include/assert.h /usr/include/sys/poll.h /usr/include/bits/poll.h \
- /usr/include/errno.h /usr/include/bits/errno.h \
+ /usr/include/getopt.h /usr/include/string.h /usr/include/bits/string.h \
+ /usr/include/bits/string2.h /usr/include/fcntl.h \
+ /usr/include/bits/fcntl.h /usr/include/bits/fcntl-linux.h \
+ /usr/include/bits/stat.h /usr/include/assert.h /usr/include/sys/poll.h \
+ /usr/include/bits/poll.h /usr/include/errno.h /usr/include/bits/errno.h \
  /usr/include/linux/errno.h /usr/include/asm/errno.h \
  /usr/include/asm-generic/errno.h /usr/include/asm-generic/errno-base.h \
  /usr/include/alsa/asoundef.h /usr/include/alsa/version.h \
@@ -144,7 +161,9 @@ libags_thread_a-ags_export_thread.o: src/ags/thread/ags_export_thread.c \
  /usr/include/asm/posix_types_64.h /usr/include/asm-generic/posix_types.h \
  /usr/include/sys/time.h src/ags/object/ags_stackable.h \
  src/ags/thread/ags_task_thread.h src/ags/thread/ags_thread_pool.h \
- src/ags/object/ags_main_loop.h src/ags/audio/ags_task.h \
+ src/ags/object/ags_main_loop.h src/ags/object/ags_application_context.h \
+ src/ags/lib/ags_log.h src/ags/object/ags_config.h \
+ src/ags/file/ags_file.h src/ags/audio/ags_task.h \
  src/ags/thread/ags_devout_thread.h src/ags/thread/ags_iterator_thread.h \
  src/ags/audio/ags_channel.h /usr/include/gtk-2.0/gtk/gtk.h \
  /usr/include/gtk-2.0/gdk/gdk.h \
@@ -570,26 +589,8 @@ libags_thread_a-ags_export_thread.o: src/ags/thread/ags_export_thread.c \
  src/ags/audio/ags_recycling_container.h src/ags/audio/ags_recall.h \
  src/ags/audio/ags_port.h /usr/include/ladspa.h \
  src/ags/audio/ags_recall_dependency.h src/ags/audio/ags_notation.h \
- /usr/include/libxml2/libxml/tree.h \
- /usr/include/libxml2/libxml/xmlversion.h \
- /usr/include/libxml2/libxml/xmlexports.h \
- /usr/include/libxml2/libxml/xmlstring.h \
- /usr/include/libxml2/libxml/xmlregexp.h \
- /usr/include/libxml2/libxml/dict.h \
- /usr/include/libxml2/libxml/xmlmemory.h \
- /usr/include/libxml2/libxml/threads.h \
- /usr/include/libxml2/libxml/globals.h \
- /usr/include/libxml2/libxml/parser.h /usr/include/libxml2/libxml/hash.h \
- /usr/include/libxml2/libxml/valid.h \
- /usr/include/libxml2/libxml/xmlerror.h \
- /usr/include/libxml2/libxml/list.h \
- /usr/include/libxml2/libxml/xmlautomata.h \
- /usr/include/libxml2/libxml/entities.h \
- /usr/include/libxml2/libxml/encoding.h /usr/include/iconv.h \
- /usr/include/libxml2/libxml/xmlIO.h /usr/include/libxml2/libxml/SAX.h \
- /usr/include/libxml2/libxml/xlink.h /usr/include/libxml2/libxml/SAX2.h \
  src/ags/thread/ags_timestamp_thread.h src/ags/audio/ags_timestamp.h \
- src/ags/audio/ags_note.h src/ags-lib/object/ags_connectable.h
+ src/ags/audio/ags_note.h
 
 /usr/include/stdc-predef.h:
 
@@ -875,19 +876,9 @@ src/ags/thread/ags_thread-posix.h:
 
 src/ags/audio/file/ags_audio_file.h:
 
-src/ags/audio/ags_devout.h:
+src/ags-lib/object/ags_connectable.h:
 
-/usr/include/alsa/asoundlib.h:
-
-/usr/include/unistd.h:
-
-/usr/include/bits/posix_opt.h:
-
-/usr/include/bits/environments.h:
-
-/usr/include/bits/confname.h:
-
-/usr/include/getopt.h:
+/usr/include/libxml2/libxml/tree.h:
 
 /usr/include/stdio.h:
 
@@ -903,6 +894,44 @@ src/ags/audio/ags_devout.h:
 
 /usr/include/bits/stdio.h:
 
+/usr/include/libxml2/libxml/xmlversion.h:
+
+/usr/include/libxml2/libxml/xmlexports.h:
+
+/usr/include/libxml2/libxml/xmlstring.h:
+
+/usr/include/libxml2/libxml/xmlregexp.h:
+
+/usr/include/libxml2/libxml/dict.h:
+
+/usr/include/libxml2/libxml/xmlmemory.h:
+
+/usr/include/libxml2/libxml/threads.h:
+
+/usr/include/libxml2/libxml/globals.h:
+
+/usr/include/libxml2/libxml/parser.h:
+
+/usr/include/libxml2/libxml/hash.h:
+
+/usr/include/libxml2/libxml/valid.h:
+
+/usr/include/libxml2/libxml/xmlerror.h:
+
+/usr/include/libxml2/libxml/list.h:
+
+/usr/include/libxml2/libxml/xmlautomata.h:
+
+/usr/include/libxml2/libxml/entities.h:
+
+/usr/include/libxml2/libxml/encoding.h:
+
+/usr/include/iconv.h:
+
+/usr/include/libxml2/libxml/xmlIO.h:
+
+/usr/include/libxml2/libxml/SAX.h:
+
 /usr/include/stdlib.h:
 
 /usr/include/bits/waitflags.h:
@@ -914,6 +943,24 @@ src/ags/audio/ags_devout.h:
 /usr/include/bits/stdlib-bsearch.h:
 
 /usr/include/bits/stdlib-float.h:
+
+/usr/include/libxml2/libxml/xlink.h:
+
+/usr/include/libxml2/libxml/SAX2.h:
+
+src/ags/audio/ags_devout.h:
+
+/usr/include/alsa/asoundlib.h:
+
+/usr/include/unistd.h:
+
+/usr/include/bits/posix_opt.h:
+
+/usr/include/bits/environments.h:
+
+/usr/include/bits/confname.h:
+
+/usr/include/getopt.h:
 
 /usr/include/string.h:
 
@@ -1036,6 +1083,14 @@ src/ags/thread/ags_task_thread.h:
 src/ags/thread/ags_thread_pool.h:
 
 src/ags/object/ags_main_loop.h:
+
+src/ags/object/ags_application_context.h:
+
+src/ags/lib/ags_log.h:
+
+src/ags/object/ags_config.h:
+
+src/ags/file/ags_file.h:
 
 src/ags/audio/ags_task.h:
 
@@ -1975,54 +2030,8 @@ src/ags/audio/ags_recall_dependency.h:
 
 src/ags/audio/ags_notation.h:
 
-/usr/include/libxml2/libxml/tree.h:
-
-/usr/include/libxml2/libxml/xmlversion.h:
-
-/usr/include/libxml2/libxml/xmlexports.h:
-
-/usr/include/libxml2/libxml/xmlstring.h:
-
-/usr/include/libxml2/libxml/xmlregexp.h:
-
-/usr/include/libxml2/libxml/dict.h:
-
-/usr/include/libxml2/libxml/xmlmemory.h:
-
-/usr/include/libxml2/libxml/threads.h:
-
-/usr/include/libxml2/libxml/globals.h:
-
-/usr/include/libxml2/libxml/parser.h:
-
-/usr/include/libxml2/libxml/hash.h:
-
-/usr/include/libxml2/libxml/valid.h:
-
-/usr/include/libxml2/libxml/xmlerror.h:
-
-/usr/include/libxml2/libxml/list.h:
-
-/usr/include/libxml2/libxml/xmlautomata.h:
-
-/usr/include/libxml2/libxml/entities.h:
-
-/usr/include/libxml2/libxml/encoding.h:
-
-/usr/include/iconv.h:
-
-/usr/include/libxml2/libxml/xmlIO.h:
-
-/usr/include/libxml2/libxml/SAX.h:
-
-/usr/include/libxml2/libxml/xlink.h:
-
-/usr/include/libxml2/libxml/SAX2.h:
-
 src/ags/thread/ags_timestamp_thread.h:
 
 src/ags/audio/ags_timestamp.h:
 
 src/ags/audio/ags_note.h:
-
-src/ags-lib/object/ags_connectable.h:

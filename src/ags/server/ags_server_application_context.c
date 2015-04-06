@@ -16,6 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include <ags/server/ags_server_application_context.h>
+
 #include <ags-lib/object/ags_connectable.h>
 
 void ags_server_application_context_class_init(AgsServerApplicationContextClass *server_application_context);
@@ -33,7 +35,10 @@ void ags_server_application_context_connect(AgsConnectable *connectable);
 void ags_server_application_context_disconnect(AgsConnectable *connectable);
 void ags_server_application_context_finalize(GObject *gobject);
 
+static gpointer ags_server_application_context_parent_class = NULL;
 static AgsConnectableInterface* ags_server_application_context_parent_connectable_interface;
+
+AgsServerApplicationContext *ags_server_application_context = NULL;
 
 GType
 ags_server_application_context_get_type()
@@ -81,7 +86,7 @@ ags_server_application_context_class_init(AgsServerApplicationContextClass *serv
   ags_server_application_context_parent_class = g_type_class_peek_parent(ags_server_application_context);
 
   /* GObjectClass */
-  gobject = (GObjectClass *) ags_server_application_context;
+  gobject = (GObjectClass *) server_application_context;
 
   gobject->set_property = ags_server_application_context_set_property;
   gobject->get_property = ags_server_application_context_get_property;
@@ -89,10 +94,10 @@ ags_server_application_context_class_init(AgsServerApplicationContextClass *serv
   gobject->finalize = ags_server_application_context_finalize;
 
   /* AgsServerApplicationContextClass */
-  application_context = (AgsApplicationContextClass *) server_application_context_class;
+  application_context = (AgsApplicationContextClass *) server_application_context;
   
-  application_context->load_config = ags_server_application_context_load_config;
-  application_context->register_types = ags_server_application_context_register_types;
+  application_context->load_config = NULL;
+  application_context->register_types = NULL;
 }
 
 void
@@ -151,7 +156,7 @@ ags_server_application_context_connect(AgsConnectable *connectable)
 
   server_application_context = AGS_SERVER_APPLICATION_CONTEXT(connectable);
 
-  if((AGS_SERVER_APPLICATION_CONTEXT_CONNECTED & (server_application_context->flags)) != 0){
+  if((AGS_APPLICATION_CONTEXT_CONNECTED & (AGS_APPLICATION_CONTEXT(server_application_context)->flags)) != 0){
     return;
   }
 
@@ -165,7 +170,7 @@ ags_server_application_context_disconnect(AgsConnectable *connectable)
 
   server_application_context = AGS_SERVER_APPLICATION_CONTEXT(connectable);
 
-  if((AGS_SERVER_APPLICATION_CONTEXT_CONNECTED & (server_application_context->flags)) == 0){
+  if((AGS_APPLICATION_CONTEXT_CONNECTED & (AGS_APPLICATION_CONTEXT(server_application_context)->flags)) == 0){
     return;
   }
 
@@ -183,7 +188,7 @@ ags_server_application_context_finalize(GObject *gobject)
 }
 
 AgsServerApplicationContext*
-ags_server_application_context_new(AgsMainLoop *main_loop,
+ags_server_application_context_new(GObject *main_loop,
 				   AgsConfig *config)
 {
   AgsServerApplicationContext *server_application_context;

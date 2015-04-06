@@ -26,6 +26,7 @@
 #include <ags/object/ags_marshal.h>
 #include <ags-lib/object/ags_connectable.h>
 #include <ags/object/ags_dynamic_connectable.h>
+#include <ags/object/ags_soundcard.h>
 
 #include <ags/plugin/ags_ladspa_manager.h>
 
@@ -36,7 +37,6 @@
 #include <ags/server/ags_server_application_context.h>
 #include <ags/server/ags_server.h>
 
-#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_input.h>
@@ -111,7 +111,7 @@ enum{
 enum{
   PROP_0,
   PROP_AUDIO,
-  PROP_DEVOUT,
+  PROP_SOUNDCARD,
 };
 
 static gpointer ags_channel_parent_class = NULL;
@@ -187,19 +187,19 @@ ags_channel_class_init(AgsChannelClass *channel)
 				  param_spec);
 
   /**
-   * AgsChannel:devout:
+   * AgsChannel:soundcard:
    *
-   * The assigned #AgsDevout acting as default sink.
+   * The assigned #AgsSoundcard acting as default sink.
    * 
    * Since: 0.4.0
    */
-  param_spec = g_param_spec_object("devout\0",
-				   "assigned devout\0",
-				   "The devout it is assigned with\0",
+  param_spec = g_param_spec_object("soundcard\0",
+				   "assigned soundcard\0",
+				   "The soundcard it is assigned with\0",
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_DEVOUT,
+				  PROP_SOUNDCARD,
 				  param_spec);
 
   /* AgsChannelClass */
@@ -313,7 +313,7 @@ ags_channel_init(AgsChannel *channel)
   channel->flags = 0;
 
   channel->audio = NULL;
-  channel->devout = NULL;
+  channel->soundcard = NULL;
 
   channel->prev = NULL;
   channel->prev_pad = NULL;
@@ -379,13 +379,13 @@ ags_channel_set_property(GObject *gobject,
       channel->audio = (GObject *) audio;
     }
     break;
-  case PROP_DEVOUT:
+  case PROP_SOUNDCARD:
     {
-      AgsDevout *devout;
+      AgsSoundcard *soundcard;
 
-      devout = (AgsDevout *) g_value_get_object(value);
+      soundcard = (AgsSoundcard *) g_value_get_object(value);
 
-      ags_channel_set_devout(channel, (GObject *) devout);
+      ags_channel_set_soundcard(channel, (GObject *) soundcard);
     }
     break;
   default:
@@ -408,8 +408,8 @@ ags_channel_get_property(GObject *gobject,
   case PROP_AUDIO:
     g_value_set_object(value, channel->audio);
     break;
-  case PROP_DEVOUT:
-    g_value_set_object(value, channel->devout);
+  case PROP_SOUNDCARD:
+    g_value_set_object(value, channel->soundcard);
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
@@ -428,7 +428,7 @@ ags_channel_add_to_registry(AgsConnectable *connectable)
   
   channel = AGS_CHANNEL(connectable);
 
-  application_context = AGS_APPLICATION_CONTEXT(AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout)->application_context);
+  application_context = ags_soundcard_get_application_context(channel->soundcard);
 
   list = application_context->sibling;
 
@@ -808,37 +808,37 @@ ags_channel_last_with_recycling(AgsChannel *channel)
 }
 
 /**
- * ags_channel_set_devout:
+ * ags_channel_set_soundcard:
  * @channel: an #AgsChannel
- * @devout: an #AgsDevout
+ * @soundcard: an #AgsSoundcard
  *
- * Sets devout.
+ * Sets soundcard.
  *
  * Since: 0.4
  */
 void
-ags_channel_set_devout(AgsChannel *channel, GObject *devout)
+ags_channel_set_soundcard(AgsChannel *channel, GObject *soundcard)
 {
   GList *list;
 
   /* channel */
-  if(channel->devout == devout)
+  if(channel->soundcard == soundcard)
     return;
 
-  if(channel->devout != NULL)
-    g_object_unref(channel->devout);
+  if(channel->soundcard != NULL)
+    g_object_unref(channel->soundcard);
 
-  if(devout != NULL)
-    g_object_ref(devout);
+  if(soundcard != NULL)
+    g_object_ref(soundcard);
 
-  channel->devout = (GObject *) devout;
+  channel->soundcard = (GObject *) soundcard;
 
   /* recall */
   list = channel->play;
 
   while(list != NULL){
     g_object_set(G_OBJECT(list->data),
-		 "devout\0", devout,
+		 "soundcard\0", soundcard,
 		 NULL);
 
     list = list->next;
@@ -848,7 +848,7 @@ ags_channel_set_devout(AgsChannel *channel, GObject *devout)
 
   while(list != NULL){
     g_object_set(G_OBJECT(list->data),
-		 "devout\0", devout,
+		 "soundcard\0", soundcard,
 		 NULL);
 
     list = list->next;
@@ -865,7 +865,7 @@ ags_channel_set_devout(AgsChannel *channel, GObject *devout)
 
     while(recycling != channel->last_recycling->next){
       g_object_set(G_OBJECT(recycling),
-		   "devout\0", devout,
+		   "soundcard\0", soundcard,
 		   NULL); 
 
       recycling = recycling->next;
@@ -1020,9 +1020,11 @@ ags_channel_real_add_effect(AgsChannel *channel,
   AgsAddRecallContainer *add_recall_container;
   AgsAddRecall *add_recall;
 
-  AgsAudioLoop *audio_loop;
+  AgsThread *main_loop;
   AgsTaskThread *task_thread;
 
+  AgsApplicationContext *application_context;
+  
   GList *port;
   GList *task;
 
@@ -1033,8 +1035,10 @@ ags_channel_real_add_effect(AgsChannel *channel,
   LADSPA_Data lower_bound, upper_bound;
   unsigned long index;
 
-  audio_loop = (AgsAudioLoop *) AGS_APPLICATION_CONTEXT(AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout)->application_context)->main_loop;
-  task_thread = (AgsTaskThread *) audio_loop->task_thread;
+  application_context = ags_soundcard_get_application_context;
+  main_loop = application_context->main_loop;
+  task_thread = ags_thread_find_type(main_loop,
+				     AGS_TYPE_TASK_THREAD);
 
   index = ags_ladspa_manager_effect_index(filename,
 					  effect);
@@ -1059,7 +1063,7 @@ ags_channel_real_add_effect(AgsChannel *channel,
 					effect,
 					index);
   g_object_set(G_OBJECT(recall_ladspa),
-	       "devout\0", AGS_AUDIO(channel->audio)->devout,
+	       "soundcard\0", AGS_AUDIO(channel->audio)->soundcard,
 	       "recall-container\0", recall_container,
 	       NULL);
   AGS_RECALL(recall_ladspa)->flags |= AGS_RECALL_TEMPLATE;
@@ -1078,7 +1082,7 @@ ags_channel_real_add_effect(AgsChannel *channel,
 							      AGS_TYPE_RECALL_LADSPA_RUN);
   AGS_RECALL(recall_channel_run_dummy)->flags |= AGS_RECALL_TEMPLATE;
   g_object_set(G_OBJECT(recall_channel_run_dummy),
-	       "devout\0", AGS_AUDIO(channel->audio)->devout,
+	       "soundcard\0", AGS_AUDIO(channel->audio)->soundcard,
 	       "recall-container\0", recall_container,
 	       "recall-channel\0", recall_ladspa,
 	       NULL);
@@ -1102,7 +1106,7 @@ ags_channel_real_add_effect(AgsChannel *channel,
 					effect,
 					index);
   g_object_set(G_OBJECT(recall_ladspa),
-	       "devout\0", AGS_AUDIO(channel->audio)->devout,
+	       "soundcard\0", AGS_AUDIO(channel->audio)->soundcard,
 	       "recall-container\0", recall_container,
 	       NULL);
   AGS_RECALL(recall_ladspa)->flags |= AGS_RECALL_TEMPLATE;
@@ -1125,7 +1129,7 @@ ags_channel_real_add_effect(AgsChannel *channel,
 							      AGS_TYPE_RECALL_LADSPA_RUN);
   AGS_RECALL(recall_channel_run_dummy)->flags |= AGS_RECALL_TEMPLATE;
   g_object_set(G_OBJECT(recall_channel_run_dummy),
-	       "devout\0", AGS_AUDIO(channel->audio)->devout,
+	       "soundcard\0", AGS_AUDIO(channel->audio)->soundcard,
 	       "recall-container\0", recall_container,
 	       "recall-channel\0", recall_ladspa,
 	       NULL);
@@ -1172,14 +1176,18 @@ ags_channel_real_remove_effect(AgsChannel *channel,
   AgsRemoveRecallContainer *remove_recall_container;
   AgsRemoveRecall *remove_recall;
 
-  AgsAudioLoop *audio_loop;
+  AgsThread *main_loop;
   AgsTaskThread *task_thread;
 
+  AgsApplicationContext *application_context;
+  
   GList *play_ladspa, *recall_ladspa;
   GList *task;
-  
-  audio_loop = (AgsAudioLoop *) AGS_APPLICATION_CONTEXT(AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout)->application_context)->main_loop;
-  task_thread = (AgsTaskThread *) audio_loop->task_thread;
+
+  application_context = ags_soundcard_get_application_context(AGS_AUDIO(channel->audio)->soundcard);
+  main_loop = application_context->main_loop;
+  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
+						       AGS_TYPE_TASK_THREAD);
 
   play_ladspa = ags_recall_template_find_type(channel->play,
 					      AGS_TYPE_RECALL_LADSPA);

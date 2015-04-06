@@ -29,15 +29,15 @@
 #include <ags/object/ags_packable.h>
 #include <ags/object/ags_dynamic_connectable.h>
 #include <ags/object/ags_plugin.h>
+#include <ags/object/ags_soundcard.h>
 
-#include <ags/server/ags_server_application_context.h>
+#include <ags/server/ags_service_provider.h>
 #include <ags/server/ags_server.h>
 
 #include <ags/file/ags_file.h>
 #include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>
 
-#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recycling.h>
@@ -141,7 +141,7 @@ enum{
 
 enum{
   PROP_0,
-  PROP_DEVOUT,
+  PROP_SOUNDCARD,
   PROP_CONTAINER,
   PROP_DEPENDENCY,
   PROP_RECALL_ID,
@@ -237,19 +237,19 @@ ags_recall_class_init(AgsRecallClass *recall)
 
   /* properties */
   /**
-   * AgsRecall:devout:
+   * AgsRecall:soundcard:
    *
-   * The assigned devout.
+   * The assigned soundcard.
    * 
    * Since: 0.4
    */
-  param_spec = g_param_spec_object("devout\0",
-				   "devout of recall\0",
-				   "The devout which this recall is packed into\0",
-				   AGS_TYPE_DEVOUT,
+  param_spec = g_param_spec_object("soundcard\0",
+				   "soundcard of recall\0",
+				   "The soundcard which this recall is packed into\0",
+				   AGS_TYPE_SOUNDCARD,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_DEVOUT,
+				  PROP_SOUNDCARD,
 				  param_spec);
 
   /**
@@ -635,7 +635,7 @@ ags_recall_init(AgsRecall *recall)
 {
   recall->flags = 0;
 
-  recall->devout = NULL;
+  recall->soundcard = NULL;
   recall->container = NULL;
 
   recall->version = NULL;
@@ -673,29 +673,29 @@ ags_recall_set_property(GObject *gobject,
   recall = AGS_RECALL(gobject);
 
   switch(prop_id){
-  case PROP_DEVOUT:
+  case PROP_SOUNDCARD:
     {
-      AgsDevout *devout;
+      GObject *soundcard;
       GList *current;
       
-      devout = (AgsDevout *) g_value_get_object(value);
+      soundcard = (GObject *) g_value_get_object(value);
 
-      if(devout == ((AgsDevout *) recall->devout))
+      if(soundcard == ((GObject *) recall->soundcard))
 	return;
 
-      if(recall->devout != NULL)
-	g_object_unref(recall->devout);
+      if(recall->soundcard != NULL)
+	g_object_unref(recall->soundcard);
 
-      if(devout != NULL)
-	g_object_ref(G_OBJECT(devout));
+      if(soundcard != NULL)
+	g_object_ref(G_OBJECT(soundcard));
 
-      recall->devout = (GObject *) devout;
+      recall->soundcard = (GObject *) soundcard;
 
       current = recall->children;
 
       while(current != NULL){
 	g_object_set(G_OBJECT(current->data),
-		     "devout\0", devout,
+		     "soundcard\0", soundcard,
 		     NULL);
 
 	current = current->next;
@@ -812,9 +812,9 @@ ags_recall_get_property(GObject *gobject,
   recall = AGS_RECALL(gobject);
 
   switch(prop_id){
-  case PROP_DEVOUT:
+  case PROP_SOUNDCARD:
     {
-      g_value_set_object(value, recall->devout);
+      g_value_set_object(value, recall->soundcard);
     }
     break;
   case PROP_CONTAINER:
@@ -842,32 +842,24 @@ void
 ags_recall_add_to_registry(AgsConnectable *connectable)
 {
   AgsApplicationContext *application_context;
-  AgsServer *server;
   AgsRecall *recall;
-  AgsRegistryEntry *entry;
-  GList *list;
   
   recall = AGS_RECALL(connectable);
 
-  application_context = AGS_APPLICATION_CONTEXT(AGS_DEVOUT(recall->devout)->application_context);
+  application_context = ags_soundcard_get_application_context(recall->soundcard);
 
-  server = NULL;
-  list = application_context->sibling;
-
-  while(list != NULL){
-    if(AGS_IS_SERVER_APPLICATION_CONTEXT(list->data)){
-      server = AGS_SERVER_APPLICATION_CONTEXT(list->data)->server;
-      break;
-    }
-
-    list = list->next;
+  if(AGS_IS_SERVICE_PROVIDER(application_context)){
+    AgsServer *server;
+    AgsRegistryEntry *entry;
+    
+    server = ags_service_provider_get_server(AGS_SERVICE_PROVIDER(application_context));
+  
+    entry = ags_registry_entry_alloc(server->registry);
+    g_value_set_object(&(entry->entry),
+		       (gpointer) recall);
+    ags_registry_add(server->registry,
+		     entry);
   }
-
-  entry = ags_registry_entry_alloc(server->registry);
-  g_value_set_object(&(entry->entry),
-		     (gpointer) recall);
-  ags_registry_add(server->registry,
-		   entry);
 }
 
 void
@@ -1160,8 +1152,8 @@ ags_recall_finalize(GObject *gobject)
   g_message("finalize %s\n\0", G_OBJECT_TYPE_NAME(gobject));
 #endif
 
-  if(recall->devout != NULL){
-    g_object_unref(recall->devout);
+  if(recall->soundcard != NULL){
+    g_object_unref(recall->soundcard);
   }
 
   if((AGS_RECALL_CONNECTED & (recall->flags)) != 0){
@@ -1722,7 +1714,7 @@ ags_recall_real_duplicate(AgsRecall *recall,
 
   parameter = ags_parameter_grow(G_OBJECT_TYPE(recall),
 				 parameter, n_params,
-				 "devout\0", recall->devout,
+				 "soundcard\0", recall->soundcard,
 				 "recall_id\0", recall_id,
 				 "recall_container\0", recall->container,
 				 NULL);
@@ -1980,7 +1972,7 @@ ags_recall_add_child(AgsRecall *parent, AgsRecall *child)
     parent->children = g_list_prepend(parent->children, child);
 
     g_object_set(G_OBJECT(child),
-		 "devout\0", parent->devout,
+		 "soundcard\0", parent->soundcard,
 		 "recall_id\0", parent->recall_id,
 		 NULL);
     g_signal_connect(G_OBJECT(child), "done\0",

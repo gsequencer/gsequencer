@@ -81,7 +81,7 @@ enum{
   PROP_APPLICATION_CONTEXT,
 };
 
-AgsConfig *ags_config;
+extern AgsConfig *ags_config = NULL;
 static gpointer ags_config_parent_class = NULL;
 static guint config_signals[LAST_SIGNAL];
 
