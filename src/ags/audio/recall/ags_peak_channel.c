@@ -321,7 +321,7 @@ ags_peak_channel_retrieve_peak(AgsPeakChannel *peak_channel,
   }
 
   recall = (AgsRecall *) peak_channel;
-  buffer_size = g_ascii_strtoull(ags_config_get(ags_config,
+  buffer_size = g_ascii_strtoull(ags_config_get_value(ags_config,
 						AGS_CONFIG_DEVOUT,
 						"buffer-size\0"),
 				 NULL,

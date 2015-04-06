@@ -24,6 +24,8 @@
 
 #include <ags/util/ags_id_generator.h>
 
+#include <ags/object/ags_application_context.h>
+
 #include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>
 #include <ags/file/ags_file_lookup.h>
@@ -42,6 +44,8 @@ void ags_file_util_write_value_resolve(AgsFileLookup *file_lookup,
 
 void ags_file_util_read_file_link_launch(AgsFileLaunch *file_launch,
 					 AgsFileLink *file_link);
+
+extern AgsApplicationContext *ags_application_context;
 
 void
 ags_file_util_read_value(AgsFile *file,
@@ -772,7 +776,7 @@ ags_file_util_read_object(AgsFile *file,
   
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->ags_main,
+				   "application-context\0", ags_application_context,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
 				   "reference\0", gobject,
@@ -841,7 +845,7 @@ ags_file_util_write_object(AgsFile *file,
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->ags_main,
+				   "application-context\0", ags_application_context,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//[@id='%s']\0", id),
 				   "reference\0", gobject,
@@ -921,7 +925,7 @@ ags_file_read_embedded_audio(AgsFile *file, xmlNode *node,
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->ags_main,
+				   "application-context\0", ags_application_context,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
@@ -949,7 +953,7 @@ ags_file_write_embedded_audio(AgsFile *file, xmlNode *parent, gchar *embedded_au
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->ags_main,
+				   "application-context\0", ags_application_context,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
@@ -1003,7 +1007,7 @@ ags_file_read_embedded_audio_list(AgsFile *file, xmlNode *node, GList **embedded
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->ags_main,
+				   "application-context\0", ags_application_context,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
@@ -1029,7 +1033,7 @@ ags_file_write_embedded_audio_list(AgsFile *file, xmlNode *parent, GList *embedd
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->ags_main,
+				   "application-context\0", ags_application_context,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
@@ -1067,7 +1071,7 @@ ags_file_read_file_link(AgsFile *file, xmlNode *node, AgsFileLink **file_link)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->ags_main,
+				   "application-context\0", ags_application_context,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
@@ -1240,7 +1244,7 @@ ags_file_write_file_link(AgsFile *file, xmlNode *parent, AgsFileLink *file_link)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->ags_main,
+				   "application-context\0", ags_application_context,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
@@ -1306,7 +1310,7 @@ ags_file_read_file_link_list(AgsFile *file, xmlNode *node, GList **file_link)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->ags_main,
+				   "application-context\0", ags_application_context,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
@@ -1332,7 +1336,7 @@ ags_file_write_file_link_list(AgsFile *file, xmlNode *parent, GList *file_link)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->ags_main,
+				   "application-context\0", ags_application_context,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),

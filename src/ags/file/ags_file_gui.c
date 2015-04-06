@@ -204,9 +204,11 @@ ags_file_read_window_resolve_devout(AgsFileLookup *file_lookup,
 
   if(id_ref != NULL){
     g_object_set(G_OBJECT(window),
-		 "devout\0", (AgsWindow *) id_ref->ref,
+		 "soundcard\0", (AgsWindow *) id_ref->ref,
 		 NULL);
   }
+
+  gtk_widget_show_all(window);
 }
 
 xmlNode*

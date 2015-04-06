@@ -182,7 +182,7 @@ ags_stream_channel_init(AgsStreamChannel *stream_channel)
 				     "port-value-size\0", sizeof(gboolean),
 				     "port-value-length\0", 1,
 				     NULL);
-  stream_channel->auto_sense->port_value.ags_port_boolean = ((!g_strcmp0(ags_config_get(ags_config,
+  stream_channel->auto_sense->port_value.ags_port_boolean = ((!g_strcmp0(ags_config_get_value(ags_config,
 											AGS_CONFIG_RECALL,
 											"auto-sense\0"), "true\0")
 							      ) ? TRUE: FALSE);

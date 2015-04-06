@@ -238,12 +238,12 @@ ags_audio_signal_init(AgsAudioSignal *audio_signal)
   audio_signal->recycling = NULL;
   audio_signal->recall_id = NULL;
 
-  audio_signal->samplerate = g_ascii_strtoull(ags_config_get(ags_config,
+  audio_signal->samplerate = g_ascii_strtoull(ags_config_get_value(ags_config,
 							     AGS_CONFIG_DEVOUT,
 							     "samplerate\0"),
 					      NULL,
 					      10);
-  audio_signal->buffer_size = g_ascii_strtoull(ags_config_get(ags_config,
+  audio_signal->buffer_size = g_ascii_strtoull(ags_config_get_value(ags_config,
 							      AGS_CONFIG_DEVOUT,
 							      "buffer-size\0"),
 					       NULL,

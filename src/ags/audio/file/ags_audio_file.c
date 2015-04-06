@@ -124,7 +124,7 @@ ags_audio_file_init(AgsAudioFile *audio_file)
 
   audio_file->name = NULL;
 
-  audio_file->samplerate = g_ascii_strtoull(ags_config_get(ags_config,
+  audio_file->samplerate = g_ascii_strtoull(ags_config_get_value(ags_config,
 							   AGS_CONFIG_DEVOUT,
 							   "samplerate\0"),
 					    NULL,
