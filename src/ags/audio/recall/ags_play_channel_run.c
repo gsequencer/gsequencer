@@ -22,8 +22,8 @@
 #include <ags-lib/object/ags_connectable.h>
 #include <ags/object/ags_dynamic_connectable.h>
 #include <ags/object/ags_plugin.h>
+#include <ags/object/ags_soundcard.h>
 
-#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_recall_id.h>
@@ -373,14 +373,11 @@ void
 ags_play_channel_run_run_pre(AgsRecall *recall)
 {
   AgsChannel *source;
-  AgsDevout *devout;
   AgsRecycling *recycling;
   AgsAudioSignal *audio_signal;
   gdouble delay;
   guint attack;
   guint tic_counter_incr;
-
-  devout = AGS_DEVOUT(recall->devout);
 
   //    g_message("ags_copy_pattern_channel_run_sequencer_alloc_callback - playing channel: %u; playing pattern: %u\0",
   //	      AGS_RECALL_CHANNEL(copy_pattern_channel)->source->line,
@@ -392,8 +389,6 @@ ags_play_channel_run_run_pre(AgsRecall *recall)
   /* create new audio signals */
   recycling = source->first_recycling;
 
-  tic_counter_incr = devout->tic_counter + 1;
-    
   //TODO:JK: unclear
   attack = 0; //devout->attack[((tic_counter_incr == AGS_NOTATION_TICS_PER_BEAT) ?
     //		   0:
@@ -404,7 +399,7 @@ ags_play_channel_run_run_pre(AgsRecall *recall)
 
   if(recycling != NULL){
     while(recycling != source->last_recycling->next){    
-      audio_signal = ags_audio_signal_new((GObject *) recall->devout,
+      audio_signal = ags_audio_signal_new((GObject *) recall->soundcard,
 					  (GObject *) recycling,
 					  (GObject *) recall->recall_id);
       ags_recycling_create_audio_signal_with_defaults(recycling,
@@ -556,12 +551,23 @@ ags_play_channel_run_stream_audio_signal_done_callback(AgsRecall *recall,
 void
 ags_play_channel_run_stop(AgsPlayChannelRun *play_channel_run)
 {
-  AgsThread *task_thread;
   AgsChannel *channel;
   AgsCancelChannel *cancel_channel;
+  AgsThread *main_loop;
+  AgsThread *task_thread;
+  AgsApplicationContext *application_context;
+  AgsSoundcard *soundcard;
 
   channel = AGS_RECALL_CHANNEL_RUN(play_channel_run)->source;
-  task_thread = (AgsTaskThread *) AGS_AUDIO_LOOP(AGS_APPLICATION_CONTEXT(AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout)->application_context)->main_loop)->task_thread;
+
+  soundcard = AGS_SOUNDCARD(AGS_RECALL(play_channel_run)->soundcard);
+
+  application_context = ags_soundcard_get_application_context(soundcard);
+
+  main_loop = application_context->main_loop;
+  
+  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
+						       AGS_TYPE_TASK_THREAD);
 
   /* create append task */
   cancel_channel = ags_cancel_channel_new(channel,

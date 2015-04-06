@@ -1364,15 +1364,18 @@ void
 ags_count_beats_audio_run_stop(AgsCountBeatsAudioRun *count_beats_audio_run,
 			       gboolean notation)
 {
-  AgsAudioLoop *audio_loop;
+  AgsThread *main_loop;
   AgsAudio *audio;
   AgsChannel *channel;
   AgsRecallID *recall_id;
+  AgsApplicationContext *application_context;
   GList *devout_play;
   gboolean all_done;
 
   audio = AGS_RECALL_AUDIO_RUN(count_beats_audio_run)->recall_audio->audio;
-  audio_loop = AGS_AUDIO_LOOP(AGS_APPLICATION_CONTEXT(AGS_DEVOUT(audio->devout)->application_context)->main_loop);
+
+  application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(audio->soundcard));
+  main_loop = application_context->main_loop;
 
   channel = audio->output;
   devout_play = AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->devout_play;
@@ -1440,7 +1443,7 @@ ags_count_beats_audio_run_stop(AgsCountBeatsAudioRun *count_beats_audio_run,
   }
 
   if(all_done){
-    ags_audio_loop_remove_audio(audio_loop,
+    ags_audio_loop_remove_audio(AGS_AUDIO_LOOP(main_loop),
 				audio);
   }
 } 

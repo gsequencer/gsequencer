@@ -18,9 +18,11 @@
 
 #include <ags/audio/recall/ags_stream_channel.h>
 
+#include <ags/object/ags_application_context.h>
 #include <ags/object/ags_config.h>
 #include <ags-lib/object/ags_connectable.h>
 #include <ags/object/ags_plugin.h>
+#include <ags/object/ags_soundcard.h>
 
 void ags_stream_channel_class_init(AgsStreamChannelClass *stream_channel);
 void ags_stream_channel_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -57,9 +59,6 @@ enum{
 static gpointer ags_stream_channel_parent_class = NULL;
 static AgsConnectableInterface *ags_stream_channel_parent_connectable_interface;
 static AgsPluginInterface *ags_stream_channel_parent_plugin_interface;
-
-extern pthread_key_t config;
-AgsConfig *ags_config =  pthread_getspecific(config);
 
 static const gchar *ags_stream_channel_plugin_name = "ags-stream\0";
 static const gchar *ags_stream_channel_plugin_specifier[] = {
@@ -165,7 +164,16 @@ ags_stream_channel_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_stream_channel_init(AgsStreamChannel *stream_channel)
 {
+  AgsApplicationContext *application_context;
+  AgsConfig *config;
+  AgsSoundcard *soundcard;
   GList *port;
+
+  soundcard = AGS_SOUNDCARD(AGS_RECALL(stream_channel)->soundcard);
+  
+  application_context = ags_soundcard_get_application_context(soundcard);
+
+  config = application_context->config;
 
   AGS_RECALL(stream_channel)->name = "ags-stream\0";
   AGS_RECALL(stream_channel)->version = AGS_RECALL_DEFAULT_VERSION;
@@ -183,9 +191,9 @@ ags_stream_channel_init(AgsStreamChannel *stream_channel)
 				     "port-value-size\0", sizeof(gboolean),
 				     "port-value-length\0", 1,
 				     NULL);
-  stream_channel->auto_sense->port_value.ags_port_boolean = ((!g_strcmp0(ags_config_get_value(ags_config,
-											AGS_CONFIG_RECALL,
-											"auto-sense\0"), "true\0")
+  stream_channel->auto_sense->port_value.ags_port_boolean = ((!g_strcmp0(ags_config_get_value(config,
+											      AGS_CONFIG_RECALL,
+											      "auto-sense\0"), "true\0")
 							      ) ? TRUE: FALSE);
   
   port = g_list_prepend(port, stream_channel->auto_sense);
