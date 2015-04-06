@@ -323,6 +323,28 @@ ags_soundcard_get_next_buffer(AgsSoundcard *soundcard)
   return(soundcard_interface->get_next_buffer(soundcard));
 }
 
+gdouble
+ags_soundcard_get_delay(AgsSoundcard *soundcard)
+{
+  AgsSoundcardInterface *soundcard_interface;
+
+  g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), G_MAXUINT);
+  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
+  g_return_val_if_fail(soundcard_interface->get_delay, G_MAXUINT);
+  return(soundcard_interface->get_delay(soundcard));
+}
+
+guint
+ags_soundcard_get_attack(AgsSoundcard *soundcard)
+{
+  AgsSoundcardInterface *soundcard_interface;
+
+  g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), G_MAXUINT);
+  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
+  g_return_val_if_fail(soundcard_interface->get_attack, G_MAXUINT);
+  return(soundcard_interface->get_attack(soundcard));
+}
+
 void
 ags_soundcard_set_note_offset(AgsSoundcard *soundcard,
 			      guint note_offset)

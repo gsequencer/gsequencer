@@ -18,11 +18,11 @@
 
 #include <ags/audio/recall/ags_peak_channel.h>
 
-#include <ags/object/ags_config.h>
 #include <ags-lib/object/ags_connectable.h>
 
 #include <ags/object/ags_mutable.h>
 #include <ags/object/ags_plugin.h>
+#include <ags/object/ags_soundcard.h>
 
 void ags_peak_channel_class_init(AgsPeakChannelClass *peak_channel);
 void ags_peak_channel_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -40,9 +40,6 @@ void ags_peak_channel_connect(AgsConnectable *connectable);
 void ags_peak_channel_disconnect(AgsConnectable *connectable);
 void ags_peak_channel_set_ports(AgsPlugin *plugin, GList *port);
 void ags_peak_channel_finalize(GObject *gobject);
-
-extern pthread_key_t config;
-AgsConfig *ags_config =  pthread_getspecific(config);
 
 /**
  * SECTION:ags_peak_channel
@@ -309,6 +306,7 @@ ags_peak_channel_retrieve_peak(AgsPeakChannel *peak_channel,
   AgsRecall *recall;
   AgsChannel *source;
   AgsRecycling *recycling;
+  AgsSoundcard *soundcard;
   GList *audio_signal;
   double *buffer;
   double current_value;
@@ -322,17 +320,20 @@ ags_peak_channel_retrieve_peak(AgsPeakChannel *peak_channel,
   }
 
   recall = (AgsRecall *) peak_channel;
-  buffer_size = g_ascii_strtoull(ags_config_get_value(ags_config,
-						AGS_CONFIG_DEVOUT,
-						"buffer-size\0"),
-				 NULL,
-				 10);
-
+  soundcard = AGS_SOUNDCARD(recall->soundcard);
+  
   source = AGS_RECALL_CHANNEL(peak_channel)->source;
   recycling = source->first_recycling;
 
+  ags_soundcard_get_presets(soundcard,
+			    NULL,
+			    NULL,
+			    &buffer_size,
+			    NULL);
+  
   /* initialize buffer */
   buffer = (double *) malloc(buffer_size * sizeof(double));
+  
   for(i = 0; i < buffer_size; i++) buffer[i] = 0.0;
 
   while(recycling != source->last_recycling->next){
