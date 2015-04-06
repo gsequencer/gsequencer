@@ -140,14 +140,16 @@ libags_audio_a-ags_audio_application_context.o: \
  /usr/include/bits/stdlib-bsearch.h /usr/include/bits/stdlib-float.h \
  /usr/include/libxml2/libxml/xlink.h /usr/include/libxml2/libxml/SAX2.h \
  src/ags/object/ags_soundcard.h src/ags-lib/object/ags_connectable.h \
- src/ags/audio/ags_devout.h /usr/include/alsa/asoundlib.h \
- /usr/include/unistd.h /usr/include/bits/posix_opt.h \
- /usr/include/bits/environments.h /usr/include/bits/confname.h \
- /usr/include/getopt.h /usr/include/string.h /usr/include/bits/string.h \
- /usr/include/bits/string2.h /usr/include/fcntl.h \
- /usr/include/bits/fcntl.h /usr/include/bits/fcntl-linux.h \
- /usr/include/bits/stat.h /usr/include/assert.h /usr/include/sys/poll.h \
- /usr/include/bits/poll.h /usr/include/errno.h /usr/include/bits/errno.h \
+ src/ags/file/ags_file_sound.h src/ags/file/ags_file_link.h \
+ src/ags/audio/ags_timestamp.h src/ags/audio/ags_devout.h \
+ /usr/include/alsa/asoundlib.h /usr/include/unistd.h \
+ /usr/include/bits/posix_opt.h /usr/include/bits/environments.h \
+ /usr/include/bits/confname.h /usr/include/getopt.h /usr/include/string.h \
+ /usr/include/bits/string.h /usr/include/bits/string2.h \
+ /usr/include/fcntl.h /usr/include/bits/fcntl.h \
+ /usr/include/bits/fcntl-linux.h /usr/include/bits/stat.h \
+ /usr/include/assert.h /usr/include/sys/poll.h /usr/include/bits/poll.h \
+ /usr/include/errno.h /usr/include/bits/errno.h \
  /usr/include/linux/errno.h /usr/include/asm/errno.h \
  /usr/include/asm-generic/errno.h /usr/include/asm-generic/errno-base.h \
  /usr/include/alsa/asoundef.h /usr/include/alsa/version.h \
@@ -590,8 +592,16 @@ libags_audio_a-ags_audio_application_context.o: \
  src/ags/audio/ags_recycling_container.h src/ags/audio/ags_recall.h \
  src/ags/audio/ags_port.h /usr/include/ladspa.h \
  src/ags/audio/ags_recall_dependency.h src/ags/audio/ags_notation.h \
- src/ags/thread/ags_timestamp_thread.h src/ags/audio/ags_timestamp.h \
- src/ags/audio/ags_note.h
+ src/ags/thread/ags_timestamp_thread.h src/ags/audio/ags_note.h \
+ src/ags/audio/ags_audio.h src/ags/audio/ags_output.h \
+ src/ags/audio/ags_input.h /usr/include/glib-2.0/glib/gstdio.h \
+ /usr/include/glib-2.0/glib/gprintf.h /usr/include/sys/stat.h \
+ src/ags/audio/ags_pattern.h src/ags/audio/ags_recall_container.h \
+ src/ags/file/ags_file_stock.h src/ags/widget/ags_led.h \
+ src/ags/widget/ags_vindicator.h src/ags/widget/ags_indicator.h \
+ src/ags/widget/ags_hindicator.h src/ags/widget/ags_waveform.h \
+ src/ags/widget/ags_dial.h src/ags/widget/ags_cartesian.h \
+ src/ags/file/ags_file_id_ref.h
 
 /usr/include/stdc-predef.h:
 
@@ -986,6 +996,12 @@ src/ags/file/ags_file.h:
 src/ags/object/ags_soundcard.h:
 
 src/ags-lib/object/ags_connectable.h:
+
+src/ags/file/ags_file_sound.h:
+
+src/ags/file/ags_file_link.h:
+
+src/ags/audio/ags_timestamp.h:
 
 src/ags/audio/ags_devout.h:
 
@@ -2033,6 +2049,38 @@ src/ags/audio/ags_notation.h:
 
 src/ags/thread/ags_timestamp_thread.h:
 
-src/ags/audio/ags_timestamp.h:
-
 src/ags/audio/ags_note.h:
+
+src/ags/audio/ags_audio.h:
+
+src/ags/audio/ags_output.h:
+
+src/ags/audio/ags_input.h:
+
+/usr/include/glib-2.0/glib/gstdio.h:
+
+/usr/include/glib-2.0/glib/gprintf.h:
+
+/usr/include/sys/stat.h:
+
+src/ags/audio/ags_pattern.h:
+
+src/ags/audio/ags_recall_container.h:
+
+src/ags/file/ags_file_stock.h:
+
+src/ags/widget/ags_led.h:
+
+src/ags/widget/ags_vindicator.h:
+
+src/ags/widget/ags_indicator.h:
+
+src/ags/widget/ags_hindicator.h:
+
+src/ags/widget/ags_waveform.h:
+
+src/ags/widget/ags_dial.h:
+
+src/ags/widget/ags_cartesian.h:
+
+src/ags/file/ags_file_id_ref.h:

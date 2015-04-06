@@ -201,12 +201,12 @@ ags_recall_ladspa_run_run_init_pre(AgsRecall *recall)
   recall_ladspa = AGS_RECALL_LADSPA(AGS_RECALL_CHANNEL_RUN(recall->parent->parent)->recall_channel);
 
   /* set up buffer */ 
-  samplerate = (unsigned long) g_ascii_strtoull(ags_config_get(ags_config,
+  samplerate = (unsigned long) g_ascii_strtoull(ags_config_get_value(ags_config,
 							       AGS_CONFIG_DEVOUT,
 							       "samplerate\0"),
 						NULL,
 						10);
-  buffer_size = (unsigned long) g_ascii_strtoull(ags_config_get(ags_config,
+  buffer_size = (unsigned long) g_ascii_strtoull(ags_config_get_value(ags_config,
 								AGS_CONFIG_DEVOUT,
 								"buffer-size\0"),
 						 NULL,

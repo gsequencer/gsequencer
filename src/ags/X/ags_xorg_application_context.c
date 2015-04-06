@@ -20,6 +20,11 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/file/ags_file.h>
+#include <ags/file/ags_file_gui.h>
+#include <ags/file/ags_file_stock.h>
+#include <ags/file/ags_file_id_ref.h>
+
 #include <ags/thread/ags_gui_thread.h>
 
 void ags_xorg_application_context_class_init(AgsXorgApplicationContextClass *xorg_application_context);
@@ -39,6 +44,9 @@ void ags_xorg_application_context_finalize(GObject *gobject);
 
 void ags_xorg_application_context_load_config(AgsApplicationContext *application_context);
 void ags_xorg_application_context_register_types(AgsApplicationContext *application_context);
+
+void ags_xorg_application_context_read(AgsFile *file, xmlNode *node, GObject **application_context);
+xmlNode* ags_xorg_application_context_write(AgsFile *file, xmlNode *parent, GObject *application_context);
 
 static gpointer ags_xorg_application_context_parent_class = NULL;
 static AgsConnectableInterface* ags_xorg_application_context_parent_connectable_interface;
@@ -242,7 +250,7 @@ ags_xorg_application_context_finalize(GObject *gobject)
 }
 
 void
-ags_audio_application_context_load_config(AgsApplicationContext *application_context)
+ags_xorg_application_context_load_config(AgsApplicationContext *application_context)
 {
   //TODO:JK: implement me
 }
@@ -278,6 +286,119 @@ ags_xorg_application_context_register_types(AgsApplicationContext *application_c
   ags_synth_input_line_get_type();
 
   ags_ffplayer_get_type();
+}
+
+void
+ags_xorg_application_context_read(AgsFile *file, xmlNode *node, GObject **application_context)
+{
+  AgsXorgApplicationContext *gobject;
+  GList *list;
+  xmlNode *child;
+
+  if(*application_context == NULL){
+    gobject = g_object_new(AGS_TYPE_XORG_APPLICATION_CONTEXT,
+			   NULL);
+
+    *application_context = (GObject *) gobject;
+  }else{
+    gobject = (AgsApplicationContext *) *application_context;
+  }
+
+  file->application_context = gobject;
+
+  g_object_set(G_OBJECT(file),
+	       "application-context\0", gobject,
+	       NULL);
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "application-context\0", file->application_context,
+				   "file\0", file,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference\0", gobject,
+				   NULL));
+  
+  /* properties */
+  AGS_APPLICATION_CONTEXT(gobject)->flags = (guint) g_ascii_strtoull(xmlGetProp(node, AGS_FILE_FLAGS_PROP),
+					    NULL,
+					    16);
+
+  AGS_APPLICATION_CONTEXT(gobject)->version = xmlGetProp(node,
+							 AGS_FILE_VERSION_PROP);
+
+  AGS_APPLICATION_CONTEXT(gobject)->build_id = xmlGetProp(node,
+							  AGS_FILE_BUILD_ID_PROP);
+
+  //TODO:JK: check version compatibelity
+
+  /* child elements */
+  child = node->children;
+
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp("ags-window\0",
+			   child->name,
+			   11)){
+	ags_file_read_window(file,
+			     child,
+			     &(gobject->window));
+      }
+    }
+
+    child = child->next;
+  }
+}
+
+xmlNode*
+ags_xorg_application_context_write(AgsFile *file, xmlNode *parent, GObject *application_context)
+{
+  xmlNode *node, *child;
+  gchar *id;
+
+  id = ags_id_generator_create_uuid();
+
+  node = xmlNewNode(NULL,
+		    "ags-application-context\0");
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "application-context\0", file->application_context,
+				   "file\0", file,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
+				   "reference\0", application_context,
+				   NULL));
+
+  xmlNewProp(node,
+	     AGS_FILE_CONTEXT_PROP,
+	     "xorg\0");
+
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  xmlNewProp(node,
+	     AGS_FILE_FLAGS_PROP,
+	     g_strdup_printf("%x\0", ((~AGS_APPLICATION_CONTEXT_CONNECTED) & (AGS_APPLICATION_CONTEXT(application_context)->flags))));
+
+  xmlNewProp(node,
+	     AGS_FILE_VERSION_PROP,
+	     AGS_APPLICATION_CONTEXT(application_context)->version);
+
+  xmlNewProp(node,
+	     AGS_FILE_BUILD_ID_PROP,
+	     AGS_APPLICATION_CONTEXT(application_context)->build_id);
+
+  /* add to parent */
+  xmlAddChild(parent,
+	      node);
+
+  ags_file_write_window(file,
+			node,
+			AGS_XORG_APPLICATION_CONTEXT(application_context)->window);
+
+  return(node);
 }
 
 AgsXorgApplicationContext*
