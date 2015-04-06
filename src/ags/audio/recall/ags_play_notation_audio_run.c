@@ -651,12 +651,12 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
   audio = AGS_RECALL_AUDIO(play_notation_audio)->audio;
   devout = AGS_DEVOUT(audio->devout);
 
-  buffer_size = g_ascii_strtoull(ags_config_get(ags_config,
+  buffer_size = g_ascii_strtoull(ags_config_get_value(ags_config,
 						AGS_CONFIG_DEVOUT,
 						"buffer-size\0"),
 				 NULL,
 				 10);
-  samplerate = g_ascii_strtoull(ags_config_get(ags_config,
+  samplerate = g_ascii_strtoull(ags_config_get_value(ags_config,
 					       AGS_CONFIG_DEVOUT,
 					       "samplerate\0"),
 				NULL,

@@ -182,12 +182,12 @@ ags_generic_preferences_apply(AgsApplicable *applicable)
 							   AGS_TYPE_PREFERENCES);
   
   if(gtk_toggle_button_get_active(generic_preferences->autosave_thread)){
-    ags_config_set(ags_config,
+    ags_config_set_value(ags_config,
 		   AGS_CONFIG_GENERIC,
 		   "autosave-thread\0",
 		   "true\0");
   }else{
-    ags_config_set(ags_config,
+    ags_config_set_value(ags_config,
 		   AGS_CONFIG_GENERIC,
 		   "autosave-thread\0",
 		   "false\0");
@@ -206,7 +206,7 @@ ags_generic_preferences_reset(AgsApplicable *applicable)
 							   AGS_TYPE_PREFERENCES);
   
   gtk_toggle_button_set_active(generic_preferences->autosave_thread,
-			       ((!strncmp(ags_config_get(ags_config,
+			       ((!strncmp(ags_config_get_value(ags_config,
 							 AGS_CONFIG_GENERIC,
 							 "autosave-thread\0"),
 					  "true\0",

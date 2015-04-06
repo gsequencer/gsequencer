@@ -66,9 +66,9 @@ struct _AgsApplicationContext
 
   AgsLog *log;
 
+  gchar *domain;
   GList *sibling;
   
-  GList *domain;
   AgsConfig *config;
 
   pthread_mutex_t mutex;

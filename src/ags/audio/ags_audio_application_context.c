@@ -22,6 +22,11 @@
 #include <ags-lib/object/ags_connectable.h>
 #include <ags/object/ags_soundcard.h>
 
+#include <ags/file/ags_file.h>
+#include <ags/file/ags_file_sound.h>
+#include <ags/file/ags_file_stock.h>
+#include <ags/file/ags_file_id_ref.h>
+
 #include <ags/audio/ags_devout.h>
 
 void ags_audio_application_context_class_init(AgsAudioApplicationContextClass *audio_application_context);
@@ -41,6 +46,8 @@ void ags_audio_application_context_finalize(GObject *gobject);
 
 void ags_audio_application_context_load_config(AgsApplicationContext *application_context);
 void ags_audio_application_context_register_types(AgsApplicationContext *application_context);
+void ags_audio_application_context_read(AgsFile *file, xmlNode *node, GObject **application_context);
+xmlNode* ags_audio_application_context_write(AgsFile *file, xmlNode *parent, GObject *application_context);
 
 void ags_audio_application_context_set_value_callback(AgsConfig *config, gchar *group, gchar *key, gchar *value,
 						      AgsAudioApplicationContext *audio_application_context);
@@ -131,6 +138,8 @@ ags_audio_application_context_class_init(AgsAudioApplicationContextClass *audio_
   
   application_context->load_config = ags_audio_application_context_load_config;
   application_context->register_types = ags_audio_application_context_register_types;
+  application_context->read = ags_audio_application_context_read;
+  application_context->write = ags_audio_application_context_write;
 }
 
 void
@@ -166,9 +175,6 @@ ags_audio_application_context_set_property(GObject *gobject,
       GObject *soundcard;
       
       soundcard = (GObject *) g_value_get_object(value);
-
-      if(soundcard == audio_application_context->soundcard)
-	return;
 
       if(g_list_find(audio_application_context->soundcard, soundcard) == NULL){
 	g_object_ref(G_OBJECT(soundcard));
@@ -274,29 +280,29 @@ ags_audio_application_context_load_config(AgsApplicationContext *application_con
   while(soundcard != NULL){
     soundcard = AGS_SOUNDCARD(list->data);
     
-    alsa_handle = ags_config_get(config,
+    alsa_handle = ags_config_get_value(config,
 				 AGS_CONFIG_DEVOUT,
 				 "alsa-handle\0");
 
-    dsp_channels = strtoul(ags_config_get(config,
+    dsp_channels = strtoul(ags_config_get_value(config,
 					  AGS_CONFIG_DEVOUT,
 					  "dsp-channels\0"),
 			   NULL,
 			   10);
     
-    pcm_channels = strtoul(ags_config_get(config,
+    pcm_channels = strtoul(ags_config_get_value(config,
 					  AGS_CONFIG_DEVOUT,
 					  "pcm-channels\0"),
 			   NULL,
 			   10);
 
-    samplerate = strtoul(ags_config_get(config,
+    samplerate = strtoul(ags_config_get_value(config,
 					AGS_CONFIG_DEVOUT,
 					"samplerate\0"),
 			 NULL,
 			 10);
 
-    buffer_size = strtoul(ags_config_get(config,
+    buffer_size = strtoul(ags_config_get_value(config,
 					 AGS_CONFIG_DEVOUT,
 					 "buffer-size\0"),
 			  NULL,
@@ -439,6 +445,119 @@ ags_audio_application_context_register_types(AgsApplicationContext *application_
 
   ags_play_notation_audio_get_type();
   ags_play_notation_audio_run_get_type();
+}
+
+void
+ags_audio_application_context_read(AgsFile *file, xmlNode *node, GObject **application_context)
+{
+  AgsAudioApplicationContext *gobject;
+  GList *list;
+  xmlNode *child;
+
+  if(*application_context == NULL){
+    gobject = g_object_new(AGS_TYPE_AUDIO_APPLICATION_CONTEXT,
+			   NULL);
+
+    *application_context = (GObject *) gobject;
+  }else{
+    gobject = (AgsApplicationContext *) *application_context;
+  }
+
+  file->application_context = gobject;
+
+  g_object_set(G_OBJECT(file),
+	       "application-context\0", gobject,
+	       NULL);
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "application-context\0", file->application_context,
+				   "file\0", file,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference\0", gobject,
+				   NULL));
+  
+  /* properties */
+  AGS_APPLICATION_CONTEXT(gobject)->flags = (guint) g_ascii_strtoull(xmlGetProp(node, AGS_FILE_FLAGS_PROP),
+								     NULL,
+								     16);
+
+  AGS_APPLICATION_CONTEXT(gobject)->version = xmlGetProp(node,
+							 AGS_FILE_VERSION_PROP);
+
+  AGS_APPLICATION_CONTEXT(gobject)->build_id = xmlGetProp(node,
+							  AGS_FILE_BUILD_ID_PROP);
+
+  //TODO:JK: check version compatibelity
+
+  /* child elements */
+  child = node->children;
+
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp("ags-devout-list\0",
+			   child->name,
+			   16)){
+	ags_file_read_devout_list(file,
+				  child,
+				  &(gobject->soundcard));
+      }
+    }
+
+    child = child->next;
+  }
+}
+
+xmlNode*
+ags_audio_application_context_write(AgsFile *file, xmlNode *parent, GObject *application_context)
+{
+  xmlNode *node, *child;
+  gchar *id;
+
+  id = ags_id_generator_create_uuid();
+
+  node = xmlNewNode(NULL,
+		    "ags-application-context\0");
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "application-context\0", file->application_context,
+				   "file\0", file,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
+				   "reference\0", application_context,
+				   NULL));
+
+  xmlNewProp(node,
+	     AGS_FILE_CONTEXT_PROP,
+	     "audio\0");
+
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  xmlNewProp(node,
+	     AGS_FILE_FLAGS_PROP,
+	     g_strdup_printf("%x\0", ((~AGS_APPLICATION_CONTEXT_CONNECTED) & (AGS_APPLICATION_CONTEXT(application_context)->flags))));
+
+  xmlNewProp(node,
+	     AGS_FILE_VERSION_PROP,
+	     AGS_APPLICATION_CONTEXT(application_context)->version);
+
+  xmlNewProp(node,
+	     AGS_FILE_BUILD_ID_PROP,
+	     AGS_APPLICATION_CONTEXT(application_context)->build_id);
+
+  /* add to parent */
+  xmlAddChild(parent,
+	      node);
+
+  ags_file_write_devout_list(file,
+			     node,
+			     AGS_AUDIO_APPLICATION_CONTEXT(application_context)->soundcard);
+
+  return(node);
 }
 
 AgsAudioApplicationContext*

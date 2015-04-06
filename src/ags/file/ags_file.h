@@ -143,10 +143,6 @@ void ags_file_read_resolve(AgsFile *file);
 void ags_file_read_start(AgsFile *file);
 
 /*  */
-void ags_file_read_server(AgsFile *file, xmlNode *node, GObject **server);
-void ags_file_write_server(AgsFile *file, xmlNode *parent, GObject *server);
-
-/*  */
 void ags_file_read_application_context(AgsFile *file, xmlNode *node, GObject **application_context);
 void ags_file_write_application_context(AgsFile *file, xmlNode *parent, GObject *application_context);
 
