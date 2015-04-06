@@ -51,7 +51,8 @@ void ags_delay_audio_change_tact(AgsTactable *tactable, gdouble tact);
 void ags_delay_audio_change_sequencer_duration(AgsTactable *tactable, gdouble duration);
 void ags_delay_audio_change_notation_duration(AgsTactable *tactable, gdouble duration);
 
-extern AgsConfig *ags_config;
+extern pthread_key_t config;
+AgsConfig *ags_config =  pthread_getspecific(config);
 
 /**
  * SECTION:ags_delay_audio

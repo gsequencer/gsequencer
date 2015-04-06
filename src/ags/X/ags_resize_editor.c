@@ -59,7 +59,8 @@ void ags_resize_editor_show(GtkWidget *widget);
 
 AgsConnectableInterface *ags_resize_editor_parent_connectable_interface;
 
-extern AgsApplicationContext *ags_application_context;
+extern pthread_key_t application_context;
+AgsApplicationContext *ags_application_context =  pthread_getspecific(application_context);
 
 GType
 ags_resize_editor_get_type(void)

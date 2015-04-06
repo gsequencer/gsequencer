@@ -53,7 +53,8 @@ void ags_generic_preferences_show(GtkWidget *widget);
 
 static gpointer ags_generic_preferences_parent_class = NULL;
 
-extern AgsConfig *ags_config;
+extern pthread_key_t config;
+AgsConfig *ags_config =  pthread_getspecific(config);
 
 GType
 ags_generic_preferences_get_type(void)

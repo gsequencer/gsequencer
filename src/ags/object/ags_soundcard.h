@@ -21,7 +21,7 @@
 
 #include <glib-object.h>
 
-#include <ags/file/ags_file.h>
+#include <ags/object/ags_application_context.h>
 
 #define AGS_TYPE_SOUNDCARD                    (ags_soundcard_get_type())
 #define AGS_SOUNDCARD(obj)                    (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SOUNDCARD, AgsSoundcard))
@@ -37,6 +37,21 @@ struct _AgsSoundcardInterface
 {
   GTypeInterface interface;
 
+  AgsApplicationContext* (*get_application_context)(AgsSoundcard *soundcard);
+  void (*set_application_context)(AgsSoundcard *soundcard,
+				  AgsApplicationContext *application_context);
+  
+  void (*set_presets)(AgsSoundcard *soundcard,
+		      guint channels,
+		      guint rate,
+		      guint buffer_size,
+		      guint format);
+  void (*get_presets)(AgsSoundcard *soundcard,
+		      guint *channels,
+		      guint *rate,
+		      guint *buffer_size,
+		      guint *format);
+  
   void (*list_cards)(AgsSoundcard *soundcard,
 		     GList **card_id, GList **card_name);
   void (*pcm_info)(AgsSoundcard *soundcard, gchar *card_id,
@@ -63,6 +78,21 @@ struct _AgsSoundcardInterface
 };
 
 GType ags_soundcard_get_type();
+
+AgsApplicationContext* ags_soundcard_get_application_context(AgsSoundcard *soundcard);
+void ags_soundcard_set_application_context(AgsSoundcard *soundcard,
+					   AgsApplicationContext *application_context);
+
+void ags_soundcard_set_presets(AgsSoundcard *soundcard,
+			       guint channels,
+			       guint rate,
+			       guint buffer_size,
+			       guint format);
+void ags_soundcard_get_presets(AgsSoundcard *soundcard,
+			       guint *channels,
+			       guint *rate,
+			       guint *buffer_size,
+			       guint *format);
 
 void ags_soundcard_list_cards(AgsSoundcard *soundcard,
 			      GList **card_id, GList **card_name);

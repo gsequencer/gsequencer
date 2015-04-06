@@ -60,9 +60,6 @@ enum{
   PROP_SOUNDCARD,
 };
 
-AgsAudioApplicationContext *ags_audio_application_context = NULL;
-extern AgsConfig *ags_config;
-
 GType
 ags_audio_application_context_get_type()
 {
@@ -176,6 +173,10 @@ ags_audio_application_context_set_property(GObject *gobject,
       
       soundcard = (GObject *) g_value_get_object(value);
 
+      if(soundcard == NULL){
+	return;
+      }
+      
       if(g_list_find(audio_application_context->soundcard, soundcard) == NULL){
 	g_object_ref(G_OBJECT(soundcard));
 
@@ -273,7 +274,7 @@ ags_audio_application_context_load_config(AgsApplicationContext *application_con
   guint buffer_size;
   guint pcm_channels, dsp_channels;
 
-  config = ags_config;
+  config = application_context->config;
   
   list = AGS_AUDIO_APPLICATION_CONTEXT(application_context)->soundcard;
 
@@ -561,7 +562,7 @@ ags_audio_application_context_write(AgsFile *file, xmlNode *parent, GObject *app
 }
 
 AgsAudioApplicationContext*
-ags_audio_application_context_new(AgsMainLoop *main_loop,
+ags_audio_application_context_new(GObject *main_loop,
 				  AgsConfig *config)
 {
   AgsAudioApplicationContext *audio_application_context;

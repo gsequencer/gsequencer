@@ -114,7 +114,8 @@ enum{
 static gpointer ags_file_parent_class = NULL;
 static guint file_signals[LAST_SIGNAL] = { 0 };
 
-extern AgsApplicationContext *ags_application_context;
+extern pthread_key_t application_context;
+AgsApplicationContext *ags_application_context =  pthread_getspecific(application_context);
 
 GType
 ags_file_get_type (void)
@@ -789,9 +790,9 @@ ags_file_real_write(AgsFile *file)
   //TODO:JK: implement me
 
   /* write main */
-  ags_file_write_main(file,
-		      file->root_node,
-		      file->application_context);
+  ags_file_write_application_context(file,
+				     file->root_node,
+				     file->application_context);
 
   /* write embedded audio */
   //TODO:JK: implement me
@@ -962,8 +963,8 @@ ags_file_real_read(AgsFile *file)
   while(child != NULL){
     if(child->type == XML_ELEMENT_NODE){
       if(!xmlStrncmp("ags-application-context\0",
-			   child->name,
-			   9)){
+		     child->name,
+		     9)){
 	current_context = NULL;
 	
 	ags_file_read_application_context(file,
@@ -1076,8 +1077,8 @@ ags_file_read_application_context(AgsFile *file, xmlNode *node, GObject **applic
   GList *list;
   gchar *context;
 
-  context = xmlNodeGetProp(node,
-			   "context\0");
+  context = xmlGetProp(node,
+		       "context\0");
   list = ags_application_context->sibling;
   
   while(list != NULL){

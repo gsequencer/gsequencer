@@ -52,8 +52,10 @@ void ags_performance_preferences_show(GtkWidget *widget);
 
 static gpointer ags_performance_preferences_parent_class = NULL;
 
-extern AgsApplicationContext *ags_application_context;
-extern AgsConfig *ags_config;
+extern pthread_key_t application_context;
+AgsApplicationContext *ags_application_context =  pthread_getspecific(application_context);
+extern pthread_key_t config;
+AgsConfig *ags_config =  pthread_getspecific(config);
 
 GType
 ags_performance_preferences_get_type(void)

@@ -56,7 +56,7 @@ enum{
   PROP_WINDOW,
 };
 
-AgsXorgApplicationContext *ags_xorg_application_context = NULL;
+extern AgsXorgApplicationContext *ags_xorg_application_context;
 
 GType
 ags_xorg_application_context_get_type()
@@ -102,7 +102,7 @@ ags_xorg_application_context_class_init(AgsXorgApplicationContextClass *xorg_app
   AgsApplicationContextClass *application_context;
   GParamSpec *param_spec;
 
-  ags_xorg_application_context_parent_class = g_type_class_peek_parent(ags_xorg_application_context);
+  ags_xorg_application_context_parent_class = g_type_class_peek_parent(xorg_application_context);
 
   /* GObjectClass */
   gobject = (GObjectClass *) xorg_application_context;

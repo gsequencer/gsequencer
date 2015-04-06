@@ -80,6 +80,68 @@ ags_soundcard_class_init(AgsSoundcardInterface *interface)
 	       G_TYPE_UINT);
 }
 
+AgsApplicationContext*
+ags_soundcard_get_application_context(AgsSoundcard *soundcard)
+{
+  AgsSoundcardInterface *soundcard_interface;
+
+  g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), NULL);
+  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
+  g_return_val_if_fail(soundcard_interface->get_application_context, NULL);
+  return(soundcard_interface->get_application_context(soundcard));
+}
+
+void
+ags_soundcard_set_application_context(AgsSoundcard *soundcard,
+				      AgsApplicationContext *application_context)
+{
+  AgsSoundcardInterface *soundcard_interface;
+
+  g_return_if_fail(AGS_IS_SOUNDCARD(soundcard));
+  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
+  g_return_if_fail(soundcard_interface->set_application_context);
+  soundcard_interface->set_application_context(soundcard,
+					       application_context);
+}
+
+void
+ags_soundcard_set_presets(AgsSoundcard *soundcard,
+			  guint channels,
+			  guint rate,
+			  guint buffer_size,
+			  guint format)
+{
+  AgsSoundcardInterface *soundcard_interface;
+
+  g_return_if_fail(AGS_IS_SOUNDCARD(soundcard));
+  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
+  g_return_if_fail(soundcard_interface->set_presets);
+  soundcard_interface->set_presets(soundcard,
+				   channels,
+				   rate,
+				   buffer_size,
+				   format);
+}
+
+void
+ags_soundcard_get_presets(AgsSoundcard *soundcard,
+			  guint *channels,
+			  guint *rate,
+			  guint *buffer_size,
+			  guint *format)
+{
+  AgsSoundcardInterface *soundcard_interface;
+
+  g_return_if_fail(AGS_IS_SOUNDCARD(soundcard));
+  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
+  g_return_if_fail(soundcard_interface->get_presets);
+  soundcard_interface->get_presets(soundcard,
+				   channels,
+				   rate,
+				   buffer_size,
+				   format);
+}
+
 /**
  * ags_soundcard_play:
  * @soundcard an #AgsSoundcard

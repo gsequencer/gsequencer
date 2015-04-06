@@ -20,7 +20,10 @@
 
 #include <ags/object/ags_application_context.h>
 
-extern AgsApplicationContext *ags_application_context = NULL;
+#include <ags/server/ags_server_application_context.h>
+
+extern pthread_key_t application_context;
+AgsApplicationContext *ags_application_context =  pthread_getspecific(application_context);
 extern AgsServerApplicationContext *ags_server_application_context;
 
 void
@@ -36,7 +39,7 @@ ags_server_init_context(int *argc, gchar ***argv)
 
   /* instantiate application context */
   ags_server_application_context = ags_server_application_context_new(NULL,
-									NULL);
+								      NULL);
   ags_application_context_add_sibling(ags_application_context,
 				      ags_server_application_context);
 }

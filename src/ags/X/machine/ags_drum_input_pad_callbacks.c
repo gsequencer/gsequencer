@@ -60,7 +60,8 @@ void ags_drum_input_pad_init_channel_launch_callback(AgsTask *task, AgsDrumInput
 #define AGS_DRUM_INPUT_PAD_OPEN_AUDIO_FILE_NAME "AgsDrumInputPadOpenAudioFileName\0"
 #define AGS_DRUM_INPUT_PAD_OPEN_SPIN_BUTTON "AgsDrumInputPadOpenSpinButton\0"
 
-extern AgsApplicationContext *ags_application_context;
+extern pthread_key_t application_context;
+AgsApplicationContext *ags_application_context =  pthread_getspecific(application_context);
 
 void
 ags_drum_input_pad_open_callback(GtkWidget *widget, AgsDrumInputPad *drum_input_pad)

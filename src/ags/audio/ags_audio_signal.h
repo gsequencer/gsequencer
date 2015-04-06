@@ -49,7 +49,7 @@ struct _AgsAudioSignal
 
   guint flags;
 
-  GObject *devout;
+  GObject *soundcard;
 
   GObject *recycling;
   GObject *recall_id; // AGS_TYPE_RECALL_ID to identify the AgsAudioSignal
@@ -124,11 +124,11 @@ void ags_audio_signal_scale(AgsAudioSignal *audio_signal,
 			    AgsAudioSignal *template,
 			    guint length);
 
-AgsAudioSignal* ags_audio_signal_new(GObject *devout,
+AgsAudioSignal* ags_audio_signal_new(GObject *soundcard,
 				     GObject *recycling,
 				     GObject *recall_id);
 
-AgsAudioSignal* ags_audio_signal_new_with_length(GObject *devout,
+AgsAudioSignal* ags_audio_signal_new_with_length(GObject *soundcard,
 						 GObject *recycling,
 						 GObject *recall_id,
 						 guint length);

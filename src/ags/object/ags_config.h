@@ -31,6 +31,8 @@
 #define AGS_CONFIG_DEFAULT_VERSION "0.4.3\0"
 #define AGS_CONFIG_DEFAULT_BUILD_ID "Sat Apr  4 02:44:55 GMT 2015\0"
 
+#define AGS_INIT_CONTEXT_TSD_CONFIG "ags-config\0"
+
 #define AGS_CONFIG_GENERIC "generic\0"
 #define AGS_CONFIG_THREAD "thread\0"
 #define AGS_CONFIG_DEVOUT "device\0"

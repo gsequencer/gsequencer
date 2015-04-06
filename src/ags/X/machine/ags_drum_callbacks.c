@@ -66,7 +66,8 @@
 #define AGS_AUDIO_FILE_DEVOUT "AgsAudioFileDevout\0"
 #define AGS_DRUM_PLAY_RECALL "AgsDrumPlayRecall\0"
 
-extern AgsApplicationContext *ags_application_context;
+extern pthread_key_t application_context;
+AgsApplicationContext *ags_application_context =  pthread_getspecific(application_context);
 extern const char *AGS_DRUM_INDEX;
 
 void

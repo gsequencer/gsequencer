@@ -23,5 +23,5 @@
 void
 ags_gui_init_context(int *argc, gchar ***argv)
 {
-  gtk_init(argc, argv);
+  //TODO:JK: implement me
 }

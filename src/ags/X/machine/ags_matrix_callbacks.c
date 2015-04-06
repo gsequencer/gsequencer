@@ -54,7 +54,8 @@ void ags_matrix_refresh_gui_callback(AgsTogglePatternBit *toggle_pattern_bit,
 				     AgsMatrix *matrix);
 
 extern const char *AGS_MATRIX_INDEX;
-extern AgsApplicationContext *ags_application_context;
+extern pthread_key_t application_context;
+AgsApplicationContext *ags_application_context =  pthread_getspecific(application_context);
 
 void
 ags_matrix_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsMatrix *matrix)
