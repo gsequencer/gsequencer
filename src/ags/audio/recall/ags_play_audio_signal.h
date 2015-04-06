@@ -47,7 +47,7 @@ struct _AgsPlayAudioSignalClass
 GType ags_play_audio_signal_get_type();
 
 AgsPlayAudioSignal* ags_play_audio_signal_new(AgsAudioSignal *source,
-					      AgsDevout *devout,
+					      GObject *soundcard,
 					      guint audio_channel);
 
 #endif /*__AGS_PLAY_AUDIO_SIGNAL__H__*/
