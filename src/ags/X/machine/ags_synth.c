@@ -19,12 +19,10 @@
 #include <ags/X/machine/ags_synth.h>
 #include <ags/X/machine/ags_synth_callbacks.h>
 
-#include <ags/main.h>
-
-#include <ags-lib/object/ags_connectable.h>
-
 #include <ags/util/ags_id_generator.h>
 
+#include <ags/object/ags_application_context.h>
+#include <ags-lib/object/ags_connectable.h>
 #include <ags/object/ags_plugin.h>
 
 #include <ags/file/ags_file.h>
@@ -111,6 +109,7 @@ void ags_synth_update(AgsSynth *synth);
 static gpointer ags_synth_parent_class = NULL;
 
 static AgsConnectableInterface *ags_synth_parent_connectable_interface;
+extern AgsApplicationContext *ags_application_context;
 
 GType
 ags_synth_get_type(void)
@@ -450,7 +449,7 @@ ags_synth_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->ags_main,
+				   "application-context\0", ags_application_context,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
@@ -528,7 +527,7 @@ ags_synth_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->ags_main,
+				   "application-context\0", ags_application_context,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
@@ -576,6 +575,8 @@ ags_synth_update(AgsSynth *synth)
   AgsDevout *devout;
   AgsChannel *channel;
   AgsApplySynth *apply_synth;
+  AgsThread *main_loop, *current;
+  AgsTaskThread *task_thread;
   GList *input_pad, *input_pad_start;
   GList *input_line, *input_line_start;
   guint wave;
@@ -583,6 +584,21 @@ ags_synth_update(AgsSynth *synth)
   guint frequency, phase, start;
   guint loop_start, loop_end;
   gdouble volume;
+
+  main_loop = ags_application_context->main_loop;
+  task_thread = NULL;
+
+  current = main_loop->children;
+
+  while(current != NULL){
+    if(AGS_IS_TASK_THREAD(current)){
+      task_thread = (AgsTaskThread *) current;
+
+      break;
+    }
+
+    current = current->next;
+  }
 
   devout = AGS_DEVOUT(AGS_MACHINE(synth)->audio->devout);
 
@@ -614,7 +630,7 @@ ags_synth_update(AgsSynth *synth)
 				      volume,
 				      loop_start, loop_end);
 
-    ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop)->task_thread),
+    ags_task_thread_append_task(task_thread,
 				AGS_TASK(apply_synth));
 
     channel = channel->next;
@@ -646,7 +662,7 @@ ags_synth_update(AgsSynth *synth)
 				      volume,
 				      loop_start, loop_end);
 
-    ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop)->task_thread),
+    ags_task_thread_append_task(task_thread,
 				AGS_TASK(apply_synth));
 
     input_pad = input_pad->next;

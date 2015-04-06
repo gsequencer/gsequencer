@@ -19,15 +19,15 @@
 #include <ags/X/ags_line_member.h>
 #include <ags/X/ags_line_member_callbacks.h>
 
-#include <ags/main.h>
-
+#include <ags/object/ags_application_context.h>
 #include <ags-lib/object/ags_connectable.h>
 
 #include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_task_thread.h>
 
-#include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_devout.h>
+#include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_channel.h>
 
 #include <ags/widget/ags_dial.h>
 
@@ -87,6 +87,8 @@ enum{
 
 static gpointer ags_line_member_parent_class = NULL;
 static guint line_member_signals[LAST_SIGNAL];
+
+extern AgsApplicationContext *ags_application_context;
 
 GType
 ags_line_member_get_type(void)
@@ -764,14 +766,28 @@ ags_line_member_real_change_port(AgsLineMember *line_member,
 
   if((AGS_LINE_MEMBER_RESET_BY_TASK & (line_member->flags)) != 0){
     AgsLine *line;
+    AgsThread *main_loop, *current;
     AgsTaskThread *task_thread;
     AgsTask *task;
 
     //TODO:JK: add support for effect_line
     line = (AgsLine *) gtk_widget_get_ancestor(GTK_WIDGET(line_member),
 					       AGS_TYPE_LINE);
-    
-    task_thread = AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(AGS_AUDIO(line->channel->audio)->devout)->ags_main)->main_loop)->task_thread);
+
+    main_loop = ags_application_context->main_loop;
+    task_thread = NULL;
+
+    current = main_loop->children;
+
+    while(current != NULL){
+      if(AGS_IS_TASK_THREAD(current)){
+	task_thread = (AgsTaskThread *) current;
+
+	break;
+      }
+
+      current = current->next;
+    }
 
     task = (AgsTask *) g_object_new(line_member->task_type,
 				    line_member->control_port, port_data,

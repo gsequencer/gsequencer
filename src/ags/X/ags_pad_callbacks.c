@@ -18,7 +18,7 @@
 
 #include <ags/X/ags_pad_callbacks.h>
 
-#include <ags/main.h>
+#include <ags/object/ags_application_context.h>
 
 #include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_task_thread.h>
@@ -31,6 +31,8 @@
 #include <ags/audio/task/recall/ags_set_muted.h>
 
 #include <ags/X/ags_machine.h>
+
+extern AgsApplicationContext *ags_application_context;
 
 int
 ags_pad_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsPad *pad)
@@ -110,14 +112,28 @@ ags_pad_mute_clicked_callback(GtkWidget *widget, AgsPad *pad)
 {
   AgsMachine *machine;
   GtkContainer *container;
+  AgsThread *main_loop, *current;
   AgsTaskThread *task_thread;
-  AgsChannel *current;
+  AgsChannel *channel;
   AgsSetMuted *set_muted;
   GList *list, *list_start, *tasks;
 
-  task_thread = AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(AGS_AUDIO(pad->channel->audio)->devout)->ags_main)->main_loop)->task_thread);
+  task_thread = NULL;
 
-  current = pad->channel;
+  main_loop = ags_application_context->main_loop;
+  current = main_loop->children;
+
+  while(current != NULL){
+    if(AGS_IS_TASK_THREAD(current)){
+      task_thread = (AgsTaskThread *) current;
+
+      break;
+    }
+
+    current = current->next;
+  }
+  
+  channel = pad->channel;
   tasks = NULL;
 
   if(gtk_toggle_button_get_active(pad->mute)){
@@ -125,12 +141,12 @@ ags_pad_mute_clicked_callback(GtkWidget *widget, AgsPad *pad)
       gtk_toggle_button_set_active(pad->solo, FALSE);
 
     /* mute */
-    while(current != pad->channel->next_pad){
-      set_muted = ags_set_muted_new(G_OBJECT(current),
+    while(channel != pad->channel->next_pad){
+      set_muted = ags_set_muted_new(G_OBJECT(channel),
 				    TRUE);
       tasks = g_list_prepend(tasks, set_muted);
 
-      current = current->next;
+      channel = channel->next;
     }
   }else{
     machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) pad, AGS_TYPE_MACHINE);
@@ -151,12 +167,12 @@ ags_pad_mute_clicked_callback(GtkWidget *widget, AgsPad *pad)
     }
 
     /* unmute */
-    while(current != pad->channel->next_pad){
-      set_muted = ags_set_muted_new(G_OBJECT(current),
+    while(channel != pad->channel->next_pad){
+      set_muted = ags_set_muted_new(G_OBJECT(channel),
 				    FALSE);
       tasks = g_list_prepend(tasks, set_muted);
 
-      current = current->next;
+      channel = channel->next;
     }
   }
 

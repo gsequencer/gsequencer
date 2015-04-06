@@ -18,12 +18,12 @@
 
 #include <ags/X/machine/ags_matrix_callbacks.h>
 
-#include <ags/main.h>
-
 #include <ags/widget/ags_led.h>
 
 #include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_task_thread.h>
+
+#include <ags/object/ags_application_context.h>
 
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recycling.h>
@@ -54,6 +54,7 @@ void ags_matrix_refresh_gui_callback(AgsTogglePatternBit *toggle_pattern_bit,
 				     AgsMatrix *matrix);
 
 extern const char *AGS_MATRIX_INDEX;
+extern AgsApplicationContext *ags_application_context;
 
 void
 ags_matrix_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsMatrix *matrix)
@@ -131,9 +132,26 @@ gboolean
 ags_matrix_drawing_area_button_press_callback(GtkWidget *widget, GdkEventButton *event, AgsMatrix *matrix)
 {
   if (event->button == 1){
-    AgsTogglePatternBit *toggle_pattern_bit;
     AgsChannel *channel;
+    AgsTogglePatternBit *toggle_pattern_bit;
+    AgsThread *main_loop, *current;
+    AgsTaskThread *task_thread;
     guint i, j;
+
+    main_loop = ags_application_context->main_loop;
+    task_thread = NULL;
+
+    current = main_loop->children;
+
+    while(current != NULL){
+      if(AGS_IS_TASK_THREAD(current)){
+	task_thread = (AgsTaskThread *) current;
+
+	break;
+      }
+
+      current = current->next;
+    }
 
     i = (guint) floor((double) event->y / (double) AGS_MATRIX_CELL_HEIGHT);
     j = (guint) floor((double) event->x / (double) AGS_MATRIX_CELL_WIDTH);
@@ -147,7 +165,7 @@ ags_matrix_drawing_area_button_press_callback(GtkWidget *widget, GdkEventButton 
     g_signal_connect(G_OBJECT(toggle_pattern_bit), "refresh-gui\0",
 		     G_CALLBACK(ags_matrix_refresh_gui_callback), matrix);
 
-    ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(AGS_MACHINE(matrix)->audio->devout)->ags_main)->main_loop)->task_thread),
+    ags_task_thread_append_task(task_thread,
 				AGS_TASK(toggle_pattern_bit));
   }else if (event->button == 3){
   }
@@ -166,7 +184,24 @@ ags_matrix_length_spin_callback(GtkWidget *spin_button, AgsMatrix *matrix)
 {
   AgsWindow *window;
   AgsApplySequencerLength *apply_sequencer_length;
+  AgsThread *main_loop, *current;
+  AgsTaskThread *task_thread;
   gdouble length;
+
+  main_loop = ags_application_context->main_loop;
+  task_thread = NULL;
+
+  current = main_loop->children;
+
+  while(current != NULL){
+    if(AGS_IS_TASK_THREAD(current)){
+      task_thread = (AgsTaskThread *) current;
+
+      break;
+    }
+
+    current = current->next;
+  }
 
   window = (AgsWindow *) gtk_widget_get_toplevel(GTK_WIDGET(matrix));
 
@@ -175,7 +210,7 @@ ags_matrix_length_spin_callback(GtkWidget *spin_button, AgsMatrix *matrix)
   apply_sequencer_length = ags_apply_sequencer_length_new(G_OBJECT(AGS_MACHINE(matrix)->audio),
 							  length);
 
-  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->task_thread),
+  ags_task_thread_append_task(task_thread,
 			      AGS_TASK(apply_sequencer_length));
 }
 
@@ -233,11 +268,28 @@ ags_matrix_tact_callback(AgsAudio *audio,
   AgsCountBeatsAudio *play_count_beats_audio;
   AgsCountBeatsAudioRun *play_count_beats_audio_run;
   AgsToggleLed *toggle_led;
+  AgsThread *main_loop, *current;
+  AgsTaskThread *task_thread;
   GList *list;
   guint counter, active_led;
   gdouble active_led_old, active_led_new;
   GValue value = {0,};
-  
+
+  main_loop = ags_application_context->main_loop;
+  task_thread = NULL;
+
+  current = main_loop->children;
+
+  while(current != NULL){
+    if(AGS_IS_TASK_THREAD(current)){
+      task_thread = (AgsTaskThread *) current;
+
+      break;
+    }
+
+    current = current->next;
+  }
+
   window = AGS_WINDOW(gtk_widget_get_ancestor((GtkWidget *) matrix, AGS_TYPE_WINDOW));
 
   /* get some recalls */
@@ -275,7 +327,7 @@ ags_matrix_tact_callback(AgsAudio *audio,
 				  (guint) active_led_new,
 				  (guint) active_led_old);
 
-  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->task_thread),
+  ags_task_thread_append_task(task_thread,
 			      AGS_TASK(toggle_led));
 }
 

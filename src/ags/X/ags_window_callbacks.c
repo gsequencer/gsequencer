@@ -18,11 +18,16 @@
 
 #include <ags/X/ags_window_callbacks.h>
 
+#include <ags/object/ags_application_context.h>
+
 #include <ags/file/ags_file.h>
 
-#include <ags/main.h>
+#include <ags/thread/ags_audio_loop.h>
+#include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/task/ags_save_file.h>
+
+extern AgsApplicationContext *ags_application_context;
 
 gboolean
 ags_window_delete_event_callback(GtkWidget *widget, gpointer data)
@@ -50,24 +55,41 @@ ags_window_delete_event_callback(GtkWidget *widget, gpointer data)
   if(response == GTK_RESPONSE_YES){
     AgsFile *file;
     AgsSaveFile *save_file;
+    AgsThread *main_loop, *current;
+    AgsTaskThread *task_thread;
     char *filename;
+
+    task_thread = NULL;
+
+    main_loop = ags_application_context->main_loop;
+    current = main_loop->children;
+
+    while(current != NULL){
+      if(AGS_IS_TASK_THREAD(current)){
+	task_thread = (AgsTaskThread *) current;
+
+	break;
+      }
+
+      current = current->next;
+    }
 
     filename = window->name;
 
     file = (AgsFile *) g_object_new(AGS_TYPE_FILE,
-				    "main\0", window->ags_main,
+				    "application-context\0", ags_application_context,
 				    "filename\0", g_strdup(filename),
 				    NULL);
 
     save_file = ags_save_file_new(file);
-    ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->task_thread),
+    ags_task_thread_append_task(task_thread,
 				AGS_TASK(save_file));
 
     g_object_unref(G_OBJECT(file));
   }
 
   if(response != GTK_RESPONSE_CANCEL){
-    ags_main_quit(AGS_MAIN(window->ags_main));
+    ags_main_quit(ags_application_context);
   }else{
     gtk_widget_destroy(GTK_WIDGET(dialog));
   }
