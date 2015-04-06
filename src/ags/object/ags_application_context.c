@@ -62,9 +62,6 @@ enum{
 static gpointer ags_application_context_parent_class = NULL;
 static guint application_context_signals[LAST_SIGNAL];
 
-AgsApplicationContext *ags_application_context = NULL;
-extern AgsConfig *ags_config;
-
 GType
 ags_application_context_get_type()
 {
@@ -108,10 +105,10 @@ ags_application_context_class_init(AgsApplicationContextClass *application_conte
   GObjectClass *gobject;
   GParamSpec *param_spec;
 
-  ags_application_context_parent_class = g_type_class_peek_parent(ags_application_context);
+  ags_application_context_parent_class = g_type_class_peek_parent(application_context);
 
   /* GObjectClass */
-  gobject = (GObjectClass *) ags_application_context;
+  gobject = (GObjectClass *) application_context;
 
   gobject->set_property = ags_application_context_set_property;
   gobject->get_property = ags_application_context_get_property;
@@ -133,6 +130,22 @@ ags_application_context_class_init(AgsApplicationContextClass *application_conte
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_MAIN_LOOP,
+				  param_spec);
+
+  /**
+   * AgsApplicationContext:config:
+   *
+   * The assigned config.
+   * 
+   * Since: 0.4
+   */
+  param_spec = g_param_spec_object("config\0",
+				   "config of application context\0",
+				   "The config what application context is running in\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_CONFIG,
 				  param_spec);
 
   /* AgsApplicationContextClass */
@@ -185,10 +198,10 @@ ags_application_context_init(AgsApplicationContext *application_context)
 {
   GFile *file;
   struct passwd *pw;
-  uid_t uid;
-  gchar *wdir, *filename;
+  //  uid_t uid;
+  //  gchar *wdir, *filename;
   pthread_mutexattr_t mutexattr;
-    
+  /*
   uid = getuid();
   pw = getpwuid(uid);
   
@@ -201,7 +214,7 @@ ags_application_context_init(AgsApplicationContext *application_context)
   g_file_make_directory(file,
 			NULL,
 			NULL);
-
+  */
   application_context->flags = 0;
 
   application_context->version = AGS_VERSION;
@@ -448,18 +461,7 @@ ags_application_context_find_main_loop(GList *application_context)
 }
 
 AgsApplicationContext*
-ags_application_context_get_instance()
-{
-  if(ags_application_context == NULL){
-    ags_application_context = ags_application_context_new(NULL,
-							  ags_config);
-  }
-  
-  return(ags_application_context);
-}
-
-AgsApplicationContext*
-ags_application_context_new(AgsMainLoop *main_loop,
+ags_application_context_new(GObject *main_loop,
 			    AgsConfig *config)
 {
   AgsApplicationContext *application_context;

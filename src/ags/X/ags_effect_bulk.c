@@ -126,7 +126,8 @@ enum{
 static gpointer ags_effect_bulk_parent_class = NULL;
 static guint effect_bulk_signals[LAST_SIGNAL];
 
-extern AgsApplicationContext *ags_application_context;
+extern pthread_key_t application_context;
+AgsApplicationContext *ags_application_context =  pthread_getspecific(application_context);
 
 GType
 ags_effect_bulk_get_type(void)

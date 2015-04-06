@@ -22,6 +22,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
-void ags_audio_init_context(int *argc, gchar ***argv);
+#include <ags/object/ags_application_context.h>
+
+void ags_audio_init_context(AgsApplicationContext *application_context);
 
 #endif /*__AGS_AUDIO_INIT_H__*/

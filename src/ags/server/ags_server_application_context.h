@@ -73,7 +73,7 @@ struct _AgsServerApplicationContextClass
 
 GType ags_server_application_context_get_type();
 
-AgsServerApplicationContext* ags_server_application_context_new(AgsMainLoop *main_loop,
+AgsServerApplicationContext* ags_server_application_context_new(GObject *main_loop,
 								AgsConfig *config);
 
 #endif /*__AGS_SERVER_APPLICATION_CONTEXT_H__*/

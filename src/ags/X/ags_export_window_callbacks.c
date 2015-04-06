@@ -37,7 +37,8 @@
 void ags_export_window_stop_callback(AgsThread *thread,
 				     AgsExportWindow *export_window);
 
-extern AgsApplicationContext *ags_application_context;
+extern pthread_key_t application_context;
+AgsApplicationContext *ags_application_context =  pthread_getspecific(application_context);
 extern AgsXorgApplicationContext *ags_xorg_application_context;
 
 void

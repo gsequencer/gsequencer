@@ -75,7 +75,8 @@ void ags_play_notation_audio_run_write_resolve_dependency(AgsFileLookup *file_lo
 void ags_play_notation_audio_run_read_resolve_dependency(AgsFileLookup *file_lookup,
 						       GObject *recall);
 
-extern AgsConfig *ags_config;
+extern pthread_key_t config;
+AgsConfig *ags_config =  pthread_getspecific(config);
 
 /**
  * SECTION:ags_play_notation_audio_run

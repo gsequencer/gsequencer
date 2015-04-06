@@ -51,7 +51,8 @@
 void ags_menu_bar_open_ok_callback(GtkWidget *widget, AgsMenuBar *menu_bar);
 void ags_menu_bar_open_cancel_callback(GtkWidget *widget, AgsMenuBar *menu_bar);
 
-extern AgsApplicationContext *ags_application_context;
+extern pthread_key_t application_context;
+AgsApplicationContext *ags_application_context =  pthread_getspecific(application_context);
 
 gboolean
 ags_menu_bar_destroy_callback(GtkObject *object, AgsMenuBar *menu_bar)

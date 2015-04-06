@@ -66,7 +66,8 @@ void ags_synth_input_pad_resize_lines(AgsPad *pad, GType line_type,
 static gpointer ags_synth_input_pad_parent_class = NULL;
 static AgsConnectableInterface *ags_synth_input_pad_parent_connectable_interface;
 
-extern AgsApplicationContext *ags_application_context;
+extern pthread_key_t application_context;
+AgsApplicationContext *ags_application_context =  pthread_getspecific(application_context);
 
 GType
 ags_synth_input_pad_get_type()

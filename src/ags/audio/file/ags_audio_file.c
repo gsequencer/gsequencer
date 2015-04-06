@@ -21,6 +21,7 @@
 #include <ags/object/ags_config.h>
 #include <ags-lib/object/ags_connectable.h>
 #include <ags/object/ags_playable.h>
+#include <ags/object/ags_soundcard.h>
 
 #include <ags/audio/ags_audio_signal.h>
 
@@ -38,8 +39,6 @@ void ags_audio_file_init(AgsAudioFile *audio_file);
 void ags_audio_file_connect(AgsConnectable *connectable);
 void ags_audio_file_disconnect(AgsConnectable *connectable);
 void ags_audio_file_finalize(GObject *object);
-
-extern AgsConfig *ags_config;
 
 enum{
   READ_BUFFER,
@@ -120,15 +119,11 @@ ags_audio_file_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_audio_file_init(AgsAudioFile *audio_file)
 {
-  audio_file->devout = NULL;
+  audio_file->soundcard = NULL;
 
   audio_file->name = NULL;
 
-  audio_file->samplerate = g_ascii_strtoull(ags_config_get_value(ags_config,
-							   AGS_CONFIG_DEVOUT,
-							   "samplerate\0"),
-					    NULL,
-					    10);
+  audio_file->samplerate = AGS_DEVOUT_DEFAULT_SAMPLERATE;
   audio_file->frames = 0;
   audio_file->channels = 2;
   audio_file->format = SF_FORMAT_WAV | SF_FORMAT_PCM_16;
@@ -363,7 +358,7 @@ ags_audio_file_read_audio_signal(AgsAudioFile *audio_file)
   GList *list;
 
   list = ags_playable_read_audio_signal(AGS_PLAYABLE(audio_file->file),
-					audio_file->devout,
+					audio_file->soundcard,
 					audio_file->start_channel, audio_file->audio_channels);
 
   audio_file->audio_signal = list;
@@ -421,7 +416,7 @@ ags_audio_file_flush(AgsAudioFile *audio_file)
 /**
  * ags_audio_file_new:
  * @name: the filename
- * @devout: defaults of #AgsDevout
+ * @soundcard: defaults of #AgsSoundcard
  * @start_channel: ommited channels
  * @audio_channels: number of channels to read
  *
@@ -433,7 +428,7 @@ ags_audio_file_flush(AgsAudioFile *audio_file)
  */
 AgsAudioFile*
 ags_audio_file_new(gchar *name,
-		   AgsDevout *devout,
+		   GObject *soundcard,
 		   guint start_channel, guint audio_channels)
 {
   AgsAudioFile *audio_file;
@@ -441,7 +436,7 @@ ags_audio_file_new(gchar *name,
   audio_file = (AgsAudioFile *) g_object_new(AGS_TYPE_AUDIO_FILE, NULL);
 
   audio_file->name = g_strdup(name);
-  audio_file->devout = devout;
+  audio_file->soundcard = soundcard;
   audio_file->start_channel = start_channel;
   audio_file->audio_channels = audio_channels;
 

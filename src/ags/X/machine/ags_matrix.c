@@ -115,7 +115,8 @@ GtkStyle *matrix_style;
 
 extern const char *AGS_COPY_PATTERN;
 const char *AGS_MATRIX_INDEX = "AgsMatrixIndex\0";
-extern AgsApplicationContext *ags_application_context;
+extern pthread_key_t application_context;
+AgsApplicationContext *ags_application_context =  pthread_getspecific(application_context);
 
 GType
 ags_matrix_get_type(void)

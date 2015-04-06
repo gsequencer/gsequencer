@@ -83,7 +83,8 @@ static gpointer ags_mixer_parent_class = NULL;
 static AgsConnectableInterface *ags_mixer_parent_connectable_interface;
 
 extern const char *AGS_MIX_VOLUME;
-extern AgsApplicationContext *ags_application_context;
+extern pthread_key_t application_context;
+AgsApplicationContext *ags_application_context =  pthread_getspecific(application_context);
 
 GType
 ags_mixer_get_type(void)

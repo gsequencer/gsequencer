@@ -25,12 +25,12 @@
 #include <ags/object/ags_application_context.h>
 #include <ags-lib/object/ags_connectable.h>
 #include <ags/object/ags_plugin.h>
+#include <ags/object/ags_soundcard.h>
 
 #include <ags/file/ags_file.h>
 #include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>
 
-#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_port.h>
 
 #include <dlfcn.h>
@@ -255,7 +255,7 @@ ags_recall_ladspa_set_property(GObject *gobject,
   switch(prop_id){
   case PROP_FILENAME:
     {
-      AgsDevout *devout;
+      GObject *soundcard;
       gchar *filename;
 
       filename = g_value_get_string(value);
@@ -776,17 +776,17 @@ ags_recall_ladspa_new(AgsChannel *source,
 		      gchar *effect,
 		      unsigned long index)
 {
-  AgsDevout *devout;
+  GObject *soundcard;
   AgsRecallLadspa *recall_ladspa;
 
   if(source != NULL){
-    devout = AGS_AUDIO(source->audio)->devout;
+    soundcard = AGS_AUDIO(source->audio)->soundcard;
   }else{
-    devout = NULL;
+    soundcard = NULL;
   }
 
   recall_ladspa = (AgsRecallLadspa *) g_object_new(AGS_TYPE_RECALL_LADSPA,
-						   "devout\0", devout,
+						   "soundcard\0", soundcard,
 						   "source\0", source,
 						   "filename\0", filename,
 						   "effect\0", effect,
