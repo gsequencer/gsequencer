@@ -1,4 +1,4 @@
-%%%%%/* AGS - Advanced GTK Sequencer
+/* AGS - Advanced GTK Sequencer
  * Copyright (C) 2005-2011 Joël Krähemann
  *
  * This program is free software; you can redistribute it and/or modify

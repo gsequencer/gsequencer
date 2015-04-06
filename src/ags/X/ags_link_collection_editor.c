@@ -19,10 +19,8 @@
 #include <ags/X/ags_link_collection_editor.h>
 #include <ags/X/ags_link_collection_editor_callbacks.h>
 
-#include <ags/main.h>
-
+#include <ags/object/ags_application_context.h>
 #include <ags-lib/object/ags_connectable.h>
-
 #include <ags/object/ags_applicable.h>
 
 #include <ags/thread/ags_audio_loop.h>
@@ -74,6 +72,8 @@ enum{
 };
 
 static gpointer ags_link_collection_editor_parent_class = NULL;
+
+extern AgsApplicationContext *ags_application_context;
 
 GType
 ags_link_collection_editor_get_type(void)
@@ -403,6 +403,8 @@ ags_link_collection_editor_apply(AgsApplicable *applicable)
     AgsMachine *machine, *link_machine;
     AgsMachineEditor *machine_editor;
     AgsChannel *channel, *link;
+    AgsThread *main_loop, *current;
+    AgsTaskThread *task_thread;
     AgsLinkChannel *link_channel;
     GtkTreeModel *model;
     GList *task;
@@ -416,11 +418,27 @@ ags_link_collection_editor_apply(AgsApplicable *applicable)
 
     first_line = (guint) gtk_spin_button_get_value_as_int(link_collection_editor->first_line);
 
-    if(link_collection_editor->channel_type == AGS_TYPE_INPUT)
+    if(link_collection_editor->channel_type == AGS_TYPE_INPUT){
       channel = ags_channel_nth(machine_editor->machine->audio->input, first_line);
-    else
+    }else{
       channel = ags_channel_nth(machine_editor->machine->audio->output, first_line);
+    }
+    
+    task_thread = NULL;
 
+    main_loop = ags_application_context->main_loop;
+    current = main_loop->children;
+
+    while(current != NULL){
+      if(AGS_IS_TASK_THREAD(current)){
+	task_thread = (AgsTaskThread *) current;
+
+	break;
+      }
+
+      current = current->next;
+    }
+    
     model = gtk_combo_box_get_model(link_collection_editor->link);
     gtk_tree_model_get(model,
 		       &iter,
@@ -444,8 +462,8 @@ ags_link_collection_editor_apply(AgsApplicable *applicable)
       
       /* append AgsLinkChannel */
       task = g_list_reverse(task);
-      ags_task_thread_append_tasks(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(machine->audio->devout)->ags_main)->main_loop)->task_thread),
-				  task);
+      ags_task_thread_append_tasks(task_thread,
+				   task);
     }else{
       guint first_link;
 
@@ -468,8 +486,8 @@ ags_link_collection_editor_apply(AgsApplicable *applicable)
 
 
       task = g_list_reverse(task);
-      ags_task_thread_append_tasks(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(machine->audio->devout)->ags_main)->main_loop)->task_thread),
-				  task);
+      ags_task_thread_append_tasks(task_thread,
+				   task);
     }
   }
 }

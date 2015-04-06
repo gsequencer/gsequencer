@@ -18,8 +18,7 @@
 
 #include <ags/X/ags_resize_editor.h>
 
-#include <ags/main.h>
-
+#include <ags/object/ags_application_context.h>
 #include <ags-lib/object/ags_connectable.h>
 
 #include <ags/object/ags_applicable.h>
@@ -59,6 +58,8 @@ void ags_resize_editor_show(GtkWidget *widget);
  */
 
 AgsConnectableInterface *ags_resize_editor_parent_connectable_interface;
+
+extern AgsApplicationContext *ags_application_context;
 
 GType
 ags_resize_editor_get_type(void)
@@ -258,6 +259,8 @@ ags_resize_editor_apply(AgsApplicable *applicable)
   AgsResizeEditor *resize_editor;
   AgsAudio *audio;
   AgsResizeAudio *resize_audio;
+  AgsThread *main_loop, *current;
+  AgsTaskThread *task_thread;
 
   resize_editor = AGS_RESIZE_EDITOR(applicable);
 
@@ -269,6 +272,21 @@ ags_resize_editor_apply(AgsApplicable *applicable)
 
   audio = machine_editor->machine->audio;
 
+  task_thread = NULL;
+
+  main_loop = ags_application_context->main_loop;
+  current = main_loop->children;
+
+  while(current != NULL){
+    if(AGS_IS_TASK_THREAD(current)){
+      task_thread = (AgsTaskThread *) current;
+
+      break;
+    }
+
+    current = current->next;
+  }
+
   /* create task */
   resize_audio = ags_resize_audio_new(audio,
 				      (guint) gtk_spin_button_get_value_as_int(resize_editor->output_pads),
@@ -276,7 +294,7 @@ ags_resize_editor_apply(AgsApplicable *applicable)
 				      (guint) gtk_spin_button_get_value_as_int(resize_editor->audio_channels));
       
   /* append AgsResizeAudio */
-  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(audio->devout)->ags_main)->main_loop)->task_thread),
+  ags_task_thread_append_task(task_thread,
 			      AGS_TASK(resize_audio));
 }
 
