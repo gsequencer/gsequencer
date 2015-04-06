@@ -19,10 +19,10 @@
 #include <ags/X/machine/ags_panel.h>
 #include <ags/X/machine/ags_panel_callbacks.h>
 
-#include <ags-lib/object/ags_connectable.h>
-
 #include <ags/util/ags_id_generator.h>
 
+#include <ags/object/ags_application_context.h>
+#include <ags-lib/object/ags_connectable.h>
 #include <ags/object/ags_plugin.h>
 
 #include <ags/file/ags_file.h>
@@ -89,6 +89,7 @@ static gpointer ags_panel_parent_class = NULL;
 static AgsConnectableInterface *ags_panel_parent_connectable_interface;
 
 extern const char *AGS_COPY_INPUT_TO_OUTPUT;
+extern AgsApplicationContext *ags_application_context;
 
 GType
 ags_panel_get_type(void)
@@ -303,7 +304,7 @@ ags_panel_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->ags_main,
+				   "application-context\0", ags_application_context,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
@@ -369,7 +370,7 @@ ags_panel_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->ags_main,
+				   "application-context\0", ags_application_context,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),

@@ -19,8 +19,7 @@
 #include <ags/X/ags_link_editor.h>
 #include <ags/X/ags_link_editor_callbacks.h>
 
-#include <ags/main.h>
-
+#include <ags/object/ags_application_context.h>
 #include <ags-lib/object/ags_connectable.h>
 
 #include <ags/object/ags_applicable.h>
@@ -61,6 +60,8 @@ void ags_link_editor_show(GtkWidget *widget);
  */
 
 static gpointer ags_link_editor_parent_class = NULL;
+
+extern AgsApplicationContext *ags_application_context;
 
 GType
 ags_link_editor_get_type(void)
@@ -216,6 +217,8 @@ ags_link_editor_apply(AgsApplicable *applicable)
     AgsMachine *link_machine;
     AgsLineEditor *line_editor;
     AgsChannel *channel, *link;
+    AgsThread *main_loop, *current;
+    AgsTaskThread *task_thread;
     AgsLinkChannel *link_channel;
     GtkTreeModel *model;
 
@@ -223,6 +226,21 @@ ags_link_editor_apply(AgsApplicable *applicable)
 							  AGS_TYPE_LINE_EDITOR));
 
     channel = line_editor->channel;
+    
+    task_thread = NULL;
+
+    main_loop = ags_application_context->main_loop;
+    current = main_loop->children;
+
+    while(current != NULL){
+      if(AGS_IS_TASK_THREAD(current)){
+	task_thread = (AgsTaskThread *) current;
+
+	break;
+      }
+
+      current = current->next;
+    }
 
     model = gtk_combo_box_get_model(link_editor->combo);
     gtk_tree_model_get(model,
@@ -235,7 +253,7 @@ ags_link_editor_apply(AgsApplicable *applicable)
       link_channel = ags_link_channel_new(channel, NULL);
       
       /* append AgsLinkChannel */
-      ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout)->ags_main)->main_loop)->task_thread),
+      ags_task_thread_append_task(task_thread,
 				  AGS_TASK(link_channel));
     }else{
       guint link_line;
@@ -253,7 +271,7 @@ ags_link_editor_apply(AgsApplicable *applicable)
       link_channel = ags_link_channel_new(channel, link);
       
       /* append AgsLinkChannel */
-      ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout)->ags_main)->main_loop)->task_thread),
+      ags_task_thread_append_task(task_thread,
 				  AGS_TASK(link_channel));
     }
   }

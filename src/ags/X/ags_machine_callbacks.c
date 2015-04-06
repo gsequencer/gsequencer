@@ -18,10 +18,8 @@
 
 #include <ags/X/ags_machine_callbacks.h>
 
-#include <ags/main.h>
-
+#include <ags/object/ags_application_context.h>
 #include <ags-lib/object/ags_connectable.h>
-
 #include <ags/object/ags_applicable.h>
 
 #include <ags/thread/ags_audio_loop.h>
@@ -35,10 +33,12 @@
 
 #include <ags/X/editor/ags_file_selection.h>
 
+#define AGS_RENAME_ENTRY "AgsRenameEntry\0"
+
 int ags_machine_popup_rename_response_callback(GtkWidget *widget, gint response, AgsMachine *machine);
 void ags_machine_start_failure_response(GtkWidget *dialog, AgsMachine *machine);
 
-#define AGS_RENAME_ENTRY "AgsRenameEntry"
+extern AgsApplicationContext *ags_application_context;
 
 int
 ags_machine_button_press_callback(GtkWidget *handle_box, GdkEventButton *event, AgsMachine *machine)
@@ -119,13 +119,30 @@ void
 ags_machine_popup_destroy_activate_callback(GtkWidget *widget, AgsMachine *machine)
 {
   AgsWindow *window;
+  AgsThread *main_loop, *current;
+  AgsTaskThread *task_thread;
   AgsRemoveAudio *remove_audio;
 
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
+  
+  task_thread = NULL;
+
+  main_loop = ags_application_context->main_loop;
+  current = main_loop->children;
+
+  while(current != NULL){
+    if(AGS_IS_TASK_THREAD(current)){
+      task_thread = (AgsTaskThread *) current;
+
+      break;
+    }
+
+    current = current->next;
+  }
 
   remove_audio = ags_remove_audio_new(window->devout,
 				      machine->audio);
-  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->task_thread),
+  ags_task_thread_append_task(task_thread,
 			      AGS_TASK(remove_audio));
 
   ags_connectable_disconnect(AGS_CONNECTABLE(machine));
@@ -449,7 +466,8 @@ ags_machine_start_failure_callback(AgsTask *task, GError *error,
   AgsAudioLoop *audio_loop;
 
   /* show error message */
-  window = AGS_MAIN(AGS_START_DEVOUT(task)->devout->ags_main)->window;
+  window = gtk_widget_get_ancestor(machine,
+				   AGS_TYPE_MACHINE);
   
   dialog = (GtkMessageDialog *) gtk_message_dialog_new(GTK_WINDOW(window),
 						       GTK_DIALOG_MODAL,

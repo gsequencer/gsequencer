@@ -19,13 +19,11 @@
 #include <ags/X/ags_preferences.h>
 #include <ags/X/ags_preferences_callbacks.h>
 
-#include <ags/main.h>
-
+#include <ags/object/ags_application_context.h>
+#include <ags/object/ags_config.h>
 #include <ags-lib/object/ags_connectable.h>
 
 #include <ags/object/ags_applicable.h>
-
-#include <ags/audio/ags_config.h>
 
 #include <ags/X/ags_window.h>
 
@@ -58,6 +56,9 @@ void ags_preferences_show(GtkWidget *widget);
  */
 
 static gpointer ags_preferences_parent_class = NULL;
+
+extern AgsApplicationContext *ags_application_context;
+extern AgsConfig *ags_config;
 
 GType
 ags_preferences_get_type(void)
@@ -233,7 +234,6 @@ void
 ags_preferences_apply(AgsApplicable *applicable)
 {
   AgsPreferences *preferences;
-  AgsConfig *config;
   AgsFile *file;
   struct passwd *pw;
   uid_t uid;
@@ -243,14 +243,12 @@ ags_preferences_apply(AgsApplicable *applicable)
 
   preferences = AGS_PREFERENCES(applicable);
 
-  config = AGS_CONFIG(AGS_MAIN(AGS_WINDOW(preferences->window)->ags_main)->config);
-
   ags_applicable_apply(AGS_APPLICABLE(preferences->generic_preferences));
   ags_applicable_apply(AGS_APPLICABLE(preferences->audio_preferences));
   ags_applicable_apply(AGS_APPLICABLE(preferences->performance_preferences));
   ags_applicable_apply(AGS_APPLICABLE(preferences->server_preferences));
 
-  ags_config_save(config);
+  ags_config_save(ags_config);
 
   uid = getuid();
   pw = getpwuid(uid);
@@ -261,7 +259,7 @@ ags_preferences_apply(AgsApplicable *applicable)
 			     AGS_PREFERENCES_DEFAULT_FILENAME);
     
   file = (AgsFile *) g_object_new(AGS_TYPE_FILE,
-				  "main\0", AGS_MAIN(AGS_WINDOW(preferences->window)->ags_main),
+				  "application-context\0", ags_application_context,
 				  "filename\0", filename,
 				  NULL);
   ags_file_write_concurrent(file);
@@ -273,7 +271,7 @@ ags_preferences_apply(AgsApplicable *applicable)
 					     filename),
 			     &error);
 
-  ags_main_quit(AGS_MAIN(AGS_WINDOW(preferences->window)->ags_main));
+  ags_main_quit(ags_application_context);
 }
 
 void
