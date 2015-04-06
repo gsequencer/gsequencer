@@ -362,19 +362,19 @@ ags_config_set_build_id(AgsConfig *config, gchar *build_id)
 void
 ags_config_real_load_defaults(AgsConfig *config)
 {
-  ags_config_set(config, AGS_CONFIG_GENERIC, "autosave-thread\0", "false\0");
+  ags_config_set_value(config, AGS_CONFIG_GENERIC, "autosave-thread\0", "false\0");
 
-  ags_config_set(config, AGS_CONFIG_THREAD, "model\0", "multi-threaded\0");
-  ags_config_set(config, AGS_CONFIG_THREAD, "lock-global\0", "ags-thread\0");
-  ags_config_set(config, AGS_CONFIG_THREAD, "lock-parent\0", "ags-recycling-thread\0");
+  ags_config_set_value(config, AGS_CONFIG_THREAD, "model\0", "multi-threaded\0");
+  ags_config_set_value(config, AGS_CONFIG_THREAD, "lock-global\0", "ags-thread\0");
+  ags_config_set_value(config, AGS_CONFIG_THREAD, "lock-parent\0", "ags-recycling-thread\0");
 
-  ags_config_set(config, AGS_CONFIG_DEVOUT, "samplerate\0", "44100\0");
-  ags_config_set(config, AGS_CONFIG_DEVOUT, "buffer-size\0", "940\0");
-  ags_config_set(config, AGS_CONFIG_DEVOUT, "pcm-channels\0", "2\0");
-  ags_config_set(config, AGS_CONFIG_DEVOUT, "dsp-channels\0", "2\0");
-  ags_config_set(config, AGS_CONFIG_DEVOUT, "alsa-handle\0", "hw:0,0\0");
+  ags_config_set_value(config, AGS_CONFIG_DEVOUT, "samplerate\0", "44100\0");
+  ags_config_set_value(config, AGS_CONFIG_DEVOUT, "buffer-size\0", "940\0");
+  ags_config_set_value(config, AGS_CONFIG_DEVOUT, "pcm-channels\0", "2\0");
+  ags_config_set_value(config, AGS_CONFIG_DEVOUT, "dsp-channels\0", "2\0");
+  ags_config_set_value(config, AGS_CONFIG_DEVOUT, "alsa-handle\0", "hw:0,0\0");
 
-  ags_config_set(config, AGS_CONFIG_RECALL, "auto-sense\0", "true\0");
+  ags_config_set_value(config, AGS_CONFIG_RECALL, "auto-sense\0", "true\0");
 }
 
 /**
@@ -451,7 +451,7 @@ ags_config_load_from_file(AgsConfig *config, gchar *filename)
 				     *keys,
 				     NULL);
 
-	ags_config_set(config,
+	ags_config_set_value(config,
 		       *groups,
 		       *keys,
 		       value);
@@ -541,7 +541,7 @@ ags_config_real_set_value(AgsConfig *config, gchar *group, gchar *key, gchar *va
 }
 
 /**
- * ags_config_set:
+ * ags_config_set_value:
  * @config: the #AgsConfig
  * @group: the config group identifier
  * @key: the key of the property
@@ -583,7 +583,7 @@ ags_config_real_get_value(AgsConfig *config, gchar *group, gchar *key)
 }
 
 /**
- * ags_config_get:
+ * ags_config_get_value:
  * @config: the #AgsConfig
  * @group: the config group identifier
  * @key: the key of the property
