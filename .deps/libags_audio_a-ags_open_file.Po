@@ -554,42 +554,13 @@ libags_audio_a-ags_open_file.o: src/ags/audio/task/ags_open_file.c \
  /usr/include/libxml2/libxml/xlink.h /usr/include/libxml2/libxml/SAX2.h \
  src/ags/thread/ags_timestamp_thread.h src/ags/thread/ags_thread-posix.h \
  src/ags/audio/ags_timestamp.h src/ags/audio/ags_note.h \
- src/ags-lib/object/ags_connectable.h src/ags/file/ags_file_link.h \
- src/ags/audio/ags_devout.h /usr/include/alsa/asoundlib.h \
- /usr/include/string.h /usr/include/bits/string.h \
- /usr/include/bits/string2.h /usr/include/fcntl.h \
- /usr/include/bits/fcntl.h /usr/include/bits/fcntl-linux.h \
- /usr/include/bits/stat.h /usr/include/assert.h /usr/include/sys/poll.h \
- /usr/include/bits/poll.h /usr/include/errno.h /usr/include/bits/errno.h \
- /usr/include/linux/errno.h /usr/include/asm/errno.h \
- /usr/include/asm-generic/errno.h /usr/include/asm-generic/errno-base.h \
- /usr/include/alsa/asoundef.h /usr/include/alsa/version.h \
- /usr/include/alsa/global.h /usr/include/alsa/input.h \
- /usr/include/alsa/output.h /usr/include/alsa/error.h \
- /usr/include/alsa/conf.h /usr/include/alsa/pcm.h \
- /usr/include/alsa/rawmidi.h /usr/include/alsa/timer.h \
- /usr/include/alsa/hwdep.h /usr/include/alsa/control.h \
- /usr/include/alsa/mixer.h /usr/include/alsa/seq_event.h \
- /usr/include/alsa/seq.h /usr/include/alsa/seqmid.h \
- /usr/include/alsa/seq_midi_event.h src/ags/thread/ags_audio_loop.h \
- /usr/include/math.h /usr/include/bits/huge_val.h \
- /usr/include/bits/huge_valf.h /usr/include/bits/huge_vall.h \
- /usr/include/bits/inf.h /usr/include/bits/nan.h \
- /usr/include/bits/mathdef.h /usr/include/bits/mathcalls.h \
- /usr/include/bits/mathinline.h src/ags/thread/ags_async_queue.h \
- /usr/include/linux/futex.h /usr/include/linux/types.h \
- /usr/include/asm/types.h /usr/include/asm-generic/types.h \
- /usr/include/asm-generic/int-ll64.h /usr/include/asm/bitsperlong.h \
- /usr/include/asm-generic/bitsperlong.h /usr/include/linux/posix_types.h \
- /usr/include/linux/stddef.h /usr/include/asm/posix_types.h \
- /usr/include/asm/posix_types_64.h /usr/include/asm-generic/posix_types.h \
- /usr/include/sys/time.h src/ags/object/ags_stackable.h \
- src/ags/thread/ags_task_thread.h src/ags/thread/ags_thread_pool.h \
- src/ags/object/ags_main_loop.h src/ags/thread/ags_devout_thread.h \
- src/ags/thread/ags_iterator_thread.h src/ags/audio/ags_input.h \
+ src/ags-lib/object/ags_connectable.h src/ags/object/ags_soundcard.h \
+ src/ags/object/ags_application_context.h src/ags/lib/ags_log.h \
+ src/ags/object/ags_config.h src/ags/file/ags_file.h \
+ src/ags/file/ags_file_link.h src/ags/audio/ags_input.h \
  /usr/include/glib-2.0/glib/gstdio.h /usr/include/glib-2.0/glib/gprintf.h \
- /usr/include/sys/stat.h src/ags/audio/file/ags_audio_file.h \
- src/ags/X/ags_machine.h
+ /usr/include/sys/stat.h /usr/include/bits/stat.h \
+ src/ags/audio/file/ags_audio_file.h src/ags/X/ags_machine.h
 
 /usr/include/stdc-predef.h:
 
@@ -1897,137 +1868,17 @@ src/ags/audio/ags_note.h:
 
 src/ags-lib/object/ags_connectable.h:
 
+src/ags/object/ags_soundcard.h:
+
+src/ags/object/ags_application_context.h:
+
+src/ags/lib/ags_log.h:
+
+src/ags/object/ags_config.h:
+
+src/ags/file/ags_file.h:
+
 src/ags/file/ags_file_link.h:
-
-src/ags/audio/ags_devout.h:
-
-/usr/include/alsa/asoundlib.h:
-
-/usr/include/string.h:
-
-/usr/include/bits/string.h:
-
-/usr/include/bits/string2.h:
-
-/usr/include/fcntl.h:
-
-/usr/include/bits/fcntl.h:
-
-/usr/include/bits/fcntl-linux.h:
-
-/usr/include/bits/stat.h:
-
-/usr/include/assert.h:
-
-/usr/include/sys/poll.h:
-
-/usr/include/bits/poll.h:
-
-/usr/include/errno.h:
-
-/usr/include/bits/errno.h:
-
-/usr/include/linux/errno.h:
-
-/usr/include/asm/errno.h:
-
-/usr/include/asm-generic/errno.h:
-
-/usr/include/asm-generic/errno-base.h:
-
-/usr/include/alsa/asoundef.h:
-
-/usr/include/alsa/version.h:
-
-/usr/include/alsa/global.h:
-
-/usr/include/alsa/input.h:
-
-/usr/include/alsa/output.h:
-
-/usr/include/alsa/error.h:
-
-/usr/include/alsa/conf.h:
-
-/usr/include/alsa/pcm.h:
-
-/usr/include/alsa/rawmidi.h:
-
-/usr/include/alsa/timer.h:
-
-/usr/include/alsa/hwdep.h:
-
-/usr/include/alsa/control.h:
-
-/usr/include/alsa/mixer.h:
-
-/usr/include/alsa/seq_event.h:
-
-/usr/include/alsa/seq.h:
-
-/usr/include/alsa/seqmid.h:
-
-/usr/include/alsa/seq_midi_event.h:
-
-src/ags/thread/ags_audio_loop.h:
-
-/usr/include/math.h:
-
-/usr/include/bits/huge_val.h:
-
-/usr/include/bits/huge_valf.h:
-
-/usr/include/bits/huge_vall.h:
-
-/usr/include/bits/inf.h:
-
-/usr/include/bits/nan.h:
-
-/usr/include/bits/mathdef.h:
-
-/usr/include/bits/mathcalls.h:
-
-/usr/include/bits/mathinline.h:
-
-src/ags/thread/ags_async_queue.h:
-
-/usr/include/linux/futex.h:
-
-/usr/include/linux/types.h:
-
-/usr/include/asm/types.h:
-
-/usr/include/asm-generic/types.h:
-
-/usr/include/asm-generic/int-ll64.h:
-
-/usr/include/asm/bitsperlong.h:
-
-/usr/include/asm-generic/bitsperlong.h:
-
-/usr/include/linux/posix_types.h:
-
-/usr/include/linux/stddef.h:
-
-/usr/include/asm/posix_types.h:
-
-/usr/include/asm/posix_types_64.h:
-
-/usr/include/asm-generic/posix_types.h:
-
-/usr/include/sys/time.h:
-
-src/ags/object/ags_stackable.h:
-
-src/ags/thread/ags_task_thread.h:
-
-src/ags/thread/ags_thread_pool.h:
-
-src/ags/object/ags_main_loop.h:
-
-src/ags/thread/ags_devout_thread.h:
-
-src/ags/thread/ags_iterator_thread.h:
 
 src/ags/audio/ags_input.h:
 
@@ -2036,6 +1887,8 @@ src/ags/audio/ags_input.h:
 /usr/include/glib-2.0/glib/gprintf.h:
 
 /usr/include/sys/stat.h:
+
+/usr/include/bits/stat.h:
 
 src/ags/audio/file/ags_audio_file.h:
 

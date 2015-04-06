@@ -594,7 +594,9 @@ libags_audio_a-ags_copy_notation_audio_run.o: \
  /usr/include/asm/posix_types_64.h /usr/include/asm-generic/posix_types.h \
  /usr/include/sys/time.h src/ags/object/ags_stackable.h \
  src/ags/thread/ags_task_thread.h src/ags/thread/ags_thread_pool.h \
- src/ags/object/ags_main_loop.h src/ags/audio/ags_task.h \
+ src/ags/object/ags_main_loop.h src/ags/object/ags_application_context.h \
+ src/ags/lib/ags_log.h src/ags/object/ags_config.h \
+ src/ags/file/ags_file.h src/ags/audio/ags_task.h \
  src/ags/thread/ags_devout_thread.h src/ags/thread/ags_iterator_thread.h
 
 /usr/include/stdc-predef.h:
@@ -2040,6 +2042,14 @@ src/ags/thread/ags_task_thread.h:
 src/ags/thread/ags_thread_pool.h:
 
 src/ags/object/ags_main_loop.h:
+
+src/ags/object/ags_application_context.h:
+
+src/ags/lib/ags_log.h:
+
+src/ags/object/ags_config.h:
+
+src/ags/file/ags_file.h:
 
 src/ags/audio/ags_task.h:
 

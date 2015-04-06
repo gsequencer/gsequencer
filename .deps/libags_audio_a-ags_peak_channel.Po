@@ -555,14 +555,13 @@ libags_audio_a-ags_peak_channel.o: \
  /usr/include/libxml2/libxml/xlink.h /usr/include/libxml2/libxml/SAX2.h \
  src/ags/thread/ags_timestamp_thread.h src/ags/thread/ags_thread-posix.h \
  src/ags/audio/ags_timestamp.h src/ags/audio/ags_note.h \
- src/ags/object/ags_config.h src/ags-lib/object/ags_connectable.h \
- src/ags/object/ags_mutable.h src/ags/audio/ags_devout.h \
- /usr/include/alsa/asoundlib.h /usr/include/string.h \
- /usr/include/bits/string.h /usr/include/bits/string2.h \
- /usr/include/fcntl.h /usr/include/bits/fcntl.h \
- /usr/include/bits/fcntl-linux.h /usr/include/bits/stat.h \
- /usr/include/assert.h /usr/include/sys/poll.h /usr/include/bits/poll.h \
- /usr/include/errno.h /usr/include/bits/errno.h \
+ src/ags-lib/object/ags_connectable.h src/ags/object/ags_mutable.h \
+ src/ags/audio/ags_devout.h /usr/include/alsa/asoundlib.h \
+ /usr/include/string.h /usr/include/bits/string.h \
+ /usr/include/bits/string2.h /usr/include/fcntl.h \
+ /usr/include/bits/fcntl.h /usr/include/bits/fcntl-linux.h \
+ /usr/include/bits/stat.h /usr/include/assert.h /usr/include/sys/poll.h \
+ /usr/include/bits/poll.h /usr/include/errno.h /usr/include/bits/errno.h \
  /usr/include/linux/errno.h /usr/include/asm/errno.h \
  /usr/include/asm-generic/errno.h /usr/include/asm-generic/errno-base.h \
  /usr/include/alsa/asoundef.h /usr/include/alsa/version.h \
@@ -587,9 +586,11 @@ libags_audio_a-ags_peak_channel.o: \
  /usr/include/asm/posix_types_64.h /usr/include/asm-generic/posix_types.h \
  /usr/include/sys/time.h src/ags/object/ags_stackable.h \
  src/ags/thread/ags_task_thread.h src/ags/thread/ags_thread_pool.h \
- src/ags/object/ags_main_loop.h src/ags/audio/ags_task.h \
+ src/ags/object/ags_main_loop.h src/ags/object/ags_application_context.h \
+ src/ags/lib/ags_log.h src/ags/object/ags_config.h \
+ src/ags/file/ags_file.h src/ags/audio/ags_task.h \
  src/ags/thread/ags_devout_thread.h src/ags/thread/ags_iterator_thread.h \
- src/ags/object/ags_plugin.h src/ags/file/ags_file.h
+ src/ags/object/ags_plugin.h src/ags/object/ags_soundcard.h
 
 /usr/include/stdc-predef.h:
 
@@ -1893,8 +1894,6 @@ src/ags/audio/ags_timestamp.h:
 
 src/ags/audio/ags_note.h:
 
-src/ags/object/ags_config.h:
-
 src/ags-lib/object/ags_connectable.h:
 
 src/ags/object/ags_mutable.h:
@@ -2025,6 +2024,14 @@ src/ags/thread/ags_thread_pool.h:
 
 src/ags/object/ags_main_loop.h:
 
+src/ags/object/ags_application_context.h:
+
+src/ags/lib/ags_log.h:
+
+src/ags/object/ags_config.h:
+
+src/ags/file/ags_file.h:
+
 src/ags/audio/ags_task.h:
 
 src/ags/thread/ags_devout_thread.h:
@@ -2033,4 +2040,4 @@ src/ags/thread/ags_iterator_thread.h:
 
 src/ags/object/ags_plugin.h:
 
-src/ags/file/ags_file.h:
+src/ags/object/ags_soundcard.h:

@@ -556,15 +556,7 @@ libags_audio_a-ags_play_audio.o: src/ags/audio/recall/ags_play_audio.c \
  src/ags/thread/ags_timestamp_thread.h src/ags/thread/ags_thread-posix.h \
  src/ags/audio/ags_timestamp.h src/ags/audio/ags_note.h src/ags/main.h \
  src/ags/object/ags_application_context.h src/ags/lib/ags_log.h \
- src/ags/object/ags_config.h src/ags/object/ags_main_loop.h \
- src/ags/thread/ags_async_queue.h /usr/include/linux/futex.h \
- /usr/include/linux/types.h /usr/include/asm/types.h \
- /usr/include/asm-generic/types.h /usr/include/asm-generic/int-ll64.h \
- /usr/include/asm/bitsperlong.h /usr/include/asm-generic/bitsperlong.h \
- /usr/include/linux/posix_types.h /usr/include/linux/stddef.h \
- /usr/include/asm/posix_types.h /usr/include/asm/posix_types_64.h \
- /usr/include/asm-generic/posix_types.h /usr/include/sys/time.h \
- src/ags/object/ags_stackable.h src/ags/file/ags_file.h
+ src/ags/object/ags_config.h src/ags/file/ags_file.h
 
 /usr/include/stdc-predef.h:
 
@@ -1877,37 +1869,5 @@ src/ags/object/ags_application_context.h:
 src/ags/lib/ags_log.h:
 
 src/ags/object/ags_config.h:
-
-src/ags/object/ags_main_loop.h:
-
-src/ags/thread/ags_async_queue.h:
-
-/usr/include/linux/futex.h:
-
-/usr/include/linux/types.h:
-
-/usr/include/asm/types.h:
-
-/usr/include/asm-generic/types.h:
-
-/usr/include/asm-generic/int-ll64.h:
-
-/usr/include/asm/bitsperlong.h:
-
-/usr/include/asm-generic/bitsperlong.h:
-
-/usr/include/linux/posix_types.h:
-
-/usr/include/linux/stddef.h:
-
-/usr/include/asm/posix_types.h:
-
-/usr/include/asm/posix_types_64.h:
-
-/usr/include/asm-generic/posix_types.h:
-
-/usr/include/sys/time.h:
-
-src/ags/object/ags_stackable.h:
 
 src/ags/file/ags_file.h:

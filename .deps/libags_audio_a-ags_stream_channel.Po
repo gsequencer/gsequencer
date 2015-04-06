@@ -555,8 +555,10 @@ libags_audio_a-ags_stream_channel.o: \
  /usr/include/libxml2/libxml/xlink.h /usr/include/libxml2/libxml/SAX2.h \
  src/ags/thread/ags_timestamp_thread.h src/ags/thread/ags_thread-posix.h \
  src/ags/audio/ags_timestamp.h src/ags/audio/ags_note.h \
- src/ags/object/ags_config.h src/ags-lib/object/ags_connectable.h \
- src/ags/object/ags_plugin.h src/ags/file/ags_file.h
+ src/ags/object/ags_application_context.h src/ags/lib/ags_log.h \
+ src/ags/object/ags_config.h src/ags/file/ags_file.h \
+ src/ags-lib/object/ags_connectable.h src/ags/object/ags_plugin.h \
+ src/ags/object/ags_soundcard.h
 
 /usr/include/stdc-predef.h:
 
@@ -1860,10 +1862,16 @@ src/ags/audio/ags_timestamp.h:
 
 src/ags/audio/ags_note.h:
 
+src/ags/object/ags_application_context.h:
+
+src/ags/lib/ags_log.h:
+
 src/ags/object/ags_config.h:
+
+src/ags/file/ags_file.h:
 
 src/ags-lib/object/ags_connectable.h:
 
 src/ags/object/ags_plugin.h:
 
-src/ags/file/ags_file.h:
+src/ags/object/ags_soundcard.h:

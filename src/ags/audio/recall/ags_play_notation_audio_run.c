@@ -21,11 +21,10 @@
 
 #include <ags/util/ags_id_generator.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_config.h>
 #include <ags-lib/object/ags_connectable.h>
 #include <ags/object/ags_dynamic_connectable.h>
 #include <ags/object/ags_plugin.h>
+#include <ags/object/ags_soundcard.h>
 
 #include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>
@@ -74,9 +73,6 @@ void ags_play_notation_audio_run_write_resolve_dependency(AgsFileLookup *file_lo
 							GObject *recall);
 void ags_play_notation_audio_run_read_resolve_dependency(AgsFileLookup *file_lookup,
 						       GObject *recall);
-
-extern pthread_key_t config;
-AgsConfig *ags_config =  pthread_getspecific(config);
 
 /**
  * SECTION:ags_play_notation_audio_run
@@ -630,13 +626,15 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 						 gdouble delay, guint attack,
 						 AgsPlayNotationAudioRun *play_notation_audio_run)
 {
-  AgsTimestampThread *timestamp_thread;
-  AgsDevout *devout;
   AgsAudio *audio;
   AgsChannel *selected_channel, *channel, *next_pad;
   AgsAudioSignal *audio_signal;
   AgsNotation *notation;
   AgsPlayNotationAudio *play_notation_audio;
+  AgsThread *main_loop;
+  AgsTimestampThread *timestamp_thread;
+  AgsApplicationContext *application_context;
+  AgsSoundcard *soundcard;
   GList *current_position;
   AgsNote *note;
   AgsRecycling *recycling;
@@ -650,18 +648,13 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
   play_notation_audio = AGS_PLAY_NOTATION_AUDIO(AGS_RECALL_AUDIO_RUN(play_notation_audio_run)->recall_audio);
 
   audio = AGS_RECALL_AUDIO(play_notation_audio)->audio;
-  devout = AGS_DEVOUT(audio->devout);
+  soundcard = AGS_SOUNDCARD(audio->soundcard);
 
-  buffer_size = g_ascii_strtoull(ags_config_get_value(ags_config,
-						AGS_CONFIG_DEVOUT,
-						"buffer-size\0"),
-				 NULL,
-				 10);
-  samplerate = g_ascii_strtoull(ags_config_get_value(ags_config,
-					       AGS_CONFIG_DEVOUT,
-					       "samplerate\0"),
-				NULL,
-				10);
+  ags_soundcard_get_presets(soundcard,
+			    NULL,
+			    &samplerate,
+			    &buffer_size,
+			    NULL);
 
   g_value_init(&value, G_TYPE_POINTER);
   ags_port_safe_read(play_notation_audio->notation,
@@ -683,7 +676,12 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 			      audio_channel);
   }
 
-  timestamp_thread = AGS_DEVOUT_THREAD(AGS_AUDIO_LOOP(AGS_APPLICATION_CONTEXT(devout->application_context)->main_loop)->devout_thread)->timestamp_thread;
+  application_context = ags_soundcard_get_application_context(soundcard);
+
+  main_loop = application_context->main_loop;
+  
+  timestamp_thread = ags_thread_find_type(main_loop,
+					  AGS_TYPE_TIMESTAMP_THREAD);
   
   //TODO:JK: make it advanced
   notation = AGS_NOTATION(g_list_nth(list, audio_channel)->data);//AGS_NOTATION(ags_notation_find_near_timestamp(list, audio_channel,
@@ -706,7 +704,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 	//#endif
 
 	while(recycling != selected_channel->last_recycling->next){
-	  audio_signal = ags_audio_signal_new((GObject *) audio->devout,
+	  audio_signal = ags_audio_signal_new((GObject *) audio->soundcard,
 					      (GObject *) recycling,
 					      (GObject *) AGS_RECALL(play_notation_audio_run)->recall_id);
 	  ags_recycling_create_audio_signal_with_frame_count(recycling,
