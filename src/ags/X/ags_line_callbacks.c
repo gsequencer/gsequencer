@@ -18,7 +18,7 @@
 
 #include <ags/X/ags_line_callbacks.h>
 
-#include <ags/main.h>
+#include <ags/object/ags_application_context.h>
 
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_recall.h>
@@ -39,6 +39,8 @@
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_pad.h>
 #include <ags/X/ags_line_member.h>
+
+extern AgsApplicationContext *ags_application_context;
 
 int
 ags_line_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsLine *line)
@@ -159,6 +161,7 @@ void
 ags_line_peak_run_post_callback(AgsRecall *peak_channel,
 				AgsLine *line)
 {
+  AgsThread *main_loop, *current;
   AgsTaskThread *task_thread;
   AgsChangeIndicator *change_indicator;
   AgsMachine *machine;
@@ -166,8 +169,22 @@ ags_line_peak_run_post_callback(AgsRecall *peak_channel,
 
   machine = (AgsMachine *) gtk_widget_get_ancestor(line,
 						   AGS_TYPE_MACHINE);
-  task_thread = AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(machine->audio->devout)->ags_main)->main_loop)->task_thread;
 
+  task_thread = NULL;
+  
+  main_loop = ags_application_context->main_loop;
+  current = main_loop->children;
+
+  while(current != NULL){
+    if(AGS_IS_TASK_THREAD(current)){
+      task_thread = current;
+    
+      break;
+    }
+
+    current = current->next;
+  }
+  
   list_start = 
     list = gtk_container_get_children(AGS_LINE(line)->expander->table);
 

@@ -18,7 +18,7 @@
 
 #include <ags/X/ags_navigation_callbacks.h>
 
-#include <ags/main.h>
+#include <ags/object/ags_application_context.h>
 
 #include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_task_thread.h>
@@ -32,6 +32,8 @@
 #include <ags/audio/task/recall/ags_apply_bpm.h>
 
 #include <ags/X/ags_window.h>
+
+extern AgsApplicationContext *ags_application_context;
 
 void
 ags_navigation_parent_set_callback(GtkWidget *widget, GtkObject *old_parent,
@@ -96,14 +98,31 @@ ags_navigation_bpm_callback(GtkWidget *widget,
 {
   AgsWindow *window;
   AgsApplyBpm *apply_bpm;
-  
+  AgsThread *main_loop, *current;
+  AgsTaskThread *task_thread;
+
+  task_thread = NULL;
+
+  main_loop = ags_application_context->main_loop;
+  current = main_loop->children;
+
+  while(current != NULL){
+    if(AGS_IS_TASK_THREAD(current)){
+      task_thread = (AgsTaskThread *) current;
+
+      break;
+    }
+
+    current = current->next;
+  }
+
   window = AGS_WINDOW(gtk_widget_get_ancestor(widget,
 					      AGS_TYPE_WINDOW));
 
   apply_bpm = ags_apply_bpm_new(G_OBJECT(window->devout),
 				navigation->bpm->adjustment->value);
 
-  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->task_thread),
+  ags_task_thread_append_task(task_thread,
 			      AGS_TASK(apply_bpm));
 }
 
@@ -377,12 +396,26 @@ void
 ags_navigation_tic_callback(AgsDevout *devout,
 			    AgsNavigation *navigation)
 {
+  AgsThread *main_loop, *current;
   AgsTaskThread *task_thread;
   AgsChangeTact *change_tact;
   AgsDisplayTact *display_tact;
   GList *list;
 
-  task_thread = AGS_AUDIO_LOOP(AGS_MAIN(navigation->devout->ags_main)->main_loop)->task_thread;
+  task_thread = NULL;
+
+  main_loop = ags_application_context->main_loop;
+  current = main_loop->children;
+
+  while(current != NULL){
+    if(AGS_IS_TASK_THREAD(current)){
+      task_thread = (AgsTaskThread *) current;
+
+      break;
+    }
+
+    current = current->next;
+  }
 
   list = NULL;
 

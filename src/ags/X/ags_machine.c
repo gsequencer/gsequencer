@@ -19,11 +19,9 @@
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_machine_callbacks.h>
 
-#include <ags-lib/object/ags_connectable.h>
-
-#include <ags/main.h>
-
+#include <ags/object/ags_application_context.h>
 #include <ags/object/ags_marshal.h>
+#include <ags-lib/object/ags_connectable.h>
 #include <ags/object/ags_plugin.h>
 
 #include <ags/thread/ags_audio_loop.h>
@@ -99,6 +97,8 @@ enum{
 
 static gpointer ags_machine_parent_class = NULL;
 static guint machine_signals[LAST_SIGNAL];
+
+extern AgsApplicationContext *ags_application_context;
 
 GType
 ags_machine_get_type(void)
@@ -772,10 +772,25 @@ ags_machine_set_run(AgsMachine *machine,
 		    gboolean run)
 {
   AgsWindow *window;
-  AgsThread *task_thread;
+  AgsThread *main_loop, *current;
+  AgsTaskThread *task_thread;
 
   window = (AgsWindow *) gtk_widget_get_toplevel(machine);
-  task_thread = (AgsTaskThread *) AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->task_thread;
+
+  task_thread = NULL;
+
+  main_loop = ags_application_context->main_loop;
+  current = main_loop->children;
+
+  while(current != NULL){
+    if(AGS_IS_TASK_THREAD(current)){
+      task_thread = (AgsTaskThread *) current;
+
+      break;
+    }
+
+    current = current->next;
+  }
 
   if(run){
     AgsInitAudio *init_audio;
@@ -791,7 +806,7 @@ ags_machine_set_run(AgsMachine *machine,
     list = g_list_prepend(list, init_audio);
     
     /* create append task */
-    append_audio = ags_append_audio_new(G_OBJECT(AGS_MAIN(window->ags_main)->main_loop),
+    append_audio = ags_append_audio_new(ags_application_context->main_loop,
 					(GObject *) machine->audio);
       
     list = g_list_prepend(list, append_audio);
@@ -1088,14 +1103,31 @@ ags_machine_open_files(AgsMachine *machine,
 		       gboolean overwrite_channels,
 		       gboolean create_channels)
 {
+  AgsThread *main_loop, *current;
+  AgsTaskThread *task_thread;
   AgsOpenFile *open_file;
+
+  task_thread = NULL;
+
+  main_loop = ags_application_context->main_loop;
+  current = main_loop->children;
+
+  while(current != NULL){
+    if(AGS_IS_TASK_THREAD(current)){
+      task_thread = (AgsTaskThread *) current;
+
+      break;
+    }
+
+    current = current->next;
+  }
 
   open_file = ags_open_file_new(machine->audio,
 				filenames,
 				overwrite_channels,
 				create_channels);
 
-  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(machine->audio->devout)->ags_main)->main_loop)->task_thread),
+  ags_task_thread_append_task(task_thread,
 			      AGS_TASK(open_file));
 
 }

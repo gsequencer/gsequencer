@@ -20,6 +20,7 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/X/ags_window.h>
 #include <ags/X/ags_editor.h>
 
 #include <ags/main.h>

@@ -19,10 +19,9 @@
 #include <ags/X/ags_line.h>
 #include <ags/X/ags_line_callbacks.h>
 
-#include <ags/main.h>
-
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/object/ags_application_context.h>
 #include <ags/object/ags_marshal.h>
 #include <ags/object/ags_plugin.h>
 
@@ -103,6 +102,8 @@ enum{
 
 static gpointer ags_line_parent_class = NULL;
 static guint line_signals[LAST_SIGNAL];
+
+extern AgsApplicationContext *ags_application_context;
 
 GType
 ags_line_get_type(void)
@@ -602,7 +603,7 @@ ags_line_real_add_effect(AgsLine *line,
 
   AgsLadspaPlugin *ladspa_plugin;
 
-  AgsAudioLoop *audio_loop;
+  AgsThread *main_loop, *current;
   AgsTaskThread *task_thread;
 
   GList *list;
@@ -622,9 +623,22 @@ ags_line_real_add_effect(AgsLine *line,
   machine = gtk_widget_get_ancestor(line,
 				    AGS_TYPE_MACHINE);
   
-  audio_loop = (AgsAudioLoop *) AGS_MAIN(AGS_DEVOUT(machine->audio->devout)->ags_main)->main_loop;
-  task_thread = (AgsTaskThread *) audio_loop->task_thread;
 
+  task_thread = NULL;
+
+  main_loop = ags_application_context->main_loop;
+  current = main_loop->children;
+
+  while(current != NULL){
+    if(AGS_IS_TASK_THREAD(current)){
+      task_thread = (AgsTaskThread *) current;
+
+      break;
+    }
+
+    current = current->next;
+  }
+  
   if(ags_recall_ladpsa_find(line->channel->recall,
 			    filename, effect) != NULL){
     /* return if duplicated */

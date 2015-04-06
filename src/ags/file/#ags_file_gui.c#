@@ -107,7 +107,7 @@ ags_file_read_window(AgsFile *file, xmlNode *node, AgsWindow **window)
   }
 
   g_object_set(G_OBJECT(gobject),
-	       "application-context\0", file->application_context,
+	       "application-context\0", file->application_context§,
 	       NULL);
 
   ags_file_add_id_ref(file,
