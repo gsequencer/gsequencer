@@ -47,8 +47,6 @@ void ags_oscillator_show(GtkWidget *widget);
  */
 
 static AgsConnectableInterface *ags_oscillator_parent_connectable_interface;
-extern pthread_key_t application_context;
-AgsApplicationContext *ags_application_context =  pthread_getspecific(application_context);
 
 GType
 ags_oscillator_get_type(void)
@@ -269,7 +267,7 @@ ags_file_read_oscillator(AgsFile *file, xmlNode *node, AgsOscillator **oscillato
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", ags_application_context,
+				   "application-context\0", file->application_context,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
@@ -343,7 +341,7 @@ ags_file_write_oscillator(AgsFile *file, xmlNode *parent, AgsOscillator *oscilla
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", ags_application_context,
+				   "application-context\0", file->application_context,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),

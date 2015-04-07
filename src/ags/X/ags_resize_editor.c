@@ -23,7 +23,7 @@
 
 #include <ags/object/ags_applicable.h>
 
-#include <ags/thread/ags_audio_loop.h>
+#include <ags/thread/ags_thread-posix.h>
 #include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_audio.h>
@@ -32,6 +32,7 @@
 
 #include <ags/audio/task/ags_resize_audio.h>
 
+#include <ags/X/ags_window.h>
 #include <ags/X/ags_machine_editor.h>
 
 void ags_resize_editor_class_init(AgsResizeEditorClass *resize_editor);
@@ -58,9 +59,6 @@ void ags_resize_editor_show(GtkWidget *widget);
  */
 
 AgsConnectableInterface *ags_resize_editor_parent_connectable_interface;
-
-extern pthread_key_t application_context;
-AgsApplicationContext *ags_application_context =  pthread_getspecific(application_context);
 
 GType
 ags_resize_editor_get_type(void)
@@ -256,13 +254,18 @@ ags_resize_editor_set_update(AgsApplicable *applicable, gboolean update)
 void
 ags_resize_editor_apply(AgsApplicable *applicable)
 {
+  AgsWindow *window;
   AgsMachineEditor *machine_editor;
   AgsResizeEditor *resize_editor;
+
   AgsAudio *audio;
   AgsResizeAudio *resize_audio;
+  
   AgsThread *main_loop, *current;
   AgsTaskThread *task_thread;
 
+  AgsApplicationContext *application_context;
+  
   resize_editor = AGS_RESIZE_EDITOR(applicable);
 
   if((AGS_PROPERTY_EDITOR_ENABLED & (AGS_PROPERTY_EDITOR(resize_editor)->flags)) == 0)
@@ -271,22 +274,16 @@ ags_resize_editor_apply(AgsApplicable *applicable)
   machine_editor = AGS_MACHINE_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(resize_editor),
 							      AGS_TYPE_MACHINE_EDITOR));
 
+  window = machine_editor->parent;
+
+  application_context = window->application_context;
+  
+  main_loop = application_context->main_loop;
+
+  task_thread = ags_thread_find_type(main_loop,
+				     AGS_TYPE_TASK_THREAD);
+
   audio = machine_editor->machine->audio;
-
-  task_thread = NULL;
-
-  main_loop = ags_application_context->main_loop;
-  current = main_loop->children;
-
-  while(current != NULL){
-    if(AGS_IS_TASK_THREAD(current)){
-      task_thread = (AgsTaskThread *) current;
-
-      break;
-    }
-
-    current = current->next;
-  }
 
   /* create task */
   resize_audio = ags_resize_audio_new(audio,

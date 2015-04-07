@@ -75,9 +75,6 @@ void ags_synth_input_line_map_recall(AgsLine *line,
 static gpointer ags_synth_input_line_parent_class = NULL;
 static AgsConnectableInterface *ags_synth_input_line_parent_connectable_interface;
 
-extern pthread_key_t application_context;
-AgsApplicationContext *ags_application_context =  pthread_getspecific(application_context);
-
 GType
 ags_synth_input_line_get_type()
 {
@@ -273,7 +270,7 @@ ags_synth_input_line_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", ags_application_context,
+				   "application-context\0", file->application_context,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
@@ -336,7 +333,7 @@ ags_synth_input_line_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", ags_application_context,
+				   "application-context\0", file->application_context,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),

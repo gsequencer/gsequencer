@@ -19,11 +19,10 @@
 #include <ags/X/machine/ags_drum_input_pad.h>
 #include <ags/X/machine/ags_drum_input_pad_callbacks.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags-lib/object/ags_connectable.h>
-
 #include <ags/util/ags_id_generator.h>
 
+#include <ags/object/ags_application_context.h>
+#include <ags-lib/object/ags_connectable.h>
 #include <ags/object/ags_plugin.h>
 
 #include <ags/file/ags_file.h>
@@ -69,9 +68,6 @@ void ags_drum_input_pad_resize_lines(AgsPad *pad, GType line_type,
 
 static gpointer ags_drum_input_pad_parent_class = NULL;
 static AgsConnectableInterface *ags_drum_input_pad_parent_connectable_interface;
-
-extern pthread_key_t application_context;
-AgsApplicationContext *ags_application_context =  pthread_getspecific(application_context);
 
 GType
 ags_drum_input_pad_get_type()
@@ -279,7 +275,7 @@ ags_drum_input_pad_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", ags_application_context,
+				   "application-context\0", file->application_context,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
@@ -340,7 +336,7 @@ ags_drum_input_pad_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 
     ags_file_add_id_ref(file,
 			g_object_new(AGS_TYPE_FILE_ID_REF,
-				     "application-context\0", ags_application_context,
+				     "application-context\0", file->application_context,
 				     "file\0", file,
 				     "node\0", node,
 				     "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
