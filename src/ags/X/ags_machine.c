@@ -98,9 +98,6 @@ enum{
 static gpointer ags_machine_parent_class = NULL;
 static guint machine_signals[LAST_SIGNAL];
 
-extern pthread_key_t application_context;
-AgsApplicationContext *ags_application_context =  pthread_getspecific(application_context);
-
 GType
 ags_machine_get_type(void)
 {
@@ -315,7 +312,7 @@ ags_machine_set_property(GObject *gobject,
       if(machine->audio != NULL){
 	GList *pad;
 
-	ags_devout_remove_audio(window->devout,
+	ags_devout_remove_audio(window->soundcard,
 				machine->audio);
 	g_object_unref(G_OBJECT(machine->audio));
 
@@ -773,25 +770,20 @@ ags_machine_set_run(AgsMachine *machine,
 		    gboolean run)
 {
   AgsWindow *window;
-  AgsThread *main_loop, *current;
+  
+  AgsThread *main_loop;
   AgsTaskThread *task_thread;
 
+  AgsApplicationContext *application_context;
+  
   window = (AgsWindow *) gtk_widget_get_toplevel(machine);
 
-  task_thread = NULL;
+  application_context = window->application_context;
+  
+  main_loop = application_context->main_loop;
 
-  main_loop = ags_application_context->main_loop;
-  current = main_loop->children;
-
-  while(current != NULL){
-    if(AGS_IS_TASK_THREAD(current)){
-      task_thread = (AgsTaskThread *) current;
-
-      break;
-    }
-
-    current = current->next;
-  }
+  task_thread = ags_thread_find_type(main_loop,
+				     AGS_TYPE_TASK_THREAD);
 
   if(run){
     AgsInitAudio *init_audio;
@@ -807,14 +799,14 @@ ags_machine_set_run(AgsMachine *machine,
     list = g_list_prepend(list, init_audio);
     
     /* create append task */
-    append_audio = ags_append_audio_new(ags_application_context->main_loop,
+    append_audio = ags_append_audio_new(application_context->main_loop,
 					(GObject *) machine->audio);
       
     list = g_list_prepend(list, append_audio);
 
     /* create start task */
     if(list != NULL){
-      start_devout = ags_start_devout_new(window->devout);
+      start_devout = ags_start_devout_new(window->soundcard);
       g_signal_connect_after(G_OBJECT(start_devout), "failure\0",
 			     G_CALLBACK(ags_machine_start_failure_callback), machine);
       list = g_list_prepend(list, start_devout);
@@ -1104,24 +1096,24 @@ ags_machine_open_files(AgsMachine *machine,
 		       gboolean overwrite_channels,
 		       gboolean create_channels)
 {
-  AgsThread *main_loop, *current;
-  AgsTaskThread *task_thread;
+  AgsWindow *window;
+  
   AgsOpenFile *open_file;
 
-  task_thread = NULL;
+  AgsThread *main_loop, *current;
+  AgsTaskThread *task_thread;
 
-  main_loop = ags_application_context->main_loop;
-  current = main_loop->children;
+  AgsApplicationContext *application_context;
 
-  while(current != NULL){
-    if(AGS_IS_TASK_THREAD(current)){
-      task_thread = (AgsTaskThread *) current;
+  window = gtk_widget_get_ancestor(machine,
+				   AGS_TYPE_WINDOW);
+  
+  application_context = window->application_context;
+  
+  main_loop = application_context->main_loop;
 
-      break;
-    }
-
-    current = current->next;
-  }
+  task_thread = ags_thread_find_type(main_loop,
+				     AGS_TYPE_TASK_THREAD);
 
   open_file = ags_open_file_new(machine->audio,
 				filenames,
@@ -1135,7 +1127,7 @@ ags_machine_open_files(AgsMachine *machine,
 
 /**
  * ags_machine_new:
- * @devout: the assigned devout.
+ * @soundcard: the assigned soundcard.
  *
  * Creates an #AgsMachine
  *
@@ -1144,7 +1136,7 @@ ags_machine_open_files(AgsMachine *machine,
  * Since: 0.3
  */
 AgsMachine*
-ags_machine_new(GObject *devout)
+ags_machine_new(GObject *soundcard)
 {
   AgsMachine *machine;
   GValue value;
@@ -1153,9 +1145,9 @@ ags_machine_new(GObject *devout)
 					NULL);
   
   g_value_init(&value, G_TYPE_OBJECT);
-  g_value_set_object(&value, devout);
+  g_value_set_object(&value, soundcard);
   g_object_set_property(G_OBJECT(machine->audio),
-			"devout\0", &value);
+			"soundcard\0", &value);
   g_value_unset(&value);
 
   return(machine);

@@ -21,10 +21,9 @@
 
 #include <ags/object/ags_application_context.h>
 #include <ags-lib/object/ags_connectable.h>
-
 #include <ags/object/ags_applicable.h>
 
-#include <ags/thread/ags_audio_loop.h>
+#include <ags/thread/ags_thread-posix.h>
 #include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_audio.h>
@@ -33,7 +32,9 @@
 
 #include <ags/audio/task/ags_link_channel.h>
 
+#include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
+#include <ags/X/ags_machine_editor.h>
 #include <ags/X/ags_line_editor.h>
 
 void ags_link_editor_class_init(AgsLinkEditorClass *link_editor);
@@ -60,9 +61,6 @@ void ags_link_editor_show(GtkWidget *widget);
  */
 
 static gpointer ags_link_editor_parent_class = NULL;
-
-extern pthread_key_t application_context;
-AgsApplicationContext *ags_application_context =  pthread_getspecific(application_context);
 
 GType
 ags_link_editor_get_type(void)
@@ -215,33 +213,35 @@ ags_link_editor_apply(AgsApplicable *applicable)
 
   if(gtk_combo_box_get_active_iter(link_editor->combo,
 				   &iter)){
+    AgsWindow *window;
     AgsMachine *link_machine;
+    AgsMachineEditor *machine_editor;
     AgsLineEditor *line_editor;
-    AgsChannel *channel, *link;
-    AgsThread *main_loop, *current;
-    AgsTaskThread *task_thread;
-    AgsLinkChannel *link_channel;
     GtkTreeModel *model;
 
+    AgsChannel *channel, *link;
+    AgsLinkChannel *link_channel;
+
+    AgsThread *main_loop, *current;
+    AgsTaskThread *task_thread;
+
+    AgsApplicationContext *application_context;
+    
     line_editor = AGS_LINE_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(link_editor),
 							  AGS_TYPE_LINE_EDITOR));
 
+    machine_editor = gtk_widget_get_ancestor(line_editor,
+					     AGS_TYPE_MACHINE_EDITOR);
+
+    window = machine_editor->parent;
+      
+    application_context = window->application_context;
+
     channel = line_editor->channel;
-    
-    task_thread = NULL;
 
-    main_loop = ags_application_context->main_loop;
-    current = main_loop->children;
-
-    while(current != NULL){
-      if(AGS_IS_TASK_THREAD(current)){
-	task_thread = (AgsTaskThread *) current;
-
-	break;
-      }
-
-      current = current->next;
-    }
+    main_loop = application_context->main_loop;
+    task_thread = ags_thread_find_type(main_loop,
+				       AGS_TYPE_TASK_THREAD);
 
     model = gtk_combo_box_get_model(link_editor->combo);
     gtk_tree_model_get(model,

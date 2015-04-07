@@ -292,7 +292,7 @@ ags_audio_preferences_apply(AgsApplicable *applicable)
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
 							   AGS_TYPE_PREFERENCES);
 
-  application_context = AGS_WINDOW(preferences->window)->application_context;
+  application_context = AGS_WINDOW(preferences->parent)->application_context;
 
   config = application_context->config;
   
@@ -352,7 +352,7 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
   /*  */
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
 							   AGS_TYPE_PREFERENCES);
-  window = AGS_WINDOW(preferences->window);
+  window = AGS_WINDOW(preferences->parent);
 
   soundcard = AGS_SOUNDCARD(window->soundcard);
 

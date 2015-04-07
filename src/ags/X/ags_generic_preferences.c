@@ -181,7 +181,7 @@ ags_generic_preferences_apply(AgsApplicable *applicable)
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(generic_preferences),
 							   AGS_TYPE_PREFERENCES);
 
-  application_context = AGS_WINDOW(preferences->window)->application_context;
+  application_context = AGS_WINDOW(preferences->parent)->application_context;
   config = application_context->config;
   
   if(gtk_toggle_button_get_active(generic_preferences->autosave_thread)){
@@ -211,7 +211,7 @@ ags_generic_preferences_reset(AgsApplicable *applicable)
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(generic_preferences),
 							   AGS_TYPE_PREFERENCES);
 
-  application_context = AGS_WINDOW(preferences->window)->application_context;
+  application_context = AGS_WINDOW(preferences->parent)->application_context;
   config = application_context->config;
   
   gtk_toggle_button_set_active(generic_preferences->autosave_thread,

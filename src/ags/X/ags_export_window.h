@@ -43,7 +43,7 @@ struct _AgsExportWindow
 
   guint flags;
 
-  GtkWidget *parent;
+  GtkWindow *parent;
   GObject *soundcard;
 
   GtkCheckButton *live_export;
