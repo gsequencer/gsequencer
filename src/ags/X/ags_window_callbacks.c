@@ -22,13 +22,10 @@
 
 #include <ags/file/ags_file.h>
 
-#include <ags/thread/ags_audio_loop.h>
+#include <ags/thread/ags_thread-posix.h>
 #include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/task/ags_save_file.h>
-
-extern pthread_key_t application_context;
-AgsApplicationContext *ags_application_context =  pthread_getspecific(application_context);
 
 gboolean
 ags_window_delete_event_callback(GtkWidget *widget, gpointer data)
@@ -36,9 +33,14 @@ ags_window_delete_event_callback(GtkWidget *widget, gpointer data)
   AgsWindow *window;
   GtkDialog *dialog;
   GtkWidget *cancel_button;
+
+  AgsApplicationContext *application_context;
+
   gint response;
 
   window = AGS_WINDOW(widget);
+
+  application_context = window->application_context;
 
   /* ask the user if he wants save to a file */
   dialog = (GtkDialog *) gtk_message_dialog_new(GTK_WINDOW(window),
@@ -54,31 +56,23 @@ ags_window_delete_event_callback(GtkWidget *widget, gpointer data)
   response = gtk_dialog_run(dialog);
 
   if(response == GTK_RESPONSE_YES){
-    AgsFile *file;
-    AgsSaveFile *save_file;
-    AgsThread *main_loop, *current;
+    AgsThread *main_loop;
     AgsTaskThread *task_thread;
+    AgsSaveFile *save_file;
+    
+    AgsFile *file;
+    
     char *filename;
-
-    task_thread = NULL;
-
-    main_loop = ags_application_context->main_loop;
-    current = main_loop->children;
-
-    while(current != NULL){
-      if(AGS_IS_TASK_THREAD(current)){
-	task_thread = (AgsTaskThread *) current;
-
-	break;
-      }
-
-      current = current->next;
-    }
+    
+    main_loop = application_context->main_loop;
+    
+    task_thread = ags_thread_find_type(main_loop,
+				       AGS_TYPE_TASK_THREAD);
 
     filename = window->name;
 
     file = (AgsFile *) g_object_new(AGS_TYPE_FILE,
-				    "application-context\0", ags_application_context,
+				    "application-context\0", application_context,
 				    "filename\0", g_strdup(filename),
 				    NULL);
 
@@ -90,7 +84,7 @@ ags_window_delete_event_callback(GtkWidget *widget, gpointer data)
   }
 
   if(response != GTK_RESPONSE_CANCEL){
-    ags_main_quit(ags_application_context);
+    ags_main_quit(application_context);
   }else{
     gtk_widget_destroy(GTK_WIDGET(dialog));
   }
