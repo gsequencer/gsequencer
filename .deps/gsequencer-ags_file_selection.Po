@@ -555,7 +555,26 @@ gsequencer-ags_file_selection.o: src/ags/X/editor/ags_file_selection.c \
  /usr/include/libxml2/libxml/xlink.h /usr/include/libxml2/libxml/SAX2.h \
  src/ags/thread/ags_timestamp_thread.h src/ags/thread/ags_thread-posix.h \
  src/ags/audio/ags_timestamp.h src/ags/audio/ags_note.h \
- src/ags/audio/file/ags_audio_file.h src/ags/audio/ags_devout.h \
+ src/ags/audio/file/ags_audio_file.h \
+ src/ags/X/editor/ags_file_selection_callbacks.h \
+ src/ags-lib/object/ags_connectable.h src/ags/X/ags_window.h \
+ src/ags/object/ags_soundcard.h src/ags/object/ags_application_context.h \
+ src/ags/lib/ags_log.h src/ags/object/ags_config.h \
+ src/ags/file/ags_file.h src/ags/X/ags_automation_editor.h \
+ src/ags/X/editor/ags_automation_toolbar.h \
+ src/ags/X/editor/ags_port_selection.h src/ags/X/editor/ags_notebook.h \
+ src/ags/X/editor/ags_machine_selector.h src/ags/X/ags_machine.h \
+ src/ags/X/editor/ags_automation_edit.h src/ags/widget/ags_ruler.h \
+ src/ags/audio/ags_automation.h src/ags/audio/ags_acceleration.h \
+ src/ags/X/ags_menu_bar.h src/ags/X/ags_editor.h \
+ src/ags/X/editor/ags_toolbar.h src/ags/X/editor/ags_meter.h \
+ src/ags/X/editor/ags_soundset.h src/ags/X/editor/ags_note_edit.h \
+ src/ags/X/editor/ags_pattern_edit.h src/ags/X/ags_navigation.h \
+ src/ags/X/ags_export_window.h src/ags/X/ags_preferences.h \
+ src/ags/X/ags_generic_preferences.h src/ags/X/ags_audio_preferences.h \
+ src/ags/X/ags_performance_preferences.h \
+ src/ags/X/ags_server_preferences.h src/ags/X/editor/ags_inline_player.h \
+ src/ags/object/ags_playable.h src/ags/audio/ags_devout.h \
  /usr/include/alsa/asoundlib.h /usr/include/string.h \
  /usr/include/bits/string.h /usr/include/bits/string2.h \
  /usr/include/fcntl.h /usr/include/bits/fcntl.h \
@@ -588,24 +607,7 @@ gsequencer-ags_file_selection.o: src/ags/X/editor/ags_file_selection.c \
  src/ags/thread/ags_task_thread.h src/ags/thread/ags_thread_pool.h \
  src/ags/object/ags_main_loop.h src/ags/audio/ags_task.h \
  src/ags/thread/ags_devout_thread.h src/ags/thread/ags_iterator_thread.h \
- src/ags/X/editor/ags_file_selection_callbacks.h \
- src/ags-lib/object/ags_connectable.h src/ags/X/ags_window.h \
- src/ags/X/ags_automation_editor.h \
- src/ags/X/editor/ags_automation_toolbar.h \
- src/ags/X/editor/ags_port_selection.h src/ags/X/editor/ags_notebook.h \
- src/ags/X/editor/ags_machine_selector.h src/ags/X/ags_machine.h \
- src/ags/X/editor/ags_automation_edit.h src/ags/widget/ags_ruler.h \
- src/ags/audio/ags_automation.h src/ags/audio/ags_acceleration.h \
- src/ags/X/ags_menu_bar.h src/ags/X/ags_editor.h \
- src/ags/X/editor/ags_toolbar.h src/ags/X/editor/ags_meter.h \
- src/ags/X/editor/ags_soundset.h src/ags/X/editor/ags_note_edit.h \
- src/ags/X/editor/ags_pattern_edit.h src/ags/X/ags_navigation.h \
- src/ags/X/ags_export_window.h src/ags/X/ags_preferences.h \
- src/ags/X/ags_generic_preferences.h src/ags/X/ags_audio_preferences.h \
- src/ags/X/ags_performance_preferences.h \
- src/ags/X/ags_server_preferences.h src/ags/X/editor/ags_inline_player.h \
- src/ags/object/ags_playable.h src/ags/X/editor/ags_sf2_chooser.h \
- src/ags/audio/file/ags_ipatch.h \
+ src/ags/X/editor/ags_sf2_chooser.h src/ags/audio/file/ags_ipatch.h \
  /usr/include/libinstpatch-1.0/libinstpatch/libinstpatch.h \
  /usr/include/libinstpatch-1.0/libinstpatch/builtin_enums.h \
  /usr/include/libinstpatch-1.0/libinstpatch/IpatchBase.h \
@@ -1990,6 +1992,74 @@ src/ags/audio/ags_note.h:
 
 src/ags/audio/file/ags_audio_file.h:
 
+src/ags/X/editor/ags_file_selection_callbacks.h:
+
+src/ags-lib/object/ags_connectable.h:
+
+src/ags/X/ags_window.h:
+
+src/ags/object/ags_soundcard.h:
+
+src/ags/object/ags_application_context.h:
+
+src/ags/lib/ags_log.h:
+
+src/ags/object/ags_config.h:
+
+src/ags/file/ags_file.h:
+
+src/ags/X/ags_automation_editor.h:
+
+src/ags/X/editor/ags_automation_toolbar.h:
+
+src/ags/X/editor/ags_port_selection.h:
+
+src/ags/X/editor/ags_notebook.h:
+
+src/ags/X/editor/ags_machine_selector.h:
+
+src/ags/X/ags_machine.h:
+
+src/ags/X/editor/ags_automation_edit.h:
+
+src/ags/widget/ags_ruler.h:
+
+src/ags/audio/ags_automation.h:
+
+src/ags/audio/ags_acceleration.h:
+
+src/ags/X/ags_menu_bar.h:
+
+src/ags/X/ags_editor.h:
+
+src/ags/X/editor/ags_toolbar.h:
+
+src/ags/X/editor/ags_meter.h:
+
+src/ags/X/editor/ags_soundset.h:
+
+src/ags/X/editor/ags_note_edit.h:
+
+src/ags/X/editor/ags_pattern_edit.h:
+
+src/ags/X/ags_navigation.h:
+
+src/ags/X/ags_export_window.h:
+
+src/ags/X/ags_preferences.h:
+
+src/ags/X/ags_generic_preferences.h:
+
+src/ags/X/ags_audio_preferences.h:
+
+src/ags/X/ags_performance_preferences.h:
+
+src/ags/X/ags_server_preferences.h:
+
+src/ags/X/editor/ags_inline_player.h:
+
+src/ags/object/ags_playable.h:
+
 src/ags/audio/ags_devout.h:
 
 /usr/include/alsa/asoundlib.h:
@@ -2121,64 +2191,6 @@ src/ags/audio/ags_task.h:
 src/ags/thread/ags_devout_thread.h:
 
 src/ags/thread/ags_iterator_thread.h:
-
-src/ags/X/editor/ags_file_selection_callbacks.h:
-
-src/ags-lib/object/ags_connectable.h:
-
-src/ags/X/ags_window.h:
-
-src/ags/X/ags_automation_editor.h:
-
-src/ags/X/editor/ags_automation_toolbar.h:
-
-src/ags/X/editor/ags_port_selection.h:
-
-src/ags/X/editor/ags_notebook.h:
-
-src/ags/X/editor/ags_machine_selector.h:
-
-src/ags/X/ags_machine.h:
-
-src/ags/X/editor/ags_automation_edit.h:
-
-src/ags/widget/ags_ruler.h:
-
-src/ags/audio/ags_automation.h:
-
-src/ags/audio/ags_acceleration.h:
-
-src/ags/X/ags_menu_bar.h:
-
-src/ags/X/ags_editor.h:
-
-src/ags/X/editor/ags_toolbar.h:
-
-src/ags/X/editor/ags_meter.h:
-
-src/ags/X/editor/ags_soundset.h:
-
-src/ags/X/editor/ags_note_edit.h:
-
-src/ags/X/editor/ags_pattern_edit.h:
-
-src/ags/X/ags_navigation.h:
-
-src/ags/X/ags_export_window.h:
-
-src/ags/X/ags_preferences.h:
-
-src/ags/X/ags_generic_preferences.h:
-
-src/ags/X/ags_audio_preferences.h:
-
-src/ags/X/ags_performance_preferences.h:
-
-src/ags/X/ags_server_preferences.h:
-
-src/ags/X/editor/ags_inline_player.h:
-
-src/ags/object/ags_playable.h:
 
 src/ags/X/editor/ags_sf2_chooser.h:
 

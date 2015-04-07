@@ -560,14 +560,6 @@ gsequencer-ags_matrix.o: src/ags/X/machine/ags_matrix.c \
  src/ags/audio/ags_recall_audio_run.h src/ags/audio/ags_recall_audio.h \
  src/ags/util/ags_id_generator.h src/ags/object/ags_application_context.h \
  src/ags/lib/ags_log.h src/ags/object/ags_config.h \
- src/ags/object/ags_main_loop.h src/ags/thread/ags_async_queue.h \
- /usr/include/linux/futex.h /usr/include/linux/types.h \
- /usr/include/asm/types.h /usr/include/asm-generic/types.h \
- /usr/include/asm-generic/int-ll64.h /usr/include/asm/bitsperlong.h \
- /usr/include/asm-generic/bitsperlong.h /usr/include/linux/posix_types.h \
- /usr/include/linux/stddef.h /usr/include/asm/posix_types.h \
- /usr/include/asm/posix_types_64.h /usr/include/asm-generic/posix_types.h \
- /usr/include/sys/time.h src/ags/object/ags_stackable.h \
  src/ags/file/ags_file.h src/ags-lib/object/ags_connectable.h \
  src/ags/object/ags_portlet.h src/ags/object/ags_plugin.h \
  src/ags/file/ags_file_stock.h src/ags/widget/ags_led.h \
@@ -575,12 +567,7 @@ gsequencer-ags_matrix.o: src/ags/X/machine/ags_matrix.c \
  src/ags/widget/ags_hindicator.h src/ags/widget/ags_waveform.h \
  src/ags/widget/ags_dial.h src/ags/widget/ags_cartesian.h \
  src/ags/file/ags_file_id_ref.h src/ags/file/ags_file_lookup.h \
- src/ags/file/ags_file_launch.h src/ags/thread/ags_audio_loop.h \
- /usr/include/math.h /usr/include/bits/huge_val.h \
- /usr/include/bits/huge_valf.h /usr/include/bits/huge_vall.h \
- /usr/include/bits/inf.h /usr/include/bits/nan.h \
- /usr/include/bits/mathdef.h /usr/include/bits/mathcalls.h \
- /usr/include/bits/mathinline.h src/ags/audio/ags_input.h \
+ src/ags/file/ags_file_launch.h src/ags/audio/ags_input.h \
  /usr/include/glib-2.0/glib/gstdio.h /usr/include/glib-2.0/glib/gprintf.h \
  /usr/include/sys/stat.h /usr/include/bits/stat.h \
  src/ags/audio/ags_output.h src/ags/audio/ags_pattern.h \
@@ -608,7 +595,20 @@ gsequencer-ags_matrix.o: src/ags/X/machine/ags_matrix.c \
  /usr/include/alsa/control.h /usr/include/alsa/mixer.h \
  /usr/include/alsa/seq_event.h /usr/include/alsa/seq.h \
  /usr/include/alsa/seqmid.h /usr/include/alsa/seq_midi_event.h \
- src/ags/thread/ags_task_thread.h src/ags/thread/ags_thread_pool.h \
+ src/ags/thread/ags_audio_loop.h /usr/include/math.h \
+ /usr/include/bits/huge_val.h /usr/include/bits/huge_valf.h \
+ /usr/include/bits/huge_vall.h /usr/include/bits/inf.h \
+ /usr/include/bits/nan.h /usr/include/bits/mathdef.h \
+ /usr/include/bits/mathcalls.h /usr/include/bits/mathinline.h \
+ src/ags/thread/ags_async_queue.h /usr/include/linux/futex.h \
+ /usr/include/linux/types.h /usr/include/asm/types.h \
+ /usr/include/asm-generic/types.h /usr/include/asm-generic/int-ll64.h \
+ /usr/include/asm/bitsperlong.h /usr/include/asm-generic/bitsperlong.h \
+ /usr/include/linux/posix_types.h /usr/include/linux/stddef.h \
+ /usr/include/asm/posix_types.h /usr/include/asm/posix_types_64.h \
+ /usr/include/asm-generic/posix_types.h /usr/include/sys/time.h \
+ src/ags/object/ags_stackable.h src/ags/thread/ags_task_thread.h \
+ src/ags/thread/ags_thread_pool.h src/ags/object/ags_main_loop.h \
  src/ags/audio/ags_task.h src/ags/thread/ags_devout_thread.h \
  src/ags/thread/ags_iterator_thread.h \
  src/ags/audio/recall/ags_stream_channel.h \
@@ -620,8 +620,22 @@ gsequencer-ags_matrix.o: src/ags/X/machine/ags_matrix.c \
  src/ags/audio/recall/ags_play_notation_audio.h \
  src/ags/audio/recall/ags_play_notation_audio_run.h \
  src/ags/audio/recall/ags_buffer_channel.h \
- src/ags/audio/recall/ags_buffer_channel_run.h src/ags/X/ags_menu_bar.h \
- src/ags/X/machine/ags_matrix_bridge.h src/ags/X/ags_effect_bridge.h
+ src/ags/audio/recall/ags_buffer_channel_run.h src/ags/X/ags_window.h \
+ src/ags/object/ags_soundcard.h src/ags/X/ags_automation_editor.h \
+ src/ags/X/editor/ags_automation_toolbar.h \
+ src/ags/X/editor/ags_port_selection.h src/ags/X/editor/ags_notebook.h \
+ src/ags/X/editor/ags_machine_selector.h \
+ src/ags/X/editor/ags_automation_edit.h src/ags/widget/ags_ruler.h \
+ src/ags/audio/ags_automation.h src/ags/audio/ags_acceleration.h \
+ src/ags/X/ags_menu_bar.h src/ags/X/ags_editor.h \
+ src/ags/X/editor/ags_toolbar.h src/ags/X/editor/ags_meter.h \
+ src/ags/X/editor/ags_soundset.h src/ags/X/editor/ags_note_edit.h \
+ src/ags/X/editor/ags_pattern_edit.h src/ags/X/ags_navigation.h \
+ src/ags/X/ags_export_window.h src/ags/X/ags_preferences.h \
+ src/ags/X/ags_generic_preferences.h src/ags/X/ags_audio_preferences.h \
+ src/ags/X/ags_performance_preferences.h \
+ src/ags/X/ags_server_preferences.h src/ags/X/machine/ags_matrix_bridge.h \
+ src/ags/X/ags_effect_bridge.h
 
 /usr/include/stdc-predef.h:
 
@@ -1943,38 +1957,6 @@ src/ags/lib/ags_log.h:
 
 src/ags/object/ags_config.h:
 
-src/ags/object/ags_main_loop.h:
-
-src/ags/thread/ags_async_queue.h:
-
-/usr/include/linux/futex.h:
-
-/usr/include/linux/types.h:
-
-/usr/include/asm/types.h:
-
-/usr/include/asm-generic/types.h:
-
-/usr/include/asm-generic/int-ll64.h:
-
-/usr/include/asm/bitsperlong.h:
-
-/usr/include/asm-generic/bitsperlong.h:
-
-/usr/include/linux/posix_types.h:
-
-/usr/include/linux/stddef.h:
-
-/usr/include/asm/posix_types.h:
-
-/usr/include/asm/posix_types_64.h:
-
-/usr/include/asm-generic/posix_types.h:
-
-/usr/include/sys/time.h:
-
-src/ags/object/ags_stackable.h:
-
 src/ags/file/ags_file.h:
 
 src/ags-lib/object/ags_connectable.h:
@@ -2004,26 +1986,6 @@ src/ags/file/ags_file_id_ref.h:
 src/ags/file/ags_file_lookup.h:
 
 src/ags/file/ags_file_launch.h:
-
-src/ags/thread/ags_audio_loop.h:
-
-/usr/include/math.h:
-
-/usr/include/bits/huge_val.h:
-
-/usr/include/bits/huge_valf.h:
-
-/usr/include/bits/huge_vall.h:
-
-/usr/include/bits/inf.h:
-
-/usr/include/bits/nan.h:
-
-/usr/include/bits/mathdef.h:
-
-/usr/include/bits/mathcalls.h:
-
-/usr/include/bits/mathinline.h:
 
 src/ags/audio/ags_input.h:
 
@@ -2125,9 +2087,61 @@ src/ags/audio/ags_devout.h:
 
 /usr/include/alsa/seq_midi_event.h:
 
+src/ags/thread/ags_audio_loop.h:
+
+/usr/include/math.h:
+
+/usr/include/bits/huge_val.h:
+
+/usr/include/bits/huge_valf.h:
+
+/usr/include/bits/huge_vall.h:
+
+/usr/include/bits/inf.h:
+
+/usr/include/bits/nan.h:
+
+/usr/include/bits/mathdef.h:
+
+/usr/include/bits/mathcalls.h:
+
+/usr/include/bits/mathinline.h:
+
+src/ags/thread/ags_async_queue.h:
+
+/usr/include/linux/futex.h:
+
+/usr/include/linux/types.h:
+
+/usr/include/asm/types.h:
+
+/usr/include/asm-generic/types.h:
+
+/usr/include/asm-generic/int-ll64.h:
+
+/usr/include/asm/bitsperlong.h:
+
+/usr/include/asm-generic/bitsperlong.h:
+
+/usr/include/linux/posix_types.h:
+
+/usr/include/linux/stddef.h:
+
+/usr/include/asm/posix_types.h:
+
+/usr/include/asm/posix_types_64.h:
+
+/usr/include/asm-generic/posix_types.h:
+
+/usr/include/sys/time.h:
+
+src/ags/object/ags_stackable.h:
+
 src/ags/thread/ags_task_thread.h:
 
 src/ags/thread/ags_thread_pool.h:
+
+src/ags/object/ags_main_loop.h:
 
 src/ags/audio/ags_task.h:
 
@@ -2155,7 +2169,55 @@ src/ags/audio/recall/ags_buffer_channel.h:
 
 src/ags/audio/recall/ags_buffer_channel_run.h:
 
+src/ags/X/ags_window.h:
+
+src/ags/object/ags_soundcard.h:
+
+src/ags/X/ags_automation_editor.h:
+
+src/ags/X/editor/ags_automation_toolbar.h:
+
+src/ags/X/editor/ags_port_selection.h:
+
+src/ags/X/editor/ags_notebook.h:
+
+src/ags/X/editor/ags_machine_selector.h:
+
+src/ags/X/editor/ags_automation_edit.h:
+
+src/ags/widget/ags_ruler.h:
+
+src/ags/audio/ags_automation.h:
+
+src/ags/audio/ags_acceleration.h:
+
 src/ags/X/ags_menu_bar.h:
+
+src/ags/X/ags_editor.h:
+
+src/ags/X/editor/ags_toolbar.h:
+
+src/ags/X/editor/ags_meter.h:
+
+src/ags/X/editor/ags_soundset.h:
+
+src/ags/X/editor/ags_note_edit.h:
+
+src/ags/X/editor/ags_pattern_edit.h:
+
+src/ags/X/ags_navigation.h:
+
+src/ags/X/ags_export_window.h:
+
+src/ags/X/ags_preferences.h:
+
+src/ags/X/ags_generic_preferences.h:
+
+src/ags/X/ags_audio_preferences.h:
+
+src/ags/X/ags_performance_preferences.h:
+
+src/ags/X/ags_server_preferences.h:
 
 src/ags/X/machine/ags_matrix_bridge.h:
 

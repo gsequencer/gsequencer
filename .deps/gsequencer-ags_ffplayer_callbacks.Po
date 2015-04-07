@@ -636,6 +636,10 @@ gsequencer-ags_ffplayer_callbacks.o: \
  /usr/include/libinstpatch-1.0/libinstpatch/IpatchXmlObject.h \
  /usr/include/libinstpatch-1.0/libinstpatch/misc.h \
  /usr/include/libinstpatch-1.0/libinstpatch/version.h \
+ src/ags/X/ags_machine_callbacks.h src/ags/audio/ags_task.h \
+ src/ags/main.h src/ags/object/ags_application_context.h \
+ src/ags/lib/ags_log.h src/ags/object/ags_config.h \
+ src/ags/file/ags_file.h src/ags/object/ags_playable.h \
  src/ags/audio/ags_devout.h /usr/include/alsa/asoundlib.h \
  /usr/include/string.h /usr/include/bits/string.h \
  /usr/include/bits/string2.h /usr/include/fcntl.h \
@@ -666,14 +670,11 @@ gsequencer-ags_ffplayer_callbacks.o: \
  /usr/include/asm/posix_types_64.h /usr/include/asm-generic/posix_types.h \
  /usr/include/sys/time.h src/ags/object/ags_stackable.h \
  src/ags/thread/ags_task_thread.h src/ags/thread/ags_thread_pool.h \
- src/ags/object/ags_main_loop.h src/ags/audio/ags_task.h \
- src/ags/thread/ags_devout_thread.h src/ags/thread/ags_iterator_thread.h \
- src/ags/X/ags_machine_callbacks.h src/ags/main.h \
- src/ags/object/ags_application_context.h src/ags/lib/ags_log.h \
- src/ags/object/ags_config.h src/ags/file/ags_file.h \
- src/ags/object/ags_playable.h src/ags/audio/task/ags_link_channel.h \
+ src/ags/object/ags_main_loop.h src/ags/thread/ags_devout_thread.h \
+ src/ags/thread/ags_iterator_thread.h \
+ src/ags/audio/task/ags_link_channel.h \
  src/ags/audio/task/ags_add_audio_signal.h src/ags/X/ags_window.h \
- src/ags/X/ags_automation_editor.h \
+ src/ags/object/ags_soundcard.h src/ags/X/ags_automation_editor.h \
  src/ags/X/editor/ags_automation_toolbar.h \
  src/ags/X/editor/ags_port_selection.h src/ags/X/editor/ags_notebook.h \
  src/ags/X/editor/ags_machine_selector.h \
@@ -2158,6 +2159,22 @@ src/ags/audio/file/ags_ipatch.h:
 
 /usr/include/libinstpatch-1.0/libinstpatch/version.h:
 
+src/ags/X/ags_machine_callbacks.h:
+
+src/ags/audio/ags_task.h:
+
+src/ags/main.h:
+
+src/ags/object/ags_application_context.h:
+
+src/ags/lib/ags_log.h:
+
+src/ags/object/ags_config.h:
+
+src/ags/file/ags_file.h:
+
+src/ags/object/ags_playable.h:
+
 src/ags/audio/ags_devout.h:
 
 /usr/include/alsa/asoundlib.h:
@@ -2284,31 +2301,17 @@ src/ags/thread/ags_thread_pool.h:
 
 src/ags/object/ags_main_loop.h:
 
-src/ags/audio/ags_task.h:
-
 src/ags/thread/ags_devout_thread.h:
 
 src/ags/thread/ags_iterator_thread.h:
-
-src/ags/X/ags_machine_callbacks.h:
-
-src/ags/main.h:
-
-src/ags/object/ags_application_context.h:
-
-src/ags/lib/ags_log.h:
-
-src/ags/object/ags_config.h:
-
-src/ags/file/ags_file.h:
-
-src/ags/object/ags_playable.h:
 
 src/ags/audio/task/ags_link_channel.h:
 
 src/ags/audio/task/ags_add_audio_signal.h:
 
 src/ags/X/ags_window.h:
+
+src/ags/object/ags_soundcard.h:
 
 src/ags/X/ags_automation_editor.h:
 

@@ -56,6 +56,7 @@
 #include <ags/audio/recall/ags_play_notation_audio.h>
 #include <ags/audio/recall/ags_play_notation_audio_run.h>
 
+#include <ags/X/ags_window.h>
 #include <ags/X/ags_editor.h>
 
 #include <ags/X/machine/ags_ffplayer_bridge.h>
@@ -107,9 +108,6 @@ static gpointer ags_ffplayer_parent_class = NULL;
 static AgsConnectableInterface *ags_ffplayer_parent_connectable_interface;
 
 GtkStyle *ffplayer_style;
-
-extern pthread_key_t application_context;
-AgsApplicationContext *ags_application_context =  pthread_getspecific(application_context);
 
 GType
 ags_ffplayer_get_type(void)
@@ -552,7 +550,7 @@ ags_ffplayer_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", ags_application_context,
+				   "application-context\0", file->application_context,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
@@ -623,7 +621,7 @@ ags_ffplayer_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", ags_application_context,
+				   "application-context\0", file->application_context,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
@@ -682,7 +680,7 @@ ags_ffplayer_launch_task(AgsFileLaunch *file_launch, AgsFFPlayer *ffplayer)
 			    "mode\0", AGS_IPATCH_READ,
 			    "filename\0", filename,
 			    NULL);
-    ipatch->devout = window->devout;
+    ipatch->soundcard = window->soundcard;
     ags_ipatch_open(ipatch, filename);
 
     playable = AGS_PLAYABLE(ipatch);
@@ -1144,7 +1142,7 @@ ags_ffplayer_paint(AgsFFPlayer *ffplayer)
 
 /**
  * ags_ffplayer_new:
- * @devout: the assigned devout.
+ * @soundcard: the assigned soundcard.
  *
  * Creates an #AgsFFPlayer
  *
@@ -1153,7 +1151,7 @@ ags_ffplayer_paint(AgsFFPlayer *ffplayer)
  * Since: 0.3
  */
 AgsFFPlayer*
-ags_ffplayer_new(GObject *devout)
+ags_ffplayer_new(GObject *soundcard)
 {
   AgsFFPlayer *ffplayer;
   GValue value = {0,};
@@ -1161,11 +1159,11 @@ ags_ffplayer_new(GObject *devout)
   ffplayer = (AgsFFPlayer *) g_object_new(AGS_TYPE_FFPLAYER,
 					  NULL);
 
-  if(devout != NULL){
+  if(soundcard != NULL){
     g_value_init(&value, G_TYPE_OBJECT);
-    g_value_set_object(&value, devout);
+    g_value_set_object(&value, soundcard);
     g_object_set_property(G_OBJECT(ffplayer->machine.audio),
-			  "devout\0", &value);
+			  "soundcard\0", &value);
     g_value_unset(&value);
   }
 

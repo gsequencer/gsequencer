@@ -18,12 +18,10 @@
 
 #include <ags/X/machine/ags_matrix_callbacks.h>
 
-#include <ags/widget/ags_led.h>
-
-#include <ags/thread/ags_audio_loop.h>
-#include <ags/thread/ags_task_thread.h>
-
 #include <ags/object/ags_application_context.h>
+
+#include <ags/thread/ags_thread-posix.h>
+#include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recycling.h>
@@ -45,6 +43,8 @@
 #include <ags/audio/recall/ags_copy_pattern_channel.h>
 #include <ags/audio/recall/ags_copy_pattern_channel_run.h>
 
+#include <ags/widget/ags_led.h>
+
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_navigation.h>
 
@@ -54,8 +54,6 @@ void ags_matrix_refresh_gui_callback(AgsTogglePatternBit *toggle_pattern_bit,
 				     AgsMatrix *matrix);
 
 extern const char *AGS_MATRIX_INDEX;
-extern pthread_key_t application_context;
-AgsApplicationContext *ags_application_context =  pthread_getspecific(application_context);
 
 void
 ags_matrix_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsMatrix *matrix)
@@ -133,26 +131,25 @@ gboolean
 ags_matrix_drawing_area_button_press_callback(GtkWidget *widget, GdkEventButton *event, AgsMatrix *matrix)
 {
   if (event->button == 1){
+    AgsWindow *window;
+    
     AgsChannel *channel;
     AgsTogglePatternBit *toggle_pattern_bit;
+    
     AgsThread *main_loop, *current;
     AgsTaskThread *task_thread;
+
+    AgsApplicationContext *application_context;
+    
     guint i, j;
 
-    main_loop = ags_application_context->main_loop;
-    task_thread = NULL;
+    window = gtk_widget_get_toplevel(matrix);
 
-    current = main_loop->children;
-
-    while(current != NULL){
-      if(AGS_IS_TASK_THREAD(current)){
-	task_thread = (AgsTaskThread *) current;
-
-	break;
-      }
-
-      current = current->next;
-    }
+    application_context = window->application_context;
+    
+    main_loop = application_context->main_loop;
+    task_thread = ags_thread_find(main_loop,
+				  AGS_TYPE_TASK_THREAD);
 
     i = (guint) floor((double) event->y / (double) AGS_MATRIX_CELL_HEIGHT);
     j = (guint) floor((double) event->x / (double) AGS_MATRIX_CELL_WIDTH);
@@ -184,27 +181,23 @@ void
 ags_matrix_length_spin_callback(GtkWidget *spin_button, AgsMatrix *matrix)
 {
   AgsWindow *window;
+
   AgsApplySequencerLength *apply_sequencer_length;
+
   AgsThread *main_loop, *current;
   AgsTaskThread *task_thread;
+
+  AgsApplicationContext *application_context;
+  
   gdouble length;
 
-  main_loop = ags_application_context->main_loop;
-  task_thread = NULL;
-
-  current = main_loop->children;
-
-  while(current != NULL){
-    if(AGS_IS_TASK_THREAD(current)){
-      task_thread = (AgsTaskThread *) current;
-
-      break;
-    }
-
-    current = current->next;
-  }
-
   window = (AgsWindow *) gtk_widget_get_toplevel(GTK_WIDGET(matrix));
+
+  application_context = window->application_context;
+  
+  main_loop = application_context->main_loop;
+  task_thread = ags_thread_find(main_loop,
+				AGS_TYPE_TASK_THREAD);
 
   length = GTK_SPIN_BUTTON(spin_button)->adjustment->value;
 
@@ -266,32 +259,29 @@ ags_matrix_tact_callback(AgsAudio *audio,
 			 AgsMatrix *matrix)
 {
   AgsWindow *window;
+
   AgsCountBeatsAudio *play_count_beats_audio;
   AgsCountBeatsAudioRun *play_count_beats_audio_run;
   AgsToggleLed *toggle_led;
+
   AgsThread *main_loop, *current;
   AgsTaskThread *task_thread;
+
+  AgsApplicationContext *application_context;
+  
   GList *list;
   guint counter, active_led;
   gdouble active_led_old, active_led_new;
+
   GValue value = {0,};
 
-  main_loop = ags_application_context->main_loop;
-  task_thread = NULL;
-
-  current = main_loop->children;
-
-  while(current != NULL){
-    if(AGS_IS_TASK_THREAD(current)){
-      task_thread = (AgsTaskThread *) current;
-
-      break;
-    }
-
-    current = current->next;
-  }
-
   window = AGS_WINDOW(gtk_widget_get_ancestor((GtkWidget *) matrix, AGS_TYPE_WINDOW));
+
+  application_context = window->application_context;
+  
+  main_loop = application_context->main_loop;
+  task_thread = ags_thread_find(main_loop,
+				AGS_TYPE_TASK_THREAD);
 
   /* get some recalls */
   list = ags_recall_find_type(audio->play,

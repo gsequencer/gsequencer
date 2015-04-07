@@ -558,7 +558,7 @@ gsequencer-ags_drum_output_pad.o: src/ags/X/machine/ags_drum_output_pad.c \
  src/ags/widget/ags_expander_set.h src/ags/X/ags_line.h \
  src/ags/widget/ags_expander.h \
  src/ags/X/machine/ags_drum_output_pad_callbacks.h \
- src/ags-lib/object/ags_connectable.h src/ags/util/ags_id_generator.h \
+ src/ags/util/ags_id_generator.h src/ags-lib/object/ags_connectable.h \
  src/ags/object/ags_plugin.h src/ags/file/ags_file.h \
  src/ags/X/machine/ags_drum.h src/ags/X/ags_machine.h \
  src/ags/audio/ags_audio.h src/ags/audio/ags_recall_container.h \
@@ -1874,9 +1874,9 @@ src/ags/widget/ags_expander.h:
 
 src/ags/X/machine/ags_drum_output_pad_callbacks.h:
 
-src/ags-lib/object/ags_connectable.h:
-
 src/ags/util/ags_id_generator.h:
+
+src/ags-lib/object/ags_connectable.h:
 
 src/ags/object/ags_plugin.h:
 

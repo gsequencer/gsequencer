@@ -636,12 +636,17 @@ gsequencer-ags_ffplayer.o: src/ags/X/machine/ags_ffplayer.c \
  /usr/include/libinstpatch-1.0/libinstpatch/IpatchXmlObject.h \
  /usr/include/libinstpatch-1.0/libinstpatch/misc.h \
  /usr/include/libinstpatch-1.0/libinstpatch/version.h \
- src/ags/audio/ags_devout.h /usr/include/alsa/asoundlib.h \
- /usr/include/string.h /usr/include/bits/string.h \
- /usr/include/bits/string2.h /usr/include/fcntl.h \
- /usr/include/bits/fcntl.h /usr/include/bits/fcntl-linux.h \
- /usr/include/bits/stat.h /usr/include/assert.h /usr/include/sys/poll.h \
- /usr/include/bits/poll.h /usr/include/errno.h /usr/include/bits/errno.h \
+ src/ags/X/machine/ags_ffplayer_callbacks.h \
+ src/ags/util/ags_id_generator.h src/ags/object/ags_application_context.h \
+ src/ags/lib/ags_log.h src/ags/object/ags_config.h \
+ src/ags/file/ags_file.h src/ags-lib/object/ags_connectable.h \
+ src/ags/object/ags_playable.h src/ags/audio/ags_devout.h \
+ /usr/include/alsa/asoundlib.h /usr/include/string.h \
+ /usr/include/bits/string.h /usr/include/bits/string2.h \
+ /usr/include/fcntl.h /usr/include/bits/fcntl.h \
+ /usr/include/bits/fcntl-linux.h /usr/include/bits/stat.h \
+ /usr/include/assert.h /usr/include/sys/poll.h /usr/include/bits/poll.h \
+ /usr/include/errno.h /usr/include/bits/errno.h \
  /usr/include/linux/errno.h /usr/include/asm/errno.h \
  /usr/include/asm-generic/errno.h /usr/include/asm-generic/errno-base.h \
  /usr/include/alsa/asoundef.h /usr/include/alsa/version.h \
@@ -668,18 +673,14 @@ gsequencer-ags_ffplayer.o: src/ags/X/machine/ags_ffplayer.c \
  src/ags/thread/ags_task_thread.h src/ags/thread/ags_thread_pool.h \
  src/ags/object/ags_main_loop.h src/ags/audio/ags_task.h \
  src/ags/thread/ags_devout_thread.h src/ags/thread/ags_iterator_thread.h \
- src/ags/X/machine/ags_ffplayer_callbacks.h \
- src/ags/util/ags_id_generator.h src/ags/object/ags_application_context.h \
- src/ags/lib/ags_log.h src/ags/object/ags_config.h \
- src/ags/file/ags_file.h src/ags-lib/object/ags_connectable.h \
- src/ags/object/ags_playable.h src/ags/object/ags_plugin.h \
- src/ags/file/ags_file_stock.h src/ags/widget/ags_led.h \
- src/ags/widget/ags_vindicator.h src/ags/widget/ags_indicator.h \
- src/ags/widget/ags_hindicator.h src/ags/widget/ags_waveform.h \
- src/ags/widget/ags_dial.h src/ags/widget/ags_cartesian.h \
- src/ags/file/ags_file_id_ref.h src/ags/file/ags_file_lookup.h \
- src/ags/file/ags_file_launch.h src/ags/file/ags_file_gui.h \
- src/ags/X/ags_window.h src/ags/X/ags_automation_editor.h \
+ src/ags/object/ags_plugin.h src/ags/file/ags_file_stock.h \
+ src/ags/widget/ags_led.h src/ags/widget/ags_vindicator.h \
+ src/ags/widget/ags_indicator.h src/ags/widget/ags_hindicator.h \
+ src/ags/widget/ags_waveform.h src/ags/widget/ags_dial.h \
+ src/ags/widget/ags_cartesian.h src/ags/file/ags_file_id_ref.h \
+ src/ags/file/ags_file_lookup.h src/ags/file/ags_file_launch.h \
+ src/ags/file/ags_file_gui.h src/ags/X/ags_window.h \
+ src/ags/object/ags_soundcard.h src/ags/X/ags_automation_editor.h \
  src/ags/X/editor/ags_automation_toolbar.h \
  src/ags/X/editor/ags_port_selection.h src/ags/X/editor/ags_notebook.h \
  src/ags/X/editor/ags_machine_selector.h \
@@ -2192,6 +2193,22 @@ src/ags/audio/file/ags_ipatch.h:
 
 /usr/include/libinstpatch-1.0/libinstpatch/version.h:
 
+src/ags/X/machine/ags_ffplayer_callbacks.h:
+
+src/ags/util/ags_id_generator.h:
+
+src/ags/object/ags_application_context.h:
+
+src/ags/lib/ags_log.h:
+
+src/ags/object/ags_config.h:
+
+src/ags/file/ags_file.h:
+
+src/ags-lib/object/ags_connectable.h:
+
+src/ags/object/ags_playable.h:
+
 src/ags/audio/ags_devout.h:
 
 /usr/include/alsa/asoundlib.h:
@@ -2324,22 +2341,6 @@ src/ags/thread/ags_devout_thread.h:
 
 src/ags/thread/ags_iterator_thread.h:
 
-src/ags/X/machine/ags_ffplayer_callbacks.h:
-
-src/ags/util/ags_id_generator.h:
-
-src/ags/object/ags_application_context.h:
-
-src/ags/lib/ags_log.h:
-
-src/ags/object/ags_config.h:
-
-src/ags/file/ags_file.h:
-
-src/ags-lib/object/ags_connectable.h:
-
-src/ags/object/ags_playable.h:
-
 src/ags/object/ags_plugin.h:
 
 src/ags/file/ags_file_stock.h:
@@ -2367,6 +2368,8 @@ src/ags/file/ags_file_launch.h:
 src/ags/file/ags_file_gui.h:
 
 src/ags/X/ags_window.h:
+
+src/ags/object/ags_soundcard.h:
 
 src/ags/X/ags_automation_editor.h:
 
