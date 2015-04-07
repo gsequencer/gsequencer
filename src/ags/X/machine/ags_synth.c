@@ -596,8 +596,8 @@ ags_synth_update(AgsSynth *synth)
   application_context = window->application_context;
   
   main_loop = application_context->main_loop;
-  task_thread = ags_thread_find(main_loop,
-				AGS_TYPE_TASK_THREAD);
+  task_thread = ags_thread_find_type(main_loop,
+				     AGS_TYPE_TASK_THREAD);
 
   soundcard = AGS_SOUNDCARD(AGS_MACHINE(synth)->audio->soundcard);
 

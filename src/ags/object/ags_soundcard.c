@@ -327,6 +327,18 @@ ags_soundcard_get_next_buffer(AgsSoundcard *soundcard)
 }
 
 gdouble
+ags_soundcard_get_bpm(AgsSoundcard *soundcard)
+{
+  AgsSoundcardInterface *soundcard_interface;
+
+  g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), G_MAXUINT);
+  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
+  g_return_val_if_fail(soundcard_interface->get_bpm, G_MAXUINT);
+
+  return(soundcard_interface->get_bpm(soundcard));
+}
+
+gdouble
 ags_soundcard_get_delay(AgsSoundcard *soundcard)
 {
   AgsSoundcardInterface *soundcard_interface;

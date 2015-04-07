@@ -74,7 +74,8 @@ struct _AgsApplicationContext
 
   pthread_mutex_t mutex;
   GObject *main_loop;
-
+  GObject *autosave_thread;
+  
   AgsFile *file;
 };
 
