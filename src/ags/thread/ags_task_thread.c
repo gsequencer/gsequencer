@@ -150,27 +150,14 @@ ags_task_thread_init(AgsTaskThread *task_thread)
   g_atomic_pointer_set(&(task_thread->exec), NULL);
   g_atomic_pointer_set(&(task_thread->queue),
 		       NULL);
-
-  task_thread->thread_pool = NULL;
 }
 
 void
 ags_task_thread_connect(AgsConnectable *connectable)
 {
-  AgsThread *main_loop;
-  AgsTaskThread *task_thread;
-
-  AgsApplicationContext *application_context;
-  
   ags_task_thread_parent_connectable_interface->connect(connectable);
 
-  task_thread = AGS_TASK_THREAD(connectable);
-
-  main_loop = ags_thread_get_toplevel(task_thread);
-  
-  application_context = ags_main_loop_get_application_context(AGS_MAIN_LOOP(main_loop));
-
-  task_thread->thread_pool = ags_concurrency_provider_get_thread_pool(AGS_CONCURRENCY_PROVIDER(application_context));
+  /* empty */
 }
 
 void
@@ -354,12 +341,22 @@ ags_task_thread_append_task_queue(AgsReturnableThread *returnable_thread, gpoint
 void
 ags_task_thread_append_task(AgsTaskThread *task_thread, AgsTask *task)
 {
+  AgsThread *main_loop;
   AgsTaskThreadAppend *append;
   AgsThread *thread;
+  AgsThreadPool *thread_pool;
+  
+  AgsApplicationContext *application_context;
 
 #ifdef AGS_DEBUG
   g_message("append task\0");
 #endif
+  
+  main_loop = ags_thread_get_toplevel(task_thread);
+  
+  application_context = ags_main_loop_get_application_context(AGS_MAIN_LOOP(main_loop));
+
+  thread_pool = ags_concurrency_provider_get_thread_pool(AGS_CONCURRENCY_PROVIDER(application_context));
 
   append = (AgsTaskThreadAppend *) malloc(sizeof(AgsTaskThreadAppend));
 
@@ -368,7 +365,7 @@ ags_task_thread_append_task(AgsTaskThread *task_thread, AgsTask *task)
   g_atomic_pointer_set(&(append->data),
 		       task);
 
-  thread = ags_thread_pool_pull(task_thread->thread_pool);
+  thread = ags_thread_pool_pull(thread_pool);
   
   pthread_mutex_lock(&(AGS_RETURNABLE_THREAD(thread)->reset_mutex));
 
@@ -432,12 +429,22 @@ ags_task_thread_append_tasks_queue(AgsReturnableThread *returnable_thread, gpoin
 void
 ags_task_thread_append_tasks(AgsTaskThread *task_thread, GList *list)
 {
+  AgsThread *main_loop;
   AgsTaskThreadAppend *append;
   AgsThread *thread;
+  AgsThreadPool *thread_pool;
+  
+  AgsApplicationContext *application_context;
 
 #ifdef AGS_DEBUG
   g_message("append tasks\0");
 #endif
+
+  main_loop = ags_thread_get_toplevel(task_thread);
+  
+  application_context = ags_main_loop_get_application_context(AGS_MAIN_LOOP(main_loop));
+
+  thread_pool = ags_concurrency_provider_get_thread_pool(AGS_CONCURRENCY_PROVIDER(application_context));
 
   append = (AgsTaskThreadAppend *) malloc(sizeof(AgsTaskThreadAppend));
 
@@ -446,7 +453,7 @@ ags_task_thread_append_tasks(AgsTaskThread *task_thread, GList *list)
   g_atomic_pointer_set(&(append->data),
 		       list);
 
-  thread = ags_thread_pool_pull(task_thread->thread_pool);
+  thread = ags_thread_pool_pull(thread_pool);
 
   pthread_mutex_lock(&(AGS_RETURNABLE_THREAD(thread)->reset_mutex));
 
