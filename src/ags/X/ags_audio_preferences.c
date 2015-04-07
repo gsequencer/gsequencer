@@ -19,14 +19,11 @@
 #include <ags/X/ags_audio_preferences.h>
 #include <ags/X/ags_audio_preferences_callbacks.h>
 
-#include <ags/main.h>
-
+#include <ags/object/ags_application_context.h>
 #include <ags/object/ags_config.h>
 #include <ags-lib/object/ags_connectable.h>
 #include <ags/object/ags_applicable.h>
 #include <ags/object/ags_soundcard.h>
-
-#include <ags/audio/ags_devout.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_preferences.h>
@@ -55,9 +52,6 @@ void ags_audio_preferences_show(GtkWidget *widget);
  */
 
 static gpointer ags_audio_preferences_parent_class = NULL;
-
-extern pthread_key_t config;
-AgsConfig *ags_config =  pthread_getspecific(config);
 
 GType
 ags_audio_preferences_get_type(void)
@@ -282,7 +276,8 @@ void
 ags_audio_preferences_apply(AgsApplicable *applicable)
 {
   AgsPreferences *preferences;
-  AgsAudioPreferences *audio_preferences; 
+  AgsAudioPreferences *audio_preferences;
+  AgsApplicationContext *application_context;
   AgsConfig *config;
   GList *card_id, *card_name;
   char *device;
@@ -297,38 +292,42 @@ ags_audio_preferences_apply(AgsApplicable *applicable)
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
 							   AGS_TYPE_PREFERENCES);
 
+  application_context = AGS_WINDOW(preferences->window)->application_context;
+
+  config = application_context->config;
+  
   /* samplerate */
   str = g_strdup_printf("%u\0",
 			(guint) gtk_spin_button_get_value(audio_preferences->samplerate));
-  ags_config_set_value(ags_config,
-		 AGS_CONFIG_DEVOUT,
-		 "samplerate\0",
-		 str);
+  ags_config_set_value(config,
+		       AGS_CONFIG_DEVOUT,
+		       "samplerate\0",
+		       str);
   g_free(str);
 
   /* buffer size */
   str = g_strdup_printf("%u\0",
 			(guint) gtk_spin_button_get_value(audio_preferences->buffer_size));
-  ags_config_set_value(ags_config,
-		 AGS_CONFIG_DEVOUT,
-		 "buffer-size\0",
-		 str);
+  ags_config_set_value(config,
+		       AGS_CONFIG_DEVOUT,
+		       "buffer-size\0",
+		       str);
   g_free(str);
 
   /* dsp channels */
   str = g_strdup_printf("%u\0",
 			(guint) gtk_spin_button_get_value(audio_preferences->audio_channels));
-  ags_config_set_value(ags_config,
-		 AGS_CONFIG_DEVOUT,
-		 "dsp-channels\0",
-		 str);
+  ags_config_set_value(config,
+		       AGS_CONFIG_DEVOUT,
+		       "dsp-channels\0",
+		       str);
   g_free(str);
 
   /* card */
-  ags_config_set_value(ags_config,
-		 AGS_CONFIG_DEVOUT,
-		 "alsa-handle\0",
-		 gtk_combo_box_text_get_active_text(audio_preferences->card));
+  ags_config_set_value(config,
+		       AGS_CONFIG_DEVOUT,
+		       "alsa-handle\0",
+		       gtk_combo_box_text_get_active_text(audio_preferences->card));
 }
 
 void
@@ -337,7 +336,7 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
   AgsWindow *window;
   AgsPreferences *preferences;
   AgsAudioPreferences *audio_preferences;
-  AgsDevout *devout;
+  AgsSoundcard *soundcard;
   GtkListStore *model;
   GtkTreeIter iter;
   GList *card_id, *card_name;
@@ -355,10 +354,10 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
 							   AGS_TYPE_PREFERENCES);
   window = AGS_WINDOW(preferences->window);
 
-  devout = window->devout;
+  soundcard = AGS_SOUNDCARD(window->soundcard);
 
   /* refresh */
-  ags_soundcard_list_cards(AGS_SOUNDCARD(devout),
+  ags_soundcard_list_cards(AGS_SOUNDCARD(soundcard),
 			   &card_id, &card_name);
   model = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_STRING);
 
@@ -380,11 +379,11 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
 			  GTK_TREE_MODEL(model));
 
   /*  */
-  g_object_get(G_OBJECT(devout),
+  g_object_get(G_OBJECT(soundcard),
 	       "device\0", &device,
-	       "pcm_channels\0", &channels,
+	       "pcm-channels\0", &channels,
 	       "frequency\0", &rate,
-	       "buffer_size\0", &buffer_size,
+	       "buffer-size\0", &buffer_size,
 	       NULL);
 
 
@@ -404,7 +403,7 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
 			    (gdouble) buffer_size);
 
   /*  */
-  ags_soundcard_pcm_info(AGS_SOUNDCARD(devout),
+  ags_soundcard_pcm_info(soundcard,
 			 gtk_combo_box_get_active_text(audio_preferences->card),
 			 &channels_min, &channels_max,
 			 &rate_min, &rate_max,

@@ -22,12 +22,8 @@
 
 #include <ags/server/ags_server_application_context.h>
 
-extern pthread_key_t application_context;
-AgsApplicationContext *ags_application_context =  pthread_getspecific(application_context);
-extern AgsServerApplicationContext *ags_server_application_context;
-
 void
-ags_server_init_context(int *argc, gchar ***argv)
+ags_server_init_context(AgsApplicationContext *application_context)
 {
   const char *error;
 
@@ -36,10 +32,4 @@ ags_server_init_context(int *argc, gchar ***argv)
 
   xmlrpc_env_init(&(ags_main->env));
 #endif
-
-  /* instantiate application context */
-  ags_server_application_context = ags_server_application_context_new(NULL,
-								      NULL);
-  ags_application_context_add_sibling(ags_application_context,
-				      ags_server_application_context);
 }

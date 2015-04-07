@@ -19,8 +19,7 @@
 #include <ags/X/ags_generic_preferences.h>
 #include <ags/X/ags_generic_preferences_callbacks.h>
 
-#include <ags/main.h>
-
+#include <ags/object/ags_application_context.h>
 #include <ags/object/ags_config.h>
 #include <ags-lib/object/ags_connectable.h>
 
@@ -52,9 +51,6 @@ void ags_generic_preferences_show(GtkWidget *widget);
  */
 
 static gpointer ags_generic_preferences_parent_class = NULL;
-
-extern pthread_key_t config;
-AgsConfig *ags_config =  pthread_getspecific(config);
 
 GType
 ags_generic_preferences_get_type(void)
@@ -176,22 +172,28 @@ ags_generic_preferences_apply(AgsApplicable *applicable)
 {
   AgsPreferences *preferences;
   AgsGenericPreferences *generic_preferences; 
- 
+
+  AgsApplicationContext *application_context;
+  AgsConfig *config;
+  
   generic_preferences = AGS_GENERIC_PREFERENCES(applicable);
 
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(generic_preferences),
 							   AGS_TYPE_PREFERENCES);
+
+  application_context = AGS_WINDOW(preferences->window)->application_context;
+  config = application_context->config;
   
   if(gtk_toggle_button_get_active(generic_preferences->autosave_thread)){
-    ags_config_set_value(ags_config,
-		   AGS_CONFIG_GENERIC,
-		   "autosave-thread\0",
-		   "true\0");
+    ags_config_set_value(config,
+			 AGS_CONFIG_GENERIC,
+			 "autosave-thread\0",
+			 "true\0");
   }else{
-    ags_config_set_value(ags_config,
-		   AGS_CONFIG_GENERIC,
-		   "autosave-thread\0",
-		   "false\0");
+    ags_config_set_value(config,
+			 AGS_CONFIG_GENERIC,
+			 "autosave-thread\0",
+			 "false\0");
   }
 }
 
@@ -200,16 +202,22 @@ ags_generic_preferences_reset(AgsApplicable *applicable)
 {
   AgsPreferences *preferences;
   AgsGenericPreferences *generic_preferences; 
+
+  AgsApplicationContext *application_context;
+  AgsConfig *config;
  
   generic_preferences = AGS_GENERIC_PREFERENCES(applicable);
 
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(generic_preferences),
 							   AGS_TYPE_PREFERENCES);
+
+  application_context = AGS_WINDOW(preferences->window)->application_context;
+  config = application_context->config;
   
   gtk_toggle_button_set_active(generic_preferences->autosave_thread,
-			       ((!strncmp(ags_config_get_value(ags_config,
-							 AGS_CONFIG_GENERIC,
-							 "autosave-thread\0"),
+			       ((!strncmp(ags_config_get_value( config,
+								AGS_CONFIG_GENERIC,
+								"autosave-thread\0"),
 					  "true\0",
 					  5)) ? TRUE: FALSE));
 }
