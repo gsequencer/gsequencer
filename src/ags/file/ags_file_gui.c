@@ -281,7 +281,7 @@ ags_file_write_window_resolve_devout(AgsFileLookup *file_lookup,
   AgsFileIdRef *id_ref;
   gchar *id;
 
-  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_reference(file_lookup->file, window->devout);
+  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_reference(file_lookup->file, window->soundcard);
 
   id = xmlGetProp(id_ref->node, AGS_FILE_ID_PROP);
 
