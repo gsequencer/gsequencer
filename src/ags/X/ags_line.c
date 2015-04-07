@@ -19,10 +19,9 @@
 #include <ags/X/ags_line.h>
 #include <ags/X/ags_line_callbacks.h>
 
-#include <ags-lib/object/ags_connectable.h>
-
 #include <ags/object/ags_application_context.h>
 #include <ags/object/ags_marshal.h>
+#include <ags-lib/object/ags_connectable.h>
 #include <ags/object/ags_plugin.h>
 
 #include <ags/plugin/ags_ladspa_manager.h>
@@ -39,6 +38,7 @@
 
 #include <ags/widget/ags_dial.h>
 
+#include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_pad.h>
 #include <ags/X/ags_line_member.h>
@@ -102,9 +102,6 @@ enum{
 
 static gpointer ags_line_parent_class = NULL;
 static guint line_signals[LAST_SIGNAL];
-
-extern pthread_key_t application_context;
-AgsApplicationContext *ags_application_context =  pthread_getspecific(application_context);
 
 GType
 ags_line_get_type(void)
@@ -597,6 +594,7 @@ ags_line_real_add_effect(AgsLine *line,
 			 gchar *filename,
 			 gchar *effect)
 {
+  AgsWindow *window;
   AgsMachine *machine;
   AgsLineMember *line_member;
   AgsAddLineMember *add_line_member;
@@ -604,9 +602,11 @@ ags_line_real_add_effect(AgsLine *line,
 
   AgsLadspaPlugin *ladspa_plugin;
 
-  AgsThread *main_loop, *current;
+  AgsThread *main_loop;
   AgsTaskThread *task_thread;
 
+  AgsApplicationContext *application_context;
+  
   GList *list;
   GList *port;
   GList *task;
@@ -624,22 +624,15 @@ ags_line_real_add_effect(AgsLine *line,
   machine = gtk_widget_get_ancestor(line,
 				    AGS_TYPE_MACHINE);
   
+  window = gtk_widget_get_ancestor(machine,
+				   AGS_TYPE_WINDOW);
 
-  task_thread = NULL;
-
-  main_loop = ags_application_context->main_loop;
-  current = main_loop->children;
-
-  while(current != NULL){
-    if(AGS_IS_TASK_THREAD(current)){
-      task_thread = (AgsTaskThread *) current;
-
-      break;
-    }
-
-    current = current->next;
-  }
+  application_context = window->application_context;
   
+  main_loop = application_context->main_loop;
+  task_thread = ags_thread_find_type(main_loop,
+				     AGS_TYPE_TASK_THREAD);
+
   if(ags_recall_ladpsa_find(line->channel->recall,
 			    filename, effect) != NULL){
     /* return if duplicated */

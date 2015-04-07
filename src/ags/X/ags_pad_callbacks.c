@@ -20,7 +20,7 @@
 
 #include <ags/object/ags_application_context.h>
 
-#include <ags/thread/ags_audio_loop.h>
+#include <ags/thread/ags_thread-posix.h>
 #include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_devout.h>
@@ -30,10 +30,8 @@
 
 #include <ags/audio/task/recall/ags_set_muted.h>
 
+#include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
-
-extern pthread_key_t application_context;
-AgsApplicationContext *ags_application_context =  pthread_getspecific(application_context);
 
 int
 ags_pad_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsPad *pad)
@@ -111,28 +109,27 @@ ags_pad_group_clicked_callback(GtkWidget *widget, AgsPad *pad)
 int
 ags_pad_mute_clicked_callback(GtkWidget *widget, AgsPad *pad)
 {
+  AgsWindow *window;
   AgsMachine *machine;
   GtkContainer *container;
-  AgsThread *main_loop, *current;
-  AgsTaskThread *task_thread;
   AgsChannel *channel;
   AgsSetMuted *set_muted;
+  AgsThread *main_loop, *current;
+  AgsTaskThread *task_thread;
+  AgsApplicationContext *application_context;
   GList *list, *list_start, *tasks;
 
+  machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) pad,
+						   AGS_TYPE_MACHINE);
+
+  window = gtk_widget_get_ancestor((GtkWidget *) pad,
+				   AGS_TYPE_WINDOW);
+
+  application_context = window->application_context;
+  
+  main_loop = application_context->main_loop;
+
   task_thread = NULL;
-
-  main_loop = ags_application_context->main_loop;
-  current = main_loop->children;
-
-  while(current != NULL){
-    if(AGS_IS_TASK_THREAD(current)){
-      task_thread = (AgsTaskThread *) current;
-
-      break;
-    }
-
-    current = current->next;
-  }
   
   channel = pad->channel;
   tasks = NULL;
@@ -150,8 +147,6 @@ ags_pad_mute_clicked_callback(GtkWidget *widget, AgsPad *pad)
       channel = channel->next;
     }
   }else{
-    machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) pad, AGS_TYPE_MACHINE);
-
     if((AGS_MACHINE_SOLO & (machine->flags)) != 0){
       container = (GtkContainer *) (AGS_IS_OUTPUT(pad->channel) ? machine->output: machine->input);
       list_start = 

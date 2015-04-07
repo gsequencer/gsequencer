@@ -54,6 +54,7 @@ struct _AgsMachineEditor
   gchar *version;
   gchar *build_id;
 
+  GtkWindow *parent;
   AgsMachine *machine;
 
   GtkNotebook *notebook;
