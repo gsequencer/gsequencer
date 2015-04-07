@@ -155,8 +155,8 @@ ags_drum_input_pad_open_play_callback(GtkToggleButton *toggle_button, AgsDrumInp
     application_context = window->application_context;
     
     main_loop = application_context->main_loop;
-    task_thread = ags_thread_find(main_loop,
-				  AGS_TYPE_TASK_THREAD);
+    task_thread = ags_thread_find_type(main_loop,
+				       AGS_TYPE_TASK_THREAD);
     
     /* AgsAudioFile */
     if(!g_strcmp0(name0, name1)){
@@ -329,8 +329,8 @@ ags_drum_input_pad_open_response_callback(GtkWidget *widget, gint response, AgsD
     window = gtk_widget_get_toplevel(drum);
     
     main_loop = application_context->main_loop;
-    task_thread = ags_thread_find(main_loop,
-				  AGS_TYPE_TASK_THREAD);
+    task_thread = ags_thread_find_type(main_loop,
+				       AGS_TYPE_TASK_THREAD);
 
     name0 = gtk_file_chooser_get_filename((GtkFileChooser *) file_chooser);
     name1 = (char *) g_object_get_data((GObject *) file_chooser, AGS_DRUM_INPUT_PAD_OPEN_AUDIO_FILE_NAME);

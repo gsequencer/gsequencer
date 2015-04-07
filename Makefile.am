@@ -165,6 +165,7 @@ ags_thread_h_sources = \
 	$(deprecated_ags_thread_h_sources) \
 	src/ags/thread/ags_thread_init.h		\
 	src/ags/thread/ags_thread_application_context.h	\
+	src/ags/thread/ags_concurrency_provider.h	\
 	src/ags/thread/ags_async_queue.h		\
 	src/ags/thread/ags_audio_loop.h			\
 	src/ags/thread/ags_autosave_thread.h		\
@@ -188,6 +189,7 @@ ags_thread_c_sources = \
 	$(deprecated_ags_thread_c_sources) \
 	src/ags/thread/ags_thread_init.c		\
 	src/ags/thread/ags_thread_application_context.c	\
+	src/ags/thread/ags_concurrency_provider.c	\
 	src/ags/thread/ags_async_queue.c		\
 	src/ags/thread/ags_audio_loop.c			\
 	src/ags/thread/ags_autosave_thread.c		\
@@ -264,6 +266,7 @@ ags_audio_h_sources = 		\
 	$(deprecated_ags_audio_h_sources) \
 	src/ags/audio/ags_audio_init.h		\
 	src/ags/audio/ags_audio_application_context.h	\
+	src/ags/audio/ags_sound_provider.h	\
 	src/ags/audio/ags_acceleration.h	\
 	src/ags/audio/ags_audio.h		\
 	src/ags/audio/ags_audio_signal.h	\
@@ -309,6 +312,7 @@ ags_audio_c_sources =  		\
 	$(deprecated_ags_audio_c_sources) \
 	src/ags/audio/ags_audio_init.c		\
 	src/ags/audio/ags_audio_application_context.c	\
+	src/ags/audio/ags_sound_provider.c	\
 	src/ags/audio/ags_acceleration.c	\
 	src/ags/object/ags_playable.c		\
 	src/ags/audio/ags_audio.c		\
@@ -623,6 +627,7 @@ gsequencer_server_h_sources = \
 	$(deprecated_gsequencer_server_h_sources) \
 	src/ags/server/ags_server_init.h		\
 	src/ags/server/ags_server_application_context.h	\
+	src/ags/server/ags_service_provider.h 		\
 	src/ags/server/ags_registry.h			\
 	src/ags/server/ags_remote_task.h		\
 	src/ags/server/ags_server.h
@@ -633,6 +638,7 @@ gsequencer_server_c_sources = \
 	$(deprecated_gsequencer_server_c_sources) \
 	src/ags/server/ags_server_init.c		\
 	src/ags/server/ags_server_application_context.c	\
+	src/ags/server/ags_service_provider.c 		\
 	src/ags/server/ags_registry.c			\
 	src/ags/server/ags_remote_task.c		\
 	src/ags/server/ags_server.c

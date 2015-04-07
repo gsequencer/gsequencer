@@ -27,6 +27,7 @@
 #include <ags/object/ags_countable.h>
 #include <ags/object/ags_seekable.h>
 #include <ags/object/ags_plugin.h>
+#include <ags/object/ags_soundcard.h>
 
 #include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>

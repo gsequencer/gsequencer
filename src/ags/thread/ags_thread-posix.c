@@ -24,7 +24,6 @@
 #include <ags/object/ags_stackable.h>
 #include <ags/object/ags_main_loop.h>
 
-#include <ags/thread/ags_async_queue.h>
 #include <ags/thread/ags_task_thread.h>
 #include <ags/thread/ags_gui_thread.h>
 #include <ags/thread/ags_returnable_thread.h>
@@ -1833,7 +1832,6 @@ ags_thread_signal_children(AgsThread *thread, gboolean broadcast)
 void
 ags_thread_real_start(AgsThread *thread)
 {
-  AgsAsyncQueue *async_queue;
   AgsMainLoop *main_loop;
   guint val;
 
@@ -1842,15 +1840,10 @@ ags_thread_real_start(AgsThread *thread)
   }
 
   main_loop = AGS_MAIN_LOOP(ags_thread_get_toplevel(thread));
-  async_queue = ags_main_loop_get_async_queue(main_loop);
 
 #ifdef AGS_DEBUG
   g_message("thread start: %s\0", G_OBJECT_TYPE_NAME(thread));
 #endif
-
-  /* add to async queue */
-  //  ags_async_queue_add(async_queue,
-  //		      AGS_STACKABLE(thread));
 
   /* */
   val = g_atomic_int_get(&(thread->flags));
@@ -1887,7 +1880,6 @@ ags_thread_start(AgsThread *thread)
 void*
 ags_thread_loop(void *ptr)
 {
-  AgsAsyncQueue *async_queue;
   AgsThread *thread, *main_loop;
   gboolean is_in_sync;
   gboolean wait_for_parent, wait_for_sibling, wait_for_children;
@@ -1957,8 +1949,6 @@ ags_thread_loop(void *ptr)
       ags_main_loop_set_last_sync(AGS_MAIN_LOOP(main_loop), current_tic);
       ags_main_loop_set_tic(AGS_MAIN_LOOP(main_loop), next_tic);
     }else{
-      ags_async_queue_clean(ags_main_loop_get_async_queue(main_loop));
-
       ags_thread_set_sync_all(main_loop, current_tic);
       pthread_mutex_unlock(&(main_loop->mutex));
 
@@ -1973,7 +1963,6 @@ ags_thread_loop(void *ptr)
     thread = AGS_THREAD(ptr);
 
   main_loop = ags_thread_get_toplevel(thread);
-  async_queue = ags_main_loop_get_async_queue(main_loop);
 
   /*  */
   current_tic = ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop));
@@ -2368,46 +2357,19 @@ ags_thread_loop(void *ptr)
 			      current_tic) &&
      current_tic == ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop))){
 
-    ags_async_queue_clean(ags_main_loop_get_async_queue(AGS_MAIN_LOOP(main_loop)));
-
     ags_thread_set_sync_all(main_loop, current_tic);
-
-    if((AGS_THREAD_UNREF_ON_EXIT & (g_atomic_int_get(&(thread->flags)))) != 0){
-      AgsAsyncQueue *async_queue;
-
-      async_queue = ags_main_loop_get_async_queue(AGS_MAIN_LOOP(main_loop));
-
-      async_queue->unref_context = g_list_prepend(async_queue->unref_context,
-						  thread);
-    }
 
     pthread_mutex_unlock(&(main_loop->mutex));
 
     ags_main_loop_set_last_sync(AGS_MAIN_LOOP(main_loop), current_tic);
     ags_main_loop_set_tic(AGS_MAIN_LOOP(main_loop), next_tic);
   }else{
-
-    if((AGS_THREAD_UNREF_ON_EXIT & (g_atomic_int_get(&(thread->flags)))) != 0){
-      AgsAsyncQueue *async_queue;
-
-      async_queue = ags_main_loop_get_async_queue(AGS_MAIN_LOOP(main_loop));
-
-      async_queue->unref_context = g_list_prepend(async_queue->unref_context,
-						  thread);
-    }
-
     pthread_mutex_unlock(&(main_loop->mutex));
   }
-
 
 #ifdef AGS_DEBUG
   g_message("thread finished\0");
 #endif  
-
-
-  /* remove of AgsAsyncQueue */  
-  //  ags_async_queue_remove(async_queue,
-  //			 AGS_STACKABLE(thread));
 
   /* exit thread */
   pthread_exit(NULL);
@@ -2772,6 +2734,34 @@ ags_thread_hangcheck(AgsThread *thread)
     ags_thread_hangcheck_unsync_all(toplevel, FALSE);
   }
 }
+
+AgsThread*
+ags_thread_find_type(AgsThread *thread, GType type)
+{
+  AgsThread *current, *retval;
+
+  if(thread == NULL || type == G_TYPE_NONE){
+    return(NULL);
+  }
+
+  if(g_type_is_a(G_OBJECT_TYPE(thread), type)){
+    return(thread);
+  }
+  
+  current = thread->children;
+
+  while(current != NULL){
+    if((retval = ags_thread_find_type(current, type)) != NULL){
+      return(retval);
+    }
+    
+    current = current->next;
+  }
+
+  
+  return(NULL);
+}
+
 
 /**
  * ags_thread_new:
