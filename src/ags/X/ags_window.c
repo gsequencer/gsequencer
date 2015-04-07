@@ -208,6 +208,8 @@ ags_window_init(AgsWindow *window)
   window->automation_editor = ags_automation_editor_new(window);
 
   window->export_window = ags_export_window_new();
+  window->export_window->parent = window;
+
   window->preferences = NULL;
 
   window->machine_counter = ags_window_standard_machine_counter();
@@ -271,10 +273,6 @@ ags_window_set_property(GObject *gobject,
       }
 
       window->application_context = application_context;
-
-      g_object_set(G_OBJECT(window->export_window),
-		   "application-context\0", application_context,
-		   NULL);
     }
     break;
   default:

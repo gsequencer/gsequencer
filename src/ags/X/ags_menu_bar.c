@@ -330,7 +330,8 @@ ags_menu_bar_new()
 {
   AgsMenuBar *menu_bar;
 
-  menu_bar = (AgsMenuBar *) g_object_new(AGS_TYPE_MENU_BAR, NULL);
+  menu_bar = (AgsMenuBar *) g_object_new(AGS_TYPE_MENU_BAR,
+					 NULL);
 
   return(menu_bar);
 }
