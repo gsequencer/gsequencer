@@ -18,6 +18,8 @@
 
 #include <ags/thread/ags_devout_thread.h>
 
+#include <ags/object/ags_application_context.h>
+#include <ags/object/ags_config.h>
 #include <ags-lib/object/ags_connectable.h>
 
 #include <ags/object/ags_soundcard.h>
@@ -25,8 +27,6 @@
 #include <ags/thread/ags_timestamp_thread.h>
 
 #include <ags/audio/ags_devout.h>
-
-#include <ags/object/ags_config.h>
 
 void ags_devout_thread_class_init(AgsDevoutThreadClass *devout_thread);
 void ags_devout_thread_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -38,8 +38,6 @@ void ags_devout_thread_finalize(GObject *gobject);
 void ags_devout_thread_start(AgsThread *thread);
 void ags_devout_thread_run(AgsThread *thread);
 void ags_devout_thread_stop(AgsThread *thread);
-
-extern pthread_key_t config;
 
 /**
  * SECTION:ags_devout_thread
@@ -124,21 +122,28 @@ ags_devout_thread_connectable_interface_init(AgsConnectableInterface *connectabl
 void
 ags_devout_thread_init(AgsDevoutThread *devout_thread)
 {
-  AgsThread *thread;
-  AgsConfig *ags_config = pthread_getspecific(config);
+  AgsThread *thread, *main_loop;
+  AgsApplicationContext *application_context;
+  AgsConfig *config;
   guint buffer_size;
   guint samplerate;
 
   thread = AGS_THREAD(devout_thread);
 
-  buffer_size = g_ascii_strtoull(ags_config_get_value(ags_config,
-						AGS_CONFIG_DEVOUT,
-						"buffer-size"),
+  main_loop = ags_thread_get_toplevel(thread);
+
+  application_context = ags_main_loop_get_application_context(AGS_MAIN_LOOP(main_loop));
+
+  config = application_context->config;
+  
+  buffer_size = g_ascii_strtoull(ags_config_get_value(config,
+						      AGS_CONFIG_DEVOUT,
+						      "buffer-size"),
 				 NULL,
 				 10);
-  samplerate = g_ascii_strtoull(ags_config_get_value(ags_config,
-					       AGS_CONFIG_DEVOUT,
-					       "samplerate"),
+  samplerate = g_ascii_strtoull(ags_config_get_value(config,
+						     AGS_CONFIG_DEVOUT,
+						     "samplerate"),
 				NULL,
 				10);
 

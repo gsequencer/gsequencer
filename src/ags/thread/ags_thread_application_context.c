@@ -63,9 +63,6 @@ enum{
   PROP_THREAD_POOL,
 };
 
-AgsThreadApplicationContext *ags_thread_application_context = NULL;
-extern pthread_key_t config;
-
 GType
 ags_thread_application_context_get_type()
 {
@@ -310,10 +307,12 @@ ags_thread_application_context_finalize(GObject *gobject)
 void
 ags_thread_application_context_load_config(AgsApplicationContext *application_context)
 {
-  AgsConfig *ags_config =  pthread_getspecific(config);
+  AgsConfig *config;
   gchar *model;
+
+  config = application_context->config;
   
-  model = ags_config_get_value(ags_config,
+  model = ags_config_get_value(config,
 			       AGS_CONFIG_THREAD,
 			       "model\0");
     

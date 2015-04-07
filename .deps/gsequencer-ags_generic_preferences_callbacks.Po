@@ -527,7 +527,7 @@ gsequencer-ags_generic_preferences_callbacks.o: \
  /usr/include/gtk-2.0/gtk/gtkoptionmenu.h \
  /usr/include/gtk-2.0/gtk/gtkpreview.h \
  /usr/include/gtk-2.0/gtk/gtktipsquery.h \
- src/ags/X/ags_generic_preferences.h src/ags/main.h \
+ src/ags/X/ags_generic_preferences.h \
  src/ags/object/ags_application_context.h src/ags/lib/ags_log.h \
  src/ags/object/ags_config.h src/ags/file/ags_file.h \
  /usr/include/libxml2/libxml/tree.h \
@@ -1794,8 +1794,6 @@ src/ags/X/ags_generic_preferences_callbacks.h:
 /usr/include/gtk-2.0/gtk/gtktipsquery.h:
 
 src/ags/X/ags_generic_preferences.h:
-
-src/ags/main.h:
 
 src/ags/object/ags_application_context.h:
 

@@ -555,7 +555,9 @@ libags_audio_a-ags_recall_factory.o: src/ags/audio/ags_recall_factory.c \
  src/ags/thread/ags_timestamp_thread.h src/ags/thread/ags_thread-posix.h \
  src/ags/audio/ags_timestamp.h src/ags/audio/ags_note.h \
  src/ags/audio/ags_recall_container.h \
- src/ags-lib/object/ags_connectable.h \
+ src/ags-lib/object/ags_connectable.h src/ags/object/ags_soundcard.h \
+ src/ags/object/ags_application_context.h src/ags/lib/ags_log.h \
+ src/ags/object/ags_config.h src/ags/file/ags_file.h \
  src/ags/audio/ags_recall_channel_run_dummy.h \
  src/ags/audio/ags_recall_channel.h \
  src/ags/audio/ags_recall_channel_run.h src/ags/audio/ags_devout.h \
@@ -589,9 +591,7 @@ libags_audio_a-ags_recall_factory.o: src/ags/audio/ags_recall_factory.c \
  /usr/include/asm/posix_types_64.h /usr/include/asm-generic/posix_types.h \
  /usr/include/sys/time.h src/ags/object/ags_stackable.h \
  src/ags/thread/ags_task_thread.h src/ags/thread/ags_thread_pool.h \
- src/ags/object/ags_main_loop.h src/ags/object/ags_application_context.h \
- src/ags/lib/ags_log.h src/ags/object/ags_config.h \
- src/ags/file/ags_file.h src/ags/audio/ags_task.h \
+ src/ags/object/ags_main_loop.h src/ags/audio/ags_task.h \
  src/ags/thread/ags_devout_thread.h src/ags/thread/ags_iterator_thread.h \
  src/ags/audio/ags_recall_audio_run.h src/ags/audio/ags_recall_audio.h \
  src/ags/audio/ags_recall_recycling_dummy.h \
@@ -1932,6 +1932,16 @@ src/ags/audio/ags_recall_container.h:
 
 src/ags-lib/object/ags_connectable.h:
 
+src/ags/object/ags_soundcard.h:
+
+src/ags/object/ags_application_context.h:
+
+src/ags/lib/ags_log.h:
+
+src/ags/object/ags_config.h:
+
+src/ags/file/ags_file.h:
+
 src/ags/audio/ags_recall_channel_run_dummy.h:
 
 src/ags/audio/ags_recall_channel.h:
@@ -2063,14 +2073,6 @@ src/ags/thread/ags_task_thread.h:
 src/ags/thread/ags_thread_pool.h:
 
 src/ags/object/ags_main_loop.h:
-
-src/ags/object/ags_application_context.h:
-
-src/ags/lib/ags_log.h:
-
-src/ags/object/ags_config.h:
-
-src/ags/file/ags_file.h:
 
 src/ags/audio/ags_task.h:
 

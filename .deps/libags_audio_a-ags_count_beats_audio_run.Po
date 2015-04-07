@@ -565,12 +565,12 @@ libags_audio_a-ags_count_beats_audio_run.o: \
  src/ags/file/ags_file.h src/ags-lib/object/ags_connectable.h \
  src/ags/object/ags_dynamic_connectable.h src/ags/object/ags_countable.h \
  src/ags/object/ags_seekable.h src/ags/object/ags_plugin.h \
- src/ags/file/ags_file_stock.h src/ags/widget/ags_led.h \
- src/ags/widget/ags_vindicator.h src/ags/widget/ags_indicator.h \
- src/ags/widget/ags_hindicator.h src/ags/widget/ags_waveform.h \
- src/ags/widget/ags_dial.h src/ags/widget/ags_cartesian.h \
- src/ags/file/ags_file_id_ref.h src/ags/file/ags_file_lookup.h \
- src/ags/audio/ags_recall_container.h \
+ src/ags/object/ags_soundcard.h src/ags/file/ags_file_stock.h \
+ src/ags/widget/ags_led.h src/ags/widget/ags_vindicator.h \
+ src/ags/widget/ags_indicator.h src/ags/widget/ags_hindicator.h \
+ src/ags/widget/ags_waveform.h src/ags/widget/ags_dial.h \
+ src/ags/widget/ags_cartesian.h src/ags/file/ags_file_id_ref.h \
+ src/ags/file/ags_file_lookup.h src/ags/audio/ags_recall_container.h \
  src/ags/audio/recall/ags_stream_channel_run.h \
  src/ags/audio/ags_recall_channel_run.h src/ags/audio/ags_devout.h \
  /usr/include/alsa/asoundlib.h /usr/include/string.h \
@@ -1937,6 +1937,8 @@ src/ags/object/ags_countable.h:
 src/ags/object/ags_seekable.h:
 
 src/ags/object/ags_plugin.h:
+
+src/ags/object/ags_soundcard.h:
 
 src/ags/file/ags_file_stock.h:
 

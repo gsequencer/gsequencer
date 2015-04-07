@@ -21,7 +21,8 @@
 
 #include <glib-object.h>
 
-#include <ags/object/ags_main_loop.h>
+#include <ags/thread/ags_thread-posix.h>
+#include <ags/thread/ags_thread_pool.h>
 
 #define AGS_TYPE_CONCURRENCY_PROVIDER                    (ags_concurrency_provider_get_type())
 #define AGS_CONCURRENCY_PROVIDER(obj)                    (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_CONCURRENCY_PROVIDER, AgsConcurrencyProvider))
@@ -38,10 +39,12 @@ struct _AgsConcurrencyProviderInterface
   GTypeInterface interface;
 
   AgsThread* (*get_main_loop)(AgsConcurrencyProvider *concurrency_provider);
+  AgsThreadPool* (*get_thread_pool)(AgsConcurrencyProvider *concurrency_provider);
 };
 
 GType ags_concurrency_provider_get_type();
 
 AgsThread* ags_concurrency_provider_get_main_loop(AgsConcurrencyProvider *concurrency_provider);
+AgsThreadPool* ags_concurrency_provider_get_thread_pool(AgsConcurrencyProvider *concurrency_provider);
 
 #endif /*__AGS_CONCURRENCY_PROVIDER_H__*/

@@ -553,7 +553,8 @@ gsequencer-main.o: src/ags/main.c /usr/include/stdc-predef.h \
  src/ags-lib/object/ags_connectable.h src/ags/object/ags_soundcard.h \
  src/ags/thread/ags_thread_init.h src/ags/thread/ags_thread-posix.h \
  src/ags/thread/ags_single_thread.h src/ags/thread/ags_autosave_thread.h \
- src/ags/thread/ags_concurrency_provider.h src/ags/object/ags_main_loop.h \
+ src/ags/thread/ags_concurrency_provider.h \
+ src/ags/thread/ags_thread_pool.h src/ags/object/ags_main_loop.h \
  src/ags/server/ags_server.h /usr/include/netinet/in.h \
  /usr/lib/gcc/x86_64-unknown-linux-gnu/4.9.2/include/stdint.h \
  /usr/include/stdint.h /usr/include/bits/wchar.h \
@@ -1894,6 +1895,8 @@ src/ags/thread/ags_single_thread.h:
 src/ags/thread/ags_autosave_thread.h:
 
 src/ags/thread/ags_concurrency_provider.h:
+
+src/ags/thread/ags_thread_pool.h:
 
 src/ags/object/ags_main_loop.h:
 
