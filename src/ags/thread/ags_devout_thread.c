@@ -122,32 +122,12 @@ ags_devout_thread_connectable_interface_init(AgsConnectableInterface *connectabl
 void
 ags_devout_thread_init(AgsDevoutThread *devout_thread)
 {
-  AgsThread *thread, *main_loop;
-  AgsApplicationContext *application_context;
-  AgsConfig *config;
-  guint buffer_size;
-  guint samplerate;
-
+  AgsThread *thread;
+  
   thread = AGS_THREAD(devout_thread);
 
-  main_loop = ags_thread_get_toplevel(thread);
+  thread->freq = AGS_DEVOUT_THREAD_DEFAULT_JIFFIE;
 
-  application_context = ags_main_loop_get_application_context(AGS_MAIN_LOOP(main_loop));
-
-  config = application_context->config;
-  
-  buffer_size = g_ascii_strtoull(ags_config_get_value(config,
-						      AGS_CONFIG_DEVOUT,
-						      "buffer-size"),
-				 NULL,
-				 10);
-  samplerate = g_ascii_strtoull(ags_config_get_value(config,
-						     AGS_CONFIG_DEVOUT,
-						     "samplerate"),
-				NULL,
-				10);
-
-  thread->freq = samplerate / buffer_size;
   devout_thread->timestamp_thread = ags_timestamp_thread_new();
   ags_thread_add_child(thread, devout_thread->timestamp_thread);
 

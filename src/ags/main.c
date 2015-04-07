@@ -210,7 +210,7 @@ main(int argc, char **argv)
 	       NULL);
   
   ags_init_context(application_context);
-  ags_thread_init(application_context);
+  ags_thread_init_context(application_context);
   ags_audio_init_context(application_context);
   ags_gui_init_context(application_context);
   ags_xorg_init_context(application_context);
@@ -274,15 +274,12 @@ main(int argc, char **argv)
 
     /* AgsSoundcard */
     soundcard = ags_devout_new(application_context);
-    g_object_set(application_context,
-		 "soundcard\0", soundcard,
-		 NULL);
+    AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard = soundcard;
+    g_object_ref(G_OBJECT(soundcard));
     
-      /* AgsWindow */
+    /* AgsWindow */
     window = ags_window_new(application_context);
-    g_object_set(application_context,
-		 "window\0", window,
-		 NULL);
+    AGS_XORG_APPLICATION_CONTEXT(application_context)->window = window;
     g_object_ref(G_OBJECT(window));
 
     gtk_window_set_default_size((GtkWindow *) window, 500, 500);
@@ -293,9 +290,6 @@ main(int argc, char **argv)
 
     /* AgsServer */
     server = ags_server_new(application_context);
-    g_object_set(application_context,
-		 "server\0", server,
-		 NULL);
 
     /* AgsMainLoop */
     audio_loop = (AgsThread *) ags_audio_loop_new((GObject *) soundcard,
@@ -308,6 +302,7 @@ main(int argc, char **argv)
     ags_connectable_connect(AGS_CONNECTABLE(audio_loop));
 
     /* start thread tree */
+    AGS_XORG_APPLICATION_CONTEXT(application_context)->thread_pool = ags_thread_pool_new(AGS_THREAD(application_context->main_loop));
     ags_thread_start(audio_loop);
 
     /* complete thread pool */

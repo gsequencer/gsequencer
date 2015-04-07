@@ -94,7 +94,7 @@ guint ags_devout_get_note_offset(AgsSoundcard *soundcard);
 
 enum{
   PROP_0,
-  PROP_MAIN,
+  PROP_APPLICATION_CONTEXT,
   PROP_DEVICE,
   PROP_DSP_CHANNELS,
   PROP_PCM_CHANNELS,
@@ -173,19 +173,19 @@ ags_devout_class_init(AgsDevoutClass *devout)
 
   /* properties */
   /**
-   * AgsDevout:main:
+   * AgsDevout:application-context:
    *
    * The assigned #AgsApplicationContext
    * 
    * Since: 0.4.0
    */
-  param_spec = g_param_spec_object("main\0",
-				   "the main object\0",
-				   "The main object\0",
+  param_spec = g_param_spec_object("application-context\0",
+				   "the application context object\0",
+				   "The application context object\0",
 				   AGS_TYPE_APPLICATION_CONTEXT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_MAIN,
+				  PROP_APPLICATION_CONTEXT,
 				  param_spec);
 
   /**
@@ -461,7 +461,7 @@ ags_devout_set_property(GObject *gobject,
   //TODO:JK: implement set functionality
   
   switch(prop_id){
-  case PROP_MAIN:
+  case PROP_APPLICATION_CONTEXT:
     {
       AgsApplicationContext *application_context;
 
@@ -480,7 +480,7 @@ ags_devout_set_property(GObject *gobject,
 	
 	g_object_ref(G_OBJECT(application_context));
 
-	config = AGS_APPLICATION_CONTEXT(devout->application_context)->config;
+	config = application_context->config;
 	
 	devout->dsp_channels = g_ascii_strtoull(ags_config_get_value(config,
 								     AGS_CONFIG_DEVOUT,
