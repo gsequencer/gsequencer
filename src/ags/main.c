@@ -279,6 +279,9 @@ main(int argc, char **argv)
     
     /* AgsWindow */
     window = ags_window_new(application_context);
+    g_object_set(window,
+		 "soundcard\0", soundcard,
+		 NULL);
     AGS_XORG_APPLICATION_CONTEXT(application_context)->window = window;
     g_object_ref(G_OBJECT(window));
 
