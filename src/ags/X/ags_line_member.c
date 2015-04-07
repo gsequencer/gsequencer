@@ -31,6 +31,7 @@
 
 #include <ags/widget/ags_dial.h>
 
+#include <ags/X/ags_window.h>
 #include <ags/X/ags_line.h>
 #include <ags/X/ags_effect_line.h>
 
@@ -87,9 +88,6 @@ enum{
 
 static gpointer ags_line_member_parent_class = NULL;
 static guint line_member_signals[LAST_SIGNAL];
-
-extern pthread_key_t application_context;
-AgsApplicationContext *ags_application_context =  pthread_getspecific(application_context);
 
 GType
 ags_line_member_get_type(void)
@@ -766,29 +764,27 @@ ags_line_member_real_change_port(AgsLineMember *line_member,
   }
 
   if((AGS_LINE_MEMBER_RESET_BY_TASK & (line_member->flags)) != 0){
+    AgsWindow *window;
     AgsLine *line;
-    AgsThread *main_loop, *current;
+    
+    AgsThread *main_loop;
     AgsTaskThread *task_thread;
     AgsTask *task;
+
+    AgsApplicationContext *application_context;
 
     //TODO:JK: add support for effect_line
     line = (AgsLine *) gtk_widget_get_ancestor(GTK_WIDGET(line_member),
 					       AGS_TYPE_LINE);
 
-    main_loop = ags_application_context->main_loop;
-    task_thread = NULL;
+    window = gtk_widget_get_ancestor(line,
+				     AGS_TYPE_WINDOW);
 
-    current = main_loop->children;
-
-    while(current != NULL){
-      if(AGS_IS_TASK_THREAD(current)){
-	task_thread = (AgsTaskThread *) current;
-
-	break;
-      }
-
-      current = current->next;
-    }
+    application_context = window->application_context;
+    
+    main_loop = application_context->main_loop;
+    task_thread = ags_thread_find_type(main_loop,
+				       AGS_TYPE_TASK_THREAD);
 
     task = (AgsTask *) g_object_new(line_member->task_type,
 				    line_member->control_port, port_data,

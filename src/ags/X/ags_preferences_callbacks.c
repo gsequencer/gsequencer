@@ -47,7 +47,7 @@ ags_preferences_response_callback(GtkDialog *dialog, gint response_id, gpointer 
   case GTK_RESPONSE_CANCEL:
     {
       AGS_PREFERENCES(dialog)->flags |= AGS_PREFERENCES_SHUTDOWN;
-      AGS_WINDOW(AGS_PREFERENCES(dialog)->window)->preferences = NULL;
+      AGS_WINDOW(AGS_PREFERENCES(dialog)->parent)->preferences = NULL;
       gtk_widget_destroy(GTK_WIDGET(dialog));
     }
   }
