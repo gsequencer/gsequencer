@@ -24,6 +24,11 @@
 #include <gtk/gtk.h>
 
 #include <ags/object/ags_application_context.h>
+#include <ags/object/ags_soundcard.h>
+
+#include <ags/thread/ags_thread_pool.h>
+
+#include <ags/server/ags_server.h>
 
 #include <ags/X/ags_window.h>
 
@@ -48,6 +53,12 @@ struct _AgsXorgApplicationContext
 {
   AgsApplicationContext application_context;
 
+  AgsThreadPool *thread_pool;
+
+  AgsServer *server;
+  
+  GList *soundcard;
+  
   AgsWindow *window;
 };
 

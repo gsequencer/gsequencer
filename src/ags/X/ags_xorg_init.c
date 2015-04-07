@@ -258,7 +258,9 @@ ags_xorg_colors_alloc()
 
 void
 ags_xorg_init_context(AgsApplicationContext *application_context)
-{  
+{
+  /* complete thread pool */
+
   /* map x11 collors */
   ags_xorg_colors_alloc();
 }

@@ -26,9 +26,16 @@
 #include <ags/file/ags_file_id_ref.h>
 
 #include <ags/thread/ags_gui_thread.h>
+#include <ags/thread/ags_concurrency_provider.h>
+#include <ags/thread/ags_thread-posix.h>
+#include <ags/thread/ags_thread_pool.h>
+
+#include <ags/audio/ags_sound_provider.h>
 
 void ags_xorg_application_context_class_init(AgsXorgApplicationContextClass *xorg_application_context);
 void ags_xorg_application_context_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_xorg_application_context_concurrency_provider_interface_init(AgsConcurrencyProviderInterface *concurrency_provider);
+void ags_xorg_application_context_sound_provider_interface_init(AgsSoundProviderInterface *sound_provider);
 void ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_context);
 void ags_xorg_application_context_set_property(GObject *gobject,
 					       guint prop_id,
@@ -40,6 +47,9 @@ void ags_xorg_application_context_get_property(GObject *gobject,
 					       GParamSpec *param_spec);
 void ags_xorg_application_context_connect(AgsConnectable *connectable);
 void ags_xorg_application_context_disconnect(AgsConnectable *connectable);
+AgsThread* ags_xorg_application_context_get_main_loop(AgsConcurrencyProvider *concurrency_provider);
+AgsThreadPool* ags_xorg_application_context_get_thread_pool(AgsConcurrencyProvider *concurrency_provider);
+GList* ags_xorg_application_context_get_soundcard(AgsSoundProvider *sound_provider);
 void ags_xorg_application_context_finalize(GObject *gobject);
 
 void ags_xorg_application_context_load_config(AgsApplicationContext *application_context);
@@ -82,6 +92,18 @@ ags_xorg_application_context_get_type()
       NULL, /* interface_data */
     };
 
+    static const GInterfaceInfo ags_concurrency_provider_interface_info = {
+      (GInterfaceInitFunc) ags_xorg_application_context_concurrency_provider_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
+    static const GInterfaceInfo ags_sound_provider_interface_info = {
+      (GInterfaceInitFunc) ags_xorg_application_context_sound_provider_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_xorg_application_context = g_type_register_static(AGS_TYPE_APPLICATION_CONTEXT,
 							       "AgsXorgApplicationContext\0",
 							       &ags_xorg_application_context_info,
@@ -90,6 +112,14 @@ ags_xorg_application_context_get_type()
     g_type_add_interface_static(ags_type_xorg_application_context,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_type_add_interface_static(ags_type_xorg_application_context,
+				AGS_TYPE_CONCURRENCY_PROVIDER,
+				&ags_concurrency_provider_interface_info);
+
+    g_type_add_interface_static(ags_type_xorg_application_context,
+				AGS_TYPE_SOUND_PROVIDER,
+				&ags_sound_provider_interface_info);
   }
 
   return (ags_type_xorg_application_context);
@@ -145,8 +175,24 @@ ags_xorg_application_context_connectable_interface_init(AgsConnectableInterface 
 }
 
 void
+ags_xorg_application_context_concurrency_provider_interface_init(AgsConcurrencyProviderInterface *concurrency_provider)
+{
+  concurrency_provider->get_main_loop = ags_xorg_application_context_get_main_loop;
+  concurrency_provider->get_thread_pool = ags_xorg_application_context_get_thread_pool;
+}
+
+void
+ags_xorg_application_context_sound_provider_interface_init(AgsSoundProviderInterface *sound_provider)
+{
+  sound_provider->get_soundcard = ags_xorg_application_context_get_soundcard;
+}
+
+void
 ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_context)
 {
+  xorg_application_context->thread_pool = NULL;
+  xorg_application_context->server = NULL;
+  xorg_application_context->soundcard = NULL;
   xorg_application_context->window = NULL;
 }
 
@@ -237,6 +283,24 @@ ags_xorg_application_context_disconnect(AgsConnectable *connectable)
   }
 
   ags_xorg_application_context_parent_connectable_interface->disconnect(connectable);
+}
+
+AgsThread*
+ags_xorg_application_context_get_main_loop(AgsConcurrencyProvider *concurrency_provider)
+{
+  return(AGS_APPLICATION_CONTEXT(concurrency_provider)->main_loop);
+}
+
+AgsThreadPool*
+ags_xorg_application_context_get_thread_pool(AgsConcurrencyProvider *concurrency_provider)
+{
+  return(AGS_XORG_APPLICATION_CONTEXT(concurrency_provider)->thread_pool);
+}
+
+GList*
+ags_xorg_application_context_get_soundcard(AgsSoundProvider *sound_provider)
+{
+  return(AGS_XORG_APPLICATION_CONTEXT(sound_provider)->soundcard);
 }
 
 void

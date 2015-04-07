@@ -19,25 +19,11 @@
 #include <ags/thread/ags_thread_init.h>
 
 #include <ags/object/ags_init.h>
-#include <ags/object/ags_application_context.h>
 
 #include <ags/thread/ags_thread_application_context.h>
 
-extern pthread_key_t application_context;
-
 void
-ags_thread_init_context(int *argc, gchar ***argv)
+ags_thread_init_context(AgsApplicationContext *application_context)
 {
-  AgsApplicationContext *ags_application_context =  pthread_getspecific(application_context);
-  AgsThreadApplicationContext *ags_thread_application_context;
-
-  /* complete thread pool */
-  ags_thread_application_context->thread_pool->parent = AGS_THREAD(ags_application_context->main_loop);
-  ags_thread_pool_start(ags_thread_application_context->thread_pool);
-
-  /* instantiate application context */
-  ags_thread_application_context = ags_thread_application_context_new(NULL,
-								      NULL);
-  ags_application_context_add_sibling(ags_application_context,
-				      ags_thread_application_context);
+  /* empty */
 }
