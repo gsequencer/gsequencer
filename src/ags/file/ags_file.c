@@ -114,9 +114,6 @@ enum{
 static gpointer ags_file_parent_class = NULL;
 static guint file_signals[LAST_SIGNAL] = { 0 };
 
-extern pthread_key_t application_context;
-AgsApplicationContext *ags_application_context =  pthread_getspecific(application_context);
-
 GType
 ags_file_get_type (void)
 {
@@ -842,8 +839,8 @@ ags_file_real_write_concurrent(AgsFile *file)
   gchar *id;
 
   main_loop = AGS_APPLICATION_CONTEXT(file->application_context)->main_loop;
-  gui_thread = AGS_AUDIO_LOOP(main_loop)->gui_thread;
-  task_thread = AGS_AUDIO_LOOP(main_loop)->task_thread;
+  //gui_thread = AGS_AUDIO_LOOP(main_loop)->gui_thread;
+  //task_thread = AGS_AUDIO_LOOP(main_loop)->task_thread;
 
   application_context = file->application_context;
 
@@ -950,7 +947,7 @@ ags_file_write_resolve(AgsFile *file)
 void
 ags_file_real_read(AgsFile *file)
 {
-  AgsApplicationContext *application_context, *current_context;
+  AgsApplicationContext *application_context;
   xmlNode *root_node, *child;
   pid_t pid_num;
 
@@ -958,25 +955,16 @@ ags_file_real_read(AgsFile *file)
   
   /* child elements */
   child = root_node->children;
-  application_context = NULL;
+  application_context = file->application_context;
   
   while(child != NULL){
     if(child->type == XML_ELEMENT_NODE){
       if(!xmlStrncmp("ags-application-context\0",
 		     child->name,
 		     9)){
-	current_context = NULL;
-	
 	ags_file_read_application_context(file,
 					  child,
-					  (GObject **) &current_context);
-
-	if(application_context != NULL){
-	  ags_application_context_add_sibling(application_context,
-					      current_context);
-	}else{
-	  application_context = current_context;
-	}
+					  (GObject **) &application_context);
       }else if(!xmlStrncmp("ags-embedded-audio-list\0",
 			   child->name,
 			   24)){
@@ -1079,22 +1067,18 @@ ags_file_read_application_context(AgsFile *file, xmlNode *node, GObject **applic
 
   context = xmlGetProp(node,
 		       "context\0");
-  list = ags_application_context->sibling;
   
-  while(list != NULL){
-    if(!g_strcmp0(context,
-		  AGS_APPLICATION_CONTEXT(list->data)->domain)){
-      AGS_APPLICATION_CONTEXT_GET_CLASS(list->data)->read(file, node, application_context);
-    }
-
-    list = list->next;
-  }
+  AGS_APPLICATION_CONTEXT_GET_CLASS(file->application_context)->read(file,
+								    node,
+								    application_context);
 }
 
 void
 ags_file_write_application_context(AgsFile *file, xmlNode *parent, GObject *application_context)
 {
-  AGS_APPLICATION_CONTEXT_GET_CLASS(application_context)->write(file, parent, application_context);
+  AGS_APPLICATION_CONTEXT_GET_CLASS(application_context)->write(file,
+								parent,
+								application_context);
 }
 
 /**
