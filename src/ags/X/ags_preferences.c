@@ -57,11 +57,6 @@ void ags_preferences_show(GtkWidget *widget);
 
 static gpointer ags_preferences_parent_class = NULL;
 
-extern pthread_key_t application_context;
-AgsApplicationContext *ags_application_context =  pthread_getspecific(application_context);
-extern pthread_key_t config;
-AgsConfig *ags_config =  pthread_getspecific(config);
-
 GType
 ags_preferences_get_type(void)
 {

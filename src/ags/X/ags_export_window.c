@@ -20,9 +20,9 @@
 #include <ags/X/ags_export_window_callbacks.h>
 
 #include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_soundcard.h>
 
-#include <ags/main.h>
-
+#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_notation.h>
 
 #include <ags/X/ags_window.h>
@@ -60,8 +60,7 @@ gboolean ags_export_window_delete_event(GtkWidget *widget, GdkEventAny *event);
 
 enum{
   PROP_0,
-  PROP_DEVOUT,
-  PROP_APPLICATION_CONTEXT,
+  PROP_SOUNDCARD,
 };
 
 static gpointer ags_export_window_parent_class = NULL;
@@ -121,37 +120,20 @@ ags_export_window_class_init(AgsExportWindowClass *export_window)
 
   /* properties */
   /**
-   * AgsExportWindow:devout:
+   * AgsExportWindow:soundcard:
    *
-   * The assigned #AgsDevout acting as default sink.
+   * The assigned #AgsSoundcard acting as default sink.
    * 
    * Since: 0.4
    */
-  param_spec = g_param_spec_object("devout\0",
-				   "assigned devout\0",
-				   "The devout it is assigned with\0",
+  param_spec = g_param_spec_object("soundcard\0",
+				   "assigned soundcard\0",
+				   "The soundcard it is assigned with\0",
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_DEVOUT,
+				  PROP_SOUNDCARD,
 				  param_spec);
-
-  /**
-   * AgsExportWindow:ags-application-context:
-   *
-   * The assigned #AgsApplicationContext to give control of application.
-   * 
-   * Since: 0.4
-   */
-  param_spec = g_param_spec_object("ags-application-context\0",
-				   "assigned ags application context\0",
-				   "The AgsApplicationContext it is assigned with\0",
-				   G_TYPE_OBJECT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_APPLICATION_CONTEXT,
-				  param_spec);
-
 
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) export_window;
@@ -181,6 +163,9 @@ ags_export_window_init(AgsExportWindow *export_window)
 
   export_window->flags = 0;
 
+  export_window->parent = NULL;
+  export_window->soundcard = NULL;
+  
   g_object_set(export_window,
 	       "title\0", "export to audio data\0",
 	       NULL);
@@ -368,39 +353,19 @@ ags_export_window_set_property(GObject *gobject,
   export_window = AGS_EXPORT_WINDOW(gobject);
 
   switch(prop_id){
-  case PROP_DEVOUT:
+  case PROP_SOUNDCARD:
     {
-      AgsDevout *devout;
+      GObject *soundcard;
 
-      devout = g_value_get_object(value);
+      soundcard = g_value_get_object(value);
 
-      if(export_window->devout == devout)
+      if(export_window->soundcard == soundcard)
 	return;
 
-      if(devout != NULL)
-	g_object_ref(devout);
+      if(soundcard != NULL)
+	g_object_ref(soundcard);
 
-      export_window->devout = devout;
-    }
-    break;
-  case PROP_APPLICATION_CONTEXT:
-    {
-      AgsApplicationContext *application_context;
-
-      application_context = g_value_get_object(value);
-
-      if(export_window->application_context == application_context)
-	return;
-
-      if(export_window->application_context != NULL){
-	g_object_unref(export_window->application_context);
-      }
-
-      if(application_context != NULL){
-	g_object_ref(application_context);
-      }
-
-      export_window->application_context = application_context;
+      export_window->soundcard = soundcard;
     }
     break;
   default:
@@ -420,11 +385,8 @@ ags_export_window_get_property(GObject *gobject,
   export_window = AGS_EXPORT_WINDOW(gobject);
 
   switch(prop_id){
-  case PROP_DEVOUT:
-    g_value_set_object(value, export_window->devout);
-    break;
-  case PROP_APPLICATION_CONTEXT:
-    g_value_set_object(value, export_window->application_context);
+  case PROP_SOUNDCARD:
+    g_value_set_object(value, export_window->soundcard);
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
@@ -491,7 +453,8 @@ ags_export_window_new()
 {
   AgsExportWindow *export_window;
 
-  export_window = (AgsExportWindow *) g_object_new(AGS_TYPE_EXPORT_WINDOW, NULL);
+  export_window = (AgsExportWindow *) g_object_new(AGS_TYPE_EXPORT_WINDOW,
+						   NULL);
 
   return(export_window);
 }

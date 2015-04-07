@@ -19,16 +19,14 @@
 #include <ags/X/ags_effect_line.h>
 #include <ags/X/ags_effect_line_callbacks.h>
 
-#include <ags-lib/object/ags_connectable.h>
-
-#include <ags/main.h>
-
+#include <ags/object/ags_application_context.h>
 #include <ags/object/ags_marshal.h>
+#include <ags-lib/object/ags_connectable.h>
 #include <ags/object/ags_plugin.h>
 
 #include <ags/plugin/ags_ladspa_manager.h>
 
-#include <ags/thread/ags_audio_loop.h>
+#include <ags/thread/ags_thread-posix.h>
 #include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_channel.h>
@@ -38,6 +36,7 @@
 
 #include <ags/widget/ags_dial.h>
 
+#include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_line_member.h>
 
@@ -397,6 +396,7 @@ ags_effect_line_real_add_effect(AgsEffectLine *effect_line,
 				gchar *filename,
 				gchar *effect)
 {
+  AgsWindow *window;
   AgsMachine *machine;
   AgsLineMember *line_member;
   AgsAddLineMember *add_line_member;
@@ -404,9 +404,11 @@ ags_effect_line_real_add_effect(AgsEffectLine *effect_line,
 
   AgsLadspaPlugin *ladspa_plugin;
 
-  AgsAudioLoop *audio_loop;
+  AgsThread *main_loop;
   AgsTaskThread *task_thread;
 
+  AgsApplicationContext *application_context;
+  
   GList *list, *list_start;
   GList *port;
   GList *task;
@@ -423,14 +425,21 @@ ags_effect_line_real_add_effect(AgsEffectLine *effect_line,
 
   machine = gtk_widget_get_ancestor(effect_line,
 				    AGS_TYPE_MACHINE);
+
+  window = gtk_widget_get_ancestor(machine,
+				   AGS_TYPE_WINDOW);
+
+  application_context = window->application_context;
   
-  audio_loop = (AgsAudioLoop *) AGS_APPLICATION_CONTEXT(AGS_DEVOUT(machine->audio->devout)->application_context)->main_loop;
-  task_thread = (AgsTaskThread *) audio_loop->task_thread;
+  main_loop = application_context->main_loop;
+  
+  task_thread = ags_thread_find_type(main_loop,
+				     AGS_TYPE_TASK_THREAD);
 
   if(ags_recall_ladpsa_find(effect_line->channel->recall,
 			    filename, effect) != NULL){
     /* return if duplicated */
-    return;
+    return(NULL);
   }
 
   index = ags_ladspa_manager_effect_index(filename,

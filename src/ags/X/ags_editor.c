@@ -66,7 +66,7 @@ enum{
 
 enum{
   PROP_0,
-  PROP_DEVOUT,
+  PROP_SOUNDCARD,
 };
 
 static gpointer ags_editor_parent_class = NULL;
@@ -129,19 +129,19 @@ ags_editor_class_init(AgsEditorClass *editor)
 
   /* properties */
   /**
-   * AgsEditor:devout:
+   * AgsEditor:soundcard:
    *
-   * The assigned #AgsDevout acting as default sink.
+   * The assigned #AgsSoundcard acting as default sink.
    * 
    * Since: 0.4
    */
-  param_spec = g_param_spec_object("devout\0",
-				   "assigned devout\0",
-				   "The devout it is assigned with\0",
+  param_spec = g_param_spec_object("soundcard\0",
+				   "assigned soundcard\0",
+				   "The soundcard it is assigned with\0",
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_DEVOUT,
+				  PROP_SOUNDCARD,
 				  param_spec);
 
   /* AgsEditorClass */
@@ -189,7 +189,7 @@ ags_editor_init(AgsEditor *editor)
   editor->version = AGS_EDITOR_DEFAULT_VERSION;
   editor->build_id = AGS_EDITOR_DEFAULT_BUILD_ID;
 
-  editor->devout = NULL;
+  editor->soundcard = NULL;
 
   editor->toolbar = ags_toolbar_new();
   gtk_box_pack_start((GtkBox *) editor,
@@ -236,19 +236,19 @@ ags_editor_set_property(GObject *gobject,
   editor = AGS_EDITOR(gobject);
 
   switch(prop_id){
-  case PROP_DEVOUT:
+  case PROP_SOUNDCARD:
     {
-      AgsDevout *devout;
+      GObject *soundcard;
 
-      devout = (AgsDevout *) g_value_get_object(value);
+      soundcard = (GObject *) g_value_get_object(value);
 
-      if(editor->devout == devout)
+      if(editor->soundcard == soundcard)
 	return;
 
-      if(devout != NULL)
-	g_object_ref(devout);
+      if(soundcard != NULL)
+	g_object_ref(soundcard);
 
-      editor->devout = devout;
+      editor->soundcard = soundcard;
     }
     break;
   default:
@@ -268,8 +268,8 @@ ags_editor_get_property(GObject *gobject,
   editor = AGS_EDITOR(gobject);
 
   switch(prop_id){
-  case PROP_DEVOUT:
-    g_value_set_object(value, editor->devout);
+  case PROP_SOUNDCARD:
+    g_value_set_object(value, editor->soundcard);
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);

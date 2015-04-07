@@ -36,12 +36,10 @@
 
 #include <ags/widget/ags_vindicator.h>
 
+#include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_pad.h>
 #include <ags/X/ags_line_member.h>
-
-extern pthread_key_t application_context;
-AgsApplicationContext *ags_application_context =  pthread_getspecific(application_context);
 
 int
 ags_line_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsLine *line)
@@ -162,29 +160,29 @@ void
 ags_line_peak_run_post_callback(AgsRecall *peak_channel,
 				AgsLine *line)
 {
-  AgsThread *main_loop, *current;
-  AgsTaskThread *task_thread;
-  AgsChangeIndicator *change_indicator;
+  AgsWindow *window;
   AgsMachine *machine;
+  AgsChangeIndicator *change_indicator;
+
+  AgsThread *main_loop;
+  AgsTaskThread *task_thread;
+
+  AgsApplicationContext *application_context;
+  
   GList *list, *list_start;
 
   machine = (AgsMachine *) gtk_widget_get_ancestor(line,
 						   AGS_TYPE_MACHINE);
 
-  task_thread = NULL;
+  window = gtk_widget_get_ancestor(machine,
+				   AGS_TYPE_WINDOW);
+
+  application_context = window->application_context;
+
+  main_loop = application_context->main_loop;
   
-  main_loop = ags_application_context->main_loop;
-  current = main_loop->children;
-
-  while(current != NULL){
-    if(AGS_IS_TASK_THREAD(current)){
-      task_thread = current;
-    
-      break;
-    }
-
-    current = current->next;
-  }
+  task_thread = ags_thread_find_type(main_loop,
+				     AGS_TYPE_TASK_THREAD);
   
   list_start = 
     list = gtk_container_get_children(AGS_LINE(line)->expander->table);

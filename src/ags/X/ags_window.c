@@ -21,8 +21,6 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
-#include <ags/main.h>
-
 #include <ags/X/machine/ags_panel.h>
 #include <ags/X/machine/ags_mixer.h>
 #include <ags/X/machine/ags_drum.h>
@@ -63,7 +61,7 @@ static GList* ags_window_standard_machine_counter();
 
 enum{
   PROP_0,
-  PROP_DEVOUT,
+  PROP_SOUNDCARD,
   PROP_APPLICATION_CONTEXT,
 };
 
@@ -123,13 +121,13 @@ ags_window_class_init(AgsWindowClass *window)
   gobject->finalize = ags_window_finalize;
 
   /* properties */
-  param_spec = g_param_spec_object("devout\0",
-				   "assigned devout\0",
-				   "The devout it is assigned with\0",
+  param_spec = g_param_spec_object("soundcard\0",
+				   "assigned soundcard\0",
+				   "The soundcard it is assigned with\0",
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_DEVOUT,
+				  PROP_SOUNDCARD,
 				  param_spec);
 
   param_spec = g_param_spec_object("application-context\0",
@@ -174,7 +172,7 @@ ags_window_init(AgsWindow *window)
   	       NULL);
 
   window->application_context = NULL;
-  window->devout = NULL;
+  window->soundcard = NULL;
 
   window->name = g_strdup("unnamed\0");
 
@@ -228,30 +226,30 @@ ags_window_set_property(GObject *gobject,
   window = AGS_WINDOW(gobject);
 
   switch(prop_id){
-  case PROP_DEVOUT:
+  case PROP_SOUNDCARD:
     {
-      AgsDevout *devout;
+      GObject *soundcard;
 
-      devout = g_value_get_object(value);
+      soundcard = g_value_get_object(value);
 
-      if(window->devout == devout)
+      if(window->soundcard == soundcard)
 	return;
 
-      if(devout != NULL)
-	g_object_ref(devout);
+      if(soundcard != NULL)
+	g_object_ref(soundcard);
 
-      window->devout = devout;
+      window->soundcard = soundcard;
 
       g_object_set(G_OBJECT(window->editor),
-		   "devout\0", devout,
+		   "soundcard\0", soundcard,
 		   NULL);
 
       g_object_set(G_OBJECT(window->navigation),
-		   "devout\0", devout,
+		   "soundcard\0", soundcard,
 		   NULL);
 
       g_object_set(G_OBJECT(window->export_window),
-		   "devout\0", devout,
+		   "soundcard\0", soundcard,
 		   NULL);
     }
     break;
@@ -296,8 +294,8 @@ ags_window_get_property(GObject *gobject,
   window = AGS_WINDOW(gobject);
 
   switch(prop_id){
-  case PROP_DEVOUT:
-    g_value_set_object(value, window->devout);
+  case PROP_SOUNDCARD:
+    g_value_set_object(value, window->soundcard);
     break;
   case PROP_APPLICATION_CONTEXT:
     g_value_set_object(value, window->application_context);
@@ -354,7 +352,7 @@ ags_window_finalize(GObject *gobject)
 
   window = (AgsWindow *) gobject;
 
-  g_object_unref(G_OBJECT(window->devout));
+  g_object_unref(G_OBJECT(window->soundcard));
   g_object_unref(G_OBJECT(window->export_window));
 
   free(window->name);

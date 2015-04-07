@@ -44,10 +44,6 @@ static guint server_signals[LAST_SIGNAL];
 
 static GList *ags_server_list = NULL;
 
-extern pthread_key_t application_context;
-AgsApplicationContext *ags_application_context =  pthread_getspecific(application_context);
-extern AgsServerApplicationContext *ags_server_application_context;
-
 GType
 ags_server_get_type()
 {
@@ -158,7 +154,7 @@ ags_server_add_to_registry(AgsConnectable *connectable)
   method_info->methodName = "ags_server_create_object\0";
   method_info->methodFunction = &ags_server_create_object;
   method_info->serverInfo = NULL;
-  xmlrpc_registry_add_method3(&(ags_server_application_context->env),
+  xmlrpc_registry_add_method3(&(ags_service_provider_get_env(AGS_SERVICE_PROVIDER(server->application_context))),
 			      registry->registry,
 			      method_info);
 
@@ -167,7 +163,7 @@ ags_server_add_to_registry(AgsConnectable *connectable)
   method_info->methodName = "ags_server_object_set_property\0";
   method_info->methodFunction = &ags_server_object_set_property;
   method_info->serverInfo = NULL;
-  xmlrpc_registry_add_method3(&(ags_server_application_context->env),
+  xmlrpc_registry_add_method3(&(ags_service_provider_get_env(AGS_SERVICE_PROVIDER(server->application_context))),
 			      registry->registry,
 			      method_info);
 #endif /* AGS_WITH_XMLRPC_C */
@@ -213,10 +209,10 @@ ags_server_real_start(AgsServer *server)
 
   registry = AGS_REGISTRY(server->registry);
 #ifdef AGS_WITH_XMLRPC_C
-  registry->registry = xmlrpc_registry_new(&(ags_server_application_context->env));
+  registry->registry = xmlrpc_registry_new(&(ags_service_provider_get_env(AGS_SERVICE_PROVIDER(server->application_context))));
 #endif /* AGS_WITH_XMLRPC_C */
 
-  ags_connectable_add_to_registry(AGS_CONNECTABLE(ags_application_context));
+  ags_connectable_add_to_registry(AGS_CONNECTABLE(server->application_context));
 
   //  xmlrpc_registry_set_shutdown(registry,
   //			       &requestShutdown, &terminationRequested);
