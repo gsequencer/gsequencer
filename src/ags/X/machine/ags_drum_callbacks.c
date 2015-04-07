@@ -168,8 +168,8 @@ ags_drum_length_spin_callback(GtkWidget *spin_button, AgsDrum *drum)
   
   main_loop = application_context->main_loop;
   
-  task_thread = ags_thread_find(main_loop,
-				AGS_TYPE_TASK_THREAD);
+  task_thread = ags_thread_find_type(main_loop,
+				     AGS_TYPE_TASK_THREAD);
 
   length = GTK_SPIN_BUTTON(spin_button)->adjustment->value;
 
@@ -326,8 +326,8 @@ ags_drum_pad_callback(GtkWidget *toggle_button, AgsDrum *drum)
   
   main_loop = application_context->main_loop;
 
-  task_thread = ags_thread_find(main_loop,
-				AGS_TYPE_TASK_THREAD);
+  task_thread = ags_thread_find_type(main_loop,
+				     AGS_TYPE_TASK_THREAD);
 
   /* calculate offset */
   list_start = 
@@ -421,8 +421,8 @@ ags_drum_tact_callback(AgsAudio *audio,
   
   main_loop = application_context->main_loop;
   
-  task_thread = ags_thread_find(main_loop,
-				AGS_TYPE_TASK_THREAD);
+  task_thread = ags_thread_find_type(main_loop,
+				     AGS_TYPE_TASK_THREAD);
 
   /* get some recalls */
   list = ags_recall_find_type(audio->play,

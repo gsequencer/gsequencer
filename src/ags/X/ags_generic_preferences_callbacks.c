@@ -18,7 +18,7 @@
 
 #include <ags/X/ags_generic_preferences_callbacks.h>
 
-#include <ags/main.h>
+#include <ags/object/ags_application_context.h>
 
 #include <ags/thread/ags_thread_application_context.h>
 #include <ags/thread/ags_thread-posix.h>
@@ -27,18 +27,25 @@
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_preferences_callbacks.h>
 
-extern AgsThreadApplicationContext *ags_thread_application_context;
-
 void
 ags_generic_preferences_autosave_thread_clicked_callback(GtkWidget *check_button,
 							 AgsGenericPreferences *generic_preferences)
 {
-  AgsAutosaveThread *autosave_thread;
+  AgsWindow *window;
   AgsPreferences *preferences;
+
+  AgsAutosaveThread *autosave_thread;
+  
+  AgsApplicationContext *application_context;
 
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(generic_preferences),
 							   AGS_TYPE_PREFERENCES);
-  autosave_thread = ags_thread_application_context->autosave_thread;
+
+  window = preferences->parent;
+
+  application_context = window->application_context;
+  
+  autosave_thread = application_context->autosave_thread;
 
   if(gtk_toggle_button_get_active(check_button)){
     ags_thread_start(autosave_thread);

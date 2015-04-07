@@ -148,8 +148,8 @@ ags_matrix_drawing_area_button_press_callback(GtkWidget *widget, GdkEventButton 
     application_context = window->application_context;
     
     main_loop = application_context->main_loop;
-    task_thread = ags_thread_find(main_loop,
-				  AGS_TYPE_TASK_THREAD);
+    task_thread = ags_thread_find_type(main_loop,
+				       AGS_TYPE_TASK_THREAD);
 
     i = (guint) floor((double) event->y / (double) AGS_MATRIX_CELL_HEIGHT);
     j = (guint) floor((double) event->x / (double) AGS_MATRIX_CELL_WIDTH);
@@ -196,8 +196,8 @@ ags_matrix_length_spin_callback(GtkWidget *spin_button, AgsMatrix *matrix)
   application_context = window->application_context;
   
   main_loop = application_context->main_loop;
-  task_thread = ags_thread_find(main_loop,
-				AGS_TYPE_TASK_THREAD);
+  task_thread = ags_thread_find_type(main_loop,
+				     AGS_TYPE_TASK_THREAD);
 
   length = GTK_SPIN_BUTTON(spin_button)->adjustment->value;
 
@@ -280,8 +280,8 @@ ags_matrix_tact_callback(AgsAudio *audio,
   application_context = window->application_context;
   
   main_loop = application_context->main_loop;
-  task_thread = ags_thread_find(main_loop,
-				AGS_TYPE_TASK_THREAD);
+  task_thread = ags_thread_find_type(main_loop,
+				     AGS_TYPE_TASK_THREAD);
 
   /* get some recalls */
   list = ags_recall_find_type(audio->play,

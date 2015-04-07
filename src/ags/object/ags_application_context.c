@@ -224,9 +224,6 @@ ags_application_context_init(AgsApplicationContext *application_context)
 						     "file\0", stdout,
 						     NULL);
   
-  application_context->sibling = g_list_alloc();
-  application_context->sibling->data = application_context;
-  
   application_context->domain = NULL;
   application_context->config = NULL;
 
@@ -236,6 +233,7 @@ ags_application_context_init(AgsApplicationContext *application_context)
   pthread_mutex_init(&(application_context->mutex), &(mutexattr));
 
   application_context->main_loop = NULL;
+  application_context->autosave_thread = NULL;
   
   application_context->file = NULL;
 

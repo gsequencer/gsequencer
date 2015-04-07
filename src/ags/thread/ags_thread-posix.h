@@ -216,6 +216,8 @@ void ags_thread_stop(AgsThread *thread);
 
 void ags_thread_hangcheck(AgsThread *thread);
 
+AgsThread* ags_thread_find_type(AgsThread *thread, GType type);
+
 AgsThread* ags_thread_new(gpointer data);
 
 #endif /*__AGS_THREAD_H__*/
