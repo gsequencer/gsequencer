@@ -402,7 +402,7 @@ ags_xorg_application_context_write(AgsFile *file, xmlNode *parent, GObject *appl
 }
 
 AgsXorgApplicationContext*
-ags_xorg_application_context_new(AgsMainLoop *main_loop,
+ags_xorg_application_context_new(GObject *main_loop,
 				 AgsConfig *config)
 {
   AgsXorgApplicationContext *xorg_application_context;

@@ -18,19 +18,11 @@
 
 #include <ags/X/ags_xorg_init.h>
 
-#include <ags/object/ags_application_context.h>
-
 #include <ags/audio/ags_audio_init.h>
 
 #include <ags/widget/ags_gui_init.h>
 
-#include <ags/X/ags_xorg_application_context.h>
-
 void ags_xorg_colors_alloc();
-
-extern pthread_key_t application_context;
-AgsApplicationContext *ags_application_context =  pthread_getspecific(application_context);
-extern AgsXorgApplicationContext *ags_xorg_application_context;
 
 extern GtkStyle *matrix_style;
 extern GtkStyle *ffplayer_style;
@@ -265,15 +257,9 @@ ags_xorg_colors_alloc()
 }
 
 void
-ags_xorg_init_context(int *argc, gchar ***argv)
+ags_xorg_init_context(AgsApplicationContext *application_context)
 {  
   /* map x11 collors */
   ags_xorg_colors_alloc();
-  
-  /* instantiate application context */
-  ags_xorg_application_context = ags_xorg_application_context_new(NULL,
-								  NULL);
-  ags_application_context_add_sibling(ags_application_context,
-				      ags_xorg_application_context);
 }
 

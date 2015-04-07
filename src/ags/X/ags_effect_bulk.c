@@ -19,12 +19,10 @@
 #include <ags/X/ags_effect_bulk.h>
 #include <ags/X/ags_effect_bulk_callbacks.h>
 
-#include <ags/main.h>
-
-#include <ags-lib/object/ags_connectable.h>
-
 #include <ags/object/ags_marshal.h>
+#include <ags-lib/object/ags_connectable.h>
 #include <ags/object/ags_plugin.h>
+#include <ags/object/ags_soundcard.h>
 
 #include <ags/plugin/ags_ladspa_manager.h>
 
@@ -52,6 +50,7 @@
 
 #include <ags/widget/ags_dial.h>
 
+#include <ags/X/ags_window.h>
 #include <ags/X/ags_ladspa_browser.h>
 #include <ags/X/ags_bulk_member.h>
 
@@ -125,9 +124,6 @@ enum{
 
 static gpointer ags_effect_bulk_parent_class = NULL;
 static guint effect_bulk_signals[LAST_SIGNAL];
-
-extern pthread_key_t application_context;
-AgsApplicationContext *ags_application_context =  pthread_getspecific(application_context);
 
 GType
 ags_effect_bulk_get_type(void)
@@ -618,6 +614,7 @@ ags_effect_bulk_real_add_effect(AgsEffectBulk *effect_bulk,
 				gchar *filename,
 				gchar *effect)
 {
+  AgsWindow *window;
   AgsBulkMember *bulk_member;
   AgsAddBulkMember *add_bulk_member;
   AgsUpdateBulkMember *update_bulk_member;
@@ -631,9 +628,11 @@ ags_effect_bulk_real_add_effect(AgsEffectBulk *effect_bulk,
   AgsAddRecallContainer *add_recall_container;
   AgsAddRecall *add_recall;
 
-  AgsAudioLoop *audio_loop;
+  AgsThread *main_loop;
   AgsTaskThread *task_thread;
 
+  AgsApplicationContext *application_context;
+  
   GList *port, *recall_port;
   GList *list, *list_start;
   GList *task;
@@ -653,10 +652,17 @@ ags_effect_bulk_real_add_effect(AgsEffectBulk *effect_bulk,
   effect_bulk->plugin = g_list_append(effect_bulk->plugin,
 				      ags_effect_bulk_plugin_alloc(filename,
 								   effect));
-  
-  audio_loop = (AgsAudioLoop *) ags_application_context->main_loop;
-  task_thread = (AgsTaskThread *) audio_loop->task_thread;
 
+  window = gtk_widget_get_ancestor(effect_bulk,
+				   AGS_TYPE_WINDOW);
+  
+  application_context = window->application_context;
+
+  main_loop = application_context->main_loop;
+
+  task_thread = ags_thread_find_type(main_loop,
+				     AGS_TYPE_TASK_THREAD);
+  
   audio_channels = effect_bulk->audio->audio_channels;
 
   if(effect_bulk->channel_type == AGS_TYPE_OUTPUT){
@@ -697,7 +703,7 @@ ags_effect_bulk_real_add_effect(AgsEffectBulk *effect_bulk,
 					    effect,
 					    index);
       g_object_set(G_OBJECT(recall_ladspa),
-		   "devout\0", AGS_AUDIO(current->audio)->devout,
+		   "soundcard\0", AGS_AUDIO(current->audio)->soundcard,
 		   "recall-container\0", recall_container,
 		   NULL);
       AGS_RECALL(recall_ladspa)->flags |= AGS_RECALL_TEMPLATE;
@@ -716,7 +722,7 @@ ags_effect_bulk_real_add_effect(AgsEffectBulk *effect_bulk,
 								  AGS_TYPE_RECALL_LADSPA_RUN);
       AGS_RECALL(recall_channel_run_dummy)->flags |= AGS_RECALL_TEMPLATE;
       g_object_set(G_OBJECT(recall_channel_run_dummy),
-		   "devout\0", AGS_AUDIO(current->audio)->devout,
+		   "soundcard\0", AGS_AUDIO(current->audio)->soundcard,
 		   "recall-container\0", recall_container,
 		   "recall-channel\0", recall_ladspa,
 		   NULL);
@@ -740,7 +746,7 @@ ags_effect_bulk_real_add_effect(AgsEffectBulk *effect_bulk,
 					    effect,
 					    index);
       g_object_set(G_OBJECT(recall_ladspa),
-		   "devout\0", AGS_AUDIO(current->audio)->devout,
+		   "soundcard\0", AGS_AUDIO(current->audio)->soundcard,
 		   "recall-container\0", recall_container,
 		   NULL);
       AGS_RECALL(recall_ladspa)->flags |= AGS_RECALL_TEMPLATE;
@@ -759,7 +765,7 @@ ags_effect_bulk_real_add_effect(AgsEffectBulk *effect_bulk,
 								  AGS_TYPE_RECALL_LADSPA_RUN);
       AGS_RECALL(recall_channel_run_dummy)->flags |= AGS_RECALL_TEMPLATE;
       g_object_set(G_OBJECT(recall_channel_run_dummy),
-		   "devout\0", AGS_AUDIO(current->audio)->devout,
+		   "soundcard\0", AGS_AUDIO(current->audio)->soundcard,
 		   "recall-container\0", recall_container,
 		   "recall-channel\0", recall_ladspa,
 		   NULL);
@@ -1004,13 +1010,16 @@ ags_effect_bulk_real_resize_audio_channels(AgsEffectBulk *effect_bulk,
 					   guint new_size,
 					   guint old_size)
 {
+  AgsWindow *window;
   AgsUpdateBulkMember *update_bulk_member;
 
   AgsChannel *current;
 
-  AgsAudioLoop *audio_loop;
+  AgsThread *main_loop;
   AgsTaskThread *task_thread;
 
+  AgsApplicationContext *application_context;
+  
   GList *task;
   GList *bulk_member;
   GList *effect_bulk_plugin;
@@ -1018,8 +1027,15 @@ ags_effect_bulk_real_resize_audio_channels(AgsEffectBulk *effect_bulk,
   guint pads;
   guint i, j;
 
-  audio_loop = (AgsAudioLoop *) ags_application_context->main_loop;
-  task_thread = (AgsTaskThread *) audio_loop->task_thread;
+  window = gtk_widget_get_ancestor(effect_bulk,
+				   AGS_TYPE_WINDOW);
+  
+  application_context = window->application_context;
+
+  main_loop = application_context->main_loop;
+
+  task_thread = ags_thread_find_type(main_loop,
+				     AGS_TYPE_TASK_THREAD);
   
   /* retrieve channel */
   if(effect_bulk->channel_type == AGS_TYPE_OUTPUT){
@@ -1106,13 +1122,16 @@ ags_effect_bulk_real_resize_pads(AgsEffectBulk *effect_bulk,
 				 guint new_size,
 				 guint old_size)
 {
+  AgsWindow *window;
   AgsUpdateBulkMember *update_bulk_member;
 
   AgsChannel *current;
 
-  AgsAudioLoop *audio_loop;
+  AgsThread *main_loop;
   AgsTaskThread *task_thread;
 
+  AgsApplicationContext *application_context;
+  
   GList *task;
   GList *bulk_member;
   GList *effect_bulk_plugin;
@@ -1120,8 +1139,15 @@ ags_effect_bulk_real_resize_pads(AgsEffectBulk *effect_bulk,
   guint audio_channels;
   guint i, j;
 
-  audio_loop = (AgsAudioLoop *) ags_application_context->main_loop;
-  task_thread = (AgsTaskThread *) audio_loop->task_thread;
+  window = gtk_widget_get_ancestor(effect_bulk,
+				   AGS_TYPE_WINDOW);
+  
+  application_context = window->application_context;
+
+  main_loop = application_context->main_loop;
+
+  task_thread = ags_thread_find_type(main_loop,
+				     AGS_TYPE_TASK_THREAD);
   
   audio_channels = effect_bulk->audio->audio_channels;
   

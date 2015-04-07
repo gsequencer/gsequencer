@@ -21,21 +21,19 @@
 #include <ags/object/ags_application_context.h>
 #include <ags/object/ags_config.h>
 #include <ags-lib/object/ags_connectable.h>
-
-#include <ags/server/ags_server_application_context.h>
+#include <ags/object/ags_soundcard.h>
 
 #include <ags/thread/ags_thread_init.h>
-#include <ags/thread/ags_thread_application_context.h>
 #include <ags/thread/ags_thread-posix.h>
 #include <ags/thread/ags_single_thread.h>
 #include <ags/thread/ags_autosave_thread.h>
+#include <ags/thread/ags_concurrency_provider.h>
 
-#include <ags/server/ags_server_application_context.h>
+#include <ags/server/ags_server.h>
 
 #include <ags/plugin/ags_ladspa_manager.h>
 
-#include <ags/audio/ags_audio_application_context.h>
-#include <ags/audio/ags_devout.h>
+#include <ags/audio/ags_sound_provider.h>
 
 #include <ags/X/ags_xorg_init.h>
 #include <ags/X/ags_xorg_application_context.h>
@@ -50,7 +48,6 @@
 #include <mcheck.h>
 
 #include <ao/ao.h>
-#include <libinstpatch/libinstpatch.h>
 
 #include <X11/Xlib.h>
 
@@ -74,13 +71,6 @@ extern void ags_thread_suspend_handler(int sig);
 
 static sigset_t ags_wait_mask;
 
-extern pthread_key_t application_context;
-AgsApplicationContext *ags_application_context =  pthread_getspecific(application_context);
-extern AgsThreadApplicationContext *ags_thread_application_context;
-extern AgsServerApplicationContext *ags_server_application_context;
-extern AgsAudioApplicationContext *ags_audio_application_context;
-extern AgsXorgApplicationContext *ags_xorg_application_context;
-
 extern AgsLadspaManager *ags_ladspa_manager;
 
 struct sigaction ags_sigact;
@@ -95,9 +85,9 @@ ags_signal_handler(int signr)
   }else{
     sigemptyset(&(ags_sigact.sa_mask));
 
-    if(signr == AGS_ASYNC_QUEUE_SIGNAL_HIGH){
+    //    if(signr == AGS_ASYNC_QUEUE_SIGNAL_HIGH){
       // pthread_yield();
-    }
+    //    }
   }
 }
 
@@ -134,6 +124,8 @@ main(int argc, char **argv)
 {
   AgsThread *audio_loop;
   AgsThread *gui_thread;
+  AgsConfig *config;
+  AgsApplicationContext *application_context;
   GFile *autosave_file;
     
   gchar *filename, *autosave_filename;
@@ -208,11 +200,20 @@ main(int argc, char **argv)
   g_thread_init(NULL);  
   gtk_init(&argc, &argv);
 
-  ags_init_context(argc, argv);
-  ags_thread_init(argc, argv);
-  ags_audio_init_context(argc, argv);
-  ags_gui_init_context(argc, &argv);
-  ags_xorg_init_context(&argc, &argv);
+  config = ags_config_new(NULL);
+
+  application_context = ags_xorg_application_context_new(NULL,
+							 config);
+
+  g_object_set(config,
+	       "application-context\0", application_context,
+	       NULL);
+  
+  ags_init_context(application_context);
+  ags_thread_init(application_context);
+  ags_audio_init_context(application_context);
+  ags_gui_init_context(application_context);
+  ags_xorg_init_context(application_context);
 
   /* Declare ourself as a real time task */
   param.sched_priority = AGS_RT_PRIORITY;
@@ -246,7 +247,7 @@ main(int argc, char **argv)
     ags_file_close(file);
   }else{
     AgsThread *audio_loop;
-    AgsDevout *devout;
+    AgsSoundcard *soundcard;
     AgsWindow *window;
     AgsServer *server;
 
@@ -265,23 +266,22 @@ main(int argc, char **argv)
 				  wdir,
 				  AGS_DEFAULT_CONFIG);
 
-    ags_config_load_from_file(ags_config,
+    ags_config_load_from_file(config,
 			      config_file);
 
     g_free(wdir);
     g_free(config_file);
 
-    /* AgsDevout */
-    devout = ags_devout_new(ags_application_context);
-    g_object_set(ags_audio_application_context,
-		 "soundcard\0", devout,
+    /* AgsSoundcard */
+    soundcard = ags_devout_new(application_context);
+    g_object_set(application_context,
+		 "soundcard\0", soundcard,
 		 NULL);
     
       /* AgsWindow */
-    window = ags_window_new(ags_application_context);
-    g_object_set(ags_xorg_application_context,
+    window = ags_window_new(application_context);
+    g_object_set(application_context,
 		 "window\0", window,
-		 "soundcard\0", devout,
 		 NULL);
     g_object_ref(G_OBJECT(window));
 
@@ -292,15 +292,15 @@ main(int argc, char **argv)
     gtk_widget_show_all((GtkWidget *) window);
 
     /* AgsServer */
-    server = ags_server_new(ags_application_context);
-    g_object_set(ags_server_application_context,
+    server = ags_server_new(application_context);
+    g_object_set(application_context,
 		 "server\0", server,
 		 NULL);
 
     /* AgsMainLoop */
-    audio_loop = (AgsThread *) ags_audio_loop_new((GObject *) devout,
-						  ags_application_context);
-    g_object_set(ags_application_context,
+    audio_loop = (AgsThread *) ags_audio_loop_new((GObject *) soundcard,
+						  application_context);
+    g_object_set(application_context,
 		 "main-loop\0", audio_loop,
 		 NULL);
 
@@ -311,27 +311,18 @@ main(int argc, char **argv)
     ags_thread_start(audio_loop);
 
     /* complete thread pool */
-    ags_thread_pool_start(ags_thread_application_context->thread_pool);
+    ags_thread_pool_start(ags_concurrency_provider_get_thread_pool(application_context));
   }
 
   if(!single_thread){
     GList *children;
 
     /* find gui thread */
-    children = AGS_THREAD(ags_application_context->main_loop)->children;
-
-    while(children != NULL){
-      if(AGS_IS_GUI_THREAD(children)){
-	gui_thread = children;
-
-	break;
-      }
-
-      children = children->next;
-    }
+    gui_thread = ags_thread_find_type(AGS_THREAD(application_context->main_loop),
+				      AGS_TYPE_GUI_THREAD);
 
     /* start main loop */
-    ags_thread_start(AGS_THREAD(ags_application_context->main_loop));
+    ags_thread_start(AGS_THREAD(application_context->main_loop));
 
     /* join gui thread */
 #ifdef _USE_PTH
@@ -345,7 +336,7 @@ main(int argc, char **argv)
     AgsSingleThread *single_thread;
 
     /* single thread */
-    single_thread = ags_single_thread_new((GObject *) ags_audio_application_context->soundcard->data);
+    single_thread = ags_single_thread_new((GObject *) ags_sound_provider_get_soundcard(application_context)->data);
 
     /* add known threads to single_thread */
     ags_thread_add_child(AGS_THREAD(single_thread),

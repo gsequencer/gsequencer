@@ -23,7 +23,7 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include <ags/audio/ags_devout.h>
+#include <ags/object/ags_soundcard.h>
 
 #include <ags/X/ags_automation_editor.h>
 
@@ -62,7 +62,7 @@ struct _AgsWindow
 
   GObject *application_context;
 
-  AgsDevout *devout;
+  GObject *soundcard;
 
   char *name;
 

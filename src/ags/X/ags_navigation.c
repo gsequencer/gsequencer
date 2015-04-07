@@ -59,7 +59,7 @@ void ags_navigation_real_change_position(AgsNavigation *navigation,
 
 enum{
   PROP_0,
-  PROP_DEVOUT,
+  PROP_SOUNDCARD,
 };
 
 enum{
@@ -125,19 +125,19 @@ ags_navigation_class_init(AgsNavigationClass *navigation)
 
   /* properties */
   /**
-   * AgsNavigation:devout:
+   * AgsNavigation:soundcard:
    *
-   * The assigned #AgsDevout to use as default sink.
+   * The assigned #GObject to use as default sink.
    * 
    * Since: 0.4
    */
-  param_spec = g_param_spec_object("devout\0",
-				   "assigned devout\0",
-				   "The devout it is assigned with\0",
+  param_spec = g_param_spec_object("soundcard\0",
+				   "assigned soundcard\0",
+				   "The soundcard it is assigned with\0",
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_DEVOUT,
+				  PROP_SOUNDCARD,
 				  param_spec);
 
   /* AgsNavigationClass */
@@ -179,7 +179,7 @@ ags_navigation_init(AgsNavigation *navigation)
 
   navigation->flags = 0;
 
-  navigation->devout = NULL;
+  navigation->soundcard = NULL;
 
   g_signal_connect_after(G_OBJECT(navigation), "parent-set\0",
 			 G_CALLBACK(ags_navigation_parent_set_callback), NULL);
@@ -298,19 +298,19 @@ ags_navigation_set_property(GObject *gobject,
   navigation = AGS_NAVIGATION(gobject);
 
   switch(prop_id){
-  case PROP_DEVOUT:
+  case PROP_SOUNDCARD:
     {
-      AgsDevout *devout;
+      GObject *soundcard;
 
-      devout = (AgsDevout *) g_value_get_object(value);
+      soundcard = (GObject *) g_value_get_object(value);
 
-      if(navigation->devout == devout)
+      if(navigation->soundcard == soundcard)
 	return;
 
-      if(devout != NULL)
-	g_object_ref(devout);
+      if(soundcard != NULL)
+	g_object_ref(soundcard);
 
-      navigation->devout = devout;
+      navigation->soundcard = soundcard;
     }
     break;
   default:
@@ -330,8 +330,8 @@ ags_navigation_get_property(GObject *gobject,
   navigation = AGS_NAVIGATION(gobject);
 
   switch(prop_id){
-  case PROP_DEVOUT:
-    g_value_set_object(value, navigation->devout);
+  case PROP_SOUNDCARD:
+    g_value_set_object(value, navigation->soundcard);
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
@@ -385,8 +385,8 @@ ags_navigation_connect(AgsConnectable *connectable)
   g_signal_connect((GObject *) navigation->duration_tact, "value-changed\0",
 		   G_CALLBACK(ags_navigation_duration_tact_callback), (gpointer) navigation);
 
-  /* devout */
-  g_signal_connect_after((GObject *) navigation->devout, "tic\0",
+  /* soundcard */
+  g_signal_connect_after((GObject *) navigation->soundcard, "tic\0",
   			 G_CALLBACK(ags_navigation_tic_callback), (gpointer) navigation);
 
   /* expansion */
