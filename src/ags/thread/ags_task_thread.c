@@ -18,15 +18,13 @@
 
 #include <ags/thread/ags_task_thread.h>
 
-#include <ags-lib/object/ags_connectable.h>
-
-#include <ags/main.h>
-
 #include <ags/lib/ags_list.h>
 
+#include <ags/object/ags_application_context.h>
 #include <ags/object/ags_config.h>
+#include <ags-lib/object/ags_connectable.h>
 
-#include <ags/thread/ags_thread_application_context.h>
+#include <ags/thread/ags_concurrency_provider.h>
 #include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_returnable_thread.h>
 
@@ -159,13 +157,20 @@ ags_task_thread_init(AgsTaskThread *task_thread)
 void
 ags_task_thread_connect(AgsConnectable *connectable)
 {
+  AgsThread *main_loop;
   AgsTaskThread *task_thread;
 
+  AgsApplicationContext *application_context;
+  
   ags_task_thread_parent_connectable_interface->connect(connectable);
 
   task_thread = AGS_TASK_THREAD(connectable);
-  task_thread->thread_pool = AGS_THREAD_APPLICATION_CONTEXT(AGS_AUDIO_LOOP(AGS_THREAD(task_thread)->parent)->application_context)->thread_pool;
-  task_thread->thread_pool->parent = task_thread;
+
+  main_loop = ags_thread_get_toplevel(task_thread);
+  
+  application_context = ags_main_loop_get_application_context(AGS_MAIN_LOOP(main_loop));
+
+  task_thread->thread_pool = ags_concurrency_provider_get_thread_pool(AGS_CONCURRENCY_PROVIDER(application_context));
 }
 
 void
@@ -198,14 +203,6 @@ ags_task_thread_start(AgsThread *thread)
 
   task_thread = AGS_TASK_THREAD(thread);
 
-  if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(task_thread->thread_pool->flags)))) == 0){
-    ags_thread_pool_start(task_thread->thread_pool);
-
-    while((AGS_THREAD_POOL_READY & (g_atomic_int_get(&(task_thread->thread_pool->flags)))) == 0){
-      usleep(500000);
-    }
-  }
-
   if((AGS_THREAD_SINGLE_LOOP & (g_atomic_int_get(&(thread->flags)))) == 0){
     AGS_THREAD_CLASS(ags_task_thread_parent_class)->start(thread);
   }
@@ -216,10 +213,9 @@ ags_task_thread_run(AgsThread *thread)
 {
   AgsDevout *devout;
   AgsTaskThread *task_thread;
-  AgsConfig *ags_config;
+
   GList *list;
-  guint buffer_size;
-  guint samplerate;
+
   static struct timespec play_idle;
   static useconds_t idle;
   guint prev_pending;
@@ -228,18 +224,27 @@ ags_task_thread_run(AgsThread *thread)
   task_thread = AGS_TASK_THREAD(thread);
   devout = AGS_DEVOUT(thread->devout);
 
-  buffer_size = g_ascii_strtoull(ags_config_get_value(ags_config,
-						      AGS_CONFIG_DEVOUT,
-						      "buffer-size\0"),
-				 NULL,
-				 10);
-  samplerate = g_ascii_strtoull(ags_config_get_value(ags_config,
-						     AGS_CONFIG_DEVOUT,
-						     "samplerate\0"),
-				NULL,
-				10);
-
   if(!initialized){
+    AgsApplicationContext *application_context;
+    AgsConfig *config;
+    guint buffer_size;
+    guint samplerate;
+
+    application_context = ags_main_loop_get_application_context(AGS_MAIN_LOOP(ags_thread_get_toplevel(thread)));
+
+    config = application_context->config;
+    
+    buffer_size = g_ascii_strtoull(ags_config_get_value(config,
+							AGS_CONFIG_DEVOUT,
+							"buffer-size\0"),
+				   NULL,
+				   10);
+    samplerate = g_ascii_strtoull(ags_config_get_value(config,
+						       AGS_CONFIG_DEVOUT,
+						       "samplerate\0"),
+				  NULL,
+				  10);
+
     play_idle.tv_sec = 0;
     play_idle.tv_nsec = 10 * round(sysconf(_SC_CLK_TCK) * (double) buffer_size  / (double) samplerate);
     //    idle = sysconf(_SC_CLK_TCK) * round(sysconf(_SC_CLK_TCK) * (double) buffer_size  / (double) samplerate / 8.0);

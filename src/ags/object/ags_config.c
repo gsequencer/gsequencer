@@ -212,7 +212,7 @@ ags_config_class_init(AgsConfigClass *config)
 		 G_STRUCT_OFFSET (AgsConfigClass, get_value),
 		 NULL, NULL,
 		 g_cclosure_user_marshal_STRING__STRING_STRING,
-		 G_TYPE_NONE, 2,
+		 G_TYPE_STRING, 2,
 		 G_TYPE_STRING, G_TYPE_STRING);
 }
 

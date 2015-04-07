@@ -550,8 +550,18 @@ gsequencer-ags_xorg_application_context.o: \
  /usr/include/bits/waitstatus.h /usr/include/alloca.h \
  /usr/include/bits/stdlib-bsearch.h /usr/include/bits/stdlib-float.h \
  /usr/include/libxml2/libxml/xlink.h /usr/include/libxml2/libxml/SAX2.h \
- src/ags/X/ags_window.h src/ags/object/ags_soundcard.h \
- src/ags/X/ags_automation_editor.h \
+ src/ags/object/ags_soundcard.h src/ags/thread/ags_thread_pool.h \
+ src/ags/object/ags_main_loop.h src/ags/thread/ags_thread-posix.h \
+ src/ags/server/ags_server.h /usr/include/netinet/in.h \
+ /usr/lib/gcc/x86_64-unknown-linux-gnu/4.9.2/include/stdint.h \
+ /usr/include/stdint.h /usr/include/bits/wchar.h \
+ /usr/include/sys/socket.h /usr/include/sys/uio.h /usr/include/bits/uio.h \
+ /usr/include/bits/socket.h /usr/include/bits/socket_type.h \
+ /usr/include/bits/sockaddr.h /usr/include/asm/socket.h \
+ /usr/include/asm-generic/socket.h /usr/include/asm/sockios.h \
+ /usr/include/asm-generic/sockios.h /usr/include/bits/in.h \
+ src/ags/server/ags_registry.h src/ags/server/ags_remote_task.h \
+ src/ags/X/ags_window.h src/ags/X/ags_automation_editor.h \
  src/ags/X/editor/ags_automation_toolbar.h \
  src/ags/X/editor/ags_port_selection.h src/ags/audio/ags_port.h \
  /usr/include/ladspa.h src/ags/X/editor/ags_notebook.h \
@@ -561,16 +571,15 @@ gsequencer-ags_xorg_application_context.o: \
  src/ags/audio/ags_audio_signal.h src/ags/audio/ags_recycling_container.h \
  src/ags/audio/ags_recall.h src/ags/audio/ags_recall_dependency.h \
  src/ags/audio/ags_notation.h src/ags/thread/ags_timestamp_thread.h \
- src/ags/thread/ags_thread-posix.h src/ags/audio/ags_timestamp.h \
- src/ags/audio/ags_note.h src/ags/X/editor/ags_automation_edit.h \
- src/ags/widget/ags_ruler.h src/ags/audio/ags_automation.h \
- src/ags/audio/ags_acceleration.h src/ags/X/ags_menu_bar.h \
- src/ags/X/ags_editor.h src/ags/X/editor/ags_toolbar.h \
- src/ags/X/editor/ags_meter.h src/ags/X/editor/ags_soundset.h \
- src/ags/X/editor/ags_note_edit.h src/ags/X/editor/ags_pattern_edit.h \
- src/ags/X/ags_navigation.h src/ags/X/ags_export_window.h \
- src/ags/X/ags_preferences.h src/ags/X/ags_generic_preferences.h \
- src/ags/X/ags_audio_preferences.h \
+ src/ags/audio/ags_timestamp.h src/ags/audio/ags_note.h \
+ src/ags/X/editor/ags_automation_edit.h src/ags/widget/ags_ruler.h \
+ src/ags/audio/ags_automation.h src/ags/audio/ags_acceleration.h \
+ src/ags/X/ags_menu_bar.h src/ags/X/ags_editor.h \
+ src/ags/X/editor/ags_toolbar.h src/ags/X/editor/ags_meter.h \
+ src/ags/X/editor/ags_soundset.h src/ags/X/editor/ags_note_edit.h \
+ src/ags/X/editor/ags_pattern_edit.h src/ags/X/ags_navigation.h \
+ src/ags/X/ags_export_window.h src/ags/X/ags_preferences.h \
+ src/ags/X/ags_generic_preferences.h src/ags/X/ags_audio_preferences.h \
  src/ags/X/ags_performance_preferences.h \
  src/ags/X/ags_server_preferences.h src/ags-lib/object/ags_connectable.h \
  src/ags/file/ags_file_gui.h src/ags/file/ags_file_lookup.h \
@@ -673,7 +682,9 @@ gsequencer-ags_xorg_application_context.o: \
  src/ags/widget/ags_vindicator.h src/ags/widget/ags_indicator.h \
  src/ags/widget/ags_hindicator.h src/ags/widget/ags_waveform.h \
  src/ags/widget/ags_dial.h src/ags/widget/ags_cartesian.h \
- src/ags/file/ags_file_id_ref.h src/ags/thread/ags_gui_thread.h
+ src/ags/file/ags_file_id_ref.h src/ags/thread/ags_gui_thread.h \
+ src/ags/thread/ags_concurrency_provider.h \
+ src/ags/audio/ags_sound_provider.h
 
 /usr/include/stdc-predef.h:
 
@@ -1955,9 +1966,51 @@ src/ags/file/ags_file.h:
 
 /usr/include/libxml2/libxml/SAX2.h:
 
-src/ags/X/ags_window.h:
-
 src/ags/object/ags_soundcard.h:
+
+src/ags/thread/ags_thread_pool.h:
+
+src/ags/object/ags_main_loop.h:
+
+src/ags/thread/ags_thread-posix.h:
+
+src/ags/server/ags_server.h:
+
+/usr/include/netinet/in.h:
+
+/usr/lib/gcc/x86_64-unknown-linux-gnu/4.9.2/include/stdint.h:
+
+/usr/include/stdint.h:
+
+/usr/include/bits/wchar.h:
+
+/usr/include/sys/socket.h:
+
+/usr/include/sys/uio.h:
+
+/usr/include/bits/uio.h:
+
+/usr/include/bits/socket.h:
+
+/usr/include/bits/socket_type.h:
+
+/usr/include/bits/sockaddr.h:
+
+/usr/include/asm/socket.h:
+
+/usr/include/asm-generic/socket.h:
+
+/usr/include/asm/sockios.h:
+
+/usr/include/asm-generic/sockios.h:
+
+/usr/include/bits/in.h:
+
+src/ags/server/ags_registry.h:
+
+src/ags/server/ags_remote_task.h:
+
+src/ags/X/ags_window.h:
 
 src/ags/X/ags_automation_editor.h:
 
@@ -1994,8 +2047,6 @@ src/ags/audio/ags_recall_dependency.h:
 src/ags/audio/ags_notation.h:
 
 src/ags/thread/ags_timestamp_thread.h:
-
-src/ags/thread/ags_thread-posix.h:
 
 src/ags/audio/ags_timestamp.h:
 
@@ -2278,3 +2329,7 @@ src/ags/widget/ags_cartesian.h:
 src/ags/file/ags_file_id_ref.h:
 
 src/ags/thread/ags_gui_thread.h:
+
+src/ags/thread/ags_concurrency_provider.h:
+
+src/ags/audio/ags_sound_provider.h:

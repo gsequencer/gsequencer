@@ -163,7 +163,7 @@ ags_audio_loop_class_init(AgsAudioLoopClass *audio_loop)
 				   AGS_TYPE_APPLICATION_CONTEXT,
 				   G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_TASK_THREAD,
+				  PROP_APPLICATION_CONTEXT,
 				  param_spec);
 
   /**
@@ -323,8 +323,6 @@ ags_audio_loop_init(AgsAudioLoop *audio_loop)
 
   g_atomic_int_set(&(audio_loop->tic), 0);
   g_atomic_int_set(&(audio_loop->last_sync), 0);
-
-  audio_loop->application_context = NULL;
 
   /* AgsApplicationContext */
   audio_loop->application_context = NULL;

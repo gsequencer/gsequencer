@@ -103,7 +103,7 @@ libags_thread_a-ags_thread_init.o: src/ags/thread/ags_thread_init.c \
  /usr/include/glib-2.0/gobject/gtypemodule.h \
  /usr/include/glib-2.0/gobject/gtypeplugin.h \
  /usr/include/glib-2.0/gobject/gvaluearray.h \
- /usr/include/glib-2.0/gobject/gvaluetypes.h src/ags/object/ags_init.h \
+ /usr/include/glib-2.0/gobject/gvaluetypes.h \
  src/ags/object/ags_application_context.h src/ags/lib/ags_log.h \
  /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h \
  /usr/include/wchar.h /usr/include/bits/stdio_lim.h \
@@ -130,6 +130,7 @@ libags_thread_a-ags_thread_init.o: src/ags/thread/ags_thread_init.c \
  /usr/include/bits/waitstatus.h /usr/include/alloca.h \
  /usr/include/bits/stdlib-bsearch.h /usr/include/bits/stdlib-float.h \
  /usr/include/libxml2/libxml/xlink.h /usr/include/libxml2/libxml/SAX2.h \
+ src/ags/object/ags_init.h \
  src/ags/thread/ags_thread_application_context.h \
  src/ags/thread/ags_thread-posix.h src/ags/thread/ags_thread_pool.h \
  src/ags/object/ags_main_loop.h
@@ -414,8 +415,6 @@ src/ags/thread/ags_thread_init.h:
 
 /usr/include/glib-2.0/gobject/gvaluetypes.h:
 
-src/ags/object/ags_init.h:
-
 src/ags/object/ags_application_context.h:
 
 src/ags/lib/ags_log.h:
@@ -493,6 +492,8 @@ src/ags/file/ags_file.h:
 /usr/include/libxml2/libxml/xlink.h:
 
 /usr/include/libxml2/libxml/SAX2.h:
+
+src/ags/object/ags_init.h:
 
 src/ags/thread/ags_thread_application_context.h:
 
