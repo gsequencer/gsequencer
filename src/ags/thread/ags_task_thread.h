@@ -62,8 +62,6 @@ struct _AgsTaskThread
 
   volatile GList *exec;
   volatile GList *queue;
-
-  AgsThreadPool *thread_pool;
 };
 
 struct _AgsTaskThreadClass

@@ -25,6 +25,9 @@
 
 #include <ags/file/ags_file.h>
 
+#include <ags/thread/ags_thread-posix.h>
+#include <ags/thread/ags_task_thread.h>
+
 #include <ags/audio/ags_input.h>
 #include <ags/audio/ags_output.h>
 
