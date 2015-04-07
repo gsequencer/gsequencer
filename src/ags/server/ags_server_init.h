@@ -24,6 +24,8 @@
 
 #include <gtk/gtk.h>
 
-void ags_server_init_context(int *argc, gchar ***argv);
+#include <ags/object/ags_application_context.h>
+
+void ags_server_init_context(AgsApplicationContext *application_context);
 
 #endif /*__AGS_SERVER_INIT_H__*/

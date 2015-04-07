@@ -24,7 +24,8 @@
 
 #include <gtk/gtk.h>
 
-#include <ags/audio/ags_devout.h>
+#include <ags/object/ags_soundcard.h>
+
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_note.h>
 
@@ -69,7 +70,7 @@ struct _AgsEditor
   gchar *version;
   gchar *build_id;
 
-  AgsDevout *devout;
+  GObject *soundcard;
 
   GtkTable *table;
 

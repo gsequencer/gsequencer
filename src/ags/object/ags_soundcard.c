@@ -88,6 +88,7 @@ ags_soundcard_get_application_context(AgsSoundcard *soundcard)
   g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), NULL);
   soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
   g_return_val_if_fail(soundcard_interface->get_application_context, NULL);
+
   return(soundcard_interface->get_application_context(soundcard));
 }
 
@@ -303,6 +304,7 @@ ags_soundcard_get_buffer(AgsSoundcard *soundcard)
   g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), NULL);
   soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
   g_return_val_if_fail(soundcard_interface->get_buffer, NULL);
+
   return(soundcard_interface->get_buffer(soundcard));
 }
 
@@ -320,6 +322,7 @@ ags_soundcard_get_next_buffer(AgsSoundcard *soundcard)
   g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), NULL);
   soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
   g_return_val_if_fail(soundcard_interface->get_next_buffer, NULL);
+
   return(soundcard_interface->get_next_buffer(soundcard));
 }
 
@@ -331,6 +334,7 @@ ags_soundcard_get_delay(AgsSoundcard *soundcard)
   g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), G_MAXUINT);
   soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
   g_return_val_if_fail(soundcard_interface->get_delay, G_MAXUINT);
+
   return(soundcard_interface->get_delay(soundcard));
 }
 
@@ -342,6 +346,7 @@ ags_soundcard_get_attack(AgsSoundcard *soundcard)
   g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), G_MAXUINT);
   soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
   g_return_val_if_fail(soundcard_interface->get_attack, G_MAXUINT);
+
   return(soundcard_interface->get_attack(soundcard));
 }
 
@@ -366,5 +371,31 @@ ags_soundcard_get_note_offset(AgsSoundcard *soundcard)
   g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), G_MAXUINT);
   soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
   g_return_val_if_fail(soundcard_interface->get_note_offset, G_MAXUINT);
+
   return(soundcard_interface->get_note_offset(soundcard));
+}
+
+GList*
+ags_soundcard_get_audio(AgsSoundcard *soundcard)
+{
+  AgsSoundcardInterface *soundcard_interface;
+
+  g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), NULL);
+  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
+  g_return_val_if_fail(soundcard_interface->get_audio, NULL);
+
+  return(soundcard_interface->get_audio(soundcard));
+}
+
+void
+ags_soundcard_set_audio(AgsSoundcard *soundcard,
+			GList *audio)
+{
+  AgsSoundcardInterface *soundcard_interface;
+
+  g_return_if_fail(AGS_IS_SOUNDCARD(soundcard));
+  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
+  g_return_if_fail(soundcard_interface->set_audio);
+  soundcard_interface->set_audio(soundcard,
+				 audio);
 }

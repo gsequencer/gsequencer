@@ -23,7 +23,7 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include <ags/audio/ags_devout.h>
+#include <ags/object/ags_soundcard.h>
 
 #define AGS_TYPE_NAVIGATION                (ags_navigation_get_type())
 #define AGS_NAVIGATION(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_NAVIGATION, AgsNavigation))
@@ -50,7 +50,7 @@ struct _AgsNavigation
 
   guint flags;
 
-  AgsDevout *devout;
+  GObject *soundcard;
 
   GtkToggleButton *expander;
 

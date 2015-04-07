@@ -58,7 +58,7 @@ struct _AgsXorgApplicationContextClass
 
 GType ags_xorg_application_context_get_type();
 
-AgsXorgApplicationContext* ags_xorg_application_context_new(AgsMainLoop *main_loop,
+AgsXorgApplicationContext* ags_xorg_application_context_new(GObject *main_loop,
 							    AgsConfig *config);
 
 #endif /*__AGS_XORG_APPLICATION_CONTEXT_H__*/

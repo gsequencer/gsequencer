@@ -78,6 +78,10 @@ struct _AgsSoundcardInterface
   void (*set_note_offset)(AgsSoundcard *soundcard,
 			  guint note_offset);
   guint (*get_note_offset)(AgsSoundcard *soundcard);
+
+  void (*set_audio)(AgsSoundcard *soundcard,
+		    GList *audio);
+  GList* (*get_audio)(AgsSoundcard *soundcard);
 };
 
 GType ags_soundcard_get_type();
@@ -123,5 +127,9 @@ guint ags_soundcard_get_attack(AgsSoundcard *soundcard);
 void ags_soundcard_set_note_offset(AgsSoundcard *soundcard,
 				   guint note_offset);
 guint ags_soundcard_get_note_offset(AgsSoundcard *soundcard);
+
+GList* ags_soundcard_get_audio(AgsSoundcard *soundcard);
+void ags_soundcard_set_audio(AgsSoundcard *soundcard,
+			     GList *audio);
 
 #endif /*__AGS_SOUNDCARD_H__*/
