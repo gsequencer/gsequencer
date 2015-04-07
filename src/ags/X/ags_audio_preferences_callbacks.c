@@ -45,7 +45,7 @@ ags_audio_preferences_card_changed_callback(GtkComboBox *combo,
   AgsSetOutputDevice *set_output_device;
 
   window = AGS_WINDOW(AGS_PREFERENCES(gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
-							      AGS_TYPE_PREFERENCES))->window);
+							      AGS_TYPE_PREFERENCES))->parent);
   soundcard = AGS_SOUNDCARD(window->soundcard);
 
   application_context = window->application_context;
@@ -79,7 +79,7 @@ ags_audio_preferences_audio_channels_changed(GtkSpinButton *spin_button,
   AgsSetAudioChannels *set_audio_channels;
 
   window = AGS_WINDOW(AGS_PREFERENCES(gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
-							      AGS_TYPE_PREFERENCES))->window);
+							      AGS_TYPE_PREFERENCES))->parent);
   soundcard = AGS_SOUNDCARD(window->soundcard);
 
   application_context = window->application_context;
@@ -110,7 +110,7 @@ ags_audio_preferences_samplerate_changed(GtkSpinButton *spin_button,
   AgsSetSamplerate *set_samplerate;
 
   window = AGS_WINDOW(AGS_PREFERENCES(gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
-							      AGS_TYPE_PREFERENCES))->window);
+							      AGS_TYPE_PREFERENCES))->parent);
   soundcard = AGS_SOUNDCARD(window->soundcard);
 
   application_context = window->application_context;
@@ -141,7 +141,7 @@ ags_audio_preferences_buffer_size_changed(GtkSpinButton *spin_button,
   AgsSetBufferSize *set_buffer_size;
 
   window = AGS_WINDOW(AGS_PREFERENCES(gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
-									 AGS_TYPE_PREFERENCES))->window);
+									 AGS_TYPE_PREFERENCES))->parent);
   soundcard = AGS_SOUNDCARD(window->soundcard);
 
   application_context = window->application_context;

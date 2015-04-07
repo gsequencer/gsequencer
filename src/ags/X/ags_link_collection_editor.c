@@ -23,7 +23,7 @@
 #include <ags-lib/object/ags_connectable.h>
 #include <ags/object/ags_applicable.h>
 
-#include <ags/thread/ags_audio_loop.h>
+#include <ags/thread/ags_thread-posix.h>
 #include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_devout.h>
@@ -32,6 +32,7 @@
 
 #include <ags/audio/task/ags_link_channel.h>
 
+#include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_machine_editor.h>
 
@@ -72,9 +73,6 @@ enum{
 };
 
 static gpointer ags_link_collection_editor_parent_class = NULL;
-
-extern pthread_key_t application_context;
-AgsApplicationContext *ags_application_context =  pthread_getspecific(application_context);
 
 GType
 ags_link_collection_editor_get_type(void)
@@ -401,20 +399,32 @@ ags_link_collection_editor_apply(AgsApplicable *applicable)
 
   if(gtk_combo_box_get_active_iter(link_collection_editor->link,
 				   &iter)){
+    AgsWindow *window;
     AgsMachine *machine, *link_machine;
     AgsMachineEditor *machine_editor;
-    AgsChannel *channel, *link;
-    AgsThread *main_loop, *current;
-    AgsTaskThread *task_thread;
-    AgsLinkChannel *link_channel;
     GtkTreeModel *model;
+
+    AgsChannel *channel, *link;
+    AgsLinkChannel *link_channel;
+
+    AgsThread *main_loop;
+    AgsTaskThread *task_thread;
+
+    AgsApplicationContext *application_context;
+    
     GList *task;
     guint first_line, count;
     guint i;
+    
     GError *error;
 
     machine_editor = AGS_MACHINE_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(link_collection_editor),
 								AGS_TYPE_MACHINE_EDITOR));
+
+    window = machine_editor->parent;
+    
+    application_context = window->application_context;
+    
     machine = machine_editor->machine;
 
     first_line = (guint) gtk_spin_button_get_value_as_int(link_collection_editor->first_line);
@@ -424,21 +434,10 @@ ags_link_collection_editor_apply(AgsApplicable *applicable)
     }else{
       channel = ags_channel_nth(machine_editor->machine->audio->output, first_line);
     }
-    
-    task_thread = NULL;
 
-    main_loop = ags_application_context->main_loop;
-    current = main_loop->children;
-
-    while(current != NULL){
-      if(AGS_IS_TASK_THREAD(current)){
-	task_thread = (AgsTaskThread *) current;
-
-	break;
-      }
-
-      current = current->next;
-    }
+    main_loop = application_context->main_loop;
+    task_thread = ags_thread_find_type(main_loop,
+				       AGS_TYPE_TASK_THREAD);
     
     model = gtk_combo_box_get_model(link_collection_editor->link);
     gtk_tree_model_get(model,

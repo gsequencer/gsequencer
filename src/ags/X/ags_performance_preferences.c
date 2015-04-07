@@ -52,11 +52,6 @@ void ags_performance_preferences_show(GtkWidget *widget);
 
 static gpointer ags_performance_preferences_parent_class = NULL;
 
-extern pthread_key_t application_context;
-AgsApplicationContext *ags_application_context =  pthread_getspecific(application_context);
-extern pthread_key_t config;
-AgsConfig *ags_config =  pthread_getspecific(config);
-
 GType
 ags_performance_preferences_get_type(void)
 {
@@ -180,8 +175,11 @@ ags_performance_preferences_set_update(AgsApplicable *applicable, gboolean updat
 void
 ags_performance_preferences_apply(AgsApplicable *applicable)
 {
+  AgsWindow *window;
   AgsPreferences *preferences;
-  AgsPerformancePreferences *performance_preferences; 
+  AgsPerformancePreferences *performance_preferences;
+  AgsApplicationContext *application_context;
+  AgsConfig *config;
   gchar *str;
   
   performance_preferences = AGS_PERFORMANCE_PREFERENCES(applicable);
@@ -189,12 +187,18 @@ ags_performance_preferences_apply(AgsApplicable *applicable)
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(performance_preferences),
 							   AGS_TYPE_PREFERENCES);
 
+  window = preferences->parent;
+
+  application_context = window->application_context;
+
+  config = application_context->config;
+  
   /* auto-sense */
   str = g_strdup(((gtk_toggle_button_get_active(performance_preferences->stream_auto_sense)) ? "true\0": "false\0"));
-  ags_config_set_value(ags_config,
-		 AGS_CONFIG_RECALL,
-		 "auto-sense\0",
-		 str);
+  ags_config_set_value(config,
+		       AGS_CONFIG_RECALL,
+		       "auto-sense\0",
+		       str);
   g_free(str);
 
   //TODO:JK: implement me
@@ -206,18 +210,25 @@ ags_performance_preferences_reset(AgsApplicable *applicable)
   AgsWindow *window;
   AgsPreferences *preferences;
   AgsPerformancePreferences *performance_preferences;
+  AgsApplicationContext *application_context;
+  AgsConfig *config;
   gchar *str;
   
   performance_preferences = AGS_PERFORMANCE_PREFERENCES(applicable);
 
-  /*  */
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(performance_preferences),
 							   AGS_TYPE_PREFERENCES);
-  window = AGS_WINDOW(preferences->window);
+  window = AGS_WINDOW(preferences->parent);
 
-  str = ags_config_get_value(ags_config,
-		       AGS_CONFIG_RECALL,
-		       "auto-sense\0");
+  
+  application_context = window->application_context;
+
+  config = application_context->config;
+
+  /*  */
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_RECALL,
+			     "auto-sense\0");
   gtk_toggle_button_set_active(performance_preferences->stream_auto_sense,
 			       !g_strcmp0("true\0",
 					  str));

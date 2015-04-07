@@ -145,7 +145,7 @@ ags_preferences_init(AgsPreferences *preferences)
 
   preferences->flags = 0;
 
-  preferences->window = NULL;
+  preferences->parent = NULL;
 
   gtk_window_set_title(GTK_WINDOW(preferences),
 		       g_strdup("preferences\0"));
@@ -230,7 +230,10 @@ ags_preferences_set_update(AgsApplicable *applicable, gboolean update)
 void
 ags_preferences_apply(AgsApplicable *applicable)
 {
+  AgsWindow *window;
   AgsPreferences *preferences;
+  AgsApplicationContext *application_context;
+  AgsConfig *config;
   AgsFile *file;
   struct passwd *pw;
   uid_t uid;
@@ -239,13 +242,18 @@ ags_preferences_apply(AgsApplicable *applicable)
   GError *error;
 
   preferences = AGS_PREFERENCES(applicable);
+  window = preferences->parent;
 
+  application_context = window->application_context;
+
+  config = application_context->config;
+  
   ags_applicable_apply(AGS_APPLICABLE(preferences->generic_preferences));
   ags_applicable_apply(AGS_APPLICABLE(preferences->audio_preferences));
   ags_applicable_apply(AGS_APPLICABLE(preferences->performance_preferences));
   ags_applicable_apply(AGS_APPLICABLE(preferences->server_preferences));
 
-  ags_config_save(ags_config);
+  ags_config_save(config);
 
   uid = getuid();
   pw = getpwuid(uid);
@@ -256,7 +264,7 @@ ags_preferences_apply(AgsApplicable *applicable)
 			     AGS_PREFERENCES_DEFAULT_FILENAME);
     
   file = (AgsFile *) g_object_new(AGS_TYPE_FILE,
-				  "application-context\0", ags_application_context,
+				  "application-context\0", application_context,
 				  "filename\0", filename,
 				  NULL);
   ags_file_write_concurrent(file);
@@ -268,7 +276,7 @@ ags_preferences_apply(AgsApplicable *applicable)
 					     filename),
 			     &error);
 
-  ags_main_quit(ags_application_context);
+  ags_main_quit(application_context);
 }
 
 void

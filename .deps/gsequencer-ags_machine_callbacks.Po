@@ -557,7 +557,13 @@ gsequencer-ags_machine_callbacks.o: src/ags/X/ags_machine_callbacks.c \
  src/ags/audio/ags_timestamp.h src/ags/audio/ags_note.h \
  src/ags/audio/ags_task.h src/ags/object/ags_application_context.h \
  src/ags/lib/ags_log.h src/ags/object/ags_config.h \
- src/ags/object/ags_main_loop.h src/ags/thread/ags_async_queue.h \
+ src/ags/file/ags_file.h src/ags-lib/object/ags_connectable.h \
+ src/ags/object/ags_applicable.h src/ags/thread/ags_audio_loop.h \
+ /usr/include/math.h /usr/include/bits/huge_val.h \
+ /usr/include/bits/huge_valf.h /usr/include/bits/huge_vall.h \
+ /usr/include/bits/inf.h /usr/include/bits/nan.h \
+ /usr/include/bits/mathdef.h /usr/include/bits/mathcalls.h \
+ /usr/include/bits/mathinline.h src/ags/thread/ags_async_queue.h \
  /usr/include/linux/futex.h /usr/include/linux/types.h \
  /usr/include/asm/types.h /usr/include/asm-generic/types.h \
  /usr/include/asm-generic/int-ll64.h /usr/include/asm/bitsperlong.h \
@@ -565,14 +571,8 @@ gsequencer-ags_machine_callbacks.o: src/ags/X/ags_machine_callbacks.c \
  /usr/include/linux/stddef.h /usr/include/asm/posix_types.h \
  /usr/include/asm/posix_types_64.h /usr/include/asm-generic/posix_types.h \
  /usr/include/sys/time.h src/ags/object/ags_stackable.h \
- src/ags/file/ags_file.h src/ags-lib/object/ags_connectable.h \
- src/ags/object/ags_applicable.h src/ags/thread/ags_audio_loop.h \
- /usr/include/math.h /usr/include/bits/huge_val.h \
- /usr/include/bits/huge_valf.h /usr/include/bits/huge_vall.h \
- /usr/include/bits/inf.h /usr/include/bits/nan.h \
- /usr/include/bits/mathdef.h /usr/include/bits/mathcalls.h \
- /usr/include/bits/mathinline.h src/ags/thread/ags_task_thread.h \
- src/ags/thread/ags_thread_pool.h src/ags/audio/task/ags_start_devout.h \
+ src/ags/thread/ags_task_thread.h src/ags/thread/ags_thread_pool.h \
+ src/ags/object/ags_main_loop.h src/ags/audio/task/ags_start_devout.h \
  src/ags/audio/ags_devout.h /usr/include/alsa/asoundlib.h \
  /usr/include/string.h /usr/include/bits/string.h \
  /usr/include/bits/string2.h /usr/include/fcntl.h \
@@ -592,7 +592,7 @@ gsequencer-ags_machine_callbacks.o: src/ags/X/ags_machine_callbacks.c \
  /usr/include/alsa/seq_midi_event.h src/ags/thread/ags_devout_thread.h \
  src/ags/thread/ags_iterator_thread.h \
  src/ags/audio/task/ags_remove_audio.h src/ags/X/ags_window.h \
- src/ags/X/ags_automation_editor.h \
+ src/ags/object/ags_soundcard.h src/ags/X/ags_automation_editor.h \
  src/ags/X/editor/ags_automation_toolbar.h \
  src/ags/X/editor/ags_port_selection.h src/ags/X/editor/ags_notebook.h \
  src/ags/X/editor/ags_machine_selector.h \
@@ -1924,7 +1924,31 @@ src/ags/lib/ags_log.h:
 
 src/ags/object/ags_config.h:
 
-src/ags/object/ags_main_loop.h:
+src/ags/file/ags_file.h:
+
+src/ags-lib/object/ags_connectable.h:
+
+src/ags/object/ags_applicable.h:
+
+src/ags/thread/ags_audio_loop.h:
+
+/usr/include/math.h:
+
+/usr/include/bits/huge_val.h:
+
+/usr/include/bits/huge_valf.h:
+
+/usr/include/bits/huge_vall.h:
+
+/usr/include/bits/inf.h:
+
+/usr/include/bits/nan.h:
+
+/usr/include/bits/mathdef.h:
+
+/usr/include/bits/mathcalls.h:
+
+/usr/include/bits/mathinline.h:
 
 src/ags/thread/ags_async_queue.h:
 
@@ -1956,35 +1980,11 @@ src/ags/thread/ags_async_queue.h:
 
 src/ags/object/ags_stackable.h:
 
-src/ags/file/ags_file.h:
-
-src/ags-lib/object/ags_connectable.h:
-
-src/ags/object/ags_applicable.h:
-
-src/ags/thread/ags_audio_loop.h:
-
-/usr/include/math.h:
-
-/usr/include/bits/huge_val.h:
-
-/usr/include/bits/huge_valf.h:
-
-/usr/include/bits/huge_vall.h:
-
-/usr/include/bits/inf.h:
-
-/usr/include/bits/nan.h:
-
-/usr/include/bits/mathdef.h:
-
-/usr/include/bits/mathcalls.h:
-
-/usr/include/bits/mathinline.h:
-
 src/ags/thread/ags_task_thread.h:
 
 src/ags/thread/ags_thread_pool.h:
+
+src/ags/object/ags_main_loop.h:
 
 src/ags/audio/task/ags_start_devout.h:
 
@@ -2065,6 +2065,8 @@ src/ags/thread/ags_iterator_thread.h:
 src/ags/audio/task/ags_remove_audio.h:
 
 src/ags/X/ags_window.h:
+
+src/ags/object/ags_soundcard.h:
 
 src/ags/X/ags_automation_editor.h:
 

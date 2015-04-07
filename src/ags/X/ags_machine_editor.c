@@ -200,6 +200,7 @@ ags_machine_editor_init(AgsMachineEditor *machine_editor)
   machine_editor->version = AGS_MACHINE_EDITOR_DEFAULT_VERSION;
   machine_editor->build_id = AGS_MACHINE_EDITOR_DEFAULT_BUILD_ID;
 
+  machine_editor->parent = NULL;
   machine_editor->machine = NULL;
 
   machine_editor->notebook =

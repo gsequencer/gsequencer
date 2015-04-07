@@ -38,9 +38,6 @@
 int ags_machine_popup_rename_response_callback(GtkWidget *widget, gint response, AgsMachine *machine);
 void ags_machine_start_failure_response(GtkWidget *dialog, AgsMachine *machine);
 
-extern pthread_key_t application_context;
-AgsApplicationContext *ags_application_context =  pthread_getspecific(application_context);
-
 int
 ags_machine_button_press_callback(GtkWidget *handle_box, GdkEventButton *event, AgsMachine *machine)
 {
@@ -120,28 +117,23 @@ void
 ags_machine_popup_destroy_activate_callback(GtkWidget *widget, AgsMachine *machine)
 {
   AgsWindow *window;
+  
+  AgsRemoveAudio *remove_audio;
+  
   AgsThread *main_loop, *current;
   AgsTaskThread *task_thread;
-  AgsRemoveAudio *remove_audio;
 
-  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
+  AgsApplicationContext *application_context;
   
-  task_thread = NULL;
+  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
 
-  main_loop = ags_application_context->main_loop;
-  current = main_loop->children;
+  application_context = window->application_context;
+  
+  main_loop = application_context->main_loop;
+  task_thread = ags_thread_find_type(main_loop,
+				     AGS_TYPE_TASK_THREAD);
 
-  while(current != NULL){
-    if(AGS_IS_TASK_THREAD(current)){
-      task_thread = (AgsTaskThread *) current;
-
-      break;
-    }
-
-    current = current->next;
-  }
-
-  remove_audio = ags_remove_audio_new(window->devout,
+  remove_audio = ags_remove_audio_new(window->soundcard,
 				      machine->audio);
   ags_task_thread_append_task(task_thread,
 			      AGS_TASK(remove_audio));
