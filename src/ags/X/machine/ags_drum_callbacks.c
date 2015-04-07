@@ -23,9 +23,7 @@
 
 #include <ags/object/ags_application_context.h>
 
-#include <ags/widget/ags_led.h>
-
-#include <ags/thread/ags_audio_loop.h>
+#include <ags/thread/ags_thread-posix.h>
 #include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_devout.h>
@@ -56,6 +54,8 @@
 
 #include <ags/audio/file/ags_audio_file.h>
 
+#include <ags/widget/ags_led.h>
+
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_pad.h>
 #include <ags/X/ags_navigation.h>
@@ -66,8 +66,6 @@
 #define AGS_AUDIO_FILE_DEVOUT "AgsAudioFileDevout\0"
 #define AGS_DRUM_PLAY_RECALL "AgsDrumPlayRecall\0"
 
-extern pthread_key_t application_context;
-AgsApplicationContext *ags_application_context =  pthread_getspecific(application_context);
 extern const char *AGS_DRUM_INDEX;
 
 void
@@ -154,27 +152,24 @@ void
 ags_drum_length_spin_callback(GtkWidget *spin_button, AgsDrum *drum)
 {
   AgsWindow *window;
+  
   AgsApplySequencerLength *apply_sequencer_length;
+
   AgsThread *main_loop, *current;
   AgsTaskThread *task_thread;
+
+  AgsApplicationContext *application_context;
+  
   gdouble length;
   
-  task_thread = NULL;
-
-  main_loop = ags_application_context->main_loop;
-  current = main_loop->children;
-
-  while(current != NULL){
-    if(AGS_IS_TASK_THREAD(current)){
-      task_thread = (AgsTaskThread *) current;
-
-      break;
-    }
-
-    current = current->next;
-  }
-
   window = (AgsWindow *) gtk_widget_get_toplevel(GTK_WIDGET(drum));
+
+  application_context = window->application_context;
+  
+  main_loop = application_context->main_loop;
+  
+  task_thread = ags_thread_find(main_loop,
+				AGS_TYPE_TASK_THREAD);
 
   length = GTK_SPIN_BUTTON(spin_button)->adjustment->value;
 
@@ -298,11 +293,16 @@ ags_drum_index1_callback(GtkWidget *widget, AgsDrum *drum)
 void
 ags_drum_pad_callback(GtkWidget *toggle_button, AgsDrum *drum)
 {
+  AgsWindow *window;
   AgsLine *selected_line;
   AgsPattern *pattern;
   AgsTogglePatternBit *toggle_pattern_bit;
+
   AgsThread *main_loop, *current;
   AgsTaskThread *task_thread;
+
+  AgsApplicationContext *application_context;
+  
   GList *list, *list_start;
   GList *line, *line_start;
   GList *tasks;
@@ -319,21 +319,15 @@ ags_drum_pad_callback(GtkWidget *toggle_button, AgsDrum *drum)
 
     return;
   }
+    
+  window = (AgsWindow *) gtk_widget_get_toplevel(GTK_WIDGET(drum));
 
-  task_thread = NULL;
+  application_context = window->application_context;
+  
+  main_loop = application_context->main_loop;
 
-  main_loop = ags_application_context->main_loop;
-  current = main_loop->children;
-
-  while(current != NULL){
-    if(AGS_IS_TASK_THREAD(current)){
-      task_thread = (AgsTaskThread *) current;
-
-      break;
-    }
-
-    current = current->next;
-  }
+  task_thread = ags_thread_find(main_loop,
+				AGS_TYPE_TASK_THREAD);
 
   /* calculate offset */
   list_start = 
@@ -405,32 +399,30 @@ ags_drum_tact_callback(AgsAudio *audio,
 		       AgsDrum *drum)
 {
   AgsWindow *window;
+  AgsToggleLed *toggle_led;
+
   AgsCountBeatsAudio *play_count_beats_audio;
   AgsCountBeatsAudioRun *play_count_beats_audio_run;
-  AgsToggleLed *toggle_led;
+
   AgsThread *main_loop, *current;
   AgsTaskThread *task_thread;
+
+  AgsApplicationContext *application_context;
+  
   GList *list, *tmp;
   guint counter, active_led;
   gdouble active_led_old, active_led_new;
   GValue value = {0,};
+
+  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) drum,
+						 AGS_TYPE_WINDOW);
+
+  application_context = window->application_context;
   
-  task_thread = NULL;
-
-  main_loop = ags_application_context->main_loop;
-  current = main_loop->children;
-
-  while(current != NULL){
-    if(AGS_IS_TASK_THREAD(current)){
-      task_thread = (AgsTaskThread *) current;
-
-      break;
-    }
-
-    current = current->next;
-  }
-
-  window = AGS_WINDOW(gtk_widget_get_ancestor((GtkWidget *) drum, AGS_TYPE_WINDOW));
+  main_loop = application_context->main_loop;
+  
+  task_thread = ags_thread_find(main_loop,
+				AGS_TYPE_TASK_THREAD);
 
   /* get some recalls */
   list = ags_recall_find_type(audio->play,

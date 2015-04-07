@@ -109,8 +109,6 @@ void ags_synth_update(AgsSynth *synth);
 static gpointer ags_synth_parent_class = NULL;
 
 static AgsConnectableInterface *ags_synth_parent_connectable_interface;
-extern pthread_key_t application_context;
-AgsApplicationContext *ags_application_context =  pthread_getspecific(application_context);
 
 GType
 ags_synth_get_type(void)
@@ -450,7 +448,7 @@ ags_synth_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", ags_application_context,
+				   "application-context\0", file->application_context,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
@@ -528,7 +526,7 @@ ags_synth_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", ags_application_context,
+				   "application-context\0", file->application_context,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
@@ -572,12 +570,19 @@ ags_synth_set_pads(AgsAudio *audio, GType type,
 void
 ags_synth_update(AgsSynth *synth)
 {
+  AgsWindow *window;
   AgsOscillator *oscillator;
-  AgsDevout *devout;
+
   AgsChannel *channel;
   AgsApplySynth *apply_synth;
+
   AgsThread *main_loop, *current;
   AgsTaskThread *task_thread;
+
+  AgsApplicationContext *application_context;
+  
+  AgsSoundcard *soundcard;
+
   GList *input_pad, *input_pad_start;
   GList *input_line, *input_line_start;
   guint wave;
@@ -586,22 +591,15 @@ ags_synth_update(AgsSynth *synth)
   guint loop_start, loop_end;
   gdouble volume;
 
-  main_loop = ags_application_context->main_loop;
-  task_thread = NULL;
+  window = gtk_widget_get_toplevel(synth);
+  
+  application_context = window->application_context;
+  
+  main_loop = application_context->main_loop;
+  task_thread = ags_thread_find(main_loop,
+				AGS_TYPE_TASK_THREAD);
 
-  current = main_loop->children;
-
-  while(current != NULL){
-    if(AGS_IS_TASK_THREAD(current)){
-      task_thread = (AgsTaskThread *) current;
-
-      break;
-    }
-
-    current = current->next;
-  }
-
-  devout = AGS_DEVOUT(AGS_MACHINE(synth)->audio->devout);
+  soundcard = AGS_SOUNDCARD(AGS_MACHINE(synth)->audio->soundcard);
 
   start = (guint) gtk_spin_button_get_value_as_int(synth->lower);
 
@@ -674,7 +672,7 @@ ags_synth_update(AgsSynth *synth)
 
 /**
  * ags_synth_new:
- * @devout: the assigned devout.
+ * @soundcard: the assigned soundcard.
  *
  * Creates an #AgsSynth
  *
@@ -683,7 +681,7 @@ ags_synth_update(AgsSynth *synth)
  * Since: 0.3
  */
 AgsSynth*
-ags_synth_new(GObject *devout)
+ags_synth_new(GObject *soundcard)
 {
   AgsSynth *synth;
 
@@ -691,7 +689,7 @@ ags_synth_new(GObject *devout)
 				    NULL);
 
   g_object_set(G_OBJECT(AGS_MACHINE(synth)->audio),
-	       "devout\0", devout,
+	       "soundcard\0", soundcard,
 	       NULL);
 
   return(synth);
