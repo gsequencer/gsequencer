@@ -27,7 +27,10 @@
 #include <ags/thread/ags_thread-posix.h>
 #include <ags/thread/ags_single_thread.h>
 #include <ags/thread/ags_autosave_thread.h>
+#include <ags/thread/ags_audio_loop.h>
+#include <ags/thread/ags_task_thread.h>
 #include <ags/thread/ags_concurrency_provider.h>
+#include <ags/thread/ags_thread_pool.h>
 
 #include <ags/server/ags_server.h>
 
@@ -123,6 +126,7 @@ int
 main(int argc, char **argv)
 {
   AgsThread *audio_loop;
+  AgsThread *task_thread;
   AgsThread *gui_thread;
   AgsConfig *config;
   AgsApplicationContext *application_context;
@@ -142,7 +146,7 @@ main(int argc, char **argv)
   int result;
 
   const rlim_t kStackSize = 64L * 1024L * 1024L;   // min stack size = 64 Mb
-
+  
   //  mtrace();
   atexit(ags_signal_cleanup);
 
@@ -204,7 +208,6 @@ main(int argc, char **argv)
 
   application_context = ags_xorg_application_context_new(NULL,
 							 config);
-
   g_object_set(config,
 	       "application-context\0", application_context,
 	       NULL);
@@ -246,10 +249,13 @@ main(int argc, char **argv)
     ags_file_read(file);
     ags_file_close(file);
   }else{
-    AgsThread *audio_loop;
-    AgsSoundcard *soundcard;
     AgsWindow *window;
+
     AgsServer *server;
+
+    AgsThreadPool *thread_pool;
+    
+    AgsSoundcard *soundcard;
 
     struct passwd *pw;
     uid_t uid;
@@ -304,19 +310,24 @@ main(int argc, char **argv)
     g_object_ref(audio_loop);
     ags_connectable_connect(AGS_CONNECTABLE(audio_loop));
 
-    /* start thread tree */
-    AGS_XORG_APPLICATION_CONTEXT(application_context)->thread_pool = ags_thread_pool_new(AGS_THREAD(application_context->main_loop));
-    ags_thread_start(audio_loop);
+    /* thread pool */
+    task_thread = ags_thread_find_type(audio_loop,
+				       AGS_TYPE_TASK_THREAD);
+    
+    thread_pool = 
+      AGS_XORG_APPLICATION_CONTEXT(application_context)->thread_pool = ags_thread_pool_new(task_thread);
 
     /* complete thread pool */
-    ags_thread_pool_start(ags_concurrency_provider_get_thread_pool(application_context));
+    thread_pool = ags_concurrency_provider_get_thread_pool(application_context);
+
+    ags_thread_pool_start(thread_pool);
   }
 
   if(!single_thread){
     GList *children;
 
     /* find gui thread */
-    gui_thread = ags_thread_find_type(AGS_THREAD(application_context->main_loop),
+    gui_thread = ags_thread_find_type(audio_loop,
 				      AGS_TYPE_GUI_THREAD);
 
     /* start main loop */
