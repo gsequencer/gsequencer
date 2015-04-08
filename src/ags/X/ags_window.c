@@ -167,14 +167,15 @@ ags_window_init(AgsWindow *window)
 
   error = NULL;
   
+  window->name = g_strdup("unnamed\0");
   g_object_set(G_OBJECT(window),
   	       "icon\0", gdk_pixbuf_new_from_file("./doc/images/jumper.png\0", &error),
   	       NULL);
 
   window->application_context = NULL;
+  window->application_mutex = NULL;
+  
   window->soundcard = NULL;
-
-  window->name = g_strdup("unnamed\0");
 
   gtk_window_set_title((GtkWindow *) window, g_strconcat("ags - \0", window->name, NULL));
 
@@ -270,6 +271,10 @@ ags_window_set_property(GObject *gobject,
 
       if(application_context != NULL){
 	g_object_ref(application_context);
+
+	window->application_mutex = &(application_context->mutex);
+      }else{
+	window->application_mutex = NULL;
       }
 
       window->application_context = application_context;

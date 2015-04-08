@@ -55,6 +55,7 @@ enum{
 
 enum{
   PROP_0,
+  PROP_APPLICATION_MUTEX,
   PROP_MAIN_LOOP,
   PROP_CONFIG,
 };

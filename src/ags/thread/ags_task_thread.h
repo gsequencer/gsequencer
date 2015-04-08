@@ -80,6 +80,6 @@ GType ags_task_thread_get_type();
 void ags_task_thread_append_task(AgsTaskThread *task_thread, AgsTask *task);
 void ags_task_thread_append_tasks(AgsTaskThread *task_thread, GList *list);
 
-AgsTaskThread* ags_task_thread_new(GObject *devout);
+AgsTaskThread* ags_task_thread_new();
 
 #endif /*__AGS_TASK_THREAD_H__*/

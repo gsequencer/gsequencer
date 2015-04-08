@@ -553,8 +553,21 @@ gsequencer-main.o: src/ags/main.c /usr/include/stdc-predef.h \
  src/ags-lib/object/ags_connectable.h src/ags/object/ags_soundcard.h \
  src/ags/thread/ags_thread_init.h src/ags/thread/ags_thread-posix.h \
  src/ags/thread/ags_single_thread.h src/ags/thread/ags_autosave_thread.h \
- src/ags/thread/ags_concurrency_provider.h \
+ src/ags/thread/ags_audio_loop.h /usr/include/math.h \
+ /usr/include/bits/huge_val.h /usr/include/bits/huge_valf.h \
+ /usr/include/bits/huge_vall.h /usr/include/bits/inf.h \
+ /usr/include/bits/nan.h /usr/include/bits/mathdef.h \
+ /usr/include/bits/mathcalls.h /usr/include/bits/mathinline.h \
+ src/ags/thread/ags_async_queue.h /usr/include/linux/futex.h \
+ /usr/include/linux/types.h /usr/include/asm/types.h \
+ /usr/include/asm-generic/types.h /usr/include/asm-generic/int-ll64.h \
+ /usr/include/asm/bitsperlong.h /usr/include/asm-generic/bitsperlong.h \
+ /usr/include/linux/posix_types.h /usr/include/linux/stddef.h \
+ /usr/include/asm/posix_types.h /usr/include/asm/posix_types_64.h \
+ /usr/include/asm-generic/posix_types.h /usr/include/sys/time.h \
+ src/ags/object/ags_stackable.h src/ags/thread/ags_task_thread.h \
  src/ags/thread/ags_thread_pool.h src/ags/object/ags_main_loop.h \
+ src/ags/audio/ags_task.h src/ags/thread/ags_concurrency_provider.h \
  src/ags/server/ags_server.h /usr/include/netinet/in.h \
  /usr/lib/gcc/x86_64-unknown-linux-gnu/4.9.2/include/stdint.h \
  /usr/include/stdint.h /usr/include/bits/wchar.h \
@@ -1894,11 +1907,65 @@ src/ags/thread/ags_single_thread.h:
 
 src/ags/thread/ags_autosave_thread.h:
 
-src/ags/thread/ags_concurrency_provider.h:
+src/ags/thread/ags_audio_loop.h:
+
+/usr/include/math.h:
+
+/usr/include/bits/huge_val.h:
+
+/usr/include/bits/huge_valf.h:
+
+/usr/include/bits/huge_vall.h:
+
+/usr/include/bits/inf.h:
+
+/usr/include/bits/nan.h:
+
+/usr/include/bits/mathdef.h:
+
+/usr/include/bits/mathcalls.h:
+
+/usr/include/bits/mathinline.h:
+
+src/ags/thread/ags_async_queue.h:
+
+/usr/include/linux/futex.h:
+
+/usr/include/linux/types.h:
+
+/usr/include/asm/types.h:
+
+/usr/include/asm-generic/types.h:
+
+/usr/include/asm-generic/int-ll64.h:
+
+/usr/include/asm/bitsperlong.h:
+
+/usr/include/asm-generic/bitsperlong.h:
+
+/usr/include/linux/posix_types.h:
+
+/usr/include/linux/stddef.h:
+
+/usr/include/asm/posix_types.h:
+
+/usr/include/asm/posix_types_64.h:
+
+/usr/include/asm-generic/posix_types.h:
+
+/usr/include/sys/time.h:
+
+src/ags/object/ags_stackable.h:
+
+src/ags/thread/ags_task_thread.h:
 
 src/ags/thread/ags_thread_pool.h:
 
 src/ags/object/ags_main_loop.h:
+
+src/ags/audio/ags_task.h:
+
+src/ags/thread/ags_concurrency_provider.h:
 
 src/ags/server/ags_server.h:
 

@@ -164,16 +164,7 @@ ags_stream_channel_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_stream_channel_init(AgsStreamChannel *stream_channel)
 {
-  AgsApplicationContext *application_context;
-  AgsConfig *config;
-  AgsSoundcard *soundcard;
   GList *port;
-
-  soundcard = AGS_SOUNDCARD(AGS_RECALL(stream_channel)->soundcard);
-  
-  application_context = ags_soundcard_get_application_context(soundcard);
-
-  config = application_context->config;
 
   AGS_RECALL(stream_channel)->name = "ags-stream\0";
   AGS_RECALL(stream_channel)->version = AGS_RECALL_DEFAULT_VERSION;
@@ -191,10 +182,7 @@ ags_stream_channel_init(AgsStreamChannel *stream_channel)
 				     "port-value-size\0", sizeof(gboolean),
 				     "port-value-length\0", 1,
 				     NULL);
-  stream_channel->auto_sense->port_value.ags_port_boolean = ((!g_strcmp0(ags_config_get_value(config,
-											      AGS_CONFIG_RECALL,
-											      "auto-sense\0"), "true\0")
-							      ) ? TRUE: FALSE);
+  stream_channel->auto_sense->port_value.ags_port_boolean = TRUE;
   
   port = g_list_prepend(port, stream_channel->auto_sense);
 
