@@ -31,6 +31,14 @@
 void ags_devout_thread_class_init(AgsDevoutThreadClass *devout_thread);
 void ags_devout_thread_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_devout_thread_init(AgsDevoutThread *devout_thread);
+void ags_devout_thread_set_property(GObject *gobject,
+				    guint prop_id,
+				    const GValue *value,
+				    GParamSpec *param_spec);
+void ags_devout_thread_get_property(GObject *gobject,
+				    guint prop_id,
+				    GValue *value,
+				    GParamSpec *param_spec);
 void ags_devout_thread_connect(AgsConnectable *connectable);
 void ags_devout_thread_disconnect(AgsConnectable *connectable);
 void ags_devout_thread_finalize(GObject *gobject);
@@ -51,6 +59,11 @@ void ags_devout_thread_stop(AgsThread *thread);
 
 static gpointer ags_devout_thread_parent_class = NULL;
 static AgsConnectableInterface *ags_devout_thread_parent_connectable_interface;
+
+enum{
+  PROP_0,
+  PROP_DEVOUT,
+};
 
 GType
 ags_devout_thread_get_type()
@@ -94,13 +107,33 @@ ags_devout_thread_class_init(AgsDevoutThreadClass *devout_thread)
 {
   GObjectClass *gobject;
   AgsThreadClass *thread;
-
+  GParamSpec *param_spec;
+  
   ags_devout_thread_parent_class = g_type_class_peek_parent(devout_thread);
 
   /* GObject */
   gobject = (GObjectClass *) devout_thread;
 
+  gobject->set_property = ags_devout_thread_set_property;
+  gobject->get_property = ags_devout_thread_get_property;
+
   gobject->finalize = ags_devout_thread_finalize;
+
+  /**
+   * AgsThread:devout:
+   *
+   * The assigned #AgsDevout.
+   * 
+   * Since: 0.4
+   */
+  param_spec = g_param_spec_object("devout\0",
+				   "devout assigned to\0",
+				   "The AgsDevout it is assigned to.\0",
+				   AGS_TYPE_DEVOUT,
+				   G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_DEVOUT,
+				  param_spec);
 
   /* AgsThread */
   thread = (AgsThreadClass *) devout_thread;
@@ -125,13 +158,68 @@ ags_devout_thread_init(AgsDevoutThread *devout_thread)
   AgsThread *thread;
   
   thread = AGS_THREAD(devout_thread);
-
+  
   thread->freq = AGS_DEVOUT_THREAD_DEFAULT_JIFFIE;
+
+  devout_thread->devout = NULL;
 
   devout_thread->timestamp_thread = ags_timestamp_thread_new();
   ags_thread_add_child(thread, devout_thread->timestamp_thread);
 
   devout_thread->error = NULL;
+}
+
+void
+ags_devout_thread_set_property(GObject *gobject,
+			       guint prop_id,
+			       const GValue *value,
+			       GParamSpec *param_spec)
+{
+  AgsDevoutThread *devout_thread;
+
+  devout_thread = AGS_DEVOUT_THREAD(gobject);
+
+  switch(prop_id){
+  case PROP_DEVOUT:
+    {
+      AgsDevout *devout;
+
+      devout = (AgsDevout *) g_value_get_object(value);
+
+      if(devout_thread->devout != NULL){
+	g_object_unref(G_OBJECT(devout_thread->devout));
+      }
+
+      if(devout != NULL){
+	g_object_ref(G_OBJECT(devout));
+      }
+
+      devout_thread->devout = G_OBJECT(devout);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_devout_thread_get_property(GObject *gobject,
+			       guint prop_id,
+			       GValue *value,
+			       GParamSpec *param_spec)
+{
+  AgsDevoutThread *devout_thread;
+
+  devout_thread = AGS_DEVOUT_THREAD(gobject);
+
+  switch(prop_id){
+  case PROP_DEVOUT:
+    {
+      g_value_set_object(value, G_OBJECT(devout_thread->devout));
+    }
+    break;
+  }
 }
 
 void
@@ -168,7 +256,7 @@ ags_devout_thread_start(AgsThread *thread)
 
   devout_thread = AGS_DEVOUT_THREAD(thread);
 
-  devout = AGS_DEVOUT(thread->devout);
+  devout = AGS_DEVOUT(devout_thread->devout);
 
   /*  */
   devout->flags |= (AGS_DEVOUT_BUFFER3 |
@@ -217,7 +305,7 @@ ags_devout_thread_run(AgsThread *thread)
 
   devout_thread = AGS_DEVOUT_THREAD(thread);
 
-  devout = AGS_DEVOUT(thread->devout);
+  devout = AGS_DEVOUT(devout_thread->devout);
 
   //  delay = (long) floor(NSEC_PER_SEC / devout->frequency * devout->buffer_size);
 
@@ -246,8 +334,8 @@ ags_devout_thread_stop(AgsThread *thread)
 
   devout_thread = AGS_DEVOUT_THREAD(thread);
 
-  devout = AGS_DEVOUT(thread->devout);
-  audio_loop = AGS_AUDIO_LOOP(thread->parent);
+  devout = AGS_DEVOUT(devout_thread->devout);
+  audio_loop = ags_thread_get_toplevel(thread);
 
   if((AGS_DEVOUT_START_PLAY & (devout->flags)) != 0){
 #ifdef AGS_DEBUG

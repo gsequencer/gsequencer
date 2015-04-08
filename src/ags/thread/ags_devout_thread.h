@@ -46,6 +46,8 @@ struct _AgsDevoutThread
 
   time_t time_val;
 
+  GObject *devout;
+  
   AgsThread *timestamp_thread;
 
   GError *error;

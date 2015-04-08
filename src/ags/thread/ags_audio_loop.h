@@ -72,7 +72,10 @@ struct _AgsAudioLoop
   gdouble frequency;
 
   GObject *application_context;
-
+  pthread_mutex_t *application_mutex;
+  
+  GObject *devout;
+  
   AgsAsyncQueue *async_queue;
   
   AgsThread *task_thread;

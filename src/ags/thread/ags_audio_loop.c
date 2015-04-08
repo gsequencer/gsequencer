@@ -73,6 +73,8 @@ void ags_audio_loop_play_audio(AgsAudioLoop *audio_loop);
 enum{
   PROP_0,
   PROP_APPLICATION_CONTEXT,
+  PROP_APPLICATION_MUTEX,
+  PROP_DEVOUT,
   PROP_TASK_THREAD,
   PROP_GUI_THREAD,
   PROP_DEVOUT_THREAD,
@@ -164,6 +166,37 @@ ags_audio_loop_class_init(AgsAudioLoopClass *audio_loop)
 				   G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_APPLICATION_CONTEXT,
+				  param_spec);
+
+  /**
+   * AgsAudioLoop:application-mutex:
+   *
+   * The assigned #AgsApplicationMutex.
+   * 
+   * Since: 0.4
+   */
+  param_spec = g_param_spec_pointer("application-mutex\0",
+				    "task thread to run\0",
+				    "The task thread to run\0",
+				    G_PARAM_READABLE);
+  g_object_class_install_property(gobject,
+				  PROP_APPLICATION_MUTEX,
+				  param_spec);
+
+  /**
+   * AgsAudioLoop:devout:
+   *
+   * The assigned #AgsDevout.
+   * 
+   * Since: 0.4
+   */
+  param_spec = g_param_spec_object("devout\0",
+				   "devout assigned to\0",
+				   "The AgsDevout it is assigned to.\0",
+				   AGS_TYPE_DEVOUT,
+				   G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_DEVOUT,
 				  param_spec);
 
   /**
@@ -326,6 +359,9 @@ ags_audio_loop_init(AgsAudioLoop *audio_loop)
 
   /* AgsApplicationContext */
   audio_loop->application_context = NULL;
+  audio_loop->application_mutex = NULL;
+  
+  audio_loop->devout = NULL;
 
   /* AgsTaskThread */  
   audio_loop->task_thread = (AgsThread *) ags_task_thread_new(NULL);
@@ -384,9 +420,35 @@ ags_audio_loop_set_property(GObject *gobject,
 
       if(application_context != NULL){
 	g_object_ref(G_OBJECT(application_context));
+
+	audio_loop->application_mutex = &(application_context->mutex);
       }
 
       audio_loop->application_context = application_context;
+    }
+    break;
+  case PROP_DEVOUT:
+    {
+      AgsDevout *devout;
+
+      devout = (AgsDevout *) g_value_get_object(value);
+
+      if(audio_loop->devout != NULL){
+	g_object_unref(G_OBJECT(audio_loop->devout));
+      }
+
+      if(devout != NULL){
+	g_object_ref(G_OBJECT(devout));
+      }
+
+      audio_loop->devout = G_OBJECT(devout);
+
+      g_object_set(audio_loop->export_thread,
+		   "devout\0", devout,
+		   NULL);
+      g_object_set(audio_loop->devout_thread,
+		   "devout\0", devout,
+		   NULL);
     }
     break;
   case PROP_TASK_THREAD:
@@ -515,6 +577,16 @@ ags_audio_loop_get_property(GObject *gobject,
       g_value_set_object(value, audio_loop->application_context);
     }
     break;
+  case PROP_APPLICATION_MUTEX:
+    {
+      g_value_set_pointer(value, audio_loop->application_mutex);
+    }
+    break;
+  case PROP_DEVOUT:
+    {
+      g_value_set_object(value, G_OBJECT(audio_loop->devout));
+    }
+    break;
   case PROP_TASK_THREAD:
     {
       g_value_set_object(value, audio_loop->task_thread);
@@ -626,6 +698,10 @@ ags_audio_loop_finalize(GObject *gobject)
   ags_list_free_and_free_link(audio_loop->play_channel);
   ags_list_free_and_free_link(audio_loop->play_audio);
 
+  if(audio_loop->devout != NULL){
+    g_object_unref(G_OBJECT(audio_loop->devout));
+  }
+
   /* call parent */
   G_OBJECT_CLASS(ags_audio_loop_parent_class)->finalize(gobject);
 }
@@ -650,15 +726,22 @@ ags_audio_loop_start(AgsThread *thread)
 void
 ags_audio_loop_run(AgsThread *thread)
 {
-  GMutex mutex;
-  GCond cond;
   AgsAudioLoop *audio_loop;
   AgsDevout *devout;
+
+  pthread_mutex_t *application_mutex;
+
   guint val;
 
   audio_loop = AGS_AUDIO_LOOP(thread);
 
-  devout = AGS_DEVOUT(AGS_THREAD(audio_loop)->devout);
+  g_object_get(audio_loop,
+	       "application-mutex\0", &application_mutex,
+	       NULL);
+
+  pthread_mutex_lock(application_mutex);
+
+  devout = AGS_DEVOUT(audio_loop->devout);
 
   pthread_mutex_lock(&(audio_loop->recall_mutex));
 
@@ -704,6 +787,7 @@ ags_audio_loop_run(AgsThread *thread)
   }
 
   pthread_mutex_unlock(&(audio_loop->recall_mutex));
+  pthread_mutex_unlock(application_mutex);
 
   /* wait for task thread */
   pthread_mutex_lock(&(audio_loop->task_thread->start_mutex));

@@ -158,6 +158,7 @@ struct _AgsDevout
   }out;
 
   GObject *application_context;
+  pthread_mutex_t *application_mutex;
   
   GList *audio;
 };

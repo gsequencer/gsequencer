@@ -54,6 +54,7 @@ struct _AgsServer
   void *server_info;
 
   GObject *application_context;
+  pthread_mutex_t *application_mutex;
   
   AgsRegistry *registry;
   AgsRemoteTask *remote_task;
