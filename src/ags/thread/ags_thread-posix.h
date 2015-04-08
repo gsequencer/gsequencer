@@ -127,7 +127,6 @@ struct _AgsThread
   pthread_mutex_t suspend_mutex;
   volatile gboolean critical_region;
 
-  GObject *devout;
   AgsThread *parent;
 
   AgsThread *next;

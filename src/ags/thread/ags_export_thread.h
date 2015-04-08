@@ -56,6 +56,7 @@ struct _AgsExportThread
   guint tic;
   guint counter;
 
+  GObject *devout;
   AgsAudioFile *audio_file;
 };
 

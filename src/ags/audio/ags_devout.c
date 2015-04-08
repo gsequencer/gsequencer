@@ -443,6 +443,7 @@ ags_devout_init(AgsDevout *devout)
 
   /* parent */
   devout->application_context = NULL;
+  devout->application_mutex = NULL;
 
   /* all AgsAudio */
   devout->audio = NULL;
@@ -480,6 +481,8 @@ ags_devout_set_property(GObject *gobject,
 	
 	g_object_ref(G_OBJECT(application_context));
 
+	devout->application_mutex = &(application_context->mutex);
+	
 	config = application_context->config;
 	
 	devout->dsp_channels = g_ascii_strtoull(ags_config_get_value(config,
@@ -509,6 +512,8 @@ ags_devout_set_property(GObject *gobject,
 	devout->out.alsa.device = g_strdup(ags_config_get_value(config,
 								AGS_CONFIG_DEVOUT,
 								"alsa-handle\0"));
+      }else{
+	devout->application_mutex = NULL;
       }
 
       devout->application_context = application_context;
@@ -633,6 +638,11 @@ ags_devout_get_property(GObject *gobject,
   devout = AGS_DEVOUT(gobject);
   
   switch(prop_id){
+  case PROP_APPLICATION_CONTEXT:
+    {
+      g_value_set_object(value, devout->application_context);
+    }
+    break;
   case PROP_DEVICE:
     {
       if((AGS_DEVOUT_LIBAO & (devout->flags)) != 0){

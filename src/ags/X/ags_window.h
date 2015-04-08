@@ -60,11 +60,12 @@ struct _AgsWindow
 
   guint flags;
 
-  GObject *application_context;
-
-  GObject *soundcard;
-
   char *name;
+
+  GObject *application_context;
+  pthread_mutex_t *application_mutex;
+  
+  GObject *soundcard;
 
   AgsMenuBar *menu_bar;
 

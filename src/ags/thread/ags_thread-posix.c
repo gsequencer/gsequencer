@@ -28,8 +28,6 @@
 #include <ags/thread/ags_gui_thread.h>
 #include <ags/thread/ags_returnable_thread.h>
 
-#include <ags/audio/ags_devout.h>
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -57,8 +55,6 @@ void ags_thread_finalize(GObject *gobject);
 void ags_thread_resume_handler(int sig);
 void ags_thread_suspend_handler(int sig);
 
-void ags_thread_set_devout(AgsThread *thread, GObject *devout);
-
 void ags_thread_real_start(AgsThread *thread);
 void* ags_thread_loop(void *ptr);
 void ags_thread_real_timelock(AgsThread *thread);
@@ -78,7 +74,6 @@ void ags_thread_real_stop(AgsThread *thread);
 
 enum{
   PROP_0,
-  PROP_DEVOUT,
   PROP_FREQUENCY,
 };
 
@@ -171,22 +166,6 @@ ags_thread_class_init(AgsThreadClass *thread)
   gobject->finalize = ags_thread_finalize;
 
   /* properties */
-  /**
-   * AgsThread:devout:
-   *
-   * The assigned #AgsDevout.
-   * 
-   * Since: 0.4
-   */
-  param_spec = g_param_spec_object("devout\0",
-				   "devout assigned to\0",
-				   "The AgsDevout it is assigned to.\0",
-				   AGS_TYPE_DEVOUT,
-				   G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_DEVOUT,
-				  param_spec);
-
   /**
    * AgsThread:frequency:
    *
@@ -364,13 +343,11 @@ ags_thread_init(AgsThread *thread)
 
   thread->timelock.tv_sec = 0;
   thread->timelock.tv_nsec = floor(NSEC_PER_SEC /
-				   (AGS_AUDIO_LOOP_DEFAULT_JIFFIE + 1));
+				   (AGS_THREAD_DEFAULT_JIFFIE + 1));
 
   thread->greedy_locks = NULL;
 
   pthread_mutex_init(&(thread->suspend_mutex), NULL);
-
-  thread->devout = NULL;
 
   thread->parent = NULL;
   thread->next = NULL;
@@ -391,34 +368,6 @@ ags_thread_set_property(GObject *gobject,
   thread = AGS_THREAD(gobject);
 
   switch(prop_id){
-  case PROP_DEVOUT:
-    {
-      AgsDevout *devout;
-      AgsThread *current;
-
-      devout = (AgsDevout *) g_value_get_object(value);
-
-      if(thread->devout != NULL){
-	g_object_unref(G_OBJECT(thread->devout));
-      }
-
-      if(devout != NULL){
-	g_object_ref(G_OBJECT(devout));
-      }
-
-      thread->devout = G_OBJECT(devout);
-
-      current = thread->children;
-
-      while(current != NULL){
-	g_object_set(G_OBJECT(current),
-		     "devout\0", devout,
-		     NULL);
-
-	current = current->next;
-      }
-    }
-    break;
   case PROP_FREQUENCY:
     {
       gdouble freq;
@@ -449,11 +398,6 @@ ags_thread_get_property(GObject *gobject,
   thread = AGS_THREAD(gobject);
 
   switch(prop_id){
-  case PROP_DEVOUT:
-    {
-      g_value_set_object(value, G_OBJECT(thread->devout));
-    }
-    break;
   case PROP_FREQUENCY:
     {
       g_value_set_double(value, thread->freq);
@@ -527,10 +471,6 @@ ags_thread_finalize(GObject *gobject)
 
   pthread_mutex_destroy(&(thread->suspend_mutex));
 
-  if(thread->devout != NULL){
-    g_object_unref(G_OBJECT(thread->devout));
-  }
-
   /* call parent */
   G_OBJECT_CLASS(ags_thread_parent_class)->finalize(gobject);
 
@@ -603,12 +543,6 @@ ags_accounting_table_set_sanity(GList *table,
   if(table != NULL){
     AGS_ACCOUNTING_TABLE(table->data)->sanity == sanity;
   }
-}
-
-void
-ags_thread_set_devout(AgsThread *thread, GObject *devout)
-{
-  //TODO:JK: implement me
 }
 
 /**
@@ -962,7 +896,7 @@ ags_thread_add_child(AgsThread *thread, AgsThread *child)
 
   /*  */
   ags_thread_lock(main_loop);
-
+  
   if(thread->children == NULL){
     thread->children = child;
     child->parent = thread;
@@ -977,7 +911,7 @@ ags_thread_add_child(AgsThread *thread, AgsThread *child)
   }
 
   ags_thread_unlock(main_loop);
-
+    
   if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(thread->flags)))) != 0){
     ags_thread_start(child);
   }

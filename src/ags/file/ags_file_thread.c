@@ -37,11 +37,6 @@
 
 void ags_file_read_thread_start(AgsFileLaunch *file_launch, AgsThread *thread);
 
-void ags_file_read_thread_resolve_devout(AgsFileLookup *file_lookup,
-					 AgsThread *thread);
-void ags_file_write_thread_resolve_devout(AgsFileLookup *file_lookup,
-					  AgsThread *thread);
-
 void ags_file_read_thread_pool_start(AgsFileLaunch *file_launch, AgsThreadPool *thread_pool);
 
 void ags_file_read_audio_loop_resolve_task_thread(AgsFileLookup *file_lookup,
@@ -122,16 +117,6 @@ ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread)
 		       G_CALLBACK(ags_file_read_thread_start), gobject);
     }
   }
-
-  /* devout */
-  file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
-					       "file\0", file,
-					       "node\0", node,
-					       "reference\0", gobject,
-					       NULL);
-  ags_file_add_lookup(file, (GObject *) file_lookup);
-  g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
-		   G_CALLBACK(ags_file_read_thread_resolve_devout), gobject);
 
   /* read children */
   child = node->children;
@@ -227,25 +212,6 @@ ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread)
   }
 }
 
-void 
-ags_file_read_thread_resolve_devout(AgsFileLookup *file_lookup,
-				    AgsThread *thread)
-{
-  AgsFileIdRef *id_ref;
-  gchar *xpath;
-
-  xpath = (gchar *) xmlGetProp(file_lookup->node,
-			       "devout\0");
-
-  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_xpath(file_lookup->file, xpath);
-
-  if(id_ref != NULL){
-    g_object_set(G_OBJECT(thread),
-		 "devout\0", id_ref->ref,
-		 NULL);
-  }
-}
-
 void
 ags_file_read_thread_start(AgsFileLaunch *file_launch, AgsThread *thread)
 {
@@ -300,16 +266,6 @@ ags_file_write_thread(AgsFile *file, xmlNode *parent, AgsThread *thread)
 	     AGS_FILE_FLAGS_PROP,
 	     g_strdup_printf("%x\0", thread->flags));
 
-  /* devout */
-  file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
-					       "file\0", file,
-					       "node\0", node,
-					       "reference\0", thread,
-					       NULL);
-  ags_file_add_lookup(file, (GObject *) file_lookup);
-  g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
-		   G_CALLBACK(ags_file_write_thread_resolve_devout), thread);
-
   xmlAddChild(parent,
 	      node);
 
@@ -333,22 +289,6 @@ ags_file_write_thread(AgsFile *file, xmlNode *parent, AgsThread *thread)
 			  current);
     current = current->next;
   }
-}
-
-void
-ags_file_write_thread_resolve_devout(AgsFileLookup *file_lookup,
-				     AgsThread *thread)
-{
-  AgsFileIdRef *id_ref;
-  gchar *id;
-
-  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_reference(file_lookup->file, thread->devout);
-
-  id = xmlGetProp(id_ref->node, AGS_FILE_ID_PROP);
-
-  xmlNewProp(file_lookup->node,
-	     "devout\0",
-	     g_strdup_printf("xpath=//ags-devout[@id='%s']\0", id));
 }
 
 void
