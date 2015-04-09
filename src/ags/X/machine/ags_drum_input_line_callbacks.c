@@ -100,7 +100,7 @@ ags_drum_input_line_audio_set_pads_callback(AgsAudio *audio, GType type,
 }
 
 void
-ags_drum_input_line_channel_done_callback(AgsChannel *source, AgsDrumInputLine *drum_input_line)
+ags_drum_input_line_play_channel_run_done(AgsRecall *recall, AgsDrumInputLine *drum_input_line)
 {
   AgsChannel *channel;
   AgsDevoutPlay *devout_play;
@@ -110,16 +110,25 @@ ags_drum_input_line_channel_done_callback(AgsChannel *source, AgsDrumInputLine *
 
   g_message("ags_drum_input_line_play_channel_run_done\0");
 
-  channel = AGS_PAD(AGS_LINE(drum_input_line)->pad)->channel;
+  channel = AGS_LINE(drum_input_line)->channel;
+
+  devout_play = AGS_DEVOUT_PLAY(channel->devout_play);
+
+  channel = ags_channel_nth(AGS_AUDIO(channel->audio)->input, channel->line - channel->audio_channel);
   next_pad = channel->next_pad;
 
   all_done = TRUE;
 
   while(channel != next_pad){
+    if(AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0] != devout_play->recall_id[0]){
+      channel = channel->next;
+      continue;
+    }
+
     current_recall = channel->play;
-    devout_play = AGS_DEVOUT_PLAY(channel->devout_play);
     
-    if(devout_play->recall_id[0] != NULL){
+    if(!ags_recall_is_done(current_recall,
+			   devout_play->recall_id[0])){
       all_done = FALSE;
       break;
     }
@@ -130,6 +139,7 @@ ags_drum_input_line_channel_done_callback(AgsChannel *source, AgsDrumInputLine *
   if(all_done){
     AgsDrumInputPad *drum_input_pad;
 
+    g_message("ags_drum_input_line_play_channel_run_done\0");
     drum_input_pad = AGS_DRUM_INPUT_PAD(AGS_LINE(drum_input_line)->pad);
 
     gtk_toggle_button_set_active(drum_input_pad->play, FALSE);

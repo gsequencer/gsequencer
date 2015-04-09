@@ -713,6 +713,7 @@ ags_recall_channel_run_duplicate(AgsRecall *recall,
 				 parameter, n_params,
 				 "devout\0", AGS_RECALL(recall_channel_run)->devout,
 				 "recall_channel\0", recall_channel_run->recall_channel,
+				 "audio_channel\0", recall_channel_run->audio_channel,
 				 //				 "audio_channel\0", recall_channel_run->audio_channel,
 				 "source\0", recall_channel_run->source,
 				 "destination\0", recall_channel_run->destination,
@@ -744,14 +745,13 @@ ags_recall_channel_run_duplicate(AgsRecall *recall,
 								 recall_id->recycling_container);
 
       audio_recall_id = ags_recall_id_find_recycling_container(audio->recall_id,
-							       default_recall_id->recycling_container);
+							       default_recall_id->recycling_container->parent);
 
       output_recall_id = ags_recall_id_find_recycling_container(output->recall_id,
-								audio_recall_id->recycling_container->parent);
+								audio_recall_id->recycling_container);
     }else{
       audio_recall_id = ags_recall_id_find_recycling_container(audio->recall_id,
 							       recall_id->recycling_container);
-
 
       output_recall_id = ags_recall_id_find_recycling_container(output->recall_id,
 								audio_recall_id->recycling_container);

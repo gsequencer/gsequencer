@@ -112,10 +112,10 @@ ags_note_edit_init(AgsNoteEdit *note_edit)
   note_edit->map_width = AGS_NOTE_EDIT_MAX_CONTROLS * 64;
   note_edit->map_height = 78;
 
-  note_edit->control_height = 14;
+  note_edit->control_height = 10;
   note_edit->control_margin_y = 2;
 
-  note_edit->control_width = 16;
+  note_edit->control_width = 1;
 
   note_edit->y0 = 0;
   note_edit->y1 = 0;
@@ -296,10 +296,10 @@ ags_note_edit_reset_horizontally(AgsNoteEdit *note_edit, guint flags)
 
     value = GTK_RANGE(note_edit->hscrollbar)->adjustment->value;
 
-    zoom_factor = 0.25;
+    zoom_factor = exp2(8.0 - (double) gtk_combo_box_get_active(editor->toolbar->zoom));
 
-    tact_factor = exp2(8.0 - (double) gtk_combo_box_get_active(editor->toolbar->zoom));
-    tact = exp2((double) gtk_combo_box_get_active(editor->toolbar->zoom) - 4.0);
+    tact_factor = exp2(8.0 - (double) gtk_combo_box_get_active(editor->toolbar->tact));
+    tact = exp2((double) gtk_combo_box_get_active(editor->toolbar->tact) - 4.0);
 
     if((AGS_NOTE_EDIT_RESET_WIDTH & flags) != 0){
       note_edit->control_unit.control_width = (guint) (((double) note_edit->control_width * zoom_factor * tact));
@@ -426,7 +426,7 @@ ags_note_edit_draw_segment(AgsNoteEdit *note_edit, cairo_t *cr)
     i += note_edit->control_height;
   }
 
-  tact = exp2((double) gtk_combo_box_get_active(editor->toolbar->zoom) - 4.0);
+  tact = exp2((double) gtk_combo_box_get_active(editor->toolbar->tact) - 4.0);
 
   i = note_edit->control_current.x0;
   

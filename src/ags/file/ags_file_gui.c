@@ -1092,10 +1092,8 @@ ags_file_read_line_pad_resolve_channel(AgsFileLookup *file_lookup,
 
   /* retrieve position */
   xpath_context = xmlXPathNewContext(file->doc);
-  //  xmlXPathSetContextNode(node->parent,
-  //			 xpath_context);
-  xpath_context->node = node->parent;
-
+  xmlXPathSetContextNode(node->parent,
+			 xpath_context);
   xpath_object = xmlXPathEval("./ags-pad\0",
 			      xpath_context);
 

@@ -150,7 +150,7 @@ ags_async_queue_init(AgsAsyncQueue *async_queue)
   sev.sigev_signo = AGS_ASYNC_QUEUE_SIGNAL_HIGH;
   sev.sigev_value.sival_ptr = &(async_queue->timerid);
 
-  //  timer_create(AGS_ASYNC_QUEUE_CLOCK_ID, &sev, &(async_queue->timerid));
+  timer_create(AGS_ASYNC_QUEUE_CLOCK_ID, &sev, &(async_queue->timerid));
 
   async_queue->stack = g_queue_new();
   async_queue->timer = g_hash_table_new(g_str_hash, g_str_equal);
@@ -303,7 +303,7 @@ ags_async_queue_run_callback(AgsThread *thread,
   gboolean interrupt_first;
   struct timespec delay = {
     0,
-    NSEC_PER_SEC / thread->freq / 2,
+    async_queue->output_sum * NSEC_PER_SEC / async_queue->systemrate / 2,
   };
 
   interrupt_first = ((AGS_ASYNC_QUEUE_STOP_BIT_0 & (async_queue->flags)) != 0) ? TRUE: FALSE;
@@ -313,7 +313,6 @@ ags_async_queue_run_callback(AgsThread *thread,
 
   //  nanosleep(&(timer->run_delay), NULL);
   //  ags_async_queue_interrupt(async_queue);
-
   //  nanosleep(&(delay), NULL);
 
   while((interrupt_first &&

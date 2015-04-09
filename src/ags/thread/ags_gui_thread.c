@@ -43,6 +43,8 @@ void ags_gui_thread_suspend_handler(int sig);
 static gpointer ags_gui_thread_parent_class = NULL;
 static AgsConnectableInterface *ags_gui_thread_parent_connectable_interface;
 
+#define NSEC_PER_SEC    (1000000000) /* The number of nsecs per sec. */
+
 GType
 ags_gui_thread_get_type()
 {
@@ -121,11 +123,14 @@ ags_gui_thread_init(AgsGuiThread *gui_thread)
 
   //  g_atomic_int_or(&(thread->flags),
   //		  AGS_THREAD_TIMELOCK_RUN);
-  
-  thread->freq = AGS_GUI_THREAD_DEFAULT_JIFFIE;
 
   g_cond_init(&(gui_thread->cond));
   g_mutex_init(&(gui_thread->mutex));
+  
+  gui_thread->frequency = 1.0 / (double) AGS_GUI_THREAD_DEFAULT_JIFFIE;
+  gui_thread->iter = 0;
+  gui_thread->iter_stop = 1;
+  gui_thread->iter_stop_is_delay = TRUE;
 
   gui_thread->gui_task_thread = NULL;
   //  gui_thread->gui_task_thread = ags_gui_task_thread_new(NULL);
@@ -164,6 +169,8 @@ ags_gui_thread_start(AgsThread *thread)
 
   /*  */
   gui_thread = AGS_GUI_THREAD(thread);
+
+  gui_thread->iter = 0.0;
 
   /*  */
   if((AGS_THREAD_SINGLE_LOOP & (g_atomic_int_get(&(thread->flags)))) == 0){
@@ -238,6 +245,7 @@ ags_gui_thread_run(AgsThread *thread)
     g_main_context_release(main_context);
   }
 
+  /* entry point */
   gui_thread = AGS_GUI_THREAD(thread);
   audio_loop = AGS_AUDIO_LOOP(thread->parent);
   task_thread = AGS_TASK_THREAD(audio_loop->task_thread);
@@ -245,7 +253,23 @@ ags_gui_thread_run(AgsThread *thread)
   /*  */
   main_context = g_main_context_default();
 
-  ags_gui_thread_do_gtk_iteration();
+  /*  */
+  if(gui_thread->iter_stop_is_delay){
+    gui_thread->iter += 1;
+
+    if(gui_thread->iter >= gui_thread->iter_stop){
+      ags_gui_thread_do_gtk_iteration();
+      gui_thread->iter = 0;
+    }else{
+      gdk_threads_enter();
+      gdk_threads_leave();
+    }
+
+  }else{
+    for(gui_thread->iter = 0; gui_thread->iter < gui_thread->iter_stop; gui_thread->iter++){
+      ags_gui_thread_do_gtk_iteration();
+    }
+  }
 }
 
 void

@@ -23,8 +23,6 @@
 
 #include <ags/main.h>
 
-#include <ags/widget/ags_led.h>
-
 #include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_task_thread.h>
 
@@ -46,6 +44,7 @@
 #include <ags/audio/task/ags_toggle_led.h>
 
 #include <ags/audio/task/recall/ags_apply_bpm.h>
+#include <ags/audio/task/recall/ags_apply_tact.h>
 #include <ags/audio/task/recall/ags_apply_sequencer_length.h>
 
 #include <ags/audio/recall/ags_delay_audio.h>
@@ -56,7 +55,6 @@
 #include <ags/audio/recall/ags_copy_pattern_channel.h>
 #include <ags/audio/recall/ags_copy_pattern_channel_run.h>
 #include <ags/audio/recall/ags_play_channel.h>
-#include <ags/audio/recall/ags_play_channel_run.h>
 #include <ags/audio/recall/ags_play_audio_signal.h>
 
 #include <ags/audio/file/ags_audio_file.h>
@@ -74,8 +72,6 @@
 extern const char *AGS_DRUM_INDEX;
 
 void ags_drum_start_devout_failure(AgsTask *task, GError *error);
-void ags_drum_init_audio_launch_callback(AgsTask *task, AgsDrum *drum);
-void ags_drum_audio_done_callback(AgsAudio *audio, AgsDrum *drum);
 
 void
 ags_drum_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrum *drum)
@@ -130,17 +126,17 @@ ags_drum_sequencer_count_callback(AgsDelayAudioRun *delay_audio_run,
   }
 
   /* set optical feedback */
-  active_led_new = (guint) play_count_beats_audio_run->sequencer_counter % AGS_DRUM_PATTERN_CONTROLS;
+  active_led_new = play_count_beats_audio_run->sequencer_counter;
   drum->active_led = (guint) active_led_new;
 
-  if(play_count_beats_audio_run->sequencer_counter == 0){
+  if(active_led_new == 0){
     g_value_init(&value, G_TYPE_DOUBLE);
     ags_port_safe_read(play_count_beats_audio->sequencer_loop_end,
 		       &value);
 
-    active_led_old = (guint) (g_value_get_double(&value) - 1.0) % AGS_DRUM_PATTERN_CONTROLS;
+    active_led_old = g_value_get_double(&value) - 1.0;
   }else{
-    active_led_old = (guint) (drum->active_led - 1.0) % AGS_DRUM_PATTERN_CONTROLS;
+    active_led_old = (gdouble) drum->active_led - 1.0;
   }
 
   toggle_led = ags_toggle_led_new(gtk_container_get_children(GTK_CONTAINER(drum->led)),
@@ -222,6 +218,7 @@ ags_drum_run_callback(GtkWidget *toggle_button, AgsDrum *drum)
   AgsAudioLoop *audio_loop;
   AgsTaskThread *task_thread;
   AgsDevoutThread *devout_thread;
+  AgsRecallID *recall_id;
 
   devout = AGS_DEVOUT(AGS_MACHINE(drum)->audio->devout);
 
@@ -242,9 +239,6 @@ ags_drum_run_callback(GtkWidget *toggle_button, AgsDrum *drum)
     /* create init task */
     init_audio = ags_init_audio_new(AGS_MACHINE(drum)->audio,
 				    FALSE, TRUE, FALSE);
-    g_signal_connect_after(init_audio, "launch\0",
-			   G_CALLBACK(ags_drum_init_audio_launch_callback), drum);
-
     tasks = g_list_prepend(tasks,
 			   init_audio);
 
@@ -285,42 +279,6 @@ ags_drum_run_callback(GtkWidget *toggle_button, AgsDrum *drum)
 }
 
 void
-ags_drum_init_audio_launch_callback(AgsTask *task, AgsDrum *drum)
-{
-  AgsAudio *audio;
-
-  audio = AGS_MACHINE(drum)->audio;
-  g_signal_connect_after(audio, "done\0",
-			 G_CALLBACK(ags_drum_audio_done_callback), drum);
-}
-
-void
-ags_drum_audio_done_callback(AgsAudio *audio, AgsDrum *drum)
-{
-  GList *devout_play;
-  gboolean all_done;
-
-  devout_play = AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->devout_play;
-
-  all_done = TRUE;
-
-  while(devout_play != NULL){
-    if(AGS_DEVOUT_PLAY(devout_play->data)->recall_id[1] != NULL){
-      all_done = FALSE;
-      break;
-    }
-
-    devout_play = devout_play->next;
-  }
-
-  if(all_done){
-    ags_led_unset_active(AGS_LED(g_list_nth(gtk_container_get_children(GTK_CONTAINER(drum->led)),
-					    drum->active_led)->data));
-    gtk_toggle_button_set_active(drum->run, FALSE);
-  }
-}
-
-void
 ags_drum_start_devout_failure(AgsTask *task, GError *error)
 {
   AgsWindow *window;
@@ -351,6 +309,24 @@ ags_drum_run_delay_done(AgsRecall *recall, AgsRecallID *recall_id, AgsDrum *drum
   //  drum->block_run = TRUE;
   //  AGS_DEVOUT_PLAY(AGS_MACHINE(drum)->audio->devout_play)->flags |= AGS_DEVOUT_PLAY_DONE;
   gtk_toggle_button_set_active(drum->run, FALSE);
+}
+
+void
+ags_drum_tact_callback(GtkWidget *combo_box, AgsDrum *drum)
+{
+  AgsWindow *window;
+  AgsApplyTact *apply_tact;
+  gdouble tact;
+
+  window = (AgsWindow *) gtk_widget_get_toplevel(GTK_WIDGET(drum));
+
+  tact = exp2(4.0 - (double) gtk_combo_box_get_active(drum->tact));
+
+  apply_tact = ags_apply_tact_new(G_OBJECT(AGS_MACHINE(drum)->audio),
+				  tact);
+
+  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->task_thread),
+			      AGS_TASK(apply_tact));
 }
 
 void

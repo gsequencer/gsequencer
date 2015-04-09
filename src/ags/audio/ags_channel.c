@@ -62,7 +62,6 @@ static void ags_channel_finalize(GObject *gobject);
 
 enum{
   RECYCLING_CHANGED,
-  DONE,
   LAST_SIGNAL,
 };
 
@@ -148,7 +147,6 @@ ags_channel_class_init(AgsChannelClass *channel)
 
   /* AgsChannelClass */
   channel->recycling_changed = NULL;
-  channel->done = NULL;
 
   /* signals */
   channel_signals[RECYCLING_CHANGED] =
@@ -163,15 +161,6 @@ ags_channel_class_init(AgsChannelClass *channel)
 		 G_TYPE_OBJECT, G_TYPE_OBJECT,
 		 G_TYPE_OBJECT, G_TYPE_OBJECT,
 		 G_TYPE_OBJECT, G_TYPE_OBJECT);
-
-  channel_signals[DONE] =
-    g_signal_new("done\0",
-		 G_TYPE_FROM_CLASS (channel),
-		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET (AgsChannelClass, done),
-		 NULL, NULL,
-		 g_cclosure_marshal_VOID__VOID,
-		 G_TYPE_NONE, 0);
 }
 
 void
@@ -485,13 +474,7 @@ ags_channel_finalize(GObject *gobject)
 AgsRecall*
 ags_channel_find_recall(AgsChannel *channel, char *effect, char *name)
 {
-  AgsRecall *recall;
-  GList *list;
-
-  //TODO:JK: implement me
   /* */
-
-  return(NULL);
 }
 
 /**
@@ -1397,17 +1380,6 @@ ags_channel_recycling_changed(AgsChannel *channel,
 }
 
 void
-ags_channel_done(AgsChannel *channel)
-{
-  g_return_if_fail(AGS_IS_CHANNEL(channel));
-
-  g_object_ref(G_OBJECT(channel));
-  g_signal_emit(G_OBJECT(channel),
-		channel_signals[DONE], 0);
-  g_object_unref(G_OBJECT(channel));
-}
-
-void
 ags_channel_safe_resize_audio_signal(AgsChannel *channel,
 				     guint length)
 {
@@ -1484,12 +1456,11 @@ ags_channel_play(AgsChannel *channel,
   AgsRecall *recall;
   GList *list, *list_next;
   
-  if(recall_id->recycling_container->parent != NULL){
+  if(recall_id->recycling_container->parent != NULL)
     list = channel->recall;
-  }else{
+  else
     list = channel->play;
-  }
-
+  
   while(list != NULL){
     list_next = list->next;
 
@@ -2183,9 +2154,9 @@ ags_channel_duplicate_recall(AgsChannel *channel,
     /* duplicate the recall */
     copy = ags_recall_duplicate(recall, recall_id);
 
-    //#ifdef AGS_DEBUG
+#ifdef AGS_DEBUG
     g_message("recall duplicated: %s\n\0", G_OBJECT_TYPE_NAME(copy));
-    //#endif
+#endif
     
     /* set appropriate flag */
     if(playback){
@@ -2207,11 +2178,6 @@ ags_channel_duplicate_recall(AgsChannel *channel,
 
     /* notify run */
     ags_recall_notify_dependency(recall, AGS_RECALL_NOTIFY_RUN, 1);
-
-    /*  */
-    ags_recall_run_init_pre(copy);
-    ags_recall_run_init_inter(copy);
-    ags_recall_run_init_post(copy);
 
     /* iterate */    
     list_recall = list_recall->next;
@@ -2302,8 +2268,8 @@ ags_channel_init_recall(AgsChannel *channel, gint stage,
  */
 AgsRecallID*
 ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
-				gboolean arrange_recall_id, gboolean duplicate_templates,
-				gboolean playback, gboolean sequencer, gboolean notation,
+				gboolean arrange_recall_id,
+				gboolean duplicate_templates, gboolean playback, gboolean sequencer, gboolean notation,
 				gboolean resolve_dependencies,
 				AgsRecallID *recall_id)
 {

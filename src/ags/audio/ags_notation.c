@@ -213,7 +213,7 @@ ags_notation_init(AgsNotation *notation)
   notation->key = g_strdup("violine\0");
   notation->base_frequency = 440.0;
 
-  notation->tact = AGS_NOTATION_MINIMUM_NOTE_LENGTH;
+  notation->tact = AGS_DEVOUT_DEFAULT_TACT;
   notation->bpm = 120.0;
 
   notation->maximum_note_length = AGS_NOTATION_MAXIMUM_NOTE_LENGTH;
@@ -596,8 +596,8 @@ ags_notation_remove_note_at_position(AgsNotation *notation,
 				     guint x, guint y)
 {
   AgsNote *note;
-  GList *notes, *notes_end_region, *reverse_start;
-  guint x_start, i;
+  GList *notes, *notes_end_region;
+  guint x_start;
 
   notes = notation->notes;
 
@@ -612,7 +612,7 @@ ags_notation_remove_note_at_position(AgsNotation *notation,
   notes_end_region = notes;
 
   /* search in y region for appropriate note */
-  if(notes != NULL && (note = AGS_NOTE(notes->data))->x[0] == x){
+  if(notes != NULL && note->x[0] == x){
     do{
       if(note->y == y){
 	g_message("remove");
@@ -633,38 +633,32 @@ ags_notation_remove_note_at_position(AgsNotation *notation,
   }
 
   /* search backward until x_start */
-  reverse_start = notes;
+  if(x < notation->maximum_note_length){
+    x_start = 0;
+  }else{
+    x_start = x - notation->maximum_note_length;
+  }
 
-  for(i = 0; i < notation->maximum_note_length / notation->tact; i++){
-    notes = reverse_start;
-
-    if(x < notation->maximum_note_length){
-      x_start = 0;
-    }else{
-      x_start = x - notation->maximum_note_length;
-    }
-
-    while(notes != NULL && (note = AGS_NOTE(notes->data))->x[0] >= x_start){
-      if(note->y == y){
-	do{
-	  if(note->x[0] < x && note->x[1] == x + i){
-	    g_message("remove");
-	    notation->notes = g_list_delete_link(notation->notes, notes);
-	    g_object_unref(note);
+  while(notes != NULL && (note = AGS_NOTE(notes->data))->x[0] >= x_start){
+    if(note->y == y){
+      do{
+	if(note->x[1] > x){
+	  g_message("remove");
+	  notation->notes = g_list_delete_link(notation->notes, notes);
+	  g_object_unref(note);
 	
-	    return(TRUE);
-	  }
+	  return(TRUE);
+	}
 
-	  notes = notes->prev;
-	}while(notes != NULL &&
-	       (note = AGS_NOTE(notes->data))->x[0] >= x_start &&
-	       note->y == y);
+	notes = notes->prev;
+      }while(notes != NULL &&
+	     (note = AGS_NOTE(notes->data))->x[0] >= x_start &&
+	     note->y == y);
 
-	continue;
-      }
-
-      notes = notes->prev;
+      continue;
     }
+
+    notes = notes->prev;
   }
 
   return(FALSE);

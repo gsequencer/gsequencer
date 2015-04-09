@@ -95,9 +95,7 @@ void ags_audio_signal_realloc_buffer_size(AgsAudioSignal *audio_signal, guint bu
 void ags_audio_signal_morph_samplerate(AgsAudioSignal *audio_signal, guint samplerate, double k_morph);
 
 void ags_audio_signal_copy_buffer_to_buffer(signed short *destination, guint dchannels,
-						   signed short *source, guint schannels, guint size)
-  __attribute__ ((hot))
-  __attribute__ ((fastcall));
+					    signed short *source, guint schannels, guint size);
 
 void ags_audio_signal_duplicate_stream(AgsAudioSignal *audio_signal,
 				       AgsAudioSignal *template);

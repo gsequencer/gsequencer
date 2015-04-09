@@ -34,19 +34,13 @@
 #define AGS_IS_THREAD_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_THREAD))
 #define AGS_THREAD_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_THREAD, AgsThreadClass))
 
-#define AGS_ACCOUNTING_TABLE(ptr) ((AgsAccountingTable *)(ptr))
-
 #define MSEC_PER_SEC    (1000000) /* The number of msecs per sec. */
 #define NSEC_PER_SEC    (1000000000) /* The number of nsecs per sec. */
 #define AGS_THREAD_RESUME_SIG SIGUSR2
 #define AGS_THREAD_SUSPEND_SIG SIGUSR1
-#define AGS_THREAD_DEFAULT_JIFFIE (250)
-#define AGS_THREAD_MAX_PRECISION (1000)
-#define AGS_THREAD_DEFAULT_ATTACK (1.0)
 
 typedef struct _AgsThread AgsThread;
 typedef struct _AgsThreadClass AgsThreadClass;
-typedef struct _AgsAccountingTable AgsAccountingTable;
 
 typedef enum{
   AGS_THREAD_RUNNING                 = 1,
@@ -99,8 +93,6 @@ struct _AgsThread
   pthread_t thread;
   pthread_attr_t thread_attr;
 
-  gdouble freq;
-
   pthread_mutex_t mutex;
   pthread_mutexattr_t mutexattr;
   pthread_cond_t cond;
@@ -150,17 +142,7 @@ struct _AgsThreadClass
   void (*stop)(AgsThread *thread);
 };
 
-struct _AgsAccountingTable
-{
-  AgsThread *thread;
-  gdouble sanity;
-};
-
 GType ags_thread_get_type();
-
-AgsAccountingTable* ags_accounting_table_alloc(AgsThread *thread);
-void ags_accounting_table_set_sanity(GList *table,
-				     AgsThread *thread, gdouble sanity);
 
 void ags_thread_set_sync(AgsThread *thread, guint tic);
 void ags_thread_set_sync_all(AgsThread *thread, guint tic);

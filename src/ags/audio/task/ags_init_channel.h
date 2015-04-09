@@ -23,7 +23,6 @@
 #include <glib-object.h>
 
 #include <ags/audio/ags_task.h>
-#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_channel.h>
 
 #define AGS_TYPE_INIT_CHANNEL                (ags_init_channel_get_type())
@@ -43,7 +42,11 @@ struct _AgsInitChannel
   AgsChannel *channel;
   gboolean play_pad;
 
-  AgsDevoutPlayDomain *devout_play_domain;
+  AgsRecallID *recall_id[3];
+
+  gboolean playback;
+  gboolean sequencer;
+  gboolean notation;
 };
 
 struct _AgsInitChannelClass
@@ -54,6 +57,7 @@ struct _AgsInitChannelClass
 GType ags_init_channel_get_type();
 
 AgsInitChannel* ags_init_channel_new(AgsChannel *channel, gboolean play_pad,
+				     AgsRecallID *recall_id[3], 
 				     gboolean playback, gboolean sequencer, gboolean notation);
 
 #endif /*__AGS_INIT_CHANNEL_H__*/

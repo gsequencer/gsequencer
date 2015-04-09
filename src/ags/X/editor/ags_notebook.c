@@ -171,7 +171,6 @@ ags_notebook_add_tab(AgsNotebook *notebook)
 
   tab->toggle = (GtkToggleButton *) gtk_toggle_button_new_with_label(g_strdup_printf("channel %d\0",
 										     index));
-  gtk_toggle_button_set_active(tab->toggle, TRUE);
   gtk_box_pack_start(GTK_BOX(notebook->hbox),
 		     GTK_WIDGET(tab->toggle),
 		     FALSE, FALSE,
@@ -233,15 +232,10 @@ ags_notebook_remove_tab(AgsNotebook *notebook,
 {
   AgsNotebookTab *tab;
   gint length;
-
-  if(notebook->tabs == NULL){
-    return;
-  }
   
   length = g_list_length(notebook->tabs);
-
   tab = g_list_nth_data(notebook->tabs,
-			length - nth - 1);
+			length - nth);
 
   notebook->tabs = g_list_remove(notebook->tabs,
 				 tab);

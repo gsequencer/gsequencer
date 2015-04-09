@@ -665,10 +665,8 @@ ags_file_read_audio(AgsFile *file, xmlNode *node, AgsAudio **audio)
 	xmlXPathObject *xpath_object;
 
 	xpath_context = xmlXPathNewContext(file->doc);
-	//	xmlXPathSetContextNode(child,
-	//		       xpath_context);
-	xpath_context->node = child;
-
+	xmlXPathSetContextNode(child,
+			       xpath_context);
 	xpath_object = xmlXPathEval("./ags-channel/ags-output\0",
 				    xpath_context);
 
@@ -1050,9 +1048,8 @@ ags_file_read_channel(AgsFile *file, xmlNode *node, AgsChannel **channel)
     xmlXPathObject *xpath_object;
     
     xpath_context = xmlXPathNewContext(file->doc);
-    //    xmlXPathSetContextNode(node,
-    //			   xpath_context);
-    xpath_context->node = node;
+    xmlXPathSetContextNode(node,
+			   xpath_context);
 
     xpath_object = xmlXPathEval("./ags-output\0",
 				xpath_context);

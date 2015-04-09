@@ -361,28 +361,7 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
 
   sequencer_delay = (guint) ceil(g_value_get_double(&value));
 
-  if(delay_audio_run->hide_ref != 0){
-    delay_audio_run->hide_ref_counter += 1;
-
-    if(delay_audio_run->hide_ref_counter == delay_audio_run->hide_ref){
-      delay_audio_run->hide_ref_counter = 0;
-
-      if(delay_audio_run->notation_counter + 1 >= notation_delay){
-	delay_audio_run->notation_counter = 0;
-      }else{
-	delay_audio_run->notation_counter += 1;
-      }
-
-      if(delay_audio_run->sequencer_counter + 1 >= sequencer_delay){
-	delay_audio_run->sequencer_counter = 0;
-      }else{
-	delay_audio_run->sequencer_counter += 1;
-      }
-    }
-  }
-
-  if(delay_audio_run->notation_counter == 0 &&
-     delay_audio_run->hide_ref_counter == 0){
+  if(delay_audio_run->notation_counter == 0){
     AgsDevout *devout;
     guint run_order;
     guint delay, attack;
@@ -416,8 +395,7 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
 				       delay, attack);
   }
 
-  if(delay_audio_run->sequencer_counter == 0 &&
-     delay_audio_run->hide_ref_counter == 0){
+  if(delay_audio_run->sequencer_counter == 0){
     AgsDevout *devout;
     guint run_order;
     guint delay, attack;
@@ -449,6 +427,26 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
     ags_delay_audio_run_sequencer_count(delay_audio_run,
 					run_order,
 					delay, attack);
+  }
+
+  if(delay_audio_run->hide_ref != 0){
+    delay_audio_run->hide_ref_counter += 1;
+
+    if(delay_audio_run->hide_ref_counter == delay_audio_run->hide_ref){
+      delay_audio_run->hide_ref_counter = 0;
+
+      if(delay_audio_run->notation_counter == notation_delay){
+	delay_audio_run->notation_counter = 0;
+      }else{
+	delay_audio_run->notation_counter += 1;
+      }
+
+      if(delay_audio_run->sequencer_counter >= sequencer_delay){
+	delay_audio_run->sequencer_counter = 0;
+      }else{
+	delay_audio_run->sequencer_counter += 1;
+      }
+    }
   }
 }
 

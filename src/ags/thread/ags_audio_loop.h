@@ -38,7 +38,7 @@
 #define AGS_IS_AUDIO_LOOP_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_AUDIO_LOOP))
 #define AGS_AUDIO_LOOP_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_AUDIO_LOOP, AgsAudioLoopClass))
 
-#define AGS_AUDIO_LOOP_DEFAULT_JIFFIE (48)
+#define AGS_AUDIO_LOOP_DEFAULT_JIFFIE ((guint) ceil(AGS_DEVOUT_DEFAULT_SAMPLERATE / AGS_DEVOUT_DEFAULT_BUFFER_SIZE))
 
 typedef struct _AgsAudioLoop AgsAudioLoop;
 typedef struct _AgsAudioLoopClass AgsAudioLoopClass;
@@ -92,8 +92,6 @@ struct _AgsAudioLoop
 
   guint play_notation_ref;
   GList *play_notation;
-
-  GList *tree_sanity;
 };
 
 struct _AgsAudioLoopClass

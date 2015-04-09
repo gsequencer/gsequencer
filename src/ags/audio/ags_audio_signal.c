@@ -23,8 +23,6 @@
 
 #include <ags/audio/ags_devout.h>
 
-#include <stdint.h>
-#include <emmintrin.h>
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
@@ -704,8 +702,10 @@ ags_audio_signal_morph_samplerate(AgsAudioSignal *audio_signal, guint samplerate
 void
 ags_audio_signal_copy_buffer_to_buffer(signed short *destination, guint dchannels, signed short *source, guint schannels, guint size)
 {
-  for(; 0<size; --size){
-    *destination += *source;
+  guint i;
+
+  for(i = 0; i < size; i++){
+    destination[0] = (signed short) (((int)destination[0] + (int)source[0]));
 
     destination += dchannels;
     source += schannels;

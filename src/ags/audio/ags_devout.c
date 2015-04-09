@@ -658,8 +658,6 @@ ags_devout_play_alloc()
   play->source = NULL;
   play->audio_channel = 0;
 
-  play->recall_id = (AgsDevoutPlay **) malloc(3 * sizeof(AgsDevoutPlay *));
-
   play->recall_id[0] = NULL;
   play->recall_id[1] = NULL;
   play->recall_id[2] = NULL;
@@ -1144,12 +1142,12 @@ ags_devout_alsa_play(AgsDevout *devout,
   }
 
   /* determine if attack should be switched */
-  devout->delay_counter += 1; //AGS_DEVOUT_DEFAULT_JIFFIE
+  devout->delay_counter += (AGS_DEVOUT_DEFAULT_DELAY *
+			    AGS_NOTATION_MINIMUM_NOTE_LENGTH);
 
-  ///TODO:JK: fix me
-  if(devout->delay_counter >= AGS_DEVOUT_DEFAULT_DELAY){ //devout->delay[devout->tic_counter]
+  if(devout->delay_counter >= devout->delay[devout->tic_counter]){
     /* tic */
-    ags_devout_tic(devout);
+    //    ags_devout_tic(devout);
 
     devout->tic_counter += 1;
 

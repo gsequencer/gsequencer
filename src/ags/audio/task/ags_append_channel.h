@@ -41,7 +41,7 @@ struct _AgsAppendChannel
   AgsTask task;
 
   GObject *audio_loop;
-  GObject *channel;
+  AgsDevoutPlay *devout_play;
 };
 
 struct _AgsAppendChannelClass
@@ -52,6 +52,6 @@ struct _AgsAppendChannelClass
 GType ags_append_channel_get_type();
 
 AgsAppendChannel* ags_append_channel_new(GObject *audio_loop,
-					 GObject *channel);
+					 AgsDevoutPlay *devout_play);
 
 #endif /*__AGS_APPEND_CHANNEL_H__*/

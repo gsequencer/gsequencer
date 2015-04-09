@@ -45,8 +45,6 @@
 #include <ags/audio/recall/ags_copy_pattern_audio_run.h>
 #include <ags/audio/recall/ags_copy_pattern_channel.h>
 #include <ags/audio/recall/ags_copy_pattern_channel_run.h>
-#include <ags/audio/recall/ags_buffer_channel.h>
-#include <ags/audio/recall/ags_buffer_channel_run.h>
 
 #include <ags/widget/ags_expander_set.h>
 #include <ags/widget/ags_expander.h>
@@ -294,10 +292,8 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
   AgsAudio *audio;
   AgsChannel *source;
   AgsChannel *current, *destination;
-  AgsPlayChannelRun *play_channel_run;
-  AgsBufferChannel *buffer_channel;
-  AgsBufferChannelRun *buffer_channel_run;
-  AgsStreamChannelRun *stream_channel_run;
+  AgsCopyChannel *copy_channel;
+  AgsCopyChannelRun *copy_channel_run;
 
   GList *list;
   guint i;
@@ -312,15 +308,12 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
   source = line->channel;
 
   /* ags-play */
-  ags_recall_factory_create(audio,
-			    NULL, NULL,
-  			    "ags-play\0",
-  			    source->audio_channel, source->audio_channel + 1, 
-  			    source->pad, source->pad + 1,
-  			    (AGS_RECALL_FACTORY_INPUT |
-			     AGS_RECALL_FACTORY_PLAY |
-  			     AGS_RECALL_FACTORY_ADD),
-  			    0);
+  //  ags_recall_factory_create(audio,
+  //			    "ags-play\0",
+  //			    0, audio->audio_channels,
+  //			    source->pad, source->pad + 1,
+  //			    FALSE,
+  //			    FALSE);
 
   /* ags-volume */
   ags_recall_factory_create(audio,
@@ -329,15 +322,14 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
 			    source->audio_channel, source->audio_channel + 1, 
 			    source->pad, source->pad + 1,
 			    (AGS_RECALL_FACTORY_INPUT |
-			     AGS_RECALL_FACTORY_PLAY |
 			     AGS_RECALL_FACTORY_RECALL |
 			     AGS_RECALL_FACTORY_ADD),
 			    0);
 
-  /* ags-buffer */
+  /* ags-copy */
   ags_recall_factory_create(audio,
 			    NULL, NULL,
-			    "ags-buffer\0",
+			    "ags-copy\0",
 			    source->audio_channel, source->audio_channel + 1, 
 			    source->pad, source->pad + 1,
 			    (AGS_RECALL_FACTORY_INPUT |
@@ -353,10 +345,10 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
     /* recall */
     list = current->recall;
 
-    while((list = ags_recall_find_type(list, AGS_TYPE_BUFFER_CHANNEL)) != NULL){
-      buffer_channel = AGS_BUFFER_CHANNEL(list->data);
+    while((list = ags_recall_find_type(list, AGS_TYPE_COPY_CHANNEL)) != NULL){
+      copy_channel = AGS_COPY_CHANNEL(list->data);
 
-      g_object_set(G_OBJECT(buffer_channel),
+      g_object_set(G_OBJECT(copy_channel),
 		   "destination\0", destination,
 		   NULL);
 
@@ -365,10 +357,10 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
 
     list = current->recall;
     
-    while((list = ags_recall_find_type(list, AGS_TYPE_BUFFER_CHANNEL_RUN)) != NULL){
-      buffer_channel_run = AGS_BUFFER_CHANNEL_RUN(list->data);
+    while((list = ags_recall_find_type(list, AGS_TYPE_COPY_CHANNEL_RUN)) != NULL){
+      copy_channel_run = AGS_COPY_CHANNEL_RUN(list->data);
 
-      g_object_set(G_OBJECT(buffer_channel_run),
+      g_object_set(G_OBJECT(copy_channel_run),
 		   "destination\0", destination,
 		   NULL);
 
@@ -389,17 +381,6 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
 			     AGS_RECALL_FACTORY_RECALL | 
 			     AGS_RECALL_FACTORY_ADD),
 			    0);
-
-  /* set up dependencies */
-  list = ags_recall_find_type(source->play, AGS_TYPE_PLAY_CHANNEL_RUN);
-  play_channel_run = AGS_PLAY_CHANNEL_RUN(list->data);
-
-  list = ags_recall_find_type(source->play, AGS_TYPE_STREAM_CHANNEL_RUN);
-  stream_channel_run = AGS_STREAM_CHANNEL_RUN(list->data);
-
-  g_object_set(G_OBJECT(play_channel_run),
-	       "stream-channel-run\0", stream_channel_run,
-	       NULL);
 }
 
 AgsDrumInputLine*

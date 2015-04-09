@@ -1169,10 +1169,9 @@ void ags_file_util_read_file_link_resolve_parent(AgsFileLookup *file_lookup,
 
     /*  */
     xpath_context = xmlXPathNewContext(file->doc);
-    //    xmlXPathSetContextNode(node,
-    //			   xpath_context);
-    xpath_context->node = node;  
-
+    xmlXPathSetContextNode(node,
+			   xpath_context);
+  
     xpath_object = xmlXPathEval("./ags-embedded-audio\0",
 				xpath_context);
 

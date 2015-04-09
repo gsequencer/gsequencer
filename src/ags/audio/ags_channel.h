@@ -104,8 +104,6 @@ struct _AgsChannelClass
 			    AgsRecycling *new_start_region, AgsRecycling *new_end_region,
 			    AgsRecycling *old_start_changed_region, AgsRecycling *old_end_changed_region,
 			    AgsRecycling *new_start_changed_region, AgsRecycling *new_end_changed_region);
-
-  void (*done)(AgsChannel *channel);
 };
 
 GType ags_channel_get_type();
@@ -142,8 +140,6 @@ void ags_channel_recycling_changed(AgsChannel *channel,
 				   AgsRecycling *old_start_changed_region, AgsRecycling *old_end_changed_region,
 				   AgsRecycling *new_start_changed_region, AgsRecycling *new_end_changed_region);
 
-void ags_channel_done(AgsChannel *channel);
-
 void ags_channel_safe_resize_audio_signal(AgsChannel *channel,
 					  guint size);
 
@@ -160,7 +156,6 @@ void ags_channel_duplicate_recall(AgsChannel *channel,
 				  AgsRecallID *recall_id);
 void ags_channel_init_recall(AgsChannel *channel, gint stage,
 			     AgsRecallID *recall_id);
-
 AgsRecallID* ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 					     gboolean arrange_recall_id, gboolean duplicate_templates,
 					     gboolean playback, gboolean sequencer, gboolean notation,

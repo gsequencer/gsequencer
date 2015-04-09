@@ -48,16 +48,15 @@
 #define AGS_DEVOUT_PLAY(ptr)           ((AgsDevoutPlay *)(ptr))
 
 #define AGS_DEVOUT_DEFAULT_SAMPLERATE (44100.0)
-#define AGS_DEVOUT_DEFAULT_BUFFER_SIZE (944)
+#define AGS_DEVOUT_DEFAULT_BUFFER_SIZE (940)
 #define AGS_DEVOUT_DEFAULT_BPM (120.0)
 #define AGS_DEVOUT_DEFAULT_JIFFIE ((double) AGS_DEVOUT_DEFAULT_SAMPLERATE / (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE)
 
-#define AGS_DEVOUT_DEFAULT_TACT (1.0 / 1.0)
+#define AGS_DEVOUT_DEFAULT_TACT (1.0)
 #define AGS_DEVOUT_DEFAULT_TACT_JIFFIE (60.0 / AGS_DEVOUT_DEFAULT_BPM * AGS_DEVOUT_DEFAULT_TACT)
 #define AGS_DEVOUT_DEFAULT_TACTRATE (1.0 / AGS_DEVOUT_DEFAULT_TACT_JIFFIE)
 
-#define AGS_DEVOUT_DEFAULT_SCALE (1.0)
-#define AGS_DEVOUT_DEFAULT_DELAY (AGS_DEVOUT_DEFAULT_JIFFIE * (60.0 / AGS_DEVOUT_DEFAULT_BPM))
+#define AGS_DEVOUT_DEFAULT_DELAY (AGS_DEVOUT_DEFAULT_JIFFIE / AGS_DEVOUT_DEFAULT_TACTRATE)
 
 typedef struct _AgsDevout AgsDevout;
 typedef struct _AgsDevoutClass AgsDevoutClass;
@@ -196,7 +195,7 @@ struct _AgsDevoutPlay
   GObject *source;
   guint audio_channel;
 
-  AgsRecallID **recall_id;
+  AgsRecallID *recall_id[3];
 };
 
 GType ags_devout_get_type();

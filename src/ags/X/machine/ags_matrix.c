@@ -49,6 +49,8 @@
 #include <ags/audio/recall/ags_count_beats_audio_run.h>
 #include <ags/audio/recall/ags_loop_channel.h>
 #include <ags/audio/recall/ags_loop_channel_run.h>
+#include <ags/audio/recall/ags_copy_channel.h>
+#include <ags/audio/recall/ags_copy_channel_run.h>
 #include <ags/audio/recall/ags_stream_channel.h>
 #include <ags/audio/recall/ags_stream_channel_run.h>
 #include <ags/audio/recall/ags_copy_pattern_audio.h>
@@ -57,8 +59,6 @@
 #include <ags/audio/recall/ags_copy_pattern_channel_run.h>
 #include <ags/audio/recall/ags_play_notation_audio.h>
 #include <ags/audio/recall/ags_play_notation_audio_run.h>
-#include <ags/audio/recall/ags_buffer_channel.h>
-#include <ags/audio/recall/ags_buffer_channel_run.h>
 
 #include <ags/widget/ags_led.h>
 
@@ -333,6 +333,11 @@ ags_matrix_init(AgsMatrix *matrix)
   matrix->length_spin->adjustment->value = 16.0;
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) matrix->length_spin, FALSE, FALSE, 0);
 
+  matrix->tact = ags_tact_combo_box_new();
+  gtk_box_pack_start((GtkBox *) vbox, (GtkWidget *) matrix->tact, FALSE, FALSE, 0);
+
+  gtk_combo_box_set_active(matrix->tact, 4);
+
   matrix->loop_button = (GtkCheckButton *) gtk_check_button_new_with_label(g_strdup("loop\0"));
   gtk_box_pack_start((GtkBox *) vbox, (GtkWidget *) matrix->loop_button, FALSE, FALSE, 0);
 }
@@ -471,6 +476,9 @@ ags_matrix_connect(AgsConnectable *connectable)
 
   g_signal_connect_after((GObject *) matrix->length_spin, "value-changed\0",
 			 G_CALLBACK(ags_matrix_length_spin_callback), (gpointer) matrix);
+
+  g_signal_connect((GObject *) matrix->tact, "changed\0",
+		   G_CALLBACK(ags_matrix_tact_callback), (gpointer) matrix);
 
   g_signal_connect((GObject *) matrix->loop_button, "clicked\0",
 		   G_CALLBACK(ags_matrix_loop_button_callback), (gpointer) matrix);
@@ -662,8 +670,8 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
 					    source->first_recycling,
 					    NULL);
 	audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
-	//	ags_audio_signal_stream_resize(audio_signal,
-	//			       stop);
+	ags_audio_signal_stream_resize(audio_signal,
+				       stop);
 	ags_recycling_add_audio_signal(source->first_recycling,
 				       audio_signal);
 
@@ -724,8 +732,8 @@ ags_matrix_input_map_recall(AgsMatrix *matrix, guint input_pad_start)
 {
   AgsAudio *audio;
   AgsChannel *source, *current, *destination;
-  AgsBufferChannel *buffer_channel;
-  AgsBufferChannelRun *buffer_channel_run;
+  AgsCopyChannel *copy_channel;
+  AgsCopyChannelRun *copy_channel_run;
 
   GList *list;
 
@@ -741,16 +749,17 @@ ags_matrix_input_map_recall(AgsMatrix *matrix, guint input_pad_start)
   current = source;
 
   while(current != NULL){
-    /* ags-buffer */
+    /* ags-copy */
     ags_recall_factory_create(audio,
 			      NULL, NULL,
-			      "ags-buffer\0",
+			      "ags-copy\0",
 			      current->audio_channel, current->audio_channel + 1, 
 			      current->pad, current->pad + 1,
 			      (AGS_RECALL_FACTORY_INPUT |
 			       AGS_RECALL_FACTORY_RECALL |
 			       AGS_RECALL_FACTORY_ADD),
 			      0);
+
 
     destination = ags_channel_nth(audio->output,
 				  current->audio_channel);
@@ -759,10 +768,10 @@ ags_matrix_input_map_recall(AgsMatrix *matrix, guint input_pad_start)
       /* recall */
       list = current->recall;
 
-      while((list = ags_recall_find_type(list, AGS_TYPE_BUFFER_CHANNEL)) != NULL){
-	buffer_channel = AGS_BUFFER_CHANNEL(list->data);
+      while((list = ags_recall_find_type(list, AGS_TYPE_COPY_CHANNEL)) != NULL){
+	copy_channel = AGS_COPY_CHANNEL(list->data);
 
-	g_object_set(G_OBJECT(buffer_channel),
+	g_object_set(G_OBJECT(copy_channel),
 		     "destination\0", destination,
 		     NULL);
 
@@ -771,10 +780,10 @@ ags_matrix_input_map_recall(AgsMatrix *matrix, guint input_pad_start)
 
       list = current->recall;
     
-      while((list = ags_recall_find_type(list, AGS_TYPE_BUFFER_CHANNEL_RUN)) != NULL){
-	buffer_channel_run = AGS_BUFFER_CHANNEL_RUN(list->data);
+      while((list = ags_recall_find_type(list, AGS_TYPE_COPY_CHANNEL_RUN)) != NULL){
+	copy_channel_run = AGS_COPY_CHANNEL_RUN(list->data);
 
-	g_object_set(G_OBJECT(buffer_channel_run),
+	g_object_set(G_OBJECT(copy_channel_run),
 		     "destination\0", destination,
 		     NULL);
 
@@ -1056,9 +1065,35 @@ ags_matrix_launch_task(AgsFileLaunch *file_launch, AgsMatrix *matrix)
   GtkTreeModel *model;
   GtkTreeIter iter;
   GList *list;
+  gchar *tact, *tmp_tact;
   gdouble length;
   gint history, i;
   gboolean valid;
+
+  /* tact */
+  tact = (gchar *) xmlGetProp(file_launch->node,
+			      "tact\0");
+
+  model = gtk_combo_box_get_model(matrix->tact);
+  valid = gtk_tree_model_get_iter_first(model,
+					&iter);
+  history = -1;
+
+  for(; valid; history++){
+    gtk_tree_model_get(model, &iter,
+		       0, &tmp_tact,
+		       -1);
+
+    if(!g_strcmp0(tact,
+		  tmp_tact)){
+      break;
+    }
+
+    valid = gtk_tree_model_iter_next(model, &iter);
+  }
+
+  gtk_combo_box_set_active_iter(matrix->tact,
+				&iter);
 
   /* length */
   length = (gdouble) g_ascii_strtod(xmlGetProp(file_launch->node,
@@ -1104,6 +1139,12 @@ ags_matrix_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
 				   "reference\0", matrix,
 				   NULL));
+
+  history = gtk_combo_box_get_active(matrix->tact);
+
+  xmlNewProp(node,
+	     "tact\0",
+	     g_strdup_printf("%s\0", gtk_combo_box_get_active_text(matrix->tact)));
 
   xmlNewProp(node,
 	     "length\0",

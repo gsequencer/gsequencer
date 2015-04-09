@@ -147,10 +147,19 @@ ags_toolbar_init(AgsToolbar *toolbar)
   label = (GtkLabel *) gtk_label_new("zoom\0");
   gtk_toolbar_append_widget((GtkToolbar *) toolbar, (GtkWidget *) label, NULL, NULL);
 
-  toolbar->zoom_history = 4;
+  toolbar->zoom_history = 6;
   toolbar->zoom = ags_zoom_combo_box_new();
-  gtk_combo_box_set_active(toolbar->zoom, 4);
+  gtk_combo_box_set_active(toolbar->zoom, 6);
   gtk_toolbar_append_widget((GtkToolbar *) toolbar, (GtkWidget *) toolbar->zoom, NULL , NULL);
+
+  /* tact */
+  label = (GtkLabel *) gtk_label_new("tact\0");
+  gtk_toolbar_append_widget((GtkToolbar *) toolbar, (GtkWidget *) label, NULL, NULL);
+
+  toolbar->tact_history = 4;
+  toolbar->tact = ags_tact_combo_box_new();
+  gtk_combo_box_set_active(toolbar->tact, 4);
+  gtk_toolbar_append_widget((GtkToolbar *) toolbar, (GtkWidget *) toolbar->tact, NULL, NULL);
 
   /* edit modes */
   label = (GtkLabel *) gtk_label_new("mode\0");
@@ -214,6 +223,10 @@ ags_toolbar_connect(AgsConnectable *connectable)
   /* zoom */
   g_signal_connect_after((GObject *) toolbar->zoom, "changed\0",
 			 G_CALLBACK(ags_toolbar_zoom_callback), (gpointer) toolbar);
+
+  /* tact */
+  g_signal_connect_after((GObject *) toolbar->tact, "changed\0",
+			 G_CALLBACK(ags_toolbar_tact_callback), (gpointer) toolbar);
 
   /* mode */
   g_signal_connect_after((GObject *) toolbar->mode, "changed\0",
