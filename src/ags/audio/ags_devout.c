@@ -18,15 +18,9 @@
 
 #include <ags/audio/ags_devout.h>
 
-#include <ags/object/ags_application_context.h>
 #include <ags-lib/object/ags_connectable.h>
 
 #include <ags/main.h>
-
-#include <ags/object/ags_config.h>
-#include <ags/object/ags_soundcard.h>
-
-#include <ags/audio/ags_notation.h>
 
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -38,6 +32,9 @@
 #include <string.h>
 #include <math.h>
 #include <time.h>
+
+#include <ags/audio/ags_config.h>
+#include <ags/audio/ags_notation.h>
 
 /**
  * SECTION:ags_devout
@@ -51,7 +48,6 @@
 
 void ags_devout_class_init(AgsDevoutClass *devout);
 void ags_devout_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_devout_soundcard_interface_init(AgsSoundcardInterface *soundcard);
 void ags_devout_init(AgsDevout *devout);
 void ags_devout_set_property(GObject *gobject,
 			     guint prop_id,
@@ -71,30 +67,15 @@ void ags_devout_switch_buffer_flag(AgsDevout *devout);
 
 void ags_devout_play_functions(AgsDevout *devout);
 
-void ags_devout_list_cards(AgsSoundcard *soundcard,
-			   GList **card_id, GList **card_name);
-void ags_devout_pcm_info(AgsSoundcard *soundcard, gchar *card_id,
-			 guint *channels_min, guint *channels_max,
-			 guint *rate_min, guint *rate_max,
-			 guint *buffer_size_min, guint *buffer_size_max,
-			 GError **error);
-
-void ags_devout_alsa_init(AgsSoundcard *soundcard,
+void ags_devout_alsa_init(AgsDevout *devout,
 			  GError **error);
-void ags_devout_alsa_play(AgsSoundcard *soundcard,
+void ags_devout_alsa_play(AgsDevout *devout,
 			  GError **error);
-void ags_devout_alsa_free(AgsSoundcard *soundcard);
-
-signed short* ags_devout_get_buffer(AgsSoundcard *soundcard);
-signed short* ags_devout_get_next_buffer(AgsSoundcard *soundcard);
-
-void ags_devout_set_note_offset(AgsSoundcard *soundcard,
-				guint note_offset);
-guint ags_devout_get_note_offset(AgsSoundcard *soundcard);
+void ags_devout_alsa_free(AgsDevout *devout);
 
 enum{
   PROP_0,
-  PROP_APPLICATION_CONTEXT,
+  PROP_MAIN,
   PROP_DEVICE,
   PROP_DSP_CHANNELS,
   PROP_PCM_CHANNELS,
@@ -106,7 +87,20 @@ enum{
   PROP_ATTACK,
 };
 
+enum{
+  RUN,
+  STOP,
+  TIC,
+  LAST_SIGNAL,
+};
+
+extern AgsConfig *config;
+
 static gpointer ags_devout_parent_class = NULL;
+static guint devout_signals[LAST_SIGNAL];
+
+/* dangerous - produces a lot of output */
+static gboolean DEBUG_DEVOUT = FALSE;
 
 GType
 ags_devout_get_type (void)
@@ -132,12 +126,6 @@ ags_devout_get_type (void)
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_soundcard_interface_info = {
-      (GInterfaceInitFunc) ags_devout_soundcard_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_devout = g_type_register_static(G_TYPE_OBJECT,
 					     "AgsDevout\0",
 					     &ags_devout_info,
@@ -146,10 +134,6 @@ ags_devout_get_type (void)
     g_type_add_interface_static(ags_type_devout,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_devout,
-				AGS_TYPE_SOUNDCARD,
-				&ags_soundcard_interface_info);
   }
 
   return (ags_type_devout);
@@ -173,19 +157,19 @@ ags_devout_class_init(AgsDevoutClass *devout)
 
   /* properties */
   /**
-   * AgsDevout:application-context:
+   * AgsDevout:main:
    *
-   * The assigned #AgsApplicationContext
+   * The assigned #AgsMain
    * 
    * Since: 0.4.0
    */
-  param_spec = g_param_spec_object("application-context\0",
-				   "the application context object\0",
-				   "The application context object\0",
-				   AGS_TYPE_APPLICATION_CONTEXT,
+  param_spec = g_param_spec_object("main\0",
+				   "the main object\0",
+				   "The main object\0",
+				   AGS_TYPE_MAIN,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_APPLICATION_CONTEXT,
+				  PROP_MAIN,
 				  param_spec);
 
   /**
@@ -346,7 +330,28 @@ ags_devout_class_init(AgsDevoutClass *devout)
 
 
   /* AgsDevoutClass */
-  //empty
+  devout->play_init = ags_devout_alsa_init;
+  devout->play = ags_devout_alsa_play;
+  devout->stop = ags_devout_alsa_free;
+
+  devout->tic = NULL;
+  devout->note_offset_changed = NULL;
+
+  /* signals */
+  /**
+   * AgsDevout::tic:
+   * @devout: the object tics
+   *
+   * The ::tic signal is emited during playback after buffer time interval.
+   */
+  devout_signals[TIC] =
+    g_signal_new("tic\0",
+		 G_TYPE_FROM_CLASS (devout),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET (AgsDevoutClass, tic),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
 }
 
 GQuark
@@ -365,20 +370,6 @@ ags_devout_connectable_interface_init(AgsConnectableInterface *connectable)
 }
 
 void
-ags_devout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
-{
-  soundcard->list_cards = ags_devout_list_cards;
-  soundcard->pcm_info = ags_devout_pcm_info;
-  soundcard->play_init = ags_devout_alsa_init;
-  soundcard->play = ags_devout_alsa_play;
-  soundcard->stop = ags_devout_alsa_free;
-  soundcard->get_buffer = ags_devout_get_buffer;
-  soundcard->get_next_buffer = ags_devout_get_next_buffer;
-  soundcard->set_note_offset = ags_devout_set_note_offset;
-  soundcard->get_note_offset = ags_devout_get_note_offset;
-}
-
-void
 ags_devout_init(AgsDevout *devout)
 {
   gdouble delay;
@@ -390,15 +381,33 @@ ags_devout_init(AgsDevout *devout)
   devout->flags = (AGS_DEVOUT_ALSA);
 
   /* quality */
-  devout->dsp_channels = AGS_DEVOUT_DEFAULT_DSP_CHANNELS;
-  devout->pcm_channels = AGS_DEVOUT_DEFAULT_PCM_CHANNELS;
+  devout->dsp_channels = g_ascii_strtoull(ags_config_get(config,
+							 AGS_CONFIG_DEVOUT,
+							 "dsp-channels\0"),
+					  NULL,
+					  10);
+  devout->pcm_channels = g_ascii_strtoull(ags_config_get(config,
+							 AGS_CONFIG_DEVOUT,
+							 "pcm-channels\0"),
+					  NULL,
+					  10);
   devout->bits = AGS_DEVOUT_DEFAULT_FORMAT;
-  devout->buffer_size = AGS_DEVOUT_DEFAULT_BUFFER_SIZE;
-  devout->frequency = AGS_DEVOUT_DEFAULT_SAMPLERATE;
+  devout->buffer_size = g_ascii_strtoull(ags_config_get(config,
+							AGS_CONFIG_DEVOUT,
+							"buffer-size\0"),
+					 NULL,
+					 10);
+  devout->frequency = g_ascii_strtoull(ags_config_get(config,
+						      AGS_CONFIG_DEVOUT,
+						      "samplerate\0"),
+				       NULL,
+				       10);
 
   //  devout->out.oss.device = NULL;
   devout->out.alsa.handle = NULL;
-  devout->out.alsa.device = AGS_DEVOUT_DEFAULT_DEVICE;
+  devout->out.alsa.device = g_strdup(ags_config_get(config,
+						    AGS_CONFIG_DEVOUT,
+						    "alsa-handle\0"));
 
   /* buffer */
   devout->buffer = (signed short **) malloc(4 * sizeof(signed short*));
@@ -416,8 +425,6 @@ ags_devout_init(AgsDevout *devout)
   
   devout->attack = (guint *) malloc((int) 2 * AGS_DEVOUT_DEFAULT_PERIOD *
 				    sizeof(guint));
-
-  devout->note_offset = 0;
   
   delay = ((gdouble) devout->frequency / (gdouble) devout->buffer_size) * (gdouble)(60.0 / devout->bpm);
   //  g_message("delay : %f\0", delay);
@@ -442,8 +449,7 @@ ags_devout_init(AgsDevout *devout)
   devout->tic_counter = 0;
 
   /* parent */
-  devout->application_context = NULL;
-  devout->application_mutex = NULL;
+  devout->ags_main = NULL;
 
   /* all AgsAudio */
   devout->audio = NULL;
@@ -462,61 +468,25 @@ ags_devout_set_property(GObject *gobject,
   //TODO:JK: implement set functionality
   
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
+  case PROP_MAIN:
     {
-      AgsApplicationContext *application_context;
+      AgsMain *ags_main;
 
-      application_context = g_value_get_object(value);
+      ags_main = g_value_get_object(value);
 
-      if(devout->application_context == application_context){
+      if(devout->ags_main == ags_main){
 	return;
       }
 
-      if(devout->application_context != NULL){
-	g_object_unref(G_OBJECT(devout->application_context));
+      if(devout->ags_main != NULL){
+	g_object_unref(G_OBJECT(devout->ags_main));
       }
 
-      if(application_context != NULL){
-	AgsConfig *config;
-	
-	g_object_ref(G_OBJECT(application_context));
-
-	devout->application_mutex = &(application_context->mutex);
-	
-	config = application_context->config;
-	
-	devout->dsp_channels = g_ascii_strtoull(ags_config_get_value(config,
-								     AGS_CONFIG_DEVOUT,
-								     "dsp-channels\0"),
-						NULL,
-						10);
-	devout->pcm_channels = g_ascii_strtoull(ags_config_get_value(config,
-								     AGS_CONFIG_DEVOUT,
-								     "pcm-channels\0"),
-						NULL,
-						10);
-	devout->bits = AGS_DEVOUT_DEFAULT_FORMAT;
-	devout->buffer_size = g_ascii_strtoull(ags_config_get_value(config,
-								    AGS_CONFIG_DEVOUT,
-								    "buffer-size\0"),
-					       NULL,
-					       10);
-	devout->frequency = g_ascii_strtoull(ags_config_get_value(config,
-								  AGS_CONFIG_DEVOUT,
-								  "samplerate\0"),
-					     NULL,
-					     10);
-
-	//  devout->out.oss.device = NULL;
-	devout->out.alsa.handle = NULL;
-	devout->out.alsa.device = g_strdup(ags_config_get_value(config,
-								AGS_CONFIG_DEVOUT,
-								"alsa-handle\0"));
-      }else{
-	devout->application_mutex = NULL;
+      if(ags_main != NULL){
+	g_object_ref(G_OBJECT(ags_main));
       }
 
-      devout->application_context = application_context;
+      devout->ags_main = ags_main;
     }
     break;
   case PROP_DEVICE:
@@ -638,11 +608,6 @@ ags_devout_get_property(GObject *gobject,
   devout = AGS_DEVOUT(gobject);
   
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      g_value_set_object(value, devout->application_context);
-    }
-    break;
   case PROP_DEVICE:
     {
       if((AGS_DEVOUT_LIBAO & (devout->flags)) != 0){
@@ -872,7 +837,6 @@ ags_devout_play_find_source(GList *devout_play,
 
 /**
  * ags_devout_list_cards:
- * @soundcard: the #AgsSoundcard
  * @card_id: alsa identifier
  * @card_name: card name
  *
@@ -881,8 +845,7 @@ ags_devout_play_find_source(GList *devout_play,
  * Since: 0.4
  */
 void
-ags_devout_list_cards(AgsSoundcard *soundcard,
-		      GList **card_id, GList **card_name)
+ags_devout_list_cards(GList **card_id, GList **card_name)
 {
   snd_ctl_t *card_handle;
   snd_ctl_card_info_t *card_info;
@@ -934,7 +897,6 @@ ags_devout_list_cards(AgsSoundcard *soundcard,
 
 /**
  * ags_devout_pcm_info:
- * @soundcard: the #AgsSoundcard
  * @card_id: alsa identifier
  * @channels_min: minimum channels supported
  * @channels_max: maximum channels supported
@@ -949,8 +911,7 @@ ags_devout_list_cards(AgsSoundcard *soundcard,
  * Since: 0.4
  */
 void
-ags_devout_pcm_info(AgsSoundcard *soundcard,
-		    char *card_id,
+ags_devout_pcm_info(char *card_id,
 		    guint *channels_min, guint *channels_max,
 		    guint *rate_min, guint *rate_max,
 		    guint *buffer_size_min, guint *buffer_size_max,
@@ -1015,12 +976,102 @@ ags_devout_pcm_info(AgsSoundcard *soundcard,
   snd_pcm_close(handle);
 }
 
+/**
+ * ags_devout_add_audio:
+ * @devout: an #AgsDevout
+ * @audio: the #AgsAudio to add
+ *
+ * Add audio to devout.
+ *
+ * Since: 0.4
+ */
 void
-ags_devout_alsa_init(AgsSoundcard *soundcard,
+ags_devout_add_audio(AgsDevout *devout, GObject *audio)
+{
+  if(g_list_find(devout->audio,
+		 audio) != NULL){
+    return;
+  }
+
+  g_object_ref(G_OBJECT(audio));
+  devout->audio = g_list_prepend(devout->audio,
+				 audio);
+}
+
+/**
+ * ags_devout_remove_audio:
+ * @devout: an #AgsDevout
+ * @audio: the #AgsAudio to remove
+ *
+ * Remove audio of devout.
+ *
+ * Since: 0.4
+ */
+void
+ags_devout_remove_audio(AgsDevout *devout, GObject *audio)
+{
+  devout->audio = g_list_remove(devout->audio,
+				audio);
+  g_object_unref(G_OBJECT(audio));
+}
+
+/**
+ * ags_devout_tic:
+ * @devout: an #AgsDevout
+ *
+ * The tic of devout.
+ *
+ * Since: 0.4
+ */
+void
+ags_devout_tic(AgsDevout *devout)
+{
+  g_return_if_fail(AGS_IS_DEVOUT(devout));
+
+  if((AGS_DEVOUT_PLAY & devout->flags) == 0){
+    g_message("ags_devout_tic: not playing\0");
+    return;
+  }
+
+  g_object_ref((GObject *) devout);
+  g_signal_emit(G_OBJECT(devout),
+		devout_signals[TIC], 0);
+  g_object_unref((GObject *) devout);
+}
+
+/**
+ * ags_devout_switch_buffer_flag:
+ * @devout: an #AgsDevout
+ *
+ * The buffer flag indicates the currently played buffer.
+ *
+ * Since: 0.3
+ */
+void
+ags_devout_switch_buffer_flag(AgsDevout *devout)
+{
+  if((AGS_DEVOUT_BUFFER0 & (devout->flags)) != 0){
+    devout->flags &= (~AGS_DEVOUT_BUFFER0);
+    devout->flags |= AGS_DEVOUT_BUFFER1;
+  }else if((AGS_DEVOUT_BUFFER1 & (devout->flags)) != 0){
+    devout->flags &= (~AGS_DEVOUT_BUFFER1);
+    devout->flags |= AGS_DEVOUT_BUFFER2;
+  }else if((AGS_DEVOUT_BUFFER2 & (devout->flags)) != 0){
+    devout->flags &= (~AGS_DEVOUT_BUFFER2);
+    devout->flags |= AGS_DEVOUT_BUFFER3;
+  }else if((AGS_DEVOUT_BUFFER3 & (devout->flags)) != 0){
+    devout->flags &= (~AGS_DEVOUT_BUFFER3);
+    devout->flags |= AGS_DEVOUT_BUFFER0;
+  }
+}
+
+void
+ags_devout_alsa_init(AgsDevout *devout,
 		     GError **error)
 {
-  AgsDevout *devout;
-  
+  static unsigned int period_time = 100000;
+  static snd_pcm_format_t format = SND_PCM_FORMAT_S16;
+
   int rc;
   snd_pcm_t *handle;
   snd_pcm_hw_params_t *hwparams;
@@ -1036,13 +1087,6 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   int period_event = 0;
   int err, dir;
 
-  static unsigned int period_time = 100000;
-  static snd_pcm_format_t format = SND_PCM_FORMAT_S16;
-
-  devout = AGS_DEVOUT(soundcard);
-
-  devout->note_offset = 0;
-  
   /* Open PCM device for playback. */
   if ((err = snd_pcm_open(&handle, devout->out.alsa.device, SND_PCM_STREAM_PLAYBACK, 0)) < 0) {
     printf("Playback open error: %s\n", snd_strerror(err));
@@ -1178,14 +1222,11 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
 }
 
 void
-ags_devout_alsa_play(AgsSoundcard *soundcard,
+ags_devout_alsa_play(AgsDevout *devout,
 		     GError **error)
 {
-  AgsDevout *devout;
   gdouble delay;
 
-  devout = AGS_DEVOUT(soundcard);
-  
   /*  */
   if((AGS_DEVOUT_BUFFER0 & (devout->flags)) != 0){
     memset(devout->buffer[3], 0, (size_t) devout->dsp_channels * devout->buffer_size * sizeof(signed short));
@@ -1342,12 +1383,10 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
 
     /* delay */
     devout->delay_counter = 0.0;
-    ags_soundcard_offset_changed(soundcard,
-				 devout->note_offset);
   } 
 
   /* tic */
-  ags_soundcard_tic(soundcard);
+  ags_devout_tic(devout);
 
   /* switch buffer flags */
   ags_devout_switch_buffer_flag(devout);
@@ -1356,163 +1395,35 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
 }
 
 void
-ags_devout_alsa_free(AgsSoundcard *soundcard)
+ags_devout_alsa_free(AgsDevout *devout)
 {
-  AgsDevout *devout;
-
-  devout = AGS_DEVOUT(soundcard);
-  
   snd_pcm_drain(devout->out.alsa.handle);
   snd_pcm_close(devout->out.alsa.handle);
   devout->out.alsa.handle = NULL;
-  devout->flags &= (~(AGS_DEVOUT_BUFFER0 &
-		      AGS_DEVOUT_BUFFER1 &
-		      AGS_DEVOUT_BUFFER2 &
-		      AGS_DEVOUT_BUFFER3));
-}
-
-signed short*
-ags_devout_get_buffer(AgsSoundcard *soundcard)
-{
-  AgsDevout *devout;
-  signed short *buffer;
-  
-  devout = AGS_DEVOUT(soundcard);
-
-  if((AGS_DEVOUT_BUFFER0 & (devout->flags)) != 0){
-    buffer = devout->buffer[0];
-  }else if((AGS_DEVOUT_BUFFER1 & (devout->flags)) != 0){
-    buffer = devout->buffer[1];
-  }else if((AGS_DEVOUT_BUFFER2 & (devout->flags)) != 0){
-    buffer = devout->buffer[2];
-  }else if((AGS_DEVOUT_BUFFER3 & (devout->flags)) != 0){
-    buffer = devout->buffer[3];
-  }else{
-    buffer = NULL;
-  }
-
-  return(buffer);
-}
-
-signed short*
-ags_devout_get_next_buffer(AgsSoundcard *soundcard)
-{
-  AgsDevout *devout;
-  signed short *buffer;
-  
-  devout = AGS_DEVOUT(soundcard);
-
-  if((AGS_DEVOUT_BUFFER0 & (devout->flags)) != 0){
-    buffer = devout->buffer[1];
-  }else if((AGS_DEVOUT_BUFFER1 & (devout->flags)) != 0){
-    buffer = devout->buffer[2];
-  }else if((AGS_DEVOUT_BUFFER2 & (devout->flags)) != 0){
-    buffer = devout->buffer[3];
-  }else if((AGS_DEVOUT_BUFFER3 & (devout->flags)) != 0){
-    buffer = devout->buffer[0];
-  }else{
-    buffer = NULL;
-  }
-
-  return(buffer);
-}
-
-void
-ags_devout_set_note_offset(AgsSoundcard *soundcard,
-			   guint note_offset)
-{
-  AGS_DEVOUT(soundcard)->note_offset = note_offset;
-}
-
-guint
-ags_devout_get_note_offset(AgsSoundcard *soundcard)
-{
-  return(AGS_DEVOUT(soundcard)->note_offset);
-}
-
-/**
- * ags_devout_switch_buffer_flag:
- * @devout: an #AgsDevout
- *
- * The buffer flag indicates the currently played buffer.
- *
- * Since: 0.3
- */
-void
-ags_devout_switch_buffer_flag(AgsDevout *devout)
-{
-  if((AGS_DEVOUT_BUFFER0 & (devout->flags)) != 0){
-    devout->flags &= (~AGS_DEVOUT_BUFFER0);
-    devout->flags |= AGS_DEVOUT_BUFFER1;
-  }else if((AGS_DEVOUT_BUFFER1 & (devout->flags)) != 0){
-    devout->flags &= (~AGS_DEVOUT_BUFFER1);
-    devout->flags |= AGS_DEVOUT_BUFFER2;
-  }else if((AGS_DEVOUT_BUFFER2 & (devout->flags)) != 0){
-    devout->flags &= (~AGS_DEVOUT_BUFFER2);
-    devout->flags |= AGS_DEVOUT_BUFFER3;
-  }else if((AGS_DEVOUT_BUFFER3 & (devout->flags)) != 0){
-    devout->flags &= (~AGS_DEVOUT_BUFFER3);
-    devout->flags |= AGS_DEVOUT_BUFFER0;
-  }
-}
-
-/**
- * ags_devout_add_audio:
- * @devout: an #AgsDevout
- * @audio: the #AgsAudio to add
- *
- * Add audio to devout.
- *
- * Since: 0.4
- */
-void
-ags_devout_add_audio(AgsDevout *devout, GObject *audio)
-{
-  if(g_list_find(devout->audio,
-		 audio) != NULL){
-    return;
-  }
-
-  g_object_ref(G_OBJECT(audio));
-  devout->audio = g_list_prepend(devout->audio,
-				 audio);
-}
-
-/**
- * ags_devout_remove_audio:
- * @devout: an #AgsDevout
- * @audio: the #AgsAudio to remove
- *
- * Remove audio of devout.
- *
- * Since: 0.4
- */
-void
-ags_devout_remove_audio(AgsDevout *devout, GObject *audio)
-{
-  devout->audio = g_list_remove(devout->audio,
-				audio);
-  g_object_unref(G_OBJECT(audio));
-}
+} 
 
 /**
  * ags_devout_new:
- * @application_context: the #AgsApplicationContext
+ * @ags_main: the #AgsMain
  *
- * Creates an #AgsDevout, refering to @application_context.
+ * Creates an #AgsDevout, refering to @ags_main.
  *
  * Returns: a new #AgsDevout
  *
  * Since: 0.3
  */
 AgsDevout*
-ags_devout_new(GObject *application_context)
+ags_devout_new(GObject *ags_main)
 {
   AgsDevout *devout;
 
-  devout = (AgsDevout *) g_object_new(AGS_TYPE_DEVOUT,
-				      "application_context\0", application_context,
-				      NULL);
+  devout = (AgsDevout *) g_object_new(AGS_TYPE_DEVOUT, NULL);
   
+  if(ags_main != NULL){
+    //TODO:JK: use set_property
+    g_object_ref(G_OBJECT(ags_main));
+    devout->ags_main = ags_main;
+  }
+
   return(devout);
 }

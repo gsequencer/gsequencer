@@ -23,6 +23,8 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
+#include <ags/audio/ags_devout.h>
+
 #define AGS_TYPE_EXPORT_WINDOW                (ags_export_window_get_type())
 #define AGS_EXPORT_WINDOW(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_EXPORT_WINDOW, AgsExportWindow))
 #define AGS_EXPORT_WINDOW_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_EXPORT_WINDOW, AgsExportWindowClass))
@@ -43,8 +45,8 @@ struct _AgsExportWindow
 
   guint flags;
 
-  GtkWindow *parent;
-  GObject *soundcard;
+  GObject *ags_main;
+  AgsDevout *devout;
 
   GtkCheckButton *live_export;
 

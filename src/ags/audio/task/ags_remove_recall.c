@@ -156,10 +156,6 @@ ags_remove_recall_launch(AgsTask *task)
   remove_recall = AGS_REMOVE_RECALL(task);
 
   if(AGS_IS_AUDIO(remove_recall->context)){
-    ags_audio_remove_recall(AGS_AUDIO(remove_recall->context),
-			    remove_recall->recall,
-			    remove_recall->is_play);
-
     if(remove_recall->remove_all){
       GList *list;
 
@@ -167,19 +163,22 @@ ags_remove_recall_launch(AgsTask *task)
 	list = AGS_RECALL_CONTAINER(remove_recall->recall->container)->recall_audio_run;
 
 	while(list != NULL){
-          ags_audio_remove_recall(AGS_AUDIO(remove_recall->context),
-			    list->data,
-			    remove_recall->is_play);
-
+	  if(list->data != remove_recall->recall){
+	    ags_audio_remove_recall(AGS_AUDIO(remove_recall->context),
+				    list->data,
+				    remove_recall->is_play);
+	  }
+	  
 	  list = list->next;	  
 	}
       }
     }
-  }else if(AGS_IS_CHANNEL(remove_recall->context)){
-    ags_channel_remove_recall(AGS_CHANNEL(remove_recall->context),
-			      remove_recall->recall,
-			      remove_recall->is_play);
 
+    ags_audio_remove_recall(AGS_AUDIO(remove_recall->context),
+			    remove_recall->recall,
+			    remove_recall->is_play);
+
+  }else if(AGS_IS_CHANNEL(remove_recall->context)){
     if(remove_recall->remove_all){
       GList *list;
 
@@ -187,14 +186,20 @@ ags_remove_recall_launch(AgsTask *task)
 	list = AGS_RECALL_CONTAINER(remove_recall->recall->container)->recall_channel_run;
 
 	while(list != NULL){
-	  ags_channel_remove_recall(AGS_CHANNEL(remove_recall->context),
-				    list->data,
-				    remove_recall->is_play);
-
+	  if(list->data != remove_recall->recall){
+	    ags_channel_remove_recall(AGS_CHANNEL(remove_recall->context),
+				      list->data,
+				      remove_recall->is_play);
+	  }
+	  
 	  list = list->next;
 	}
-      }      
+      }
     }
+
+    ags_channel_remove_recall(AGS_CHANNEL(remove_recall->context),
+			      remove_recall->recall,
+			      remove_recall->is_play);
   }else if(AGS_IS_RECALL(remove_recall->context)){
     ags_recall_remove_child(AGS_RECALL(remove_recall->context),
 			    remove_recall->recall);

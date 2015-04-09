@@ -18,11 +18,10 @@
 
 #include <ags/audio/ags_audio_signal.h>
 
-#include <ags/object/ags_config.h>
 #include <ags/object/ags_marshal.h>
 #include <ags-lib/object/ags_connectable.h>
-#include <ags/object/ags_soundcard.h>
 
+#include <ags/audio/ags_config.h>
 #include <ags/audio/ags_devout.h>
 
 #include <stdint.h>
@@ -62,7 +61,7 @@ void ags_audio_signal_real_morph_samplerate(AgsAudioSignal *audio_signal, guint 
 
 enum{
   PROP_0,
-  PROP_SOUNDCARD,
+  PROP_DEVOUT,
   PROP_RECYCLING,
   PROP_RECALL_ID,
 };
@@ -72,6 +71,8 @@ enum{
   MORPH_SAMPLERATE,
   LAST_SIGNAL,
 };
+
+extern AgsConfig *config;
 
 static gpointer ags_audio_signal_parent_class = NULL;
 static guint audio_signal_signals[LAST_SIGNAL];
@@ -131,19 +132,19 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
 
   /* properties */
   /**
-   * AgsAudioSignal:soundcard:
+   * AgsAudioSignal:devout:
    *
-   * The assigned #AgsSoundcard providing default settings.
+   * The assigned #AgsDevout providing default settings.
    * 
    * Since: 0.4.0
    */
-  param_spec = g_param_spec_object("soundcard\0",
-				   "assigned soundcard\0",
-				   "The soundcard it is assigned with\0",
-				   G_TYPE_OBJECT,
+  param_spec = g_param_spec_object("devout\0",
+				   "assigned devout\0",
+				   "The devout it is assigned with\0",
+				   AGS_TYPE_DEVOUT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_SOUNDCARD,
+				  PROP_DEVOUT,
 				  param_spec);
 
   /**
@@ -232,16 +233,23 @@ ags_audio_signal_init(AgsAudioSignal *audio_signal)
 {
   audio_signal->flags = 0;
 
-  audio_signal->soundcard = NULL;
+  audio_signal->devout = NULL;
 
   audio_signal->recycling = NULL;
   audio_signal->recall_id = NULL;
 
-  audio_signal->samplerate = AGS_DEVOUT_DEFAULT_SAMPLERATE;
-  audio_signal->buffer_size = AGS_DEVOUT_DEFAULT_BUFFER_SIZE;
+  audio_signal->samplerate = g_ascii_strtoull(ags_config_get(config,
+							     AGS_CONFIG_DEVOUT,
+							     "samplerate\0"),
+					      NULL,
+					      10);
+  audio_signal->buffer_size = g_ascii_strtoull(ags_config_get(config,
+							      AGS_CONFIG_DEVOUT,
+							      "buffer-size\0"),
+					       NULL,
+					       10);
   audio_signal->resolution = AGS_DEVOUT_RESOLUTION_16_BIT;
 
-  
   audio_signal->length = 0;
   audio_signal->last_frame = 0;
   audio_signal->loop_start = 0;
@@ -268,35 +276,22 @@ ags_audio_signal_set_property(GObject *gobject,
   audio_signal = AGS_AUDIO_SIGNAL(gobject);
 
   switch(prop_id){
-  case PROP_SOUNDCARD:
+  case PROP_DEVOUT:
     {
-      GObject *soundcard;
+      GObject *devout;
 
-      soundcard = g_value_get_object(value);
+      devout = g_value_get_object(value);
 
-      if(audio_signal->soundcard == soundcard)
+      if(audio_signal->devout == devout)
 	return;
 
-      if(audio_signal->soundcard != NULL)
-	g_object_unref(audio_signal->soundcard);
+      if(audio_signal->devout != NULL)
+	g_object_unref(audio_signal->devout);
 
-      if(soundcard != NULL){
-	guint samplerate, buffer_size, bits;
-	
-	g_object_ref(soundcard);
+      if(devout != NULL)
+	g_object_ref(devout);
 
-	ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
-				  NULL,
-				  &samplerate,
-				  &buffer_size,
-				  &bits);
-
-	audio_signal->samplerate = samplerate;
-	audio_signal->buffer_size = buffer_size;
-	audio_signal->resolution = bits;
-      }
-      
-      audio_signal->soundcard = soundcard;
+      audio_signal->devout = devout;
     }
     break;
   case PROP_RECYCLING:
@@ -352,8 +347,8 @@ ags_audio_signal_get_property(GObject *gobject,
   audio_signal = AGS_AUDIO_SIGNAL(gobject);
 
   switch(prop_id){
-  case PROP_SOUNDCARD:
-    g_value_set_object(value, audio_signal->soundcard);
+  case PROP_DEVOUT:
+    g_value_set_object(value, audio_signal->devout);
     break;
   case PROP_RECYCLING:
     g_value_set_object(value, audio_signal->recycling);
@@ -381,8 +376,8 @@ ags_audio_signal_finalize(GObject *gobject)
   if((AGS_AUDIO_SIGNAL_TEMPLATE & (audio_signal->flags)) != 0)
     g_warning("AGS_AUDIO_SIGNAL_TEMPLATE: destroying\n\0");
 
-  if(audio_signal->soundcard != NULL)
-    g_object_unref(audio_signal->soundcard);
+  if(audio_signal->devout != NULL)
+    g_object_unref(audio_signal->devout);
 
   if(audio_signal->recycling != NULL)
     g_object_unref(audio_signal->recycling);
@@ -1017,7 +1012,7 @@ ags_audio_signal_tile(AgsAudioSignal *audio_signal,
 		      AgsAudioSignal *template,
 		      guint frame_count)
 {
-  AgsSoundcard *soundcard;
+  AgsDevout *devout;
   GList *template_stream, *audio_signal_stream, *audio_signal_stream_end;
   signed short *template_buffer, *audio_signal_buffer;
   guint template_size;
@@ -1026,7 +1021,7 @@ ags_audio_signal_tile(AgsAudioSignal *audio_signal,
   guint k, k_end;
   gboolean alloc_buffer;
   
-  soundcard = AGS_SOUNDCARD(audio_signal->soundcard);
+  devout = AGS_DEVOUT(audio_signal->devout);
 
   audio_signal_stream = NULL;
   template_stream = template->stream_beginning;
@@ -1753,11 +1748,11 @@ ags_audio_signal_scale(AgsAudioSignal *audio_signal,
 
 /**
  * ags_audio_signal_new:
- * @soundcard: the assigned #AgsSoundcard
+ * @devout: the assigned #AgsDevout
  * @recycling: the #AgsRecycling
  * @recall_id: the #AgsRecallID, it can be NULL if %AGS_AUDIO_SIGNAL_TEMPLATE is set
  *
- * Creates a #AgsAudioSignal, with defaults of @soundcard, linking @recycling tree
+ * Creates a #AgsAudioSignal, with defaults of @devout, linking @recycling tree
  * and refering to @recall_id.
  *
  * Returns: a new #AgsAudioSignal
@@ -1765,14 +1760,14 @@ ags_audio_signal_scale(AgsAudioSignal *audio_signal,
  * Since: 0.3
  */
 AgsAudioSignal*
-ags_audio_signal_new(GObject *soundcard,
+ags_audio_signal_new(GObject *devout,
 		     GObject *recycling,
 		     GObject *recall_id)
 {
   AgsAudioSignal *audio_signal;
 
   audio_signal = (AgsAudioSignal *) g_object_new(AGS_TYPE_AUDIO_SIGNAL,
-						 "soundcard\0", soundcard,
+						 "devout\0", devout,
 						 "recycling\0", recycling,
 						 "recall-id\0", recall_id,
 						 NULL);
@@ -1782,12 +1777,12 @@ ags_audio_signal_new(GObject *soundcard,
 
 /**
  * ags_audio_signal_new_with_length:
- * @soundcard: the assigned #AgsSoundcard
+ * @devout: the assigned #AgsDevout
  * @recycling: the #AgsRecycling
  * @recall_id: the #AgsRecallID, it can be NULL if %AGS_AUDIO_SIGNAL_TEMPLATE is set
  * @length: audio data frame count
  *
- * Creates a #AgsAudioSignal, with defaults of @soundcard, linking @recycling tree
+ * Creates a #AgsAudioSignal, with defaults of @devout, linking @recycling tree
  * and refering to @recall_id.
  * The audio data is tiled to @length frame count.
  *
@@ -1796,7 +1791,7 @@ ags_audio_signal_new(GObject *soundcard,
  * Since: 0.4
  */
 AgsAudioSignal*
-ags_audio_signal_new_with_length(GObject *soundcard,
+ags_audio_signal_new_with_length(GObject *devout,
 				 GObject *recycling,
 				 GObject *recall_id,
 				 guint length)
@@ -1804,7 +1799,7 @@ ags_audio_signal_new_with_length(GObject *soundcard,
   AgsAudioSignal *audio_signal, *template;
 
   audio_signal = (AgsAudioSignal *) g_object_new(AGS_TYPE_AUDIO_SIGNAL,
-						 "soundcard\0", soundcard,
+						 "devout\0", devout,
 						 "recycling\0", recycling,
 						 "recall-id\0", recall_id,
 						 NULL);

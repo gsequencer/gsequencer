@@ -19,21 +19,11 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
-#include <ags/object/ags_application_context.h>
-
-#include <ags/server/ags_server_application_context.h>
+#include <ags/main.h>
 
 void ags_server_class_init(AgsServerClass *server);
 void ags_server_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_server_init(AgsServer *server);
-void ags_server_set_property(GObject *gobject,
-			     guint prop_id,
-			     const GValue *value,
-			     GParamSpec *param_spec);
-void ags_server_get_property(GObject *gobject,
-			     guint prop_id,
-			     GValue *value,
-			     GParamSpec *param_spec);
 void ags_server_add_to_registry(AgsConnectable *connectable);
 void ags_server_remove_from_registry(AgsConnectable *connectable);
 void ags_server_connect(AgsConnectable *connectable);
@@ -41,11 +31,6 @@ void ags_server_disconnect(AgsConnectable *connectable);
 void ags_server_finalize(GObject *gobject);
 
 void ags_server_real_start(AgsServer *server);
-
-enum{
-  PROP_0,
-  PROP_APPLICATION_CONTEXT,
-};
 
 enum{
   START,
@@ -98,34 +83,13 @@ void
 ags_server_class_init(AgsServerClass *server)
 {
   GObjectClass *gobject;
-  GParamSpec *param_spec;
-  
+
   ags_server_parent_class = g_type_class_peek_parent(server);
 
   /* GObjectClass */
   gobject = (GObjectClass *) server;
 
-  gobject->set_property = ags_server_set_property;
-  gobject->get_property = ags_server_get_property;
-
   gobject->finalize = ags_server_finalize;
-
-  /* properties */
-  /**
-   * AgsServer:application-context:
-   *
-   * The assigned #AgsApplicationContext
-   * 
-   * Since: 0.4.0
-   */
-  param_spec = g_param_spec_object("application-context\0",
-				   "the application context object\0",
-				   "The application context object\0",
-				   AGS_TYPE_APPLICATION_CONTEXT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_APPLICATION_CONTEXT,
-				  param_spec);
 
   /* AgsServer */
   server->start = ags_server_real_start;
@@ -161,78 +125,10 @@ ags_server_init(AgsServer *server)
 
   server->server_info = NULL;
 
-  server->application_context = NULL;
-  server->application_mutex = NULL;
+  server->main = NULL;
 
   server->registry = ags_registry_new();
   server->remote_task = ags_remote_task_new();
-}
-void
-ags_server_set_property(GObject *gobject,
-			guint prop_id,
-			const GValue *value,
-			GParamSpec *param_spec)
-{
-  AgsServer *server;
-
-  server = AGS_SERVER(gobject);
-
-  //TODO:JK: implement set functionality
-  
-  switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      AgsApplicationContext *application_context;
-
-      application_context = g_value_get_object(value);
-
-      if(server->application_context == application_context){
-	return;
-      }
-
-      if(server->application_context != NULL){
-	g_object_unref(G_OBJECT(server->application_context));
-      }
-
-      if(application_context != NULL){
-	AgsConfig *config;
-	
-	g_object_ref(G_OBJECT(application_context));
-
-	server->application_mutex = &(application_context->mutex);
-      }else{
-	server->application_mutex = NULL;
-      }
-
-      server->application_context = application_context;
-    }
-    break;
-  default:
-    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
-    break;
-  }
-}
-
-void
-ags_server_get_property(GObject *gobject,
-			guint prop_id,
-			GValue *value,
-			GParamSpec *param_spec)
-{
-  AgsServer *server;
-
-  server = AGS_SERVER(gobject);
-  
-  switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      g_value_set_object(value, server->application_context);
-    }
-    break;
-  default:
-    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
-    break;
-  }
 }
 
 void
@@ -256,7 +152,7 @@ ags_server_add_to_registry(AgsConnectable *connectable)
   method_info->methodName = "ags_server_create_object\0";
   method_info->methodFunction = &ags_server_create_object;
   method_info->serverInfo = NULL;
-  xmlrpc_registry_add_method3(&(ags_service_provider_get_env(AGS_SERVICE_PROVIDER(server->application_context))),
+  xmlrpc_registry_add_method3(&(AGS_MAIN(server->main)->env),
 			      registry->registry,
 			      method_info);
 
@@ -265,7 +161,7 @@ ags_server_add_to_registry(AgsConnectable *connectable)
   method_info->methodName = "ags_server_object_set_property\0";
   method_info->methodFunction = &ags_server_object_set_property;
   method_info->serverInfo = NULL;
-  xmlrpc_registry_add_method3(&(ags_service_provider_get_env(AGS_SERVICE_PROVIDER(server->application_context))),
+  xmlrpc_registry_add_method3(&(AGS_MAIN(server->main)->env),
 			      registry->registry,
 			      method_info);
 #endif /* AGS_WITH_XMLRPC_C */
@@ -306,15 +202,21 @@ ags_server_finalize(GObject *gobject)
 void
 ags_server_real_start(AgsServer *server)
 {
+  AgsMain *main;
   AgsRegistry *registry;
   const char *error;
 
+  main = AGS_MAIN(server->main);
+
   registry = AGS_REGISTRY(server->registry);
 #ifdef AGS_WITH_XMLRPC_C
-  registry->registry = xmlrpc_registry_new(&(ags_service_provider_get_env(AGS_SERVICE_PROVIDER(server->application_context))));
+  registry->registry = xmlrpc_registry_new(&(main->env));
 #endif /* AGS_WITH_XMLRPC_C */
 
-  ags_connectable_add_to_registry(AGS_CONNECTABLE(server->application_context));
+  ags_connectable_add_to_registry(AGS_CONNECTABLE(main->main_loop));
+  ags_connectable_add_to_registry(AGS_CONNECTABLE(server));
+  ags_connectable_add_to_registry(AGS_CONNECTABLE(main->devout));
+  ags_connectable_add_to_registry(AGS_CONNECTABLE(main->window));
 
   //  xmlrpc_registry_set_shutdown(registry,
   //			       &requestShutdown, &terminationRequested);
@@ -514,13 +416,14 @@ ags_server_object_set_property(xmlrpc_env *env,
 #endif /* AGS_WITH_XMLRPC_C */
 
 AgsServer*
-ags_server_new(GObject *application_context)
+ags_server_new(GObject *main)
 {
   AgsServer *server;
 
   server = (AgsServer *) g_object_new(AGS_TYPE_SERVER,
-				      "application-context\0", application_context,
 				      NULL);
+
+  server->main = main;
 
   return(server);
 }

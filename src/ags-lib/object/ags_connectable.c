@@ -18,16 +18,6 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
-/**
- * SECTION:ags_connectable
- * @short_description: unique access to recalls
- * @title: AgsConnectable
- * @section_id:
- * @include: ags/object/ags_connectable.h
- *
- * The #AgsConnectable interface gives you a unique access to objects.
- */
-
 void ags_connectable_base_init(AgsConnectableInterface *interface);
 
 GType
@@ -113,9 +103,9 @@ ags_connectable_connect(AgsConnectable *connectable)
   connectable_interface = AGS_CONNECTABLE_GET_INTERFACE(connectable);
   g_return_if_fail(connectable_interface->connect);
 
-  if(!ags_connectable_is_ready(connectable)){
-    return;
-  }
+  //  if(!ags_connectable_is_ready(connectable)){
+  //    return;
+  //  }
 
   connectable_interface->connect(connectable);
 }

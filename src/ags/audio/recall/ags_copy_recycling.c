@@ -156,8 +156,8 @@ void
 ags_copy_recycling_init(AgsCopyRecycling *copy_recycling)
 {
   AGS_RECALL(copy_recycling)->name = "ags-copy\0";
-  AGS_RECALL(copy_recycling)->version = AGS_RECALL_DEFAULT_VERSION;
-  AGS_RECALL(copy_recycling)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
+  AGS_RECALL(copy_recycling)->version = AGS_EFFECTS_DEFAULT_VERSION;
+  AGS_RECALL(copy_recycling)->build_id = AGS_BUILD_ID;
   AGS_RECALL(copy_recycling)->xml_type = "ags-copy-recycling\0";
   AGS_RECALL(copy_recycling)->port = NULL;
 

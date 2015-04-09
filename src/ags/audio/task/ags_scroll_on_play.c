@@ -20,7 +20,6 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
-#include <ags/X/ags_window.h>
 #include <ags/X/ags_editor.h>
 
 #include <ags/main.h>
@@ -165,22 +164,22 @@ ags_scroll_on_play_launch(AgsTask *task)
   tact = gtk_spin_button_get_value(window->navigation->position_tact);
 
   if(!gtk_toggle_button_get_active(window->navigation->loop) || tact <= loop_end){
-    position = tact * editor->edit.note_edit->control_current.control_width;
+    position = tact * editor->note_edit->control_current.control_width;
   }else{
-    position = loop_start * editor->edit.note_edit->control_current.control_width;
+    position = loop_start * editor->note_edit->control_current.control_width;
   }
 
   /* scroll */
-  if(position - (0.125 * editor->edit.note_edit->control_current.control_width) > 0.0){
-    gtk_range_set_value(GTK_RANGE(editor->edit.note_edit->hscrollbar),
-			position - (0.125 * editor->edit.note_edit->control_current.control_width));
+  if(position - (0.125 * editor->note_edit->control_current.control_width) > 0.0){
+    gtk_range_set_value(GTK_RANGE(editor->note_edit->hscrollbar),
+			position - (0.125 * editor->note_edit->control_current.control_width));
   }
 
   /* draw fader */
   cairo_push_group(cr);
 
-  cr = gdk_cairo_create(GTK_WIDGET(editor->edit.note_edit->drawing_area)->window);
-  ags_note_edit_draw_scroll(editor->edit.note_edit, cr,
+  cr = gdk_cairo_create(GTK_WIDGET(editor->note_edit->drawing_area)->window);
+  ags_note_edit_draw_scroll(editor->note_edit, cr,
 			    position);
 
   cairo_pop_group_to_source(cr);

@@ -19,6 +19,9 @@
 #include <ags/audio/recall/ags_copy_pattern_channel_run.h>
 
 #include <ags-lib/object/ags_connectable.h>
+
+#include <ags/main.h>
+
 #include <ags/object/ags_dynamic_connectable.h>
 #include <ags/object/ags_plugin.h>
 
@@ -188,8 +191,8 @@ void
 ags_copy_pattern_channel_run_init(AgsCopyPatternChannelRun *copy_pattern_channel_run)
 {
   AGS_RECALL(copy_pattern_channel_run)->name = "ags-copy-pattern\0";
-  AGS_RECALL(copy_pattern_channel_run)->version = AGS_RECALL_DEFAULT_VERSION;
-  AGS_RECALL(copy_pattern_channel_run)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
+  AGS_RECALL(copy_pattern_channel_run)->version = AGS_EFFECTS_DEFAULT_VERSION;
+  AGS_RECALL(copy_pattern_channel_run)->build_id = AGS_BUILD_ID;
   AGS_RECALL(copy_pattern_channel_run)->xml_type = "ags-copy-pattern-channel-run\0";
   AGS_RECALL(copy_pattern_channel_run)->port = NULL;
 
@@ -400,10 +403,13 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
   current_bit = g_value_get_boolean(&current_bit_value);
 
   if(current_bit){
+    AgsDevout *devout;
     AgsRecycling *recycling;
     AgsAudioSignal *audio_signal;
     gdouble delay;
     guint attack;
+  
+    devout = AGS_DEVOUT(AGS_RECALL(copy_pattern_channel_run)->devout);
 
     //    g_message("ags_copy_pattern_channel_run_sequencer_alloc_callback - playing channel: %u; playing pattern: %u\0",
     //	      AGS_RECALL_CHANNEL(copy_pattern_channel)->source->line,
@@ -444,7 +450,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 	  }
 	}
 
-	audio_signal = ags_audio_signal_new(AGS_RECALL(copy_pattern_audio)->soundcard,
+	audio_signal = ags_audio_signal_new(AGS_RECALL(copy_pattern_audio)->devout,
 					    recycling,
 					    child_recall_id);
 	ags_recycling_create_audio_signal_with_defaults(recycling,

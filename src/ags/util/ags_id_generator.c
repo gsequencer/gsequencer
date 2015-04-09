@@ -19,9 +19,9 @@
 /**
  * ags_id_generator_create_uuid:
  *
- * Creates an new string containing UUID. 
+ * Creates a new string containing UUID. 
  *
- * Returns: a new string
+ * Returns: the string
  *
  * Since: 0.4
  */

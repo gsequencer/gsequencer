@@ -22,8 +22,8 @@
 
 #include <ags/object/ags_marshal.h>
 #include <ags-lib/object/ags_connectable.h>
-#include <ags/object/ags_soundcard.h>
 
+#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
 
@@ -64,7 +64,7 @@ void ags_recycling_real_remove_audio_signal(AgsRecycling *recycling,
 
 enum{
   PROP_0,
-  PROP_SOUNDCARD,
+  PROP_DEVOUT,
 };
 
 enum{
@@ -135,19 +135,19 @@ ags_recycling_class_init(AgsRecyclingClass *recycling)
 
   /* properties */
   /**
-   * AgsRecycling:soundcard:
+   * AgsRecycling:devout:
    *
-   * The assigned #AgsSoundcard acting as default sink.
+   * The assigned #AgsDevout acting as default sink.
    * 
    * Since: 0.4.0
    */
-  param_spec = g_param_spec_object("soundcard\0",
-				   "assigned soundcard\0",
-				   "The soundcard it is assigned with\0",
-				   G_TYPE_OBJECT,
+  param_spec = g_param_spec_object("devout\0",
+				   "assigned devout\0",
+				   "The devout it is assigned with\0",
+				   AGS_TYPE_DEVOUT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_SOUNDCARD,
+				  PROP_DEVOUT,
 				  param_spec);
 
   /*  */
@@ -203,7 +203,8 @@ ags_recycling_init(AgsRecycling *recycling)
 {
   recycling->flags = 0;
 
-  recycling->soundcard = NULL;
+  recycling->devout = NULL;
+
   recycling->channel = NULL;
 
   recycling->parent = NULL;
@@ -225,13 +226,13 @@ ags_recycling_set_property(GObject *gobject,
   recycling = AGS_RECYCLING(gobject);
 
   switch(prop_id){
-  case PROP_SOUNDCARD:
+  case PROP_DEVOUT:
     {
-      GObject *soundcard;
+      AgsDevout *devout;
 
-      soundcard = (GObject *) g_value_get_object(value);
+      devout = (AgsDevout *) g_value_get_object(value);
 
-      ags_recycling_set_soundcard(recycling, (GObject *) soundcard);
+      ags_recycling_set_devout(recycling, (GObject *) devout);
     }
     break;
   default:
@@ -251,8 +252,8 @@ ags_recycling_get_property(GObject *gobject,
   recycling = AGS_RECYCLING(gobject);
 
   switch(prop_id){
-  case PROP_SOUNDCARD:
-    g_value_set_object(value, recycling->soundcard);
+  case PROP_DEVOUT:
+    g_value_set_object(value, recycling->devout);
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
@@ -288,28 +289,28 @@ ags_recycling_finalize(GObject *gobject)
 }
 
 /**
- * ags_recycling_set_soundcard:
+ * ags_recycling_set_devout:
  * @recycling:  an #AgsRecycling
- * @soundcard: the #AgsSoundcard to set
+ * @devout: the #AgsDevout to set
  *
- * Sets #AgsSoundcard to recycling.
+ * Sets #AgsDevout to recycling.
  *
  * Since: 0.3
  */
 void
-ags_recycling_set_soundcard(AgsRecycling *recycling, GObject *soundcard)
+ags_recycling_set_devout(AgsRecycling *recycling, GObject *devout)
 {
   /* recycling */
-  if(recycling->soundcard == soundcard)
+  if(recycling->devout == devout)
     return;
 
-  if(recycling->soundcard != NULL)
-    g_object_unref(recycling->soundcard);
+  if(recycling->devout != NULL)
+    g_object_unref(recycling->devout);
 
-  if(soundcard != NULL)
-    g_object_ref(soundcard);
+  if(devout != NULL)
+    g_object_ref(devout);
 
-  recycling->soundcard = (GObject *) soundcard;
+  recycling->devout = (GObject *) devout;
 }
 
 /**
@@ -408,7 +409,7 @@ ags_recycling_create_audio_signal_with_defaults(AgsRecycling *recycling,
     return;
   }
 
-  audio_signal->soundcard = template->soundcard;
+  audio_signal->devout = template->devout;
 
   audio_signal->recycling = (GObject *) recycling;
 
@@ -457,7 +458,7 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
 						   guint frame_count,
 						   gdouble delay, guint attack)
 {
-  AgsSoundcard *soundcard;
+  AgsDevout *devout;
   AgsAudioSignal *template;
   GList *stream, *template_stream, *template_loop;
   guint frames_copied;
@@ -467,9 +468,9 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
   /* some init */
   template = ags_audio_signal_get_template(recycling->audio_signal);
 
-  audio_signal->soundcard = template->soundcard;
+  audio_signal->devout = template->devout;
 
-  soundcard = AGS_SOUNDCARD(audio_signal->soundcard);
+  devout = AGS_DEVOUT(audio_signal->devout);
 
   audio_signal->recycling = (GObject *) recycling;
 
@@ -626,23 +627,23 @@ ags_recycling_position(AgsRecycling *start_recycling, AgsRecycling *end_region,
 
 /**
  * ags_recycling_new:
- * @soundcard: the #AgsSoundcard
+ * @devout: the #AgsDevout
  *
- * Creates a #AgsRecycling, with defaults of @soundcard.
+ * Creates a #AgsRecycling, with defaults of @devout.
  *
  * Returns: a new #AgsRecycling
  *
  * Since: 0.3
  */
 AgsRecycling*
-ags_recycling_new(GObject *soundcard)
+ags_recycling_new(GObject *devout)
 {
   AgsRecycling *recycling;
   AgsAudioSignal *audio_signal;
 
   recycling = (AgsRecycling *) g_object_new(AGS_TYPE_RECYCLING, NULL);
 
-  audio_signal = ags_audio_signal_new(soundcard,
+  audio_signal = ags_audio_signal_new(devout,
 				      (GObject *) recycling,
 				      NULL);
   audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;

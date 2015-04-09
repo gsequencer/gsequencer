@@ -141,8 +141,8 @@ ags_play_notation_audio_init(AgsPlayNotationAudio *play_notation_audio)
   GList *port;
 
   AGS_RECALL(play_notation_audio)->name = "ags-play-notation\0";
-  AGS_RECALL(play_notation_audio)->version = AGS_RECALL_DEFAULT_VERSION;
-  AGS_RECALL(play_notation_audio)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
+  AGS_RECALL(play_notation_audio)->version = AGS_EFFECTS_DEFAULT_VERSION;
+  AGS_RECALL(play_notation_audio)->build_id = AGS_BUILD_ID;
   AGS_RECALL(play_notation_audio)->xml_type = "ags-play-notation-audio\0";
 
   port = NULL;

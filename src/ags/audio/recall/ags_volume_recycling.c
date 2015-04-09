@@ -148,8 +148,8 @@ void
 ags_volume_recycling_init(AgsVolumeRecycling *volume_recycling)
 {
   AGS_RECALL(volume_recycling)->name = "ags-volume\0";
-  AGS_RECALL(volume_recycling)->version = AGS_RECALL_DEFAULT_VERSION;
-  AGS_RECALL(volume_recycling)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
+  AGS_RECALL(volume_recycling)->version = AGS_EFFECTS_DEFAULT_VERSION;
+  AGS_RECALL(volume_recycling)->build_id = AGS_BUILD_ID;
   AGS_RECALL(volume_recycling)->xml_type = "ags-volume-recycling\0";
   AGS_RECALL(volume_recycling)->port = NULL;
 

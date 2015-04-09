@@ -645,13 +645,13 @@ ags_port_safe_write(AgsPort *port, GValue *value)
 void
 ags_port_real_safe_get_property(AgsPort *port, gchar *property_name, GValue *value)
 {
-  //  pthread_mutex_lock(&(port->mutex));
+  pthread_mutex_lock(&(port->mutex));
 
   g_object_get_property(port->port_value.ags_port_object,
 			property_name,
 			value);
 
-  //  pthread_mutex_unlock(&(port->mutex));
+  pthread_mutex_unlock(&(port->mutex));
 }
 
 /**
@@ -678,13 +678,13 @@ ags_port_safe_get_property(AgsPort *port, gchar *property_name, GValue *value)
 void
 ags_port_real_safe_set_property(AgsPort *port, gchar *property_name, GValue *value)
 {
-  //  pthread_mutex_lock(&(port->mutex));
+  pthread_mutex_lock(&(port->mutex));
 
   g_object_set_property(port->port_value.ags_port_object,
 			property_name,
 			value);
 
-  //  pthread_mutex_unlock(&(port->mutex));
+  pthread_mutex_unlock(&(port->mutex));
 }
 
 /**

@@ -83,8 +83,6 @@ struct _AgsMachine
   GType input_line_type;
   GtkContainer *input;
 
-  GtkContainer *bridge;
-  
   GList *port;
 
   GtkMenu *popup;

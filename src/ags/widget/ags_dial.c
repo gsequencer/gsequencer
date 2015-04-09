@@ -716,8 +716,7 @@ ags_dial_draw(AgsDial *dial)
   }
 
   if(range == 0.0){
-    g_warning("ags_dial.c: range = 0, lower = %f, upper = %f\0", dial->adjustment->lower, dial->adjustment->upper);
-    return;
+    g_warning("ags_dial.c - range = 0.0\0");
   }
   
   if(dial->adjustment->lower < 0.0){

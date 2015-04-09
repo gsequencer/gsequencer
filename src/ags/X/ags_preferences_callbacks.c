@@ -37,7 +37,12 @@ ags_preferences_response_callback(GtkDialog *dialog, gint response_id, gpointer 
   case GTK_RESPONSE_OK:
     {
       ags_applicable_apply(AGS_APPLICABLE(dialog));
-
+      gtk_dialog_run(gtk_message_dialog_new(dialog,
+					    GTK_DIALOG_MODAL,
+					    GTK_MESSAGE_WARNING,
+					    GTK_BUTTONS_OK,
+					    "Restart Advanced Gtk+ Sequencer now!\0"));
+      
       if(apply){
 	ags_applicable_reset(AGS_APPLICABLE(dialog));
 
@@ -47,7 +52,7 @@ ags_preferences_response_callback(GtkDialog *dialog, gint response_id, gpointer 
   case GTK_RESPONSE_CANCEL:
     {
       AGS_PREFERENCES(dialog)->flags |= AGS_PREFERENCES_SHUTDOWN;
-      AGS_WINDOW(AGS_PREFERENCES(dialog)->parent)->preferences = NULL;
+      AGS_WINDOW(AGS_PREFERENCES(dialog)->window)->preferences = NULL;
       gtk_widget_destroy(GTK_WIDGET(dialog));
     }
   }

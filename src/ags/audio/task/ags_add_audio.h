@@ -22,6 +22,7 @@
 #include <glib-object.h>
 
 #include <ags/audio/ags_task.h>
+#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
 
 #define AGS_TYPE_ADD_AUDIO                (ags_add_audio_get_type())
@@ -38,7 +39,7 @@ struct _AgsAddAudio
 {
   AgsTask task;
 
-  GObject *soundcard;
+  AgsDevout *devout;
   AgsAudio *audio;
 };
 
@@ -49,7 +50,7 @@ struct _AgsAddAudioClass
 
 GType ags_add_audio_get_type();
 
-AgsAddAudio* ags_add_audio_new(GObject *soundcard,
+AgsAddAudio* ags_add_audio_new(AgsDevout *devout,
 			       AgsAudio *audio);
 
 #endif /*__AGS_ADD_AUDIO_H__*/

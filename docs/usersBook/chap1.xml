@@ -9,7 +9,6 @@
 ]>
 <chapter xmlns="http://docbook.org/ns/docbook" version="5.0">
   <title>The navigation</title>
-  <imagedata fileref="../images/ags_navigation.png" />
   <para>
     With the navigation you have overall control of your song. Settings you perform
     here may influence the behaviour of AGS.
@@ -25,10 +24,11 @@
     </para>
     <para>
       To calculate timings you divide 1 minute with the entered BPM and divide it
-      with basic. For example you have a BPM rate of 120:
+      with basic. For example you have a BPM rate of 120 and a 4/4 tact you would
+      calculate the timing as follow:
     </para>
     <equation>
-      <mathphrase>t = 1 / 120</mathphrase>
+      <mathphrase>t = 1 / 120 * (1 / 4)</mathphrase>
     </equation>
   </sect1>
 
@@ -84,37 +84,16 @@
   </sect1>
 
   <sect1>
+    <title>Song information</title>
+    <para>
+      <!-- TODO:JK: write section -->
+    </para>
+  </sect1>
+
+  <sect1>
     <title>Loop</title>
     <para>
-      By enabling control notation loops. More loop related control see <see>Auto-Scroll</see>.
-    </para>
-  </sect1>
-
-  <sect1>
-    <title>Position</title>
-    <para>
-      Display or change position of playback, consider <see>Loop</see> control.
-    </para>
-  </sect1>
-
-  <sect1>
-    <title>Duration</title>
-    <para>
-      Display or change duration of playback.
-    </para>
-  </sect1>
-
-  <sect1>
-    <title>Loop offset</title>
-    <para>
-      Set offset of loop, enable/disable by <see>Loop</see>.
-    </para>
-  </sect1>
-
-  <sect1>
-    <title>Auto-Scroll</title>
-    <para>
-      Scroll during playback, influenced by <see>Position</see>.
+      <!-- TODO:JK: write section -->
     </para>
   </sect1>
 </chapter>

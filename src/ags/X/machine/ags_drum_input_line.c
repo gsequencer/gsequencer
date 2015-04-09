@@ -19,10 +19,10 @@
 #include <ags/X/machine/ags_drum_input_line.h>
 #include <ags/X/machine/ags_drum_input_line_callbacks.h>
 
+#include <ags-lib/object/ags_connectable.h>
+
 #include <ags/util/ags_id_generator.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags-lib/object/ags_connectable.h>
 #include <ags/object/ags_plugin.h>
 #include <ags/object/ags_portlet.h>
 
@@ -68,6 +68,8 @@
 
 #include <ags/X/machine/ags_drum.h>
 
+#include <ags/audio/ags_config.h>
+
 void ags_drum_input_line_class_init(AgsDrumInputLineClass *drum_input_line);
 void ags_drum_input_line_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_drum_input_line_plugin_interface_init(AgsPluginInterface *plugin);
@@ -86,6 +88,8 @@ void ags_drum_input_line_set_channel(AgsLine *line, AgsChannel *channel);
 void ags_drum_input_line_group_changed(AgsLine *line);
 void ags_drum_input_line_map_recall(AgsLine *line,
 				    guint output_pad_start);
+
+extern AgsConfig *config;
 
 /**
  * SECTION:ags_drum_input_line
@@ -338,10 +342,10 @@ ags_drum_input_line_set_channel(AgsLine *line, AgsChannel *channel)
 
   if(channel != NULL){
     if(channel->audio != NULL &&
-       AGS_AUDIO(channel->audio)->soundcard != NULL){
+       AGS_AUDIO(channel->audio)->devout != NULL){
       AgsAudioSignal *audio_signal;
 
-      audio_signal = ags_audio_signal_new(AGS_AUDIO(channel->audio)->soundcard,
+      audio_signal = ags_audio_signal_new(AGS_AUDIO(channel->audio)->devout,
 					  channel->first_recycling,
 					  NULL);
       audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
@@ -606,7 +610,7 @@ ags_drum_input_line_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
+				   "main\0", file->ags_main,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
@@ -633,7 +637,7 @@ ags_drum_input_line_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
+				   "main\0", file->ags_main,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),

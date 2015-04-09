@@ -22,8 +22,9 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/audio/ags_task.h>
 #include <ags/thread/ags_export_thread.h>
+
+#include <ags/X/ags_window.h>
 
 #define AGS_TYPE_EXPORT_OUTPUT                (ags_export_output_get_type())
 #define AGS_EXPORT_OUTPUT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_EXPORT_OUTPUT, AgsExportOutput))
@@ -40,7 +41,7 @@ struct _AgsExportOutput
   AgsTask task;
 
   AgsExportThread *export_thread;
-  GObject *soundcard;
+  AgsDevout *devout;
   gchar *filename;
   guint tic;
   gboolean live_performance;
@@ -54,7 +55,7 @@ struct _AgsExportOutputClass
 GType ags_export_output_get_type();
 
 AgsExportOutput* ags_export_output_new(AgsExportThread *export_thread,
-				       GObject *soundcard,
+				       AgsDevout *devout,
 				       gchar *filename,
 				       guint tic,
 				       gboolean live_performance);

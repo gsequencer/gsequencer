@@ -21,8 +21,6 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
-#include <ags/object/ags_marshal.h>
-
 #include <ags/X/ags_editor.h>
 
 void ags_navigation_class_init(AgsNavigationClass *navigation);
@@ -43,8 +41,7 @@ void ags_navigation_destroy(GtkObject *object);
 void ags_navigation_show(GtkWidget *widget);
 
 void ags_navigation_real_change_position(AgsNavigation *navigation,
-					 gdouble tact,
-					 gdouble bpm);
+					 gdouble tact);
 
 /**
  * SECTION:ags_navigation
@@ -59,7 +56,7 @@ void ags_navigation_real_change_position(AgsNavigation *navigation,
 
 enum{
   PROP_0,
-  PROP_SOUNDCARD,
+  PROP_DEVOUT,
 };
 
 enum{
@@ -125,19 +122,19 @@ ags_navigation_class_init(AgsNavigationClass *navigation)
 
   /* properties */
   /**
-   * AgsNavigation:soundcard:
+   * AgsNavigation:devout:
    *
-   * The assigned #GObject to use as default sink.
+   * The assigned #AgsDevout to use as default sink.
    * 
    * Since: 0.4
    */
-  param_spec = g_param_spec_object("soundcard\0",
-				   "assigned soundcard\0",
-				   "The soundcard it is assigned with\0",
+  param_spec = g_param_spec_object("devout\0",
+				   "assigned devout\0",
+				   "The devout it is assigned with\0",
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_SOUNDCARD,
+				  PROP_DEVOUT,
 				  param_spec);
 
   /* AgsNavigationClass */
@@ -157,7 +154,7 @@ ags_navigation_class_init(AgsNavigationClass *navigation)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsNavigationClass, change_position),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__DOUBLE_DOUBLE,
+		 g_cclosure_marshal_VOID__DOUBLE,
 		 G_TYPE_NONE, 1,
 		 G_TYPE_DOUBLE);
 }
@@ -177,9 +174,9 @@ ags_navigation_init(AgsNavigation *navigation)
   GtkHBox *hbox;
   GtkLabel *label;
 
-  navigation->flags = 0;
+  navigation->flags = AGS_NAVIGATION_BLOCK_TIC;
 
-  navigation->soundcard = NULL;
+  navigation->devout = NULL;
 
   g_signal_connect_after(G_OBJECT(navigation), "parent-set\0",
 			 G_CALLBACK(ags_navigation_parent_set_callback), NULL);
@@ -298,19 +295,19 @@ ags_navigation_set_property(GObject *gobject,
   navigation = AGS_NAVIGATION(gobject);
 
   switch(prop_id){
-  case PROP_SOUNDCARD:
+  case PROP_DEVOUT:
     {
-      GObject *soundcard;
+      AgsDevout *devout;
 
-      soundcard = (GObject *) g_value_get_object(value);
+      devout = (AgsDevout *) g_value_get_object(value);
 
-      if(navigation->soundcard == soundcard)
+      if(navigation->devout == devout)
 	return;
 
-      if(soundcard != NULL)
-	g_object_ref(soundcard);
+      if(devout != NULL)
+	g_object_ref(devout);
 
-      navigation->soundcard = soundcard;
+      navigation->devout = devout;
     }
     break;
   default:
@@ -330,8 +327,8 @@ ags_navigation_get_property(GObject *gobject,
   navigation = AGS_NAVIGATION(gobject);
 
   switch(prop_id){
-  case PROP_SOUNDCARD:
-    g_value_set_object(value, navigation->soundcard);
+  case PROP_DEVOUT:
+    g_value_set_object(value, navigation->devout);
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
@@ -385,9 +382,12 @@ ags_navigation_connect(AgsConnectable *connectable)
   g_signal_connect((GObject *) navigation->duration_tact, "value-changed\0",
 		   G_CALLBACK(ags_navigation_duration_tact_callback), (gpointer) navigation);
 
-  /* soundcard */
-  g_signal_connect_after((GObject *) navigation->soundcard, "tic\0",
+  /* devout */
+  g_signal_connect_after((GObject *) navigation->devout, "tic\0",
   			 G_CALLBACK(ags_navigation_tic_callback), (gpointer) navigation);
+
+  g_signal_connect_after((GObject *) navigation->devout, "stop\0",
+  			 G_CALLBACK(ags_navigation_devout_stop_callback), (gpointer) navigation);
 
   /* expansion */
   g_signal_connect((GObject *) navigation->loop_left_tact, "value-changed\0",
@@ -427,8 +427,7 @@ ags_navigation_show(GtkWidget *widget)
 
 void
 ags_navigation_real_change_position(AgsNavigation *navigation,
-				    gdouble tact,
-				    gdouble bpm)
+				    gdouble tact)
 {
   gchar *timestr, *str;
 
@@ -436,8 +435,7 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
 	       "label\0", &str,
 	       NULL);
   ags_navigation_update_time_string(tact,
-  				    str,
-				    bpm);
+  				    str);
   //  g_object_set(navigation->duration_time,
   //	       "label\0", str,
   //	       NULL);
@@ -456,15 +454,14 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
  */
 void
 ags_navigation_change_position(AgsNavigation *navigation,
-			       gdouble tact,
-			       gdouble bpm)
+			       gdouble tact)
 {
   g_return_if_fail(AGS_IS_NAVIGATION(navigation));
 
   g_object_ref(G_OBJECT(navigation));
   g_signal_emit(G_OBJECT(navigation),
 		navigation_signals[CHANGE_POSITION], 0,
-		tact, bpm);
+		tact);
   g_object_unref(G_OBJECT(navigation));
 }
 
@@ -479,8 +476,7 @@ ags_navigation_change_position(AgsNavigation *navigation,
  * Since: 0.4 
  */
 gchar*
-ags_navigation_tact_to_time_string(gdouble tact,
-				   gdouble bpm)
+ags_navigation_tact_to_time_string(gdouble tact)
 {
   static gdouble delay_min, delay_sec, delay_hsec;
   static gboolean initialized = FALSE;
@@ -489,7 +485,7 @@ ags_navigation_tact_to_time_string(gdouble tact,
   guint min, sec, hsec;
 
   if(!initialized){
-    delay_min = bpm;
+    delay_min = AGS_DEVOUT_DEFAULT_BPM;
     delay_sec = delay_min / 60.0;
     delay_hsec = delay_sec / 100.0;
 
@@ -528,8 +524,7 @@ ags_navigation_tact_to_time_string(gdouble tact,
  */
 void
 ags_navigation_update_time_string(double tact,
-				  gchar *time_string,
-				  gdouble bpm)
+				  gchar *time_string)
 {
   static gdouble delay_min, delay_sec, delay_hsec;
   static gboolean initialized = FALSE;
@@ -538,7 +533,7 @@ ags_navigation_update_time_string(double tact,
   guint min, sec, hsec;
 
   if(!initialized){
-    delay_min = bpm;
+    delay_min = AGS_DEVOUT_DEFAULT_BPM;
     delay_sec = delay_min / 60.0;
     delay_hsec = delay_sec / 100.0;
 

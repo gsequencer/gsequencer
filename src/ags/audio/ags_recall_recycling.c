@@ -26,11 +26,11 @@
 #include <ags/object/ags_marshal.h>
 #include <ags-lib/object/ags_connectable.h>
 #include <ags/object/ags_dynamic_connectable.h>
-#include <ags/object/ags_soundcard.h>
 
 #include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_task_thread.h>
 
+#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_input.h>
@@ -591,7 +591,7 @@ ags_recall_recycling_duplicate(AgsRecall *recall,
 
   parameter = ags_parameter_grow(G_OBJECT_TYPE(recall),
 				 parameter, n_params,
-				 "soundcard\0", recall->soundcard,
+				 "devout\0", recall->devout,
 				 "audio_channel\0", recall_recycling->audio_channel,
 				 "destination\0", recall_recycling->destination,
 				 "source\0", recall_recycling->source,
@@ -686,7 +686,7 @@ ags_recall_recycling_source_add_audio_signal_callback(AgsRecycling *source,
 
     if(AGS_RECALL(recall_recycling)->child_type != G_TYPE_NONE){
       recall_audio_signal = g_object_new(AGS_RECALL(recall_recycling)->child_type,
-					 "soundcard\0", recall->soundcard,
+					 "devout\0", recall->devout,
 					 "audio_channel\0", recall_recycling->audio_channel,
 					 "destination\0", recall_recycling->child_destination,
 					 "source\0", audio_signal,
@@ -702,7 +702,7 @@ ags_recall_recycling_source_remove_audio_signal_callback(AgsRecycling *source,
 							 AgsAudioSignal *audio_signal,
 							 AgsRecallRecycling *recall_recycling)
 {
-  GObject *soundcard;
+  AgsDevout *devout;
   AgsChannel *channel;
   AgsRecall *recall;
   AgsCancelRecall *cancel_recall;
@@ -731,7 +731,7 @@ ags_recall_recycling_source_remove_audio_signal_callback(AgsRecycling *source,
 	      AGS_CHANNEL(recall_recycling->source->channel)->line);
 #endif
 
-    soundcard = AGS_AUDIO(AGS_CHANNEL(source->channel)->audio)->soundcard;
+    devout = AGS_DEVOUT(AGS_AUDIO(AGS_CHANNEL(source->channel)->audio)->devout);
 
     list = ags_recall_get_children(recall);
 
@@ -743,7 +743,7 @@ ags_recall_recycling_source_remove_audio_signal_callback(AgsRecycling *source,
 	//   	cancel_recall = ags_cancel_recall_new(AGS_RECALL(recall_audio_signal),
 	//				      NULL);
 	
-	//	ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(soundcard->ags_main)->main_loop)->task_thread),
+	//	ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop)->task_thread),
 	//			    (AgsTask *) cancel_recall);
 
 	break;
@@ -818,7 +818,7 @@ ags_recall_recycling_destination_remove_audio_signal_callback(AgsRecycling *dest
 							      AgsAudioSignal *audio_signal,
 							      AgsRecallRecycling *recall_recycling)
 {
-  GObject *soundcard;
+  AgsDevout *devout;
   AgsRecall *recall;
   AgsCancelRecall *cancel_recall;
   AgsRecallAudioSignal *recall_audio_signal;
@@ -844,7 +844,7 @@ ags_recall_recycling_destination_remove_audio_signal_callback(AgsRecycling *dest
     	      AGS_CHANNEL(recall_recycling->source->channel)->line);
 #endif
 
-    soundcard = AGS_AUDIO(AGS_CHANNEL(destination->channel)->audio)->soundcard;
+    devout = AGS_DEVOUT(AGS_AUDIO(AGS_CHANNEL(destination->channel)->audio)->devout);
 
     list = ags_recall_get_children(AGS_RECALL(recall_recycling));
 
@@ -856,7 +856,7 @@ ags_recall_recycling_destination_remove_audio_signal_callback(AgsRecycling *dest
 	//	cancel_recall = ags_cancel_recall_new(AGS_RECALL(recall_audio_signal),
 	//				      NULL);
 
-	//	ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(soundcard->ags_main)->main_loop)->task_thread),
+	//	ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop)->task_thread),
 	//			    (AgsTask *) cancel_recall);
       }
 

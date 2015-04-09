@@ -189,8 +189,8 @@ ags_buffer_channel_init(AgsBufferChannel *buffer_channel)
   GList *port;
 
   AGS_RECALL(buffer_channel)->name = "ags-buffer\0";
-  AGS_RECALL(buffer_channel)->version = AGS_RECALL_DEFAULT_VERSION;
-  AGS_RECALL(buffer_channel)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
+  AGS_RECALL(buffer_channel)->version = AGS_EFFECTS_DEFAULT_VERSION;
+  AGS_RECALL(buffer_channel)->build_id = AGS_BUILD_ID;
   AGS_RECALL(buffer_channel)->xml_type = "ags-buffer-channel\0";
 
   port = NULL;

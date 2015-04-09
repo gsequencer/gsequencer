@@ -23,7 +23,7 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include <ags/object/ags_soundcard.h>
+#include <ags/audio/ags_devout.h>
 
 #define AGS_TYPE_NAVIGATION                (ags_navigation_get_type())
 #define AGS_NAVIGATION(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_NAVIGATION, AgsNavigation))
@@ -42,6 +42,7 @@ typedef struct _AgsNavigationClass AgsNavigationClass;
 typedef enum{
   AGS_NAVIGATION_BLOCK_TACT   = 1,
   AGS_NAVIGATION_BLOCK_PLAY   = 1 << 1,
+  AGS_NAVIGATION_BLOCK_TIC    = 1 << 2,
 }AgsNavigationFlags;
 
 struct _AgsNavigation
@@ -50,7 +51,7 @@ struct _AgsNavigation
 
   guint flags;
 
-  GObject *soundcard;
+  AgsDevout *devout;
 
   GtkToggleButton *expander;
 
@@ -88,18 +89,15 @@ struct _AgsNavigationClass
 
 GType ags_navigation_get_type(void);
 
-gchar* ags_navigation_tact_to_time_string(gdouble tact,
-					  gdouble bpm);
+gchar* ags_navigation_tact_to_time_string(gdouble tact);
 void ags_navigation_update_time_string(double tact,
-				       gchar *time_string,
-				       gdouble bpm);
+				       gchar *time_string);
 
 void ags_navigation_set_seeking_sensitive(AgsNavigation *navigation,
 					  gboolean enabled);
 
 void ags_navigation_change_position(AgsNavigation *navigation,
-				    gdouble tact,
-				    gdouble bpm);
+				    gdouble tact);
 
 AgsNavigation* ags_navigation_new();
 

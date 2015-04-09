@@ -18,19 +18,22 @@
 
 #include <ags/audio/ags_recall_ladspa.h>
 
+#include <ags/main.h>
+
+#include <ags-lib/object/ags_connectable.h>
+
 #include <ags/util/ags_id_generator.h>
 
 #include <ags/plugin/ags_ladspa_manager.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags-lib/object/ags_connectable.h>
 #include <ags/object/ags_plugin.h>
-#include <ags/object/ags_soundcard.h>
 
 #include <ags/file/ags_file.h>
 #include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>
 
+#include <ags/audio/ags_config.h>
+#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_port.h>
 
 #include <dlfcn.h>
@@ -80,6 +83,8 @@ enum{
   PROP_EFFECT,
   PROP_INDEX,
 };
+
+extern AgsConfig *config;
 
 static gpointer ags_recall_ladspa_parent_class = NULL;
 static AgsConnectableInterface* ags_recall_ladspa_parent_connectable_interface;
@@ -224,8 +229,8 @@ void
 ags_recall_ladspa_init(AgsRecallLadspa *recall_ladspa)
 {
   AGS_RECALL(recall_ladspa)->name = "ags-ladspa\0";
-  AGS_RECALL(recall_ladspa)->version = AGS_RECALL_DEFAULT_VERSION;
-  AGS_RECALL(recall_ladspa)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
+  AGS_RECALL(recall_ladspa)->version = AGS_EFFECTS_DEFAULT_VERSION;
+  AGS_RECALL(recall_ladspa)->build_id = AGS_BUILD_ID;
   AGS_RECALL(recall_ladspa)->xml_type = "ags-recall-ladspa\0";
   AGS_RECALL(recall_ladspa)->port = NULL;
 
@@ -255,7 +260,7 @@ ags_recall_ladspa_set_property(GObject *gobject,
   switch(prop_id){
   case PROP_FILENAME:
     {
-      GObject *soundcard;
+      AgsDevout *devout;
       gchar *filename;
 
       filename = g_value_get_string(value);
@@ -326,7 +331,7 @@ ags_recall_ladspa_get_property(GObject *gobject,
     break;
   case PROP_INDEX:
     {
-      g_value_set_ulong(value, recall_ladspa->index);
+      g_value_set_uint(value, recall_ladspa->index);
     }
     break;
   default:
@@ -414,22 +419,22 @@ ags_recall_ladspa_set_ports(AgsPlugin *plugin, GList *port)
 	}else if(LADSPA_IS_PORT_AUDIO(port_descriptor[i])){
 	  if(LADSPA_IS_PORT_INPUT(port_descriptor[i])){
 	    if(recall_ladspa->input_port == NULL){
-	      recall_ladspa->input_port = (guint *) malloc(sizeof(guint));
+	      recall_ladspa->input_port = (unsigned long *) malloc(sizeof(unsigned long));
 	      recall_ladspa->input_port[0] = i;
 	    }else{
-	      recall_ladspa->input_port = (guint *) realloc(recall_ladspa->input_port,
-							    (recall_ladspa->input_lines + 1) * sizeof(guint));
+	      recall_ladspa->input_port = (unsigned long *) realloc(recall_ladspa->input_port,
+							    (recall_ladspa->input_lines + 1) * sizeof(unsigned long));
 	      recall_ladspa->input_port[recall_ladspa->input_lines] = i;
 	    }
 
 	    recall_ladspa->input_lines += 1;
 	  }else if(LADSPA_IS_PORT_OUTPUT(port_descriptor[i])){
 	    if(recall_ladspa->output_port == NULL){
-	      recall_ladspa->output_port = (guint *) malloc(sizeof(guint));
+	      recall_ladspa->output_port = (unsigned long *) malloc(sizeof(unsigned long));
 	      recall_ladspa->output_port[0] = i;
 	    }else{
-	      recall_ladspa->output_port = (guint *) realloc(recall_ladspa->output_port,
-							    (recall_ladspa->output_lines + 1) * sizeof(guint));
+	      recall_ladspa->output_port = (unsigned long *) realloc(recall_ladspa->output_port,
+							    (recall_ladspa->output_lines + 1) * sizeof(unsigned long));
 	      recall_ladspa->output_port[recall_ladspa->output_lines] = i;
 	    }
 
@@ -466,7 +471,7 @@ ags_recall_ladspa_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
+				   "main\0", file->ags_main,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
@@ -496,9 +501,7 @@ ags_recall_ladspa_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 {
   AgsRecallLadspa *recall_ladspa;
   xmlNode *node;
-  GList *list;
   gchar *id;
-  guint i;
 
   recall_ladspa = AGS_RECALL_LADSPA(plugin);
 
@@ -512,7 +515,7 @@ ags_recall_ladspa_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
+				   "main\0", file->ags_main,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
@@ -645,22 +648,22 @@ ags_recall_ladspa_load_ports(AgsRecallLadspa *recall_ladspa)
 	}else if(LADSPA_IS_PORT_AUDIO(port_descriptor[i])){
 	  if(LADSPA_IS_PORT_INPUT(port_descriptor[i])){
 	    if(recall_ladspa->input_port == NULL){
-	      recall_ladspa->input_port = (unsigned long *) malloc(sizeof(unsigned long));
+	      recall_ladspa->input_port = (guint *) malloc(sizeof(guint));
 	      recall_ladspa->input_port[0] = i;
 	    }else{
-	      recall_ladspa->input_port = (unsigned long *) realloc(recall_ladspa->input_port,
-								    (recall_ladspa->input_lines + 1) * sizeof(unsigned long));
+	      recall_ladspa->input_port = (guint *) realloc(recall_ladspa->input_port,
+							    (recall_ladspa->input_lines + 1) * sizeof(guint));
 	      recall_ladspa->input_port[recall_ladspa->input_lines] = i;
 	    }
 
 	    recall_ladspa->input_lines += 1;
 	  }else if(LADSPA_IS_PORT_OUTPUT(port_descriptor[i])){
 	    if(recall_ladspa->output_port == NULL){
-	      recall_ladspa->output_port = (unsigned long *) malloc(sizeof(unsigned long));
+	      recall_ladspa->output_port = (guint *) malloc(sizeof(guint));
 	      recall_ladspa->output_port[0] = i;
 	    }else{
-	      recall_ladspa->output_port = (unsigned long *) realloc(recall_ladspa->output_port,
-								     (recall_ladspa->output_lines + 1) * sizeof(unsigned long));
+	      recall_ladspa->output_port = (guint *) realloc(recall_ladspa->output_port,
+							    (recall_ladspa->output_lines + 1) * sizeof(guint));
 	      recall_ladspa->output_port[recall_ladspa->output_lines] = i;
 	    }
 
@@ -776,17 +779,17 @@ ags_recall_ladspa_new(AgsChannel *source,
 		      gchar *effect,
 		      unsigned long index)
 {
-  GObject *soundcard;
+  AgsDevout *devout;
   AgsRecallLadspa *recall_ladspa;
 
   if(source != NULL){
-    soundcard = AGS_AUDIO(source->audio)->soundcard;
+    devout = AGS_AUDIO(source->audio)->devout;
   }else{
-    soundcard = NULL;
+    devout = NULL;
   }
 
   recall_ladspa = (AgsRecallLadspa *) g_object_new(AGS_TYPE_RECALL_LADSPA,
-						   "soundcard\0", soundcard,
+						   "devout\0", devout,
 						   "source\0", source,
 						   "filename\0", filename,
 						   "effect\0", effect,

@@ -18,8 +18,10 @@
 
 #include <ags/X/ags_machine_callbacks.h>
 
-#include <ags/object/ags_application_context.h>
+#include <ags/main.h>
+
 #include <ags-lib/object/ags_connectable.h>
+
 #include <ags/object/ags_applicable.h>
 
 #include <ags/thread/ags_audio_loop.h>
@@ -33,10 +35,10 @@
 
 #include <ags/X/editor/ags_file_selection.h>
 
-#define AGS_RENAME_ENTRY "AgsRenameEntry\0"
-
 int ags_machine_popup_rename_response_callback(GtkWidget *widget, gint response, AgsMachine *machine);
 void ags_machine_start_failure_response(GtkWidget *dialog, AgsMachine *machine);
+
+#define AGS_RENAME_ENTRY "AgsRenameEntry"
 
 int
 ags_machine_button_press_callback(GtkWidget *handle_box, GdkEventButton *event, AgsMachine *machine)
@@ -117,25 +119,13 @@ void
 ags_machine_popup_destroy_activate_callback(GtkWidget *widget, AgsMachine *machine)
 {
   AgsWindow *window;
-  
   AgsRemoveAudio *remove_audio;
-  
-  AgsThread *main_loop, *current;
-  AgsTaskThread *task_thread;
 
-  AgsApplicationContext *application_context;
-  
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
 
-  application_context = window->application_context;
-  
-  main_loop = application_context->main_loop;
-  task_thread = ags_thread_find_type(main_loop,
-				     AGS_TYPE_TASK_THREAD);
-
-  remove_audio = ags_remove_audio_new(window->soundcard,
+  remove_audio = ags_remove_audio_new(window->devout,
 				      machine->audio);
-  ags_task_thread_append_task(task_thread,
+  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->task_thread),
 			      AGS_TASK(remove_audio));
 
   ags_connectable_disconnect(AGS_CONNECTABLE(machine));
@@ -459,8 +449,7 @@ ags_machine_start_failure_callback(AgsTask *task, GError *error,
   AgsAudioLoop *audio_loop;
 
   /* show error message */
-  window = gtk_widget_get_ancestor(machine,
-				   AGS_TYPE_MACHINE);
+  window = AGS_MAIN(AGS_START_DEVOUT(task)->devout->ags_main)->window;
   
   dialog = (GtkMessageDialog *) gtk_message_dialog_new(GTK_WINDOW(window),
 						       GTK_DIALOG_MODAL,

@@ -19,10 +19,12 @@
 #include <ags/X/machine/ags_ffplayer.h>
 #include <ags/X/machine/ags_ffplayer_callbacks.h>
 
+#include <ags/main.h>
+
+#include <ags-lib/object/ags_connectable.h>
+
 #include <ags/util/ags_id_generator.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags-lib/object/ags_connectable.h>
 #include <ags/object/ags_playable.h>
 #include <ags/object/ags_plugin.h>
 
@@ -56,10 +58,7 @@
 #include <ags/audio/recall/ags_play_notation_audio.h>
 #include <ags/audio/recall/ags_play_notation_audio_run.h>
 
-#include <ags/X/ags_window.h>
 #include <ags/X/ags_editor.h>
-
-#include <ags/X/machine/ags_ffplayer_bridge.h>
 
 #include <math.h>
 
@@ -140,8 +139,8 @@ ags_ffplayer_get_type(void)
     };
 
     ags_type_ffplayer = g_type_register_static(AGS_TYPE_MACHINE,
-					       "AgsFFPlayer\0", &ags_ffplayer_info,
-					       0);
+					    "AgsFFPlayer\0", &ags_ffplayer_info,
+					    0);
     
     g_type_add_interface_static(ags_type_ffplayer,
 				AGS_TYPE_CONNECTABLE,
@@ -183,6 +182,8 @@ ags_ffplayer_class_init(AgsFFPlayerClass *ffplayer)
 void
 ags_ffplayer_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  AgsConnectableInterface *ags_ffplayer_connectable_parent_interface;
+
   ags_ffplayer_parent_connectable_interface = g_type_interface_peek_parent(connectable);
 
   connectable->connect = ags_ffplayer_connect;
@@ -230,7 +231,7 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   AGS_MACHINE(ffplayer)->input_line_type = G_TYPE_NONE;
   AGS_MACHINE(ffplayer)->output_pad_type = G_TYPE_NONE;
   AGS_MACHINE(ffplayer)->output_line_type = G_TYPE_NONE;
-
+  
   g_signal_connect_after(G_OBJECT(ffplayer->machine.audio), "set_audio_channels\0",
 			 G_CALLBACK(ags_ffplayer_set_audio_channels), NULL);
 
@@ -244,7 +245,7 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   ffplayer->xml_type = "ags-ffplayer\0";
 
   /* create widgets */
-  table = (GtkTable *) gtk_table_new(4, 3, FALSE);
+  table = (GtkTable *) gtk_table_new(3, 2, FALSE);
   gtk_container_add((GtkContainer *) (gtk_bin_get_child((GtkBin *) ffplayer)), (GtkWidget *) table);
 
   hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
@@ -324,18 +325,6 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   hscrollbar = (GtkHScrollbar *) gtk_hscrollbar_new(ffplayer->hadjustment);
   gtk_widget_set_style((GtkWidget *) hscrollbar, ffplayer_style);
   gtk_box_pack_start((GtkBox *) vbox, (GtkWidget *) hscrollbar, FALSE, FALSE, 0);
-
-  /* effect bridge */
-  AGS_MACHINE(ffplayer)->bridge = ags_ffplayer_bridge_new(audio);
-  gtk_table_attach(table,
-		   (GtkWidget *) AGS_MACHINE(ffplayer)->bridge,
-		   2, 3,
-		   0, 4,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
-  g_object_set(AGS_MACHINE(ffplayer)->bridge,
-	       "audio\0", AGS_MACHINE(ffplayer)->audio,
-	       NULL);
 }
 
 void
@@ -550,7 +539,7 @@ ags_ffplayer_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
+				   "main\0", file->ags_main,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
@@ -621,7 +610,7 @@ ags_ffplayer_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
+				   "main\0", file->ags_main,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
@@ -680,7 +669,7 @@ ags_ffplayer_launch_task(AgsFileLaunch *file_launch, AgsFFPlayer *ffplayer)
 			    "mode\0", AGS_IPATCH_READ,
 			    "filename\0", filename,
 			    NULL);
-    ipatch->soundcard = window->soundcard;
+    ipatch->devout = window->devout;
     ags_ipatch_open(ipatch, filename);
 
     playable = AGS_PLAYABLE(ipatch);
@@ -1142,7 +1131,7 @@ ags_ffplayer_paint(AgsFFPlayer *ffplayer)
 
 /**
  * ags_ffplayer_new:
- * @soundcard: the assigned soundcard.
+ * @devout: the assigned devout.
  *
  * Creates an #AgsFFPlayer
  *
@@ -1151,7 +1140,7 @@ ags_ffplayer_paint(AgsFFPlayer *ffplayer)
  * Since: 0.3
  */
 AgsFFPlayer*
-ags_ffplayer_new(GObject *soundcard)
+ags_ffplayer_new(GObject *devout)
 {
   AgsFFPlayer *ffplayer;
   GValue value = {0,};
@@ -1159,11 +1148,11 @@ ags_ffplayer_new(GObject *soundcard)
   ffplayer = (AgsFFPlayer *) g_object_new(AGS_TYPE_FFPLAYER,
 					  NULL);
 
-  if(soundcard != NULL){
+  if(devout != NULL){
     g_value_init(&value, G_TYPE_OBJECT);
-    g_value_set_object(&value, soundcard);
+    g_value_set_object(&value, devout);
     g_object_set_property(G_OBJECT(ffplayer->machine.audio),
-			  "soundcard\0", &value);
+			  "devout\0", &value);
     g_value_unset(&value);
   }
 

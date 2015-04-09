@@ -64,6 +64,8 @@ ags_applicable_base_init(AgsApplicableInterface *interface)
  * @update: if %TRUE do ::reset after ::update
  *
  * Update behaviour.
+ *
+ * Since: 0.3
  */
 void
 ags_applicable_set_update(AgsApplicable *applicable, gboolean update)
@@ -80,7 +82,9 @@ ags_applicable_set_update(AgsApplicable *applicable, gboolean update)
  * ags_applicable_apply:
  * @applicable: an #AgsApplicable
  *
- * Apply.
+ * Apply all changes done so far.
+ *
+ * Since: 0.3
  */
 void
 ags_applicable_apply(AgsApplicable *applicable)
@@ -97,7 +101,9 @@ ags_applicable_apply(AgsApplicable *applicable)
  * ags_applicable_reset:
  * @applicable: an #AgsApplicable
  *
- * Reset.
+ * Reset all changes within the user interface.
+ *
+ * Since: 0.3
  */
 void
 ags_applicable_reset(AgsApplicable *applicable)

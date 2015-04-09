@@ -18,7 +18,7 @@
 
 #include <ags/X/ags_navigation_callbacks.h>
 
-#include <ags/object/ags_application_context.h>
+#include <ags/main.h>
 
 #include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_task_thread.h>
@@ -47,7 +47,7 @@ ags_navigation_parent_set_callback(GtkWidget *widget, GtkObject *old_parent,
 					      AGS_TYPE_WINDOW));
   navigation = AGS_NAVIGATION(widget);
 
-  navigation->soundcard = window->soundcard;
+  navigation->devout = window->devout;
 }
 
 gboolean
@@ -97,25 +97,13 @@ ags_navigation_bpm_callback(GtkWidget *widget,
   AgsWindow *window;
   AgsApplyBpm *apply_bpm;
   
-  AgsThread *main_loop;
-  AgsTaskThread *task_thread;
-
-  AgsApplicationContext *application_context;
-  
   window = AGS_WINDOW(gtk_widget_get_ancestor(widget,
 					      AGS_TYPE_WINDOW));
 
-  application_context = window->application_context;
-  
-  main_loop = application_context->main_loop;
-
-  task_thread = ags_thread_find_type(main_loop,
-				     AGS_TYPE_TASK_THREAD);
-
-  apply_bpm = ags_apply_bpm_new(G_OBJECT(window->soundcard),
+  apply_bpm = ags_apply_bpm_new(G_OBJECT(window->devout),
 				navigation->bpm->adjustment->value);
 
-  ags_task_thread_append_task(task_thread,
+  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->task_thread),
 			      AGS_TASK(apply_bpm));
 }
 
@@ -276,12 +264,8 @@ void
 ags_navigation_position_tact_callback(GtkWidget *widget,
 				      AgsNavigation *navigation)
 {
-  gdouble bpm;
-
-  bpm = navigation->bpm->adjustment->value;
   ags_navigation_change_position(navigation,
-				 gtk_spin_button_get_value(widget),
-				 bpm);
+				 gtk_spin_button_get_value(widget));
 }
 
 void
@@ -386,30 +370,26 @@ ags_navigation_loop_right_tact_callback(GtkWidget *widget,
 }
 
 void
-ags_navigation_tic_callback(AgsSoundcard *soundcard,
+ags_navigation_tic_callback(AgsDevout *devout,
 			    AgsNavigation *navigation)
-{ 
-  AgsThread *main_loop;
+{
   AgsTaskThread *task_thread;
-  
   AgsChangeTact *change_tact;
   AgsDisplayTact *display_tact;
-
-  AgsApplicationContext *application_context;
-  
   GList *list;
 
-  application_context = ags_soundcard_get_application_context(soundcard);
-  
-  main_loop = application_context->main_loop;
+  if((AGS_NAVIGATION_BLOCK_TIC & (navigation->flags)) != 0){
+    navigation->flags &= (~AGS_NAVIGATION_BLOCK_TIC);
+    return;
+  }
 
-  task_thread = ags_thread_find_type(main_loop,
-				     AGS_TYPE_TASK_THREAD);
+  task_thread = AGS_AUDIO_LOOP(AGS_MAIN(navigation->devout->ags_main)->main_loop)->task_thread;
+
   list = NULL;
 
-  change_tact = ags_change_tact_new(navigation);
-  list = g_list_prepend(list,
-			change_tact);
+  //  change_tact = ags_change_tact_new(navigation);
+  //  list = g_list_prepend(list,
+  //			change_tact);
 
   display_tact = ags_display_tact_new(navigation);
   list = g_list_prepend(list,
@@ -419,4 +399,11 @@ ags_navigation_tic_callback(AgsSoundcard *soundcard,
 
   ags_task_thread_append_tasks(task_thread,
 			       list);
+}
+
+void
+ags_navigation_devout_stop_callback(AgsDevout *devout,
+				    AgsNavigation *navigation)
+{
+  navigation->flags |= AGS_NAVIGATION_BLOCK_TIC;
 }

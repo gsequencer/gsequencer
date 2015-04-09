@@ -22,6 +22,18 @@
 
 void ags_countable_base_init(AgsCountableInterface *interface);
 
+/**
+ * SECTION:ags_countable
+ * @short_description: unique access to dialogs
+ * @title: AgsCountable
+ * @section_id:
+ * @include: ags/object/ags_countable.h
+ *
+ * The #AgsCountable interface gives you a unique access to counters. Generally we
+ * distinguish between notation and sequencer counters. Those may have their own
+ * relative positions, especially the sequencers may loop.
+ */
+
 GType
 ags_countable_get_type()
 {
@@ -48,6 +60,16 @@ ags_countable_base_init(AgsCountableInterface *interface)
   /* empty */
 }
 
+/**
+ * ags_countable_get_notation_counter:
+ * @countable: an #AgsCountable
+ *
+ * Retrieve current position of notation.
+ *
+ * Returns: the current position
+ *
+ * Since: 0.4
+ */
 guint
 ags_countable_get_notation_counter(AgsCountable *countable)
 {
@@ -59,6 +81,16 @@ ags_countable_get_notation_counter(AgsCountable *countable)
   countable_interface->get_notation_counter(countable);
 }
 
+/**
+ * ags_countable_get_sequencer_counter:
+ * @countable: an #AgsCountable
+ *
+ * Retrieve current position of sequencer.
+ *
+ * Returns: the current position
+ *
+ * Since: 0.4
+ */
 guint
 ags_countable_get_sequencer_counter(AgsCountable *countable)
 {

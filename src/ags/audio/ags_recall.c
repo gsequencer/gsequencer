@@ -20,24 +20,22 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/main.h>
+
 #include <ags/util/ags_id_generator.h>
 
 #include <ags/lib/ags_parameter.h>
 
-#include <ags/object/ags_application_context.h>
 #include <ags/object/ags_marshal.h>
 #include <ags/object/ags_packable.h>
 #include <ags/object/ags_dynamic_connectable.h>
 #include <ags/object/ags_plugin.h>
-#include <ags/object/ags_soundcard.h>
-
-#include <ags/server/ags_service_provider.h>
-#include <ags/server/ags_server.h>
 
 #include <ags/file/ags_file.h>
 #include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>
 
+#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recycling.h>
@@ -141,7 +139,7 @@ enum{
 
 enum{
   PROP_0,
-  PROP_SOUNDCARD,
+  PROP_DEVOUT,
   PROP_CONTAINER,
   PROP_DEPENDENCY,
   PROP_RECALL_ID,
@@ -237,19 +235,19 @@ ags_recall_class_init(AgsRecallClass *recall)
 
   /* properties */
   /**
-   * AgsRecall:soundcard:
+   * AgsRecall:devout:
    *
-   * The assigned soundcard.
+   * The assigned devout.
    * 
    * Since: 0.4
    */
-  param_spec = g_param_spec_object("soundcard\0",
-				   "soundcard of recall\0",
-				   "The soundcard which this recall is packed into\0",
-				   G_TYPE_OBJECT,
+  param_spec = g_param_spec_object("devout\0",
+				   "devout of recall\0",
+				   "The devout which this recall is packed into\0",
+				   AGS_TYPE_DEVOUT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_SOUNDCARD,
+				  PROP_DEVOUT,
 				  param_spec);
 
   /**
@@ -635,7 +633,7 @@ ags_recall_init(AgsRecall *recall)
 {
   recall->flags = 0;
 
-  recall->soundcard = NULL;
+  recall->devout = NULL;
   recall->container = NULL;
 
   recall->version = NULL;
@@ -673,29 +671,29 @@ ags_recall_set_property(GObject *gobject,
   recall = AGS_RECALL(gobject);
 
   switch(prop_id){
-  case PROP_SOUNDCARD:
+  case PROP_DEVOUT:
     {
-      GObject *soundcard;
+      AgsDevout *devout;
       GList *current;
       
-      soundcard = (GObject *) g_value_get_object(value);
+      devout = (AgsDevout *) g_value_get_object(value);
 
-      if(soundcard == ((GObject *) recall->soundcard))
+      if(devout == ((AgsDevout *) recall->devout))
 	return;
 
-      if(recall->soundcard != NULL)
-	g_object_unref(recall->soundcard);
+      if(recall->devout != NULL)
+	g_object_unref(recall->devout);
 
-      if(soundcard != NULL)
-	g_object_ref(G_OBJECT(soundcard));
+      if(devout != NULL)
+	g_object_ref(G_OBJECT(devout));
 
-      recall->soundcard = (GObject *) soundcard;
+      recall->devout = (GObject *) devout;
 
       current = recall->children;
 
       while(current != NULL){
 	g_object_set(G_OBJECT(current->data),
-		     "soundcard\0", soundcard,
+		     "devout\0", devout,
 		     NULL);
 
 	current = current->next;
@@ -812,9 +810,9 @@ ags_recall_get_property(GObject *gobject,
   recall = AGS_RECALL(gobject);
 
   switch(prop_id){
-  case PROP_SOUNDCARD:
+  case PROP_DEVOUT:
     {
-      g_value_set_object(value, recall->soundcard);
+      g_value_set_object(value, recall->devout);
     }
     break;
   case PROP_CONTAINER:
@@ -841,25 +839,23 @@ ags_recall_get_property(GObject *gobject,
 void
 ags_recall_add_to_registry(AgsConnectable *connectable)
 {
-  AgsApplicationContext *application_context;
+  AgsMain *ags_main;
+  AgsServer *server;
   AgsRecall *recall;
+  AgsRegistryEntry *entry;
+  GList *list;
   
   recall = AGS_RECALL(connectable);
 
-  application_context = ags_soundcard_get_application_context(recall->soundcard);
+  ags_main = AGS_MAIN(AGS_DEVOUT(recall->devout)->ags_main);
 
-  if(AGS_IS_SERVICE_PROVIDER(application_context)){
-    AgsServer *server;
-    AgsRegistryEntry *entry;
-    
-    server = ags_service_provider_get_server(AGS_SERVICE_PROVIDER(application_context));
-  
-    entry = ags_registry_entry_alloc(server->registry);
-    g_value_set_object(&(entry->entry),
-		       (gpointer) recall);
-    ags_registry_add(server->registry,
-		     entry);
-  }
+  server = ags_main->server;
+
+  entry = ags_registry_entry_alloc(server->registry);
+  g_value_set_object(&(entry->entry),
+		     (gpointer) recall);
+  ags_registry_add(server->registry,
+		   entry);
 }
 
 void
@@ -1103,7 +1099,7 @@ ags_recall_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->application_context,
+				   "main\0", file->ags_main,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
 				   "reference\0", recall,
@@ -1129,7 +1125,7 @@ ags_recall_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->application_context,
+				   "main\0", file->ags_main,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
 				   "reference\0", recall,
@@ -1152,8 +1148,8 @@ ags_recall_finalize(GObject *gobject)
   g_message("finalize %s\n\0", G_OBJECT_TYPE_NAME(gobject));
 #endif
 
-  if(recall->soundcard != NULL){
-    g_object_unref(recall->soundcard);
+  if(recall->devout != NULL){
+    g_object_unref(recall->devout);
   }
 
   if((AGS_RECALL_CONNECTED & (recall->flags)) != 0){
@@ -1523,6 +1519,10 @@ ags_recall_real_stop_persistent(AgsRecall *recall)
 void
 ags_recall_stop_persistent(AgsRecall *recall)
 {
+  if((AGS_RECALL_DONE & (recall->flags)) != 0){
+    return;
+  }
+
   recall->flags &= (~(AGS_RECALL_PERSISTENT |
 		      AGS_RECALL_PERSISTENT_PLAYBACK |
 		      AGS_RECALL_PERSISTENT_SEQUENCER |
@@ -1534,6 +1534,10 @@ ags_recall_stop_persistent(AgsRecall *recall)
 void
 ags_recall_real_done(AgsRecall *recall)
 {
+  if((AGS_RECALL_DONE & (recall->flags)) != 0){
+    return;
+  }
+  
   recall->flags |= AGS_RECALL_DONE;
 
   ags_recall_remove(recall);
@@ -1577,13 +1581,13 @@ ags_recall_real_cancel(AgsRecall *recall)
   }
 
   /* call cancel for children */
-  list = recall->children;
+  //  list = recall->children;
 
-  while(list != NULL){
-    ags_recall_cancel(AGS_RECALL(list->data));
+  //  while(list != NULL){
+  //    ags_recall_cancel(AGS_RECALL(list->data));
 
-    list = list->next;
-  }
+  //    list = list->next;
+  //  }
 
   if((AGS_RECALL_PERSISTENT & (recall->flags)) != 0 ||
      (AGS_RECALL_PERSISTENT_PLAYBACK & (recall->flags)) != 0){
@@ -1630,9 +1634,11 @@ ags_recall_real_remove(AgsRecall *recall)
   }else{
     parent = AGS_RECALL(recall->parent);
 
-    parent->children = g_list_remove(parent->children, recall);
+    ags_recall_remove_child(parent,
+			    recall);
   }
 
+  /* propagate done */
   if(parent != NULL &&
      (AGS_RECALL_PROPAGATE_DONE & (parent->flags)) != 0 &&
      (AGS_RECALL_PERSISTENT & (parent->flags)) == 0 &&
@@ -1714,7 +1720,7 @@ ags_recall_real_duplicate(AgsRecall *recall,
 
   parameter = ags_parameter_grow(G_OBJECT_TYPE(recall),
 				 parameter, n_params,
-				 "soundcard\0", recall->soundcard,
+				 "devout\0", recall->devout,
 				 "recall_id\0", recall_id,
 				 "recall_container\0", recall->container,
 				 NULL);
@@ -1912,9 +1918,16 @@ ags_recall_get_dependencies(AgsRecall *recall)
 void
 ags_recall_remove_child(AgsRecall *recall, AgsRecall *child)
 {
+  if(recall == NULL ||
+     child == NULL ||
+     child->parent != recall){
+    return;
+  }
+  
   recall->children = g_list_remove(recall->children,
 				   child);
-
+  child->parent = NULL;
+  
   g_object_unref(recall);
   g_object_unref(child);
 }
@@ -1972,11 +1985,11 @@ ags_recall_add_child(AgsRecall *parent, AgsRecall *child)
     parent->children = g_list_prepend(parent->children, child);
 
     g_object_set(G_OBJECT(child),
-		 "soundcard\0", parent->soundcard,
+		 "devout\0", parent->devout,
 		 "recall_id\0", parent->recall_id,
 		 NULL);
     g_signal_connect(G_OBJECT(child), "done\0",
-		     G_CALLBACK(ags_recall_child_done), parent);
+    		     G_CALLBACK(ags_recall_child_done), parent);
   }
   
   child->parent = parent;
@@ -2129,9 +2142,8 @@ ags_recall_template_find_type(GList *recall_i, GType type)
     recall = AGS_RECALL(recall_i->data);
 
     if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0 &&
-       G_TYPE_CHECK_INSTANCE_TYPE((recall), type)){
+       G_OBJECT_TYPE(recall) == type)
       break;
-    }
 
     recall_i = recall_i->next;
   }
@@ -2411,6 +2423,11 @@ void
 ags_recall_child_done(AgsRecall *child,
 		      AgsRecall *parent)
 {
+  if(child == NULL ||
+     parent == NULL){
+    return;
+  }
+  
   ags_recall_remove_child(parent,
 			  child);
 }

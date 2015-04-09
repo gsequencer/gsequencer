@@ -139,6 +139,7 @@ ags_async_queue_init(AgsAsyncQueue *async_queue)
 {
   struct sigevent sev;
 
+  /* deprecated
   async_queue->flags = AGS_ASYNC_QUEUE_POSIX_THREADS;
 
   async_queue->output_sum = AGS_DEVOUT_DEFAULT_BUFFER_SIZE;
@@ -159,6 +160,7 @@ ags_async_queue_init(AgsAsyncQueue *async_queue)
 
   async_queue->context = NULL;
   async_queue->unref_context = NULL;
+  */
 }
 
 void

@@ -24,14 +24,30 @@
 
 #include <ags/object/ags_plugin.h>
 
+#include <ags/widget/ags_dial.h>
+
+#include <ags/thread/ags_audio_loop.h>
+#include <ags/thread/ags_task_thread.h>
+
+#include <ags/audio/ags_devout.h>
+#include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_output.h>
+#include <ags/audio/ags_recall_container.h>
+#include <ags/audio/ags_recall_channel_run_dummy.h>
+#include <ags/audio/ags_recall_recycling_dummy.h>
+#include <ags/audio/ags_recall_ladspa.h>
+#include <ags/audio/ags_recall_ladspa_run.h>
+#include <ags/audio/ags_port.h>
+
+#include <ags/audio/task/ags_add_recall_container.h>
+#include <ags/audio/task/ags_add_recall.h>
+#include <ags/audio/task/ags_add_line_member.h>
+#include <ags/audio/task/ags_remove_recall.h>
+#include <ags/audio/task/ags_remove_recall_container.h>
 
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_pad.h>
 #include <ags/X/ags_line.h>
-#include <ags/X/ags_effect_bridge.h>
-#include <ags/X/ags_effect_pad.h>
-#include <ags/X/ags_effect_line.h>
 #include <ags/X/ags_line_member.h>
 #include <ags/X/ags_machine_editor.h>
 #include <ags/X/ags_line_editor.h>
@@ -57,170 +73,321 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
 							gint response,
 							AgsLineMemberEditor *line_member_editor)
 {
-  AgsMachine *machine;
-  AgsMachineEditor *machine_editor;
-  AgsLineEditor *line_editor;
-
-  GList *pad, *pad_start;
-  GList *list, *list_start;
-  gchar *filename, *effect;
-  gboolean has_bridge;
-  gboolean is_output;
-  
-  auto void ags_line_member_editor_ladspa_browser_response_create_entry();
-  
-  void ags_line_member_editor_ladspa_browser_response_create_entry(){
-    GtkHBox *hbox;
-    GtkCheckButton *check_button;
-    GtkLabel *label;
-
-    /* create entry */
-    hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-    gtk_box_pack_start(GTK_BOX(line_member_editor->line_member),
-		       GTK_WIDGET(hbox),
-		       FALSE, FALSE,
-		       0);
-      
-    check_button = (GtkCheckButton *) gtk_check_button_new();
-    gtk_box_pack_start(GTK_BOX(hbox),
-		       GTK_WIDGET(check_button),
-		       FALSE, FALSE,
-		       0);
-
-    //TODO:JK: ugly
-    label = (GtkLabel *) gtk_label_new(g_strdup_printf("%s - %s\0",
-						       filename,
-						       effect));
-    gtk_box_pack_start(GTK_BOX(hbox),
-		       GTK_WIDGET(label),
-		       FALSE, FALSE,
-		       0);
-    gtk_widget_show_all((GtkWidget *) hbox);
-  }
-  
   switch(response){
   case GTK_RESPONSE_ACCEPT:
     {
+      AgsAudioLoop *audio_loop;
+      AgsTaskThread *task_thread;
+      AgsLine *line;
+      AgsLineMember *line_member;
+      AgsMachineEditor *machine_editor;
+      AgsLineEditor *line_editor;
+      GtkHBox *hbox;
+      GtkCheckButton *check_button;
+      GtkLabel *label;
+      AgsAddRecallContainer *add_recall_container;
+      AgsAddRecall *add_recall;
+      AgsAddLineMember *add_line_member;
+      AgsRecallContainer *recall_container;
+      AgsRecallChannelRunDummy *recall_channel_run_dummy;
+      AgsRecallLadspa *recall_ladspa;
+      GtkAdjustment *adjustment;
+      AgsLadspaPlugin *ladspa_plugin;
+      GList *plugin;
+      GList *task;
+      GList *port;
+      GList *pad, *pad_start;
+      GList *list, *list_start;
+      gchar *filename, *effect;
+      gdouble step;
+      long index;
+      guint x, y;
+
+      void *plugin_so;
+      LADSPA_Descriptor_Function ladspa_descriptor;
+      LADSPA_Descriptor *plugin_descriptor;
+      LADSPA_PortDescriptor *port_descriptor;
+      LADSPA_Data lower_bound, upper_bound;
+      long i;
+
       machine_editor = (AgsMachineEditor *) gtk_widget_get_ancestor(line_member_editor,
 								    AGS_TYPE_MACHINE_EDITOR);
       line_editor = (AgsLineEditor *) gtk_widget_get_ancestor(line_member_editor,
 							      AGS_TYPE_LINE_EDITOR);
-
-      machine = machine_editor->machine;
+      
+      line = NULL;
 
       if(AGS_IS_OUTPUT(line_editor->channel)){
-	is_output = TRUE;
+	pad_start = 
+	  pad = gtk_container_get_children(machine_editor->machine->output);
       }else{
-	is_output = FALSE;
+	pad_start = 
+	  pad = gtk_container_get_children(machine_editor->machine->input);
       }
 
-      if(machine->bridge != NULL){
-	has_bridge = TRUE;
-      }else{
-	has_bridge = FALSE;
+      pad = g_list_nth(pad,
+		       line_editor->channel->pad);
+
+      if(pad != NULL){
+	list_start =
+	  list = gtk_container_get_children(AGS_PAD(pad->data)->expander_set);
+
+	while(list != NULL){
+	  if(AGS_LINE(list->data)->channel == line_editor->channel){
+	    break;
+	  }
+
+	  list = list->next;
+	}
+
+	if(list != NULL){
+	  line = AGS_LINE(list->data);
+	  g_list_free(list_start);
+	}
+      }
+
+      g_list_free(pad_start);
+
+      if(line == NULL){
+	return;
       }
       
-      if(!has_bridge){	
-	AgsLine *line;
-	
-	/* find pad and line */
-	line = NULL;
-	
-	if(is_output){
-	  pad_start = 
-	    pad = gtk_container_get_children(machine_editor->machine->output);
-	}else{
-	  pad_start = 
-	    pad = gtk_container_get_children(machine_editor->machine->input);
-	}
+      audio_loop = (AgsAudioLoop *) AGS_MAIN(AGS_DEVOUT(AGS_MACHINE(machine_editor->machine)->audio->devout)->ags_main)->main_loop;
+      task_thread = (AgsTaskThread *) audio_loop->task_thread;
 
-	pad = g_list_nth(pad,
-			 line_editor->channel->pad);
+      /* retrieve plugin */
+      filename = ags_ladspa_browser_get_plugin_filename(line_member_editor->ladspa_browser);
+      effect = ags_ladspa_browser_get_plugin_effect(line_member_editor->ladspa_browser);
 
-	if(pad != NULL){
-	  list_start =
-	    list = gtk_container_get_children(AGS_PAD(pad->data)->expander_set);
+      if(ags_recall_ladpsa_find(line->channel->recall,
+				filename, effect) != NULL){
+	/* return if duplicated */
+	return;
+      }
 
-	  while(list != NULL){
-	    if(AGS_LINE(list->data)->channel == line_editor->channel){
-	      break;
-	    }
+      plugin = gtk_container_get_children(GTK_CONTAINER(line_member_editor->ladspa_browser->plugin));
+      index = gtk_combo_box_get_active(GTK_COMBO_BOX(plugin->next->next->next->data));
 
-	    list = list->next;
+      g_list_free(plugin);
+
+      /* load plugin */
+      ags_ladspa_manager_load_file(filename);
+      ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(filename);
+
+      plugin_so = ladspa_plugin->plugin_so;
+
+      /* create entry */
+      hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
+      gtk_box_pack_start(GTK_BOX(line_member_editor->line_member),
+			 GTK_WIDGET(hbox),
+			 FALSE, FALSE,
+			 0);
+      
+      check_button = (GtkCheckButton *) gtk_check_button_new();
+      gtk_box_pack_start(GTK_BOX(hbox),
+			 GTK_WIDGET(check_button),
+			 FALSE, FALSE,
+			 0);
+
+      label = (GtkLabel *) gtk_label_new(g_strdup_printf("%s - %s\0",
+							 filename,
+							 effect));
+      gtk_box_pack_start(GTK_BOX(hbox),
+			 GTK_WIDGET(label),
+			 FALSE, FALSE,
+			 0);
+      gtk_widget_show_all((GtkWidget *) hbox);
+
+      if(line != NULL){
+	x = 0;
+	y = 0;
+	i = 0;
+
+	list = line->expander->children;
+
+	while(list != NULL){
+	  if(y <= AGS_EXPANDER_CHILD(list->data)->y){
+	    y = AGS_EXPANDER_CHILD(list->data)->y + 1;
 	  }
 
-	  if(list != NULL){
-	    line = AGS_LINE(list->data);
-	    g_list_free(list_start);
-	  }
-	}
-
-	g_list_free(pad_start);
-
-	/* retrieve plugin */
-	filename = ags_ladspa_browser_get_plugin_filename(line_member_editor->ladspa_browser);
-	effect = ags_ladspa_browser_get_plugin_effect(line_member_editor->ladspa_browser);
-
-	if(line != NULL){
-	  ags_line_member_editor_ladspa_browser_response_create_entry();
-	
-	  /* add effect */
-	  ags_line_add_effect(line,
-			      filename,
-			      effect);
-	}
-      }else{
-	AgsEffectBridge *effect_bridge;
-	AgsEffectLine *effect_line;
-	
-	effect_bridge = machine->bridge;
-	
-	if(is_output){
-	  pad_start = 
-	    pad = gtk_container_get_children(effect_bridge->output);
-	}else{
-	  pad_start = 
-	    pad = gtk_container_get_children(effect_bridge->input);
-	}
-
-	pad = g_list_nth(pad,
-			 line_editor->channel->pad);
-
-	if(pad != NULL){
-	  list_start =
-	    list = gtk_container_get_children(AGS_EFFECT_PAD(pad->data)->table);
-
-	  while(list != NULL){
-	    if(AGS_EFFECT_LINE(list->data)->channel == line_editor->channel){
-	      break;
-	    }
-
-	    list = list->next;
-	  }
-
-	  if(list != NULL){
-	    effect_line = AGS_EFFECT_LINE(list->data);
-	    g_list_free(list_start);
-	  }
-	}
-
-	g_list_free(pad_start);
-
-	/* retrieve plugin */
-	filename = ags_ladspa_browser_get_plugin_filename(line_member_editor->ladspa_browser);
-	effect = ags_ladspa_browser_get_plugin_effect(line_member_editor->ladspa_browser);
-
-	if(effect_line != NULL){
-	  ags_line_member_editor_ladspa_browser_response_create_entry();
-
-	  /* add effect */
-	  ags_effect_line_add_effect(effect_line,
-				     filename,
-				     effect);
+	  list = list->next;
 	}
       }
+
+      /* tasks */
+      task = NULL;
+
+      /* ladspa play */
+      recall_container = ags_recall_container_new();
+
+      add_recall_container = ags_add_recall_container_new(line_editor->channel->audio,
+							  recall_container);
+      task = g_list_prepend(task,
+			    add_recall_container);
+
+      recall_ladspa = ags_recall_ladspa_new(line_editor->channel,
+					    filename,
+					    effect,
+					    index);
+      g_object_set(G_OBJECT(recall_ladspa),
+		   "devout\0", AGS_AUDIO(line_editor->channel->audio)->devout,
+		   "recall-container\0", recall_container,
+		   NULL);
+      AGS_RECALL(recall_ladspa)->flags |= AGS_RECALL_TEMPLATE;
+      ags_recall_ladspa_load(recall_ladspa);
+      ags_recall_ladspa_load_ports(recall_ladspa);
+
+      add_recall = ags_add_recall_new(line_editor->channel,
+				      recall_ladspa,
+				      TRUE);
+      task = g_list_prepend(task,
+			    add_recall);
+
+      /* dummy */
+      recall_channel_run_dummy = ags_recall_channel_run_dummy_new(line_editor->channel,
+								  AGS_TYPE_RECALL_RECYCLING_DUMMY,
+								  AGS_TYPE_RECALL_LADSPA_RUN);
+      AGS_RECALL(recall_channel_run_dummy)->flags |= AGS_RECALL_TEMPLATE;
+      g_object_set(G_OBJECT(recall_channel_run_dummy),
+		   "devout\0", AGS_AUDIO(line_editor->channel->audio)->devout,
+		   "recall-container\0", recall_container,
+		   "recall-channel\0", recall_ladspa,
+		   NULL);
+
+      add_recall = ags_add_recall_new(line_editor->channel,
+				      recall_channel_run_dummy,
+				      TRUE);
+      task = g_list_prepend(task,
+			    add_recall);
+
+      /* ladspa recall */
+      recall_container = ags_recall_container_new();
+
+      add_recall_container = ags_add_recall_container_new(line_editor->channel->audio,
+							  recall_container);
+      task = g_list_prepend(task,
+			    add_recall_container);
+
+      recall_ladspa = ags_recall_ladspa_new(line_editor->channel,
+					    filename,
+					    effect,
+					    index);
+      g_object_set(G_OBJECT(recall_ladspa),
+		   "devout\0", AGS_AUDIO(line_editor->channel->audio)->devout,
+		   "recall-container\0", recall_container,
+		   NULL);
+      AGS_RECALL(recall_ladspa)->flags |= AGS_RECALL_TEMPLATE;
+      ags_recall_ladspa_load(recall_ladspa);
+      port = ags_recall_ladspa_load_ports(recall_ladspa);
+
+      add_recall = ags_add_recall_new(line_editor->channel,
+				      recall_ladspa,
+				      FALSE);
+      task = g_list_prepend(task,
+			    add_recall);
+
+      /* dummy */
+      recall_channel_run_dummy = ags_recall_channel_run_dummy_new(line_editor->channel,
+								  AGS_TYPE_RECALL_RECYCLING_DUMMY,
+								  AGS_TYPE_RECALL_LADSPA_RUN);
+      AGS_RECALL(recall_channel_run_dummy)->flags |= AGS_RECALL_TEMPLATE;
+      g_object_set(G_OBJECT(recall_channel_run_dummy),
+		   "devout\0", AGS_AUDIO(line_editor->channel->audio)->devout,
+		   "recall-container\0", recall_container,
+		   "recall-channel\0", recall_ladspa,
+		   NULL);
+
+      add_recall = ags_add_recall_new(line_editor->channel,
+				      recall_channel_run_dummy,
+				      FALSE);
+      task = g_list_prepend(task,
+			    add_recall);
+
+      /* add controls of ports and apply range  */
+      if(line != NULL){
+	if(index != -1 &&
+	   plugin_so){
+	  ladspa_descriptor = (LADSPA_Descriptor_Function) dlsym(plugin_so,
+								 "ladspa_descriptor\0");
+
+	  if(dlerror() == NULL && ladspa_descriptor){
+	    plugin_descriptor = ladspa_descriptor(index);
+
+	    port_descriptor = plugin_descriptor->PortDescriptors;   
+
+	    while(port != NULL){
+	      if((LADSPA_IS_PORT_CONTROL(port_descriptor[i]) && 
+		   (LADSPA_IS_PORT_INPUT(port_descriptor[i]) ||
+		    LADSPA_IS_PORT_OUTPUT(port_descriptor[i])))){
+		AgsDial *dial;
+		GtkAdjustment *adjustment;
+
+		if(x == 2){
+		  x = 0;
+		  y++;
+		}
+
+		line_member = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
+							     "widget-type\0", AGS_TYPE_DIAL,
+							     "widget-label\0", plugin_descriptor->PortNames[i],
+							     "plugin-name\0", AGS_PORT(port->data)->plugin_name,
+							     "specifier\0", AGS_PORT(port->data)->specifier,
+							     "control-port\0", AGS_PORT(port->data)->control_port,
+							     NULL);
+		dial = ags_line_member_get_widget(line_member);
+		gtk_widget_set_size_request(dial,
+					    2 * dial->radius + 2 * dial->outline_strength + dial->button_width + 1,
+					    2 * dial->radius + 2 * dial->outline_strength + 1);
+		
+		lower_bound = plugin_descriptor->PortRangeHints[i].LowerBound;
+		upper_bound = plugin_descriptor->PortRangeHints[i].UpperBound;
+
+		adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0);
+		g_object_set(dial,
+			     "adjustment", adjustment,
+			     NULL);
+
+		if(upper_bound >= 0.0 && lower_bound >= 0.0){
+		  step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
+		}else if(upper_bound < 0.0 && lower_bound < 0.0){
+		  step = -1.0 * (lower_bound - upper_bound) / AGS_DIAL_DEFAULT_PRECISION;
+		}else{
+		  step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
+		}
+
+		gtk_adjustment_set_step_increment(adjustment,
+						  step);
+		gtk_adjustment_set_lower(adjustment,
+					 lower_bound);
+		gtk_adjustment_set_upper(adjustment,
+					 upper_bound);
+		gtk_adjustment_set_value(adjustment,
+					 lower_bound);
+
+		add_line_member = ags_add_line_member_new(line,
+							  line_member,
+							  x, y,
+							  1, 1);
+		task = g_list_prepend(task,
+				      add_line_member);
+	  
+		x++;
+		port = port->next;
+	      }
+
+	      i++;
+	    }
+	  }
+	}
+      }
+
+      task = g_list_reverse(task);
+      
+      /* launch tasks */
+      ags_task_thread_append_tasks(task_thread,
+				   task);
     }
-    break;      
+    break;
   }
 }
 
@@ -228,24 +395,22 @@ void
 ags_line_member_editor_remove_callback(GtkWidget *button,
 				       AgsLineMemberEditor *line_member_editor)
 {
-  AgsMachine *machine;
+  AgsAudioLoop *audio_loop;
+  AgsTaskThread *task_thread;
+  AgsLine *line;
   AgsMachineEditor *machine_editor;
   AgsLineEditor *line_editor;
-
+  AgsRemoveRecall *remove_recall;
+  AgsRemoveRecallContainer *remove_recall_container;
+  GList *control;
   GList *line_member;
-  GList *list, *list_start, *pad, *pad_start;
   GList *children;
-  guint nth;
-  gboolean has_bridge;
-  gboolean is_output;
-  
-  auto void ags_line_member_editor_ladspa_browser_response_destroy_entry();
-  
-  void ags_line_member_editor_ladspa_browser_response_destroy_entry(){
-    /* destroy line member editor entry */
-    gtk_widget_destroy(GTK_WIDGET(line_member->data));
-  }
-  
+  GList *play_ladspa, *play_ladspa_start, *recall_ladspa, *recall_ladspa_start;
+  GList *port;
+  GList *task;
+  GList *list, *list_start, *pad, *pad_start;
+  guint index;
+
   if(button == NULL ||
      line_member_editor == NULL){
     return;
@@ -256,129 +421,135 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
   line_editor = (AgsLineEditor *) gtk_widget_get_ancestor(line_member_editor,
 							  AGS_TYPE_LINE_EDITOR);
 
-  line_member = gtk_container_get_children(GTK_CONTAINER(line_member_editor->line_member));
+  audio_loop = (AgsAudioLoop *) AGS_MAIN(AGS_DEVOUT(AGS_MACHINE(machine_editor->machine)->audio->devout)->ags_main)->main_loop;
+  task_thread = (AgsTaskThread *) audio_loop->task_thread;
 
-  machine = machine_editor->machine;
+  line_member = gtk_container_get_children(GTK_CONTAINER(line_member_editor->line_member));
+  task = NULL;
+
+  line = NULL;
 
   if(AGS_IS_OUTPUT(line_editor->channel)){
-    is_output = TRUE;
+    pad_start = 
+      pad = gtk_container_get_children(machine_editor->machine->output);
   }else{
-    is_output = FALSE;
+    pad_start = 
+      pad = gtk_container_get_children(machine_editor->machine->input);
   }
 
-  if(machine->bridge != NULL){
-    has_bridge = TRUE;
-  }else{
-    has_bridge = FALSE;
-  }
+  pad = g_list_nth(pad,
+		   line_editor->channel->pad);
 
-  if(!has_bridge){	
-    AgsLine *line;
-    
-    /* retrieve line and pad */
-    line = NULL;
+  if(pad != NULL){
+    list_start =
+      list = gtk_container_get_children(AGS_PAD(pad->data)->expander_set);
 
-    if(AGS_IS_OUTPUT(line_editor->channel)){
-      pad_start = 
-	pad = gtk_container_get_children(machine->output);
-    }else{
-      pad_start = 
-	pad = gtk_container_get_children(machine->input);
+    while(list != NULL){
+      if(AGS_LINE(list->data)->channel == line_editor->channel){
+	break;
+      }
+
+      list = list->next;
     }
 
-    pad = g_list_nth(pad,
-		     line_editor->channel->pad);
-
-    if(pad != NULL){
-      list_start =
-	list = gtk_container_get_children(AGS_PAD(pad->data)->expander_set);
-
-      while(list != NULL){
-	if(AGS_LINE(list->data)->channel == line_editor->channel){
-	  break;
-	}
-
-	list = list->next;
-      }
-
-      if(list != NULL){
-	line = AGS_LINE(list->data);
-	g_list_free(list_start);
-      }
-    }
-
-    g_list_free(pad_start);
-
-    /* iterate line member */
-    if(line != NULL){
-      for(nth = 0; line_member != NULL; nth++){
-
-	children = gtk_container_get_children(GTK_CONTAINER(line_member->data));
-
-	if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(children->data))){
-	  ags_line_member_editor_ladspa_browser_response_destroy_entry();
-	
-	  /* remove effect */
-	  ags_line_remove_effect(line,
-				 nth);
-	}
-      
-	line_member = line_member->next;
-      }
-    }
-  }else{
-    AgsEffectBridge *effect_bridge;
-    AgsEffectLine *effect_line;
-	
-    effect_bridge = machine->bridge;
-	
-    if(is_output){
-      pad_start = 
-	pad = gtk_container_get_children(effect_bridge->output);
-    }else{
-      pad_start = 
-	pad = gtk_container_get_children(effect_bridge->input);
-    }
-
-    pad = g_list_nth(pad,
-		     line_editor->channel->pad);
-
-    if(pad != NULL){
-      list_start =
-	list = gtk_container_get_children(AGS_EFFECT_PAD(pad->data)->table);
-
-      while(list != NULL){
-	if(AGS_EFFECT_LINE(list->data)->channel == line_editor->channel){
-	  break;
-	}
-
-	list = list->next;
-      }
-
-      if(list != NULL){
-	effect_line = AGS_EFFECT_LINE(list->data);
-	g_list_free(list_start);
-      }
-    }
-
-    g_list_free(pad_start);
-
-    /* iterate line member */
-    if(effect_line != NULL){
-      for(nth = 0; line_member != NULL; nth++){
-
-	children = gtk_container_get_children(GTK_CONTAINER(line_member->data));
-
-	if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(children->data))){
-	  ags_line_member_editor_ladspa_browser_response_destroy_entry();
-	
-	  /* remove effect */
-	  ags_effect_line_remove_effect(effect_line,
-					nth);
-	}
-      
-	line_member = line_member->next;
-      }
+    if(list != NULL){
+      line = AGS_LINE(list->data);
+      g_list_free(list_start);
     }
   }
+
+  g_list_free(pad_start);
+
+  play_ladspa = 
+    play_ladspa_start = ags_recall_template_find_type(line_editor->channel->play,
+						      AGS_TYPE_RECALL_LADSPA);
+  recall_ladspa = 
+    recall_ladspa_start = ags_recall_template_find_type(line_editor->channel->recall,
+							AGS_TYPE_RECALL_LADSPA);
+
+  for(index = 0; line_member != NULL; index++){
+
+    children = gtk_container_get_children(GTK_CONTAINER(line_member->data));
+
+    if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(children->data))){
+      task = NULL;
+
+      /* play context */
+      remove_recall = ags_remove_recall_new(line_editor->channel,
+					    g_list_nth(play_ladspa,
+						       index)->data,
+					    TRUE,
+					    TRUE);
+      task = g_list_prepend(task,
+			    remove_recall);
+
+      remove_recall = ags_remove_recall_new(line_editor->channel,
+					    ags_recall_find_template(AGS_RECALL_CONTAINER(AGS_RECALL(g_list_nth(play_ladspa,
+														index)->data)->container)->recall_channel_run)->data,
+					    TRUE,
+					    TRUE);
+      task = g_list_prepend(task,
+			    remove_recall);
+
+      remove_recall_container = ags_remove_recall_container_new(line_editor->channel->audio,
+								AGS_RECALL(g_list_nth(play_ladspa,
+										      index)->data)->container);
+      task = g_list_prepend(task,
+			    remove_recall_container);
+
+      /* recall context */
+      remove_recall = ags_remove_recall_new(line_editor->channel,
+					    g_list_nth(recall_ladspa,
+						       index)->data,
+					    FALSE,
+					    TRUE);
+      task = g_list_prepend(task,
+			    remove_recall);
+
+      remove_recall = ags_remove_recall_new(line_editor->channel,
+					    ags_recall_find_template(AGS_RECALL_CONTAINER(AGS_RECALL(g_list_nth(recall_ladspa,
+														index)->data)->container)->recall_channel_run)->data,
+					    FALSE,
+					    TRUE);
+      task = g_list_prepend(task,
+			    remove_recall);
+
+      remove_recall_container = ags_remove_recall_container_new(line_editor->channel->audio,
+								AGS_RECALL(g_list_nth(recall_ladspa,
+										      index)->data)->container);
+      task = g_list_prepend(task,
+			    remove_recall_container);
+
+      /* destroy line member editor entry */
+      gtk_widget_destroy(GTK_WIDGET(line_member->data));
+
+      /* destroy controls */
+      if(line != NULL){
+	port = AGS_RECALL(g_list_nth(play_ladspa,
+				     index)->data)->port;
+
+	while(port != NULL){
+	  control = gtk_container_get_children(line->expander->table);
+	    
+	    while(control != NULL){
+	      if(AGS_IS_LINE_MEMBER(control->data) &&
+		 AGS_LINE_MEMBER(control->data)->port == port->data){
+		ags_expander_remove(line->expander,
+				    control->data);
+		break;
+	      }
+	      
+	      control = control->next;
+	    }
+	  
+	  port = port->next;
+	}
+      }
+    }
+
+    line_member = line_member->next;
+  }
+
+  ags_task_thread_append_tasks(task_thread,
+			       task);
 }

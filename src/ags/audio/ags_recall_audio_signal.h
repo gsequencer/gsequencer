@@ -63,7 +63,7 @@ GType ags_recall_audio_signal_get_type();
 
 AgsRecallAudioSignal* ags_recall_audio_signal_new(AgsAudioSignal *destination,
 						  AgsAudioSignal *source,
-						  GObject *devout);
+						  AgsDevout *devout);
 
 #endif /*__AGS_RECALL_AUDIO_SIGNAL_H__*/
 

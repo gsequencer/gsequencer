@@ -24,8 +24,7 @@
 
 #include <gtk/gtk.h>
 
-#include <ags/object/ags_soundcard.h>
-
+#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_note.h>
 
@@ -35,10 +34,7 @@
 #include <ags/X/editor/ags_machine_selector.h>
 #include <ags/X/editor/ags_notebook.h>
 #include <ags/X/editor/ags_meter.h>
-#include <ags/X/editor/ags_soundset.h>
 #include <ags/X/editor/ags_note_edit.h>
-#include <ags/X/editor/ags_pattern_edit.h>
-#include <ags/X/editor/ags_automation_edit.h>
 
 #define AGS_TYPE_EDITOR                (ags_editor_get_type ())
 #define AGS_EDITOR(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_EDITOR, AgsEditor))
@@ -55,12 +51,6 @@
 typedef struct _AgsEditor AgsEditor;
 typedef struct _AgsEditorClass AgsEditorClass;
 
-typedef enum{
-  AGS_EDITOR_TOOL_NOTE_EDIT        = 1,
-  AGS_EDITOR_TOOL_PATTERN_EDIT     = 1 << 1,
-  AGS_EDITOR_TOOL_AUTOMATION_EDIT  = 1 << 2,
-};
-
 struct _AgsEditor
 {
   GtkVBox vbox;
@@ -70,9 +60,7 @@ struct _AgsEditor
   gchar *version;
   gchar *build_id;
 
-  GObject *soundcard;
-
-  GtkTable *table;
+  AgsDevout *devout;
 
   AgsMachineSelector *machine_selector;
   AgsMachine *selected_machine;
@@ -83,16 +71,8 @@ struct _AgsEditor
 
   AgsNotebook *notebook;
 
-  union AgsPiano{
-    AgsMeter *meter;
-    AgsSoundset *soundset;
-  }piano;
-
-  union AgsEdit{
-    AgsNoteEdit *note_edit;
-    AgsPatternEdit *pattern_edit;
-    AgsAutomationEdit *automation_edit;
-  }edit;
+  AgsMeter *meter;
+  AgsNoteEdit *note_edit;
 
   guint tact_counter;
 };
@@ -101,14 +81,12 @@ struct _AgsEditorClass
 {
   GtkVBoxClass vbox;
 
-  void (*machine_changed)(AgsEditor *editor,
-			  AgsMachine *machine);
+  void (*machine_changed)(AgsEditor *editor, AgsMachine *machine);
 };
 
 GType ags_editor_get_type(void);
 
-void ags_editor_machine_changed(AgsEditor *editor,
-				AgsMachine *machine);
+void ags_editor_machine_changed(AgsEditor *editor, AgsMachine *machine);
 
 AgsEditor* ags_editor_new();
 

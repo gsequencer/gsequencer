@@ -127,6 +127,7 @@ struct _AgsThread
   pthread_mutex_t suspend_mutex;
   volatile gboolean critical_region;
 
+  GObject *devout;
   AgsThread *parent;
 
   AgsThread *next;
@@ -214,8 +215,6 @@ void ags_thread_timelock(AgsThread *thread);
 void ags_thread_stop(AgsThread *thread);
 
 void ags_thread_hangcheck(AgsThread *thread);
-
-AgsThread* ags_thread_find_type(AgsThread *thread, GType type);
 
 AgsThread* ags_thread_new(gpointer data);
 

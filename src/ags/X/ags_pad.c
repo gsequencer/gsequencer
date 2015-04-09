@@ -369,6 +369,8 @@ ags_pad_connect(AgsConnectable *connectable)
     }
   }else{
     pad->flags &= (~AGS_PAD_PREMAPPED_RECALL);
+
+    ags_pad_find_port(pad);
   }
 
   /* GtkObject */
@@ -474,11 +476,15 @@ ags_pad_real_set_channel(AgsPad *pad, AgsChannel *channel)
 
   pad->channel = channel;
 
+  if(channel == NULL){
+    return;
+  }
+
   line_start = 
     line = gtk_container_get_children(GTK_CONTAINER(AGS_PAD(pad)->expander_set));
-  current = pad->channel;
-  
-  while(line != NULL){
+  current = channel;
+
+  while(line != NULL && current != NULL){
     g_object_set(G_OBJECT(line->data),
 		 "channel\0", current,
 		 NULL);
@@ -521,7 +527,7 @@ ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
   guint i, j;
 
   //  fprintf(stdout, "ags_pad_real_resize_lines: audio_channels = %u ; audio_channels_old = %u\n\0", audio_channels, audio_channels_old);
-  machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) pad, AGS_TYPE_MACHINE);
+    machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) pad, AGS_TYPE_MACHINE);
 
   if(audio_channels > audio_channels_old){
     channel = ags_channel_nth(pad->channel, audio_channels_old);
@@ -533,13 +539,19 @@ ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
 					"pad\0", pad,
 					"channel\0", channel,
 					NULL);
-	channel->line_widget = (GtkWidget *) line;
+
+	if(channel != NULL){
+	  channel->line_widget = (GtkWidget *) line;
+	}
+
 	ags_expander_set_add(pad->expander_set,
 			     (GtkWidget *) line,
 			     j, i / pad->cols,
 			     1, 1);
 	
-	channel = channel->next;
+	if(channel != NULL){
+	  channel = channel->next;
+	}
       }
     }
   }else if(audio_channels < audio_channels_old){

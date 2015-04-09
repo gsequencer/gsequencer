@@ -18,19 +18,17 @@
 
 #include <ags/audio/ags_audio.h>
 
+#include <ags-lib/object/ags_connectable.h>
+
+#include <ags/main.h>
+
 #include <ags/lib/ags_list.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags-lib/object/ags_connectable.h>
 #include <ags/object/ags_dynamic_connectable.h>
 #include <ags/object/ags_marshal.h>
-#include <ags/object/ags_soundcard.h>
 
 #include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_task_thread.h>
-
-#include <ags/server/ags_server_application_context.h>
-#include <ags/server/ags_server.h>
 
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_output.h>
@@ -100,7 +98,7 @@ enum{
 
 enum{
   PROP_0,
-  PROP_SOUNDCARD,
+  PROP_DEVOUT,
 };
 
 static gpointer ags_audio_parent_class = NULL;
@@ -161,19 +159,19 @@ ags_audio_class_init(AgsAudioClass *audio)
 
   /* properties */
   /**
-   * AgsAudio:soundcard:
+   * AgsAudio:devout:
    *
-   * The assigned #AgsSoundcard acting as default sink.
+   * The assigned #AgsDevout acting as default sink.
    * 
    * Since: 0.4
    */
-  param_spec = g_param_spec_object("soundcard\0",
-				   "assigned soundcard\0",
-				   "The soundcard it is assigned with\0",
-				   G_TYPE_OBJECT,
+  param_spec = g_param_spec_object("devout\0",
+				   "assigned devout\0",
+				   "The devout it is assigned with\0",
+				   AGS_TYPE_DEVOUT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_SOUNDCARD,
+				  PROP_DEVOUT,
 				  param_spec);
 
   /* AgsAudioClass */
@@ -297,7 +295,7 @@ ags_audio_init(AgsAudio *audio)
 {
   audio->flags = 0;
 
-  audio->soundcard = NULL;
+  audio->devout = NULL;
 
   audio->sequence_length = 0;
   audio->audio_channels = 0;
@@ -315,7 +313,6 @@ ags_audio_init(AgsAudio *audio)
   AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->domain = audio;
 
   audio->notation = NULL;
-  audio->automation = NULL;
 
   audio->recall_id = NULL;
   audio->recycling_container = NULL;
@@ -341,13 +338,13 @@ ags_audio_set_property(GObject *gobject,
   audio = AGS_AUDIO(gobject);
 
   switch(prop_id){
-  case PROP_SOUNDCARD:
+  case PROP_DEVOUT:
     {
-      GObject *soundcard;
+      AgsDevout *devout;
 
-      soundcard = (GObject *) g_value_get_object(value);
+      devout = (AgsDevout *) g_value_get_object(value);
 
-      ags_audio_set_soundcard(audio, (GObject *) soundcard);
+      ags_audio_set_devout(audio, (GObject *) devout);
     }
     break;
   default:
@@ -367,8 +364,8 @@ ags_audio_get_property(GObject *gobject,
   audio = AGS_AUDIO(gobject);
 
   switch(prop_id){
-  case PROP_SOUNDCARD:
-    g_value_set_object(value, audio->soundcard);
+  case PROP_DEVOUT:
+    g_value_set_object(value, audio->devout);
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
@@ -384,8 +381,8 @@ ags_audio_finalize(GObject *gobject)
 
   audio = AGS_AUDIO(gobject);
 
-  if(audio->soundcard != NULL)
-    g_object_unref(audio->soundcard);
+  if(audio->devout != NULL)
+    g_object_unref(audio->devout);
 
   /* output */
   channel = audio->output;
@@ -429,7 +426,7 @@ ags_audio_finalize(GObject *gobject)
 void
 ags_audio_add_to_registry(AgsConnectable *connectable)
 {
-  AgsApplicationContext *application_context;
+  AgsMain *ags_main;
   AgsServer *server;
   AgsAudio *audio;
   AgsChannel *channel;
@@ -438,20 +435,10 @@ ags_audio_add_to_registry(AgsConnectable *connectable)
   
   audio = AGS_AUDIO(connectable);
 
-  application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(audio->soundcard));
+  ags_main = AGS_MAIN(AGS_DEVOUT(audio->devout)->ags_main);
 
-  server = NULL;
-  list = application_context->sibling;
+  server = ags_main->server;
 
-  while(list != NULL){
-    if(AGS_IS_SERVER_APPLICATION_CONTEXT(list->data)){
-      server = AGS_SERVER_APPLICATION_CONTEXT(list->data)->server;
-      break;
-    }
-
-    list = list->next;
-  }
-  
   entry = ags_registry_entry_alloc(server->registry);
   g_value_set_object(&(entry->entry),
 		     (gpointer) audio);
@@ -628,12 +615,12 @@ ags_audio_set_flags(AgsAudio *audio, guint flags)
 	  
       if(channel != NULL){
 	start_recycling = 
-	  recycling = ags_recycling_new(audio->soundcard);
+	  recycling = ags_recycling_new(audio->devout);
 	goto ags_audio_set_flags_OUTPUT_RECYCLING;
       }
 
       while(channel != NULL){
-	recycling->next = ags_recycling_new(audio->soundcard);
+	recycling->next = ags_recycling_new(audio->devout);
       ags_audio_set_flags_OUTPUT_RECYCLING:
 	recycling->next->prev = recycling;
 	recycling = recycling->next;
@@ -666,21 +653,13 @@ ags_audio_set_flags(AgsAudio *audio, guint flags)
   }
   void ags_audio_set_flags_add_recycling_task(GParameter *parameter){
     AgsAudioSetRecycling *audio_set_recycling;
-    AgsThread *main_loop, *current;
-    AgsTaskThread *task_thread;
-    AgsApplicationContext *application_context;
 
-    application_context = ags_soundcard_get_application_context(audio->soundcard);
-    main_loop = application_context->main_loop;
-    task_thread = ags_thread_find_type(main_loop,
-				       AGS_TYPE_TASK_THREAD);
-    
     /* create set recycling task */
     audio_set_recycling = ags_audio_set_recycling_new(audio,
 						      parameter);
 
     /* append AgsAudioSetRecycling */
-    ags_task_thread_append_task(task_thread,
+    ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(audio->devout)->ags_main)->main_loop)->task_thread),
 				AGS_TASK(audio_set_recycling));
   }
 
@@ -768,21 +747,13 @@ ags_audio_unset_flags(AgsAudio *audio, guint flags)
   }
   void ags_audio_unset_flags_add_recycling_task(GParameter *parameter){
     AgsAudioSetRecycling *audio_set_recycling;
-    AgsThread *main_loop, *current;
-    AgsTaskThread *task_thread;
-    AgsApplicationContext *application_context;
 
-    application_context = ags_soundcard_get_application_context(audio->soundcard);
-    main_loop = application_context->main_loop;
-    task_thread = ags_thread_find_type(main_loop,
-				       AGS_TYPE_TASK_THREAD);
-    
     /* create set recycling task */
     audio_set_recycling = ags_audio_set_recycling_new(audio,
 						      parameter);
 
     /* append AgsAudioSetRecycling */
-    ags_task_thread_append_task(task_thread,
+    ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(audio->devout)->ags_main)->main_loop)->task_thread),
 				AGS_TASK(audio_set_recycling));
   }
 
@@ -886,7 +857,7 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
     if(alloc_recycling){
       recycling =
 	channel->first_recycling =
-	channel->last_recycling = ags_recycling_new(audio->soundcard);
+	channel->last_recycling = ags_recycling_new(audio->devout);
 
       channel->first_recycling->channel = (GObject *) channel;
 
@@ -921,7 +892,7 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 
       if(alloc_recycling){
 	channel->first_recycling =
-	  channel->last_recycling = ags_recycling_new(audio->soundcard);
+	  channel->last_recycling = ags_recycling_new(audio->devout);
 
 	if(link_recycling){
 	  recycling->next = channel->first_recycling;
@@ -970,7 +941,7 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
     if(alloc_recycling){
       recycling =
 	channel->first_recycling =
-	channel->last_recycling = ags_recycling_new(audio->soundcard);
+	channel->last_recycling = ags_recycling_new(audio->devout);
 
       if(link_recycling){
 	prev_channel->last_recycling->next = recycling;
@@ -1028,7 +999,7 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 
       if(alloc_recycling){
 	channel->first_recycling =
-	  channel->last_recycling = ags_recycling_new(audio->soundcard);
+	  channel->last_recycling = ags_recycling_new(audio->devout);
 
 	if(link_recycling){
 	  recycling->next = channel->first_recycling;
@@ -1129,7 +1100,7 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 
 	if(alloc_recycling){
 	  channel->first_recycling =
-	    channel->last_recycling = ags_recycling_new(audio->soundcard);
+	    channel->last_recycling = ags_recycling_new(audio->devout);
 
 	  if(link_recycling){
 	    recycling->next = channel->first_recycling;
@@ -1203,7 +1174,7 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 
       if(alloc_recycling){
 	channel->first_recycling =
-	  channel->last_recycling = ags_recycling_new(audio->soundcard);
+	  channel->last_recycling = ags_recycling_new(audio->devout);
 
 	if(link_recycling){
 	  recycling->next = channel->first_recycling;
@@ -1518,7 +1489,7 @@ ags_audio_real_set_pads(AgsAudio *audio,
 
     if(alloc_recycling){
       channel->first_recycling =
-	channel->last_recycling = ags_recycling_new(audio->soundcard);
+	channel->last_recycling = ags_recycling_new(audio->devout);
 
       channel->first_recycling->channel = (GObject *) channel;
 
@@ -1551,7 +1522,7 @@ ags_audio_real_set_pads(AgsAudio *audio,
 
       if(alloc_recycling){
 	channel->first_recycling =
-	  channel->last_recycling = ags_recycling_new(audio->soundcard);
+	  channel->last_recycling = ags_recycling_new(audio->devout);
 
 	channel->first_recycling->channel = (GObject *) channel;
 
@@ -1651,7 +1622,7 @@ ags_audio_real_set_pads(AgsAudio *audio,
 
 	if(alloc_recycling){
 	  channel->first_recycling =
-	    channel->last_recycling = ags_recycling_new(audio->soundcard);
+	    channel->last_recycling = ags_recycling_new(audio->devout);
 
 	  if(link_recycling){
 	    recycling = recycling_iter->data;
@@ -2026,6 +1997,13 @@ ags_audio_real_set_pads(AgsAudio *audio,
 	recall_id = audio->recall_id;
 
 	while(recall_id != NULL){
+	  if(AGS_RECALL_ID(recall_id->data)->recycling != NULL &&
+	     AGS_IS_OUTPUT(AGS_RECYCLING(AGS_RECALL_ID(recall_id->data)->recycling)->channel)){
+	    recall_id = recall_id->next;
+	    
+	    continue;
+	  }
+	  
 	  current_recall_id = g_object_new(AGS_TYPE_RECALL_ID,
 					   "recycling\0", current->first_recycling,
 					   "recycling-container\0", AGS_RECALL_ID(recall_id->data)->recycling_container,
@@ -2084,6 +2062,13 @@ ags_audio_real_set_pads(AgsAudio *audio,
 	  recall_id = audio->recall_id;
 
 	  while(recall_id != NULL){
+	    if(AGS_RECALL_ID(recall_id->data)->recycling != NULL &&
+	       AGS_IS_OUTPUT(AGS_RECYCLING(AGS_RECALL_ID(recall_id->data)->recycling)->channel)){
+	      recall_id = recall_id->next;
+	    
+	      continue;
+	    }
+	    
 	    current_recall_id = g_object_new(AGS_TYPE_RECALL_ID,
 					     "recycling\0", current->first_recycling,
 					     "recycling-container\0", AGS_RECALL_ID(recall_id->data)->recycling_container,
@@ -2119,6 +2104,13 @@ ags_audio_real_set_pads(AgsAudio *audio,
     recall_id = audio->recall_id;
 
     while(recall_id != NULL){
+      if(AGS_RECALL_ID(recall_id->data)->recycling != NULL &&
+	 AGS_IS_INPUT(AGS_RECYCLING(AGS_RECALL_ID(recall_id->data)->recycling)->channel)){
+	recall_id = recall_id->next;
+	
+	continue;
+      }
+  
       if((AGS_AUDIO_ASYNC & (audio->flags)) == 0){
 	channel = ags_channel_nth(audio->input,
 				  AGS_CHANNEL(AGS_RECYCLING(AGS_RECALL_ID(recall_id->data)->recycling)->channel)->line);
@@ -2127,36 +2119,27 @@ ags_audio_real_set_pads(AgsAudio *audio,
 				  AGS_CHANNEL(AGS_RECYCLING(AGS_RECALL_ID(recall_id->data)->recycling)->channel)->audio_channel);
       }
 
-      old_first_recycling =
-	first_recycling = channel->first_recycling;
+      first_recycling = channel->first_recycling;
     
       old_recycling_container = (AgsRecyclingContainer *) AGS_RECALL_ID(recall_id->data)->recycling_container;
 
-      if((old_first_recycling != NULL &&
-	  ags_recycling_container_find(old_recycling_container,
-				       old_first_recycling) != -1) ||
-	 (first_recycling->parent == NULL ||
-	  ags_recycling_container_find_parent(old_recycling_container,
-					      first_recycling->parent) == -1)){
-	recall_id = recall_id->next;
-	
-	continue;
+      if((AGS_AUDIO_ASYNC & (audio->flags)) == 0){
+	recycling_container = ags_recycling_container_reset_recycling(old_recycling_container,
+								      NULL, NULL,
+								      channel->first_recycling, channel->last_recycling);
+      }else{
+	recycling_container = ags_recycling_container_reset_recycling(old_recycling_container,
+								      NULL, NULL,
+								      channel->first_recycling, ags_channel_pad_last(channel)->last_recycling);
       }
-  
-      recycling_container = ags_recycling_container_reset_recycling(old_recycling_container,
-								    NULL, NULL,
-								    channel->first_recycling, ags_channel_pad_last(channel)->last_recycling);
-
+      
       ags_audio_add_recycling_container(audio,
 					recycling_container);
+      ags_channel_recursive_reset_recycling_container(ags_channel_nth(audio->output,
+								      (((AGS_AUDIO_ASYNC & (audio->flags)) != 0) ? channel->audio_channel: channel->line)),
+						      old_recycling_container,
+						      recycling_container);
 
-      while(channel != NULL){
-	ags_channel_recursive_reset_recycling_container(channel,
-							old_recycling_container,
-							recycling_container);
-
-	channel = channel->next_pad;
-      }
       
       recall_id = recall_id->next;
     }
@@ -2274,75 +2257,35 @@ ags_audio_set_sequence_length(AgsAudio *audio, guint sequence_length)
 }
 
 /**
- * ags_audio_add_notation:
+ * ags_audio_add_recycling_container:
  * @audio: an #AgsAudio
- * @notation: the #AgsNotation
+ * @recycling_container: the #AgsRecyclingContainer
  *
- * Adds a notation.
+ * Adds a recycling container.
  *
  * Since: 0.4
  */
 void
-ags_audio_add_notation(AgsAudio *audio,
-		       GObject *notation)
+ags_audio_add_recycling_container(AgsAudio *audio, GObject *recycling_container)
 {
-  g_object_ref(notation);
-  audio->automation = g_list_prepend(audio->notation,
-				     notation);
+  g_object_ref(recycling_container);
+  audio->recycling_container = g_list_prepend(audio->recycling_container, recycling_container);
 }
 
 /**
- * ags_audio_remove_notation:
+ * ags_audio_remove_recycling_container:
  * @audio: an #AgsAudio
- * @notation: the #AgsNotation
+ * @recycling_container: the #AgsRecyclingContainer
  *
- * Removes a notation.
+ * Removes a recycling container.
  *
  * Since: 0.4
  */
 void
-ags_audio_remove_notation(AgsAudio *audio,
-			  GObject *notation)
+ags_audio_remove_recycling_container(AgsAudio *audio, GObject *recycling_container)
 {
-  g_object_unref(notation);
-  audio->automation = g_list_remove(audio->notation,
-				    notation);
-}
-
-/**
- * ags_audio_add_automation:
- * @audio: an #AgsAudio
- * @automation: the #AgsAutomation
- *
- * Adds an automation.
- *
- * Since: 0.4
- */
-void
-ags_audio_add_automation(AgsAudio *audio,
-			 GObject *automation)
-{
-  g_object_ref(automation);
-  audio->automation = g_list_prepend(audio->automation,
-				     automation);
-}
-
-/**
- * ags_audio_remove_automation:
- * @audio: an #AgsAudio
- * @automation: the #AgsAutomation
- *
- * Removes an automation.
- *
- * Since: 0.4
- */
-void
-ags_audio_remove_automation(AgsAudio *audio,
-			    GObject *automation)
-{
-  g_object_unref(automation);
-  audio->automation = g_list_remove(audio->automation,
-				    automation);
+  audio->recycling_container = g_list_remove(audio->recycling_container, recycling_container);
+  g_object_unref(recycling_container);
 }
 
 /**
@@ -2382,38 +2325,6 @@ ags_audio_remove_recall_id(AgsAudio *audio, GObject *recall_id)
 
   audio->recall_id = g_list_remove(audio->recall_id, recall_id);
   g_object_unref(recall_id);
-}
-
-/**
- * ags_audio_add_recycling_container:
- * @audio: an #AgsAudio
- * @recycling_container: the #AgsRecyclingContainer
- *
- * Adds a recycling container.
- *
- * Since: 0.4
- */
-void
-ags_audio_add_recycling_container(AgsAudio *audio, GObject *recycling_container)
-{
-  g_object_ref(recycling_container);
-  audio->recycling_container = g_list_prepend(audio->recycling_container, recycling_container);
-}
-
-/**
- * ags_audio_remove_recycling_container:
- * @audio: an #AgsAudio
- * @recycling_container: the #AgsRecyclingContainer
- *
- * Removes a recycling container.
- *
- * Since: 0.4
- */
-void
-ags_audio_remove_recycling_container(AgsAudio *audio, GObject *recycling_container)
-{
-  audio->recycling_container = g_list_remove(audio->recycling_container, recycling_container);
-  g_object_unref(recycling_container);
 }
 
 /**
@@ -3014,38 +2925,38 @@ ags_audio_cancel(AgsAudio *audio,
 }
 
 /**
- * ags_audio_set_soundcard:
+ * ags_audio_set_devout:
  * @audio: the #AgsAudio
- * @soundcard: an #AgsSoundcard
+ * @devout: an #AgsDevout
  *
- * Sets a soundcard object on audio.
+ * Sets a devout object on audio.
  *
  * Since: 0.4
  */
 void
-ags_audio_set_soundcard(AgsAudio *audio, GObject *soundcard)
+ags_audio_set_devout(AgsAudio *audio, GObject *devout)
 {
   AgsChannel *channel;
   GList *list;
 
   /* audio */
-  if(audio->soundcard == soundcard)
+  if(audio->devout == devout)
     return;
 
-  if(audio->soundcard != NULL)
-    g_object_unref(audio->soundcard);
+  if(audio->devout != NULL)
+    g_object_unref(audio->devout);
 
-  if(soundcard != NULL)
-    g_object_ref(soundcard);
+  if(devout != NULL)
+    g_object_ref(devout);
 
-  audio->soundcard = (GObject *) soundcard;
+  audio->devout = (GObject *) devout;
 
   /* recall */
   list = audio->play;
   
   while(list != NULL){
     g_object_set(G_OBJECT(list->data),
-		 "soundcard\0", soundcard,
+		 "devout\0", devout,
 		 NULL);
     
     list = list->next;
@@ -3055,7 +2966,7 @@ ags_audio_set_soundcard(AgsAudio *audio, GObject *soundcard)
   
   while(list != NULL){
     g_object_set(G_OBJECT(list->data),
-		 "soundcard\0", soundcard,
+		 "devout\0", devout,
 		 NULL);
     
     list = list->next;
@@ -3066,7 +2977,7 @@ ags_audio_set_soundcard(AgsAudio *audio, GObject *soundcard)
 
   while(channel != NULL){
     g_object_set(G_OBJECT(channel),
-		 "soundcard\0", soundcard,
+		 "devout\0", devout,
 		 NULL);
     
     channel = channel->next;
@@ -3077,7 +2988,7 @@ ags_audio_set_soundcard(AgsAudio *audio, GObject *soundcard)
 
   while(channel != NULL){
     g_object_set(G_OBJECT(channel),
-		 "soundcard\0", soundcard,
+		 "devout\0", devout,
 		 NULL);
     
     channel = channel->next;
@@ -3116,7 +3027,7 @@ ags_audio_open_files(AgsAudio *audio,
     if(channel != NULL){
       for(i = 0; i < audio->input_pads && filenames != NULL; i++){
 	audio_file = ags_audio_file_new((gchar *) filenames->data,
-					(GObject *) audio->soundcard,
+					(AgsDevout *) audio->devout,
 					0, audio->audio_channels);
 	if(!ags_audio_file_open(audio_file)){
 	  filenames = filenames->next;
@@ -3175,7 +3086,7 @@ ags_audio_open_files(AgsAudio *audio,
     
     while(filenames != NULL){
       audio_file = ags_audio_file_new((gchar *) filenames->data,
-				      (GObject *) audio->soundcard,
+				      (AgsDevout *) audio->devout,
 				      0, audio->audio_channels);
       if(!ags_audio_file_open(audio_file)){
 	filenames = filenames->next;
@@ -3274,21 +3185,21 @@ ags_audio_find_port(AgsAudio *audio)
 
 /**
  * ags_audio_new:
- * @soundcard: an #AgsSoundcard
+ * @devout: an #AgsDevout
  *
- * Creates an #AgsAudio, with defaults of @soundcard.
+ * Creates an #AgsAudio, with defaults of @devout.
  *
  * Returns: a new #AgsAudio
  *
  * Since: 0.3
  */
 AgsAudio*
-ags_audio_new(GObject *soundcard)
+ags_audio_new(AgsDevout *devout)
 {
   AgsAudio *audio;
 
   audio = (AgsAudio *) g_object_new(AGS_TYPE_AUDIO,
-				    "soundcard\0", soundcard,
+				    "devout\0", devout,
 				    NULL);
 
   return(audio);

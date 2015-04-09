@@ -64,6 +64,8 @@ ags_packable_base_init(AgsPackableInterface *interface)
  * Pack to container.
  *
  * Returns: %TRUE on success
+ *
+ * Since: 0.4
  */
 gboolean
 ags_packable_pack(AgsPackable *packable, GObject *container)
@@ -84,6 +86,8 @@ ags_packable_pack(AgsPackable *packable, GObject *container)
  * Unpack of container.
  *
  * Returns: %TRUE on success
+ *
+ * Since: 0.4
  */
 gboolean
 ags_packable_unpack(AgsPackable *packable)

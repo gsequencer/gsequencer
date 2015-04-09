@@ -45,12 +45,9 @@
 #define AGS_DEVOUT_PLAY_DOMAIN(ptr)    ((AgsDevoutPlayDomain *)(ptr))
 #define AGS_DEVOUT_PLAY(ptr)           ((AgsDevoutPlay *)(ptr))
 
-#define AGS_DEVOUT_DEFAULT_DSP_CHANNELS (2)
-#define AGS_DEVOUT_DEFAULT_PCM_CHANNELS (2)
 #define AGS_DEVOUT_DEFAULT_SAMPLERATE (44100.0)
 #define AGS_DEVOUT_DEFAULT_FORMAT (AGS_DEVOUT_RESOLUTION_16_BIT)
 #define AGS_DEVOUT_DEFAULT_BUFFER_SIZE (944)
-#define AGS_DEVOUT_DEFAULT_DEVICE "hw:0"
 #define AGS_DEVOUT_DEFAULT_BPM (120.0)
 #define AGS_DEVOUT_DEFAULT_JIFFIE ((double) AGS_DEVOUT_DEFAULT_SAMPLERATE / (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE)
 
@@ -141,8 +138,6 @@ struct _AgsDevout
   gdouble delay_counter; // next time attack changeing when delay_counter == delay
   guint tic_counter; // in the range of default period
 
-  guint note_offset;
-  
   union{
     struct _AgsOss{
       int device_fd;
@@ -157,8 +152,7 @@ struct _AgsDevout
     }alsa;
   }out;
 
-  GObject *application_context;
-  pthread_mutex_t *application_mutex;
+  GObject *ags_main;
   
   GList *audio;
 };
@@ -166,6 +160,16 @@ struct _AgsDevout
 struct _AgsDevoutClass
 {
   GObjectClass object;
+
+  void (*play_init)(AgsDevout *devout,
+		    GError **error);
+  void (*play)(AgsDevout *devout,
+	       GError **error);
+  void (*stop)(AgsDevout *devout);
+
+  void (*tic)(AgsDevout *devout);
+
+  void (*note_offset_changed)(AgsDevout *devout, guint note_offset);
 };
 
 /**
@@ -218,20 +222,23 @@ GType ags_devout_get_type();
 GQuark ags_devout_error_quark();
 
 AgsDevoutPlayDomain* ags_devout_play_domain_alloc();
-
 void ags_devout_play_domain_free(AgsDevoutPlayDomain *devout_play_domain);
 
 AgsDevoutPlay* ags_devout_play_alloc();
-
 void ags_devout_play_free(AgsDevoutPlay *devout_play);
-
 AgsDevoutPlay* ags_devout_play_find_source(GList *devout_play,
 					   GObject *source);
 
-void ags_devout_add_audio(AgsDevout *devout, GObject *audio);
+void ags_devout_list_cards(GList **card_id, GList **card_name);
+void ags_devout_pcm_info(char *card_id,
+			 guint *channels_min, guint *channels_max,
+			 guint *rate_min, guint *rate_max,
+			 guint *buffer_size_min, guint *buffer_size_max,
+			 GError **error);
+void ags_devout_tic(AgsDevout *devout);
 
-void ags_devout_remove_audio(AgsDevout *devout, GObject *audio);
+void ags_devout_note_offset_changed(AgsDevout *devout, guint note_offset);
 
-AgsDevout* ags_devout_new(GObject *application_context);
+AgsDevout* ags_devout_new(GObject *ags_main);
 
 #endif /*__AGS_DEVOUT_H__*/

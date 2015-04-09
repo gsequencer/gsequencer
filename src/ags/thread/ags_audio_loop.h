@@ -71,11 +71,8 @@ struct _AgsAudioLoop
 
   gdouble frequency;
 
-  GObject *application_context;
-  pthread_mutex_t *application_mutex;
-  
-  GObject *devout;
-  
+  GObject *ags_main;
+
   AgsAsyncQueue *async_queue;
   
   AgsThread *task_thread;
@@ -116,6 +113,6 @@ void ags_audio_loop_remove_channel(AgsAudioLoop *audio_loop, GObject *channel);
 void ags_audio_loop_add_recall(AgsAudioLoop *audio_loop, gpointer devout_play);
 void ags_audio_loop_remove_recall(AgsAudioLoop *audio_loop, gpointer devout_play);
 
-AgsAudioLoop* ags_audio_loop_new(GObject *devout, GObject *application_context);
+AgsAudioLoop* ags_audio_loop_new(GObject *devout, GObject *ags_main);
 
 #endif /*__AGS_AUDIO_LOOP_H__*/

@@ -140,8 +140,8 @@ ags_copy_pattern_channel_init(AgsCopyPatternChannel *copy_pattern_channel)
   GList *port;
 
   AGS_RECALL(copy_pattern_channel)->name = "ags-copy-pattern\0";
-  AGS_RECALL(copy_pattern_channel)->version = AGS_RECALL_DEFAULT_VERSION;
-  AGS_RECALL(copy_pattern_channel)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
+  AGS_RECALL(copy_pattern_channel)->version = AGS_EFFECTS_DEFAULT_VERSION;
+  AGS_RECALL(copy_pattern_channel)->build_id = AGS_BUILD_ID;
   AGS_RECALL(copy_pattern_channel)->xml_type = "ags-copy-pattern-channel\0";
   
   port = NULL;

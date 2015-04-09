@@ -19,12 +19,37 @@
 #include <ags/X/machine/ags_drum.h>
 #include <ags/X/machine/ags_drum_callbacks.h>
 
+#include <ags/main.h>
+
+#include <ags-lib/object/ags_connectable.h>
+
 #include <ags/util/ags_id_generator.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags-lib/object/ags_connectable.h>
 #include <ags/object/ags_portlet.h>
 #include <ags/object/ags_plugin.h>
+
+#include <ags/file/ags_file.h>
+#include <ags/file/ags_file_stock.h>
+#include <ags/file/ags_file_id_ref.h>
+#include <ags/file/ags_file_lookup.h>
+#include <ags/file/ags_file_launch.h>
+#include <ags/file/ags_file_gui.h>
+
+#include <ags/thread/ags_thread-posix.h>
+#include <ags/thread/ags_audio_loop.h>
+
+#include <ags/widget/ags_led.h>
+
+#include <ags/X/machine/ags_drum_input_pad.h>
+#include <ags/X/machine/ags_drum_input_line.h>
+#include <ags/X/machine/ags_drum_output_pad.h>
+#include <ags/X/machine/ags_drum_output_line.h>
+#include <ags/X/machine/ags_drum_input_line_callbacks.h>
+
+#include <ags/X/ags_window.h>
+#include <ags/X/ags_menu_bar.h>
+#include <ags/X/ags_pad.h>
+#include <ags/X/ags_line.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
@@ -47,29 +72,6 @@
 #include <ags/audio/recall/ags_copy_pattern_channel_run.h>
 
 #include <ags/audio/task/recall/ags_apply_sequencer_length.h>
-
-#include <ags/file/ags_file.h>
-#include <ags/file/ags_file_stock.h>
-#include <ags/file/ags_file_id_ref.h>
-#include <ags/file/ags_file_lookup.h>
-#include <ags/file/ags_file_launch.h>
-#include <ags/file/ags_file_gui.h>
-
-#include <ags/thread/ags_thread-posix.h>
-#include <ags/thread/ags_audio_loop.h>
-
-#include <ags/widget/ags_led.h>
-
-#include <ags/X/ags_window.h>
-#include <ags/X/ags_menu_bar.h>
-#include <ags/X/ags_pad.h>
-#include <ags/X/ags_line.h>
-
-#include <ags/X/machine/ags_drum_input_pad.h>
-#include <ags/X/machine/ags_drum_input_line.h>
-#include <ags/X/machine/ags_drum_output_pad.h>
-#include <ags/X/machine/ags_drum_output_line.h>
-#include <ags/X/machine/ags_drum_input_line_callbacks.h>
 
 #include <math.h>
 
@@ -497,13 +499,9 @@ ags_drum_show(GtkWidget *widget)
 void
 ags_drum_show_all(GtkWidget *widget)
 {
-  AgsDrum *drum;
-  
   GTK_WIDGET_CLASS(ags_drum_parent_class)->show_all(widget);
 
-  drum = AGS_DRUM(widget);
-  
-  ags_drum_set_pattern(drum);
+  ags_drum_set_pattern(AGS_DRUM(widget));
 }
 
 void
@@ -630,7 +628,7 @@ ags_drum_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
+				   "main\0", file->ags_main,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
@@ -775,7 +773,7 @@ ags_drum_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
+				   "main\0", file->ags_main,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
