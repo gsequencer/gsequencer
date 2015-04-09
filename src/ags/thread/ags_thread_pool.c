@@ -43,18 +43,7 @@ void* ags_thread_pool_creation_thread(void *ptr);
 
 void ags_thread_pool_real_start(AgsThreadPool *thread_pool);
 
-/**
- * SECTION:ags_thread_pool
- * @short_description: thread pool
- * @title: AgsThreadPool
- * @section_id:
- * @include: ags/thread/ags_thread_pool.h
- *
- * The #AgsThreadPool acts as preinstantiated threads store.
- * This can achieve enormeous performance.
- */
-
-#define AGS_THREAD_POOL_DEFAULT_MAX_UNUSED_THREADS 16
+#define AGS_THREAD_POOL_DEFAULT_MAX_UNUSED_THREADS 12
 #define AGS_THREAD_POOL_DEFAULT_MAX_THREADS 1024
 
 enum{
@@ -129,7 +118,7 @@ ags_thread_pool_class_init(AgsThreadPoolClass *thread_pool)
 				 "maximum unused threads\0",
 				 "The maximum of unused threads.\0",
 				 1, 65535,
-				 24,
+				 3,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_MAX_UNUSED_THREADS,
@@ -139,7 +128,7 @@ ags_thread_pool_class_init(AgsThreadPoolClass *thread_pool)
 				 "maximum threads to use\0",
 				 "The maximum of threads to be created.\0",
 				 1, 65535,
-				 1024,
+				 8,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_MAX_THREADS,
@@ -348,12 +337,13 @@ ags_thread_pool_creation_thread(void *ptr)
 	thread = (AgsThread *) ags_returnable_thread_new(thread_pool);
 	tmplist = g_atomic_pointer_get(&(thread_pool->returnable_thread));
 	g_atomic_pointer_set(&(thread_pool->returnable_thread),
-			     g_list_prepend(tmplist, thread));      
+			     g_list_prepend(tmplist, thread));
+      
 	ags_thread_add_child(AGS_THREAD(thread_pool->parent),
 			     thread);
 	ags_connectable_connect(AGS_CONNECTABLE(thread));
 	g_atomic_int_inc(&(thread_pool->n_threads));
-
+      
 	n_threads++;
       }
     }
@@ -365,18 +355,7 @@ ags_thread_pool_creation_thread(void *ptr)
 #endif
   }
 }
-
-/**
- * ags_thread_pool_pull:
- * @thread_pool: the #AgsThreadPool
- *
- * Pull a previously instantiated #AgsReturnableThread. Note this
- * function may block until a new thread is available.
- *
- * Returns: a new #AgsThread
- *
- * Since: 0.4
- */    
+    
 AgsThread*
 ags_thread_pool_pull(AgsThreadPool *thread_pool)
 {
@@ -388,38 +367,34 @@ ags_thread_pool_pull(AgsThreadPool *thread_pool)
 
   void ags_thread_pool_pull_running(){
     g_atomic_int_inc(&(thread_pool->newly_pulled));
-      
+
     do{
       pthread_mutex_lock(&(thread_pool->creation_mutex));
-
+      
       if((AGS_THREAD_POOL_READY & (g_atomic_int_get(&(thread_pool->flags)))) != 0){
 	pthread_cond_signal(&(thread_pool->creation_cond));
       }
 
       pthread_mutex_unlock(&(thread_pool->creation_mutex));
-      
+
       list = g_atomic_pointer_get(&(thread_pool->returnable_thread));
 
       while(list != NULL){
 	returnable_thread = AGS_RETURNABLE_THREAD(list->data);
 
 	if((AGS_RETURNABLE_THREAD_IN_USE & (g_atomic_int_get(&(returnable_thread->flags)))) == 0){
-	  pthread_mutex_lock(&(thread_pool->creation_mutex));
+	  pthread_mutex_lock(&(thread_pool->pull_mutex));
 
 	  tmplist = g_atomic_pointer_get(&(thread_pool->returnable_thread));
 	  g_atomic_pointer_set(&(thread_pool->returnable_thread),
 			       g_list_remove(tmplist,
 					     returnable_thread));
-
-	  pthread_mutex_unlock(&(thread_pool->creation_mutex));
 	  
-	  pthread_mutex_lock(&(thread_pool->pull_mutex));
-
 	  tmplist = g_atomic_pointer_get(&(thread_pool->running_thread));
 	  g_atomic_pointer_set(&(thread_pool->running_thread),
 			       g_list_prepend(tmplist,
 					      returnable_thread));
-
+	  
 	  pthread_mutex_unlock(&(thread_pool->pull_mutex));
 
 	  break;
@@ -442,7 +417,9 @@ ags_thread_pool_pull(AgsThreadPool *thread_pool)
     g_atomic_int_inc(&(thread_pool->queued));
 
     while((n_threads = g_atomic_int_get(&(thread_pool->n_threads))) > max_threads){
+#ifdef AGS_DEBUG
       g_message("n_threads >= max_threads\0");
+#endif
       
       pthread_cond_wait(&(thread_pool->return_cond),
 			&(thread_pool->return_mutex));
@@ -479,20 +456,12 @@ ags_thread_pool_real_start(AgsThreadPool *thread_pool)
   while(list != NULL){
     ags_thread_add_child(AGS_THREAD(thread_pool->parent),
 			 AGS_THREAD(list->data));
-    //    ags_thread_start(AGS_THREAD(list->data));
+    ags_thread_start(AGS_THREAD(list->data));
 
     list = list->next;
   }
 }
 
-/**
- * ags_thread_pool_start:
- * @thread_pool: the #AgsThreadPool
- *
- * Start the thread pool.
- *
- * Since: 0.4
- */
 void
 ags_thread_pool_start(AgsThreadPool *thread_pool)
 {
@@ -504,16 +473,6 @@ ags_thread_pool_start(AgsThreadPool *thread_pool)
   g_object_unref(G_OBJECT(thread_pool));
 }
 
-/**
- * ags_thread_pool_new:
- * @parent: the parent #AgsThread of returnable threads
- *
- * Create a new #AgsThreadPool.
- *
- * Returns: the new #AgsThreadPool
- *
- * Since: 0.4
- */
 AgsThreadPool*
 ags_thread_pool_new(AgsThread *parent)
 {

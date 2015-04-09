@@ -29,16 +29,6 @@ void ags_save_file_finalize(GObject *gobject);
 
 void ags_save_file_launch(AgsTask *task);
 
-/**
- * SECTION:ags_save_file
- * @short_description: save file object
- * @title: AgsSaveFile
- * @section_id:
- * @include: ags/audio/task/ags_save_file.h
- *
- * The #AgsSaveFile task saves files.
- */
-
 static gpointer ags_save_file_parent_class = NULL;
 static AgsConnectableInterface *ags_save_file_parent_connectable_interface;
 
@@ -144,23 +134,10 @@ ags_save_file_launch(AgsTask *task)
 
   save_file = AGS_SAVE_FILE(task);
 
-  g_message("Saving to: %s", save_file->file->filename);
-  ags_file_rw_open(save_file->file,
-		   TRUE);
+  g_message(save_file->file->filename);
   ags_file_write(save_file->file);
-  ags_file_close(save_file->file);
 }
 
-/**
- * ags_save_file_new:
- * @file: the #AgsFile
- *
- * Creates an #AgsSaveFile.
- *
- * Returns: an new #AgsSaveFile.
- *
- * Since: 0.4
- */
 AgsSaveFile*
 ags_save_file_new(AgsFile *file)
 {

@@ -26,16 +26,6 @@ void ags_machine_selection_init(AgsMachineSelection *machine_selection);
 void ags_machine_selection_connect(AgsConnectable *connectable);
 void ags_machine_selection_disconnect(AgsConnectable *connectable);
 
-/**
- * SECTION:ags_machine_selection
- * @short_description: machine radio buttons
- * @title: AgsMachineSelection
- * @section_id:
- * @include: ags/X/editor/ags_machine_selection.h
- *
- * The #AgsMachineSelection enables you make choice of an #AgsMachine.
- */
-
 static gpointer ags_machine_selection_parent_class = NULL;
 
 GType
@@ -119,14 +109,6 @@ ags_machine_selection_disconnect(AgsConnectable *connectable)
   //TODO:JK: implement me
 }
 
-/**
- * ags_machine_selection_run:
- * @machine_selection: the #AgsMachineSelection
- *
- * Run the dialog.
- *
- * Returns: the #AgsMachine
- */
 AgsMachine*
 ags_machine_selection_run(AgsMachineSelection *machine_selection)
 {
@@ -134,7 +116,7 @@ ags_machine_selection_run(AgsMachineSelection *machine_selection)
   GtkVBox *vbox;
   GtkContainer *content_area;
   GtkRadioButton *group;
-  GList *list, *list_start, *index, *index_start;
+  GList *list, *index;
   gint response;
 
   machine_selection->machine =
@@ -171,10 +153,8 @@ ags_machine_selection_run(AgsMachineSelection *machine_selection)
   response = gtk_dialog_run(GTK_DIALOG(machine_selection));
 
   if(response == GTK_RESPONSE_ACCEPT){
-    list_start = 
-      list = gtk_container_get_children(GTK_CONTAINER(machine_selection->window->machines));
-    index_start = 
-      index = gtk_container_get_children(vbox);
+    list = gtk_container_get_children(GTK_CONTAINER(machine_selection->window->machines));
+    index = gtk_container_get_children(vbox);
 
     while(index != NULL){
       if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(index->data))){
@@ -186,9 +166,6 @@ ags_machine_selection_run(AgsMachineSelection *machine_selection)
       index = index->next;
       list = list->next;
     }
-
-    g_list_free(list_start);
-    g_list_free(index_start);
   }
 
   gtk_widget_destroy(machine_selection);
@@ -196,13 +173,6 @@ ags_machine_selection_run(AgsMachineSelection *machine_selection)
   return(machine);
 }
 
-/**
- * ags_machine_selection_new:
- *
- * Create a new #AgsMachineSelection.
- *
- * Since: 0.4
- */
 AgsMachineSelection*
 ags_machine_selection_new(AgsWindow *window)
 {

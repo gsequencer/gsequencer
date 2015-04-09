@@ -35,8 +35,8 @@
 
 #define AGS_RECALL_HANDLER(handler)    ((AgsRecallHandler *)(handler))
 
-#define AGS_RECALL_DEFAULT_VERSION "0.4.2\0"
-#define AGS_RECALL_DEFAULT_BUILD_ID "CEST 02-10-2014 19:36\0"
+#define AGS_RECALL_DEFAULT_VERSION "0.4.0\0"
+#define AGS_RECALL_DEFAULT_BUILD_ID "CEST 22-06-2014 03:07\0"
 
 typedef struct _AgsRecall AgsRecall;
 typedef struct _AgsRecallClass AgsRecallClass;
@@ -51,7 +51,7 @@ typedef enum{
   AGS_RECALL_NOTATION              = 1 <<  5,
   AGS_RECALL_DEFAULT_TEMPLATE      = 1 <<  6,
   //TODO:JK: remove because it's useless
-  AGS_RECALL_DYNAMIC_CONNECTED     = 1 <<  7,
+  //  AGS_RECALL_IS_REAL               = 1 <<  7,
   AGS_RECALL_INPUT_ORIENTATED      = 1 <<  8,
   AGS_RECALL_OUTPUT_ORIENTATED     = 1 <<  9,
   AGS_RECALL_PERSISTENT            = 1 << 10,
@@ -138,15 +138,6 @@ struct _AgsRecallClass
   void (*child_added)(AgsRecall *recall, AgsRecall *child);
 };
 
-/**
- * AgsRecallHandler:
- * @signal_name the signal to listen
- * @callback the callback to use
- * @data user data to pass
- * @handler the handler id
- *
- * A #AgsRecallHandler-struct acts as a callback definition
- */
 struct _AgsRecallHandler
 {
   const gchar *signal_name;
@@ -193,6 +184,8 @@ GList* ags_recall_get_dependencies(AgsRecall *recall);
 void ags_recall_remove_child(AgsRecall *recall, AgsRecall *child);
 void ags_recall_add_child(AgsRecall *recall, AgsRecall *child);
 GList* ags_recall_get_children(AgsRecall *recall);
+
+void ags_recall_stop(GList *recall);
 
 void ags_recall_set_effect(AgsRecall *recall, char *effect);
 GList* ags_recall_find_by_effect(GList *list, AgsRecallID *recall_id, char *effect);

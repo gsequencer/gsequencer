@@ -30,17 +30,6 @@ void ags_file_id_ref_get_property(GObject *gobject,
 				  GParamSpec *param_spec);
 void ags_file_id_ref_finalize(GObject *gobject);
 
-/**
- * SECTION:ags_file_id_ref
- * @short_description: file id reference
- * @title: AgsFileIdRef
- * @section_id:
- * @include: ags/file/ags_file_id_ref.h
- *
- * The #AgsFileIdRef referes a XML node by its ID. It's used
- * to perform XPath lookup.
- */
-
 enum{
   RESOLVED,
   LAST_SIGNAL,
@@ -160,7 +149,7 @@ ags_file_id_ref_class_init(AgsFileIdRefClass *file_id_ref)
 void
 ags_file_id_ref_init(AgsFileIdRef *file_id_ref)
 {
-  file_id_ref->ags_main = NULL;
+  file_id_ref->main = NULL;
   file_id_ref->file = NULL;
 
   file_id_ref->node = NULL;
@@ -227,17 +216,17 @@ ags_file_id_ref_set_property(GObject *gobject,
     break;
   case PROP_MAIN:
     {
-      GObject *ags_main;
+      GObject *main;
 
-      ags_main = (GObject *) g_value_get_object(value);
+      main = (GObject *) g_value_get_object(value);
 
-      if(file_id_ref->ags_main != NULL)
-	g_object_unref(file_id_ref->ags_main);
+      if(file_id_ref->main != NULL)
+	g_object_unref(file_id_ref->main);
 
-      if(ags_main != NULL)
-	g_object_ref(ags_main);
+      if(main != NULL)
+	g_object_ref(main);
 
-      file_id_ref->ags_main = ags_main;
+      file_id_ref->main = main;
     }
     break;
   default:
@@ -279,7 +268,7 @@ ags_file_id_ref_get_property(GObject *gobject,
     break;
   case PROP_MAIN:
     {
-      g_value_set_object(value, file_id_ref->ags_main);
+      g_value_set_object(value, file_id_ref->main);
     }
     break;
   default:
@@ -307,8 +296,8 @@ ags_file_id_ref_finalize(GObject *gobject)
     g_object_unref(file_id_ref->file);
   }
 
-  if(file_id_ref->ags_main != NULL){
-    g_object_unref(file_id_ref->ags_main);
+  if(file_id_ref->main != NULL){
+    g_object_unref(file_id_ref->main);
   }
 
   G_OBJECT_CLASS(ags_file_id_ref_parent_class)->finalize(gobject);
@@ -326,15 +315,6 @@ ags_file_id_ref_resolved(AgsFileIdRef *file_id_ref)
   g_object_unref((GObject *) file_id_ref);
 }
 
-/**
- * ags_file_id_ref_new:
- *
- * Creates an #AgsFileIdRef
- *
- * Returns: a new #AgsFileIdRef
- *
- * Since: 0.4
- */
 AgsFileIdRef*
 ags_file_id_ref_new()
 {

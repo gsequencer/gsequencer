@@ -39,16 +39,6 @@ void ags_input_finalize (GObject *gobject);
 void ags_input_connect(AgsConnectable *connectable);
 void ags_input_disconnect(AgsConnectable *connectable);
 
-/**
- * SECTION:ags_input
- * @short_description: Input of #AgsAudio
- * @title: AgsInput
- * @section_id:
- * @include: ags/audio/ags_input.h
- *
- * #AgsInput represents an input channel of #AgsAudio.
- */
-
 static gpointer ags_input_parent_class = NULL;
 static AgsConnectableInterface *ags_input_parent_connectable_interface;
 
@@ -111,13 +101,6 @@ ags_input_class_init(AgsInputClass *input)
   gobject->finalize = ags_input_finalize;
   
   /* properties */
-  /**
-   * AgsInput:file-link:
-   *
-   * The file containing audio data.
-   * 
-   * Since: 0.4.0
-   */
   param_spec = g_param_spec_object("file-link\0",
 				   "file link assigned to\0",
 				   "The file link to read from\0",
@@ -229,16 +212,6 @@ ags_input_disconnect(AgsConnectable *connectable)
   ags_input_parent_connectable_interface->disconnect(connectable);
 }
 
-/**
- * ags_input_new:
- * @audio: the #AgsAudio
- *
- * Creates a #AgsInput, linking tree to @audio.
- *
- * Returns: a new #AgsInput
- *
- * Since: 0.3
- */
 AgsInput*
 ags_input_new(GObject *audio)
 {

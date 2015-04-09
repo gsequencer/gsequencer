@@ -75,11 +75,11 @@ void ags_recycling_remove_audio_signal(AgsRecycling *recycling,
 
 void ags_recycling_create_audio_signal_with_defaults(AgsRecycling *recycling,
 						     AgsAudioSignal *audio_signal,
-						     gdouble delay, guint attack);
+						     guint delay, guint attack);
 void ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
 							AgsAudioSignal *audio_signal,
 							guint frame_count,
-							gdouble delay, guint attack);
+							guint delay, guint attack);
 
 gint ags_recycling_position(AgsRecycling *start_recycling, AgsRecycling *end_region,
 			    AgsRecycling *recycling);

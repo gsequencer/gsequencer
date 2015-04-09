@@ -139,7 +139,6 @@ ags_async_queue_init(AgsAsyncQueue *async_queue)
 {
   struct sigevent sev;
 
-  /* deprecated
   async_queue->flags = AGS_ASYNC_QUEUE_POSIX_THREADS;
 
   async_queue->output_sum = AGS_DEVOUT_DEFAULT_BUFFER_SIZE;
@@ -159,8 +158,6 @@ ags_async_queue_init(AgsAsyncQueue *async_queue)
   pthread_mutex_init(&(async_queue->lock.mutex), NULL);
 
   async_queue->context = NULL;
-  async_queue->unref_context = NULL;
-  */
 }
 
 void
@@ -408,26 +405,6 @@ ags_async_queue_worker(void *ptr)
   }
 
   return(NULL);
-}
-
-/**
- * ags_async_queue_clean:
- */
-void
-ags_async_queue_clean(AgsAsyncQueue *async_queue)
-{
-  GList *list;
-
-  list = async_queue->unref_context;
-
-  while(list != NULL){
-    g_object_unref(list->data);
-
-    list = list->next;
-  }
-
-  g_list_free(async_queue->unref_context);
-  async_queue->unref_context = NULL;
 }
 
 /**

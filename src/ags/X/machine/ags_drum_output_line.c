@@ -21,15 +21,6 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
-#include <ags/util/ags_id_generator.h>
-
-#include <ags/object/ags_plugin.h>
-
-#include <ags/file/ags_file.h>
-#include <ags/file/ags_file_stock.h>
-#include <ags/file/ags_file_id_ref.h>
-#include <ags/file/ags_file_lookup.h>
-
 #include <ags/audio/ags_recall_factory.h>
 
 #include <ags/audio/recall/ags_delay_audio.h>
@@ -37,8 +28,6 @@
 #include <ags/audio/recall/ags_copy_pattern_audio_run.h>
 #include <ags/audio/recall/ags_stream_channel.h>
 #include <ags/audio/recall/ags_stream_channel_run.h>
-#include <ags/audio/recall/ags_loop_channel.h>
-#include <ags/audio/recall/ags_loop_channel_run.h>
 
 #include <ags/X/ags_window.h>
 
@@ -48,31 +37,12 @@
 
 void ags_drum_output_line_class_init(AgsDrumOutputLineClass *drum_output_line);
 void ags_drum_output_line_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_drum_output_line_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_drum_output_line_init(AgsDrumOutputLine *drum_output_line);
 void ags_drum_output_line_destroy(GtkObject *object);
 void ags_drum_output_line_connect(AgsConnectable *connectable);
 void ags_drum_output_line_disconnect(AgsConnectable *connectable);
-gchar* ags_drum_output_line_get_name(AgsPlugin *plugin);
-void ags_drum_output_line_set_name(AgsPlugin *plugin, gchar *name);
-gchar* ags_drum_output_line_get_xml_type(AgsPlugin *plugin);
-void ags_drum_output_line_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
-void ags_drum_output_line_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
-xmlNode* ags_drum_output_line_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
 void ags_drum_output_line_set_channel(AgsLine *line, AgsChannel *channel);
-void ags_drum_output_line_map_recall(AgsLine *line,
-				     guint output_pad_start);
-
-/**
- * SECTION:ags_drum_output_line
- * @short_description: drum sequencer output line
- * @title: AgsDrumOutputLine
- * @section_id:
- * @include: ags/X/machine/ags_drum_output_line.h
- *
- * The #AgsDrumOutputLine is a composite widget to act as drum sequencer output line.
- */
 
 static gpointer ags_drum_output_line_parent_class = NULL;
 static AgsConnectableInterface *ags_drum_output_line_parent_connectable_interface;
@@ -101,12 +71,6 @@ ags_drum_output_line_get_type()
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_drum_output_line_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_drum_output_line = g_type_register_static(AGS_TYPE_LINE,
 						       "AgsDrumOutputLine\0", &ags_drum_output_line_info,
 						       0);
@@ -114,10 +78,6 @@ ags_drum_output_line_get_type()
     g_type_add_interface_static(ags_type_drum_output_line,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_drum_output_line,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
   }
 
   return(ags_type_drum_output_line);
@@ -134,7 +94,6 @@ ags_drum_output_line_class_init(AgsDrumOutputLineClass *drum_output_line)
   line = AGS_LINE_CLASS(drum_output_line);
 
   line->set_channel = ags_drum_output_line_set_channel;
-  line->map_recall = ags_drum_output_line_map_recall;
 }
 
 void
@@ -147,23 +106,10 @@ ags_drum_output_line_connectable_interface_init(AgsConnectableInterface *connect
 }
 
 void
-ags_drum_output_line_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  plugin->get_name = ags_drum_output_line_get_name;
-  plugin->set_name = ags_drum_output_line_set_name;
-  plugin->get_xml_type = ags_drum_output_line_get_xml_type;
-  plugin->set_xml_type = ags_drum_output_line_set_xml_type;
-  plugin->read = ags_drum_output_line_read;
-  plugin->write = ags_drum_output_line_write;
-}
-
-void
 ags_drum_output_line_init(AgsDrumOutputLine *drum_output_line)
 {
   g_signal_connect_after((GObject *) drum_output_line, "parent_set\0",
 			 G_CALLBACK(ags_drum_output_line_parent_set_callback), NULL);
-
-  drum_output_line->xml_type = "ags-drum-output-line\0";
 }
 
 void
@@ -195,30 +141,6 @@ ags_drum_output_line_disconnect(AgsConnectable *connectable)
   /* empty */
 }
 
-gchar*
-ags_drum_output_line_get_name(AgsPlugin *plugin)
-{
-  return(AGS_DRUM_OUTPUT_LINE(plugin)->name);
-}
-
-void
-ags_drum_output_line_set_name(AgsPlugin *plugin, gchar *name)
-{
-  AGS_DRUM_OUTPUT_LINE(plugin)->name = name;
-}
-
-gchar*
-ags_drum_output_line_get_xml_type(AgsPlugin *plugin)
-{
-  return(AGS_DRUM_OUTPUT_LINE(plugin)->xml_type);
-}
-
-void
-ags_drum_output_line_set_xml_type(AgsPlugin *plugin, gchar *xml_type)
-{
-  AGS_DRUM_OUTPUT_LINE(plugin)->xml_type = xml_type;
-}
-
 void
 ags_drum_output_line_set_channel(AgsLine *line, AgsChannel *channel)
 {
@@ -228,30 +150,42 @@ ags_drum_output_line_set_channel(AgsLine *line, AgsChannel *channel)
 
   drum_output_line = AGS_DRUM_OUTPUT_LINE(line);
 
+  if(line->channel != NULL){
+    line->flags &= (~AGS_LINE_MAPPED_RECALL);
+  }
+
   if(channel != NULL){
     AgsDevout *devout;
     AgsAudioSignal *audio_signal;
-    gdouble delay;
     guint stop;
 
-    if(channel->audio != NULL &&
-       AGS_AUDIO(channel->audio)->devout != NULL){
-      devout = AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout);
+    devout = AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout);
 
-      audio_signal = ags_audio_signal_new(devout,
-					  channel->first_recycling,
-					  NULL);
-      audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
-      ags_recycling_add_audio_signal(channel->first_recycling,
-				     audio_signal);
+    stop = (guint) ceil(16.0 * AGS_DEVOUT_DEFAULT_DELAY * exp2(8.0 - 4.0) + 1.0);
+
+    audio_signal = ags_audio_signal_new(devout,
+					channel->first_recycling,
+					NULL);
+    audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
+    //    ags_audio_signal_stream_resize(audio_signal,
+    //				   stop);
+    ags_recycling_add_audio_signal(channel->first_recycling,
+				   audio_signal);
+
+    //    audio_signal = ags_audio_signal_get_template(channel->first_recycling->audio_signal);
+    //    ags_audio_signal_stream_resize(audio_signal, stop);
+    if((AGS_LINE_PREMAPPED_RECALL & (line->flags)) == 0){
+      ags_drum_output_line_add_default_recall(AGS_DRUM_OUTPUT_LINE(line));
     }
   }
 }
 
 void
-ags_drum_output_line_map_recall(AgsLine *line,
-				guint output_pad_start)
+ags_drum_output_line_add_default_recall(AgsDrumOutputLine *drum_output_line)
 {
+  AgsDrum *drum;
+  AgsLine *line;
+
   AgsAudio *audio;
 
   AgsChannel *output;
@@ -260,13 +194,15 @@ ags_drum_output_line_map_recall(AgsLine *line,
 
   GList *list;
 
-  if((AGS_LINE_MAPPED_RECALL & (line->flags)) != 0 ||
-     (AGS_LINE_PREMAPPED_RECALL & (line->flags)) != 0){
-    return;
-  }
+  printf("ags_drum_output_line_map_recall\n\0");
 
-  output = line->channel;
+  line = AGS_LINE(drum_output_line);
+  line->flags |= AGS_LINE_MAPPED_RECALL;
+
+  output = AGS_LINE(drum_output_line)->channel;
   audio = AGS_AUDIO(output->audio);
+
+  drum = AGS_DRUM(audio->machine);
 
   /* get some recalls */
   list = ags_recall_find_type(audio->play, AGS_TYPE_DELAY_AUDIO);
@@ -296,67 +232,8 @@ ags_drum_output_line_map_recall(AgsLine *line,
 			     AGS_RECALL_FACTORY_RECALL | 
 			     AGS_RECALL_FACTORY_ADD),
 			    0);
-
-  AGS_LINE_CLASS(ags_drum_output_line_parent_class)->map_recall(line,
-								output_pad_start);
 }
 
-void
-ags_drum_output_line_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
-{
-  AgsDrumOutputLine *gobject;
-
-  gobject = AGS_DRUM_OUTPUT_LINE(plugin);
-
-  ags_file_add_id_ref(file,
-		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->ags_main,
-				   "file\0", file,
-				   "node\0", node,
-				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
-				   "reference\0", gobject,
-				   NULL));
-}
-
-xmlNode*
-ags_drum_output_line_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
-{
-  AgsDrumOutputLine *drum_output_line;
-  xmlNode *node;
-  gchar *id;
-
-  drum_output_line = AGS_DRUM_OUTPUT_LINE(plugin);
-
-  id = ags_id_generator_create_uuid();
-  
-  node = xmlNewNode(NULL,
-		    "ags-drum-output-line\0");
-  xmlNewProp(node,
-	     AGS_FILE_ID_PROP,
-	     id);
-
-  ags_file_add_id_ref(file,
-		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->ags_main,
-				   "file\0", file,
-				   "node\0", node,
-				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
-				   "reference\0", drum_output_line,
-				   NULL));
-
-  return(node);
-}
-
-/**
- * ags_drum_output_line_new:
- * @channel: the assigned channel
- *
- * Creates an #AgsDrumOutputLine
- *
- * Returns: a new #AgsDrumOutputLine
- *
- * Since: 0.4
- */
 AgsDrumOutputLine*
 ags_drum_output_line_new(AgsChannel *channel)
 {

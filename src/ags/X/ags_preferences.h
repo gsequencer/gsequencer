@@ -21,7 +21,6 @@
 
 #include <gtk/gtk.h>
 
-#include <ags/X/ags_generic_preferences.h>
 #include <ags/X/ags_audio_preferences.h>
 #include <ags/X/ags_performance_preferences.h>
 #include <ags/X/ags_server_preferences.h>
@@ -32,8 +31,6 @@
 #define AGS_IS_PREFERENCES(obj)             (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_PREFERENCES))
 #define AGS_IS_PREFERENCES_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_PREFERENCES))
 #define AGS_PREFERENCES_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_PREFERENCES, AgsPreferencesClass))
-
-#define AGS_PREFERENCES_DEFAULT_FILENAME "ags_current.xml\0"
 
 typedef struct _AgsPreferences AgsPreferences;
 typedef struct _AgsPreferencesClass AgsPreferencesClass;
@@ -50,7 +47,6 @@ struct _AgsPreferences
 
   GtkWindow *window;
 
-  AgsGenericPreferences *generic_preferences;
   AgsAudioPreferences *audio_preferences;
   AgsPerformancePreferences *performance_preferences;
   AgsServerPreferences *server_preferences;

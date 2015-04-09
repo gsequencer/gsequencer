@@ -36,17 +36,6 @@ void ags_property_collection_editor_reset(AgsApplicable *applicable);
 void ags_property_collection_editor_destroy(GtkObject *object);
 void ags_property_collection_editor_show(GtkWidget *widget);
 
-/**
- * SECTION:ags_property_collection_editor
- * @short_description: Edit propertys in bulk mode.
- * @title: AgsPropertyCollectionEditor
- * @section_id:
- * @include: ags/X/ags_property_collection_editor.h
- *
- * #AgsPropertyCollectionEditor is a composite widget to modify propertys in bulk mode. A property collection
- * editor should be packed by a #AgsMachineEditor.
- */
-
 AgsConnectableInterface *ags_property_collection_editor_parent_connectable_interface;
 
 GType
@@ -177,15 +166,14 @@ ags_property_collection_editor_apply(AgsApplicable *applicable)
 {
   AgsPropertyCollectionEditor *property_collection_editor;
   GtkWidget *child;
-  GList *list, *list_start;
+  GList *list;
 
   property_collection_editor = AGS_PROPERTY_COLLECTION_EDITOR(applicable);
 
   if((AGS_PROPERTY_EDITOR_ENABLED & (AGS_PROPERTY_EDITOR(property_collection_editor)->flags)) == 0)
     return;
 
-  list_start = 
-    list = gtk_container_get_children(GTK_CONTAINER(property_collection_editor->child));
+  list = gtk_container_get_children(GTK_CONTAINER(property_collection_editor->child));
 
   while(list != NULL){
     child = GTK_WIDGET(g_object_get_data(G_OBJECT(list->data), "AgsChild\0"));
@@ -193,8 +181,6 @@ ags_property_collection_editor_apply(AgsApplicable *applicable)
 
     list = list->next;
   }
-
-  g_list_free(list_start);
 }
 
 void
@@ -219,16 +205,6 @@ ags_property_collection_editor_show(GtkWidget *widget)
   /* empty */
 }
 
-/**
- * ags_property_collection_editor_new:
- * @channel_type: either %AGS_TYPE_INPUT or %AGS_TYPE_OUTPUT
- *
- * Creates an #AgsPropertyCollectionEditor
- *
- * Returns: a new #AgsPropertyCollectionEditor
- *
- * Since: 0.3
- */
 AgsPropertyCollectionEditor*
 ags_property_collection_editor_new(GType child_type,
 				   guint child_parameter_count,

@@ -111,14 +111,6 @@ AgsRecall* ags_recall_real_duplicate(AgsRecall *reall,
 void ags_recall_child_done(AgsRecall *child,
 			   AgsRecall *parent);
 
-/**
- * SECTION:ags_recall
- * @Short_description: The recall base class
- * @Title: AgsRecall
- *
- * #AgsRecall acts as effect processor.
- */
-
 enum{
   RESOLVE_DEPENDENCIES,
   RUN_INIT_PRE,
@@ -234,13 +226,6 @@ ags_recall_class_init(AgsRecallClass *recall)
   gobject->finalize = ags_recall_finalize;
 
   /* properties */
-  /**
-   * AgsRecall:devout:
-   *
-   * The assigned devout.
-   * 
-   * Since: 0.4
-   */
   param_spec = g_param_spec_object("devout\0",
 				   "devout of recall\0",
 				   "The devout which this recall is packed into\0",
@@ -250,14 +235,7 @@ ags_recall_class_init(AgsRecallClass *recall)
 				  PROP_DEVOUT,
 				  param_spec);
 
-  /**
-   * AgsRecall:recall-container:
-   *
-   * The recall container packed into.
-   * 
-   * Since: 0.4
-   */
-  param_spec = g_param_spec_object("recall-container\0",
+  param_spec = g_param_spec_object("recall_container\0",
 				   "container of recall\0",
 				   "The container which this recall is packed into\0",
 				   AGS_TYPE_RECALL_CONTAINER,
@@ -266,13 +244,6 @@ ags_recall_class_init(AgsRecallClass *recall)
 				  PROP_CONTAINER,
 				  param_spec);
 
-  /**
-   * AgsRecall:dependency:
-   *
-   * The recall depending on.
-   * 
-   * Since: 0.4
-   */
   param_spec = g_param_spec_object("dependency\0",
 				   "dependency of recall\0",
 				   "The dependency that can be added\0",
@@ -282,14 +253,7 @@ ags_recall_class_init(AgsRecallClass *recall)
 				  PROP_DEPENDENCY,
 				  param_spec);
 
-  /**
-   * AgsRecall:recall-id:
-   *
-   * The recall id running in.
-   * 
-   * Since: 0.4
-   */
-  param_spec = g_param_spec_object("recall-id\0",
+  param_spec = g_param_spec_object("recall_id\0",
 				   "run id of recall\0",
 				   "The recall id of the recall\0",
 				   AGS_TYPE_RECALL_ID,
@@ -298,13 +262,6 @@ ags_recall_class_init(AgsRecallClass *recall)
 				  PROP_RECALL_ID,
 				  param_spec);
   
-  /**
-   * AgsRecall:audio-channel:
-   *
-   * The parent recall.
-   * 
-   * Since: 0.4
-   */
   param_spec = g_param_spec_object("parent\0",
 				   "parent recall of this recall\0",
 				   "The recall should be the parent instance of this recall\0",
@@ -314,13 +271,6 @@ ags_recall_class_init(AgsRecallClass *recall)
 				  PROP_PARENT,
 				  param_spec);
   
-  /**
-   * AgsRecall:audio-channel:
-   *
-   * The child recall.
-   * 
-   * Since: 0.4
-   */
   param_spec = g_param_spec_object("child\0",
 				   "child of recall\0",
 				   "The child that can be added\0",
@@ -354,15 +304,8 @@ ags_recall_class_init(AgsRecallClass *recall)
   recall->child_added = NULL;
 
   /* signals */
-  /**
-   * AgsRecall::resolve-dependencies:
-   * @recall: the object to resolve
-   *
-   * The ::resolve-dependencies signal notifies about resolving
-   * dependencies.
-   */
   recall_signals[RESOLVE_DEPENDENCIES] =
-    g_signal_new("resolve-dependencies\0",
+    g_signal_new("resolve_dependencies\0",
 		 G_TYPE_FROM_CLASS (recall),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsRecallClass, resolve_dependencies),
@@ -370,109 +313,66 @@ ags_recall_class_init(AgsRecallClass *recall)
 		 g_cclosure_marshal_VOID__VOID,
 		 G_TYPE_NONE, 0);
 
-  /**
-   * AgsRecall::run-init-pre:
-   * @recall: the object to initialize
-   *
-   * The ::run-init-pre signal notifies about initializing
-   * stage 0.
-   */
   recall_signals[RUN_INIT_PRE] =
-    g_signal_new("run-init-pre\0",
+    g_signal_new("run_init_pre\0",
 		 G_TYPE_FROM_CLASS (recall),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsRecallClass, run_init_pre),
 		 NULL, NULL,
-		 g_cclosure_marshal_VOID__VOID,
-		 G_TYPE_NONE, 0);
+		 g_cclosure_marshal_VOID__UINT,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_UINT);
 
-  /**
-   * AgsRecall::run-init-inter:
-   * @recall: the object to initialize
-   *
-   * The ::run-init-inter signal notifies about initializing
-   * stage 1.
-   */
   recall_signals[RUN_INIT_INTER] =
-    g_signal_new("run-init-inter\0",
+    g_signal_new("run_init_inter\0",
 		 G_TYPE_FROM_CLASS (recall),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsRecallClass, run_init_inter),
 		 NULL, NULL,
-		 g_cclosure_marshal_VOID__VOID,
-		 G_TYPE_NONE, 0);
+		 g_cclosure_marshal_VOID__UINT,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_UINT);
 
-  /**
-   * AgsRecall::run-init-post:
-   * @recall: the object to initialize
-   *
-   * The ::run-init-post signal notifies about initializing
-   * stage 2.
-   */
   recall_signals[RUN_INIT_POST] =
-    g_signal_new("run-init-post\0",
+    g_signal_new("run_init_post\0",
 		 G_TYPE_FROM_CLASS (recall),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsRecallClass, run_init_post),
 		 NULL, NULL,
-		 g_cclosure_marshal_VOID__VOID,
-		 G_TYPE_NONE, 0);
+		 g_cclosure_marshal_VOID__UINT,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_UINT);
 
-  /**
-   * AgsRecall::run-pre:
-   * @recall: the object to play 
-   *
-   * The ::run-pre signal notifies about running
-   * stage 0.
-   */
   recall_signals[RUN_PRE] =
-    g_signal_new("run-pre\0",
+    g_signal_new("run_pre\0",
 		 G_TYPE_FROM_CLASS (recall),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsRecallClass, run_pre),
 		 NULL, NULL,
-		 g_cclosure_marshal_VOID__VOID,
-		 G_TYPE_NONE, 0);
+		 g_cclosure_marshal_VOID__UINT,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_UINT);
 
-  /**
-   * AgsRecall::run-inter:
-   * @recall: the object to play
-   *
-   * The ::run-inter signal notifies about running
-   * stage 1.
-   */
   recall_signals[RUN_INTER] =
-    g_signal_new("run-inter\0",
+    g_signal_new("run_inter\0",
 		 G_TYPE_FROM_CLASS (recall),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsRecallClass, run_inter),
 		 NULL, NULL,
-		 g_cclosure_marshal_VOID__VOID,
-		 G_TYPE_NONE, 0);
+		 g_cclosure_marshal_VOID__UINT,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_UINT);
 
-  /**
-   * AgsRecall::run-post:
-   * @recall: the object to play
-   *
-   * The ::run-post signal notifies about running
-   * stage 2.
-   */
   recall_signals[RUN_POST] =
-    g_signal_new("run-post\0",
+    g_signal_new("run_post\0",
 		 G_TYPE_FROM_CLASS (recall),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsRecallClass, run_post),
 		 NULL, NULL,
-		 g_cclosure_marshal_VOID__VOID,
-		 G_TYPE_NONE, 0);
+		 g_cclosure_marshal_VOID__UINT,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_UINT);
 
-  /**
-   * AgsRecall::stop-persistent:
-   * @recall: the object stop playback
-   *
-   * The ::stop-persistent signal notifies about definitively
-   * stopping playback.
-   */
   recall_signals[STOP_PERSISTENT] =
     g_signal_new("stop_persistent\0",
 		 G_TYPE_FROM_CLASS (recall),
@@ -482,12 +382,6 @@ ags_recall_class_init(AgsRecallClass *recall)
 		 g_cclosure_marshal_VOID__VOID,
 		 G_TYPE_NONE, 0);
 
-  /**
-   * AgsRecall::done:
-   * @recall: the object to finish playback
-   *
-   * The ::done signal notifies about stopping playback.
-   */
   recall_signals[DONE] =
     g_signal_new("done\0",
 		 G_TYPE_FROM_CLASS (recall),
@@ -497,27 +391,16 @@ ags_recall_class_init(AgsRecallClass *recall)
 		 g_cclosure_marshal_VOID__VOID,
 		 G_TYPE_NONE, 0);
 
-  /**
-   * AgsRecall::cancel:
-   * @recall: the object to cancel playback
-   *
-   * The ::cancel signal notifies about cancelling playback.
-   */
   recall_signals[CANCEL] =
     g_signal_new("cancel\0",
 		 G_TYPE_FROM_CLASS (recall),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsRecallClass, cancel),
 		 NULL, NULL,
-		 g_cclosure_marshal_VOID__VOID,
-		 G_TYPE_NONE, 0);
+		 g_cclosure_marshal_VOID__UINT,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_UINT);
 
-  /**
-   * AgsRecall::remove:
-   * @recall: the object to remove of audio loop
-   *
-   * The ::remove signal notifies about removing.
-   */
   recall_signals[REMOVE] =
     g_signal_new("remove\0",
 		 G_TYPE_FROM_CLASS (recall),
@@ -527,15 +410,6 @@ ags_recall_class_init(AgsRecallClass *recall)
 		 g_cclosure_marshal_VOID__VOID,
 		 G_TYPE_NONE, 0);
 
-  /**
-   * AgsRecall::duplicate:
-   * @recall: the object to duplicate
-   * @recall_id: the assigned #AgsRecallID
-   * @n_params: pointer to array length
-   * @parameter: parameter array
-   *
-   * The ::duplicate signal notifies about instantiating.
-   */
   recall_signals[DUPLICATE] =
     g_signal_new("duplicate\0",
 		 G_TYPE_FROM_CLASS (recall),
@@ -547,17 +421,8 @@ ags_recall_class_init(AgsRecallClass *recall)
 		 G_TYPE_OBJECT,
 		 G_TYPE_POINTER, G_TYPE_POINTER);
 
-  /**
-   * AgsRecall::notify-dependency:
-   * @recall: the object to notify
-   * @dependency: the kind of dependency
-   * @count: the reference count
-   *
-   * The ::notify-dependency signal notifies about dependencies
-   * added.
-   */
   recall_signals[NOTIFY_DEPENDENCY] =
-    g_signal_new("notify-dependency\0",
+    g_signal_new("notify_dependency\0",
 		 G_TYPE_FROM_CLASS (recall),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsRecallClass, notify_dependency),
@@ -566,14 +431,6 @@ ags_recall_class_init(AgsRecallClass *recall)
 		 G_TYPE_NONE, 2,
 		 G_TYPE_UINT, G_TYPE_INT);
 
-  /**
-   * AgsRecall::child-added:
-   * @recall: the object to add the child
-   * @child: the #AgsRecall to add
-   *
-   * The ::child-added signal notifies about children
-   * added.
-   */
   recall_signals[CHILD_ADDED] =
     g_signal_new("child-added\0",
 		 G_TYPE_FROM_CLASS (recall),
@@ -900,8 +757,8 @@ ags_recall_connect(AgsConnectable *connectable)
 
   while(list != NULL){
     recall_handler = AGS_RECALL_HANDLER(list->data);
-    recall_handler->handler = g_signal_connect_after(G_OBJECT(recall), recall_handler->signal_name,
-						     G_CALLBACK(recall_handler->callback), recall_handler->data);
+    recall_handler->handler = g_signal_connect(G_OBJECT(recall), recall_handler->signal_name,
+					       G_CALLBACK(recall_handler->callback), recall_handler->data);
 
     list = list->next;
   }
@@ -978,10 +835,6 @@ ags_recall_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
 
   recall = AGS_RECALL(dynamic_connectable);
 
-#ifdef AGS_DEBUG
-      g_message("dynamic connect: %s\0", G_OBJECT_TYPE_NAME(recall));
-#endif
-
   /* connect children */
   list = recall->children;
 
@@ -1002,8 +855,7 @@ ags_recall_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
     list = list->next;
   }
 
-  //TODO:JK: fixme
-  recall->flags |= AGS_RECALL_DYNAMIC_CONNECTED;
+  recall->flags |= AGS_RECALL_RUN_INITIALIZED;
 }
 
 void
@@ -1034,6 +886,8 @@ ags_recall_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable)
 
     list = list->next;
   }
+
+  recall->flags &= (~AGS_RECALL_RUN_INITIALIZED);
 }
 
 gchar*
@@ -1093,27 +947,20 @@ ags_recall_get_ports(AgsPlugin *plugin)
 void
 ags_recall_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 {
-  AgsRecall *recall;
-
-  recall = AGS_RECALL(plugin);
-
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
 				   "main\0", file->ags_main,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
-				   "reference\0", recall,
+				   "reference\0", G_OBJECT(plugin),
 				   NULL));
 }
 
 xmlNode*
 ags_recall_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 {
-  AgsRecall *recall;
   xmlNode *node;
   gchar *id;
-
-  recall = AGS_RECALL(plugin);
 
   id = ags_id_generator_create_uuid();
 
@@ -1128,7 +975,7 @@ ags_recall_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 				   "main\0", file->ags_main,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
-				   "reference\0", recall,
+				   "reference\0", G_OBJECT(plugin),
 				   NULL));
 
   xmlAddChild(parent,
@@ -1153,11 +1000,11 @@ ags_recall_finalize(GObject *gobject)
   }
 
   if((AGS_RECALL_CONNECTED & (recall->flags)) != 0){
-    //    ags_connectable_disconnect(AGS_CONNECTABLE(recall));
+    ags_connectable_disconnect(AGS_CONNECTABLE(recall));
   }
 
-  if((AGS_RECALL_DYNAMIC_CONNECTED & (recall->flags)) != 0){
-    //    ags_dynamic_connectable_disconnect_dynamic(AGS_DYNAMIC_CONNECTABLE(recall));
+  if((AGS_RECALL_RUN_INITIALIZED & (recall->flags)) != 0){
+    ags_dynamic_connectable_disconnect_dynamic(AGS_DYNAMIC_CONNECTABLE(recall));
   }
 
   //  if(recall->name != NULL)
@@ -1181,12 +1028,10 @@ ags_recall_finalize(GObject *gobject)
 
 /**
  * ags_recall_set_flags:
- * @recall: an #AgsRecall
- * @flags: the flags mask
+ * @recall an #AgsRecall
+ * @flags the flags mask
  *
  * Set flags recursivly.
- * 
- * Since: 0.4
  */
 void
 ags_recall_set_flags(AgsRecall *recall, guint flags)
@@ -1223,12 +1068,10 @@ ags_recall_set_flags(AgsRecall *recall, guint flags)
 
 /**
  * ags_recall_resolve_dependencies:
- * @recall: an #AgsRecall
+ * @recall an #AgsRecall
  *
  * A signal indicating that the inheriting object should resolve
  * it's dependencies.
- * 
- * Since: 0.4
  */
 void
 ags_recall_resolve_dependencies(AgsRecall *recall)
@@ -1276,11 +1119,9 @@ ags_recall_real_run_init_pre(AgsRecall *recall)
 
 /**
  * ags_recall_run_init_pre:
- * @recall: an #AgsRecall
+ * @recall an #AgsRecall
  *
  * Prepare for run, this is the pre stage within the preparation.
- * 
- * Since: 0.4
  */
 void
 ags_recall_run_init_pre(AgsRecall *recall)
@@ -1312,12 +1153,10 @@ ags_recall_real_run_init_inter(AgsRecall *recall)
 }
 
 /**
- * ags_recall_run_init_inter:
- * @recall: an #AgsRecall
+ * ags_recall_run_init_pre:
+ * @recall an #AgsRecall
  *
  * Prepare for run, this is the inter stage within the preparation.
- * 
- * Since: 0.4
  */
 void
 ags_recall_run_init_inter(AgsRecall *recall)
@@ -1347,17 +1186,14 @@ ags_recall_real_run_init_post(AgsRecall *recall)
     list = list->next;
   }
 
-  recall->flags |= (AGS_RECALL_INITIAL_RUN |
-		    AGS_RECALL_RUN_INITIALIZED);
+  recall->flags |= AGS_RECALL_INITIAL_RUN;
 }
 
 /**
- * ags_recall_run_init_post:
- * @recall: an #AgsRecall
+ * ags_recall_run_init_pre:
+ * @recall an #AgsRecall
  *
  * Prepare for run, this is the post stage within the preparation.
- * 
- * Since: 0.4
  */
 void
 ags_recall_run_init_post(AgsRecall *recall)
@@ -1373,32 +1209,26 @@ ags_recall_run_init_post(AgsRecall *recall)
 void
 ags_recall_real_run_pre(AgsRecall *recall)
 {
-  GList *list, *list_next;
+  GList *list;
 
   list = recall->children;
 
   while(list != NULL){
-    list_next = list->next;
-
     if((AGS_RECALL_TEMPLATE & (AGS_RECALL(list->data)->flags)) != 0){
       g_warning("running on template\0");
-      list = list->next;
-      continue;
     }
 
     ags_recall_run_pre(AGS_RECALL(list->data));
 
-    list = list_next;
+    list = list->next;
   }
 }
 
 /**
- * ags_recall_run_pre:
- * @recall: an #AgsRecall
+ * ags_recall_run_init_pre:
+ * @recall an #AgsRecall
  *
  * This is the pre stage within a run.
- * 
- * Since: 0.4
  */
 void
 ags_recall_run_pre(AgsRecall *recall)
@@ -1414,32 +1244,26 @@ ags_recall_run_pre(AgsRecall *recall)
 void
 ags_recall_real_run_inter(AgsRecall *recall)
 {
-  GList *list, *list_next;
+  GList *list;
 
   list = recall->children;
 
   while(list != NULL){
-    list_next = list->next;
-
     if((AGS_RECALL_TEMPLATE & (AGS_RECALL(list->data)->flags)) != 0){
       g_warning("running on template\0");
-      list = list->next;
-      continue;
     }
 
     ags_recall_run_inter(AGS_RECALL(list->data));
 
-    list = list_next;
+    list = list->next;
   }
 }
 
 /**
- * ags_recall_run_inter:
- * @recall: an #AgsRecall
+ * ags_recall_run_init_inter:
+ * @recall an #AgsRecall
  *
  * This is the inter stage within a run.
- * 
- * Since: 0.4
  */
 void
 ags_recall_run_inter(AgsRecall *recall)
@@ -1464,8 +1288,6 @@ ags_recall_real_run_post(AgsRecall *recall)
 
     if((AGS_RECALL_TEMPLATE & (AGS_RECALL(list->data)->flags)) != 0){
       g_warning("running on template\0");
-      list = list->next;
-      continue;
     }
 
     ags_recall_run_post(AGS_RECALL(list->data));
@@ -1479,12 +1301,10 @@ ags_recall_real_run_post(AgsRecall *recall)
 }
 
 /**
- * ags_recall_run_post:
- * @recall: an #AgsRecall
+ * ags_recall_run_init_post:
+ * @recall an #AgsRecall
  *
  * This is the post stage within a run.
- * 
- * Since: 0.4
  */
 void
 ags_recall_run_post(AgsRecall *recall)
@@ -1510,19 +1330,13 @@ ags_recall_real_stop_persistent(AgsRecall *recall)
 
 /**
  * ags_recall_stop_persistent:
- * @recall: an #AgsRecall
+ * @recall an #AgsRecall
  *
  * Unsets the %AGS_RECALL_PERSISTENT flag set and invokes ags_recall_done().
- * 
- * Since: 0.4
  */
 void
 ags_recall_stop_persistent(AgsRecall *recall)
 {
-  if((AGS_RECALL_DONE & (recall->flags)) != 0){
-    return;
-  }
-
   recall->flags &= (~(AGS_RECALL_PERSISTENT |
 		      AGS_RECALL_PERSISTENT_PLAYBACK |
 		      AGS_RECALL_PERSISTENT_SEQUENCER |
@@ -1534,10 +1348,6 @@ ags_recall_stop_persistent(AgsRecall *recall)
 void
 ags_recall_real_done(AgsRecall *recall)
 {
-  if((AGS_RECALL_DONE & (recall->flags)) != 0){
-    return;
-  }
-  
   recall->flags |= AGS_RECALL_DONE;
 
   ags_recall_remove(recall);
@@ -1545,12 +1355,10 @@ ags_recall_real_done(AgsRecall *recall)
 
 /**
  * ags_recall_done:
- * @recall: an #AgsRecall
+ * @recall an #AgsRecall
  *
  * The #AgsRecall doesn't want to run anymore, it has been done its
  * work.
- * 
- * Since: 0.4
  */
 void
 ags_recall_done(AgsRecall *recall)
@@ -1581,13 +1389,13 @@ ags_recall_real_cancel(AgsRecall *recall)
   }
 
   /* call cancel for children */
-  //  list = recall->children;
+  list = recall->children;
 
-  //  while(list != NULL){
-  //    ags_recall_cancel(AGS_RECALL(list->data));
+  while(list != NULL){
+    ags_recall_cancel(AGS_RECALL(list->data));
 
-  //    list = list->next;
-  //  }
+    list = list->next;
+  }
 
   if((AGS_RECALL_PERSISTENT & (recall->flags)) != 0 ||
      (AGS_RECALL_PERSISTENT_PLAYBACK & (recall->flags)) != 0){
@@ -1599,11 +1407,9 @@ ags_recall_real_cancel(AgsRecall *recall)
 
 /**
  * ags_recall_cancel:
- * @recall: an #AgsRecall
+ * @recall an #AgsRecall
  *
  * The #AgsRecall doesn't want to run anymore, it aborts further execution.
- * 
- * Since: 0.4
  */
 void
 ags_recall_cancel(AgsRecall *recall)
@@ -1621,11 +1427,7 @@ ags_recall_real_remove(AgsRecall *recall)
 {
   AgsRecall *parent;
 
-  if(recall == NULL){
-    return;
-  }
-
-  g_object_ref(recall);
+  ags_dynamic_connectable_disconnect_dynamic(AGS_DYNAMIC_CONNECTABLE(recall));
 
   if(recall->parent == NULL){
     parent = NULL;
@@ -1634,26 +1436,23 @@ ags_recall_real_remove(AgsRecall *recall)
   }else{
     parent = AGS_RECALL(recall->parent);
 
-    ags_recall_remove_child(parent,
-			    recall);
+    parent->children = g_list_remove(parent->children, recall);
   }
 
-  /* propagate done */
   if(parent != NULL &&
      (AGS_RECALL_PROPAGATE_DONE & (parent->flags)) != 0 &&
-     (AGS_RECALL_PERSISTENT & (parent->flags)) == 0 &&
      parent->children == NULL){
     ags_recall_done(parent);
   }
+
+  g_object_unref(recall);
 }
 
 /**
  * ags_recall_remove:
- * @recall: an #AgsRecall
+ * @recall an #AgsRecall
  *
  * The #AgsRecall will be removed immediately.
- * 
- * Since: 0.4
  */
 void
 ags_recall_remove(AgsRecall *recall)
@@ -1664,17 +1463,14 @@ ags_recall_remove(AgsRecall *recall)
   g_signal_emit(G_OBJECT(recall),
 		recall_signals[REMOVE], 0);
   g_object_unref(G_OBJECT(recall));
-  g_object_unref(recall);
 }
 
 /**
  * ags_recall_is_done:
- * @recall: an #AgsRecall
- * @recycling_container: an #AgsRecyclingContainer
+ * @recall an #AgsRecall
+ * @recycling_container an #AgsRecyclingContainer
  *
  * Check if recall is over.
- * 
- * Since: 0.4
  */
 gboolean
 ags_recall_is_done(GList *recalls, GObject *recycling_container)
@@ -1695,8 +1491,7 @@ ags_recall_is_done(GList *recalls, GObject *recycling_container)
        recall->recall_id != NULL &&
        recall->recall_id->recycling_container == recycling_container){
       if((AGS_RECALL_DONE & (recall->flags)) == 0){
-	recall->flags &= (~AGS_RECALL_RUN_INITIALIZED);
-	g_message("done: %s\0", G_OBJECT_TYPE_NAME(recall));
+	g_message("%s\0", G_OBJECT_TYPE_NAME(recall));
 	return(FALSE);
       }
     }
@@ -1727,13 +1522,7 @@ ags_recall_real_duplicate(AgsRecall *recall,
 
   copy = g_object_newv(G_OBJECT_TYPE(recall), *n_params, parameter);
 
-  ags_recall_set_flags(copy,
-		       (recall->flags & (~ (AGS_RECALL_TEMPLATE |
-					    AGS_RECALL_RUN_INITIALIZED |
-					    AGS_RECALL_CONNECTED |
-					    AGS_RECALL_DYNAMIC_CONNECTED))));
-
-  copy->child_type = recall->child_type;
+  ags_recall_set_flags(copy, (recall->flags & (~AGS_RECALL_TEMPLATE)));
 
   /* duplicate handlers */
   list = recall->handlers;
@@ -1753,16 +1542,14 @@ ags_recall_real_duplicate(AgsRecall *recall,
 }
 
 /**
- * ags_recall_duplicate:
- * @recall: an #AgsRecall
- * @recall_id: an #AgsRecallID
- * @n_params: the count of #parameter entries
- * @parameter: the properties to be passed for instantiating the #AgsRecall
+ * ags_recall_real_duplicate:
+ * @recall an #AgsRecall
+ * @recall_id an #AgsRecallID
+ * @n_params the count of #parameter entries
+ * @parameter the properties to be passed for instantiating the #AgsRecall
  *
  * Should duplicate an #AgsRecall, so it can pass the runs. Mainly used for
- * creating duplicates from templates, see %AGS_RECALL_TEMPLATE.
- * 
- * Since: 0.4
+ * creating duplicates from templates, see #AGS_RECALL_TEMPLATE.
  */
 AgsRecall*
 ags_recall_duplicate(AgsRecall *recall, AgsRecallID *recall_id) /*, guint n_params, GParameter *parameter */
@@ -1788,12 +1575,10 @@ ags_recall_duplicate(AgsRecall *recall, AgsRecallID *recall_id) /*, guint n_para
 
 /**
  * ags_recall_set_recall_id:
- * @recall: an #AgsRecall
- * @recall_id: the #AgsRecallID to set
+ * @recall an #AgsRecall
+ * @recall_id the #AgsRecallID to set
  *
  * Sets the recall id recursively.
- * 
- * Since: 0.4
  */
 void
 ags_recall_set_recall_id(AgsRecall *recall, AgsRecallID *recall_id)
@@ -1817,13 +1602,11 @@ ags_recall_set_recall_id(AgsRecall *recall, AgsRecallID *recall_id)
 
 /**
  * ags_recall_notify_dependency:
- * @recall: an #AgsRecall
- * @flags: see AgsRecallNotifyDependencyMode
- * @count: how many dependencies
+ * @recall an #AgsRecall
+ * @flags see AgsRecallNotifyDependencyMode
+ * @count how many dependencies
  *
  * Notifies a recall that an other depends on it.
- * 
- * Since: 0.4
  */
 void
 ags_recall_notify_dependency(AgsRecall *recall, guint flags, gint count)
@@ -1839,12 +1622,10 @@ ags_recall_notify_dependency(AgsRecall *recall, guint flags, gint count)
 
 /**
  * ags_recall_add_dependency:
- * @recall: an #AgsRecall
- * @recall_dependency: an #AgsRecallDependency
+ * @recall an #AgsRecall
+ * @recall_dependency an #AgsRecallDependency
  *
  * Associate a new dependency for this recall.
- * 
- * Since: 0.4
  */
 void
 ags_recall_add_dependency(AgsRecall *recall, AgsRecallDependency *recall_dependency)
@@ -1862,12 +1643,10 @@ ags_recall_add_dependency(AgsRecall *recall, AgsRecallDependency *recall_depende
 
 /**
  * ags_recall_remove_dependency:
- * @recall: an #AgsRecall
- * @dependency: an #AgsRecall
+ * @recall an #AgsRecall
+ * @dependency an #AgsRecall
  *
  * Remove a prior associated dependency.
- * 
- * Since: 0.4
  */
 void
 ags_recall_remove_dependency(AgsRecall *recall, AgsRecall *dependency)
@@ -1891,13 +1670,8 @@ ags_recall_remove_dependency(AgsRecall *recall, AgsRecall *dependency)
 
 /**
  * ags_recall_get_dependencies:
- * @recall: an #AgsRecall
- *
- * Retrieve dependencies.
- *
- * Returns: a #GList with all dependencies.
- * 
- * Since: 0.4
+ * @recall an #AgsRecall
+ * Returns: a GList with all dependencies.
  */
 //FIXME:JK: duplicate the list
 GList*
@@ -1908,38 +1682,27 @@ ags_recall_get_dependencies(AgsRecall *recall)
 
 /**
  * ags_recall_remove_child:
- * @parent: an #AgsRecall
- * @child: an #AgsRecall
+ * @parent an #AgsRecall
+ * @child an #AgsRecall
  *
  * An #AgsRecall may have children.
- * 
- * Since: 0.4
  */
 void
 ags_recall_remove_child(AgsRecall *recall, AgsRecall *child)
 {
-  if(recall == NULL ||
-     child == NULL ||
-     child->parent != recall){
-    return;
-  }
-  
   recall->children = g_list_remove(recall->children,
 				   child);
-  child->parent = NULL;
-  
+
   g_object_unref(recall);
   g_object_unref(child);
 }
 
 /**
  * ags_recall_add_child:
- * @parent: an #AgsRecall
- * @child: an #AgsRecall
+ * @parent an #AgsRecall
+ * @child an #AgsRecall
  *
  * An #AgsRecall may have children.
- * 
- * Since: 0.4
  */
 void
 ags_recall_add_child(AgsRecall *parent, AgsRecall *child)
@@ -1989,7 +1752,7 @@ ags_recall_add_child(AgsRecall *parent, AgsRecall *child)
 		 "recall_id\0", parent->recall_id,
 		 NULL);
     g_signal_connect(G_OBJECT(child), "done\0",
-    		     G_CALLBACK(ags_recall_child_done), parent);
+		     G_CALLBACK(ags_recall_child_done), parent);
   }
   
   child->parent = parent;
@@ -2002,25 +1765,22 @@ ags_recall_add_child(AgsRecall *parent, AgsRecall *child)
   ags_connectable_connect(AGS_CONNECTABLE(child));
 
   if(parent != NULL &&
-     (AGS_RECALL_DYNAMIC_CONNECTED & (parent->flags)) != 0 &&
-     (AGS_RECALL_DYNAMIC_CONNECTED & (child->flags)) == 0){
-    ags_dynamic_connectable_connect_dynamic(AGS_DYNAMIC_CONNECTABLE(child));
-
+     (AGS_RECALL_RUN_INITIALIZED & (parent->flags)) != 0 &&
+     (AGS_RECALL_RUN_INITIALIZED & (child->flags)) == 0){
     ags_recall_run_init_pre(AGS_RECALL(child));
     ags_recall_run_init_inter(AGS_RECALL(child));
     ags_recall_run_init_post(AGS_RECALL(child));
+
+    ags_dynamic_connectable_connect_dynamic(AGS_DYNAMIC_CONNECTABLE(child));
+    
+    child->flags |= AGS_RECALL_RUN_INITIALIZED;
   }
 }
 
 /**
  * ags_recall_get_children:
- * @recall: an #AgsRecall
- *
- * Retrieve children.
- *
+ * @recall an #AgsRecall
  * Returns: a GList with all children.
- * 
- * Since: 0.4
  */
 //FIXME:JK: duplicate the list
 GList*
@@ -2031,16 +1791,13 @@ ags_recall_get_children(AgsRecall *recall)
 
 /**
  * ags_recall_find_by_effect:
- * @list: a #GList with recalls
- * @recall_id: an #AgsRecallId
- * @effect: the effect name
+ * @list a #GList with recalls
+ * @recall_id an #AgsRecallId
+ * @effect the effect name
+ * Returns: a GList, or #NULL if not found
  *
  * Finds next matching effect name. Intended to be used as
  * iteration function.
- *
- * Returns: a GList, or %NULL if not found
- *
- * Since: 0.4
  */
 GList*
 ags_recall_find_by_effect(GList *list, AgsRecallID *recall_id, char *effect)
@@ -2066,15 +1823,12 @@ ags_recall_find_by_effect(GList *list, AgsRecallID *recall_id, char *effect)
 
 /**
  * ags_recall_find_type:
- * @recall_i: a #GList containing recalls
- * @type: a #GType
+ * @recall_i a #GList containing recalls
+ * @type a #GType
+ * Returns: a #GList containing recalls, or #NULL if not found
  * 
  * Finds next matching recall for type. Intended to be used as
  * iteration function.
- *
- * Returns: a #GList containing recalls, or %NULL if not found
- *
- * Since: 0.4
  */
 GList*
 ags_recall_find_type(GList *recall_i, GType type)
@@ -2096,13 +1850,10 @@ ags_recall_find_type(GList *recall_i, GType type)
 /**
  * ags_recall_find_template:
  * @recall_i a #GList containing recalls
+ * Returns: a #GList containing recalls, or #NULL if not found
  *
  * Finds next template, see #AGS_RECALL_TEMPLATE flag. Intended to be used as
  * iteration function.
- *
- * Returns: a #GList containing recalls, or %NULL if not found
- *
- * Since: 0.4
  */
 GList*
 ags_recall_find_template(GList *recall_i)
@@ -2122,16 +1873,13 @@ ags_recall_find_template(GList *recall_i)
 }
 
 /**
- * ags_recall_template_find_type:
- * @recall_i: a #GList containing recalls
- * @type: a #GType
+ * ags_recall_find_template_with_type:
+ * @recall_i a #GList containing recalls
+ * @type a #GType
+ * Returns: a #GList containing recalls, or #NULL if not found
  * 
  * Finds next matching recall for type which is a template, see #AGS_RECALL_TEMPLATE flag.
  * Intended to be used as iteration function.
- *
- * Returns: a #GList containing recalls, or %NULL if not found
- *
- * Since: 0.4
  */
 GList*
 ags_recall_template_find_type(GList *recall_i, GType type)
@@ -2153,16 +1901,13 @@ ags_recall_template_find_type(GList *recall_i, GType type)
 
 /**
  * ags_recall_find_type_with_recycling_container:
- * @recall_i: a #GList containing recalls
- * @type: a #GType
- * @recycling_container: an #AgsRecyclingContainer
+ * @recall_i a #GList containing recalls
+ * @type a #GType
+ * @recycling_container an #AgsRecyclingContainer
+ * Returns: a #GList containing recalls, or #NULL if not found
  * 
  * Finds next matching recall for type which has @recycling_container, see #AgsRecallId for further
  * details about #AgsRecyclingContainer. Intended to be used as iteration function.
- *
- * Returns: a #GList containing recalls, or %NULL if not found
- *
- * Since: 0.4
  */
 GList*
 ags_recall_find_type_with_recycling_container(GList *recall_i, GType type, GObject *recycling_container)
@@ -2172,7 +1917,7 @@ ags_recall_find_type_with_recycling_container(GList *recall_i, GType type, GObje
   while(recall_i != NULL){
     recall = AGS_RECALL(recall_i->data);
 
-    if(g_type_is_a(G_OBJECT_TYPE(recall), type) &&
+    if(G_OBJECT_TYPE(recall) == type &&
        recall->recall_id != NULL &&
        recall->recall_id->recycling_container == recycling_container)
       return(recall_i);
@@ -2185,15 +1930,13 @@ ags_recall_find_type_with_recycling_container(GList *recall_i, GType type, GObje
 
 /**
  * ags_recall_find_recycling_container:
- * @recall_i: a #GList containing recalls
- * @recycling_container: an #AgsRecyclingContainer
+ * @recall_i a #GList containing recalls
+ * @type a #GType
+ * @recycling_container an #AgsRecyclingContainer
+ * Returns: a #GList containing recalls, or #NULL if not found
  * 
  * Finds next matching recall which has @recycling_container, see #AgsRecallId for further
  * details about #AgsRecyclingContainer. Intended to be used as iteration function.
- *
- * Returns: a #GList containing recalls, or %NULL if not found
- *
- * Since: 0.4
  */
 GList*
 ags_recall_find_recycling_container(GList *recall_i, GObject *recycling_container)
@@ -2224,17 +1967,14 @@ ags_recall_find_recycling_container(GList *recall_i, GObject *recycling_containe
 }
 
 /**
- * ags_recall_find_provider:
- * @recall_i: a #GList containing recalls
- * @provider: a #GObject
+ * ags_recall_find_type:
+ * @recall_i a #GList containing recalls
+ * @provider a #GObject
+ * Returns: a #GList containing recalls, or #NULL if not found
  * 
  * Finds next matching recall for type which has @provider. The @provider may be either an #AgsChannel
  * or an #AgsAudio object. This function tries to find the corresponding #AgsRecallChannel and #AgsRecallAudio
  * objects of a #AgsRecall to find. If these recalls contains the @provider, the function will return.
- *
- * Returns: a #GList containing recalls, or %NULL if not found
- *
- * Since: 0.4
  */
 GList*
 ags_recall_find_provider(GList *recall_i, GObject *provider)
@@ -2287,17 +2027,6 @@ ags_recall_find_provider(GList *recall_i, GObject *provider)
   return(NULL);
 }
 
-/**
- * ags_recall_find_provider:
- * @recall: a #GList containing recalls
- * @provider: a #GObject
- * 
- * Finds provider eg. #AgsAudio or #AgsChannel within #GList containig #AgsRecall.
- *
- * Returns: a #GList containing recalls, or %NULL if not found
- * 
- * Since: 0.4
- */
 GList*
 ags_recall_template_find_provider(GList *recall, GObject *provider)
 {
@@ -2317,16 +2046,13 @@ ags_recall_template_find_provider(GList *recall, GObject *provider)
 }
 
 /**
- * ags_recall_find_provider_with_recycling_container:
- * @recall_i: a #GList containing recalls
- * @provider: a #GObject
- * @recycling_container: an #AgsRecyclingContainer
+ * ags_recall_find_type:
+ * @recall_i a #GList containing recalls
+ * @provider a #GObject
+ * @recycling_container an #AgsRecyclingContainer
+ * Returns: a #GList containing recalls, or #NULL if not found
  * 
- * Like ags_recall_template_find_provider() but given additionally @recycling_container as search parameter.
- *
- * Returns: a #GList containing recalls, or %NULL if not found
- * 
- * Since: 0.4
+ * Like ags_recall_find_provider() but given additionally @recycling_container as search parameter.
  */
 GList*
 ags_recall_find_provider_with_recycling_container(GList *recall_i, GObject *provider, GObject *recycling_container)
@@ -2359,16 +2085,6 @@ ags_recall_run_init(AgsRecall *recall, guint stage)
   }
 }
 
-/**
- * ags_recall_handler_alloc:
- * @signal_name: signal's name to connect
- * @callback: the #GCallback function
- * @data: the data to pass the callback
- *
- * Allocates #AgsRecallHandler-struct.
- * 
- * Since: 0.4
- */
 AgsRecallHandler*
 ags_recall_handler_alloc(const gchar *signal_name,
 			 GCallback callback,
@@ -2385,15 +2101,6 @@ ags_recall_handler_alloc(const gchar *signal_name,
   return(recall_handler);
 }
 
-/**
- * ags_recall_add_handler:
- * @recall: the #AgsRecall to connect
- * @recall_handler: the signal specs
- *
- * Connect callback to @recall specified by @recall_handler.
- * 
- * Since: 0.4
- */
 void
 ags_recall_add_handler(AgsRecall *recall,
 		       AgsRecallHandler *recall_handler)
@@ -2402,15 +2109,6 @@ ags_recall_add_handler(AgsRecall *recall,
 				    recall_handler);
 }
 
-/**
- * ags_recall_remove_handler:
- * @recall: the #AgsRecall to connect
- * @recall_handler: the signal specs
- *
- * Remove a #AgsRecallHandler-struct from @recall.
- * 
- * Since: 0.4
- */
 void
 ags_recall_remove_handler(AgsRecall *recall,
 			  AgsRecallHandler *recall_handler)
@@ -2423,24 +2121,10 @@ void
 ags_recall_child_done(AgsRecall *child,
 		      AgsRecall *parent)
 {
-  if(child == NULL ||
-     parent == NULL){
-    return;
-  }
-  
   ags_recall_remove_child(parent,
 			  child);
 }
 
-/**
- * ags_recall_new:
- *
- * Creates an #AgsRecall.
- *
- * Returns: a new #AgsRecall.
- * 
- * Since: 0.3
- */
 AgsRecall*
 ags_recall_new()
 {

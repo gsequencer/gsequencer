@@ -25,8 +25,6 @@
 
 #include <ags/audio/file/ags_sndfile.h>
 
-#include <ags/audio/ags_config.h>
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
@@ -40,22 +38,10 @@ void ags_audio_file_connect(AgsConnectable *connectable);
 void ags_audio_file_disconnect(AgsConnectable *connectable);
 void ags_audio_file_finalize(GObject *object);
 
-extern AgsConfig *config;
-
 enum{
   READ_BUFFER,
   LAST_SIGNAL,
 };
-
-/**
- * SECTION:ags_audio_file
- * @short_description: Audio file input/output
- * @title: AgsAudioFile
- * @section_id:
- * @include: ags/audio/file/ags_audio_file.h
- *
- * #AgsAudioFile is the base object to read/write audio data.
- */
 
 static gpointer ags_audio_file_parent_class = NULL;
 static AgsConnectableInterface *ags_audio_file_parent_connectable_interface;
@@ -124,15 +110,8 @@ ags_audio_file_init(AgsAudioFile *audio_file)
   audio_file->devout = NULL;
 
   audio_file->name = NULL;
-
-  audio_file->samplerate = g_ascii_strtoull(ags_config_get(config,
-							   AGS_CONFIG_DEVOUT,
-							   "samplerate\0"),
-					    NULL,
-					    10);
   audio_file->frames = 0;
-  audio_file->channels = 2;
-  audio_file->format = SF_FORMAT_WAV | SF_FORMAT_PCM_16;
+  audio_file->channels = 0;
 
   audio_file->start_channel = 0;
   audio_file->audio_channels = 0;
@@ -180,14 +159,6 @@ ags_audio_file_disconnect(AgsConnectable *connectable)
   /* empty */
 }
 
-/**
- * ags_audio_file_open:
- * @audio_file: the #AgsAudioFile
- *
- * Open the #AgsAudioFile in read mode.
- *
- * Since: 0.3
- */
 gboolean
 ags_audio_file_open(AgsAudioFile *audio_file)
 {
@@ -230,67 +201,6 @@ ags_audio_file_open(AgsAudioFile *audio_file)
   }
 }
 
-/**
- * ags_audio_file_rw_open:
- * @audio_file: the #AgsAudioFile
- * @create: create the file
- *
- * Open the #AgsAudioFile in read/write mode.
- *
- * Since: 0.4
- */
-gboolean
-ags_audio_file_rw_open(AgsAudioFile *audio_file,
-		       gboolean create)
-{
-#ifdef AGS_DEBUG
-  g_message("ags_audio_file_rw_open: %s\0", audio_file->name);
-#endif
-
-  if(!create &&
-     !g_file_test(audio_file->name, G_FILE_TEST_EXISTS)){
-    return(FALSE);
-  }
-
-  if(g_str_has_suffix(audio_file->name, ".wav\0") ||
-     g_str_has_suffix(audio_file->name, ".ogg\0") ||
-     g_str_has_suffix(audio_file->name, ".flac\0")){
-    GError *error;
-    guint loop_start, loop_end;
-
-    audio_file->file = (GObject *) ags_sndfile_new();
-
-    if(ags_playable_rw_open(AGS_PLAYABLE(audio_file->file),
-			    audio_file->name,
-			    create,
-			    audio_file->samplerate, audio_file->channels,
-			    audio_file->frames,
-			    audio_file->format)){
-      error = NULL;
-
-      if(error != NULL){
-	g_error("%s\0", error->message);
-      }
-
-      return(TRUE);
-    }else{
-      return(FALSE);
-    }
-  }else{
-    g_message("ags_audio_file_open: unknown file type\n\0");
-    return(FALSE);
-  }
-}
-
-/**
- * ags_audio_file_open_from_data:
- * @audio_file: the #AgsAudioFile
- * @data: the audio data
- *
- * Open #AgsAudioFile using virtual functions.
- *
- * Since: 0.4
- */
 gboolean
 ags_audio_file_open_from_data(AgsAudioFile *audio_file, gchar *data)
 {
@@ -336,28 +246,13 @@ ags_audio_file_open_from_data(AgsAudioFile *audio_file, gchar *data)
   }
 }
 
-/**
- * ags_audio_file_close:
- * @audio_file: the #AgsAudioFile
- *
- * Close the #AgsAudioFile.
- *
- * Since: 0.3
- */
 void
 ags_audio_file_close(AgsAudioFile *audio_file)
 {
   ags_playable_close(AGS_PLAYABLE(audio_file->file));
 }
 
-/**
- * ags_audio_file_read_audio_signal:
- * @audio_file: the #AgsAudioFile
- *
- * Convert the #AgsAudioFile to a #GList of buffers.
- *
- * Since: 0.3
- */
+
 void
 ags_audio_file_read_audio_signal(AgsAudioFile *audio_file)
 {
@@ -370,16 +265,6 @@ ags_audio_file_read_audio_signal(AgsAudioFile *audio_file)
   audio_file->audio_signal = list;
 }
 
-/**
- * ags_audio_file_seek:
- * @audio_file: the #AgsAudioFile
- * @frames: number of frames to seek
- * @whence: SEEK_SET, SEEK_CUR, or SEEK_END
- *
- * Position the #AgsAudioFile's internal data address.
- *
- * Since: 0.4
- */
 void
 ags_audio_file_seek(AgsAudioFile *audio_file, guint frames, gint whence)
 {
@@ -387,16 +272,6 @@ ags_audio_file_seek(AgsAudioFile *audio_file, guint frames, gint whence)
 		    frames, whence);
 }
 
-/**
- * ags_audio_file_write:
- * @audio_file: the #AgsAudioFile
- * @buffer: the audio data
- * @buffer_size: the count of frames to write
- *
- * Write the buffer to #AgsAudioFile.
- *
- * Since: 0.4
- */
 void
 ags_audio_file_write(AgsAudioFile *audio_file,
 		     signed short *buffer, guint buffer_size)
@@ -405,33 +280,12 @@ ags_audio_file_write(AgsAudioFile *audio_file,
 		     buffer, buffer_size);
 }
 
-/**
- * ags_audio_file_flush:
- * @audio_file: the #AgsAudioFile
- *
- * Flushes the #AgsAudioFile's internal buffer.
- *
- * Since: 0.4
- */
 void
 ags_audio_file_flush(AgsAudioFile *audio_file)
 {
   ags_playable_flush(AGS_PLAYABLE(audio_file->file));
 }
 
-/**
- * ags_audio_file_new:
- * @name: the filename
- * @devout: defaults of #AgsDevout
- * @start_channel: ommited channels
- * @audio_channels: number of channels to read
- *
- * Creates an #AgsAudioFile.
- *
- * Returns: an empty #AgsAudioFile.
- *
- * Since: 0.3
- */
 AgsAudioFile*
 ags_audio_file_new(gchar *name,
 		   AgsDevout *devout,

@@ -47,16 +47,6 @@ AgsRecall* ags_buffer_recycling_duplicate(AgsRecall *recall,
 					  guint *n_params, GParameter *parameter);
 void ags_buffer_recycling_remove(AgsRecall *recall);
 
-/**
- * SECTION:ags_buffer_recycling
- * @short_description: buffers recycling
- * @title: AgsBufferRecycling
- * @section_id:
- * @include: ags/audio/recall/ags_buffer_recycling.h
- *
- * The #AgsBufferRecycling class buffers the recycling.
- */
-
 static gpointer ags_buffer_recycling_parent_class = NULL;
 static AgsConnectableInterface *ags_buffer_recycling_parent_connectable_interface;
 static AgsDynamicConnectableInterface *ags_buffer_recycling_parent_dynamic_connectable_interface;
@@ -156,9 +146,6 @@ ags_buffer_recycling_init(AgsBufferRecycling *buffer_recycling)
   AGS_RECALL(buffer_recycling)->port = NULL;
 
   AGS_RECALL(buffer_recycling)->child_type = AGS_TYPE_BUFFER_AUDIO_SIGNAL;
-
-  AGS_RECALL_RECYCLING(buffer_recycling)->flags |= (AGS_RECALL_RECYCLING_MAP_CHILD_DESTINATION |
-						    AGS_RECALL_RECYCLING_CREATE_DESTINATION_ON_MAP_SOURCE);
 }
 
 void
@@ -213,16 +200,6 @@ ags_buffer_recycling_duplicate(AgsRecall *recall,
   return((AgsRecall *) copy);
 }
 
-/**
- * ags_buffer_recycling_new:
- * @recycling: an #AgsRecycling
- *
- * Creates an #AgsBufferRecycling
- *
- * Returns: a new #AgsBufferRecycling
- *
- * Since: 0.4
- */
 AgsBufferRecycling*
 ags_buffer_recycling_new(AgsRecycling *recycling)
 {

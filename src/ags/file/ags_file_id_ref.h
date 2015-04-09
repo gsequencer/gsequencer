@@ -45,7 +45,7 @@ struct _AgsFileIdRef
 {
   GObject object;
 
-  GObject *ags_main;
+  GObject *main;
   GObject *file;
 
   xmlNode *node;

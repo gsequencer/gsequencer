@@ -22,12 +22,6 @@
 
 #include <ags/main.h>
 
-#include <ags/thread/ags_export_thread.h>
-
-#include <ags/audio/ags_devout.h>
-
-#include <ags/audio/file/ags_audio_file.h>
-
 void ags_export_output_class_init(AgsExportOutputClass *export_output);
 void ags_export_output_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_export_output_init(AgsExportOutput *export_output);
@@ -36,16 +30,6 @@ void ags_export_output_disconnect(AgsConnectable *connectable);
 void ags_export_output_finalize(GObject *gobject);
 
 void ags_export_output_launch(AgsTask *task);
-
-/**
- * SECTION:ags_export_output
- * @short_description: export output object
- * @title: AgsExportOutput
- * @section_id:
- * @include: ags/audio/task/ags_export_output.h
- *
- * The #AgsExportOutput task exports #AgsDevout to file.
- */
 
 static gpointer ags_export_output_parent_class = NULL;
 static AgsConnectableInterface *ags_export_output_parent_connectable_interface;
@@ -118,11 +102,7 @@ ags_export_output_connectable_interface_init(AgsConnectableInterface *connectabl
 void
 ags_export_output_init(AgsExportOutput *export_output)
 {
-  export_output->export_thread = NULL;
-  export_output->devout = NULL;
-  export_output->filename = NULL;
-  export_output->tic = 0;
-  export_output->live_performance = TRUE;
+  export_output->flags = 0;
 }
 
 void
@@ -153,92 +133,21 @@ void
 ags_export_output_launch(AgsTask *task)
 {
   AgsExportOutput *export_output;
-  AgsExportThread *export_thread;
-  AgsDevout *devout;
-  AgsAudioFile *audio_file;
-  gchar *filename;
-  guint tic;
-  guint val;
-  
+
   export_output = AGS_EXPORT_OUTPUT(task);
-  devout = export_output->devout;
-  export_thread = export_output->export_thread;
-  filename = export_output->filename;
-  tic = export_output->tic;
 
-  /* open read/write audio file */
-  audio_file = ags_audio_file_new(filename,
-				  devout,
-				  0, devout->dsp_channels);
+  audio_loop = AGS_AUDIO_LOOP(export_output->audio_loop);
 
-  audio_file->samplerate = (int) devout->frequency;
-  audio_file->channels = devout->dsp_channels;
-
-  ags_audio_file_rw_open(audio_file,
-			 TRUE);
-
-  g_message("export output");
-
-  /* start export thread */
-  export_thread->tic = tic;
-  g_object_set(G_OBJECT(export_thread),
-	       "devout\0", devout,
-	       "audio-file\0", audio_file,
-	       NULL);
-  ags_thread_start(export_thread);
-
-  if((AGS_THREAD_SINGLE_LOOP & (AGS_THREAD(export_thread)->flags)) == 0){
-    pthread_mutex_lock(&(AGS_THREAD(export_thread)->start_mutex));
-
-    val = g_atomic_int_get(&(AGS_THREAD(export_thread)->flags));
-
-    if((AGS_THREAD_INITIAL_RUN & val) != 0){
-      while((AGS_THREAD_INITIAL_RUN & val) != 0){
-	pthread_cond_wait(&(AGS_THREAD(export_thread)->start_cond),
-			  &(AGS_THREAD(export_thread)->start_mutex));
-	
-	val = g_atomic_int_get(&(AGS_THREAD(export_thread)->flags));
-      }
-    }
-    
-    pthread_mutex_unlock(&(AGS_THREAD(export_thread)->start_mutex));
-  }else{
-    g_atomic_int_or(&(AGS_THREAD(export_thread)->flags),
-		    AGS_THREAD_RUNNING);
-  }
+  /* to implement me */
 }
 
-/**
- * ags_export_output_new:
- * @export_thread: the #AgsExportThread to start
- * @devout: the #AgsDevout to export
- * @filename: the filename to save
- * @tic: stream duration in tact
- * @live_performance: if %TRUE export is done during real-time
- *
- * Creates an #AgsExportOutput.
- *
- * Returns: an new #AgsExportOutput.
- *
- * Since: 0.4
- */
 AgsExportOutput*
-ags_export_output_new(AgsExportThread *export_thread,
-		      AgsDevout *devout,
-		      gchar *filename,
-		      guint tic,
-		      gboolean live_performance)
+ags_export_output_new(gboolean live_performance)
 {
   AgsExportOutput *export_output;
 
   export_output = (AgsExportOutput *) g_object_new(AGS_TYPE_EXPORT_OUTPUT,
 						   NULL);
-
-  export_output->export_thread = export_thread;
-  export_output->devout = devout;
-  export_output->filename = filename;
-  export_output->tic = tic;
-  export_output->live_performance = live_performance;
 
   return(export_output);
 }

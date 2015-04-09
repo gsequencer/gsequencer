@@ -22,6 +22,7 @@
 
 #include <ags/object/ags_plugin.h>
 
+#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
 
 #include <stdlib.h>

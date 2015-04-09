@@ -30,16 +30,6 @@ void ags_file_lookup_get_property(GObject *gobject,
 				  GParamSpec *param_spec);
 void ags_file_lookup_finalize(GObject *gobject);
 
-/**
- * SECTION:ags_file_lookup
- * @short_description: resolve objects read of file.
- * @title: AgsFileLookup
- * @section_id:
- * @include: ags/file/ags_file_lookup.h
- *
- * The #AgsFileLookup resolve objects of file.
- */
-
 enum{
   RESOLVE,
   LAST_SIGNAL,
@@ -262,15 +252,6 @@ ags_file_lookup_find_by_node(GList *file_lookup,
   return(file_lookup);
 }
 
-/**
- * ags_file_lookup_new:
- *
- * Creates an #AgsFileLookup
- *
- * Returns: a new #AgsFileLookup
- *
- * Since: 0.4
- */
 AgsFileLookup*
 ags_file_lookup_new()
 {

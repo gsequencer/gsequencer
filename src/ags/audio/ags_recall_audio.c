@@ -45,16 +45,6 @@ AgsRecall* ags_recall_audio_duplicate(AgsRecall *recall,
 				      AgsRecallID *recall_id,
 				      guint *n_params, GParameter *parameter);
 
-/**
- * SECTION:ags_recall_audio
- * @short_description: audio context of recall
- * @title: AgsRecallAudio
- * @section_id:
- * @include: ags/audio/ags_recall_audio.h
- *
- * #AgsRecallAudio acts as audio recall.
- */
-
 enum{
   PROP_0,
   PROP_AUDIO,
@@ -128,14 +118,6 @@ ags_recall_audio_class_init(AgsRecallAudioClass *recall_audio)
   gobject->set_property = ags_recall_audio_set_property;
   gobject->get_property = ags_recall_audio_get_property;
 
-  /* properties */
-  /**
-   * AgsRecallAudio:audio:
-   *
-   * The assigned audio.
-   * 
-   * Since: 0.4.0
-   */
   param_spec = g_param_spec_object("audio\0",
 				   "assigned audio\0",
 				   "The audio object it is assigned to\0",
@@ -354,15 +336,6 @@ ags_recall_audio_duplicate(AgsRecall *recall,
   return((AgsRecall *) copy);
 }
 
-/**
- * ags_recall_audio_new:
- *
- * Creates an #AgsRecallAudio.
- *
- * Returns: a new #AgsRecallAudio.
- *
- * Since: 0.4
- */
 AgsRecallAudio*
 ags_recall_audio_new(AgsAudio *audio)
 {

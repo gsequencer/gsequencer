@@ -18,27 +18,14 @@
 
 #include <ags/X/ags_line_callbacks.h>
 
-#include <ags/main.h>
-
-#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_recall.h>
 #include <ags/audio/ags_recall_audio.h>
 #include <ags/audio/ags_recall_audio_run.h>
 #include <ags/audio/ags_recall_id.h>
-#include <ags/audio/ags_port.h>
-#include <ags/audio/ags_recycling_container.h>
 
 #include <ags/audio/recall/ags_volume_channel.h>
-#include <ags/audio/recall/ags_copy_pattern_channel.h>
-#include <ags/audio/recall/ags_copy_pattern_channel_run.h>
 
-#include <ags/audio/task/ags_change_indicator.h>
-
-#include <ags/widget/ags_vindicator.h>
-
-#include <ags/X/ags_machine.h>
 #include <ags/X/ags_pad.h>
-#include <ags/X/ags_line_member.h>
 
 int
 ags_line_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsLine *line)
@@ -72,14 +59,13 @@ ags_line_group_clicked_callback(GtkWidget *widget, AgsLine *line)
   AgsPad *pad;
   AgsLine *current;
   GtkContainer *container;
-  GList *list, *list_start;
+  GList *list;
 
   pad = (AgsPad *) gtk_widget_get_ancestor(GTK_WIDGET(line), AGS_TYPE_PAD);
 
   container = (GtkContainer *) pad->expander_set;
 
-  list_start =
-    list = gtk_container_get_children(container);
+  list = gtk_container_get_children(container);
 
   if(gtk_toggle_button_get_active(line->group)){
     ags_line_group_changed(line);
@@ -88,7 +74,6 @@ ags_line_group_clicked_callback(GtkWidget *widget, AgsLine *line)
       current = AGS_LINE(list->data);
 
       if(!gtk_toggle_button_get_active(current->group)){
-	g_list_free(list_start);
 	return(0);
       }
 
@@ -107,7 +92,6 @@ ags_line_group_clicked_callback(GtkWidget *widget, AgsLine *line)
 
 	if(gtk_toggle_button_get_active(current->group)){
 	  ags_line_group_changed(line);
-	  g_list_free(list_start);
 	  return(0);
 	}
 
@@ -117,8 +101,6 @@ ags_line_group_clicked_callback(GtkWidget *widget, AgsLine *line)
 
     gtk_toggle_button_set_active(line->group, TRUE);
   }
-
-  g_list_free(list_start);
 
   return(0);
 }
@@ -152,97 +134,5 @@ ags_line_volume_callback(GtkRange *range,
 			&value);
 
     list = list->next;
-  }
-}
-
-void
-ags_line_peak_run_post_callback(AgsRecall *peak_channel,
-				AgsLine *line)
-{
-  AgsTaskThread *task_thread;
-  AgsChangeIndicator *change_indicator;
-  AgsMachine *machine;
-  GList *list, *list_start;
-
-  machine = (AgsMachine *) gtk_widget_get_ancestor(line,
-						   AGS_TYPE_MACHINE);
-  task_thread = AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(machine->audio->devout)->ags_main)->main_loop)->task_thread;
-
-  list_start = 
-    list = gtk_container_get_children(AGS_LINE(line)->expander->table);
-
-  while(list != NULL){
-    if(AGS_IS_LINE_MEMBER(list->data) &&
-       AGS_LINE_MEMBER(list->data)->widget_type == AGS_TYPE_VINDICATOR){
-      GtkWidget *child;
-      AgsPort *port;
-      gdouble peak;
-      GValue value = {0,};
-
-      child = gtk_bin_get_child(AGS_LINE_MEMBER(list->data));
-
-      if(AGS_RECYCLING_CONTAINER(peak_channel->recall_id->recycling_container)->parent == NULL){
-	port = AGS_LINE_MEMBER(list->data)->port;
-      }else{
-	port = AGS_LINE_MEMBER(list->data)->recall_port;
-      }
-
-      g_value_init(&value, G_TYPE_DOUBLE);
-      ags_port_safe_read(port,
-			 &value);
-
-      peak = g_value_get_double(&value);
-
-      change_indicator = ags_change_indicator_new(child,
-						  peak);
-
-      ags_task_thread_append_task(task_thread,
-				  change_indicator);
-
-      break;
-    }
-    
-    list = list->next;
-  }
-
-  g_list_free(list_start);
-}
-
-void
-ags_line_channel_done_callback(AgsChannel *source, AgsLine *line)
-{
-  AgsChannel *channel;
-  AgsDevoutPlay *devout_play;
-  AgsChannel *next_pad;
-  GList *current_recall;
-  gboolean all_done;
-
-  g_message("ags_line_channel_done\0");
-
-  channel = AGS_PAD(AGS_LINE(line)->pad)->channel;
-  next_pad = channel->next_pad;
-
-  all_done = TRUE;
-
-  while(channel != next_pad){
-    current_recall = channel->play;
-    devout_play = AGS_DEVOUT_PLAY(channel->devout_play);
-    
-    if(devout_play->recall_id[0] != NULL){
-      all_done = FALSE;
-      break;
-    }
-    
-    channel = channel->next;
-  }
-
-  if(all_done){
-    AgsPad *pad;
-
-    pad = AGS_PAD(AGS_LINE(line)->pad);
-
-    if(pad->play != NULL){
-      gtk_toggle_button_set_active(pad->play, FALSE);
-    }
   }
 }

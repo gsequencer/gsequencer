@@ -33,7 +33,6 @@
 #include <ags/file/ags_file_id_ref.h>
 #include <ags/file/ags_file_lookup.h>
 #include <ags/file/ags_file_launch.h>
-#include <ags/file/ags_file_gui.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_input.h>
@@ -70,7 +69,7 @@ void ags_ffplayer_connect(AgsConnectable *connectable);
 void ags_ffplayer_disconnect(AgsConnectable *connectable);
 void ags_ffplayer_finalize(GObject *gobject);
 void ags_ffplayer_show(GtkWidget *widget);
-void ags_ffplayer_map_recall(AgsMachine *machine);
+void ags_ffplayer_add_default_recalls(AgsMachine *machine);
 gchar* ags_ffplayer_get_name(AgsPlugin *plugin);
 void ags_ffplayer_set_name(AgsPlugin *plugin, gchar *name);
 gchar* ags_ffplayer_get_xml_type(AgsPlugin *plugin);
@@ -79,8 +78,6 @@ void ags_ffplayer_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
 void ags_ffplayer_resolve_filename(AgsFileLookup *lookup, AgsFFPlayer *ffplayer);
 void ags_ffplayer_launch_task(AgsFileLaunch *file_launch, AgsFFPlayer *ffplayer);
 xmlNode* ags_ffplayer_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
-void ags_ffplayer_read_resolve_audio(AgsFileLookup *file_lookup,
-				 AgsMachine *machine);
 
 void ags_ffplayer_set_audio_channels(AgsAudio *audio,
 				     guint audio_channels, guint audio_channels_old,
@@ -92,16 +89,6 @@ void ags_ffplayer_set_pads(AgsAudio *audio, GType type,
 void ags_ffplayer_output_map_recall(AgsFFPlayer *ffplayer, guint output_pad_start);
 void ags_ffplayer_input_map_recall(AgsFFPlayer *ffplayer, guint input_pad_start);
 void ags_ffplayer_paint(AgsFFPlayer *ffplayer);
-
-/**
- * SECTION:ags_ffplayer
- * @short_description: ffplayer notation
- * @title: AgsFFPlayer
- * @section_id:
- * @include: ags/X/machine/ags_ffplayer.h
- *
- * The #AgsFFPlayer is a composite widget to act as soundfont2 notation player.
- */
 
 static gpointer ags_ffplayer_parent_class = NULL;
 static AgsConnectableInterface *ags_ffplayer_parent_connectable_interface;
@@ -176,7 +163,7 @@ ags_ffplayer_class_init(AgsFFPlayerClass *ffplayer)
   /* AgsMachineClass */
   machine = (AgsMachineClass *) ffplayer;
 
-  machine->map_recall = ags_ffplayer_map_recall;
+  machine->add_default_recalls = ags_ffplayer_add_default_recalls;
 }
 
 void
@@ -227,17 +214,6 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   AGS_MACHINE(ffplayer)->flags |= AGS_MACHINE_IS_SYNTHESIZER;
   AGS_MACHINE(ffplayer)->file_input_flags |= AGS_MACHINE_ACCEPT_SOUNDFONT2;
 
-  AGS_MACHINE(ffplayer)->input_pad_type = G_TYPE_NONE;
-  AGS_MACHINE(ffplayer)->input_line_type = G_TYPE_NONE;
-  AGS_MACHINE(ffplayer)->output_pad_type = G_TYPE_NONE;
-  AGS_MACHINE(ffplayer)->output_line_type = G_TYPE_NONE;
-  
-  g_signal_connect_after(G_OBJECT(ffplayer->machine.audio), "set_audio_channels\0",
-			 G_CALLBACK(ags_ffplayer_set_audio_channels), NULL);
-
-  g_signal_connect_after(G_OBJECT(ffplayer->machine.audio), "set_pads\0",
-			 G_CALLBACK(ags_ffplayer_set_pads), NULL);
-
   ffplayer->mapped_input_pad = 0;
   ffplayer->mapped_output_pad = 0;
 
@@ -246,7 +222,7 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 
   /* create widgets */
   table = (GtkTable *) gtk_table_new(3, 2, FALSE);
-  gtk_container_add((GtkContainer *) (gtk_bin_get_child((GtkBin *) ffplayer)), (GtkWidget *) table);
+  gtk_container_add((GtkContainer *) (gtk_container_get_children((GtkContainer *) ffplayer))->data, (GtkWidget *) table);
 
   hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
   gtk_table_attach(table,
@@ -328,7 +304,7 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 }
 
 void
-ags_ffplayer_map_recall(AgsMachine *machine)
+ags_ffplayer_add_default_recalls(AgsMachine *machine)
 {
   AgsAudio *audio;
 
@@ -341,15 +317,8 @@ ags_ffplayer_map_recall(AgsMachine *machine)
 
   GList *list;
 
-  if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0 ||
-     (AGS_MACHINE_PREMAPPED_RECALL & (machine->flags)) != 0){
-    return;
-  }
-
   audio = machine->audio;
 
-  AGS_MACHINE_CLASS(ags_ffplayer_parent_class)->map_recall(machine);
-  
   /* ags-delay */
   ags_recall_factory_create(audio,
 			    NULL, NULL,
@@ -365,7 +334,7 @@ ags_ffplayer_map_recall(AgsMachine *machine)
 
   if(list != NULL){
     play_delay_audio_run = AGS_DELAY_AUDIO_RUN(list->data);
-    //    AGS_RECALL(play_delay_audio_run)->flags |= AGS_RECALL_PERSISTENT;
+    AGS_RECALL(play_delay_audio_run)->flags |= AGS_RECALL_PERSISTENT;
   }
   
   /* ags-count-beats */
@@ -439,10 +408,6 @@ ags_ffplayer_connect(AgsConnectable *connectable)
   AgsFFPlayer *ffplayer;
   GList *list;
 
-  if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) != 0){
-    return;
-  }
-
   ags_ffplayer_parent_connectable_interface->connect(connectable);
 
   /* AgsFFPlayer */
@@ -468,7 +433,13 @@ ags_ffplayer_connect(AgsConnectable *connectable)
   g_signal_connect((GObject *) ffplayer->hadjustment, "value_changed\0",
 		   G_CALLBACK(ags_ffplayer_hscrollbar_value_changed), (gpointer) ffplayer);
 
-  /* AgsAudio */  
+  /* AgsAudio */
+  g_signal_connect_after(G_OBJECT(ffplayer->machine.audio), "set_audio_channels\0",
+			 G_CALLBACK(ags_ffplayer_set_audio_channels), NULL);
+
+  g_signal_connect_after(G_OBJECT(ffplayer->machine.audio), "set_pads\0",
+			 G_CALLBACK(ags_ffplayer_set_pads), NULL);
+  
   //TODO:JK: magnify it
   if(!gtk_toggle_button_get_active(window->navigation->loop)){
     GList *list;
@@ -531,10 +502,8 @@ void
 ags_ffplayer_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 {
   AgsFFPlayer *gobject;
-  AgsFileLookup *file_lookup;
   AgsFileLaunch *file_launch;
-  GList *list;
-  
+
   gobject = AGS_FFPLAYER(plugin);
 
   ags_file_add_id_ref(file,
@@ -546,49 +515,11 @@ ags_ffplayer_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 				   "reference\0", gobject,
 				   NULL));
 
-  list = file->lookup;
-
-  while((file_lookup = ags_file_lookup_find_by_node(list,
-						    node->parent)) != NULL){
-    if(g_signal_handler_find(list->data,
-			     G_SIGNAL_MATCH_FUNC,
-			     0,
-			     0,
-			     NULL,
-			     ags_file_read_machine_resolve_audio,
-			     NULL) != 0){
-      g_signal_connect_after(G_OBJECT(file_lookup), "resolve\0",
-			     G_CALLBACK(ags_ffplayer_read_resolve_audio), gobject);
-      
-      break;
-    }
-
-    list = list->next;
-  }
-
   file_launch = g_object_new(AGS_TYPE_FILE_LAUNCH,
 			     "node\0", node,
 			     NULL);
   g_signal_connect(G_OBJECT(file_launch), "start\0",
 		   G_CALLBACK(ags_ffplayer_launch_task), gobject);
-  ags_file_add_launch(file,
-		      file_launch);
-}
-
-void
-ags_ffplayer_read_resolve_audio(AgsFileLookup *file_lookup,
-			    AgsMachine *machine)
-{
-  AgsFFPlayer *ffplayer;
-  GList *pad, *pad_start, *line, *line_start;
-
-  ffplayer = AGS_FFPLAYER(machine);
-
-  g_signal_connect_after(G_OBJECT(machine->audio), "set_audio_channels\0",
-			 G_CALLBACK(ags_ffplayer_set_audio_channels), ffplayer);
-
-  g_signal_connect_after(G_OBJECT(machine->audio), "set_pads\0",
-			 G_CALLBACK(ags_ffplayer_set_pads), ffplayer);
 }
 
 xmlNode*
@@ -632,9 +563,7 @@ ags_ffplayer_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
   }
 
   xmlAddChild(parent,
-	      node);
-
-  return(node);
+	      node);  
 }
 
 void
@@ -647,6 +576,8 @@ ags_ffplayer_launch_task(AgsFileLaunch *file_launch, AgsFFPlayer *ffplayer)
   xmlNode *node;
   gchar *filename;
   gchar *preset, *instrument;
+  guint i;
+  gboolean valid;
 
   window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(ffplayer)));
   node = file_launch->node;
@@ -677,15 +608,10 @@ ags_ffplayer_launch_task(AgsFileLaunch *file_launch, AgsFFPlayer *ffplayer)
     ags_playable_open(playable, filename);
 
     error = NULL;
-    ipatch->nth_level = 0;
     ags_playable_level_select(playable,
 			      0, filename,
 			      &error);
 
-    if(error != NULL){
-      g_warning(error->message);
-    }
-    
     /* select first preset */
     ipatch->nth_level = 1;
     preset = ags_playable_sublevel_names(playable);
@@ -695,10 +621,6 @@ ags_ffplayer_launch_task(AgsFileLaunch *file_launch, AgsFFPlayer *ffplayer)
 			      1, *preset,
 			      &error);
 
-    if(error != NULL){
-      g_warning(error->message);
-    }
-    
     /* fill ffplayer->preset */
     while(*preset != NULL){
       gtk_combo_box_text_append_text(ffplayer->preset,
@@ -712,24 +634,31 @@ ags_ffplayer_launch_task(AgsFileLaunch *file_launch, AgsFFPlayer *ffplayer)
 			"preset\0");
 
     list_store = gtk_combo_box_get_model(ffplayer->preset);
+    valid = gtk_tree_model_get_iter_first(list_store, &iter);
+    i = 0;
 
-    if(gtk_tree_model_get_iter_first(list_store, &iter)){
-      do{
-	gchar *str;
-	
-	gtk_tree_model_get(list_store, &iter,
-			   0, &str,
-			   -1);
-	if(!g_strcmp0(preset,
-		      str)){
-	  break;
-	}
-      }while(gtk_tree_model_iter_next(list_store, &iter));
-      
-      gtk_combo_box_set_active_iter(GTK_COMBO_BOX(ffplayer->preset),
-				    &iter);
+    while(valid){
+      gchar *str;
+
+      gtk_tree_model_get (list_store, &iter,
+			  0, &str,
+			  -1);
+      if(!g_strcmp0(preset[i],
+		       str)){
+	g_free (str);
+
+	break;
+      }else{
+	g_free (str);
+
+	i++;
+	valid = gtk_tree_model_iter_next(list_store, &iter);
+      }
     }
-  
+
+    gtk_combo_box_set_active(GTK_COMBO_BOX(ffplayer->preset),
+			     i);
+
     /* select first instrument */
     ipatch->nth_level = 2;
     instrument = ags_playable_sublevel_names(playable);
@@ -739,10 +668,6 @@ ags_ffplayer_launch_task(AgsFileLaunch *file_launch, AgsFFPlayer *ffplayer)
 			      2, *instrument,
 			      &error);
 
-    if(error != NULL){
-      g_warning(error->message);
-    }
-    
     /* fill ffplayer->instrument */
     while(*instrument != NULL){
       gtk_combo_box_text_append_text(ffplayer->instrument,
@@ -756,24 +681,30 @@ ags_ffplayer_launch_task(AgsFileLaunch *file_launch, AgsFFPlayer *ffplayer)
 			    "instrument\0");
 
     list_store = gtk_combo_box_get_model(ffplayer->instrument);
+    valid = gtk_tree_model_get_iter_first(list_store, &iter);
+    i = 0;
 
-    if(gtk_tree_model_get_iter_first(list_store, &iter)){
-      do{
-	gchar *str;
+    while(valid){
+      gchar *str;
 
-	gtk_tree_model_get(list_store, &iter,
-			   0, &str,
-			   -1);
+      gtk_tree_model_get(list_store, &iter,
+			 0, &str,
+			 -1);
+      if(!g_strcmp0(instrument[i],
+		       str)){
+	g_free (str);
 
-	if(!g_strcmp0(instrument,
-		      str)){
-	  break;
-	}
-      }while(gtk_tree_model_iter_next(list_store, &iter));
+	break;
+      }else{
+	g_free (str);
 
-      gtk_combo_box_set_active_iter(GTK_COMBO_BOX(ffplayer->instrument),
-				    &iter);
+	i++;
+	valid = gtk_tree_model_iter_next(list_store, &iter);
+      }
     }
+
+    gtk_combo_box_set_active(GTK_COMBO_BOX(ffplayer->instrument),
+			     i);
   }
 }
 
@@ -1129,16 +1060,6 @@ ags_ffplayer_paint(AgsFFPlayer *ffplayer)
   }
 }
 
-/**
- * ags_ffplayer_new:
- * @devout: the assigned devout.
- *
- * Creates an #AgsFFPlayer
- *
- * Returns: a new #AgsFFPlayer
- *
- * Since: 0.3
- */
 AgsFFPlayer*
 ags_ffplayer_new(GObject *devout)
 {

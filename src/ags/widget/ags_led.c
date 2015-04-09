@@ -37,16 +37,6 @@ gboolean ags_led_expose(GtkWidget *widget,
 
 void ags_led_draw(AgsLed *led);
 
-/**
- * SECTION:ags_led
- * @short_description: A led widget
- * @title: AgsLed
- * @section_id:
- * @include: ags/widget/ags_led.h
- *
- * #AgsLed is a widget visualizing a #gboolean value.
- */
-
 static gpointer ags_led_parent_class = NULL;
 
 GType
@@ -213,9 +203,7 @@ ags_led_set_active(AgsLed *led)
 {
   led->flags |= AGS_LED_ACTIVE;
 
-  gtk_widget_queue_draw(led);
-
-  //  ags_led_draw(led);
+  ags_led_draw(led);
 }
 
 void
@@ -223,20 +211,9 @@ ags_led_unset_active(AgsLed *led)
 {
   led->flags &= (~AGS_LED_ACTIVE);
 
-  gtk_widget_queue_draw(led);
-
-  //  ags_led_draw(led);
+  ags_led_draw(led);
 }
 
-/**
- * ags_led_new:
- *
- * Creates an #AgsLed.
- *
- * Returns: a new #AgsLed
- *
- * Since: 0.4
- */
 AgsLed*
 ags_led_new()
 {

@@ -41,16 +41,6 @@ void ags_set_muted_recall(AgsSetMuted *set_muted, AgsRecall *recall);
 void ags_set_muted_channel(AgsSetMuted *set_muted, AgsChannel *channel);
 void ags_set_muted_audio(AgsSetMuted *set_muted, AgsAudio *audio);
 
-/**
- * SECTION:ags_set_muted
- * @short_description: set muted to delay audio
- * @title: AgsSetMuted
- * @section_id:
- * @include: ags/audio/task/recall/ags_set_muted.h
- *
- * The #AgsSetMuted task sets muted to #AgsMutable.
- */
-
 static gpointer ags_set_muted_parent_class = NULL;
 static AgsConnectableInterface *ags_set_muted_parent_connectable_interface;
 
@@ -251,17 +241,6 @@ ags_set_muted_audio(AgsSetMuted *set_muted, AgsAudio *audio)
   }
 }
 
-/**
- * ags_set_muted_new:
- * @gobject: the #GObject
- * @muted: muted to set
- *
- * Creates an #AgsSetMuted.
- *
- * Returns: an new #AgsSetMuted.
- *
- * Since: 0.4
- */
 AgsSetMuted*
 ags_set_muted_new(GObject *gobject,
 		  gboolean muted)

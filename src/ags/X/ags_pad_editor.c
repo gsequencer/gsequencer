@@ -44,17 +44,6 @@ void ags_pad_editor_reset(AgsApplicable *applicable);
 void ags_pad_editor_destroy(GtkObject *object);
 void ags_pad_editor_show(GtkWidget *widget);
 
-/**
- * SECTION:ags_pad_editor
- * @short_description: A composite widget to edit #AgsChannel
- * @title: AgsPadEditor
- * @section_id:
- * @include: ags/X/ags_pad_editor.h
- *
- * #AgsPadEditor is a composite widget to edit #AgsChannel. It should be
- * packed by an #AgsPadEditor.
- */
-
 enum{
   PROP_0,
   PROP_CHANNEL,
@@ -211,7 +200,7 @@ ags_pad_editor_connect(AgsConnectable *connectable)
 {
   AgsPadEditor *pad_editor;
   AgsAudio *audio;
-  GList *line_editor, *line_editor_start;
+  GList *line_editor;
 
   pad_editor = AGS_PAD_EDITOR(connectable);
 
@@ -228,16 +217,13 @@ ags_pad_editor_connect(AgsConnectable *connectable)
 			 G_CALLBACK(ags_pad_editor_set_audio_channels_callback), pad_editor);
 
   /* AgsLineEditor */
-  line_editor_start = 
-    line_editor = gtk_container_get_children(GTK_CONTAINER(pad_editor->line_editor));
+  line_editor = gtk_container_get_children(GTK_CONTAINER(pad_editor->line_editor));
 
   while(line_editor != NULL){
     ags_line_editor_connect(AGS_CONNECTABLE(line_editor->data));
 
     line_editor = line_editor->next;
   }
-
-  g_list_free(line_editor_start);
 }
 
 void
@@ -250,60 +236,51 @@ void
 ags_pad_editor_set_update(AgsApplicable *applicable, gboolean update)
 {
   AgsPadEditor *pad_editor;
-  GList *line_editor, *line_editor_start;
+  GList *line_editor;
 
   pad_editor = AGS_PAD_EDITOR(applicable);
 
-  line_editor_start = 
-    line_editor = gtk_container_get_children(GTK_CONTAINER(pad_editor->line_editor));
+  line_editor = gtk_container_get_children(GTK_CONTAINER(pad_editor->line_editor));
 
   while(line_editor != NULL){
     ags_applicable_set_update(AGS_APPLICABLE(line_editor->data), update);
 
     line_editor = line_editor->next;
   }
-
-  g_list_free(line_editor_start);
 }
 
 void
 ags_pad_editor_apply(AgsApplicable *applicable)
 {
   AgsPadEditor *pad_editor;
-  GList *line_editor, *line_editor_start;
+  GList *line_editor;
 
   pad_editor = AGS_PAD_EDITOR(applicable);
 
-  line_editor_start = 
-    line_editor = gtk_container_get_children(GTK_CONTAINER(pad_editor->line_editor));
+  line_editor = gtk_container_get_children(GTK_CONTAINER(pad_editor->line_editor));
 
   while(line_editor != NULL){
     ags_applicable_apply(AGS_APPLICABLE(line_editor->data));
 
     line_editor = line_editor->next;
   }
-
-  g_list_free(line_editor_start);
 }
 
 void
 ags_pad_editor_reset(AgsApplicable *applicable)
 {
   AgsPadEditor *pad_editor;
-  GList *line_editor, *line_editor_start;
+  GList *line_editor;
 
   pad_editor = AGS_PAD_EDITOR(applicable);
 
-  line_editor_start = 
-    line_editor = gtk_container_get_children(GTK_CONTAINER(pad_editor->line_editor));
+  line_editor = gtk_container_get_children(GTK_CONTAINER(pad_editor->line_editor));
 
   while(line_editor != NULL){
     ags_applicable_reset(AGS_APPLICABLE(line_editor->data));
 
     line_editor = line_editor->next;
   }
-
-  g_list_free(line_editor_start);
 }
 
 void
@@ -318,15 +295,6 @@ ags_pad_editor_show(GtkWidget *widget)
   /* empty */
 }
 
-/**
- * ags_pad_editor_set_channel:
- * @pad_editor: an #AgsPadEditor
- * @channel: the new #AgsChannel
- *
- * Is called as channel gets modified.
- *
- * Since: 0.3
- */
 void
 ags_pad_editor_set_channel(AgsPadEditor *pad_editor, AgsChannel *channel)
 {
@@ -368,16 +336,6 @@ ags_pad_editor_set_channel(AgsPadEditor *pad_editor, AgsChannel *channel)
   }
 }
 
-/**
- * ags_pad_editor_new:
- * @channel: the channel to edit
- *
- * Creates an #AgsPadEditor
- *
- * Returns: a new #AgsPadEditor
- *
- * Since: 0.3
- */
 AgsPadEditor*
 ags_pad_editor_new(AgsChannel *channel)
 {

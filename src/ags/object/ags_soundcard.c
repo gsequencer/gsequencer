@@ -125,8 +125,7 @@ ags_soundcard_play_init(AgsSoundcard *soundcard,
   g_return_if_fail(AGS_IS_SOUNDCARD(soundcard));
   soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
   g_return_if_fail(soundcard_interface->play_init);
-  soundcard_interface->play_init(soundcard,
-				 error);
+  soundcard_interface->play_init(soundcard);
 }
 
 /**
@@ -160,9 +159,9 @@ ags_soundcard_stop(AgsSoundcard *soundcard)
 {
   AgsSoundcardInterface *soundcard_interface;
 
-  g_return_if_fail(AGS_IS_SOUNDCARD(soundcard));
+  g_return_if_fail(AGS_IS_SOUNDCARD(soundcard), NULL);
   soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
-  g_return_if_fail(soundcard_interface->stop);
+  g_return_if_fail(soundcard_interface->stop, NULL);
   soundcard_interface->stop(soundcard);
 }
 
@@ -197,41 +196,6 @@ ags_soundcard_offset_changed(AgsSoundcard *soundcard,
 
   g_return_if_fail(AGS_IS_SOUNDCARD(soundcard));
   soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
-  g_return_if_fail(soundcard_interface->offset_changed);
-  soundcard_interface->offset_changed(soundcard,
-				      note_offset);
-}
-
-/**
- * ags_soundcard_get_buffer:
- * @soundcard an #AgsSoundcard
- *
- * Get current playback buffer. 
- */
-signed short*
-ags_soundcard_get_buffer(AgsSoundcard *soundcard)
-{
-  AgsSoundcardInterface *soundcard_interface;
-
-  g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), NULL);
-  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
-  g_return_val_if_fail(soundcard_interface->get_buffer, NULL);
-  return(soundcard_interface->get_buffer(soundcard));
-}
-
-/**
- * ags_soundcard_get_next_buffer:
- * @soundcard an #AgsSoundcard
- *
- * Get future playback buffer.
- */
-signed short*
-ags_soundcard_get_next_buffer(AgsSoundcard *soundcard)
-{
-  AgsSoundcardInterface *soundcard_interface;
-
-  g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), NULL);
-  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
-  g_return_val_if_fail(soundcard_interface->get_next_buffer, NULL);
-  return(soundcard_interface->get_next_buffer(soundcard));
+  g_return_if_fail(soundcard_interface->note_offset);
+  soundcard_interface->offset_changed(soundcard, note_offset);
 }

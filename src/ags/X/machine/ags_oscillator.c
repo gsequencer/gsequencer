@@ -38,16 +38,6 @@ void ags_oscillator_disconnect(AgsConnectable *connectable);
 void ags_oscillator_destroy(GtkObject *object);
 void ags_oscillator_show(GtkWidget *widget);
 
-/**
- * SECTION:ags_oscillator
- * @short_description: oscillator
- * @title: AgsOscillator
- * @section_id:
- * @include: ags/X/machine/ags_oscillator.h
- *
- * The #AgsOscillator is a composite widget to act as oscillator.
- */
-
 static AgsConnectableInterface *ags_oscillator_parent_connectable_interface;
 
 GType
@@ -378,15 +368,6 @@ ags_file_write_oscillator(AgsFile *file, xmlNode *parent, AgsOscillator *oscilla
 	      node);  
 }
 
-/**
- * ags_oscillator_new:
- *
- * Creates an #AgsOscillator
- *
- * Returns: a new #AgsOscillator
- *
- * Since: 0.3
- */
 AgsOscillator*
 ags_oscillator_new()
 {

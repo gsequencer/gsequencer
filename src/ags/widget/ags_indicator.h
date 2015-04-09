@@ -36,8 +36,6 @@ typedef struct _AgsIndicatorClass AgsIndicatorClass;
 struct _AgsIndicator
 {
   GtkWidget widget;
-
-  GtkAdjustment *adjustment;
 };
 
 struct _AgsIndicatorClass

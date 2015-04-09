@@ -42,6 +42,8 @@ void ags_stream_recycling_connect_dynamic(AgsDynamicConnectable *dynamic_connect
 void ags_stream_recycling_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 void ags_stream_recycling_finalize(GObject *gobject);
 
+void ags_stream_recycling_child_added(AgsRecall *recall, AgsRecall *child,
+				      gpointer data);
 AgsRecall* ags_stream_recycling_duplicate(AgsRecall *recall,
 					  AgsRecallID *recall_id,
 					  guint *n_params, GParameter *parameter);
@@ -52,16 +54,6 @@ void ags_stream_recycling_source_add_audio_signal_callback(AgsRecycling *source,
 void ags_stream_recycling_source_remove_audio_signal_callback(AgsRecycling *source,
 							      AgsAudioSignal *audio_signal,
 							      AgsStreamRecycling *stream_recycling);
-
-/**
- * SECTION:ags_stream_recycling
- * @short_description: streams recycling
- * @title: AgsStreamRecycling
- * @section_id:
- * @include: ags/audio/recall/ags_stream_recycling.h
- *
- * The #AgsStreamRecycling streams the recycling with appropriate #AgsRecallID.
- */
 
 static gpointer ags_stream_recycling_parent_class = NULL;
 static AgsConnectableInterface *ags_stream_recycling_parent_connectable_interface;
@@ -161,9 +153,8 @@ ags_stream_recycling_init(AgsStreamRecycling *stream_recycling)
   AGS_RECALL(stream_recycling)->xml_type = "ags-stream-recycling\0";
   AGS_RECALL(stream_recycling)->port = NULL;
 
+  AGS_RECALL(stream_recycling)->flags |= AGS_RECALL_PERSISTENT;
   AGS_RECALL(stream_recycling)->child_type = AGS_TYPE_STREAM_AUDIO_SIGNAL;
-
-  AGS_RECALL_RECYCLING(stream_recycling)->flags |= (AGS_RECALL_RECYCLING_MAP_CHILD_SOURCE);
 }
 
 void
@@ -184,10 +175,10 @@ ags_stream_recycling_connect(AgsConnectable *connectable)
 
   ags_stream_recycling_parent_connectable_interface->connect(connectable);
 
-  //  g_signal_connect(AGS_RECALL_RECYCLING(stream_recycling)->source, "add_audio_signal\0",
-  //		   G_CALLBACK(ags_stream_recycling_source_add_audio_signal_callback), stream_recycling);
-  //  g_signal_connect(AGS_RECALL_RECYCLING(stream_recycling)->source, "remove_audio_signal\0",
-  //		   G_CALLBACK(ags_stream_recycling_source_remove_audio_signal_callback), stream_recycling);
+  g_signal_connect(AGS_RECALL_RECYCLING(stream_recycling)->source, "add_audio_signal\0",
+		   G_CALLBACK(ags_stream_recycling_source_add_audio_signal_callback), stream_recycling);
+  g_signal_connect(AGS_RECALL_RECYCLING(stream_recycling)->source, "remove_audio_signal\0",
+		   G_CALLBACK(ags_stream_recycling_source_remove_audio_signal_callback), stream_recycling);
 }
 
 void
@@ -232,7 +223,7 @@ ags_stream_recycling_source_add_audio_signal_callback(AgsRecycling *source,
 						      AgsAudioSignal *audio_signal,
 						      AgsStreamRecycling *stream_recycling)
 {
-  //  g_object_ref(audio_signal);
+  g_object_ref(audio_signal);
 }
 
 void
@@ -249,18 +240,10 @@ ags_stream_recycling_source_remove_audio_signal_callback(AgsRecycling *source,
   //  unref_audio_signal = ags_unref_audio_signal_new(AGS_RECALL_AUDIO_SIGNAL(gobject)->source);
   //  ags_task_thread_append_task(task_thread,
   //			      unref_audio_signal);
+
+  g_object_unref(audio_signal);
 }
 
-/**
- * ags_stream_recycling_new:
- * @recycling: the #AgsRecycling
- *
- * Creates an #AgsStreamRecycling
- *
- * Returns: a new #AgsStreamRecycling
- *
- * Since: 0.4
- */
 AgsStreamRecycling*
 ags_stream_recycling_new(AgsRecycling *recycling)
 {

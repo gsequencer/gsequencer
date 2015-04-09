@@ -18,20 +18,13 @@
 
 #include <ags/X/ags_resize_editor.h>
 
-#include <ags/main.h>
-
 #include <ags-lib/object/ags_connectable.h>
 
 #include <ags/object/ags_applicable.h>
 
-#include <ags/thread/ags_audio_loop.h>
-#include <ags/thread/ags_task_thread.h>
-
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_input.h>
-
-#include <ags/audio/task/ags_resize_audio.h>
 
 #include <ags/X/ags_machine_editor.h>
 
@@ -46,17 +39,6 @@ void ags_resize_editor_apply(AgsApplicable *applicable);
 void ags_resize_editor_reset(AgsApplicable *applicable);
 void ags_resize_editor_destroy(GtkObject *object);
 void ags_resize_editor_show(GtkWidget *widget);
-
-/**
- * SECTION:ags_resize_editor
- * @short_description: Resize audio channels or pads. 
- * @title: AgsResizeEditor
- * @section_id:
- * @include: ags/X/ags_resize_editor.h
- *
- * #AgsResizeEditor is a composite widget to resize. A resize editor 
- * should be packed by a #AgsMachineEditor.
- */
 
 AgsConnectableInterface *ags_resize_editor_parent_connectable_interface;
 
@@ -257,7 +239,6 @@ ags_resize_editor_apply(AgsApplicable *applicable)
   AgsMachineEditor *machine_editor;
   AgsResizeEditor *resize_editor;
   AgsAudio *audio;
-  AgsResizeAudio *resize_audio;
 
   resize_editor = AGS_RESIZE_EDITOR(applicable);
 
@@ -269,15 +250,13 @@ ags_resize_editor_apply(AgsApplicable *applicable)
 
   audio = machine_editor->machine->audio;
 
-  /* create task */
-  resize_audio = ags_resize_audio_new(audio,
-				      (guint) gtk_spin_button_get_value_as_int(resize_editor->output_pads),
-				      (guint) gtk_spin_button_get_value_as_int(resize_editor->input_pads),
-				      (guint) gtk_spin_button_get_value_as_int(resize_editor->audio_channels));
-      
-  /* append AgsResizeAudio */
-  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(audio->devout)->ags_main)->main_loop)->task_thread),
-			      AGS_TASK(resize_audio));
+  ags_audio_set_audio_channels(audio,
+			       (guint) gtk_spin_button_get_value_as_int(resize_editor->audio_channels));
+
+  ags_audio_set_pads(audio, AGS_TYPE_INPUT,
+		     (guint) gtk_spin_button_get_value_as_int(resize_editor->input_pads));
+  ags_audio_set_pads(audio, AGS_TYPE_OUTPUT,
+		     (guint) gtk_spin_button_get_value_as_int(resize_editor->output_pads));
 }
 
 void
@@ -318,15 +297,6 @@ ags_resize_editor_show(GtkWidget *widget)
   AgsResizeEditor *resize_editor = (AgsResizeEditor *) widget;
 }
 
-/**
- * ags_resize_editor_new:
- *
- * Creates an #AgsResizeEditor
- *
- * Returns: a new #AgsResizeEditor
- *
- * Since: 0.3
- */
 AgsResizeEditor*
 ags_resize_editor_new()
 {

@@ -29,13 +29,11 @@
 #define AGS_IS_CONFIG_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_CONFIG))
 #define AGS_CONFIG_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_CONFIG, AgsConfigClass))
 
-#define AGS_CONFIG_DEFAULT_VERSION "0.4.2\0"
-#define AGS_CONFIG_DEFAULT_BUILD_ID "CEST 02-10-2014 19:36\0"
+#define AGS_CONFIG_DEFAULT_VERSION "0.4.0\0"
+#define AGS_CONFIG_DEFAULT_BUILD_ID "CEST 22-06-2014 03:07\0"
 
-#define AGS_CONFIG_GENERIC "generic\0"
 #define AGS_CONFIG_THREAD "thread\0"
 #define AGS_CONFIG_DEVOUT "device\0"
-#define AGS_CONFIG_RECALL "recall\0"
 
 typedef struct _AgsConfig AgsConfig;
 typedef struct _AgsConfigClass AgsConfigClass;
@@ -46,8 +44,6 @@ struct _AgsConfig
 
   guint version;
   gchar *build_id;
-  
-  GObject *ags_main;
 
   GKeyFile *key_file;
 };

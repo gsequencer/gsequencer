@@ -22,20 +22,14 @@ int
 ags_line_member_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsLineMember *line_member)
 {
   if(old_parent == NULL){
-    //TODO:JK: implement me
+    gtk_widget_show_all(widget);
   }
 }
 
 void
 ags_line_member_dial_changed_callback(GtkWidget *dial, AgsLineMember *line_member)
 {
-  GtkAdjustment *adjustment;
-
-  g_object_get(dial,
-	       "adjustment\0", &adjustment,
-	       NULL);
-  ags_line_member_change_port(line_member,
-			      (gpointer) &(adjustment->value));
+  //TODO:JK: implement me
 }
 
 void
@@ -90,9 +84,4 @@ ags_line_member_button_clicked_callback(GtkWidget *button, AgsLineMember *line_m
   ags_line_member_change_port(line_member,
 			      &(line_member->active));
 }
-void
-ags_line_member_port_safe_write_callback(AgsPort *port, GValue *value,
-					 AgsLineMember *line_member)
-{
-  //TODO:JK: implement me
-}
+

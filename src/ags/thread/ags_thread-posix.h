@@ -180,10 +180,8 @@ gboolean ags_thread_parental_is_locked(AgsThread *thread, AgsThread *parent);
 gboolean ags_thread_sibling_is_locked(AgsThread *thread);
 gboolean ags_thread_children_is_locked(AgsThread *thread);
 
-gboolean ags_thread_is_current_ready(AgsThread *current,
-				     guint tic);
-gboolean ags_thread_is_tree_ready(AgsThread *thread,
-				  guint tic);
+gboolean ags_thread_is_current_ready(AgsThread *current);
+gboolean ags_thread_is_tree_ready(AgsThread *thread);
 
 AgsThread* ags_thread_next_parent_locked(AgsThread *thread, AgsThread *parent);
 AgsThread* ags_thread_next_sibling_locked(AgsThread *thread);

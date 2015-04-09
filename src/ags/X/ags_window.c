@@ -51,16 +51,6 @@ gboolean ags_window_delete_event(GtkWidget *widget, GdkEventAny *event);
 
 static GList* ags_window_standard_machine_counter();
 
-/**
- * SECTION:ags_window
- * @short_description: The window object.
- * @title: AgsWindow
- * @section_id:
- * @include: ags/X/ags_window.h
- *
- * #AgsWindow is a composite toplevel widget.
- */
-
 enum{
   PROP_0,
   PROP_DEVOUT,
@@ -207,7 +197,6 @@ ags_window_init(AgsWindow *window)
 		     (GtkWidget *) window->navigation,
 		     FALSE, FALSE, 0);
 
-  window->export_window = ags_export_window_new();
   window->preferences = NULL;
 
   window->machine_counter = ags_window_standard_machine_counter();
@@ -247,10 +236,6 @@ ags_window_set_property(GObject *gobject,
       g_object_set(G_OBJECT(window->navigation),
 		   "devout\0", devout,
 		   NULL);
-
-      g_object_set(G_OBJECT(window->export_window),
-		   "devout\0", devout,
-		   NULL);
     }
     break;
   case PROP_MAIN:
@@ -271,10 +256,6 @@ ags_window_set_property(GObject *gobject,
       }
 
       window->ags_main = ags_main;
-
-      g_object_set(G_OBJECT(window->export_window),
-		   "ags-main\0", ags_main,
-		   NULL);
     }
     break;
   default:
@@ -297,9 +278,6 @@ ags_window_get_property(GObject *gobject,
   case PROP_DEVOUT:
     g_value_set_object(value, window->devout);
     break;
-  case PROP_MAIN:
-    g_value_set_object(value, window->ags_main);
-    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -310,7 +288,7 @@ void
 ags_window_connect(AgsConnectable *connectable)
 {
   AgsWindow *window;
-  GList *list, *list_start;
+  GList *list;
 
   window = AGS_WINDOW(connectable);
 
@@ -319,8 +297,7 @@ ags_window_connect(AgsConnectable *connectable)
 
   ags_connectable_connect(AGS_CONNECTABLE(window->menu_bar));
 
-  list_start = 
-    list = gtk_container_get_children(window->machines);
+  list = gtk_container_get_children(window->machines);
 
   while(list != NULL){
     ags_connectable_connect(AGS_CONNECTABLE(list->data));
@@ -328,12 +305,8 @@ ags_window_connect(AgsConnectable *connectable)
     list = list->next;
   }
 
-  g_list_free(list_start);
-  
   ags_connectable_connect(AGS_CONNECTABLE(window->editor));
   ags_connectable_connect(AGS_CONNECTABLE(window->navigation));
-
-  ags_connectable_connect(AGS_CONNECTABLE(window->export_window));
 }
 
 void
@@ -351,7 +324,6 @@ ags_window_finalize(GObject *gobject)
   window = (AgsWindow *) gobject;
 
   g_object_unref(G_OBJECT(window->devout));
-  g_object_unref(G_OBJECT(window->export_window));
 
   free(window->name);
 
@@ -380,12 +352,6 @@ ags_window_delete_event(GtkWidget *widget, GdkEventAny *event)
   return(FALSE);
 }
 
-/**
- * @window: the #AgsWindow
- * @machine_type: the machine type
- *
- * Keep track of count of machines. Well known machines.
- */
 static GList*
 ags_window_standard_machine_counter()
 {
@@ -415,12 +381,6 @@ ags_window_standard_machine_counter()
   return(machine_counter);
 }
 
-/**
- * @window: the #AgsWindow
- * @machine_type: the machine type
- *
- * Keep track of count of machines. Lookup window's counter.
- */
 AgsMachineCounter*
 ags_window_find_machine_counter(AgsWindow *window,
 				GType machine_type)
@@ -440,12 +400,6 @@ ags_window_find_machine_counter(AgsWindow *window,
   return(NULL);
 }
 
-/**
- * @window: the #AgsWindow
- * @machine_type: the machine type
- *
- * Keep track of count of machines. Increment window's counter.
- */
 void
 ags_window_increment_machine_counter(AgsWindow *window,
 				     GType machine_type)
@@ -460,12 +414,6 @@ ags_window_increment_machine_counter(AgsWindow *window,
   }
 }
 
-/**
- * @window: the #AgsWindow
- * @machine_type: the machine type
- *
- * Keep track of count of machines. Decrement window's counter.
- */
 void
 ags_window_decrement_machine_counter(AgsWindow *window,
 				     GType machine_type)
@@ -480,14 +428,6 @@ ags_window_decrement_machine_counter(AgsWindow *window,
   }
 }
 
-/**
- * @version: the machine's version
- * @build_id: the machine's build id
- * @machine_type: the machine type
- * @initial_value: initialize counter
- *
- * Keep track of count of machines.
- */
 AgsMachineCounter*
 ags_machine_counter_alloc(gchar *version, gchar *build_id,
 			  GType machine_type, guint initial_value)
@@ -505,24 +445,14 @@ ags_machine_counter_alloc(gchar *version, gchar *build_id,
   return(machine_counter);
 }
 
-/**
- * ags_window_new:
- * @ags_main: the application object.
- *
- * Creates an #AgsWindow
- *
- * Returns: a new #AgsWindow
- *
- * Since: 0.3
- */
 AgsWindow*
 ags_window_new(GObject *ags_main)
 {
   AgsWindow *window;
 
-  window = (AgsWindow *) g_object_new(AGS_TYPE_WINDOW,
-				      "ags-main", ags_main,
-				      NULL);
+  window = (AgsWindow *) g_object_new(AGS_TYPE_WINDOW, NULL);
+
+  window->ags_main = ags_main;
 
   return(window);
 }

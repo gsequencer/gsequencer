@@ -83,16 +83,6 @@ void ags_play_channel_run_master_source_recycling_changed_callback(AgsChannel *c
 void ags_play_channel_run_master_stream_channel_done_callback(AgsRecall *recall,
 							      AgsPlayChannelRunMasterStreamer *streamer);
 
-/**
- * SECTION:ags_play_channel_master_run
- * @short_description: plays channel as toplevel
- * @title: AgsPlayChannelMaster
- * @section_id:
- * @include: ags/audio/recall/ags_play_channel_master.h
- *
- * The #AgsPlayChannelMaster class plays the channel within toplevel context.
- */
-
 enum{
   PROP_0,
   PROP_STREAM_CHANNEL_RUN,
@@ -230,8 +220,7 @@ ags_play_channel_run_master_init(AgsPlayChannelRunMaster *play_channel_run_maste
   AGS_RECALL(play_channel_run_master)->xml_type = "ags-play-channel-run-master\0";
   AGS_RECALL(play_channel_run_master)->port = NULL;
 
-  AGS_RECALL(play_channel_run_master)->flags |= (AGS_RECALL_INPUT_ORIENTATED |
-						 AGS_RECALL_PERSISTENT);
+  AGS_RECALL(play_channel_run_master)->flags |= AGS_RECALL_INPUT_ORIENTATED;
   AGS_RECALL(play_channel_run_master)->child_type = AGS_TYPE_PLAY_RECYCLING;
 
   play_channel_run_master->flags = 0;
@@ -652,15 +641,6 @@ ags_play_channel_run_master_find_streamer(GList *list,
   return(NULL);
 }
 
-/**
- * ags_play_channel_master_run_new:
- *
- * Creates an #AgsPlayChannelMasterRun
- *
- * Returns: a new #AgsPlayChannelMasterRun
- *
- * Since: 0.4
- */
 AgsPlayChannelRunMaster*
 ags_play_channel_run_master_new()
 {

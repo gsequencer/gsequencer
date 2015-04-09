@@ -29,16 +29,6 @@ void ags_add_audio_signal_finalize(GObject *gobject);
 
 void ags_add_audio_signal_launch(AgsTask *task);
 
-/**
- * SECTION:ags_add_audio_signal
- * @short_description: add audio_signal object to recycling
- * @title: AgsAddAudioSignal
- * @section_id:
- * @include: ags/audio/task/ags_add_audio_signal.h
- *
- * The #AgsAddAudioSignal task adds #AgsAudioSignal to #AgsRecycling.
- */
-
 static gpointer ags_add_audio_signal_parent_class = NULL;
 static AgsConnectableInterface *ags_add_audio_signal_parent_connectable_interface;
 
@@ -148,8 +138,7 @@ ags_add_audio_signal_launch(AgsTask *task)
   AgsAddAudioSignal *add_audio_signal;
   AgsAudioSignal *audio_signal, *old_template;
   AgsRecallID *recall_id;
-  gdouble delay;
-  guint attack;
+  guint attack, delay;
   guint tic_counter_incr;
 
   add_audio_signal = AGS_ADD_AUDIO_SIGNAL(task);
@@ -179,11 +168,10 @@ ags_add_audio_signal_launch(AgsTask *task)
   /* delay and attack */
   tic_counter_incr = devout->tic_counter + 1;
 
-  //TODO:JK: unclear
   attack = 0; //devout->attack[((tic_counter_incr == AGS_NOTATION_TICS_PER_BEAT) ?
     //		   0:
     //			   tic_counter_incr)];
-  delay = 0.0; //devout->delay[((tic_counter_incr == AGS_NOTATION_TICS_PER_BEAT) ?
+  delay = 0; //devout->delay[((tic_counter_incr == AGS_NOTATION_TICS_PER_BEAT) ?
   //		 0:
   //			 tic_counter_incr)];
   
@@ -207,20 +195,6 @@ ags_add_audio_signal_launch(AgsTask *task)
   }
 }
 
-/**
- * ags_add_audio_signal_new:
- * @recycling: the #AgsRecycling
- * @audio_signal: the #AgsAudioSignal to add
- * @devout: the #AgsDevout defaulting to
- * @recall_id: the #AgsRecallID, may be %NULL if %AGS_AUDIO_SIGNAL_TEMPLATE set
- * @audio_signal_flags: the flags to set
- *
- * Creates an #AgsAddAudioSignal.
- *
- * Returns: an new #AgsAddAudioSignal.
- *
- * Since: 0.4
- */
 AgsAddAudioSignal*
 ags_add_audio_signal_new(AgsRecycling *recycling,
 			 AgsAudioSignal *audio_signal,

@@ -42,17 +42,6 @@ void ags_line_editor_reset(AgsApplicable *applicable);
 void ags_line_editor_destroy(GtkObject *object);
 void ags_line_editor_show(GtkWidget *widget);
 
-/**
- * SECTION:ags_line_editor
- * @short_description: A composite widget to edit #AgsChannel
- * @title: AgsLineEditor
- * @section_id:
- * @include: ags/X/ags_line_editor.h
- *
- * #AgsLineEditor is a composite widget to edit #AgsChannel. It should be
- * packed by an #AgsPadEditor.
- */
-
 enum{
   PROP_0,
   PROP_CHANNEL,
@@ -115,13 +104,6 @@ ags_line_editor_class_init(AgsLineEditorClass *line_editor)
   gobject->set_property = ags_line_editor_set_property;
   gobject->get_property = ags_line_editor_get_property;
 
-  /**
-   * AgsLineEditor:channel:
-   *
-   * The assigned #AgsChannel to edit.
-   * 
-   * Since: 0.3
-   */
   param_spec = g_param_spec_object("channel\0",
 				   "assigned channel\0",
 				   "The channel which this pad editor is assigned with\0",
@@ -219,7 +201,6 @@ ags_line_editor_connect(AgsConnectable *connectable)
   		   G_CALLBACK(ags_line_editor_show_callback), (gpointer) line_editor);
 
   ags_connectable_connect(AGS_CONNECTABLE(line_editor->link_editor));
-  ags_connectable_connect(AGS_CONNECTABLE(line_editor->member_editor));
 }
 
 void
@@ -262,10 +243,6 @@ ags_line_editor_reset(AgsApplicable *applicable)
   if(line_editor->link_editor != NULL){
     ags_applicable_reset(AGS_APPLICABLE(line_editor->link_editor));
   }
-
-  if(line_editor->member_editor != NULL){
-    ags_applicable_reset(AGS_APPLICABLE(line_editor->member_editor));
-  }
 }
 
 void
@@ -279,18 +256,8 @@ ags_line_editor_show(GtkWidget *widget)
   AgsLineEditor *line_editor = (AgsLineEditor *) widget;
 
   gtk_widget_show((GtkWidget *) line_editor->link_editor);
-  gtk_widget_show((GtkWidget *) line_editor->member_editor);
 }
 
-/**
- * ags_line_editor_set_channel:
- * @line_editor: an #AgsLineEditor
- * @channel: the new #AgsChannel
- *
- * Is called as channel gets modified.
- *
- * Since: 0.3
- */
 void
 ags_line_editor_set_channel(AgsLineEditor *line_editor,
 			    AgsChannel *channel)
@@ -301,7 +268,6 @@ ags_line_editor_set_channel(AgsLineEditor *line_editor,
     link_editor = line_editor->link_editor;
     line_editor->link_editor = NULL;
     gtk_widget_destroy(GTK_WIDGET(line_editor->link_editor));
-    gtk_widget_destroy(GTK_WIDGET(line_editor->member_editor));
   }
 
   line_editor->channel = channel;
@@ -323,16 +289,6 @@ ags_line_editor_set_channel(AgsLineEditor *line_editor,
   }
 }
 
-/**
- * ags_line_editor_new:
- * @channel: the channel to edit
- *
- * Creates an #AgsLineEditor
- *
- * Returns: a new #AgsLineEditor
- *
- * Since: 0.3
- */
 AgsLineEditor*
 ags_line_editor_new(AgsChannel *channel)
 {

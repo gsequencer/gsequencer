@@ -53,16 +53,6 @@ AgsRecall* ags_mute_audio_signal_duplicate(AgsRecall *recall,
 					   AgsRecallID *recall_id,
 					   guint *n_params, GParameter *parameter);
 
-/**
- * SECTION:ags_mute_audio_signal
- * @short_description: mutes audio signal
- * @title: AgsMuteAudioSignal
- * @section_id:
- * @include: ags/audio/recall/ags_mute_audio_signal.h
- *
- * The #AgsMuteAudioSignal class mutes the audio signal.
- */
-
 static gpointer ags_mute_audio_signal_parent_class = NULL;
 static AgsConnectableInterface *ags_mute_audio_signal_parent_connectable_interface;
 static AgsDynamicConnectableInterface *ags_mute_audio_signal_parent_dynamic_connectable_interface;
@@ -212,13 +202,13 @@ ags_mute_audio_signal_finalize(GObject *gobject)
 void
 ags_mute_audio_signal_run_inter(AgsRecall *recall)
 {
+  AgsDevout *devout;
   AgsMuteAudio *mute_audio;
   AgsMuteChannel *mute_channel;
   AgsMuteAudioSignal *mute_audio_signal;
   AgsAudioSignal *source;
   GList *stream_source;
   gboolean audio_muted, channel_muted;
-  guint buffer_size;
   guint i;
   GValue audio_value = {0,};
   GValue channel_value = {0,};
@@ -227,9 +217,9 @@ ags_mute_audio_signal_run_inter(AgsRecall *recall)
 
   mute_audio_signal = AGS_MUTE_AUDIO_SIGNAL(recall);
 
+  devout = AGS_DEVOUT(AGS_RECALL(mute_audio_signal)->devout);
   source = AGS_RECALL_AUDIO_SIGNAL(mute_audio_signal)->source;
   stream_source = source->stream_current;
-  buffer_size = source->buffer_size;
 
   if(stream_source == NULL){
     ags_recall_done(recall);
@@ -262,7 +252,7 @@ ags_mute_audio_signal_run_inter(AgsRecall *recall)
   }
 
   /* mute */
-  memset((signed short *) stream_source->data, 0, buffer_size * sizeof(signed short));
+  memset((signed short *) stream_source->data, 0, devout->buffer_size * sizeof(signed short));
 }
 
 AgsRecall*
@@ -279,16 +269,6 @@ ags_mute_audio_signal_duplicate(AgsRecall *recall,
   return((AgsRecall *) mute);
 }
 
-/**
- * ags_mute_audio_signal_new:
- * @source: the source #AgsAudioSignal
- *
- * Creates an #AgsMuteAudioSignal
- *
- * Returns: a new #AgsMuteAudioSignal
- *
- * Since: 0.4
- */
 AgsMuteAudioSignal*
 ags_mute_audio_signal_new(AgsAudioSignal *source)
 {

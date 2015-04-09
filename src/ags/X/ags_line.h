@@ -34,8 +34,8 @@
 #define AGS_IS_LINE_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_LINE))
 #define AGS_LINE_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_LINE, AgsLineClass))
 
-#define AGS_LINE_DEFAULT_VERSION "0.4.2\0"
-#define AGS_LINE_DEFAULT_BUILD_ID "CEST 02-10-2014 19:36\0"
+#define AGS_LINE_DEFAULT_VERSION "0.4.0\0"
+#define AGS_LINE_DEFAULT_BUILD_ID "CEST 22-06-2014 03:07\0"
 
 typedef struct _AgsLine AgsLine;
 typedef struct _AgsLineClass AgsLineClass;
@@ -75,23 +75,17 @@ struct _AgsLineClass
   void (*set_channel)(AgsLine *line, AgsChannel *channel);
 
   void (*group_changed)(AgsLine *line);
-
-  void (*map_recall)(AgsLine *line,
-		     guint output_pad_start);
-  GList (*find_port)(AgsLine *line);
 };
 
 GType ags_line_get_type(void);
 
 void ags_line_set_channel(AgsLine *line, AgsChannel *channel);
 
+void ags_line_find_port(AgsLine *line);
+
 void ags_line_group_changed(AgsLine *line);
 
 GList* ags_line_find_next_grouped(GList *line);
-
-void ags_line_map_recall(AgsLine *line,
-			 guint output_pad_start);
-GList* ags_line_find_port(AgsLine *line);
 
 AgsLine* ags_line_new(GtkWidget *pad, AgsChannel *channel);
 

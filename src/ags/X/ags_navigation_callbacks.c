@@ -26,8 +26,11 @@
 
 #include <ags/audio/recall/ags_count_beats_audio.h>
 
+#include <ags/audio/task/ags_init_audio.h>
+#include <ags/audio/task/ags_append_audio.h>
+#include <ags/audio/task/ags_cancel_audio.h>
+#include <ags/audio/task/ags_start_devout.h>
 #include <ags/audio/task/ags_change_tact.h>
-#include <ags/audio/task/ags_display_tact.h>
 
 #include <ags/audio/task/recall/ags_apply_bpm.h>
 
@@ -70,16 +73,9 @@ void
 ags_navigation_expander_callback(GtkWidget *widget,
 				 AgsNavigation *navigation)
 {
-  GtkArrow *arrow;
-  GList *list;
+  GtkArrow *arrow = (GtkArrow *) gtk_container_get_children((GtkContainer *) widget)->data;
 
-  list = gtk_container_get_children((GtkContainer *) widget);
-  arrow = (GtkArrow *) list->data;
-  g_list_free(list);
-
-  list = gtk_container_get_children((GtkContainer *) navigation);
-  widget = (GtkWidget *) list->next->data;
-  g_list_free(list);
+  widget = (GtkWidget *) gtk_container_get_children((GtkContainer *) navigation)->next->data;
 
   if(arrow->arrow_type == GTK_ARROW_DOWN){
     gtk_widget_hide_all(widget);
@@ -131,15 +127,16 @@ ags_navigation_play_callback(GtkWidget *widget,
 {
   AgsWindow *window;
   AgsMachine *machine;
-  GList *machines, *machines_start;
-
-  if((AGS_NAVIGATION_BLOCK_PLAY & (navigation->flags)) != 0){
-    return;
-  }
+  AgsInitAudio *init_audio;
+  AgsAppendAudio *append_audio;
+  AgsStartDevout *start_devout;
+  GList *machines;
+  GList *list;
 
   window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
-  machines_start =
-    machines = gtk_container_get_children(GTK_CONTAINER(window->machines));
+  machines = gtk_container_get_children(GTK_CONTAINER(window->machines));
+
+  list = NULL;
 
   while(machines != NULL){
     machine = AGS_MACHINE(machines->data);
@@ -148,14 +145,31 @@ ags_navigation_play_callback(GtkWidget *widget,
        (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0){
       printf("found machine to play!\n\0");
 
-      ags_machine_set_run(machine,
-			  TRUE);
+      /* create init task */
+      init_audio = ags_init_audio_new(machine->audio,
+				      FALSE, TRUE, TRUE);
+      list = g_list_prepend(list, init_audio);
+    
+      /* create append task */
+      append_audio = ags_append_audio_new(G_OBJECT(AGS_MAIN(window->ags_main)->main_loop),
+					  (GObject *) machine->audio);
+      
+      list = g_list_prepend(list, append_audio);
     }
 
     machines = machines->next;
   }
 
-  g_list_free(machines_start);
+  /* create start task */
+  if(list != NULL){
+    start_devout = ags_start_devout_new(window->devout);
+    list = g_list_prepend(list, start_devout);
+    list = g_list_reverse(list);
+
+    /* append AgsStartDevout */
+    ags_task_thread_append_tasks(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->task_thread),
+				 list);
+  }  
 }
 
 void
@@ -164,11 +178,14 @@ ags_navigation_stop_callback(GtkWidget *widget,
 {
   AgsWindow *window;
   AgsMachine *machine;
-  GList *machines,*machines_start;
+  AgsCancelAudio *cancel_audio;
+  GList *machines;
+  GList *list;
 
   window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
-  machines_start = 
-    machines = gtk_container_get_children(GTK_CONTAINER(window->machines));
+  machines = gtk_container_get_children(GTK_CONTAINER(window->machines));
+
+  list = NULL;
 
   while(machines != NULL){
     machine = AGS_MACHINE(machines->data);
@@ -176,22 +193,25 @@ ags_navigation_stop_callback(GtkWidget *widget,
     if((AGS_MACHINE_IS_SEQUENCER & (machine->flags)) !=0 ||
        (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0){
       printf("found machine to stop!\n\0");
-
-      ags_machine_set_run(machine,
-			  FALSE);
+    
+      /* create append task */
+      cancel_audio = ags_cancel_audio_new(machine->audio,
+					  FALSE, FALSE, TRUE);
+      
+      list = g_list_prepend(list, cancel_audio);
     }
 
     machines = machines->next;
   }
 
-  g_list_free(machines_start);
+  /* create start task */
+  if(list != NULL){
+    list = g_list_reverse(list);
 
-  /* toggle play button */
-  navigation->flags |= AGS_NAVIGATION_BLOCK_PLAY;
-  gtk_toggle_button_set_active(navigation->play,
-			       FALSE);
-
-  navigation->flags &= (~AGS_NAVIGATION_BLOCK_PLAY);
+    /* append AgsStartDevout */
+    ags_task_thread_append_tasks(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->task_thread),
+				 list);
+  }  
 }
 
 void
@@ -221,13 +241,12 @@ ags_navigation_loop_callback(GtkWidget *widget,
   AgsMachine *machine;
   AgsAudio *audio;
   AgsRecall *recall;
-  GList *machines, *machines_start;
+  GList *machines;
   GList *list; // find AgsPlayNotationAudio and AgsCopyPatternAudio
   GValue value = {0,};
 
   window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
-  machines_start = 
-    machines = gtk_container_get_children(GTK_CONTAINER(window->machines));
+  machines = gtk_container_get_children(GTK_CONTAINER(window->machines));
 
   g_value_init(&value, G_TYPE_BOOLEAN);
   g_value_set_boolean(&value,
@@ -256,8 +275,6 @@ ags_navigation_loop_callback(GtkWidget *widget,
 
     machines = machines->next;
   }
-
-  g_list_free(machines_start);
 }
 
 void
@@ -283,13 +300,12 @@ ags_navigation_loop_left_tact_callback(GtkWidget *widget,
   AgsMachine *machine;
   AgsAudio *audio;
   AgsRecall *recall;
-  GList *machines, *machines_start;
+  GList *machines;
   GList *list; // find AgsPlayNotationAudio and AgsCopyPatternAudio
   GValue value = {0,};
 
   window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
-  machines_start = 
-    machines = gtk_container_get_children(GTK_CONTAINER(window->machines));
+  machines = gtk_container_get_children(GTK_CONTAINER(window->machines));
 
   g_value_init(&value, G_TYPE_DOUBLE);
   g_value_set_boolean(&value,
@@ -318,8 +334,6 @@ ags_navigation_loop_left_tact_callback(GtkWidget *widget,
 
     machines = machines->next;
   }
-
-  g_list_free(machines_start);
 }
 
 void
@@ -330,13 +344,12 @@ ags_navigation_loop_right_tact_callback(GtkWidget *widget,
   AgsMachine *machine;
   AgsAudio *audio;
   AgsRecall *recall;
-  GList *machines, *machines_start;
+  GList *machines;
   GList *list; // find AgsPlayNotationAudio and AgsCopyPatternAudio
   GValue value = {0,};
 
   window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
-  machines_start = 
-    machines = gtk_container_get_children(GTK_CONTAINER(window->machines));
+  machines = gtk_container_get_children(GTK_CONTAINER(window->machines));
 
   g_value_init(&value, G_TYPE_DOUBLE);
   g_value_set_boolean(&value,
@@ -365,45 +378,17 @@ ags_navigation_loop_right_tact_callback(GtkWidget *widget,
 
     machines = machines->next;
   }
-
-  g_list_free(machines_start);
 }
 
 void
 ags_navigation_tic_callback(AgsDevout *devout,
 			    AgsNavigation *navigation)
 {
-  AgsTaskThread *task_thread;
   AgsChangeTact *change_tact;
-  AgsDisplayTact *display_tact;
-  GList *list;
+  AgsTaskThread *task_thread;
 
-  if((AGS_NAVIGATION_BLOCK_TIC & (navigation->flags)) != 0){
-    navigation->flags &= (~AGS_NAVIGATION_BLOCK_TIC);
-    return;
-  }
-
+  change_tact = ags_change_tact_new(navigation);
   task_thread = AGS_AUDIO_LOOP(AGS_MAIN(navigation->devout->ags_main)->main_loop)->task_thread;
-
-  list = NULL;
-
-  //  change_tact = ags_change_tact_new(navigation);
-  //  list = g_list_prepend(list,
-  //			change_tact);
-
-  display_tact = ags_display_tact_new(navigation);
-  list = g_list_prepend(list,
-			display_tact);
-
-  list = g_list_reverse(list);
-
-  ags_task_thread_append_tasks(task_thread,
-			       list);
-}
-
-void
-ags_navigation_devout_stop_callback(AgsDevout *devout,
-				    AgsNavigation *navigation)
-{
-  navigation->flags |= AGS_NAVIGATION_BLOCK_TIC;
+  ags_task_thread_append_task(task_thread,
+			      change_tact);
 }

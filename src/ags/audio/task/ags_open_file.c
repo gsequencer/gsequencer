@@ -29,8 +29,6 @@
 
 #include <ags/audio/file/ags_audio_file.h>
 
-#include <ags/X/ags_machine.h>
-
 void ags_open_file_class_init(AgsOpenFileClass *open_file);
 void ags_open_file_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_open_file_init(AgsOpenFile *open_file);
@@ -38,16 +36,6 @@ void ags_open_file_connect(AgsConnectable *connectable);
 void ags_open_file_disconnect(AgsConnectable *connectable);
 void ags_open_file_finalize(GObject *gobject);
 void ags_open_file_launch(AgsTask *task);
-
-/**
- * SECTION:ags_open_file
- * @short_description: open file object
- * @title: AgsOpenFile
- * @section_id:
- * @include: ags/audio/task/ags_open_file.h
- *
- * The #AgsOpenFile task opens files.
- */
 
 static gpointer ags_open_file_parent_class = NULL;
 static AgsConnectableInterface *ags_open_file_parent_connectable_interface;
@@ -180,13 +168,8 @@ ags_open_file_launch(AgsTask *task)
 
   /*  */
   if(open_file->create_channels){
-    AgsMachine *machine;
-    GList *list;
-    guint pads_old;
-
     i_stop = g_slist_length(open_file->filenames);
-    pads_old = audio->input_pads;
-    
+
     if(open_file->overwrite_channels){
       if(i_stop > audio->input_pads){
 	ags_audio_set_pads(audio, AGS_TYPE_INPUT,
@@ -195,32 +178,14 @@ ags_open_file_launch(AgsTask *task)
 
       channel = audio->input;
     }else{
+      guint pads_old;
+
+      pads_old = audio->input_pads;
+
       ags_audio_set_pads(audio, AGS_TYPE_INPUT,
 			 audio->input_pads + i_stop);
 
-      channel = ags_channel_pad_nth(audio->input,
-				    pads_old);
-    }
-
-    iter = ags_channel_pad_nth(audio->input,
-			       pads_old);
-
-    while(iter != NULL){
-      ags_connectable_connect(AGS_CONNECTABLE(iter));
-
-      iter = iter->next;
-    }
-
-    machine = audio->machine;
-    list = gtk_container_get_children(machine->input);
-    list = g_list_nth(list,
-		      pads_old);
-
-    while(list != NULL){
-      ags_connectable_connect(AGS_CONNECTABLE(list->data));
-      gtk_widget_show_all(list->data);
-
-      list = list->next;
+      channel = ags_channel_pad_nth(audio->input, pads_old);
     }
   }
 
@@ -258,7 +223,6 @@ ags_open_file_launch(AgsTask *task)
 	}
       }
 
-      //TODO:JK: add mutex
       ags_recycling_add_audio_signal(iter->first_recycling,
 				     AGS_AUDIO_SIGNAL(audio_signal->data));
 
@@ -271,20 +235,6 @@ ags_open_file_launch(AgsTask *task)
   }
 }
 
-/**
- * ags_open_file_new:
- * @file: the #AgsFile
- * @filenames: the filenames to be opened
- * @overwrite_channels: reset existing #AgsInput
- * @create_channels: inistantiate new #AgsInput, if @overwrite_channell as needed
- * else for sure
- *
- * Creates an #AgsOpenFile.
- *
- * Returns: an new #AgsOpenFile.
- *
- * Since: 0.4
- */
 AgsOpenFile*
 ags_open_file_new(AgsAudio *audio,
 		  GSList *filenames,

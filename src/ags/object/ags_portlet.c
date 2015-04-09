@@ -22,17 +22,6 @@
 
 void ags_portlet_base_init(AgsPortletInterface *interface);
 
-/**
- * SECTION:ags_portlet
- * @short_description: interfacing portlets
- * @title: AgsPortlet
- * @section_id:
- * @include: ags/object/ags_portlet.h
- *
- * The #AgsPortlet interface is intended to use with ports containing #GObject.
- * Whereas its should implement this interface.
- */
-
 GType
 ags_portlet_get_type()
 {
@@ -59,15 +48,6 @@ ags_portlet_base_init(AgsPortletInterface *interface)
   /* empty */
 }
 
-/**
- * ags_portlet_set_port:
- * @portlet: an #AgsPortlet
- * @port: the #AgsPort
- *
- * Set port.
- *
- * Since: 0.4
- */
 void
 ags_portlet_set_port(AgsPortlet *portlet, AgsPort *port)
 {
@@ -79,16 +59,6 @@ ags_portlet_set_port(AgsPortlet *portlet, AgsPort *port)
   portlet_interface->set_port(portlet, port);
 }
 
-/**
- * ags_portlet_get_port:
- * @portlet: an #AgsPortlet
- *
- * Get port.
- *
- * Returns: the #AgsPort
- *
- * Since: 0.4
- */
 AgsPort*
 ags_portlet_get_port(AgsPortlet *portlet)
 {
@@ -100,16 +70,6 @@ ags_portlet_get_port(AgsPortlet *portlet)
   portlet_interface->get_port(portlet);
 }
 
-/**
- * ags_portlet_list_safe_properties:
- * @portlet: an #AgsPortlet
- *
- * Retrieve thread-safe properties.
- *
- * Returns: a #GList containing properties
- *
- * Since: 0.4
- */
 GList*
 ags_portlet_list_safe_properties(AgsPortlet *portlet)
 {
@@ -121,18 +81,8 @@ ags_portlet_list_safe_properties(AgsPortlet *portlet)
   portlet_interface->list_safe_properties(portlet);
 }
 
-/**
- * ags_portlet_safe_get_property:
- * @portlet: an #AgsPortlet
- * @property_name: propertie's name
- * @value: the #GValue
- *
- * Get property thread safe.
- *
- * Since: 0.4
- */
 void
-ags_portlet_safe_get_property(AgsPortlet *portlet, gchar *property_name, GValue *value)
+ags_portlet_get_safe_property(AgsPortlet *portlet, gchar *property_name, GValue *value)
 {
   AgsPortletInterface *portlet_interface;
 
@@ -142,18 +92,8 @@ ags_portlet_safe_get_property(AgsPortlet *portlet, gchar *property_name, GValue 
   portlet_interface->safe_get_property(portlet, property_name, value);
 }
 
-/**
- * ags_portlet_safe_set_property:
- * @portlet: an #AgsPortlet
- * @property_name: propertie's name
- * @value: the #GValue
- *
- * Set property thread safe.
- *
- * Since: 0.4
- */
 void
-ags_portlet_safe_set_property(AgsPortlet *portlet, gchar *property_name, GValue *value)
+ags_portlet_set_safe_property(AgsPortlet *portlet, gchar *property_name, GValue *value)
 {
   AgsPortletInterface *portlet_interface;
 

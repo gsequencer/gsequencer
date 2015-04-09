@@ -27,10 +27,6 @@
 #include <ags/object/ags_dynamic_connectable.h>
 #include <ags/object/ags_plugin.h>
 
-#include <ags/file/ags_file_stock.h>
-#include <ags/file/ags_file_id_ref.h>
-#include <ags/file/ags_file_lookup.h>
-
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_recall_audio.h>
 #include <ags/audio/ags_recall_id.h>
@@ -49,9 +45,6 @@ void ags_delay_audio_run_connect_dynamic(AgsDynamicConnectable *dynamic_connecta
 void ags_delay_audio_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 void ags_delay_audio_run_finalize(GObject *gobject);
 
-void ags_delay_audio_run_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
-xmlNode* ags_delay_audio_run_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
-
 void ags_delay_audio_run_run_init_pre(AgsRecall *recall);
 void ags_delay_audio_run_run_pre(AgsRecall *recall);
 void ags_delay_audio_run_done(AgsRecall *recall);
@@ -61,16 +54,6 @@ AgsRecall* ags_delay_audio_run_duplicate(AgsRecall *recall,
 					 AgsRecallID *recall_id,
 					 guint *n_params, GParameter *parameter);
 void ags_delay_audio_run_notify_dependency(AgsRecall *recall, guint notify_mode, gint count);
-
-/**
- * SECTION:ags_delay_audio_run
- * @short_description: delay
- * @title: AgsDelayAudioRun
- * @section_id:
- * @include: ags/audio/recall/ags_delay_audio_run.h
- *
- * The #AgsDelayNotationAudioRun class delays.
- */
 
 enum{
   NOTATION_ALLOC_OUTPUT,
@@ -180,131 +163,71 @@ ags_delay_audio_run_class_init(AgsDelayAudioRunClass *delay_audio_run)
   delay_audio_run->sequencer_count = NULL;
 
   /* signals */
-  /**
-   * AgsDelayAudioRun::notation-alloc-output:
-   * @delay_audio_run: the #AgsDelayAudioRun
-   * @run_order: the nth run
-   * @delay: the delay
-   * @attack: the attack
-   *
-   * The ::notation-alloc-output signal is emited while allocating
-   * notation output.
-   */
   delay_audio_run_signals[NOTATION_ALLOC_OUTPUT] =
     g_signal_new("notation-alloc-output\0",
 		 G_TYPE_FROM_CLASS(delay_audio_run),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsDelayAudioRunClass, notation_alloc_output),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__UINT_DOUBLE_UINT,
+		 g_cclosure_user_marshal_VOID__UINT_UINT_UINT,
 		 G_TYPE_NONE, 3,
 		 G_TYPE_UINT,
-		 G_TYPE_DOUBLE, G_TYPE_UINT);
+		 G_TYPE_UINT, G_TYPE_UINT);
 
-  /**
-   * AgsDelayAudioRun::notation-alloc-input:
-   * @delay_audio_run: the #AgsDelayAudioRun
-   * @run_order: the nth run
-   * @delay: the delay
-   * @attack: the attack
-   *
-   * The ::notation-alloc-input signal is emited while allocating
-   * notation input.
-   */
   delay_audio_run_signals[NOTATION_ALLOC_INPUT] =
     g_signal_new("notation-alloc-input\0",
 		 G_TYPE_FROM_CLASS(delay_audio_run),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsDelayAudioRunClass, notation_alloc_input),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__UINT_DOUBLE_UINT,
+		 g_cclosure_user_marshal_VOID__UINT_UINT_UINT,
 		 G_TYPE_NONE, 3,
 		 G_TYPE_UINT,
-		 G_TYPE_DOUBLE, G_TYPE_UINT);
+		 G_TYPE_UINT, G_TYPE_UINT);
 
-  /**
-   * AgsDelayAudioRun::notation-count:
-   * @delay_audio_run: the #AgsDelayAudioRun
-   * @run_order: the nth run
-   * @delay: the delay
-   * @attack: the attack
-   *
-   * The ::notation-count signal is emited while counting
-   * notation.
-   */
   delay_audio_run_signals[NOTATION_COUNT] =
     g_signal_new("notation-count\0",
 		 G_TYPE_FROM_CLASS(delay_audio_run),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsDelayAudioRunClass, notation_count),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__UINT_DOUBLE_UINT,
+		 g_cclosure_user_marshal_VOID__UINT_UINT_UINT,
 		 G_TYPE_NONE, 3,
 		 G_TYPE_UINT,
-		 G_TYPE_DOUBLE, G_TYPE_UINT);
+		 G_TYPE_UINT, G_TYPE_UINT);
 
-  /**
-   * AgsDelayAudioRun::sequencer-alloc-output:
-   * @delay_audio_run: the #AgsDelayAudioRun
-   * @run_order: the nth run
-   * @delay: the delay
-   * @attack: the attack
-   *
-   * The ::sequencer-alloc-output signal is emited while allocating
-   * sequencer output.
-   */
   delay_audio_run_signals[SEQUENCER_ALLOC_OUTPUT] =
     g_signal_new("sequencer-alloc-output\0",
 		 G_TYPE_FROM_CLASS(delay_audio_run),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsDelayAudioRunClass, sequencer_alloc_output),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__UINT_DOUBLE_UINT,
+		 g_cclosure_user_marshal_VOID__UINT_UINT_UINT,
 		 G_TYPE_NONE, 3,
 		 G_TYPE_UINT,
-		 G_TYPE_DOUBLE, G_TYPE_UINT);
+		 G_TYPE_UINT, G_TYPE_UINT);
 
-  /**
-   * AgsDelayAudioRun::sequencer-alloc-input:
-   * @delay_audio_run: the #AgsDelayAudioRun
-   * @run_order: the nth run
-   * @delay: the delay
-   * @attack: the attack
-   *
-   * The ::sequencer-alloc-input signal is emited while allocating
-   * sequencer input.
-   */
   delay_audio_run_signals[SEQUENCER_ALLOC_INPUT] =
     g_signal_new("sequencer-alloc-input\0",
 		 G_TYPE_FROM_CLASS(delay_audio_run),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsDelayAudioRunClass, sequencer_alloc_input),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__UINT_DOUBLE_UINT,
+		 g_cclosure_user_marshal_VOID__UINT_UINT_UINT,
 		 G_TYPE_NONE, 3,
 		 G_TYPE_UINT,
-		 G_TYPE_DOUBLE, G_TYPE_UINT);
+		 G_TYPE_UINT, G_TYPE_UINT);
 
-  /**
-   * AgsDelayAudioRun::sequencer-count:
-   * @delay_audio_run: the #AgsDelayAudioRun
-   * @run_order: the nth run
-   * @delay: the delay
-   * @attack: the attack
-   *
-   * The ::sequencer-count signal is emited while counting
-   * sequencer.
-   */
   delay_audio_run_signals[SEQUENCER_COUNT] =
     g_signal_new("sequencer-count\0",
 		 G_TYPE_FROM_CLASS(delay_audio_run),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsDelayAudioRunClass, sequencer_count),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__UINT_DOUBLE_UINT,
+		 g_cclosure_user_marshal_VOID__UINT_UINT_UINT,
 		 G_TYPE_NONE, 3,
 		 G_TYPE_UINT,
-		 G_TYPE_DOUBLE, G_TYPE_UINT);
+		 G_TYPE_UINT, G_TYPE_UINT);
 
 }
 
@@ -330,16 +253,11 @@ void
 ags_delay_audio_run_plugin_interface_init(AgsPluginInterface *plugin)
 {
   ags_delay_audio_run_parent_plugin_interface = g_type_interface_peek_parent(plugin);
-
-  plugin->read = ags_delay_audio_run_read;
-  plugin->write = ags_delay_audio_run_write;
 }
 
 void
 ags_delay_audio_run_init(AgsDelayAudioRun *delay_audio_run)
 {
-  AGS_RECALL(delay_audio_run)->flags |= AGS_RECALL_PERSISTENT;
-
   AGS_RECALL(delay_audio_run)->name = "ags-delay\0";
   AGS_RECALL(delay_audio_run)->version = AGS_EFFECTS_DEFAULT_VERSION;
   AGS_RECALL(delay_audio_run)->build_id = AGS_BUILD_ID;
@@ -386,31 +304,6 @@ ags_delay_audio_run_finalize(GObject *gobject)
 }
 
 void
-ags_delay_audio_run_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
-{
-  AgsFileLookup *file_lookup;
-  xmlNode *iter;
-
-  /* read parent */
-  ags_delay_audio_run_parent_plugin_interface->read(file, node, plugin);
-}
-
-xmlNode*
-ags_delay_audio_run_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
-{
-  AgsFileLookup *file_lookup;
-  xmlNode *node, *child;
-  xmlNode *dependency_node;
-  GList *list;
-  gchar *id;
-
-  /* write parent */
-  node = ags_delay_audio_run_parent_plugin_interface->write(file, parent, plugin);
-
-  return(node);
-}
-
-void
 ags_delay_audio_run_run_init_pre(AgsRecall *recall)
 {
   AgsDevout *devout;
@@ -435,7 +328,7 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
 {
   AgsDelayAudio *delay_audio;
   AgsDelayAudioRun *delay_audio_run;
-  gdouble notation_delay, sequencer_delay;
+  guint notation_delay, sequencer_delay;
   GValue value = { 0, };
 
   AGS_RECALL_CLASS(ags_delay_audio_run_parent_class)->run_pre(recall);
@@ -459,14 +352,14 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
 
   ags_port_safe_read(delay_audio->notation_delay, &value);
 
-  notation_delay = g_value_get_double(&value);
+  notation_delay = (guint) ceil(g_value_get_double(&value));
 
   /* read sequencer-delay port */
   g_value_reset(&value);
 
   ags_port_safe_read(delay_audio->sequencer_delay, &value);
 
-  sequencer_delay = g_value_get_double(&value);
+  sequencer_delay = (guint) ceil(g_value_get_double(&value));
 
   if(delay_audio_run->hide_ref != 0){
     delay_audio_run->hide_ref_counter += 1;
@@ -474,13 +367,13 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
     if(delay_audio_run->hide_ref_counter == delay_audio_run->hide_ref){
       delay_audio_run->hide_ref_counter = 0;
 
-      if(delay_audio_run->notation_counter + 1 >= (guint) notation_delay){
+      if(delay_audio_run->notation_counter + 1 >= notation_delay){
 	delay_audio_run->notation_counter = 0;
       }else{
 	delay_audio_run->notation_counter += 1;
       }
 
-      if(delay_audio_run->sequencer_counter + 1 >= (guint) sequencer_delay){
+      if(delay_audio_run->sequencer_counter + 1 >= sequencer_delay){
 	delay_audio_run->sequencer_counter = 0;
       }else{
 	delay_audio_run->sequencer_counter += 1;
@@ -492,22 +385,20 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
      delay_audio_run->hide_ref_counter == 0){
     AgsDevout *devout;
     guint run_order;
-    gdouble delay;
-    guint attack;
+    guint delay, attack;
 
     devout = AGS_DEVOUT(AGS_RECALL_AUDIO(delay_audio)->audio->devout);
 
     run_order = delay_audio_run->hide_ref_counter;
 
     /* delay and attack */
-    //TODO:JK: unclear
-    attack = 0; // devout->attack[((devout->tic_counter + 1 == AGS_NOTATION_TICS_PER_BEAT) ?
-      //	     0:
-      //		     devout->tic_counter + 1)];
+    attack = devout->attack[((devout->tic_counter + 1 == AGS_NOTATION_TICS_PER_BEAT) ?
+			     0:
+			     devout->tic_counter + 1)];
       
-    delay = 0.0; // devout->delay[((devout->tic_counter + 1 == AGS_NOTATION_TICS_PER_BEAT) ?
-      //		   0:
-      //		   devout->tic_counter + 1)];
+    delay = devout->delay[((devout->tic_counter + 1 == AGS_NOTATION_TICS_PER_BEAT) ?
+			   0:
+			   devout->tic_counter + 1)];
 
     //    g_message("ags_delay_audio_run_run_pre@%llu: alloc notation[%u]\0",
     //	      delay_audio_run,
@@ -529,19 +420,17 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
      delay_audio_run->hide_ref_counter == 0){
     AgsDevout *devout;
     guint run_order;
-    gdouble delay;
-    guint attack;
+    guint delay, attack;
 
     devout = AGS_DEVOUT(AGS_RECALL_AUDIO(delay_audio)->audio->devout);
 
     /* delay and attack */
-    //TODO:JK: unclear
-    attack = 0; // devout->attack[((devout->tic_counter + 1 == AGS_NOTATION_TICS_PER_BEAT) ?
-      //	     0:
-      //		     devout->tic_counter + 1)];
-    delay = 0.0; // devout->delay[((devout->tic_counter + 1 == AGS_NOTATION_TICS_PER_BEAT) ?
-      //		   0:
-      //		   devout->tic_counter + 1)];
+    attack = devout->attack[((devout->tic_counter + 1 == AGS_NOTATION_TICS_PER_BEAT) ?
+			     0:
+			     devout->tic_counter + 1)];
+    delay = devout->delay[((devout->tic_counter + 1 == AGS_NOTATION_TICS_PER_BEAT) ?
+			   0:
+			   devout->tic_counter + 1)];
 
     run_order = delay_audio_run->hide_ref_counter;
 
@@ -638,20 +527,9 @@ ags_delay_audio_run_notify_dependency(AgsRecall *recall, guint notify_mode, gint
   }
 }
 
-/**
- * ags_delay_audio_run_notation_alloc_output:
- * @delay_audio_run: the #AgsDelayAudioRun
- * @run_order: the nth run
- * @delay: the delay
- * @attack: the attack
- *
- * Emitted as notation allocs output.
- *
- * Since: 0.4
- */
 void
 ags_delay_audio_run_notation_alloc_output(AgsDelayAudioRun *delay_audio_run, guint run_order,
-					  gdouble delay, guint attack)
+					  guint delay, guint attack)
 {
   g_return_if_fail(AGS_IS_DELAY_AUDIO_RUN(delay_audio_run));
 
@@ -662,20 +540,9 @@ ags_delay_audio_run_notation_alloc_output(AgsDelayAudioRun *delay_audio_run, gui
   g_object_unref(G_OBJECT(delay_audio_run));
 }
 
-/**
- * ags_delay_audio_run_notation_alloc_input:
- * @delay_audio_run: the #AgsDelayAudioRun
- * @run_order: the nth run
- * @delay: the delay
- * @attack: the attack
- *
- * Emitted as notation allocs output.
- *
- * Since: 0.4
- */
 void
 ags_delay_audio_run_notation_alloc_input(AgsDelayAudioRun *delay_audio_run, guint run_order,
-					 gdouble delay, guint attack)
+					 guint delay, guint attack)
 {
   g_return_if_fail(AGS_IS_DELAY_AUDIO_RUN(delay_audio_run));
 
@@ -686,20 +553,9 @@ ags_delay_audio_run_notation_alloc_input(AgsDelayAudioRun *delay_audio_run, guin
   g_object_unref(G_OBJECT(delay_audio_run));
 }
 
-/**
- * ags_delay_audio_run_notation_count:
- * @delay_audio_run: the #AgsDelayAudioRun
- * @run_order: the nth run
- * @delay: the delay
- * @attack: the attack
- *
- * Emitted as notation counts.
- *
- * Since: 0.4
- */
 void
 ags_delay_audio_run_notation_count(AgsDelayAudioRun *delay_audio_run, guint run_order,
-				   gdouble delay, guint attack)
+				   guint delay, guint attack)
 {
   g_return_if_fail(AGS_IS_DELAY_AUDIO_RUN(delay_audio_run));
 
@@ -710,90 +566,45 @@ ags_delay_audio_run_notation_count(AgsDelayAudioRun *delay_audio_run, guint run_
   g_object_unref(G_OBJECT(delay_audio_run));
 }
 
-/**
- * ags_delay_audio_run_sequencer_alloc_output:
- * @delay_audio_run: the #AgsDelayAudioRun
- * @run_order: the nth run
- * @delay: the delay
- * @attack: the attack
- *
- * Emitted as sequencer allocs output.
- *
- * Since: 0.4
- */
 void
 ags_delay_audio_run_sequencer_alloc_output(AgsDelayAudioRun *delay_audio_run, guint run_order,
-					   gdouble delay, guint attack)
+					   guint delay, guint attack)
 {
   g_return_if_fail(AGS_IS_DELAY_AUDIO_RUN(delay_audio_run));
 
   g_object_ref(G_OBJECT(delay_audio_run));
   g_signal_emit(G_OBJECT(delay_audio_run),
 		delay_audio_run_signals[SEQUENCER_ALLOC_OUTPUT], 0,
-		run_order,
-		delay, attack);
+		run_order, attack);
   g_object_unref(G_OBJECT(delay_audio_run));
 }
 
-/**
- * ags_delay_audio_run_sequencer_alloc_input:
- * @delay_audio_run: the #AgsDelayAudioRun
- * @run_order: the nth run
- * @delay: the delay
- * @attack: the attack
- *
- * Emitted as sequencer allocs output.
- *
- * Since: 0.4
- */
 void
 ags_delay_audio_run_sequencer_alloc_input(AgsDelayAudioRun *delay_audio_run, guint run_order,
-					  gdouble delay, guint attack)
+					  guint delay, guint attack)
 {
   g_return_if_fail(AGS_IS_DELAY_AUDIO_RUN(delay_audio_run));
 
   g_object_ref(G_OBJECT(delay_audio_run));
   g_signal_emit(G_OBJECT(delay_audio_run),
 		delay_audio_run_signals[SEQUENCER_ALLOC_INPUT], 0,
-		run_order,
-		delay, attack);
+		run_order, attack);
   g_object_unref(G_OBJECT(delay_audio_run));
 }
 
-/**
- * ags_delay_audio_run_sequencer_count:
- * @delay_audio_run: the #AgsDelayAudioRun
- * @run_order: the nth run
- * @delay: the delay
- * @attack: the attack
- *
- * Emitted as sequencer counts.
- *
- * Since: 0.4
- */
 void
 ags_delay_audio_run_sequencer_count(AgsDelayAudioRun *delay_audio_run, guint run_order,
-				    gdouble delay, guint attack)
+				    guint delay, guint attack)
 {
   g_return_if_fail(AGS_IS_DELAY_AUDIO_RUN(delay_audio_run));
 
   g_object_ref(G_OBJECT(delay_audio_run));
   g_signal_emit(G_OBJECT(delay_audio_run),
 		delay_audio_run_signals[SEQUENCER_COUNT], 0,
-		run_order,
-		delay, attack);
+		run_order, attack);
   g_object_unref(G_OBJECT(delay_audio_run));
 }
 
-/**
- * ags_delay_audio_run_new:
- *
- * Creates an #AgsDelayAudioRun
- *
- * Returns: a new #AgsDelayAudioRun
- *
- * Since: 0.4
- */
 AgsDelayAudioRun*
 ags_delay_audio_run_new()
 {

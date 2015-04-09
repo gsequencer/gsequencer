@@ -27,7 +27,6 @@
 #include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_task_thread.h>
 
-#include <ags/audio/task/ags_start_devout.h>
 #include <ags/audio/task/ags_remove_audio.h>
 
 #include <ags/X/ags_window.h>
@@ -36,9 +35,9 @@
 #include <ags/X/editor/ags_file_selection.h>
 
 int ags_machine_popup_rename_response_callback(GtkWidget *widget, gint response, AgsMachine *machine);
-void ags_machine_start_failure_response(GtkWidget *dialog, AgsMachine *machine);
 
 #define AGS_RENAME_ENTRY "AgsRenameEntry"
+
 
 int
 ags_machine_button_press_callback(GtkWidget *handle_box, GdkEventButton *event, AgsMachine *machine)
@@ -344,126 +343,10 @@ ags_machine_open_extended_response_callback(GtkWidget *widget, gint response, Ag
 	}
       }
     }
-    
-    //TODO:JK: fix GSList filenames memory leak
+
     ags_machine_open_files(machine,
 			   filenames,
 			   overwrite->toggle_button.active,
 			   create->toggle_button.active);
   }
-}
-
-void
-ags_machine_play_callback(GtkWidget *toggle_button, AgsMachine *machine)
-{
-  if(machine == NULL){
-    return;
-  }
-
-  if(GTK_TOGGLE_BUTTON(toggle_button)->active){
-    if((AGS_MACHINE_BLOCK_PLAY & (machine->flags)) != 0){
-      return;
-    }
-
-    printf("machine: on\n\0");
-
-    machine->flags |= AGS_MACHINE_BLOCK_PLAY;
-
-    ags_machine_set_run(machine,
-			TRUE);
-
-    machine->flags &= (~AGS_MACHINE_BLOCK_PLAY);
-  }else{
-    if((AGS_MACHINE_BLOCK_STOP & (machine->flags)) != 0){
-      return;
-    }
-
-    printf("machine: off\n\0");
-
-    machine->flags |= AGS_MACHINE_BLOCK_STOP;
-
-    ags_machine_set_run(machine,
-			FALSE);
-
-    machine->flags &= (~AGS_MACHINE_BLOCK_STOP);
-  }
-}
-
-void
-ags_machine_tact_callback(AgsAudio *audio,
-			  AgsRecallID *recall_id,
-			  AgsMachine *machine)
-{
-  /* empty */
-}
-
-void
-ags_machine_done_callback(AgsAudio *audio,
-			  AgsRecallID *recall_id,
-			  AgsMachine *machine)
-{
-  AgsChannel *channel;
-
-  if((AGS_MACHINE_BLOCK_STOP & (machine->flags)) != 0){
-    return;
-  }
-
-  machine->flags |= AGS_MACHINE_BLOCK_STOP;
-
-  gtk_toggle_button_set_active(machine->play, FALSE);
-
-  /* cancel playback */
-  channel = audio->output;
-  
-  while(channel != NULL){
-    if(AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0] == recall_id){
-      ags_channel_tillrecycling_cancel(channel,
-				       AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0]);
-    }
-
-    if(AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[1] == recall_id){
-      ags_channel_tillrecycling_cancel(channel,
-				       AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[1]);
-    }
-
-    if(AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[2] == recall_id){
-      ags_channel_tillrecycling_cancel(channel,
-				       AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[2]);
-    }
-    
-    /* set remove flag */
-    AGS_DEVOUT_PLAY(channel->devout_play)->flags |= (AGS_DEVOUT_PLAY_DONE | AGS_DEVOUT_PLAY_REMOVE);
-    
-    channel = channel->next;
-  }
-
-  machine->flags &= (~AGS_MACHINE_BLOCK_STOP);
-}
-
-void
-ags_machine_start_failure_callback(AgsTask *task, GError *error,
-				   AgsMachine *machine)
-{
-  AgsWindow *window;
-  GtkMessageDialog *dialog;
-  AgsAudioLoop *audio_loop;
-
-  /* show error message */
-  window = AGS_MAIN(AGS_START_DEVOUT(task)->devout->ags_main)->window;
-  
-  dialog = (GtkMessageDialog *) gtk_message_dialog_new(GTK_WINDOW(window),
-						       GTK_DIALOG_MODAL,
-						       GTK_MESSAGE_ERROR,
-						       GTK_BUTTONS_CLOSE,
-						       error->message);
-  g_signal_connect(dialog, "response\0",
-		   G_CALLBACK(ags_machine_start_failure_response), machine);
-  gtk_widget_show_all(dialog);
-}
-
-void
-ags_machine_start_failure_response(GtkWidget *dialog,
-				   AgsMachine *machine)
-{
-  gtk_widget_destroy(dialog);
 }

@@ -39,8 +39,6 @@
 #include <ags/audio/ags_recall_id.h>
 #include <ags/audio/ags_recall_container.h>
 
-#include <ags/audio/ags_config.h>
-
 void ags_play_notation_audio_run_class_init(AgsPlayNotationAudioRunClass *play_notation_audio_run);
 void ags_play_notation_audio_run_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_play_notation_audio_run_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
@@ -58,7 +56,7 @@ void ags_play_notation_audio_run_finalize(GObject *gobject);
 void ags_play_notation_audio_run_connect(AgsConnectable *connectable);
 void ags_play_notation_audio_run_disconnect(AgsConnectable *connectable);
 void ags_play_notation_audio_run_connect_dynamic(AgsDynamicConnectable *dynamic_connectable);
-void ags_play_notation_audio_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable); 
+void ags_play_notation_audio_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 void ags_play_notation_audio_run_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
 xmlNode* ags_play_notation_audio_run_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
@@ -70,25 +68,13 @@ AgsRecall* ags_play_notation_audio_run_duplicate(AgsRecall *recall,
 void ags_play_notation_audio_run_play_note_done(AgsRecall *recall, AgsPlayNotationAudioRun *play_notation_audio_run);
 void ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
 						      guint nth_run,
-						      gdouble delay, guint attack,
+						      guint delay, guint attack,
 						      AgsPlayNotationAudioRun *play_notation_audio_run);
 
 void ags_play_notation_audio_run_write_resolve_dependency(AgsFileLookup *file_lookup,
 							GObject *recall);
 void ags_play_notation_audio_run_read_resolve_dependency(AgsFileLookup *file_lookup,
 						       GObject *recall);
-
-extern AgsConfig *config;
-
-/**
- * SECTION:ags_play_notation_audio_run
- * @short_description: play notation
- * @title: AgsPlayNotationAudioRun
- * @section_id:
- * @include: ags/audio/recall/ags_play_notation_audio_run.h
- *
- * The #AgsPlayNotationAudioRun class play notation.
- */
 
 enum{
   PROP_0,
@@ -187,7 +173,7 @@ ags_play_notation_audio_run_class_init(AgsPlayNotationAudioRunClass *play_notati
 
   param_spec = g_param_spec_object("count-beats-audio-run\0",
 				   "assigned AgsCountBeatsAudioRun\0",
-				   "the AgsCountBeatsAudioRun which just counts\0",
+				   "the AgsCount_BeatsAudioRun which just counts\0",
 				   AGS_TYPE_COUNT_BEATS_AUDIO_RUN,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -231,13 +217,8 @@ ags_play_notation_audio_run_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_play_notation_audio_run_init(AgsPlayNotationAudioRun *play_notation_audio_run)
 {
-  AGS_RECALL(play_notation_audio_run)->name = "ags-play-notation\0";
-  AGS_RECALL(play_notation_audio_run)->version = AGS_EFFECTS_DEFAULT_VERSION;
-  AGS_RECALL(play_notation_audio_run)->build_id = AGS_BUILD_ID;
-  AGS_RECALL(play_notation_audio_run)->xml_type = "ags-play-notation-audio-run\0";
-  AGS_RECALL(play_notation_audio_run)->port = NULL;
-
   play_notation_audio_run->delay_audio_run = NULL;
+
   play_notation_audio_run->count_beats_audio_run = NULL;
 }
 
@@ -629,7 +610,7 @@ ags_play_notation_audio_run_duplicate(AgsRecall *recall,
 void
 ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
 						 guint nth_run,
-						 gdouble delay, guint attack,
+						 guint delay, guint attack,
 						 AgsPlayNotationAudioRun *play_notation_audio_run)
 {
   AgsTimestampThread *timestamp_thread;
@@ -644,8 +625,6 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
   AgsRecycling *recycling;
   GList *list;
   guint audio_channel;
-  guint samplerate;
-  guint buffer_size;
   guint i;
   GValue value = {0,};
 
@@ -653,17 +632,6 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 
   audio = AGS_RECALL_AUDIO(play_notation_audio)->audio;
   devout = AGS_DEVOUT(audio->devout);
-
-  buffer_size = g_ascii_strtoull(ags_config_get(config,
-						AGS_CONFIG_DEVOUT,
-						"buffer-size\0"),
-				 NULL,
-				 10);
-  samplerate = g_ascii_strtoull(ags_config_get(config,
-					       AGS_CONFIG_DEVOUT,
-					       "samplerate\0"),
-				NULL,
-				10);
 
   g_value_init(&value, G_TYPE_POINTER);
   ags_port_safe_read(play_notation_audio->notation,
@@ -713,7 +681,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 					      (GObject *) AGS_RECALL(play_notation_audio_run)->recall_id);
 	  ags_recycling_create_audio_signal_with_frame_count(recycling,
 							     audio_signal,
-							     samplerate /  ((double) samplerate / (double) buffer_size) * (note->x[1] - note->x[0]),
+							     AGS_DEVOUT_DEFAULT_SAMPLERATE / AGS_DEVOUT_DEFAULT_JIFFIE * (note->x[1] - note->x[0]),
 							     delay, attack);
 	  ags_audio_signal_connect(audio_signal);
 
@@ -773,16 +741,6 @@ ags_play_notation_audio_run_read_resolve_dependency(AgsFileLookup *file_lookup,
   }
 }
 
-/**
- * ags_play_notation_audio_run_new:
- * @count_beats_audio_run: an #AgsCountBeatsAudioRun as dependency
- *
- * Creates an #AgsPlayNotationAudioRun
- *
- * Returns: a new #AgsPlayNotationAudioRun
- *
- * Since: 0.4
- */
 AgsPlayNotationAudioRun*
 ags_play_notation_audio_run_new()
 {

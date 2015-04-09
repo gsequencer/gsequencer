@@ -36,8 +36,8 @@
 #define AGS_IS_PAD_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_PAD))
 #define AGS_PAD_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_PAD, AgsPadClass))
 
-#define AGS_PAD_DEFAULT_VERSION "0.4.2\0"
-#define AGS_PAD_DEFAULT_BUILD_ID "CEST 02-10-2014 19:36\0"
+#define AGS_PAD_DEFAULT_VERSION "0.4.0\0"
+#define AGS_PAD_DEFAULT_BUILD_ID "CEST 22-06-2014 03:07\0"
 
 typedef struct _AgsPad AgsPad;
 typedef struct _AgsPadClass AgsPadClass;
@@ -47,8 +47,6 @@ typedef enum{
   AGS_PAD_SHOW_GROUPING       = 1 << 1,
   AGS_PAD_GROUP_ALL           = 1 << 2,
   AGS_PAD_GROUP_LINE          = 1 << 3,
-  AGS_PAD_MAPPED_RECALL       = 1 << 4,
-  AGS_PAD_PREMAPPED_RECALL    = 1 << 5,
 }AgsPadFlags;
 
 struct _AgsPad
@@ -70,8 +68,6 @@ struct _AgsPad
   GtkToggleButton *group;
   GtkToggleButton *mute;
   GtkToggleButton *solo;
-
-  GtkToggleButton *play;
 };
 
 struct _AgsPadClass
@@ -82,9 +78,6 @@ struct _AgsPadClass
 
   void (*resize_lines)(AgsPad *pad, GType line_type,
 		       guint audio_channels, guint audio_channels_old);
-  void (*map_recall)(AgsPad *pad,
-		     guint output_pad_start);
-  GList* (*find_port)(AgsPad *pad);
 };
 
 GType ags_pad_get_type(void);
@@ -94,10 +87,7 @@ void ags_pad_set_channel(AgsPad *pad, AgsChannel *channel);
 void ags_pad_resize_lines(AgsPad *pad, GType line_type,
 			  guint audio_channels, guint audio_channels_old);
 
-void ags_pad_map_recall(AgsPad *pad,
-			guint output_pad_start);
-
-GList* ags_pad_find_port(AgsPad *pad);
+void ags_pad_find_port(AgsPad *pad);
 
 AgsPad* ags_pad_new(AgsChannel *channel);
 

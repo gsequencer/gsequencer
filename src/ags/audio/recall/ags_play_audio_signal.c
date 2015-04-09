@@ -26,12 +26,10 @@
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recall_id.h>
-#include <ags/audio/ags_recall_container.h>
 #include <ags/audio/ags_recall_channel.h>
 #include <ags/audio/ags_recall_channel_run.h>
 
 #include <ags/audio/recall/ags_play_channel.h>
-#include <ags/audio/recall/ags_play_channel_run_master.h>
 
 #include <stdlib.h>
 
@@ -50,16 +48,6 @@ void ags_play_audio_signal_run_inter(AgsRecall *recall);
 AgsRecall* ags_play_audio_signal_duplicate(AgsRecall *recall,
 					   AgsRecallID *recall_id,
 					   guint *n_params, GParameter *parameter);
-
-/**
- * SECTION:ags_play_audio_signal
- * @short_description: plays audio signal
- * @title: AgsPlayAudioSignal
- * @section_id:
- * @include: ags/audio/recall/ags_play_audio_signal.h
- *
- * The #AgsPlayAudioSignal class plays the audio signal.
- */
 
 static gpointer ags_play_audio_signal_parent_class = NULL;
 static AgsConnectableInterface *ags_play_audio_signal_parent_connectable_interface;
@@ -204,8 +192,6 @@ ags_play_audio_signal_run_init_pre(AgsRecall *recall)
 {  
   /* call parent */
   AGS_RECALL_CLASS(ags_play_audio_signal_parent_class)->run_init_pre(recall);
-
-  /* empty */
 }
 
 void
@@ -214,13 +200,11 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
   AgsDevout *devout;
   AgsRecycling *recycling;
   AgsAudioSignal *source;
-  AgsRecallChannelRun *play_channel_run;
   AgsPlayChannel *play_channel;
   AgsPlayAudioSignal *play_audio_signal;
   GList *stream;
   signed short *buffer0, *buffer1;
   guint audio_channel;
-  guint buffer_size;
   gboolean muted;
   GValue muted_value = {0,};
   GValue audio_channel_value = {0,};
@@ -259,45 +243,34 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
     return;
   }
 
-  if(recall->parent == NULL ||
-     recall->parent->parent == NULL){
-    play_channel_run = NULL;
-    play_channel = NULL;
-    audio_channel = AGS_RECALL_AUDIO_SIGNAL(play_audio_signal)->audio_channel;
-  }else{
-    play_channel_run = AGS_RECALL_CHANNEL_RUN(recall->parent->parent);
-    play_channel = ags_recall_find_provider(AGS_RECALL_CONTAINER(AGS_RECALL(play_channel_run)->container)->recall_channel,
-					    AGS_RECALL_CHANNEL_RUN(play_channel_run)->source)->data;
+  play_channel = AGS_PLAY_CHANNEL(AGS_RECALL_CHANNEL_RUN(recall->parent->parent)->recall_channel);
 
-    g_value_init(&muted_value, G_TYPE_BOOLEAN);
-    ags_port_safe_read(play_channel->muted,
-		       &muted_value);
+  g_value_init(&muted_value, G_TYPE_BOOLEAN);
+  ags_port_safe_read(play_channel->muted,
+		     &muted_value);
 
-    muted = g_value_get_boolean(&muted_value);
+  muted = g_value_get_boolean(&muted_value);
 
-    if(muted){
-      return;
-    }
-
-    g_value_init(&audio_channel_value, G_TYPE_UINT64);
-    ags_port_safe_read(play_channel->audio_channel,
-		       &audio_channel_value);
-
-    audio_channel = g_value_get_uint64(&audio_channel_value);
+  if(muted){
+    return;
   }
 
-  buffer_size = source->buffer_size;
+  g_value_init(&audio_channel_value, G_TYPE_UINT);
+  ags_port_safe_read(play_channel->audio_channel,
+		     &audio_channel_value);
+
+  audio_channel = g_value_get_uint(&audio_channel_value);
 
   if((AGS_RECALL_INITIAL_RUN & (AGS_RECALL_AUDIO_SIGNAL(recall)->flags)) != 0){
     AGS_RECALL_AUDIO_SIGNAL(recall)->flags &= (~AGS_RECALL_INITIAL_RUN);
     ags_audio_signal_copy_buffer_to_buffer(&(buffer0[audio_channel + source->attack * devout->pcm_channels]),
 					   devout->pcm_channels,
 					   (signed short *) stream->data, 1,
-					   buffer_size - source->attack);
+					   AGS_DEVOUT_DEFAULT_BUFFER_SIZE - source->attack);
   }else{
     ags_audio_signal_copy_buffer_to_buffer(&(buffer0[audio_channel]), devout->pcm_channels,
 					   (signed short *) stream->data, 1,
-					   buffer_size);
+					   devout->buffer_size);
   }
 
   /* call parent */
@@ -317,18 +290,6 @@ ags_play_audio_signal_duplicate(AgsRecall *recall,
   return((AgsRecall *) copy);
 }
 
-/**
- * ags_play_audio_signal_new:
- * @source: the source #AgsAudioSignal
- * @devout: the #AgsDevout outputting to
- * @attack: the attack
- *
- * Creates an #AgsPlayAudioSignal
- *
- * Returns: a new #AgsPlayAudioSignal
- *
- * Since: 0.4
- */
 AgsPlayAudioSignal*
 ags_play_audio_signal_new(AgsAudioSignal *source,
 			  AgsDevout *devout,

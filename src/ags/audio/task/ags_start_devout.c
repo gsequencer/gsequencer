@@ -34,16 +34,6 @@ void ags_start_devout_finalize(GObject *gobject);
 
 void ags_start_devout_launch(AgsTask *task);
 
-/**
- * SECTION:ags_start_devout
- * @short_description: start devout object
- * @title: AgsStartDevout
- * @section_id:
- * @include: ags/audio/task/ags_start_devout.h
- *
- * The #AgsStartDevout task starts devout.
- */
-
 static gpointer ags_start_devout_parent_class = NULL;
 static AgsConnectableInterface *ags_start_devout_parent_connectable_interface;
 
@@ -149,7 +139,6 @@ ags_start_devout_launch(AgsTask *task)
   AgsDevout *devout;
   AgsAudioLoop *audio_loop;
   AgsDevoutThread *devout_thread;
-  guint val;
   GError *error;
 
   start_devout = AGS_START_DEVOUT(task);
@@ -170,45 +159,27 @@ ags_start_devout_launch(AgsTask *task)
   devout->flags |= (AGS_DEVOUT_START_PLAY |
 		    AGS_DEVOUT_PLAY);
 
-  error = devout_thread->error;
-  devout_thread->error = NULL;
-
   ags_thread_start(AGS_THREAD(devout_thread));
   
   if((AGS_THREAD_SINGLE_LOOP & (AGS_THREAD(devout_thread)->flags)) == 0){
-    if(devout_thread->error != NULL &&
-       error == NULL){
-      ags_task_failure(AGS_TASK(start_devout), devout_thread->error);
-    }else{
-      pthread_mutex_lock(&(AGS_THREAD(devout_thread)->start_mutex));
+    pthread_mutex_lock(&(AGS_THREAD(devout_thread)->start_mutex));
 
-      val = g_atomic_int_get(&(AGS_THREAD(devout_thread)->flags));
-
-      if((AGS_THREAD_INITIAL_RUN & val) != 0){
-	while((AGS_THREAD_INITIAL_RUN & val) != 0){
-	  pthread_cond_wait(&(AGS_THREAD(devout_thread)->start_cond),
-			    &(AGS_THREAD(devout_thread)->start_mutex));
-
-	  val = g_atomic_int_get(&(AGS_THREAD(devout_thread)->flags));
-	}
-      }
-    
-      //    ags_thread_unlock(AGS_THREAD(devout_thread));
-      pthread_mutex_unlock(&(AGS_THREAD(devout_thread)->start_mutex));
+    while((AGS_DEVOUT_START_PLAY & (devout->flags)) != 0){
+      pthread_cond_wait(&(AGS_THREAD(devout_thread)->start_cond),
+			&(AGS_THREAD(devout_thread)->start_mutex));
     }
+    
+    //    ags_thread_unlock(AGS_THREAD(devout_thread));
+    pthread_mutex_unlock(&(AGS_THREAD(devout_thread)->start_mutex));
+    
+    if(devout_thread->error != NULL){
+      ags_task_failure(AGS_TASK(start_devout), error);
+    }
+  }else{
+    AGS_THREAD(devout_thread)->flags |= AGS_THREAD_RUNNING;
   }
 }
 
-/**
- * ags_start_devout_new:
- * @devout: the #AgsDevout
- *
- * Creates an #AgsStartDevout.
- *
- * Returns: an new #AgsStartDevout.
- *
- * Since: 0.4
- */
 AgsStartDevout*
 ags_start_devout_new(AgsDevout *devout)
 {

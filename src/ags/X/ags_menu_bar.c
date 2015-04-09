@@ -37,16 +37,6 @@ void ags_menu_bar_disconnect(AgsConnectable *connectable);
 void ags_menu_bar_destroy(GtkObject *object);
 void ags_menu_bar_show(GtkWidget *widget);
 
-/**
- * SECTION:ags_menu_bar
- * @short_description: the menu bar.
- * @title: AgsMenuBar
- * @section_id:
- * @include: ags/X/ags_menu_bar.h
- *
- * #AgsMenuBar is a composite widget to be used as application's menu bar.
- */
-
 GType
 ags_menu_bar_get_type(void)
 {
@@ -121,12 +111,6 @@ ags_menu_bar_init(AgsMenuBar *menu_bar)
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->file,
 			(GtkWidget*) gtk_separator_menu_item_new());
 
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("export\0"));
-  gtk_menu_shell_append((GtkMenuShell*) menu_bar->file, (GtkWidget*) item);
-
-  gtk_menu_shell_append((GtkMenuShell*) menu_bar->file,
-			(GtkWidget*) gtk_separator_menu_item_new());
-
   item = (GtkImageMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_QUIT, NULL);
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->file, (GtkWidget*) item);
 
@@ -192,7 +176,6 @@ ags_menu_bar_connect(AgsConnectable *connectable)
 {
   AgsMenuBar *menu_bar;
   GList *list0, *list1, *list2;
-  GList *list1_start, *list2_start;
 
   menu_bar = AGS_MENU_BAR(connectable);
 
@@ -205,8 +188,7 @@ ags_menu_bar_connect(AgsConnectable *connectable)
 
   list0 = GTK_MENU_SHELL(menu_bar)->children;
 
-  list1_start = 
-    list1 = gtk_container_get_children ((GtkContainer *) gtk_menu_item_get_submenu((GtkMenuItem *) list0->data));
+  list1 = gtk_container_get_children ((GtkContainer *) gtk_menu_item_get_submenu((GtkMenuItem *) list0->data));
 
   g_signal_connect (G_OBJECT (list1->data), "activate\0",
                     G_CALLBACK (ags_menu_bar_open_callback), (gpointer) menu_bar);
@@ -221,24 +203,15 @@ ags_menu_bar_connect(AgsConnectable *connectable)
   list1 = list1->next->next;
 
   g_signal_connect (G_OBJECT (list1->data), "activate\0",
-                    G_CALLBACK (ags_menu_bar_export_callback), menu_bar);
-  list1 = list1->next->next;
-
-  g_signal_connect (G_OBJECT (list1->data), "activate\0",
                     G_CALLBACK (ags_menu_bar_quit_callback), (gpointer) menu_bar);
-
-  g_list_free(list1_start);
 
   /* Edit */
   list0 = list0->next;
-  list1_start = 
-    list1 = gtk_container_get_children((GtkContainer *) gtk_menu_item_get_submenu((GtkMenuItem *) list0->data));
+  list1 = gtk_container_get_children((GtkContainer *) gtk_menu_item_get_submenu((GtkMenuItem *) list0->data));
 
   g_signal_connect (G_OBJECT (list1->data), "activate\0",
                     G_CALLBACK (ags_menu_bar_add_callback), (gpointer) menu_bar);
-
-  list2_start = 
-    list2 = gtk_container_get_children((GtkContainer *) gtk_menu_item_get_submenu((GtkMenuItem *) list1->data));
+  list2 = gtk_container_get_children((GtkContainer *) gtk_menu_item_get_submenu((GtkMenuItem *) list1->data));
   list1 = list1->next;
 
   g_signal_connect (G_OBJECT (list2->data), "activate\0",
@@ -264,8 +237,6 @@ ags_menu_bar_connect(AgsConnectable *connectable)
   g_signal_connect (G_OBJECT (list2->data), "activate\0",
                     G_CALLBACK (ags_menu_bar_add_ffplayer_callback), (gpointer) menu_bar);
 
-  g_list_free(list2_start);
-
   g_signal_connect (G_OBJECT (list1->data), "activate\0",
                     G_CALLBACK (ags_menu_bar_remove_callback), (gpointer) menu_bar);
   list1 = list1->next;
@@ -274,29 +245,22 @@ ags_menu_bar_connect(AgsConnectable *connectable)
   g_signal_connect (G_OBJECT (list1->data), "activate\0",
                     G_CALLBACK (ags_menu_bar_preferences_callback), (gpointer) menu_bar);
 
-  g_list_free(list1_start);
-
   /* Help */
   list0 = list0->next;
-  list1_start = 
-    list1 = gtk_container_get_children((GtkContainer *) gtk_menu_item_get_submenu((GtkMenuItem *) list0->data));
+  list1 = gtk_container_get_children((GtkContainer *) gtk_menu_item_get_submenu((GtkMenuItem *) list0->data));
 
   g_signal_connect (G_OBJECT (list1->data), "activate\0",
                     G_CALLBACK (ags_menu_bar_about_callback), (gpointer) menu_bar);
-
-  g_list_free(list1_start);
 }
 
 void
 ags_menu_bar_disconnect(AgsConnectable *connectable)
 {
-  /* empty */
 }
 
 void
 ags_menu_bar_destroy(GtkObject *object)
 {
-  /* empty */
 }
 
 void
@@ -305,15 +269,6 @@ ags_menu_bar_show(GtkWidget *widget)
   gtk_widget_show_all(widget);
 }
 
-/**
- * ags_menu_bar_new:
- *
- * Creates an #AgsMenuBar
- *
- * Returns: a new #AgsMenuBar
- *
- * Since: 0.3
- */
 AgsMenuBar*
 ags_menu_bar_new()
 {
@@ -444,15 +399,6 @@ ags_tact_menu_new()
   return(menu);
 }
 
-/**
- * ags_zoom_combo_box_new:
- *
- * Creates an #GtkComboBox to select zoom.
- *
- * Returns: a new #GtkComboBox
- *
- * Since: 0.4
- */
 GtkComboBox*
 ags_zoom_combo_box_new()
 {
@@ -482,15 +428,6 @@ ags_zoom_combo_box_new()
   return(combo_box);
 }
 
-/**
- * ags_zoom_combo_box_new:
- *
- * Creates an #GtkComboBox to select tact
- *
- * Returns: a new #GtkComboBox
- *
- * Since: 0.4
- */
 GtkComboBox*
 ags_tact_combo_box_new()
 {

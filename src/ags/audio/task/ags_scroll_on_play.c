@@ -33,16 +33,6 @@ void ags_scroll_on_play_finalize(GObject *gobject);
 
 void ags_scroll_on_play_launch(AgsTask *task);
 
-/**
- * SECTION:ags_scroll_on_play
- * @short_description: scrolls the editor
- * @title: AgsScrollOnPlay
- * @section_id:
- * @include: ags/audio/task/ags_scroll_on_play.h
- *
- * The #AgsScrollOnPlay task scrolls the specified #AgsEditor.
- */
-
 static gpointer ags_scroll_on_play_parent_class = NULL;
 static AgsConnectableInterface *ags_scroll_on_play_parent_connectable_interface;
 
@@ -185,8 +175,6 @@ ags_scroll_on_play_launch(AgsTask *task)
   cairo_pop_group_to_source(cr);
   cairo_paint(cr);
 
-  cairo_destroy(cr);
-
   /* update tact */
   if(!gtk_toggle_button_get_active(window->navigation->loop) || tact + 1.0 < loop_end){
     gtk_spin_button_set_value(window->navigation->position_tact,
@@ -197,16 +185,6 @@ ags_scroll_on_play_launch(AgsTask *task)
   }
 }
 
-/**
- * ags_scroll_on_play_new:
- * @editor: the #AgsEditor to scroll
- *
- * Creates an #AgsScrollOnPlay.
- *
- * Returns: an new #AgsScrollOnPlay.
- *
- * Since: 0.4
- */
 AgsScrollOnPlay*
 ags_scroll_on_play_new(GtkWidget *editor)
 {

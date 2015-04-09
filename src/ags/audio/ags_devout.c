@@ -33,18 +33,7 @@
 #include <math.h>
 #include <time.h>
 
-#include <ags/audio/ags_config.h>
 #include <ags/audio/ags_notation.h>
-
-/**
- * SECTION:ags_devout
- * @short_description: Outputting to soundcard
- * @title: AgsDevout
- * @section_id:
- * @include: ags/audio/ags_devout.h
- *
- * #AgsDevout represents a soundcard and supports output.
- */
 
 void ags_devout_class_init(AgsDevoutClass *devout);
 void ags_devout_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -85,6 +74,7 @@ enum{
   PROP_BUFFER,
   PROP_BPM,
   PROP_ATTACK,
+  PROP_TASK,
 };
 
 enum{
@@ -93,8 +83,6 @@ enum{
   TIC,
   LAST_SIGNAL,
 };
-
-extern AgsConfig *config;
 
 static gpointer ags_devout_parent_class = NULL;
 static guint devout_signals[LAST_SIGNAL];
@@ -156,13 +144,6 @@ ags_devout_class_init(AgsDevoutClass *devout)
   gobject->finalize = ags_devout_finalize;
 
   /* properties */
-  /**
-   * AgsDevout:main:
-   *
-   * The assigned #AgsMain
-   * 
-   * Since: 0.4.0
-   */
   param_spec = g_param_spec_object("main\0",
 				   "the main object\0",
 				   "The main object\0",
@@ -172,13 +153,6 @@ ags_devout_class_init(AgsDevoutClass *devout)
 				  PROP_MAIN,
 				  param_spec);
 
-  /**
-   * AgsDevout:device:
-   *
-   * The alsa soundcard indentifier
-   * 
-   * Since: 0.4.0
-   */
   param_spec = g_param_spec_string("device\0",
 				   "the device identifier\0",
 				   "The device to perform output to\0",
@@ -188,14 +162,7 @@ ags_devout_class_init(AgsDevoutClass *devout)
 				  PROP_DEVICE,
 				  param_spec);
   
-  /**
-   * AgsDevout:dsp-channels:
-   *
-   * The dsp channel count
-   * 
-   * Since: 0.4.0
-   */
-  param_spec = g_param_spec_uint("dsp-channels\0",
+  param_spec = g_param_spec_uint("dsp_channels\0",
 				 "count of DSP channels\0",
 				 "The count of DSP channels to use\0",
 				 1,
@@ -206,14 +173,7 @@ ags_devout_class_init(AgsDevoutClass *devout)
 				  PROP_DSP_CHANNELS,
 				  param_spec);
 
-  /**
-   * AgsDevout:pcm-channels:
-   *
-   * The pcm channel count
-   * 
-   * Since: 0.4.0
-   */
-  param_spec = g_param_spec_uint("pcm-channels\0",
+  param_spec = g_param_spec_uint("pcm_channels\0",
 				 "count of PCM channels\0",
 				 "The count of PCM channels to use\0",
 				 1,
@@ -227,32 +187,18 @@ ags_devout_class_init(AgsDevoutClass *devout)
   /*
    * TODO:JK: add support for other quality than 16 bit
    */
-  /**
-   * AgsDevout:bits:
-   *
-   * The precision of the buffer
-   * 
-   * Since: 0.4.0
-   */
   param_spec = g_param_spec_uint("bits\0",
 				 "precision of buffer\0",
 				 "The precision to use for a frame\0",
 				 1,
 				 64,
-				 AGS_DEVOUT_DEFAULT_FORMAT,
+				 16,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_BITS,
 				  param_spec);
 
-  /**
-   * AgsDevout:buffer-size:
-   *
-   * The buffer size
-   * 
-   * Since: 0.4.0
-   */
-  param_spec = g_param_spec_uint("buffer-size\0",
+  param_spec = g_param_spec_uint("buffer_size\0",
 				 "frame count of a buffer\0",
 				 "The count of frames a buffer contains\0",
 				 1,
@@ -263,13 +209,6 @@ ags_devout_class_init(AgsDevoutClass *devout)
 				  PROP_BUFFER_SIZE,
 				  param_spec);
 
-  /**
-   * AgsDevout:frequency:
-   *
-   * The samplerate
-   * 
-   * Since: 0.4.0
-   */
   param_spec = g_param_spec_uint("frequency\0",
 				 "frames per second\0",
 				 "The frames count played during a second\0",
@@ -281,13 +220,6 @@ ags_devout_class_init(AgsDevoutClass *devout)
 				  PROP_FREQUENCY,
 				  param_spec);
 
-  /**
-   * AgsDevout:buffer:
-   *
-   * The buffer
-   * 
-   * Since: 0.4.0
-   */
   param_spec = g_param_spec_pointer("buffer\0",
 				    "the buffer\0",
 				    "The buffer to play\0",
@@ -296,13 +228,6 @@ ags_devout_class_init(AgsDevoutClass *devout)
 				  PROP_BUFFER,
 				  param_spec);
 
-  /**
-   * AgsDevout:bpm:
-   *
-   * Beats per minute
-   * 
-   * Since: 0.4.0
-   */
   param_spec = g_param_spec_double("bpm\0",
 				   "beats per minute\0",
 				   "Beats per minute to use\0",
@@ -313,13 +238,7 @@ ags_devout_class_init(AgsDevoutClass *devout)
   g_object_class_install_property(gobject,
 				  PROP_BPM,
 				  param_spec);
-  /**
-   * AgsDevout:bpm:
-   *
-   * Attack of the buffer
-   * 
-   * Since: 0.4.0
-   */
+
   param_spec = g_param_spec_pointer("attack\0",
 				    "attack of buffer\0",
 				    "The attack to use for the buffer\0",
@@ -328,6 +247,14 @@ ags_devout_class_init(AgsDevoutClass *devout)
 				  PROP_ATTACK,
 				  param_spec);
 
+  param_spec = g_param_spec_object("task\0",
+				   "task to launch\0",
+				   "A task to launch\0",
+				   AGS_TYPE_TASK,
+				   G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_TASK,
+				  param_spec);
 
   /* AgsDevoutClass */
   devout->play_init = ags_devout_alsa_init;
@@ -337,13 +264,6 @@ ags_devout_class_init(AgsDevoutClass *devout)
   devout->tic = NULL;
   devout->note_offset_changed = NULL;
 
-  /* signals */
-  /**
-   * AgsDevout::tic:
-   * @devout: the object tics
-   *
-   * The ::tic signal is emited during playback after buffer time interval.
-   */
   devout_signals[TIC] =
     g_signal_new("tic\0",
 		 G_TYPE_FROM_CLASS (devout),
@@ -372,42 +292,23 @@ ags_devout_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_devout_init(AgsDevout *devout)
 {
-  gdouble delay;
   guint default_tact_frames;
-  guint default_period;
+  guint default_tic_frames;
   guint i;
   
   /* flags */
   devout->flags = (AGS_DEVOUT_ALSA);
 
   /* quality */
-  devout->dsp_channels = g_ascii_strtoull(ags_config_get(config,
-							 AGS_CONFIG_DEVOUT,
-							 "dsp-channels\0"),
-					  NULL,
-					  10);
-  devout->pcm_channels = g_ascii_strtoull(ags_config_get(config,
-							 AGS_CONFIG_DEVOUT,
-							 "pcm-channels\0"),
-					  NULL,
-					  10);
-  devout->bits = AGS_DEVOUT_DEFAULT_FORMAT;
-  devout->buffer_size = g_ascii_strtoull(ags_config_get(config,
-							AGS_CONFIG_DEVOUT,
-							"buffer-size\0"),
-					 NULL,
-					 10);
-  devout->frequency = g_ascii_strtoull(ags_config_get(config,
-						      AGS_CONFIG_DEVOUT,
-						      "samplerate\0"),
-				       NULL,
-				       10);
+  devout->dsp_channels = 2;
+  devout->pcm_channels = 2;
+  devout->bits = 16;
+  devout->buffer_size = AGS_DEVOUT_DEFAULT_BUFFER_SIZE;
+  devout->frequency = AGS_DEVOUT_DEFAULT_SAMPLERATE;
 
   //  devout->out.oss.device = NULL;
   devout->out.alsa.handle = NULL;
-  devout->out.alsa.device = g_strdup(ags_config_get(config,
-						    AGS_CONFIG_DEVOUT,
-						    "alsa-handle\0"));
+  devout->out.alsa.device = g_strdup("hw:0\0");
 
   /* buffer */
   devout->buffer = (signed short **) malloc(4 * sizeof(signed short*));
@@ -420,28 +321,24 @@ ags_devout_init(AgsDevout *devout)
   devout->bpm = AGS_DEVOUT_DEFAULT_BPM;
 
   /* delay and attack */
-  devout->delay = (gdouble *) malloc((int) 2 * AGS_DEVOUT_DEFAULT_PERIOD *
-				     sizeof(gdouble));
-  
-  devout->attack = (guint *) malloc((int) 2 * AGS_DEVOUT_DEFAULT_PERIOD *
-				    sizeof(guint));
-  
-  delay = ((gdouble) devout->frequency / (gdouble) devout->buffer_size) * (gdouble)(60.0 / devout->bpm);
-  //  g_message("delay : %f\0", delay);
-  default_tact_frames = (guint) (delay * devout->buffer_size);
-  default_period = (1.0 / AGS_DEVOUT_DEFAULT_PERIOD) * (default_tact_frames);
+  devout->delay = (guint *) malloc((int) ceil(2.0 * AGS_NOTATION_TICS_PER_BEAT) *
+				   sizeof(gdouble));
 
-  devout->attack[0] = 0;
-  devout->delay[0] = delay;
-  
-  for(i = 1; i < (int)  2.0 * AGS_DEVOUT_DEFAULT_PERIOD; i++){
-    devout->attack[i] = (guint) ((i * default_tact_frames + devout->attack[i - 1]) / (AGS_DEVOUT_DEFAULT_PERIOD / (delay * i))) % (guint) (devout->buffer_size);
-    //    g_message("%d\0", devout->attack[i]);
+  devout->attack = (guint *) malloc((int) ceil(2.0 * AGS_NOTATION_TICS_PER_BEAT) *
+				   sizeof(guint));
+
+  default_tact_frames = (guint) (AGS_DEVOUT_DEFAULT_DELAY * AGS_DEVOUT_DEFAULT_BUFFER_SIZE);
+  default_tic_frames = (guint) (default_tact_frames * AGS_NOTATION_MINIMUM_NOTE_LENGTH);
+
+  memset(devout->delay, 0, (int) (ceil(2.0 * AGS_NOTATION_TICS_PER_BEAT) * sizeof(guint)));
+  memset(devout->delay, 0, (int) (ceil(2.0 * AGS_NOTATION_TICS_PER_BEAT) * sizeof(guint)));
+
+  for(i = 0; i < (int) ceil(2.0 * AGS_NOTATION_TICS_PER_BEAT); i++){
+    devout->attack[i] = (i * default_tic_frames) % AGS_DEVOUT_DEFAULT_BUFFER_SIZE;
   }
-  
-  for(i = 1; i < (int) 2.0 * AGS_DEVOUT_DEFAULT_PERIOD; i++){
-    devout->delay[i] = ((gdouble) (default_tact_frames + devout->attack[i])) / (gdouble) devout->buffer_size;
-    //    g_message("%f\0", devout->delay[i]);
+
+  for(i = 0; i < (int) ceil(2.0 * AGS_NOTATION_TICS_PER_BEAT); i++){
+    //    devout->delay[i] = AGS_DEVOUT_DEFAULT_BUFFER_SIZE / (default_tic_frames) / (AGS_DEVOUT_DEFAULT_SAMPLERATE / AGS_NOTATION_DEFAULT_JIFFIE);
   }
 
   /*  */
@@ -498,9 +395,9 @@ ags_devout_set_property(GObject *gobject,
       if((AGS_DEVOUT_LIBAO & (devout->flags)) != 0){
 	//TODO:JK: implement me
       }else if((AGS_DEVOUT_OSS & (devout->flags)) != 0){
-	devout->out.oss.device = g_strdup(device);
+	devout->out.oss.device = device;
       }else if((AGS_DEVOUT_ALSA & (devout->flags)) != 0){
-	devout->out.alsa.device = g_strdup(device);
+	devout->out.alsa.device = device;
       }
     }
     break;
@@ -591,6 +488,11 @@ ags_devout_set_property(GObject *gobject,
 	//TODO:JK: implement me
     }
     break;
+  case PROP_TASK:
+    {
+	//TODO:JK: implement me
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -611,7 +513,7 @@ ags_devout_get_property(GObject *gobject,
   case PROP_DEVICE:
     {
       if((AGS_DEVOUT_LIBAO & (devout->flags)) != 0){
-	//TODO:JK: implement me
+	g_value_set_string(value, ao_driver_info(devout->out.ao.driver_ao)->name);
       }else if((AGS_DEVOUT_OSS & (devout->flags)) != 0){
 	g_value_set_string(value, devout->out.oss.device);
       }else if((AGS_DEVOUT_ALSA & (devout->flags)) != 0){
@@ -712,15 +614,6 @@ ags_devout_disconnect(AgsConnectable *connectable)
   //TODO:JK: implement me
 }
 
-/**
- * ags_devout_play_domain_alloc:
- *
- * Allocs an #AgsDevoutPlayDomain.
- *
- * Returns: the devout play domain
- *
- * Since: 0.4
- */
 AgsDevoutPlayDomain*
 ags_devout_play_domain_alloc()
 {
@@ -739,14 +632,6 @@ ags_devout_play_domain_alloc()
   return(devout_play_domain);
 }
 
-/**
- * ags_devout_play_domain_free:
- * @devout_play_domain: the devout play domain
- *
- * Frees an #AgsDevoutPlayDomain.
- *
- * Since: 0.4
- */
 void
 ags_devout_play_domain_free(AgsDevoutPlayDomain *devout_play_domain)
 {
@@ -755,16 +640,6 @@ ags_devout_play_domain_free(AgsDevoutPlayDomain *devout_play_domain)
   free(devout_play_domain);
 }
 
-
-/**
- * ags_devout_play_alloc:
- *
- * Allocs an #AgsDevoutPlay.
- *
- * Returns: the devout play
- *
- * Since: 0.4
- */
 AgsDevoutPlay*
 ags_devout_play_alloc()
 {
@@ -792,14 +667,6 @@ ags_devout_play_alloc()
   return(play);
 }
 
-/**
- * ags_devout_play_free:
- * @devout_play: the devout play
- *
- * Frees an #AgsDevoutPlay.
- *
- * Since: 0.4
- */
 void
 ags_devout_play_free(AgsDevoutPlay *play)
 {
@@ -810,40 +677,6 @@ ags_devout_play_free(AgsDevoutPlay *play)
   free(play->iterator_thread);
 }
 
-/**
- * ags_devout_play_find_source:
- * @devout_play: a #GList containing #AgsDevoutPlay-struct
- * 
- * Find source
- *
- * Returns: the matching devout play
- *
- * Since: 0.4
- */
-AgsDevoutPlay*
-ags_devout_play_find_source(GList *devout_play,
-			    GObject *source)
-{
-  while(devout_play != NULL){
-    if(AGS_DEVOUT_PLAY(devout_play->data)->source == source){
-      return(devout_play->data);
-    }
-
-    devout_play = devout_play->next;
-  }
-
-  return(NULL);
-}
-
-/**
- * ags_devout_list_cards:
- * @card_id: alsa identifier
- * @card_name: card name
- *
- * List available soundcards.
- *
- * Since: 0.4
- */
 void
 ags_devout_list_cards(GList **card_id, GList **card_name)
 {
@@ -895,21 +728,6 @@ ags_devout_list_cards(GList **card_id, GList **card_name)
   *card_name = g_list_reverse(*card_name);
 }
 
-/**
- * ags_devout_pcm_info:
- * @card_id: alsa identifier
- * @channels_min: minimum channels supported
- * @channels_max: maximum channels supported
- * @rate_min: minimum samplerate supported
- * @rate_max: maximum samplerate supported
- * @buffer_size_min: minimum buffer size supported
- * @buffer_size_max maximum buffer size supported
- * @error: on success %NULL
- *
- * List soundcard settings.
- *
- * Since: 0.4
- */
 void
 ags_devout_pcm_info(char *card_id,
 		    guint *channels_min, guint *channels_max,
@@ -976,37 +794,14 @@ ags_devout_pcm_info(char *card_id,
   snd_pcm_close(handle);
 }
 
-/**
- * ags_devout_add_audio:
- * @devout: an #AgsDevout
- * @audio: the #AgsAudio to add
- *
- * Add audio to devout.
- *
- * Since: 0.4
- */
 void
 ags_devout_add_audio(AgsDevout *devout, GObject *audio)
 {
-  if(g_list_find(devout->audio,
-		 audio) != NULL){
-    return;
-  }
-
   g_object_ref(G_OBJECT(audio));
   devout->audio = g_list_prepend(devout->audio,
 				 audio);
 }
 
-/**
- * ags_devout_remove_audio:
- * @devout: an #AgsDevout
- * @audio: the #AgsAudio to remove
- *
- * Remove audio of devout.
- *
- * Since: 0.4
- */
 void
 ags_devout_remove_audio(AgsDevout *devout, GObject *audio)
 {
@@ -1015,14 +810,6 @@ ags_devout_remove_audio(AgsDevout *devout, GObject *audio)
   g_object_unref(G_OBJECT(audio));
 }
 
-/**
- * ags_devout_tic:
- * @devout: an #AgsDevout
- *
- * The tic of devout.
- *
- * Since: 0.4
- */
 void
 ags_devout_tic(AgsDevout *devout)
 {
@@ -1041,11 +828,9 @@ ags_devout_tic(AgsDevout *devout)
 
 /**
  * ags_devout_switch_buffer_flag:
- * @devout: an #AgsDevout
+ * @devout an #AgsDevout
  *
  * The buffer flag indicates the currently played buffer.
- *
- * Since: 0.3
  */
 void
 ags_devout_switch_buffer_flag(AgsDevout *devout)
@@ -1090,11 +875,6 @@ ags_devout_alsa_init(AgsDevout *devout,
   /* Open PCM device for playback. */
   if ((err = snd_pcm_open(&handle, devout->out.alsa.device, SND_PCM_STREAM_PLAYBACK, 0)) < 0) {
     printf("Playback open error: %s\n", snd_strerror(err));
-    g_set_error(error,
-		AGS_DEVOUT_ERROR,
-		AGS_DEVOUT_ERROR_LOCKED_SOUNDCARD,
-		"unable to open pcm device: %s\n\0",
-		snd_strerror(err));
     return;
   }
 
@@ -1148,8 +928,7 @@ ags_devout_alsa_init(AgsDevout *devout,
 
   if (rrate != rate) {
     printf("Rate doesn't match (requested %iHz, get %iHz)\n", rate, err);
-    //    exit(-EINVAL);
-    return;
+    exit(-EINVAL);
   }
 
   /* set the buffer size */
@@ -1163,8 +942,6 @@ ags_devout_alsa_init(AgsDevout *devout,
   buffer_size = size;
 
   /* set the period time */
-  period_time = MSEC_PER_SEC / devout->frequency;
-  dir = -1;
   err = snd_pcm_hw_params_set_period_time_near(handle, hwparams, &period_time, &dir);
   if (err < 0) {
     printf("Unable to set period time %i for playback: %s\n", period_time, snd_strerror(err));
@@ -1217,16 +994,13 @@ ags_devout_alsa_init(AgsDevout *devout,
 
   /*  */
   devout->out.alsa.handle = handle;
-  devout->delay_counter = 0.0;
-  devout->tic_counter = 0;
+  devout->delay_counter = 0;
 }
 
 void
 ags_devout_alsa_play(AgsDevout *devout,
 		     GError **error)
-{
-  gdouble delay;
-
+{    
   /*  */
   if((AGS_DEVOUT_BUFFER0 & (devout->flags)) != 0){
     memset(devout->buffer[3], 0, (size_t) devout->dsp_channels * devout->buffer_size * sizeof(signed short));
@@ -1370,23 +1144,22 @@ ags_devout_alsa_play(AgsDevout *devout,
   }
 
   /* determine if attack should be switched */
-  delay = devout->delay[devout->tic_counter];
-  devout->delay_counter += 1.0;
+  devout->delay_counter += 1; //AGS_DEVOUT_DEFAULT_JIFFIE
 
   ///TODO:JK: fix me
-  if(devout->delay_counter >= delay){ //devout->delay[devout->tic_counter]
+  if(devout->delay_counter >= AGS_DEVOUT_DEFAULT_DELAY){ //devout->delay[devout->tic_counter]
+    /* tic */
+    ags_devout_tic(devout);
+
     devout->tic_counter += 1;
 
-    if(devout->tic_counter == AGS_DEVOUT_DEFAULT_PERIOD){
+    if(devout->tic_counter == AGS_NOTATION_TICS_PER_BEAT){
       devout->tic_counter = 0;
     }
 
     /* delay */
-    devout->delay_counter = 0.0;
+    devout->delay_counter = 0;
   } 
-
-  /* tic */
-  ags_devout_tic(devout);
 
   /* switch buffer flags */
   ags_devout_switch_buffer_flag(devout);
@@ -1402,28 +1175,6 @@ ags_devout_alsa_free(AgsDevout *devout)
   devout->out.alsa.handle = NULL;
 } 
 
-void
-ags_devout_add_audio(AgsDevout *devout,
-		     AgsAudio *audio)
-{
-}
-
-void
-ags_devout_remove_audio(AgsDevout *devout,
-			AgsAudio *audio)
-{
-}
-
-/**
- * ags_devout_new:
- * @ags_main: the #AgsMain
- *
- * Creates an #AgsDevout, refering to @ags_main.
- *
- * Returns: a new #AgsDevout
- *
- * Since: 0.3
- */
 AgsDevout*
 ags_devout_new(GObject *ags_main)
 {
@@ -1432,7 +1183,6 @@ ags_devout_new(GObject *ags_main)
   devout = (AgsDevout *) g_object_new(AGS_TYPE_DEVOUT, NULL);
   
   if(ags_main != NULL){
-    //TODO:JK: use set_property
     g_object_ref(G_OBJECT(ags_main));
     devout->ags_main = ags_main;
   }

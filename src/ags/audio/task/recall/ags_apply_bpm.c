@@ -42,16 +42,6 @@ void ags_apply_bpm_channel(AgsApplyBpm *apply_bpm, AgsChannel *channel);
 void ags_apply_bpm_audio(AgsApplyBpm *apply_bpm, AgsAudio *audio);
 void ags_apply_bpm_devout(AgsApplyBpm *apply_bpm, AgsDevout *devout);
 
-/**
- * SECTION:ags_apply_bpm
- * @short_description: apply bpm to delay audio
- * @title: AgsApplyBpm
- * @section_id:
- * @include: ags/audio/task/recall/ags_apply_bpm.h
- *
- * The #AgsApplyBpm task applys bpm to #AgsDelayAudio.
- */
-
 static gpointer ags_apply_bpm_parent_class = NULL;
 static AgsConnectableInterface *ags_apply_bpm_parent_connectable_interface;
 
@@ -276,17 +266,6 @@ ags_apply_bpm_devout(AgsApplyBpm *apply_bpm, AgsDevout *devout)
   }
 }
 
-/**
- * ags_apply_bpm_new:
- * @gobject: the #GObject
- * @bpm: the bpm to apply
- *
- * Creates an #AgsApplyBpm.
- *
- * Returns: an new #AgsApplyBpm.
- *
- * Since: 0.4
- */
 AgsApplyBpm*
 ags_apply_bpm_new(GObject *gobject,
 		  gdouble bpm)

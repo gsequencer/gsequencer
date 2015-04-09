@@ -29,16 +29,6 @@ void ags_cancel_recall_finalize(GObject *gobject);
 
 void ags_cancel_recall_launch(AgsTask *task);
 
-/**
- * SECTION:ags_cancel_recall
- * @short_description: cancel recall object
- * @title: AgsCancelRecall
- * @section_id:
- * @include: ags/audio/task/ags_cancel_recall.h
- *
- * The #AgsCancelRecall task cancels #AgsRecall playback.
- */
-
 static gpointer ags_cancel_recall_parent_class = NULL;
 static AgsConnectableInterface *ags_cancel_recall_parent_connectable_interface;
 
@@ -142,33 +132,18 @@ ags_cancel_recall_finalize(GObject *gobject)
 void
 ags_cancel_recall_launch(AgsTask *task)
 {
-  AgsRecall *recall;
   AgsCancelRecall *cancel_recall;
 
   cancel_recall = AGS_CANCEL_RECALL(task);
 
-  recall = cancel_recall->recall;
-  recall->flags |= AGS_RECALL_REMOVE;
-
   /* cancel AgsRecall */
-  ags_recall_cancel(recall);
+  ags_recall_cancel(cancel_recall->recall);
 
   /* set remove flag */
   if(cancel_recall->play != NULL)
     cancel_recall->play->flags |= AGS_DEVOUT_PLAY_REMOVE;
 }
 
-/**
- * ags_cancel_recall_new:
- * @recall: the #AgsRecall to cancel
- * @play: the #AgsDevoutPlay-struct
- *
- * Creates an #AgsCancelRecall.
- *
- * Returns: an new #AgsCancelRecall.
- *
- * Since: 0.4
- */
 AgsCancelRecall*
 ags_cancel_recall_new(AgsRecall *recall,
 		      AgsDevoutPlay *play)

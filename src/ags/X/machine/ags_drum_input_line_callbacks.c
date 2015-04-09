@@ -19,8 +19,6 @@
 #include <ags/X/machine/ags_drum_input_line_callbacks.h>
 #include <ags/X/machine/ags_drum.h>
 
-#include <ags/main.h>
-
 #include <ags-lib/object/ags_connectable.h>
 
 #include <ags/audio/ags_devout.h>
@@ -32,31 +30,18 @@
 #include <ags/audio/ags_recall.h>
 #include <ags/audio/ags_recall_container.h>
 
+#include <ags/audio/recall/ags_volume_channel.h>
 #include <ags/audio/recall/ags_play_channel_run.h>
 #include <ags/audio/recall/ags_copy_pattern_channel.h>
 #include <ags/audio/recall/ags_copy_pattern_channel_run.h>
 
 #include <ags/X/ags_window.h>
-#include <ags/X/ags_line_member.h>
 
 void
 ags_drum_input_line_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrumInputLine *drum_input_line)
 {
-  AgsDrum *drum;
-
-  if(old_parent != NULL){
-    return;
-  }
-
-  drum = gtk_widget_get_ancestor(widget,
-				 AGS_TYPE_DRUM);
-  
-  if(drum != NULL &&
-     G_OBJECT(AGS_MACHINE(drum)->audio) != NULL){
-    /* AgsAudio */
-    g_signal_connect_after(G_OBJECT(AGS_MACHINE(drum)->audio), "set_pads\0",
-			   G_CALLBACK(ags_drum_input_line_audio_set_pads_callback), drum_input_line);
-  }
+  /* set devout */
+  //TODO:JK: implement me
 }
 
 void
@@ -83,6 +68,7 @@ ags_drum_input_line_audio_set_pads_callback(AgsAudio *audio, GType type,
 	      g_object_set(G_OBJECT(recall->data),
 			   "destination\0", output,
 			   NULL);
+	      ags_connectable_connect(AGS_CONNECTABLE(recall->data));
 	    }
 
 	    recall = recall->next;
@@ -95,6 +81,8 @@ ags_drum_input_line_audio_set_pads_callback(AgsAudio *audio, GType type,
 	      g_object_set(G_OBJECT(recall->data),
 			   "destination\0", output,
 			   NULL);
+
+	      ags_connectable_connect(AGS_CONNECTABLE(recall->data));
 	    }
 
 	    recall = recall->next;
@@ -109,4 +97,91 @@ ags_drum_input_line_audio_set_pads_callback(AgsAudio *audio, GType type,
       /* empty */
     }
   }
+}
+
+void
+ags_drum_input_line_channel_done_callback(AgsChannel *source, AgsDrumInputLine *drum_input_line)
+{
+  AgsChannel *channel;
+  AgsDevoutPlay *devout_play;
+  AgsChannel *next_pad;
+  GList *current_recall;
+  gboolean all_done;
+
+  g_message("ags_drum_input_line_play_channel_run_done\0");
+
+  channel = AGS_PAD(AGS_LINE(drum_input_line)->pad)->channel;
+  next_pad = channel->next_pad;
+
+  all_done = TRUE;
+
+  while(channel != next_pad){
+    current_recall = channel->play;
+    devout_play = AGS_DEVOUT_PLAY(channel->devout_play);
+    
+    if(devout_play->recall_id[0] != NULL){
+      all_done = FALSE;
+      break;
+    }
+    
+    channel = channel->next;
+  }
+
+  if(all_done){
+    AgsDrumInputPad *drum_input_pad;
+
+    drum_input_pad = AGS_DRUM_INPUT_PAD(AGS_LINE(drum_input_line)->pad);
+
+    gtk_toggle_button_set_active(drum_input_pad->play, FALSE);
+  }
+}
+
+void
+ags_drum_input_line_play_channel_run_cancel(AgsRecall *recall, AgsDrumInputLine *drum_input_line)
+{
+  /* empty */
+}
+
+void
+ags_drum_input_line_play_volume_done(AgsRecall *recall, AgsDrumInputLine *drum_input_line)
+{
+  /* empty */
+}
+
+void
+ags_drum_input_line_play_volume_cancel(AgsRecall *recall, AgsDrumInputLine *drum_input_line)
+{
+  /* empty */
+}
+
+void
+ags_drum_input_line_copy_pattern_done(AgsRecall *recall, AgsDrumInputLine *drum_input_line)
+{
+  AgsCopyPatternChannelRun *copy_pattern_channel_run;
+
+  fprintf(stdout, "ags_drum_input_line_copy_pattern_done\n\0");
+
+  copy_pattern_channel_run = AGS_COPY_PATTERN_CHANNEL_RUN(recall);
+  /*
+  g_list_free(copy_pattern->destination);
+  copy_pattern->destination = NULL;
+  */
+}
+
+void
+ags_drum_input_line_copy_pattern_cancel(AgsRecall *recall, AgsDrumInputLine *drum_input_line)
+{
+  /* empty */
+}
+
+void
+ags_drum_input_line_recall_volume_done(AgsRecall *recall, AgsDrumInputLine *drum_input_line)
+{
+  /* empty */
+}
+
+void
+ags_drum_input_line_recall_volume_cancel(AgsRecall *recall, AgsDrumInputLine *drum_input_line)
+{
+  /* empty */
 }

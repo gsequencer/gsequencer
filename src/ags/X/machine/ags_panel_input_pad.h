@@ -38,9 +38,6 @@ typedef struct _AgsPanelInputPadClass AgsPanelInputPadClass;
 struct _AgsPanelInputPad
 {
   AgsPad pad;
-
-  gchar *name;
-  gchar *xml_type;
 };
 
 struct _AgsPanelInputPadClass

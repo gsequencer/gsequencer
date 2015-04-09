@@ -31,6 +31,10 @@
 #include <ags/audio/ags_recall.h>
 #include <ags/audio/ags_recall_container.h>
 
+#include <ags/audio/task/ags_init_audio.h>
+#include <ags/audio/task/ags_append_audio.h>
+#include <ags/audio/task/ags_start_devout.h>
+#include <ags/audio/task/ags_cancel_audio.h>
 #include <ags/audio/task/ags_toggle_led.h>
 #include <ags/audio/task/ags_toggle_pattern_bit.h>
 
@@ -52,6 +56,8 @@
 
 void ags_matrix_refresh_gui_callback(AgsTogglePatternBit *toggle_pattern_bit,
 				     AgsMatrix *matrix);
+void ags_matrix_init_audio_launch_callback(AgsTask *task, AgsMatrix *matrix);
+void ags_matrix_audio_done_callback(AgsAudio *audio, AgsMatrix *matrix);
 
 extern const char *AGS_MATRIX_INDEX;
 
@@ -69,6 +75,168 @@ ags_matrix_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsMatr
 					      ags_window_find_machine_counter(window, AGS_TYPE_MATRIX)->counter);
   ags_window_increment_machine_counter(window,
 				       AGS_TYPE_MATRIX);
+}
+
+void
+ags_matrix_run_callback(GtkWidget *toggle_button, AgsMatrix *matrix)
+{
+  AgsDevout *devout;
+  AgsAudioLoop *audio_loop;
+  AgsTaskThread *task_thread;
+  AgsDevoutThread *devout_thread;
+  AgsRecallID *recall_id;
+
+  devout = AGS_DEVOUT(AGS_MACHINE(matrix)->audio->devout);
+
+  audio_loop = AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop);
+  task_thread = AGS_TASK_THREAD(audio_loop->task_thread);
+  devout_thread = AGS_DEVOUT_THREAD(audio_loop->devout_thread);
+
+  if(GTK_TOGGLE_BUTTON(toggle_button)->active){
+    AgsInitAudio *init_audio;
+    AgsAppendAudio *append_audio;
+    AgsStartDevout *start_devout;
+    GList *tasks;
+
+    printf("matrix: on\n\0");
+
+    tasks = NULL;
+
+    /* create init task */
+    init_audio = ags_init_audio_new(AGS_MACHINE(matrix)->audio,
+				    FALSE, TRUE, FALSE);
+    g_signal_connect_after(init_audio, "launch\0",
+			   G_CALLBACK(ags_matrix_init_audio_launch_callback), matrix);
+   tasks = g_list_prepend(tasks,
+			   init_audio);
+
+    /* create append task */
+    append_audio = ags_append_audio_new(G_OBJECT(audio_loop),
+					G_OBJECT(AGS_MACHINE(matrix)->audio));
+
+    tasks = g_list_prepend(tasks,
+			   append_audio);
+
+    /* create start task */
+    start_devout = ags_start_devout_new(devout);
+
+    tasks = g_list_prepend(tasks,
+			   start_devout);
+
+    /* append tasks */
+    tasks = g_list_reverse(tasks);
+    
+    ags_task_thread_append_tasks(task_thread,
+				 tasks);
+  }else{
+    printf("matrix: off\n\0");
+
+    /* abort code */
+    if(ags_audio_is_playing(AGS_MACHINE(matrix)->audio)){
+      AgsCancelAudio *cancel_audio;
+
+      /* create cancel task */
+      cancel_audio = ags_cancel_audio_new(AGS_MACHINE(matrix)->audio,
+					  FALSE, TRUE, FALSE);
+
+      /* append AgsCancelAudio */
+      ags_task_thread_append_task(task_thread,
+				  AGS_TASK(cancel_audio));
+    }
+  }
+}
+
+void
+ags_matrix_init_audio_launch_callback(AgsTask *task, AgsMatrix *matrix)
+{
+  AgsAudio *audio;
+
+  audio = AGS_MACHINE(matrix)->audio;
+  g_signal_connect_after(audio, "done\0",
+			 G_CALLBACK(ags_matrix_audio_done_callback), matrix);
+}
+
+void
+ags_matrix_audio_done_callback(AgsAudio *audio, AgsMatrix *matrix)
+{
+  GList *devout_play;
+  gboolean all_done;
+
+  devout_play = AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->devout_play;
+
+  all_done = TRUE;
+
+  while(devout_play != NULL){
+    if(AGS_DEVOUT_PLAY(devout_play->data)->recall_id[1] != NULL){
+      all_done = FALSE;
+      break;
+    }
+
+    devout_play = devout_play->next;
+  }
+
+  if(all_done){
+    ags_led_unset_active(AGS_LED(g_list_nth(gtk_container_get_children(GTK_CONTAINER(matrix->led)),
+					    matrix->active_led)->data));
+    gtk_toggle_button_set_active(matrix->run, FALSE);
+  }
+}
+
+void
+ags_matrix_sequencer_count_callback(AgsDelayAudioRun *delay_audio_run, guint nth_run,
+				    guint delay, guint attack,
+				    AgsMatrix *matrix)
+{
+  AgsWindow *window;
+  AgsAudio *audio;
+  AgsCountBeatsAudio *play_count_beats_audio;
+  AgsCountBeatsAudioRun *play_count_beats_audio_run;
+  AgsToggleLed *toggle_led;
+  GList *list;
+  guint counter, active_led;
+  gdouble active_led_old, active_led_new;
+  GValue value = {0,};
+  
+  window = AGS_WINDOW(gtk_widget_get_ancestor((GtkWidget *) matrix, AGS_TYPE_WINDOW));
+
+  audio = AGS_MACHINE(matrix)->audio;
+
+  /* get some recalls */
+  list = ags_recall_find_type(audio->play,
+			      AGS_TYPE_COUNT_BEATS_AUDIO);
+  
+  if(list != NULL){
+    play_count_beats_audio = AGS_COUNT_BEATS_AUDIO(list->data);
+  }
+
+  list = ags_recall_find_type_with_recycling_container(audio->play,
+						       AGS_TYPE_COUNT_BEATS_AUDIO_RUN,
+						       (GObject *) AGS_RECALL(delay_audio_run)->recall_id->recycling_container);
+  
+  if(list != NULL){
+    play_count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(list->data);
+  }
+
+  /* set optical feedback */
+  active_led_new = play_count_beats_audio_run->sequencer_counter;
+  matrix->active_led = (guint) active_led_new;
+
+  if(active_led_new == 0){
+    g_value_init(&value, G_TYPE_DOUBLE);
+    ags_port_safe_read(play_count_beats_audio->sequencer_loop_end,
+		       &value);
+
+    active_led_old = g_value_get_double(&value) - 1.0;
+  }else{
+    active_led_old = (gdouble) matrix->active_led - 1.0;
+  }
+
+  toggle_led = ags_toggle_led_new(gtk_container_get_children(GTK_CONTAINER(matrix->led)),
+				  (guint) active_led_new,
+				  (guint) active_led_old);
+
+  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->task_thread),
+			      AGS_TASK(toggle_led));
 }
 
 void
@@ -96,6 +264,19 @@ ags_matrix_index_callback(GtkWidget *widget, AgsMatrix *matrix)
       ags_matrix_draw_matrix(matrix);
 
       /* modify port */
+      /* play */
+      list = ags_recall_find_type(audio->play, AGS_TYPE_COPY_PATTERN_AUDIO);
+  
+      if(list != NULL){
+	play_copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(list->data);
+      }
+
+      g_value_init(&play_value, G_TYPE_UINT);
+      g_value_set_uint(&play_value, GPOINTER_TO_UINT(g_object_get_data((GObject *) widget, AGS_MATRIX_INDEX)));
+
+      ags_port_safe_write(play_copy_pattern_audio->bank_index_1, &play_value);
+
+      g_value_unset(&play_value);
 
       /* recall */
       list = ags_recall_find_type(audio->recall, AGS_TYPE_COPY_PATTERN_AUDIO);
@@ -213,6 +394,62 @@ ags_matrix_loop_button_callback(GtkWidget *button, AgsMatrix *matrix)
 }
 
 void
+ags_matrix_run_delay_done(AgsRecall *recall, AgsMatrix *matrix)
+{
+  fprintf(stdout, "ags_matrix_run_delay_done\n\0");
+
+  //  delay = AGS_DELAY(recall);
+  //  matrix = AGS_MATRIX(AGS_AUDIO(delay->recall.parent)->machine);
+  //  matrix->block_run = TRUE;
+  //  AGS_DEVOUT_PLAY(AGS_MACHINE(matrix)->audio->devout_play)->flags |= AGS_DEVOUT_PLAY_DONE;
+  gtk_toggle_button_set_active(matrix->run, FALSE);
+
+}
+
+void
+ags_matrix_copy_pattern_done(AgsRecall *recall, AgsMatrix *matrix)
+{
+  //  AgsCopyPattern *copy_pattern;
+
+  //  copy_pattern = AGS_COPY_PATTERN(recall);
+  recall->flags |= AGS_RECALL_HIDE;
+  /*
+  g_list_free(copy_pattern->destination);
+  copy_pattern->destination = NULL;
+  */
+}
+
+void
+ags_matrix_copy_pattern_cancel(AgsRecall *recall, AgsMatrix *matrix)
+{
+}
+
+void
+ags_matrix_copy_pattern_loop(AgsRecall *recall, AgsMatrix *matrix)
+{
+
+}
+
+void
+ags_matrix_play_done(AgsRecall *recall, AgsMatrix *matrix)
+{
+  /*
+  matrix->play_ref++;
+
+  if(matrix->play_ref == AGS_MACHINE(matrix)->audio->output_lines){
+    matrix->play_ref = 0;
+    AGS_DEVOUT_PLAY(AGS_MACHINE(matrix)->audio->devout_play)->flags |= AGS_DEVOUT_PLAY_DONE;
+    gtk_toggle_button_set_active(matrix->run, FALSE);
+  }
+  */
+}
+
+void
+ags_matrix_play_cancel(AgsRecall *recall, AgsMatrix *matrix)
+{
+}
+
+void
 ags_matrix_refresh_gui_callback(AgsTogglePatternBit *toggle_pattern_bit,
 				AgsMatrix *matrix)
 {
@@ -222,116 +459,4 @@ ags_matrix_refresh_gui_callback(AgsTogglePatternBit *toggle_pattern_bit,
   channel = ags_channel_nth(AGS_MACHINE(matrix)->audio->input, toggle_pattern_bit->line);
 
   ags_matrix_redraw_gutter_point(matrix, channel, toggle_pattern_bit->bit, toggle_pattern_bit->line - (guint) matrix->adjustment->value);
-}
-
-void
-ags_matrix_tact_callback(AgsAudio *audio,
-			 AgsRecallID *recall_id,
-			 AgsMatrix *matrix)
-{
-  AgsWindow *window;
-  AgsCountBeatsAudio *play_count_beats_audio;
-  AgsCountBeatsAudioRun *play_count_beats_audio_run;
-  AgsToggleLed *toggle_led;
-  GList *list;
-  guint counter, active_led;
-  gdouble active_led_old, active_led_new;
-  GValue value = {0,};
-  
-  window = AGS_WINDOW(gtk_widget_get_ancestor((GtkWidget *) matrix, AGS_TYPE_WINDOW));
-
-  /* get some recalls */
-  list = ags_recall_find_type(audio->play,
-			      AGS_TYPE_COUNT_BEATS_AUDIO);
-  
-  if(list != NULL){
-    play_count_beats_audio = AGS_COUNT_BEATS_AUDIO(list->data);
-  }
-
-  list = ags_recall_find_type_with_recycling_container(audio->play,
-						       AGS_TYPE_COUNT_BEATS_AUDIO_RUN,
-						       (GObject *) recall_id->recycling_container);
-  
-  if(list != NULL){
-    play_count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(list->data);
-  }
-
-  /* set optical feedback */
-  active_led_new = play_count_beats_audio_run->sequencer_counter;
-  matrix->active_led = (guint) active_led_new;
-
-  if(active_led_new == 0){
-    g_value_init(&value, G_TYPE_DOUBLE);
-    ags_port_safe_read(play_count_beats_audio->sequencer_loop_end,
-		       &value);
-
-    active_led_old = g_value_get_double(&value) - 1.0;
-  }else{
-    active_led_old = (gdouble) matrix->active_led - 1.0;
-  }
-
-  //FIXME:JK: memory leak of GList
-  toggle_led = ags_toggle_led_new(gtk_container_get_children(GTK_CONTAINER(matrix->led)),
-				  (guint) active_led_new,
-				  (guint) active_led_old);
-
-  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->task_thread),
-			      AGS_TASK(toggle_led));
-}
-
-void
-ags_matrix_done_callback(AgsAudio *audio,
-			 AgsRecallID *recall_id,
-			 AgsMatrix *matrix)
-{
-  GList *devout_play;
-  gboolean all_done;
-
-  devout_play = AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->devout_play;
-
-  /* check unset */
-  all_done = TRUE;
-
-  while(devout_play != NULL){
-    if(AGS_DEVOUT_PLAY(devout_play->data)->recall_id[1] != NULL){
-      all_done = FALSE;
-      break;
-    }
-
-    devout_play = devout_play->next;
-  }
-
-  if(all_done){
-    GList *list;
-    guint active_led;
-
-    /* get active led */
-    if(matrix->active_led == 0){
-      AgsCountBeatsAudio *play_count_beats_audio;
-      GValue value = {0,};
-
-      /* get some recalls */
-      list = ags_recall_find_type(audio->play,
-				  AGS_TYPE_COUNT_BEATS_AUDIO);
-  
-      if(list != NULL){
-	play_count_beats_audio = AGS_COUNT_BEATS_AUDIO(list->data);
-      }
-  
-      g_value_init(&value, G_TYPE_DOUBLE);
-      ags_port_safe_read(play_count_beats_audio->sequencer_loop_end,
-			 &value);
-      
-      active_led = g_value_get_double(&value) - 1.0;
-    }else{
-      active_led = matrix->active_led - 1;
-    }
-
-    /* unset led */
-    list = gtk_container_get_children(GTK_CONTAINER(matrix->led));
-    ags_led_unset_active(AGS_LED(g_list_nth(list,
-					    active_led)->data));
-
-    g_list_free(list);
-  }
 }

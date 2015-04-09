@@ -47,16 +47,7 @@ void ags_autosave_thread_finalize(GObject *gobject);
 
 void ags_autosave_thread_start(AgsThread *thread);
 void ags_autosave_thread_run(AgsThread *thread);
-
-/**
- * SECTION:ags_autosave_thread
- * @short_description: auto safe
- * @title: AgsAutosaveThread
- * @section_id:
- * @include: ags/thread/ags_autosave_thread.h
- *
- * The #AgsAutosaveThread performs auto-safe.
- */
+void ags_autosave_thread_stop(AgsThread *thread);
 
 enum{
   PROP_0,
@@ -145,6 +136,7 @@ ags_autosave_thread_class_init(AgsAutosaveThreadClass *autosave_thread)
 
   thread->start = ags_autosave_thread_start;
   thread->run = ags_autosave_thread_run;
+  thread->stop = ags_autosave_thread_stop;
 }
 
 void
@@ -326,14 +318,12 @@ ags_autosave_thread_run(AgsThread *thread)
     gchar *filename;
 
     autosave_thread->counter = 0;
-
+    
     uid = getuid();
     pw = getpwuid(uid);
 
-    filename = g_strdup_printf("%s/%s/%d-%s\0",
+    filename = g_strdup_printf("%s/%s\0",
 			       pw->pw_dir,
-			       AGS_DEFAULT_DIRECTORY,
-			       getpid(),
 			       AGS_AUTOSAVE_THREAD_DEFAULT_FILENAME);
     
     file = (AgsFile *) g_object_new(AGS_TYPE_FILE,
@@ -347,17 +337,12 @@ ags_autosave_thread_run(AgsThread *thread)
   nanosleep(&delay, NULL);
 }
 
-/**
- * ags_autosave_thread_new:
- * @devout: the #AgsDevout
- * @ags_main: the #AgsMain
- *
- * Create a new #AgsAutosaveThread.
- *
- * Returns: the new #AgsAutosaveThread
- *
- * Since: 0.4
- */
+void
+ags_autosave_thread_stop(AgsThread *thread)
+{
+  //TODO:JK: implement me
+}
+
 AgsAutosaveThread*
 ags_autosave_thread_new(GObject *devout, AgsMain *ags_main)
 {

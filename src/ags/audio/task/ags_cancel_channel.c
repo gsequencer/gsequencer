@@ -29,16 +29,6 @@ void ags_cancel_channel_finalize(GObject *gobject);
 
 void ags_cancel_channel_launch(AgsTask *task);
 
-/**
- * SECTION:ags_cancel_channel
- * @short_description: cancel channel object
- * @title: AgsCancelChannel
- * @section_id:
- * @include: ags/audio/task/ags_cancel_channel.h
- *
- * The #AgsCancelChannel task cancels #AgsChannel playback.
- */
-
 static gpointer ags_cancel_channel_parent_class = NULL;
 static AgsConnectableInterface *ags_cancel_channel_parent_connectable_interface;
 
@@ -148,34 +138,14 @@ ags_cancel_channel_launch(AgsTask *task)
 
   cancel_channel = AGS_CANCEL_CHANNEL(task);
 
-  channel = cancel_channel->channel;
-
-  /* cancel playback */
-  if(AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0] == NULL){
-    return;
-  }
-
-  g_object_ref(AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0]);
-  ags_channel_tillrecycling_cancel(channel,
-				   AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0]);
+  /* cancel AgsChannel */
+  ags_channel_tillrecycling_cancel(cancel_channel->channel, cancel_channel->recall_id);
 
   /* set remove flag */
-  AGS_DEVOUT_PLAY(channel->devout_play)->flags |= (AGS_DEVOUT_PLAY_DONE | AGS_DEVOUT_PLAY_REMOVE);
-  AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0] = NULL;
+  if(cancel_channel->play != NULL)
+    cancel_channel->play->flags |= AGS_DEVOUT_PLAY_REMOVE;
 }
 
-/**
- * ags_cancel_channel_new:
- * @channel: the #AgsChannel to cancel
- * @recall_id: the #AgsRecallID to cancel
- * @play: the #AgsDevoutPlay-struct
- *
- * Creates an #AgsCancelChannel.
- *
- * Returns: an new #AgsCancelChannel.
- *
- * Since: 0.4
- */
 AgsCancelChannel*
 ags_cancel_channel_new(AgsChannel *channel, AgsRecallID *recall_id,
 		       AgsDevoutPlay *play)

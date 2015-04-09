@@ -31,11 +31,6 @@ void ags_sndfile_connect(AgsConnectable *connectable);
 void ags_sndfile_disconnect(AgsConnectable *connectable);
 
 gboolean ags_sndfile_open(AgsPlayable *playable, gchar *name);
-gboolean ags_sndfile_rw_open(AgsPlayable *playable, gchar *name,
-			     gboolean create,
-			     guint samplerate, guint channels,
-			     guint frames,
-			     guint format);
 guint ags_sndfile_level_count(AgsPlayable *playable);
 gchar** ags_sndfile_sublevel_names(AgsPlayable *playable);
 void ags_sndfile_iter_start(AgsPlayable *playable);
@@ -55,16 +50,6 @@ sf_vio_seek ags_sndfile_vio_seek(sf_count_t offset, int whence, void *user_data)
 sf_vio_read ags_sndfile_vio_read(void *ptr, sf_count_t count, void *user_data);
 sf_vio_write ags_sndfile_vio_write(const void *ptr, sf_count_t count, void *user_data);
 sf_vio_tell ags_sndfile_vio_tell(const void *ptr, sf_count_t count, void *user_data);
-
-/**
- * SECTION:ags_sndfile
- * @short_description: Libsndfile wrapper
- * @title: AgsSndfile
- * @section_id:
- * @include: ags/audio/file/ags_sndfile.h
- *
- * #AgsSndfile is the base object to ineract with libsndfile.
- */
 
 static gpointer ags_sndfile_parent_class = NULL;
 static AgsConnectableInterface *ags_sndfile_parent_connectable_interface;
@@ -156,7 +141,6 @@ ags_sndfile_playable_interface_init(AgsPlayableInterface *playable)
   ags_sndfile_parent_playable_interface = g_type_interface_peek_parent(playable);
 
   playable->open = ags_sndfile_open;
-  playable->rw_open = ags_sndfile_rw_open;
 
   playable->level_count = ags_sndfile_level_count;
   playable->sublevel_names = ags_sndfile_sublevel_names;
@@ -213,7 +197,6 @@ ags_sndfile_open(AgsPlayable *playable, gchar *name)
   sndfile = AGS_SNDFILE(playable);
 
   sndfile->info = (SF_INFO *) malloc(sizeof(SF_INFO));
-  sndfile->info->format = 0;
 
   if((AGS_SNDFILE_VIRTUAL & (sndfile->flags)) == 0){
     if(name != NULL){
@@ -222,58 +205,6 @@ ags_sndfile_open(AgsPlayable *playable, gchar *name)
   }else{
     sndfile->file = (SNDFILE *) sf_open_virtual(ags_sndfile_virtual_io, SFM_READ, sndfile->info, sndfile);
   }
-
-  if(sndfile->file == NULL)
-    return(FALSE);
-  else
-    return(TRUE);
-}
-
-gboolean
-ags_sndfile_rw_open(AgsPlayable *playable, gchar *name,
-		    gboolean create,
-		    guint samplerate, guint channels,
-		    guint frames,
-		    guint format)
-{
-  AgsSndfile *sndfile;
-  sf_count_t multi_frames;
-  
-  sndfile = AGS_SNDFILE(playable);
-
-  sndfile->info = (SF_INFO *) malloc(sizeof(SF_INFO));
-
-  sndfile->info->samplerate = (int) samplerate;
-  sndfile->info->channels = (int) channels;
-  sndfile->info->format = (int) format;
-  sndfile->info->frames = 0;
-  sndfile->info->seekable = 0;
-  sndfile->info->sections = 0;
-
-  g_message("export to: %s\n  samplerate: %d\n  channels: %d\n  format: %x\0",
-	    name,
-	    samplerate,
-	    channels,
-	    format);
-
-  if(!sf_format_check(sndfile->info)){
-    g_warning("invalid format");
-  }
-
-  if((AGS_SNDFILE_VIRTUAL & (sndfile->flags)) == 0){
-    if(name != NULL){
-      sndfile->file = (SNDFILE *) sf_open(name, SFM_RDWR, sndfile->info);
-    }
-  }else{
-    sndfile->file = (SNDFILE *) sf_open_virtual(ags_sndfile_virtual_io, SFM_RDWR, sndfile->info, sndfile);
-  }
-
-  multi_frames = frames * sndfile->info->channels;
-  //  sf_command(sndfile->file, SFC_FILE_TRUNCATE, &(multi_frames), sizeof(multi_frames));
-  //  sf_command (sndfile, SFC_SET_SCALE_INT_FLOAT_WRITE, NULL, SF_TRUE);
-  //  sf_seek(sndfile->file, 0, SEEK_SET);
-
-  //  sndfile->info->frames = multi_frames;
 
   if(sndfile->file == NULL)
     return(FALSE);
@@ -367,18 +298,11 @@ void
 ags_sndfile_write(AgsPlayable *playable, signed short *buffer, guint buffer_length)
 {
   AgsSndfile *sndfile;
-  sf_count_t multi_frames, retval;
 
   sndfile = AGS_SNDFILE(playable);
 
-  multi_frames = buffer_length * sndfile->info->channels;
-
-  retval = sf_write_short(sndfile->file, buffer, multi_frames);
-
-  if(retval > multi_frames){
-    g_warning("retval > multi_frames");
-    //    sf_seek(sndfile->file, (multi_frames - retval), SEEK_CUR);
-  }
+  sf_write_short(sndfile->file, buffer, buffer_length);
+  sf_seek(sndfile->file, buffer_length, SEEK_CUR);
 }
 
 void
@@ -388,7 +312,7 @@ ags_sndfile_flush(AgsPlayable *playable)
 
   sndfile = AGS_SNDFILE(playable);
 
-  sf_write_sync(sndfile->file);
+  /* empty */
 }
 
 void
@@ -467,15 +391,6 @@ ags_sndfile_vio_tell(const void *ptr, sf_count_t count, void *user_data)
   return(AGS_SNDFILE(user_data)->current - AGS_SNDFILE(user_data)->pointer);
 }
 
-/**
- * ags_sndfile_new:
- *
- * Creates an #AgsSndfile.
- *
- * Returns: an empty #AgsSndfile.
- *
- * Since: 0.3
- */
 AgsSndfile*
 ags_sndfile_new()
 {

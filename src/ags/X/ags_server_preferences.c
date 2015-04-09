@@ -19,39 +19,20 @@
 #include <ags/X/ags_server_preferences.h>
 #include <ags/X/ags_server_preferences_callbacks.h>
 
-#include <ags/main.h>
-
 #include <ags-lib/object/ags_connectable.h>
 
-#include <ags/object/ags_applicable.h>
-
 #include <ags/audio/ags_devout.h>
-#include <ags/audio/ags_config.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_preferences.h>
 
 void ags_server_preferences_class_init(AgsServerPreferencesClass *server_preferences);
 void ags_server_preferences_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_server_preferences_applicable_interface_init(AgsApplicableInterface *applicable);
 void ags_server_preferences_init(AgsServerPreferences *server_preferences);
 void ags_server_preferences_connect(AgsConnectable *connectable);
 void ags_server_preferences_disconnect(AgsConnectable *connectable);
-void ags_server_preferences_set_update(AgsApplicable *applicable, gboolean update);
-void ags_server_preferences_apply(AgsApplicable *applicable);
-void ags_server_preferences_reset(AgsApplicable *applicable);
 static void ags_server_preferences_finalize(GObject *gobject);
 void ags_server_preferences_show(GtkWidget *widget);
-
-/**
- * SECTION:ags_server_preferences
- * @short_description: A composite widget to do server related preferences
- * @title: AgsServerPreferences
- * @section_id: 
- * @include: ags/X/ags_server_preferences.h
- *
- * #AgsServerPreferences enables you to make server related preferences.
- */
 
 static gpointer ags_server_preferences_parent_class = NULL;
 
@@ -79,12 +60,6 @@ ags_server_preferences_get_type(void)
       NULL, /* interface_data */
     };
     
-    static const GInterfaceInfo ags_applicable_interface_info = {
-      (GInterfaceInitFunc) ags_server_preferences_applicable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_server_preferences = g_type_register_static(GTK_TYPE_VBOX,
 							 "AgsServerPreferences\0", &ags_server_preferences_info,
 							 0);
@@ -92,10 +67,6 @@ ags_server_preferences_get_type(void)
     g_type_add_interface_static(ags_type_server_preferences,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_server_preferences,
-				AGS_TYPE_APPLICABLE,
-				&ags_applicable_interface_info);
   }
 
   return(ags_type_server_preferences);
@@ -130,14 +101,6 @@ ags_server_preferences_connectable_interface_init(AgsConnectableInterface *conne
 }
 
 void
-ags_server_preferences_applicable_interface_init(AgsApplicableInterface *applicable)
-{
-  applicable->set_update = ags_server_preferences_set_update;
-  applicable->apply = ags_server_preferences_apply;
-  applicable->reset = ags_server_preferences_reset;
-}
-
-void
 ags_server_preferences_init(AgsServerPreferences *server_preferences)
 {
   GtkTable *table;
@@ -156,8 +119,6 @@ ags_server_preferences_init(AgsServerPreferences *server_preferences)
 		   0, 1,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
-  gtk_widget_set_sensitive(server_preferences->start,
-			   FALSE);
 
   /* address */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
@@ -178,8 +139,6 @@ ags_server_preferences_init(AgsServerPreferences *server_preferences)
 		   1, 2,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
-  gtk_widget_set_sensitive(server_preferences->address,
-			   FALSE);
 
   /* port */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
@@ -200,8 +159,6 @@ ags_server_preferences_init(AgsServerPreferences *server_preferences)
 		   2, 3,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
-  gtk_widget_set_sensitive(server_preferences->port,
-			   FALSE);
 
   /* username */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
@@ -222,8 +179,6 @@ ags_server_preferences_init(AgsServerPreferences *server_preferences)
 		   3, 4,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
-  gtk_widget_set_sensitive(server_preferences->username,
-			   FALSE);
 
   /* password */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
@@ -245,8 +200,6 @@ ags_server_preferences_init(AgsServerPreferences *server_preferences)
 		   4, 5,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
-  gtk_widget_set_sensitive(server_preferences->password,
-			   FALSE);
 }
 
 void
@@ -261,25 +214,6 @@ void
 ags_server_preferences_disconnect(AgsConnectable *connectable)
 {
   /* empty */
-}
-
-
-void
-ags_server_preferences_set_update(AgsApplicable *applicable, gboolean update)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_server_preferences_apply(AgsApplicable *applicable)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_server_preferences_reset(AgsApplicable *applicable)
-{
-  //TODO:JK: implement me
 }
 
 static void
@@ -298,15 +232,6 @@ ags_server_preferences_show(GtkWidget *widget)
   GTK_WIDGET_CLASS(ags_server_preferences_parent_class)->show(widget);
 }
 
-/**
- * ags_server_preferences_new:
- *
- * Creates an #AgsServerPreferences
- *
- * Returns: a new #AgsServerPreferences
- *
- * Since: 0.4
- */
 AgsServerPreferences*
 ags_server_preferences_new()
 {

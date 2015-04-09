@@ -28,8 +28,6 @@
 
 #include <ags/util/ags_id_generator.h>
 
-#include <ags/object/ags_marshal.h>
-
 #include <ags/file/ags_file_lookup.h>
 #include <ags/file/ags_file_id_ref.h>
 #include <ags/file/ags_file_launch.h>
@@ -66,12 +64,6 @@ void ags_file_get_property(GObject *gobject,
 			   GParamSpec *param_spec);
 void ags_file_finalize(GObject *gobject);
 
-void ags_file_real_open(AgsFile *file);
-void ags_file_real_open_from_data(AgsFile *file,
-				  gchar *data, guint length);
-void ags_file_real_rw_open(AgsFile *file,
-			   gboolean create);
-
 void ags_file_real_write(AgsFile *file);
 void ags_file_real_write_concurrent(AgsFile *file);
 void ags_file_real_write_resolve(AgsFile *file);
@@ -79,17 +71,6 @@ void ags_file_real_write_resolve(AgsFile *file);
 void ags_file_real_read(AgsFile *file);
 void ags_file_real_read_resolve(AgsFile *file);
 void ags_file_real_read_start(AgsFile *file);
-
-/**
- * SECTION:ags_file
- * @short_description: read/write XML file
- * @title: AgsFile
- * @section_id:
- * @include: ags/file/ags_file.h
- *
- * The #AgsFile is an object to read or write files using XML. It
- * is the persisting layer of Advanced Gtk+ Sequencer.
- */
 
 enum{
   PROP_0,
@@ -101,9 +82,6 @@ enum{
 };
 
 enum{
-  OPEN,
-  OPEN_FROM_DATA,
-  RW_OPEN,
   WRITE,
   WRITE_CONCURRENT,
   WRITE_RESOLVE,
@@ -206,43 +184,12 @@ ags_file_class_init(AgsFileClass *file)
 				  param_spec);
 
   /* AgsFileClass */
-  file->open = ags_file_real_open;
-  file->rw_open = ags_file_real_rw_open;
-  file->open_from_data = ags_file_real_open_from_data;
-
   file->write = ags_file_real_write;
   file->write_concurrent = ags_file_real_write_concurrent;
   file->write_resolve = ags_file_real_write_resolve;
   file->read = ags_file_real_read;
   file->read_resolve = ags_file_real_read_resolve;
   file->read_start = ags_file_real_read_start;
-
-  file_signals[OPEN] =
-    g_signal_new("open\0",
-		 G_TYPE_FROM_CLASS(file),
-		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsFileClass, open),
-		 NULL, NULL,
-		 g_cclosure_marshal_VOID__VOID,
-		 G_TYPE_NONE, 0);
-
-  file_signals[OPEN_FROM_DATA] =
-    g_signal_new("open-from-data\0",
-		 G_TYPE_FROM_CLASS(file),
-		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsFileClass, open_from_data),
-		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__STRING_UINT,
-		 G_TYPE_NONE, 0);
-
-  file_signals[RW_OPEN] =
-    g_signal_new("rw-open\0",
-		 G_TYPE_FROM_CLASS(file),
-		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsFileClass, rw_open),
-		 NULL, NULL,
-		 g_cclosure_marshal_VOID__BOOLEAN,
-		 G_TYPE_NONE, 0);
 
   file_signals[WRITE] =
     g_signal_new("write\0",
@@ -304,9 +251,6 @@ ags_file_init(AgsFile *file)
 {
   file->flags = 0;
 
-  file->out = NULL;
-  file->buffer = NULL;
-
   file->filename = NULL;
   file->encoding = AGS_FILE_DEFAULT_ENCODING;
   file->dtd = AGS_FILE_DEFAULT_DTD;
@@ -356,6 +300,7 @@ ags_file_set_property(GObject *gobject,
 	return;
       }
 
+      g_message(filename);
       file->filename = g_strdup(filename);
     }
     break;
@@ -542,9 +487,7 @@ ags_file_find_id_ref_by_xpath(AgsFile *file, gchar *xpath)
   guint i;
 
   if(file == NULL || xpath == NULL || !g_str_has_prefix(xpath, "xpath=\0")){
-    g_message("invalid xpath: %s", xpath);
-
-    return(NULL);
+    return;
   }
 
   xpath = &(xpath[6]);
@@ -630,148 +573,18 @@ ags_file_add_launch(AgsFile *file, GObject *file_launch)
 }
 
 void
-ags_file_real_open(AgsFile *file)
-{
-  if(file == NULL){
-    return;
-  }
-
-  /* parse the file and get the DOM */
-  file->doc = xmlReadFile(file->filename, NULL, 0);
-
-  if(file->doc == NULL){
-    printf("error: could not parse file %s\n", file->filename);
-  }
-
-  /*Get the root element node */
-  file->root_node = xmlDocGetRootElement(file->doc);
-}
-
-void
-ags_file_open(AgsFile *file)
-{
-  g_return_if_fail(AGS_IS_FILE(file));
-
-  g_object_ref(G_OBJECT(file));
-  g_signal_emit(G_OBJECT(file),
-		file_signals[OPEN], 0);
-  g_object_unref(G_OBJECT(file));
-}
-
-void
-ags_file_real_open_from_data(AgsFile *file,
-			     gchar *data, guint length)
-{
-  if(file == NULL){
-    return;
-  }
-
-  file->doc = xmlReadMemory(data, length, file->filename, NULL, 0);
-
-  if(file->doc == NULL) {
-    printf("error: could not parse file %s\n", file->filename);
-  }
-
-  /*Get the root element node */
-  file->root_node = xmlDocGetRootElement(file->doc);
-}
-
-void
-ags_file_open_from_data(AgsFile *file,
-			gchar *data, guint length)
-{
-  g_return_if_fail(AGS_IS_FILE(file));
-
-  g_object_ref(G_OBJECT(file));
-  g_signal_emit(G_OBJECT(file),
-		file_signals[OPEN_FROM_DATA], 0,
-		data, length);
-  g_object_unref(G_OBJECT(file));
-}
-
-void
-ags_file_real_rw_open(AgsFile *file,
-		      gboolean create)
-{
-  if(file == NULL){
-    return;
-  }
-
-  file->out = fopen(file->filename, "w+\0");
-
-  file->doc = xmlNewDoc("1.0\0");
-  file->root_node = xmlNewNode(NULL, "ags\0");
-  xmlDocSetRootElement(file->doc, file->root_node);
-}
-
-void
-ags_file_rw_open(AgsFile *file,
-		 gboolean create)
-{
-  g_return_if_fail(AGS_IS_FILE(file));
-
-  g_object_ref(G_OBJECT(file));
-  g_signal_emit(G_OBJECT(file),
-		file_signals[RW_OPEN], 0,
-		create);
-  g_object_unref(G_OBJECT(file));
-}
-
-void
-ags_file_open_filename(AgsFile *file,
-		       gchar *filename)
-{
-  if(file == NULL){
-    return;
-  }
-
-  if(file->filename != NULL){
-    ags_file_close(file);
-  }
-
-  g_object_set(file,
-	       "filename\0", filename,
-	       NULL);
-  ags_file_open(file);
-}
-
-void
-ags_file_close(AgsFile *file)
-{
-  if(file == NULL){
-    return;
-  }
-
-  if(file->out != NULL){
-    fclose(file->out);
-  }
-  
-  /*free the document */
-  xmlFreeDoc(file->doc);
-
-  /*
-   *Free the global variables that may
-   *have been allocated by the parser.
-   */
-  xmlCleanupParser();
-
-  /*
-   * this is to debug memory for regression tests
-   */
-  xmlMemoryDump();
-
-  file->filename = NULL;
-}
-
-void
 ags_file_real_write(AgsFile *file)
 {
   AgsMain *ags_main;
+  xmlNode *root_node;
+  FILE *file_out;
   GList *list;
+  xmlChar *buffer;
   int size;
 
-  //  ags_file_rw_open(file,
-  //		   TRUE);
+  file->doc = xmlNewDoc("1.0\0");
+  root_node = xmlNewNode(NULL, "ags\0");
+  xmlDocSetRootElement(file->doc, root_node);
 
   /* write clip board */
   //TODO:JK: implement me
@@ -790,7 +603,7 @@ ags_file_real_write(AgsFile *file)
 
   /* write main */
   ags_file_write_main(file,
-		      file->root_node,
+		      root_node,
 		      file->ags_main);
 
   /* write embedded audio */
@@ -809,10 +622,26 @@ ags_file_real_write(AgsFile *file)
    * Dumping document to file
    */
   //  xmlSaveFormatFileEnc(file->filename, file->doc, "UTF-8\0", 1);
-  xmlDocDumpFormatMemoryEnc(file->doc, &(file->buffer), &size, file->encoding, TRUE);
+  xmlDocDumpFormatMemoryEnc(file->doc, &buffer, &size, file->encoding, TRUE);
 
-  fwrite(file->buffer, size, sizeof(xmlChar), file->out);
-  fflush(file->out);
+  file_out = fopen(file->filename, "w+\0");
+  fwrite(buffer, size, sizeof(xmlChar), file_out);
+  fflush(file_out);
+  fclose(file_out);
+
+  /*free the document */
+  xmlFreeDoc(file->doc);
+
+  /*
+   *Free the global variables that may
+   *have been allocated by the parser.
+   */
+  xmlCleanupParser();
+
+  /*
+   * this is to debug memory for regression tests
+   */
+  xmlMemoryDump();
 }
 
 void
@@ -996,8 +825,6 @@ ags_file_real_write_resolve(AgsFile *file)
 {
   GList *list;
 
-  file->lookup = g_list_prepend(file->lookup,
-				NULL);
   list = file->lookup;
 
   while(list != NULL){
@@ -1025,7 +852,15 @@ ags_file_real_read(AgsFile *file)
   xmlNode *root_node, *child;
   pid_t pid_num;
 
-  root_node = file->root_node;
+  /* parse the file and get the DOM */
+  file->doc = xmlReadFile(file->filename, NULL, 0);
+
+  if(file->doc == NULL){
+    printf("error: could not parse file %s\n", file->filename);
+  }
+
+  /*Get the root element node */
+  root_node = xmlDocGetRootElement(file->doc);
 
   /* child elements */
   child = root_node->children;
@@ -1091,6 +926,15 @@ ags_file_real_read(AgsFile *file)
 
   /* start */
   ags_file_read_start(file);
+
+  /*free the document */
+  xmlFreeDoc(file->doc);
+
+  /*
+   *Free the global variables that may
+   *have been allocated by the parser.
+   */
+  xmlCleanupParser();
 }
 
 void
@@ -1109,10 +953,8 @@ ags_file_real_read_resolve(AgsFile *file)
 {
   GList *list;
 
-  file->lookup = g_list_prepend(file->lookup,
-				NULL);
-  list = g_list_reverse(file->lookup);
-  
+  list = file->lookup;
+
   while(list != NULL){
     ags_file_lookup_resolve(AGS_FILE_LOOKUP(list->data));
 
@@ -1136,7 +978,7 @@ ags_file_real_read_start(AgsFile *file)
 {
   GList *list;
 
-  list = g_list_reverse(file->launch);
+  list = file->launch;
 
   while(list != NULL){
     ags_file_launch_start(AGS_FILE_LAUNCH(list->data));
@@ -1326,15 +1168,6 @@ ags_file_write_main(AgsFile *file, xmlNode *parent, GObject *ags_main)
 			AGS_MAIN(ags_main)->window);
 }
 
-/**
- * ags_file_new:
- *
- * Creates an #AgsFile
- *
- * Returns: a new #AgsFile
- *
- * Since: 0.3
- */
 AgsFile*
 ags_file_new()
 {

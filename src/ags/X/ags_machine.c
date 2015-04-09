@@ -23,7 +23,6 @@
 
 #include <ags/main.h>
 
-#include <ags/object/ags_marshal.h>
 #include <ags/object/ags_plugin.h>
 
 #include <ags/thread/ags_audio_loop.h>
@@ -33,15 +32,10 @@
 #include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>
 
-#include <ags/audio/ags_output.h>
 #include <ags/audio/ags_input.h>
 
 #include <ags/audio/file/ags_audio_file.h>
 
-#include <ags/audio/task/ags_init_audio.h>
-#include <ags/audio/task/ags_append_audio.h>
-#include <ags/audio/task/ags_start_devout.h>
-#include <ags/audio/task/ags_cancel_audio.h>
 #include <ags/audio/task/ags_open_file.h>
 
 #include <ags/X/ags_window.h>
@@ -68,26 +62,12 @@ void ags_machine_set_build_id(AgsPlugin *plugin, gchar *build_id);
 static void ags_machine_finalize(GObject *gobject);
 void ags_machine_show(GtkWidget *widget);
 
-void ags_machine_real_map_recall(AgsMachine *machine);
-GList* ags_machine_real_find_port(AgsMachine *machine);
-
 GtkMenu* ags_machine_popup_new(AgsMachine *machine);
-
-/**
- * SECTION:ags_machine
- * @short_description: visualize audio object.
- * @title: AgsMachine
- * @section_id:
- * @include: ags/X/ags_machine.h
- *
- * #AgsMachine is a composite widget to act as base class to visualize #AgsAudio.
- */
 
 #define AGS_DEFAULT_MACHINE "ags-default-machine\0"
 
 enum{
-  MAP_RECALL,
-  FIND_PORT,
+  ADD_DEFAULT_RECALLS,
   LAST_SIGNAL,
 };
 
@@ -163,13 +143,6 @@ ags_machine_class_init(AgsMachineClass *machine)
   gobject->finalize = ags_machine_finalize;
 
   /* properties */
-  /**
-   * AgsMachine:audio:
-   *
-   * The assigned #AgsAudio to visualize.
-   * 
-   * Since: 0.3
-   */
   param_spec = g_param_spec_object("audio\0",
 				   "assigned audio\0",
 				   "The audio it is assigned to\0",
@@ -185,40 +158,16 @@ ags_machine_class_init(AgsMachineClass *machine)
   widget->show = ags_machine_show;
 
   /* AgsMachineClass */
-  machine->map_recall = ags_machine_real_map_recall;
-  machine->find_port = ags_machine_real_find_port;
+  machine->add_default_recalls = NULL;
 
-  /* signals */
-  /**
-   * AgsMachine::map-recall:
-   * @machine: the #AgsMachine
-   *
-   * The ::map-recall should be used to add the machine's default recall.
-   */
-  machine_signals[MAP_RECALL] =
-    g_signal_new("map-recall\0",
+  machine_signals[ADD_DEFAULT_RECALLS] =
+    g_signal_new("add-default-recalls\0",
                  G_TYPE_FROM_CLASS (machine),
                  G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET (AgsMachineClass, map_recall),
+		 G_STRUCT_OFFSET (AgsMachineClass, add_default_recalls),
                  NULL, NULL,
-                 g_cclosure_marshal_VOID__UINT,
+                 g_cclosure_marshal_VOID__VOID,
                  G_TYPE_NONE, 0);
-
-  /**
-   * AgsMachine::find-port:
-   * @machine: the #AgsMachine to resize
-   * Returns: a #GList with associated ports
-   *
-   * The ::find-port as recall should be mapped
-   */
-  machine_signals[FIND_PORT] =
-    g_signal_new("find-port\0",
-		 G_TYPE_FROM_CLASS(machine),
-		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsMachineClass, find_port),
-		 NULL, NULL,
-		 g_cclosure_user_marshal_POINTER__VOID,
-		 G_TYPE_POINTER, 0);
 }
 
 void
@@ -269,15 +218,6 @@ ags_machine_init(AgsMachine *machine)
   g_object_ref(G_OBJECT(machine->audio));
   machine->audio->machine = (GtkWidget *) machine;
 
-  /* AgsAudio */
-  g_signal_connect_after(G_OBJECT(machine->audio), "set_audio_channels\0",
-			 G_CALLBACK(ags_machine_set_audio_channels), machine);
-
-  g_signal_connect_after(G_OBJECT(machine->audio), "set_pads\0",
-			 G_CALLBACK(ags_machine_set_pads), machine);
-  
-  machine->play = NULL;
-
   machine->output = NULL;
   machine->input = NULL;
 
@@ -294,12 +234,9 @@ ags_machine_set_property(GObject *gobject,
 			 const GValue *value,
 			 GParamSpec *param_spec)
 {
-  AgsWindow *window;
   AgsMachine *machine;
 
   machine = AGS_MACHINE(gobject);
-  window = gtk_widget_get_ancestor(machine,
-				   AGS_TYPE_WINDOW);
 
   switch(prop_id){
   case PROP_AUDIO:
@@ -314,14 +251,12 @@ ags_machine_set_property(GObject *gobject,
       if(machine->audio != NULL){
 	GList *pad;
 
-	ags_devout_remove_audio(window->devout,
-				machine->audio);
 	g_object_unref(G_OBJECT(machine->audio));
 
 	if(audio == NULL){
 	  /* destroy pad */
 	  pad = gtk_container_get_children(machine->output);
-	  //	  pad = g_list_nth(pad, audio->output_pads);
+	  pad = g_list_nth(pad, audio->output_pads);
 	  
 	  while(pad != NULL){
 	    gtk_widget_destroy(pad->data);
@@ -330,7 +265,7 @@ ags_machine_set_property(GObject *gobject,
 	  }
 
 	  pad = gtk_container_get_children(machine->input);
-	  //	  pad = g_list_nth(pad, audio->input_pads);
+	  pad = g_list_nth(pad, audio->input_pads);
 	  
 	  while(pad != NULL){
 	    gtk_widget_destroy(pad->data);
@@ -341,7 +276,7 @@ ags_machine_set_property(GObject *gobject,
 	  reset = FALSE;
 	}
       }
-      
+
       if(audio != NULL){
 	g_object_ref(G_OBJECT(audio));
 	machine->audio = audio;
@@ -359,7 +294,7 @@ ags_machine_set_property(GObject *gobject,
 
 	    i = 0;
 
-	    while(pad != NULL && output != NULL){
+	    while(pad != NULL){
 	      line = gtk_container_get_children(GTK_CONTAINER(AGS_PAD(pad->data)->expander_set));
 
 	      ags_pad_resize_lines(AGS_PAD(pad->data), machine->output_line_type,
@@ -374,33 +309,41 @@ ags_machine_set_property(GObject *gobject,
 	    }
 
 	    if(output != NULL){
-	      AgsPad *pad;
+	      if(g_list_length(pad) < audio->output_pads){
+		AgsPad *pad;
 
-	      /* add pad */
-	      for(; i < audio->output_pads; i++){
-		pad = g_object_new(machine->output_pad_type,
-				   "channel\0", output,
-				   NULL);
-		gtk_container_add(machine->output,
-				  GTK_WIDGET(pad));
+		/* add pad */
+		for(; i < audio->output_pads; i++){
+		  pad = g_object_new(machine->output_pad_type,
+				     "channel\0", output,
+				     NULL);
+		  gtk_container_add(machine->output,
+				    GTK_WIDGET(pad));
+	  
+		  ags_pad_resize_lines(pad, machine->output_line_type,
+				       audio->audio_channels, 0);
 
-		ags_pad_resize_lines(pad, machine->output_line_type,
-				     audio->audio_channels, 0);
+		  if(GTK_WIDGET_VISIBLE((GtkWidget *) machine)){
+		    ags_connectable_connect(AGS_CONNECTABLE(pad));
+		  }
+
+		  output = output->next_pad;
+		}
+	      }else if(g_list_length(pad) > audio->output_pads){
+		/* destroy pad */
+		pad = gtk_container_get_children(machine->output);
+		pad = g_list_nth(pad, audio->output_pads);
+
+		while(pad != NULL){
+		  gtk_widget_destroy(pad->data);
+
+		  pad = pad->next;
+		}	      
 	      }
-	    }else{
-	      /* destroy pad */
-	      pad = gtk_container_get_children(machine->output);
-	      pad = g_list_nth(pad, audio->output_pads);
-
-	      while(pad != NULL){
-		gtk_widget_destroy(pad->data);
-
-		pad = pad->next;
-	      }	      
 	    }
 	  }
 
-	  /* set channel and resize for AgsOutput */
+	  /* set channel and resize for AgsInput */
 	  if(machine->input_pad_type != G_TYPE_NONE){
 	    input = audio->input;
 	    pad = gtk_container_get_children(machine->input);
@@ -422,29 +365,37 @@ ags_machine_set_property(GObject *gobject,
 	    }
 
 	    if(input != NULL){
-	      AgsPad *pad;
+	      if(g_list_length(pad) < audio->input_pads){
+		AgsPad *pad;
 
-	      /* add pad */
-	      for(; i < audio->input_pads; i++){
-		pad = g_object_new(machine->input_pad_type,
-				   "channel\0", input,
-				   NULL);
-		gtk_container_add(machine->input,
-				  GTK_WIDGET(pad));
+		/* add pad */
+		for(; i < audio->input_pads; i++){
+		  pad = g_object_new(machine->input_pad_type,
+				     "channel\0", input,
+				     NULL);
+		  gtk_container_add(machine->input,
+				    GTK_WIDGET(pad));
 
-		ags_pad_resize_lines(pad, machine->input_line_type,
-				     audio->audio_channels, 0);
+		  ags_pad_resize_lines(pad, machine->input_line_type,
+				       audio->audio_channels, 0);
+
+		  if(GTK_WIDGET_VISIBLE((GtkWidget *) machine)){
+		    ags_connectable_connect(AGS_CONNECTABLE(pad));
+		  }
+
+		  input = input->next_pad;
+		}
+	      }else if(g_list_length(pad) > audio->input_pads){
+		/* destroy pad */
+		pad = gtk_container_get_children(machine->input);
+		pad = g_list_nth(pad, audio->input_pads);
+
+		while(pad != NULL){
+		  gtk_widget_destroy(pad->data);
+
+		  pad = pad->next;
+		}	      
 	      }
-	    }else{
-	      /* destroy pad */
-	      pad = gtk_container_get_children(machine->input);
-	      pad = g_list_nth(pad, audio->input_pads);
-
-	      while(pad != NULL){
-		gtk_widget_destroy(pad->data);
-
-		pad = pad->next;
-	      }	      
 	    }
 	  }
 	}else{
@@ -461,7 +412,9 @@ ags_machine_set_property(GObject *gobject,
 				 "channel\0", channel,
 				 NULL);
 	      gtk_container_add(machine->output,
-				GTK_WIDGET(pad));	  
+				GTK_WIDGET(pad));
+	      ags_connectable_connect(AGS_CONNECTABLE(pad));
+	  
 	      ags_pad_resize_lines(pad, machine->output_line_type,
 				   audio->audio_channels, 0);
 
@@ -478,6 +431,8 @@ ags_machine_set_property(GObject *gobject,
 				 NULL);
 	      gtk_container_add(machine->output,
 				GTK_WIDGET(pad));
+	      ags_connectable_connect(AGS_CONNECTABLE(pad));
+
 	      ags_pad_resize_lines(pad, machine->input_line_type,
 				   audio->audio_channels, 0);
 
@@ -525,26 +480,11 @@ ags_machine_connect(AgsConnectable *connectable)
   /* AgsMachine */
   machine = AGS_MACHINE(connectable);
 
-  if((AGS_MACHINE_CONNECTED & (machine->flags)) != 0){
-    return;
-  }
+  if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) == 0 &&
+     (AGS_MACHINE_PREMAPPED_RECALL & (machine->flags)) == 0){
+    machine->flags |= AGS_MACHINE_MAPPED_RECALL;
 
-  machine->flags |= AGS_MACHINE_CONNECTED;
-
-  if((AGS_MACHINE_PREMAPPED_RECALL & (machine->flags)) == 0){
-    if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) == 0){
-      ags_machine_map_recall(machine);
-    }
-  }else{
-    //    machine->flags &= ~AGS_MACHINE_PREMAPPED_RECALL;
-    g_message("find port\0");
-
-    ags_machine_find_port(machine);
-  }
-
-  if(machine->play != NULL){
-    g_signal_connect(G_OBJECT(machine->play), "clicked\0",
-		     G_CALLBACK(ags_machine_play_callback), (gpointer) machine);
+    ags_machine_add_default_recalls(machine);
   }
 
   /* GtkWidget */
@@ -572,13 +512,6 @@ ags_machine_connect(AgsConnectable *connectable)
       pad_list = pad_list->next;
     }
   }
-
-  /* audio */
-  g_signal_connect_after(machine->audio, "tact\0",
-			 G_CALLBACK(ags_machine_tact_callback), machine);
-
-  g_signal_connect_after(machine->audio, "done\0",
-			 G_CALLBACK(ags_machine_done_callback), machine);
 }
 
 void
@@ -653,45 +586,16 @@ ags_machine_show(GtkWidget *widget)
 }
 
 void
-ags_machine_real_map_recall(AgsMachine *machine)
-{
-  if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0){
-    return;
-  }
-
-  machine->flags |= AGS_MACHINE_MAPPED_RECALL;
-
-  ags_machine_find_port(machine);
-}
-
-/**
- * ags_machine_map_recall:
- * @machine: the #AgsMachine to add its default recall.
- *
- * You may want the @machine to add its default recall.
- */
-void
-ags_machine_map_recall(AgsMachine *machine)
+ags_machine_add_default_recalls(AgsMachine *machine)
 {
   g_return_if_fail(AGS_IS_MACHINE(machine));
 
   g_object_ref((GObject *) machine);
   g_signal_emit((GObject *) machine,
-		machine_signals[MAP_RECALL], 0);
+		machine_signals[ADD_DEFAULT_RECALLS], 0);
   g_object_unref((GObject *) machine);
 }
 
-/**
- * ags_machine_get_possible_links:
- * @machine: the #AgsMachine
- *
- * Find links suitable for @machine.
- *
- * Returns: a #GtkListStore containing one column with a string representing
- * machines by its type and name.
- *
- * Since: 0.4
- */
 GtkListStore*
 ags_machine_get_possible_links(AgsMachine *machine)
 {
@@ -728,15 +632,6 @@ ags_machine_get_possible_links(AgsMachine *machine)
   return(model);
 }
 
-/**
- * ags_machine_find_by_name:
- * @list: a #GList of #AgsMachine
- * @name: the name of machine
- *
- * Find the specified by @name machine.
- *
- * Since: 0.3
- */
 AgsMachine*
 ags_machine_find_by_name(GList *list, char *name)
 {
@@ -750,330 +645,28 @@ ags_machine_find_by_name(GList *list, char *name)
   return(NULL);
 }
 
-GList*
-ags_machine_real_find_port(AgsMachine *machine)
-{
-  AgsAudio *audio;
-  GList *list;
-  
-  audio = machine->audio;
-
-  return(ags_audio_find_port(audio));
-}
-
-/**
- * ags_machine_find_port:
- * @machine: the #AgsMachine
- * Returns: an #GList containing all related #AgsPort
- *
- * Lookup ports of associated recalls.
- *
- * Since: 0.4
- */
-GList*
+void
 ags_machine_find_port(AgsMachine *machine)
 {
-  GList *list;
-
-  list = NULL;
-  g_return_val_if_fail(AGS_IS_MACHINE(machine),
-		       NULL);
-
-  g_object_ref((GObject *) machine);
-  g_signal_emit((GObject *) machine,
-		machine_signals[FIND_PORT], 0,
-		&list);
-  g_object_unref((GObject *) machine);
-
-  return(list);
-}
-
-/**
- * ags_machine_set_run:
- * @machine: the #AgsMachine
- * @run: if %TRUE playback is started, otherwise stopped
- *
- * Start/stop playback of @machine.
- *
- * Since: 0.4
- */
-void
-ags_machine_set_run(AgsMachine *machine,
-		    gboolean run)
-{
-  AgsWindow *window;
-  AgsThread *task_thread;
-
-  window = (AgsWindow *) gtk_widget_get_toplevel(machine);
-  task_thread = (AgsTaskThread *) AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->task_thread;
-
-  if(run){
-    AgsInitAudio *init_audio;
-    AgsAppendAudio *append_audio;
-    AgsStartDevout *start_devout;
-    GList *list;
-
-    list = NULL;
-
-    /* create init task */
-    init_audio = ags_init_audio_new(machine->audio,
-				    FALSE, TRUE, FALSE);
-    list = g_list_prepend(list, init_audio);
-    
-    /* create append task */
-    append_audio = ags_append_audio_new(G_OBJECT(AGS_MAIN(window->ags_main)->main_loop),
-					(GObject *) machine->audio);
-      
-    list = g_list_prepend(list, append_audio);
-
-    /* create start task */
-    if(list != NULL){
-      start_devout = ags_start_devout_new(window->devout);
-      g_signal_connect_after(G_OBJECT(start_devout), "failure\0",
-			     G_CALLBACK(ags_machine_start_failure_callback), machine);
-      list = g_list_prepend(list, start_devout);
-
-      /* append AgsStartDevout */
-      list = g_list_reverse(list);
-
-      ags_task_thread_append_tasks(task_thread,
-				   list);
-    }
-  }else{
-    AgsCancelAudio *cancel_audio;
-
-    /* create append task */
-    cancel_audio = ags_cancel_audio_new(machine->audio,
-					FALSE, TRUE, FALSE);
-    
-    /* append AgsCancelAudio */
-    ags_task_thread_append_task(task_thread,
-				cancel_audio);
-  }
-}
-
-void
-ags_machine_set_audio_channels(AgsAudio *audio,
-			       guint audio_channels, guint audio_channels_old,
-			       AgsMachine *machine)
-{
-  AgsChannel *channel;
-  GList *list_output_pad, *list_output_pad_start;
-  GList *list_input_pad, *list_input_pad_start;
-  GList *list_output_pad_next, *list_output_pad_next_start;
-  GList *list_input_pad_next, *list_input_pad_next_start;
-  guint i, j;
+  GList *pad;
   
-  if(audio_channels > audio_channels_old){
-    /* grow lines */
-    AgsPad *pad;
-    GList *list, *list_start;
+  pad = gtk_container_get_children(GTK_CONTAINER(machine->output));
 
-    /* AgsInput */
-    if(machine->input != NULL){
-      list_input_pad = gtk_container_get_children((GtkContainer *) machine->input);
-      channel = audio->input;
+  while(pad != NULL){
+    ags_pad_find_port(AGS_PAD(pad->data));
 
-      for(i = 0; i < audio->input_pads; i++){
-	if(audio_channels_old == 0){
-	  /* create AgsPad's if necessary */
-	  pad = g_object_new(machine->input_pad_type,
-			     "channel\0", channel,
-			     NULL);
-	  gtk_box_pack_start((GtkBox *) machine->input,
-			     (GtkWidget *) pad,
-			     FALSE, FALSE,
-			     0);
+    pad = pad->next;
+  }
 
-	  ags_pad_resize_lines((AgsPad *) pad, machine->input_line_type,
-			       audio->audio_channels, 0);
-	}else{
-	  pad = AGS_PAD(list_input_pad->data);
+  pad = gtk_container_get_children(GTK_CONTAINER(machine->input));
 
-	  ags_pad_resize_lines((AgsPad *) pad, machine->input_line_type,
-			       audio_channels, audio_channels_old);
-	}
+  while(pad != NULL){
+    ags_pad_find_port(AGS_PAD(pad->data));
 
-	channel = channel->next_pad;
-
-	if(audio_channels_old != 0){
-	  list_input_pad = list_input_pad->next;
-	}
-      }
-
-      g_list_free(list_input_pad_start);
-    }
-
-    /* AgsOutput */
-    if(machine->output != NULL){
-      list_output_pad = gtk_container_get_children((GtkContainer *) machine->output);
-      channel = audio->output;
-
-      for(i = 0; i < audio->output_pads; i++){
-	if(audio_channels_old == 0){
-	  /* create AgsPad's if necessary */
-	  pad = g_object_new(machine->output_pad_type,
-			     "channel\0", channel,
-			     NULL);
-	  gtk_box_pack_start((GtkBox *) machine->output,
-			     (GtkWidget *) pad,
-			     FALSE, FALSE,
-			     0);
-	  ags_pad_resize_lines((AgsPad *) pad, machine->output_line_type,
-			       AGS_AUDIO(channel->audio)->audio_channels, 0);
-	}else{
-	  pad = AGS_PAD(list_output_pad->data);
-
-	  ags_pad_resize_lines((AgsPad *) pad, machine->input_line_type,
-			       audio_channels, audio_channels_old);
-	}
-
-	channel = channel->next_pad;
-
-	if(audio_channels_old != 0){
-	  list_output_pad = list_output_pad->next;
-	}
-      }
-
-      g_list_free(list_output_pad_start);
-    }
-  }else if(audio_channels < audio_channels_old){
-    /* shrink lines */
-
-    list_output_pad_start = 
-      list_output_pad = gtk_container_get_children((GtkContainer *) machine->output);
-
-    list_input_pad_start = 
-      list_input_pad = gtk_container_get_children((GtkContainer *) machine->input);
-
-    if(audio_channels == 0){
-      /* AgsInput */
-      while(list_input_pad != NULL){
-	list_input_pad_next = list_input_pad->next;
-
-	gtk_widget_destroy(GTK_WIDGET(list_input_pad->data));
-
-	list_input_pad->next = list_input_pad_next;
-      }
-
-      /* AgsOutput */
-      while(list_output_pad != NULL){
-	list_output_pad_next = list_output_pad->next;
-
-	gtk_widget_destroy(GTK_WIDGET(list_output_pad->data));
-
-	list_output_pad->next = list_output_pad_next;
-      }
-    }else{
-      /* AgsInput */
-      for(i = 0; list_input_pad != NULL; i++){
-	ags_pad_resize_lines(AGS_PAD(list_input_pad->data), machine->input_pad_type,
-			     audio_channels, audio_channels_old);
-
-	list_input_pad = list_input_pad->next;
-      }
-
-      /* AgsOutput */
-      for(i = 0; list_output_pad != NULL; i++){
-	ags_pad_resize_lines(AGS_PAD(list_output_pad->data), machine->output_pad_type,
-			     audio_channels, audio_channels_old);
-
-	list_output_pad = list_output_pad->next;
-      }
-    }
-
-    if(list_output_pad_start)
-      g_list_free(list_output_pad_start);
-
-    if(list_input_pad_start)
-      g_list_free(list_input_pad_start);
-  }  
-}
-
-void
-ags_machine_set_pads(AgsAudio *audio, GType type,
-		     guint pads, guint pads_old,
-		     AgsMachine *machine)
-{
-  AgsPad *pad;
-  AgsChannel *channel;
-  guint i, j;
-
-  if(pads_old < pads){
-    /* input  */
-    if(machine->input != NULL){
-      if(type == AGS_TYPE_INPUT){
-	channel = ags_channel_nth(audio->input,
-				  pads_old * audio->audio_channels);
-      
-	for(i = pads_old; i < pads; i++){
-	  pad = g_object_new(machine->input_pad_type,
-			     "channel\0", channel,
-			     NULL);
-	  gtk_box_pack_start((GtkBox *) machine->input,
-			     (GtkWidget *) pad, FALSE, FALSE, 0);
-	  ags_pad_resize_lines((AgsPad *) pad, machine->input_line_type,
-			       audio->audio_channels, 0);
-	  channel = channel->next_pad;
-	}
-      }
-    }  
-    /* output */
-    if(machine->output != NULL){
-      if(type == AGS_TYPE_OUTPUT){
-	channel = ags_channel_nth(audio->output,
-				  pads_old * audio->audio_channels);
-    
-	for(i = pads_old; i < pads; i++){
-	  pad = g_object_new(machine->output_pad_type,
-			     "channel\0", channel,
-			     NULL);
-	  gtk_box_pack_start((GtkBox *) machine->output, (GtkWidget *) pad, FALSE, FALSE, 0);
-	  ags_pad_resize_lines((AgsPad *) pad, machine->output_line_type,
-			       audio->audio_channels, 0);
-      
-	  channel = channel->next_pad;
-	}
-      }
-    }
-  }else if(pads_old > pads){
-    GList *list, *list_next;
-
-    /* input - destroy AgsPad's */
-    list = gtk_container_get_children(GTK_CONTAINER(machine->input));
-    list = g_list_nth(list, pads);
-
-    while(list != NULL){
-      list_next = list->next;
-
-      gtk_widget_destroy(GTK_WIDGET(list->data));
-
-      list = list_next;
-    }
-
-    /* output - destroy AgsPad's */
-    list = gtk_container_get_children(GTK_CONTAINER(machine->output));
-    list = g_list_nth(list, pads);
-
-    while(list != NULL){
-      list_next = list->next;
-
-      gtk_widget_destroy(GTK_WIDGET(list->data));
-
-      list = list_next;
-    }
+    pad = pad->next;
   }
 }
 
-/**
- * ags_machine_file_chooser_dialog_new:
- * @machine: the #AgsMachine
- *
- * Creates a new machine file chooser dialog in order to
- * open audio files.
- *
- * Since: 0.4
- */
 GtkFileChooserDialog*
 ags_machine_file_chooser_dialog_new(AgsMachine *machine)
 {
@@ -1101,17 +694,6 @@ ags_machine_file_chooser_dialog_new(AgsMachine *machine)
   return(file_chooser);
 }
 
-/**
- * ags_machine_open_files:
- * @machine: the #AgsMachine
- * @filenames: the filenames
- * @overwrite_channels: reset channels
- * @create_channels: instantiate new channels
- *
- * Opens audio files and modifies or creates new channels if wished.
- *
- * Since: 0.4
- */
 void
 ags_machine_open_files(AgsMachine *machine,
 		       GSList *filenames,
@@ -1130,16 +712,6 @@ ags_machine_open_files(AgsMachine *machine,
 
 }
 
-/**
- * ags_machine_new:
- * @devout: the assigned devout.
- *
- * Creates an #AgsMachine
- *
- * Returns: a new #AgsMachine
- *
- * Since: 0.3
- */
 AgsMachine*
 ags_machine_new(GObject *devout)
 {
@@ -1158,22 +730,12 @@ ags_machine_new(GObject *devout)
   return(machine);
 }
 
-/**
- * ags_machine_popup_new:
- * @machine: the assigned machine.
- *
- * Creates #GtkMenu to use as @machine's popup context menu.
- *
- * Returns: a new #GtkMenu containing basic actions.
- *
- * Since: 0.3
- */
 GtkMenu*
 ags_machine_popup_new(AgsMachine *machine)
 {
   GtkMenu *popup;
   GtkMenuItem *item;
-  GList *list, *list_start;
+  GList *list;
 
   popup = (GtkMenu *) gtk_menu_new();
 
@@ -1198,8 +760,7 @@ ags_machine_popup_new(AgsMachine *machine)
   item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("properties\0"));
   gtk_menu_shell_append((GtkMenuShell *) popup, (GtkWidget*) item);
 
-  list_start = 
-    list = gtk_container_get_children((GtkContainer *) popup);
+  list = gtk_container_get_children((GtkContainer *) popup);
 
   g_signal_connect((GObject*) list->data, "activate\0",
 		   G_CALLBACK(ags_machine_popup_move_up_activate_callback), (gpointer) machine);
@@ -1228,7 +789,6 @@ ags_machine_popup_new(AgsMachine *machine)
   g_signal_connect((GObject*) list->data, "activate\0",
 		   G_CALLBACK(ags_machine_popup_properties_activate_callback), (gpointer) machine);
 
-  g_list_free(list_start);
   gtk_widget_show_all((GtkWidget*) popup);
 
   return(popup);

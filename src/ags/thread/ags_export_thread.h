@@ -22,13 +22,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#ifdef AGS_USE_LINUX_THREADS
-#include <ags/thread/ags_thread-kthreads.h>
-#else
-#include <ags/thread/ags_thread-posix.h>
-#endif 
-
-#include <ags/audio/file/ags_audio_file.h>
+#include <ags/thread/ags_thread.h>
 
 #define AGS_TYPE_EXPORT_THREAD                (ags_export_thread_get_type())
 #define AGS_EXPORT_THREAD(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_EXPORT_THREAD, AgsExportThread))
@@ -37,8 +31,7 @@
 #define AGS_IS_EXPORT_THREAD_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_EXPORT_THREAD))
 #define AGS_EXPORT_THREAD_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_EXPORT_THREAD, AgsExportThreadClass))
 
-#define AGS_EXPORT_THREAD_DEFAULT_JIFFIE (48.0) // same as devout thread
-#define AGS_EXPORT_THREAD_BUFFER_TIME (1.0 / (AGS_DEVOUT_DEFAULT_FORMAT / 8))
+#define AGS_EXPORT_THREAD_DEFAULT_JIFFIE (100)
 
 typedef struct _AgsExportThread AgsExportThread;
 typedef struct _AgsExportThreadClass AgsExportThreadClass;
@@ -52,9 +45,6 @@ struct _AgsExportThread
   AgsThread thread;
 
   guint flags;
-
-  guint tic;
-  guint counter;
 
   AgsAudioFile *audio_file;
 };

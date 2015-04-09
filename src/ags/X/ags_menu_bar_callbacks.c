@@ -34,7 +34,6 @@
 #include <ags/audio/task/ags_add_audio.h>
 
 #include <ags/X/ags_window.h>
-#include <ags/X/ags_export_window.h>
 
 #include <ags/X/machine/ags_panel.h>
 #include <ags/X/machine/ags_mixer.h>
@@ -99,13 +98,20 @@ ags_menu_bar_open_ok_callback(GtkWidget *widget, AgsMenuBar *menu_bar)
 
   error = NULL;
 
-  g_spawn_command_line_async(g_strdup_printf("./ags --filename %s\0",
-					     filename),
-			     &error);
+  g_shell_parse_argv(g_strdup_printf("./ags --filename %s\0",
+				     filename),
+		     NULL, &argv, NULL);
+  g_spawn_async(NULL,
+		argv,
+		NULL,
+		0,
+		NULL,
+		NULL,
+		NULL,
+		&error);
+  g_strfreev(argv);
 
   gtk_widget_destroy(file_selection);
-
-  g_free(filename);
 }
 
 void
@@ -130,10 +136,7 @@ ags_menu_bar_save_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 				  "main\0", window->ags_main,
 				  "filename\0", g_strdup(window->name),
 				  NULL);
-  ags_file_rw_open(file,
-		   TRUE);
   ags_file_write(file);
-  ags_file_close(file);
   g_object_unref(G_OBJECT(file));
 }
 
@@ -167,7 +170,7 @@ ags_menu_bar_save_as_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 
     file = (AgsFile *) g_object_new(AGS_TYPE_FILE,
 				    "main\0", window->ags_main,
-				    "filename\0", filename,
+				    "filename\0", g_strdup(filename),
 				    NULL);
 
     save_file = ags_save_file_new(file);
@@ -176,16 +179,6 @@ ags_menu_bar_save_as_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   }
 
   gtk_widget_destroy((GtkWidget *) file_chooser);
-}
-
-void
-ags_menu_bar_export_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
-{
-  AgsWindow *window;
-
-  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) menu_bar);
-
-  gtk_widget_show_all(window->export_window);
 }
 
 void
@@ -258,15 +251,17 @@ ags_menu_bar_add_panel_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 		     GTK_WIDGET(panel),
 		     FALSE, FALSE, 0);
 
+  ags_connectable_connect(AGS_CONNECTABLE(panel));
+
+  gtk_widget_show_all(GTK_WIDGET(panel));
+
   AGS_MACHINE(panel)->audio->audio_channels = 2;
   ags_audio_set_pads(AGS_MACHINE(panel)->audio,
 		     AGS_TYPE_INPUT, 1);
   ags_audio_set_pads(AGS_MACHINE(panel)->audio,
 		     AGS_TYPE_OUTPUT, 1);
 
-  ags_connectable_connect(AGS_CONNECTABLE(panel));
-
-  gtk_widget_show_all(GTK_WIDGET(panel));
+  ags_machine_find_port(AGS_MACHINE(panel));
 }
 
 void
@@ -289,15 +284,17 @@ ags_menu_bar_add_mixer_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 		     GTK_WIDGET(mixer),
 		     FALSE, FALSE, 0);
 
+  ags_connectable_connect(AGS_CONNECTABLE(mixer));
+
+  gtk_widget_show_all(GTK_WIDGET(mixer));
+
   mixer->machine.audio->audio_channels = 2;
   ags_audio_set_pads(mixer->machine.audio,
 		     AGS_TYPE_INPUT, 8);
   ags_audio_set_pads(mixer->machine.audio,
 		     AGS_TYPE_OUTPUT, 1);
 
-  ags_connectable_connect(AGS_CONNECTABLE(mixer));
-
-  gtk_widget_show_all(GTK_WIDGET(mixer));
+  ags_machine_find_port(AGS_MACHINE(mixer));
 }
 
 void
@@ -315,10 +312,16 @@ ags_menu_bar_add_drum_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 				AGS_MACHINE(drum)->audio);
   ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->task_thread),
 			      AGS_TASK(add_audio));
-
+  
   gtk_box_pack_start((GtkBox *) window->machines,
 		     GTK_WIDGET(drum),
 		     FALSE, FALSE, 0);
+
+  /* connect everything */
+  ags_connectable_connect(AGS_CONNECTABLE(drum));
+
+  /* */
+  gtk_widget_show_all(GTK_WIDGET(drum));
 
   /* */
   drum->machine.audio->audio_channels = 2;
@@ -327,11 +330,7 @@ ags_menu_bar_add_drum_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   ags_audio_set_pads(drum->machine.audio, AGS_TYPE_INPUT, 8);
   ags_audio_set_pads(drum->machine.audio, AGS_TYPE_OUTPUT, 1);
 
-  /* connect everything */
-  ags_connectable_connect(AGS_CONNECTABLE(drum));
-
-  /* */
-  gtk_widget_show_all(GTK_WIDGET(drum));
+  ags_machine_find_port(AGS_MACHINE(drum));
 }
 
 void
@@ -353,7 +352,13 @@ ags_menu_bar_add_matrix_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   gtk_box_pack_start((GtkBox *) window->machines,
 		     GTK_WIDGET(matrix),
 		     FALSE, FALSE, 0);
-  
+
+  /* connect everything */
+  ags_connectable_connect(AGS_CONNECTABLE(matrix));
+
+  /* */
+  gtk_widget_show_all(GTK_WIDGET(matrix));
+
   /* */
   matrix->machine.audio->audio_channels = 1;
 
@@ -361,11 +366,7 @@ ags_menu_bar_add_matrix_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   ags_audio_set_pads(matrix->machine.audio, AGS_TYPE_INPUT, 78);
   ags_audio_set_pads(matrix->machine.audio, AGS_TYPE_OUTPUT, 1);
 
-  /* connect everything */
-  ags_connectable_connect(AGS_CONNECTABLE(matrix));
-
-  /* */
-  gtk_widget_show_all(GTK_WIDGET(matrix));
+  ags_machine_find_port(AGS_MACHINE(matrix));
 }
 
 void
@@ -388,13 +389,15 @@ ags_menu_bar_add_synth_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 		     (GtkWidget *) synth,
 		     FALSE, FALSE, 0);
 
+  ags_connectable_connect(AGS_CONNECTABLE(synth));
+
+  gtk_widget_show_all((GtkWidget *) synth);
+
   synth->machine.audio->audio_channels = 1;
   ags_audio_set_pads((AgsAudio*) synth->machine.audio, AGS_TYPE_INPUT, 2);
   ags_audio_set_pads((AgsAudio*) synth->machine.audio, AGS_TYPE_OUTPUT, 78);
 
-  ags_connectable_connect(AGS_CONNECTABLE(synth));
-
-  gtk_widget_show_all((GtkWidget *) synth);
+  ags_machine_find_port(AGS_MACHINE(synth));
 }
 
 void
@@ -417,13 +420,16 @@ ags_menu_bar_add_ffplayer_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 		     (GtkWidget *) ffplayer,
 		     FALSE, FALSE, 0);
 
-    //  ffplayer->machine.audio->frequence = ;
+  ags_connectable_connect(AGS_CONNECTABLE(ffplayer));
+
+  gtk_widget_show_all((GtkWidget *) ffplayer);
+
+  //  ffplayer->machine.audio->frequence = ;
   ffplayer->machine.audio->audio_channels = 2;
   ags_audio_set_pads(AGS_MACHINE(ffplayer)->audio, AGS_TYPE_INPUT, 78);
   ags_audio_set_pads(AGS_MACHINE(ffplayer)->audio, AGS_TYPE_OUTPUT, 1);
 
-  ags_connectable_connect(AGS_CONNECTABLE(ffplayer));
-  gtk_widget_show_all((GtkWidget *) ffplayer);
+  ags_machine_find_port(AGS_MACHINE(ffplayer));
 }
 
 
@@ -480,8 +486,7 @@ ags_menu_bar_about_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 			"program-name\0", "ags\0",
 			"authors\0", authors,
 			"license\0", license,
-			"version\0", AGS_VERSION,
-			"website\0", "http://ags.sf.net\0",
+			"version\0", "0.3.99-SNAPSHOT\0",
 			"title\0", "Advanced Gtk+ Sequencer\0",
 			"logo\0", logo,
 			NULL);

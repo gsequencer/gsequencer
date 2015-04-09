@@ -27,7 +27,6 @@
 #include <libxml/tree.h>
 
 #include <ags/file/ags_file.h>
-#include <ags/file/ags_file_lookup.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_menu_bar.h>
@@ -47,7 +46,6 @@
 
 #include <ags/X/editor/ags_toolbar.h>
 #include <ags/X/editor/ags_machine_selector.h>
-#include <ags/X/editor/ags_machine_radio_button.h>
 #include <ags/X/editor/ags_notebook.h>
 
 #include <ags/X/machine/ags_panel.h>
@@ -82,9 +80,6 @@ xmlNode* ags_file_write_machine(AgsFile *file, xmlNode *parent, AgsMachine *mach
 
 void ags_file_read_machine_list(AgsFile *file, xmlNode *node, GList **machine);
 xmlNode* ags_file_write_machine_list(AgsFile *file, xmlNode *parent, GList *machine);
-
-void ags_file_read_machine_resolve_audio(AgsFileLookup *file_lookup,
-					 AgsMachine *machine);
 
 /* AgsPad */
 void ags_file_read_pad(AgsFile *file, xmlNode *node, AgsPad **pad);

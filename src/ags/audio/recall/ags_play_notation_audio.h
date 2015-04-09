@@ -39,7 +39,6 @@ struct _AgsPlayNotationAudio
   AgsRecallAudio recall_audio;
 
   AgsPort *notation;
-  AgsPort *monotonic;
 };
 
 struct _AgsPlayNotationAudioClass

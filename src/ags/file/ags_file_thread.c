@@ -79,14 +79,14 @@ ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread)
       thread_type_is_registered = TRUE;
     }
 
+    if(type == AGS_TYPE_RETURNABLE_THREAD){
+      return;
+    }
+
     type_name = xmlGetProp(node,
 			   AGS_FILE_TYPE_PROP);
 
     type = g_type_from_name(type_name);
-
-    if(type == AGS_TYPE_RETURNABLE_THREAD){
-      return;
-    }
 
     gobject = g_object_new(type,
 			   NULL);
@@ -107,17 +107,15 @@ ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread)
 				   "reference\0", gobject,
 				   NULL));
 
-  g_atomic_int_set(&(gobject->flags),
-		   ((~(AGS_THREAD_WAIT_0 |
-		       AGS_THREAD_WAIT_1 |
-		       AGS_THREAD_WAIT_2 |
-		       AGS_THREAD_RUNNING)) & (guint) g_ascii_strtoull(xmlGetProp(node,
-										  AGS_FILE_FLAGS_PROP),
-								       NULL,
-								       16)));
+  gobject->flags = (guint) g_ascii_strtoull(xmlGetProp(node,
+						       AGS_FILE_FLAGS_PROP),
+					    NULL,
+					    16);
 
   /* start */
-  if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(gobject->flags)))) != 0){
+  if((AGS_THREAD_RUNNING & (gobject->flags)) != 0){
+    gobject->flags &= (~AGS_THREAD_RUNNING);
+
     //FIXME:JK: workaround file setting AGS_THREAD_RUNNING is just ignored
     if(AGS_IS_AUDIO_LOOP(gobject)){
       file_launch = (AgsFileLaunch *) g_object_new(AGS_TYPE_FILE_LAUNCH,
@@ -152,9 +150,10 @@ ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread)
     
 	  /* task thread */
 	  xpath_context = xmlXPathNewContext(file->doc);
-	  xpath_context->node = child;
 	  //	  xmlXPathSetContextNode(child,
 	  //			 xpath_context);
+	  xpath_context = child;
+
 	  xpath_object = xmlXPathCompiledEval(xmlXPathCompile("./ags-thread[@type='AgsTaskThread']\0"),
 					      xpath_context);
 	    //xmlXPathNodeEval(child,
@@ -169,7 +168,7 @@ ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread)
 
 	  /* devout thread */
 	  xpath_context = xmlXPathNewContext(file->doc);
-	  xpath_context->node = child;
+
 	  xpath_object = xmlXPathCompiledEval(xmlXPathCompile("./ags-thread[@type='AgsDevoutThread']\0"),
 					      xpath_context);
 
@@ -181,7 +180,6 @@ ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread)
 
 	  /* timestamp thread */
 	  xpath_context = xmlXPathNewContext(file->doc);
-	  xpath_context->node = child;
 	  xpath_object = xmlXPathCompiledEval(xmlXPathCompile("./ags-thread[@type='AgsDevoutThread']/ags-thread-list/ags-thread[@type='AgsTimestampThread']\0"),
 					      xpath_context);
 
@@ -193,7 +191,7 @@ ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread)
 
 	  /* gui thread */
 	  xpath_context = xmlXPathNewContext(file->doc);
-	  xpath_context->node = child;
+
 	  xpath_object = xmlXPathCompiledEval(xmlXPathCompile("./ags-thread[@type='AgsGuiThread']\0"),
 					      xpath_context);
 
@@ -256,16 +254,6 @@ ags_file_read_thread_start(AgsFileLaunch *file_launch, AgsThread *thread)
 {
   thread->flags &= (~AGS_THREAD_RUNNING);
   ags_thread_start(thread);
-
-  pthread_mutex_lock(&(thread->start_mutex));
-
-  while((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) == 0){
-    pthread_cond_wait(&(thread->start_cond),
-		      &(thread->start_mutex));
-    
-  }
-
-  pthread_mutex_unlock(&(thread->start_mutex));
 }
 
 xmlNode*

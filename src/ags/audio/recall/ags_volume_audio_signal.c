@@ -53,16 +53,6 @@ AgsRecall* ags_volume_audio_signal_duplicate(AgsRecall *recall,
 					     AgsRecallID *recall_id,
 					     guint *n_params, GParameter *parameter);
 
-/**
- * SECTION:ags_volume_audio_signal
- * @short_description: volumes audio signal
- * @title: AgsVolumeAudioSignal
- * @section_id:
- * @include: ags/audio/recall/ags_volume_audio_signal.h
- *
- * The #AgsVolumeAudioSignal class volumes the audio signal.
- */
-
 enum{
   PROP_0,
   PROP_VOLUME,
@@ -137,6 +127,7 @@ ags_volume_audio_signal_class_init(AgsVolumeAudioSignalClass *volume_audio_signa
   recall = (AgsRecallClass *) volume_audio_signal;
 
   recall->run_inter = ags_volume_audio_signal_run_inter;
+  recall->duplicate = ags_volume_audio_signal_duplicate;
 }
 
 void
@@ -222,24 +213,27 @@ ags_volume_audio_signal_run_inter(AgsRecall *recall)
   volume_audio_signal = AGS_VOLUME_AUDIO_SIGNAL(recall);
 
   if(AGS_RECALL_AUDIO_SIGNAL(recall)->source->stream_current != NULL){
+    AgsDevout *devout;
     AgsVolumeChannel *volume_channel;
     signed short *buffer;
     gdouble volume;
-    guint buffer_size;
     guint i;
     GValue value = {0,};
+
+    return;
+
+    devout = AGS_DEVOUT(AGS_RECALL_AUDIO_SIGNAL(recall)->source->devout);
 
     volume_channel = AGS_VOLUME_CHANNEL(AGS_RECALL_CHANNEL_RUN(recall->parent->parent)->recall_channel);
 
     buffer = (signed short *) AGS_RECALL_AUDIO_SIGNAL(recall)->source->stream_current->data;
-    buffer_size = AGS_RECALL_AUDIO_SIGNAL(recall)->source->buffer_size;
 
     g_value_init(&value, G_TYPE_DOUBLE);
     ags_port_safe_read(volume_channel->volume, &value);
 
     volume = g_value_get_double(&value);
 
-    for(i = 0; i < buffer_size; i++){
+    for(i = 0; i < devout->buffer_size; i++){
       buffer[i] = (signed short) ((0xffff) & (int)((gdouble)volume * (gdouble)buffer[i]));
     }
   }else{
@@ -247,16 +241,22 @@ ags_volume_audio_signal_run_inter(AgsRecall *recall)
   }
 }
 
-/**
- * ags_volume_audio_signal_new:
- * @audio_signal: an #AgsAudioSignal
- *
- * Creates an #AgsVolumeAudioSignal
- *
- * Returns: a new #AgsVolumeAudioSignal
- *
- * Since: 0.4
- */
+AgsRecall*
+ags_volume_audio_signal_duplicate(AgsRecall *recall,
+				  AgsRecallID *recall_id,
+				  guint *n_params, GParameter *parameter)
+{
+  AgsVolumeAudioSignal *volume_audio_signal, *copy;
+
+  volume_audio_signal = (AgsVolumeAudioSignal *) recall;
+
+  copy = (AgsVolumeAudioSignal *) AGS_RECALL_CLASS(ags_volume_audio_signal_parent_class)->duplicate(recall,
+												    recall_id,
+												    n_params, parameter);
+
+  return((AgsRecall *) copy);
+}
+
 AgsVolumeAudioSignal*
 ags_volume_audio_signal_new(AgsAudioSignal *audio_signal)
 {

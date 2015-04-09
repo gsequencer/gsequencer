@@ -40,8 +40,6 @@
 #include <ags/audio/recall/ags_stream_recycling.h>
 #include <ags/audio/recall/ags_stream_audio_signal.h>
 
-#include <ags/audio/task/ags_cancel_channel.h>
-
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -78,16 +76,6 @@ AgsRecall* ags_play_channel_run_duplicate(AgsRecall *recall,
 void ags_play_channel_run_stream_audio_signal_done_callback(AgsRecall *recall,
 							    AgsPlayChannelRun *play_channel_run);
 void ags_play_channel_run_stop(AgsPlayChannelRun *play_channel_run);
-
-/**
- * SECTION:ags_play_channel_run
- * @short_description: plays channel
- * @title: AgsPlayChannel
- * @section_id:
- * @include: ags/audio/recall/ags_play_channel.h
- *
- * The #AgsPlayChannel class plays the channel.
- */
 
 enum{
   PROP_0,
@@ -378,8 +366,7 @@ ags_play_channel_run_run_pre(AgsRecall *recall)
   AgsDevout *devout;
   AgsRecycling *recycling;
   AgsAudioSignal *audio_signal;
-  gdouble delay;
-  guint attack;
+  guint delay, attack;
   guint tic_counter_incr;
 
   devout = AGS_DEVOUT(recall->devout);
@@ -396,13 +383,12 @@ ags_play_channel_run_run_pre(AgsRecall *recall)
 
   tic_counter_incr = devout->tic_counter + 1;
     
-  //TODO:JK: unclear
-  attack = 0; //devout->attack[((tic_counter_incr == AGS_NOTATION_TICS_PER_BEAT) ?
-    //		   0:
-    //			   tic_counter_incr)];
-  delay = 0.0; // devout->delay[((tic_counter_incr == AGS_NOTATION_TICS_PER_BEAT) ?
-    //		 0:
-    //			 tic_counter_incr)];
+  attack = devout->attack[((tic_counter_incr == AGS_NOTATION_TICS_PER_BEAT) ?
+			   0:
+			   tic_counter_incr)];
+  delay = devout->delay[((tic_counter_incr == AGS_NOTATION_TICS_PER_BEAT) ?
+			 0:
+			 tic_counter_incr)];
 
   if(recycling != NULL){
     while(recycling != source->last_recycling->next){    
@@ -447,7 +433,6 @@ ags_play_channel_run_run_post(AgsRecall *recall)
 
   AGS_PLAY_CHANNEL_RUN(recall)->flags &= (~AGS_PLAY_CHANNEL_RUN_INITIAL_RUN);
 
-  /* connect done */
   source = AGS_RECALL_CHANNEL_RUN(recall)->source;
   found = FALSE;
 
@@ -558,32 +543,27 @@ ags_play_channel_run_stream_audio_signal_done_callback(AgsRecall *recall,
 void
 ags_play_channel_run_stop(AgsPlayChannelRun *play_channel_run)
 {
-  AgsThread *task_thread;
-  AgsChannel *channel;
-  AgsCancelChannel *cancel_channel;
+  AgsAudioLoop *audio_loop;
+  AgsChannel *source;
 
-  channel = AGS_RECALL_CHANNEL_RUN(play_channel_run)->source;
-  task_thread = (AgsTaskThread *) AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout)->ags_main)->main_loop)->task_thread;
+  source = AGS_RECALL_CHANNEL_RUN(play_channel_run)->source;
+  audio_loop = AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(AGS_AUDIO(source->audio)->devout)->ags_main)->main_loop);
 
-  /* create append task */
-  cancel_channel = ags_cancel_channel_new(channel,
-					  AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0], TRUE);
-  
-  /* append AgsCancelAudio */
-  ags_task_thread_append_task(task_thread,
-			      cancel_channel);
+  ags_channel_tillrecycling_cancel(source,
+				   AGS_RECALL(play_channel_run)->recall_id);
+
+  AGS_DEVOUT_PLAY(source->devout_play)->flags |= AGS_DEVOUT_PLAY_DONE;
+
+  AGS_DEVOUT_PLAY(source->devout_play)->recall_id[0] = NULL;
+  AGS_DEVOUT_PLAY(source->devout_play)->flags &= (~(AGS_DEVOUT_PLAY_PLAYBACK |
+						    AGS_DEVOUT_PLAY_DONE));
+
+  ags_channel_done(source);
+
+  ags_audio_loop_remove_channel(audio_loop,
+				source);
 }
 
-/**
- * ags_play_channel_run_new:
- * @stream_channel_run: the #AgsStreamChannelRun as dependency
- *
- * Creates an #AgsPlayChannelRun
- *
- * Returns: a new #AgsPlayChannelRun
- *
- * Since: 0.4
- */
 AgsPlayChannelRun*
 ags_play_channel_run_new(AgsStreamChannelRun *stream_channel_run)
 {

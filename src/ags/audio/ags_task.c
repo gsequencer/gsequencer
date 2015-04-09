@@ -27,16 +27,6 @@ void ags_task_connect(AgsConnectable *connectable);
 void ags_task_disconnect(AgsConnectable *connectable);
 void ags_task_finalize(GObject *gobject);
 
-/**
- * SECTION:ags_task
- * @short_description: Perform operations in a thread safe context.
- * @title: AgsTask
- * @section_id: 
- * @include: ags/audio/ags_task.h
- *
- * #AgsTask object acts an interceptor in a thread safe context.
- */
-
 enum{
   LAUNCH,
   FAILURE,
@@ -100,12 +90,6 @@ ags_task_class_init(AgsTaskClass *task)
   task->failure = NULL;
 
   /* signals */
-  /**
-   * AgsTask::launch:
-   * @task: the object to launch.
-   *
-   * The ::launch signal is emited in a thread safe context
-   */
   task_signals[LAUNCH] =
     g_signal_new("launch\0",
 		 G_TYPE_FROM_CLASS (task),
@@ -115,13 +99,6 @@ ags_task_class_init(AgsTaskClass *task)
 		 g_cclosure_marshal_VOID__VOID,
 		 G_TYPE_NONE, 0);
 
-  /**
-   * AgsTask::failure:
-   * @task: the object failed to do its work.
-   * @error: the error
-   *
-   * The ::failure signal is emited if ::launch fails
-   */
   task_signals[FAILURE] =
     g_signal_new("failure\0",
 		 G_TYPE_FROM_CLASS (task),
@@ -177,19 +154,9 @@ ags_task_finalize(GObject *gobject)
     g_free(task->name);
   }
 
-  pthread_cond_destroy(&(task->wait_sync_task_cond));
-
   G_OBJECT_CLASS(ags_task_parent_class)->finalize(gobject);
 }
 
-/**
- * ags_task_launch:
- * @task: an #AgsTask
- *
- * Intercept task.
- *
- * Since: 0.4
- */
 void
 ags_task_launch(AgsTask *task)
 {
@@ -201,15 +168,6 @@ ags_task_launch(AgsTask *task)
   g_object_unref(G_OBJECT(task));
 }
 
-/**
- * ags_task_failure:
- * @task: an #AgsTask
- * @error: is %NULL on success
- *
- * Signals failure of task.
- *
- * Since: 0.4
- */
 void
 ags_task_failure(AgsTask *task, GError *error)
 {
@@ -222,15 +180,6 @@ ags_task_failure(AgsTask *task, GError *error)
   g_object_unref(G_OBJECT(task));
 }
 
-/**
- * ags_task_new:
- *
- * Creates a #AgsTask
- *
- * Returns: a new #AgsTask
- *
- * Since: 0.4
- */
 AgsTask*
 ags_task_new()
 {

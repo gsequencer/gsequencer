@@ -33,16 +33,6 @@ void ags_display_tact_finalize(GObject *gobject);
 
 void ags_display_tact_launch(AgsTask *task);
 
-/**
- * SECTION:ags_display_tact
- * @short_description: display tact object
- * @title: AgsDisplayTact
- * @section_id:
- * @include: ags/audio/task/ags_display_tact.h
- *
- * The #AgsDisplayTact task displays #AgsTact and the GUI is updated.
- */
-
 static gpointer ags_display_tact_parent_class = NULL;
 static AgsConnectableInterface *ags_display_tact_parent_connectable_interface;
 
@@ -152,25 +142,13 @@ ags_display_tact_launch(AgsTask *task)
   
   navigation = AGS_NAVIGATION(display_tact->navigation);
 
-  //  gtk_adjustment_set_value(navigation->position_tact->adjustment,
-  //			   navigation->position_tact->adjustment->value + (exp2(-4.0)));
+  gtk_adjustment_set_value(navigation->position_tact->adjustment,
+			   navigation->position_tact->adjustment->value + (exp2(-4.0)));
 
   timestr = ags_navigation_tact_to_time_string(navigation->position_tact->adjustment->value);
   gtk_label_set_text(navigation->duration_time, timestr);
-
-  g_free(timestr);
 }
 
-/**
- * ags_display_tact_new:
- * @navigation: the #AgsNavigation to update
- *
- * Creates an #AgsDisplayTact.
- *
- * Returns: an new #AgsDisplayTact.
- *
- * Since: 0.4
- */
 AgsDisplayTact*
 ags_display_tact_new(GtkWidget *navigation)
 {

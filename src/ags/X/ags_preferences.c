@@ -19,21 +19,9 @@
 #include <ags/X/ags_preferences.h>
 #include <ags/X/ags_preferences_callbacks.h>
 
-#include <ags/main.h>
-
 #include <ags-lib/object/ags_connectable.h>
 
 #include <ags/object/ags_applicable.h>
-
-#include <ags/audio/ags_config.h>
-
-#include <ags/X/ags_window.h>
-
-#include <sys/types.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <pwd.h>
 
 void ags_preferences_class_init(AgsPreferencesClass *preferences);
 void ags_preferences_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -46,16 +34,6 @@ void ags_preferences_apply(AgsApplicable *applicable);
 void ags_preferences_reset(AgsApplicable *applicable);
 static void ags_preferences_finalize(GObject *gobject);
 void ags_preferences_show(GtkWidget *widget);
-
-/**
- * SECTION:ags_preferences
- * @short_description: A dialog to do preferences
- * @title: AgsPluginPreferences
- * @section_id: 
- * @include: ags/X/ags_plugin_preferences.h
- *
- * #AgsDialogPreferences enables you to make preferences.
- */
 
 static gpointer ags_preferences_parent_class = NULL;
 
@@ -161,11 +139,6 @@ ags_preferences_init(AgsPreferences *preferences)
   gtk_container_add(GTK_CONTAINER(GTK_DIALOG(preferences)->vbox),
 		    GTK_WIDGET(notebook));
 
-  preferences->generic_preferences = ags_generic_preferences_new();
-  gtk_notebook_append_page(notebook,
-			   GTK_WIDGET(preferences->generic_preferences),
-			   gtk_label_new("generic\0"));
-
   preferences->audio_preferences = ags_audio_preferences_new();
   gtk_notebook_append_page(notebook,
 			   GTK_WIDGET(preferences->audio_preferences),
@@ -201,7 +174,6 @@ ags_preferences_connect(AgsConnectable *connectable)
 
   preferences = AGS_PREFERENCES(connectable);
 
-  ags_connectable_connect(preferences->generic_preferences);
   ags_connectable_connect(preferences->audio_preferences);
   ags_connectable_connect(preferences->performance_preferences);
   ags_connectable_connect(preferences->server_preferences);
@@ -223,7 +195,6 @@ ags_preferences_set_update(AgsApplicable *applicable, gboolean update)
 
   preferences = AGS_PREFERENCES(applicable);
 
-  ags_applicable_set_update(AGS_APPLICABLE(preferences->generic_preferences), update);
   ags_applicable_set_update(AGS_APPLICABLE(preferences->audio_preferences), update);
   ags_applicable_set_update(AGS_APPLICABLE(preferences->performance_preferences), update);
   ags_applicable_set_update(AGS_APPLICABLE(preferences->server_preferences), update);
@@ -233,47 +204,12 @@ void
 ags_preferences_apply(AgsApplicable *applicable)
 {
   AgsPreferences *preferences;
-  AgsConfig *config;
-  AgsFile *file;
-  struct passwd *pw;
-  uid_t uid;
-  gchar *filename;
-  gchar **argv;
-  GError *error;
 
   preferences = AGS_PREFERENCES(applicable);
 
-  config = AGS_CONFIG(AGS_MAIN(AGS_WINDOW(preferences->window)->ags_main)->config);
-
-  ags_applicable_apply(AGS_APPLICABLE(preferences->generic_preferences));
   ags_applicable_apply(AGS_APPLICABLE(preferences->audio_preferences));
   ags_applicable_apply(AGS_APPLICABLE(preferences->performance_preferences));
   ags_applicable_apply(AGS_APPLICABLE(preferences->server_preferences));
-
-  ags_config_save(config);
-
-  uid = getuid();
-  pw = getpwuid(uid);
-
-  filename = g_strdup_printf("%s/%s/%s\0",
-			     pw->pw_dir,
-			     AGS_DEFAULT_DIRECTORY,
-			     AGS_PREFERENCES_DEFAULT_FILENAME);
-    
-  file = (AgsFile *) g_object_new(AGS_TYPE_FILE,
-				  "main\0", AGS_MAIN(AGS_WINDOW(preferences->window)->ags_main),
-				  "filename\0", filename,
-				  NULL);
-  ags_file_write_concurrent(file);
-  g_object_unref(file);
-  
-  error = NULL;
-
-  g_spawn_command_line_async(g_strdup_printf("./ags --filename %s\0",
-					     filename),
-			     &error);
-
-  ags_main_quit(AGS_MAIN(AGS_WINDOW(preferences->window)->ags_main));
 }
 
 void
@@ -283,7 +219,6 @@ ags_preferences_reset(AgsApplicable *applicable)
 
   preferences = AGS_PREFERENCES(applicable);
 
-  ags_applicable_reset(AGS_APPLICABLE(preferences->generic_preferences));
   ags_applicable_reset(AGS_APPLICABLE(preferences->audio_preferences));
   ags_applicable_reset(AGS_APPLICABLE(preferences->performance_preferences));
   ags_applicable_reset(AGS_APPLICABLE(preferences->server_preferences));
@@ -300,15 +235,6 @@ ags_preferences_show(GtkWidget *widget)
 {
 }
 
-/**
- * ags_preferences_new:
- *
- * Creates an #AgsPreferences
- *
- * Returns: a new #AgsPreferences
- *
- * Since: 0.4
- */
 AgsPreferences*
 ags_preferences_new()
 {

@@ -103,9 +103,9 @@ ags_connectable_connect(AgsConnectable *connectable)
   connectable_interface = AGS_CONNECTABLE_GET_INTERFACE(connectable);
   g_return_if_fail(connectable_interface->connect);
 
-  //  if(!ags_connectable_is_ready(connectable)){
-  //    return;
-  //  }
+  if(!ags_connectable_is_ready(connectable)){
+    return;
+  }
 
   connectable_interface->connect(connectable);
 }

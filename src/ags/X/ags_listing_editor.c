@@ -40,17 +40,6 @@ void ags_listing_editor_reset(AgsApplicable *applicable);
 void ags_listing_editor_destroy(GtkObject *object);
 void ags_listing_editor_show(GtkWidget *widget);
 
-/**
- * SECTION:ags_listing_editor
- * @short_description: pack pad editors.
- * @title: AgsListingEditor
- * @section_id:
- * @include: ags/X/ags_listing_editor.h
- *
- * #AgsListingEditor is a composite widget to pack #AgsPadEditor.
- */
-
-static gpointer ags_listing_editor_parent_class = NULL;
 static AgsConnectableInterface* ags_listing_editor_parent_connectable_interface;
 
 GType
@@ -138,7 +127,7 @@ ags_listing_editor_connect(AgsConnectable *connectable)
 {
   AgsMachineEditor *machine_editor;
   AgsListingEditor *listing_editor;
-  GList *pad_editor, *pad_editor_start;
+  GList *pad_editor;
 
   ags_listing_editor_parent_connectable_interface->connect(connectable);
 
@@ -159,16 +148,13 @@ ags_listing_editor_connect(AgsConnectable *connectable)
   }
 
   /* AgsPadEditor */
-  pad_editor_start = 
-    pad_editor = gtk_container_get_children(GTK_CONTAINER(listing_editor->child));
+  pad_editor = gtk_container_get_children(GTK_CONTAINER(listing_editor->child));
 
   while(pad_editor != NULL){
     ags_connectable_connect(AGS_CONNECTABLE(pad_editor->data));
 
     pad_editor = pad_editor->next;
   }
-  
-  g_list_free(pad_editor_start);
 }
 
 void
@@ -181,20 +167,17 @@ void
 ags_listing_editor_set_update(AgsApplicable *applicable, gboolean update)
 {
   AgsListingEditor *listing_editor;
-  GList *pad_editor, *pad_editor_start;
+  GList *pad_editor;
 
   listing_editor = AGS_LISTING_EDITOR(applicable);
 
-  pad_editor_start = 
-    pad_editor = gtk_container_get_children(GTK_CONTAINER(listing_editor->child));
+  pad_editor = gtk_container_get_children(GTK_CONTAINER(listing_editor->child));
 
   while(pad_editor != NULL){
     ags_applicable_set_update(AGS_APPLICABLE(pad_editor->data), update);
 
     pad_editor = pad_editor->next;
   }
-
-  g_list_free(pad_editor_start);
 }
 
 void
@@ -202,43 +185,37 @@ ags_listing_editor_apply(AgsApplicable *applicable)
 {
 
   AgsListingEditor *listing_editor;
-  GList *pad_editor, *pad_editor_start;
+  GList *pad_editor;
 
   listing_editor = AGS_LISTING_EDITOR(applicable);
 
   if((AGS_PROPERTY_EDITOR_ENABLED & (AGS_PROPERTY_EDITOR(listing_editor)->flags)) == 0)
     return;
 
-  pad_editor_start = 
-    pad_editor = gtk_container_get_children(GTK_CONTAINER(listing_editor->child));
+  pad_editor = gtk_container_get_children(GTK_CONTAINER(listing_editor->child));
 
   while(pad_editor != NULL){
     ags_applicable_apply(AGS_APPLICABLE(pad_editor->data));
 
     pad_editor = pad_editor->next;
   }
-  
-  g_list_free(pad_editor_start);
 }
 
 void
 ags_listing_editor_reset(AgsApplicable *applicable)
 {
   AgsListingEditor *listing_editor;
-  GList *pad_editor, *pad_editor_start;
+  GList *pad_editor;
 
   listing_editor = AGS_LISTING_EDITOR(applicable);
 
-  pad_editor_start = 
-    pad_editor = gtk_container_get_children(GTK_CONTAINER(listing_editor->child));
+  pad_editor = gtk_container_get_children(GTK_CONTAINER(listing_editor->child));
 
   while(pad_editor != NULL){
     ags_applicable_reset(AGS_APPLICABLE(pad_editor->data));
 
     pad_editor = pad_editor->next;
   }
-
-  g_list_free(pad_editor_start);
 }
 
 void
@@ -253,20 +230,10 @@ ags_listing_editor_show(GtkWidget *widget)
   /* empty */
 }
 
-/**
- * ags_listing_editor_add_children:
- * @audio: the #AgsAudio to use
- * @nth_channel: nth channel to start creation until end
- * @connect: if %TRUE widget is connected and shown
- *
- * Creates new pad editors or destroys them.
- *
- * Since: 0.3
- */
 void
 ags_listing_editor_add_children(AgsListingEditor *listing_editor,
-				AgsAudio *audio, guint nth_channel,
-				gboolean connect)
+					AgsAudio *audio, guint nth_channel,
+					gboolean connect)
 {
   AgsPadEditor *pad_editor;
   GtkVBox *vbox;
@@ -311,16 +278,6 @@ ags_listing_editor_add_children(AgsListingEditor *listing_editor,
   }
 }
 
-/**
- * ags_listing_editor_new:
- * @channel_type: the channel type to represent
- *
- * Creates an #AgsListingEditor
- *
- * Returns: a new #AgsListingEditor
- *
- * Since: 0.3
- */
 AgsListingEditor*
 ags_listing_editor_new(GType channel_type)
 {

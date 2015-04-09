@@ -24,8 +24,6 @@
 
 #include <gtk/gtk.h>
 
-#include <ags/widget/ags_ruler.h>
-
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_notation.h>
 
@@ -63,7 +61,6 @@ struct _AgsNoteEdit
 
   guint flags;
 
-  AgsRuler *ruler;
   GtkDrawingArea *drawing_area;
 
   struct _AgsNoteEditControl{ // values retrieved by mouse pressed and released callback

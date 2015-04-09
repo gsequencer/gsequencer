@@ -24,10 +24,8 @@
 
 #include <ags/thread/ags_export_thread.h>
 
-#include <ags/X/ags_window.h>
-
 #define AGS_TYPE_EXPORT_OUTPUT                (ags_export_output_get_type())
-#define AGS_EXPORT_OUTPUT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_EXPORT_OUTPUT, AgsExportOutput))
+#define AGS_EXPORT_OUTPUT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_EXPORT_OUTPUT, AgsExportOutput}))
 #define AGS_EXPORT_OUTPUT_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_EXPORT_OUTPUT, AgsExportOutputClass))
 #define AGS_IS_EXPORT_OUTPUT(obj)             (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_EXPORT_OUTPUT))
 #define AGS_IS_EXPORT_OUTPUT_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_EXPORT_OUTPUT))
@@ -40,11 +38,8 @@ struct _AgsExportOutput
 {
   AgsTask task;
 
-  AgsExportThread *export_thread;
-  AgsDevout *devout;
-  gchar *filename;
-  guint tic;
   gboolean live_performance;
+  AgsExportThread *thread;
 };
 
 struct _AgsExportOutputClass
@@ -54,10 +49,6 @@ struct _AgsExportOutputClass
 
 GType ags_export_output_get_type();
 
-AgsExportOutput* ags_export_output_new(AgsExportThread *export_thread,
-				       AgsDevout *devout,
-				       gchar *filename,
-				       guint tic,
-				       gboolean live_performance);
+AgsExportOutput* ags_export_output_new(gboolean live_performance);
 
 #endif /*__AGS_EXPORT_OUTPUT_H__*/

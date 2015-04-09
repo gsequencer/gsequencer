@@ -29,16 +29,6 @@ void ags_toggle_pattern_bit_finalize(GObject *gobject);
 
 void ags_toggle_pattern_bit_launch(AgsTask *task);
 
-/**
- * SECTION:ags_toggle_pattern_bit
- * @short_description: toggles the pattern
- * @title: AgsTogglePatternBit
- * @section_id:
- * @include: ags/audio/task/ags_toggle_pattern_bit.h
- *
- * The #AgsTogglePatternBit task toggles the specified #AgsPattern.
- */
-
 enum{
   REFRESH_GUI,
   LAST_SIGNAL,
@@ -186,20 +176,6 @@ ags_toggle_pattern_bit_refresh_gui(AgsTogglePatternBit *toggle_pattern_bit)
   g_object_unref(G_OBJECT(toggle_pattern_bit));
 }
 
-/**
- * ags_toggle_pattern_bit_new:
- * @pattern: the #AgsPattern to toggle
- * @line: 
- * @index_i: bank 0
- * @index_j: bank 1
- * @bit: the index within pattern
- *
- * Creates an #AgsTogglePatternBit.
- *
- * Returns: an new #AgsTogglePatternBit.
- *
- * Since: 0.4
- */
 AgsTogglePatternBit*
 ags_toggle_pattern_bit_new(AgsPattern *pattern,
 			   guint line,
@@ -207,7 +183,7 @@ ags_toggle_pattern_bit_new(AgsPattern *pattern,
 			   guint bit)
 {
   AgsTogglePatternBit *toggle_pattern_bit;
-  
+
   toggle_pattern_bit = (AgsTogglePatternBit *) g_object_new(AGS_TYPE_TOGGLE_PATTERN_BIT,
 							    NULL);
 

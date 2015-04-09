@@ -56,16 +56,6 @@ void ags_drum_input_pad_set_channel(AgsPad *pad, AgsChannel *channel);
 void ags_drum_input_pad_resize_lines(AgsPad *pad, GType line_type,
 				     guint audio_channels, guint audio_channels_old);
 
-/**
- * SECTION:ags_drum_input_pad
- * @short_description: drum sequencer input pad
- * @title: AgsDrumInputPad
- * @section_id:
- * @include: ags/X/machine/ags_drum_input_pad.h
- *
- * The #AgsDrumInputPad is a composite widget to act as drum sequencer input pad.
- */
-
 static gpointer ags_drum_input_pad_parent_class = NULL;
 static AgsConnectableInterface *ags_drum_input_pad_parent_connectable_interface;
 
@@ -169,8 +159,7 @@ ags_drum_input_pad_init(AgsDrumInputPad *drum_input_pad)
   gtk_container_add((GtkContainer *) drum_input_pad->open, (GtkWidget *) gtk_image_new_from_stock(GTK_STOCK_OPEN, GTK_ICON_SIZE_BUTTON));
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) drum_input_pad->open, TRUE, TRUE, 0);
 
-  AGS_PAD(drum_input_pad)->play = 
-    drum_input_pad->play = (GtkToggleButton *) gtk_toggle_button_new();
+  drum_input_pad->play = (GtkToggleButton *) gtk_toggle_button_new();
   gtk_container_add((GtkContainer *) drum_input_pad->play, (GtkWidget *) gtk_image_new_from_stock(GTK_STOCK_MEDIA_PLAY, GTK_ICON_SIZE_BUTTON));
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) drum_input_pad->play, TRUE, TRUE, 0);
 
@@ -353,17 +342,7 @@ ags_drum_input_pad_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 
   return(node);
 }
-
-/**
- * ags_drum_input_pad_new:
- * @channel: the assigned channel
- *
- * Creates an #AgsDrumInputPad
- *
- * Returns: a new #AgsDrumInputPad
- *
- * Since: 0.4
- */
+    
 AgsDrumInputPad*
 ags_drum_input_pad_new(AgsChannel *channel)
 {

@@ -21,8 +21,6 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
-#include <ags/main.h>
-
 #include <ags/audio/ags_devout.h>
 
 #include <math.h>
@@ -41,18 +39,6 @@ void ags_gui_thread_resume(AgsThread *thread);
 void ags_gui_thread_stop(AgsThread *thread);
 
 void ags_gui_thread_suspend_handler(int sig);
-
-/**
- * SECTION:ags_gui_thread
- * @short_description: gui thread
- * @title: AgsGuiThread
- * @section_id:
- * @include: ags/thread/ags_gui_thread.h
- *
- * The #AgsGuiThread acts as graphical user interface thread.
- */
-
-extern pthread_mutex_t ags_application_mutex;
 
 static gpointer ags_gui_thread_parent_class = NULL;
 static AgsConnectableInterface *ags_gui_thread_parent_connectable_interface;
@@ -220,8 +206,7 @@ ags_gui_thread_run(AgsThread *thread)
     }
 
     /*  */
-    pthread_mutex_lock(&(audio_loop->recall_mutex));
-
+    pthread_mutex_lock(&(task_thread->launch_mutex));
     if(success){
       /*  */
       pthread_mutex_unlock(&(thread->suspend_mutex));
@@ -240,7 +225,7 @@ ags_gui_thread_run(AgsThread *thread)
     //    success = pthread_mutex_trylock(&(thread->suspend_mutex));
       
     /*  */
-    pthread_mutex_unlock(&(audio_loop->recall_mutex));
+    pthread_mutex_unlock(&(task_thread->launch_mutex));
 
     /*  */
     //    g_atomic_int_set(&(thread->critical_region),
@@ -253,8 +238,6 @@ ags_gui_thread_run(AgsThread *thread)
     g_main_context_release(main_context);
   }
 
-  pthread_mutex_lock(&(ags_application_mutex));
-
   gui_thread = AGS_GUI_THREAD(thread);
   audio_loop = AGS_AUDIO_LOOP(thread->parent);
   task_thread = AGS_TASK_THREAD(audio_loop->task_thread);
@@ -263,8 +246,6 @@ ags_gui_thread_run(AgsThread *thread)
   main_context = g_main_context_default();
 
   ags_gui_thread_do_gtk_iteration();
-
-  pthread_mutex_unlock(&(ags_application_mutex));
 }
 
 void
@@ -329,15 +310,6 @@ ags_gui_thread_stop(AgsThread *thread)
   gdk_flush();
 }
 
-/**
- * ags_gui_thread_new:
- *
- * Create a new #AgsGuiThread.
- *
- * Returns: the new #AgsGuiThread
- *
- * Since: 0.4
- */
 AgsGuiThread*
 ags_gui_thread_new()
 {

@@ -55,13 +55,6 @@ void ags_recall_audio_run_finalize(GObject *gobject);
 AgsRecall* ags_recall_audio_run_duplicate(AgsRecall *recall,
 					  AgsRecallID *recall_id,
 					  guint *n_params, GParameter *parameter);
-/**
- * SECTION:ags_recall_audio_run
- * @Short_description: audio context of dynamic recall
- * @Title: AgsRecallAudioRun
- *
- * #AgsRecallAudioRun acts as dynamic audio recall.
- */
 
 enum{
   LAST_SIGNAL,
@@ -153,14 +146,7 @@ ags_recall_audio_run_class_init(AgsRecallAudioRunClass *recall_audio_run)
   gobject->finalize = ags_recall_audio_run_finalize;
 
   /* properties */
-  /**
-   * AgsRecallAudioRun:recall-audio:
-   *
-   * The recall audio belonging to.
-   * 
-   * Since: 0.4.0
-   */
-  param_spec = g_param_spec_object("recall-audio\0",
+  param_spec = g_param_spec_object("recall_audio\0",
 				   "AgsRecallAudio of this recall\0",
 				   "The AgsRecallAudio which this recall needs\0",
 				   AGS_TYPE_RECALL_AUDIO,
@@ -331,7 +317,7 @@ ags_recall_audio_run_pack(AgsPackable *packable, GObject *container)
 
   /* set AgsRecallAudio */
   g_object_set(G_OBJECT(recall_audio_run),
-	       "recall-audio\0", recall_container->recall_audio,
+	       "recall_audio\0", recall_container->recall_audio,
 	       NULL);
 
   /* set in AgsRecallChannelRun */
@@ -342,7 +328,7 @@ ags_recall_audio_run_pack(AgsPackable *packable, GObject *container)
 
     while((list = ags_recall_find_recycling_container(list, recall_id->recycling_container)) != NULL){
       g_object_set(G_OBJECT(list->data),
-		   "recall-audio-run\0", AGS_RECALL_AUDIO_RUN(packable),
+		   "recall_audio_run\0", AGS_RECALL_AUDIO_RUN(packable),
 		   NULL);
 
       list= list->next;
@@ -350,7 +336,7 @@ ags_recall_audio_run_pack(AgsPackable *packable, GObject *container)
   }else if((AGS_RECALL_TEMPLATE & (AGS_RECALL(packable)->flags)) != 0){
     while((list = ags_recall_find_template(list)) != NULL){
       g_object_set(G_OBJECT(list->data),
-		   "recall-audio-run\0", AGS_RECALL_AUDIO_RUN(packable),
+		   "recall_audio_run\0", AGS_RECALL_AUDIO_RUN(packable),
 		   NULL);
 
       list= list->next;
@@ -358,7 +344,7 @@ ags_recall_audio_run_pack(AgsPackable *packable, GObject *container)
   }
 
   g_object_set(G_OBJECT(recall_container),
-	       "recall-audio-run\0", AGS_RECALL(packable),
+	       "recall_audio_run\0", AGS_RECALL(packable),
 	       NULL);
 
   return(FALSE);
@@ -456,15 +442,6 @@ ags_recall_audio_run_duplicate(AgsRecall *recall,
   return((AgsRecall *) copy);
 }
 
-/**
- * ags_recall_audio_run_new:
- *
- * Creates an #AgsRecallAudioRun.
- *
- * Returns: a new #AgsRecallAudioRun.
- *
- * Since: 0.4
- */
 AgsRecallAudioRun*
 ags_recall_audio_run_new()
 {

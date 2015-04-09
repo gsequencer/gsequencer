@@ -50,7 +50,7 @@ struct _AgsToolbar
   guint zoom_history;
   GtkComboBoxText *zoom;
 
-  GtkComboBoxText *mode;
+  GtkOptionMenu *mode;
 };
 
 struct _AgsToolbarClass

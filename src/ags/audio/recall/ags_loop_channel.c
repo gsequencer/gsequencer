@@ -51,16 +51,6 @@ void ags_loop_channel_finalize(GObject *gobject);
 void ags_loop_channel_sequencer_duration_changed_callback(AgsDelayAudio *delay_audio,
 							  AgsLoopChannel *loop_channel);
 
-/**
- * SECTION:ags_loop_channel
- * @short_description: loops channel
- * @title: AgsLoopChannel
- * @section_id:
- * @include: ags/audio/recall/ags_loop_channel.h
- *
- * The #AgsLoopChannel class provides ports to the effect processor.
- */
-
 static gpointer ags_loop_channel_parent_class = NULL;
 static AgsConnectableInterface *ags_loop_channel_parent_connectable_interface;
 static AgsPluginInterface *ags_loop_channel_parent_plugin_interface;
@@ -298,21 +288,10 @@ ags_loop_channel_sequencer_duration_changed_callback(AgsDelayAudio *delay_audio,
   sequencer_duration = g_value_get_double(&value);
 
   /* resize audio signal */
-  //TODO:JK: make it advanced
-  //  ags_channel_safe_resize_audio_signal(AGS_RECALL_CHANNEL(loop_channel)->source,
-  //				       (guint) sequencer_duration);
+  ags_channel_safe_resize_audio_signal(AGS_RECALL_CHANNEL(loop_channel)->source,
+				       (guint) sequencer_duration);
 }
 
-/**
- * ags_loop_channel_new:
- * @source: the #AgsChannel as source
- *
- * Creates an #AgsLoopChannel
- *
- * Returns: a new #AgsLoopChannel
- *
- * Since: 0.4
- */
 AgsLoopChannel*
 ags_loop_channel_new()
 {
@@ -323,3 +302,4 @@ ags_loop_channel_new()
 
   return(loop_channel);
 }
+

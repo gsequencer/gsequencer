@@ -52,26 +52,10 @@ void ags_pad_show(GtkWidget *widget);
 void ags_pad_real_set_channel(AgsPad *pad, AgsChannel *channel);
 void ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
 			       guint audio_channels, guint audio_channels_old);
-void ags_pad_real_map_recall(AgsPad *pad,
-			     guint output_pad_start);
-GList* ags_pad_real_find_port(AgsPad *pad);
-
-/**
- * SECTION:ags_pad
- * @short_description: A composite widget to visualize a bunch of #AgsChannel
- * @title: AgsPad
- * @section_id:
- * @include: ags/X/ags_pad.h
- *
- * #AgsPad is a composite widget to visualize a bunch of #AgsChannel. It should be
- * packed by an #AgsMachine.
- */
 
 enum{
   SET_CHANNEL,
   RESIZE_LINES,
-  MAP_RECALL,
-  FIND_PORT,
   LAST_SIGNAL,
 };
 
@@ -143,15 +127,8 @@ ags_pad_class_init(AgsPadClass *pad)
   gobject->set_property = ags_pad_set_property;
   gobject->get_property = ags_pad_get_property;
 
-  /* properties */
   //TODO:JK: add finalize
-  /**
-   * AgsPad:channel:
-   *
-   * The start of a bunch of #AgsChannel to visualize.
-   * 
-   * Since: 0.4
-   */
+
   param_spec = g_param_spec_object("channel\0",
 				   "assigned channel\0",
 				   "The channel it is assigned with\0",
@@ -164,19 +141,9 @@ ags_pad_class_init(AgsPadClass *pad)
   /* AgsPadClass */
   pad->set_channel = ags_pad_real_set_channel;
   pad->resize_lines = ags_pad_real_resize_lines;
-  pad->map_recall = ags_pad_real_map_recall;
-  pad->find_port = ags_pad_real_find_port;
 
-  /* signals */
-  /**
-   * AgsPad::set-channel:
-   * @pad: the #AgsPad to modify
-   * @channel: the #AgsChannel to set
-   *
-   * The ::set-channel signal notifies about changed channel.
-   */
   pad_signals[SET_CHANNEL] =
-    g_signal_new("set-channel\0",
+    g_signal_new("set_channel\0",
 		 G_TYPE_FROM_CLASS(pad),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsPadClass, set_channel),
@@ -185,17 +152,8 @@ ags_pad_class_init(AgsPadClass *pad)
 		 G_TYPE_NONE, 1,
 		 G_TYPE_OBJECT);
 
-  /**
-   * AgsPad::resize-lines:
-   * @pad: the #AgsPad to resize
-   * @line_type: the channel type
-   * @audio_channels: count of lines
-   * @audio_channels_old: old count of lines
-   *
-   * The ::resize-lines is emitted as count of lines pack is modified.
-   */
   pad_signals[RESIZE_LINES] =
-    g_signal_new("resize-lines\0",
+    g_signal_new("resize_lines\0",
 		 G_TYPE_FROM_CLASS(pad),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsPadClass, resize_lines),
@@ -203,40 +161,6 @@ ags_pad_class_init(AgsPadClass *pad)
 		 g_cclosure_user_marshal_VOID__ULONG_UINT_UINT,
 		 G_TYPE_NONE, 3,
 		 G_TYPE_ULONG, G_TYPE_UINT, G_TYPE_UINT);
-
-  
-  /**
-   * AgsPad::map-recall:
-   * @pad: the #AgsPad to resize
-   * @output_pad_start: start of output pad
-   *
-   * The ::map-recall as recall should be mapped
-   */
-  pad_signals[MAP_RECALL] =
-    g_signal_new("map-recall\0",
-		 G_TYPE_FROM_CLASS(pad),
-		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsPadClass, map_recall),
-		 NULL, NULL,
-		 g_cclosure_marshal_VOID__UINT,
-		 G_TYPE_NONE, 1,
-		 G_TYPE_UINT);
-
-  /**
-   * AgsPad::find-port:
-   * @pad: the #AgsPad to resize
-   * Returns: a #GList with associated ports
-   *
-   * The ::find-port retrieves all associated ports
-   */
-  pad_signals[FIND_PORT] =
-    g_signal_new("find-port\0",
-		 G_TYPE_FROM_CLASS(pad),
-		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsPadClass, find_port),
-		 NULL, NULL,
-		 g_cclosure_user_marshal_POINTER__VOID,
-		 G_TYPE_POINTER, 0);
 }
 
 void
@@ -288,17 +212,15 @@ ags_pad_init(AgsPad *pad)
   hbox = (GtkHBox *) gtk_hbox_new(TRUE, 0);
   gtk_box_pack_start((GtkBox *) pad, (GtkWidget *) hbox, FALSE, FALSE, 0);
 
-  pad->group = (GtkToggleButton *) gtk_toggle_button_new_with_label("G\0");
+  pad->group = (GtkToggleButton *) gtk_toggle_button_new_with_label(g_strdup("G\0"));
   gtk_toggle_button_set_active(pad->group, TRUE);
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) pad->group, FALSE, FALSE, 0);
 
-  pad->mute = (GtkToggleButton *) gtk_toggle_button_new_with_label("M\0");
+  pad->mute = (GtkToggleButton *) gtk_toggle_button_new_with_label(g_strdup("M\0"));
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) pad->mute, FALSE, FALSE, 0);
 
-  pad->solo = (GtkToggleButton *) gtk_toggle_button_new_with_label("S\0");
+  pad->solo = (GtkToggleButton *) gtk_toggle_button_new_with_label(g_strdup("S\0"));
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) pad->solo, FALSE, FALSE, 0);
-
-  pad->play = NULL;
 }
 
 void
@@ -351,7 +273,7 @@ void
 ags_pad_connect(AgsConnectable *connectable)
 {
   AgsPad *pad;
-  GList *line_list, *line_list_start;
+  GList *line_list;
 
   /* AgsPad */
   pad = AGS_PAD(connectable);
@@ -359,19 +281,8 @@ ags_pad_connect(AgsConnectable *connectable)
   if((AGS_PAD_CONNECTED & (pad->flags)) != 0){
     return;
   }
-  
+
   pad->flags |= AGS_PAD_CONNECTED;
-
-  if((AGS_PAD_PREMAPPED_RECALL & (pad->flags)) == 0){
-    if((AGS_PAD_MAPPED_RECALL & (pad->flags)) == 0){
-      ags_pad_map_recall(pad,
-			 0);
-    }
-  }else{
-    pad->flags &= (~AGS_PAD_PREMAPPED_RECALL);
-
-    ags_pad_find_port(pad);
-  }
 
   /* GtkObject */
   g_signal_connect((GObject *) pad, "destroy\0",
@@ -392,16 +303,13 @@ ags_pad_connect(AgsConnectable *connectable)
 			 G_CALLBACK(ags_pad_solo_clicked_callback), (gpointer) pad);
 
   /* AgsLine */
-  line_list_start =  
-    line_list = gtk_container_get_children(GTK_CONTAINER(pad->expander_set));
+  line_list = gtk_container_get_children(GTK_CONTAINER(pad->expander_set));
 
   while(line_list != NULL){
     ags_connectable_connect(AGS_CONNECTABLE(line_list->data));
 
     line_list = line_list->next;
   }
-
-  g_list_free(line_list_start);
 }
 
 void
@@ -460,7 +368,7 @@ void
 ags_pad_real_set_channel(AgsPad *pad, AgsChannel *channel)
 {
   AgsChannel *current;
-  GList *line, *line_start;
+  GList *line;
 
   if(pad->channel == channel){
     return;
@@ -476,15 +384,10 @@ ags_pad_real_set_channel(AgsPad *pad, AgsChannel *channel)
 
   pad->channel = channel;
 
-  if(channel == NULL){
-    return;
-  }
-
-  line_start = 
-    line = gtk_container_get_children(GTK_CONTAINER(AGS_PAD(pad)->expander_set));
-  current = channel;
-
-  while(line != NULL && current != NULL){
+  line = gtk_container_get_children(GTK_CONTAINER(AGS_PAD(pad)->expander_set));
+  current = pad->channel;
+  
+  while(line != NULL){
     g_object_set(G_OBJECT(line->data),
 		 "channel\0", current,
 		 NULL);
@@ -492,19 +395,8 @@ ags_pad_real_set_channel(AgsPad *pad, AgsChannel *channel)
     current = current->next;
     line = line->next;
   }
-
-  g_list_free(line_start);
 }
 
-/**
- * ags_pad_set_channel:
- * @pad: an #AgsPad
- * @channel: the #AgsChannel to set
- *
- * Is emitted as channel gets modified.
- *
- * Since: 0.3
- */
 void
 ags_pad_set_channel(AgsPad *pad, AgsChannel *channel)
 {
@@ -527,9 +419,9 @@ ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
   guint i, j;
 
   //  fprintf(stdout, "ags_pad_real_resize_lines: audio_channels = %u ; audio_channels_old = %u\n\0", audio_channels, audio_channels_old);
-    machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) pad, AGS_TYPE_MACHINE);
 
   if(audio_channels > audio_channels_old){
+    machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) pad, AGS_TYPE_MACHINE);
     channel = ags_channel_nth(pad->channel, audio_channels_old);
 
     /* create AgsLine */
@@ -539,19 +431,31 @@ ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
 					"pad\0", pad,
 					"channel\0", channel,
 					NULL);
-
-	if(channel != NULL){
-	  channel->line_widget = (GtkWidget *) line;
-	}
-
+	channel->line_widget = (GtkWidget *) line;
 	ags_expander_set_add(pad->expander_set,
 			     (GtkWidget *) line,
 			     j, i / pad->cols,
 			     1, 1);
 	
-	if(channel != NULL){
-	  channel = channel->next;
-	}
+	channel = channel->next;
+      }
+    }
+
+    /* check if we should show and connect the AgsLine */
+    if(machine != NULL && GTK_WIDGET_VISIBLE((GtkWidget *) machine)){
+      GList *list;
+
+      list = g_list_nth(gtk_container_get_children(GTK_CONTAINER(pad->expander_set)),
+			audio_channels_old);
+
+      /* show and connect AgsLine */
+      while(list != NULL){
+	line = AGS_LINE(list->data);
+
+	gtk_widget_show_all((GtkWidget *) line);
+	ags_connectable_connect(AGS_CONNECTABLE(line));
+
+	list = list->next;
       }
     }
   }else if(audio_channels < audio_channels_old){
@@ -574,22 +478,9 @@ ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
 
       list = list->next;
     }
-
-    g_list_free(list_start);
   }
 }
 
-/**
- * ags_pad_resize_lines:
- * @pad: the #AgsPad to resize
- * @line_type: channel type, either %AGS_TYPE_INPUT or %AGS_TYPE_OUTPUT
- * @audio_channels: count of lines
- * @audio_channels_old: old count of lines
- *
- * Resize the count of #AgsLine packe by #AgsPad.
- *
- * Since: 0.3
- */
 void ags_pad_resize_lines(AgsPad *pad, GType line_type,
 			  guint audio_channels, guint audio_channels_old)
 {
@@ -605,106 +496,20 @@ void ags_pad_resize_lines(AgsPad *pad, GType line_type,
   g_object_unref((GObject *) pad);
 }
 
-void ags_pad_real_map_recall(AgsPad *pad, guint output_pad_start)
-{
-  if((AGS_PAD_MAPPED_RECALL & (pad->flags)) != 0){
-    return;
-  }
-  
-  pad->flags |= AGS_PAD_MAPPED_RECALL;
-
-  ags_pad_find_port(pad);
-}
-
-/**
- * ags_pad_map_recall:
- * @pad: the #AgsPad to resize
- * @output_pad_start: start of output pad
- *
- * Start of output pad
- *
- * Since: 0.4
- */
-void ags_pad_map_recall(AgsPad *pad, guint output_pad_start)
-{
-  g_return_if_fail(AGS_IS_PAD(pad));
-
-  g_object_ref((GObject *) pad);
-  g_signal_emit(G_OBJECT(pad),
-		pad_signals[MAP_RECALL], 0,
-		output_pad_start);
-  g_object_unref((GObject *) pad);
-}
-
-GList*
-ags_pad_real_find_port(AgsPad *pad)
-{
-  AgsChannel *channel, *next_pad;
-  GList *list, *tmp;
-
-  list = NULL;
-  
-  channel = pad->channel;
-
-  if(channel != NULL){
-    next_pad = channel->next_pad;
-
-    while(channel != next_pad){
-      if(list != NULL){
-	list = ags_channel_find_port(channel);
-      }else{
-	tmp = ags_channel_find_port(channel);
-	list = g_list_concat(list,
-			     tmp);
-	g_list_free(tmp);
-      }
-
-      channel = channel->next;
-    }
-  }
-  
-  return(list);
-
-}
-
-/**
- * ags_pad_find_port:
- * @pad: an #AgsPad
- * Returns: an #GList containing all related #AgsPort
- *
- * Lookup ports of assigned recalls.
- *
- * Since: 0.4
- */
-GList*
+void
 ags_pad_find_port(AgsPad *pad)
 {
-  GList *list;
+  GList *line;
 
-  list = NULL;
-  g_return_val_if_fail(AGS_IS_PAD(pad),
-		       NULL);
+  line = gtk_container_get_children(GTK_CONTAINER(pad->expander_set));
 
-  g_object_ref((GObject *) pad);
-  g_signal_emit((GObject *) pad,
-		pad_signals[FIND_PORT], 0,
-		&list);
-  g_object_unref((GObject *) pad);
+  while(line != NULL){
+    ags_line_find_port(AGS_LINE(line->data));
 
-  return(list);
+    line = line->next;
+  }
 }
 
-/**
- * ags_pad_new:
- * @pad: the parent pad
- * @channel: the bunch of channel to visualize
- *
- * Creates an #AgsPad
- *
- * Returns: a new #AgsPad
- *
- * Since: 0.3
- */
 AgsPad*
 ags_pad_new(AgsChannel *channel)
 {

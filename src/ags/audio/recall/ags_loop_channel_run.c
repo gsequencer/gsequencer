@@ -70,6 +70,9 @@ AgsRecall* ags_loop_channel_run_duplicate(AgsRecall *recall,
 					  AgsRecallID *recall_id,
 					  guint *n_params, GParameter *parameter);
 
+void ags_loop_channel_run_sequencer_duration_changed_callback(AgsDelayAudio *delay_audio,
+							      AgsLoopChannelRun *loop_channel_run);
+
 void ags_loop_channel_run_start_callback(AgsCountBeatsAudioRun *count_beats_audio_run,
 					 guint run_order,
 					 AgsLoopChannelRun *loop_channel_run);
@@ -84,16 +87,6 @@ void ags_loop_channel_run_write_resolve_dependency(AgsFileLookup *file_lookup,
 						   GObject *recall);
 void ags_loop_channel_run_read_resolve_dependency(AgsFileLookup *file_lookup,
 						  GObject *recall);
-
-/**
- * SECTION:ags_loop_channel_run
- * @short_description: loop
- * @title: AgsLoopChannelRun
- * @section_id:
- * @include: ags/audio/recall/ags_loop_channel_run.h
- *
- * The #AgsLoopChannelRun class loops the channel.
- */
 
 enum{
   PROP_0,
@@ -579,8 +572,7 @@ ags_loop_channel_run_create_audio_signals(AgsLoopChannelRun *loop_channel_run)
   AgsDevout *devout;
   AgsRecycling *recycling;
   AgsAudioSignal *audio_signal;
-  gdouble delay;
-  guint attack;
+  guint delay, attack;
   guint tic_counter_incr;
 
   //  g_message("debug\0");
@@ -593,11 +585,10 @@ ags_loop_channel_run_create_audio_signals(AgsLoopChannelRun *loop_channel_run)
   /* delay and attack */
   tic_counter_incr = devout->tic_counter + 1;
 
-  //TODO:JK: unclear
   attack = 0;// devout->attack[((tic_counter_incr == AGS_NOTATION_TICS_PER_BEAT) ?
   //		   0:
   //			   tic_counter_incr)];
-  delay = 0.0; //devout->delay[((tic_counter_incr == AGS_NOTATION_TICS_PER_BEAT) ?
+  delay = 0; //devout->delay[((tic_counter_incr == AGS_NOTATION_TICS_PER_BEAT) ?
   //		 0:
   //			 tic_counter_incr)];
 
@@ -708,18 +699,6 @@ ags_loop_channel_run_read_resolve_dependency(AgsFileLookup *file_lookup,
   }
 }
 
-/**
- * ags_loop_channel_run_new:
- * @channel: the #AgsChannel as source
- * @count_beats_audio_run: an #AgsCountBeatsAudioRun
- * @is_template: if %TRUE recall is templated
- *
- * Creates an #AgsLoopChannelRun
- *
- * Returns: a new #AgsLoopChannelRun
- *
- * Since: 0.4
- */
 AgsLoopChannelRun*
 ags_loop_channel_run_new(AgsChannel *channel,
 			 AgsCountBeatsAudioRun *count_beats_audio_run,

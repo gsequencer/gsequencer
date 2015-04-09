@@ -20,12 +20,6 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
-#include <ags/audio/ags_audio.h>
-#include <ags/audio/ags_channel.h>
-#include <ags/audio/ags_recall_container.h>
-#include <ags/audio/ags_recall_audio_run.h>
-#include <ags/audio/ags_recall_channel_run.h>
-
 #include <math.h>
 
 void ags_remove_recall_class_init(AgsRemoveRecallClass *remove_recall);
@@ -36,16 +30,6 @@ void ags_remove_recall_disconnect(AgsConnectable *connectable);
 void ags_remove_recall_finalize(GObject *gobject);
 
 void ags_remove_recall_launch(AgsTask *task);
-
-/**
- * SECTION:ags_remove_recall
- * @short_description: remove recall object to context
- * @title: AgsRemoveRecall
- * @section_id:
- * @include: ags/audio/task/ags_remove_recall.h
- *
- * The #AgsRemoveRecall task removes #AgsRecall to context.
- */
 
 static gpointer ags_remove_recall_parent_class = NULL;
 static AgsConnectableInterface *ags_remove_recall_parent_connectable_interface;
@@ -118,10 +102,7 @@ ags_remove_recall_connectable_interface_init(AgsConnectableInterface *connectabl
 void
 ags_remove_recall_init(AgsRemoveRecall *remove_recall)
 {
-  remove_recall->context = NULL;
   remove_recall->recall = NULL;
-  remove_recall->is_play = FALSE;
-  remove_recall->remove_all = FALSE;
 }
 
 void
@@ -155,87 +136,19 @@ ags_remove_recall_launch(AgsTask *task)
 
   remove_recall = AGS_REMOVE_RECALL(task);
 
-  if(AGS_IS_AUDIO(remove_recall->context)){
-    if(remove_recall->remove_all){
-      GList *list;
-
-      if(AGS_IS_RECALL_AUDIO_RUN(remove_recall->recall)){
-	list = AGS_RECALL_CONTAINER(remove_recall->recall->container)->recall_audio_run;
-
-	while(list != NULL){
-	  if(list->data != remove_recall->recall){
-	    ags_audio_remove_recall(AGS_AUDIO(remove_recall->context),
-				    list->data,
-				    remove_recall->is_play);
-	  }
-	  
-	  list = list->next;	  
-	}
-      }
-    }
-
-    ags_audio_remove_recall(AGS_AUDIO(remove_recall->context),
-			    remove_recall->recall,
-			    remove_recall->is_play);
-
-  }else if(AGS_IS_CHANNEL(remove_recall->context)){
-    if(remove_recall->remove_all){
-      GList *list;
-
-      if(AGS_IS_RECALL_CHANNEL_RUN(remove_recall->recall)){
-	list = AGS_RECALL_CONTAINER(remove_recall->recall->container)->recall_channel_run;
-
-	while(list != NULL){
-	  if(list->data != remove_recall->recall){
-	    ags_channel_remove_recall(AGS_CHANNEL(remove_recall->context),
-				      list->data,
-				      remove_recall->is_play);
-	  }
-	  
-	  list = list->next;
-	}
-      }
-    }
-
-    ags_channel_remove_recall(AGS_CHANNEL(remove_recall->context),
-			      remove_recall->recall,
-			      remove_recall->is_play);
-  }else if(AGS_IS_RECALL(remove_recall->context)){
-    ags_recall_remove_child(AGS_RECALL(remove_recall->context),
-			    remove_recall->recall);
-  }else{
-    ags_recall_remove(remove_recall->recall);
-  }
+  ags_recall_remove(remove_recall->recall);
 }
 
-/**
- * ags_remove_recall_new:
- * @context: may be #AgsAudio, #AgsChannel or #AgsRecall
- * @recall: the #AgsRecall to remove
- * @is_play: if %TRUE non-complex recall
- * @remove_all: if %TRUE all related will be removed
- *
- * Creates an #AgsRemoveRecall.
- *
- * Returns: an new #AgsRemoveRecall.
- *
- * Since: 0.4
- */
 AgsRemoveRecall*
-ags_remove_recall_new(GObject *context,
-		      AgsRecall *recall,
-		      gboolean is_play,
-		      gboolean remove_all)
+ags_remove_recall_new(AgsRecall *recall)
 {
   AgsRemoveRecall *remove_recall;
 
   remove_recall = (AgsRemoveRecall *) g_object_new(AGS_TYPE_REMOVE_RECALL,
-						   NULL);  
+						   NULL);
+  
 
-  remove_recall->context = context;
   remove_recall->recall = recall;
-  remove_recall->is_play = is_play;
-  remove_recall->remove_all = remove_all;
 
   return(remove_recall);
 }

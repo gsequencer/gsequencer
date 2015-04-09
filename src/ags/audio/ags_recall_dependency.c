@@ -35,17 +35,6 @@ void ags_recall_dependency_connect(AgsConnectable *connectable);
 void ags_recall_dependency_disconnect(AgsConnectable *connectable);
 void ags_recall_dependency_finalize(GObject *gobject);
 
-/**
- * SECTION:ags_recall_dependency
- * @short_description: Object specifing dependency
- * @title: AgsRecallDependency
- * @section_id:
- * @include: ags/audio/ags_recall_dependency.h
- *
- * #AgsRecallDependency specifies dependencies on other recalls. Dependencies
- * are resolved during initialization.
- */
-
 static gpointer ags_recall_dependency_parent_class = NULL;
 
 GType
@@ -127,17 +116,6 @@ ags_recall_dependency_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_recall_dependency_parent_class)->finalize(gobject);
 }
 
-/**
- * ags_recall_dependency_find_dependency:
- * @recall_dependencies: a #GList containing  #AgsRecallDependency
- * @dependency: the #AgsRecall depending on
- *
- * Retrieve dependency.
- *
- * Returns: Next match.
- * 
- * Since: 0.4.0
- */
 GList*
 ags_recall_dependency_find_dependency(GList *recall_dependencies, GObject *dependency)
 {
@@ -156,17 +134,6 @@ ags_recall_dependency_find_dependency(GList *recall_dependencies, GObject *depen
   return(NULL);
 }
 
-/**
- * ags_recall_dependency_find_dependency_by_provider:
- * @recall_dependencies: a #GList containing  #AgsRecallDependency
- * @provider: the object providing recall, like #AgsAudio or #AgsChannel
- *
- * Retrieve dependency by provider.
- *
- * Returns: Next match.
- * 
- * Since: 0.4.0
- */
 GList*
 ags_recall_dependency_find_dependency_by_provider(GList *recall_dependencies,
 						  GObject *provider)
@@ -191,17 +158,6 @@ ags_recall_dependency_find_dependency_by_provider(GList *recall_dependencies,
   return(NULL);
 }
 
-/**
- * ags_recall_dependency_resolve:
- * @recall_dependeny: an #AgsRecallDependency
- * @recall_id: the #AgsRecallID refering to
- *
- * Resolve dependency.
- *
- * Returns: the #AgsRecall dependency.
- * 
- * Since: 0.4.0
- */
 GObject*
 ags_recall_dependency_resolve(AgsRecallDependency *recall_dependency, AgsRecallID *recall_id)
 {
@@ -210,83 +166,44 @@ ags_recall_dependency_resolve(AgsRecallDependency *recall_dependency, AgsRecallI
   
   if(recall_dependency->dependency == NULL ||
      AGS_RECALL(recall_dependency->dependency)->container == NULL){
-    g_message("dependency resolve: container == NULL");
     return(NULL);
   }
 
   dependency = AGS_RECALL(recall_dependency->dependency);
-  recall_container = AGS_RECALL_CONTAINER(dependency->container);
+  recall_container = AGS_RECALL_CONTAINER(AGS_RECALL(recall_dependency->dependency)->container);
   
   if(AGS_IS_RECALL_AUDIO(dependency)){
     return((GObject *) recall_container->recall_audio);
   }else if(AGS_IS_RECALL_AUDIO_RUN(dependency)){
     GList *recall_list;
 
-    if(recall_id == NULL){
-      g_message("dependency resolve: recall_id == NULL");
-      return(NULL);
-    }
-
     recall_list = ags_recall_find_recycling_container(recall_container->recall_audio_run,
 						      recall_id->recycling_container);
 
-    if(recall_list != NULL){
+    if(recall_list != NULL)
       return(G_OBJECT(recall_list->data));
-    }else{
-      recall_list = ags_recall_find_recycling_container(recall_container->recall_audio_run,
-							recall_id->recycling_container->parent);
-
-      if(recall_list != NULL){
-	return(G_OBJECT(recall_list->data));
-      }
-    }
   }else if(AGS_IS_RECALL_CHANNEL(dependency)){
     GList *recall_list;
 
     recall_list = ags_recall_find_provider(recall_container->recall_channel,
 					   (GObject *) AGS_RECALL_CHANNEL(dependency)->source);
 
-    if(recall_list != NULL){
+    if(recall_list != NULL)
       return(G_OBJECT(recall_list->data));
-    }
   }else if(AGS_IS_RECALL_CHANNEL_RUN(dependency)){
     GList *recall_list;
-
-    if(recall_id == NULL){
-      g_message("dependency resolve: recall_id == NULL");
-      return(NULL);
-    }
 
     recall_list = ags_recall_find_provider_with_recycling_container(recall_container->recall_channel_run,
 								    (GObject *) AGS_RECALL_CHANNEL_RUN(dependency)->recall_channel->source,
 								    recall_id->recycling_container);
 
-    if(recall_list != NULL){
+    if(recall_list != NULL)
       return(G_OBJECT(recall_list->data));
-    }else{
-      recall_list = ags_recall_find_provider_with_recycling_container(recall_container->recall_channel_run,
-								      (GObject *) AGS_RECALL_CHANNEL_RUN(dependency)->recall_channel->source,
-								      recall_id->recycling_container->parent);
-
-      if(recall_list != NULL){
-	return(G_OBJECT(recall_list->data));
-      }      
-    }
   }
 
   return(NULL);
 }
 
-/**
- * ags_recall_dependency_new:
- * @dependency: the #AgsRecall depending on
- *
- * Creates a #AgsRecallDependency
- *
- * Returns: a new #AgsRecallDependency
- * 
- * Since: 0.4.0
- */
 AgsRecallDependency*
 ags_recall_dependency_new(GObject *dependency)
 {

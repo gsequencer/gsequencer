@@ -36,26 +36,15 @@ void ags_play_notation_audio_get_property(GObject *gobject,
 void ags_play_notation_audio_finalize(GObject *gobject);
 void ags_play_notation_audio_set_ports(AgsPlugin *plugin, GList *port);
 
-/**
- * SECTION:ags_play_notation_audio
- * @short_description: play audio notation
- * @title: AgsPlayNotationAudio
- * @section_id:
- * @include: ags/audio/recall/ags_play_notation_audio.h
- *
- * The #AgsPlayNotationAudio class provides ports to the effect processor.
- */
-
 enum{
   PROP_0,
   PROP_NOTATION,
-  PROP_MONOTONIC,
 };
 
 static gpointer ags_play_notation_audio_parent_class = NULL;
 static AgsPluginInterface *ags_play_notation_parent_plugin_interface;
 
-static const gchar *ags_play_notation_audio_plugin_name = "ags-play-notation\0";
+static const gchar *ags_play_notation_audio_plugin_name = "ags-play\0";
 static const gchar *ags_play_notation_audio_specifier[] = {
   "./notation[0]\0"
 };
@@ -251,15 +240,6 @@ ags_play_notation_audio_set_ports(AgsPlugin *plugin, GList *port)
   }
 }
 
-/**
- * ags_play_notation_audio_new:
- *
- * Creates an #AgsPlayNotationAudio
- *
- * Returns: a new #AgsPlayNotationAudio
- *
- * Since: 0.4
- */
 AgsPlayNotationAudio*
 ags_play_notation_audio_new()
 {

@@ -22,16 +22,6 @@
 
 void ags_tactable_class_init(AgsTactableInterface *interface);
 
-/**
- * SECTION:ags_tactable
- * @short_description: Unique tempo set or attributes access
- * @title: AgsTactable
- * @section_id:
- * @include: ags/object/ags_tactable.h
- *
- * The #AgsTactable interface gives you a unique access to modify tempo.
- */
-
 GType
 ags_tactable_get_type()
 {
@@ -51,14 +41,6 @@ ags_tactable_get_type()
 void
 ags_tactable_class_init(AgsTactableInterface *interface)
 {
-  /**
-   * AgsTactable::change-sequencer-duration:
-   * @tactable: the object
-   * @duration: new duration
-   *
-   * The ::change-sequencer-duration signal notifies about changed duration
-   * of sequencer.
-   */
   g_signal_new("change_sequencer_duration\0",
 	       G_TYPE_FROM_INTERFACE(interface),
 	       G_SIGNAL_RUN_LAST,
@@ -68,14 +50,6 @@ ags_tactable_class_init(AgsTactableInterface *interface)
 	       G_TYPE_NONE, 1,
 	       G_TYPE_DOUBLE);
 
-  /**
-   * AgsTactable::change-notation-duration:
-   * @tactable: the object
-   * @duration: new duration
-   *
-   * The ::change-notation-duration signal notifies about changed duration
-   * of notation.
-   */
   g_signal_new("change_notation_duration\0",
 	       G_TYPE_FROM_INTERFACE(interface),
 	       G_SIGNAL_RUN_LAST,
@@ -85,13 +59,6 @@ ags_tactable_class_init(AgsTactableInterface *interface)
 	       G_TYPE_NONE, 1,
 	       G_TYPE_DOUBLE);
 
-  /**
-   * AgsTactable::change-tact
-   * @tactable: the object
-   * @tact: new tact
-   *
-   * The ::change-tact signal notifies about changed tact.
-   */
   g_signal_new("change_tact\0",
 	       G_TYPE_FROM_INTERFACE(interface),
 	       G_SIGNAL_RUN_LAST,
@@ -101,13 +68,6 @@ ags_tactable_class_init(AgsTactableInterface *interface)
 	       G_TYPE_NONE, 1,
 	       G_TYPE_DOUBLE);
 
-  /**
-   * AgsTactable::change-bpm:
-   * @tactable: the object
-   * @duration: new duration
-   *
-   * The ::change-bpm signal notifies about changed bpm.
-   */
   g_signal_new("change_bpm\0",
 	       G_TYPE_FROM_INTERFACE(interface),
 	       G_SIGNAL_RUN_LAST,
@@ -118,13 +78,6 @@ ags_tactable_class_init(AgsTactableInterface *interface)
 	       G_TYPE_DOUBLE);
 }
 
-/**
- * ags_tactable_change_sequencer_duration:
- * @tactable: an #AgsTactable
- * @duration: the duration
- *
- * Sequencer duration changed.
- */
 void
 ags_tactable_change_sequencer_duration(AgsTactable *tactable, double duration)
 {
@@ -136,13 +89,6 @@ ags_tactable_change_sequencer_duration(AgsTactable *tactable, double duration)
   tactable_interface->change_sequencer_duration(tactable, duration);
 }
 
-/**
- * ags_tactable_change_notation_duration:
- * @tactable: an #AgsTactable
- * @duration: the duration
- *
- * Notation duration changed.
- */
 void
 ags_tactable_change_notation_duration(AgsTactable *tactable, double duration)
 {
@@ -154,13 +100,6 @@ ags_tactable_change_notation_duration(AgsTactable *tactable, double duration)
   tactable_interface->change_notation_duration(tactable, duration);
 }
 
-/**
- * ags_tactable_change_tact:
- * @tactable: an #AgsTactable
- * @tact: the tact
- *
- * Tact changed.
- */
 void
 ags_tactable_change_tact(AgsTactable *tactable, double tact)
 {
@@ -172,13 +111,6 @@ ags_tactable_change_tact(AgsTactable *tactable, double tact)
   tactable_interface->change_tact(tactable, tact);
 }
 
-/**
- * ags_tactable_change_bpm:
- * @tactable: an #AgsTactable
- * @bpm: the bpm
- *
- * Bpm changed.
- */
 void
 ags_tactable_change_bpm(AgsTactable *tactable, double bpm)
 {

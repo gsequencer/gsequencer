@@ -21,8 +21,6 @@
 
 #include <ags/object/ags_main_loop.h>
 
-#include <ags/plugin/ags_ladspa_manager.h>
-
 #include <ags/file/ags_file.h>
 
 #include <ags/thread/ags_audio_loop.h>
@@ -47,15 +45,10 @@
 #include <stdio.h>
 #include <signal.h>
 #include <unistd.h>
-#include <sys/resource.h>
-#include <mcheck.h>
 
 #include <X11/Xlib.h>
 
 #include <gdk/gdk.h>
-
-#include <sys/types.h>
-#include <pwd.h>
 
 #include "config.h"
 
@@ -74,23 +67,19 @@ void ags_signal_handler(int signr);
 static gpointer ags_main_parent_class = NULL;
 static sigset_t ags_wait_mask;
 
-pthread_mutex_t ags_application_mutex = PTHREAD_MUTEX_INITIALIZER;
 static const gchar *ags_config_thread = AGS_CONFIG_THREAD;
 static const gchar *ags_config_devout = AGS_CONFIG_DEVOUT;
 
 extern void ags_thread_resume_handler(int sig);
 extern void ags_thread_suspend_handler(int sig);
 
-extern AgsConfig *config;
-
 extern GtkStyle *matrix_style;
 extern GtkStyle *ffplayer_style;
 extern GtkStyle *editor_style;
 extern GtkStyle *notebook_style;
+extern GtkStyle *ruler_style;
 extern GtkStyle *meter_style;
 extern GtkStyle *note_edit_style;
-
-extern AgsLadspaManager *ags_ladspa_manager;
 
 struct sigaction ags_sigact;
 
@@ -154,24 +143,7 @@ ags_main_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_main_init(AgsMain *ags_main)
 {
-  GFile *file;
   struct sigaction sa;
-  struct passwd *pw;
-  uid_t uid;
-  gchar *wdir, *filename;
-    
-  uid = getuid();
-  pw = getpwuid(uid);
-  
-  wdir = g_strdup_printf("%s/%s\0",
-			 pw->pw_dir,
-			 AGS_DEFAULT_DIRECTORY);
-
-  file = g_file_new_for_path(wdir);
-
-  g_file_make_directory(file,
-			NULL,
-			NULL);
 
   ags_main->flags = 0;
 
@@ -184,13 +156,7 @@ ags_main_init(AgsMain *ags_main)
   ags_colors_alloc();
 
   ags_main->main_loop = NULL;
-
-  /* AgsAutosaveThread */
   ags_main->autosave_thread = NULL;
-  ags_main->autosave_thread = ags_autosave_thread_new(NULL, ags_main);
-  g_object_ref(G_OBJECT(ags_main->autosave_thread));
-  ags_connectable_connect(AGS_CONNECTABLE(ags_main->autosave_thread));
-  
   ags_main->thread_pool = ags_thread_pool_new(NULL);
   ags_main->server = NULL;
   ags_main->devout = NULL;
@@ -210,16 +176,7 @@ ags_main_init(AgsMain *ags_main)
   sa.sa_handler = ags_thread_suspend_handler;
   sigaction(AGS_THREAD_SUSPEND_SIG, &sa, NULL);
   
-  filename = g_strdup_printf("%s/%s\0",
-			     wdir,
-			     AGS_DEFAULT_CONFIG);
-
-  ags_main->config = config;
-  //TODO:JK: ugly
-  config->ags_main = ags_main;
-
-  g_free(filename);
-  g_free(wdir);
+  ags_main->config = ags_config_new();
 }
 
 void
@@ -419,27 +376,26 @@ ags_colors_alloc()
 
 
     /* ruler style */
-    //TODO:JK: deprecated
-    //    ruler_style = gtk_style_new();
-    //    ruler_style->fg[0].red = 255 * (65535/255);
-    //    ruler_style->fg[0].green = 240 *(65535/255);
-    //    ruler_style->fg[0].blue = 200 * (65535/255);
-    //    ruler_style->fg[0].pixel = (gulong)(255*65536 + 240*256 + 200);
+    ruler_style = gtk_style_new();
+    ruler_style->fg[0].red = 255 * (65535/255);
+    ruler_style->fg[0].green = 240 *(65535/255);
+    ruler_style->fg[0].blue = 200 * (65535/255);
+    ruler_style->fg[0].pixel = (gulong)(255*65536 + 240*256 + 200);
 
-    //    ruler_style->bg[0].red = 40 * (65535/255);
-    //    ruler_style->bg[0].green = 40 *(65535/255);
-    //    ruler_style->bg[0].blue = 40 * (65535/255);
-    //    ruler_style->bg[0].pixel = (gulong)(40*65536 + 40*256 + 40);
+    ruler_style->bg[0].red = 40 * (65535/255);
+    ruler_style->bg[0].green = 40 *(65535/255);
+    ruler_style->bg[0].blue = 40 * (65535/255);
+    ruler_style->bg[0].pixel = (gulong)(40*65536 + 40*256 + 40);
 
-    //    ruler_style->mid[0].red = 250 * (65535/255);
-    //    ruler_style->mid[0].green = 0 *(65535/255);
-    //    ruler_style->mid[0].blue = 250 * (65535/255);
-    //    ruler_style->mid[0].pixel = (gulong)(150*65536 + 150*256 + 250);
+    ruler_style->mid[0].red = 250 * (65535/255);
+    ruler_style->mid[0].green = 0 *(65535/255);
+    ruler_style->mid[0].blue = 250 * (65535/255);
+    ruler_style->mid[0].pixel = (gulong)(150*65536 + 150*256 + 250);
 
-    //    ruler_style->base[0].red = 250 * (65535/255);
-    //    ruler_style->base[0].green = 250 *(65535/255);
-    //    ruler_style->base[0].blue = 250 * (65535/255);
-    //    ruler_style->base[0].pixel = (gulong)(250*65536 + 250*256 + 250);
+    ruler_style->base[0].red = 250 * (65535/255);
+    ruler_style->base[0].green = 250 *(65535/255);
+    ruler_style->base[0].blue = 250 * (65535/255);
+    ruler_style->base[0].pixel = (gulong)(250*65536 + 250*256 + 250);
 
 
     /* meter style */
@@ -598,8 +554,7 @@ void
 ags_main_add_devout(AgsMain *ags_main,
 		    AgsDevout *devout)
 {
-  if(ags_main == NULL ||
-     devout == NULL){
+  if(devout == NULL){
     return;
   }
 
@@ -627,13 +582,6 @@ ags_main_register_recall_type()
 
   ags_volume_channel_get_type();
   ags_volume_channel_run_get_type();
-
-  ags_peak_channel_get_type();
-  ags_peak_channel_run_get_type();
-
-  ags_recall_ladspa_get_type();
-  ags_recall_channel_run_dummy_get_type();
-  ags_recall_ladspa_run_get_type();
 
   ags_delay_audio_get_type();
   ags_delay_audio_run_get_type();
@@ -754,37 +702,13 @@ main(int argc, char **argv)
   AgsDevout *devout;
   AgsWindow *window;
   AgsGuiThread *gui_thread;
-  GFile *autosave_file;
+  gchar *filename;
   struct sched_param param;
-  struct rlimit rl;
-  gchar *filename, *autosave_filename;
-
-  struct passwd *pw;
-  uid_t uid;
-  gchar *wdir, *config_file;
-  int result;
+  const char *error;
   gboolean single_thread = FALSE;
   guint i;
 
-  const char *error;
-  const rlim_t kStackSize = 128L * 1024L * 1024L;   // min stack size = 128 Mb
-
-  //  mtrace();
   atexit(ags_signal_cleanup);
-
-  result = getrlimit(RLIMIT_STACK, &rl);
-
-  /* set stack size 64M */
-  if(result == 0){
-    if(rl.rlim_cur < kStackSize){
-      rl.rlim_cur = kStackSize;
-      result = setrlimit(RLIMIT_STACK, &rl);
-
-      if(result != 0){
-	//TODO:JK
-      }
-    }
-  }
 
   /* Ignore interactive and job-control signals.  */
   signal(SIGINT, SIG_IGN);
@@ -824,48 +748,24 @@ main(int argc, char **argv)
     }
   }
 
-  config = ags_config_new();
-  uid = getuid();
-  pw = getpwuid(uid);
-  
-  wdir = g_strdup_printf("%s/%s\0",
-			 pw->pw_dir,
-			 AGS_DEFAULT_DIRECTORY);
-
-  config_file = g_strdup_printf("%s/%s\0",
-				wdir,
-				AGS_DEFAULT_CONFIG);
-
-  ags_config_load_from_file(config,
-			    config_file);
-
-  g_free(wdir);
-  g_free(config_file);
-
   if(filename != NULL){
     AgsFile *file;
 
     file = g_object_new(AGS_TYPE_FILE,
 			"filename\0", filename,
 			NULL);
-    ags_file_open(file);
     ags_file_read(file);
 
     ags_main = AGS_MAIN(file->ags_main);
-    ags_file_close(file);
-
-    ags_thread_start(ags_main->main_loop);
-
-    /* complete thread pool */
-    ags_main->thread_pool->parent = AGS_THREAD(ags_main->main_loop);
-    ags_thread_pool_start(ags_main->thread_pool);
 
 #ifdef _USE_PTH
     pth_join(AGS_AUDIO_LOOP(ags_main->main_loop)->gui_thread->thread,
 	     NULL);
 #else
+    g_message("joining\0");
     pthread_join(AGS_AUDIO_LOOP(ags_main->main_loop)->gui_thread->thread,
 		 NULL);
+    g_message("done\0");
 #endif
   }else{
     ags_main = ags_main_new();
@@ -874,14 +774,15 @@ main(int argc, char **argv)
       ags_main->flags = AGS_MAIN_SINGLE_THREAD;
     }
 
+
     /* Declare ourself as a real time task */
     param.sched_priority = AGS_PRIORITY;
 
-    if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
-      perror("sched_setscheduler failed\0");
-    }
+    //    if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
+    //      perror("sched_setscheduler failed\0");
+    //    }
 
-    mlockall(MCL_CURRENT | MCL_FUTURE);
+    //    mlockall(MCL_CURRENT | MCL_FUTURE);
 
     if((AGS_MAIN_SINGLE_THREAD & (ags_main->flags)) == 0){
       //      GdkFrameClock *frame_clock;
@@ -896,11 +797,6 @@ main(int argc, char **argv)
       devout = ags_devout_new((GObject *) ags_main);
       ags_main_add_devout(ags_main,
 			  devout);
-
-      /*  */
-      g_object_set(G_OBJECT(ags_main->autosave_thread),
-		   "devout\0", devout,
-		   NULL);
 
       /* AgsWindow */
       ags_main->window =
@@ -924,22 +820,33 @@ main(int argc, char **argv)
       g_object_ref(G_OBJECT(ags_main->main_loop));
       ags_connectable_connect(AGS_CONNECTABLE(ags_main->main_loop));
 
+      /* set appropriate freq of GUI thread*/
+      //TODO:JK: uncomment me
+      //      frame_clock = gdk_window_get_frame_clock(GTK_WIDGET(window)->window);
+      //      AGS_AUDIO_LOOP(ags_main->main_loop)->gui_thread->freq = MSEC_PER_SEC / gdk_frame_clock_get_frame_time(frame_clock);
+
       /* start thread tree */
       ags_thread_start(ags_main->main_loop);
 
-      /* complete thread pool */
-      ags_main->thread_pool->parent = AGS_THREAD(ags_main->main_loop);
-      ags_thread_pool_start(ags_main->thread_pool);
+      /* AgsAutosaveThread */
+      //TODO:JK: uncomment me
+      ags_main->autosave_thread = NULL;
+      //      ags_main->autosave_thread = ags_autosave_thread_new(devout, ags_main);
+      //      g_object_ref(G_OBJECT(ags_main->autosave_thread));
+
+      //      ags_connectable_connect(AGS_CONNECTABLE(ags_main->autosave_thread));
+
+      //      ags_thread_start(ags_main->autosave_thread);
+
+      //TODO:JK: buggy
+      //      ags_config_load_defaults(ags_main->config);
+      //      ags_main_load_config(ags_main);
     }else{
       AgsSingleThread *single_thread;
 
       devout = ags_devout_new((GObject *) ags_main);
       ags_main_add_devout(ags_main,
 			  devout);
-
-      g_object_set(G_OBJECT(ags_main->autosave_thread),
-		   "devout\0", devout,
-		   NULL);
 
       /* threads */
       single_thread = ags_single_thread_new((GObject *) devout);
@@ -950,6 +857,7 @@ main(int argc, char **argv)
       g_object_set(G_OBJECT(window),
 		   "devout\0", devout,
 		   NULL);
+
       gtk_window_set_default_size((GtkWindow *) window, 500, 500);
       gtk_paned_set_position((GtkPaned *) window->paned, 300);
 
@@ -960,13 +868,23 @@ main(int argc, char **argv)
       ags_main->main_loop = AGS_MAIN_LOOP(ags_audio_loop_new((GObject *) devout, (GObject *) ags_main));
       g_object_ref(G_OBJECT(ags_main->main_loop));
 
-      /* complete thread pool */
-      ags_main->thread_pool->parent = AGS_THREAD(ags_main->main_loop);
-      ags_thread_pool_start(ags_main->thread_pool);
-
       /* start thread tree */
       ags_thread_start((AgsThread *) single_thread);
+
+      /* AgsAutosaveThread */
+      //TODO:JK: uncomment me
+      ags_main->autosave_thread = NULL;
+      //      ags_main->autosave_thread = ags_autosave_thread_new(devout, ags_main);
+      //      g_object_ref(G_OBJECT(ags_main->autosave_thread));
+
+      //      ags_connectable_connect(AGS_CONNECTABLE(ags_main->autosave_thread));
+
+      //      ags_thread_start(ags_main->autosave_thread);
     }
+
+    //TODO:JK: buggy
+    //    ags_config_load_defaults(ags_main->config);
+    //    ags_main_load_config(ags_main);
 
     if(!single_thread){
       /* join gui thread */
@@ -979,34 +897,6 @@ main(int argc, char **argv)
 #endif
     }
   }
-
-  /* free managers */
-  if(ags_ladspa_manager != NULL){
-    g_object_unref(ags_ladspa_manager_get_instance());
-  }
-
-  uid = getuid();
-  pw = getpwuid(uid);
-  
-  autosave_filename = g_strdup_printf("%s/%s/%d-%s\0",
-				      pw->pw_dir,
-				      AGS_DEFAULT_DIRECTORY,
-				      getpid(),
-				      AGS_AUTOSAVE_THREAD_DEFAULT_FILENAME);
-  
-  autosave_file = g_file_new_for_path(autosave_filename);
-
-  if(g_file_query_exists(autosave_file,
-			 NULL)){
-    g_file_delete(autosave_file,
-		  NULL,
-		  NULL);
-  }
-
-  g_free(autosave_filename);
-  g_object_unref(autosave_file);
-
-  //  muntrace();
 
   return(0);
 }

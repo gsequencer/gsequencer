@@ -37,8 +37,6 @@ typedef struct _AgsStreamChannelClass AgsStreamChannelClass;
 struct _AgsStreamChannel
 {
   AgsRecallChannel recall_channel;
-
-  AgsPort *auto_sense;
 };
 
 struct _AgsStreamChannelClass

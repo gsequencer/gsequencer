@@ -73,7 +73,7 @@ struct _AgsTaskThreadClass
 
 struct _AgsTaskThreadAppend
 {
-  volatile AgsTaskThread *task_thread;
+  AgsTaskThread *task_thread;
   volatile gpointer data;
 };
 

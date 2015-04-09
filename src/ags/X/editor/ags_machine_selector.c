@@ -28,16 +28,6 @@ void ags_machine_selector_connect(AgsConnectable *connectable);
 void ags_machine_selector_disconnect(AgsConnectable *connectable);
 void ags_machine_selector_show(GtkWidget *widget);
 
-/**
- * SECTION:ags_machine_selector
- * @short_description: machine radio buttons
- * @title: AgsMachineSelector
- * @section_id:
- * @include: ags/X/editor/ags_machine_selector.h
- *
- * The #AgsMachineSelector enables you make choice of an #AgsMachine.
- */
-
 enum{
   CHANGED,
   LAST_SIGNAL,
@@ -158,13 +148,6 @@ ags_machine_selector_disconnect(AgsConnectable *connectable)
   //TODO:JK: implement me
 }
 
-/**
- * ags_machine_selector_changed:
- *
- * Emitted as #AgsMachineSelector modified.
- *
- * Since: 0.4
- */
 void
 ags_machine_selector_changed(AgsMachineSelector *machine_selector, AgsMachine *machine)
 {
@@ -177,13 +160,6 @@ ags_machine_selector_changed(AgsMachineSelector *machine_selector, AgsMachine *m
   g_object_unref((GObject *) machine_selector);
 }
 
-/**
- * ags_machine_selector_new:
- *
- * Create a new #AgsMachineSelector.
- *
- * Since: 0.4
- */
 AgsMachineSelector*
 ags_machine_selector_new()
 {
@@ -195,19 +171,12 @@ ags_machine_selector_new()
   return(machine_selector);
 }
 
-/**
- * ags_machine_selector_popup_new:
- *
- * Create a new #AgsMachineSelectorPopup.
- *
- * Since: 0.4
- */
 GtkMenu*
 ags_machine_selector_popup_new(AgsMachineSelector *machine_selector)
 {
   GtkMenu *popup;
   GtkMenuItem *item;
-  GList *list, *list_start;
+  GList *list;
 
   popup = (GtkMenu *) gtk_menu_new();
   g_object_set_data((GObject *) popup, g_type_name(AGS_TYPE_MACHINE_SELECTOR), machine_selector);
@@ -227,8 +196,7 @@ ags_machine_selector_popup_new(AgsMachineSelector *machine_selector)
   item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("link index\0"));
   gtk_menu_shell_append((GtkMenuShell*) popup, (GtkWidget*) item);
 
-  list_start = 
-    list = gtk_container_get_children((GtkContainer *) popup);
+  list = gtk_container_get_children((GtkContainer *) popup);
 
   g_signal_connect(G_OBJECT(list->data), "activate\0",
 		   G_CALLBACK(ags_machine_selector_popup_add_tab_callback), (gpointer) machine_selector);
@@ -249,7 +217,6 @@ ags_machine_selector_popup_new(AgsMachineSelector *machine_selector)
   g_signal_connect(G_OBJECT(list->data), "activate\0",
 		   G_CALLBACK(ags_machine_selector_popup_link_index_callback), (gpointer) machine_selector);
 
-  g_list_free(list_start);
   gtk_widget_show_all((GtkWidget *) popup);
 
   return(popup);

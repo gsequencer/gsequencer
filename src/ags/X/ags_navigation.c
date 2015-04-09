@@ -43,17 +43,6 @@ void ags_navigation_show(GtkWidget *widget);
 void ags_navigation_real_change_position(AgsNavigation *navigation,
 					 gdouble tact);
 
-/**
- * SECTION:ags_navigation
- * @short_description: control audio object's playback.
- * @title: AgsNavigation
- * @section_id:
- * @include: ags/X/ags_navigation.h
- *
- * #AgsNavigation is a composite widget to control playback of #AgsAudio objects.
- * It can start #AgsMachine in bulk mode or position the stream.
- */
-
 enum{
   PROP_0,
   PROP_DEVOUT,
@@ -121,13 +110,6 @@ ags_navigation_class_init(AgsNavigationClass *navigation)
   gobject->finalize = ags_navigation_finalize;
 
   /* properties */
-  /**
-   * AgsNavigation:devout:
-   *
-   * The assigned #AgsDevout to use as default sink.
-   * 
-   * Since: 0.4
-   */
   param_spec = g_param_spec_object("devout\0",
 				   "assigned devout\0",
 				   "The devout it is assigned with\0",
@@ -141,13 +123,6 @@ ags_navigation_class_init(AgsNavigationClass *navigation)
   navigation->change_position = ags_navigation_real_change_position;
 
   /* signals */
-  /**
-   * AgsNavigation::change-position:
-   * @navigation: the #AgsNavigation
-   * @tact: the new position
-   *
-   * The ::change-position seeks the stream.
-   */
   navigation_signals[CHANGE_POSITION] =
     g_signal_new("change-position\0",
 		 G_TYPE_FROM_CLASS (navigation),
@@ -174,7 +149,7 @@ ags_navigation_init(AgsNavigation *navigation)
   GtkHBox *hbox;
   GtkLabel *label;
 
-  navigation->flags = AGS_NAVIGATION_BLOCK_TIC;
+  navigation->flags = 0;
 
   navigation->devout = NULL;
 
@@ -386,9 +361,6 @@ ags_navigation_connect(AgsConnectable *connectable)
   g_signal_connect_after((GObject *) navigation->devout, "tic\0",
   			 G_CALLBACK(ags_navigation_tic_callback), (gpointer) navigation);
 
-  g_signal_connect_after((GObject *) navigation->devout, "stop\0",
-  			 G_CALLBACK(ags_navigation_devout_stop_callback), (gpointer) navigation);
-
   /* expansion */
   g_signal_connect((GObject *) navigation->loop_left_tact, "value-changed\0",
 		   G_CALLBACK(ags_navigation_loop_left_tact_callback), (gpointer) navigation);
@@ -406,13 +378,11 @@ ags_navigation_disconnect(AgsConnectable *connectable)
 void
 ags_navigation_finalize(GObject *gobject)
 {
-  /* empty */
 }
 
 void
 ags_navigation_destroy(GtkObject *object)
 {
-  /* empty */
 }
 
 void
@@ -420,61 +390,10 @@ ags_navigation_show(GtkWidget *widget)
 {
   GList *list;
 
-  /* empty */
-  //  list = gtk_container_get_children((GtkContainer *) widget);
+  list = gtk_container_get_children((GtkContainer *) widget);
   //  GTK_WIDGET_UNSET_FLAGS((GtkWidget *) list->next->data, GTK_NO_SHOW_ALL);
 }
 
-void
-ags_navigation_real_change_position(AgsNavigation *navigation,
-				    gdouble tact)
-{
-  gchar *timestr, *str;
-
-  g_object_get(navigation->duration_time,
-	       "label\0", &str,
-	       NULL);
-  ags_navigation_update_time_string(tact,
-  				    str);
-  //  g_object_set(navigation->duration_time,
-  //	       "label\0", str,
-  //	       NULL);
-  //  gtk_widget_show_all(navigation->duration_time);
-}
-
-/**
- * ags_navigation_change_position:
- * @navigation: the #AgsNavigation
- * @tact: the new position
- * 
- * Change tact position of editor. The scrollbar is adjustet
- * and its playback position seeked.
- *
- * Since: 0.4
- */
-void
-ags_navigation_change_position(AgsNavigation *navigation,
-			       gdouble tact)
-{
-  g_return_if_fail(AGS_IS_NAVIGATION(navigation));
-
-  g_object_ref(G_OBJECT(navigation));
-  g_signal_emit(G_OBJECT(navigation),
-		navigation_signals[CHANGE_POSITION], 0,
-		tact);
-  g_object_unref(G_OBJECT(navigation));
-}
-
-/**
- * ags_navigation_tact_to_time_string:
- * @tact: the new position
- * 
- * Convert tact unit to time.
- *
- * Returns: tact as time string
- *
- * Since: 0.4 
- */
 gchar*
 ags_navigation_tact_to_time_string(gdouble tact)
 {
@@ -513,15 +432,6 @@ ags_navigation_tact_to_time_string(gdouble tact)
   return(timestr);
 }
 
-/**
- * ags_navigation_update_time_string:
- * @tact: the new position
- * @time_str: the pointer location to set
- *
- * Updates time as string.
- *
- * Since: 0.4 
- */
 void
 ags_navigation_update_time_string(double tact,
 				  gchar *time_string)
@@ -559,42 +469,36 @@ ags_navigation_update_time_string(double tact,
   sprintf(time_string, "%.4d:%.2d.%.2d\0", min, sec, hsec);
 }
 
-/**
- * ags_navigation_set_seeking_sensitive_new:
- * @navigation: the #AgsNavigation
- * @enabled: if %TRUE then sensitive, otherwise insensitive.
- *
- * Enables/Disables the #AgsNavigation to control the tree.
- *
- * Since: 0.4
- */
 void
-ags_navigation_set_seeking_sensitive(AgsNavigation *navigation,
-				     gboolean enabled)
+ags_navigation_real_change_position(AgsNavigation *navigation,
+				    gdouble tact)
 {
-  gtk_widget_set_sensitive(navigation->rewind,
-			   enabled);
-  gtk_widget_set_sensitive(navigation->previous,
-			   enabled);
-  gtk_widget_set_sensitive(navigation->play,
-			   enabled);
-  gtk_widget_set_sensitive(navigation->stop,
-			   enabled);
-  gtk_widget_set_sensitive(navigation->next,
-			   enabled);
-  gtk_widget_set_sensitive(navigation->forward,
-			   enabled);
+  gchar *timestr, *str;
+
+  g_object_get(navigation->duration_time,
+	       "label\0", &str,
+	       NULL);
+  ags_navigation_update_time_string(tact,
+  				    str);
+  //  g_object_set(navigation->duration_time,
+  //	       "label\0", str,
+  //	       NULL);
+  //  gtk_widget_show_all(navigation->duration_time);
 }
 
-/**
- * ags_navigation_new:
- *
- * Creates an #AgsNavigation to control the tree.
- *
- * Returns: a new #AgsNavigation
- *
- * Since: 0.4
- */
+void
+ags_navigation_change_position(AgsNavigation *navigation,
+			       gdouble tact)
+{
+  g_return_if_fail(AGS_IS_NAVIGATION(navigation));
+
+  g_object_ref(G_OBJECT(navigation));
+  g_signal_emit(G_OBJECT(navigation),
+		navigation_signals[CHANGE_POSITION], 0,
+		tact);
+  g_object_unref(G_OBJECT(navigation));
+}
+
 AgsNavigation*
 ags_navigation_new()
 {

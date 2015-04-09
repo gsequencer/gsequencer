@@ -29,7 +29,6 @@
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_recall_id.h>
-#include <ags/audio/ags_recall_container.h>
 
 #include <ags/audio/recall/ags_copy_pattern_audio.h>
 #include <ags/audio/recall/ags_copy_pattern_audio_run.h>
@@ -60,18 +59,9 @@ AgsRecall* ags_copy_pattern_channel_run_duplicate(AgsRecall *recall,
 
 void ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_audio_run,
 							   guint run_order,
-							   gdouble delay, guint attack,
+							   guint delay, guint attack,
 							   AgsCopyPatternChannelRun *copy_pattern_channel_run);
 
-/**
- * SECTION:ags_copy_pattern_channel_run
- * @short_description: copys pattern
- * @title: AgsCopyPatternChannelRun
- * @section_id:
- * @include: ags/audio/recall/ags_copy_pattern_channel_run.h
- *
- * The #AgsCopyPatternChannelRun class copys pattern.
- */
 
 static gpointer ags_copy_pattern_channel_run_parent_class = NULL;
 static AgsConnectableInterface* ags_copy_pattern_channel_run_parent_connectable_interface;
@@ -237,7 +227,7 @@ ags_copy_pattern_channel_run_connect_dynamic(AgsDynamicConnectable *dynamic_conn
 
   /* connect sequencer_alloc in AgsDelayAudioRun */
   count_beats_audio_run = copy_pattern_audio_run->count_beats_audio_run;
-  delay_audio_run = copy_pattern_audio_run->delay_audio_run;
+  delay_audio_run = count_beats_audio_run->delay_audio_run;
 
   //  g_object_ref(G_OBJECT(delay_audio_run));
   copy_pattern_channel_run->sequencer_alloc_handler =
@@ -258,10 +248,10 @@ ags_copy_pattern_channel_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_c
   copy_pattern_channel_run = AGS_COPY_PATTERN_CHANNEL_RUN(dynamic_connectable);
 
   /* get AgsCopyPatternAudioRun */
-  copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(AGS_RECALL_CHANNEL_RUN(copy_pattern_channel_run)->recall_audio_run);
+  copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(copy_pattern_channel_run->recall_channel_run.recall_audio_run);
 
   /* disconnect sequencer_alloc in AgsDelayAudioRun */
-  delay_audio_run = copy_pattern_audio_run->delay_audio_run;
+  delay_audio_run = copy_pattern_audio_run->count_beats_audio_run->delay_audio_run;
 
   g_signal_handler_disconnect(G_OBJECT(delay_audio_run),
 			      copy_pattern_channel_run->sequencer_alloc_handler);
@@ -277,7 +267,8 @@ ags_copy_pattern_channel_run_finalize(GObject *gobject)
 void
 ags_copy_pattern_channel_run_resolve_dependencies(AgsRecall *recall)
 {
-  //TODO:JK: implement me
+  //  g_message(" ----- resolving: copy_pattern_channel_run -----\n\0");
+  //TODO:JK: implement this function - see uncommented
 }
 
 void
@@ -362,7 +353,7 @@ ags_copy_pattern_channel_run_duplicate(AgsRecall *recall,
 void
 ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_audio_run,
 						      guint run_order,
-						      gdouble delay, guint attack,
+						      guint delay, guint attack,
 						      AgsCopyPatternChannelRun *copy_pattern_channel_run)
 {
   AgsChannel *output, *source;
@@ -373,10 +364,10 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
   GValue offset_value = { 0, };
   GValue current_bit_value = { 0, };  
 
-  if(AGS_RECALL_CHANNEL_RUN(copy_pattern_channel_run)->run_order != run_order){
-    g_message("blocked %d %d\0", AGS_RECALL_CHANNEL_RUN(copy_pattern_channel_run)->run_order, run_order);
-    return;
-  }
+  //  if(AGS_RECALL_CHANNEL_RUN(copy_pattern_channel_run)->run_order != run_order){
+  //    g_message("blocked %d %d\0", AGS_RECALL_CHANNEL_RUN(copy_pattern_channel_run)->run_order, run_order);
+  //    return;
+  //  }
 
   /* get AgsCopyPatternAudio */
   copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(AGS_RECALL_CHANNEL_RUN(copy_pattern_channel_run)->recall_audio_run->recall_audio);
@@ -406,8 +397,8 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
     AgsDevout *devout;
     AgsRecycling *recycling;
     AgsAudioSignal *audio_signal;
-    gdouble delay;
-    guint attack;
+    guint delay, attack;
+    guint tic_counter_incr;
   
     devout = AGS_DEVOUT(AGS_RECALL(copy_pattern_channel_run)->devout);
 
@@ -421,53 +412,29 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
     /* create new audio signals */
     recycling = source->first_recycling;
     
-    //TODO:JK: unclear
-    attack = 0;
-    delay = 0.0;
- 
+    tic_counter_incr = devout->tic_counter + 1;
+    
+    attack = devout->attack[((tic_counter_incr == AGS_NOTATION_TICS_PER_BEAT) ?
+			     0:
+			     tic_counter_incr)];
+    delay = devout->delay[((tic_counter_incr == AGS_NOTATION_TICS_PER_BEAT) ?
+			   0:
+			   tic_counter_incr)];
+
     if(recycling != NULL){
-      AgsRecallID *child_recall_id;
-
       while(recycling != source->last_recycling->next){
-	if(source->link == NULL){
-	  child_recall_id = AGS_RECALL(copy_pattern_channel_run)->recall_id;
-	}else{
-	  GList *list;
-
-	  list = source->link->recall_id;
-
-	  while(list != NULL){
-	    if(AGS_RECALL_ID(list->data)->recycling_container->parent == AGS_RECALL(copy_pattern_channel_run)->recall_id->recycling_container){
-	      child_recall_id = list->data;
-	      break;
-	    }
-	  
-	    list = list->next;
-	  }
-
-	  if(list == NULL){
-	    child_recall_id = NULL;
-	  }
-	}
-
-	audio_signal = ags_audio_signal_new(AGS_RECALL(copy_pattern_audio)->devout,
-					    recycling,
-					    child_recall_id);
+	audio_signal = ags_audio_signal_new((GObject *) AGS_RECALL(copy_pattern_audio)->devout,
+					    (GObject *) recycling,
+					    (GObject *) AGS_RECALL(copy_pattern_channel_run)->recall_id);
 	ags_recycling_create_audio_signal_with_defaults(recycling,
 							audio_signal,
 							delay, attack);
-	audio_signal->flags &= (~AGS_AUDIO_SIGNAL_TEMPLATE);
 	audio_signal->stream_current = audio_signal->stream_beginning;
 	ags_audio_signal_connect(audio_signal);
 	
 	/*
 	 * emit add_audio_signal on AgsRecycling
 	 */
-#ifdef AGS_DEBUG
-	g_message("play %x\0", AGS_RECALL(copy_pattern_channel_run)->recall_id);
-#endif
-
-	audio_signal->recall_id = child_recall_id;
 	ags_recycling_add_audio_signal(recycling,
 				       audio_signal);
 
@@ -475,8 +442,9 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 	 * unref AgsAudioSignal because AgsCopyPatternChannelRun has no need for it
 	 * if you need a valid reference to audio_signal you have to g_object_ref(audio_signal)
 	 */
-	g_object_unref(audio_signal);
-		
+	//FIXME:JK:
+
+	
 	recycling = recycling->next;
       }
     }
@@ -487,15 +455,6 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
   //  }
 }
 
-/**
- * ags_copy_pattern_channel_run_new:
- *
- * Creates an #AgsCopyPatternChannelRun
- *
- * Returns: a new #AgsCopyPatternChannelRun
- *
- * Since: 0.4
- */
 AgsCopyPatternChannelRun*
 ags_copy_pattern_channel_run_new()
 {

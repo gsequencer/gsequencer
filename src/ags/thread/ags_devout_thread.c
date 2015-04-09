@@ -20,13 +20,9 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
-#include <ags/main.h>
-
 #include <ags/thread/ags_timestamp_thread.h>
 
 #include <ags/audio/ags_devout.h>
-
-#include <ags/audio/ags_config.h>
 
 void ags_devout_thread_class_init(AgsDevoutThreadClass *devout_thread);
 void ags_devout_thread_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -39,19 +35,6 @@ void ags_devout_thread_start(AgsThread *thread);
 void ags_devout_thread_run(AgsThread *thread);
 void ags_devout_thread_stop(AgsThread *thread);
 
-extern AgsConfig *config;
-
-/**
- * SECTION:ags_devout_thread
- * @short_description: devout thread
- * @title: AgsDevoutThread
- * @section_id:
- * @include: ags/thread/ags_devout_thread.h
- *
- * The #AgsDevoutThread acts as audio output thread to soundcard.
- */
-
-extern pthread_mutex_t ags_application_mutex;
 static gpointer ags_devout_thread_parent_class = NULL;
 static AgsConnectableInterface *ags_devout_thread_parent_connectable_interface;
 
@@ -126,23 +109,11 @@ void
 ags_devout_thread_init(AgsDevoutThread *devout_thread)
 {
   AgsThread *thread;
-  guint buffer_size;
-  guint samplerate;
 
   thread = AGS_THREAD(devout_thread);
 
-  buffer_size = g_ascii_strtoull(ags_config_get(config,
-						AGS_CONFIG_DEVOUT,
-						"buffer-size"),
-				 NULL,
-				 10);
-  samplerate = g_ascii_strtoull(ags_config_get(config,
-					       AGS_CONFIG_DEVOUT,
-					       "samplerate"),
-				NULL,
-				10);
+  thread->freq = AGS_DEVOUT_THREAD_DEFAULT_JIFFIE;
 
-  thread->freq = samplerate / buffer_size;
   devout_thread->timestamp_thread = ags_timestamp_thread_new();
   ags_thread_add_child(thread, devout_thread->timestamp_thread);
 
@@ -186,9 +157,19 @@ ags_devout_thread_start(AgsThread *thread)
   devout = AGS_DEVOUT(thread->devout);
 
   /*  */
+  if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
+    pthread_mutex_lock(&(thread->start_mutex));
+
+    g_atomic_int_and(&(thread->flags),
+		     (~AGS_THREAD_INITIAL_RUN));
+    pthread_cond_broadcast(&(thread->start_cond));
+
+    pthread_mutex_unlock(&(thread->start_mutex));
+  }
+
+  /*  */
   devout->flags |= (AGS_DEVOUT_BUFFER3 |
-		    AGS_DEVOUT_PLAY |
-		    AGS_DEVOUT_NONBLOCKING);
+		    AGS_DEVOUT_PLAY);
 
   /*  */
   devout_thread->error = NULL;
@@ -196,20 +177,23 @@ ags_devout_thread_start(AgsThread *thread)
   if((AGS_DEVOUT_ALSA & (devout->flags)) != 0){
     if(devout->out.alsa.handle == NULL){
       ags_devout_alsa_init(devout,
-      			   &(devout_thread->error));
+      			   devout_thread->error);
       
-      if(devout_thread->error == NULL){
-	devout->flags &= (~AGS_DEVOUT_START_PLAY);
-      }else{
-	/* preserve AgsAudioLoop from playing */
-	
-	return;
-      }
-
+      devout->flags &= (~AGS_DEVOUT_START_PLAY);
 #ifdef AGS_DEBUG
       g_message("ags_devout_alsa_play\0");
 #endif
     }
+  }
+
+
+  if(devout_thread->error != NULL){
+    AgsAudioLoop *audio_loop;
+
+    /* preserve AgsAudioLoop from playing */
+    //TODO:JK: implement me
+
+    return;
   }
 
   memset(devout->buffer[0], 0, devout->dsp_channels * devout->buffer_size * sizeof(signed short));
@@ -232,28 +216,34 @@ ags_devout_thread_run(AgsThread *thread)
 
   devout_thread = AGS_DEVOUT_THREAD(thread);
 
-  pthread_mutex_lock(&(ags_application_mutex));
-
   devout = AGS_DEVOUT(thread->devout);
 
-  //  delay = (long) floor(NSEC_PER_SEC / devout->frequency * devout->buffer_size);
+  delay = (long) floor(NSEC_PER_SEC / devout->frequency * devout->buffer_size);
 
   if((AGS_THREAD_INITIAL_RUN & (thread->flags)) != 0){
     //    time(&(devout_thread->time_val));
   }
 
   //  g_message("play\0");
-  if((AGS_DEVOUT_PLAY & (devout->flags)) != 0){
-    error = NULL;
-    ags_devout_alsa_play(devout,
-			 &error);
-  }
 
+  error = NULL;
+  ags_devout_alsa_play(devout,
+  		       &error);
+  
   if(error != NULL){
     //TODO:JK: implement me
   }
 
-  pthread_mutex_unlock(&(ags_application_mutex));
+  if((AGS_DEVOUT_NONBLOCKING & (devout->flags)) != 0){
+    time_t new_time_val;
+    struct timespec sdelay;
+
+    sdelay.tv_sec = 0;
+    sdelay.tv_nsec = delay;
+    nanosleep(&sdelay, NULL);
+
+    //    time(&(devout_thread->time_val));
+  }
 }
 
 void
@@ -285,16 +275,6 @@ ags_devout_thread_stop(AgsThread *thread)
   }
 }
 
-/**
- * ags_devout_thread_new:
- * @devout: the #AgsDevout
- *
- * Create a new #AgsDevoutThread.
- *
- * Returns: the new #AgsDevoutThread
- *
- * Since: 0.4
- */
 AgsDevoutThread*
 ags_devout_thread_new(GObject *devout)
 {

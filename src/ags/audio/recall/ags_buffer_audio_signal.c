@@ -32,8 +32,6 @@
 #include <ags/audio/ags_recall_channel.h>
 #include <ags/audio/ags_recall_channel_run.h>
 #include <ags/audio/ags_recall_recycling.h>
-
-#include <ags/audio/ags_config.h>
  
 void ags_buffer_audio_signal_class_init(AgsBufferAudioSignalClass *buffer_audio_signal);
 void ags_buffer_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -51,18 +49,6 @@ void ags_buffer_audio_signal_run_inter(AgsRecall *recall);
 AgsRecall* ags_buffer_audio_signal_duplicate(AgsRecall *recall,
 					     AgsRecallID *recall_id,
 					     guint *n_params, GParameter *parameter);
-
-extern AgsConfig *config;
-
-/**
- * SECTION:ags_buffer_audio_signal
- * @short_description: buffers audio signal
- * @title: AgsBufferAudioSignal
- * @section_id:
- * @include: ags/audio/recall/ags_buffer_audio_signal.h
- *
- * The #AgsBufferAudioSignal class buffers the audio signal.
- */
 
 static gpointer ags_buffer_audio_signal_parent_class = NULL;
 static AgsConnectableInterface *ags_buffer_audio_signal_parent_connectable_interface;
@@ -221,26 +207,11 @@ ags_buffer_audio_signal_run_init_pre(AgsRecall *recall)
   AgsAudioSignal *destination;
   AgsBufferRecycling *buffer_recycling;
   AgsBufferAudioSignal *buffer_audio_signal;
-  GList *stream;
-  guint buffer_size;
-  guint samplerate;
-  guint length;
 
   buffer_audio_signal = AGS_BUFFER_AUDIO_SIGNAL(recall);
   buffer_recycling = AGS_BUFFER_RECYCLING(recall->parent);
 
   devout = AGS_DEVOUT(AGS_RECALL(buffer_audio_signal)->devout);
-
-  buffer_size = g_ascii_strtoull(ags_config_get(config,
-						AGS_CONFIG_DEVOUT,
-						"buffer-size\0"),
-				 NULL,
-				 10);
-  samplerate = g_ascii_strtoull(ags_config_get(config,
-					       AGS_CONFIG_DEVOUT,
-					       "samplerate\0"),
-				NULL,
-				10);
 
   //  recall->flags &= (~AGS_RECALL_PERSISTENT);
   recycling = AGS_RECALL_RECYCLING(buffer_recycling)->destination;
@@ -249,28 +220,24 @@ ags_buffer_audio_signal_run_init_pre(AgsRecall *recall)
   destination = ags_audio_signal_new((GObject *) devout,
 				     (GObject *) recycling,
 				     (GObject *) recall->recall_id->recycling_container->parent->recall_id);
-  length =  (guint) (2.0 * devout->delay[devout->tic_counter]) + 1;
-  ags_audio_signal_stream_resize(destination,
-				 length);
-  stream = destination->stream_beginning;
-
-  while(stream != NULL){
-    memset(stream->data, 0, buffer_size * sizeof(signed short));
-    stream = stream->next;
-  }
-
+  ags_recycling_create_audio_signal_with_frame_count(recycling,
+						     destination,
+						     AGS_DEVOUT_DEFAULT_SAMPLERATE / AGS_NOTATION_DEFAULT_JIFFIE + 2 * AGS_DEVOUT_DEFAULT_BUFFER_SIZE,
+						     0, 0);
   ags_audio_signal_connect(destination);
   
   destination->stream_current = destination->stream_beginning;
   ags_recycling_add_audio_signal(recycling,
 				 destination);
+
   AGS_RECALL_AUDIO_SIGNAL(buffer_audio_signal)->destination = destination;
+  g_object_unref(destination);
+  
 
 #ifdef AGS_DEBUG	
-  g_message("buffer to %x\0", destination->recall_id);
   g_message("creating destination\0");
 #endif
-  g_object_unref(destination);
+
 
   /* call parent */
   AGS_RECALL_CLASS(ags_buffer_audio_signal_parent_class)->run_init_pre(recall);
@@ -335,11 +302,10 @@ ags_buffer_audio_signal_run_inter(AgsRecall *recall)
   if(stream_destination->next == NULL){
     ags_audio_signal_add_stream(destination);
   }
-  
-  //TODO:JK: in future release buffer size may differ
+
   ags_audio_signal_copy_buffer_to_buffer((signed short *) stream_destination->data, 1,
 					 (signed short *) stream_source->data, 1,
-					 source->buffer_size);
+					 devout->buffer_size);
 }
 
 AgsRecall*
@@ -356,16 +322,6 @@ ags_buffer_audio_signal_duplicate(AgsRecall *recall,
   return((AgsRecall *) buffer);
 }
 
-/**
- * ags_buffer_audio_signal_new:
- * @audio_signal: an #AgsAudioSignal
- *
- * Creates an #AgsBufferAudioSignal
- *
- * Returns: a new #AgsBufferAudioSignal
- *
- * Since: 0.4
- */
 AgsBufferAudioSignal*
 ags_buffer_audio_signal_new(AgsAudioSignal *audio_signal)
 {

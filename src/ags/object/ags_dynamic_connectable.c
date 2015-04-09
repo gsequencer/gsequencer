@@ -22,19 +22,6 @@
 
 void ags_dynamic_connectable_base_init(AgsDynamicConnectableInterface *interface);
 
-/**
- * SECTION:ags_dynamic_connectable
- * @short_description: unique access to recalls
- * @title: AgsDynamicConnectable
- * @section_id:
- * @include: ags/object/ags_dynamic_connectable.h
- *
- * The #AgsDynamicConnectable interface gives you a unique access to recalls. Its main
- * purpose is to setup up signal handlers with dynamic context for ::connect-dynamic.
- * A dynamic context would be a dependency that has to be resolved first within run
- * initialization.
- */
-
 GType
 ags_dynamic_connectable_get_type()
 {
@@ -61,14 +48,6 @@ ags_dynamic_connectable_base_init(AgsDynamicConnectableInterface *interface)
   /* empty */
 }
 
-/**
- * ags_dynamic_connectable_connect_dynamic:
- * @connectable: an #AgsDynamicConnectable
- *
- * Connect signal handlers within dynamic context.
- *
- * Since: 0.3
- */
 void
 ags_dynamic_connectable_connect_dynamic(AgsDynamicConnectable *connectable)
 {
@@ -80,14 +59,6 @@ ags_dynamic_connectable_connect_dynamic(AgsDynamicConnectable *connectable)
   connectable_interface->connect_dynamic(connectable);
 }
 
-/**
- * ags_dynamic_connectable_disconnect_dynamic:
- * @connectable: an #AgsDynamicConnectable
- *
- * Disconnect signal handlers within dynamic context.
- *
- * Since: 0.3
- */
 void
 ags_dynamic_connectable_disconnect_dynamic(AgsDynamicConnectable *connectable)
 {

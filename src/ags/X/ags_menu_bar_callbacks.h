@@ -32,7 +32,6 @@ void ags_menu_bar_show_callback(GtkWidget *widget, AgsMenuBar *menu_bar);
 void ags_menu_bar_open_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar);
 void ags_menu_bar_save_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar);
 void ags_menu_bar_save_as_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar);
-void ags_menu_bar_export_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar);
 void ags_menu_bar_quit_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar);
 
 void ags_menu_bar_add_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar);

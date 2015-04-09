@@ -19,36 +19,21 @@
 #include <ags/X/ags_performance_preferences.h>
 #include <ags/X/ags_performance_preferences_callbacks.h>
 
-#include <ags/main.h>
-
 #include <ags-lib/object/ags_connectable.h>
-
-#include <ags/object/ags_applicable.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_preferences.h>
 
 void ags_performance_preferences_class_init(AgsPerformancePreferencesClass *performance_preferences);
 void ags_performance_preferences_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_performance_preferences_applicable_interface_init(AgsApplicableInterface *applicable);
 void ags_performance_preferences_init(AgsPerformancePreferences *performance_preferences);
 void ags_performance_preferences_connect(AgsConnectable *connectable);
 void ags_performance_preferences_disconnect(AgsConnectable *connectable);
-void ags_performance_preferences_set_update(AgsApplicable *applicable, gboolean update);
-void ags_performance_preferences_apply(AgsApplicable *applicable);
-void ags_performance_preferences_reset(AgsApplicable *applicable);
 static void ags_performance_preferences_finalize(GObject *gobject);
 void ags_performance_preferences_show(GtkWidget *widget);
 
-/**
- * SECTION:ags_performance_preferences
- * @short_description: A composite widget to do performance related preferences
- * @title: AgsPerformancePreferences
- * @section_id: 
- * @include: ags/X/ags_performance_preferences.h
- *
- * #AgsPerformancePreferences enables you to make performance related preferences.
- */
+void ags_performance_preferences_reset(AgsPerformancePreferences *performance_preferences);
+void* ags_performance_preferences_refresh(void *ptr);
 
 static gpointer ags_performance_preferences_parent_class = NULL;
 
@@ -76,12 +61,6 @@ ags_performance_preferences_get_type(void)
       NULL, /* interface_data */
     };
     
-    static const GInterfaceInfo ags_applicable_interface_info = {
-      (GInterfaceInitFunc) ags_performance_preferences_applicable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_performance_preferences = g_type_register_static(GTK_TYPE_VBOX,
 							      "AgsPerformancePreferences\0", &ags_performance_preferences_info,
 							      0);
@@ -89,10 +68,6 @@ ags_performance_preferences_get_type(void)
     g_type_add_interface_static(ags_type_performance_preferences,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_performance_preferences,
-				AGS_TYPE_APPLICABLE,
-				&ags_applicable_interface_info);
   }
 
   return(ags_type_performance_preferences);
@@ -127,29 +102,13 @@ ags_performance_preferences_connectable_interface_init(AgsConnectableInterface *
 }
 
 void
-ags_performance_preferences_applicable_interface_init(AgsApplicableInterface *applicable)
-{
-  applicable->set_update = ags_performance_preferences_set_update;
-  applicable->apply = ags_performance_preferences_apply;
-  applicable->reset = ags_performance_preferences_reset;
-}
-
-void
 ags_performance_preferences_init(AgsPerformancePreferences *performance_preferences)
 {
-  performance_preferences->stream_auto_sense = (GtkCheckButton *) gtk_check_button_new_with_label("Auto-sense on stream\0");
-  gtk_box_pack_start(GTK_BOX(performance_preferences),
-		     GTK_WIDGET(performance_preferences->stream_auto_sense),
-		     FALSE, FALSE,
-		     0);
-  
-  performance_preferences->super_threaded = (GtkCheckButton *) gtk_check_button_new_with_label("Super threaded\0");
+  performance_preferences->super_threaded = (GtkCheckButton *) gtk_check_button_new_with_label("Super Threaded\0");
   gtk_box_pack_start(GTK_BOX(performance_preferences),
 		     GTK_WIDGET(performance_preferences->super_threaded),
 		     FALSE, FALSE,
 		     0);
-  gtk_widget_set_sensitive(performance_preferences->super_threaded,
-			   FALSE);
 }
 
 void
@@ -164,64 +123,6 @@ void
 ags_performance_preferences_disconnect(AgsConnectable *connectable)
 {
   /* empty */
-}
-
-void
-ags_performance_preferences_set_update(AgsApplicable *applicable, gboolean update)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_performance_preferences_apply(AgsApplicable *applicable)
-{
-  AgsPreferences *preferences;
-  AgsPerformancePreferences *performance_preferences; 
-  AgsConfig *config;
-  gchar *str;
-  
-  performance_preferences = AGS_PERFORMANCE_PREFERENCES(applicable);
-
-  preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(performance_preferences),
-							   AGS_TYPE_PREFERENCES);
-  config = AGS_CONFIG(AGS_MAIN(AGS_WINDOW(preferences->window)->ags_main)->config);
-
-  /* auto-sense */
-  str = g_strdup(((gtk_toggle_button_get_active(performance_preferences->stream_auto_sense)) ? "true\0": "false\0"));
-  ags_config_set(config,
-		 AGS_CONFIG_RECALL,
-		 "auto-sense\0",
-		 str);
-  g_free(str);
-
-  //TODO:JK: implement me
-}
-
-void
-ags_performance_preferences_reset(AgsApplicable *applicable)
-{
-  AgsWindow *window;
-  AgsPreferences *preferences;
-  AgsPerformancePreferences *performance_preferences;
-  AgsConfig *config;
-  gchar *str;
-  
-  performance_preferences = AGS_PERFORMANCE_PREFERENCES(applicable);
-
-  /*  */
-  preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(performance_preferences),
-							   AGS_TYPE_PREFERENCES);
-  window = AGS_WINDOW(preferences->window);
-  config = AGS_CONFIG(AGS_MAIN(window->ags_main)->config);
-
-  str = ags_config_get(config,
-		       AGS_CONFIG_RECALL,
-		       "auto-sense\0");
-  gtk_toggle_button_set_active(performance_preferences->stream_auto_sense,
-			       !g_strcmp0("true\0",
-					  str));
-  
-  //TODO:JK: implement me
 }
 
 static void
@@ -240,15 +141,6 @@ ags_performance_preferences_show(GtkWidget *widget)
   GTK_WIDGET_CLASS(ags_performance_preferences_parent_class)->show(widget);
 }
 
-/**
- * ags_performance_preferences_new:
- *
- * Creates an #AgsPerformancePreferences
- *
- * Returns: a new #AgsPerformancePreferences
- *
- * Since: 0.4
- */
 AgsPerformancePreferences*
 ags_performance_preferences_new()
 {
@@ -259,3 +151,4 @@ ags_performance_preferences_new()
   
   return(performance_preferences);
 }
+

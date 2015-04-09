@@ -20,17 +20,6 @@
 
 void ags_packable_base_init(AgsPackableInterface *interface);
 
-/**
- * SECTION:ags_packable
- * @short_description: packing recalls
- * @title: AgsPackable
- * @section_id:
- * @include: ags/object/ags_packable.h
- *
- * The #AgsPackable interface gives you a unique access to recalls
- * to be packed into a #AgsRecallContainer.
- */
-
 GType
 ags_packable_get_type()
 {
@@ -57,16 +46,6 @@ ags_packable_base_init(AgsPackableInterface *interface)
   /* empty */
 }
 
-/**
- * ags_packable_pack:
- * @packable: the #AgsPackable
- *
- * Pack to container.
- *
- * Returns: %TRUE on success
- *
- * Since: 0.4
- */
 gboolean
 ags_packable_pack(AgsPackable *packable, GObject *container)
 {
@@ -79,16 +58,6 @@ ags_packable_pack(AgsPackable *packable, GObject *container)
   return(packable_interface->pack(packable, container));
 }
 
-/**
- * ags_packable_unpack:
- * @packable: the #AgsPackable
- *
- * Unpack of container.
- *
- * Returns: %TRUE on success
- *
- * Since: 0.4
- */
 gboolean
 ags_packable_unpack(AgsPackable *packable)
 {

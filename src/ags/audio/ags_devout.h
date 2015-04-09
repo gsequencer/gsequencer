@@ -28,6 +28,8 @@
 
 #include <alsa/asoundlib.h>
 
+#include <ao/ao.h>
+
 #include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_task_thread.h>
 #include <ags/thread/ags_devout_thread.h>
@@ -46,7 +48,6 @@
 #define AGS_DEVOUT_PLAY(ptr)           ((AgsDevoutPlay *)(ptr))
 
 #define AGS_DEVOUT_DEFAULT_SAMPLERATE (44100.0)
-#define AGS_DEVOUT_DEFAULT_FORMAT (AGS_DEVOUT_RESOLUTION_16_BIT)
 #define AGS_DEVOUT_DEFAULT_BUFFER_SIZE (944)
 #define AGS_DEVOUT_DEFAULT_BPM (120.0)
 #define AGS_DEVOUT_DEFAULT_JIFFIE ((double) AGS_DEVOUT_DEFAULT_SAMPLERATE / (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE)
@@ -57,8 +58,6 @@
 
 #define AGS_DEVOUT_DEFAULT_SCALE (1.0)
 #define AGS_DEVOUT_DEFAULT_DELAY (AGS_DEVOUT_DEFAULT_JIFFIE * (60.0 / AGS_DEVOUT_DEFAULT_BPM))
-
-#define AGS_DEVOUT_DEFAULT_PERIOD (64.0)
 
 typedef struct _AgsDevout AgsDevout;
 typedef struct _AgsDevoutClass AgsDevoutClass;
@@ -136,9 +135,14 @@ struct _AgsDevout
   guint *attack; // where currently tic resides in the stream's offset, measured in 1/64 of bpm
 
   gdouble delay_counter; // next time attack changeing when delay_counter == delay
-  guint tic_counter; // in the range of default period
+  guint tic_counter;
 
   union{
+    struct _AgsAO{
+      ao_device *device;
+      ao_sample_format *format;
+      int driver_ao;
+    }ao;
     struct _AgsOss{
       int device_fd;
       char *device;
@@ -172,17 +176,6 @@ struct _AgsDevoutClass
   void (*note_offset_changed)(AgsDevout *devout, guint note_offset);
 };
 
-/**
- * AgsDevoutPlayDomain:
- * @domain: the source
- * @playback: if %TRUE playback is on
- * @sequencer: if %TRUE sequencer is on
- * @notation: if %TRUE notation is on
- * @devout_play: a #GList of #AgsDevoutPlay-struct
- *
- * A #AgsDevoutPlayDomain-struct represents the entire possible play/recall
- * context.
- */
 struct _AgsDevoutPlayDomain
 {
   GObject *domain;
@@ -194,17 +187,6 @@ struct _AgsDevoutPlayDomain
   GList *devout_play;
 };
 
-/**
- * AgsDevoutPlay:
- * @flags: the internal state
- * @iterator_thread: Super-threaded related #AgsThread. Index 0 playback, 1 sequencer and 2 notation.
- * @source: either #AgsChannel or #AgsRecall
- * @audio_channel: destination audio channel
- * @recall_id: array pointing to appropriate #AgsRecallID. Index 0 playback, 1 sequencer and 2 notation.
- *
- * A #AgsDevoutPlay-struct represents the play/recall in #AgsChannel or #AgsRecall
- * scope to do output to device.
- */
 struct _AgsDevoutPlay
 {
   guint flags;
@@ -226,8 +208,6 @@ void ags_devout_play_domain_free(AgsDevoutPlayDomain *devout_play_domain);
 
 AgsDevoutPlay* ags_devout_play_alloc();
 void ags_devout_play_free(AgsDevoutPlay *devout_play);
-AgsDevoutPlay* ags_devout_play_find_source(GList *devout_play,
-					   GObject *source);
 
 void ags_devout_list_cards(GList **card_id, GList **card_name);
 void ags_devout_pcm_info(char *card_id,

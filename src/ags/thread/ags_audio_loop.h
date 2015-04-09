@@ -38,7 +38,7 @@
 #define AGS_IS_AUDIO_LOOP_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_AUDIO_LOOP))
 #define AGS_AUDIO_LOOP_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_AUDIO_LOOP, AgsAudioLoopClass))
 
-#define AGS_AUDIO_LOOP_DEFAULT_JIFFIE (48.0)
+#define AGS_AUDIO_LOOP_DEFAULT_JIFFIE (48)
 
 typedef struct _AgsAudioLoop AgsAudioLoop;
 typedef struct _AgsAudioLoopClass AgsAudioLoopClass;
@@ -78,7 +78,6 @@ struct _AgsAudioLoop
   AgsThread *task_thread;
   AgsThread *gui_thread;
   AgsThread *devout_thread;
-  AgsThread *export_thread;
 
   pthread_mutex_t recall_mutex;
 
@@ -110,8 +109,8 @@ void ags_audio_loop_remove_audio(AgsAudioLoop *audio_loop, GObject *audio);
 void ags_audio_loop_add_channel(AgsAudioLoop *audio_loop, GObject *channel);
 void ags_audio_loop_remove_channel(AgsAudioLoop *audio_loop, GObject *channel);
 
-void ags_audio_loop_add_recall(AgsAudioLoop *audio_loop, gpointer devout_play);
-void ags_audio_loop_remove_recall(AgsAudioLoop *audio_loop, gpointer devout_play);
+void ags_audio_loop_add_recall(AgsAudioLoop *audio_loop, GObject *recall);
+void ags_audio_loop_remove_recall(AgsAudioLoop *audio_loop, GObject *recall);
 
 AgsAudioLoop* ags_audio_loop_new(GObject *devout, GObject *ags_main);
 

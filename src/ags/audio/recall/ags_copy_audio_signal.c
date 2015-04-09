@@ -51,16 +51,6 @@ AgsRecall* ags_copy_audio_signal_duplicate(AgsRecall *recall,
 					   AgsRecallID *recall_id,
 					   guint *n_params, GParameter *parameter);
 
-/**
- * SECTION:ags_copy_audio_signal
- * @short_description: copys audio signal
- * @title: AgsCopyAudioSignal
- * @section_id:
- * @include: ags/audio/recall/ags_copy_audio_signal.h
- *
- * The #AgsCopyAudioSignal class copys the audio signal.
- */
-
 static gpointer ags_copy_audio_signal_parent_class = NULL;
 static AgsConnectableInterface *ags_copy_audio_signal_parent_connectable_interface;
 static AgsDynamicConnectableInterface *ags_copy_audio_signal_parent_dynamic_connectable_interface;
@@ -265,12 +255,9 @@ ags_copy_audio_signal_run_inter(AgsRecall *recall)
     ags_audio_signal_add_stream(destination);
   }
 
-  g_message("copy\0");
-
-  //TODO:JK
   ags_audio_signal_copy_buffer_to_buffer((signed short *) stream_destination->data, 1,
 					 (signed short *) stream_source->data, 1,
-					 source->buffer_size);
+					 devout->buffer_size);
 
   //  if(attack->first_start != 0){
   //    ags_audio_signal_copy_buffer_to_buffer((signed short *) stream_destination->data, 1,
@@ -293,19 +280,6 @@ ags_copy_audio_signal_duplicate(AgsRecall *recall,
   return((AgsRecall *) copy);
 }
 
-/**
- * ags_copy_audio_signal_new:
- * @destination: the destination #AgsAudioSignal
- * @source: the source #AgsAudioSignal
- * @devout: the #AgsDevout defaulting to
- * @attack: the attack
- *
- * Creates an #AgsCopyAudioSignal
- *
- * Returns: a new #AgsCopyAudioSignal
- *
- * Since: 0.4
- */
 AgsCopyAudioSignal*
 ags_copy_audio_signal_new(AgsAudioSignal *destination,
 			  AgsAudioSignal *source,

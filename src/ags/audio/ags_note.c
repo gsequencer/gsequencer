@@ -29,16 +29,6 @@ void ags_note_connect(AgsConnectable *connectable);
 void ags_note_disconnect(AgsConnectable *connectable);
 void ags_note_finalize(GObject *object);
 
-/**
- * SECTION:ags_note
- * @short_description: Note class.
- * @title: AgsNote
- * @section_id:
- * @include: ags/audio/ags_note.h
- *
- * #AgsNote represents a tone.
- */
-
 static gpointer ags_note_parent_class = NULL;
 
 GType
@@ -130,16 +120,6 @@ ags_note_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_note_parent_class)->finalize(gobject);
 }
 
-/**
- * ags_note_duplicate:
- * @note: an #AgsNote
- * 
- * Duplicate a note.
- *
- * Returns: the duplicated #AgsNote.
- *
- * Since: 0.4
- */
 AgsNote*
 ags_note_duplicate(AgsNote *note)
 {
@@ -156,15 +136,6 @@ ags_note_duplicate(AgsNote *note)
   return(copy);
 }
 
-/**
- * ags_note_new:
- *
- * Creates an #AgsNote
- *
- * Returns: a new #AgsNote
- *
- * Since: 0.4
- */
 AgsNote*
 ags_note_new()
 {

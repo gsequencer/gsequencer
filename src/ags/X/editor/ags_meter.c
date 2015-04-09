@@ -33,16 +33,6 @@ void ags_meter_disconnect(AgsConnectable *connectable);
 void ags_meter_destroy(GtkObject *object);
 void ags_meter_show(GtkWidget *widget);
 
-/**
- * SECTION:ags_meter
- * @short_description: piano widget
- * @title: AgsMeter
- * @section_id:
- * @include: ags/X/editor/ags_meter.h
- *
- * The #AgsMeter draws you a piano.
- */
-
 GtkStyle *meter_style;
 
 GType
@@ -154,12 +144,9 @@ ags_meter_paint(AgsMeter *meter)
   guint bitmap;
   guint y[2];
   guint i, i_stop, j, j0;
-  guint border_top;
 
   widget = (GtkWidget *) meter;
   editor = (AgsEditor *) gtk_widget_get_ancestor(widget, AGS_TYPE_EDITOR);
-
-  border_top = 24; // see ags_ruler.c
 
   bitmap = 0x52a52a; // description of the keyboard
 
@@ -172,13 +159,13 @@ ags_meter_paint(AgsMeter *meter)
     y[0] = editor->note_edit->control_height - y[0];
   }
 
-  y[1] = ((guint) (widget->allocation.height - border_top) - y[0]) % editor->note_edit->control_height;
-  i_stop = ((widget->allocation.height - border_top) - y[0] - y[1]) / editor->note_edit->control_height;
+  y[1] = ((guint) widget->allocation.height - y[0]) % editor->note_edit->control_height;
+  i_stop = (widget->allocation.height - y[0] - y[1]) / editor->note_edit->control_height;
 
   cr = gdk_cairo_create(widget->window);
 
   cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
-  cairo_rectangle(cr, 0.0, (double) border_top, (double) widget->allocation.width, (double) widget->allocation.height - border_top);
+  cairo_rectangle(cr, 0.0, 0.0, (double) widget->allocation.width, (double) widget->allocation.height);
   cairo_fill(cr);
 
   cairo_set_line_width(cr, 1.0);
@@ -190,29 +177,29 @@ ags_meter_paint(AgsMeter *meter)
     if(((1 << j0) & bitmap) != 0){
       cairo_set_source_rgb(cr, 0.2, 0.2, 0.2);
 
-      cairo_rectangle(cr, 0.0, 0.0, 2.0 / 3.0 * (double) widget->allocation.width, (double) y[0] + border_top);
+      cairo_rectangle(cr, 0.0, 0.0, 2.0 / 3.0 * (double) widget->allocation.width, (double) y[0]);
       cairo_fill(cr); 	
 
       cairo_set_source_rgb(cr, 0.68, 0.68, 0.68);
 
       if(y[0] > editor->note_edit->control_height / 2){
-	cairo_move_to(cr, 2.0 / 3.0 * (double) widget->allocation.width, (double) (y[0] - editor->note_edit->control_height / 2) + border_top);
-	cairo_line_to(cr, (double) widget->allocation.width, (double) (y[0] - editor->note_edit->control_height / 2) + border_top);
+	cairo_move_to(cr, 2.0 / 3.0 * (double) widget->allocation.width, (double) (y[0] - editor->note_edit->control_height / 2));
+	cairo_line_to(cr, (double) widget->allocation.width, (double) (y[0] - editor->note_edit->control_height / 2));
 	cairo_stroke(cr);
       }
 
-      cairo_move_to(cr, (double) widget->allocation.width, border_top);
-      cairo_line_to(cr, (double) widget->allocation.width, (double) y[0] + border_top);
+      cairo_move_to(cr, (double) widget->allocation.width, 0.0);
+      cairo_line_to(cr, (double) widget->allocation.width, (double) y[0]);
       cairo_stroke(cr);
     }else{
       if(((1 << (j0 + 1)) & bitmap) == 0){
 	cairo_move_to(cr, 0.0, (double) y[0]);
-	cairo_line_to(cr, (double) widget->allocation.width, (double) y[0] + border_top);
+	cairo_line_to(cr, (double) widget->allocation.width, (double) y[0]);
 	cairo_stroke(cr);
       }
 
-      cairo_move_to(cr, (double) widget->allocation.width,  border_top);
-      cairo_line_to(cr, (double) widget->allocation.width, (double) y[0] + border_top);
+      cairo_move_to(cr, (double) widget->allocation.width, 0.0);
+      cairo_line_to(cr, (double) widget->allocation.width, (double) y[0]);
       cairo_stroke(cr);
     }
   }
@@ -222,28 +209,28 @@ ags_meter_paint(AgsMeter *meter)
       // draw semi tone key
       cairo_set_source_rgb(cr, 0.2, 0.2, 0.2);
 
-      cairo_rectangle(cr, 0.0, (double) (i * editor->note_edit->control_height + y[0] + border_top), 2.0 / 3.0 * (double) widget->allocation.width, (double) editor->note_edit->control_height);
+      cairo_rectangle(cr, 0.0, (double) (i * editor->note_edit->control_height + y[0]), 2.0 / 3.0 * (double) widget->allocation.width, (double) editor->note_edit->control_height);
       cairo_fill(cr); 	
 
       cairo_set_source_rgb(cr, 0.68, 0.68, 0.68);
 
-      cairo_move_to(cr, 2.0 / 3.0 * (double) widget->allocation.width, (double) (i * editor->note_edit->control_height + y[0] + border_top + editor->note_edit->control_height / 2));
-      cairo_line_to(cr, (double) widget->allocation.width, (double) (i * editor->note_edit->control_height + y[0] + border_top + editor->note_edit->control_height / 2));
+      cairo_move_to(cr, 2.0 / 3.0 * (double) widget->allocation.width, (double) (i * editor->note_edit->control_height + y[0] + editor->note_edit->control_height / 2));
+      cairo_line_to(cr, (double) widget->allocation.width, (double) (i * editor->note_edit->control_height + y[0] + editor->note_edit->control_height / 2));
       cairo_stroke(cr);
 
-      cairo_move_to(cr, (double) widget->allocation.width, (double) (i * editor->note_edit->control_height + y[0] + border_top));
-      cairo_line_to(cr, (double) widget->allocation.width, (double) (i * editor->note_edit->control_height + y[0] + border_top + editor->note_edit->control_height));
+      cairo_move_to(cr, (double) widget->allocation.width, (double) (i * editor->note_edit->control_height + y[0]));
+      cairo_line_to(cr, (double) widget->allocation.width, (double) (i * editor->note_edit->control_height + y[0] + editor->note_edit->control_height));
       cairo_stroke(cr);
     }else{
       // no semi tone key
       if(((1 << (j + 1)) & bitmap) == 0){
-	cairo_move_to(cr, 0.0, (double) (i * editor->note_edit->control_height + y[0] + border_top + editor->note_edit->control_height));
-	cairo_line_to(cr, (double) widget->allocation.width, (double) (i * editor->note_edit->control_height + y[0] + border_top + editor->note_edit->control_height));
+	cairo_move_to(cr, 0.0, (double) (i * editor->note_edit->control_height + y[0] + editor->note_edit->control_height));
+	cairo_line_to(cr, (double) widget->allocation.width, (double) (i * editor->note_edit->control_height + y[0] + editor->note_edit->control_height));
 	cairo_stroke(cr);
       }
 
-      cairo_move_to(cr, (double) widget->allocation.width, (double) (i * editor->note_edit->control_height + y[0] + border_top));
-      cairo_line_to(cr, (double) widget->allocation.width, (double) (i * editor->note_edit->control_height + y[0] + border_top + editor->note_edit->control_height));
+      cairo_move_to(cr, (double) widget->allocation.width, (double) (i * editor->note_edit->control_height + y[0]));
+      cairo_line_to(cr, (double) widget->allocation.width, (double) (i * editor->note_edit->control_height + y[0] + editor->note_edit->control_height));
       cairo_stroke(cr);
     }
 
@@ -266,7 +253,7 @@ ags_meter_paint(AgsMeter *meter)
 
       if(y[1] > editor->note_edit->control_height / 2){
 	cairo_move_to(cr, 2.0 / 3.0 * (double) widget->allocation.width, (double) (widget->allocation.height - y[1] + editor->note_edit->control_height / 2));
-	cairo_line_to(cr, (double) widget->allocation.width, (double) ((widget->allocation.height) - y[1] + editor->note_edit->control_height / 2));
+	cairo_line_to(cr, (double) widget->allocation.width, (double) (widget->allocation.height - y[1] + editor->note_edit->control_height / 2));
 	cairo_stroke(cr);
       }
 
@@ -281,13 +268,6 @@ ags_meter_paint(AgsMeter *meter)
   }
 }
 
-/**
- * ags_meter_new:
- *
- * Create a new #AgsMeter.
- *
- * Since: 0.4
- */
 AgsMeter*
 ags_meter_new()
 {

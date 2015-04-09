@@ -22,12 +22,6 @@
 
 #include <ags/thread/ags_thread_pool.h>
 
-#include <pthread.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <errno.h>
-
 void ags_returnable_thread_class_init(AgsReturnableThreadClass *returnable_thread);
 void ags_returnable_thread_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_returnable_thread_init(AgsReturnableThread *returnable_thread);
@@ -38,17 +32,6 @@ void ags_returnable_thread_finalize(GObject *gobject);
 void ags_returnable_thread_start(AgsThread *thread);
 void ags_returnable_thread_run(AgsThread *thread);
 void ags_returnable_thread_resume(AgsThread *thread);
-
-/**
- * SECTION:ags_returnable_thread
- * @short_description: returnable thread
- * @title: AgsReturnableThread
- * @section_id:
- * @include: ags/thread/ags_returnable_thread.h
- *
- * The #AgsReturnableThread acts as thread. It should return after a short
- * while because of limited thread pool.
- */
 
 enum{
   SAFE_RUN,
@@ -147,9 +130,6 @@ ags_returnable_thread_init(AgsReturnableThread *returnable_thread)
 
   thread = AGS_THREAD(returnable_thread);
 
-  pthread_attr_setdetachstate(&(thread->thread_attr),
-			      PTHREAD_CREATE_DETACHED);
-
   g_atomic_int_or(&(thread->flags),
 		  AGS_THREAD_UNREF_ON_EXIT);
 
@@ -181,8 +161,7 @@ ags_returnable_thread_disconnect(AgsConnectable *connectable)
 void
 ags_returnable_thread_finalize(GObject *gobject)
 {
-  pthread_mutex_destroy(&(AGS_RETURNABLE_THREAD(gobject)->reset_mutex));
-
+  /* empty */
   /* call parent */
   G_OBJECT_CLASS(ags_returnable_thread_parent_class)->finalize(gobject);
 }
@@ -208,7 +187,7 @@ ags_returnable_thread_run(AgsThread *thread)
   
   if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
 #ifdef AGS_DEBUG
-    g_message("returnable thread initial\0");
+    g_message("returnalbe thread initial\0");
 #endif
 
     return;
@@ -224,7 +203,10 @@ ags_returnable_thread_run(AgsThread *thread)
     pthread_mutex_unlock(&(returnable_thread->reset_mutex));
 
     /* release thread in thread pool */
-    pthread_mutex_lock(&(thread_pool->pull_mutex));
+    pthread_mutex_lock(&(thread_pool->creation_mutex));
+
+    g_atomic_int_or(&(AGS_THREAD(returnable_thread)->flags),
+		    AGS_THREAD_RUNNING);
 
     tmplist = g_atomic_pointer_get(&(thread_pool->running_thread));
     g_atomic_pointer_set(&(thread_pool->running_thread),
@@ -235,16 +217,16 @@ ags_returnable_thread_run(AgsThread *thread)
     g_atomic_int_and(&(returnable_thread->flags),
 		     (~AGS_RETURNABLE_THREAD_IN_USE));
     
-    pthread_mutex_unlock(&(thread_pool->pull_mutex));
+    pthread_mutex_unlock(&(thread_pool->creation_mutex));
 
     pthread_mutex_lock(&(thread_pool->return_mutex));
 
     g_atomic_int_dec_and_test(&(thread_pool->n_threads));
-    //    ags_thread_remove_child(thread->parent,
-    //			    thread);
+    ags_thread_remove_child(thread->parent,
+			    thread);
 
     g_atomic_int_and(&(AGS_THREAD(returnable_thread)->flags),
-    		     (~AGS_THREAD_RUNNING));
+		     (~AGS_THREAD_RUNNING));
 
     if(g_atomic_int_get(&(thread_pool->queued)) > 0){
       pthread_cond_signal(&(thread_pool->return_cond));
@@ -273,15 +255,6 @@ ags_returnable_thread_resume(AgsThread *thread)
   /* empty */
 }
 
-/**
- * ags_returnable_thread_connect_safe_run:
- * @returnable_thread: the thread to connect
- * @callback: the callback
- *
- * Connects @callback to @thread.
- *
- * Since: 0.4
- */
 void
 ags_returnable_thread_connect_safe_run(AgsReturnableThread *returnable_thread, AgsReturnableThreadCallback callback)
 {
@@ -289,14 +262,6 @@ ags_returnable_thread_connect_safe_run(AgsReturnableThread *returnable_thread, A
 						G_CALLBACK(callback), returnable_thread);
 }
 
-/**
- * ags_returnable_thread_disconnect_safe_run:
- * @returnable_thread: the thread to disconnect
- *
- * Disconnects callback of @thread.
- *
- * Since: 0.4
- */
 void
 ags_returnable_thread_disconnect_safe_run(AgsReturnableThread *returnable_thread)
 {
@@ -304,16 +269,6 @@ ags_returnable_thread_disconnect_safe_run(AgsReturnableThread *returnable_thread
 			      returnable_thread->handler);
 }
 
-/**
- * ags_returnable_thread_new:
- * @thread_pool: the #AgsThreadPool
- *
- * Create a new #AgsReturnableThread.
- *
- * Returns: the new #AgsReturnableThread
- *
- * Since: 0.4
- */
 AgsReturnableThread*
 ags_returnable_thread_new(GObject *thread_pool)
 {

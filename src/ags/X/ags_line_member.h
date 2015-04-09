@@ -1,4 +1,3 @@
-
 /* AGS - Advanced GTK Sequencer
  * Copyright (C) 2013 Joël Krähemann
  *
@@ -42,11 +41,6 @@ typedef enum{
   AGS_LINE_MEMBER_DEFAULT_TEMPLATE      = 1,
   AGS_LINE_MEMBER_RESET_BY_ATOMIC       = 1 << 1,
   AGS_LINE_MEMBER_RESET_BY_TASK         = 1 << 2,
-  AGS_LINE_MEMBER_APPLY_RECALL          = 1 << 3,
-  AGS_LINE_MEMBER_PLAY_CALLBACK_WRITE   = 1 << 4,
-  AGS_LINE_MEMBER_RECALL_CALLBACK_WRITE = 1 << 5,
-  AGS_LINE_MEMBER_CALLBACK_READ_BLOCK   = 1 << 6,
-  AGS_LINE_MEMBER_CALLBACK_WRITE_BLOCK  = 1 << 7,
 }AgsLineMemberFlags;
 
 struct _AgsLineMember
@@ -67,10 +61,6 @@ struct _AgsLineMember
   gpointer port_data;
   gboolean active;
 
-  AgsPort *recall_port;
-  gpointer recall_port_data;
-  gboolean recall_active;
-
   GType task_type;
 };
 
@@ -84,7 +74,6 @@ struct _AgsLineMemberClass
 
 GType ags_line_member_get_type(void);
 
-GtkWidget* ags_line_member_get_widget(AgsLineMember *line_member);
 void ags_line_member_set_label(AgsLineMember *line_member,
 			       gchar *label);
 

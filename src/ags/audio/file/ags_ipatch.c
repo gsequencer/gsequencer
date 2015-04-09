@@ -60,16 +60,6 @@ GList* ags_ipatch_read_audio_signal(AgsPlayable *playable,
 				    AgsDevout *devout,
 				    guint start_channel, guint channels);
 
-/**
- * SECTION:ags_ipatch
- * @short_description: Libinstpatch wrapper
- * @title: AgsIpatch
- * @section_id:
- * @include: ags/audio/file/ags_ipatch.h
- *
- * #AgsIpatch is the base object to ineract with libinstpatch.
- */
-
 static gpointer ags_ipatch_parent_class = NULL;
 static AgsConnectableInterface *ags_ipatch_parent_connectable_interface;
 static AgsPlayableInterface *ags_ipatch_parent_playable_interface;
@@ -834,12 +824,11 @@ ags_ipatch_finalize(GObject *gobject)
 
 /**
  * ags_ipatch_read_audio_signal:
- * @ipatch: an AgsIpatch
+ * @ipatch an AgsIpatch
+ * Returns:
  *
  * Reads an AgsAudioSignal from current sample and iterates to the next sample. Prior,
  * you should have called #ags_playable_iter_start.
- *
- * Returns:
  */
 GList*
 ags_ipatch_read_audio_signal(AgsPlayable *playable,
@@ -858,15 +847,6 @@ ags_ipatch_read_audio_signal(AgsPlayable *playable,
   ipatch->audio_signal = list;
 }
 
-/**
- * ags_ipatch_new:
- *
- * Creates an #AgsIpatch.
- *
- * Returns: an empty #AgsIpatch.
- *
- * Since: 0.4
- */
 AgsIpatch*
 ags_ipatch_new()
 {

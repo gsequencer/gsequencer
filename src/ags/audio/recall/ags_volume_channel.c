@@ -41,16 +41,6 @@ void ags_volume_channel_disconnect(AgsConnectable *connectable);
 void ags_volume_channel_set_ports(AgsPlugin *plugin, GList *port);
 void ags_volume_channel_finalize(GObject *gobject);
 
-/**
- * SECTION:ags_volume_channel
- * @short_description: volumes channel
- * @title: AgsVolumeChannel
- * @section_id:
- * @include: ags/audio/recall/ags_volume_channel.h
- *
- * The #AgsVolumeChannel class provides ports to the effect processor.
- */
-
 enum{
   PROP_0,
   PROP_VOLUME,
@@ -171,7 +161,7 @@ ags_volume_channel_init(AgsVolumeChannel *volume_channel)
 
   /* volume */
   volume_channel->volume = g_object_new(AGS_TYPE_PORT,
-					"plugin-name\0", "ags-volume\0",
+					"plugin-name\0", g_strdup("ags-volume\0"),
 					"specifier\0", "./volume[0]\0",
 					"control-port\0", "1/1\0",
 					"port-value-is-pointer\0", FALSE,
@@ -269,7 +259,7 @@ ags_volume_channel_set_ports(AgsPlugin *plugin, GList *port)
   while(port != NULL){
     if(!strncmp(AGS_PORT(port->data)->specifier,
 		"./volume[0]\0",
-		12)){
+		10)){
       g_object_set(G_OBJECT(plugin),
 		   "volume\0", AGS_PORT(port->data),
 		   NULL);
@@ -294,15 +284,6 @@ ags_volume_channel_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_volume_channel_parent_class)->finalize(gobject);
 }
 
-/**
- * ags_volume_channel_new:
- *
- * Creates an #AgsVolumeChannel
- *
- * Returns: a new #AgsVolumeChannel
- *
- * Since: 0.4
- */
 AgsVolumeChannel*
 ags_volume_channel_new()
 {

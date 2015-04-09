@@ -41,6 +41,8 @@
 #include <string.h>
 #include <cairo.h>
 
+#define AGS_EDITOR_LINK_INDEX_VBOX "AgsEditorLinkIndexVBox"
+
 void
 ags_editor_parent_set_callback(GtkWidget  *widget, GtkObject *old_parent, AgsEditor *editor)
 {
@@ -93,10 +95,14 @@ ags_editor_set_pads_callback(AgsAudio *audio,
     if(!g_type_is_a(channel_type, AGS_TYPE_INPUT)){
       return;
     }
+
+    pads = audio->input_pads;
   }else{
     if(!g_type_is_a(channel_type, AGS_TYPE_OUTPUT)){
       return;
     }
+
+    pads = audio->output_pads;
   }
 
   ags_note_edit_set_map_height(editor->note_edit,
@@ -117,10 +123,6 @@ ags_editor_change_position_callback(AgsNavigation *navigation, gdouble tact,
   cairo_t *cr;
   gdouble loop_start, loop_end;
   gdouble position;
-
-  if(!gtk_toggle_button_get_active(navigation->scroll)){
-    return;
-  }
 
   loop_start = gtk_spin_button_get_value(navigation->loop_left_tact);
   loop_end = gtk_spin_button_get_value(navigation->loop_right_tact);

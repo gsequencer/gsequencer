@@ -33,8 +33,6 @@
 #define AGS_IS_DIAL_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_DIAL))
 #define AGS_DIAL_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_DIAL, AgsDialClass))
 
-#define AGS_DIAL_DEFAULT_PRECISION (8.0)
-
 typedef struct _AgsDial AgsDial;
 typedef struct _AgsDialClass AgsDialClass;
 
@@ -70,6 +68,12 @@ struct _AgsDial
   gint sleep_interval;
 
   GtkAdjustment *adjustment;
+
+  pthread_t idle_thread;
+  pthread_attr_t idle_thread_attr;
+  pthread_mutex_t idle_mutex;
+  pthread_mutexattr_t idle_mutex_attr;
+  pthread_cond_t idle_cond;
 
   gdouble gravity_x;
   gdouble gravity_y;

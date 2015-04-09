@@ -217,7 +217,7 @@ ags_note_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
     note->x[1] = (note_x * tact) + (note_offset_x1 * tact);
 
     list_notation = machine->audio->notation;
-    history = gtk_combo_box_get_active(editor->toolbar->mode);
+    history = gtk_option_menu_get_history(editor->toolbar->mode);
 
     switch(history){
     case 0:
@@ -340,7 +340,7 @@ ags_note_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
     /* select notes */
     list_notation = machine->audio->notation;
 
-    history = gtk_combo_box_get_active(editor->toolbar->mode);
+    history = gtk_option_menu_get_history(editor->toolbar->mode);
 
     if(history == 0){
       if(editor->notebook->tabs != NULL){
@@ -415,7 +415,7 @@ ags_note_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
     /* select notes */
     list_notation = machine->audio->notation;
 
-    if(gtk_combo_box_get_active(editor->toolbar->mode) == 0){
+    if(gtk_option_menu_get_history(editor->toolbar->mode) == 0){
       if(editor->notebook->tabs != NULL){
 	list_notation = g_list_nth(list_notation,
 				   ags_notebook_next_active_tab(editor->notebook,
@@ -644,10 +644,8 @@ ags_note_edit_drawing_area_motion_notify_event (GtkWidget *widget, GdkEventMotio
 
     /* get drawable size and offset */
     if(x0 < x0_viewport){
-      //      x0 = 0;
-      //      width = x1_offset - x0_viewport;
-      x0 -= x0_viewport;
-      width = x1 - x0;
+      x0 = 0;
+      width = x1_offset - x0_viewport;
     }else{
       x0 -= x0_viewport;
       width = x1 - x0;
@@ -655,8 +653,6 @@ ags_note_edit_drawing_area_motion_notify_event (GtkWidget *widget, GdkEventMotio
 
     if(x1 > x1_viewport){
       width -= (x1 - x1_viewport);
-    }else{
-      width -= x0_viewport;
     }
 
     /* get real size and offset */
@@ -685,8 +681,6 @@ ags_note_edit_drawing_area_motion_notify_event (GtkWidget *widget, GdkEventMotio
 
     if(y1 > y1_viewport){
       height -= (y1 - y1_viewport);
-    }else{
-      height -= y0_viewport;
     }
 
     cairo_set_source_rgba(cr, 1.0, 0.0, 0.0, 0.3);
@@ -766,12 +760,6 @@ ags_note_edit_hscrollbar_value_changed(GtkRange *range, AgsNoteEdit *note_edit)
     return;
   }
 
-  /* reset ruler */
-  gtk_adjustment_set_value(note_edit->ruler->adjustment,
-			   GTK_RANGE(note_edit->hscrollbar)->adjustment->value / (double) note_edit->control_current.control_width);
-  gtk_widget_queue_draw(note_edit->ruler);
-
-  /* update note edit */
   note_edit->flags |= AGS_NOTE_EDIT_RESETING_HORIZONTALLY;
   ags_note_edit_reset_horizontally(note_edit, 0);
   note_edit->flags &= (~AGS_NOTE_EDIT_RESETING_HORIZONTALLY);

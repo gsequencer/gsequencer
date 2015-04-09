@@ -40,11 +40,7 @@ struct _AgsRemoveRecall
 {
   AgsTask task;
 
-  GObject *context;
-
   AgsRecall *recall;
-  gboolean is_play;
-  gboolean remove_all;
 };
 
 struct _AgsRemoveRecallClass
@@ -54,9 +50,6 @@ struct _AgsRemoveRecallClass
 
 GType ags_remove_recall_get_type();
 
-AgsRemoveRecall* ags_remove_recall_new(GObject *context,
-				       AgsRecall *recall,
-				       gboolean is_play,
-				       gboolean remove_all);
+AgsRemoveRecall* ags_remove_recall_new(AgsRecall *recall);
 
 #endif /*__AGS_REMOVE_RECALL_H__*/
