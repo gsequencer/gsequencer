@@ -23,6 +23,7 @@
 #include <glib-object.h>
 
 #include <ags/audio/ags_task.h>
+#include <ags/X/ags_line.h>
 #include <ags/X/ags_line_member.h>
 
 #define AGS_TYPE_ADD_LINE_MEMBER                (ags_add_line_member_get_type())
@@ -39,7 +40,7 @@ struct _AgsAddLineMember
 {
   AgsTask task;
 
-  GtkWidget *line;
+  AgsLine *line;
   AgsLineMember *line_member;
 
   guint x;
@@ -55,7 +56,7 @@ struct _AgsAddLineMemberClass
 
 GType ags_add_line_member_get_type();
 
-AgsAddLineMember* ags_add_line_member_new(GtkWidget *line,
+AgsAddLineMember* ags_add_line_member_new(AgsLine *line,
 					  AgsLineMember *line_member,
 					  guint x, guint y,
 					  guint width, guint height);

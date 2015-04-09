@@ -48,7 +48,7 @@ struct _AgsPreferences
 
   guint flags;
 
-  GtkWindow *parent;
+  GtkWindow *window;
 
   AgsGenericPreferences *generic_preferences;
   AgsAudioPreferences *audio_preferences;

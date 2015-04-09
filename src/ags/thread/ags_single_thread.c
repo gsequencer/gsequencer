@@ -20,6 +20,8 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/audio/ags_devout.h>
+
 void ags_single_thread_class_init(AgsSingleThreadClass *single_thread);
 void ags_single_thread_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_single_thread_init(AgsSingleThread *single_thread);
@@ -106,7 +108,23 @@ ags_single_thread_connectable_interface_init(AgsConnectableInterface *connectabl
 void
 ags_single_thread_init(AgsSingleThread *single_thread)
 {
-  /* empty */
+  AgsThread *thread;
+  AgsAudioLoop *audio_loop;
+
+  thread = AGS_THREAD(single_thread);
+
+  audio_loop = 
+    single_thread->audio_loop = ags_audio_loop_new(NULL, NULL);
+  AGS_THREAD(single_thread->audio_loop)->flags |= AGS_THREAD_SINGLE_LOOP;
+
+  single_thread->task_thread = AGS_TASK_THREAD(audio_loop->task_thread);
+  AGS_THREAD(single_thread->task_thread)->flags |= AGS_THREAD_SINGLE_LOOP;
+
+  single_thread->devout_thread = AGS_DEVOUT_THREAD(audio_loop->devout_thread);
+  AGS_THREAD(single_thread->task_thread)->flags |= AGS_THREAD_SINGLE_LOOP;
+
+  single_thread->gui_thread = AGS_GUI_THREAD(audio_loop->gui_thread);
+  AGS_THREAD(single_thread->gui_thread)->flags |= AGS_THREAD_SINGLE_LOOP;
 }
 
 void
@@ -137,14 +155,44 @@ void
 ags_single_thread_start(AgsThread *thread)
 {
   AgsSingleThread *single_thread;
+  AgsDevout *devout;
 
   single_thread = AGS_SINGLE_THREAD(thread);
+
+  devout = AGS_DEVOUT(thread->devout);
+  devout->flags |= AGS_DEVOUT_NONBLOCKING;
+
+  g_object_set(G_OBJECT(single_thread->audio_loop),
+	       "devout\0", devout,
+	       NULL);
+
+  g_object_set(G_OBJECT(single_thread->task_thread),
+	       "devout\0", devout,
+	       NULL);
+
+  g_object_set(G_OBJECT(single_thread->devout_thread),
+	       "devout\0", devout,
+	       NULL);
+
+  g_object_set(G_OBJECT(single_thread->gui_thread),
+	       "devout\0", devout,
+	       NULL);
 
   g_atomic_int_or(&(thread->flags),
 		  (AGS_THREAD_RUNNING |
 		   AGS_THREAD_INITIAL_RUN));
 
   ags_single_thread_run(thread);
+
+  //  pthread_create(&(AGS_THREAD(single_thread)->thread), NULL,
+  //		 &(ags_single_thread_loop), thread);
+
+  ags_thread_start((AgsThread *) single_thread->audio_loop);
+
+  ags_thread_start((AgsThread *) single_thread->task_thread);
+
+  ags_thread_start((AgsThread *) single_thread->gui_thread);
+
 }
 
 void*
@@ -159,28 +207,28 @@ void
 ags_single_thread_run(AgsThread *thread)
 {
   AgsSingleThread *single_thread;
-
-  GList *list;
-  
   struct timespec play_start, play_exceeded, play_idle, current;
 
   single_thread = AGS_SINGLE_THREAD(thread);
 
   play_idle.tv_sec = 0;
-  play_idle.tv_nsec = floor((double) NSEC_PER_SEC / (double) AGS_SINGLE_THREAD_DEFAULT_JIFFIE);
+  play_idle.tv_nsec = floor((double) NSEC_PER_SEC / (double) AGS_AUDIO_LOOP_DEFAULT_JIFFIE);
 
   while((AGS_THREAD_RUNNING & (g_atomic_int_get(&thread->flags))) != 0){
     /* initial value to calculate timing */
     clock_gettime(CLOCK_MONOTONIC, &play_start);
 
-    list = AGS_THREAD(single_thread)->children;
+    /*  */
+    ags_thread_run((AgsThread *) single_thread->audio_loop);
 
-    while(list != NULL){
-      ags_thread_run(AGS_THREAD(list->data));
+    ags_thread_run((AgsThread *) single_thread->task_thread);
 
-      list = list->next;
+    if((AGS_THREAD_RUNNING & (AGS_THREAD(single_thread->devout_thread)->flags)) != 0){
+      ags_thread_run((AgsThread *) single_thread->devout_thread);
     }
-    
+
+    ags_thread_run((AgsThread *) single_thread->gui_thread);
+
     /* do timing */
     clock_gettime(CLOCK_MONOTONIC, &play_exceeded);
 
@@ -205,25 +253,25 @@ void
 ags_single_thread_stop(AgsThread *thread)
 {
   AgsSingleThread *single_thread;
-  GList *list;
-  
+
   single_thread = AGS_SINGLE_THREAD(thread);
 
-  list = AGS_THREAD(single_thread)->children;
+  ags_thread_stop((AgsThread *) single_thread->audio_loop);
 
-  while(list != NULL){
-    ags_thread_run(AGS_THREAD(list->data));
+  ags_thread_stop((AgsThread *) single_thread->task_thread);
 
-    list = list->next;
-  }    
+  ags_thread_stop((AgsThread *) single_thread->devout_thread);
+
+  ags_thread_stop((AgsThread *) single_thread->gui_thread);
 }
 
 AgsSingleThread*
-ags_single_thread_new()
+ags_single_thread_new(GObject *devout)
 {
   AgsSingleThread *single_thread;
 
   single_thread = (AgsSingleThread *) g_object_new(AGS_TYPE_SINGLE_THREAD,
+						   "devout\0", devout,
 						   NULL);
 
 

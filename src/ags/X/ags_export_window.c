@@ -20,13 +20,10 @@
 #include <ags/X/ags_export_window_callbacks.h>
 
 #include <ags-lib/object/ags_connectable.h>
-#include <ags/object/ags_soundcard.h>
 
-#include <ags/audio/ags_devout.h>
+#include <ags/main.h>
+
 #include <ags/audio/ags_notation.h>
-
-#include <ags/X/ags_window.h>
-#include <ags/X/ags_navigation.h>
 
 #include <stdlib.h>
 
@@ -60,7 +57,8 @@ gboolean ags_export_window_delete_event(GtkWidget *widget, GdkEventAny *event);
 
 enum{
   PROP_0,
-  PROP_SOUNDCARD,
+  PROP_DEVOUT,
+  PROP_MAIN,
 };
 
 static gpointer ags_export_window_parent_class = NULL;
@@ -120,20 +118,37 @@ ags_export_window_class_init(AgsExportWindowClass *export_window)
 
   /* properties */
   /**
-   * AgsExportWindow:soundcard:
+   * AgsExportWindow:devout:
    *
-   * The assigned #AgsSoundcard acting as default sink.
+   * The assigned #AgsDevout acting as default sink.
    * 
    * Since: 0.4
    */
-  param_spec = g_param_spec_object("soundcard\0",
-				   "assigned soundcard\0",
-				   "The soundcard it is assigned with\0",
+  param_spec = g_param_spec_object("devout\0",
+				   "assigned devout\0",
+				   "The devout it is assigned with\0",
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_SOUNDCARD,
+				  PROP_DEVOUT,
 				  param_spec);
+
+  /**
+   * AgsExportWindow:ags-main:
+   *
+   * The assigned #AgsMain to give control of application.
+   * 
+   * Since: 0.4
+   */
+  param_spec = g_param_spec_object("ags-main\0",
+				   "assigned ags main\0",
+				   "The AgsMain it is assigned with\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_MAIN,
+				  param_spec);
+
 
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) export_window;
@@ -158,14 +173,9 @@ ags_export_window_init(AgsExportWindow *export_window)
   GtkHBox *hbox;
   GtkTable *table;
   GtkLabel *label;
-  gchar *str;
-  gdouble bpm;
 
   export_window->flags = 0;
 
-  export_window->parent = NULL;
-  export_window->soundcard = NULL;
-  
   g_object_set(export_window,
 	       "title\0", "export to audio data\0",
 	       NULL);
@@ -294,10 +304,7 @@ ags_export_window_init(AgsExportWindow *export_window)
 		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
 		   0, 0);
 
-  bpm = AGS_DEVOUT_DEFAULT_BPM; // AGS_NAVIGATION(AGS_WINDOW(AGS_APPLICATION_CONTEXT(export_window->application_context)->window)->navigation)->bpm->adjustment->value
-  str = ags_navigation_tact_to_time_string(0.0,
-					   bpm);
-  export_window->duration = gtk_label_new(str);
+  export_window->duration = gtk_label_new(ags_navigation_tact_to_time_string(0.0));
   gtk_box_pack_start(GTK_BOX(hbox),
 		     GTK_WIDGET(export_window->duration),
 		     FALSE, FALSE,
@@ -353,19 +360,39 @@ ags_export_window_set_property(GObject *gobject,
   export_window = AGS_EXPORT_WINDOW(gobject);
 
   switch(prop_id){
-  case PROP_SOUNDCARD:
+  case PROP_DEVOUT:
     {
-      GObject *soundcard;
+      AgsDevout *devout;
 
-      soundcard = g_value_get_object(value);
+      devout = g_value_get_object(value);
 
-      if(export_window->soundcard == soundcard)
+      if(export_window->devout == devout)
 	return;
 
-      if(soundcard != NULL)
-	g_object_ref(soundcard);
+      if(devout != NULL)
+	g_object_ref(devout);
 
-      export_window->soundcard = soundcard;
+      export_window->devout = devout;
+    }
+    break;
+  case PROP_MAIN:
+    {
+      AgsMain *ags_main;
+
+      ags_main = g_value_get_object(value);
+
+      if(export_window->ags_main == ags_main)
+	return;
+
+      if(export_window->ags_main != NULL){
+	g_object_unref(export_window->ags_main);
+      }
+
+      if(ags_main != NULL){
+	g_object_ref(ags_main);
+      }
+
+      export_window->ags_main = ags_main;
     }
     break;
   default:
@@ -385,8 +412,11 @@ ags_export_window_get_property(GObject *gobject,
   export_window = AGS_EXPORT_WINDOW(gobject);
 
   switch(prop_id){
-  case PROP_SOUNDCARD:
-    g_value_set_object(value, export_window->soundcard);
+  case PROP_DEVOUT:
+    g_value_set_object(value, export_window->devout);
+    break;
+  case PROP_MAIN:
+    g_value_set_object(value, export_window->ags_main);
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
@@ -453,8 +483,7 @@ ags_export_window_new()
 {
   AgsExportWindow *export_window;
 
-  export_window = (AgsExportWindow *) g_object_new(AGS_TYPE_EXPORT_WINDOW,
-						   NULL);
+  export_window = (AgsExportWindow *) g_object_new(AGS_TYPE_EXPORT_WINDOW, NULL);
 
   return(export_window);
 }

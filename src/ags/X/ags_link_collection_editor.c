@@ -19,11 +19,13 @@
 #include <ags/X/ags_link_collection_editor.h>
 #include <ags/X/ags_link_collection_editor_callbacks.h>
 
-#include <ags/object/ags_application_context.h>
+#include <ags/main.h>
+
 #include <ags-lib/object/ags_connectable.h>
+
 #include <ags/object/ags_applicable.h>
 
-#include <ags/thread/ags_thread-posix.h>
+#include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_devout.h>
@@ -32,7 +34,6 @@
 
 #include <ags/audio/task/ags_link_channel.h>
 
-#include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_machine_editor.h>
 
@@ -399,46 +400,27 @@ ags_link_collection_editor_apply(AgsApplicable *applicable)
 
   if(gtk_combo_box_get_active_iter(link_collection_editor->link,
 				   &iter)){
-    AgsWindow *window;
     AgsMachine *machine, *link_machine;
     AgsMachineEditor *machine_editor;
-    GtkTreeModel *model;
-
     AgsChannel *channel, *link;
     AgsLinkChannel *link_channel;
-
-    AgsThread *main_loop;
-    AgsTaskThread *task_thread;
-
-    AgsApplicationContext *application_context;
-    
+    GtkTreeModel *model;
     GList *task;
     guint first_line, count;
     guint i;
-    
     GError *error;
 
     machine_editor = AGS_MACHINE_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(link_collection_editor),
 								AGS_TYPE_MACHINE_EDITOR));
-
-    window = machine_editor->parent;
-    
-    application_context = window->application_context;
-    
     machine = machine_editor->machine;
 
     first_line = (guint) gtk_spin_button_get_value_as_int(link_collection_editor->first_line);
 
-    if(link_collection_editor->channel_type == AGS_TYPE_INPUT){
+    if(link_collection_editor->channel_type == AGS_TYPE_INPUT)
       channel = ags_channel_nth(machine_editor->machine->audio->input, first_line);
-    }else{
+    else
       channel = ags_channel_nth(machine_editor->machine->audio->output, first_line);
-    }
 
-    main_loop = application_context->main_loop;
-    task_thread = ags_thread_find_type(main_loop,
-				       AGS_TYPE_TASK_THREAD);
-    
     model = gtk_combo_box_get_model(link_collection_editor->link);
     gtk_tree_model_get(model,
 		       &iter,
@@ -462,8 +444,8 @@ ags_link_collection_editor_apply(AgsApplicable *applicable)
       
       /* append AgsLinkChannel */
       task = g_list_reverse(task);
-      ags_task_thread_append_tasks(task_thread,
-				   task);
+      ags_task_thread_append_tasks(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(machine->audio->devout)->ags_main)->main_loop)->task_thread),
+				  task);
     }else{
       guint first_link;
 
@@ -486,8 +468,8 @@ ags_link_collection_editor_apply(AgsApplicable *applicable)
 
 
       task = g_list_reverse(task);
-      ags_task_thread_append_tasks(task_thread,
-				   task);
+      ags_task_thread_append_tasks(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(machine->audio->devout)->ags_main)->main_loop)->task_thread),
+				  task);
     }
   }
 }

@@ -53,7 +53,6 @@ void ags_export_thread_stop(AgsThread *thread);
 
 enum{
   PROP_0,
-  PROP_DEVOUT,
   PROP_AUDIO_FILE,
 };
 
@@ -115,29 +114,6 @@ ags_export_thread_class_init(AgsExportThreadClass *export_thread)
   gobject->finalize = ags_export_thread_finalize;
 
   /* properties */
-  /**
-   * AgsExportThread:devout:
-   *
-   * The assigned #AgsDevout.
-   * 
-   * Since: 0.4
-   */
-  param_spec = g_param_spec_object("devout\0",
-				   "devout assigned to\0",
-				   "The AgsDevout it is assigned to.\0",
-				   AGS_TYPE_DEVOUT,
-				   G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_DEVOUT,
-				  param_spec);
-
-  /**
-   * AgsExportThread:audio-file:
-   *
-   * The assigned #AgsAudioFile.
-   * 
-   * Since: 0.4
-   */
   param_spec = g_param_spec_object("audio-file\0",
 				   "audio file to write\0",
 				   "The audio file to write output.\0",
@@ -176,9 +152,6 @@ ags_export_thread_init(AgsExportThread *export_thread)
 
   export_thread->tic = 0;
   export_thread->counter = 0;
-
-  export_thread->devout = NULL;
-
   export_thread->audio_file = NULL;
 }
 
@@ -193,23 +166,6 @@ ags_export_thread_set_property(GObject *gobject,
   export_thread = AGS_EXPORT_THREAD(gobject);
 
   switch(prop_id){
-  case PROP_DEVOUT:
-    {
-      AgsDevout *devout;
-
-      devout = (AgsDevout *) g_value_get_object(value);
-
-      if(export_thread->devout != NULL){
-	g_object_unref(G_OBJECT(export_thread->devout));
-      }
-
-      if(devout != NULL){
-	g_object_ref(G_OBJECT(devout));
-      }
-
-      export_thread->devout = G_OBJECT(devout);
-    }
-    break;
   case PROP_AUDIO_FILE:
     {
       AgsAudioFile *audio_file;
@@ -248,11 +204,6 @@ ags_export_thread_get_property(GObject *gobject,
   export_thread = AGS_EXPORT_THREAD(gobject);
 
   switch(prop_id){
-  case PROP_DEVOUT:
-    {
-      g_value_set_object(value, G_OBJECT(export_thread->devout));
-    }
-    break;
   case PROP_AUDIO_FILE:
     {
       g_value_set_object(value, export_thread->audio_file);
@@ -313,7 +264,7 @@ ags_export_thread_run(AgsThread *thread)
     export_thread->counter += 1;
   }
 
-  devout = export_thread->devout;
+  devout =  thread->devout;
 
   if((AGS_DEVOUT_BUFFER0 & (devout->flags)) != 0){
     devout_buffer = devout->buffer[0];

@@ -167,8 +167,8 @@ void
 ags_buffer_channel_run_init(AgsBufferChannelRun *buffer_channel_run)
 {
   AGS_RECALL(buffer_channel_run)->name = "ags-buffer\0";
-  AGS_RECALL(buffer_channel_run)->version = AGS_RECALL_DEFAULT_VERSION;
-  AGS_RECALL(buffer_channel_run)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
+  AGS_RECALL(buffer_channel_run)->version = AGS_EFFECTS_DEFAULT_VERSION;
+  AGS_RECALL(buffer_channel_run)->build_id = AGS_BUILD_ID;
   AGS_RECALL(buffer_channel_run)->xml_type = "ags-buffer-channel-run\0";
   AGS_RECALL(buffer_channel_run)->port = NULL;
 

@@ -22,10 +22,12 @@
 #include <ags/file/ags_file_gui.h>
 #include <ags/file/ags_file_stock.h>
 
+#include <ags-lib/object/ags_connectable.h>
+
+#include <ags/main.h>
+
 #include <ags/util/ags_id_generator.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags-lib/object/ags_connectable.h>
 #include <ags/object/ags_marshal.h>
 
 #include <ags/file/ags_file_lookup.h>
@@ -194,10 +196,10 @@ ags_file_class_init(AgsFileClass *file)
 				  PROP_AUDIO_ENCODING,
 				  param_spec);
 
-  param_spec = g_param_spec_object("application-context\0",
+  param_spec = g_param_spec_object("main\0",
 				   "main object of file\0",
 				   "The main object to write to file.\0",
-				   AGS_TYPE_APPLICATION_CONTEXT,
+				   AGS_TYPE_MAIN,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_MAIN,
@@ -318,7 +320,7 @@ ags_file_init(AgsFile *file)
   file->lookup = NULL;
   file->launch = NULL;
 
-  file->application_context = NULL;
+  file->ags_main = NULL;
 
   file->clipboard = NULL;
   file->property = NULL;
@@ -386,23 +388,23 @@ ags_file_set_property(GObject *gobject,
     break;
   case PROP_MAIN:
     {
-      GObject *application_context;
+      GObject *ags_main;
 
-      application_context = g_value_get_object(value);
+      ags_main = g_value_get_object(value);
 
-      if(file->application_context == application_context){
+      if(file->ags_main == ags_main){
 	return;
       }
 
-      if(file->application_context != NULL){
-	g_object_unref(file->application_context);
+      if(file->ags_main != NULL){
+	g_object_unref(file->ags_main);
       }
 
-      if(application_context != NULL){
-	g_object_ref(application_context);
+      if(ags_main != NULL){
+	g_object_ref(ags_main);
       }
 
-      file->application_context = application_context;
+      file->ags_main = ags_main;
     }
     break;
   default:
@@ -444,7 +446,7 @@ ags_file_get_property(GObject *gobject,
     break;
   case PROP_MAIN:
     {
-      g_value_set_object(value, file->application_context);
+      g_value_set_object(value, file->ags_main);
     }
     break;
   default:
@@ -764,7 +766,7 @@ ags_file_close(AgsFile *file)
 void
 ags_file_real_write(AgsFile *file)
 {
-  AgsApplicationContext *application_context;
+  AgsMain *ags_main;
   GList *list;
   int size;
 
@@ -787,9 +789,9 @@ ags_file_real_write(AgsFile *file)
   //TODO:JK: implement me
 
   /* write main */
-  ags_file_write_application_context(file,
-				     file->root_node,
-				     file->application_context);
+  ags_file_write_main(file,
+		      file->root_node,
+		      file->ags_main);
 
   /* write embedded audio */
   //TODO:JK: implement me
@@ -827,7 +829,7 @@ ags_file_write(AgsFile *file)
 void
 ags_file_real_write_concurrent(AgsFile *file)
 {
-  AgsApplicationContext *application_context;
+  AgsMain *ags_main;
   AgsThread *main_loop, *gui_thread, *task_thread;
   xmlNode *root_node;
   FILE *file_out;
@@ -838,11 +840,11 @@ ags_file_real_write_concurrent(AgsFile *file)
   xmlNode *parent, *node, *child;
   gchar *id;
 
-  main_loop = AGS_APPLICATION_CONTEXT(file->application_context)->main_loop;
-  //gui_thread = AGS_AUDIO_LOOP(main_loop)->gui_thread;
-  //task_thread = AGS_AUDIO_LOOP(main_loop)->task_thread;
+  main_loop = AGS_MAIN(file->ags_main)->main_loop;
+  gui_thread = AGS_AUDIO_LOOP(main_loop)->gui_thread;
+  task_thread = AGS_AUDIO_LOOP(main_loop)->task_thread;
 
-  application_context = file->application_context;
+  ags_main = file->ags_main;
 
   file->doc = xmlNewDoc("1.0\0");
   root_node = xmlNewNode(NULL, "ags\0");
@@ -866,7 +868,79 @@ ags_file_real_write_concurrent(AgsFile *file)
   //TODO:JK: implement me
 
   /* the main code - write main */
-  //TODO:JK: implement me
+  ags_thread_lock(main_loop);
+
+  id = ags_id_generator_create_uuid();
+
+  node = xmlNewNode(NULL,
+		    "ags-main\0");
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->ags_main,
+				   "file\0", file,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
+				   "reference\0", ags_main,
+				   NULL));
+
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  xmlNewProp(node,
+	     AGS_FILE_FLAGS_PROP,
+	     g_strdup_printf("%x\0", ((~AGS_MAIN_CONNECTED) & (AGS_MAIN(ags_main)->flags))));
+
+  xmlNewProp(node,
+	     AGS_FILE_VERSION_PROP,
+	     AGS_MAIN(ags_main)->version);
+
+  xmlNewProp(node,
+	     AGS_FILE_BUILD_ID_PROP,
+	     AGS_MAIN(ags_main)->build_id);
+
+  /* add to parent */
+  xmlAddChild(parent,
+	      node);
+
+  ags_thread_unlock(main_loop);
+
+  /* child elements */
+  /* thread */
+  ags_thread_lock(main_loop);
+
+  ags_file_write_thread(file,
+			node,
+			AGS_THREAD(AGS_MAIN(ags_main)->main_loop));
+
+  ags_thread_unlock(main_loop);
+
+  /* thread pool */
+  ags_thread_lock(main_loop);
+
+  ags_file_write_thread_pool(file,
+			     node,
+			     AGS_THREAD_POOL(AGS_MAIN(ags_main)->thread_pool));
+
+  ags_thread_unlock(main_loop);
+
+  /* write audio */
+  ags_thread_lock(task_thread);
+
+  ags_file_write_devout_list(file,
+			     node,
+			     AGS_MAIN(ags_main)->devout);
+
+  ags_thread_unlock(task_thread);
+
+  ags_thread_lock(gui_thread);
+
+  ags_file_write_window(file,
+			node,
+			AGS_MAIN(ags_main)->window);
+
+  ags_thread_unlock(gui_thread);
 
   /* write embedded audio */
   //TODO:JK: implement me
@@ -947,24 +1021,45 @@ ags_file_write_resolve(AgsFile *file)
 void
 ags_file_real_read(AgsFile *file)
 {
-  AgsApplicationContext *application_context;
+  AgsMain *ags_main;
   xmlNode *root_node, *child;
   pid_t pid_num;
 
   root_node = file->root_node;
-  
+
   /* child elements */
   child = root_node->children;
-  application_context = file->application_context;
-  
+
   while(child != NULL){
     if(child->type == XML_ELEMENT_NODE){
-      if(!xmlStrncmp("ags-application-context\0",
+      if(!xmlStrncmp("ags-clip-board\0",
 		     child->name,
-		     9)){
-	ags_file_read_application_context(file,
-					  child,
-					  (GObject **) &application_context);
+		     15)){
+	//TODO:JK: implement me
+      }else if(!xmlStrncmp("ags-script-list\0",
+			   child->name,
+			   16)){
+	//TODO:JK: implement me
+      }else if(!xmlStrncmp("ags-cluster\0",
+			   child->name,
+			   12)){
+	//TODO:JK: implement me
+      }else if(!xmlStrncmp("ags-client\0",
+			   child->name,
+			   11)){
+	//TODO:JK: implement me
+      }else if(!xmlStrncmp("ags-server\0",
+			   child->name,
+			   11)){
+	//TODO:JK: implement me
+      }else if(!xmlStrncmp("ags-main\0",
+			   child->name,
+			   9)){
+	ags_main = NULL;
+
+	ags_file_read_main(file,
+			   child,
+			   (GObject **) &ags_main);
       }else if(!xmlStrncmp("ags-embedded-audio-list\0",
 			   child->name,
 			   24)){
@@ -985,10 +1080,12 @@ ags_file_real_read(AgsFile *file)
 
   /* resolve */
   ags_file_read_resolve(file);
+
+  gtk_widget_show_all(GTK_WIDGET(ags_main->window));
   
   g_message("XML file resolved\0");
 
-  ags_connectable_connect(AGS_CONNECTABLE(application_context));
+  ags_connectable_connect(AGS_CONNECTABLE(ags_main));
 
   g_message("XML file connected\0");
 
@@ -1060,25 +1157,173 @@ ags_file_read_start(AgsFile *file)
 }
 
 void
-ags_file_read_application_context(AgsFile *file, xmlNode *node, GObject **application_context)
+ags_file_read_server(AgsFile *file, xmlNode *node, GObject **server)
 {
-  GList *list;
-  gchar *context;
-
-  context = xmlGetProp(node,
-		       "context\0");
-  
-  AGS_APPLICATION_CONTEXT_GET_CLASS(file->application_context)->read(file,
-								    node,
-								    application_context);
+  //TODO:JK: implement me
 }
 
 void
-ags_file_write_application_context(AgsFile *file, xmlNode *parent, GObject *application_context)
+ags_file_write_server(AgsFile *file, xmlNode *parent, GObject *server)
 {
-  AGS_APPLICATION_CONTEXT_GET_CLASS(application_context)->write(file,
-								parent,
-								application_context);
+  //TODO:JK: implement me
+}
+
+void
+ags_file_read_main(AgsFile *file, xmlNode *node, GObject **ags_main)
+{
+  AgsMain *gobject;
+  GList *list;
+  xmlNode *child;
+  int argc;
+  static const gchar *argv[] = {
+    "ags\0",
+  };
+
+  if(*ags_main == NULL){
+    gobject = g_object_new(AGS_TYPE_MAIN,
+			   NULL);
+
+    *ags_main = (GObject *) gobject;
+  }else{
+    gobject = (AgsMain *) *ags_main;
+  }
+
+  file->ags_main = gobject;
+
+  argc = 1;
+  g_object_set(G_OBJECT(file),
+	       "main\0", gobject,
+	       NULL);
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->ags_main,
+				   "file\0", file,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference\0", gobject,
+				   NULL));
+  
+  /* properties */
+  gobject->flags = (guint) g_ascii_strtoull(xmlGetProp(node, AGS_FILE_FLAGS_PROP),
+					    NULL,
+					    16);
+
+  gobject->version = xmlGetProp(node,
+				AGS_FILE_VERSION_PROP);
+
+  gobject->build_id = xmlGetProp(node,
+				 AGS_FILE_BUILD_ID_PROP);
+
+  //TODO:JK: check version compatibelity
+
+  /* child elements */
+  child = node->children;
+
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp("ags-thread\0",
+		     child->name,
+		     11)){
+	ags_file_read_thread(file,
+			     child,
+			     (AgsThread **) &(gobject->main_loop));
+	
+	AGS_AUDIO_LOOP(gobject->main_loop)->ags_main = gobject;
+      }else if(!xmlStrncmp("ags-thread-pool\0",
+			   child->name,
+			   16)){
+	ags_file_read_thread_pool(file,
+				  child,
+				  (AgsThreadPool **) &(gobject->thread_pool));
+      }else if(!xmlStrncmp("ags-devout-list\0",
+			   child->name,
+			   16)){
+	ags_file_read_devout_list(file,
+				  child,
+				  &(gobject->devout));
+      }else if(!xmlStrncmp("ags-window\0",
+			   child->name,
+			   11)){
+	ags_file_read_window(file,
+			     child,
+			     &(gobject->window));
+      }
+    }
+
+    child = child->next;
+  }
+
+  //TODO:JK: should be resolved
+  AGS_TASK_THREAD(AGS_AUDIO_LOOP(gobject->main_loop)->task_thread)->thread_pool = gobject->thread_pool;
+  AGS_THREAD_POOL(gobject->thread_pool)->parent = AGS_THREAD(AGS_AUDIO_LOOP(gobject->main_loop)->task_thread);
+
+  list = AGS_THREAD_POOL(gobject->thread_pool)->returnable_thread;
+
+  while(list != NULL){
+    ags_thread_add_child(AGS_THREAD(AGS_AUDIO_LOOP(gobject->main_loop)->task_thread),
+			 AGS_THREAD(list->data));
+
+    list = list->next;
+  }
+}
+
+void
+ags_file_write_main(AgsFile *file, xmlNode *parent, GObject *ags_main)
+{
+  xmlNode *node, *child;
+  gchar *id;
+
+  id = ags_id_generator_create_uuid();
+
+  node = xmlNewNode(NULL,
+		    "ags-main\0");
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->ags_main,
+				   "file\0", file,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
+				   "reference\0", ags_main,
+				   NULL));
+
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  xmlNewProp(node,
+	     AGS_FILE_FLAGS_PROP,
+	     g_strdup_printf("%x\0", ((~AGS_MAIN_CONNECTED) & (AGS_MAIN(ags_main)->flags))));
+
+  xmlNewProp(node,
+	     AGS_FILE_VERSION_PROP,
+	     AGS_MAIN(ags_main)->version);
+
+  xmlNewProp(node,
+	     AGS_FILE_BUILD_ID_PROP,
+	     AGS_MAIN(ags_main)->build_id);
+
+  /* add to parent */
+  xmlAddChild(parent,
+	      node);
+
+  /* child elements */
+  ags_file_write_thread(file,
+			node,
+			AGS_THREAD(AGS_MAIN(ags_main)->main_loop));
+
+  ags_file_write_thread_pool(file,
+			     node,
+			     AGS_THREAD_POOL(AGS_MAIN(ags_main)->thread_pool));
+
+  ags_file_write_devout_list(file,
+			     node,
+			     AGS_MAIN(ags_main)->devout);
+
+  ags_file_write_window(file,
+			node,
+			AGS_MAIN(ags_main)->window);
 }
 
 /**

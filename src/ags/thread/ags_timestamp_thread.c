@@ -21,6 +21,7 @@
 #include <ags-lib/object/ags_connectable.h>
 
 #include <ags/audio/ags_timestamp.h>
+#include <ags/audio/ags_devout.h>
 
 void ags_timestamp_thread_class_init(AgsTimestampThreadClass *timestamp_thread);
 void ags_timestamp_thread_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -142,19 +143,15 @@ void
 ags_timestamp_thread_run(AgsThread *thread)
 {
   AgsTimestampThread *timestamp_thread;
-  //  AgsDevout *devout;
+  AgsDevout *devout;
   guint duration;
   time_t timer;
 
   timestamp_thread = AGS_TIMESTAMP_THREAD(thread);
-  //  devout = AGS_DEVOUT(thread->devout);
+  devout = AGS_DEVOUT(thread->devout);
 
-  //  duration = (devout->tic_counter /
-  //	      (devout->frequency / devout->buffer_size) *
-  //	      AGS_MICROSECONDS_PER_SECOND);
-
-  //FIXME:JK: definitely wrong
-  duration = (AGS_THREAD_DEFAULT_JIFFIE *
+  duration = (devout->tic_counter /
+	      (devout->frequency / devout->buffer_size) *
 	      AGS_MICROSECONDS_PER_SECOND);
   
   timer = time(&(AGS_TIMESTAMP(timestamp_thread->current_timestamp)->timer.unix_time.time_val));

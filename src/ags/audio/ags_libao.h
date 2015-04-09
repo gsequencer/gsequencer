@@ -144,7 +144,7 @@ struct _AgsLibao
     }ao;
   }out;
 
-  GObject *application_context;
+  GObject *ags_main;
   
   GList *audio;
 };
@@ -207,7 +207,7 @@ void ags_libao_tic(AgsLibao *libao);
 
 void ags_libao_note_offset_changed(AgsLibao *libao, guint note_offset);
 
-AgsLibao* ags_libao_new(GObject *application_context);
+AgsLibao* ags_libao_new(GObject *ags_main);
 
 #endif /*__AGS_LIBAO_H__*/
 

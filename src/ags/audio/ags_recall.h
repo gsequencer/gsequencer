@@ -65,7 +65,6 @@ typedef enum{
   AGS_RECALL_PERSISTENT_SEQUENCER  = 1 << 18,
   AGS_RECALL_PERSISTENT_NOTATION   = 1 << 19,
   AGS_RECALL_SKIP_DEPENDENCIES     = 1 << 20,
-  AGS_RECALL_BULK_MODE             = 1 << 21,
 }AgsRecallFlags;
 
 typedef enum{
@@ -83,7 +82,7 @@ struct _AgsRecall
 
   guint flags;
 
-  GObject *soundcard;
+  GObject *devout;
   GObject *container; // see AgsRecallContainer
 
   gchar *version;
@@ -183,7 +182,7 @@ AgsRecall* ags_recall_duplicate(AgsRecall *recall,
 				AgsRecallID *recall_id);
 
 void ags_recall_set_recall_id(AgsRecall *recall, AgsRecallID *recall_id);
-void ags_recall_set_soundcard_recursive(AgsRecall *recall, GObject *soundcard);
+void ags_recall_set_devout_recursive(AgsRecall *recall, GObject *devout);
 
 void ags_recall_notify_dependency(AgsRecall *recall, guint dependency, gint count);
 

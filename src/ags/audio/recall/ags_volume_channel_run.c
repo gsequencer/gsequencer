@@ -152,8 +152,8 @@ void
 ags_volume_channel_run_init(AgsVolumeChannelRun *volume_channel_run)
 {
   AGS_RECALL(volume_channel_run)->name = "ags-volume\0";
-  AGS_RECALL(volume_channel_run)->version = AGS_RECALL_DEFAULT_VERSION;
-  AGS_RECALL(volume_channel_run)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
+  AGS_RECALL(volume_channel_run)->version = AGS_EFFECTS_DEFAULT_VERSION;
+  AGS_RECALL(volume_channel_run)->build_id = AGS_BUILD_ID;
   AGS_RECALL(volume_channel_run)->xml_type = "ags-volume-channel-run\0";
   AGS_RECALL(volume_channel_run)->port = NULL;
 

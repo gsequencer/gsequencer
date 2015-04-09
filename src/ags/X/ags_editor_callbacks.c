@@ -21,11 +21,14 @@
 #include <ags/main.h>
 
 #include <ags/thread/ags_audio_loop.h>
+#include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_input.h>
+
+#include <ags/audio/task/ags_scroll_on_play.h>
 
 #include <ags/X/ags_window.h>
 
@@ -43,6 +46,10 @@ ags_editor_parent_set_callback(GtkWidget  *widget, GtkObject *old_parent, AgsEdi
 {
   if(old_parent != NULL)
     return;
+  
+  editor->note_edit->flags |= AGS_NOTE_EDIT_RESETING_HORIZONTALLY;
+  ags_note_edit_reset_horizontally(editor->note_edit, AGS_NOTE_EDIT_RESET_HSCROLLBAR);
+  editor->note_edit->flags &= (~AGS_NOTE_EDIT_RESETING_HORIZONTALLY);
 }
 
 void
@@ -92,16 +99,15 @@ ags_editor_set_pads_callback(AgsAudio *audio,
     }
   }
 
-  ags_note_edit_set_map_height(editor->edit.note_edit,
-			       pads * editor->edit.note_edit->control_height);
+  ags_note_edit_set_map_height(editor->note_edit,
+			       pads * editor->note_edit->control_height);
 }
 
 void
 ags_editor_machine_changed_callback(AgsMachineSelector *machine_selector, AgsMachine *machine,
 				    AgsEditor *editor)
 {
-  ags_editor_machine_changed(editor,
-			     machine);
+  ags_editor_machine_changed(editor, machine);
 }
 
 void
@@ -120,26 +126,15 @@ ags_editor_change_position_callback(AgsNavigation *navigation, gdouble tact,
   loop_end = gtk_spin_button_get_value(navigation->loop_right_tact);
 
   if(!gtk_toggle_button_get_active(navigation->loop) || tact <= loop_end){
-    position = tact * editor->edit.note_edit->control_current.control_width;
+    position = tact * editor->note_edit->control_current.control_width;
   }else{
-    position = loop_start * editor->edit.note_edit->control_current.control_width;
+    position = loop_start * editor->note_edit->control_current.control_width;
   }
 
   /* scroll */
-  if(position - (0.125 * editor->edit.note_edit->control_current.control_width) > 0.0){
-    gtk_range_set_value(GTK_RANGE(editor->edit.note_edit->hscrollbar),
-			position - (0.125 * editor->edit.note_edit->control_current.control_width));
+  if(position - (0.125 * editor->note_edit->control_current.control_width) > 0.0){
+    gtk_range_set_value(GTK_RANGE(editor->note_edit->hscrollbar),
+			position - (0.125 * editor->note_edit->control_current.control_width));
   }
 }
 
-void
-ags_editor_edit_vscrollbar_value_changed_callback(GtkWidget *note_edit,
-						  AgsEditor *editor)
-{
-  if((AGS_MACHINE_IS_SYNTHESIZER & (editor->selected_machine->flags)) != 0){
-    gtk_widget_queue_draw(editor->piano.meter);
-  }else if((AGS_MACHINE_IS_SEQUENCER & (editor->selected_machine->flags)) != 0){
-    gtk_widget_queue_draw(editor->piano.soundset);
-  }else{
-  }
-}

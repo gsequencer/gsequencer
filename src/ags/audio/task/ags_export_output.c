@@ -19,9 +19,12 @@
 #include <ags/audio/task/ags_export_output.h>
 
 #include <ags-lib/object/ags_connectable.h>
-#include <ags/object/ags_soundcard.h>
+
+#include <ags/main.h>
 
 #include <ags/thread/ags_export_thread.h>
+
+#include <ags/audio/ags_devout.h>
 
 #include <ags/audio/file/ags_audio_file.h>
 
@@ -41,7 +44,7 @@ void ags_export_output_launch(AgsTask *task);
  * @section_id:
  * @include: ags/audio/task/ags_export_output.h
  *
- * The #AgsExportOutput task exports #AgsSoundcard to file.
+ * The #AgsExportOutput task exports #AgsDevout to file.
  */
 
 static gpointer ags_export_output_parent_class = NULL;
@@ -116,7 +119,7 @@ void
 ags_export_output_init(AgsExportOutput *export_output)
 {
   export_output->export_thread = NULL;
-  export_output->soundcard = NULL;
+  export_output->devout = NULL;
   export_output->filename = NULL;
   export_output->tic = 0;
   export_output->live_performance = TRUE;
@@ -151,35 +154,25 @@ ags_export_output_launch(AgsTask *task)
 {
   AgsExportOutput *export_output;
   AgsExportThread *export_thread;
-  AgsSoundcard *soundcard;
+  AgsDevout *devout;
   AgsAudioFile *audio_file;
   gchar *filename;
-  guint samplerate, dsp_channels;
   guint tic;
   guint val;
   
   export_output = AGS_EXPORT_OUTPUT(task);
-
-  soundcard = export_output->soundcard;
+  devout = export_output->devout;
   export_thread = export_output->export_thread;
-
   filename = export_output->filename;
-
-  ags_soundcard_get_presets(soundcard,
-			    &dsp_channels,
-			    &samplerate,
-			    NULL,
-			    NULL);
-  
   tic = export_output->tic;
 
   /* open read/write audio file */
   audio_file = ags_audio_file_new(filename,
-				  soundcard,
-				  0, dsp_channels);
+				  devout,
+				  0, devout->dsp_channels);
 
-  audio_file->samplerate = (int) samplerate;
-  audio_file->channels = dsp_channels;
+  audio_file->samplerate = (int) devout->frequency;
+  audio_file->channels = devout->dsp_channels;
 
   ags_audio_file_rw_open(audio_file,
 			 TRUE);
@@ -189,7 +182,7 @@ ags_export_output_launch(AgsTask *task)
   /* start export thread */
   export_thread->tic = tic;
   g_object_set(G_OBJECT(export_thread),
-	       "soundcard\0", soundcard,
+	       "devout\0", devout,
 	       "audio-file\0", audio_file,
 	       NULL);
   ags_thread_start(export_thread);
@@ -218,7 +211,7 @@ ags_export_output_launch(AgsTask *task)
 /**
  * ags_export_output_new:
  * @export_thread: the #AgsExportThread to start
- * @soundcard: the #AgsSoundcard to export
+ * @devout: the #AgsDevout to export
  * @filename: the filename to save
  * @tic: stream duration in tact
  * @live_performance: if %TRUE export is done during real-time
@@ -231,7 +224,7 @@ ags_export_output_launch(AgsTask *task)
  */
 AgsExportOutput*
 ags_export_output_new(AgsExportThread *export_thread,
-		      GObject *soundcard,
+		      AgsDevout *devout,
 		      gchar *filename,
 		      guint tic,
 		      gboolean live_performance)
@@ -242,7 +235,7 @@ ags_export_output_new(AgsExportThread *export_thread,
 						   NULL);
 
   export_output->export_thread = export_thread;
-  export_output->soundcard = soundcard;
+  export_output->devout = devout;
   export_output->filename = filename;
   export_output->tic = tic;
   export_output->live_performance = live_performance;

@@ -86,6 +86,7 @@ int
 ags_machine_editor_apply_callback(GtkWidget *widget, AgsMachineEditor *machine_editor)
 {
   ags_applicable_apply(AGS_APPLICABLE(machine_editor));
+
   //TODO:JK: remove me
   //  ags_applicable_reset(AGS_APPLICABLE(machine_editor));
 

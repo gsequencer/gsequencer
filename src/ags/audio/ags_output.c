@@ -19,8 +19,8 @@
 #include <ags/audio/ags_output.h>
 
 #include <ags-lib/object/ags_connectable.h>
-#include <ags/object/ags_soundcard.h>
 
+#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
 
 void ags_output_class_init(AgsOutputClass *output_class);
@@ -142,7 +142,7 @@ ags_output_disconnect(AgsConnectable *connectable)
 GList*
 ags_output_map_audio_signal(AgsOutput *output, AgsRecallID *recall_id)
 {
-  AgsSoundcard *soundcard;
+  AgsDevout *devout;
   AgsAudioSignal *audio_signal;
   GList *list_destination;
 
@@ -152,7 +152,7 @@ ags_output_map_audio_signal(AgsOutput *output, AgsRecallID *recall_id)
   }else
     return(NULL);
 
-  soundcard = AGS_SOUNDCARD(AGS_AUDIO(AGS_CHANNEL(output)->audio)->soundcard);
+  devout = AGS_DEVOUT(AGS_AUDIO(AGS_CHANNEL(output)->audio)->devout);
   
   while(output != NULL){
     list_destination->next = g_list_alloc();
@@ -161,7 +161,7 @@ ags_output_map_audio_signal(AgsOutput *output, AgsRecallID *recall_id)
   ags_copy_pattern_map_destination0:
     g_message("ags_output_map_audio_signal\n\0");
 
-    audio_signal = ags_audio_signal_new((GObject *) soundcard,
+    audio_signal = ags_audio_signal_new((GObject *) devout,
 					(GObject *) output->channel.first_recycling,
 					(GObject *) recall_id);
     ags_connectable_connect(AGS_CONNECTABLE(audio_signal));

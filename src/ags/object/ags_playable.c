@@ -18,12 +18,15 @@
 
 #include <ags/object/ags_playable.h>
 
-#include <ags/object/ags_config.h>
 #include <ags-lib/object/ags_connectable.h>
+
+#include <ags/audio/ags_config.h>
 
 #include <math.h>
 
 void ags_playable_base_init(AgsPlayableInterface *interface);
+
+extern AgsConfig *config;
 
 /**
  * SECTION:ags_playable
@@ -437,7 +440,6 @@ ags_playable_read_audio_signal(AgsPlayable *playable,
 			       guint start_channel, guint channels_to_read)
 {
   AgsAudioSignal *audio_signal;
-  AgsConfig *config;
   GList *stream, *list, *list_beginning;
   short *buffer;
   guint channels;
@@ -450,21 +452,19 @@ ags_playable_read_audio_signal(AgsPlayable *playable,
   guint i, j, k, i_stop, j_stop;
   GError *error;
 
-  config = AGS_APPLICATION_CONTEXT(devout->application_context)->config;
-  
   ags_playable_info(playable,
 		    &channels, &frames,
 		    &loop_start, &loop_end,
 		    &error);
 
-  samplerate = g_ascii_strtoull(ags_config_get_value(config,
-						     AGS_CONFIG_DEVOUT,
-						     "samplerate\0"),
+  samplerate = g_ascii_strtoull(ags_config_get(config,
+					       AGS_CONFIG_DEVOUT,
+					       "samplerate\0"),
 				NULL,
 				10);
-  buffer_size = g_ascii_strtoull(ags_config_get_value(config,
-						      AGS_CONFIG_DEVOUT,
-						      "buffer-size\0"),
+  buffer_size = g_ascii_strtoull(ags_config_get(config,
+						AGS_CONFIG_DEVOUT,
+						"buffer-size\0"),
 				 NULL,
 				 10);
   length = (guint) ceil((double)(frames) / (double)(buffer_size));

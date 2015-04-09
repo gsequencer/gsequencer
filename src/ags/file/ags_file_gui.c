@@ -107,12 +107,12 @@ ags_file_read_window(AgsFile *file, xmlNode *node, AgsWindow **window)
   }
 
   g_object_set(G_OBJECT(gobject),
-	       "application-context\0", file->application_context,
+	       "ags-main\0", file->ags_main,
 	       NULL);
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
+				   "main\0", file->ags_main,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
@@ -204,11 +204,9 @@ ags_file_read_window_resolve_devout(AgsFileLookup *file_lookup,
 
   if(id_ref != NULL){
     g_object_set(G_OBJECT(window),
-		 "soundcard\0", (AgsWindow *) id_ref->ref,
+		 "devout\0", (AgsWindow *) id_ref->ref,
 		 NULL);
   }
-
-  gtk_widget_show_all(window);
 }
 
 xmlNode*
@@ -228,7 +226,7 @@ ags_file_write_window(AgsFile *file, xmlNode *parent, AgsWindow *window)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->application_context,
+				   "main\0", file->ags_main,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
@@ -281,7 +279,7 @@ ags_file_write_window_resolve_devout(AgsFileLookup *file_lookup,
   AgsFileIdRef *id_ref;
   gchar *id;
 
-  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_reference(file_lookup->file, window->soundcard);
+  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_reference(file_lookup->file, window->devout);
 
   id = xmlGetProp(id_ref->node, AGS_FILE_ID_PROP);
 
@@ -307,7 +305,7 @@ ags_file_read_menu_bar(AgsFile *file, xmlNode *node, AgsMenuBar **menu_bar)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->application_context,
+				   "main\0", file->ags_main,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
@@ -332,7 +330,7 @@ ags_file_write_menu_bar(AgsFile *file, xmlNode *parent, AgsMenuBar *menu_bar)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->application_context,
+				   "main\0", file->ags_main,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
@@ -360,7 +358,7 @@ ags_file_read_machine_counter(AgsFile *file, xmlNode *node, AgsMachineCounter **
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->application_context,
+				   "main\0", file->ags_main,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
@@ -399,7 +397,7 @@ ags_file_write_machine_counter(AgsFile *file, xmlNode *parent, AgsMachineCounter
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->application_context,
+				   "main\0", file->ags_main,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
@@ -453,7 +451,7 @@ ags_file_read_machine_counter_list(AgsFile *file, xmlNode *node, GList **machine
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->application_context,
+				   "main\0", file->ags_main,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
@@ -479,7 +477,7 @@ ags_file_write_machine_counter_list(AgsFile *file, xmlNode *parent, GList *machi
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->application_context,
+				   "main\0", file->ags_main,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
@@ -512,7 +510,7 @@ ags_file_read_machine(AgsFile *file, xmlNode *node, AgsMachine **machine)
 
   if(*machine == NULL){
     if(!machine_type_is_registered){
-      //      ags_main_register_machine_type();
+      ags_main_register_machine_type();
 
       machine_type_is_registered = TRUE;
     }
@@ -529,7 +527,7 @@ ags_file_read_machine(AgsFile *file, xmlNode *node, AgsMachine **machine)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->application_context,
+				   "main\0", file->ags_main,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
@@ -735,7 +733,7 @@ ags_file_write_machine(AgsFile *file, xmlNode *parent, AgsMachine *machine)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->application_context,
+				   "main\0", file->ags_main,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
@@ -906,7 +904,7 @@ ags_file_read_machine_list(AgsFile *file, xmlNode *node, GList **machine)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->application_context,
+				   "main\0", file->ags_main,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
@@ -932,7 +930,7 @@ ags_file_write_machine_list(AgsFile *file, xmlNode *parent, GList *machine)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->application_context,
+				   "main\0", file->ags_main,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
@@ -977,7 +975,7 @@ ags_file_read_pad(AgsFile *file, xmlNode *node, AgsPad **pad)
   
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->application_context,
+				   "main\0", file->ags_main,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
@@ -1202,7 +1200,7 @@ ags_file_write_pad(AgsFile *file, xmlNode *parent, AgsPad *pad)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->application_context,
+				   "main\0", file->ags_main,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
@@ -1299,7 +1297,7 @@ ags_file_read_pad_list(AgsFile *file, xmlNode *node, GList **pad)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->application_context,
+				   "main\0", file->ags_main,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
@@ -1325,7 +1323,7 @@ ags_file_write_pad_list(AgsFile *file, xmlNode *parent, GList *pad)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->application_context,
+				   "main\0", file->ags_main,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
@@ -1367,7 +1365,7 @@ ags_file_read_line(AgsFile *file, xmlNode *node, AgsLine **line)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->application_context,
+				   "main\0", file->ags_main,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
@@ -1642,7 +1640,7 @@ ags_file_write_line(AgsFile *file, xmlNode *parent, AgsLine *line)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->application_context,
+				   "main\0", file->ags_main,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
@@ -1753,7 +1751,7 @@ ags_file_read_line_list(AgsFile *file, xmlNode *node, GList **line)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->application_context,
+				   "main\0", file->ags_main,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
@@ -1778,7 +1776,7 @@ ags_file_write_line_list(AgsFile *file, xmlNode *parent, GList *line)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->application_context,
+				   "main\0", file->ags_main,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
@@ -1828,7 +1826,7 @@ ags_file_read_line_member(AgsFile *file, xmlNode *node, AgsLineMember **line_mem
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->application_context,
+				   "main\0", file->ags_main,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
@@ -1836,7 +1834,7 @@ ags_file_read_line_member(AgsFile *file, xmlNode *node, AgsLineMember **line_mem
 				   NULL));
 
   if(!widget_type_is_registered){
-    //    ags_main_register_widget_type();
+    ags_main_register_widget_type();
 
     widget_type_is_registered = TRUE;
   }
@@ -2038,7 +2036,7 @@ ags_file_write_line_member(AgsFile *file, xmlNode *parent, AgsLineMember *line_m
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->application_context,
+				   "main\0", file->ags_main,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
@@ -2229,7 +2227,7 @@ ags_file_read_line_member_list(AgsFile *file, xmlNode *node, GList **line_member
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->application_context,
+				   "main\0", file->ags_main,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
@@ -2254,7 +2252,7 @@ ags_file_write_line_member_list(AgsFile *file, xmlNode *parent, GList *line_memb
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->application_context,
+				   "main\0", file->ags_main,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
@@ -2323,7 +2321,7 @@ ags_file_write_machine_editor(AgsFile *file, xmlNode *parent, AgsMachineEditor *
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->application_context,
+				   "main\0", file->ags_main,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
@@ -2437,7 +2435,7 @@ ags_file_read_editor(AgsFile *file, xmlNode *node, AgsEditor **editor)
   
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->application_context,
+				   "main\0", file->ags_main,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
@@ -2552,18 +2550,18 @@ ags_file_read_editor_launch(AgsFileLaunch *file_launch,
 
   editor->toolbar->zoom_history = history;
 
-  editor->edit.note_edit->flags |= AGS_NOTE_EDIT_RESETING_HORIZONTALLY;
-  ags_note_edit_reset_horizontally(editor->edit.note_edit, AGS_NOTE_EDIT_RESET_HSCROLLBAR |
+  editor->note_edit->flags |= AGS_NOTE_EDIT_RESETING_HORIZONTALLY;
+  ags_note_edit_reset_horizontally(editor->note_edit, AGS_NOTE_EDIT_RESET_HSCROLLBAR |
 				   AGS_NOTE_EDIT_RESET_WIDTH);
-  editor->edit.note_edit->flags &= (~AGS_NOTE_EDIT_RESETING_HORIZONTALLY);
+  editor->note_edit->flags &= (~AGS_NOTE_EDIT_RESETING_HORIZONTALLY);
 
   /* reset ruler */
-  editor->edit.note_edit->ruler->factor = tact_factor;
-  editor->edit.note_edit->ruler->precision = tact;
-  editor->edit.note_edit->ruler->scale_precision = 1.0 / tact;
+  editor->note_edit->ruler->factor = tact_factor;
+  editor->note_edit->ruler->precision = tact;
+  editor->note_edit->ruler->scale_precision = 1.0 / tact;
 
-  gtk_widget_queue_draw(editor->edit.note_edit->ruler);
-  gtk_widget_queue_draw(editor->edit.note_edit);
+  gtk_widget_queue_draw(editor->note_edit->ruler);
+  gtk_widget_queue_draw(editor->note_edit);
 }
 
 xmlNode*
@@ -2583,7 +2581,7 @@ ags_file_write_editor(AgsFile *file, xmlNode *parent, AgsEditor *editor)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->application_context,
+				   "main\0", file->ags_main,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
@@ -2631,7 +2629,7 @@ ags_file_read_toolbar(AgsFile *file, xmlNode *node, AgsToolbar **toolbar)
   
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->application_context,
+				   "main\0", file->ags_main,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
@@ -2724,7 +2722,7 @@ ags_file_write_toolbar(AgsFile *file, xmlNode *parent, AgsToolbar *toolbar)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->application_context,
+				   "main\0", file->ags_main,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
@@ -2927,7 +2925,7 @@ ags_file_write_machine_selector(AgsFile *file, xmlNode *parent, AgsMachineSelect
  
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->application_context,
+				   "main\0", file->ags_main,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
@@ -3066,7 +3064,7 @@ ags_file_write_navigation(AgsFile *file, xmlNode *parent, AgsNavigation *navigat
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->application_context,
+				   "main\0", file->ags_main,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),

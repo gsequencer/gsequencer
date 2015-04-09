@@ -19,10 +19,12 @@
 #include <ags/X/machine/ags_mixer.h>
 #include <ags/X/machine/ags_mixer_callbacks.h>
 
+#include <ags/main.h>
+
+#include <ags-lib/object/ags_connectable.h>
+
 #include <ags/util/ags_id_generator.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags-lib/object/ags_connectable.h>
 #include <ags/object/ags_plugin.h>
 
 #include <ags/file/ags_file.h>
@@ -37,7 +39,6 @@
 #include <ags/audio/ags_recall_factory.h>
 #include <ags/audio/ags_recall.h>
 
-#include <ags/X/ags_window.h>
 #include <ags/X/ags_pad.h>
 #include <ags/X/ags_line.h>
 
@@ -292,7 +293,7 @@ ags_mixer_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
+				   "main\0", file->ags_main,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
@@ -356,7 +357,7 @@ ags_mixer_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
+				   "main\0", file->ags_main,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
@@ -387,7 +388,7 @@ ags_mixer_set_pads(AgsAudio *audio, GType type,
 
 /**
  * ags_mixer_new:
- * @soundcard: the assigned soundcard.
+ * @devout: the assigned devout.
  *
  * Creates an #AgsMixer
  *
@@ -396,7 +397,7 @@ ags_mixer_set_pads(AgsAudio *audio, GType type,
  * Since: 0.3
  */
 AgsMixer*
-ags_mixer_new(GObject *soundcard)
+ags_mixer_new(GObject *devout)
 {
   AgsMixer *mixer;
 
@@ -404,7 +405,7 @@ ags_mixer_new(GObject *soundcard)
 				    NULL);
 
   g_object_set(G_OBJECT(AGS_MACHINE(mixer)->audio),
-	       "soundcard\0", soundcard,
+	       "devout\0", devout,
 	       NULL);
 
   return(mixer);

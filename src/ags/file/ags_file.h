@@ -74,7 +74,7 @@ struct _AgsFile
   GList *lookup;
   GList *launch;
 
-  GObject *application_context;
+  GObject *ags_main;
 
   GObject *clipboard;
   GList *property;
@@ -143,8 +143,12 @@ void ags_file_read_resolve(AgsFile *file);
 void ags_file_read_start(AgsFile *file);
 
 /*  */
-void ags_file_read_application_context(AgsFile *file, xmlNode *node, GObject **application_context);
-void ags_file_write_application_context(AgsFile *file, xmlNode *parent, GObject *application_context);
+void ags_file_read_server(AgsFile *file, xmlNode *node, GObject **server);
+void ags_file_write_server(AgsFile *file, xmlNode *parent, GObject *server);
+
+/*  */
+void ags_file_read_main(AgsFile *file, xmlNode *node, GObject **main);
+void ags_file_write_main(AgsFile *file, xmlNode *parent, GObject *main);
 
 /* */
 AgsFile* ags_file_new();

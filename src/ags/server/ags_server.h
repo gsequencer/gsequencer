@@ -52,10 +52,9 @@ struct _AgsServer
   struct sockaddr_in address;
 
   void *server_info;
-
-  GObject *application_context;
-  pthread_mutex_t *application_mutex;
   
+  GObject *main;
+
   AgsRegistry *registry;
   AgsRemoteTask *remote_task;
 };
@@ -83,6 +82,6 @@ xmlrpc_value* ags_server_object_set_property(xmlrpc_env *env,
 					     void *server_info);
 #endif
 
-AgsServer* ags_server_new(GObject *application_context);
+AgsServer* ags_server_new(GObject *main);
 
 #endif /*__AGS_SERVER_H__*/

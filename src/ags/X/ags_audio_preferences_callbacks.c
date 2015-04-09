@@ -18,11 +18,12 @@
 
 #include <ags/X/ags_audio_preferences_callbacks.h>
 
-#include <ags/object/ags_soundcard.h>
+#include <ags/main.h>
 
-#include <ags/thread/ags_thread-posix.h>
+#include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_task_thread.h>
 
+#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_task.h>
 
 #include <ags/audio/task/ags_set_output_device.h>
@@ -38,29 +39,19 @@ ags_audio_preferences_card_changed_callback(GtkComboBox *combo,
 					    AgsAudioPreferences *audio_preferences)
 {
   AgsWindow *window;
-  AgsApplicationContext *application_context;
-  AgsThread *main_loop;
-  AgsTaskThread *task_thread;
-  AgsSoundcard *soundcard;
+  AgsDevout *devout;
   AgsSetOutputDevice *set_output_device;
 
   window = AGS_WINDOW(AGS_PREFERENCES(gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
-							      AGS_TYPE_PREFERENCES))->parent);
-  soundcard = AGS_SOUNDCARD(window->soundcard);
+							      AGS_TYPE_PREFERENCES))->window);
+  devout = AGS_DEVOUT(window->devout);
 
-  application_context = window->application_context;
-
-  main_loop = application_context->main_loop;
-
-  task_thread = ags_thread_find_type(main_loop,
-				     AGS_TYPE_TASK_THREAD);
-  
   /* create set output device task */
-  set_output_device = ags_set_output_device_new((GObject *) soundcard,
+  set_output_device = ags_set_output_device_new((GObject *) devout,
 						gtk_combo_box_get_active_text(audio_preferences->card));
 
   /* append AgsSetOutputDevice */
-  ags_task_thread_append_task(task_thread,
+  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop)->task_thread),
 			      AGS_TASK(set_output_device));
   
   /* reset dialog */
@@ -72,29 +63,19 @@ ags_audio_preferences_audio_channels_changed(GtkSpinButton *spin_button,
 					     AgsAudioPreferences *audio_preferences)
 {
   AgsWindow *window;
-  AgsApplicationContext *application_context;
-  AgsThread *main_loop;
-  AgsTaskThread *task_thread;
-  AgsSoundcard *soundcard;
+  AgsDevout *devout;
   AgsSetAudioChannels *set_audio_channels;
 
   window = AGS_WINDOW(AGS_PREFERENCES(gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
-							      AGS_TYPE_PREFERENCES))->parent);
-  soundcard = AGS_SOUNDCARD(window->soundcard);
-
-  application_context = window->application_context;
-    
-  main_loop = application_context->main_loop;
-
-  task_thread = ags_thread_find_type(main_loop,
-				     AGS_TYPE_TASK_THREAD);
+							      AGS_TYPE_PREFERENCES))->window);
+  devout = AGS_DEVOUT(window->devout);
 
   /* create set output device task */
-  set_audio_channels = ags_set_audio_channels_new(soundcard,
+  set_audio_channels = ags_set_audio_channels_new(devout,
 						  (guint) gtk_spin_button_get_value(spin_button));
 
   /* append AgsSetAudioChannels */
-  ags_task_thread_append_task(task_thread,
+  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop)->task_thread),
 			      AGS_TASK(set_audio_channels));
 }
 
@@ -103,29 +84,19 @@ ags_audio_preferences_samplerate_changed(GtkSpinButton *spin_button,
 					 AgsAudioPreferences *audio_preferences)
 {
   AgsWindow *window;
-  AgsApplicationContext *application_context;
-  AgsThread *main_loop;
-  AgsTaskThread *task_thread;
-  AgsSoundcard *soundcard;
+  AgsDevout *devout;
   AgsSetSamplerate *set_samplerate;
 
   window = AGS_WINDOW(AGS_PREFERENCES(gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
-							      AGS_TYPE_PREFERENCES))->parent);
-  soundcard = AGS_SOUNDCARD(window->soundcard);
-
-  application_context = window->application_context;
-
-  main_loop = application_context->main_loop;
-
-  task_thread = ags_thread_find_type(main_loop,
-				     AGS_TYPE_TASK_THREAD);
+							      AGS_TYPE_PREFERENCES))->window);
+  devout = AGS_DEVOUT(window->devout);
 
   /* create set output device task */
-  set_samplerate = ags_set_samplerate_new((GObject *) soundcard,
+  set_samplerate = ags_set_samplerate_new((GObject *) devout,
 					  (guint) gtk_spin_button_get_value(spin_button));
 
   /* append AgsSetSamplerate */
-  ags_task_thread_append_task(task_thread,
+  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop)->task_thread),
 			      AGS_TASK(set_samplerate));
 }
 
@@ -134,28 +105,18 @@ ags_audio_preferences_buffer_size_changed(GtkSpinButton *spin_button,
 					  AgsAudioPreferences *audio_preferences)
 {
   AgsWindow *window;
-  AgsApplicationContext *application_context;
-  AgsThread *main_loop;
-  AgsTaskThread *task_thread;
-  AgsSoundcard *soundcard;
+  AgsDevout *devout;
   AgsSetBufferSize *set_buffer_size;
 
   window = AGS_WINDOW(AGS_PREFERENCES(gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
-									 AGS_TYPE_PREFERENCES))->parent);
-  soundcard = AGS_SOUNDCARD(window->soundcard);
-
-  application_context = window->application_context;
-
-  main_loop = application_context->main_loop;
-
-  task_thread = ags_thread_find_type(main_loop,
-				     AGS_TYPE_TASK_THREAD);
+									 AGS_TYPE_PREFERENCES))->window);
+  devout = AGS_DEVOUT(window->devout);
 
   /* create set output device task */
-  set_buffer_size = ags_set_buffer_size_new((GObject *) soundcard,
+  set_buffer_size = ags_set_buffer_size_new((GObject *) devout,
 					    (guint) gtk_spin_button_get_value(spin_button));
 
   /* append AgsSetBufferSize */
-  ags_task_thread_append_task(task_thread,
+  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop)->task_thread),
 			      AGS_TASK(set_buffer_size));
 }

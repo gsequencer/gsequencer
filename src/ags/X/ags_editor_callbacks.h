@@ -23,13 +23,9 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include <ags/audio/ags_audio.h>
-
 #include <ags/X/ags_editor.h>
 #include <ags/X/ags_navigation.h>
 #include <ags/X/ags_machine.h>
-
-#include <ags/X/editor/ags_machine_selector.h>
 
 void ags_editor_parent_set_callback(GtkWidget  *widget, GtkObject *old_parent,
 				    AgsEditor *editor);
@@ -47,8 +43,5 @@ void ags_editor_machine_changed_callback(AgsMachineSelector *machine_selector, A
 
 void ags_editor_change_position_callback(AgsNavigation *navigation, gdouble tact,
 					 AgsEditor *editor);
-
-void ags_editor_edit_vscrollbar_value_changed_callback(GtkWidget *note_edit,
-						       AgsEditor *editor);
 
 #endif /*__AGS_EDITOR_CALLBACKS_H__*/

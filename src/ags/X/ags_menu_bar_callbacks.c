@@ -18,16 +18,15 @@
 
 #include <ags/X/ags_menu_bar_callbacks.h>
 
-#include <ags/object/ags_application_context.h>
 #include <ags-lib/object/ags_connectable.h>
+
+#include <ags/main.h>
+
 #include <ags/object/ags_applicable.h>
-#include <ags/object/ags_soundcard.h>
 
 #include <ags/file/ags_file.h>
 
-#include <ags/thread/ags_thread-posix.h>
-#include <ags/thread/ags_task_thread.h>
-
+#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_input.h>
 #include <ags/audio/ags_output.h>
 
@@ -128,10 +127,13 @@ ags_menu_bar_save_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 
   //TODO:JK: revise me
   file = (AgsFile *) g_object_new(AGS_TYPE_FILE,
-				  "application-context\0", window->application_context,
+				  "main\0", window->ags_main,
 				  "filename\0", g_strdup(window->name),
 				  NULL);
+  ags_file_rw_open(file,
+		   TRUE);
   ags_file_write(file);
+  ags_file_close(file);
   g_object_unref(G_OBJECT(file));
 }
 
@@ -157,32 +159,19 @@ ags_menu_bar_save_as_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   response = gtk_dialog_run(GTK_DIALOG(file_chooser));
 
   if(response == GTK_RESPONSE_ACCEPT){
-    AgsSaveFile *save_file;
-
-    AgsThread *main_loop;
-    AgsTaskThread *task_thread;
-
-    AgsApplicationContext *application_context;
-
     AgsFile *file;
+    AgsSaveFile *save_file;
     char *filename;
-
-    application_context = window->application_context;
-    
-    main_loop = application_context->main_loop;
-    
-    task_thread = ags_thread_find_type(main_loop,
-				       AGS_TYPE_TASK_THREAD);
 
     filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(file_chooser));
 
     file = (AgsFile *) g_object_new(AGS_TYPE_FILE,
-				    "application-context\0", application_context,
+				    "main\0", window->ags_main,
 				    "filename\0", filename,
 				    NULL);
 
     save_file = ags_save_file_new(file);
-    ags_task_thread_append_task(task_thread,
+    ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->task_thread),
 				AGS_TASK(save_file));
   }
 
@@ -205,13 +194,10 @@ ags_menu_bar_quit_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   AgsWindow *window;
   GtkDialog *dialog;
   GtkWidget *cancel_button;
-  AgsApplicationContext *application_context;
   gint response;
 
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) menu_bar);
 
-  application_context = window->application_context;
-  
   /* ask the user if he wants save to a file */
   dialog = (GtkDialog *) gtk_message_dialog_new(GTK_WINDOW(window),
 						GTK_DIALOG_DESTROY_WITH_PARENT,
@@ -230,7 +216,7 @@ ags_menu_bar_quit_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 
     //TODO:JK: revise me
     file = (AgsFile *) g_object_new(AGS_TYPE_FILE,
-				    "main\0", application_context,
+				    "main\0", window->ags_main,
 				    "filename\0", g_strdup(window->name),
 				    NULL);
 
@@ -239,7 +225,7 @@ ags_menu_bar_quit_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   }
 
   if(response != GTK_RESPONSE_CANCEL){
-    ags_main_quit(application_context);
+    ags_main_quit(AGS_MAIN(window->ags_main));
   }else{
     gtk_widget_destroy(GTK_WIDGET(dialog));
   }
@@ -258,32 +244,19 @@ ags_menu_bar_add_panel_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   AgsWindow *window;
   AgsPanel *panel;
   AgsAddAudio *add_audio;
-  AgsThread *main_loop;
-  AgsTaskThread *task_thread;
-  AgsApplicationContext *application_context;
 
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) menu_bar, AGS_TYPE_WINDOW);
 
-  application_context = window->application_context;
-  
-  main_loop = application_context->main_loop;
-  task_thread = ags_thread_find_type(main_loop,
-				     AGS_TYPE_TASK_THREAD);
+  panel = ags_panel_new(G_OBJECT(window->devout));
 
-  panel = ags_panel_new(G_OBJECT(window->soundcard));
-
-  add_audio = ags_add_audio_new(window->soundcard,
+  add_audio = ags_add_audio_new(window->devout,
 				AGS_MACHINE(panel)->audio);
-  ags_task_thread_append_task(task_thread,
+  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->task_thread),
 			      AGS_TASK(add_audio));
 
   gtk_box_pack_start((GtkBox *) window->machines,
 		     GTK_WIDGET(panel),
 		     FALSE, FALSE, 0);
-
-  ags_connectable_connect(AGS_CONNECTABLE(panel));
-
-  gtk_widget_show_all(GTK_WIDGET(panel));
 
   AGS_MACHINE(panel)->audio->audio_channels = 2;
   ags_audio_set_pads(AGS_MACHINE(panel)->audio,
@@ -291,9 +264,9 @@ ags_menu_bar_add_panel_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   ags_audio_set_pads(AGS_MACHINE(panel)->audio,
 		     AGS_TYPE_OUTPUT, 1);
 
-  ags_machine_find_port(AGS_MACHINE(panel));
+  ags_connectable_connect(AGS_CONNECTABLE(panel));
 
-  gtk_widget_show_all(panel->vbox);
+  gtk_widget_show_all(GTK_WIDGET(panel));
 }
 
 void
@@ -302,32 +275,19 @@ ags_menu_bar_add_mixer_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   AgsWindow *window;
   AgsMixer *mixer;
   AgsAddAudio *add_audio;
-  AgsThread *main_loop;
-  AgsTaskThread *task_thread;
-  AgsApplicationContext *application_context;
 
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) menu_bar, AGS_TYPE_WINDOW);
 
-  application_context = window->application_context;
-  
-  main_loop = application_context->main_loop;
-  task_thread = ags_thread_find_type(main_loop,
-				     AGS_TYPE_TASK_THREAD);
+  mixer = ags_mixer_new(G_OBJECT(window->devout));
 
-  mixer = ags_mixer_new(G_OBJECT(window->soundcard));
-
-  add_audio = ags_add_audio_new(window->soundcard,
+  add_audio = ags_add_audio_new(window->devout,
 				AGS_MACHINE(mixer)->audio);
-  ags_task_thread_append_task(task_thread,
+  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->task_thread),
 			      AGS_TASK(add_audio));
 
   gtk_box_pack_start((GtkBox *) window->machines,
 		     GTK_WIDGET(mixer),
 		     FALSE, FALSE, 0);
-
-  ags_connectable_connect(AGS_CONNECTABLE(mixer));
-
-  gtk_widget_show_all(GTK_WIDGET(mixer));
 
   mixer->machine.audio->audio_channels = 2;
   ags_audio_set_pads(mixer->machine.audio,
@@ -335,9 +295,9 @@ ags_menu_bar_add_mixer_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   ags_audio_set_pads(mixer->machine.audio,
 		     AGS_TYPE_OUTPUT, 1);
 
-  ags_machine_find_port(AGS_MACHINE(mixer));
+  ags_connectable_connect(AGS_CONNECTABLE(mixer));
 
-  gtk_widget_show_all(mixer->input_pad);
+  gtk_widget_show_all(GTK_WIDGET(mixer));
 }
 
 void
@@ -346,34 +306,19 @@ ags_menu_bar_add_drum_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   AgsWindow *window;
   AgsDrum *drum;
   AgsAddAudio *add_audio;
-  AgsThread *main_loop;
-  AgsTaskThread *task_thread;
-  AgsApplicationContext *application_context;
 
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) menu_bar, AGS_TYPE_WINDOW);
 
-  application_context = window->application_context;
-  
-  main_loop = application_context->main_loop;
-  task_thread = ags_thread_find_type(main_loop,
-				     AGS_TYPE_TASK_THREAD);
+  drum = ags_drum_new(G_OBJECT(window->devout));
 
-  drum = ags_drum_new(G_OBJECT(window->soundcard));
-
-  add_audio = ags_add_audio_new(window->soundcard,
+  add_audio = ags_add_audio_new(window->devout,
 				AGS_MACHINE(drum)->audio);
-  ags_task_thread_append_task(task_thread,
+  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->task_thread),
 			      AGS_TASK(add_audio));
-  
+
   gtk_box_pack_start((GtkBox *) window->machines,
 		     GTK_WIDGET(drum),
 		     FALSE, FALSE, 0);
-
-  /* connect everything */
-  ags_connectable_connect(AGS_CONNECTABLE(drum));
-
-  /* */
-  gtk_widget_show_all(GTK_WIDGET(drum));
 
   /* */
   drum->machine.audio->audio_channels = 2;
@@ -382,10 +327,11 @@ ags_menu_bar_add_drum_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   ags_audio_set_pads(drum->machine.audio, AGS_TYPE_INPUT, 8);
   ags_audio_set_pads(drum->machine.audio, AGS_TYPE_OUTPUT, 1);
 
-  ags_machine_find_port(AGS_MACHINE(drum));
+  /* connect everything */
+  ags_connectable_connect(AGS_CONNECTABLE(drum));
 
-  gtk_widget_show_all(drum->output_pad);
-  gtk_widget_show_all(drum->input_pad);
+  /* */
+  gtk_widget_show_all(GTK_WIDGET(drum));
 }
 
 void
@@ -394,35 +340,20 @@ ags_menu_bar_add_matrix_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   AgsWindow *window;
   AgsMatrix *matrix;
   AgsAddAudio *add_audio;
-  AgsThread *main_loop;
-  AgsTaskThread *task_thread;
-  AgsApplicationContext *application_context;
 
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) menu_bar, AGS_TYPE_WINDOW);
 
-  application_context = window->application_context;
-  
-  main_loop = application_context->main_loop;
-  task_thread = ags_thread_find_type(main_loop,
-				     AGS_TYPE_TASK_THREAD);
+  matrix = ags_matrix_new(G_OBJECT(window->devout));
 
-  matrix = ags_matrix_new(G_OBJECT(window->soundcard));
-
-  add_audio = ags_add_audio_new(window->soundcard,
+  add_audio = ags_add_audio_new(window->devout,
 				AGS_MACHINE(matrix)->audio);
-  ags_task_thread_append_task(task_thread,
+  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->task_thread),
 			      AGS_TASK(add_audio));
   
   gtk_box_pack_start((GtkBox *) window->machines,
 		     GTK_WIDGET(matrix),
 		     FALSE, FALSE, 0);
-
-  /* connect everything */
-  ags_connectable_connect(AGS_CONNECTABLE(matrix));
-
-  /* */
-  gtk_widget_show_all(GTK_WIDGET(matrix));
-
+  
   /* */
   matrix->machine.audio->audio_channels = 1;
 
@@ -430,7 +361,11 @@ ags_menu_bar_add_matrix_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   ags_audio_set_pads(matrix->machine.audio, AGS_TYPE_INPUT, 78);
   ags_audio_set_pads(matrix->machine.audio, AGS_TYPE_OUTPUT, 1);
 
-  ags_machine_find_port(AGS_MACHINE(matrix));
+  /* connect everything */
+  ags_connectable_connect(AGS_CONNECTABLE(matrix));
+
+  /* */
+  gtk_widget_show_all(GTK_WIDGET(matrix));
 }
 
 void
@@ -439,36 +374,25 @@ ags_menu_bar_add_synth_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   AgsWindow *window;
   AgsSynth *synth;
   AgsAddAudio *add_audio;
-  AgsThread *main_loop;
-  AgsTaskThread *task_thread;
-  AgsApplicationContext *application_context;
 
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) menu_bar, AGS_TYPE_WINDOW);
 
-  application_context = window->application_context;
-  
-  main_loop = application_context->main_loop;
-  task_thread = ags_thread_find_type(main_loop,
-				     AGS_TYPE_TASK_THREAD);
+  synth = ags_synth_new(G_OBJECT(window->devout));
 
-  synth = ags_synth_new(G_OBJECT(window->soundcard));
-
-  add_audio = ags_add_audio_new(window->soundcard,
+  add_audio = ags_add_audio_new(window->devout,
 				AGS_MACHINE(synth)->audio);
-  ags_task_thread_append_task(task_thread,
+  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->task_thread),
 			      AGS_TASK(add_audio));
 
   gtk_box_pack_start((GtkBox *) window->machines,
 		     (GtkWidget *) synth,
 		     FALSE, FALSE, 0);
 
-  ags_connectable_connect(AGS_CONNECTABLE(synth));
-
   synth->machine.audio->audio_channels = 1;
   ags_audio_set_pads((AgsAudio*) synth->machine.audio, AGS_TYPE_INPUT, 2);
   ags_audio_set_pads((AgsAudio*) synth->machine.audio, AGS_TYPE_OUTPUT, 78);
 
-  ags_machine_find_port(AGS_MACHINE(synth));
+  ags_connectable_connect(AGS_CONNECTABLE(synth));
 
   gtk_widget_show_all((GtkWidget *) synth);
 }
@@ -479,38 +403,26 @@ ags_menu_bar_add_ffplayer_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   AgsWindow *window;
   AgsFFPlayer *ffplayer;
   AgsAddAudio *add_audio;
-  AgsThread *main_loop;
-  AgsTaskThread *task_thread;
-  AgsApplicationContext *application_context;
 
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) menu_bar, AGS_TYPE_WINDOW);
 
-  application_context = window->application_context;
-  
-  main_loop = application_context->main_loop;
-  task_thread = ags_thread_find_type(main_loop,
-				     AGS_TYPE_TASK_THREAD);
+  ffplayer = ags_ffplayer_new(G_OBJECT(window->devout));
 
-  ffplayer = ags_ffplayer_new(G_OBJECT(window->soundcard));
-
-  add_audio = ags_add_audio_new(window->soundcard,
+  add_audio = ags_add_audio_new(window->devout,
 				AGS_MACHINE(ffplayer)->audio);
-  ags_task_thread_append_task(task_thread,
+  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->task_thread),
 			      AGS_TASK(add_audio));
 
   gtk_box_pack_start((GtkBox *) window->machines,
 		     (GtkWidget *) ffplayer,
 		     FALSE, FALSE, 0);
 
-  ags_connectable_connect(AGS_CONNECTABLE(ffplayer));
-
-  //  ffplayer->machine.audio->frequence = ;
+    //  ffplayer->machine.audio->frequence = ;
   ffplayer->machine.audio->audio_channels = 2;
   ags_audio_set_pads(AGS_MACHINE(ffplayer)->audio, AGS_TYPE_INPUT, 78);
   ags_audio_set_pads(AGS_MACHINE(ffplayer)->audio, AGS_TYPE_OUTPUT, 1);
 
-  ags_machine_find_port(AGS_MACHINE(ffplayer));
-
+  ags_connectable_connect(AGS_CONNECTABLE(ffplayer));
   gtk_widget_show_all((GtkWidget *) ffplayer);
 }
 
@@ -518,17 +430,6 @@ ags_menu_bar_add_ffplayer_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 void
 ags_menu_bar_remove_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 {
-  //TODO:JK: implement me
-}
-
-void
-ags_menu_bar_automation_editor_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
-{
-  AgsWindow *window;
-
-  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) menu_bar, AGS_TYPE_WINDOW);
-  
-  gtk_widget_show_all(window->automation_editor);
 }
 
 void
@@ -543,7 +444,7 @@ ags_menu_bar_preferences_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   }
 
   window->preferences = ags_preferences_new();
-  window->preferences->parent = GTK_WINDOW(window);
+  window->preferences->window = GTK_WINDOW(window);
 
   ags_applicable_reset(AGS_APPLICABLE(window->preferences));
 

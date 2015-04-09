@@ -119,14 +119,23 @@ ags_machine_selection_disconnect(AgsConnectable *connectable)
   //TODO:JK: implement me
 }
 
-void
-ags_machine_selection_load_default(AgsMachineSelection *machine_selection)
+/**
+ * ags_machine_selection_run:
+ * @machine_selection: the #AgsMachineSelection
+ *
+ * Run the dialog.
+ *
+ * Returns: the #AgsMachine
+ */
+AgsMachine*
+ags_machine_selection_run(AgsMachineSelection *machine_selection)
 {
   AgsMachine *machine;
   GtkVBox *vbox;
   GtkContainer *content_area;
-  GList *list, *list_start;
   GtkRadioButton *group;
+  GList *list, *list_start, *index, *index_start;
+  gint response;
 
   machine_selection->machine =
     list = gtk_container_get_children(GTK_CONTAINER(machine_selection->window->machines));
@@ -158,31 +167,8 @@ ags_machine_selection_load_default(AgsMachineSelection *machine_selection)
   }
 
   gtk_widget_show_all(vbox);
-}
-
-/**
- * ags_machine_selection_run:
- * @machine_selection: the #AgsMachineSelection
- *
- * Run the dialog.
- *
- * Returns: the #AgsMachine
- */
-AgsMachine*
-ags_machine_selection_run(AgsMachineSelection *machine_selection)
-{
-  AgsMachine *machine;
-  GtkVBox *vbox;
-  GtkContainer *content_area;
-  GList *list, *list_start, *index, *index_start;
-  gint response;
 
   response = gtk_dialog_run(GTK_DIALOG(machine_selection));
-
-  content_area = gtk_dialog_get_content_area(GTK_DIALOG(machine_selection));
-  machine = NULL;
-
-  vbox = gtk_bin_get_child(content_area);
 
   if(response == GTK_RESPONSE_ACCEPT){
     list_start = 

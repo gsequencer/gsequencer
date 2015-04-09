@@ -156,8 +156,8 @@ void
 ags_stream_recycling_init(AgsStreamRecycling *stream_recycling)
 {
   AGS_RECALL(stream_recycling)->name = "ags-stream\0";
-  AGS_RECALL(stream_recycling)->version = AGS_RECALL_DEFAULT_VERSION;
-  AGS_RECALL(stream_recycling)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
+  AGS_RECALL(stream_recycling)->version = AGS_EFFECTS_DEFAULT_VERSION;
+  AGS_RECALL(stream_recycling)->build_id = AGS_BUILD_ID;
   AGS_RECALL(stream_recycling)->xml_type = "ags-stream-recycling\0";
   AGS_RECALL(stream_recycling)->port = NULL;
 

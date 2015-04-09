@@ -1,0 +1,84 @@
+<?xml version="1.0"?>
+<!DOCTYPE schema [
+<!ENTITY ags-plugin-default-version "0.4.0">
+<!ENTITY ags-plugin-default-build-id "0.4.0">
+<!ENTITY ags-led "AgsLed">
+<!ENTITY ags-vindicator "AgsVIndicator">
+<!ENTITY ags-hindicator "AgsHIndicator">
+<!ENTITY gtk-label "GtkLabel">
+<!ENTITY ags-waveform "AgsWaveform">
+<!ENTITY gtk-button "GtkButton">
+<!ENTITY gtk-toggle-button "GtkToggleButton">
+<!ENTITY gtk-check-button "GtkCheckButton">
+<!ENTITY gtk-spin-button "GtkSpinButton">
+<!ENTITY gtk-vscale "GtkVScale">
+<!ENTITY gtk-hscale "GtkHScale">
+<!ENTITY ags-dial "AgsDial">
+<!ENTITY ags-cartesian "AgsCartesian">
+]>
+<ags-default-plugin>
+  <widgets>
+    <widget name="&ags-led;" control-type="boolean" control-ports="1" access="r"/>
+    <widget name="&ags-vindicator;" control-type="float" control-ports="1" access="r"/>
+    <widget name="&ags-hindicator;" control-type="float" control-ports="1" access="r"/>
+    <widget name="&gtk-label;" control-type="text" control-ports="1" access="r"/>
+    <widget name="&ags-waveform;" control-type="float" control-ports="*" access="r"/>
+    <widget name="&gtk-button;" control-type="boolean" control-ports="1" access="w"/>
+    <widget name="&gtk-toggle-button;" control-type="boolean" control-ports="1" access="rw"/>
+    <widget name="&gtk-check-button;" control-type="boolean" control-ports="1" access="rw"/>
+    <widget name="&gtk-spin-button;" control-type="float" control-ports="1" access="rw"/>
+    <widget name="&gtk-vscale;" control-type="float" control-ports="1" access="rw"/>
+    <widget name="&gtk-hscale;" control-type="float" control-ports="1" access="rw"/>
+    <widget name="&ags-dial;" control-type="float" control-ports="1" access="rw"/>
+    <widget name="&ags-cartesian;" control-type="float" control-ports="*" access="rw"/>
+  </widgets>
+
+  <plugins>
+    <plugin>
+      <plugin-type>AgsCopyPatternChannel</plugin-type>
+      <plugin-name>AgsCopyPattern</plugin-name>
+      <version>&ags-plugin-default-version;</version>
+      <build-id>&ags-plugin-default-build-id;</build-id>
+      <xml-type>ags-copy-pattern-channel</xml-type>
+      <controls>
+	<control>
+	  <control-name></control-name>
+	  <control-type></control-type>
+	  <control-widget></control-widget>
+	</control>
+      </controls>
+      <control-count></control-count>
+    </plugin>
+    <plugin>
+      <plugin-type>AgsCopyPatternChannelRun</plugin-type>
+      <plugin-name>AgsCopyPattern</plugin-name>
+      <version>&ags-plugin-default-version;</version>
+      <build-id>&ags-plugin-default-build-id;</build-id>
+      <xml-type>ags-copy-pattern-channel</xml-type>
+      <controls>
+	<control>
+	  <control-name></control-name>
+	  <control-type></control-type>
+	  <control-widget></control-widget>
+	</control>
+      </controls>
+      <control-count></control-count>
+    </plugin>
+
+
+    <plugin>
+      <plugin-type>AgsVolumeChannel</plugin-type>
+      <plugin-name>AgsVolume</plugin-name>
+      <version>&ags-plugin-default-version;</version>
+      <build-id>&ags-plugin-default-build-id;</build-id>
+      <xml-type>ags-copy-pattern-channel</xml-type>
+      <controls>
+	<control-name></control-name>
+	<control-type></control-type>
+	<control-widget></control-widget>
+      </controls>
+      <control-count></control-count>
+    </plugin>
+
+  </plugins>
+</ags-default-plugin>

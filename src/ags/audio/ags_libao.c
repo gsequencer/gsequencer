@@ -18,7 +18,6 @@
 
 #include <ags/audio/ags_libao.h>
 
-#include <ags/object/ags_application_context.h>
 #include <ags-lib/object/ags_connectable.h>
 
 #include <ags/main.h>
@@ -56,7 +55,7 @@ void ags_libao_output_free(AgsLibao *libao);
 
 enum{
   PROP_0,
-  PROP_APPLICATION_CONTEXT,
+  PROP_MAIN,
   PROP_DEVICE,
   PROP_DSP_CHANNELS,
   PROP_PCM_CHANNELS,
@@ -136,13 +135,13 @@ ags_libao_class_init(AgsLibaoClass *libao)
   gobject->finalize = ags_libao_finalize;
 
   /* properties */
-  param_spec = g_param_spec_object("application-context\0",
-				   "the application context object\0",
-				   "The application context object\0",
-				   AGS_TYPE_APPLICATION_CONTEXT,
+  param_spec = g_param_spec_object("main\0",
+				   "the main object\0",
+				   "The main object\0",
+				   AGS_TYPE_MAIN,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_APPLICATION_CONTEXT,
+				  PROP_MAIN,
 				  param_spec);
 
   param_spec = g_param_spec_string("device\0",
@@ -336,7 +335,7 @@ ags_libao_init(AgsLibao *libao)
   libao->tic_counter = 0;
 
   /* parent */
-  libao->application_context = NULL;
+  libao->ags_main = NULL;
 
   /* all AgsAudio */
   libao->audio = NULL;
@@ -355,25 +354,25 @@ ags_libao_set_property(GObject *gobject,
   //TODO:JK: implement set functionality
   
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
+  case PROP_MAIN:
     {
-      AgsApplicationContext *application_context;
+      AgsMain *ags_main;
 
-      application_context = g_value_get_object(value);
+      ags_main = g_value_get_object(value);
 
-      if(libao->application_context == application_context){
+      if(libao->ags_main == ags_main){
 	return;
       }
 
-      if(libao->application_context != NULL){
-	g_object_unref(G_OBJECT(libao->application_context));
+      if(libao->ags_main != NULL){
+	g_object_unref(G_OBJECT(libao->ags_main));
       }
 
-      if(application_context != NULL){
-	g_object_ref(G_OBJECT(application_context));
+      if(ags_main != NULL){
+	g_object_ref(G_OBJECT(ags_main));
       }
 
-      libao->application_context = application_context;
+      libao->ags_main = ags_main;
     }
     break;
   case PROP_DEVICE:
@@ -786,7 +785,7 @@ ags_libao_output_play(AgsLibao *libao,
   */
 
   /* determine if attack should be switched */
-  libao->delay_counter += (AGS_LIBAO_DEFAULT_DELAY *
+  libao->delay_counter += (AGS_DEVOUT_DEFAULT_DELAY *
 			   AGS_NOTATION_MINIMUM_NOTE_LENGTH);
 
   if(libao->delay_counter >= libao->delay[libao->tic_counter]){
@@ -814,13 +813,16 @@ ags_libao_output_free(AgsLibao *libao)
 }
 
 AgsLibao*
-ags_libao_new(GObject *application_context)
+ags_libao_new(GObject *ags_main)
 {
   AgsLibao *libao;
 
-  libao = (AgsLibao *) g_object_new(AGS_TYPE_LIBAO,
-				    "application-context", application_context,
-				    NULL);  
+  libao = (AgsLibao *) g_object_new(AGS_TYPE_LIBAO, NULL);
+  
+  if(ags_main != NULL){
+    g_object_ref(G_OBJECT(ags_main));
+    libao->ags_main = ags_main;
+  }
 
   return(libao);
 }

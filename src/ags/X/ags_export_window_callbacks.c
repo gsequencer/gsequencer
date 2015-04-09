@@ -18,9 +18,9 @@
 
 #include <ags/X/ags_export_window_callbacks.h>
 
-#include <ags/object/ags_application_context.h>
+#include <ags/main.h>
 
-#include <ags/thread/ags_thread-posix.h>
+#include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_task_thread.h>
 #include <ags/thread/ags_export_thread.h>
 
@@ -61,50 +61,23 @@ void
 ags_export_window_tact_callback(GtkWidget *spin_button,
 				AgsExportWindow *export_window)
 {
-  gdouble bpm;
-
-  bpm = AGS_NAVIGATION(AGS_WINDOW(export_window->parent)->navigation)->bpm->adjustment->value;
-
   gtk_label_set_text(export_window->duration,
-		     ags_navigation_tact_to_time_string(gtk_spin_button_get_value(export_window->tact),
-							bpm));
+		     ags_navigation_tact_to_time_string(gtk_spin_button_get_value(export_window->tact)));
 }
 
 void
 ags_export_window_export_callback(GtkWidget *toggle_button,
 				  AgsExportWindow *export_window)
 {
+  AgsAudioLoop *audio_loop;
   AgsWindow *window;
   AgsMachine *machine;
-
-  AgsThread *main_loop;
-  AgsTaskThread *task_thread;
-
-  AgsApplicationContext *application_context;
-  AgsSoundcard *soundcard;
-  
   GList *machines_start;
-  guint delay, attack;
-  guint tic_counter_incr;
   gboolean success;
 
-  window = export_window->parent;
-
-  application_context = window->application_context;
+  window = AGS_MAIN(export_window->ags_main)->window;
+  audio_loop = AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop);
   
-  main_loop = application_context->main_loop;
-  task_thread = ags_thread_find_type(main_loop,
-				     AGS_TYPE_TASK_THREAD);
-  
-  soundcard = AGS_SOUNDCARD(window->soundcard);
-  
-  delay = AGS_DEVOUT_DEFAULT_DELAY;
-
-  if(soundcard != NULL){
-    attack = ags_soundcard_get_attack(soundcard);
-    delay = ags_soundcard_get_delay(soundcard);
-  }
-
   machines_start = NULL;
 
   if(gtk_toggle_button_get_active(toggle_button)){
@@ -114,8 +87,7 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
     gchar *filename;
     gboolean live_performance;
 
-    export_thread = ags_thread_find_type(main_loop,
-					 AGS_TYPE_EXPORT_THREAD);
+    export_thread = audio_loop->export_thread;
 
     filename = gtk_entry_get_text(export_window->filename);
 
@@ -149,19 +121,22 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
     /* create start task */
     if(success){
       guint tic;
+      gdouble delay;
+
+      delay = (1.0 / window->devout->frequency / window->devout->buffer_size) * (60.0 / AGS_DEVOUT_DEFAULT_BPM);
 
       tic = (gtk_spin_button_get_value(export_window->tact) + 1) * delay;
 
       export_output = ags_export_output_new(export_thread,
-					    window->soundcard,
+					    window->devout,
 					    filename,
 					    tic,
 					    live_performance);
       g_signal_connect(export_thread, "stop\0",
 		       G_CALLBACK(ags_export_window_stop_callback), export_window);
 
-      /* append AgsStartSoundcard */
-      ags_task_thread_append_task(task_thread,
+      /* append AgsStartDevout */
+      ags_task_thread_append_task(AGS_TASK_THREAD(audio_loop->task_thread),
 				  export_output);
 
       ags_navigation_set_seeking_sensitive(window->navigation,

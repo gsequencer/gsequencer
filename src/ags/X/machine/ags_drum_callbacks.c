@@ -21,9 +21,11 @@
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_machine_callbacks.h>
 
-#include <ags/object/ags_application_context.h>
+#include <ags/main.h>
 
-#include <ags/thread/ags_thread-posix.h>
+#include <ags/widget/ags_led.h>
+
+#include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_devout.h>
@@ -53,8 +55,6 @@
 #include <ags/audio/recall/ags_play_audio_signal.h>
 
 #include <ags/audio/file/ags_audio_file.h>
-
-#include <ags/widget/ags_led.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_pad.h>
@@ -152,31 +152,17 @@ void
 ags_drum_length_spin_callback(GtkWidget *spin_button, AgsDrum *drum)
 {
   AgsWindow *window;
-  
   AgsApplySequencerLength *apply_sequencer_length;
-
-  AgsThread *main_loop, *current;
-  AgsTaskThread *task_thread;
-
-  AgsApplicationContext *application_context;
-  
   gdouble length;
-  
-  window = (AgsWindow *) gtk_widget_get_toplevel(GTK_WIDGET(drum));
 
-  application_context = window->application_context;
-  
-  main_loop = application_context->main_loop;
-  
-  task_thread = ags_thread_find_type(main_loop,
-				     AGS_TYPE_TASK_THREAD);
+  window = (AgsWindow *) gtk_widget_get_toplevel(GTK_WIDGET(drum));
 
   length = GTK_SPIN_BUTTON(spin_button)->adjustment->value;
 
   apply_sequencer_length = ags_apply_sequencer_length_new(G_OBJECT(AGS_MACHINE(drum)->audio),
 							  length);
 
-  ags_task_thread_append_task(task_thread,
+  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->task_thread),
 			      AGS_TASK(apply_sequencer_length));
 }
 
@@ -293,16 +279,9 @@ ags_drum_index1_callback(GtkWidget *widget, AgsDrum *drum)
 void
 ags_drum_pad_callback(GtkWidget *toggle_button, AgsDrum *drum)
 {
-  AgsWindow *window;
   AgsLine *selected_line;
   AgsPattern *pattern;
   AgsTogglePatternBit *toggle_pattern_bit;
-
-  AgsThread *main_loop, *current;
-  AgsTaskThread *task_thread;
-
-  AgsApplicationContext *application_context;
-  
   GList *list, *list_start;
   GList *line, *line_start;
   GList *tasks;
@@ -319,15 +298,6 @@ ags_drum_pad_callback(GtkWidget *toggle_button, AgsDrum *drum)
 
     return;
   }
-    
-  window = (AgsWindow *) gtk_widget_get_toplevel(GTK_WIDGET(drum));
-
-  application_context = window->application_context;
-  
-  main_loop = application_context->main_loop;
-
-  task_thread = ags_thread_find_type(main_loop,
-				     AGS_TYPE_TASK_THREAD);
 
   /* calculate offset */
   list_start = 
@@ -383,7 +353,7 @@ ags_drum_pad_callback(GtkWidget *toggle_button, AgsDrum *drum)
   g_list_free(line_start);
 
   /* append AgsTogglePatternBit */
-  ags_task_thread_append_tasks(task_thread,
+  ags_task_thread_append_tasks(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(AGS_MACHINE(drum)->audio->devout)->ags_main)->main_loop)->task_thread),
 			       tasks);
 }
 
@@ -399,30 +369,15 @@ ags_drum_tact_callback(AgsAudio *audio,
 		       AgsDrum *drum)
 {
   AgsWindow *window;
-  AgsToggleLed *toggle_led;
-
   AgsCountBeatsAudio *play_count_beats_audio;
   AgsCountBeatsAudioRun *play_count_beats_audio_run;
-
-  AgsThread *main_loop, *current;
-  AgsTaskThread *task_thread;
-
-  AgsApplicationContext *application_context;
-  
+  AgsToggleLed *toggle_led;
   GList *list, *tmp;
   guint counter, active_led;
   gdouble active_led_old, active_led_new;
   GValue value = {0,};
-
-  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) drum,
-						 AGS_TYPE_WINDOW);
-
-  application_context = window->application_context;
   
-  main_loop = application_context->main_loop;
-  
-  task_thread = ags_thread_find_type(main_loop,
-				     AGS_TYPE_TASK_THREAD);
+  window = AGS_WINDOW(gtk_widget_get_ancestor((GtkWidget *) drum, AGS_TYPE_WINDOW));
 
   /* get some recalls */
   list = ags_recall_find_type(audio->play,
@@ -459,7 +414,7 @@ ags_drum_tact_callback(AgsAudio *audio,
 				  (guint) active_led_new,
 				  (guint) active_led_old);
 
-  ags_task_thread_append_task(task_thread,
+  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->task_thread),
 			      AGS_TASK(toggle_led));
 }
 

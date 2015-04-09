@@ -19,10 +19,10 @@
 #include <ags/X/machine/ags_panel.h>
 #include <ags/X/machine/ags_panel_callbacks.h>
 
+#include <ags-lib/object/ags_connectable.h>
+
 #include <ags/util/ags_id_generator.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags-lib/object/ags_connectable.h>
 #include <ags/object/ags_plugin.h>
 
 #include <ags/file/ags_file.h>
@@ -303,7 +303,7 @@ ags_panel_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
+				   "main\0", file->ags_main,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
@@ -369,7 +369,7 @@ ags_panel_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
+				   "main\0", file->ags_main,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
@@ -400,7 +400,7 @@ ags_panel_set_pads(AgsAudio *audio, GType type,
 
 /**
  * ags_panel_new:
- * @soundcard: the assigned soundcard.
+ * @devout: the assigned devout.
  *
  * Creates an #AgsPanel
  *
@@ -409,7 +409,7 @@ ags_panel_set_pads(AgsAudio *audio, GType type,
  * Since: 0.3
  */
 AgsPanel*
-ags_panel_new(GObject *soundcard)
+ags_panel_new(GObject *devout)
 {
   AgsPanel *panel;
   GValue value = {0,};
@@ -417,11 +417,11 @@ ags_panel_new(GObject *soundcard)
   panel = (AgsPanel *) g_object_new(AGS_TYPE_PANEL,
 				    NULL);
 
-  if(soundcard != NULL){
+  if(devout != NULL){
     g_value_init(&value, G_TYPE_OBJECT);
-    g_value_set_object(&value, soundcard);
+    g_value_set_object(&value, devout);
     g_object_set_property(G_OBJECT(AGS_MACHINE(panel)->audio),
-			  "soundcard\0", &value);
+			  "devout\0", &value);
     g_value_unset(&value);
   }
 

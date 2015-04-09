@@ -1,0 +1,55 @@
+weedlight@gmail.com
+
+You need a realtime kernel in conjunction with ags. The realtime kernel shipped with Ubuntu Studio didn't work but a self compiled worked. See http://rt.wiki.kernel.org/ for more information. 
+
+
+TODO:
+- fix AgsAudio shouldn't contain an AgsDevout move it to AgsChannel
+- revise ags_recall_set_property
+- revise destroy functions - disconnect before destroying
+- play channel when linked if needed
+- implement an iteration function for ags_channel_recursive_play_init
+- AgsCopyPattern implementation in AgsDrum and AgsMatrix doesn't have correct abort code, perhaps see AgsDelay
+- remove recalls after the 3 stages were executed in ags_channel_recursive_play
+- destroy AgsRecalls and AgsAudioSignals
+- implement cancel signal in AgsRecalls
+- update retrieving of AgsDelay in recalls, recalls should duplicate AgsDelays in contrast plays work fine
+- modify ags_audio_set_audio_channels and ags_audio_set_pads so that it updates parent AgsChannel's first_recycling and last_recycling
+- ags_machine_link_editor_callbacks.c replace code in callbacks with ags_machine_link_editor_reset_input and ags_machine_link_editor_reset_output
+- remove ags_editor_reset and move code to callback functions
+- ags_editor.c implement machine_changed signal
+- ags_audio.c add protection against multiple pads on AgsChannel's with AGS_AUDIO_ASYNC and without AgsAudioSignal on AgsOutput
+
+DONE:
+- write a destroy task (see <ags/audio/recall/ags_remove_audio_run.[ch]>)
+
+BUGS:
+- ags_audio_set_audio_channels do proper set_async_link: believed to be fixed
+- application crashes while running an AgsSynth linked with an AgsMatrix, when AgsOscillator has different length
+
+WARNING:
+- ags_copy_pattern should be used only once by an AgsAudio because in ags_copy_pattern_duplicate detection of AgsCopyPatternAudioRun can't handle more than one
+
+DEPRECATED:
+- AgsGroupID
+- ags_run_order.[ch]
+
+NOTES:
+- AgsRecallID gives every stream an identification and makes it possible to stop a single of multiple AgsRecalls that are possible. Imagine an AgsAudio object is played and a child of it, too. A child of the child is also played and so on.
+
+
+RELEASE NOTES:
+
+ags_0.4.0:
+	- many refactorings to make Advanced Gtk+ Sequencer more attractive to develop with.
+	- implemented threading model and safety in use with super threaded fashion.
+	- revised AgsEditor and therefore introduced AgsNoteEdit.
+	- reimplemented from scratch file IO interface.
+	- implemented XPath in file IO.
+	- rudimentary scripting and remote control support
+	- grained AgsDevout which knows music tics
+	- removed OSS output support?
+
+ags_0.3.9.6:
+	- AgsStreamLock removed
+	- ags_garbage_collector removed

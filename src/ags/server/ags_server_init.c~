@@ -1,5 +1,0 @@
-#ifdef AGS_WITH_XMLRPC_C
-      AbyssInit(&error);
-
-      xmlrpc_env_init(&(ags_main->env));
-#endif /* AGS_WITH_XMLRPC_C */

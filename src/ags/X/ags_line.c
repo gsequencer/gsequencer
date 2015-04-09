@@ -19,28 +19,19 @@
 #include <ags/X/ags_line.h>
 #include <ags/X/ags_line_callbacks.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_marshal.h>
 #include <ags-lib/object/ags_connectable.h>
+
+#include <ags/main.h>
+
+#include <ags/object/ags_marshal.h>
 #include <ags/object/ags_plugin.h>
 
-#include <ags/plugin/ags_ladspa_manager.h>
-
-#include <ags/thread/ags_audio_loop.h>
-#include <ags/thread/ags_task_thread.h>
+#include <ags/X/ags_pad.h>
 
 #include <ags/audio/ags_channel.h>
-#include <ags/audio/ags_recall_ladspa.h>
 
 #include <ags/audio/recall/ags_peak_channel_run.h>
 
-#include <ags/audio/task/ags_add_line_member.h>
-
-#include <ags/widget/ags_dial.h>
-
-#include <ags/X/ags_window.h>
-#include <ags/X/ags_machine.h>
-#include <ags/X/ags_pad.h>
 #include <ags/X/ags_line_member.h>
 
 void ags_line_class_init(AgsLineClass *line);
@@ -62,11 +53,6 @@ void ags_line_set_version(AgsPlugin *plugin, gchar *version);
 gchar* ags_line_get_build_id(AgsPlugin *plugin);
 void ags_line_set_build_id(AgsPlugin *plugin, gchar *build_id);
 
-GList* ags_line_real_add_effect(AgsLine *line,
-				gchar *filename,
-				gchar *effect);
-void ags_line_real_remove_effect(AgsLine *line,
-				 guint nth);
 void ags_line_real_set_channel(AgsLine *line, AgsChannel *channel);
 void ags_line_real_map_recall(AgsLine *line,
 			      guint output_pad_start);
@@ -85,8 +71,6 @@ GList* ags_line_real_find_port(AgsLine *line);
  */
 
 enum{
-  ADD_EFFECT,
-  REMOVE_EFFECT,
   SET_CHANNEL,
   GROUP_CHANGED,
   MAP_RECALL,
@@ -199,48 +183,11 @@ ags_line_class_init(AgsLineClass *line)
   /* AgsLineClass */
   line->set_channel = ags_line_real_set_channel;
 
-  line->add_effect = ags_line_real_add_effect;
-  line->remove_effect = ags_line_real_remove_effect;
   line->group_changed = NULL;
   line->map_recall = ags_line_real_map_recall;
   line->find_port = ags_line_real_find_port;
-  
+
   /* signals */
-  /**
-   * AgsLine::add-effect:
-   * @line: the #AgsLine to modify
-   * @effect: the effect's name
-   *
-   * The ::add-effect signal notifies about added effect.
-   */
-  line_signals[ADD_EFFECT] =
-    g_signal_new("add-effect\0",
-		 G_TYPE_FROM_CLASS(line),
-		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsLineClass, add_effect),
-		 NULL, NULL,
-		 g_cclosure_user_marshal_POINTER__STRING_STRING,
-		 G_TYPE_POINTER, 2,
-		 G_TYPE_STRING,
-		 G_TYPE_STRING);
-
-  /**
-   * AgsLine::remove-effect:
-   * @line: the #AgsLine to modify
-   * @nth: the nth effect
-   *
-   * The ::remove-effect signal notifies about removed effect.
-   */
-  line_signals[REMOVE_EFFECT] =
-    g_signal_new("remove-effect\0",
-		 G_TYPE_FROM_CLASS(line),
-		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsLineClass, remove_effect),
-		 NULL, NULL,
-		 g_cclosure_marshal_VOID__UINT,
-		 G_TYPE_NONE, 1,
-		 G_TYPE_UINT);
-
   /**
    * AgsLine::set-channel:
    * @line: the #AgsLine to modify
@@ -463,10 +410,12 @@ ags_line_connect(AgsConnectable *connectable)
   if((AGS_LINE_PREMAPPED_RECALL & (line->flags)) == 0){
     if((AGS_LINE_MAPPED_RECALL & (line->flags)) == 0){
       ags_line_map_recall(line,
-			  0);
+			 0);
     }
   }else{
-    line->flags &= (~AGS_LINE_PREMAPPED_RECALL);
+    //    line->flags &= (~AGS_LINE_PREMAPPED_RECALL);
+
+    ags_line_find_port(line);
   }
 
   /* AgsMachine */
@@ -586,246 +535,6 @@ ags_line_group_changed(AgsLine *line)
   g_object_ref((GObject *) line);
   g_signal_emit(G_OBJECT(line),
 		line_signals[GROUP_CHANGED], 0);
-  g_object_unref((GObject *) line);
-}
-
-GList*
-ags_line_real_add_effect(AgsLine *line,
-			 gchar *filename,
-			 gchar *effect)
-{
-  AgsWindow *window;
-  AgsMachine *machine;
-  AgsLineMember *line_member;
-  AgsAddLineMember *add_line_member;
-  GtkAdjustment *adjustment;
-
-  AgsLadspaPlugin *ladspa_plugin;
-
-  AgsThread *main_loop;
-  AgsTaskThread *task_thread;
-
-  AgsApplicationContext *application_context;
-  
-  GList *list;
-  GList *port;
-  GList *task;
-  gdouble step;
-  guint x, y;
-  
-  void *plugin_so;
-  LADSPA_Descriptor_Function ladspa_descriptor;
-  LADSPA_Descriptor *plugin_descriptor;
-  LADSPA_PortDescriptor *port_descriptor;
-  LADSPA_Data lower_bound, upper_bound;
-  unsigned long index;
-  unsigned long i;
-
-  machine = gtk_widget_get_ancestor(line,
-				    AGS_TYPE_MACHINE);
-  
-  window = gtk_widget_get_ancestor(machine,
-				   AGS_TYPE_WINDOW);
-
-  application_context = window->application_context;
-  
-  main_loop = application_context->main_loop;
-  task_thread = ags_thread_find_type(main_loop,
-				     AGS_TYPE_TASK_THREAD);
-
-  if(ags_recall_ladpsa_find(line->channel->recall,
-			    filename, effect) != NULL){
-    /* return if duplicated */
-    return;
-  }
-
-  index = ags_ladspa_manager_effect_index(filename,
-					  effect);
-
-  task = NULL;
-  
-  /* load plugin */
-  ags_ladspa_manager_load_file(filename);
-  ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(filename);
-
-  plugin_so = ladspa_plugin->plugin_so;
-
-  /* retrieve position within table  */
-  x = 0;
-  y = 0;
-  i = 0;
-
-  list = line->expander->children;
-
-  while(list != NULL){
-    if(y <= AGS_EXPANDER_CHILD(list->data)->y){
-      y = AGS_EXPANDER_CHILD(list->data)->y + 1;
-    }
-
-    list = list->next;
-  }
-
-  /* add effect to channel */
-  port = ags_channel_add_effect(line->channel,
-				filename,
-				effect);
-
-  /* load ports */
-  if(index != -1 &&
-     plugin_so){
-    ladspa_descriptor = (LADSPA_Descriptor_Function) dlsym(plugin_so,
-							   "ladspa_descriptor\0");
-
-    if(dlerror() == NULL && ladspa_descriptor){
-      plugin_descriptor = ladspa_descriptor(index);
-
-      port_descriptor = plugin_descriptor->PortDescriptors;   
-
-      while(port != NULL){
-	if((LADSPA_IS_PORT_CONTROL(port_descriptor[i]) && 
-	    (LADSPA_IS_PORT_INPUT(port_descriptor[i]) ||
-	     LADSPA_IS_PORT_OUTPUT(port_descriptor[i])))){
-	  AgsDial *dial;
-	  GtkAdjustment *adjustment;
-
-	  if(x == 2){
-	    x = 0;
-	    y++;
-	  }
-	  
-	  g_message("line_add_effect - add line member\0");
-
-	  /* add line member */
-	  line_member = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
-						       "widget-type\0", AGS_TYPE_DIAL,
-						       "widget-label\0", plugin_descriptor->PortNames[i],
-						       "plugin-name\0", AGS_PORT(port->data)->plugin_name,
-						       "specifier\0", AGS_PORT(port->data)->specifier,
-						       "control-port\0", AGS_PORT(port->data)->control_port,
-						       NULL);
-	  dial = ags_line_member_get_widget(line_member);
-	  gtk_widget_set_size_request(dial,
-				      2 * dial->radius + 2 * dial->outline_strength + dial->button_width + 1,
-				      2 * dial->radius + 2 * dial->outline_strength + 1);
-		
-	  /* add controls of ports and apply range  */
-	  lower_bound = plugin_descriptor->PortRangeHints[i].LowerBound;
-	  upper_bound = plugin_descriptor->PortRangeHints[i].UpperBound;
-
-	  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0);
-	  g_object_set(dial,
-		       "adjustment", adjustment,
-		       NULL);
-
-	  if(upper_bound >= 0.0 && lower_bound >= 0.0){
-	    step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
-	  }else if(upper_bound < 0.0 && lower_bound < 0.0){
-	    step = -1.0 * (lower_bound - upper_bound) / AGS_DIAL_DEFAULT_PRECISION;
-	  }else{
-	    step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
-	  }
-
-	  gtk_adjustment_set_step_increment(adjustment,
-					    step);
-	  gtk_adjustment_set_lower(adjustment,
-				   lower_bound);
-	  gtk_adjustment_set_upper(adjustment,
-				   upper_bound);
-	  gtk_adjustment_set_value(adjustment,
-				   lower_bound);
-
-	  /* create task */
-	  add_line_member = ags_add_line_member_new(line,
-						    line_member,
-						    x, y,
-						    1, 1);
-	  task = g_list_prepend(task,
-				add_line_member);
-	  
-	  x++;
-	  port = port->next;
-	}
-
-	i++;
-      }
-    }
-  }
-  
-  /* launch tasks */
-  task = g_list_reverse(task);      
-  ags_task_thread_append_tasks(task_thread,
-			       task);
-
-  return(port);
-}
-
-GList*
-ags_line_add_effect(AgsLine *line,
-		    gchar *filename,
-		    gchar *effect)
-{
-  GList *port;
-  
-  g_return_val_if_fail(AGS_IS_LINE(line), NULL);
-
-  g_object_ref((GObject *) line);
-  g_signal_emit(G_OBJECT(line),
-		line_signals[ADD_EFFECT], 0,
-		filename,
-		effect,
-		&port);
-  g_object_unref((GObject *) line);
-  
-  return(port);
-}
-
-void
-ags_line_real_remove_effect(AgsLine *line,
-			    guint nth)
-{
-  GList *control;
-  GList *play_ladspa;
-  GList *port;
-
-  play_ladspa = ags_recall_template_find_type(line->channel->play,
-					      AGS_TYPE_RECALL_LADSPA);
-
-  /* destroy controls */
-  port = AGS_RECALL(g_list_nth(play_ladspa,
-			       nth)->data)->port;
-    
-  while(port != NULL){
-    control = gtk_container_get_children(line->expander->table);
-      
-    while(control != NULL){
-      if(AGS_IS_LINE_MEMBER(control->data) &&
-	 AGS_LINE_MEMBER(control->data)->port == port->data){
-	ags_expander_remove(line->expander,
-			    control->data);
-	break;
-      }
-	
-      control = control->next;
-    }
-      
-    port = port->next;
-  }
-
-  /* remove recalls */
-  ags_channel_remove_effect(line->channel,
-			    nth);
-}
-
-void
-ags_line_remove_effect(AgsLine *line,
-		       guint nth)
-{
-  g_return_if_fail(AGS_IS_LINE(line));
-
-  g_object_ref((GObject *) line);
-  g_signal_emit(G_OBJECT(line),
-		line_signals[REMOVE_EFFECT], 0,
-		nth);
   g_object_unref((GObject *) line);
 }
 

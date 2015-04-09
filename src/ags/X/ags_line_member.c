@@ -19,21 +19,19 @@
 #include <ags/X/ags_line_member.h>
 #include <ags/X/ags_line_member_callbacks.h>
 
-#include <ags/object/ags_application_context.h>
+#include <ags/main.h>
+
 #include <ags-lib/object/ags_connectable.h>
 
 #include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_task_thread.h>
 
-#include <ags/audio/ags_devout.h>
-#include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_devout.h>
 
 #include <ags/widget/ags_dial.h>
 
-#include <ags/X/ags_window.h>
-#include <ags/X/ags_line.h>
-#include <ags/X/ags_effect_line.h>
+#include <ags/X/ags_pad.h>
 
 void ags_line_member_class_init(AgsLineMemberClass *line_member);
 void ags_line_member_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -764,27 +762,14 @@ ags_line_member_real_change_port(AgsLineMember *line_member,
   }
 
   if((AGS_LINE_MEMBER_RESET_BY_TASK & (line_member->flags)) != 0){
-    AgsWindow *window;
     AgsLine *line;
-    
-    AgsThread *main_loop;
     AgsTaskThread *task_thread;
     AgsTask *task;
 
-    AgsApplicationContext *application_context;
-
-    //TODO:JK: add support for effect_line
     line = (AgsLine *) gtk_widget_get_ancestor(GTK_WIDGET(line_member),
 					       AGS_TYPE_LINE);
-
-    window = gtk_widget_get_ancestor(line,
-				     AGS_TYPE_WINDOW);
-
-    application_context = window->application_context;
     
-    main_loop = application_context->main_loop;
-    task_thread = ags_thread_find_type(main_loop,
-				       AGS_TYPE_TASK_THREAD);
+    task_thread = AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(line->channel->devout)->ags_main)->main_loop)->task_thread);
 
     task = (AgsTask *) g_object_new(line_member->task_type,
 				    line_member->control_port, port_data,
@@ -828,7 +813,8 @@ ags_line_member_change_port(AgsLineMember *line_member,
 void
 ags_line_member_find_port(AgsLineMember *line_member)
 {
-  GtkWidget *line;
+  AgsMachine *machine;
+  AgsLine *line;
   AgsAudio *audio;
   AgsChannel *channel;
   AgsPort *audio_port, *channel_port;
@@ -874,21 +860,12 @@ ags_line_member_find_port(AgsLineMember *line_member)
     return;
   }
 
-  line = gtk_widget_get_ancestor(GTK_WIDGET(line_member),
-				 AGS_TYPE_LINE);
+  line = (AgsLine *) gtk_widget_get_ancestor(GTK_WIDGET(line_member),
+					     AGS_TYPE_LINE);
 
-  if(line != NULL){
-    channel = AGS_LINE(line)->channel;
-  }else{
-    line = gtk_widget_get_ancestor(GTK_WIDGET(line_member),
-				   AGS_TYPE_EFFECT_LINE);
+  audio = AGS_AUDIO(line->channel->audio);
 
-    if(line != NULL){
-      channel = AGS_EFFECT_LINE(line)->channel;
-    }
-  }
-  
-  audio = AGS_AUDIO(channel->audio);
+  machine = AGS_MACHINE(audio->machine);
 
   audio_port = NULL;
   channel_port = NULL;
@@ -897,6 +874,8 @@ ags_line_member_find_port(AgsLineMember *line_member)
   recall_channel_port = NULL;
   
   /* search channels */
+  channel = line->channel;
+
   recall = channel->play;
   channel_port = ags_line_member_find_specifier(recall);
 

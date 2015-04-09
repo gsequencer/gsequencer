@@ -19,11 +19,13 @@
 #include <ags/X/ags_link_editor.h>
 #include <ags/X/ags_link_editor_callbacks.h>
 
-#include <ags/object/ags_application_context.h>
+#include <ags/main.h>
+
 #include <ags-lib/object/ags_connectable.h>
+
 #include <ags/object/ags_applicable.h>
 
-#include <ags/thread/ags_thread-posix.h>
+#include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_audio.h>
@@ -32,9 +34,7 @@
 
 #include <ags/audio/task/ags_link_channel.h>
 
-#include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
-#include <ags/X/ags_machine_editor.h>
 #include <ags/X/ags_line_editor.h>
 
 void ags_link_editor_class_init(AgsLinkEditorClass *link_editor);
@@ -213,35 +213,16 @@ ags_link_editor_apply(AgsApplicable *applicable)
 
   if(gtk_combo_box_get_active_iter(link_editor->combo,
 				   &iter)){
-    AgsWindow *window;
     AgsMachine *link_machine;
-    AgsMachineEditor *machine_editor;
     AgsLineEditor *line_editor;
-    GtkTreeModel *model;
-
     AgsChannel *channel, *link;
     AgsLinkChannel *link_channel;
+    GtkTreeModel *model;
 
-    AgsThread *main_loop, *current;
-    AgsTaskThread *task_thread;
-
-    AgsApplicationContext *application_context;
-    
     line_editor = AGS_LINE_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(link_editor),
 							  AGS_TYPE_LINE_EDITOR));
 
-    machine_editor = gtk_widget_get_ancestor(line_editor,
-					     AGS_TYPE_MACHINE_EDITOR);
-
-    window = machine_editor->parent;
-      
-    application_context = window->application_context;
-
     channel = line_editor->channel;
-
-    main_loop = application_context->main_loop;
-    task_thread = ags_thread_find_type(main_loop,
-				       AGS_TYPE_TASK_THREAD);
 
     model = gtk_combo_box_get_model(link_editor->combo);
     gtk_tree_model_get(model,
@@ -254,7 +235,7 @@ ags_link_editor_apply(AgsApplicable *applicable)
       link_channel = ags_link_channel_new(channel, NULL);
       
       /* append AgsLinkChannel */
-      ags_task_thread_append_task(task_thread,
+      ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout)->ags_main)->main_loop)->task_thread),
 				  AGS_TASK(link_channel));
     }else{
       guint link_line;
@@ -272,7 +253,7 @@ ags_link_editor_apply(AgsApplicable *applicable)
       link_channel = ags_link_channel_new(channel, link);
       
       /* append AgsLinkChannel */
-      ags_task_thread_append_task(task_thread,
+      ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout)->ags_main)->main_loop)->task_thread),
 				  AGS_TASK(link_channel));
     }
   }

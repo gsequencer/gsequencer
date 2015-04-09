@@ -151,8 +151,8 @@ void
 ags_peak_channel_run_init(AgsPeakChannelRun *peak_channel_run)
 {
   AGS_RECALL(peak_channel_run)->name = "ags-peak\0";
-  AGS_RECALL(peak_channel_run)->version = AGS_RECALL_DEFAULT_VERSION;
-  AGS_RECALL(peak_channel_run)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
+  AGS_RECALL(peak_channel_run)->version = AGS_EFFECTS_DEFAULT_VERSION;
+  AGS_RECALL(peak_channel_run)->build_id = AGS_BUILD_ID;
   AGS_RECALL(peak_channel_run)->xml_type = "ags-peak-channel-run\0";
   AGS_RECALL(peak_channel_run)->port = NULL;
 

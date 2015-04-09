@@ -149,31 +149,25 @@ ags_menu_bar_init(AgsMenuBar *menu_bar)
   menu_bar->add = (GtkMenu *) gtk_menu_new();
   gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) menu_bar->add);
 
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label("Panel\0");
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("Panel\0"));
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
 
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label("Mixer\0");
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("Mixer\0"));
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
 
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label("Drum\0");
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("Drum\0"));
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
 
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label("Matrix\0");
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("Matrix\0"));
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
 
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label("Synth\0");
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("Synth\0"));
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
 
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label("FPlayer\0");
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("FPlayer\0"));
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
 
   item = (GtkImageMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_REMOVE, NULL);
-  gtk_menu_shell_append((GtkMenuShell*) menu_bar->edit, (GtkWidget*) item);
-
-  gtk_menu_shell_append((GtkMenuShell*) menu_bar->edit,
-			(GtkWidget*) gtk_separator_menu_item_new());
-
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label("Automation Editor\0");
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->edit, (GtkWidget*) item);
 
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->edit,
@@ -278,11 +272,6 @@ ags_menu_bar_connect(AgsConnectable *connectable)
   list1 = list1->next;
 
   g_signal_connect (G_OBJECT (list1->data), "activate\0",
-                    G_CALLBACK (ags_menu_bar_automation_editor_callback), (gpointer) menu_bar);
-  list1 = list1->next;
-  list1 = list1->next;
-
-  g_signal_connect (G_OBJECT (list1->data), "activate\0",
                     G_CALLBACK (ags_menu_bar_preferences_callback), (gpointer) menu_bar);
 
   g_list_free(list1_start);
@@ -330,8 +319,7 @@ ags_menu_bar_new()
 {
   AgsMenuBar *menu_bar;
 
-  menu_bar = (AgsMenuBar *) g_object_new(AGS_TYPE_MENU_BAR,
-					 NULL);
+  menu_bar = (AgsMenuBar *) g_object_new(AGS_TYPE_MENU_BAR, NULL);
 
   return(menu_bar);
 }
