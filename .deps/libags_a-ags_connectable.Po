@@ -107,7 +107,7 @@ libags_a-ags_connectable.o: src/ags-lib/object/ags_connectable.c \
  /usr/include/libxml2/libxml/tree.h /usr/include/stdio.h \
  /usr/include/libio.h /usr/include/_G_config.h /usr/include/wchar.h \
  /usr/include/bits/stdio_lim.h /usr/include/bits/sys_errlist.h \
- /usr/include/bits/stdio.h /usr/include/libxml2/libxml/xmlversion.h \
+ /usr/include/libxml2/libxml/xmlversion.h \
  /usr/include/libxml2/libxml/xmlexports.h \
  /usr/include/libxml2/libxml/xmlstring.h \
  /usr/include/libxml2/libxml/xmlregexp.h \
@@ -125,8 +125,8 @@ libags_a-ags_connectable.o: src/ags-lib/object/ags_connectable.c \
  /usr/include/libxml2/libxml/xmlIO.h /usr/include/libxml2/libxml/SAX.h \
  /usr/include/stdlib.h /usr/include/bits/waitflags.h \
  /usr/include/bits/waitstatus.h /usr/include/alloca.h \
- /usr/include/bits/stdlib-bsearch.h /usr/include/bits/stdlib-float.h \
- /usr/include/libxml2/libxml/xlink.h /usr/include/libxml2/libxml/SAX2.h
+ /usr/include/bits/stdlib-float.h /usr/include/libxml2/libxml/xlink.h \
+ /usr/include/libxml2/libxml/SAX2.h
 
 /usr/include/stdc-predef.h:
 
@@ -422,8 +422,6 @@ src/ags-lib/object/ags_connectable.h:
 
 /usr/include/bits/sys_errlist.h:
 
-/usr/include/bits/stdio.h:
-
 /usr/include/libxml2/libxml/xmlversion.h:
 
 /usr/include/libxml2/libxml/xmlexports.h:
@@ -469,8 +467,6 @@ src/ags-lib/object/ags_connectable.h:
 /usr/include/bits/waitstatus.h:
 
 /usr/include/alloca.h:
-
-/usr/include/bits/stdlib-bsearch.h:
 
 /usr/include/bits/stdlib-float.h:
 

@@ -31,30 +31,28 @@
 
 typedef struct _AgsMutexManager AgsMutexManager;
 typedef struct _AgsMutexManagerClass AgsMutexManagerClass;
-typedef struct _AgsMutexEntry AgsMutexEntry;
 
 struct _AgsMutexManager
 {
   GObject object;
+
+  GHashTable *lock_object;
 };
 
 struct _AgsMutexManagerClass
 {
   GObjectClass object;
-
-  GList *entry;
-};
-
-struct _AgsMutexEntry
-{
-  GObject *lock_object;
-  pthread_mutex_t mutex;
 };
 
 GType ags_mutex_manager_get_type();
 
-AgsMutexEntry* ags_mutex_manager_find(AgsMutexManager *mutex_manager,
-				      GObject *lock_object);
+gboolean ags_mutex_manager_insert(AgsMutexManager *mutex_manager,
+				  GObject *lock_object, pthread_mutex_t *mutex);
+gboolean ags_mutex_manager_remove(AgsMutexManager *mutex_manager,
+				  GObject *lock_object);
+
+pthread_mutex_t* ags_mutex_manager_lookup(AgsMutexManager *mutex_manager,
+					  GObject *lock_object);
 
 AgsMutexManager* ags_mutex_manager_get_instance();
 AgsMutexManager* ags_mutex_manager_new();

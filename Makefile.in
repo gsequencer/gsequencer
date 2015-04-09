@@ -329,6 +329,7 @@ am_ags_OBJECTS = ags-ags_combo_box_text.$(OBJEXT) \
 	ags-ags_file_util.$(OBJEXT) ags-ags_file_lookup.$(OBJEXT) \
 	ags-ags_file_launch.$(OBJEXT) ags-ags_file_gui.$(OBJEXT) \
 	ags-ags_file.$(OBJEXT) ags-ags_record_thread.$(OBJEXT) \
+	ags-ags_mutex_manager.$(OBJEXT) \
 	ags-ags_returnable_thread.$(OBJEXT) \
 	ags-ags_autosave_thread.$(OBJEXT) \
 	ags-ags_devout_thread.$(OBJEXT) ags-ags_thread_pool.$(OBJEXT) \
@@ -1158,6 +1159,8 @@ ags_SOURCES = src/ags/lib/ags_combo_box_text.c src/ags/lib/ags_list.c \
 	src/ags/thread/ags_record_thread.c \
 	src/ags/thread/ags_thread_pool.h \
 	src/ags/thread/ags_timestamp_thread.h \
+	src/ags/thread/ags_mutex_manager.h \
+	src/ags/thread/ags_mutex_manager.c \
 	src/ags/thread/ags_task_thread.h \
 	src/ags/thread/ags_audio_loop.h \
 	src/ags/thread/ags_gui_task_thread.h \
@@ -1484,6 +1487,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_mute_channel.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_mute_channel_run.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_mute_recycling.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_mutex_manager.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_navigation.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_navigation_callbacks.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_notation.Po@am__quote@
@@ -5759,6 +5763,20 @@ ags-ags_record_thread.obj: src/ags/thread/ags_record_thread.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/thread/ags_record_thread.c' object='ags-ags_record_thread.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_record_thread.obj `if test -f 'src/ags/thread/ags_record_thread.c'; then $(CYGPATH_W) 'src/ags/thread/ags_record_thread.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/thread/ags_record_thread.c'; fi`
+
+ags-ags_mutex_manager.o: src/ags/thread/ags_mutex_manager.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_mutex_manager.o -MD -MP -MF $(DEPDIR)/ags-ags_mutex_manager.Tpo -c -o ags-ags_mutex_manager.o `test -f 'src/ags/thread/ags_mutex_manager.c' || echo '$(srcdir)/'`src/ags/thread/ags_mutex_manager.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_mutex_manager.Tpo $(DEPDIR)/ags-ags_mutex_manager.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/thread/ags_mutex_manager.c' object='ags-ags_mutex_manager.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_mutex_manager.o `test -f 'src/ags/thread/ags_mutex_manager.c' || echo '$(srcdir)/'`src/ags/thread/ags_mutex_manager.c
+
+ags-ags_mutex_manager.obj: src/ags/thread/ags_mutex_manager.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_mutex_manager.obj -MD -MP -MF $(DEPDIR)/ags-ags_mutex_manager.Tpo -c -o ags-ags_mutex_manager.obj `if test -f 'src/ags/thread/ags_mutex_manager.c'; then $(CYGPATH_W) 'src/ags/thread/ags_mutex_manager.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/thread/ags_mutex_manager.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_mutex_manager.Tpo $(DEPDIR)/ags-ags_mutex_manager.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/thread/ags_mutex_manager.c' object='ags-ags_mutex_manager.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_mutex_manager.obj `if test -f 'src/ags/thread/ags_mutex_manager.c'; then $(CYGPATH_W) 'src/ags/thread/ags_mutex_manager.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/thread/ags_mutex_manager.c'; fi`
 
 ags-ags_returnable_thread.o: src/ags/thread/ags_returnable_thread.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_returnable_thread.o -MD -MP -MF $(DEPDIR)/ags-ags_returnable_thread.Tpo -c -o ags-ags_returnable_thread.o `test -f 'src/ags/thread/ags_returnable_thread.c' || echo '$(srcdir)/'`src/ags/thread/ags_returnable_thread.c
