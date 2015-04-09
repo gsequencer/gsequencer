@@ -27,10 +27,11 @@ void ags_mutex_manager_connect(AgsConnectable *connectable);
 void ags_mutex_manager_disconnect(AgsConnectable *connectable);
 void ags_mutex_manager_finalize(GObject *gobject);
 
-static gpointer ags_mutex_manager_parent_class = NULL;
-static guint mutex_manager_signals[LAST_SIGNAL];
+void ags_mutex_manager_destroy_data(gpointer data);
 
-__mutex_manager AgsMutexManager *ags_mutex_manager_self = NULL;
+static gpointer ags_mutex_manager_parent_class = NULL;
+
+AgsMutexManager *ags_mutex_manager = NULL;
 
 GType
 ags_mutex_manager_get_type()
@@ -84,9 +85,18 @@ ags_mutex_manager_class_init(AgsMutexManagerClass *mutex_manager)
 }
 
 void
+ags_mutex_manager_connectable_interface_init(AgsConnectableInterface *connectable)
+{
+  connectable->connect = ags_mutex_manager_connect;
+  connectable->disconnect = ags_mutex_manager_disconnect;
+}
+
+void
 ags_mutex_manager_init(AgsMutexManager *mutex_manager)
 {
-  mutex_manager->entry = NULL;
+  mutex_manager->lock_object = g_hash_table_new_full(g_direct_hash, g_direct_equal,
+						     NULL,
+						     (GDestroyNotify) ags_mutex_manager_destroy_data);
 }
 
 void
@@ -107,19 +117,66 @@ ags_mutex_manager_finalize(GObject *gobject)
   AgsMutexManager *mutex_manager;
 
   mutex_manager = AGS_MUTEX_MANAGER(gobject);
+
+  g_hash_table_destroy(mutex_manager->lock_object);
 }
 
-AgsMutexEntry*
-ags_mutex_manager_find(AgsMutexManager *mutex_manager,
-		       GObject *lock_object)
+void
+ags_mutex_manager_destroy_data(gpointer data)
 {
-  //TODO:JK: implement me
+  pthread_mutex_destroy((pthread_mutex_t *) data);
+}
+
+gboolean
+ags_mutex_manager_insert(AgsMutexManager *mutex_manager,
+			 GObject *lock_object, pthread_mutex_t *mutex)
+{
+  return(g_hash_table_insert(mutex_manager->lock_object,
+			     lock_object, mutex));
+}
+
+gboolean
+ags_mutex_manager_remove(AgsMutexManager *mutex_manager,
+			 GObject *lock_object)
+{
+  pthread_mutex_t *mutex;
+
+  mutex = g_hash_table_lookup(mutex_manager->lock_object,
+			      lock_object);
+
+  if(mutex == NULL ||
+     pthread_mutex_trylock(mutex) != 0){
+    return(FALSE);
+  }
+
+  g_hash_table_remove(mutex_manager->lock_object,
+		      lock_object);
+
+  pthread_mutex_unlock(mutex);
+  
+  return(TRUE);
+}
+
+pthread_mutex_t*
+ags_mutex_manager_lookup(AgsMutexManager *mutex_manager,
+			 GObject *lock_object)
+{
+  pthread_mutex_t *mutex;
+
+  mutex = (pthread_mutex_t *) g_hash_table_lookup(mutex_manager->lock_object,
+						  lock_object);
+
+  return(mutex);
 }
 
 AgsMutexManager*
 ags_mutex_manager_get_instance()
 {
-  //TODO:JK: implement me
+  if(ags_mutex_manager == NULL){
+    ags_mutex_manager = ags_mutex_manager_new();
+  }
+
+  return(ags_mutex_manager);
 }
 
 AgsMutexManager*

@@ -1402,18 +1402,6 @@ ags_devout_alsa_free(AgsDevout *devout)
   devout->out.alsa.handle = NULL;
 } 
 
-void
-ags_devout_add_audio(AgsDevout *devout,
-		     AgsAudio *audio)
-{
-}
-
-void
-ags_devout_remove_audio(AgsDevout *devout,
-			AgsAudio *audio)
-{
-}
-
 /**
  * ags_devout_new:
  * @ags_main: the #AgsMain

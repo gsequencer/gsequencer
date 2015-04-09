@@ -329,6 +329,7 @@ am_ags_OBJECTS = ags-ags_combo_box_text.$(OBJEXT) \
 	ags-ags_file_util.$(OBJEXT) ags-ags_file_lookup.$(OBJEXT) \
 	ags-ags_file_launch.$(OBJEXT) ags-ags_file_gui.$(OBJEXT) \
 	ags-ags_file.$(OBJEXT) ags-ags_record_thread.$(OBJEXT) \
+	ags-ags_mutex_manager.$(OBJEXT) \
 	ags-ags_returnable_thread.$(OBJEXT) \
 	ags-ags_autosave_thread.$(OBJEXT) \
 	ags-ags_devout_thread.$(OBJEXT) ags-ags_thread_pool.$(OBJEXT) \
@@ -468,13 +469,13 @@ distuninstallcheck_listfiles = find . -type f -print
 am__distuninstallcheck_listfiles = $(distuninstallcheck_listfiles) \
   | sed 's|^\./|$(prefix)/|' | grep -v '$(infodir)/dir$$'
 distcleancheck_listfiles = find . -type f -print
-ACLOCAL = ${SHELL} /home/minos/ags-0_4_2-42/missing aclocal-1.14
+ACLOCAL = ${SHELL} /usr/src/ags-devel/missing aclocal-1.14
 ALLOCA = 
 AMTAR = $${TAR-tar}
 AM_DEFAULT_VERBOSITY = 1
-AUTOCONF = ${SHELL} /home/minos/ags-0_4_2-42/missing autoconf
-AUTOHEADER = ${SHELL} /home/minos/ags-0_4_2-42/missing autoheader
-AUTOMAKE = ${SHELL} /home/minos/ags-0_4_2-42/missing automake-1.14
+AUTOCONF = ${SHELL} /usr/src/ags-devel/missing autoconf
+AUTOHEADER = ${SHELL} /usr/src/ags-devel/missing autoheader
+AUTOMAKE = ${SHELL} /usr/src/ags-devel/missing automake-1.14
 AWK = gawk
 BUILD_INCLUDED_LIBINTL = no
 CAIRO_CFLAGS = -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng16 -I/usr/include/harfbuzz -I/usr/include/freetype2 -I/usr/include/harfbuzz -I/usr/include/libdrm -I/usr/include/libpng16 -I/usr/X11/include 
@@ -552,7 +553,7 @@ LTLIBMULTITHREAD = -pthread
 LTLIBOBJS = 
 LTLIBPTH = 
 LTLIBTHREAD = 
-MAKEINFO = ${SHELL} /home/minos/ags-0_4_2-42/missing makeinfo
+MAKEINFO = ${SHELL} /usr/src/ags-devel/missing makeinfo
 MKDIR_P = /bin/mkdir -p
 MSGFMT = /usr/bin/msgfmt
 MSGFMT_015 = /usr/bin/msgfmt
@@ -568,7 +569,7 @@ PACKAGE_VERSION = 0.4.2
 PATH_SEPARATOR = :
 PKG_CONFIG = /usr/bin/pkg-config
 PKG_CONFIG_LIBDIR = 
-PKG_CONFIG_PATH = /usr/lib/pkgconfig:/usr/X11/lib/pkgconfig:/usr/X11/share/pkgconfig
+PKG_CONFIG_PATH = /usr/lib/pkgconfig:/usr/share/pkgconfig:/usr/X11/lib/pkgconfig:/usr/X11/share/pkgconfig
 POSUB = po
 PRI_MACROS_BROKEN = 0
 RANLIB = ranlib
@@ -590,10 +591,10 @@ XGETTEXT = /usr/bin/xgettext
 XGETTEXT_015 = /usr/bin/xgettext
 XGETTEXT_EXTRA_OPTIONS = 
 XMKMF = 
-abs_builddir = /home/minos/ags-0_4_2-42
-abs_srcdir = /home/minos/ags-0_4_2-42
-abs_top_builddir = /home/minos/ags-0_4_2-42
-abs_top_srcdir = /home/minos/ags-0_4_2-42
+abs_builddir = /usr/src/ags-devel
+abs_srcdir = /usr/src/ags-devel
+abs_top_builddir = /usr/src/ags-devel
+abs_top_srcdir = /usr/src/ags-devel
 ac_ct_CC = gcc
 am__include = include
 am__leading_dot = .
@@ -620,7 +621,7 @@ host_vendor = unknown
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = ${SHELL} /home/minos/ags-0_4_2-42/install-sh
+install_sh = ${SHELL} /usr/src/ags-devel/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
@@ -1158,6 +1159,8 @@ ags_SOURCES = src/ags/lib/ags_combo_box_text.c src/ags/lib/ags_list.c \
 	src/ags/thread/ags_record_thread.c \
 	src/ags/thread/ags_thread_pool.h \
 	src/ags/thread/ags_timestamp_thread.h \
+	src/ags/thread/ags_mutex_manager.h \
+	src/ags/thread/ags_mutex_manager.c \
 	src/ags/thread/ags_task_thread.h \
 	src/ags/thread/ags_audio_loop.h \
 	src/ags/thread/ags_gui_task_thread.h \
@@ -1484,6 +1487,7 @@ include ./$(DEPDIR)/ags-ags_mute_audio_signal.Po
 include ./$(DEPDIR)/ags-ags_mute_channel.Po
 include ./$(DEPDIR)/ags-ags_mute_channel_run.Po
 include ./$(DEPDIR)/ags-ags_mute_recycling.Po
+include ./$(DEPDIR)/ags-ags_mutex_manager.Po
 include ./$(DEPDIR)/ags-ags_navigation.Po
 include ./$(DEPDIR)/ags-ags_navigation_callbacks.Po
 include ./$(DEPDIR)/ags-ags_notation.Po
@@ -5759,6 +5763,20 @@ ags-ags_record_thread.obj: src/ags/thread/ags_record_thread.c
 #	$(AM_V_CC)source='src/ags/thread/ags_record_thread.c' object='ags-ags_record_thread.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_record_thread.obj `if test -f 'src/ags/thread/ags_record_thread.c'; then $(CYGPATH_W) 'src/ags/thread/ags_record_thread.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/thread/ags_record_thread.c'; fi`
+
+ags-ags_mutex_manager.o: src/ags/thread/ags_mutex_manager.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_mutex_manager.o -MD -MP -MF $(DEPDIR)/ags-ags_mutex_manager.Tpo -c -o ags-ags_mutex_manager.o `test -f 'src/ags/thread/ags_mutex_manager.c' || echo '$(srcdir)/'`src/ags/thread/ags_mutex_manager.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_mutex_manager.Tpo $(DEPDIR)/ags-ags_mutex_manager.Po
+#	$(AM_V_CC)source='src/ags/thread/ags_mutex_manager.c' object='ags-ags_mutex_manager.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_mutex_manager.o `test -f 'src/ags/thread/ags_mutex_manager.c' || echo '$(srcdir)/'`src/ags/thread/ags_mutex_manager.c
+
+ags-ags_mutex_manager.obj: src/ags/thread/ags_mutex_manager.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_mutex_manager.obj -MD -MP -MF $(DEPDIR)/ags-ags_mutex_manager.Tpo -c -o ags-ags_mutex_manager.obj `if test -f 'src/ags/thread/ags_mutex_manager.c'; then $(CYGPATH_W) 'src/ags/thread/ags_mutex_manager.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/thread/ags_mutex_manager.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_mutex_manager.Tpo $(DEPDIR)/ags-ags_mutex_manager.Po
+#	$(AM_V_CC)source='src/ags/thread/ags_mutex_manager.c' object='ags-ags_mutex_manager.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_mutex_manager.obj `if test -f 'src/ags/thread/ags_mutex_manager.c'; then $(CYGPATH_W) 'src/ags/thread/ags_mutex_manager.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/thread/ags_mutex_manager.c'; fi`
 
 ags-ags_returnable_thread.o: src/ags/thread/ags_returnable_thread.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_returnable_thread.o -MD -MP -MF $(DEPDIR)/ags-ags_returnable_thread.Tpo -c -o ags-ags_returnable_thread.o `test -f 'src/ags/thread/ags_returnable_thread.c' || echo '$(srcdir)/'`src/ags/thread/ags_returnable_thread.c
