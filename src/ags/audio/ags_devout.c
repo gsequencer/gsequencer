@@ -20,6 +20,8 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/thread/ags_mutex_manager.h>
+
 #include <ags/main.h>
 
 #include <sys/stat.h>
@@ -32,6 +34,8 @@
 #include <string.h>
 #include <math.h>
 #include <time.h>
+
+#include <pthread.h>
 
 #include <ags/audio/ags_config.h>
 #include <ags/audio/ags_notation.h>
@@ -101,6 +105,8 @@ static guint devout_signals[LAST_SIGNAL];
 
 /* dangerous - produces a lot of output */
 static gboolean DEBUG_DEVOUT = FALSE;
+
+extern pthread_mutex_t ags_application_mutex;
 
 GType
 ags_devout_get_type (void)
@@ -372,11 +378,35 @@ ags_devout_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_devout_init(AgsDevout *devout)
 {
+  AgsMutexManager *mutex_manager;
+
   gdouble delay;
   guint default_tact_frames;
   guint default_period;
   guint i;
+
+  pthread_mutex_t *mutex;
+  pthread_mutexattr_t attr;
+
+  //FIXME:JK: memory leak
+  pthread_mutexattr_init(&attr);
+  pthread_mutexattr_settype(&attr,
+			    PTHREAD_MUTEX_RECURSIVE);
   
+  mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(mutex,
+		     &attr);
+  
+  pthread_mutex_lock(&(ags_application_mutex));
+
+  mutex_manager = ags_mutex_manager_get_instance();
+
+  ags_mutex_manager_insert(mutex_manager,
+			   devout,
+			   mutex);
+  
+  pthread_mutex_unlock(&(ags_application_mutex));
+
   /* flags */
   devout->flags = (AGS_DEVOUT_ALSA);
 
@@ -669,9 +699,21 @@ void
 ags_devout_finalize(GObject *gobject)
 {
   AgsDevout *devout;
+
+  AgsMutexManager *mutex_manager;
+  
   GList *list, *list_next;
 
   devout = AGS_DEVOUT(gobject);
+
+  pthread_mutex_lock(&(ags_application_mutex));
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+
+  ags_mutex_manager_remove(mutex_manager,
+			   gobject);
+  
+  pthread_mutex_unlock(&(ags_application_mutex));
 
   /* free output buffer */
   free(devout->buffer[0]);
@@ -684,7 +726,7 @@ ags_devout_finalize(GObject *gobject)
 
   /* free AgsAttack */
   free(devout->attack);
-
+  
   /* call parent */
   G_OBJECT_CLASS(ags_devout_parent_class)->finalize(gobject);
 }
@@ -693,8 +735,9 @@ void
 ags_devout_connect(AgsConnectable *connectable)
 {
   AgsDevout *devout;
-  GList *list;
 
+  GList *list;
+  
   devout = AGS_DEVOUT(connectable);
   
   list = devout->audio;
@@ -988,6 +1031,21 @@ ags_devout_pcm_info(char *card_id,
 void
 ags_devout_add_audio(AgsDevout *devout, GObject *audio)
 {
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *mutex;
+  
+  pthread_mutex_lock(&(ags_application_mutex));
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   devout);
+  
+  pthread_mutex_unlock(&(ags_application_mutex));
+
+  pthread_mutex_lock(mutex);
+  
   if(g_list_find(devout->audio,
 		 audio) != NULL){
     return;
@@ -996,6 +1054,8 @@ ags_devout_add_audio(AgsDevout *devout, GObject *audio)
   g_object_ref(G_OBJECT(audio));
   devout->audio = g_list_prepend(devout->audio,
 				 audio);
+  
+  pthread_mutex_unlock(mutex);
 }
 
 /**
@@ -1010,9 +1070,26 @@ ags_devout_add_audio(AgsDevout *devout, GObject *audio)
 void
 ags_devout_remove_audio(AgsDevout *devout, GObject *audio)
 {
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *mutex;
+  
+  pthread_mutex_lock(&(ags_application_mutex));
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   devout);
+  
+  pthread_mutex_unlock(&(ags_application_mutex));
+
+  pthread_mutex_lock(mutex);
+
   devout->audio = g_list_remove(devout->audio,
 				audio);
   g_object_unref(G_OBJECT(audio));
+
+  pthread_mutex_unlock(mutex);
 }
 
 /**
@@ -1026,7 +1103,24 @@ ags_devout_remove_audio(AgsDevout *devout, GObject *audio)
 void
 ags_devout_tic(AgsDevout *devout)
 {
-  g_return_if_fail(AGS_IS_DEVOUT(devout));
+  AgsMutexManager *mutex_manager;
+  
+  pthread_mutex_t *mutex;
+  
+  pthread_mutex_lock(&(ags_application_mutex));
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   devout);
+  
+  pthread_mutex_unlock(&(ags_application_mutex));
+
+  pthread_mutex_lock(mutex);
+
+  if(!AGS_IS_DEVOUT(devout)){
+    pthread_mutex_unlock(mutex);
+  }
 
   if((AGS_DEVOUT_PLAY & devout->flags) == 0){
     g_message("ags_devout_tic: not playing\0");
@@ -1037,6 +1131,8 @@ ags_devout_tic(AgsDevout *devout)
   g_signal_emit(G_OBJECT(devout),
 		devout_signals[TIC], 0);
   g_object_unref((GObject *) devout);
+
+  pthread_mutex_unlock(mutex);
 }
 
 /**
@@ -1050,6 +1146,21 @@ ags_devout_tic(AgsDevout *devout)
 void
 ags_devout_switch_buffer_flag(AgsDevout *devout)
 {
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *mutex;
+  
+  pthread_mutex_lock(&(ags_application_mutex));
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   devout);
+  
+  pthread_mutex_unlock(&(ags_application_mutex));
+
+  pthread_mutex_lock(mutex);
+
   if((AGS_DEVOUT_BUFFER0 & (devout->flags)) != 0){
     devout->flags &= (~AGS_DEVOUT_BUFFER0);
     devout->flags |= AGS_DEVOUT_BUFFER1;
@@ -1063,12 +1174,16 @@ ags_devout_switch_buffer_flag(AgsDevout *devout)
     devout->flags &= (~AGS_DEVOUT_BUFFER3);
     devout->flags |= AGS_DEVOUT_BUFFER0;
   }
+
+  pthread_mutex_unlock(mutex);
 }
 
 void
 ags_devout_alsa_init(AgsDevout *devout,
 		     GError **error)
 {
+  AgsMutexManager *mutex_manager;
+  
   static unsigned int period_time = 100000;
   static snd_pcm_format_t format = SND_PCM_FORMAT_S16;
 
@@ -1086,6 +1201,19 @@ ags_devout_alsa_init(AgsDevout *devout,
   snd_pcm_sw_params_t *swparams;
   int period_event = 0;
   int err, dir;
+  
+  pthread_mutex_t *mutex;
+  
+  pthread_mutex_lock(&(ags_application_mutex));
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   devout);
+  
+  pthread_mutex_unlock(&(ags_application_mutex));
+
+  pthread_mutex_lock(mutex);
 
   /* Open PCM device for playback. */
   if ((err = snd_pcm_open(&handle, devout->out.alsa.device, SND_PCM_STREAM_PLAYBACK, 0)) < 0) {
@@ -1219,14 +1347,31 @@ ags_devout_alsa_init(AgsDevout *devout,
   devout->out.alsa.handle = handle;
   devout->delay_counter = 0.0;
   devout->tic_counter = 0;
+
+  pthread_mutex_unlock(mutex);
 }
 
 void
 ags_devout_alsa_play(AgsDevout *devout,
 		     GError **error)
 {
+  AgsMutexManager *mutex_manager;
+  
   gdouble delay;
 
+  pthread_mutex_t *mutex;
+  
+  pthread_mutex_lock(&(ags_application_mutex));
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   devout);
+  
+  pthread_mutex_unlock(&(ags_application_mutex));
+
+  pthread_mutex_lock(mutex);
+  
   /*  */
   if((AGS_DEVOUT_BUFFER0 & (devout->flags)) != 0){
     memset(devout->buffer[3], 0, (size_t) devout->dsp_channels * devout->buffer_size * sizeof(signed short));
@@ -1392,14 +1537,33 @@ ags_devout_alsa_play(AgsDevout *devout,
   ags_devout_switch_buffer_flag(devout);
 
   snd_pcm_prepare(devout->out.alsa.handle);
+
+  pthread_mutex_unlock(mutex);
 }
 
 void
 ags_devout_alsa_free(AgsDevout *devout)
 {
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *mutex;
+  
+  pthread_mutex_lock(&(ags_application_mutex));
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   devout);
+  
+  pthread_mutex_unlock(&(ags_application_mutex));
+
+  pthread_mutex_lock(mutex);
+
   snd_pcm_drain(devout->out.alsa.handle);
   snd_pcm_close(devout->out.alsa.handle);
   devout->out.alsa.handle = NULL;
+
+  pthread_mutex_unlock(mutex);
 } 
 
 /**

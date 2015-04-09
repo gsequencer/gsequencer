@@ -58,9 +58,9 @@ ags_mutex_manager_get_type()
     };
 
     ags_type_mutex_manager = g_type_register_static(G_TYPE_OBJECT,
-					     "AgsMutexManager\0",
-					     &ags_mutex_manager_info,
-					     0);
+						    "AgsMutexManager\0",
+						    &ags_mutex_manager_info,
+						    0);
 
     g_type_add_interface_static(ags_type_mutex_manager,
 				AGS_TYPE_CONNECTABLE,
