@@ -387,7 +387,7 @@ ags_mixer_set_pads(AgsAudio *audio, GType type,
 
 /**
  * ags_mixer_new:
- * @devout: the assigned devout.
+ * @soundcard: the assigned soundcard.
  *
  * Creates an #AgsMixer
  *
@@ -396,7 +396,7 @@ ags_mixer_set_pads(AgsAudio *audio, GType type,
  * Since: 0.3
  */
 AgsMixer*
-ags_mixer_new(GObject *devout)
+ags_mixer_new(GObject *soundcard)
 {
   AgsMixer *mixer;
 
@@ -404,7 +404,7 @@ ags_mixer_new(GObject *devout)
 				    NULL);
 
   g_object_set(G_OBJECT(AGS_MACHINE(mixer)->audio),
-	       "devout\0", devout,
+	       "soundcard\0", soundcard,
 	       NULL);
 
   return(mixer);
