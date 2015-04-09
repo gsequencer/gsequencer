@@ -603,10 +603,10 @@ ags-ags_audio.o: src/ags/audio/ags_audio.c /usr/include/stdc-predef.h \
  src/ags/X/ags_performance_preferences.h \
  src/ags/X/ags_server_preferences.h src/ags/lib/ags_list.h \
  src/ags/object/ags_dynamic_connectable.h src/ags/object/ags_marshal.h \
- src/ags/audio/ags_output.h src/ags/audio/ags_input.h \
- /usr/include/glib-2.0/glib/gstdio.h /usr/include/glib-2.0/glib/gprintf.h \
- /usr/include/sys/stat.h src/ags/audio/ags_recall_audio.h \
- src/ags/audio/file/ags_audio_file.h \
+ src/ags/thread/ags_mutex_manager.h src/ags/audio/ags_output.h \
+ src/ags/audio/ags_input.h /usr/include/glib-2.0/glib/gstdio.h \
+ /usr/include/glib-2.0/glib/gprintf.h /usr/include/sys/stat.h \
+ src/ags/audio/ags_recall_audio.h src/ags/audio/file/ags_audio_file.h \
  src/ags/audio/task/ags_audio_set_recycling.h
 
 /usr/include/stdc-predef.h:
@@ -2116,6 +2116,8 @@ src/ags/lib/ags_list.h:
 src/ags/object/ags_dynamic_connectable.h:
 
 src/ags/object/ags_marshal.h:
+
+src/ags/thread/ags_mutex_manager.h:
 
 src/ags/audio/ags_output.h:
 
