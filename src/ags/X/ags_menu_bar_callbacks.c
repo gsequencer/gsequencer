@@ -249,6 +249,8 @@ ags_menu_bar_add_panel_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 
   panel = ags_panel_new(G_OBJECT(window->devout));
 
+  g_message("debug -1\0");
+  
   add_audio = ags_add_audio_new(window->devout,
 				AGS_MACHINE(panel)->audio);
   ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->task_thread),
@@ -259,6 +261,9 @@ ags_menu_bar_add_panel_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 		     FALSE, FALSE, 0);
 
   AGS_MACHINE(panel)->audio->audio_channels = 2;
+
+  g_message("debug 0\0");
+  
   ags_audio_set_pads(AGS_MACHINE(panel)->audio,
 		     AGS_TYPE_INPUT, 1);
   ags_audio_set_pads(AGS_MACHINE(panel)->audio,
