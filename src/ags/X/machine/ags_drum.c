@@ -303,7 +303,7 @@ ags_drum_init(AgsDrum *drum)
     drum->run = (GtkToggleButton *) gtk_toggle_button_new_with_label("run\0");
   gtk_table_attach_defaults(table0,
 			    (GtkWidget *) drum->run,
-			    1, 2, 2, 3);
+			    1, 2, 0, 3);
 
   /* bank */
   table1 = (GtkTable *) gtk_table_new(3, 5, TRUE);
