@@ -51,7 +51,6 @@ extern AgsConfig *config;
  * The #AgsDevoutThread acts as audio output thread to soundcard.
  */
 
-extern pthread_mutex_t ags_application_mutex;
 static gpointer ags_devout_thread_parent_class = NULL;
 static AgsConnectableInterface *ags_devout_thread_parent_connectable_interface;
 
@@ -232,8 +231,6 @@ ags_devout_thread_run(AgsThread *thread)
 
   devout_thread = AGS_DEVOUT_THREAD(thread);
 
-  pthread_mutex_lock(&(ags_application_mutex));
-
   devout = AGS_DEVOUT(thread->devout);
 
   //  delay = (long) floor(NSEC_PER_SEC / devout->frequency * devout->buffer_size);
@@ -252,8 +249,6 @@ ags_devout_thread_run(AgsThread *thread)
   if(error != NULL){
     //TODO:JK: implement me
   }
-
-  pthread_mutex_unlock(&(ags_application_mutex));
 }
 
 void

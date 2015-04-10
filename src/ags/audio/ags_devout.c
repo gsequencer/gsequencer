@@ -1048,6 +1048,7 @@ ags_devout_add_audio(AgsDevout *devout, GObject *audio)
   
   if(g_list_find(devout->audio,
 		 audio) != NULL){
+    pthread_mutex_unlock(mutex);
     return;
   }
 
@@ -1120,10 +1121,14 @@ ags_devout_tic(AgsDevout *devout)
 
   if(!AGS_IS_DEVOUT(devout)){
     pthread_mutex_unlock(mutex);
+    
+    return;
   }
 
   if((AGS_DEVOUT_PLAY & devout->flags) == 0){
     g_message("ags_devout_tic: not playing\0");
+    pthread_mutex_unlock(mutex);
+    
     return;
   }
 
@@ -1557,13 +1562,13 @@ ags_devout_alsa_free(AgsDevout *devout)
   
   pthread_mutex_unlock(&(ags_application_mutex));
 
-  pthread_mutex_lock(mutex);
+  //  pthread_mutex_lock(mutex);
 
   snd_pcm_drain(devout->out.alsa.handle);
   snd_pcm_close(devout->out.alsa.handle);
   devout->out.alsa.handle = NULL;
 
-  pthread_mutex_unlock(mutex);
+  //  pthread_mutex_unlock(mutex);
 } 
 
 /**

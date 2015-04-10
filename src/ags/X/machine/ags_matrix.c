@@ -939,6 +939,8 @@ ags_matrix_draw_matrix(AgsMatrix *matrix)
   channel = ags_channel_nth(AGS_MACHINE(matrix)->audio->input, (guint) matrix->adjustment->value);
 
   if(channel == NULL){
+    pthread_mutex_unlock(audio_mutex);
+    
     return;
   }
 

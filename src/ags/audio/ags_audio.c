@@ -2857,7 +2857,7 @@ void ags_audio_resolve_recall(AgsAudio *audio,
     pthread_mutex_unlock(mutex);
     return;
   }
-    
+  
   /* get the appropriate lists */
   if(recall_id->recycling_container->parent == NULL){
     list_recall = audio->play;
@@ -3056,16 +3056,19 @@ ags_audio_play(AgsAudio *audio,
   switch(stage){
   case 0:
     if((AGS_RECALL_ID_PRE & (recall_id->flags)) != 0){
+      pthread_mutex_unlock(mutex);
       return;
     }
     break;
   case 1:
     if((AGS_RECALL_ID_INTER & (recall_id->flags)) != 0){
+      pthread_mutex_unlock(mutex);
       return;
     }
     break;
   case 2:
     if((AGS_RECALL_ID_POST & (recall_id->flags)) != 0){
+      pthread_mutex_unlock(mutex);
       return;
     }
     break;
@@ -3641,7 +3644,7 @@ ags_audio_find_port(AgsAudio *audio)
    
   /*  */
   list = g_list_reverse(list);
-  
+    
   pthread_mutex_unlock(mutex);
   
   return(list);

@@ -104,8 +104,8 @@ ags_matrix_index_callback(GtkWidget *widget, AgsMatrix *matrix)
 	recall_copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(list->data);
       }
 
-      g_value_init(&recall_value, G_TYPE_UINT);
-      g_value_set_uint(&recall_value, GPOINTER_TO_UINT(g_object_get_data((GObject *) widget, AGS_MATRIX_INDEX)));
+      g_value_init(&recall_value, G_TYPE_UINT64);
+      g_value_set_uint64(&recall_value, strtol(matrix->selected->button.label_text, NULL, 10) - 1);
 
       ags_port_safe_write(recall_copy_pattern_audio->bank_index_1, &recall_value);
 
