@@ -37,8 +37,11 @@ DEPRECATED:
 NOTES:
 - AgsRecallID gives every stream an identification and makes it possible to stop a single of multiple AgsRecalls that are possible. Imagine an AgsAudio object is played and a child of it, too. A child of the child is also played and so on.
 
-
 RELEASE NOTES:
+
+ags_0.4.2:
+	- first LADSPA support
+	- hardened thread safety
 
 ags_0.4.0:
 	- many refactorings to make Advanced Gtk+ Sequencer more attractive to develop with.

@@ -290,7 +290,8 @@ ags_recycling_container_replace(AgsRecyclingContainer *recycling_container,
 				AgsRecycling *recycling,
 				gint position)
 {
-  if(recycling_container == NULL){
+  if(recycling_container == NULL ||
+     position >= recycling_container->length){
     return;
   }
 
@@ -665,7 +666,7 @@ ags_recycling_container_reset_recycling(AgsRecyclingContainer *recycling_contain
   recycling = new_first_recycling;
 
   for(i = 0; i < new_length; i++){
-    ags_recycling_container_replace(recycling_container,
+    ags_recycling_container_replace(new_recycling_container,
 				    recycling,
 				    first_index + i);
     recycling = recycling->next;
