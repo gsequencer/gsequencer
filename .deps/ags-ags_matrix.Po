@@ -614,10 +614,11 @@ ags-ags_matrix.o: src/ags/X/machine/ags_matrix.c \
  src/ags/widget/ags_waveform.h src/ags/widget/ags_dial.h \
  src/ags/widget/ags_cartesian.h src/ags/file/ags_file_id_ref.h \
  src/ags/file/ags_file_lookup.h src/ags/file/ags_file_launch.h \
- src/ags/audio/ags_input.h /usr/include/glib-2.0/glib/gstdio.h \
- /usr/include/glib-2.0/glib/gprintf.h /usr/include/sys/stat.h \
- src/ags/audio/ags_output.h src/ags/audio/ags_pattern.h \
- src/ags/audio/ags_recall_factory.h src/ags/audio/ags_recall_container.h \
+ src/ags/thread/ags_mutex_manager.h src/ags/audio/ags_input.h \
+ /usr/include/glib-2.0/glib/gstdio.h /usr/include/glib-2.0/glib/gprintf.h \
+ /usr/include/sys/stat.h src/ags/audio/ags_output.h \
+ src/ags/audio/ags_pattern.h src/ags/audio/ags_recall_factory.h \
+ src/ags/audio/ags_recall_container.h \
  src/ags/audio/recall/ags_delay_audio.h \
  src/ags/audio/recall/ags_count_beats_audio.h \
  src/ags/audio/recall/ags_count_beats_audio_run.h \
@@ -2175,6 +2176,8 @@ src/ags/file/ags_file_id_ref.h:
 src/ags/file/ags_file_lookup.h:
 
 src/ags/file/ags_file_launch.h:
+
+src/ags/thread/ags_mutex_manager.h:
 
 src/ags/audio/ags_input.h:
 

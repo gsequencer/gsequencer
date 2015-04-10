@@ -34,6 +34,7 @@
 #include <ags/file/ags_file_lookup.h>
 #include <ags/file/ags_file_launch.h>
 
+#include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_thread-posix.h>
 #include <ags/thread/ags_audio_loop.h>
 
@@ -115,6 +116,8 @@ GtkStyle *matrix_style;
 
 extern const char *AGS_COPY_PATTERN;
 const char *AGS_MATRIX_INDEX = "AgsMatrixIndex\0";
+
+extern pthread_mutex_t ags_application_mutex;
 
 GType
 ags_matrix_get_type(void)
@@ -860,8 +863,24 @@ void
 ags_matrix_draw_gutter(AgsMatrix *matrix)
 {
   AgsChannel *channel;
+
+  AgsMutexManager *mutex_manager;
+
   guint gutter;
   int i, j;
+
+  pthread_mutex_t *audio_mutex;
+  
+  pthread_mutex_lock(&(ags_application_mutex));
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 AGS_MACHINE(matrix)->audio);
+  
+  pthread_mutex_unlock(&(ags_application_mutex));
+
+  pthread_mutex_lock(audio_mutex);
 
   gdk_draw_rectangle (GTK_WIDGET (matrix->drawing_area)->window,
                       GTK_WIDGET (matrix->drawing_area)->style->bg_gc[0],
@@ -890,14 +909,32 @@ ags_matrix_draw_gutter(AgsMatrix *matrix)
 
     channel = channel->next;
   }
+
+  pthread_mutex_unlock(audio_mutex);
 }
 
 void
 ags_matrix_draw_matrix(AgsMatrix *matrix)
 {
   AgsChannel *channel;
+
+  AgsMutexManager *mutex_manager;
+
   guint gutter;
   int i, j;
+
+  pthread_mutex_t *audio_mutex;
+
+  pthread_mutex_lock(&(ags_application_mutex));
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 AGS_MACHINE(matrix)->audio);
+  
+  pthread_mutex_unlock(&(ags_application_mutex));
+
+  pthread_mutex_lock(audio_mutex);
 
   channel = ags_channel_nth(AGS_MACHINE(matrix)->audio->input, (guint) matrix->adjustment->value);
 
@@ -917,6 +954,8 @@ ags_matrix_draw_matrix(AgsMatrix *matrix)
 
     channel = channel->next;
   }
+
+  pthread_mutex_unlock(audio_mutex);
 }
 
 void

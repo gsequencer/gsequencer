@@ -554,7 +554,7 @@ ags-ags_recall_factory.o: src/ags/audio/ags_recall_factory.c \
  /usr/include/libxml2/libxml/SAX2.h src/ags/thread/ags_timestamp_thread.h \
  src/ags/thread/ags_thread-posix.h src/ags/audio/ags_timestamp.h \
  src/ags/audio/ags_note.h src/ags/audio/ags_recall_container.h \
- src/ags-lib/object/ags_connectable.h \
+ src/ags-lib/object/ags_connectable.h src/ags/thread/ags_mutex_manager.h \
  src/ags/audio/ags_recall_channel_run_dummy.h \
  src/ags/audio/ags_recall_channel.h \
  src/ags/audio/ags_recall_channel_run.h src/ags/audio/ags_devout.h \
@@ -1922,6 +1922,8 @@ src/ags/audio/ags_note.h:
 src/ags/audio/ags_recall_container.h:
 
 src/ags-lib/object/ags_connectable.h:
+
+src/ags/thread/ags_mutex_manager.h:
 
 src/ags/audio/ags_recall_channel_run_dummy.h:
 

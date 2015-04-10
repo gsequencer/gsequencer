@@ -602,8 +602,11 @@ ags-ags_audio_loop.o: src/ags/thread/ags_audio_loop.c \
  src/ags/X/ags_preferences.h src/ags/X/ags_generic_preferences.h \
  src/ags/X/ags_audio_preferences.h \
  src/ags/X/ags_performance_preferences.h \
- src/ags/X/ags_server_preferences.h src/ags/thread/ags_export_thread.h \
- src/ags/audio/file/ags_audio_file.h src/ags/thread/ags_gui_thread.h
+ src/ags/X/ags_server_preferences.h src/ags/thread/ags_mutex_manager.h \
+ src/ags/thread/ags_export_thread.h src/ags/audio/file/ags_audio_file.h \
+ src/ags/thread/ags_gui_thread.h src/ags/audio/ags_recall_audio.h \
+ src/ags/audio/ags_recall_audio_run.h src/ags/audio/ags_recall_channel.h \
+ src/ags/audio/ags_recall_channel_run.h
 
 /usr/include/stdc-predef.h:
 
@@ -2107,8 +2110,18 @@ src/ags/X/ags_performance_preferences.h:
 
 src/ags/X/ags_server_preferences.h:
 
+src/ags/thread/ags_mutex_manager.h:
+
 src/ags/thread/ags_export_thread.h:
 
 src/ags/audio/file/ags_audio_file.h:
 
 src/ags/thread/ags_gui_thread.h:
+
+src/ags/audio/ags_recall_audio.h:
+
+src/ags/audio/ags_recall_audio_run.h:
+
+src/ags/audio/ags_recall_channel.h:
+
+src/ags/audio/ags_recall_channel_run.h:

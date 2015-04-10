@@ -467,8 +467,9 @@ ags_channel_connect(AgsConnectable *connectable)
     list = list->next;
   }
 
-  if(channel->notation != NULL)
+  if(channel->notation != NULL){
     ags_connectable_connect(AGS_CONNECTABLE(channel->notation));
+  }
 }
 
 void
@@ -487,9 +488,10 @@ ags_channel_finalize(GObject *gobject)
   channel = AGS_CHANNEL(gobject);
 
   //FIXME:JK: wrong ref count
-  if(channel->audio != NULL)
+  if(channel->audio != NULL){
     //    g_object_unref(channel->audio);
-
+  }
+  
   /* AgsRecycling */
   if(((AGS_AUDIO_INPUT_HAS_RECYCLING & (AGS_AUDIO(channel->audio)->flags)) != 0 && AGS_IS_INPUT(channel)) ||
      ((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (AGS_AUDIO(channel->audio)->flags)) != 0 && AGS_IS_OUTPUT(channel))){
@@ -508,12 +510,13 @@ ags_channel_finalize(GObject *gobject)
   }
 
   /* key string */
-  if(channel->note != NULL)
+  if(channel->note != NULL){
     free(channel->note);
+  }
 
-  if(channel->devout_play != NULL)
+  if(channel->devout_play != NULL){
     ags_devout_play_free(channel->devout_play);  
-
+  }
 
   /* free some lists */
   g_list_free_full(channel->recall_id,
@@ -530,9 +533,10 @@ ags_channel_finalize(GObject *gobject)
 		   g_object_unref);
 
   /* AgsNotation */
-  if(channel->notation != NULL)
+  if(channel->notation != NULL){
     g_object_unref(channel->notation);
-
+  }
+  
   /* call parent class */
   G_OBJECT_CLASS(ags_channel_parent_class)->finalize(gobject);
 }

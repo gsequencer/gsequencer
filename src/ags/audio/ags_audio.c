@@ -311,7 +311,7 @@ ags_audio_init(AgsAudio *audio)
   mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(mutex,
 		     &attr);
-  
+
   pthread_mutex_lock(&(ags_application_mutex));
 
   mutex_manager = ags_mutex_manager_get_instance();
@@ -421,9 +421,10 @@ ags_audio_finalize(GObject *gobject)
 
   audio = AGS_AUDIO(gobject);
 
-  if(audio->devout != NULL)
+  if(audio->devout != NULL){
     g_object_unref(audio->devout);
-
+  }
+  
   /* output */
   channel = audio->output;
 
