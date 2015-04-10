@@ -116,8 +116,6 @@ static gpointer ags_drum_parent_class = NULL;
 
 static AgsConnectableInterface *ags_drum_parent_connectable_interface;
 
-const char *AGS_DRUM_INDEX = "AgsDrumIndex";
-
 GType
 ags_drum_get_type(void)
 {
@@ -317,10 +315,11 @@ ags_drum_init(AgsDrum *drum)
 
   for(i = 0; i < 3; i++)
     for(j = 0; j < 4; j++){
+      drum->index1[4 * i + j] = (GtkToggleButton *) gtk_toggle_button_new_with_label(g_strdup_printf("%d\0",
+												     (4 * i) + (j + 1)));
       gtk_table_attach_defaults(table1,
-				(GtkWidget *) (drum->index1[i * 4 + j] = (GtkToggleButton *) gtk_toggle_button_new()),
-				j, j +1, i, i +1);
-      g_object_set_data((GObject *) drum->index1[i * 4 + j], AGS_DRUM_INDEX, GUINT_TO_POINTER(i * 4 + j));
+				(GtkWidget *) (drum->index1[4 * i + j]),
+				j, j + 1, i, i + 1);
     }
 
   drum->selected1 = drum->index1[0];
@@ -329,10 +328,11 @@ ags_drum_init(AgsDrum *drum)
   drum->selected0 = NULL;
 
   for(j = 0; j < 4; j++){
+    drum->index0[j] = (GtkToggleButton *) gtk_toggle_button_new_with_label(g_strdup_printf("%c\0",
+											   'a' + j));
     gtk_table_attach_defaults(table1,
-			      (GtkWidget *) (drum->index0[j] = (GtkToggleButton *) gtk_toggle_button_new()),
-			      j, j +1, 4, 5);
-    g_object_set_data((GObject *) drum->index0[j], AGS_DRUM_INDEX, GUINT_TO_POINTER(j));
+			      (GtkWidget *) (drum->index0[j]),
+			      j, j + 1, 4, 5);
   }
 
   drum->selected0 = drum->index0[0];
@@ -355,7 +355,12 @@ ags_drum_init(AgsDrum *drum)
 
   drum->led =
     hbox = (GtkHBox *) gtk_hbox_new(FALSE, 16);
-  gtk_table_attach_defaults(table0, (GtkWidget *) hbox, 3, 15, 1, 2);
+  gtk_table_attach(table0,
+		   (GtkWidget *) hbox,
+		   3, 15,
+		   1, 2,
+		   0, 0,
+		   0, 0);
 
   for(i = 0; i < 16; i++){
     toggle_button = (GtkToggleButton *) ags_led_new();
@@ -366,7 +371,12 @@ ags_drum_init(AgsDrum *drum)
   /* pattern */
   drum->pattern =
     hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-  gtk_table_attach_defaults(table0, (GtkWidget *) hbox, 3, 15, 2, 3);
+  gtk_table_attach(table0,
+		   (GtkWidget *) hbox,
+		   3, 15,
+		   2, 3,
+		   0, 0,
+		   0, 0);
 
   for(i = 0; i < 16; i++){
     toggle_button = (GtkToggleButton *) gtk_toggle_button_new();
