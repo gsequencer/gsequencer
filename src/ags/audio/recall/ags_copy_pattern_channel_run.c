@@ -371,6 +371,8 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
   AgsCopyPatternChannel *copy_pattern_channel;
   gboolean current_bit;
   GValue offset_value = { 0, };
+  GValue i_value = { 0, };
+  GValue j_value = { 0, };
   GValue current_bit_value = { 0, };  
 
   if(AGS_RECALL_CHANNEL_RUN(copy_pattern_channel_run)->run_order != run_order){
@@ -387,6 +389,12 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
   /* get AgsCopyPatternChannel */
   copy_pattern_channel = AGS_COPY_PATTERN_CHANNEL(copy_pattern_channel_run->recall_channel_run.recall_channel);
 
+  g_value_init(&i_value, G_TYPE_UINT64);
+  ags_port_safe_read(copy_pattern_audio->bank_index_0, &i_value);
+
+  g_value_init(&j_value, G_TYPE_UINT64);
+  ags_port_safe_read(copy_pattern_audio->bank_index_1, &j_value);
+  
   /* write pattern port - current offset */
   g_value_init(&offset_value, G_TYPE_UINT);
   g_value_set_uint(&offset_value,
@@ -394,6 +402,12 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 
   ags_port_safe_set_property(copy_pattern_channel->pattern,
 			     "offset\0", &offset_value);
+
+  ags_port_safe_set_property(copy_pattern_channel->pattern,
+			     "first-index\0", &i_value);
+  
+  ags_port_safe_set_property(copy_pattern_channel->pattern,
+			     "second-index\0", &j_value);
 
   /* read pattern port - current bit */
   g_value_init(&current_bit_value, G_TYPE_BOOLEAN);

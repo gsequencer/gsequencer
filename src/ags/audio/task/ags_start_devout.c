@@ -173,6 +173,8 @@ ags_start_devout_launch(AgsTask *task)
   error = devout_thread->error;
   devout_thread->error = NULL;
 
+  g_message("start devout\0");
+  
   ags_thread_start(AGS_THREAD(devout_thread));
   
   if((AGS_THREAD_SINGLE_LOOP & (AGS_THREAD(devout_thread)->flags)) == 0){
@@ -197,6 +199,9 @@ ags_start_devout_launch(AgsTask *task)
       pthread_mutex_unlock(&(AGS_THREAD(devout_thread)->start_mutex));
     }
   }
+
+  g_message("started devout\0");
+
 }
 
 /**

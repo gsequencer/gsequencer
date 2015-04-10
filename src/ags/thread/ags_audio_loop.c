@@ -630,6 +630,8 @@ ags_audio_loop_run(AgsThread *thread)
 
   audio_loop = AGS_AUDIO_LOOP(thread);
 
+  pthread_mutex_lock(&(audio_loop->recall_mutex));
+
   /* play recall */
   if((AGS_AUDIO_LOOP_PLAY_RECALL & (audio_loop->flags)) != 0){
     ags_audio_loop_play_recall(audio_loop);
@@ -820,10 +822,10 @@ ags_audio_loop_play_recall(AgsAudioLoop *audio_loop)
     }
     
     if(audio != NULL){
-      pthread_mutex_lock(audio_mutex);
+      pthread_mutex_unlock(audio_mutex);
     }
     
-    pthread_mutex_lock(devout_mutex);
+    pthread_mutex_unlock(devout_mutex);
 
     list = list_next;
   }
@@ -956,8 +958,8 @@ ags_audio_loop_play_channel(AgsAudioLoop *audio_loop)
 	//TODO:JK: verify g_object_unref() missing
       }
 
-      pthread_mutex_lock(audio_mutex);
-      pthread_mutex_lock(devout_mutex);
+      pthread_mutex_unlock(audio_mutex);
+      pthread_mutex_unlock(devout_mutex);
 
       list_play = list_next_play;
     }
@@ -1111,8 +1113,8 @@ ags_audio_loop_play_audio(AgsAudioLoop *audio_loop)
       }
 
       /*  */
-      pthread_mutex_lock(audio_mutex);
-      pthread_mutex_lock(devout_mutex);
+      pthread_mutex_unlock(audio_mutex);
+      pthread_mutex_unlock(devout_mutex);
 
       /* iterate */
       list_play_domain = list_next_play_domain;
