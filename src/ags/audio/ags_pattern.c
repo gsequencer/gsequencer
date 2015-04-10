@@ -178,7 +178,7 @@ ags_pattern_class_init(AgsPatternClass *pattern)
 				 0,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_OFFSET,
+				  PROP_FIRST_INDEX,
 				  param_spec);
 
   /**
@@ -195,7 +195,7 @@ ags_pattern_class_init(AgsPatternClass *pattern)
 				 0,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_OFFSET,
+				  PROP_SECOND_INDEX,
 				  param_spec);
 
   /**

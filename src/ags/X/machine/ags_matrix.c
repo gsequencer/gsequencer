@@ -713,7 +713,6 @@ void
 ags_matrix_input_map_recall(AgsMatrix *matrix, guint input_pad_start)
 {
   AgsAudio *audio;
-  AgsPattern *pattern;
   AgsChannel *source, *current, *destination;
 
   AgsBufferChannel *buffer_channel;

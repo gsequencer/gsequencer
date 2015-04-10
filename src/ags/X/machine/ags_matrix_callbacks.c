@@ -80,7 +80,9 @@ ags_matrix_index_callback(GtkWidget *widget, AgsMatrix *matrix)
     if(GTK_TOGGLE_BUTTON(widget) != matrix->selected){
       AgsAudio *audio;
       AgsCopyPatternAudio *recall_copy_pattern_audio, *play_copy_pattern_audio;
+
       GList *list;
+      guint64 index1;
       GValue play_value = {0,};
       GValue recall_value = {0,};
 
@@ -95,7 +97,8 @@ ags_matrix_index_callback(GtkWidget *widget, AgsMatrix *matrix)
       matrix->selected = (GtkToggleButton*) widget;
       ags_matrix_draw_matrix(matrix);
 
-      /* modify port */
+      /*  */
+      index1 = ((guint) g_ascii_strtoull(matrix->selected->button.label_text, NULL, 10)) - 1;
 
       /* recall */
       list = ags_recall_find_type(audio->recall, AGS_TYPE_COPY_PATTERN_AUDIO);
@@ -105,7 +108,7 @@ ags_matrix_index_callback(GtkWidget *widget, AgsMatrix *matrix)
       }
 
       g_value_init(&recall_value, G_TYPE_UINT64);
-      g_value_set_uint64(&recall_value, strtol(matrix->selected->button.label_text, NULL, 10) - 1);
+      g_value_set_uint64(&recall_value, index1);
 
       ags_port_safe_write(recall_copy_pattern_audio->bank_index_1, &recall_value);
 
@@ -134,15 +137,18 @@ ags_matrix_drawing_area_button_press_callback(GtkWidget *widget, GdkEventButton 
     AgsTogglePatternBit *toggle_pattern_bit;
     AgsChannel *channel;
     guint i, j;
-
+    guint index1;
+    
     i = (guint) floor((double) event->y / (double) AGS_MATRIX_CELL_HEIGHT);
     j = (guint) floor((double) event->x / (double) AGS_MATRIX_CELL_WIDTH);
 
+    index1 = ((guint) g_ascii_strtoull(matrix->selected->button.label_text, NULL, 10)) - 1;
+    
     channel = ags_channel_nth(AGS_MACHINE(matrix)->audio->input, i + (guint) matrix->adjustment->value);
 
     toggle_pattern_bit = ags_toggle_pattern_bit_new(channel->pattern->data,
 						    i + (guint) matrix->adjustment->value,
-						    0, strtol(matrix->selected->button.label_text, NULL, 10) - 1,
+						    0, index1,
 						    j);
     g_signal_connect(G_OBJECT(toggle_pattern_bit), "refresh-gui\0",
 		     G_CALLBACK(ags_matrix_refresh_gui_callback), matrix);

@@ -176,7 +176,6 @@ ags_drum_index0_callback(GtkWidget *widget, AgsDrum *drum)
       AgsCopyPatternAudio *copy_pattern_audio;
       GList *list;
       guint64 index0;
-      guint i;
       
       toggle_button = drum->selected0;
       drum->selected0 = NULL;
@@ -187,9 +186,7 @@ ags_drum_index0_callback(GtkWidget *widget, AgsDrum *drum)
 				  AGS_TYPE_COPY_PATTERN_AUDIO);
 
       /* calculate index 0 */
-      for(i = 0; i < 4 && drum->selected0 != drum->index0[i]; i++);
-
-      index0 = i;
+      index0 = ((guint) drum->selected0->button.label_text[0] - 'a');
 
       if(list != NULL){
 	GValue value = {0,};
@@ -238,7 +235,6 @@ ags_drum_index1_callback(GtkWidget *widget, AgsDrum *drum)
       AgsCopyPatternAudio *copy_pattern_audio;
       GList *list;
       guint64 index1;
-      guint i;
       
       toggle_button = drum->selected1;
       drum->selected1 = NULL;
@@ -249,9 +245,7 @@ ags_drum_index1_callback(GtkWidget *widget, AgsDrum *drum)
 				  AGS_TYPE_COPY_PATTERN_AUDIO);
 
       /* calculate index 1 */
-      for(i = 0; i < 12 && drum->selected1 != drum->index1[i]; i++);
-  
-      index1 = i;
+      index1 = ((guint) g_ascii_strtoull(drum->selected1->button.label_text, NULL, 10)) - 1;
 
       if(list != NULL){
 	GValue value = {0,};
@@ -324,15 +318,11 @@ ags_drum_pad_callback(GtkWidget *toggle_button, AgsDrum *drum)
   g_list_free(list_start);
 
   /* calculate index 0 */
-  for(i = 0; i < 4 && drum->selected0 != drum->index0[i]; i++);
-
-  index0 = i;
-
-  /* calculate index 1 */
-  for(i = 0; i < 12 && drum->selected1 != drum->index1[i]; i++);
+  index0 = ((guint) drum->selected0->button.label_text[0] - 'a');
   
-  index1 = i;
-
+  /* calculate index 1 */
+  index1 = ((guint) g_ascii_strtoull(drum->selected1->button.label_text, NULL, 10)) - 1;
+  
   /* calculate offset / page */
   list_start = 
     list = gtk_container_get_children((GtkContainer *) drum->offset);
