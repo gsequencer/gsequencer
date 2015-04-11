@@ -170,6 +170,12 @@ ags_menu_bar_save_as_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 				    "filename\0", filename,
 				    NULL);
 
+    window->name = filename;
+    gtk_window_set_title(window,
+			 g_strconcat("ags - \0",
+				     window->name,
+				     NULL));
+    
     save_file = ags_save_file_new(file);
     ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->task_thread),
 				AGS_TASK(save_file));
