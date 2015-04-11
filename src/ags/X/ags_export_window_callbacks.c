@@ -94,16 +94,44 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
 
     filename = gtk_entry_get_text(export_window->filename);
 
+    /* test filename */
     if(filename == NULL ||
        strlen(filename) == 0){
       return;
     }
 
+    if(g_file_test(filename,
+		   G_FILE_TEST_EXISTS)){
+      GtkDialog *dialog;
+      gint response;
+      
+      if(g_file_test(filename,
+		     (G_FILE_TEST_IS_DIR | G_FILE_TEST_IS_SYMLINK))){
+	return;
+      }
+
+      dialog = gtk_message_dialog_new(export_window,
+				      GTK_DIALOG_MODAL,
+				      GTK_MESSAGE_QUESTION,
+				      GTK_BUTTONS_OK_CANCEL,
+				      "Replace existing file?\0");
+      response = gtk_dialog_run(dialog);
+      gtk_widget_destroy(dialog);
+
+      if(response == GTK_RESPONSE_REJECT){
+	return;
+      }
+
+      g_remove(filename);
+    }
+
+    /* get some preferences */
     live_performance = gtk_toggle_button_get_active(export_window->live_export);
 
     machines_start = 
       machines = gtk_container_get_children(GTK_CONTAINER(window->machines));
 
+    /* start machines */
     success = FALSE;
 
     while(machines != NULL){
@@ -121,7 +149,7 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
       machines = machines->next;
     }
 
-    /* create start task */
+    /* start export thread */
     if(success){
       AgsMutexManager *mutex_manager;
 
@@ -141,6 +169,7 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
 
       pthread_mutex_lock(devout_mutex);
 
+      /* create task */
       delay = (window->devout->delay[window->devout->tic_counter]);
 
       tic = (gtk_spin_button_get_value(export_window->tact) + 1) * delay;
@@ -168,6 +197,7 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
     machines_start = 
       machines = gtk_container_get_children(GTK_CONTAINER(window->machines));
 
+    /* stop machines */
     while(machines != NULL){
       machine = AGS_MACHINE(machines->data);
 
@@ -184,12 +214,14 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
       machines = machines->next;
     }
 
+    /* disable auto-seeking */
     if(success){
       ags_navigation_set_seeking_sensitive(window->navigation,
 					   TRUE);
     }
   }
 
+  /* free machine list */
   g_list_free(machines_start);
 }
 

@@ -356,6 +356,10 @@ ags_peak_channel_retrieve_peak(AgsPeakChannel *peak_channel,
   current_value = 0.0;
 
   for(i = 0; i < buffer_size; i++){
+    if(buffer[i] == 0){
+      continue;
+    }
+    
     current_value +=  (1.0 / (1.0 / G_MAXUINT16 * buffer[i]));
   }
   
