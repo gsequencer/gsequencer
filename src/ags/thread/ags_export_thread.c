@@ -242,8 +242,14 @@ ags_export_thread_finalize(GObject *gobject)
 void
 ags_export_thread_start(AgsThread *thread)
 {
+  AgsExportThread *export_thread;
+  
   //TODO:JK: implement me
   g_message("export start");
+
+  export_thread = thread;
+  
+  export_thread->counter = 0;
 
   AGS_THREAD_CLASS(ags_export_thread_parent_class)->start(thread);
 }

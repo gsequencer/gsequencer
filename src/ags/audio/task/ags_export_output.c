@@ -177,7 +177,7 @@ ags_export_output_launch(AgsTask *task)
   ags_audio_file_rw_open(audio_file,
 			 TRUE);
 
-  g_message("export output");
+  g_message("export output\0");
 
   /* start export thread */
   export_thread->tic = tic;

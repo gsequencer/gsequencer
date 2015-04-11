@@ -20,6 +20,7 @@
 
 #include <ags/main.h>
 
+#include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_task_thread.h>
 #include <ags/thread/ags_export_thread.h>
@@ -33,6 +34,8 @@
 
 void ags_export_window_stop_callback(AgsThread *thread,
 				     AgsExportWindow *export_window);
+
+extern pthread_mutex_t ags_application_mutex;
 
 void
 ags_export_window_file_chooser_button_callback(GtkWidget *file_chooser_button,
@@ -120,10 +123,25 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
 
     /* create start task */
     if(success){
+      AgsMutexManager *mutex_manager;
+
       guint tic;
       gdouble delay;
 
-      delay = (1.0 / window->devout->frequency / window->devout->buffer_size) * (60.0 / AGS_DEVOUT_DEFAULT_BPM);
+      pthread_mutex_t *devout_mutex;
+
+      pthread_mutex_lock(&(ags_application_mutex));
+  
+      mutex_manager = ags_mutex_manager_get_instance();
+
+      devout_mutex = ags_mutex_manager_lookup(mutex_manager,
+					      window->devout);
+  
+      pthread_mutex_unlock(&(ags_application_mutex));
+
+      pthread_mutex_lock(devout_mutex);
+
+      delay = (window->devout->delay[window->devout->tic_counter]);
 
       tic = (gtk_spin_button_get_value(export_window->tact) + 1) * delay;
 
@@ -134,6 +152,8 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
 					    live_performance);
       g_signal_connect(export_thread, "stop\0",
 		       G_CALLBACK(ags_export_window_stop_callback), export_window);
+
+      pthread_mutex_unlock(devout_mutex);
 
       /* append AgsStartDevout */
       ags_task_thread_append_task(AGS_TASK_THREAD(audio_loop->task_thread),
