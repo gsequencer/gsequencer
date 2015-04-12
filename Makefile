@@ -306,6 +306,7 @@ libags_gui_a_OBJECTS = $(am_libags_gui_a_OBJECTS)
 libags_thread_a_AR = $(AR) $(ARFLAGS)
 libags_thread_a_DEPENDENCIES = libags.a
 am__objects_15 = $(am__objects_1) \
+	libags_thread_a-ags_mutex_manager.$(OBJEXT) \
 	libags_thread_a-ags_thread_init.$(OBJEXT) \
 	libags_thread_a-ags_thread_application_context.$(OBJEXT) \
 	libags_thread_a-ags_concurrency_provider.$(OBJEXT) \
@@ -943,6 +944,7 @@ deprecated_ags_thread_h_sources = \
 
 ags_thread_h_sources = \
 	$(deprecated_ags_thread_h_sources) \
+	src/ags/thread/ags_mutex_manager.h		\
 	src/ags/thread/ags_thread_init.h		\
 	src/ags/thread/ags_thread_application_context.h	\
 	src/ags/thread/ags_concurrency_provider.h	\
@@ -966,6 +968,7 @@ ags_thread_h_sources = \
 deprecated_ags_thread_c_sources = 
 ags_thread_c_sources = \
 	$(deprecated_ags_thread_c_sources) \
+	src/ags/thread/ags_mutex_manager.c		\
 	src/ags/thread/ags_thread_init.c		\
 	src/ags/thread/ags_thread_application_context.c	\
 	src/ags/thread/ags_concurrency_provider.c	\
@@ -2269,6 +2272,7 @@ include ./$(DEPDIR)/libags_thread_a-ags_devout_thread.Po
 include ./$(DEPDIR)/libags_thread_a-ags_export_thread.Po
 include ./$(DEPDIR)/libags_thread_a-ags_gui_thread.Po
 include ./$(DEPDIR)/libags_thread_a-ags_iterator_thread.Po
+include ./$(DEPDIR)/libags_thread_a-ags_mutex_manager.Po
 include ./$(DEPDIR)/libags_thread_a-ags_record_thread.Po
 include ./$(DEPDIR)/libags_thread_a-ags_recycling_thread.Po
 include ./$(DEPDIR)/libags_thread_a-ags_recycling_thread_callbacks.Po
@@ -4849,6 +4853,20 @@ libags_gui_a-ags_waveform.obj: src/ags/widget/ags_waveform.c
 #	$(AM_V_CC)source='src/ags/widget/ags_waveform.c' object='libags_gui_a-ags_waveform.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_gui_a_CFLAGS) $(CFLAGS) -c -o libags_gui_a-ags_waveform.obj `if test -f 'src/ags/widget/ags_waveform.c'; then $(CYGPATH_W) 'src/ags/widget/ags_waveform.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/widget/ags_waveform.c'; fi`
+
+libags_thread_a-ags_mutex_manager.o: src/ags/thread/ags_mutex_manager.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -MT libags_thread_a-ags_mutex_manager.o -MD -MP -MF $(DEPDIR)/libags_thread_a-ags_mutex_manager.Tpo -c -o libags_thread_a-ags_mutex_manager.o `test -f 'src/ags/thread/ags_mutex_manager.c' || echo '$(srcdir)/'`src/ags/thread/ags_mutex_manager.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_thread_a-ags_mutex_manager.Tpo $(DEPDIR)/libags_thread_a-ags_mutex_manager.Po
+#	$(AM_V_CC)source='src/ags/thread/ags_mutex_manager.c' object='libags_thread_a-ags_mutex_manager.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -c -o libags_thread_a-ags_mutex_manager.o `test -f 'src/ags/thread/ags_mutex_manager.c' || echo '$(srcdir)/'`src/ags/thread/ags_mutex_manager.c
+
+libags_thread_a-ags_mutex_manager.obj: src/ags/thread/ags_mutex_manager.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -MT libags_thread_a-ags_mutex_manager.obj -MD -MP -MF $(DEPDIR)/libags_thread_a-ags_mutex_manager.Tpo -c -o libags_thread_a-ags_mutex_manager.obj `if test -f 'src/ags/thread/ags_mutex_manager.c'; then $(CYGPATH_W) 'src/ags/thread/ags_mutex_manager.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/thread/ags_mutex_manager.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_thread_a-ags_mutex_manager.Tpo $(DEPDIR)/libags_thread_a-ags_mutex_manager.Po
+#	$(AM_V_CC)source='src/ags/thread/ags_mutex_manager.c' object='libags_thread_a-ags_mutex_manager.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -c -o libags_thread_a-ags_mutex_manager.obj `if test -f 'src/ags/thread/ags_mutex_manager.c'; then $(CYGPATH_W) 'src/ags/thread/ags_mutex_manager.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/thread/ags_mutex_manager.c'; fi`
 
 libags_thread_a-ags_thread_init.o: src/ags/thread/ags_thread_init.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -MT libags_thread_a-ags_thread_init.o -MD -MP -MF $(DEPDIR)/libags_thread_a-ags_thread_init.Tpo -c -o libags_thread_a-ags_thread_init.o `test -f 'src/ags/thread/ags_thread_init.c' || echo '$(srcdir)/'`src/ags/thread/ags_thread_init.c
