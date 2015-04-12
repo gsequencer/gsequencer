@@ -381,7 +381,7 @@ ags_drum_init(AgsDrum *drum)
 		   2, 3,
 		   0, 0,
 		   0, 0);
-
+  
   for(i = 0; i < 16; i++){
     toggle_button = (GtkToggleButton *) gtk_toggle_button_new();
     gtk_widget_set_size_request((GtkWidget *) toggle_button, 24, 24);

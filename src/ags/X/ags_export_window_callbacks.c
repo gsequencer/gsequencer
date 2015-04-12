@@ -124,6 +124,30 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
       return;
     }
 
+    if(g_file_test(filename,
+		   G_FILE_TEST_EXISTS)){
+      GtkDialog *dialog;
+      gint response;
+      
+      if(g_file_test(filename,
+		     (G_FILE_TEST_IS_DIR | G_FILE_TEST_IS_SYMLINK))){
+	return;
+      }
+      dialog = gtk_message_dialog_new(export_window,
+				      GTK_DIALOG_MODAL,
+				      GTK_MESSAGE_QUESTION,
+				      GTK_BUTTONS_OK_CANCEL,
+				      "Replace existing file?\0");
+      response = gtk_dialog_run(dialog);
+      gtk_widget_destroy(dialog);
+      
+      if(response == GTK_RESPONSE_REJECT){
+	return;
+      }
+      
+      g_remove(filename);
+    }
+    
     live_performance = gtk_toggle_button_get_active(export_window->live_export);
 
     machines_start = 

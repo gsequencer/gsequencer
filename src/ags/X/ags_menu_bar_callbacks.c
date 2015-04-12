@@ -175,7 +175,8 @@ ags_menu_bar_save_as_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 				       AGS_TYPE_TASK_THREAD);
 
     filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(file_chooser));
-
+    window->name = filename;
+    
     file = (AgsFile *) g_object_new(AGS_TYPE_FILE,
 				    "application-context\0", application_context,
 				    "filename\0", filename,

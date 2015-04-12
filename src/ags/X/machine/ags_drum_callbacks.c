@@ -201,8 +201,8 @@ ags_drum_index0_callback(GtkWidget *widget, AgsDrum *drum)
       if(list != NULL){
 	GValue value = {0,};
 
-	g_value_init(&value, G_TYPE_UINT);
-	g_value_set_uint(&value, GPOINTER_TO_UINT(g_object_get_data((GObject *) widget, AGS_DRUM_INDEX)));
+	g_value_init(&value, G_TYPE_UINT64);
+	g_value_set_uint64(&value, ((guint) drum->selected0->button.label_text[0] - 'a'));
 
 	copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(list->data);
 	ags_port_safe_write(copy_pattern_audio->bank_index_0, &value);
@@ -216,8 +216,8 @@ ags_drum_index0_callback(GtkWidget *widget, AgsDrum *drum)
       if(list != NULL){
 	GValue value = {0,};
 
-	g_value_init(&value, G_TYPE_UINT);
-	g_value_set_uint(&value, GPOINTER_TO_UINT(g_object_get_data((GObject *) widget, AGS_DRUM_INDEX)));
+	g_value_init(&value, G_TYPE_UINT64);
+	g_value_set_uint64(&value, ((guint) drum->selected0->button.label_text[0] - 'a'));
 
 	copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(list->data);
 	ags_port_safe_write(copy_pattern_audio->bank_index_0, &value);
@@ -256,8 +256,8 @@ ags_drum_index1_callback(GtkWidget *widget, AgsDrum *drum)
       if(list != NULL){
 	GValue value = {0,};
 
-	g_value_init(&value, G_TYPE_UINT);
-	g_value_set_uint(&value, GPOINTER_TO_UINT(g_object_get_data((GObject *) widget, AGS_DRUM_INDEX)));
+	g_value_init(&value, G_TYPE_UINT64);
+	g_value_set_uint64(&value, ((guint) g_ascii_strtoull(drum->selected1->button.label_text, NULL, 10)) - 1);
 
 	copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(list->data);
 	ags_port_safe_write(copy_pattern_audio->bank_index_1, &value);
@@ -271,8 +271,8 @@ ags_drum_index1_callback(GtkWidget *widget, AgsDrum *drum)
       if(list != NULL){
 	GValue value = {0,};
 
-	g_value_init(&value, G_TYPE_UINT);
-	g_value_set_uint(&value, GPOINTER_TO_UINT(g_object_get_data((GObject *) widget, AGS_DRUM_INDEX)));
+	g_value_init(&value, G_TYPE_UINT64);
+	g_value_set_uint64(&value, ((guint) g_ascii_strtoull(drum->selected1->button.label_text, NULL, 10)) - 1);
 
 	copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(list->data);
 	ags_port_safe_write(copy_pattern_audio->bank_index_1, &value);
@@ -340,14 +340,10 @@ ags_drum_pad_callback(GtkWidget *toggle_button, AgsDrum *drum)
   g_list_free(list_start);
 
   /* calculate index 0 */
-  for(i = 0; i < 4 && drum->selected0 != drum->index0[i]; i++);
-
-  index0 = i;
+  index0 = ((guint) drum->selected0->button.label_text[0] - 'a');
 
   /* calculate index 1 */
-  for(i = 0; i < 12 && drum->selected1 != drum->index1[i]; i++);
-  
-  index1 = i;
+  index1 = ((guint) g_ascii_strtoull(drum->selected1->button.label_text, NULL, 10)) - 1;
 
   /* calculate offset / page */
   list_start = 

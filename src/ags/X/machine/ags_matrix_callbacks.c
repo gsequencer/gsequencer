@@ -104,8 +104,8 @@ ags_matrix_index_callback(GtkWidget *widget, AgsMatrix *matrix)
 	recall_copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(list->data);
       }
 
-      g_value_init(&recall_value, G_TYPE_UINT);
-      g_value_set_uint(&recall_value, GPOINTER_TO_UINT(g_object_get_data((GObject *) widget, AGS_MATRIX_INDEX)));
+      g_value_init(&recall_value, G_TYPE_UINT64);
+      g_value_set_uint64(&recall_value, ((guint) g_ascii_strtoull(matrix->selected->button.label_text, NULL, 10)) - 1);
 
       ags_port_safe_write(recall_copy_pattern_audio->bank_index_1, &recall_value);
 
@@ -158,7 +158,7 @@ ags_matrix_drawing_area_button_press_callback(GtkWidget *widget, GdkEventButton 
 
     toggle_pattern_bit = ags_toggle_pattern_bit_new(channel->pattern->data,
 						    i + (guint) matrix->adjustment->value,
-						    0, strtol(matrix->selected->button.label_text, NULL, 10) - 1,
+						    0, ((guint) g_ascii_strtoull(matrix->selected->button.label_text, NULL, 10)) - 1,
 						    j);
     g_signal_connect(G_OBJECT(toggle_pattern_bit), "refresh-gui\0",
 		     G_CALLBACK(ags_matrix_refresh_gui_callback), matrix);
