@@ -676,8 +676,10 @@ ags_note_edit_drawing_area_motion_notify_event (GtkWidget *widget, GdkEventMotio
 
     /* get drawable size and offset */
     if(y0 < y0_viewport){
-      y0 = 0;
-      height = y1_offset - y0_viewport;
+      //      y0 = 0;
+      //      height = y1_offset - y0_viewport;
+      y0 -= y0_viewport;
+      height = y1 - y0;
     }else{
       y0 -= y0_viewport;
       height = y1 - y0;
@@ -701,6 +703,7 @@ ags_note_edit_drawing_area_motion_notify_event (GtkWidget *widget, GdkEventMotio
     cairo_t *cr;
 
     prev_x1 = note_edit->control.x1;
+
     note_edit->control.x1 = (guint) event->x;
     note_edit->control.y1 = (guint) event->y;
 

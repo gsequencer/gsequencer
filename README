@@ -41,6 +41,7 @@ RELEASE NOTES:
 
 ags_0.4.2:
 	- first LADSPA support
+	- export to WAV
 	- hardened thread safety
 
 ags_0.4.0:
