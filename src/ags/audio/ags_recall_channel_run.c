@@ -316,8 +316,6 @@ ags_recall_channel_run_class_init(AgsRecallChannelRunClass *recall_channel_run)
 void
 ags_recall_channel_run_connectable_interface_init(AgsConnectableInterface *connectable)
 {
-  AgsConnectableInterface *ags_recall_channel_run_connectable_parent_interface;
-
   ags_recall_channel_run_parent_connectable_interface = g_type_interface_peek_parent(connectable);
 
   connectable->connect = ags_recall_channel_run_connect;
@@ -572,11 +570,16 @@ ags_recall_channel_run_connect(AgsConnectable *connectable)
   AgsRecallChannelRun *recall_channel_run;
   GObject *gobject;
 
-  ags_recall_channel_run_parent_connectable_interface->connect(connectable);
-
-  /* AgsCopyChannelRun */
+  /* AgsRecallChannelRun */
   recall_channel_run = AGS_RECALL_CHANNEL_RUN(connectable);
 
+  if((AGS_RECALL_CONNECTED & (AGS_RECALL(recall_channel_run)->flags)) != 0){
+    return;
+  }
+
+  /* connect parent */
+  ags_recall_channel_run_parent_connectable_interface->connect(connectable);
+  
   /* destination */
   if(recall_channel_run->destination != NULL){
     gobject = G_OBJECT(recall_channel_run->destination);
@@ -604,6 +607,10 @@ ags_recall_channel_run_disconnect(AgsConnectable *connectable)
   /* AgsRecallChannelRun */
   recall_channel_run = AGS_RECALL_CHANNEL_RUN(connectable);
 
+  if((AGS_RECALL_CONNECTED & (AGS_RECALL(recall_channel_run)->flags)) == 0){
+    return;
+  }
+  
   /* destination */
   if(recall_channel_run->destination != NULL){
     gobject = G_OBJECT(recall_channel_run->destination);
