@@ -114,8 +114,6 @@ static gpointer ags_drum_parent_class = NULL;
 
 static AgsConnectableInterface *ags_drum_parent_connectable_interface;
 
-const char *AGS_DRUM_INDEX = "AgsDrumIndex";
-
 GType
 ags_drum_get_type(void)
 {
@@ -321,7 +319,6 @@ ags_drum_init(AgsDrum *drum)
       gtk_table_attach_defaults(table1,
 				(GtkWidget *) (drum->index1[i * 4 + j]),
 				j, j +1, i, i +1);
-      g_object_set_data((GObject *) drum->index1[i * 4 + j], AGS_DRUM_INDEX, GUINT_TO_POINTER(i * 4 + j));
     }
 
   drum->selected1 = drum->index1[0];
@@ -336,7 +333,6 @@ ags_drum_init(AgsDrum *drum)
     gtk_table_attach_defaults(table1,
 			      (GtkWidget *) (drum->index0[j]),
 			      j, j +1, 4, 5);
-    g_object_set_data((GObject *) drum->index0[j], AGS_DRUM_INDEX, GUINT_TO_POINTER(j));
   }
 
   drum->selected0 = drum->index0[0];
