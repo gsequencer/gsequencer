@@ -697,9 +697,19 @@ ags_note_edit_drawing_area_motion_notify_event (GtkWidget *widget, GdkEventMotio
     cairo_t *cr;
 
     prev_x1 = note_edit->control.x1;
-    note_edit->control.x1 = (guint) event->x;
-    note_edit->control.y1 = (guint) event->y;
 
+    if(event->x >= 0.0){
+      note_edit->control.x1 = (guint) event->x;
+    }else{
+      note_edit->control.x1 = 0;
+    }
+
+    if(event->y >= 0.0){
+      note_edit->control.y1 = (guint) event->y;
+    }else{
+      note_edit->control.y1 = 0;
+    }
+    
     machine = editor->selected_machine;
     note = note_edit->control.note;
 
