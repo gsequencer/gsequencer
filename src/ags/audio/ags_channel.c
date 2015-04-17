@@ -5011,13 +5011,6 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
   auto void ags_channel_tillrecycling_unset_recall_id_up(AgsChannel *channel,
 							 GList *invalid_recall_id_list);
 
-  auto void ags_channel_recursive_set_recall_id_down_input(AgsChannel *output,
-							   GList *invalid_recall_id_list);
-  auto void ags_channel_recursive_set_recall_id_down(AgsChannel *current,
-						     GList *invalid_recall_id_list);
-  auto void ags_channel_tillrecycling_set_recall_id_up(AgsChannel *channel,
-						       GList *invalid_recall_id_list);
-
   auto void ags_channel_recursive_duplicate_recall_down_input(AgsChannel *output,
 							      GList *recall_id_list);
   auto void ags_channel_recursive_duplicate_recall_down(AgsChannel *channel,
@@ -5653,6 +5646,9 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
 
     audio = AGS_AUDIO(output->audio);
 
+    next_recall_id_list = recall_id_list;
+    next_invalid_recall_id_list = invalid_recall_id_list;
+
     if((AGS_AUDIO_ASYNC & (audio->flags)) != 0){
       current = ags_channel_nth(audio->input, output->audio_channel);
 
@@ -5662,48 +5658,10 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
 				    recall_id_list, devout_play_list,
 				    invalid_recall_id_list);
 	
-	/* retrieve next recall id list */
-	if((AGS_AUDIO_INPUT_HAS_RECYCLING & (audio->flags)) == 0){
-	  next_recall_id_list = recall_id_list;
-	  next_invalid_recall_id_list = invalid_recall_id_list;
-	}else{
-	  next_recall_id_list = NULL;
-
-	  while(recall_id_list != NULL){
-	    if(next_recall_id_list == NULL){
-	      next_recall_id_list = ags_recycling_container_get_child_recall_id(AGS_RECALL_ID(recall_id_list->data)->recycling_container);
-	    }else{
-	      next_recall_id_list = g_list_concat(next_recall_id_list,
-						  ags_recycling_container_get_child_recall_id(AGS_RECALL_ID(recall_id_list->data)->recycling_container));
-	    }
-
-	    recall_id_list = recall_id_list->next;
-	  }
-
-	  next_invalid_recall_id_list = NULL;
-
-	  while(invalid_recall_id_list != NULL){
-	    if(next_invalid_recall_id_list == NULL){
-	      next_invalid_recall_id_list = ags_recycling_container_get_child_recall_id(AGS_RECALL_ID(invalid_recall_id_list->data)->recycling_container);
-	    }else{
-	      next_invalid_recall_id_list = g_list_concat(next_invalid_recall_id_list,
-							  ags_recycling_container_get_child_recall_id(AGS_RECALL_ID(invalid_recall_id_list->data)->recycling_container));
-	    }
-
-	    invalid_recall_id_list = invalid_recall_id_list->next;
-	  }
-	}
-
 	/* follow the links */
 	ags_channel_recursive_reset_recall_id_down(current->link,
 						   next_recall_id_list, devout_play_list,
 						   next_invalid_recall_id_list);
-
-	/* free allocated lists */
-	if((AGS_AUDIO_INPUT_HAS_RECYCLING & (audio->flags)) == 0){
-	  g_list_free(next_recall_id_list);
-	  g_list_free(next_invalid_recall_id_list);
-	}
 
 	current = current->next_pad;
       }
@@ -5716,48 +5674,10 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
 				 recall_id_list, devout_play_list,
 				 invalid_recall_id_list);
 
-      /* retrieve next recall id list */
-      if((AGS_AUDIO_INPUT_HAS_RECYCLING & (audio->flags)) == 0){
-	next_recall_id_list = recall_id_list;
-	next_invalid_recall_id_list = invalid_recall_id_list;
-      }else{
-	next_recall_id_list = NULL;
-
-	while(recall_id_list != NULL){
-	  if(next_recall_id_list == NULL){
-	    next_recall_id_list = ags_recycling_container_get_child_recall_id(AGS_RECALL_ID(recall_id_list->data)->recycling_container);
-	  }else{
-	    next_recall_id_list = g_list_concat(next_recall_id_list,
-						ags_recycling_container_get_child_recall_id(AGS_RECALL_ID(recall_id_list->data)->recycling_container));
-	  }
-
-	  recall_id_list = recall_id_list->next;
-	}
-
-	next_invalid_recall_id_list = NULL;
-
-	while(invalid_recall_id_list != NULL){
-	  if(next_invalid_recall_id_list == NULL){
-	    next_invalid_recall_id_list = ags_recycling_container_get_child_recall_id(AGS_RECALL_ID(invalid_recall_id_list->data)->recycling_container);
-	  }else{
-	    next_invalid_recall_id_list = g_list_concat(next_invalid_recall_id_list,
-							ags_recycling_container_get_child_recall_id(AGS_RECALL_ID(invalid_recall_id_list->data)->recycling_container));
-	  }
-
-	  invalid_recall_id_list = invalid_recall_id_list->next;
-	}
-      }
-
       /* follow the links */
       ags_channel_recursive_reset_recall_id_down(current->link,
 						 recall_id_list, devout_play_list,
 						 next_invalid_recall_id_list);
-
-      /* free allocated lists */
-      if((AGS_AUDIO_INPUT_HAS_RECYCLING & (audio->flags)) == 0){
-	g_list_free(next_recall_id_list);
-	g_list_free(next_invalid_recall_id_list);
-      }
     }
   }
 
@@ -5766,11 +5686,18 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
 						  GList *invalid_recall_id_list)
   {
     AgsAudio *audio;
+    AgsRecycling *recycling;
+    AgsRecyclingContainer *recycling_container;
+    AgsRecallID *recall_id;
+      
     GList *next_recall_id_list;
     GList *next_invalid_recall_id_list;
-
-    if(current == NULL)
+    guint recycling_length;
+    guint i;
+    
+    if(current == NULL){
       return;
+    }
 
     audio = AGS_AUDIO(current->audio);
     
@@ -5787,16 +5714,44 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
       next_recall_id_list = NULL;
 
       while(recall_id_list != NULL){
-	if(next_recall_id_list == NULL){
-	  next_recall_id_list = ags_recycling_container_get_child_recall_id(AGS_RECALL_ID(recall_id_list->data)->recycling_container);
-	}else{
-	  next_recall_id_list = g_list_concat(next_recall_id_list,
-					      ags_recycling_container_get_child_recall_id(AGS_RECALL_ID(recall_id_list->data)->recycling_container));
+	/* create toplevel recycling container */
+	recycling_length = ags_recycling_position(current->first_recycling, current->last_recycling->next,
+						  current->last_recycling);
+	recycling_length += 1;
+	  
+	recycling_container = (AgsRecyclingContainer *) g_object_new(AGS_TYPE_RECYCLING_CONTAINER,
+								     "length\0", recycling_length,
+								     "parent\0", AGS_RECALL_ID(recall_id_list->data)->recycling_container,
+								     NULL);
+	ags_audio_add_recycling_container(audio,
+					  recycling_container);
+
+	/* recycling */
+	recycling = current->first_recycling;
+
+	for(i = 0; i < recycling_length; i++){
+	  recycling_container->recycling[i] = recycling;
+
+	  recycling = recycling->next;
 	}
 
+	/* recall id */
+	recall_id = g_object_new(AGS_TYPE_RECALL_ID,
+				 "recycling\0", current->first_recycling,
+				 "recycling-container\0", recycling_container,
+				 NULL);
+	g_object_set(recycling_container,
+		     "recall_id\0", recall_id,
+		     NULL);
+
+	next_recall_id_list = g_list_prepend(next_recall_id_list,
+					     recall_id);
+	
 	recall_id_list = recall_id_list->next;
       }
 
+      next_recall_id_list = g_list_reverse(next_recall_id_list);
+      
       next_invalid_recall_id_list = NULL;
 
       while(invalid_recall_id_list != NULL){
@@ -5835,7 +5790,8 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
     
     /* free allocated lists */
     if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0){
-      g_list_free(next_recall_id_list);
+      g_list_free_full(next_recall_id_list,
+		       g_object_unref);
       g_list_free(next_invalid_recall_id_list);
     }
   }
@@ -6110,24 +6066,6 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
 
       current = current->link;
     }
-  }
-
-  void ags_channel_recursive_set_recall_id_down_input(AgsChannel *output,
-						      GList *invalid_recall_id_list)
-  {
-    //TODO:JK: implement me
-  }
-  
-  void ags_channel_recursive_set_recall_id_down(AgsChannel *current,
-						GList *invalid_recall_id_list)
-  {
-    //TODO:JK: implement me
-  }
-  
-  void ags_channel_tillrecycling_set_recall_id_up(AgsChannel *channel,
-						  GList *invalid_recall_id_list)
-  {
-    //TODO:JK: implement me
   }
 
   void ags_channel_recursive_duplicate_recall_down_input(AgsChannel *output,
