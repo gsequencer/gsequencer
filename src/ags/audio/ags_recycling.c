@@ -64,6 +64,7 @@ void ags_recycling_real_remove_audio_signal(AgsRecycling *recycling,
 
 enum{
   PROP_0,
+  PROP_CHANNEL,
   PROP_DEVOUT,
 };
 
@@ -134,6 +135,22 @@ ags_recycling_class_init(AgsRecyclingClass *recycling)
   gobject->finalize = ags_recycling_finalize;
 
   /* properties */
+  /**
+   * AgsRecycling:channel:
+   *
+   * The assigned #AgsChannel.
+   * 
+   * Since: 0.4.0
+   */
+  param_spec = g_param_spec_object("channel\0",
+				   "assigned channel\0",
+				   "The channel it is assigned with\0",
+				   AGS_TYPE_CHANNEL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_CHANNEL,
+				  param_spec);
+
   /**
    * AgsRecycling:devout:
    *
@@ -226,6 +243,27 @@ ags_recycling_set_property(GObject *gobject,
   recycling = AGS_RECYCLING(gobject);
 
   switch(prop_id){
+  case PROP_CHANNEL:
+    {
+      AgsChannel *channel;
+
+      channel = (AgsChannel *) g_value_get_object(value);
+
+      if(channel == recycling->channel){
+	return;
+      }
+
+      if(recycling->channel != NULL){
+	g_object_unref(recycling->channel);
+      }
+
+      if(channel != NULL){
+	g_object_ref(channel);
+      }
+
+      recycling->channel = channel;
+    }
+    break;
   case PROP_DEVOUT:
     {
       AgsDevout *devout;
@@ -252,6 +290,9 @@ ags_recycling_get_property(GObject *gobject,
   recycling = AGS_RECYCLING(gobject);
 
   switch(prop_id){
+  case PROP_CHANNEL:
+    g_value_set_object(value, recycling->channel);
+    break;
   case PROP_DEVOUT:
     g_value_set_object(value, recycling->devout);
     break;
@@ -614,7 +655,7 @@ ags_recycling_position(AgsRecycling *start_recycling, AgsRecycling *end_region,
 
   while(current != NULL && current != end_region){
     position++;
-
+    
     if(current == recycling){
       return(position);
     }
