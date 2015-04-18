@@ -897,11 +897,11 @@ ags_recall_channel_run_map_recall_recycling(AgsRecallChannelRun *recall_channel_
 					"destination\0", destination_recycling,
 					NULL);
 
-	  ags_recall_add_child(AGS_RECALL(recall_channel_run), AGS_RECALL(recall_recycling));
-
-	  if(destination_recycling != NULL){
-	    destination_recycling = destination_recycling->next;
-	  }
+	ags_recall_add_child(AGS_RECALL(recall_channel_run), AGS_RECALL(recall_recycling));
+	
+	if(destination_recycling != NULL){
+	  destination_recycling = destination_recycling->next;
+	}
       }while(destination_recycling != end_destination_recycling);
 
       source_recycling = source_recycling->next;
@@ -916,12 +916,13 @@ ags_recall_channel_run_remap_child_source(AgsRecallChannelRun *recall_channel_ru
 {
   AgsRecycling *destination_recycling, *source_recycling;
   AgsRecallRecycling *recall_recycling;
-  GList *list;
+  GList *list, *list_next;
 
   if(recall_channel_run->source == NULL ||
      AGS_RECALL(recall_channel_run)->child_type == G_TYPE_NONE ||
-     (AGS_RECALL_TEMPLATE & (AGS_RECALL(recall_channel_run)->flags)) != 0)
+     (AGS_RECALL_TEMPLATE & (AGS_RECALL(recall_channel_run)->flags)) != 0){
     return;
+  }
 
   /* remove old */
   if(old_start_changed_region != NULL){
@@ -936,18 +937,15 @@ ags_recall_channel_run_remap_child_source(AgsRecallChannelRun *recall_channel_ru
       list = ags_recall_get_children(AGS_RECALL(recall_channel_run));
 
       while(list != NULL){
+	list_next = list->next;
+	
 	if(AGS_RECALL_RECYCLING(list->data)->source == source_recycling){
 	  recall = AGS_RECALL(list->data);
 
-	  recall->flags |= AGS_RECALL_HIDE;
-	  cancel_recall = ags_cancel_recall_new(recall,
-						NULL);
-
-	  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop)->task_thread),
-				      (AgsTask *) cancel_recall);
+	  ags_recall_remove(recall);
 	}
 
-	list = list->next;
+	list = list_next;
       }
 
       source_recycling = source_recycling->next;
@@ -959,16 +957,20 @@ ags_recall_channel_run_remap_child_source(AgsRecallChannelRun *recall_channel_ru
     source_recycling = new_start_changed_region;
       
     while(source_recycling != new_end_changed_region->next){
+      if(AGS_RECALL(recall_channel_run)->recall_id->recycling_container->parent == NULL){
+	g_warning("a !!!\0");
+      }
+      
       recall_recycling = g_object_new(AGS_RECALL(recall_channel_run)->child_type,
 				      "devout\0", AGS_RECALL(recall_channel_run)->devout,
 				      "recall_id\0", AGS_RECALL(recall_channel_run)->recall_id,
 				      "audio_channel\0", recall_channel_run->audio_channel,
 				      "source\0", source_recycling,
-				      "destination\0", NULL,
+				      "destination\0", ((recall_channel_run->destination != NULL) ? recall_channel_run->destination->first_recycling: NULL),
 				      NULL);
 	
       ags_recall_add_child(AGS_RECALL(recall_channel_run), AGS_RECALL(recall_recycling));
-
+      
       source_recycling = source_recycling->next;
     }
   }
@@ -1005,12 +1007,7 @@ ags_recall_channel_run_remap_child_destination(AgsRecallChannelRun *recall_chann
 	if(AGS_RECALL_RECYCLING(list->data)->destination == destination_recycling){
 	  recall = AGS_RECALL(list->data);
 
-	  recall->flags |= AGS_RECALL_HIDE;
-	  cancel_recall = ags_cancel_recall_new(recall,
-						NULL);
-
-	  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop)->task_thread),
-				      (AgsTask *) cancel_recall);
+	  ags_recall_remove(recall);
 	}
 
 	list = list->next;
@@ -1023,8 +1020,9 @@ ags_recall_channel_run_remap_child_destination(AgsRecallChannelRun *recall_chann
   /* add new */
   if(new_start_changed_region != NULL){
     if(recall_channel_run->source != NULL){
-      if(recall_channel_run->source->first_recycling == NULL)
+      if(recall_channel_run->source->first_recycling == NULL){
 	return;
+      }
       
       destination_recycling = new_start_changed_region;
       
@@ -1061,7 +1059,6 @@ ags_recall_channel_run_source_recycling_changed_callback(AgsChannel *channel,
 {
   /* empty */
 }
-
 
 void
 ags_recall_channel_run_destination_recycling_changed_callback(AgsChannel *channel,

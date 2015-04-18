@@ -767,7 +767,7 @@ main(int argc, char **argv)
   guint i;
 
   const char *error;
-  const rlim_t kStackSize = 128L * 1024L * 1024L;   // min stack size = 128 Mb
+  const rlim_t kStackSize = 256L * 1024L * 1024L;   // min stack size = 128 Mb
 
   //  mtrace();
   atexit(ags_signal_cleanup);

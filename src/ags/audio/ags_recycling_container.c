@@ -661,10 +661,12 @@ ags_recycling_container_reset_recycling(AgsRecyclingContainer *recycling_contain
   /* instantiate */
   if(new_context){
     new_recycling_container = g_object_new(AGS_TYPE_RECYCLING_CONTAINER,
+					   "parent\0", recycling_container->parent,
 					   "length\0", new_length,
 					   NULL);
   }else{
     new_recycling_container = g_object_new(AGS_TYPE_RECYCLING_CONTAINER,
+					   "parent\0", recycling_container->parent,
 					   "length\0", (recycling_container->length -
 							(last_index - first_index) +
 							new_length),
