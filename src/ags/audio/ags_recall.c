@@ -1664,7 +1664,7 @@ ags_recall_remove(AgsRecall *recall)
   g_signal_emit(G_OBJECT(recall),
 		recall_signals[REMOVE], 0);
   g_object_unref(G_OBJECT(recall));
-  g_object_unref(recall);
+  //  g_object_unref(recall);
 }
 
 /**

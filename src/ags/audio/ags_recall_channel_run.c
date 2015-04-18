@@ -957,10 +957,6 @@ ags_recall_channel_run_remap_child_source(AgsRecallChannelRun *recall_channel_ru
     source_recycling = new_start_changed_region;
       
     while(source_recycling != new_end_changed_region->next){
-      if(AGS_RECALL(recall_channel_run)->recall_id->recycling_container->parent == NULL){
-	g_warning("a !!!\0");
-      }
-      
       recall_recycling = g_object_new(AGS_RECALL(recall_channel_run)->child_type,
 				      "devout\0", AGS_RECALL(recall_channel_run)->devout,
 				      "recall_id\0", AGS_RECALL(recall_channel_run)->recall_id,
@@ -1057,7 +1053,9 @@ ags_recall_channel_run_source_recycling_changed_callback(AgsChannel *channel,
 							 AgsRecycling *new_start_changed_region, AgsRecycling *new_end_changed_region,
 							 AgsRecallChannelRun *recall_channel_run)
 {
-  /* empty */
+  ags_recall_channel_run_remap_child_source(recall_channel_run,
+  					    old_start_changed_region, old_end_changed_region,
+  					    new_start_changed_region, new_end_changed_region);
 }
 
 void
