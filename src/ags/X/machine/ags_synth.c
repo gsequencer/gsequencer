@@ -393,7 +393,7 @@ ags_synth_map_recall(AgsMachine *machine)
   audio = machine->audio;
   synth = AGS_SYNTH(machine);
 
-  /* ags-delay */
+  /* ags-delay * /
   ags_recall_factory_create(audio,
 			    NULL, NULL,
 			    "ags-stream\0",
@@ -401,10 +401,10 @@ ags_synth_map_recall(AgsMachine *machine)
 			    0, audio->output_pads,
 			    (AGS_RECALL_FACTORY_OUTPUT |
 			     AGS_RECALL_FACTORY_ADD |
-			     AGS_RECALL_FACTORY_PLAY |
-			     AGS_RECALL_FACTORY_RECALL),
+			     AGS_RECALL_FACTORY_PLAY),
 			    0);
-
+  */
+  
   AGS_MACHINE_CLASS(ags_synth_parent_class)->map_recall(machine);
 }
 

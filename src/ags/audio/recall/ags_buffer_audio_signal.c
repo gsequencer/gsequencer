@@ -250,10 +250,6 @@ ags_buffer_audio_signal_run_init_pre(AgsRecall *recall)
   recycling_container = recall->recall_id->recycling_container;
   parent_recycling_container = recycling_container->parent;
 
-  if(parent_recycling_container == NULL){
-    g_warning("!!!\0");
-  }
-  
   /* create new audio signal */
   destination = ags_audio_signal_new((GObject *) devout,
 				     (GObject *) recycling,

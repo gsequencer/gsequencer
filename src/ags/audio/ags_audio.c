@@ -2812,11 +2812,10 @@ ags_audio_duplicate_recall(AgsAudio *audio,
       }
 
       /* append to AgsAudio */
-      if(recall_id->recycling_container->parent == NULL)
-	audio->play = g_list_append(audio->play, copy);
-      else
-	audio->recall = g_list_append(audio->recall, copy);
-    
+      ags_audio_add_recall(audio,
+			   copy,
+			   ((recall_id->recycling_container->parent == NULL) ? TRUE: FALSE));
+
       /* connect */
       ags_connectable_connect(AGS_CONNECTABLE(copy));
     }

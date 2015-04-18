@@ -453,17 +453,13 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 	  while(list != NULL){
 	    if(AGS_RECALL_ID(list->data)->recycling_container->parent == AGS_RECALL(copy_pattern_channel_run)->recall_id->recycling_container){
 	      child_recall_id = list->data;
-	      g_message("found\0");
 	      break;
-	    }else{
-	      g_message("!%x, !%x\0", AGS_RECALL_ID(list->data)->recycling_container->parent, AGS_RECALL(copy_pattern_channel_run)->recall_id->recycling_container);
 	    }
 	  
 	    list = list->next;
 	  }
 
 	  if(list == NULL){
-	    g_warning("!!!!\0");
 	    child_recall_id = NULL;
 	  }
 	}

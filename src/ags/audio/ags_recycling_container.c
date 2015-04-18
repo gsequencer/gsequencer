@@ -661,26 +661,32 @@ ags_recycling_container_reset_recycling(AgsRecyclingContainer *recycling_contain
   /* instantiate */
   if(new_context){
     new_recycling_container = g_object_new(AGS_TYPE_RECYCLING_CONTAINER,
-					   "parent\0", recycling_container->parent,
 					   "length\0", new_length,
 					   NULL);
   }else{
     new_recycling_container = g_object_new(AGS_TYPE_RECYCLING_CONTAINER,
-					   "parent\0", recycling_container->parent,
 					   "length\0", (recycling_container->length -
 							(last_index - first_index) +
 							new_length),
 					   NULL);
   }
+
+  if(recycling_container->parent != NULL){
+    GList *list;
+    
+    list = g_list_find(recycling_container->parent->children,
+		       recycling_container);
+    list->data = new_recycling_container;
+    g_object_ref(new_recycling_container);
+    
+    new_recycling_container->parent = recycling_container->parent;
+    g_object_ref(new_recycling_container->parent);
+    
+    new_recycling_container->recall_id = recycling_container->recall_id;
+    g_object_ref(recycling_container->recall_id);
+  }
   
   new_recycling_container->children = g_list_copy(recycling_container->children);
-  g_object_set(new_recycling_container,
-	       "parent\0", recycling_container->parent,
-	       NULL);
-  g_object_set(recycling_container,
-	       "parent\0", NULL,
-	       NULL);
-
   
   /* copy heading */
   if(!new_context){
@@ -709,7 +715,7 @@ ags_recycling_container_reset_recycling(AgsRecyclingContainer *recycling_contain
 	     (new_recycling_container->length - first_index - new_length) * sizeof(AgsRecycling *));
     }
   }
-  
+
   return(new_recycling_container);
 }
 
