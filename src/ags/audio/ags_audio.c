@@ -2716,6 +2716,11 @@ ags_audio_duplicate_recall(AgsAudio *audio,
   AgsMutexManager *mutex_manager;
 
   pthread_mutex_t *mutex;
+
+  if(audio == NULL ||
+     recall_id == NULL){
+    return;
+  }
   
   pthread_mutex_lock(&(ags_application_mutex));
   
@@ -2728,9 +2733,9 @@ ags_audio_duplicate_recall(AgsAudio *audio,
 
   pthread_mutex_lock(mutex);
   
-  //#ifdef AGS_DEBUG
+#ifdef AGS_DEBUG
   g_message("ags_audio_duplicate_recall: %s - audio.lines[%u,%u]\n\0", G_OBJECT_TYPE_NAME(audio->machine), audio->output_lines, audio->input_lines);
-  //#endif
+#endif
 
   playback = FALSE;
   sequencer = FALSE;
@@ -2840,6 +2845,11 @@ void ags_audio_resolve_recall(AgsAudio *audio,
   AgsMutexManager *mutex_manager;
 
   pthread_mutex_t *mutex;
+
+  if(audio == NULL ||
+     recall_id == NULL){
+    return;
+  }
   
   pthread_mutex_lock(&(ags_application_mutex));
   
@@ -2896,7 +2906,12 @@ ags_audio_init_recall(AgsAudio *audio, gint stage,
   AgsMutexManager *mutex_manager;
 
   pthread_mutex_t *mutex;
-  
+
+  if(audio == NULL ||
+     recall_id == NULL){
+    return;
+  }
+    
   pthread_mutex_lock(&(ags_application_mutex));
   
   mutex_manager = ags_mutex_manager_get_instance();
@@ -3040,6 +3055,11 @@ ags_audio_play(AgsAudio *audio,
   AgsMutexManager *mutex_manager;
 
   pthread_mutex_t *mutex;
+
+  if(audio == NULL ||
+     recall_id == NULL){
+    return;
+  }
   
   pthread_mutex_lock(&(ags_application_mutex));
   

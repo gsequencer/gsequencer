@@ -219,8 +219,11 @@ ags_buffer_audio_signal_run_init_pre(AgsRecall *recall)
   AgsDevout *devout;
   AgsRecycling *recycling;
   AgsAudioSignal *destination;
+  AgsRecyclingContainer *recycling_container, *parent_recycling_container;
+  
   AgsBufferRecycling *buffer_recycling;
   AgsBufferAudioSignal *buffer_audio_signal;
+
   GList *stream;
   guint buffer_size;
   guint samplerate;
@@ -244,11 +247,17 @@ ags_buffer_audio_signal_run_init_pre(AgsRecall *recall)
 
   //  recall->flags &= (~AGS_RECALL_PERSISTENT);
   recycling = AGS_RECALL_RECYCLING(buffer_recycling)->destination;
+  recycling_container = recall->recall_id->recycling_container;
+  parent_recycling_container = recycling_container->parent;
 
+  if(parent_recycling_container == NULL){
+    g_warning("!!!\0");
+  }
+  
   /* create new audio signal */
   destination = ags_audio_signal_new((GObject *) devout,
 				     (GObject *) recycling,
-				     (GObject *) recall->recall_id->recycling_container->parent->recall_id);
+				     (GObject *) parent_recycling_container->recall_id);
   length =  (guint) (2.0 * devout->delay[devout->tic_counter]) + 1;
   ags_audio_signal_stream_resize(destination,
 				 length);
