@@ -37,7 +37,7 @@
 #define AGS_IS_GUI_THREAD_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_GUI_THREAD))
 #define AGS_GUI_THREAD_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_GUI_THREAD, AgsGuiThreadClass))
 
-#define AGS_GUI_THREAD_DEFAULT_JIFFIE (60)
+#define AGS_GUI_THREAD_DEFAULT_JIFFIE (250)
 
 typedef struct _AgsGuiThread AgsGuiThread;
 typedef struct _AgsGuiThreadClass AgsGuiThreadClass;
@@ -49,7 +49,7 @@ struct _AgsGuiThread
   GMutex mutex;
   GCond cond;
 
-  AgsThread *gui_task_thread;
+  GList *task_completion;
 };
 
 struct _AgsGuiThreadClass

@@ -1222,6 +1222,8 @@ ags_devout_alsa_init(AgsDevout *devout,
 
   /* Open PCM device for playback. */
   if ((err = snd_pcm_open(&handle, devout->out.alsa.device, SND_PCM_STREAM_PLAYBACK, 0)) < 0) {
+    pthread_mutex_unlock(mutex);
+    
     printf("Playback open error: %s\n", snd_strerror(err));
     g_set_error(error,
 		AGS_DEVOUT_ERROR,
@@ -1237,6 +1239,8 @@ ags_devout_alsa_init(AgsDevout *devout,
   /* choose all parameters */
   err = snd_pcm_hw_params_any(handle, hwparams);
   if (err < 0) {
+    pthread_mutex_unlock(mutex);
+    
     printf("Broken configuration for playback: no configurations available: %s\n", snd_strerror(err));
     return;
   }
@@ -1244,6 +1248,8 @@ ags_devout_alsa_init(AgsDevout *devout,
   /* set hardware resampling */
   err = snd_pcm_hw_params_set_rate_resample(handle, hwparams, 1);
   if (err < 0) {
+    pthread_mutex_unlock(mutex);
+    
     printf("Resampling setup failed for playback: %s\n", snd_strerror(err));
     return;
   }
@@ -1251,6 +1257,8 @@ ags_devout_alsa_init(AgsDevout *devout,
   /* set the interleaved read/write format */
   err = snd_pcm_hw_params_set_access(handle, hwparams, SND_PCM_ACCESS_RW_INTERLEAVED);
   if (err < 0) {
+    pthread_mutex_unlock(mutex);
+    
     printf("Access type not available for playback: %s\n", snd_strerror(err));
     return;
   }
@@ -1258,6 +1266,8 @@ ags_devout_alsa_init(AgsDevout *devout,
   /* set the sample format */
   err = snd_pcm_hw_params_set_format(handle, hwparams, format);
   if (err < 0) {
+    pthread_mutex_unlock(mutex);
+    
     printf("Sample format not available for playback: %s\n", snd_strerror(err));
     return;
   }
@@ -1266,6 +1276,8 @@ ags_devout_alsa_init(AgsDevout *devout,
   channels = devout->dsp_channels;
   err = snd_pcm_hw_params_set_channels(handle, hwparams, channels);
   if (err < 0) {
+    pthread_mutex_unlock(mutex);
+    
     printf("Channels count (%i) not available for playbacks: %s\n", channels, snd_strerror(err));
     return;
   }
@@ -1275,11 +1287,15 @@ ags_devout_alsa_init(AgsDevout *devout,
   rrate = rate;
   err = snd_pcm_hw_params_set_rate_near(handle, hwparams, &rrate, 0);
   if (err < 0) {
+    pthread_mutex_unlock(mutex);
+    
     printf("Rate %iHz not available for playback: %s\n", rate, snd_strerror(err));
     return;
   }
 
   if (rrate != rate) {
+    pthread_mutex_unlock(mutex);
+    
     printf("Rate doesn't match (requested %iHz, get %iHz)\n", rate, err);
     //    exit(-EINVAL);
     return;
@@ -1289,6 +1305,8 @@ ags_devout_alsa_init(AgsDevout *devout,
   size = devout->buffer_size;
   err = snd_pcm_hw_params_set_buffer_size(handle, hwparams, size);
   if (err < 0) {
+    pthread_mutex_unlock(mutex);
+    
     printf("Unable to set buffer size %i for playback: %s\n", size, snd_strerror(err));
     return;
   }
@@ -1300,12 +1318,16 @@ ags_devout_alsa_init(AgsDevout *devout,
   dir = -1;
   err = snd_pcm_hw_params_set_period_time_near(handle, hwparams, &period_time, &dir);
   if (err < 0) {
+    pthread_mutex_unlock(mutex);
+    
     printf("Unable to set period time %i for playback: %s\n", period_time, snd_strerror(err));
     return;
   }
 
   err = snd_pcm_hw_params_get_period_size(hwparams, &size, &dir);
   if (err < 0) {
+    pthread_mutex_unlock(mutex);
+    
     printf("Unable to get period size for playback: %s\n", snd_strerror(err));
     return;
   }
@@ -1314,6 +1336,8 @@ ags_devout_alsa_init(AgsDevout *devout,
   /* write the parameters to device */
   err = snd_pcm_hw_params(handle, hwparams);
   if (err < 0) {
+    pthread_mutex_unlock(mutex);
+    
     printf("Unable to set hw params for playback: %s\n", snd_strerror(err));
     return;
   }
@@ -1321,6 +1345,8 @@ ags_devout_alsa_init(AgsDevout *devout,
   /* get the current swparams */
   err = snd_pcm_sw_params_current(handle, swparams);
   if (err < 0) {
+    pthread_mutex_unlock(mutex);
+    
     printf("Unable to determine current swparams for playback: %s\n", snd_strerror(err));
     return;
   }
@@ -1329,6 +1355,8 @@ ags_devout_alsa_init(AgsDevout *devout,
   /* (buffer_size / avail_min) * avail_min */
   err = snd_pcm_sw_params_set_start_threshold(handle, swparams, (buffer_size / period_size) * period_size);
   if (err < 0) {
+    pthread_mutex_unlock(mutex);
+    
     printf("Unable to set start threshold mode for playback: %s\n", snd_strerror(err));
     return;
   }
@@ -1337,6 +1365,8 @@ ags_devout_alsa_init(AgsDevout *devout,
   /* or disable this mechanism when period event is enabled (aka interrupt like style processing) */
   err = snd_pcm_sw_params_set_avail_min(handle, swparams, period_event ? buffer_size : period_size);
   if (err < 0) {
+    pthread_mutex_unlock(mutex);
+    
     printf("Unable to set avail min for playback: %s\n", snd_strerror(err));
     return;
   }
@@ -1344,6 +1374,8 @@ ags_devout_alsa_init(AgsDevout *devout,
   /* write the parameters to the playback device */
   err = snd_pcm_sw_params(handle, swparams);
   if (err < 0) {
+    pthread_mutex_unlock(mutex);
+    
     printf("Unable to set sw params for playback: %s\n", snd_strerror(err));
     return;
   }

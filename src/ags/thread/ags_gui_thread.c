@@ -17,13 +17,14 @@
  */
 
 #include <ags/thread/ags_gui_thread.h>
-#include <ags/thread/ags_gui_task_thread.h>
 
 #include <ags-lib/object/ags_connectable.h>
 
 #include <ags/main.h>
 
 #include <ags/audio/ags_devout.h>
+
+#include <ags/thread/ags_task_completion.h>
 
 #include <math.h>
 
@@ -139,10 +140,7 @@ ags_gui_thread_init(AgsGuiThread *gui_thread)
   g_cond_init(&(gui_thread->cond));
   g_mutex_init(&(gui_thread->mutex));
 
-  gui_thread->gui_task_thread = NULL;
-  //  gui_thread->gui_task_thread = ags_gui_task_thread_new(NULL);
-  //  ags_thread_add_child(gui_thread,
-  //		       gui_thread->gui_task_thread);
+  gui_thread->task_completion = NULL;
 }
 
 void
@@ -195,7 +193,8 @@ ags_gui_thread_run(AgsThread *thread)
   int success;
 
   auto void ags_gui_thread_do_gtk_iteration();
-
+  auto void ags_gui_thread_complete_task();
+  
   void ags_gui_thread_do_gtk_iteration(){
 
     if(!g_main_context_acquire(main_context)){
@@ -251,6 +250,26 @@ ags_gui_thread_run(AgsThread *thread)
     g_main_context_release(main_context);
   }
 
+  void ags_gui_thread_complete_task()
+  {
+    GList *list, *list_next;
+
+    list = gui_thread->task_completion;
+
+    while(list != NULL){
+      list_next = list->next;
+      
+      if((AGS_TASK_COMPLETION_READY & (g_atomic_int_get(&(AGS_TASK_COMPLETION(list->data)->flags)))) != 0){
+	ags_task_completion_complete(AGS_TASK_COMPLETION(list->data));
+
+	gui_thread->task_completion = g_list_remove(gui_thread->task_completion,
+						    list->data);
+      }
+
+      list = list_next;
+    }
+  }
+  
   gui_thread = AGS_GUI_THREAD(thread);
   audio_loop = AGS_AUDIO_LOOP(thread->parent);
   task_thread = AGS_TASK_THREAD(audio_loop->task_thread);
@@ -259,6 +278,8 @@ ags_gui_thread_run(AgsThread *thread)
   main_context = g_main_context_default();
 
   ags_gui_thread_do_gtk_iteration();
+
+  ags_gui_thread_complete_task();  
 }
 
 void

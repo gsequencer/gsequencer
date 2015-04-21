@@ -105,7 +105,7 @@ ags_note_edit_init(AgsNoteEdit *note_edit)
   note_edit->ruler = ags_ruler_new();
   gtk_table_attach(GTK_TABLE(note_edit), (GtkWidget *) note_edit->ruler,
 		   0, 1, 0, 1,
-		   GTK_FILL|GTK_EXPAND, GTK_FILL,
+		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
   note_edit->drawing_area = (GtkDrawingArea *) gtk_drawing_area_new();

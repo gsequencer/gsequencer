@@ -330,6 +330,7 @@ am_ags_OBJECTS = ags-ags_combo_box_text.$(OBJEXT) \
 	ags-ags_file_launch.$(OBJEXT) ags-ags_file_gui.$(OBJEXT) \
 	ags-ags_file.$(OBJEXT) ags-ags_record_thread.$(OBJEXT) \
 	ags-ags_mutex_manager.$(OBJEXT) \
+	ags-ags_task_completion.$(OBJEXT) \
 	ags-ags_returnable_thread.$(OBJEXT) \
 	ags-ags_autosave_thread.$(OBJEXT) \
 	ags-ags_devout_thread.$(OBJEXT) ags-ags_thread_pool.$(OBJEXT) \
@@ -1164,6 +1165,8 @@ ags_SOURCES = src/ags/lib/ags_combo_box_text.c src/ags/lib/ags_list.c \
 	src/ags/thread/ags_task_thread.h \
 	src/ags/thread/ags_audio_loop.h \
 	src/ags/thread/ags_gui_task_thread.h \
+	src/ags/thread/ags_task_completion.h \
+	src/ags/thread/ags_task_completion.c \
 	src/ags/thread/ags_recycling_thread.h \
 	src/ags/thread/ags_autosave_thread.h \
 	src/ags/thread/ags_returnable_thread.c \
@@ -1610,6 +1613,7 @@ include ./$(DEPDIR)/ags-ags_synths.Po
 include ./$(DEPDIR)/ags-ags_table.Po
 include ./$(DEPDIR)/ags-ags_tactable.Po
 include ./$(DEPDIR)/ags-ags_task.Po
+include ./$(DEPDIR)/ags-ags_task_completion.Po
 include ./$(DEPDIR)/ags-ags_task_thread.Po
 include ./$(DEPDIR)/ags-ags_thread-posix.Po
 include ./$(DEPDIR)/ags-ags_thread_pool.Po
@@ -5777,6 +5781,20 @@ ags-ags_mutex_manager.obj: src/ags/thread/ags_mutex_manager.c
 #	$(AM_V_CC)source='src/ags/thread/ags_mutex_manager.c' object='ags-ags_mutex_manager.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_mutex_manager.obj `if test -f 'src/ags/thread/ags_mutex_manager.c'; then $(CYGPATH_W) 'src/ags/thread/ags_mutex_manager.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/thread/ags_mutex_manager.c'; fi`
+
+ags-ags_task_completion.o: src/ags/thread/ags_task_completion.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_task_completion.o -MD -MP -MF $(DEPDIR)/ags-ags_task_completion.Tpo -c -o ags-ags_task_completion.o `test -f 'src/ags/thread/ags_task_completion.c' || echo '$(srcdir)/'`src/ags/thread/ags_task_completion.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_task_completion.Tpo $(DEPDIR)/ags-ags_task_completion.Po
+#	$(AM_V_CC)source='src/ags/thread/ags_task_completion.c' object='ags-ags_task_completion.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_task_completion.o `test -f 'src/ags/thread/ags_task_completion.c' || echo '$(srcdir)/'`src/ags/thread/ags_task_completion.c
+
+ags-ags_task_completion.obj: src/ags/thread/ags_task_completion.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_task_completion.obj -MD -MP -MF $(DEPDIR)/ags-ags_task_completion.Tpo -c -o ags-ags_task_completion.obj `if test -f 'src/ags/thread/ags_task_completion.c'; then $(CYGPATH_W) 'src/ags/thread/ags_task_completion.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/thread/ags_task_completion.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_task_completion.Tpo $(DEPDIR)/ags-ags_task_completion.Po
+#	$(AM_V_CC)source='src/ags/thread/ags_task_completion.c' object='ags-ags_task_completion.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_task_completion.obj `if test -f 'src/ags/thread/ags_task_completion.c'; then $(CYGPATH_W) 'src/ags/thread/ags_task_completion.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/thread/ags_task_completion.c'; fi`
 
 ags-ags_returnable_thread.o: src/ags/thread/ags_returnable_thread.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_returnable_thread.o -MD -MP -MF $(DEPDIR)/ags-ags_returnable_thread.Tpo -c -o ags-ags_returnable_thread.o `test -f 'src/ags/thread/ags_returnable_thread.c' || echo '$(srcdir)/'`src/ags/thread/ags_returnable_thread.c

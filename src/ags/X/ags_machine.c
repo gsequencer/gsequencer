@@ -28,6 +28,7 @@
 
 #include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_task_thread.h>
+#include <ags/thread/ags_gui_thread.h>
 
 #include <ags/file/ags_file.h>
 #include <ags/file/ags_file_stock.h>
@@ -828,11 +829,22 @@ ags_machine_set_run(AgsMachine *machine,
 
     /* create start task */
     if(list != NULL){
+      AgsGuiThread *gui_thread;
+      AgsTaskCompletion *task_completion;
+
+      gui_thread = (AgsTaskThread *) AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->gui_thread;
+	
       start_devout = ags_start_devout_new(window->devout);
-      g_signal_connect_after(G_OBJECT(start_devout), "failure\0",
-			     G_CALLBACK(ags_machine_start_failure_callback), machine);
       list = g_list_prepend(list, start_devout);
 
+      task_completion = ags_task_completion_new(start_devout,
+						NULL);
+      g_signal_connect_after(G_OBJECT(task_completion), "complete\0",
+			     G_CALLBACK(ags_machine_start_complete_callback), machine);
+      gui_thread->task_completion = g_list_prepend(gui_thread->task_completion,
+						   task_completion);
+      ags_connectable_connect(AGS_CONNECTABLE(task_completion));
+      
       /* append AgsStartDevout */
       list = g_list_reverse(list);
 
