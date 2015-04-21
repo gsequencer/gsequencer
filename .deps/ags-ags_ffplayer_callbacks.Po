@@ -666,7 +666,8 @@ ags-ags_ffplayer_callbacks.o: src/ags/X/machine/ags_ffplayer_callbacks.c \
  src/ags/thread/ags_thread_pool.h src/ags/object/ags_main_loop.h \
  src/ags/audio/ags_task.h src/ags/thread/ags_devout_thread.h \
  src/ags/thread/ags_iterator_thread.h src/ags/X/ags_machine_callbacks.h \
- src/ags/main.h src/ags/lib/ags_log.h src/ags/server/ags_server.h \
+ src/ags/thread/ags_task_completion.h src/ags/main.h \
+ src/ags/lib/ags_log.h src/ags/server/ags_server.h \
  /usr/include/netinet/in.h \
  /usr/lib/gcc/x86_64-unknown-linux-gnu/4.9.2/include/stdint.h \
  /usr/include/stdint.h /usr/include/bits/wchar.h \
@@ -2282,6 +2283,8 @@ src/ags/thread/ags_devout_thread.h:
 src/ags/thread/ags_iterator_thread.h:
 
 src/ags/X/ags_machine_callbacks.h:
+
+src/ags/thread/ags_task_completion.h:
 
 src/ags/main.h:
 

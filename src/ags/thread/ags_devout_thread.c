@@ -201,6 +201,11 @@ ags_devout_thread_start(AgsThread *thread)
 	devout->flags &= (~AGS_DEVOUT_START_PLAY);
       }else{
 	/* preserve AgsAudioLoop from playing */
+	devout->flags &= (~(AGS_DEVOUT_BUFFER3 |
+			    AGS_DEVOUT_PLAY |
+			    AGS_DEVOUT_NONBLOCKING));
+			  
+	g_message("aborting\0");
 	
 	return;
       }

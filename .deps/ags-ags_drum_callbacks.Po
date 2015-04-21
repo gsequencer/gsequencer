@@ -561,17 +561,17 @@ ags-ags_drum_callbacks.o: src/ags/X/machine/ags_drum_callbacks.c \
  src/ags/X/machine/ags_drum_input_pad.h src/ags/X/ags_pad.h \
  src/ags/widget/ags_expander_set.h src/ags/X/ags_line.h \
  src/ags/widget/ags_expander.h src/ags/X/ags_machine_callbacks.h \
- src/ags/audio/ags_task.h src/ags/main.h src/ags/lib/ags_log.h \
- src/ags/thread/ags_thread_pool.h src/ags/object/ags_main_loop.h \
- src/ags/thread/ags_async_queue.h /usr/include/linux/futex.h \
- /usr/include/linux/types.h /usr/include/asm/types.h \
- /usr/include/asm-generic/types.h /usr/include/asm-generic/int-ll64.h \
- /usr/include/asm/bitsperlong.h /usr/include/asm-generic/bitsperlong.h \
- /usr/include/linux/posix_types.h /usr/include/linux/stddef.h \
- /usr/include/asm/posix_types.h /usr/include/asm/posix_types_64.h \
- /usr/include/asm-generic/posix_types.h /usr/include/sys/time.h \
- src/ags/object/ags_stackable.h src/ags/server/ags_server.h \
- /usr/include/netinet/in.h \
+ src/ags/thread/ags_task_completion.h src/ags/audio/ags_task.h \
+ src/ags/main.h src/ags/lib/ags_log.h src/ags/thread/ags_thread_pool.h \
+ src/ags/object/ags_main_loop.h src/ags/thread/ags_async_queue.h \
+ /usr/include/linux/futex.h /usr/include/linux/types.h \
+ /usr/include/asm/types.h /usr/include/asm-generic/types.h \
+ /usr/include/asm-generic/int-ll64.h /usr/include/asm/bitsperlong.h \
+ /usr/include/asm-generic/bitsperlong.h /usr/include/linux/posix_types.h \
+ /usr/include/linux/stddef.h /usr/include/asm/posix_types.h \
+ /usr/include/asm/posix_types_64.h /usr/include/asm-generic/posix_types.h \
+ /usr/include/sys/time.h src/ags/object/ags_stackable.h \
+ src/ags/server/ags_server.h /usr/include/netinet/in.h \
  /usr/lib/gcc/x86_64-unknown-linux-gnu/4.9.2/include/stdint.h \
  /usr/include/stdint.h /usr/include/bits/wchar.h \
  /usr/include/sys/socket.h /usr/include/sys/uio.h /usr/include/bits/uio.h \
@@ -1957,6 +1957,8 @@ src/ags/X/ags_line.h:
 src/ags/widget/ags_expander.h:
 
 src/ags/X/ags_machine_callbacks.h:
+
+src/ags/thread/ags_task_completion.h:
 
 src/ags/audio/ags_task.h:
 

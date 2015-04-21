@@ -208,7 +208,10 @@ ags_editor_init(AgsEditor *editor)
   gtk_paned_pack1((GtkPaned *) paned, (GtkWidget *) scrolled_window, FALSE, TRUE);
   //  gtk_widget_set_size_request((GtkWidget *) scrolled_window, 180, -1);
 
-  editor->machine_selector = ags_machine_selector_new();
+  editor->machine_selector = g_object_new(AGS_TYPE_MACHINE_SELECTOR,
+					  "homogeneous\0", FALSE,
+					  "spacing\0", 0,
+					  NULL);
   gtk_scrolled_window_add_with_viewport(scrolled_window, (GtkWidget *) editor->machine_selector);
 
   editor->selected_machine = NULL;
@@ -216,19 +219,27 @@ ags_editor_init(AgsEditor *editor)
   table = (GtkTable *) gtk_table_new(4, 3, FALSE);
   gtk_paned_pack2((GtkPaned *) paned, (GtkWidget *) table, TRUE, FALSE);
   
-  editor->notebook = ags_notebook_new();
+  editor->notebook = g_object_new(AGS_TYPE_NOTEBOOK,
+				  "homogeneous\0", FALSE,
+				  "spacing\0", 0,
+				  NULL);
   gtk_table_attach(table, (GtkWidget *) editor->notebook,
 		   0, 3, 0, 1,
 		   GTK_FILL|GTK_EXPAND, GTK_FILL,
 		   0, 0);
 
-  editor->meter = ags_meter_new();
+  editor->meter = g_object_new(AGS_TYPE_METER,
+			       NULL);
   gtk_table_attach(table, (GtkWidget *) editor->meter,
 		   0, 1, 1, 2,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
-  editor->note_edit = ags_note_edit_new();
+  editor->note_edit = g_object_new(AGS_TYPE_NOTE_EDIT,
+				   "n-rows\0", 3,
+				   "n-columns\0", 3,
+				   "homogeneous", FALSE,
+				   NULL);
   gtk_table_attach(table, (GtkWidget *) editor->note_edit,
 		   1, 2, 1, 2,
 		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,

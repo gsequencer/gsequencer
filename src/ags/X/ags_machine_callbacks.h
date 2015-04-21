@@ -22,8 +22,11 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include <ags/X/ags_machine.h>
+#include <ags/thread/ags_task_completion.h>
+
 #include <ags/audio/ags_task.h>
+
+#include <ags/X/ags_machine.h>
 
 int ags_machine_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsMachine *machine);
 int ags_machine_destroy_callback(GtkObject *object, AgsMachine *machine);
@@ -52,7 +55,7 @@ void ags_machine_done_callback(AgsAudio *audio,
 			       AgsMachine *machine);
 
 /* task */
-void ags_machine_start_failure_callback(AgsTask *task, GError *error,
-					AgsMachine *machine);
+void ags_machine_start_complete_callback(AgsTaskCompletion *task_completion,
+					 AgsMachine *machine);
 
 #endif /*__AGS_MACHINE_CALLBACKS_H__*/

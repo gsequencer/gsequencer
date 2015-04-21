@@ -192,17 +192,25 @@ ags_window_init(AgsWindow *window)
   gtk_box_pack_start((GtkBox*) vbox, (GtkWidget*) window->paned, TRUE, TRUE, 0);
 
   scrolled_window = (GtkWidget *) gtk_scrolled_window_new(NULL, NULL);
-  gtk_paned_add1((GtkPaned *) window->paned,
-		 scrolled_window);
+  gtk_paned_pack1((GtkPaned *) window->paned,
+		  scrolled_window,
+		  TRUE, TRUE);
 
   window->machines = (GtkVBox *) gtk_vbox_new(FALSE, 0);
   gtk_scrolled_window_add_with_viewport((GtkScrolledWindow *) scrolled_window,
 					(GtkWidget *) window->machines);
-  window->editor = ags_editor_new();
-  gtk_paned_add2((GtkPaned *) window->paned,
-  		 (GtkWidget *) window->editor);
+  window->editor = g_object_new(AGS_TYPE_EDITOR,
+				"homogeneous\0", FALSE,
+				"spacing\0", 0,
+				NULL);
+  gtk_paned_pack2((GtkPaned *) window->paned,
+		  (GtkWidget *) window->editor,
+		  TRUE, TRUE);
 
-  window->navigation = ags_navigation_new();
+  window->navigation = g_object_new(AGS_TYPE_NAVIGATION,
+				    "homogeneous\0", FALSE,
+				    "spacing\0", 0,
+				    NULL);
   gtk_box_pack_start((GtkBox *) vbox,
 		     (GtkWidget *) window->navigation,
 		     FALSE, FALSE, 0);
@@ -363,11 +371,11 @@ ags_window_show(GtkWidget *widget)
 {
   AgsWindow *window;
 
-  GTK_WIDGET_CLASS(ags_window_parent_class)->show(widget);
-
   window = (AgsWindow *) widget;
 
   gtk_widget_show((GtkWidget *) window->menu_bar);
+
+  GTK_WIDGET_CLASS(ags_window_parent_class)->show(widget);
 }
 
 gboolean

@@ -36,7 +36,7 @@
 #include <ags/X/editor/ags_file_selection.h>
 
 int ags_machine_popup_rename_response_callback(GtkWidget *widget, gint response, AgsMachine *machine);
-void ags_machine_start_failure_response(GtkWidget *dialog, AgsMachine *machine);
+void ags_machine_start_complete_response(GtkWidget *dialog, gint response, AgsMachine *machine);
 
 #define AGS_RENAME_ENTRY "AgsRenameEntry"
 
@@ -441,29 +441,36 @@ ags_machine_done_callback(AgsAudio *audio,
 }
 
 void
-ags_machine_start_failure_callback(AgsTask *task, GError *error,
-				   AgsMachine *machine)
+ags_machine_start_complete_callback(AgsTaskCompletion *task_completion,
+				    AgsMachine *machine)
 {
   AgsWindow *window;
   GtkMessageDialog *dialog;
-  AgsAudioLoop *audio_loop;
-
-  /* show error message */
-  window = AGS_MAIN(AGS_START_DEVOUT(task)->devout->ags_main)->window;
   
-  dialog = (GtkMessageDialog *) gtk_message_dialog_new(GTK_WINDOW(window),
-						       GTK_DIALOG_MODAL,
-						       GTK_MESSAGE_ERROR,
-						       GTK_BUTTONS_CLOSE,
-						       error->message);
-  g_signal_connect(dialog, "response\0",
-		   G_CALLBACK(ags_machine_start_failure_response), machine);
-  gtk_widget_show_all(dialog);
+  AgsDevoutThread *devout_thread;
+  AgsTask *task;
+
+  task = task_completion->task;
+  window = AGS_MAIN(AGS_START_DEVOUT(task)->devout->ags_main)->window;
+  devout_thread = (AgsTaskThread *) AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->devout_thread;
+
+  if(devout_thread->error != NULL){
+    /* show error message */
+    dialog = (GtkMessageDialog *) gtk_message_dialog_new(GTK_WINDOW(window),
+							 GTK_DIALOG_DESTROY_WITH_PARENT,
+							 GTK_MESSAGE_ERROR,
+							 GTK_BUTTONS_CLOSE,
+							 "Error: %s\0", devout_thread->error->message);
+    g_signal_connect(dialog, "response\0",
+		     G_CALLBACK(ags_machine_start_complete_response), machine);
+    gtk_widget_show_all(dialog);
+  }
 }
 
 void
-ags_machine_start_failure_response(GtkWidget *dialog,
-				   AgsMachine *machine)
+ags_machine_start_complete_response(GtkWidget *dialog,
+				    gint response,
+				    AgsMachine *machine)
 {
   gtk_widget_destroy(dialog);
 }
