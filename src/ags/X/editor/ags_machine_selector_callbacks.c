@@ -42,7 +42,7 @@ ags_machine_selector_popup_add_index_callback(GtkWidget *menu_item, AgsMachineSe
 		     0);
   g_signal_connect_after(G_OBJECT(machine_radio_button), "clicked\0",
 			 G_CALLBACK(ags_machine_selector_radio_changed), machine_selector);
-  gtk_widget_show_all(machine_radio_button);
+  gtk_widget_show_all((GtkWidget *) machine_radio_button);
 }
 
 void
@@ -97,7 +97,7 @@ ags_machine_selector_popup_link_index_callback(GtkWidget *menu_item, AgsMachineS
 
   g_list_free(list_start);
 
-  machine_selection = (AgsMachineSelection *) ags_machine_selection_new(gtk_widget_get_toplevel(machine_selector));
+  machine_selection = (AgsMachineSelection *) ags_machine_selection_new((AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine_selector));
   machine = ags_machine_selection_run(machine_selection);
   g_object_set(G_OBJECT(machine_radio_button),
 	       "machine\0", machine,

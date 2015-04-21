@@ -163,7 +163,7 @@ ags_note_edit_drawing_area_button_press_event (GtkWidget *widget, GdkEventButton
 
     if((AGS_NOTE_EDIT_ADDING_NOTE & (note_edit->flags)) != 0 ||
        (AGS_NOTE_EDIT_POSITION_CURSOR & (note_edit->flags)) != 0){
-      tact = exp2(8.0 - (double) gtk_combo_box_get_active(editor->toolbar->zoom));
+      tact = exp2(8.0 - (double) gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->zoom));
       
       if(AGS_IS_PANEL(machine)){
       }else if(AGS_IS_MIXER(machine)){
@@ -217,7 +217,7 @@ ags_note_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
     note->x[1] = (note_x * tact) + (note_offset_x1 * tact);
 
     list_notation = machine->audio->notation;
-    history = gtk_combo_box_get_active(editor->toolbar->mode);
+    history = gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->mode);
 
     switch(history){
     case 0:
@@ -340,7 +340,7 @@ ags_note_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
     /* select notes */
     list_notation = machine->audio->notation;
 
-    history = gtk_combo_box_get_active(editor->toolbar->mode);
+    history = gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->mode);
 
     if(history == 0){
       if(editor->notebook->tabs != NULL){
@@ -415,7 +415,7 @@ ags_note_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
     /* select notes */
     list_notation = machine->audio->notation;
 
-    if(gtk_combo_box_get_active(editor->toolbar->mode) == 0){
+    if(gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->mode) == 0){
       if(editor->notebook->tabs != NULL){
 	list_notation = g_list_nth(list_notation,
 				   ags_notebook_next_active_tab(editor->notebook,
@@ -455,7 +455,7 @@ ags_note_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
     note_edit->control.x1_offset = (guint) round((double) note_edit->hscrollbar->scrollbar.range.adjustment->value);
     note_edit->control.y1_offset = (guint) round((double) note_edit->vscrollbar->scrollbar.range.adjustment->value);
 
-    tact = exp2(8.0 - (double) gtk_combo_box_get_active(editor->toolbar->zoom));
+    tact = exp2(8.0 - (double) gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->zoom));
 
     cr = gdk_cairo_create(widget->window);
     cairo_push_group(cr);
@@ -722,7 +722,7 @@ ags_note_edit_drawing_area_motion_notify_event (GtkWidget *widget, GdkEventMotio
     note_edit->control.x1_offset = (guint) round((double) note_edit->hscrollbar->scrollbar.range.adjustment->value);
     note_edit->control.y1_offset = (guint) round((double) note_edit->vscrollbar->scrollbar.range.adjustment->value);
 
-    tact = exp2(8.0 - (double) gtk_combo_box_get_active(editor->toolbar->zoom));
+    tact = exp2(8.0 - (double) gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->zoom));
 
     cr = gdk_cairo_create(widget->window);
     cairo_push_group(cr);
@@ -781,7 +781,7 @@ ags_note_edit_hscrollbar_value_changed(GtkRange *range, AgsNoteEdit *note_edit)
   /* reset ruler */
   gtk_adjustment_set_value(note_edit->ruler->adjustment,
 			   GTK_RANGE(note_edit->hscrollbar)->adjustment->value / (double) note_edit->control_current.control_width);
-  gtk_widget_queue_draw(note_edit->ruler);
+  gtk_widget_queue_draw((GtkWidget *) note_edit->ruler);
 
   /* update note edit */
   note_edit->flags |= AGS_NOTE_EDIT_RESETING_HORIZONTALLY;
