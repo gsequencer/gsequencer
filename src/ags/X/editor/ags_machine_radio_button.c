@@ -168,7 +168,7 @@ ags_machine_radio_button_set_property(GObject *gobject,
 
       machine_radio_button->machine = machine;
       
-      machine_selector = (AgsMachineSelector *) gtk_widget_get_ancestor(machine_radio_button,
+      machine_selector = (AgsMachineSelector *) gtk_widget_get_ancestor((GtkWidget *) machine_radio_button,
 									AGS_TYPE_MACHINE_SELECTOR);
       ags_machine_selector_changed(machine_selector,
 				   machine);

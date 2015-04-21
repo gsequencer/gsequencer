@@ -28,12 +28,12 @@ ags_notebook_machine_changed_callback(AgsEditor *editor, AgsMachine *machine,
     GtkWidget *widget;
 
     for(; i < stop; i++)
-      ags_notebook_remove_tab((GtkNotebook *) notebook,
+      ags_notebook_remove_tab(notebook,
 			      0);
   }
   void ags_notebook_change_machine_grow(){
     for(; i < stop; i++){
-      ags_notebook_add_tab((GtkNotebook *) notebook);
+      ags_notebook_add_tab(notebook);
     }
   }
 
