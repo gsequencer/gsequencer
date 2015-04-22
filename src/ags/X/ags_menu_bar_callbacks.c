@@ -267,8 +267,6 @@ ags_menu_bar_add_panel_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 		     FALSE, FALSE, 0);
 
   AGS_MACHINE(panel)->audio->audio_channels = 2;
-
-  g_message("debug 0\0");
   
   ags_audio_set_pads(AGS_MACHINE(panel)->audio,
 		     AGS_TYPE_INPUT, 1);

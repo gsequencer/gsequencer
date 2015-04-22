@@ -504,12 +504,13 @@ ags_thread_finalize(GObject *gobject)
 {
   AgsThread *thread;
   void *stackaddr;
+  size_t stacksize;
 
   thread = AGS_THREAD(gobject);
 
   pthread_attr_getstack(&(thread->thread_attr),
 			&stackaddr,
-			NULL);
+			&stacksize);
 
   pthread_attr_destroy(&(thread->thread_attr));
 
