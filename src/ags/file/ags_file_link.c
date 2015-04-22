@@ -172,7 +172,7 @@ ags_file_link_set_property(GObject *gobject,
 
       timestamp = (GObject *) g_value_get_object(value);
 
-      if(timestamp == file_link->timestamp){
+      if((AgsTimestamp *) timestamp == file_link->timestamp){
 	return;
       }
 

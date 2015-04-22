@@ -844,7 +844,7 @@ ags_file_real_write_concurrent(AgsFile *file)
   gui_thread = AGS_AUDIO_LOOP(main_loop)->gui_thread;
   task_thread = AGS_AUDIO_LOOP(main_loop)->task_thread;
 
-  ags_main = file->ags_main;
+  ags_main = (AgsMain *) file->ags_main;
 
   file->doc = xmlNewDoc("1.0\0");
   root_node = xmlNewNode(NULL, "ags\0");
@@ -1188,7 +1188,7 @@ ags_file_read_main(AgsFile *file, xmlNode *node, GObject **ags_main)
     gobject = (AgsMain *) *ags_main;
   }
 
-  file->ags_main = gobject;
+  file->ags_main = (GObject *) gobject;
 
   argc = 1;
   g_object_set(G_OBJECT(file),

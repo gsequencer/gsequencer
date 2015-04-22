@@ -805,7 +805,7 @@ ags_machine_set_run(AgsMachine *machine,
   AgsWindow *window;
   AgsThread *task_thread;
 
-  window = (AgsWindow *) gtk_widget_get_toplevel(machine);
+  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
   task_thread = (AgsThread *) AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->task_thread;
 
   if(run){
@@ -832,7 +832,7 @@ ags_machine_set_run(AgsMachine *machine,
       AgsGuiThread *gui_thread;
       AgsTaskCompletion *task_completion;
 
-      gui_thread = (AgsTaskThread *) AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->gui_thread;
+      gui_thread = (AgsGuiThread *) AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->gui_thread;
 	
       start_devout = ags_start_devout_new(window->devout);
       list = g_list_prepend(list, start_devout);
@@ -859,7 +859,7 @@ ags_machine_set_run(AgsMachine *machine,
 					FALSE, TRUE, FALSE);
     
     /* append AgsCancelAudio */
-    ags_task_thread_append_task(task_thread,
+    ags_task_thread_append_task((AgsTaskThread *) task_thread,
 				(AgsTask *) cancel_audio);
   }
 }

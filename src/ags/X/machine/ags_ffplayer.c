@@ -447,7 +447,7 @@ ags_ffplayer_connect(AgsConnectable *connectable)
 
   /* AgsFFPlayer */
   ffplayer = AGS_FFPLAYER(connectable);
-  window = gtk_widget_get_toplevel((GtkWidget *) ffplayer);
+  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) ffplayer);
 
   g_signal_connect((GObject *) ffplayer->open, "clicked\0",
 		   G_CALLBACK(ags_ffplayer_open_clicked_callback), (gpointer) ffplayer);

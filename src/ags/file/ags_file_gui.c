@@ -1522,8 +1522,8 @@ ags_file_read_line_resolve_channel(AgsFileLookup *file_lookup,
   if(machine->output != NULL){
     AgsPad *pad;
 
-    pad = gtk_widget_get_ancestor((GtkWidget *) line,
-				  AGS_TYPE_PAD);
+    pad = (AgsPad *) gtk_widget_get_ancestor((GtkWidget *) line,
+					     AGS_TYPE_PAD);
     list = gtk_container_get_children(machine->output);
 
     if(list != NULL &&
@@ -1918,7 +1918,7 @@ ags_file_read_line_member(AgsFile *file, xmlNode *node, AgsLineMember **line_mem
 			     TRUE);
     }
   }else if(AGS_IS_INDICATOR(child_widget)){
-    adjustment = gtk_adjustment_new(0.0, 0.0, 10.0, 1.0, 1.0, 10.0);
+    adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 10.0, 1.0, 1.0, 10.0);
     g_object_set(child_widget,
 		 "adjustment\0", adjustment,
 		 NULL);
@@ -2671,7 +2671,7 @@ ags_file_read_toolbar(AgsFile *file, xmlNode *node, AgsToolbar **toolbar)
     }while(gtk_tree_model_iter_next(model,
 				    &iter));
 
-    gtk_combo_box_set_active_iter(gobject->zoom,
+    gtk_combo_box_set_active_iter((GtkComboBox *) gobject->zoom,
 				  &iter);
 
     gobject->zoom_history = gtk_combo_box_get_active((GtkComboBox *) gobject->zoom);
@@ -2842,8 +2842,8 @@ ags_file_read_machine_selector_resolve_parameter(AgsFileLookup *file_lookup,
       return;
     }
 
-    editor = gtk_widget_get_ancestor((GtkWidget *) machine_selector,
-				     AGS_TYPE_EDITOR);
+    editor = (AgsEditor *) gtk_widget_get_ancestor((GtkWidget *) machine_selector,
+						   AGS_TYPE_EDITOR);
 
     machine_radio_button = g_object_new(AGS_TYPE_MACHINE_RADIO_BUTTON,
 					NULL);
