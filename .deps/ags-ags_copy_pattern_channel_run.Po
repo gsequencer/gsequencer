@@ -138,16 +138,8 @@ ags-ags_copy_pattern_channel_run.o: \
  /usr/include/bits/huge_valf.h /usr/include/bits/huge_vall.h \
  /usr/include/bits/inf.h /usr/include/bits/nan.h \
  /usr/include/bits/mathdef.h /usr/include/bits/mathcalls.h \
- src/ags/thread/ags_thread-posix.h src/ags/thread/ags_async_queue.h \
- /usr/include/linux/futex.h /usr/include/linux/types.h \
- /usr/include/asm/types.h /usr/include/asm-generic/types.h \
- /usr/include/asm-generic/int-ll64.h /usr/include/asm/bitsperlong.h \
- /usr/include/asm-generic/bitsperlong.h /usr/include/linux/posix_types.h \
- /usr/include/linux/stddef.h /usr/include/asm/posix_types.h \
- /usr/include/asm/posix_types_64.h /usr/include/asm-generic/posix_types.h \
- /usr/include/sys/time.h src/ags/object/ags_stackable.h \
- src/ags/thread/ags_task_thread.h src/ags/thread/ags_thread_pool.h \
- src/ags/object/ags_main_loop.h src/ags/audio/ags_task.h \
+ src/ags/thread/ags_thread-posix.h src/ags/thread/ags_task_thread.h \
+ src/ags/thread/ags_thread_pool.h src/ags/audio/ags_task.h \
  src/ags/thread/ags_devout_thread.h src/ags/thread/ags_iterator_thread.h \
  src/ags/audio/ags_channel.h /usr/include/gtk-2.0/gtk/gtk.h \
  /usr/include/gtk-2.0/gdk/gdk.h \
@@ -1036,41 +1028,9 @@ src/ags/thread/ags_audio_loop.h:
 
 src/ags/thread/ags_thread-posix.h:
 
-src/ags/thread/ags_async_queue.h:
-
-/usr/include/linux/futex.h:
-
-/usr/include/linux/types.h:
-
-/usr/include/asm/types.h:
-
-/usr/include/asm-generic/types.h:
-
-/usr/include/asm-generic/int-ll64.h:
-
-/usr/include/asm/bitsperlong.h:
-
-/usr/include/asm-generic/bitsperlong.h:
-
-/usr/include/linux/posix_types.h:
-
-/usr/include/linux/stddef.h:
-
-/usr/include/asm/posix_types.h:
-
-/usr/include/asm/posix_types_64.h:
-
-/usr/include/asm-generic/posix_types.h:
-
-/usr/include/sys/time.h:
-
-src/ags/object/ags_stackable.h:
-
 src/ags/thread/ags_task_thread.h:
 
 src/ags/thread/ags_thread_pool.h:
-
-src/ags/object/ags_main_loop.h:
 
 src/ags/audio/ags_task.h:
 

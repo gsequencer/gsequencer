@@ -310,8 +310,8 @@ ags_libao_init(AgsLibao *libao)
   libao->bpm = AGS_LIBAO_DEFAULT_BPM;
 
   /* delay and attack */
-  libao->delay = (guint *) malloc((int) ceil(2.0 * AGS_NOTATION_TICS_PER_BEAT) *
-				   sizeof(gdouble));
+  libao->delay = (gdouble *) malloc((int) ceil(2.0 * AGS_NOTATION_TICS_PER_BEAT) *
+				    sizeof(gdouble));
 
   libao->attack = (guint *) malloc((int) ceil(2.0 * AGS_NOTATION_TICS_PER_BEAT) *
 				   sizeof(guint));
@@ -358,9 +358,9 @@ ags_libao_set_property(GObject *gobject,
     {
       AgsMain *ags_main;
 
-      ags_main = g_value_get_object(value);
+      ags_main = (AgsMain *) g_value_get_object(value);
 
-      if(libao->ags_main == ags_main){
+      if((AgsMain *) libao->ags_main == ags_main){
 	return;
       }
 
@@ -372,7 +372,7 @@ ags_libao_set_property(GObject *gobject,
 	g_object_ref(G_OBJECT(ags_main));
       }
 
-      libao->ags_main = ags_main;
+      libao->ags_main = (AgsMain *) ags_main;
     }
     break;
   case PROP_DEVICE:

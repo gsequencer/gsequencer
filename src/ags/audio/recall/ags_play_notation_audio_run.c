@@ -582,7 +582,7 @@ ags_play_notation_audio_run_resolve_dependencies(AgsRecall *recall)
 	  (AGS_RECALL_OUTPUT_ORIENTATED & (AGS_RECALL(recall_dependency->dependency)->flags)) != 0)){
 	recall_id = recall->recall_id;
       }else{
-	recall_id = recall->recall_id->recycling_container->parent->recall_id;
+	recall_id = (AgsRecallID *) recall->recall_id->recycling_container->parent->recall_id;
       }
 
       delay_audio_run = (AgsDelayAudioRun *) ags_recall_dependency_resolve(recall_dependency, recall_id);
@@ -595,7 +595,7 @@ ags_play_notation_audio_run_resolve_dependencies(AgsRecall *recall)
 	  (AGS_RECALL_OUTPUT_ORIENTATED & (AGS_RECALL(recall_dependency->dependency)->flags)) != 0)){
 	recall_id = recall->recall_id;
       }else{
-	recall_id = recall->recall_id->recycling_container->parent->recall_id;
+	recall_id = (AgsRecallID *) recall->recall_id->recycling_container->parent->recall_id;
       }
 
       count_beats_audio_run = (AgsCountBeatsAudioRun *) ags_recall_dependency_resolve(recall_dependency, recall_id);
@@ -685,7 +685,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 			      audio_channel);
   }
 
-  timestamp_thread = AGS_DEVOUT_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop)->devout_thread)->timestamp_thread;
+  timestamp_thread = (AgsTimestampThread *) AGS_DEVOUT_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop)->devout_thread)->timestamp_thread;
   
   //TODO:JK: make it advanced
   notation = AGS_NOTATION(g_list_nth(list, audio_channel)->data);//AGS_NOTATION(ags_notation_find_near_timestamp(list, audio_channel,

@@ -247,7 +247,7 @@ ags_export_thread_start(AgsThread *thread)
   //TODO:JK: implement me
   g_message("export start");
 
-  export_thread = thread;
+  export_thread = (AgsExportThread *) thread;
   
   export_thread->counter = 0;
 
@@ -270,7 +270,7 @@ ags_export_thread_run(AgsThread *thread)
     export_thread->counter += 1;
   }
 
-  devout =  thread->devout;
+  devout =  (AgsDevout *) thread->devout;
 
   if((AGS_DEVOUT_BUFFER0 & (devout->flags)) != 0){
     devout_buffer = devout->buffer[0];

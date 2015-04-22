@@ -106,7 +106,8 @@ ags-ags_recycling_container.o: src/ags/audio/ags_recycling_container.c \
  src/ags/audio/ags_recycling.h src/ags/audio/ags_audio_signal.h \
  src/ags/audio/ags_recall_id.h /usr/include/stdlib.h \
  /usr/include/bits/waitflags.h /usr/include/bits/waitstatus.h \
- /usr/include/alloca.h /usr/include/bits/stdlib-float.h
+ /usr/include/alloca.h /usr/include/bits/stdlib-float.h \
+ /usr/include/string.h
 
 /usr/include/stdc-predef.h:
 
@@ -403,3 +404,5 @@ src/ags/audio/ags_recall_id.h:
 /usr/include/alloca.h:
 
 /usr/include/bits/stdlib-float.h:
+
+/usr/include/string.h:

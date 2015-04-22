@@ -69,7 +69,7 @@ ags_main_loop_base_init(AgsMainLoopInterface *interface)
  * Since: 0.4
  */
 void
-ags_main_loop_set_async_queue(AgsMainLoop *main_loop, AgsAsyncQueue *async_queue)
+ags_main_loop_set_async_queue(AgsMainLoop *main_loop, GObject *async_queue)
 {
   AgsMainLoopInterface *main_loop_interface;
 
@@ -89,7 +89,7 @@ ags_main_loop_set_async_queue(AgsMainLoop *main_loop, AgsAsyncQueue *async_queue
  *
  * Since: 0.4
  */
-AgsAsyncQueue*
+GObject*
 ags_main_loop_get_async_queue(AgsMainLoop *main_loop)
 {
   AgsMainLoopInterface *main_loop_interface;

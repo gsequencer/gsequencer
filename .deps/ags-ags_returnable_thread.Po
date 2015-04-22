@@ -128,14 +128,6 @@ ags-ags_returnable_thread.o: src/ags/thread/ags_returnable_thread.c \
  /usr/include/bits/waitstatus.h /usr/include/alloca.h \
  /usr/include/bits/stdlib-float.h /usr/include/libxml2/libxml/xlink.h \
  /usr/include/libxml2/libxml/SAX2.h src/ags/thread/ags_thread_pool.h \
- src/ags/object/ags_main_loop.h src/ags/thread/ags_async_queue.h \
- /usr/include/linux/futex.h /usr/include/linux/types.h \
- /usr/include/asm/types.h /usr/include/asm-generic/types.h \
- /usr/include/asm-generic/int-ll64.h /usr/include/asm/bitsperlong.h \
- /usr/include/asm-generic/bitsperlong.h /usr/include/linux/posix_types.h \
- /usr/include/linux/stddef.h /usr/include/asm/posix_types.h \
- /usr/include/asm/posix_types_64.h /usr/include/asm-generic/posix_types.h \
- /usr/include/sys/time.h src/ags/object/ags_stackable.h \
  /usr/include/unistd.h /usr/include/bits/posix_opt.h \
  /usr/include/bits/environments.h /usr/include/bits/confname.h \
  /usr/include/getopt.h /usr/include/errno.h /usr/include/bits/errno.h \
@@ -493,38 +485,6 @@ src/ags-lib/object/ags_connectable.h:
 /usr/include/libxml2/libxml/SAX2.h:
 
 src/ags/thread/ags_thread_pool.h:
-
-src/ags/object/ags_main_loop.h:
-
-src/ags/thread/ags_async_queue.h:
-
-/usr/include/linux/futex.h:
-
-/usr/include/linux/types.h:
-
-/usr/include/asm/types.h:
-
-/usr/include/asm-generic/types.h:
-
-/usr/include/asm-generic/int-ll64.h:
-
-/usr/include/asm/bitsperlong.h:
-
-/usr/include/asm-generic/bitsperlong.h:
-
-/usr/include/linux/posix_types.h:
-
-/usr/include/linux/stddef.h:
-
-/usr/include/asm/posix_types.h:
-
-/usr/include/asm/posix_types_64.h:
-
-/usr/include/asm-generic/posix_types.h:
-
-/usr/include/sys/time.h:
-
-src/ags/object/ags_stackable.h:
 
 /usr/include/unistd.h:
 

@@ -454,7 +454,7 @@ ags_synth_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 
   while((list = ags_file_lookup_find_by_node(list,
 					     node->parent)) != NULL){
-    file_lookup = AGS_FILE_LOOKUP(file_lookup->data);
+    file_lookup = AGS_FILE_LOOKUP(list->data);
     
     if(g_signal_handler_find(list->data,
 			     G_SIGNAL_MATCH_FUNC,

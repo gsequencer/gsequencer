@@ -22,8 +22,6 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/object/ags_main_loop.h>
-
 #ifdef AGS_USE_LINUX_THREADS
 #include <ags/thread/ags_thread-kthreads.h>
 #else

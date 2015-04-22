@@ -44,7 +44,7 @@ struct _AgsConfig
 {
   GObject object;
 
-  guint version;
+  gchar *version;
   gchar *build_id;
   
   GObject *ags_main;

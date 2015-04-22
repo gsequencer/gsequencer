@@ -381,7 +381,7 @@ ags_config_set(AgsConfig *config, gchar *group, gchar *key, gchar *value)
   gchar *old_value;
   GError *error;
   
-  ags_main = config->ags_main;
+  ags_main = (AgsMain *) config->ags_main;
 
   error = NULL;
   old_value = g_key_file_get_value(config->key_file, group, key, &error);
@@ -405,14 +405,14 @@ ags_config_set(AgsConfig *config, gchar *group, gchar *key, gchar *value)
 	return;
       }
       
-      autosave_thread = ags_main->autosave_thread;
+      autosave_thread = (AgsAutosaveThread *) ags_main->autosave_thread;
 
       if(!strncmp(value,
 		  "true\0",
 		  5)){
-	ags_thread_start(autosave_thread);
+	ags_thread_start((AgsThread *) autosave_thread);
       }else{
-	ags_thread_stop(autosave_thread);
+	ags_thread_stop((AgsThread *) autosave_thread);
       }
     }
   }else if(!strncmp(group,

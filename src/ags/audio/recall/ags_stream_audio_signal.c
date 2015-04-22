@@ -229,8 +229,8 @@ ags_stream_audio_signal_run_post(AgsRecall *recall)
   
   if(recall->parent != NULL &&
      recall->parent->parent != NULL){
-    stream_channel_run = recall->parent->parent;
-    stream_channel = AGS_RECALL_CHANNEL_RUN(stream_channel_run)->recall_channel;
+    stream_channel_run = (AgsStreamChannelRun *) recall->parent->parent;
+    stream_channel = (AgsStreamChannel *) AGS_RECALL_CHANNEL_RUN(stream_channel_run)->recall_channel;
   }else{
     stream_channel_run = NULL;
     stream_channel = NULL;

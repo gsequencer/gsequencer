@@ -452,7 +452,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 
 	  while(list != NULL){
 	    if(AGS_RECALL_ID(list->data)->recycling_container->parent == AGS_RECALL(copy_pattern_channel_run)->recall_id->recycling_container){
-	      child_recall_id = list->data;
+	      child_recall_id = (AgsRecallID *) list->data;
 	      break;
 	    }
 	  
@@ -465,7 +465,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 	}
 
 	audio_signal = ags_audio_signal_new(AGS_RECALL(copy_pattern_audio)->devout,
-					    recycling,
+					    (GObject *) recycling,
 					    child_recall_id);
 	ags_recycling_create_audio_signal_with_defaults(recycling,
 							audio_signal,
@@ -481,7 +481,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 	g_message("play %x\0", AGS_RECALL(copy_pattern_channel_run)->recall_id);
 #endif
 
-	audio_signal->recall_id = child_recall_id;
+	audio_signal->recall_id = (GObject *) child_recall_id;
 	ags_recycling_add_audio_signal(recycling,
 				       audio_signal);
 

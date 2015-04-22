@@ -1081,7 +1081,7 @@ ags_file_read_file_link(AgsFile *file, xmlNode *node, AgsFileLink **file_link)
   g_signal_connect(G_OBJECT(file_launch), "start\0",
 		   G_CALLBACK(ags_file_util_read_file_link_launch), gobject);
   ags_file_add_launch(file,
-		      file_launch);
+		      (GObject *) file_launch);
 }
 
 void
@@ -1107,13 +1107,14 @@ ags_file_util_read_file_link_launch(AgsFileLaunch *file_launch,
   
   /*  */
   input = NULL;
-  id_ref = ags_file_find_id_ref_by_node(file_launch->file, node->parent->parent);
+  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_node(file_launch->file,
+							 node->parent->parent);
 
   if(id_ref != NULL){
     input = (AgsChannel *) id_ref->ref;
   }
 
-  devout = AGS_AUDIO(input->audio)->devout;
+  devout = (AgsDevout *) AGS_AUDIO(input->audio)->devout;
 
   type = xmlGetProp(node,
 		    "type\0");

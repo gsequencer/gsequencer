@@ -267,7 +267,7 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
   }else{
     play_channel_run = AGS_RECALL_CHANNEL_RUN(recall->parent->parent);
     play_channel = ags_recall_find_provider(AGS_RECALL_CONTAINER(AGS_RECALL(play_channel_run)->container)->recall_channel,
-					    AGS_RECALL_CHANNEL_RUN(play_channel_run)->source)->data;
+					    (GObject *) AGS_RECALL_CHANNEL_RUN(play_channel_run)->source)->data;
 
     g_value_init(&muted_value, G_TYPE_BOOLEAN);
     ags_port_safe_read(play_channel->muted,

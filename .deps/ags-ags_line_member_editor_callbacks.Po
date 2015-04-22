@@ -530,15 +530,7 @@ ags-ags_line_member_editor_callbacks.o: \
  /usr/include/gtk-2.0/gtk/gtktipsquery.h \
  src/ags/X/ags_line_member_editor.h src/ags/X/ags_ladspa_browser.h \
  src/ags/main.h src/ags/thread/ags_thread-posix.h src/ags/lib/ags_log.h \
- src/ags/thread/ags_thread_pool.h src/ags/object/ags_main_loop.h \
- src/ags/thread/ags_async_queue.h /usr/include/linux/futex.h \
- /usr/include/linux/types.h /usr/include/asm/types.h \
- /usr/include/asm-generic/types.h /usr/include/asm-generic/int-ll64.h \
- /usr/include/asm/bitsperlong.h /usr/include/asm-generic/bitsperlong.h \
- /usr/include/linux/posix_types.h /usr/include/linux/stddef.h \
- /usr/include/asm/posix_types.h /usr/include/asm/posix_types_64.h \
- /usr/include/asm-generic/posix_types.h /usr/include/sys/time.h \
- src/ags/object/ags_stackable.h src/ags/server/ags_server.h \
+ src/ags/thread/ags_thread_pool.h src/ags/server/ags_server.h \
  /usr/include/netinet/in.h \
  /usr/lib/gcc/x86_64-unknown-linux-gnu/4.9.2/include/stdint.h \
  /usr/include/stdint.h /usr/include/bits/wchar.h \
@@ -1856,38 +1848,6 @@ src/ags/thread/ags_thread-posix.h:
 src/ags/lib/ags_log.h:
 
 src/ags/thread/ags_thread_pool.h:
-
-src/ags/object/ags_main_loop.h:
-
-src/ags/thread/ags_async_queue.h:
-
-/usr/include/linux/futex.h:
-
-/usr/include/linux/types.h:
-
-/usr/include/asm/types.h:
-
-/usr/include/asm-generic/types.h:
-
-/usr/include/asm-generic/int-ll64.h:
-
-/usr/include/asm/bitsperlong.h:
-
-/usr/include/asm-generic/bitsperlong.h:
-
-/usr/include/linux/posix_types.h:
-
-/usr/include/linux/stddef.h:
-
-/usr/include/asm/posix_types.h:
-
-/usr/include/asm/posix_types_64.h:
-
-/usr/include/asm-generic/posix_types.h:
-
-/usr/include/sys/time.h:
-
-src/ags/object/ags_stackable.h:
 
 src/ags/server/ags_server.h:
 

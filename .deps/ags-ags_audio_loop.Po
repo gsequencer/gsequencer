@@ -107,18 +107,11 @@ ags-ags_audio_loop.o: src/ags/thread/ags_audio_loop.c \
  /usr/include/glib-2.0/gobject/gtypeplugin.h \
  /usr/include/glib-2.0/gobject/gvaluearray.h \
  /usr/include/glib-2.0/gobject/gvaluetypes.h \
- src/ags/thread/ags_thread-posix.h src/ags/thread/ags_async_queue.h \
- /usr/include/linux/futex.h /usr/include/linux/types.h \
- /usr/include/asm/types.h /usr/include/asm-generic/types.h \
- /usr/include/asm-generic/int-ll64.h /usr/include/asm/bitsperlong.h \
- /usr/include/asm-generic/bitsperlong.h /usr/include/linux/posix_types.h \
- /usr/include/linux/stddef.h /usr/include/asm/posix_types.h \
- /usr/include/asm/posix_types_64.h /usr/include/asm-generic/posix_types.h \
- /usr/include/sys/time.h src/ags/object/ags_stackable.h \
- src/ags-lib/object/ags_connectable.h /usr/include/libxml2/libxml/tree.h \
- /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h \
- /usr/include/wchar.h /usr/include/bits/stdio_lim.h \
- /usr/include/bits/sys_errlist.h /usr/include/libxml2/libxml/xmlversion.h \
+ src/ags/thread/ags_thread-posix.h src/ags-lib/object/ags_connectable.h \
+ /usr/include/libxml2/libxml/tree.h /usr/include/stdio.h \
+ /usr/include/libio.h /usr/include/_G_config.h /usr/include/wchar.h \
+ /usr/include/bits/stdio_lim.h /usr/include/bits/sys_errlist.h \
+ /usr/include/libxml2/libxml/xmlversion.h \
  /usr/include/libxml2/libxml/xmlexports.h \
  /usr/include/libxml2/libxml/xmlstring.h \
  /usr/include/libxml2/libxml/xmlregexp.h \
@@ -138,8 +131,8 @@ ags-ags_audio_loop.o: src/ags/thread/ags_audio_loop.c \
  /usr/include/bits/waitstatus.h /usr/include/alloca.h \
  /usr/include/bits/stdlib-float.h /usr/include/libxml2/libxml/xlink.h \
  /usr/include/libxml2/libxml/SAX2.h src/ags/main.h src/ags/lib/ags_log.h \
- src/ags/thread/ags_thread_pool.h src/ags/object/ags_main_loop.h \
- src/ags/server/ags_server.h /usr/include/netinet/in.h \
+ src/ags/thread/ags_thread_pool.h src/ags/server/ags_server.h \
+ /usr/include/netinet/in.h \
  /usr/lib/gcc/x86_64-unknown-linux-gnu/4.9.2/include/stdint.h \
  /usr/include/stdint.h /usr/include/bits/wchar.h \
  /usr/include/sys/socket.h /usr/include/sys/uio.h /usr/include/bits/uio.h \
@@ -602,9 +595,17 @@ ags-ags_audio_loop.o: src/ags/thread/ags_audio_loop.c \
  src/ags/X/ags_preferences.h src/ags/X/ags_generic_preferences.h \
  src/ags/X/ags_audio_preferences.h \
  src/ags/X/ags_performance_preferences.h \
- src/ags/X/ags_server_preferences.h src/ags/thread/ags_mutex_manager.h \
- src/ags/thread/ags_export_thread.h src/ags/audio/file/ags_audio_file.h \
- src/ags/thread/ags_gui_thread.h src/ags/audio/ags_recall_audio.h \
+ src/ags/X/ags_server_preferences.h src/ags/object/ags_main_loop.h \
+ src/ags/thread/ags_mutex_manager.h src/ags/thread/ags_export_thread.h \
+ src/ags/audio/file/ags_audio_file.h src/ags/thread/ags_gui_thread.h \
+ src/ags/thread/ags_async_queue.h /usr/include/linux/futex.h \
+ /usr/include/linux/types.h /usr/include/asm/types.h \
+ /usr/include/asm-generic/types.h /usr/include/asm-generic/int-ll64.h \
+ /usr/include/asm/bitsperlong.h /usr/include/asm-generic/bitsperlong.h \
+ /usr/include/linux/posix_types.h /usr/include/linux/stddef.h \
+ /usr/include/asm/posix_types.h /usr/include/asm/posix_types_64.h \
+ /usr/include/asm-generic/posix_types.h /usr/include/sys/time.h \
+ src/ags/object/ags_stackable.h src/ags/audio/ags_recall_audio.h \
  src/ags/audio/ags_recall_audio_run.h src/ags/audio/ags_recall_channel.h \
  src/ags/audio/ags_recall_channel_run.h
 
@@ -906,36 +907,6 @@ src/ags/thread/ags_audio_loop.h:
 
 src/ags/thread/ags_thread-posix.h:
 
-src/ags/thread/ags_async_queue.h:
-
-/usr/include/linux/futex.h:
-
-/usr/include/linux/types.h:
-
-/usr/include/asm/types.h:
-
-/usr/include/asm-generic/types.h:
-
-/usr/include/asm-generic/int-ll64.h:
-
-/usr/include/asm/bitsperlong.h:
-
-/usr/include/asm-generic/bitsperlong.h:
-
-/usr/include/linux/posix_types.h:
-
-/usr/include/linux/stddef.h:
-
-/usr/include/asm/posix_types.h:
-
-/usr/include/asm/posix_types_64.h:
-
-/usr/include/asm-generic/posix_types.h:
-
-/usr/include/sys/time.h:
-
-src/ags/object/ags_stackable.h:
-
 src/ags-lib/object/ags_connectable.h:
 
 /usr/include/libxml2/libxml/tree.h:
@@ -1009,8 +980,6 @@ src/ags/main.h:
 src/ags/lib/ags_log.h:
 
 src/ags/thread/ags_thread_pool.h:
-
-src/ags/object/ags_main_loop.h:
 
 src/ags/server/ags_server.h:
 
@@ -2110,6 +2079,8 @@ src/ags/X/ags_performance_preferences.h:
 
 src/ags/X/ags_server_preferences.h:
 
+src/ags/object/ags_main_loop.h:
+
 src/ags/thread/ags_mutex_manager.h:
 
 src/ags/thread/ags_export_thread.h:
@@ -2117,6 +2088,36 @@ src/ags/thread/ags_export_thread.h:
 src/ags/audio/file/ags_audio_file.h:
 
 src/ags/thread/ags_gui_thread.h:
+
+src/ags/thread/ags_async_queue.h:
+
+/usr/include/linux/futex.h:
+
+/usr/include/linux/types.h:
+
+/usr/include/asm/types.h:
+
+/usr/include/asm-generic/types.h:
+
+/usr/include/asm-generic/int-ll64.h:
+
+/usr/include/asm/bitsperlong.h:
+
+/usr/include/asm-generic/bitsperlong.h:
+
+/usr/include/linux/posix_types.h:
+
+/usr/include/linux/stddef.h:
+
+/usr/include/asm/posix_types.h:
+
+/usr/include/asm/posix_types_64.h:
+
+/usr/include/asm-generic/posix_types.h:
+
+/usr/include/sys/time.h:
+
+src/ags/object/ags_stackable.h:
 
 src/ags/audio/ags_recall_audio.h:
 

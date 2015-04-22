@@ -667,7 +667,7 @@ ags_file_read_machine_resolve_audio(AgsFileLookup *file_lookup,
 	       "audio\0", (AgsAudio *) id_ref->ref,
 	       NULL);
 
-  AGS_AUDIO(id_ref->ref)->machine = machine;
+  AGS_AUDIO(id_ref->ref)->machine = (GtkWidget *) machine;
 
   g_signal_connect_after(G_OBJECT(machine->audio), "set_audio_channels\0",
 			 G_CALLBACK(ags_machine_set_audio_channels), machine);
@@ -1168,9 +1168,8 @@ ags_file_read_pad_resolve_channel(AgsFileLookup *file_lookup,
 
     channel_node = xpath_object->nodesetval->nodeTab[i];
 
-    file_id_ref = ags_file_find_id_ref_by_node(file,
-					       channel_node->parent);
-
+    file_id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_node(file,
+								channel_node->parent);
     g_object_set(G_OBJECT(pad),
 		 "channel\0", AGS_CHANNEL(file_id_ref->ref),
 		 NULL);
@@ -1523,7 +1522,7 @@ ags_file_read_line_resolve_channel(AgsFileLookup *file_lookup,
   if(machine->output != NULL){
     AgsPad *pad;
 
-    pad = gtk_widget_get_ancestor(line,
+    pad = gtk_widget_get_ancestor((GtkWidget *) line,
 				  AGS_TYPE_PAD);
     list = gtk_container_get_children(machine->output);
 
@@ -1607,8 +1606,8 @@ ags_file_read_line_resolve_channel(AgsFileLookup *file_lookup,
 
     channel_node = xpath_object->nodesetval->nodeTab[i];
 
-    file_id_ref = ags_file_find_id_ref_by_node(file,
-					       channel_node->parent);
+    file_id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_node(file,
+								channel_node->parent);
 
     g_object_set(G_OBJECT(line),
 		 "channel\0", AGS_CHANNEL(file_id_ref->ref),
@@ -1843,7 +1842,7 @@ ags_file_read_line_member(AgsFile *file, xmlNode *node, AgsLineMember **line_mem
   g_object_set(gobject,
 	       "widget-type\0", g_type_from_name(widget_type),
 	       NULL);
-  child_widget = (GtkWidget *) gtk_bin_get_child(gobject);
+  child_widget = (GtkWidget *) gtk_bin_get_child(GTK_BIN(gobject));
 
   /* label */
   label = (gchar *) xmlGetProp(node, "label\0");
@@ -1901,12 +1900,12 @@ ags_file_read_line_member(AgsFile *file, xmlNode *node, AgsLineMember **line_mem
   }else if(AGS_IS_DIAL(child_widget)){
     AgsDial *dial;
     
-    dial = child_widget;
+    dial = (AgsDial *) child_widget;
     adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0);
     g_object_set(child_widget,
 		 "adjustment\0", adjustment,
 		 NULL);
-    gtk_widget_set_size_request(dial,
+    gtk_widget_set_size_request((GtkWidget *) dial,
 				2 * dial->radius + 2 * dial->outline_strength + dial->button_width + 1,
 				2 * dial->radius + 2 * dial->outline_strength + 1);
   }else if(GTK_IS_RANGE(child_widget)){
@@ -2486,7 +2485,7 @@ ags_file_read_editor(AgsFile *file, xmlNode *node, AgsEditor **editor)
   g_signal_connect(G_OBJECT(file_launch), "start\0",
 		   G_CALLBACK(ags_file_read_editor_launch), gobject);
   ags_file_add_launch(file,
-		      file_launch);
+		      (GObject *) file_launch);
 }
 
 void
@@ -2542,11 +2541,11 @@ ags_file_read_editor_launch(AgsFileLaunch *file_launch,
   /* set zoom */
   zoom_factor = 0.25;
 
-  tact_factor = exp2(8.0 - (double) gtk_combo_box_get_active(editor->toolbar->zoom));
-  tact = exp2((double) gtk_combo_box_get_active(editor->toolbar->zoom) - 4.0);
+  tact_factor = exp2(8.0 - (double) gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->zoom));
+  tact = exp2((double) gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->zoom) - 4.0);
 
   /* reset note edit */
-  history = gtk_combo_box_get_active(editor->toolbar->zoom);
+  history = gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->zoom);
 
   editor->toolbar->zoom_history = history;
 
@@ -2560,8 +2559,8 @@ ags_file_read_editor_launch(AgsFileLaunch *file_launch,
   editor->note_edit->ruler->precision = tact;
   editor->note_edit->ruler->scale_precision = 1.0 / tact;
 
-  gtk_widget_queue_draw(editor->note_edit->ruler);
-  gtk_widget_queue_draw(editor->note_edit);
+  gtk_widget_queue_draw((GtkWidget *) editor->note_edit->ruler);
+  gtk_widget_queue_draw((GtkWidget *) editor->note_edit);
 }
 
 xmlNode*
@@ -2641,23 +2640,23 @@ ags_file_read_toolbar(AgsFile *file, xmlNode *node, AgsToolbar **toolbar)
 
   if(!g_strcmp0("position\0",
 		str)){
-    gtk_button_clicked(gobject->position);
+    gtk_button_clicked((GtkButton *) gobject->position);
   }else if(!g_strcmp0("edit\0",
 		      str)){
-    gtk_button_clicked(gobject->edit);
+    gtk_button_clicked((GtkButton *) gobject->edit);
   }else if(!g_strcmp0("clear\0",
 		      str)){
-    gtk_button_clicked(gobject->clear);
+    gtk_button_clicked((GtkButton *) gobject->clear);
   }else if(!g_strcmp0("select\0",
 		      str)){
-    gtk_button_clicked(gobject->select);
+    gtk_button_clicked((GtkButton *) gobject->select);
   }
 
   /* zoom */
   str = xmlGetProp(node,
 		   "zoom\0");
 
-  model = gtk_combo_box_get_model(gobject->zoom);
+  model = gtk_combo_box_get_model((GtkComboBox *) gobject->zoom);
 
   if(gtk_tree_model_get_iter_first(model, &iter)){
     do{
@@ -2675,14 +2674,14 @@ ags_file_read_toolbar(AgsFile *file, xmlNode *node, AgsToolbar **toolbar)
     gtk_combo_box_set_active_iter(gobject->zoom,
 				  &iter);
 
-    gobject->zoom_history = gtk_combo_box_get_active(gobject->zoom);
+    gobject->zoom_history = gtk_combo_box_get_active((GtkComboBox *) gobject->zoom);
   }
 
   /* mode */
   str = xmlGetProp(node,
 		   "mode\0");
   
-  model = gtk_combo_box_get_model(gobject->mode);
+  model = gtk_combo_box_get_model((GtkComboBox *) gobject->mode);
   
   if(gtk_tree_model_get_iter_first(model, &iter)){
     do{
@@ -2694,10 +2693,10 @@ ags_file_read_toolbar(AgsFile *file, xmlNode *node, AgsToolbar **toolbar)
 		    value)){
 	break;
       }
-    }while(gtk_tree_model_iter_next(model,
+    }while(gtk_tree_model_iter_next(GTK_TREE_MODEL(model),
 				    &iter));
 
-    gtk_combo_box_set_active_iter(gobject->mode,
+    gtk_combo_box_set_active_iter((GtkComboBox *) gobject->mode,
 				  &iter);
   }
 }
@@ -2843,13 +2842,13 @@ ags_file_read_machine_selector_resolve_parameter(AgsFileLookup *file_lookup,
       return;
     }
 
-    editor = gtk_widget_get_ancestor(machine_selector,
+    editor = gtk_widget_get_ancestor((GtkWidget *) machine_selector,
 				     AGS_TYPE_EDITOR);
 
     machine_radio_button = g_object_new(AGS_TYPE_MACHINE_RADIO_BUTTON,
 					NULL);
     gtk_box_pack_start(GTK_BOX(machine_selector),
-		       machine_radio_button,
+		       (GtkWidget *) machine_radio_button,
 		       FALSE, FALSE,
 		       0);
     g_object_set(machine_radio_button,
@@ -2858,7 +2857,7 @@ ags_file_read_machine_selector_resolve_parameter(AgsFileLookup *file_lookup,
 
     if(editor->selected_machine == NULL){
       ags_editor_machine_changed(editor,
-				 gobject);
+				 (AgsMachine *) gobject);
     }
 
   }
@@ -3009,7 +3008,7 @@ ags_file_read_navigation(AgsFile *file, xmlNode *node, AgsNavigation **navigatio
   if(!xmlStrncmp(str,
 		 AGS_FILE_TRUE,
 		 5)){
-    gtk_toggle_button_set_active(gobject->expander,
+    gtk_toggle_button_set_active((GtkToggleButton *) gobject->expander,
 				 TRUE);
   }
 
@@ -3025,7 +3024,7 @@ ags_file_read_navigation(AgsFile *file, xmlNode *node, AgsNavigation **navigatio
   if(!xmlStrncmp(str,
 		 AGS_FILE_TRUE,
 		 5)){
-    gtk_toggle_button_set_active(gobject->loop,
+    gtk_toggle_button_set_active((GtkToggleButton *) gobject->loop,
 				 TRUE);
   }
 
@@ -3073,7 +3072,7 @@ ags_file_write_navigation(AgsFile *file, xmlNode *parent, AgsNavigation *navigat
 
   xmlNewProp(node,
 	     "expanded\0",
-	     g_strdup_printf("%s\0", ((gtk_toggle_button_get_active(navigation->expander)) ? AGS_FILE_TRUE: AGS_FILE_FALSE)));
+	     g_strdup_printf("%s\0", ((gtk_toggle_button_get_active((GtkToggleButton *) navigation->expander)) ? AGS_FILE_TRUE: AGS_FILE_FALSE)));
   
   xmlNewProp(node,
 	     "bpm\0",
@@ -3081,7 +3080,7 @@ ags_file_write_navigation(AgsFile *file, xmlNode *parent, AgsNavigation *navigat
   
   xmlNewProp(node,
 	     "loop\0",
-	     g_strdup_printf("%s\0", ((gtk_toggle_button_get_active(navigation->loop)) ? AGS_FILE_TRUE: AGS_FILE_FALSE)));
+	     g_strdup_printf("%s\0", ((gtk_toggle_button_get_active((GtkToggleButton *) navigation->loop)) ? AGS_FILE_TRUE: AGS_FILE_FALSE)));
  
   xmlNewProp(node,
 	     "position\0",

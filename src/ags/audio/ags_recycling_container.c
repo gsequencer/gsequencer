@@ -21,6 +21,7 @@
 #include <ags/audio/ags_recall_id.h>
 
 #include <stdlib.h>
+#include <string.h>
 
 void ags_recycling_container_class_init(AgsRecyclingContainerClass *recycling_container_class);
 void ags_recycling_container_init(AgsRecyclingContainer *recycling_container);
@@ -214,7 +215,7 @@ ags_recycling_container_set_property(GObject *gobject,
 
       recall_id = (AgsRecallID *) g_value_get_object(value);
 
-      if(recall_id == recycling_container->recall_id){
+      if((AgsRecallID *) recall_id == recycling_container->recall_id){
 	return;
       }
 

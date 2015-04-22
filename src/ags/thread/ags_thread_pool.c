@@ -195,7 +195,7 @@ ags_thread_pool_init(AgsThreadPool *thread_pool)
   list = NULL;
 
   for(i = 0; i < g_atomic_int_get(&(thread_pool->max_unused_threads)); i++){
-    thread = (AgsThread *) ags_returnable_thread_new(thread_pool);
+    thread = (AgsThread *) ags_returnable_thread_new((GObject *) thread_pool);
 
     list = g_list_prepend(list, thread);
   }
@@ -345,7 +345,7 @@ ags_thread_pool_creation_thread(void *ptr)
     
     if(n_threads < max_threads){
       for(i = 0; i < i_stop && n_threads < max_threads; i++){
-	thread = (AgsThread *) ags_returnable_thread_new(thread_pool);
+	thread = (AgsThread *) ags_returnable_thread_new((GObject *) thread_pool);
 	tmplist = g_atomic_pointer_get(&(thread_pool->returnable_thread));
 	g_atomic_pointer_set(&(thread_pool->returnable_thread),
 			     g_list_prepend(tmplist, thread));      
