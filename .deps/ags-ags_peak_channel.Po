@@ -598,7 +598,7 @@ ags-ags_peak_channel.o: src/ags/audio/recall/ags_peak_channel.c \
  src/ags/X/ags_audio_preferences.h \
  src/ags/X/ags_performance_preferences.h \
  src/ags/X/ags_server_preferences.h src/ags/object/ags_mutable.h \
- src/ags/object/ags_plugin.h
+ src/ags/object/ags_plugin.h src/ags/audio/ags_output.h
 
 /usr/include/stdc-predef.h:
 
@@ -2077,3 +2077,5 @@ src/ags/X/ags_server_preferences.h:
 src/ags/object/ags_mutable.h:
 
 src/ags/object/ags_plugin.h:
+
+src/ags/audio/ags_output.h:

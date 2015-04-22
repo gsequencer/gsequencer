@@ -25,6 +25,9 @@
 #include <ags/object/ags_mutable.h>
 #include <ags/object/ags_plugin.h>
 
+#include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_output.h>
+
 void ags_peak_channel_class_init(AgsPeakChannelClass *peak_channel);
 void ags_peak_channel_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_peak_channel_plugin_interface_init(AgsPluginInterface *plugin);
@@ -330,7 +333,7 @@ ags_peak_channel_retrieve_peak(AgsPeakChannel *peak_channel,
 
   source = AGS_RECALL_CHANNEL(peak_channel)->source;
   recycling = source->first_recycling;
-
+  
   /* initialize buffer */
   buffer = (double *) malloc(buffer_size * sizeof(double));
   for(i = 0; i < buffer_size; i++) buffer[i] = 0.0;
@@ -353,7 +356,7 @@ ags_peak_channel_retrieve_peak(AgsPeakChannel *peak_channel,
   }
 
   /* calculate average value */
-  current_value = 0.0;
+  current_value = 1.0 / (1.0 / G_MAXUINT16 * (1.0 / 45.0));
 
   for(i = 0; i < buffer_size; i++){
     if(buffer[i] == 0){
