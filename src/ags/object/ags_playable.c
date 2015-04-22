@@ -452,6 +452,9 @@ ags_playable_read_audio_signal(AgsPlayable *playable,
   guint i, j, k, i_stop, j_stop;
   GError *error;
 
+  g_return_val_if_fail(AGS_IS_PLAYABLE(playable),
+		       NULL);
+
   ags_playable_info(playable,
 		    &channels, &frames,
 		    &loop_start, &loop_end,

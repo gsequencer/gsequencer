@@ -617,14 +617,18 @@ ags_recycling_container_reset_recycling(AgsRecyclingContainer *recycling_contain
   guint i;
   gboolean new_context;
 
-  if(ags_recycling_position(old_first_recycling, old_last_recycling->next,
-			    new_first_recycling) == -1){
-    if(old_first_recycling->prev == new_last_recycling){
-      new_context = FALSE;
-    }else if(old_first_recycling->next == new_first_recycling){
-      new_context = FALSE;
+  if(old_first_recycling != NULL){
+    if(ags_recycling_position(old_first_recycling, old_last_recycling->next,
+			      new_first_recycling) == -1){
+      if(old_first_recycling->prev == new_last_recycling){
+	new_context = FALSE;
+      }else if(old_first_recycling->next == new_first_recycling){
+	new_context = FALSE;
+      }else{
+	new_context = TRUE;
+      }
     }else{
-      new_context = TRUE;
+      new_context = FALSE;
     }
   }else{
     new_context = FALSE;

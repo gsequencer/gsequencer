@@ -46,7 +46,7 @@ void ags_peak_channel_run_finalize(GObject *gobject);
 AgsRecall* ags_peak_channel_run_duplicate(AgsRecall *recall,
 					    AgsRecallID *recall_id,
 					    guint *n_params, GParameter *parameter);
-void ags_peak_channel_run_run_post(AgsRecall *recall);
+void ags_peak_channel_run_run_inter(AgsRecall *recall);
 
 /**
  * SECTION:ags_peak_channel_run
@@ -126,7 +126,7 @@ ags_peak_channel_run_class_init(AgsPeakChannelRunClass *peak_channel_run)
   recall = (AgsRecallClass *) peak_channel_run;
 
   recall->duplicate = ags_peak_channel_run_duplicate;
-  recall->run_post = ags_peak_channel_run_run_post;
+  recall->run_inter = ags_peak_channel_run_run_inter;
 }
 
 void
@@ -219,7 +219,7 @@ ags_peak_channel_run_duplicate(AgsRecall *recall,
 }
 
 void
-ags_peak_channel_run_run_post(AgsRecall *recall)
+ags_peak_channel_run_run_inter(AgsRecall *recall)
 {
   AgsChannel *source;
   AgsRecallChannel *recall_channel;
