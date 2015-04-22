@@ -255,8 +255,8 @@ ags_synth_init(AgsSynth *synth)
   hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
   gtk_container_add((GtkContainer*) (gtk_bin_get_child((GtkBin *) synth)), (GtkWidget *) hbox);
 
-  synth->input_pad = (GtkHBox *) gtk_vbox_new(FALSE, 0);
-  AGS_MACHINE(synth)->input = synth->input_pad;
+  synth->input_pad = (GtkVBox *) gtk_vbox_new(FALSE, 0);
+  AGS_MACHINE(synth)->input = (GtkContainer *) synth->input_pad;
   gtk_box_pack_start((GtkBox *) hbox,
 		     (GtkWidget *) AGS_MACHINE(synth)->input,
 		     FALSE,
@@ -452,8 +452,10 @@ ags_synth_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 
   list = file->lookup;
 
-  while((file_lookup = ags_file_lookup_find_by_node(list,
-						    node->parent)) != NULL){
+  while((list = ags_file_lookup_find_by_node(list,
+					     node->parent)) != NULL){
+    file_lookup = AGS_FILE_LOOKUP(file_lookup->data);
+    
     if(g_signal_handler_find(list->data,
 			     G_SIGNAL_MATCH_FUNC,
 			     0,
@@ -587,11 +589,11 @@ ags_synth_update(AgsSynth *synth)
   /* write input */
   channel = AGS_MACHINE(synth)->audio->input;
   input_pad_start = 
-    input_pad = gtk_container_get_children(synth->input_pad);
+    input_pad = gtk_container_get_children((GtkContainer *)synth->input_pad);
 
   while(input_pad != NULL){
-    input_line = gtk_container_get_children(AGS_PAD(input_pad->data)->expander_set);
-    oscillator = AGS_OSCILLATOR(gtk_container_get_children(AGS_LINE(input_line->data)->expander->table)->data);
+    input_line = gtk_container_get_children((GtkContainer *) AGS_PAD(input_pad->data)->expander_set);
+    oscillator = AGS_OSCILLATOR(gtk_container_get_children((GtkContainer *) AGS_LINE(input_line->data)->expander->table)->data);
 
     wave = (guint) gtk_combo_box_get_active(oscillator->wave) + 1;
     attack = (guint) gtk_spin_button_get_value_as_int(oscillator->attack);
@@ -619,11 +621,11 @@ ags_synth_update(AgsSynth *synth)
   /* write output */
   channel = AGS_MACHINE(synth)->audio->output;
   input_pad_start = 
-    input_pad = gtk_container_get_children(synth->input_pad);
+    input_pad = gtk_container_get_children((GtkContainer *) synth->input_pad);
 
   while(input_pad != NULL){
-    input_line = gtk_container_get_children(AGS_PAD(input_pad->data)->expander_set);
-    oscillator = AGS_OSCILLATOR(gtk_container_get_children(AGS_LINE(input_line->data)->expander->table)->data);
+    input_line = gtk_container_get_children((GtkContainer *) AGS_PAD(input_pad->data)->expander_set);
+    oscillator = AGS_OSCILLATOR(gtk_container_get_children((GtkContainer *) AGS_LINE(input_line->data)->expander->table)->data);
 
     wave = (guint) gtk_combo_box_get_active(oscillator->wave) + 1;
     attack = (guint) gtk_spin_button_get_value_as_int(oscillator->attack);

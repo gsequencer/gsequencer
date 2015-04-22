@@ -78,7 +78,7 @@ struct _AgsLineClass
 
   void (*map_recall)(AgsLine *line,
 		     guint output_pad_start);
-  GList (*find_port)(AgsLine *line);
+  GList* (*find_port)(AgsLine *line);
 };
 
 GType ags_line_get_type(void);

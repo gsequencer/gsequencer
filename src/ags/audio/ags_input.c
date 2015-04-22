@@ -174,7 +174,7 @@ ags_input_set_property(GObject *gobject,
 	g_object_ref(G_OBJECT(file_link));
       }
 
-      input->file_link = file_link;
+      input->file_link = (GObject *) file_link;
     }
     break;
   default:

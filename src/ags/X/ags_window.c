@@ -265,9 +265,9 @@ ags_window_set_property(GObject *gobject,
     {
       AgsMain *ags_main;
 
-      ags_main = g_value_get_object(value);
+      ags_main = (AgsMain *) g_value_get_object(value);
 
-      if(window->ags_main == ags_main)
+      if((AgsMain *) window->ags_main == ags_main)
 	return;
 
       if(window->ags_main != NULL){
@@ -278,7 +278,7 @@ ags_window_set_property(GObject *gobject,
 	g_object_ref(ags_main);
       }
 
-      window->ags_main = ags_main;
+      window->ags_main = (GObject *) ags_main;
 
       g_object_set(G_OBJECT(window->export_window),
 		   "ags-main\0", ags_main,
@@ -328,7 +328,7 @@ ags_window_connect(AgsConnectable *connectable)
   ags_connectable_connect(AGS_CONNECTABLE(window->menu_bar));
 
   list_start = 
-    list = gtk_container_get_children(window->machines);
+    list = gtk_container_get_children((GtkWidget *) window->machines);
 
   while(list != NULL){
     ags_connectable_connect(AGS_CONNECTABLE(list->data));

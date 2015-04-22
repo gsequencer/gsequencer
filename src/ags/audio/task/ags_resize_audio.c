@@ -176,7 +176,7 @@ ags_resize_audio_launch(AgsTask *task)
       }
     }
 
-    machine = resize_audio->audio->machine;
+    machine = (AgsMachine *) resize_audio->audio->machine;
     list = gtk_container_get_children(machine->output);
     list = g_list_nth(list,
 		      pads_old);
@@ -207,7 +207,7 @@ ags_resize_audio_launch(AgsTask *task)
       }
     }
 
-    machine = resize_audio->audio->machine;
+    machine = (AgsMachine *) resize_audio->audio->machine;
     list = gtk_container_get_children(machine->input);
     list = g_list_nth(list,
 		      pads_old);

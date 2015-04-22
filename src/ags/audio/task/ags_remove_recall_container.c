@@ -150,8 +150,8 @@ ags_remove_recall_container_launch(AgsTask *task)
 
   remove_recall_container = AGS_REMOVE_RECALL_CONTAINER(task);
 
-  ags_audio_remove_recall_container(remove_recall_container->audio,
-				    remove_recall_container->recall_container);
+  ags_audio_remove_recall_container((AgsAudio *) remove_recall_container->audio,
+				    (GObject *) remove_recall_container->recall_container);
 }
 
 /**

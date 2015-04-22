@@ -187,7 +187,7 @@ ags_main_init(AgsMain *ags_main)
 
   /* AgsAutosaveThread */
   ags_main->autosave_thread = NULL;
-  ags_main->autosave_thread = ags_autosave_thread_new(NULL, ags_main);
+  ags_main->autosave_thread = (AgsThread *) ags_autosave_thread_new(NULL, ags_main);
   g_object_ref(G_OBJECT(ags_main->autosave_thread));
   ags_connectable_connect(AGS_CONNECTABLE(ags_main->autosave_thread));
   

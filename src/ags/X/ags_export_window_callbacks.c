@@ -57,7 +57,7 @@ ags_export_window_file_chooser_button_callback(GtkWidget *file_chooser_button,
 		       filename);
   }
   
-  gtk_widget_destroy(file_chooser);
+  gtk_widget_destroy((GtkWidget *) file_chooser);
 }
 
 void
@@ -83,14 +83,14 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
   
   machines_start = NULL;
 
-  if(gtk_toggle_button_get_active(toggle_button)){
+  if(gtk_toggle_button_get_active((GtkToggleButton *) toggle_button)){
     AgsExportOutput *export_output;
     AgsExportThread *export_thread;
     GList *machines;
     gchar *filename;
     gboolean live_performance;
 
-    export_thread = audio_loop->export_thread;
+    export_thread = (AgsExportThread *) audio_loop->export_thread;
 
     filename = gtk_entry_get_text(export_window->filename);
 
@@ -110,13 +110,13 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
 	return;
       }
 
-      dialog = gtk_message_dialog_new(export_window,
+      dialog = gtk_message_dialog_new((GtkWindow *) export_window,
 				      GTK_DIALOG_MODAL,
 				      GTK_MESSAGE_QUESTION,
 				      GTK_BUTTONS_OK_CANCEL,
 				      "Replace existing file?\0");
       response = gtk_dialog_run(dialog);
-      gtk_widget_destroy(dialog);
+      gtk_widget_destroy((GtkWidget *) dialog);
 
       if(response == GTK_RESPONSE_REJECT){
 	return;
@@ -126,7 +126,7 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
     }
 
     /* get some preferences */
-    live_performance = gtk_toggle_button_get_active(export_window->live_export);
+    live_performance = gtk_toggle_button_get_active((GtkToggleButton *) export_window->live_export);
 
     machines_start = 
       machines = gtk_container_get_children(GTK_CONTAINER(window->machines));
@@ -163,7 +163,7 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
       mutex_manager = ags_mutex_manager_get_instance();
 
       devout_mutex = ags_mutex_manager_lookup(mutex_manager,
-					      window->devout);
+					      (GObject *) window->devout);
   
       pthread_mutex_unlock(&(ags_application_mutex));
 
@@ -186,7 +186,7 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
 
       /* append AgsStartDevout */
       ags_task_thread_append_task(AGS_TASK_THREAD(audio_loop->task_thread),
-				  export_output);
+				  (AgsTask *) export_output);
 
       ags_navigation_set_seeking_sensitive(window->navigation,
 					   FALSE);

@@ -118,14 +118,14 @@ ags_editor_change_position_callback(AgsNavigation *navigation, gdouble tact,
   gdouble loop_start, loop_end;
   gdouble position;
 
-  if(!gtk_toggle_button_get_active(navigation->scroll)){
+  if(!gtk_toggle_button_get_active((GtkToggleButton *) navigation->scroll)){
     return;
   }
 
   loop_start = gtk_spin_button_get_value(navigation->loop_left_tact);
   loop_end = gtk_spin_button_get_value(navigation->loop_right_tact);
 
-  if(!gtk_toggle_button_get_active(navigation->loop) || tact <= loop_end){
+  if(!gtk_toggle_button_get_active((GtkToggleButton *) navigation->loop) || tact <= loop_end){
     position = tact * editor->note_edit->control_current.control_width;
   }else{
     position = loop_start * editor->note_edit->control_current.control_width;

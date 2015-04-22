@@ -647,8 +647,10 @@ ags_drum_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 
   list = file->lookup;
 
-  while((file_lookup = ags_file_lookup_find_by_node(list,
-						    node->parent)) != NULL){
+  while((list = ags_file_lookup_find_by_node(list,
+					     node->parent)) != NULL){
+    file_lookup = AGS_FILE_LOOKUP(list->data);
+    
     if(g_signal_handler_find(list->data,
 			     G_SIGNAL_MATCH_FUNC,
 			     0,
@@ -666,14 +668,14 @@ ags_drum_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
   }
 
   /*  */
-  file_launch = g_object_new(AGS_TYPE_FILE_LAUNCH,
-			     "node\0", node,
-			     "file\0", file,
-			     NULL);
+  file_launch = (AgsFileLaunch *) g_object_new(AGS_TYPE_FILE_LAUNCH,
+					       "node\0", node,
+					       "file\0", file,
+					       NULL);
   g_signal_connect(G_OBJECT(file_launch), "start\0",
 		   G_CALLBACK(ags_drum_launch_task), gobject);
   ags_file_add_launch(file,
-		      file_launch);
+		      (GObject *) file_launch);
 }
 
 void
@@ -692,11 +694,11 @@ ags_drum_read_resolve_audio(AgsFileLookup *file_lookup,
 			 G_CALLBACK(ags_drum_set_pads), drum);
 
   pad_start = 
-    pad = gtk_container_get_children(machine->input);
+    pad = gtk_container_get_children((GtkContainer *) machine->input);
 
   while(pad != NULL){
     line_start = 
-      line = gtk_container_get_children(AGS_PAD(pad->data)->expander_set);
+      line = gtk_container_get_children((GtkContainer *) AGS_PAD(pad->data)->expander_set);
 
     while(line != NULL){
       /* AgsAudio */
@@ -730,7 +732,7 @@ ags_drum_launch_task(AgsFileLaunch *file_launch, AgsDrum *drum)
   if(!g_strcmp0(xmlGetProp(node,
 			   "loop\0"),
 		AGS_FILE_TRUE)){
-    gtk_toggle_button_set_active(drum->loop_button,
+    gtk_toggle_button_set_active((GtkToggleButton *) drum->loop_button,
 				 TRUE);
   }
 
@@ -808,7 +810,7 @@ ags_drum_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 
   xmlNewProp(node,
 	     "loop\0",
-	     g_strdup_printf("%s\0", ((gtk_toggle_button_get_active(drum->loop_button)) ? AGS_FILE_TRUE: AGS_FILE_FALSE)));
+	     g_strdup_printf("%s\0", ((gtk_toggle_button_get_active((GtkToggleButton *) drum->loop_button)) ? AGS_FILE_TRUE: AGS_FILE_FALSE)));
 
   xmlAddChild(parent,
 	      node);

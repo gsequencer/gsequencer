@@ -211,7 +211,7 @@ ags_open_file_launch(AgsTask *task)
       iter = iter->next;
     }
 
-    machine = audio->machine;
+    machine = (AgsMachine *) audio->machine;
     list = gtk_container_get_children(machine->input);
     list = g_list_nth(list,
 		      pads_old);

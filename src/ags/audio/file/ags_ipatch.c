@@ -337,7 +337,7 @@ ags_ipatch_open(AgsPlayable *playable, gchar *filename)
     ipatch->flags |= AGS_IPATCH_SF2;
 
     /*  */
-    ipatch->reader = ags_ipatch_sf2_reader_new();
+    ipatch->reader = (GObject *) ags_ipatch_sf2_reader_new();
     AGS_IPATCH_SF2_READER(ipatch->reader)->ipatch = ipatch;
 
     AGS_IPATCH_SF2_READER(ipatch->reader)->reader = ipatch_sf2_reader_new(ipatch->handle);

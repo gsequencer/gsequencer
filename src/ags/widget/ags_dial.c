@@ -191,7 +191,7 @@ ags_dial_set_property(GObject *gobject,
 	g_object_ref(G_OBJECT(adjustment));
       }
 
-      dial->adjustment = (GObject *) adjustment;
+      dial->adjustment = adjustment;
     }
     break;
   default:
@@ -227,7 +227,7 @@ ags_dial_map(GtkWidget *widget)
     GTK_WIDGET_CLASS (ags_dial_parent_class)->map(widget);
     
     gdk_window_show(widget->window);
-    ags_dial_draw(widget);
+    ags_dial_draw((AgsDial *) widget);
   }
 }
 

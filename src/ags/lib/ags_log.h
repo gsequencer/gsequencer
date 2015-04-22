@@ -22,7 +22,6 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#define __USE_UNIX98
 #include <pthread.h>
 #include <time.h>
 #include <stdio.h>

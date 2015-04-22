@@ -402,7 +402,7 @@ ags_devout_init(AgsDevout *devout)
   mutex_manager = ags_mutex_manager_get_instance();
 
   ags_mutex_manager_insert(mutex_manager,
-			   devout,
+			   (GObject *) devout,
 			   mutex);
   
   pthread_mutex_unlock(&(ags_application_mutex));
@@ -502,7 +502,7 @@ ags_devout_set_property(GObject *gobject,
     {
       AgsMain *ags_main;
 
-      ags_main = g_value_get_object(value);
+      ags_main = (AgsMain *) g_value_get_object(value);
 
       if(devout->ags_main == ags_main){
 	return;
@@ -516,7 +516,7 @@ ags_devout_set_property(GObject *gobject,
 	g_object_ref(G_OBJECT(ags_main));
       }
 
-      devout->ags_main = ags_main;
+      devout->ags_main = (GObject *) ags_main;
     }
     break;
   case PROP_DEVICE:
@@ -1040,7 +1040,7 @@ ags_devout_add_audio(AgsDevout *devout, GObject *audio)
   mutex_manager = ags_mutex_manager_get_instance();
 
   mutex = ags_mutex_manager_lookup(mutex_manager,
-				   devout);
+				   (GObject *) devout);
   
   pthread_mutex_unlock(&(ags_application_mutex));
 
@@ -1080,7 +1080,7 @@ ags_devout_remove_audio(AgsDevout *devout, GObject *audio)
   mutex_manager = ags_mutex_manager_get_instance();
 
   mutex = ags_mutex_manager_lookup(mutex_manager,
-				   devout);
+				   (GObject *) devout);
   
   pthread_mutex_unlock(&(ags_application_mutex));
 
@@ -1113,7 +1113,7 @@ ags_devout_tic(AgsDevout *devout)
   mutex_manager = ags_mutex_manager_get_instance();
 
   mutex = ags_mutex_manager_lookup(mutex_manager,
-				   devout);
+				   (GObject *) devout);
   
   pthread_mutex_unlock(&(ags_application_mutex));
 
@@ -1160,7 +1160,7 @@ ags_devout_switch_buffer_flag(AgsDevout *devout)
   mutex_manager = ags_mutex_manager_get_instance();
 
   mutex = ags_mutex_manager_lookup(mutex_manager,
-				   devout);
+				   (GObject *) devout);
   
   pthread_mutex_unlock(&(ags_application_mutex));
 
@@ -1214,7 +1214,7 @@ ags_devout_alsa_init(AgsDevout *devout,
   mutex_manager = ags_mutex_manager_get_instance();
 
   mutex = ags_mutex_manager_lookup(mutex_manager,
-				   devout);
+				   (GObject *) devout);
   
   pthread_mutex_unlock(&(ags_application_mutex));
 
@@ -1403,7 +1403,7 @@ ags_devout_alsa_play(AgsDevout *devout,
   mutex_manager = ags_mutex_manager_get_instance();
 
   mutex = ags_mutex_manager_lookup(mutex_manager,
-				   devout);
+				   (GObject *) devout);
   
   pthread_mutex_unlock(&(ags_application_mutex));
 
@@ -1590,7 +1590,7 @@ ags_devout_alsa_free(AgsDevout *devout)
   mutex_manager = ags_mutex_manager_get_instance();
 
   mutex = ags_mutex_manager_lookup(mutex_manager,
-				   devout);
+				   (GObject *) devout);
   
   pthread_mutex_unlock(&(ags_application_mutex));
 

@@ -447,7 +447,7 @@ ags_ffplayer_connect(AgsConnectable *connectable)
 
   /* AgsFFPlayer */
   ffplayer = AGS_FFPLAYER(connectable);
-  window = gtk_widget_get_toplevel(ffplayer);
+  window = gtk_widget_get_toplevel((GtkWidget *) ffplayer);
 
   g_signal_connect((GObject *) ffplayer->open, "clicked\0",
 		   G_CALLBACK(ags_ffplayer_open_clicked_callback), (gpointer) ffplayer);
@@ -470,7 +470,7 @@ ags_ffplayer_connect(AgsConnectable *connectable)
 
   /* AgsAudio */  
   //TODO:JK: magnify it
-  if(!gtk_toggle_button_get_active(window->navigation->loop)){
+  if(!gtk_toggle_button_get_active((GtkToggleButton *) window->navigation->loop)){
     GList *list;
 
     list = ags_recall_find_type(ffplayer->machine.audio->play, AGS_TYPE_COUNT_BEATS_AUDIO_RUN);
@@ -548,8 +548,10 @@ ags_ffplayer_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 
   list = file->lookup;
 
-  while((file_lookup = ags_file_lookup_find_by_node(list,
-						    node->parent)) != NULL){
+  while((list = ags_file_lookup_find_by_node(list,
+					     node->parent)) != NULL){
+    file_lookup = AGS_FILE_LOOKUP(list->data);
+    
     if(g_signal_handler_find(list->data,
 			     G_SIGNAL_MATCH_FUNC,
 			     0,
@@ -566,13 +568,13 @@ ags_ffplayer_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
     list = list->next;
   }
 
-  file_launch = g_object_new(AGS_TYPE_FILE_LAUNCH,
-			     "node\0", node,
-			     NULL);
+  file_launch = (AgsFileLaunch *) g_object_new(AGS_TYPE_FILE_LAUNCH,
+					       "node\0", node,
+					       NULL);
   g_signal_connect(G_OBJECT(file_launch), "start\0",
 		   G_CALLBACK(ags_ffplayer_launch_task), gobject);
   ags_file_add_launch(file,
-		      file_launch);
+		      G_OBJECT(file_launch));
 }
 
 void
@@ -657,7 +659,7 @@ ags_ffplayer_launch_task(AgsFileLaunch *file_launch, AgsFFPlayer *ffplayer)
   if(g_str_has_suffix(filename, ".sf2\0")){
     AgsIpatch *ipatch;
     AgsPlayable *playable;
-    gchar **preset, **instrument;
+    gchar **preset, **instrument, *selected;
     GError *error;
 
     /* clear preset, instrument and sample*/
@@ -708,10 +710,10 @@ ags_ffplayer_launch_task(AgsFileLaunch *file_launch, AgsFFPlayer *ffplayer)
     }
 
     /* Get the first iter in the list */
-    preset = xmlGetProp(node,
-			"preset\0");
+    selected = xmlGetProp(node,
+			  "preset\0");
 
-    list_store = gtk_combo_box_get_model(ffplayer->preset);
+    list_store = gtk_combo_box_get_model((GtkComboBox *) ffplayer->preset);
 
     if(gtk_tree_model_get_iter_first(list_store, &iter)){
       do{
@@ -720,7 +722,7 @@ ags_ffplayer_launch_task(AgsFileLaunch *file_launch, AgsFFPlayer *ffplayer)
 	gtk_tree_model_get(list_store, &iter,
 			   0, &str,
 			   -1);
-	if(!g_strcmp0(preset,
+	if(!g_strcmp0(selected,
 		      str)){
 	  break;
 	}
@@ -752,10 +754,10 @@ ags_ffplayer_launch_task(AgsFileLaunch *file_launch, AgsFFPlayer *ffplayer)
     }
 
     /* Get the first iter in the list */
-    instrument = xmlGetProp(node,
-			    "instrument\0");
+    selected = xmlGetProp(node,
+			  "instrument\0");
 
-    list_store = gtk_combo_box_get_model(ffplayer->instrument);
+    list_store = gtk_combo_box_get_model((GtkComboBox *) ffplayer->instrument);
 
     if(gtk_tree_model_get_iter_first(list_store, &iter)){
       do{
@@ -765,7 +767,7 @@ ags_ffplayer_launch_task(AgsFileLaunch *file_launch, AgsFFPlayer *ffplayer)
 			   0, &str,
 			   -1);
 
-	if(!g_strcmp0(instrument,
+	if(!g_strcmp0(selected,
 		      str)){
 	  break;
 	}

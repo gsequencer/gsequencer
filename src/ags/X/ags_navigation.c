@@ -252,7 +252,7 @@ ags_navigation_init(AgsNavigation *navigation)
   g_object_set(navigation->duration_time,
 	       "label\0", g_strdup("0000:00.00\0"),
 	       NULL);
-  gtk_widget_queue_draw(navigation->duration_time);
+  gtk_widget_queue_draw((GtkWidget *) navigation->duration_time);
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->duration_time, FALSE, FALSE, 2);
 
   navigation->duration_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, AGS_NOTE_EDIT_MAX_CONTROLS * 64.0, 1.0);
@@ -572,17 +572,17 @@ void
 ags_navigation_set_seeking_sensitive(AgsNavigation *navigation,
 				     gboolean enabled)
 {
-  gtk_widget_set_sensitive(navigation->rewind,
+  gtk_widget_set_sensitive((GtkWidget *) navigation->rewind,
 			   enabled);
-  gtk_widget_set_sensitive(navigation->previous,
+  gtk_widget_set_sensitive((GtkWidget *) navigation->previous,
 			   enabled);
-  gtk_widget_set_sensitive(navigation->play,
+  gtk_widget_set_sensitive((GtkWidget *) navigation->play,
 			   enabled);
-  gtk_widget_set_sensitive(navigation->stop,
+  gtk_widget_set_sensitive((GtkWidget *) navigation->stop,
 			   enabled);
-  gtk_widget_set_sensitive(navigation->next,
+  gtk_widget_set_sensitive((GtkWidget *) navigation->next,
 			   enabled);
-  gtk_widget_set_sensitive(navigation->forward,
+  gtk_widget_set_sensitive((GtkWidget *) navigation->forward,
 			   enabled);
 }
 

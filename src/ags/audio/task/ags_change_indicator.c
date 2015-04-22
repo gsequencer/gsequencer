@@ -152,7 +152,7 @@ ags_change_indicator_launch(AgsTask *task)
   gtk_adjustment_set_value(adjustment,
 			   change_indicator->value);
 
-  gtk_widget_queue_draw(change_indicator->indicator);
+  gtk_widget_queue_draw((GtkWidget *) change_indicator->indicator);
 }
 
 /**

@@ -84,7 +84,7 @@ ags_vindicator_class_init(AgsVIndicatorClass *indicator)
 void
 ags_vindicator_init(AgsVIndicator *indicator)
 {
-  gtk_widget_set_size_request(indicator,
+  gtk_widget_set_size_request((GtkWidget *) indicator,
 			      16,
 			      100);
 }
@@ -93,7 +93,7 @@ gboolean
 ags_vindicator_configure(GtkWidget *widget,
 			 GdkEventConfigure *event)
 {
-  ags_vindicator_draw(widget);
+  ags_vindicator_draw((AgsVIndicator *) widget);
 
   return(FALSE);
 }
@@ -102,7 +102,7 @@ gboolean
 ags_vindicator_expose(GtkWidget *widget,
 		     GdkEventExpose *event)
 {
-  ags_vindicator_draw(widget);
+  ags_vindicator_draw((AgsVIndicator *) widget);
 
   return(FALSE);
 }

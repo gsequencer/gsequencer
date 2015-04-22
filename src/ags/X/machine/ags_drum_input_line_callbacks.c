@@ -48,8 +48,8 @@ ags_drum_input_line_parent_set_callback(GtkWidget *widget, GtkObject *old_parent
     return;
   }
 
-  drum = gtk_widget_get_ancestor(widget,
-				 AGS_TYPE_DRUM);
+  drum = (AgsDrum *) gtk_widget_get_ancestor(widget,
+					     AGS_TYPE_DRUM);
   
   if(drum != NULL &&
      G_OBJECT(AGS_MACHINE(drum)->audio) != NULL){

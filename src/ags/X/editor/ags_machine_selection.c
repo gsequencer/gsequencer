@@ -141,7 +141,7 @@ ags_machine_selection_run(AgsMachineSelection *machine_selection)
     list = gtk_container_get_children(GTK_CONTAINER(machine_selection->window->machines));
   machine = NULL;
 
-  content_area = gtk_dialog_get_content_area(GTK_DIALOG(machine_selection));
+  content_area = (GtkContainer *) gtk_dialog_get_content_area(GTK_DIALOG(machine_selection));
 
   vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
   gtk_container_add(content_area,
@@ -166,7 +166,7 @@ ags_machine_selection_run(AgsMachineSelection *machine_selection)
     list = list->next;
   }
 
-  gtk_widget_show_all(vbox);
+  gtk_widget_show_all((GtkWidget *) vbox);
 
   response = gtk_dialog_run(GTK_DIALOG(machine_selection));
 
@@ -174,7 +174,7 @@ ags_machine_selection_run(AgsMachineSelection *machine_selection)
     list_start = 
       list = gtk_container_get_children(GTK_CONTAINER(machine_selection->window->machines));
     index_start = 
-      index = gtk_container_get_children(vbox);
+      index = gtk_container_get_children((GtkContainer *) vbox);
 
     while(index != NULL){
       if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(index->data))){
@@ -191,7 +191,7 @@ ags_machine_selection_run(AgsMachineSelection *machine_selection)
     g_list_free(index_start);
   }
 
-  gtk_widget_destroy(machine_selection);
+  gtk_widget_destroy((GtkWidget *) machine_selection);
 
   return(machine);
 }

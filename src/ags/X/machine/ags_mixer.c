@@ -302,8 +302,10 @@ ags_mixer_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 
   list = file->lookup;
 
-  while((file_lookup = ags_file_lookup_find_by_node(list,
-						    node->parent)) != NULL){
+  while((list = ags_file_lookup_find_by_node(list,
+					     node->parent)) != NULL){
+    file_lookup = AGS_FILE_LOOKUP(list->data);
+    
     if(g_signal_handler_find(list->data,
 			     G_SIGNAL_MATCH_FUNC,
 			     0,

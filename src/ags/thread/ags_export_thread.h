@@ -45,7 +45,7 @@ typedef struct _AgsExportThreadClass AgsExportThreadClass;
 
 typedef enum{
   AGS_EXPORT_THREAD_LIVE_PERFORMANCE       = 1,
-};
+}AgsExportThreadFlags;
 
 struct _AgsExportThread
 {

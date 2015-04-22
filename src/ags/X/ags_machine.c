@@ -299,7 +299,7 @@ ags_machine_set_property(GObject *gobject,
   AgsMachine *machine;
 
   machine = AGS_MACHINE(gobject);
-  window = gtk_widget_get_ancestor(machine,
+  window = gtk_widget_get_ancestor((GtkWidget *) machine,
 				   AGS_TYPE_WINDOW);
 
   switch(prop_id){
@@ -647,7 +647,7 @@ ags_machine_show(GtkWidget *widget)
 
   GTK_WIDGET_CLASS(ags_machine_parent_class)->show(widget);
 
-  window = (AgsWindow *) gtk_widget_get_toplevel(widget);
+  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) widget);
 
   frame = (GtkFrame *) gtk_container_get_children((GtkContainer *) machine)->data;
   gtk_widget_show_all((GtkWidget *) frame);
@@ -806,7 +806,7 @@ ags_machine_set_run(AgsMachine *machine,
   AgsThread *task_thread;
 
   window = (AgsWindow *) gtk_widget_get_toplevel(machine);
-  task_thread = (AgsTaskThread *) AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->task_thread;
+  task_thread = (AgsThread *) AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->task_thread;
 
   if(run){
     AgsInitAudio *init_audio;
@@ -837,7 +837,7 @@ ags_machine_set_run(AgsMachine *machine,
       start_devout = ags_start_devout_new(window->devout);
       list = g_list_prepend(list, start_devout);
 
-      task_completion = ags_task_completion_new(start_devout,
+      task_completion = ags_task_completion_new((GObject *) start_devout,
 						NULL);
       g_signal_connect_after(G_OBJECT(task_completion), "complete\0",
 			     G_CALLBACK(ags_machine_start_complete_callback), machine);
@@ -848,7 +848,7 @@ ags_machine_set_run(AgsMachine *machine,
       /* append AgsStartDevout */
       list = g_list_reverse(list);
 
-      ags_task_thread_append_tasks(task_thread,
+      ags_task_thread_append_tasks((AgsTaskThread *) task_thread,
 				   list);
     }
   }else{
@@ -860,7 +860,7 @@ ags_machine_set_run(AgsMachine *machine,
     
     /* append AgsCancelAudio */
     ags_task_thread_append_task(task_thread,
-				cancel_audio);
+				(AgsTask *) cancel_audio);
   }
 }
 

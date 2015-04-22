@@ -655,7 +655,7 @@ ags_line_member_finalize(GObject *gobject)
 GtkWidget*
 ags_line_member_get_widget(AgsLineMember *line_member)
 {
-  return(gtk_bin_get_child(line_member));
+  return(gtk_bin_get_child(GTK_BIN(line_member)));
 }
 
 /**

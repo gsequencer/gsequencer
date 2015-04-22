@@ -134,7 +134,7 @@ ags_ladspa_browser_init(AgsLadspaBrowser *ladspa_browser)
   ladspa_browser->parent = NULL;
 
   vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
-  gtk_container_add((GtkContainer *) gtk_dialog_get_content_area(ladspa_browser),
+  gtk_container_add((GtkContainer *) gtk_dialog_get_content_area((GtkDialog *) ladspa_browser),
 		    GTK_WIDGET(vbox));
   
   /* plugin */
@@ -226,20 +226,20 @@ ags_ladspa_browser_init(AgsLadspaBrowser *ladspa_browser)
 		     FALSE, FALSE,
 		     0);
   
-  table = gtk_table_new(256, 2,
-			FALSE);
+  table = (GtkTable *) gtk_table_new(256, 2,
+				     FALSE);
   gtk_box_pack_start(GTK_BOX(ladspa_browser->description),
 		     GTK_WIDGET(table),
 		     FALSE, FALSE,
 		     0);
 
   /* action area */
-  gtk_dialog_add_buttons(ladspa_browser,
+  gtk_dialog_add_buttons((GtkDialog *) ladspa_browser,
 			 GTK_STOCK_OK, GTK_RESPONSE_ACCEPT,
 			 GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT,
 			 NULL);
 
-  list = gtk_container_get_children(gtk_dialog_get_action_area(ladspa_browser));
+  list = gtk_container_get_children((GtkContainer *) gtk_dialog_get_action_area((GtkDialog *) ladspa_browser));
   ladspa_browser->ok = GTK_BUTTON(list->data);
   ladspa_browser->cancel = GTK_BUTTON(list->next->data);
   g_list_free(list);
@@ -315,7 +315,7 @@ ags_ladspa_browser_reset(AgsApplicable *applicable)
   filename = GTK_COMBO_BOX(list->next->data);
   g_list_free(list);
 
-  gtk_combo_box_set_active(filename,
+  gtk_combo_box_set_active((GtkComboBox *) filename,
 			   0);
 }
 
@@ -391,7 +391,7 @@ ags_ladspa_browser_combo_box_controls_new()
   gtk_combo_box_set_active(combo_box,
 			   1);
 
-  return(combo_box);
+  return((GtkComboBox *) combo_box);
 }
 
 GtkWidget*

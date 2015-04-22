@@ -458,7 +458,7 @@ ags_zoom_combo_box_new()
 {
   GtkComboBoxText *combo_box;
 
-  combo_box = gtk_combo_box_text_new();
+  combo_box = (GtkComboBoxText *) gtk_combo_box_text_new();
 
   gtk_combo_box_text_append_text(combo_box,
 				 "16:1\0");
@@ -479,7 +479,7 @@ ags_zoom_combo_box_new()
   gtk_combo_box_text_append_text(combo_box,
 				 "1:16\0");
 
-  return(combo_box);
+  return((GtkComboBox *) combo_box);
 }
 
 /**
@@ -496,7 +496,7 @@ ags_tact_combo_box_new()
 {
   GtkComboBoxText *combo_box;
 
-  combo_box = gtk_combo_box_text_new();
+  combo_box = (GtkComboBoxText *) gtk_combo_box_text_new();
 
   gtk_combo_box_text_append_text(combo_box,
 				 "16/1\0");
@@ -517,5 +517,5 @@ ags_tact_combo_box_new()
   gtk_combo_box_text_append_text(combo_box,
 				 "1/16\0");
 
-  return(combo_box);
+  return((GtkComboBox *) combo_box);
 }

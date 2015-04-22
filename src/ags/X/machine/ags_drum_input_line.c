@@ -212,7 +212,7 @@ ags_drum_input_line_init(AgsDrumInputLine *drum_input_line)
 		   1, 1);
   widget = gtk_bin_get_child(GTK_BIN(line_member));
 
-  adjustment = gtk_adjustment_new(0.0, 0.0, 10.0, 1.0, 1.0, 10.0);
+  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 10.0, 1.0, 1.0, 10.0);
   g_object_set(widget,
 	       "adjustment\0", adjustment,
 	       NULL);
@@ -346,7 +346,7 @@ ags_drum_input_line_set_channel(AgsLine *line, AgsChannel *channel)
       AgsAudioSignal *audio_signal;
 
       audio_signal = ags_audio_signal_new(AGS_AUDIO(channel->audio)->devout,
-					  channel->first_recycling,
+					  (GObject *) channel->first_recycling,
 					  NULL);
       audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
       ags_recycling_add_audio_signal(channel->first_recycling,

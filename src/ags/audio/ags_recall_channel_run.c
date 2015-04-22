@@ -642,7 +642,7 @@ ags_recall_channel_run_pack(AgsPackable *packable, GObject *container)
     recall_id = AGS_RECALL(packable)->recall_id;
       
     list = ags_recall_find_recycling_container(list,
-					       recall_id->recycling_container);
+					       (GObject *) recall_id->recycling_container);
 
     if(list != NULL){
       recall_audio_run = AGS_RECALL_AUDIO_RUN(list->data);
@@ -757,7 +757,7 @@ ags_recall_channel_run_done(AgsRecall *recall)
   recall_channel_run = AGS_RECALL_CHANNEL_RUN(recall);
   
   ags_channel_remove_recall(recall_channel_run->source,
-			    recall,
+			    (GObject *) recall,
 			    ((recall->recall_id->recycling_container->parent == NULL) ? TRUE: FALSE));
 
   AGS_RECALL_CLASS(ags_recall_channel_run_parent_class)->done(recall);
@@ -802,7 +802,7 @@ ags_recall_channel_run_duplicate(AgsRecall *recall,
   if(AGS_IS_OUTPUT(copy->source)){
     output = copy->source;
     output_recall_id = ags_recall_id_find_recycling_container(output->recall_id,
-							      recall_id->recycling_container);
+							      (GObject *) recall_id->recycling_container);
   }else{
     AgsRecallID *default_recall_id, *audio_recall_id;
 
