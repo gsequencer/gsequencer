@@ -208,7 +208,7 @@ ags_panel_init(AgsPanel *panel)
   panel->xml_type = "ags-panel\0";
 
   panel->vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
-  gtk_container_add((GtkContainer*) (gtk_bin_get_child((GtkContainer *) panel)), (GtkWidget *) panel->vbox);
+  gtk_container_add((GtkContainer*) (gtk_bin_get_child((GtkBin *) panel)), (GtkWidget *) panel->vbox);
 
   //  AGS_MACHINE(panel)->output = (GtkContainer *) gtk_hbox_new(FALSE, 0);
   //  gtk_box_pack_start((GtkBox *) panel->vbox, (GtkWidget *) AGS_MACHINE(panel)->output, FALSE, FALSE, 0);
@@ -312,8 +312,10 @@ ags_panel_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 
   list = file->lookup;
 
-  while((file_lookup = ags_file_lookup_find_by_node(list,
-						    node->parent)) != NULL){
+  while((list = ags_file_lookup_find_by_node(list,
+					     node->parent)) != NULL){
+    file_lookup = AGS_FILE_LOOKUP(list->data);
+    
     if(g_signal_handler_find(list->data,
 			     G_SIGNAL_MATCH_FUNC,
 			     0,

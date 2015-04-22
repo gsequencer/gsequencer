@@ -63,7 +63,7 @@ ags_line_member_spin_button_changed_callback(GtkWidget *spin_button, AgsLineMemb
 {
   GtkAdjustment *adjustment;
 
-  adjustment = gtk_spin_button_get_adjustment(spin_button);
+  adjustment = gtk_spin_button_get_adjustment((GtkSpinButton *) spin_button);
   ags_line_member_change_port(line_member,
 			      &(adjustment->value));
 }

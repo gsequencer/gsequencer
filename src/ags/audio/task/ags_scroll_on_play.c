@@ -163,7 +163,7 @@ ags_scroll_on_play_launch(AgsTask *task)
 
   tact = gtk_spin_button_get_value(window->navigation->position_tact);
 
-  if(!gtk_toggle_button_get_active(window->navigation->loop) || tact <= loop_end){
+  if(!gtk_toggle_button_get_active((GtkToggleButton *) window->navigation->loop) || tact <= loop_end){
     position = tact * editor->note_edit->control_current.control_width;
   }else{
     position = loop_start * editor->note_edit->control_current.control_width;
@@ -188,7 +188,7 @@ ags_scroll_on_play_launch(AgsTask *task)
   cairo_destroy(cr);
 
   /* update tact */
-  if(!gtk_toggle_button_get_active(window->navigation->loop) || tact + 1.0 < loop_end){
+  if(!gtk_toggle_button_get_active((GtkToggleButton *) window->navigation->loop) || tact + 1.0 < loop_end){
     gtk_spin_button_set_value(window->navigation->position_tact,
 			      tact + 1.0);
   }else{

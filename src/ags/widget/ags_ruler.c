@@ -141,7 +141,7 @@ ags_ruler_init(AgsRuler *ruler)
   ruler->precision = 1.0;
   ruler->scale_precision = 1.0;
 
-  gtk_widget_set_size_request(ruler,
+  gtk_widget_set_size_request((GtkWidget *) ruler,
 			      20,
 			      24);
 }
@@ -175,7 +175,7 @@ ags_ruler_set_property(GObject *gobject,
 	g_object_ref(G_OBJECT(adjustment));
       }
 
-      ruler->adjustment = (GObject *) adjustment;
+      ruler->adjustment = adjustment;
     }
     break;
   default:
@@ -211,7 +211,7 @@ ags_ruler_map(GtkWidget *widget)
     GTK_WIDGET_CLASS (ags_ruler_parent_class)->map(widget);
     
     gdk_window_show(widget->window);
-    ags_ruler_draw(widget);
+    ags_ruler_draw((AgsRuler *) widget);
   }
 }
 

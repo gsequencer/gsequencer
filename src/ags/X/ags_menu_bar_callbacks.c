@@ -103,7 +103,7 @@ ags_menu_bar_open_ok_callback(GtkWidget *widget, AgsMenuBar *menu_bar)
 					     filename),
 			     &error);
 
-  gtk_widget_destroy(file_selection);
+  gtk_widget_destroy((GtkWidget *) file_selection);
 
   g_free(filename);
 }
@@ -171,7 +171,7 @@ ags_menu_bar_save_as_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 				    NULL);
 
     window->name = filename;
-    gtk_window_set_title(window,
+    gtk_window_set_title((GtkWindow *) window,
 			 g_strconcat("ags - \0",
 				     window->name,
 				     NULL));
@@ -191,7 +191,7 @@ ags_menu_bar_export_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) menu_bar);
 
-  gtk_widget_show_all(window->export_window);
+  gtk_widget_show_all((GtkWidget *) window->export_window);
 }
 
 void

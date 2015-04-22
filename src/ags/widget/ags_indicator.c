@@ -152,7 +152,7 @@ ags_indicator_set_property(GObject *gobject,
 	g_object_ref(G_OBJECT(adjustment));
       }
 
-      indicator->adjustment = (GObject *) adjustment;
+      indicator->adjustment = adjustment;
     }
     break;
   default:

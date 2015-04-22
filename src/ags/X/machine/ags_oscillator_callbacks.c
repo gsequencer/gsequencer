@@ -24,7 +24,7 @@ ags_oscillator_wave_callback(GtkComboBox *combo, AgsOscillator *oscillator)
 {
   AgsSynth *synth;
 
-  synth = gtk_widget_get_ancestor((GtkWidget *) oscillator, AGS_TYPE_SYNTH);
+  synth = (AgsSynth *) gtk_widget_get_ancestor((GtkWidget *) oscillator, AGS_TYPE_SYNTH);
 
   if((AGS_SYNTH_AUTO_UPDATE & (synth->flags)) != 0){
     ags_synth_update(synth);
@@ -36,7 +36,7 @@ ags_oscillator_attack_callback(GtkSpinButton *spin_button, AgsOscillator *oscill
 {
   AgsSynth *synth;
 
-  synth = gtk_widget_get_ancestor((GtkWidget *) oscillator, AGS_TYPE_SYNTH);
+  synth = (AgsSynth *) gtk_widget_get_ancestor((GtkWidget *) oscillator, AGS_TYPE_SYNTH);
 
   if((AGS_SYNTH_AUTO_UPDATE & (synth->flags)) != 0){
     ags_synth_update(synth);
@@ -48,7 +48,7 @@ ags_oscillator_frame_count_callback(GtkSpinButton *spin_button, AgsOscillator *o
 {
   AgsSynth *synth;
 
-  synth = gtk_widget_get_ancestor((GtkWidget *) oscillator, AGS_TYPE_SYNTH);
+  synth = (AgsSynth *) gtk_widget_get_ancestor((GtkWidget *) oscillator, AGS_TYPE_SYNTH);
 
   if((AGS_SYNTH_AUTO_UPDATE & (synth->flags)) != 0){
     ags_synth_update(synth);
@@ -60,7 +60,7 @@ ags_oscillator_frequency_callback(GtkSpinButton *spin_button, AgsOscillator *osc
 {
   AgsSynth *synth;
 
-  synth = gtk_widget_get_ancestor((GtkWidget *) oscillator, AGS_TYPE_SYNTH);
+  synth = (AgsSynth *) gtk_widget_get_ancestor((GtkWidget *) oscillator, AGS_TYPE_SYNTH);
 
   if((AGS_SYNTH_AUTO_UPDATE & (synth->flags)) != 0){
     ags_synth_update(synth);
@@ -72,7 +72,7 @@ ags_oscillator_phase_callback(GtkSpinButton *spin_button, AgsOscillator *oscilla
 {
   AgsSynth *synth;
 
-  synth = gtk_widget_get_ancestor((GtkWidget *) oscillator, AGS_TYPE_SYNTH);
+  synth = (AgsSynth *) gtk_widget_get_ancestor((GtkWidget *) oscillator, AGS_TYPE_SYNTH);
 
   if((AGS_SYNTH_AUTO_UPDATE & (synth->flags)) != 0){
     ags_synth_update(synth);
@@ -84,7 +84,7 @@ ags_oscillator_volume_callback(GtkSpinButton *spin_button, AgsOscillator *oscill
 {
   AgsSynth *synth;
 
-  synth = gtk_widget_get_ancestor((GtkWidget *) oscillator, AGS_TYPE_SYNTH);
+  synth = (AgsSynth *) gtk_widget_get_ancestor((GtkWidget *) oscillator, AGS_TYPE_SYNTH);
 
   if((AGS_SYNTH_AUTO_UPDATE & (synth->flags)) != 0){
     ags_synth_update(synth);

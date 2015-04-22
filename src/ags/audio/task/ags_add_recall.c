@@ -164,7 +164,7 @@ ags_add_recall_launch(AgsTask *task)
     }
 
     ags_audio_add_recall(AGS_AUDIO(add_recall->context),
-			 add_recall->recall,
+			 (GObject *) add_recall->recall,
 			 add_recall->is_play);
 
     /* set up playback, sequencer or notation */

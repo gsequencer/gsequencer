@@ -450,9 +450,9 @@ ags_machine_start_complete_callback(AgsTaskCompletion *task_completion,
   AgsDevoutThread *devout_thread;
   AgsTask *task;
 
-  task = task_completion->task;
+  task = (AgsTask *) task_completion->task;
   window = AGS_MAIN(AGS_START_DEVOUT(task)->devout->ags_main)->window;
-  devout_thread = (AgsTaskThread *) AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->devout_thread;
+  devout_thread = (AgsDevoutThread *) AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->devout_thread;
 
   if(devout_thread->error != NULL){
     /* show error message */
@@ -463,7 +463,7 @@ ags_machine_start_complete_callback(AgsTaskCompletion *task_completion,
 							 "Error: %s\0", devout_thread->error->message);
     g_signal_connect(dialog, "response\0",
 		     G_CALLBACK(ags_machine_start_complete_response), machine);
-    gtk_widget_show_all(dialog);
+    gtk_widget_show_all((GtkWidget *) dialog);
   }
 }
 

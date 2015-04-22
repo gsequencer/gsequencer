@@ -136,7 +136,7 @@ ags_change_tact_launch(AgsTask *task)
 {
   gdouble tact;
 
-  if(!gtk_toggle_button_get_active(AGS_CHANGE_TACT(task)->navigation->scroll)){
+  if(!gtk_toggle_button_get_active((GtkToggleButton *) AGS_CHANGE_TACT(task)->navigation->scroll)){
     return;
   }
 
@@ -144,7 +144,7 @@ ags_change_tact_launch(AgsTask *task)
 
   tact = gtk_spin_button_get_value(AGS_CHANGE_TACT(task)->navigation->position_tact);
 
-  if(!gtk_toggle_button_get_active(AGS_CHANGE_TACT(task)->navigation->loop) ||
+  if(!gtk_toggle_button_get_active((GtkToggleButton *) AGS_CHANGE_TACT(task)->navigation->loop) ||
      tact + AGS_NAVIGATION_DEFAULT_TACT_STEP < gtk_spin_button_get_value(AGS_CHANGE_TACT(task)->navigation->loop_right_tact)){
     gtk_spin_button_set_value(AGS_CHANGE_TACT(task)->navigation->position_tact,
 			      tact +

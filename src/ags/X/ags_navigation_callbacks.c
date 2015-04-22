@@ -265,7 +265,7 @@ ags_navigation_position_tact_callback(GtkWidget *widget,
 				      AgsNavigation *navigation)
 {
   ags_navigation_change_position(navigation,
-				 gtk_spin_button_get_value(widget));
+				 gtk_spin_button_get_value((GtkSpinButton *) widget));
 }
 
 void
@@ -391,7 +391,7 @@ ags_navigation_tic_callback(AgsDevout *devout,
   //  list = g_list_prepend(list,
   //			change_tact);
 
-  display_tact = ags_display_tact_new(navigation);
+  display_tact = ags_display_tact_new((GtkWidget *) navigation);
   list = g_list_prepend(list,
 			display_tact);
 

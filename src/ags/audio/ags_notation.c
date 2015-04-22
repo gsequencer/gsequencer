@@ -544,7 +544,7 @@ ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
       continue;
     }
 
-    current_timestamp = AGS_NOTATION(notation->data)->timestamp;
+    current_timestamp = (AgsTimestamp *) AGS_NOTATION(notation->data)->timestamp;
 
     if((AGS_TIMESTAMP_UNIX & (timestamp->flags)) != 0){
       if((AGS_TIMESTAMP_UNIX & (current_timestamp->flags)) != 0){

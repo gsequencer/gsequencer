@@ -48,8 +48,8 @@ ags_ladspa_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
 
   list = gtk_container_get_children(GTK_CONTAINER(ladspa_browser->plugin));
 
-  filename = GTK_COMBO_BOX(list->next->data);
-  effect = GTK_COMBO_BOX(list->next->next->next->data);
+  filename = GTK_COMBO_BOX_TEXT(list->next->data);
+  effect = GTK_COMBO_BOX_TEXT(list->next->next->next->data);
 
   ags_combo_box_text_remove_all(effect);
 
@@ -75,7 +75,7 @@ ags_ladspa_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
     }
   }
 
-  gtk_combo_box_set_active(effect,
+  gtk_combo_box_set_active((GtkComboBox *) effect,
   			   0);
 }
 
@@ -103,8 +103,8 @@ ags_ladspa_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
   list_start = 
     list = gtk_container_get_children(GTK_CONTAINER(ladspa_browser->plugin));
 
-  filename = GTK_COMBO_BOX(list->next->data);
-  effect = GTK_COMBO_BOX(list->next->next->next->data);
+  filename = GTK_COMBO_BOX_TEXT(list->next->data);
+  effect = GTK_COMBO_BOX_TEXT(list->next->next->next->data);
 
   g_list_free(list_start);
 
@@ -117,7 +117,7 @@ ags_ladspa_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
   
   plugin_so = ladspa_plugin->plugin_so;
 
-  index = gtk_combo_box_get_active(effect);
+  index = gtk_combo_box_get_active((GtkComboBox *) effect);
 
   if(index != -1 &&
      plugin_so){
@@ -200,7 +200,7 @@ ags_ladspa_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
 	y++;
       }
 
-      gtk_widget_show_all(table);
+      gtk_widget_show_all((GtkWidget *) table);
     }
   }else{
     /* update ui - empty */

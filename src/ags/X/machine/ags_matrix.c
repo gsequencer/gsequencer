@@ -539,8 +539,8 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
 
 	stop = (guint) ceil(16.0 * delay * exp2(8.0 - 4.0) + 1.0);
 
-	audio_signal = ags_audio_signal_new(devout,
-					    source->first_recycling,
+	audio_signal = ags_audio_signal_new((GObject *) devout,
+					    (GObject *) source->first_recycling,
 					    NULL);
 	audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
 	//	ags_audio_signal_stream_resize(audio_signal,
@@ -875,7 +875,7 @@ ags_matrix_draw_gutter(AgsMatrix *matrix)
   mutex_manager = ags_mutex_manager_get_instance();
 
   audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 AGS_MACHINE(matrix)->audio);
+					 (GObject *) AGS_MACHINE(matrix)->audio);
   
   pthread_mutex_unlock(&(ags_application_mutex));
 
@@ -929,7 +929,7 @@ ags_matrix_draw_matrix(AgsMatrix *matrix)
   mutex_manager = ags_mutex_manager_get_instance();
 
   audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 AGS_MACHINE(matrix)->audio);
+					 (GObject *) AGS_MACHINE(matrix)->audio);
   
   pthread_mutex_unlock(&(ags_application_mutex));
 
@@ -1034,14 +1034,14 @@ ags_matrix_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 				   NULL));
 
   /*  */
-  file_launch = g_object_new(AGS_TYPE_FILE_LAUNCH,
-			     "node\0", node,
-			     "file\0", file,
-			     NULL);
+  file_launch = (AgsFileLaunch *) g_object_new(AGS_TYPE_FILE_LAUNCH,
+					       "node\0", node,
+					       "file\0", file,
+					       NULL);
   g_signal_connect(G_OBJECT(file_launch), "start\0",
 		   G_CALLBACK(ags_matrix_launch_task), gobject);
   ags_file_add_launch(file,
-		      file_launch);
+		      (GObject *) file_launch);
 }
 
 void
@@ -1063,7 +1063,7 @@ ags_matrix_launch_task(AgsFileLaunch *file_launch, AgsMatrix *matrix)
   if(!g_strcmp0(xmlGetProp(node,
 			   "loop\0"),
 		AGS_FILE_TRUE)){
-    gtk_toggle_button_set_active(matrix->loop_button,
+    gtk_toggle_button_set_active((GtkToggleButton *) matrix->loop_button,
 				 TRUE);
   }
 
@@ -1123,7 +1123,7 @@ ags_matrix_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 
   xmlNewProp(node,
 	     "loop\0",
-	     g_strdup_printf("%s\0", ((gtk_toggle_button_get_active(matrix->loop_button)) ? AGS_FILE_TRUE: AGS_FILE_FALSE)));
+	     g_strdup_printf("%s\0", ((gtk_toggle_button_get_active((GtkToggleButton *) matrix->loop_button)) ? AGS_FILE_TRUE: AGS_FILE_FALSE)));
 
   xmlAddChild(parent,
 	      node);

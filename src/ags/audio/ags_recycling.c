@@ -249,7 +249,7 @@ ags_recycling_set_property(GObject *gobject,
 
       channel = (AgsChannel *) g_value_get_object(value);
 
-      if(channel == recycling->channel){
+      if(channel == (AgsChannel *) recycling->channel){
 	return;
       }
 
@@ -261,7 +261,7 @@ ags_recycling_set_property(GObject *gobject,
 	g_object_ref(channel);
       }
 
-      recycling->channel = channel;
+      recycling->channel = (GObject *) channel;
     }
     break;
   case PROP_DEVOUT:

@@ -30,7 +30,7 @@ typedef enum{
   AGS_REGISTRY_XML_DOCUMENT  = 1,
   AGS_REGISTRY_XML_RPC       = 1 << 1,
   AGS_REGISTRY_DIRTY         = 1 << 2,
-};
+}AgsRegistryFlags;
 
 struct _AgsRegistry
 {

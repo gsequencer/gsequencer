@@ -165,7 +165,7 @@ ags_remove_recall_launch(AgsTask *task)
 	while(list != NULL){
 	  if(list->data != remove_recall->recall){
 	    ags_audio_remove_recall(AGS_AUDIO(remove_recall->context),
-				    list->data,
+				    (GObject *) list->data,
 				    remove_recall->is_play);
 	  }
 	  
@@ -175,7 +175,7 @@ ags_remove_recall_launch(AgsTask *task)
     }
 
     ags_audio_remove_recall(AGS_AUDIO(remove_recall->context),
-			    remove_recall->recall,
+			    (GObject *) remove_recall->recall,
 			    remove_recall->is_play);
 
   }else if(AGS_IS_CHANNEL(remove_recall->context)){
@@ -188,7 +188,7 @@ ags_remove_recall_launch(AgsTask *task)
 	while(list != NULL){
 	  if(list->data != remove_recall->recall){
 	    ags_channel_remove_recall(AGS_CHANNEL(remove_recall->context),
-				      list->data,
+				      (GObject *) list->data,
 				      remove_recall->is_play);
 	  }
 	  
@@ -198,7 +198,7 @@ ags_remove_recall_launch(AgsTask *task)
     }
 
     ags_channel_remove_recall(AGS_CHANNEL(remove_recall->context),
-			      remove_recall->recall,
+			      (GObject *) remove_recall->recall,
 			      remove_recall->is_play);
   }else if(AGS_IS_RECALL(remove_recall->context)){
     ags_recall_remove_child(AGS_RECALL(remove_recall->context),

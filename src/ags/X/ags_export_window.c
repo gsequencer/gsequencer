@@ -185,8 +185,8 @@ ags_export_window_init(AgsExportWindow *export_window)
   gtk_container_add(GTK_CONTAINER(export_window),
 		    GTK_WIDGET(vbox));
 
-  export_window->live_export = gtk_check_button_new_with_label("live export\0");
-  gtk_toggle_button_set_active(export_window->live_export,
+  export_window->live_export = (GtkCheckButton *) gtk_check_button_new_with_label("live export\0");
+  gtk_toggle_button_set_active((GtkToggleButton *) export_window->live_export,
 			       TRUE);
   gtk_box_pack_start(GTK_BOX(vbox),
 		     GTK_WIDGET(export_window->live_export),
@@ -221,7 +221,7 @@ ags_export_window_init(AgsExportWindow *export_window)
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
-  export_window->filename = gtk_entry_new();
+  export_window->filename = (GtkEntry *) gtk_entry_new();
   gtk_entry_set_text(export_window->filename,
 		     "out.wav\0");
   gtk_box_pack_start(GTK_BOX(hbox),
@@ -229,7 +229,7 @@ ags_export_window_init(AgsExportWindow *export_window)
 		     TRUE, TRUE,
 		     0);
 
-  export_window->file_chooser_button = gtk_button_new_with_label("open\0");
+  export_window->file_chooser_button = (GtkButton *) gtk_button_new_with_label("open\0");
   gtk_box_pack_start(GTK_BOX(hbox),
 		     GTK_WIDGET(export_window->file_chooser_button),
 		     TRUE, TRUE,
@@ -253,7 +253,7 @@ ags_export_window_init(AgsExportWindow *export_window)
   //TODO:JK: uncomment me
   //  gtk_combo_box_text_append_text(export_window->mode,
   //				 "time\0");
-  gtk_combo_box_set_active(export_window->mode,
+  gtk_combo_box_set_active((GtkComboBox *) export_window->mode,
 			   0);
   gtk_table_attach(table,
 		   GTK_WIDGET(export_window->mode),
@@ -274,7 +274,7 @@ ags_export_window_init(AgsExportWindow *export_window)
 		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
 		   0, 0);
 
-  export_window->tact = gtk_spin_button_new_with_range(0.0, AGS_NOTATION_DEFAULT_LENGTH, 0.25);
+  export_window->tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, AGS_NOTATION_DEFAULT_LENGTH, 0.25);
   gtk_spin_button_set_digits(export_window->tact,
 			     2);
   gtk_table_attach(table,
@@ -304,7 +304,7 @@ ags_export_window_init(AgsExportWindow *export_window)
 		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
 		   0, 0);
 
-  export_window->duration = gtk_label_new(ags_navigation_tact_to_time_string(0.0));
+  export_window->duration = (GtkLabel *) gtk_label_new(ags_navigation_tact_to_time_string(0.0));
   gtk_box_pack_start(GTK_BOX(hbox),
 		     GTK_WIDGET(export_window->duration),
 		     FALSE, FALSE,
@@ -325,7 +325,7 @@ ags_export_window_init(AgsExportWindow *export_window)
   export_window->output_format = (GtkComboBoxText *) gtk_combo_box_text_new();
   gtk_combo_box_text_append_text(export_window->output_format,
 				 "WAV\0");
-  gtk_combo_box_set_active(export_window->output_format,
+  gtk_combo_box_set_active((GtkComboBox *) export_window->output_format,
 			   0);
   gtk_table_attach(table,
 		   GTK_WIDGET(export_window->output_format),
@@ -379,9 +379,9 @@ ags_export_window_set_property(GObject *gobject,
     {
       AgsMain *ags_main;
 
-      ags_main = g_value_get_object(value);
+      ags_main = (AgsMain *) g_value_get_object(value);
 
-      if(export_window->ags_main == ags_main)
+      if((AgsMain *) export_window->ags_main == ags_main)
 	return;
 
       if(export_window->ags_main != NULL){

@@ -153,7 +153,7 @@ ags_add_line_member_launch(AgsTask *task)
   add_line_member = AGS_ADD_LINE_MEMBER(task);
 
   ags_expander_add(add_line_member->line->expander,
-		   add_line_member->line_member,
+		   (GtkWidget *) add_line_member->line_member,
 		   add_line_member->x, add_line_member->y,
 		   add_line_member->width, add_line_member->height);
 

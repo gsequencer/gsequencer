@@ -151,7 +151,7 @@ ags_add_recall_container_launch(AgsTask *task)
   add_recall_container = AGS_ADD_RECALL_CONTAINER(task);
 
   ags_audio_add_recall_container(add_recall_container->audio,
-				 add_recall_container->recall_container);
+				 (GObject *) add_recall_container->recall_container);
 }
 
 /**

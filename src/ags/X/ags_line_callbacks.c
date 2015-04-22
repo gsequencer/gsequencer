@@ -164,12 +164,12 @@ ags_line_peak_run_post_callback(AgsRecall *peak_channel,
   AgsMachine *machine;
   GList *list, *list_start;
 
-  machine = (AgsMachine *) gtk_widget_get_ancestor(line,
+  machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) line,
 						   AGS_TYPE_MACHINE);
-  task_thread = AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(machine->audio->devout)->ags_main)->main_loop)->task_thread;
+  task_thread = (AgsTaskThread *) AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(machine->audio->devout)->ags_main)->main_loop)->task_thread;
 
   list_start = 
-    list = gtk_container_get_children(AGS_LINE(line)->expander->table);
+    list = gtk_container_get_children((GtkContainer *) AGS_LINE(line)->expander->table);
 
   while(list != NULL){
     if(AGS_IS_LINE_MEMBER(list->data) &&
@@ -179,7 +179,7 @@ ags_line_peak_run_post_callback(AgsRecall *peak_channel,
       gdouble peak;
       GValue value = {0,};
 
-      child = gtk_bin_get_child(AGS_LINE_MEMBER(list->data));
+      child = gtk_bin_get_child(GTK_BIN(list->data));
 
       if(AGS_RECYCLING_CONTAINER(peak_channel->recall_id->recycling_container)->parent == NULL){
 	port = AGS_LINE_MEMBER(list->data)->port;
@@ -193,11 +193,11 @@ ags_line_peak_run_post_callback(AgsRecall *peak_channel,
 
       peak = g_value_get_double(&value);
 
-      change_indicator = ags_change_indicator_new(child,
+      change_indicator = ags_change_indicator_new((AgsIndicator *) child,
 						  peak);
 
       ags_task_thread_append_task(task_thread,
-				  change_indicator);
+				  (AgsTask *) change_indicator);
 
       break;
     }

@@ -21,6 +21,8 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/plugin/ags_ladspa_manager.h>
+
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_preferences.h>
 
@@ -161,12 +163,14 @@ ags_ladspa_plugin_preferences_alloc(gchar *ladspa_path)
   ladspa_plugin_preferences = (AgsLadspaPluginPreferences *) malloc(sizeof(AgsLadspaPluginPreferences));
 
   if(ladspa_path == NULL){
-    ladspa_plugin_preferences->ladspa_path = default_ladspa_path;
+    gtk_entry_set_text(ladspa_plugin_preferences->ladspa_path,
+		       default_ladspa_path);
   }else{
-    ladspa_plugin_preferences->ladspa_path = ladspa_path;
+    gtk_entry_set_text(ladspa_plugin_preferences->ladspa_path,
+		       ladspa_path);
   }
 
-  ladspa_plugin_preferences->plugin_file = gtk_cell_view_new();
+  ladspa_plugin_preferences->plugin_file = (GtkCellView *) gtk_cell_view_new();
 
   list_store = gtk_list_store_new(1,
 				  G_TYPE_STRING);
@@ -185,7 +189,7 @@ ags_ladspa_plugin_preferences_alloc(gchar *ladspa_path)
 
   free(filenames_start);
   gtk_cell_view_set_model(ladspa_plugin_preferences->plugin_file,
-			  list_store);
+			  GTK_TREE_MODEL(list_store));
 
   return(ladspa_plugin_preferences);
 }

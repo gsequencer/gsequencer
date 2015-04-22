@@ -278,7 +278,7 @@ ags_recall_container_set_property(GObject *gobject,
 
       recall_audio = (AgsRecallAudio *) g_value_get_object(value);
 
-      if(recall_container->recall_audio == recall_audio)
+      if(recall_container->recall_audio == (AgsRecall *) recall_audio)
 	return;
 
       if(recall_container->recall_audio != NULL){
@@ -289,7 +289,7 @@ ags_recall_container_set_property(GObject *gobject,
 	g_object_ref(G_OBJECT(recall_audio));
       }
 
-      recall_container->recall_audio = recall_audio;
+      recall_container->recall_audio = (AgsRecall *) recall_audio;
     }
     break;
   case PROP_RECALL_AUDIO_RUN_TYPE:

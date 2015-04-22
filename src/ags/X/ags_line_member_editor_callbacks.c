@@ -65,7 +65,7 @@ void
 ags_line_member_editor_add_callback(GtkWidget *button,
 				    AgsLineMemberEditor *line_member_editor)
 {
-  gtk_widget_show_all(line_member_editor->ladspa_browser);
+  gtk_widget_show_all((GtkWidget *) line_member_editor->ladspa_browser);
 }
 
 void
@@ -110,9 +110,9 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
       LADSPA_Data lower_bound, upper_bound;
       long i;
 
-      machine_editor = (AgsMachineEditor *) gtk_widget_get_ancestor(line_member_editor,
+      machine_editor = (AgsMachineEditor *) gtk_widget_get_ancestor((GtkWidget *) line_member_editor,
 								    AGS_TYPE_MACHINE_EDITOR);
-      line_editor = (AgsLineEditor *) gtk_widget_get_ancestor(line_member_editor,
+      line_editor = (AgsLineEditor *) gtk_widget_get_ancestor((GtkWidget *) line_member_editor,
 							      AGS_TYPE_LINE_EDITOR);
       
       line = NULL;
@@ -130,7 +130,7 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
 
       if(pad != NULL){
 	list_start =
-	  list = gtk_container_get_children(AGS_PAD(pad->data)->expander_set);
+	  list = gtk_container_get_children((GtkContainer *) AGS_PAD(pad->data)->expander_set);
 
 	while(list != NULL){
 	  if(AGS_LINE(list->data)->channel == line_editor->channel){
@@ -237,8 +237,8 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
       ags_recall_ladspa_load(recall_ladspa);
       ags_recall_ladspa_load_ports(recall_ladspa);
 
-      add_recall = ags_add_recall_new(line_editor->channel,
-				      recall_ladspa,
+      add_recall = ags_add_recall_new((GObject *) line_editor->channel,
+				      (AgsRecall *) recall_ladspa,
 				      TRUE);
       task = g_list_prepend(task,
 			    add_recall);
@@ -254,8 +254,8 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
 		   "recall-channel\0", recall_ladspa,
 		   NULL);
 
-      add_recall = ags_add_recall_new(line_editor->channel,
-				      recall_channel_run_dummy,
+      add_recall = ags_add_recall_new((GObject *) line_editor->channel,
+				      (AgsRecall *) recall_channel_run_dummy,
 				      TRUE);
       task = g_list_prepend(task,
 			    add_recall);
@@ -280,8 +280,8 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
       ags_recall_ladspa_load(recall_ladspa);
       port = ags_recall_ladspa_load_ports(recall_ladspa);
 
-      add_recall = ags_add_recall_new(line_editor->channel,
-				      recall_ladspa,
+      add_recall = ags_add_recall_new((GObject *) line_editor->channel,
+				      (AgsRecall *) recall_ladspa,
 				      FALSE);
       task = g_list_prepend(task,
 			    add_recall);
@@ -334,8 +334,8 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
 							     "specifier\0", AGS_PORT(port->data)->specifier,
 							     "control-port\0", AGS_PORT(port->data)->control_port,
 							     NULL);
-		dial = ags_line_member_get_widget(line_member);
-		gtk_widget_set_size_request(dial,
+		dial = (AgsDial *) ags_line_member_get_widget(line_member);
+		gtk_widget_set_size_request((GtkWidget *) dial,
 					    2 * dial->radius + 2 * dial->outline_strength + dial->button_width + 1,
 					    2 * dial->radius + 2 * dial->outline_strength + 1);
 		
@@ -416,9 +416,9 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
     return;
   }
 
-  machine_editor = (AgsMachineEditor *) gtk_widget_get_ancestor(line_member_editor,
+  machine_editor = (AgsMachineEditor *) gtk_widget_get_ancestor((GtkWidget *) line_member_editor,
 								AGS_TYPE_MACHINE_EDITOR);
-  line_editor = (AgsLineEditor *) gtk_widget_get_ancestor(line_member_editor,
+  line_editor = (AgsLineEditor *) gtk_widget_get_ancestor((GtkWidget *) line_member_editor,
 							  AGS_TYPE_LINE_EDITOR);
 
   audio_loop = (AgsAudioLoop *) AGS_MAIN(AGS_DEVOUT(AGS_MACHINE(machine_editor->machine)->audio->devout)->ags_main)->main_loop;
@@ -442,7 +442,7 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
 
   if(pad != NULL){
     list_start =
-      list = gtk_container_get_children(AGS_PAD(pad->data)->expander_set);
+      list = gtk_container_get_children((GtkContainer *) AGS_PAD(pad->data)->expander_set);
 
     while(list != NULL){
       if(AGS_LINE(list->data)->channel == line_editor->channel){
@@ -475,7 +475,7 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
       task = NULL;
 
       /* play context */
-      remove_recall = ags_remove_recall_new(line_editor->channel,
+      remove_recall = ags_remove_recall_new((GObject *) line_editor->channel,
 					    g_list_nth(play_ladspa,
 						       index)->data,
 					    TRUE,
@@ -483,7 +483,7 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
       task = g_list_prepend(task,
 			    remove_recall);
 
-      remove_recall = ags_remove_recall_new(line_editor->channel,
+      remove_recall = ags_remove_recall_new((GObject *) line_editor->channel,
 					    ags_recall_find_template(AGS_RECALL_CONTAINER(AGS_RECALL(g_list_nth(play_ladspa,
 														index)->data)->container)->recall_channel_run)->data,
 					    TRUE,
@@ -492,13 +492,13 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
 			    remove_recall);
 
       remove_recall_container = ags_remove_recall_container_new(line_editor->channel->audio,
-								AGS_RECALL(g_list_nth(play_ladspa,
-										      index)->data)->container);
+								(AgsRecallContainer *) AGS_RECALL(g_list_nth(play_ladspa,
+													     index)->data)->container);
       task = g_list_prepend(task,
 			    remove_recall_container);
 
       /* recall context */
-      remove_recall = ags_remove_recall_new(line_editor->channel,
+      remove_recall = ags_remove_recall_new((GObject *) line_editor->channel,
 					    g_list_nth(recall_ladspa,
 						       index)->data,
 					    FALSE,
@@ -506,7 +506,7 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
       task = g_list_prepend(task,
 			    remove_recall);
 
-      remove_recall = ags_remove_recall_new(line_editor->channel,
+      remove_recall = ags_remove_recall_new((GObject *) line_editor->channel,
 					    ags_recall_find_template(AGS_RECALL_CONTAINER(AGS_RECALL(g_list_nth(recall_ladspa,
 														index)->data)->container)->recall_channel_run)->data,
 					    FALSE,
@@ -515,8 +515,8 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
 			    remove_recall);
 
       remove_recall_container = ags_remove_recall_container_new(line_editor->channel->audio,
-								AGS_RECALL(g_list_nth(recall_ladspa,
-										      index)->data)->container);
+								(AgsRecallContainer *) AGS_RECALL(g_list_nth(recall_ladspa,
+													     index)->data)->container);
       task = g_list_prepend(task,
 			    remove_recall_container);
 
@@ -529,7 +529,7 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
 				     index)->data)->port;
 
 	while(port != NULL){
-	  control = gtk_container_get_children(line->expander->table);
+	  control = gtk_container_get_children((GtkContainer *) line->expander->table);
 	    
 	    while(control != NULL){
 	      if(AGS_IS_LINE_MEMBER(control->data) &&

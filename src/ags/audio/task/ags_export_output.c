@@ -185,7 +185,7 @@ ags_export_output_launch(AgsTask *task)
 	       "devout\0", devout,
 	       "audio-file\0", audio_file,
 	       NULL);
-  ags_thread_start(export_thread);
+  ags_thread_start((AgsThread *) export_thread);
 
   if((AGS_THREAD_SINGLE_LOOP & (AGS_THREAD(export_thread)->flags)) == 0){
     pthread_mutex_lock(&(AGS_THREAD(export_thread)->start_mutex));

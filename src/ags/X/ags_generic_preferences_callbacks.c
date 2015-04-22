@@ -36,12 +36,12 @@ ags_generic_preferences_autosave_thread_clicked_callback(GtkWidget *check_button
 
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(generic_preferences),
 							   AGS_TYPE_PREFERENCES);
-  ags_main = AGS_WINDOW(preferences->window)->ags_main;
-  autosave_thread = ags_main->autosave_thread;
+  ags_main = (AgsMain *) AGS_WINDOW(preferences->window)->ags_main;
+  autosave_thread = (AgsAutosaveThread *) ags_main->autosave_thread;
 
   if(gtk_toggle_button_get_active(check_button)){
-    ags_thread_start(autosave_thread);
+    ags_thread_start((AgsThread *) autosave_thread);
   }else{
-    ags_thread_stop(autosave_thread);
+    ags_thread_stop((AgsThread *) autosave_thread);
   }
 }

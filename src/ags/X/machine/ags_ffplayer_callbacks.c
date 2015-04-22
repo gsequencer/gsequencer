@@ -263,7 +263,7 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
 
   while(channel != NULL && has_more){
     list = ags_playable_read_audio_signal(playable,
-					  AGS_MACHINE(ffplayer)->audio->devout,
+					  (AgsDevout *) AGS_MACHINE(ffplayer)->audio->devout,
 					  channel->audio_channel, AGS_IPATCH_DEFAULT_CHANNELS);
 
     for(i = 0; i < AGS_IPATCH_DEFAULT_CHANNELS && list != NULL; i++){
