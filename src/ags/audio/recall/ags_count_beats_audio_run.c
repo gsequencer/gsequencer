@@ -1236,7 +1236,7 @@ ags_count_beats_audio_run_sequencer_count_callback(AgsDelayAudioRun *delay_audio
 
 	    list = ags_recall_find_type_with_recycling_container(list,
 								 AGS_TYPE_STREAM_CHANNEL_RUN,
-								 AGS_RECALL(count_beats_audio_run)->recall_id->recycling_container);
+								 (GObject *) AGS_RECALL(count_beats_audio_run)->recall_id->recycling_container);
 
 	    if(list != NULL){
 	      stream_channel_run = AGS_STREAM_CHANNEL_RUN(list->data);
@@ -1333,7 +1333,7 @@ ags_count_beats_audio_run_stream_audio_signal_done_callback(AgsRecall *recall,
 
   while((list = ags_recall_find_type_with_recycling_container(channel->play,
 							      AGS_TYPE_STREAM_CHANNEL_RUN,
-							      recall->recall_id->recycling_container)) == NULL){
+							      (GObject *) recall->recall_id->recycling_container)) == NULL){
     channel = channel->next;
   }
 
@@ -1416,7 +1416,7 @@ ags_count_beats_audio_run_stop(AgsCountBeatsAudioRun *count_beats_audio_run,
     devout_play = devout_play->next;
   }
 
-  ags_recall_done(count_beats_audio_run);
+  ags_recall_done((AgsRecall *) count_beats_audio_run);
 
   g_object_unref(count_beats_audio_run);
 
@@ -1443,7 +1443,7 @@ ags_count_beats_audio_run_stop(AgsCountBeatsAudioRun *count_beats_audio_run,
 
   if(all_done){
     ags_audio_loop_remove_audio(audio_loop,
-				audio);
+				(GObject *) audio);
   }
 } 
 

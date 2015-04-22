@@ -291,7 +291,7 @@ ags_recall_ladspa_set_property(GObject *gobject,
     break;
   case PROP_INDEX:
     {
-      unsigned long *index;
+      unsigned long index;
       
       index = g_value_get_ulong(value);
 
@@ -648,22 +648,22 @@ ags_recall_ladspa_load_ports(AgsRecallLadspa *recall_ladspa)
 	}else if(LADSPA_IS_PORT_AUDIO(port_descriptor[i])){
 	  if(LADSPA_IS_PORT_INPUT(port_descriptor[i])){
 	    if(recall_ladspa->input_port == NULL){
-	      recall_ladspa->input_port = (guint *) malloc(sizeof(guint));
+	      recall_ladspa->input_port = (unsigned long *) malloc(sizeof(unsigned long));
 	      recall_ladspa->input_port[0] = i;
 	    }else{
-	      recall_ladspa->input_port = (guint *) realloc(recall_ladspa->input_port,
-							    (recall_ladspa->input_lines + 1) * sizeof(guint));
+	      recall_ladspa->input_port = (unsigned long *) realloc(recall_ladspa->input_port,
+								    (recall_ladspa->input_lines + 1) * sizeof(unsigned long));
 	      recall_ladspa->input_port[recall_ladspa->input_lines] = i;
 	    }
 
 	    recall_ladspa->input_lines += 1;
 	  }else if(LADSPA_IS_PORT_OUTPUT(port_descriptor[i])){
 	    if(recall_ladspa->output_port == NULL){
-	      recall_ladspa->output_port = (guint *) malloc(sizeof(guint));
+	      recall_ladspa->output_port = (unsigned long *) malloc(sizeof(unsigned long));
 	      recall_ladspa->output_port[0] = i;
 	    }else{
-	      recall_ladspa->output_port = (guint *) realloc(recall_ladspa->output_port,
-							    (recall_ladspa->output_lines + 1) * sizeof(guint));
+	      recall_ladspa->output_port = (unsigned long *) realloc(recall_ladspa->output_port,
+							    (recall_ladspa->output_lines + 1) * sizeof(unsigned long));
 	      recall_ladspa->output_port[recall_ladspa->output_lines] = i;
 	    }
 
@@ -783,7 +783,7 @@ ags_recall_ladspa_new(AgsChannel *source,
   AgsRecallLadspa *recall_ladspa;
 
   if(source != NULL){
-    devout = AGS_AUDIO(source->audio)->devout;
+    devout = (AgsDevout *) AGS_AUDIO(source->audio)->devout;
   }else{
     devout = NULL;
   }

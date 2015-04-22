@@ -126,7 +126,7 @@ gboolean ags_async_queue_remove(AgsAsyncQueue *async_queue, AgsStackable *stacka
 
 void ags_async_queue_idle(AgsAsyncQueue *async_queue);
 
-void ags_async_queue_initerrupt(AgsAsyncQueue *async_queue);
+void ags_async_queue_interrupt(AgsAsyncQueue *async_queue);
 
 void ags_async_queue_push_context(AgsAsyncQueue *async_queue,
 				  AgsContext *context);

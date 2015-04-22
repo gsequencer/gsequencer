@@ -151,7 +151,7 @@ ags_gui_task_thread_run(AgsThread *thread)
   AgsGuiThread *gui_thread;
   GMainContext *main_context;
 
-  gui_thread = AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(thread->devout)->ags_main)->main_loop)->gui_thread;
+  gui_thread = (AgsGuiThread *) AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(thread->devout)->ags_main)->main_loop)->gui_thread;
   main_context = g_main_context_default();
 
   if(!g_main_context_acquire(main_context)){

@@ -507,8 +507,9 @@ ags_thread_finalize(GObject *gobject)
 
   thread = AGS_THREAD(gobject);
 
-  pthread_attr_getstackaddr(&(thread->thread_attr),
-			    &stackaddr);
+  pthread_attr_getstack(&(thread->thread_attr),
+			&stackaddr,
+			NULL);
 
   pthread_attr_destroy(&(thread->thread_attr));
 

@@ -54,7 +54,7 @@ struct _AgsPluginFactoryClass
 	      GParameter *control, guint control_count);
 
   AgsPlugin* (*create)(AgsPluginFactory *plugin_factory,
-		       gchar *xml_type);
+		       gchar *plugin_name, gchar *version, gchar *build_id);
 };
 
 struct _AgsPluginMetadata

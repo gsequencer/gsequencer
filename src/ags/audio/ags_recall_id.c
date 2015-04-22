@@ -176,7 +176,7 @@ ags_recall_id_set_property(GObject *gobject,
 
       recycling = g_value_get_object(value);
 
-      if(recall_id->recycling == recycling)
+      if(recall_id->recycling == (GObject *) recycling)
 	return;
 
       if(recall_id->recycling != NULL){
@@ -187,7 +187,7 @@ ags_recall_id_set_property(GObject *gobject,
 	g_object_ref(recycling);
       }
 
-      recall_id->recycling = recycling;
+      recall_id->recycling = (GObject *) recycling;
     }
     break;
   case PROP_RECYCLING_CONTAINER:

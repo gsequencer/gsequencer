@@ -184,7 +184,7 @@ ags_file_link_set_property(GObject *gobject,
 	g_object_ref(timestamp);
       }
 
-      file_link->timestamp = timestamp;
+      file_link->timestamp = (AgsTimestamp *) timestamp;
     }
     break;
   default:

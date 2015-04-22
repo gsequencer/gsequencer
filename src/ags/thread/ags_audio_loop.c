@@ -27,6 +27,7 @@
 #include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_export_thread.h>
 #include <ags/thread/ags_gui_thread.h>
+#include <ags/thread/ags_async_queue.h>
 
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
@@ -328,8 +329,8 @@ ags_audio_loop_init(AgsAudioLoop *audio_loop)
   ags_thread_add_child(AGS_THREAD(audio_loop), audio_loop->task_thread);
 
   /* AgsGuiThread */
-  gui_thread =
-    audio_loop->gui_thread = (AgsThread *) ags_gui_thread_new();
+  audio_loop->gui_thread = (AgsThread *) ags_gui_thread_new();
+  gui_thread = (AgsGuiThread *) audio_loop->gui_thread;
   ags_thread_add_child(AGS_THREAD(audio_loop), audio_loop->gui_thread);
 
   /* AgsDevoutThread */
@@ -780,18 +781,18 @@ ags_audio_loop_play_recall(AgsAudioLoop *audio_loop)
 		   "source\0", &source,
 		   NULL);
 
-      audio = source->audio;
+      audio = (AgsAudio *) source->audio;
     }
     
     /*  */
     pthread_mutex_lock(&(ags_application_mutex));
 
     devout_mutex = ags_mutex_manager_lookup(mutex_manager,
-					    recall->devout);
+					    (GObject *) recall->devout);
     
     if(audio != NULL){      
       audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     audio);
+					     (GObject *) audio);
     }
 
     pthread_mutex_lock(devout_mutex);
@@ -1043,7 +1044,7 @@ ags_audio_loop_play_audio(AgsAudioLoop *audio_loop)
 
       while(output != NULL){
 	play = ags_devout_play_find_source(play_domain->devout_play,
-					   output);
+					   (GObject *) output);
 
 	if(play == NULL){
 	  output = output->next;

@@ -317,7 +317,7 @@ ags_audio_init(AgsAudio *audio)
   mutex_manager = ags_mutex_manager_get_instance();
 
   ags_mutex_manager_insert(mutex_manager,
-			   audio,
+			   (GObject *) audio,
 			   mutex);
   
   pthread_mutex_unlock(&(ags_application_mutex));
@@ -339,7 +339,7 @@ ags_audio_init(AgsAudio *audio)
   audio->input = NULL;
 
   audio->devout_play_domain = ags_devout_play_domain_alloc();
-  AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->domain = audio;
+  AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->domain = (GObject *) audio;
 
   audio->notation = NULL;
 
@@ -1473,7 +1473,7 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
     for(i = 0; i < audio->audio_channels - audio_channels; i++){
       AgsDevoutPlay *devout_play;
 
-      devout_play = g_list_last(devout_play_domain->devout_play);
+      devout_play = g_list_last(devout_play_domain->devout_play)->data;
       devout_play_domain->devout_play = g_list_remove(devout_play_domain->devout_play,
 						      devout_play);
     }
@@ -1505,7 +1505,7 @@ ags_audio_set_audio_channels(AgsAudio *audio, guint audio_channels)
   mutex_manager = ags_mutex_manager_get_instance();
 
   mutex = ags_mutex_manager_lookup(mutex_manager,
-				   audio);
+				   (GObject *) audio);
   
   pthread_mutex_unlock(&(ags_application_mutex));
 
@@ -2196,7 +2196,7 @@ ags_audio_real_set_pads(AgsAudio *audio,
       }
       
       ags_audio_add_recycling_container(audio,
-					recycling_container);
+					(GObject *) recycling_container);
       ags_channel_recursive_reset_recycling_container(ags_channel_nth(audio->output,
 								      (((AGS_AUDIO_ASYNC & (audio->flags)) != 0) ? channel->audio_channel: channel->line)),
 						      old_recycling_container,
@@ -2234,7 +2234,7 @@ ags_audio_set_pads(AgsAudio *audio, GType type, guint pads)
   mutex_manager = ags_mutex_manager_get_instance();
 
   mutex = ags_mutex_manager_lookup(mutex_manager,
-				   audio);
+				   (GObject *) audio);
   
   pthread_mutex_unlock(&(ags_application_mutex));
 
@@ -2278,7 +2278,7 @@ ags_audio_init_run(AgsAudio *audio)
   mutex_manager = ags_mutex_manager_get_instance();
 
   mutex = ags_mutex_manager_lookup(mutex_manager,
-				   audio);
+				   (GObject *) audio);
   
   pthread_mutex_unlock(&(ags_application_mutex));
 
@@ -2321,7 +2321,7 @@ ags_audio_tact(AgsAudio *audio, AgsRecallID *recall_id)
   mutex_manager = ags_mutex_manager_get_instance();
 
   mutex = ags_mutex_manager_lookup(mutex_manager,
-				   audio);
+				   (GObject *) audio);
   
   pthread_mutex_unlock(&(ags_application_mutex));
 
@@ -2362,7 +2362,7 @@ ags_audio_done(AgsAudio *audio, AgsRecallID *recall_id)
   mutex_manager = ags_mutex_manager_get_instance();
 
   mutex = ags_mutex_manager_lookup(mutex_manager,
-				   audio);
+				   (GObject *) audio);
   
   pthread_mutex_unlock(&(ags_application_mutex));
 
@@ -2418,7 +2418,7 @@ ags_audio_add_recycling_container(AgsAudio *audio, GObject *recycling_container)
   mutex_manager = ags_mutex_manager_get_instance();
 
   mutex = ags_mutex_manager_lookup(mutex_manager,
-				   audio);
+				   (GObject *) audio);
   
   pthread_mutex_unlock(&(ags_application_mutex));
 
@@ -2451,7 +2451,7 @@ ags_audio_remove_recycling_container(AgsAudio *audio, GObject *recycling_contain
   mutex_manager = ags_mutex_manager_get_instance();
 
   mutex = ags_mutex_manager_lookup(mutex_manager,
-				   audio);
+				   (GObject *) audio);
   
   pthread_mutex_unlock(&(ags_application_mutex));
 
@@ -2484,7 +2484,7 @@ ags_audio_add_recall_id(AgsAudio *audio, GObject *recall_id)
   mutex_manager = ags_mutex_manager_get_instance();
 
   mutex = ags_mutex_manager_lookup(mutex_manager,
-				   audio);
+				   (GObject *) audio);
   
   pthread_mutex_unlock(&(ags_application_mutex));
 
@@ -2520,7 +2520,7 @@ ags_audio_remove_recall_id(AgsAudio *audio, GObject *recall_id)
   mutex_manager = ags_mutex_manager_get_instance();
 
   mutex = ags_mutex_manager_lookup(mutex_manager,
-				   audio);
+				   (GObject *) audio);
   
   pthread_mutex_unlock(&(ags_application_mutex));
 
@@ -2557,7 +2557,7 @@ ags_audio_add_recall_container(AgsAudio *audio, GObject *recall_container)
   mutex_manager = ags_mutex_manager_get_instance();
 
   mutex = ags_mutex_manager_lookup(mutex_manager,
-				   audio);
+				   (GObject *) audio);
   
   pthread_mutex_unlock(&(ags_application_mutex));
 
@@ -2594,7 +2594,7 @@ ags_audio_remove_recall_container(AgsAudio *audio, GObject *recall_container)
   mutex_manager = ags_mutex_manager_get_instance();
 
   mutex = ags_mutex_manager_lookup(mutex_manager,
-				   audio);
+				   (GObject *) audio);
   
   pthread_mutex_unlock(&(ags_application_mutex));
 
@@ -2632,7 +2632,7 @@ ags_audio_add_recall(AgsAudio *audio, GObject *recall, gboolean play)
   mutex_manager = ags_mutex_manager_get_instance();
 
   mutex = ags_mutex_manager_lookup(mutex_manager,
-				   audio);
+				   (GObject *) audio);
   
   pthread_mutex_unlock(&(ags_application_mutex));
 
@@ -2675,7 +2675,7 @@ ags_audio_remove_recall(AgsAudio *audio, GObject *recall, gboolean play)
   mutex_manager = ags_mutex_manager_get_instance();
 
   mutex = ags_mutex_manager_lookup(mutex_manager,
-				   audio);
+				   (GObject *) audio);
   
   pthread_mutex_unlock(&(ags_application_mutex));
 
@@ -2727,7 +2727,7 @@ ags_audio_duplicate_recall(AgsAudio *audio,
   mutex_manager = ags_mutex_manager_get_instance();
 
   mutex = ags_mutex_manager_lookup(mutex_manager,
-				   audio);
+				   (GObject *) audio);
   
   pthread_mutex_unlock(&(ags_application_mutex));
 
@@ -2855,7 +2855,7 @@ void ags_audio_resolve_recall(AgsAudio *audio,
   mutex_manager = ags_mutex_manager_get_instance();
 
   mutex = ags_mutex_manager_lookup(mutex_manager,
-				   audio);
+				   (GObject *) audio);
   
   pthread_mutex_unlock(&(ags_application_mutex));
 
@@ -2875,7 +2875,7 @@ void ags_audio_resolve_recall(AgsAudio *audio,
   }
 
   /* resolve */  
-  while((list_recall = ags_recall_find_recycling_container(list_recall, recall_id->recycling_container)) != NULL){
+  while((list_recall = ags_recall_find_recycling_container(list_recall, (GObject *) recall_id->recycling_container)) != NULL){
     recall = AGS_RECALL(list_recall->data);
     
     ags_recall_resolve_dependencies(recall);
@@ -2916,7 +2916,7 @@ ags_audio_init_recall(AgsAudio *audio, gint stage,
   mutex_manager = ags_mutex_manager_get_instance();
 
   mutex = ags_mutex_manager_lookup(mutex_manager,
-				   audio);
+				   (GObject *) audio);
   
   pthread_mutex_unlock(&(ags_application_mutex));
 
@@ -3006,7 +3006,7 @@ ags_audio_is_playing(AgsAudio *audio)
   mutex_manager = ags_mutex_manager_get_instance();
 
   mutex = ags_mutex_manager_lookup(mutex_manager,
-				   audio);
+				   (GObject *) audio);
   
   pthread_mutex_unlock(&(ags_application_mutex));
 
@@ -3065,7 +3065,7 @@ ags_audio_play(AgsAudio *audio,
   mutex_manager = ags_mutex_manager_get_instance();
 
   mutex = ags_mutex_manager_lookup(mutex_manager,
-				   audio);
+				   (GObject *) audio);
   
   pthread_mutex_unlock(&(ags_application_mutex));
 
@@ -3173,7 +3173,7 @@ ags_audio_recursive_play_init(AgsAudio *audio,
   mutex_manager = ags_mutex_manager_get_instance();
 
   mutex = ags_mutex_manager_lookup(mutex_manager,
-				   audio);
+				   (GObject *) audio);
   
   pthread_mutex_unlock(&(ags_application_mutex));
 
@@ -3254,7 +3254,7 @@ ags_audio_remove(AgsAudio *audio,
   mutex_manager = ags_mutex_manager_get_instance();
 
   mutex = ags_mutex_manager_lookup(mutex_manager,
-				   audio);
+				   (GObject *) audio);
   
   pthread_mutex_unlock(&(ags_application_mutex));
 
@@ -3324,7 +3324,7 @@ ags_audio_cancel(AgsAudio *audio,
   mutex_manager = ags_mutex_manager_get_instance();
 
   mutex = ags_mutex_manager_lookup(mutex_manager,
-				   audio);
+				   (GObject *) audio);
   
   pthread_mutex_unlock(&(ags_application_mutex));
 
@@ -3383,7 +3383,7 @@ ags_audio_set_devout(AgsAudio *audio, GObject *devout)
   mutex_manager = ags_mutex_manager_get_instance();
 
   mutex = ags_mutex_manager_lookup(mutex_manager,
-				   audio);
+				   (GObject *) audio);
   
   pthread_mutex_unlock(&(ags_application_mutex));
 
@@ -3482,7 +3482,7 @@ ags_audio_open_files(AgsAudio *audio,
   mutex_manager = ags_mutex_manager_get_instance();
 
   mutex = ags_mutex_manager_lookup(mutex_manager,
-				   audio);
+				   (GObject *) audio);
   
   pthread_mutex_unlock(&(ags_application_mutex));
 
@@ -3617,7 +3617,7 @@ ags_audio_find_port(AgsAudio *audio)
   mutex_manager = ags_mutex_manager_get_instance();
 
   mutex = ags_mutex_manager_lookup(mutex_manager,
-				   audio);
+				   (GObject *) audio);
   
   pthread_mutex_unlock(&(ags_application_mutex));
 

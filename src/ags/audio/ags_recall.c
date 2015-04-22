@@ -1693,7 +1693,7 @@ ags_recall_is_done(GList *recalls, GObject *recycling_container)
        !AGS_IS_RECALL_AUDIO(recall) &&
        !AGS_IS_RECALL_CHANNEL(recall) &&
        recall->recall_id != NULL &&
-       recall->recall_id->recycling_container == recycling_container){
+       recall->recall_id->recycling_container == (GObject *) recycling_container){
       if((AGS_RECALL_DONE & (recall->flags)) == 0){
 	recall->flags &= (~AGS_RECALL_RUN_INITIALIZED);
 	g_message("done: %s\0", G_OBJECT_TYPE_NAME(recall));
@@ -2174,7 +2174,7 @@ ags_recall_find_type_with_recycling_container(GList *recall_i, GType type, GObje
 
     if(g_type_is_a(G_OBJECT_TYPE(recall), type) &&
        recall->recall_id != NULL &&
-       recall->recall_id->recycling_container == recycling_container)
+       recall->recall_id->recycling_container == (GObject *) recycling_container)
       return(recall_i);
 
     recall_i = recall_i->next;
@@ -2337,7 +2337,7 @@ ags_recall_find_provider_with_recycling_container(GList *recall_i, GObject *prov
     recall = AGS_RECALL(recall_i->data);
     
     if(recall->recall_id != NULL &&
-       recall->recall_id->recycling_container == recycling_container){
+       recall->recall_id->recycling_container == (GObject *) recycling_container){
       return(recall_i);
     }
 

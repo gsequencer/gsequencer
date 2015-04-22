@@ -2219,7 +2219,7 @@ ags_recall_factory_create(AgsAudio *audio,
   mutex_manager = ags_mutex_manager_get_instance();
 
   audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 audio);
+					 (GObject *) audio);
   
   pthread_mutex_unlock(&(ags_application_mutex));
 

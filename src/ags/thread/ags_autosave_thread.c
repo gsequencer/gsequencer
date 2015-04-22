@@ -19,6 +19,7 @@
 #include <ags/thread/ags_autosave_thread.h>
 
 #include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_main_loop.h>
 
 #include <ags/audio/ags_devout.h>
 

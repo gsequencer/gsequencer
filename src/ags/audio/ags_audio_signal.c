@@ -1115,7 +1115,7 @@ ags_audio_signal_tile(AgsAudioSignal *audio_signal,
   remaining_size = frame_count - (i * audio_signal->buffer_size);
 
   if(remaining_size > k_end - j_offcut){
-    ags_audio_signal_copy_buffer_to_buffer(&(audio_signal_buffer[j)], 1,
+    ags_audio_signal_copy_buffer_to_buffer(&(audio_signal_buffer[j]), 1,
 					   &(template_buffer[j_offcut]), 1, k_end - j_offcut);
 
     if(k_end + j_offcut == template->buffer_size){

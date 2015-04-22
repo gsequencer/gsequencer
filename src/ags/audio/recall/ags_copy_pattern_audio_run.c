@@ -244,7 +244,7 @@ ags_copy_pattern_audio_run_set_property(GObject *gobject,
   switch(prop_id){
   case PROP_DELAY_AUDIO_RUN:
     {
-      AgsCountBeatsAudioRun *delay_audio_run;
+      AgsDelayAudioRun *delay_audio_run;
       gboolean is_template;
 
       delay_audio_run = (AgsCountBeatsAudioRun *) g_value_get_object(value);
@@ -571,12 +571,12 @@ ags_copy_pattern_audio_run_resolve_dependencies(AgsRecall *recall)
       
     if(AGS_IS_DELAY_AUDIO_RUN(recall_dependency->dependency)){
       delay_audio_run = (AgsDelayAudioRun *) ags_recall_dependency_resolve(recall_dependency,
-									   recall_id->recycling_container->parent->recall_id);
+									   (AgsRecallID *) recall_id->recycling_container->parent->recall_id);
 
       i++;
     }else if(AGS_IS_COUNT_BEATS_AUDIO_RUN(recall_dependency->dependency)){
       count_beats_audio_run = (AgsCountBeatsAudioRun *) ags_recall_dependency_resolve(recall_dependency,
-										      recall_id->recycling_container->parent->recall_id);
+										      (AgsRecallID *) recall_id->recycling_container->parent->recall_id);
 
       i++;
     }

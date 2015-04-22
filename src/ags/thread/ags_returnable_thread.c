@@ -110,7 +110,7 @@ ags_returnable_thread_class_init(AgsReturnableThreadClass *returnable_thread)
   gobject->finalize = ags_returnable_thread_finalize;
 
   /* AgsThreadClass */
-  thread = (AgsThread *) returnable_thread;
+  thread = (AgsThreadClass *) returnable_thread;
 
   thread->start = ags_returnable_thread_start;
   thread->run = ags_returnable_thread_run;
@@ -204,7 +204,7 @@ ags_returnable_thread_run(AgsThread *thread)
   
   /* retrieve some variables */
   returnable_thread = AGS_RETURNABLE_THREAD(thread);
-  thread_pool = returnable_thread->thread_pool;
+  thread_pool = (AgsThreadPool *) returnable_thread->thread_pool;
   
   if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
 #ifdef AGS_DEBUG

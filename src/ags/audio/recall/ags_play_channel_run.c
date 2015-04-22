@@ -453,7 +453,7 @@ ags_play_channel_run_run_post(AgsRecall *recall)
 
   list = ags_recall_find_type_with_recycling_container(source->play,
 						       AGS_TYPE_STREAM_CHANNEL_RUN,
-						       recall->recall_id->recycling_container);
+						       (GObject *) recall->recall_id->recycling_container);
   stream_channel_run = AGS_STREAM_CHANNEL_RUN(list->data);
   
   recall_recycling_list = AGS_RECALL(stream_channel_run)->children;
@@ -474,7 +474,7 @@ ags_play_channel_run_run_post(AgsRecall *recall)
   }
 
   if(!found){
-    ags_play_channel_run_stop(recall);
+    ags_play_channel_run_stop((AgsPlayChannelRun *) recall);
   }
 }
 
@@ -563,15 +563,16 @@ ags_play_channel_run_stop(AgsPlayChannelRun *play_channel_run)
   AgsCancelChannel *cancel_channel;
 
   channel = AGS_RECALL_CHANNEL_RUN(play_channel_run)->source;
-  task_thread = (AgsTaskThread *) AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout)->ags_main)->main_loop)->task_thread;
+  task_thread = AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout)->ags_main)->main_loop)->task_thread;
 
   /* create append task */
   cancel_channel = ags_cancel_channel_new(channel,
-					  AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0], TRUE);
+					  AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0],
+					  AGS_DEVOUT_PLAY(channel->devout_play));
   
   /* append AgsCancelAudio */
-  ags_task_thread_append_task(task_thread,
-			      cancel_channel);
+  ags_task_thread_append_task((AgsTaskThread *) task_thread,
+			      (AgsTask *) cancel_channel);
 }
 
 /**

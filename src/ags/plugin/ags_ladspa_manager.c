@@ -113,7 +113,7 @@ ags_ladspa_manager_finalize(GObject *gobject)
   ladspa_plugin = ladspa_manager->ladspa_plugin;
 
   g_list_free_full(ladspa_plugin,
-		   ags_ladspa_plugin_free);
+		   (GDestroyNotify) ags_ladspa_plugin_free);
 }
 
 /**

@@ -831,8 +831,8 @@ ags_file_read_audio_resolve_devout(AgsFileLookup *file_lookup,
       channel = audio->output;
 
       while(channel != NULL){
-	audio_signal = ags_audio_signal_new(devout,
-					    channel->first_recycling,
+	audio_signal = ags_audio_signal_new((GObject *) devout,
+					    (GObject *) channel->first_recycling,
 					    NULL);
 	audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
 	ags_recycling_add_audio_signal(channel->first_recycling,
@@ -847,8 +847,8 @@ ags_file_read_audio_resolve_devout(AgsFileLookup *file_lookup,
       channel = audio->input;
 
       while(channel != NULL){
-	audio_signal = ags_audio_signal_new(devout,
-					    channel->first_recycling,
+	audio_signal = ags_audio_signal_new((GObject *) devout,
+					    (GObject *) channel->first_recycling,
 					    NULL);
 	audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
 	ags_recycling_add_audio_signal(channel->first_recycling,
@@ -1577,7 +1577,7 @@ ags_file_write_input(AgsFile *file, xmlNode *parent, AgsChannel *channel)
   if(input->file_link != NULL){
     ags_file_write_file_link(file,
 			     node,
-			     input->file_link);
+			     (AgsFileLink *) input->file_link);
   }
 
   return(node);
@@ -1828,8 +1828,8 @@ ags_file_read_recall_resolve_audio(AgsFileLookup *file_lookup,
   audio = NULL;
 
   node = file_lookup->node->parent->parent;
-  file_id_ref = ags_file_find_id_ref_by_node(file_lookup->file,
-					     node);
+  file_id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_node(file_lookup->file,
+							      node);
 
   if(file_id_ref != NULL){
     audio = (AgsAudio *) file_id_ref->ref;
@@ -1852,8 +1852,8 @@ ags_file_read_recall_resolve_channel(AgsFileLookup *file_lookup,
   destination = NULL;
 
   node = file_lookup->node->parent->parent;
-  file_id_ref = ags_file_find_id_ref_by_node(file_lookup->file,
-					     node);
+  file_id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_node(file_lookup->file,
+							      node);
 
   if(file_id_ref != NULL){
     source = AGS_CHANNEL(file_id_ref->ref);
@@ -2925,8 +2925,8 @@ ags_file_read_port_resolve_port_value(AgsFileLookup *file_lookup,
   ags_port_safe_write(port,
 		      (GValue *) file_lookup->ref);
 
-  file_id_ref = ags_file_find_id_ref_by_reference(file_lookup->file,
-						  port);
+  file_id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_reference(file_lookup->file,
+								   port);
   ags_file_id_ref_resolved(file_id_ref);
 }
 
@@ -3961,7 +3961,7 @@ ags_file_read_pattern_resolve_port(AgsFileLookup *file_lookup,
 
     g_value_init(&value, G_TYPE_OBJECT);
     g_value_set_object(&value, pattern);
-    ags_port_safe_write(G_OBJECT(id_ref->ref),
+    ags_port_safe_write(port,
 			&value);
   }
 }
@@ -4459,7 +4459,7 @@ ags_file_read_notation_resolve_port(AgsFileLookup *file_lookup,
 
     g_value_init(&value, G_TYPE_OBJECT);
     g_value_set_object(&value, notation);
-    ags_port_safe_write(G_OBJECT(port),
+    ags_port_safe_write(port,
 			&value);
   }
 }

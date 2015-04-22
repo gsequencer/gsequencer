@@ -104,8 +104,8 @@ ags_timestamp_thread_connectable_interface_init(AgsConnectableInterface *connect
 void
 ags_timestamp_thread_init(AgsTimestampThread *timestamp_thread)
 {
-  timestamp_thread->current_timestamp = ags_timestamp_new();
-  timestamp_thread->current_latency = ags_timestamp_new();
+  timestamp_thread->current_timestamp = (GObject *) ags_timestamp_new();
+  timestamp_thread->current_latency = (GObject *) ags_timestamp_new();
 }
 
 void

@@ -188,7 +188,7 @@ ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread)
 	  ags_file_read_thread(file,
 			       xpath_object->nodesetval->nodeTab[0],
 			       &(AGS_DEVOUT_THREAD(AGS_AUDIO_LOOP(gobject)->devout_thread)->timestamp_thread));
-	  ags_thread_add_child(AGS_DEVOUT_THREAD(AGS_AUDIO_LOOP(gobject)->devout_thread),
+	  ags_thread_add_child(AGS_AUDIO_LOOP(gobject)->devout_thread,
 			       AGS_DEVOUT_THREAD(AGS_AUDIO_LOOP(gobject)->devout_thread)->timestamp_thread);
 
 	  /* gui thread */
