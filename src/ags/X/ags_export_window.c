@@ -392,7 +392,7 @@ ags_export_window_set_property(GObject *gobject,
 	g_object_ref(ags_main);
       }
 
-      export_window->ags_main = ags_main;
+      export_window->ags_main = (GObject *) ags_main;
     }
     break;
   default:
