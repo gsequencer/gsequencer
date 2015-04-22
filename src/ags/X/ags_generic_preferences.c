@@ -182,7 +182,7 @@ ags_generic_preferences_apply(AgsApplicable *applicable)
 							   AGS_TYPE_PREFERENCES);
   config = AGS_CONFIG(AGS_MAIN(AGS_WINDOW(preferences->window)->ags_main)->config);
   
-  if(gtk_toggle_button_get_active((GtkWidget *) generic_preferences->autosave_thread)){
+  if(gtk_toggle_button_get_active((GtkToggleButton *) generic_preferences->autosave_thread)){
     ags_config_set(config,
 		   AGS_CONFIG_GENERIC,
 		   "autosave-thread\0",

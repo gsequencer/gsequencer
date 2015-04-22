@@ -328,7 +328,7 @@ ags_window_connect(AgsConnectable *connectable)
   ags_connectable_connect(AGS_CONNECTABLE(window->menu_bar));
 
   list_start = 
-    list = gtk_container_get_children((GtkWidget *) window->machines);
+    list = gtk_container_get_children((GtkContainer *) window->machines);
 
   while(list != NULL){
     ags_connectable_connect(AGS_CONNECTABLE(list->data));

@@ -383,7 +383,7 @@ ags_navigation_tic_callback(AgsDevout *devout,
     return;
   }
 
-  task_thread = AGS_AUDIO_LOOP(AGS_MAIN(navigation->devout->ags_main)->main_loop)->task_thread;
+  task_thread = (AgsTaskThread *) AGS_AUDIO_LOOP(AGS_MAIN(navigation->devout->ags_main)->main_loop)->task_thread;
 
   list = NULL;
 

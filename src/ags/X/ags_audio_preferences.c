@@ -326,7 +326,7 @@ ags_audio_preferences_apply(AgsApplicable *applicable)
   ags_config_set(config,
 		 AGS_CONFIG_DEVOUT,
 		 "alsa-handle\0",
-		 gtk_combo_box_text_get_active_text((GtkWidget *) audio_preferences->card));
+		 gtk_combo_box_text_get_active_text(audio_preferences->card));
 }
 
 void
@@ -400,7 +400,7 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
 			    (gdouble) buffer_size);
 
   /*  */
-  ags_devout_pcm_info(gtk_combo_box_get_active_text((GtkWidget *) audio_preferences->card),
+  ags_devout_pcm_info(gtk_combo_box_get_active_text(audio_preferences->card),
   		      &channels_min, &channels_max,
   		      &rate_min, &rate_max,
   		      &buffer_size_min, &buffer_size_max,

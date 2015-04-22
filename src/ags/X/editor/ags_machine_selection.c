@@ -145,7 +145,7 @@ ags_machine_selection_run(AgsMachineSelection *machine_selection)
 
   vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
   gtk_container_add(content_area,
-		    vbox);
+		    (GtkWidget *) vbox);
 
   group = NULL;
 

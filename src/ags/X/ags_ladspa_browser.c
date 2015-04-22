@@ -312,7 +312,7 @@ ags_ladspa_browser_reset(AgsApplicable *applicable)
 
   list = gtk_container_get_children(GTK_CONTAINER(ladspa_browser->plugin));
 
-  filename = GTK_COMBO_BOX(list->next->data);
+  filename = GTK_COMBO_BOX_TEXT(list->next->data);
   g_list_free(list);
 
   gtk_combo_box_set_active((GtkComboBox *) filename,
@@ -388,10 +388,10 @@ ags_ladspa_browser_combo_box_controls_new()
   gtk_combo_box_text_append_text(combo_box,
 				 "horizontal scale\0");
 
-  gtk_combo_box_set_active(combo_box,
+  gtk_combo_box_set_active((GtkComboBox *) combo_box,
 			   1);
 
-  return((GtkComboBox *) combo_box);
+  return((GtkWidget *) combo_box);
 }
 
 GtkWidget*

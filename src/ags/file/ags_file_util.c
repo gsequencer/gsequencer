@@ -1107,7 +1107,7 @@ ags_file_util_read_file_link_launch(AgsFileLaunch *file_launch,
   
   /*  */
   input = NULL;
-  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_node(file_launch->file,
+  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_node((AgsFile *) file_launch->file,
 							 node->parent->parent);
 
   if(id_ref != NULL){

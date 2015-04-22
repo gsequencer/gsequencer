@@ -902,9 +902,9 @@ ags_audio_loop_play_channel(AgsAudioLoop *audio_loop)
       pthread_mutex_lock(&(ags_application_mutex));
 
       devout_mutex = ags_mutex_manager_lookup(mutex_manager,
-					      AGS_AUDIO(channel->audio)->devout);
+					      (GObject *) AGS_AUDIO(channel->audio)->devout);
       audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     channel->audio);
+					     (GObject *) channel->audio);
       
       pthread_mutex_unlock(&(ags_application_mutex));
       
@@ -1029,9 +1029,9 @@ ags_audio_loop_play_audio(AgsAudioLoop *audio_loop)
       pthread_mutex_lock(&(ags_application_mutex));
 
       devout_mutex = ags_mutex_manager_lookup(mutex_manager,
-					      audio->devout);
+					      (GObject *) audio->devout);
       audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     audio);
+					     (GObject *) audio);
       
       pthread_mutex_unlock(&(ags_application_mutex));
       
