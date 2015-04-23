@@ -337,14 +337,16 @@ ags_buffer_audio_signal_run_inter(AgsRecall *recall)
 
   stream_destination = destination->stream_current;
 
-  if(stream_destination->next == NULL){
-    ags_audio_signal_add_stream(destination);
-  }
+  if(stream_destination != NULL){
+    if(stream_destination->next == NULL){
+      ags_audio_signal_add_stream(destination);
+    }
   
-  //TODO:JK: in future release buffer size may differ
-  ags_audio_signal_copy_buffer_to_buffer((signed short *) stream_destination->data, 1,
-					 (signed short *) stream_source->data, 1,
-					 source->buffer_size);
+    //TODO:JK: in future release buffer size may differ
+    ags_audio_signal_copy_buffer_to_buffer((signed short *) stream_destination->data, 1,
+					   (signed short *) stream_source->data, 1,
+					   source->buffer_size);
+  }
 }
 
 AgsRecall*
