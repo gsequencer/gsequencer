@@ -564,11 +564,12 @@ ags-ags_drum_input_pad.o: src/ags/X/machine/ags_drum_input_pad.c \
  src/ags/widget/ags_hindicator.h src/ags/widget/ags_waveform.h \
  src/ags/widget/ags_dial.h src/ags/widget/ags_cartesian.h \
  src/ags/file/ags_file_id_ref.h src/ags/file/ags_file_lookup.h \
- src/ags/X/ags_window.h src/ags/audio/ags_devout.h \
- /usr/include/alsa/asoundlib.h /usr/include/string.h /usr/include/fcntl.h \
- /usr/include/bits/fcntl.h /usr/include/bits/fcntl-linux.h \
- /usr/include/bits/stat.h /usr/include/assert.h /usr/include/sys/poll.h \
- /usr/include/bits/poll.h /usr/include/errno.h /usr/include/bits/errno.h \
+ src/ags/file/ags_file_launch.h src/ags/X/ags_window.h \
+ src/ags/audio/ags_devout.h /usr/include/alsa/asoundlib.h \
+ /usr/include/string.h /usr/include/fcntl.h /usr/include/bits/fcntl.h \
+ /usr/include/bits/fcntl-linux.h /usr/include/bits/stat.h \
+ /usr/include/assert.h /usr/include/sys/poll.h /usr/include/bits/poll.h \
+ /usr/include/errno.h /usr/include/bits/errno.h \
  /usr/include/linux/errno.h /usr/include/asm/errno.h \
  /usr/include/asm-generic/errno.h /usr/include/asm-generic/errno-base.h \
  /usr/include/alsa/asoundef.h /usr/include/alsa/version.h \
@@ -1931,6 +1932,8 @@ src/ags/widget/ags_cartesian.h:
 src/ags/file/ags_file_id_ref.h:
 
 src/ags/file/ags_file_lookup.h:
+
+src/ags/file/ags_file_launch.h:
 
 src/ags/X/ags_window.h:
 

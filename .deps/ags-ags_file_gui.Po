@@ -701,7 +701,12 @@ ags-ags_file_gui.o: src/ags/file/ags_file_gui.c \
  src/ags/widget/ags_cartesian.h src/ags/file/ags_file_id_ref.h \
  src/ags/file/ags_file_launch.h src/ags/audio/ags_input.h \
  /usr/include/glib-2.0/glib/gstdio.h /usr/include/glib-2.0/glib/gprintf.h \
- /usr/include/sys/stat.h \
+ /usr/include/sys/stat.h src/ags/audio/recall/ags_peak_channel.h \
+ src/ags/audio/ags_recall_channel.h \
+ src/ags/audio/recall/ags_peak_channel_run.h \
+ src/ags/audio/ags_recall_channel_run.h \
+ src/ags/audio/ags_recall_audio_run.h src/ags/audio/ags_recall_audio.h \
+ src/ags/X/ags_line_callbacks.h \
  src/ags/X/machine/ags_drum_input_line_callbacks.h \
  src/ags/X/machine/ags_drum_input_line.h
 
@@ -2428,6 +2433,20 @@ src/ags/audio/ags_input.h:
 /usr/include/glib-2.0/glib/gprintf.h:
 
 /usr/include/sys/stat.h:
+
+src/ags/audio/recall/ags_peak_channel.h:
+
+src/ags/audio/ags_recall_channel.h:
+
+src/ags/audio/recall/ags_peak_channel_run.h:
+
+src/ags/audio/ags_recall_channel_run.h:
+
+src/ags/audio/ags_recall_audio_run.h:
+
+src/ags/audio/ags_recall_audio.h:
+
+src/ags/X/ags_line_callbacks.h:
 
 src/ags/X/machine/ags_drum_input_line_callbacks.h:
 

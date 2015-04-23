@@ -604,10 +604,11 @@ ags-ags_drum_input_pad_callbacks.o: \
  src/ags/X/ags_preferences.h src/ags/X/ags_generic_preferences.h \
  src/ags/X/ags_audio_preferences.h \
  src/ags/X/ags_performance_preferences.h \
- src/ags/X/ags_server_preferences.h src/ags/audio/ags_input.h \
- /usr/include/glib-2.0/glib/gstdio.h /usr/include/glib-2.0/glib/gprintf.h \
- /usr/include/sys/stat.h src/ags/audio/ags_output.h \
- src/ags/audio/ags_pattern.h src/ags/audio/task/ags_start_devout.h \
+ src/ags/X/ags_server_preferences.h src/ags/thread/ags_mutex_manager.h \
+ src/ags/audio/ags_input.h /usr/include/glib-2.0/glib/gstdio.h \
+ /usr/include/glib-2.0/glib/gprintf.h /usr/include/sys/stat.h \
+ src/ags/audio/ags_output.h src/ags/audio/ags_pattern.h \
+ src/ags/audio/task/ags_start_devout.h \
  src/ags/audio/task/ags_init_channel.h \
  src/ags/audio/task/ags_append_channel.h \
  src/ags/audio/task/ags_append_recall.h \
@@ -2112,6 +2113,8 @@ src/ags/X/ags_audio_preferences.h:
 src/ags/X/ags_performance_preferences.h:
 
 src/ags/X/ags_server_preferences.h:
+
+src/ags/thread/ags_mutex_manager.h:
 
 src/ags/audio/ags_input.h:
 

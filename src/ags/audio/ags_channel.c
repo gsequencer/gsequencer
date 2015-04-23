@@ -219,7 +219,7 @@ ags_channel_class_init(AgsChannelClass *channel)
 		 G_STRUCT_OFFSET (AgsChannelClass, done),
 		 NULL, NULL,
 		 g_cclosure_marshal_VOID__OBJECT,
-		 G_TYPE_NONE, 0,
+		 G_TYPE_NONE, 1,
 		 G_TYPE_OBJECT);
 }
 

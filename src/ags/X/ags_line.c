@@ -413,8 +413,6 @@ ags_line_connect(AgsConnectable *connectable)
 			 0);
     }
   }else{
-    //    line->flags &= (~AGS_LINE_PREMAPPED_RECALL);
-
     ags_line_find_port(line);
   }
 

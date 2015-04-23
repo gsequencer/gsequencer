@@ -22,6 +22,7 @@
 
 #include <ags/main.h>
 
+#include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_task_thread.h>
 
@@ -59,6 +60,8 @@ void ags_drum_input_pad_init_channel_launch_callback(AgsTask *task, AgsDrumInput
 
 #define AGS_DRUM_INPUT_PAD_OPEN_AUDIO_FILE_NAME "AgsDrumInputPadOpenAudioFileName\0"
 #define AGS_DRUM_INPUT_PAD_OPEN_SPIN_BUTTON "AgsDrumInputPadOpenSpinButton\0"
+
+extern pthread_mutex_t ags_application_mutex;
 
 void
 ags_drum_input_pad_open_callback(GtkWidget *widget, AgsDrumInputPad *drum_input_pad)
@@ -347,15 +350,33 @@ void
 ags_drum_input_pad_play_callback(GtkToggleButton *toggle_button, AgsDrumInputPad *drum_input_pad)
 {
   AgsDrum *drum;
+
   AgsDevout *devout;
+  AgsChannel *channel;
+
   AgsAudioLoop *audio_loop;
   AgsTaskThread *task_thread;
   AgsDevoutThread *devout_thread;
-  AgsChannel *channel;
+
+  AgsMutexManager *mutex_manager;
+
   GList *tasks;
 
+  pthread_mutex_t *audio_mutex;
+  
   drum = (AgsDrum *) gtk_widget_get_ancestor((GtkWidget *) drum_input_pad, AGS_TYPE_DRUM);
 
+  pthread_mutex_lock(&(ags_application_mutex));
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) AGS_MACHINE(drum)->audio);
+  
+  pthread_mutex_unlock(&(ags_application_mutex));
+
+  pthread_mutex_lock(audio_mutex);
+  
   devout = AGS_DEVOUT(AGS_MACHINE(drum)->audio->devout);
 
   audio_loop = AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop);
@@ -429,6 +450,7 @@ ags_drum_input_pad_play_callback(GtkToggleButton *toggle_button, AgsDrumInputPad
 
     if(AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0] == NULL ||
        (AGS_DEVOUT_PLAY_DONE & (AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0]->flags)) != 0){
+      pthread_mutex_unlock(audio_mutex);
       return;
     }
 
@@ -481,6 +503,8 @@ ags_drum_input_pad_play_callback(GtkToggleButton *toggle_button, AgsDrumInputPad
       }
     }
   }
+  
+  pthread_mutex_unlock(audio_mutex);
 }
 
 void
@@ -518,11 +542,11 @@ ags_drum_input_pad_init_channel_launch_callback(AgsTask *task,
 				  AGS_TYPE_PLAY_CHANNEL_RUN);
     //TODO:JK: fix me
     //    g_list_free(tmp);
-    
+
     if(recall != NULL){
       g_signal_connect_after(channel, "done\0",
-			     G_CALLBACK(ags_line_channel_done_callback), list->data);
-
+			     G_CALLBACK(ags_line_channel_done_callback), AGS_LINE(list->data));
+      
       /* add audio signal */
       recycling = channel->first_recycling;
 

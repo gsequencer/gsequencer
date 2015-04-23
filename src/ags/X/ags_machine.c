@@ -369,6 +369,8 @@ ags_machine_set_property(GObject *gobject,
 			   "channel\0", output,
 			   NULL);
 
+	      g_list_free(line);
+	      
 	      output = output->next_pad;
 	      pad = pad->next;
 	      i++;
@@ -416,6 +418,8 @@ ags_machine_set_property(GObject *gobject,
 	      g_object_set(G_OBJECT(pad->data),
 			   "channel\0", input,
 			   NULL);
+
+	      g_list_free(line);
 
 	      input = input->next_pad;
 	      pad = pad->next;
