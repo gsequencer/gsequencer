@@ -156,11 +156,15 @@ ags_start_devout_launch(AgsTask *task)
 
   devout = start_devout->devout;
 
+  audio_loop = AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop);
+
   if((AGS_DEVOUT_PLAY & (devout->flags)) != 0){
+    audio_loop->flags |= (AGS_AUDIO_LOOP_PLAY_AUDIO |
+			  AGS_AUDIO_LOOP_PLAY_CHANNEL |
+			  AGS_AUDIO_LOOP_PLAY_RECALL);
     return;
   }
 
-  audio_loop = AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop);
   devout_thread = AGS_DEVOUT_THREAD(audio_loop->devout_thread);
 
   /* append to AgsDevout */

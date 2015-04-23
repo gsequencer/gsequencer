@@ -732,8 +732,7 @@ ags_drum_launch_task(AgsFileLaunch *file_launch, AgsDrum *drum)
   if(!g_strcmp0(xmlGetProp(node,
 			   "loop\0"),
 		AGS_FILE_TRUE)){
-    gtk_toggle_button_set_active((GtkToggleButton *) drum->loop_button,
-				 TRUE);
+    gtk_button_clicked(drum->loop_button);
   }
 
   /* index */
@@ -743,11 +742,7 @@ ags_drum_launch_task(AgsFileLaunch *file_launch, AgsDrum *drum)
 			   10);
 
   if(index != 0){
-    gtk_toggle_button_set_active(drum->index0[0],
-				 FALSE);
-    gtk_toggle_button_set_active(drum->index0[index],
-				 TRUE);
-    drum->selected0 = drum->index0[index];
+    gtk_button_clicked(drum->index0[index]);
   }
 
   index = g_ascii_strtoull(xmlGetProp(node,
@@ -756,11 +751,7 @@ ags_drum_launch_task(AgsFileLaunch *file_launch, AgsDrum *drum)
 			   10);
 
   if(index != 0){
-    gtk_toggle_button_set_active(drum->index1[0],
-				 FALSE);
-    gtk_toggle_button_set_active(drum->index1[index],
-				 TRUE);
-    drum->selected1 = drum->index1[index];
+    gtk_button_clicked(drum->index1[index]);
   }
 }
 

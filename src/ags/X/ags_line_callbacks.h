@@ -49,7 +49,7 @@ void ags_line_recall_volume_cancel(AgsRecall *recall,
 				   AgsLine *line);
 
 /* AgsRecall - play */
-void ags_line_channel_done_callback(AgsChannel *channel,
+void ags_line_channel_done_callback(AgsChannel *channel, AgsRecallID *recall_id,
 				    AgsLine *line);
 void ags_line_play_channel_run_cancel(AgsRecall *recall,
 				      AgsLine *line);

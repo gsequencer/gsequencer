@@ -145,6 +145,7 @@ ags_cancel_channel_launch(AgsTask *task)
 {
   AgsCancelChannel *cancel_channel;
   AgsChannel *channel;
+  AgsRecallID *recall_id;
 
   cancel_channel = AGS_CANCEL_CHANNEL(task);
 
@@ -155,13 +156,19 @@ ags_cancel_channel_launch(AgsTask *task)
     return;
   }
 
-  g_object_ref(AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0]);
+  recall_id = AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0];
+  
+  g_object_ref(recall_id);
   ags_channel_tillrecycling_cancel(channel,
-				   AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0]);
+				   recall_id);
 
   /* set remove flag */
   AGS_DEVOUT_PLAY(channel->devout_play)->flags |= (AGS_DEVOUT_PLAY_DONE | AGS_DEVOUT_PLAY_REMOVE);
   AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0] = NULL;
+  
+  /* emit done */
+  ags_channel_done(channel,
+		   recall_id);
 }
 
 /**

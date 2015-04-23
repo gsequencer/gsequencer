@@ -914,6 +914,7 @@ ags_audio_loop_play_channel(AgsAudioLoop *audio_loop)
       /*  */
       if((AGS_DEVOUT_PLAY_REMOVE & (play->flags)) == 0){
 	remove_play = FALSE;
+	
 	if((AGS_DEVOUT_PLAY_SUPER_THREADED & (play->flags)) == 0){
 	  /* not super threaded */
 	  if((AGS_DEVOUT_PLAY_PLAYBACK & (play->flags)) != 0){
@@ -945,16 +946,15 @@ ags_audio_loop_play_channel(AgsAudioLoop *audio_loop)
 	    pthread_cond_signal(&(play->iterator_thread[2]->tic_cond));
 	  }
 	}
+      }else{
+	remove_play = TRUE;
       }
 
       if(remove_play){
 	audio_loop->play_channel_ref = audio_loop->play_channel_ref - 1;
 	audio_loop->play_channel = g_list_remove(audio_loop->play_channel, (gpointer) play);
 
-	ags_channel_done(play->source,
-			 play->recall_id[0]);
-
-	play->flags &= (~(AGS_DEVOUT_PLAY_REMOVE));
+	play->flags &= (~(AGS_DEVOUT_PLAY_DONE | AGS_DEVOUT_PLAY_REMOVE));
 	play->recall_id[0] = NULL;
 	//TODO:JK: verify g_object_unref() missing
       }

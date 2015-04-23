@@ -37,7 +37,15 @@
 #include <ags/file/ags_file_lookup.h>
 #include <ags/file/ags_file_launch.h>
 
+#include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_input.h>
+#include <ags/audio/ags_recall.h>
+#include <ags/audio/ags_recall_container.h>
+
+#include <ags/audio/recall/ags_peak_channel.h>
+#include <ags/audio/recall/ags_peak_channel_run.h>
+
+#include <ags/X/ags_line_callbacks.h>
 
 #include <ags/X/machine/ags_drum_input_line_callbacks.h>
 
@@ -1169,7 +1177,7 @@ ags_file_read_pad_resolve_channel(AgsFileLookup *file_lookup,
     channel_node = xpath_object->nodesetval->nodeTab[i];
 
     file_id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_node(file,
-								channel_node->parent);
+								channel_node);
     g_object_set(G_OBJECT(pad),
 		 "channel\0", AGS_CHANNEL(file_id_ref->ref),
 		 NULL);
@@ -1607,7 +1615,7 @@ ags_file_read_line_resolve_channel(AgsFileLookup *file_lookup,
     channel_node = xpath_object->nodesetval->nodeTab[i];
 
     file_id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_node(file,
-								channel_node->parent);
+								channel_node);
 
     g_object_set(G_OBJECT(line),
 		 "channel\0", AGS_CHANNEL(file_id_ref->ref),
@@ -1917,11 +1925,12 @@ ags_file_read_line_member(AgsFile *file, xmlNode *node, AgsLineMember **line_mem
       gtk_range_set_inverted(GTK_RANGE(child_widget),
 			     TRUE);
     }
-  }else if(AGS_IS_INDICATOR(child_widget)){
+  }else if(AGS_IS_VINDICATOR(child_widget)){
     adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 10.0, 1.0, 1.0, 10.0);
     g_object_set(child_widget,
 		 "adjustment\0", adjustment,
 		 NULL);
+    gtk_widget_queue_draw(child_widget);
   }
 
   //TODO:JK: implement more types
@@ -1981,6 +1990,7 @@ void
 ags_file_read_line_member_resolve_port(AgsFileLookup *file_lookup,
 				       AgsLineMember *line_member)
 {
+  GtkWidget *child_widget;
   AgsFileIdRef *id_ref;
   gchar *xpath;
 
@@ -2011,6 +2021,53 @@ ags_file_read_line_member_resolve_port(AgsFileLookup *file_lookup,
       g_object_set(G_OBJECT(line_member),
 		   "recall-port\0", (AgsPort *) id_ref->ref,
 		   NULL);
+    }
+  }
+
+  child_widget = (GtkWidget *) gtk_bin_get_child(GTK_BIN(line_member));
+
+  if(AGS_IS_VINDICATOR(child_widget)){
+    AgsLine *line;
+    AgsChannel *source;
+    
+    AgsPeakChannelRun *recall_peak_channel_run, *play_peak_channel_run;
+    AgsRecallHandler *recall_handler;
+    GList *list;
+
+    line = gtk_widget_get_ancestor(line_member,
+				   AGS_TYPE_LINE);
+    source = line->channel;
+    
+    /* play - connect run_post */
+    list = ags_recall_template_find_type(source->play,
+					 AGS_TYPE_PEAK_CHANNEL_RUN);
+
+    if(list != NULL){
+      play_peak_channel_run = AGS_PEAK_CHANNEL_RUN(list->data);
+
+      recall_handler = (AgsRecallHandler *) malloc(sizeof(AgsRecallHandler));
+
+      recall_handler->signal_name = "run-post\0";
+      recall_handler->callback = G_CALLBACK(ags_line_peak_run_post_callback);
+      recall_handler->data = (gpointer) line;
+
+      ags_recall_add_handler(AGS_RECALL(play_peak_channel_run), recall_handler);
+    }
+
+    /* recall - connect run_post */
+    list = ags_recall_template_find_type(source->recall,
+					 AGS_TYPE_PEAK_CHANNEL_RUN);
+
+    if(list != NULL){
+      recall_peak_channel_run = AGS_PEAK_CHANNEL_RUN(list->data);
+
+      recall_handler = (AgsRecallHandler *) malloc(sizeof(AgsRecallHandler));
+
+      recall_handler->signal_name = "run-post\0";
+      recall_handler->callback = G_CALLBACK(ags_line_peak_run_post_callback);
+      recall_handler->data = (gpointer) line;
+
+      ags_recall_add_handler(AGS_RECALL(recall_peak_channel_run), recall_handler);
     }
   }
 }

@@ -209,15 +209,14 @@ ags_line_peak_run_post_callback(AgsRecall *peak_channel,
 }
 
 void
-ags_line_channel_done_callback(AgsChannel *source, AgsLine *line)
+ags_line_channel_done_callback(AgsChannel *source, AgsRecallID *recall_id,
+			       AgsLine *line)
 {
   AgsChannel *channel;
   AgsDevoutPlay *devout_play;
   AgsChannel *next_pad;
   GList *current_recall;
   gboolean all_done;
-
-  g_message("ags_line_channel_done\0");
 
   channel = AGS_PAD(AGS_LINE(line)->pad)->channel;
   next_pad = channel->next_pad;
