@@ -25,6 +25,7 @@
 
 #include <ags/widget/ags_led.h>
 
+#include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_task_thread.h>
 
@@ -67,6 +68,7 @@
 #define AGS_DRUM_PLAY_RECALL "AgsDrumPlayRecall\0"
 
 extern const char *AGS_DRUM_INDEX;
+extern pthread_mutex_t ags_application_mutex;
 
 void
 ags_drum_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrum *drum)
@@ -118,8 +120,24 @@ void
 ags_drum_loop_button_callback(GtkWidget *button, AgsDrum *drum)
 {
   AgsCountBeatsAudio *count_beats_audio;
+
+  AgsMutexManager *mutex_manager;
+
   GList *list;
   gboolean loop;
+
+  pthread_mutex_t *audio_mutex;
+  
+  pthread_mutex_lock(&(ags_application_mutex));
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) AGS_MACHINE(drum)->audio);
+  
+  pthread_mutex_unlock(&(ags_application_mutex));
+
+  pthread_mutex_lock(audio_mutex);
 
   loop = (GTK_TOGGLE_BUTTON(button)->active) ? TRUE: FALSE;
 
@@ -146,14 +164,32 @@ ags_drum_loop_button_callback(GtkWidget *button, AgsDrum *drum)
     list = list->next;
   }
 
+  pthread_mutex_unlock(audio_mutex);
 }
 
 void
 ags_drum_length_spin_callback(GtkWidget *spin_button, AgsDrum *drum)
 {
   AgsWindow *window;
+
   AgsApplySequencerLength *apply_sequencer_length;
+  
+  AgsMutexManager *mutex_manager;
+
   gdouble length;
+
+  pthread_mutex_t *audio_mutex;
+  
+  pthread_mutex_lock(&(ags_application_mutex));
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) AGS_MACHINE(drum)->audio);
+  
+  pthread_mutex_unlock(&(ags_application_mutex));
+
+  pthread_mutex_lock(audio_mutex);
 
   window = (AgsWindow *) gtk_widget_get_toplevel(GTK_WIDGET(drum));
 
@@ -164,11 +200,28 @@ ags_drum_length_spin_callback(GtkWidget *spin_button, AgsDrum *drum)
 
   ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->task_thread),
 			      AGS_TASK(apply_sequencer_length));
+
+  pthread_mutex_unlock(audio_mutex);
 }
 
 void
 ags_drum_index0_callback(GtkWidget *widget, AgsDrum *drum)
 {
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *audio_mutex;
+  
+  pthread_mutex_lock(&(ags_application_mutex));
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) AGS_MACHINE(drum)->audio);
+  
+  pthread_mutex_unlock(&(ags_application_mutex));
+
+  pthread_mutex_lock(audio_mutex);
+
   if(drum->selected0 != NULL){
     GtkToggleButton *toggle_button;
 
@@ -223,11 +276,28 @@ ags_drum_index0_callback(GtkWidget *widget, AgsDrum *drum)
 
     ags_drum_set_pattern(drum);
   }
+
+  pthread_mutex_unlock(audio_mutex);
 }
 
 void
 ags_drum_index1_callback(GtkWidget *widget, AgsDrum *drum)
 {
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *audio_mutex;
+  
+  pthread_mutex_lock(&(ags_application_mutex));
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) AGS_MACHINE(drum)->audio);
+  
+  pthread_mutex_unlock(&(ags_application_mutex));
+
+  pthread_mutex_lock(audio_mutex);
+
   if(drum->selected1 != NULL){
     GtkToggleButton *toggle_button;
 
@@ -282,18 +352,27 @@ ags_drum_index1_callback(GtkWidget *widget, AgsDrum *drum)
 
     ags_drum_set_pattern(drum);
   }
+
+  pthread_mutex_unlock(audio_mutex);
 }
 
 void
 ags_drum_pad_callback(GtkWidget *toggle_button, AgsDrum *drum)
 {
   AgsLine *selected_line;
+
   AgsPattern *pattern;
+  
   AgsTogglePatternBit *toggle_pattern_bit;
+
+  AgsMutexManager *mutex_manager;
+
   GList *list, *list_start;
   GList *line, *line_start;
   GList *tasks;
   guint i, index0, index1, offset;
+
+  pthread_mutex_t *audio_mutex;
 
   if(drum->selected_pad == NULL){
     return;
@@ -306,6 +385,17 @@ ags_drum_pad_callback(GtkWidget *toggle_button, AgsDrum *drum)
 
     return;
   }
+  
+  pthread_mutex_lock(&(ags_application_mutex));
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) AGS_MACHINE(drum)->audio);
+  
+  pthread_mutex_unlock(&(ags_application_mutex));
+
+  pthread_mutex_lock(audio_mutex);
 
   /* calculate offset */
   list_start = 
@@ -346,7 +436,6 @@ ags_drum_pad_callback(GtkWidget *toggle_button, AgsDrum *drum)
 						    selected_line->channel->line,
 						    index0, index1,
 						    offset);
-    g_message("found %d %x\0", selected_line->channel, selected_line->channel->pattern->data);
 
     tasks = g_list_prepend(tasks,
 			   toggle_pattern_bit);
@@ -359,6 +448,8 @@ ags_drum_pad_callback(GtkWidget *toggle_button, AgsDrum *drum)
   /* append AgsTogglePatternBit */
   ags_task_thread_append_tasks(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(AGS_MACHINE(drum)->audio->devout)->ags_main)->main_loop)->task_thread),
 			       tasks);
+
+  pthread_mutex_unlock(audio_mutex);
 }
 
 void
@@ -373,13 +464,32 @@ ags_drum_tact_callback(AgsAudio *audio,
 		       AgsDrum *drum)
 {
   AgsWindow *window;
+
   AgsCountBeatsAudio *play_count_beats_audio;
   AgsCountBeatsAudioRun *play_count_beats_audio_run;
   AgsToggleLed *toggle_led;
+
+  AgsMutexManager *mutex_manager;
+
   GList *list, *tmp;
   guint counter, active_led;
   gdouble active_led_old, active_led_new;
+
   GValue value = {0,};
+
+  pthread_mutex_t *audio_mutex;
+
+  pthread_mutex_lock(&(ags_application_mutex));
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) AGS_MACHINE(drum)->audio);
+  
+  pthread_mutex_unlock(&(ags_application_mutex));
+
+  pthread_mutex_lock(audio_mutex);
+
   
   window = AGS_WINDOW(gtk_widget_get_ancestor((GtkWidget *) drum, AGS_TYPE_WINDOW));
 
@@ -420,6 +530,8 @@ ags_drum_tact_callback(AgsAudio *audio,
 
   ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->task_thread),
 			      AGS_TASK(toggle_led));
+
+  pthread_mutex_unlock(audio_mutex);
 }
 
 void

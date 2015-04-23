@@ -604,10 +604,10 @@ ags-ags_drum_callbacks.o: src/ags/X/machine/ags_drum_callbacks.c \
  src/ags/X/ags_audio_preferences.h \
  src/ags/X/ags_performance_preferences.h \
  src/ags/X/ags_server_preferences.h src/ags/widget/ags_led.h \
- src/ags/audio/ags_input.h /usr/include/glib-2.0/glib/gstdio.h \
- /usr/include/glib-2.0/glib/gprintf.h /usr/include/sys/stat.h \
- src/ags/audio/ags_output.h src/ags/audio/ags_pattern.h \
- src/ags/audio/task/ags_toggle_pattern_bit.h \
+ src/ags/thread/ags_mutex_manager.h src/ags/audio/ags_input.h \
+ /usr/include/glib-2.0/glib/gstdio.h /usr/include/glib-2.0/glib/gprintf.h \
+ /usr/include/sys/stat.h src/ags/audio/ags_output.h \
+ src/ags/audio/ags_pattern.h src/ags/audio/task/ags_toggle_pattern_bit.h \
  src/ags/audio/task/ags_toggle_led.h \
  src/ags/audio/task/recall/ags_apply_bpm.h \
  src/ags/audio/task/recall/ags_apply_sequencer_length.h \
@@ -2123,6 +2123,8 @@ src/ags/X/ags_performance_preferences.h:
 src/ags/X/ags_server_preferences.h:
 
 src/ags/widget/ags_led.h:
+
+src/ags/thread/ags_mutex_manager.h:
 
 src/ags/audio/ags_input.h:
 
