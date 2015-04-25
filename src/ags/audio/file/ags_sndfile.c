@@ -432,10 +432,13 @@ ags_sndfile_vio_seek(sf_count_t offset, int whence, void *user_data)
   switch(whence){
   case SEEK_CUR:
     AGS_SNDFILE(user_data)->current += offset;
+    break;
   case SEEK_SET:
     AGS_SNDFILE(user_data)->current = &(AGS_SNDFILE(user_data)->pointer[offset]);
+    break;
   case SEEK_END:
     AGS_SNDFILE(user_data)->current = &(AGS_SNDFILE(user_data)->pointer[AGS_SNDFILE(user_data)->length - offset]);
+    break;
   }
 
   return(AGS_SNDFILE(user_data)->current - AGS_SNDFILE(user_data)->pointer);

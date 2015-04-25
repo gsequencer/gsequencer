@@ -1,0 +1,410 @@
+/* AGS - Advanced GTK Sequencer
+ * Copyright (C) 2015 Joël Krähemann
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+#include <ags/audio/midi/ags_midi_parser.h>
+
+void ags_midi_parser_class_init(AgsMidiParserClass *midi_parser);
+void ags_midi_parser_init(AgsMidiParser *midi_parser);
+void ags_midi_parser_finalize(GObject *gobject);
+
+#define AGS_MIDI_PARSE_MSB16(x) ((x[0] << 8) | (x[1]))
+#define AGS_MIDI_PARSE_MSB32(x) ((x[0] << 24) | (x[1] << 16) | (x[2] << 8) | (x[3]))
+#define AGS_MIDI_PARSE_MSB64(x) ((x[0] << 56) | (x[1] << 48) | (x[2] << 40) | (x[3] << 32) | (x[4] << 24) | (x[5] << 16) | (x[6] << 8) | (x[7]))
+
+/**
+ * SECTION:ags_midi_parser
+ * @short_description: the menu bar.
+ * @title: AgsMidiParser
+ * @section_id:
+ * @include: ags/X/ags_midi_parser.h
+ *
+ * #AgsMidiParser reads your midi parsers.
+ */
+
+static gpointer ags_midi_parser_parent_class = NULL;
+
+GType
+ags_midi_parser_get_type(void)
+{
+  static GType ags_type_midi_parser = 0;
+
+  if(!ags_type_midi_parser){
+    static const GTypeInfo ags_midi_parser_info = {
+      sizeof (AgsMidiParserClass),
+      NULL, /* base_init */
+      NULL, /* base_finalize */
+      (GClassInitFunc) ags_midi_parser_class_init,
+      NULL, /* class_finalize */
+      NULL, /* class_data */
+      sizeof (AgsMidiParser),
+      0,    /* n_preallocs */
+      (GInstanceInitFunc) ags_midi_parser_init,
+    };
+
+    ags_type_midi_parser = g_type_register_static(G_TYPE_OBJECT,
+						  "AgsMidiParser\0", &ags_midi_parser_info,
+						  0);
+  }
+
+  return(ags_type_midi_parser);
+}
+
+void
+ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
+{
+  GObjectClass *gobject;
+
+  ags_midi_parser_parent_class = g_type_class_peek_parent(midi_parser);
+
+  /* GObjectClass */
+  gobject = (GObjectClass *) midi_parser;
+  
+  gobject->finalize = ags_midi_parser_finalize;
+}
+
+void
+ags_midi_parser_init(AgsMidiParser *midi_parser)
+{
+  midi_parser->fd = -1;
+  midi_parser->nth_chunk = 0;
+}
+
+void
+ags_midi_parser_finalize(GObject *gobject)
+{
+  G_OBJECT_CLASS(ags_midi_parser_parent_class)->finalize(gobject);
+}
+}
+
+char*
+ags_midi_parser_read_chunk(AgsMidiParser *midi_parser,
+			   guint *message_type, guint *message_length,
+			   GError **error)
+{
+  char chunk_type[4];
+  char chunk_length[4];
+  char *data;
+
+  guint midi_type;
+  guint data_length;
+  
+  read(midi_parser->fd, chunk_type, 4 * sizeof(char));
+
+  if(!g_strncmp(AGS_MIDI_PARSER_MTHD,
+		chunk_type,
+		4)){
+    midi_type = AGS_MIDI_CHUNK_HEADER;
+  }else if(!g_strncmp(AGS_MIDI_PARSER_MTCK,
+		      chunk_type,
+		      4)){
+    midi_type = AGS_MIDI_CHUNK_TRACK;
+  }else{
+    midi_type = AGS_MIDI_CHUNK_UNKNOWN;
+  }
+  
+  read(midi_parser->fd, chunk_length, 4 * sizeof(char));
+  data_length = AGS_MIDI_PARSE_MSB32(chunk_length);
+
+  data = (char *) malloc(data_length * sizeof(char));
+  read(midi_parser->fd, data, data_length * sizeof(char));
+
+  midi_parser->nth_chunk += 1;
+  
+  if(message_type != NULL){
+    *message_type = midi_type;
+  }
+
+  if(message_length != NULL){
+    *message_length = data_length;
+  }
+  
+  return(data);
+}
+
+void
+ags_midi_parser_write_chunk(AgsMidiParser *midi_parser,
+			    char *chunk, size_t length)
+{
+  write(midi_parser->fd, chunk, length);
+}
+
+void
+ags_midi_parser_seek(AgsMidiParser *midi_parser, guint n_chunks, gint whence)
+{
+  char chunk_head[8];
+  guint start_chunk;
+  guint data_length;
+
+  switch(whence){
+  case SEEK_CUR:
+    start_chunk = midi_parser->nth_chunk;
+
+    while(midi_parser->nth_chunk - start_chunk < n_chunks){
+      read(midi_parser->fd, chunk_head, 8 * sizeof(char));
+      data_length = AGS_MIDI_PARSE_MSB32(&(chunk_head[4]));
+      
+      seek(midi_parser->fd, SEEK_CUR, data_length);
+      
+      midi_parser->nth_chunk += 1;
+    }
+
+    break;
+  case SEEK_SET:
+    midi_parser->nth_chunk = 0;
+    seek(midi_parser->fd, SEEK_SET, 0);
+
+    while(midi_parser->nth_chunk < n_chunks){
+      read(midi_parser->fd, chunk_head, 8 * sizeof(char));
+      data_length = AGS_MIDI_PARSE_MSB32(&(chunk_head[4]));
+      
+      seek(midi_parser->fd, SEEK_CUR, data_length);
+
+      midi_parser->nth_chunk += 1;
+    }
+
+    break;
+  case SEEK_END:
+    //TODO:JK: implement me
+    break;
+  }
+}
+
+void
+ags_midi_parser_flush(AgsMidiParser *midi_parser)
+{
+  flush(midi_parser->fd);
+}
+
+xmlNode*
+ags_midi_parser_parse_header(AgsMidiParser *parser,
+			     char *chunk_data,
+			     guint chunk_type,
+			     guint chunk_length)
+{
+  xmlNode *node;
+
+  char chunk_format[2];
+  char chunk_tracks[2];
+  char chunk_division[2];
+  
+  guint track_format;
+  guint track_count;
+  guint track_division;
+  
+  node = xmlNewNode(NULL,
+		    "midi-header\0");
+
+  memcpy(chunk_format, data, 2 * sizeof(char));
+  track_format = AGS_MIDI_PARSE_MSB16(chunk_format);
+
+  switch(track_format){
+  case 0:
+    {
+      xmlNewProp(node,
+		 "track-format\0",
+		 "single\0");
+    }
+    break;
+  case 1:
+    {
+      xmlNewProp(node,
+		 "track-format\0",
+		 "simoultaneous\0");
+    }
+    break;
+  case 2
+    {
+      xmlNewProp(node,
+		 "track-format\0",
+		 "independant\0");
+    }
+  break;
+  }
+  
+  memcpy(chunk_tracks, &(data[2]), 2 * sizeof(char));
+  track_count = AGS_MIDI_PARSE_MSB16(chunk_tracks);
+
+  xmlNewProp(node,
+	     "track-count\0",
+	     g_strdup_printf("%d\0", track_count));
+  
+  memcpy(chunk_division, &(data[4]), 2 * sizeof(char));
+  track_division = AGS_MIDI_PARSE_MSB16(chunk_division);
+
+  if((track_division & (1 << 15)) != 0){
+    xmlNewProp(node,
+	       "smtpe\0",
+	       "false\0");
+    
+    xmlNewProp(node,
+	       "delta-time\0",
+	       g_strdup_printf("%d\0",
+			       (track_division & (~(1 << 15)))));
+  }else{
+    xmlNewProp(node,
+	       "smtpe\0",
+	       "true\0");
+
+    xmlNewProp(node,
+	       "delta-time\0",
+	       g_strdup_printf("%d\0",
+			       (track_division & (~(0xff)))));
+
+    xmlNewProp(node,
+	       "smtpe-fps\0",
+	       g_strdup_printf("%d\0",
+			       (track_division & (~(0x7f00)))));
+  }
+  
+  return(node);
+}
+
+xmlNode*
+ags_midi_parser_parse_track(AgsMidiParser *parser,
+			    char *chunk_data,
+			    guint chunk_type,
+			    guint chunk_length)
+{
+  xmlNode *node, *message_node;
+
+  char chunk_delta_time[8];
+  char voice_message[4];
+  guint64 delta_time;
+  guint channel_num;
+  guint key, control, program, pitch;
+  guint velocity;
+  guint offset;
+  guint i;
+  
+  node = xmlNewNode(NULL,
+		    "midi-track\0");
+
+  /* delta time */
+  for(offset = 0; offset < 8; offset++){
+    if((&(data[offset]) & (1 << 7)) != 0){
+      break;
+    }
+  }
+
+  for(i = 0; i < offset + 1; i++){
+    chunk_delta_time[i] = data[offset - i];
+  }
+  
+  data_time = AGS_MIDI_PARSE_MSB64(chunk_delta_time);
+  offset++;
+  
+  xmlNewProp(node,
+	     "delta-time\0",
+	     g_strdup_printf("%d\0", delta_time));
+
+  for(; offset < chunk_length;){
+    message_node = xmlNewNode(NULL,
+			      "midi-message\0");
+    
+    if((data[offset] & (0x80)) != 0 ||
+       (data[offset] & (0x90)) != 0 ||
+       (data[offset] & (0xa0)) != 0){
+      /* definitely voice message */
+      channel_num = (data[offset] & 0x0f);
+
+      xmlNewProp(message_node,
+		 "type\0",
+		 "voice-message\0");
+
+      xmlNewProp(message_node,
+		 "channel\0",
+		 g_strdup_printf("%d\0", channel_num));
+      
+      key = data[offset + 1];
+      velocity = data[offset + 2];
+
+      if((~channel_num) & data[offset] == 0x80){
+	xmlNewProp(message_node,
+		   "event\0",
+		   "note-off\0");
+      }else if((~channel_num) & data[offset] == 0x90){
+	xmlNewProp(message_node,
+		   "event\0",
+		   "note-on\0");
+      }else{
+	xmlNewProp(message_node,
+		   "event\0",
+		   "polyphonic\0");
+      }
+
+      offset += 3;
+    }else if(data[offset] == 0xb0){
+      /* voice or channel mode message */
+      control = data[offset + 1];
+      velocity = data[offset + 2];
+
+      if(control < 120){
+	channel_num = (data[offset] & 0x0f);
+
+	xmlNewProp(message_node,
+		   "type\0",
+		   "voice-message\0");
+
+	xmlNewProp(message_node,
+		   "channel\0",
+		   g_strdup_printf("%d\0", channel_num));
+
+	
+      }else{
+	channel_num = (data[offset] & 0x0f);
+	
+	xmlNewProp(message_node,
+		   "type\0",
+		   "mode-message\0");
+	
+	xmlNewProp(message_node,
+		   "channel\0",
+		   g_strdup_printf("%d\0", channel_num));
+
+	
+      }
+    }else if((data[offset] & (0xc0)) != 0 ||
+	     (data[offset] & (0xd0)) != 0 ||
+	     (data[offset] & (0xe0)) != 0){
+      /* definitely voice message */
+    }else if(){
+      /* system common message */
+    }else{
+      /* real-time message */
+    }
+
+    xmlAddChild(node,
+		message_node);
+  }
+  
+  //TODO:JK: implement me
+  
+  return(node);
+}
+
+AgsMidiParser*
+ags_midi_parser_new()
+{
+  AgsMidiParser *midi_parser;
+
+  midi_parser = (AgsMidiParser *) g_object_new(AGS_TYPE_MIDI_PARSER,
+					       NULL);
+
+  return(midi_parser);
+}
+
