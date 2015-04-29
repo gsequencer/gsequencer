@@ -646,14 +646,14 @@ distuninstallcheck_listfiles = find . -type f -print
 am__distuninstallcheck_listfiles = $(distuninstallcheck_listfiles) \
   | sed 's|^\./|$(prefix)/|' | grep -v '$(infodir)/dir$$'
 distcleancheck_listfiles = find . -type f -print
-ACLOCAL = ${SHELL} /usr/src/ags-devel/missing aclocal-1.14
+ACLOCAL = ${SHELL} /home/minos/ags-devel/missing aclocal-1.14
 AMTAR = $${TAR-tar}
 AM_DEFAULT_VERBOSITY = 1
 AR = ar
 AS = as
-AUTOCONF = ${SHELL} /usr/src/ags-devel/missing autoconf
-AUTOHEADER = ${SHELL} /usr/src/ags-devel/missing autoheader
-AUTOMAKE = ${SHELL} /usr/src/ags-devel/missing automake-1.14
+AUTOCONF = ${SHELL} /home/minos/ags-devel/missing autoconf
+AUTOHEADER = ${SHELL} /home/minos/ags-devel/missing autoheader
+AUTOMAKE = ${SHELL} /home/minos/ags-devel/missing automake-1.14
 AWK = gawk
 CAIRO_CFLAGS = -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng16 -I/usr/include/harfbuzz -I/usr/include/freetype2 -I/usr/include/harfbuzz -I/usr/include/libdrm -I/usr/include/libpng16 -I/usr/X11/include 
 CAIRO_LIBS = -lcairo 
@@ -706,7 +706,7 @@ LIBXML2_LIBS = -lxml2
 LIPO = 
 LN_S = ln -s
 LTLIBOBJS = 
-MAKEINFO = ${SHELL} /usr/src/ags-devel/missing makeinfo
+MAKEINFO = ${SHELL} /home/minos/ags-devel/missing makeinfo
 MANIFEST_TOOL = :
 MKDIR_P = /bin/mkdir -p
 NM = /usr/bin/nm -B
@@ -725,7 +725,7 @@ PACKAGE_VERSION = 0.4.3
 PATH_SEPARATOR = :
 PKG_CONFIG = /usr/bin/pkg-config
 PKG_CONFIG_LIBDIR = 
-PKG_CONFIG_PATH = /usr/lib/pkgconfig:/usr/share/pkgconfig:/usr/X11/lib/pkgconfig:/usr/X11/share/pkgconfig
+PKG_CONFIG_PATH = /usr/lib/pkgconfig:/usr/share/pkgconfig:/usr/X11/lib/pkgconfig:/usr/X11/share/pkgconfig:/usr/local/lib/pkgconfig
 RANLIB = ranlib
 SED = /bin/sed
 SET_MAKE = 
@@ -737,10 +737,10 @@ UUID_CFLAGS = -I/usr/include/uuid
 UUID_LIBS = -luuid 
 VERSION = 0.4.3
 XMKMF = 
-abs_builddir = /usr/src/ags-devel
-abs_srcdir = /usr/src/ags-devel
-abs_top_builddir = /usr/src/ags-devel
-abs_top_srcdir = /usr/src/ags-devel
+abs_builddir = /home/minos/ags-devel
+abs_srcdir = /home/minos/ags-devel
+abs_top_builddir = /home/minos/ags-devel
+abs_top_srcdir = /home/minos/ags-devel
 ac_ct_AR = ar
 ac_ct_CC = gcc
 ac_ct_CXX = g++
@@ -770,7 +770,7 @@ host_vendor = unknown
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = ${SHELL} /usr/src/ags-devel/install-sh
+install_sh = ${SHELL} /home/minos/ags-devel/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
@@ -829,17 +829,19 @@ TARGETS = gsequencer
 noinst_LIBRARIES = libags.a libags_thread.a libags_audio.a libags_gui.a
 
 # application
-libags_a_CFLAGS = -g -O2 -g -std=gnu11 -Wall -O -I./src -I/usr/include $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
+COMPILER_FLAGS = -g -std=gnu11
+WARN_FLAGS = -Wuninitialized -Wreturn-type -Wunused-variable -Wunused-but-set-variable -Wmaybe-uninitialized -Wimplicit-function-declaration -Wparentheses -Wpointer-sign -Wdeprecated-declarations -Wcomment
+libags_a_CFLAGS = -g -O2 $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./src -I/usr/include $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
 libags_a_LDFLAGS =  -L/lib -L/usr/lib -L/usr/X11/lib -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
-libags_thread_a_CFLAGS = -g -O2 -g -std=gnu11 -Wall -O -I./src -I/usr/include $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
+libags_thread_a_CFLAGS = -g -O2 $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./src -I/usr/include $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
 libags_thread_a_LDFLAGS =  -L/lib -L/usr/lib -L/usr/X11/lib -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
 libags_thread_a_LIBADD = libags.a
-libags_audio_a_CFLAGS = -g -O2 -g -std=gnu11 -Wall -O -I./src -I/usr/include $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
+libags_audio_a_CFLAGS = -g -O2 $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./src -I/usr/include $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
 libags_audio_a_LDFLAGS =  -L/lib -L/usr/lib -L/usr/X11/lib -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
 libags_audio_a_LIBADD = libags_thread.a libags.a 
-libags_gui_a_CFLAGS = -g -O2 -g -std=gnu11 -Wall -O -I./src -I/usr/include $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
+libags_gui_a_CFLAGS = -g -O2 $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./src -I/usr/include $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
 libags_gui_a_LDFLAGS =  -L/lib -L/usr/lib -L/usr/X11/lib -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
-gsequencer_CFLAGS = -g -O2 -g 	-std=gnu11 -Wall -O -I./src -I/usr/include $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
+gsequencer_CFLAGS = -g -O2 $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./src -I/usr/include $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
 gsequencer_LDFLAGS =  -L/lib -L/usr/lib -L/usr/X11/lib -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
 gsequencer_LDADD = libags_audio.a libags_gui.a libags_thread.a libags.a
 ACLOCAL_AMFLAGS = -I m4
@@ -1150,6 +1152,16 @@ ags_audio_file_c_sources = \
 	src/ags/audio/file/ags_ipatch.c		\
 	src/ags/audio/file/ags_ipatch_sf2_reader.c	\
 	src/ags/audio/file/ags_sndfile.c
+
+deprecated_ags_audio_midi_h_sources = 
+ags_audio_midi_h_sources = \
+	$(deprecated_ags_audio_midi_h_sources) \
+	src/ags/audio/midi/ags_midi_parser.h
+
+deprecated_ags_audio_midi_c_sources = 
+ags_audio_midi_c_sources = \
+	$(deprecated_ags_audio_midi_c_sources) \
+	src/ags/audio/midi/ags_midi_parser.c
 
 deprecated_ags_audio_recall_h_sources = \
 	src/ags/audio/recall/ags_amplifier.h			\

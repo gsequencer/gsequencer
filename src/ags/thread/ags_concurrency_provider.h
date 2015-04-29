@@ -39,12 +39,14 @@ struct _AgsConcurrencyProviderInterface
   GTypeInterface interface;
 
   AgsThread* (*get_main_loop)(AgsConcurrencyProvider *concurrency_provider);
+  AgsThread* (*get_task_thread)(AgsConcurrencyProvider *concurrency_provider);
   AgsThreadPool* (*get_thread_pool)(AgsConcurrencyProvider *concurrency_provider);
 };
 
 GType ags_concurrency_provider_get_type();
 
 AgsThread* ags_concurrency_provider_get_main_loop(AgsConcurrencyProvider *concurrency_provider);
+AgsThread* ags_concurrency_provider_get_task_thread(AgsConcurrencyProvider *concurrency_provider);
 AgsThreadPool* ags_concurrency_provider_get_thread_pool(AgsConcurrencyProvider *concurrency_provider);
 
 #endif /*__AGS_CONCURRENCY_PROVIDER_H__*/
