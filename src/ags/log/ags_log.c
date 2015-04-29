@@ -93,6 +93,7 @@ void
 ags_log_init(AgsLog *log)
 {
   log->flags = 0;
+  log->mode = AGS_LOG_WARN | AGS_LOG_ERROR;
 
   log->application_context = NULL;
   log->application_mutex = NULL;
@@ -250,7 +251,7 @@ ags_log_message_alloc(struct timespec timestamp, char *format, va_list args)
   /* alloc AgsLogMessage */
   log_message = (AgsLogMessage *) malloc(sizeof(AgsLogMessage));
 
-  /* set timestamp */
+  log_message->mode = 0;
   log_message->timestamp = timestamp;
   log_message->format = format;
   log_message->args = args;
@@ -310,7 +311,7 @@ ags_log_debug(AgsLog *log, char *format, ...)
   /* add message to queue */
   pthread_mutex_lock(log_mutex);
 
-  if((AGS_LOG_DEBUG & (log->flags)) != 0){
+  if((AGS_LOG_DEBUG & (log->mode)) != 0){
     struct timespec timestamp;
     va_list args_copy;
       
@@ -322,7 +323,8 @@ ags_log_debug(AgsLog *log, char *format, ...)
     clock_gettime(CLOCK_REALTIME, timestamp);
     
     log_message = ags_log_message_alloc(timestamp, format, args);
-
+    log_message->mode = AGS_LOG_DEBUG;
+    
     /* queue*/
     ags_log_add_queue(log, log_message);
   }else{
@@ -368,6 +370,7 @@ ags_log_message(AgsLog *log, char *format, ...)
     clock_gettime(CLOCK_REALTIME, timestamp);
     
     log_message = ags_log_message_alloc(timestamp, format, args);
+    log_message->mode = AGS_LOG_MESSAGE;
 
     /* queue*/
     ags_log_add_queue(log, log_message);
@@ -414,6 +417,7 @@ ags_log_warn(AgsLog *log, char *format, ...)
     clock_gettime(CLOCK_REALTIME, timestamp);
     
     log_message = ags_log_message_alloc(timestamp, format, args);
+    log_message->mode = AGS_LOG_WARN;
 
     /* queue*/
     ags_log_add_queue(log, log_message);
@@ -460,6 +464,7 @@ ags_log_error(AgsLog *log, char *format, ...)
     clock_gettime(CLOCK_REALTIME, timestamp);
     
     log_message = ags_log_message_alloc(timestamp, format, args);
+    log_message->mode = AGS_LOG_ERROR;
 
     /* queue*/
     ags_log_add_queue(log, log_message);
