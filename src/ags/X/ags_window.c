@@ -298,10 +298,14 @@ ags_window_get_property(GObject *gobject,
 
   switch(prop_id){
   case PROP_SOUNDCARD:
-    g_value_set_object(value, window->soundcard);
+    {
+      g_value_set_object(value, window->soundcard);
+    }
     break;
   case PROP_APPLICATION_CONTEXT:
-    g_value_set_object(value, window->application_context);
+    {
+      g_value_set_object(value, window->application_context);
+    }
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);

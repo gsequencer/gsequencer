@@ -52,6 +52,8 @@ struct _AgsNote
 
   gchar *name;
   gdouble frequency;
+
+  gdouble velocity[2];
 };
 
 struct _AgsNoteClass

@@ -72,9 +72,11 @@ struct _AgsApplicationContext
   
   AgsConfig *config;
 
-  pthread_mutex_t mutex;
+  pthread_mutex_t *mutex;
+  
   GObject *main_loop;
   GObject *autosave_thread;
+  GObject *task_thread;
   
   AgsFile *file;
 };

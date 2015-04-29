@@ -56,6 +56,18 @@ ags_concurrency_provider_get_main_loop(AgsConcurrencyProvider *concurrency_provi
   return(concurrency_provider_interface->get_main_loop(concurrency_provider));
 }
 
+AgsThread*
+ags_concurrency_provider_get_task_thread(AgsConcurrencyProvider *concurrency_provider)
+{
+  AgsConcurrencyProviderInterface *concurrency_provider_interface;
+
+  g_return_val_if_fail(AGS_IS_CONCURRENCY_PROVIDER(concurrency_provider), NULL);
+  concurrency_provider_interface = AGS_CONCURRENCY_PROVIDER_GET_INTERFACE(concurrency_provider);
+  g_return_val_if_fail(concurrency_provider_interface->get_task_thread, NULL);
+
+  return(concurrency_provider_interface->get_task_thread(concurrency_provider));
+}
+
 AgsThreadPool*
 ags_concurrency_provider_get_thread_pool(AgsConcurrencyProvider *concurrency_provider)
 {
