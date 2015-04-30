@@ -25,7 +25,6 @@
 
 #include <ags/object/ags_dynamic_connectable.h>
 
-#include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_devout.h>

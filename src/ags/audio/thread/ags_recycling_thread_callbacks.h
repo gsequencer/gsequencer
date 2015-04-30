@@ -20,7 +20,7 @@
 
 #include <glib-object.h>
 
-#include <ags/thread/ags_recycling_thread.h>
+#include <ags/audio/thread/ags_recycling_thread.h>
 
 void ags_recycling_thread_iterate_callback(AgsRecyclingThread *thread,
 					   gpointer user_data);

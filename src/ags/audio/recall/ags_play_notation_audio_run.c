@@ -30,8 +30,11 @@
 #include <ags/file/ags_file_id_ref.h>
 #include <ags/file/ags_file_lookup.h>
 
-#include <ags/thread/ags_audio_loop.h>
-#include <ags/thread/ags_devout_thread.h>
+#ifdef AGS_USE_LINUX_THREADS
+#include <ags/thread/ags_thread-kthreads.h>
+#else
+#include <ags/thread/ags_thread-posix.h>
+#endif 
 #include <ags/thread/ags_timestamp_thread.h>
 
 #include <ags/audio/ags_recall_id.h>

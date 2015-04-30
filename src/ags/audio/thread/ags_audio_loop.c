@@ -16,14 +16,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <ags/thread/ags_audio_loop.h>
+#include <ags/audio/thread/ags_audio_loop.h>
 
 #include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_main_loop.h>
-
-#include <ags/thread/ags_export_thread.h>
-#include <ags/thread/ags_gui_thread.h>
 
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
@@ -71,14 +68,15 @@ void ags_audio_loop_play_audio(AgsAudioLoop *audio_loop);
  */
 
 enum{
+  STOPPED_ALL,
+  LAST_SIGNAL,
+};
+
+enum{
   PROP_0,
   PROP_APPLICATION_CONTEXT,
   PROP_APPLICATION_MUTEX,
   PROP_DEVOUT,
-  PROP_TASK_THREAD,
-  PROP_GUI_THREAD,
-  PROP_DEVOUT_THREAD,
-  PROP_EXPORT_THREAD,
   PROP_PLAY_RECALL,
   PROP_PLAY_CHANNEL,
   PROP_PLAY_AUDIO,
@@ -86,6 +84,7 @@ enum{
 
 static gpointer ags_audio_loop_parent_class = NULL;
 static AgsConnectableInterface *ags_audio_loop_parent_connectable_interface;
+static guint audio_loop_signals[LAST_SIGNAL];
 
 GType
 ags_audio_loop_get_type()
@@ -200,70 +199,6 @@ ags_audio_loop_class_init(AgsAudioLoopClass *audio_loop)
 				  param_spec);
 
   /**
-   * AgsAudioLoop:task-thread:
-   *
-   * The assigned #AgsTaskThread.
-   * 
-   * Since: 0.4
-   */
-  param_spec = g_param_spec_object("task-thread\0",
-				   "task thread to run\0",
-				   "The task thread to run\0",
-				   AGS_TYPE_TASK_THREAD,
-				   G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_TASK_THREAD,
-				  param_spec);
-
-  /**
-   * AgsAudioLoop:devout-thread:
-   *
-   * The assigned #AgsDevoutThread.
-   * 
-   * Since: 0.4
-   */
-  param_spec = g_param_spec_object("devout-thread\0",
-				   "devout thread to run\0",
-				   "The devout thread to run\0",
-				   AGS_TYPE_DEVOUT_THREAD,
-				   G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_DEVOUT_THREAD,
-				  param_spec);
-
-  /**
-   * AgsAudioLoop:export-thread:
-   *
-   * The assigned #AgsExportThread.
-   * 
-   * Since: 0.4
-   */
-  param_spec = g_param_spec_object("export-thread\0",
-				   "export thread to run\0",
-				   "The export thread to run\0",
-				   AGS_TYPE_EXPORT_THREAD,
-				   G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_EXPORT_THREAD,
-				  param_spec);
-
-  /**
-   * AgsAudioLoop:gui-thread:
-   *
-   * The assigned #AgsGuiThread.
-   * 
-   * Since: 0.4
-   */
-  param_spec = g_param_spec_object("gui-thread\0",
-				   "gui thread to run\0",
-				   "The gui thread to run\0",
-				   AGS_TYPE_GUI_THREAD,
-				   G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_GUI_THREAD,
-				  param_spec);
-
-  /**
    * AgsAudioLoop:play-recall:
    *
    * An #AgsRecall to add for playback.
@@ -318,6 +253,24 @@ ags_audio_loop_class_init(AgsAudioLoopClass *audio_loop)
   thread->run = ags_audio_loop_run;
 
   /* AgsAudioLoop */
+  audio_loop->stopped_all = NULL;
+
+  
+  /* signals */
+  /**
+   * AgsAudioLoop::stopped-all:
+   * @audio_loop: the object that stopped
+   *
+   * The ::stopped-all signal notifies about stopped playback..
+   */
+  audio_loop_signals[STOPPED_ALL] =
+    g_signal_new("stopped-all\0",
+		 G_TYPE_FROM_CLASS(audio_loop),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsAudioLoopClass, stopped_all),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
 }
 
 void
@@ -344,7 +297,6 @@ void
 ags_audio_loop_init(AgsAudioLoop *audio_loop)
 {
   AgsThread *thread;
-  AgsGuiThread *gui_thread;
 
   thread = (AgsThread *) audio_loop;
 
@@ -362,23 +314,6 @@ ags_audio_loop_init(AgsAudioLoop *audio_loop)
   audio_loop->application_mutex = NULL;
   
   audio_loop->devout = NULL;
-
-  /* AgsTaskThread */  
-  audio_loop->task_thread = (AgsThread *) ags_task_thread_new(NULL);
-  ags_thread_add_child(AGS_THREAD(audio_loop), audio_loop->task_thread);
-
-  /* AgsGuiThread */
-  gui_thread =
-    audio_loop->gui_thread = (AgsThread *) ags_gui_thread_new();
-  ags_thread_add_child(AGS_THREAD(audio_loop), audio_loop->gui_thread);
-
-  /* AgsDevoutThread */
-  audio_loop->devout_thread = (AgsThread *) ags_devout_thread_new(NULL);
-  ags_thread_add_child(AGS_THREAD(audio_loop), audio_loop->devout_thread);
-
-  /* AgsExportThread */
-  audio_loop->export_thread = (AgsThread *) ags_export_thread_new(NULL, NULL);
-  ags_thread_add_child(AGS_THREAD(audio_loop), audio_loop->export_thread);
 
   /* recall mutex */
   pthread_mutex_init(&(audio_loop->recall_mutex), NULL);
@@ -442,81 +377,6 @@ ags_audio_loop_set_property(GObject *gobject,
       }
 
       audio_loop->devout = G_OBJECT(devout);
-
-      g_object_set(audio_loop->export_thread,
-		   "devout\0", devout,
-		   NULL);
-      g_object_set(audio_loop->devout_thread,
-		   "devout\0", devout,
-		   NULL);
-    }
-    break;
-  case PROP_TASK_THREAD:
-    {
-      AgsThread *thread;
-
-      thread = (AgsThread *) g_value_get_object(value);
-
-      if(audio_loop->task_thread != NULL){
-	g_object_unref(G_OBJECT(audio_loop->task_thread));
-      }
-
-      if(thread != NULL){
-	g_object_ref(G_OBJECT(thread));
-      }
-
-      audio_loop->task_thread = thread;
-    }
-    break;
-  case PROP_GUI_THREAD:
-    {
-      AgsThread *thread;
-
-      thread = (AgsThread *) g_value_get_object(value);
-
-      if(audio_loop->gui_thread != NULL){
-	g_object_unref(G_OBJECT(audio_loop->gui_thread));
-      }
-
-      if(thread != NULL){
-	g_object_ref(G_OBJECT(thread));
-      }
-
-      audio_loop->gui_thread = thread;
-    }
-    break;
-  case PROP_DEVOUT_THREAD:
-    {
-      AgsThread *thread;
-
-      thread = (AgsThread *) g_value_get_object(value);
-
-      if(audio_loop->devout_thread != NULL){
-	g_object_unref(G_OBJECT(audio_loop->devout_thread));
-      }
-
-      if(thread != NULL){
-	g_object_ref(G_OBJECT(thread));
-      }
-
-      audio_loop->devout_thread = thread;
-    }
-    break;
-  case PROP_EXPORT_THREAD:
-    {
-      AgsThread *thread;
-
-      thread = (AgsThread *) g_value_get_object(value);
-
-      if(audio_loop->export_thread != NULL){
-	g_object_unref(G_OBJECT(audio_loop->export_thread));
-      }
-
-      if(thread != NULL){
-	g_object_ref(G_OBJECT(thread));
-      }
-
-      audio_loop->export_thread = thread;
     }
     break;
   case PROP_PLAY_RECALL:
@@ -585,26 +445,6 @@ ags_audio_loop_get_property(GObject *gobject,
   case PROP_DEVOUT:
     {
       g_value_set_object(value, G_OBJECT(audio_loop->devout));
-    }
-    break;
-  case PROP_TASK_THREAD:
-    {
-      g_value_set_object(value, audio_loop->task_thread);
-    }
-    break;
-  case PROP_GUI_THREAD:
-    {
-      g_value_set_object(value, audio_loop->gui_thread);
-    }
-    break;
-  case PROP_DEVOUT_THREAD:
-    {
-      g_value_set_object(value, audio_loop->devout_thread);
-    }
-    break;
-  case PROP_EXPORT_THREAD:
-    {
-      g_value_set_object(value, audio_loop->export_thread);
     }
     break;
   case PROP_PLAY_RECALL:
@@ -716,10 +556,6 @@ ags_audio_loop_start(AgsThread *thread)
   if((AGS_THREAD_SINGLE_LOOP & (thread->flags)) == 0){
     /*  */
     AGS_THREAD_CLASS(ags_audio_loop_parent_class)->start(thread);
-
-    /*  */
-    ags_thread_start(audio_loop->task_thread);
-    ags_thread_start(audio_loop->gui_thread);
   }
 }
 
@@ -777,49 +613,11 @@ ags_audio_loop_run(AgsThread *thread)
      audio_loop->play_channel_ref == 0 &&
      audio_loop->play_audio_ref == 0 &&
      audio_loop->play_notation_ref == 0){
-    if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(AGS_THREAD(audio_loop->devout_thread)->flags)))) != 0){
-      ags_thread_stop(AGS_THREAD(audio_loop->devout_thread));
-
-      if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(AGS_THREAD(audio_loop->export_thread)->flags)))) != 0){
-	ags_thread_stop(AGS_THREAD(audio_loop->export_thread));
-      }
-    }
+    ags_audio_loop_stopped_all(audio_loop);
   }
 
   pthread_mutex_unlock(&(audio_loop->recall_mutex));
   pthread_mutex_unlock(application_mutex);
-
-  /* wait for task thread */
-  pthread_mutex_lock(&(audio_loop->task_thread->start_mutex));
-
-  val = g_atomic_int_get(&(AGS_THREAD(audio_loop->task_thread)->flags));
-
-  if((AGS_THREAD_INITIAL_RUN & val) != 0){
-    while((AGS_THREAD_INITIAL_RUN & val) != 0){
-      pthread_cond_wait(&(audio_loop->task_thread->start_cond),
-			&(audio_loop->task_thread->start_mutex));
-
-      val = g_atomic_int_get(&(AGS_THREAD(audio_loop->task_thread)->flags));
-    }
-  }
-
-  pthread_mutex_unlock(&(audio_loop->task_thread->start_mutex));
-  
-  /* wait for gui thread */
-  pthread_mutex_lock(&(audio_loop->gui_thread->start_mutex));
-
-  val = g_atomic_int_get(&(AGS_THREAD(audio_loop->task_thread)->flags));
-
-  if((AGS_THREAD_INITIAL_RUN & val) != 0){
-    while((AGS_THREAD_INITIAL_RUN & val) != 0){
-      pthread_cond_wait(&(audio_loop->gui_thread->start_cond),
-			&(audio_loop->gui_thread->start_mutex));
-
-      val = g_atomic_int_get(&(AGS_THREAD(audio_loop->gui_thread)->flags));
-    }
-  }
-
-  pthread_mutex_unlock(&(audio_loop->gui_thread->start_mutex));
 }
 
 /**
@@ -1226,6 +1024,16 @@ ags_audio_loop_remove_recall(AgsAudioLoop *audio_loop, gpointer devout_play)
   audio_loop->play_recall = g_list_remove(audio_loop->play_recall,
 					  devout_play);
   audio_loop->play_recall_ref = audio_loop->play_recall_ref - 1;
+}
+
+void
+ags_audio_loop_stopped_all(AgsAudioLoop *audio_loop)
+{
+  g_return_if_fail(AGS_IS_AUDIO_LOOP(audio_loop));
+  g_object_ref(G_OBJECT(audio_loop));
+  g_signal_emit(G_OBJECT(audio_loop),
+		audio_loop_signals[STOPPED_ALL], 0);
+  g_object_unref(G_OBJECT(audio_loop));
 }
 
 /**

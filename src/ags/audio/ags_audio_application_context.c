@@ -23,11 +23,12 @@
 #include <ags/object/ags_soundcard.h>
 
 #include <ags/file/ags_file.h>
-#include <ags/file/ags_file_sound.h>
 #include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>
 
 #include <ags/audio/ags_devout.h>
+
+#include <ags/audio/file/ags_audio_file_xml.h>
 
 void ags_audio_application_context_class_init(AgsAudioApplicationContextClass *audio_application_context);
 void ags_audio_application_context_connectable_interface_init(AgsConnectableInterface *connectable);

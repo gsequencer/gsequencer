@@ -16,8 +16,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <ags/object/ags_playable.h>
+#include <ags/audio/file/ags_playable.h>
 
+#include <ags/object/ags_application_context.h>
 #include <ags/object/ags_config.h>
 #include <ags/object/ags_connectable.h>
 

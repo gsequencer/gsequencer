@@ -23,6 +23,7 @@
 #include <glib-object.h>
 
 #include <ags/thread/ags_task.h>
+
 #include <ags/audio/ags_devout.h>
 
 #define AGS_TYPE_APPEND_AUDIO                (ags_append_audio_get_type())

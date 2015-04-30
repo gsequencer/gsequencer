@@ -16,12 +16,12 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <ags/thread/ags_recycling_thread.h>
+#include <ags/audio/thread/ags_recycling_thread.h>
 
 #include <ags/object/ags_marshal.h>
 #include <ags/object/ags_connectable.h>
 
-#include <ags/thread/ags_iterator_thread.h>
+#include <ags/audio/thread/ags_iterator_thread.h>
 
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
