@@ -24,6 +24,13 @@
 #include <ags/object/ags_plugin.h>
 #include <ags/object/ags_soundcard.h>
 
+#ifdef AGS_USE_LINUX_THREADS
+#include <ags/thread/ags_thread-kthreads.h>
+#else
+#include <ags/thread/ags_thread-posix.h>
+#endif 
+#include <ags/thread/ags_task_thread.h>
+
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_recall_id.h>

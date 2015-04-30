@@ -20,6 +20,8 @@
 
 #include <ags/object/ags_connectable.h>
 
+#include <ags/audio/thread/ags_audio_loop.h>
+
 void ags_append_audio_threaded_class_init(AgsAppendAudioThreadedClass *append_audio_threaded);
 void ags_append_audio_threaded_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_append_audio_threaded_init(AgsAppendAudioThreaded *append_audio_threaded);

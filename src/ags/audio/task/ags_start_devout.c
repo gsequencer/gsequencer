@@ -21,8 +21,8 @@
 #include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>
 
-#include <ags/thread/ags_audio_loop.h>
-#include <ags/thread/ags_devout_thread.h>
+#include <ags/audio/thread/ags_audio_loop.h>
+#include <ags/audio/thread/ags_devout_thread.h>
 
 void ags_start_devout_class_init(AgsStartDevoutClass *start_devout);
 void ags_start_devout_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -160,7 +160,8 @@ ags_start_devout_launch(AgsTask *task)
   }
 
   audio_loop = AGS_AUDIO_LOOP(AGS_APPLICATION_CONTEXT(devout->application_context)->main_loop);
-  devout_thread = AGS_DEVOUT_THREAD(audio_loop->devout_thread);
+  devout_thread = ags_thread_find_type(audio_loop,
+				       AGS_TYPE_DEVOUT_THREAD);
 
   /* append to AgsDevout */
   audio_loop->flags |= (AGS_AUDIO_LOOP_PLAY_AUDIO |

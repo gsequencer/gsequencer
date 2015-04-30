@@ -21,8 +21,6 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_soundcard.h>
 
-#include <ags/thread/ags_export_thread.h>
-
 #include <ags/audio/file/ags_audio_file.h>
 
 void ags_export_output_class_init(AgsExportOutputClass *export_output);

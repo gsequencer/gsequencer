@@ -94,6 +94,8 @@ struct _AgsAudioLoop
 struct _AgsAudioLoopClass
 {
   AgsThreadClass thread;
+
+  void (*stopped_all)(AgsAudioLoop *audio_loop);
 };
 
 GType ags_audio_loop_get_type();
@@ -106,6 +108,8 @@ void ags_audio_loop_remove_channel(AgsAudioLoop *audio_loop, GObject *channel);
 
 void ags_audio_loop_add_recall(AgsAudioLoop *audio_loop, gpointer devout_play);
 void ags_audio_loop_remove_recall(AgsAudioLoop *audio_loop, gpointer devout_play);
+
+void ags_audio_loop_stopped_all(AgsAudioLoop *audio_loop);
 
 AgsAudioLoop* ags_audio_loop_new(GObject *devout, GObject *application_context);
 

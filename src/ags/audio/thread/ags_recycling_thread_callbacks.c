@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-#include <ags/thread/ags_recycling_thread_callbacks.h>
+#include <ags/audio/thread/ags_recycling_thread_callbacks.h>
 
 void
 ags_recycling_thread_iterate_callback(AgsRecyclingThread *thread, gpointer user_data)

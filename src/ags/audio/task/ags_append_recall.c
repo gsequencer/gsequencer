@@ -20,7 +20,7 @@
 
 #include <ags/object/ags_connectable.h>
 
-#include <ags/thread/ags_audio_loop.h>
+#include <ags/audio/thread/ags_audio_loop.h>
 
 void ags_append_recall_class_init(AgsAppendRecallClass *append_recall);
 void ags_append_recall_connectable_interface_init(AgsConnectableInterface *connectable);

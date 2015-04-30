@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef __AGS_FILE_SOUND_H__
-#define __AGS_FILE_SOUND_H__
+#ifndef __AGS_AUDIO_FILE_XML_H__
+#define __AGS_AUDIO_FILE_XML_H__
 
 #include <glib.h>
 #include <glib-object.h>
@@ -195,4 +195,4 @@ xmlNode* ags_file_write_timestamp(AgsFile *file, xmlNode *parent, AgsTimestamp *
 void ags_file_read_timestamp_list(AgsFile *file, xmlNode *node, GList **timestamp);
 xmlNode* ags_file_write_timestamp_list(AgsFile *file, xmlNode *parent, GList *timestamp);
 
-#endif /*__AGS_FILE_SOUND_H__*/
+#endif /*__AGS_AUDIO_FILE_XML_H__*/

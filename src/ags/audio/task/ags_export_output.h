@@ -23,7 +23,7 @@
 #include <glib-object.h>
 
 #include <ags/thread/ags_task.h>
-#include <ags/thread/ags_export_thread.h>
+#include <ags/audio/thread/ags_export_thread.h>
 
 #define AGS_TYPE_EXPORT_OUTPUT                (ags_export_output_get_type())
 #define AGS_EXPORT_OUTPUT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_EXPORT_OUTPUT, AgsExportOutput))

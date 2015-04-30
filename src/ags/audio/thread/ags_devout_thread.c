@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <ags/thread/ags_devout_thread.h>
+#include <ags/audio/thread/ags_devout_thread.h>
 
 #include <ags/object/ags_application_context.h>
 #include <ags/object/ags_config.h>
@@ -329,13 +329,11 @@ void
 ags_devout_thread_stop(AgsThread *thread)
 {
   AgsDevout *devout;
-  AgsAudioLoop *audio_loop;
   AgsDevoutThread *devout_thread;
 
   devout_thread = AGS_DEVOUT_THREAD(thread);
 
   devout = AGS_DEVOUT(devout_thread->devout);
-  audio_loop = ags_thread_get_toplevel(thread);
 
   if((AGS_DEVOUT_START_PLAY & (devout->flags)) != 0){
 #ifdef AGS_DEBUG

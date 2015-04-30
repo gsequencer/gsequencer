@@ -24,6 +24,8 @@
 #include <ags/server/ags_server_application_context.h>
 #include <ags/server/ags_server.h>
 
+#include <ags/audio/thread/ags_audio_loop.h>
+
 void ags_append_channel_class_init(AgsAppendChannelClass *append_channel);
 void ags_append_channel_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_append_channel_init(AgsAppendChannel *append_channel);

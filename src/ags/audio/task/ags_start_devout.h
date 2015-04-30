@@ -23,6 +23,7 @@
 #include <glib-object.h>
 
 #include <ags/thread/ags_task.h>
+
 #include <ags/audio/ags_devout.h>
 
 #define AGS_TYPE_START_DEVOUT                (ags_start_devout_get_type())

@@ -17,7 +17,7 @@
  */
 
 //TODO:JK: add file to AgsFileIdRef
-#include <ags/file/ags_file_sound.h>
+#include <ags/audio/file/ags_audio_file_xml.h>
 
 #include <libxml/parser.h>
 #include <libxml/xlink.h>
