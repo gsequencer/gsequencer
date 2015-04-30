@@ -61,6 +61,6 @@ struct _AgsAutosaveThreadClass
 
 GType ags_autosave_thread_get_type();
 
-AgsAutosaveThread* ags_autosave_thread_new(GObject *devout, GObject *application_context);
+AgsAutosaveThread* ags_autosave_thread_new(GObject *application_context);
 
 #endif /*__AGS_AUTOSAVE_THREAD_H__*/

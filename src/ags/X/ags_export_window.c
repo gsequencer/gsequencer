@@ -22,7 +22,6 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_soundcard.h>
 
-#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_notation.h>
 
 #include <ags/X/ags_window.h>

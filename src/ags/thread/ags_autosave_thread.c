@@ -349,7 +349,6 @@ ags_autosave_thread_run(AgsThread *thread)
 
 /**
  * ags_autosave_thread_new:
- * @devout: the #AgsDevout
  * @application_context: the #AgsApplicationContext
  *
  * Create a new #AgsAutosaveThread.
@@ -359,12 +358,11 @@ ags_autosave_thread_run(AgsThread *thread)
  * Since: 0.4
  */
 AgsAutosaveThread*
-ags_autosave_thread_new(GObject *devout, GObject *application_context)
+ags_autosave_thread_new(GObject *application_context)
 {
   AgsAutosaveThread *autosave_thread;
 
   autosave_thread = (AgsAutosaveThread *) g_object_new(AGS_TYPE_AUTOSAVE_THREAD,
-						       "devout\0", devout,
 						       "application-context\0", application_context,
 						       NULL);
 

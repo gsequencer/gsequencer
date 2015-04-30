@@ -20,7 +20,7 @@
 
 #include <ags/object/ags_connectable.h>
 
-#include <ags/audio/ags_devout.h>
+#include <ags/object/ags_soundcard.h>
 
 void ags_export_thread_class_init(AgsExportThreadClass *export_thread);
 void ags_export_thread_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -53,7 +53,7 @@ void ags_export_thread_stop(AgsThread *thread);
 
 enum{
   PROP_0,
-  PROP_DEVOUT,
+  PROP_SOUNDCARD,
   PROP_AUDIO_FILE,
 };
 
@@ -116,19 +116,19 @@ ags_export_thread_class_init(AgsExportThreadClass *export_thread)
 
   /* properties */
   /**
-   * AgsExportThread:devout:
+   * AgsExportThread:soundcard:
    *
-   * The assigned #AgsDevout.
+   * The assigned #AgsSoundcard.
    * 
    * Since: 0.4
    */
-  param_spec = g_param_spec_object("devout\0",
-				   "devout assigned to\0",
-				   "The AgsDevout it is assigned to.\0",
-				   AGS_TYPE_DEVOUT,
+  param_spec = g_param_spec_object("soundcard\0",
+				   "soundcard assigned to\0",
+				   "The AgsSoundcard it is assigned to.\0",
+				   G_TYPE_OBJECT,
 				   G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_DEVOUT,
+				  PROP_SOUNDCARD,
 				  param_spec);
 
   /**
@@ -177,7 +177,7 @@ ags_export_thread_init(AgsExportThread *export_thread)
   export_thread->tic = 0;
   export_thread->counter = 0;
 
-  export_thread->devout = NULL;
+  export_thread->soundcard = NULL;
 
   export_thread->audio_file = NULL;
 }
@@ -193,21 +193,21 @@ ags_export_thread_set_property(GObject *gobject,
   export_thread = AGS_EXPORT_THREAD(gobject);
 
   switch(prop_id){
-  case PROP_DEVOUT:
+  case PROP_SOUNDCARD:
     {
-      AgsDevout *devout;
+      GObject *soundcard;
 
-      devout = (AgsDevout *) g_value_get_object(value);
+      soundcard = (GObject *) g_value_get_object(value);
 
-      if(export_thread->devout != NULL){
-	g_object_unref(G_OBJECT(export_thread->devout));
+      if(export_thread->soundcard != NULL){
+	g_object_unref(G_OBJECT(export_thread->soundcard));
       }
 
-      if(devout != NULL){
-	g_object_ref(G_OBJECT(devout));
+      if(soundcard != NULL){
+	g_object_ref(G_OBJECT(soundcard));
       }
 
-      export_thread->devout = G_OBJECT(devout);
+      export_thread->soundcard = G_OBJECT(soundcard);
     }
     break;
   case PROP_AUDIO_FILE:
@@ -248,9 +248,9 @@ ags_export_thread_get_property(GObject *gobject,
   export_thread = AGS_EXPORT_THREAD(gobject);
 
   switch(prop_id){
-  case PROP_DEVOUT:
+  case PROP_SOUNDCARD:
     {
-      g_value_set_object(value, G_OBJECT(export_thread->devout));
+      g_value_set_object(value, G_OBJECT(export_thread->soundcard));
     }
     break;
   case PROP_AUDIO_FILE:
@@ -301,9 +301,9 @@ void
 ags_export_thread_run(AgsThread *thread)
 {
   AgsExportThread *export_thread;
-  AgsDevout *devout;
-  signed short *devout_buffer;
-  guint buffer_length;
+  AgsSoundcard *soundcard;
+  signed short *soundcard_buffer;
+  guint buffer_size;
 
   export_thread = AGS_EXPORT_THREAD(thread);
 
@@ -313,22 +313,17 @@ ags_export_thread_run(AgsThread *thread)
     export_thread->counter += 1;
   }
 
-  devout = export_thread->devout;
+  soundcard = AGS_SOUNDCARD(export_thread->soundcard);
 
-  if((AGS_DEVOUT_BUFFER0 & (devout->flags)) != 0){
-    devout_buffer = devout->buffer[0];
-  }else if((AGS_DEVOUT_BUFFER1 & (devout->flags)) != 0){
-    devout_buffer = devout->buffer[1];
-  }else if((AGS_DEVOUT_BUFFER2 & (devout->flags)) != 0){
-    devout_buffer = devout->buffer[2];
-  }else if((AGS_DEVOUT_BUFFER3 & (devout->flags)) != 0){
-    devout_buffer = devout->buffer[3];
-  }
- 
-  buffer_length = devout->buffer_size;
+  soundcard_buffer = ags_soundcard_get_buffer(soundcard);
+  ags_soundcard_get_presets(soundcard,
+			    NULL,
+			    NULL,
+			    &buffer_size,
+			    NULL);
 
   ags_audio_file_write(export_thread->audio_file,
-		       devout_buffer, (guint) buffer_length);
+		       soundcard_buffer, (guint) buffer_size);
 }
 
 void
@@ -346,7 +341,7 @@ ags_export_thread_stop(AgsThread *thread)
 
 /**
  * ags_export_thread_new:
- * @export: the #AgsExport
+ * @soundcard: the #AgsSoundcard
  * @audio_file: the output file
  *
  * Create a new #AgsExportThread.
@@ -356,12 +351,12 @@ ags_export_thread_stop(AgsThread *thread)
  * Since: 0.4
  */
 AgsExportThread*
-ags_export_thread_new(GObject *devout, AgsAudioFile *audio_file)
+ags_export_thread_new(GObject *soundcard, AgsAudioFile *audio_file)
 {
   AgsExportThread *export_thread;
 
   export_thread = (AgsExportThread *) g_object_new(AGS_TYPE_EXPORT_THREAD,
-						   "devout\0", devout,
+						   "soundcard\0", soundcard,
 						   "audio-file\0", audio_file,
 						   NULL);
   
