@@ -38,9 +38,9 @@ struct _AgsPlaybackDomain
 
   GObject *domain;
   
-  gboolean playback;
-  gboolean sequencer;
-  gboolean notation;
+  gboolean do_playback;
+  gboolean do_sequencer;
+  gboolean do_notation;
 
   GList *playback;
 };
@@ -52,6 +52,6 @@ struct _AgsPlaybackDomainClass
 
 GType ags_playback_domain_get_type();
 
-AgsPlaybackDomain* ags_playback_domain_new(GObject *application_context);
+AgsPlaybackDomain* ags_playback_domain_new();
 
 #endif /*__AGS_PLAYBACK_DOMAIN_H__*/

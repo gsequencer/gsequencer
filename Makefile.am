@@ -432,7 +432,7 @@ deprecated_ags_audio_thread_h_sources =
 ags_audio_thread_h_sources = \
 	$(deprecated_ags_audio_thread_h_sources) \
 	src/ags/audio/thread/ags_audio_loop.h			\
-	src/ags/audio/thread/ags_devout_thread.h		\
+	src/ags/audio/thread/ags_soundcard_thread.h		\
 	src/ags/audio/thread/ags_export_thread.h		\
 	src/ags/audio/thread/ags_iterator_thread.h		\
 	src/ags/audio/thread/ags_record_thread.h		\
@@ -444,7 +444,7 @@ deprecated_ags_audio_thread_c_sources =
 ags_audio_thread_c_sources = \
 	$(deprecated_ags_audio_thread_c_sources) \
 	src/ags/audio/thread/ags_audio_loop.c			\
-	src/ags/audio/thread/ags_devout_thread.c		\
+	src/ags/audio/thread/ags_soundcard_thread.c		\
 	src/ags/audio/thread/ags_export_thread.c		\
 	src/ags/audio/thread/ags_iterator_thread.c		\
 	src/ags/audio/thread/ags_record_thread.c		\
@@ -631,7 +631,7 @@ ags_audio_task_h_sources = \
 	src/ags/audio/task/ags_resize_audio.h				\
 	src/ags/audio/task/ags_set_audio_channels.h 			\
 	src/ags/audio/task/ags_set_buffer_size.h			\
-	src/ags/audio/task/ags_set_devout_play_flags.h 			\
+	src/ags/audio/task/ags_set_playback_flags.h 			\
 	src/ags/audio/task/ags_set_output_device.h			\
 	src/ags/audio/task/ags_set_samplerate.h				\
 	src/ags/audio/task/ags_start_devout.h				\
@@ -677,10 +677,10 @@ ags_audio_task_c_sources = \
 	src/ags/audio/task/ags_resize_audio.c				\
 	src/ags/audio/task/ags_set_audio_channels.c 			\
 	src/ags/audio/task/ags_set_buffer_size.c			\
-	src/ags/audio/task/ags_set_devout_play_flags.c 			\
+	src/ags/audio/task/ags_set_playback_flags.c 			\
 	src/ags/audio/task/ags_set_output_device.c			\
 	src/ags/audio/task/ags_set_samplerate.c				\
-	src/ags/audio/task/ags_start_devout.c				\
+	src/ags/audio/task/ags_start_soundcard.c			\
 	src/ags/audio/task/ags_unref_audio_signal.c			\
 	src/ags/audio/task/ags_toggle_pattern_bit.c
 

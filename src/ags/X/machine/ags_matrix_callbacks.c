@@ -24,6 +24,8 @@
 #include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_playback_domain.h>
+#include <ags/audio/ags_playback.h>
 #include <ags/audio/ags_playback.h>
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_pattern.h>

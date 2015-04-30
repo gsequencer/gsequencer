@@ -20,6 +20,8 @@
 
 #include <ags/object/ags_connectable.h>
 
+#include <ags/audio/ags_playback.h>
+
 void ags_cancel_channel_class_init(AgsCancelChannelClass *cancel_channel);
 void ags_cancel_channel_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_cancel_channel_init(AgsCancelChannel *cancel_channel);
@@ -113,7 +115,7 @@ ags_cancel_channel_init(AgsCancelChannel *cancel_channel)
   cancel_channel->channel = NULL;
   cancel_channel->recall_id = NULL;
 
-  cancel_channel->play = NULL;
+  cancel_channel->playback = NULL;
 }
 
 void
@@ -178,7 +180,7 @@ ags_cancel_channel_launch(AgsTask *task)
  */
 AgsCancelChannel*
 ags_cancel_channel_new(AgsChannel *channel, AgsRecallID *recall_id,
-		       AgsDevoutPlay *play)
+		       GObject *playback)
 {
   AgsCancelChannel *cancel_channel;
 
@@ -188,7 +190,7 @@ ags_cancel_channel_new(AgsChannel *channel, AgsRecallID *recall_id,
   cancel_channel->channel = channel;
   cancel_channel->recall_id = recall_id;
 
-  cancel_channel->play = play;
+  cancel_channel->playback = playback;
 
   return(cancel_channel);
 }

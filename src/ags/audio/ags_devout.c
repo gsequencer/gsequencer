@@ -524,23 +524,23 @@ ags_devout_set_property(GObject *gobject,
 	config = application_context->config;
 	
 	devout->dsp_channels = g_ascii_strtoull(ags_config_get_value(config,
-								     AGS_CONFIG_DEVOUT,
+								     AGS_CONFIG_SOUNDCARD,
 								     "dsp-channels\0"),
 						NULL,
 						10);
 	devout->pcm_channels = g_ascii_strtoull(ags_config_get_value(config,
-								     AGS_CONFIG_DEVOUT,
+								     AGS_CONFIG_SOUNDCARD,
 								     "pcm-channels\0"),
 						NULL,
 						10);
 	devout->format = AGS_SOUNDCARD_DEFAULT_FORMAT;
 	devout->buffer_size = g_ascii_strtoull(ags_config_get_value(config,
-								    AGS_CONFIG_DEVOUT,
+								    AGS_CONFIG_SOUNDCARD,
 								    "buffer-size\0"),
 					       NULL,
 					       10);
 	devout->samplerate = g_ascii_strtoull(ags_config_get_value(config,
-								  AGS_CONFIG_DEVOUT,
+								  AGS_CONFIG_SOUNDCARD,
 								  "samplerate\0"),
 					     NULL,
 					     10);
@@ -548,7 +548,7 @@ ags_devout_set_property(GObject *gobject,
 	//  devout->out.oss.device = NULL;
 	devout->out.alsa.handle = NULL;
 	devout->out.alsa.device = g_strdup(ags_config_get_value(config,
-								AGS_CONFIG_DEVOUT,
+								AGS_CONFIG_SOUNDCARD,
 								"alsa-handle\0"));
       }else{
 	devout->application_mutex = NULL;
@@ -563,9 +563,7 @@ ags_devout_set_property(GObject *gobject,
 
       device = (char *) g_value_get_string(value);
 
-      if((AGS_DEVOUT_LIBAO & (devout->flags)) != 0){
-	//TODO:JK: implement me
-      }else if((AGS_DEVOUT_OSS & (devout->flags)) != 0){
+      if((AGS_DEVOUT_OSS & (devout->flags)) != 0){
 	devout->out.oss.device = g_strdup(device);
       }else if((AGS_DEVOUT_ALSA & (devout->flags)) != 0){
 	devout->out.alsa.device = g_strdup(device);
@@ -683,9 +681,7 @@ ags_devout_get_property(GObject *gobject,
     break;
   case PROP_DEVICE:
     {
-      if((AGS_DEVOUT_LIBAO & (devout->flags)) != 0){
-	//TODO:JK: implement me
-      }else if((AGS_DEVOUT_OSS & (devout->flags)) != 0){
+      if((AGS_DEVOUT_OSS & (devout->flags)) != 0){
 	g_value_set_string(value, devout->out.oss.device);
       }else if((AGS_DEVOUT_ALSA & (devout->flags)) != 0){
 	g_value_set_string(value, devout->out.alsa.device);
@@ -848,7 +844,7 @@ ags_devout_set_presets(AgsSoundcard *soundcard,
   devout = AGS_DEVOUT(soundcard);
   g_object_set(devout,
 	       "dsp-channels\0", channels,
-	       "samplerate\0", samplerate,
+	       "samplerate\0", rate,
 	       "buffer-size\0", buffer_size,
 	       "format\0", format,
 	       NULL);

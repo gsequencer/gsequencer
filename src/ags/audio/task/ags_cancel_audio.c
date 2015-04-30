@@ -21,6 +21,7 @@
 #include <ags/object/ags_connectable.h>
 
 #include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_playback.h>
 
 void ags_cancel_audio_class_init(AgsCancelAudioClass *cancel_audio);
 void ags_cancel_audio_connectable_interface_init(AgsConnectableInterface *connectable);

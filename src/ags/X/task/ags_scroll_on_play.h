@@ -22,6 +22,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <gtk/gtk.h>
+
 #include <ags/thread/ags_task.h>
 
 #define AGS_TYPE_SCROLL_ON_PLAY                (ags_scroll_on_play_get_type())

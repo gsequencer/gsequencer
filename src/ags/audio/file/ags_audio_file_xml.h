@@ -32,6 +32,8 @@
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_input.h>
+#include <ags/audio/ags_playback_domain.h>
+#include <ags/audio/ags_playback.h>
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_pattern.h>
@@ -50,11 +52,11 @@ xmlNode* ags_file_write_devout(AgsFile *file, xmlNode *parent, AgsDevout *devout
 void ags_file_read_devout_list(AgsFile *file, xmlNode *node, GList **devout);
 xmlNode* ags_file_write_devout_list(AgsFile *file, xmlNode *parent, GList *devout);
 
-void ags_file_read_devout_play(AgsFile *file, xmlNode *node, AgsDevoutPlay **play);
-xmlNode* ags_file_write_devout_play(AgsFile *file, xmlNode *parent, AgsDevoutPlay *play);
+void ags_file_read_playback(AgsFile *file, xmlNode *node, AgsPlayback **playback);
+xmlNode* ags_file_write_playback(AgsFile *file, xmlNode *parent, AgsPlayback *playback);
 
-void ags_file_read_devout_play_list(AgsFile *file, xmlNode *node, GList **play);
-xmlNode* ags_file_write_devout_play_list(AgsFile *file, xmlNode *parent, GList *play);
+void ags_file_read_playback_list(AgsFile *file, xmlNode *node, GList **playback);
+xmlNode* ags_file_write_playback_list(AgsFile *file, xmlNode *parent, GList *playback);
 
 /* AgsAudio */
 void ags_file_read_audio(AgsFile *file, xmlNode *node, AgsAudio **audio);

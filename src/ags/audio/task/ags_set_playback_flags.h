@@ -16,41 +16,42 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef __AGS_SET_DEVOUT_PLAY_FLAGS_H__
-#define __AGS_SET_DEVOUT_PLAY_FLAGS_H__
+#ifndef __AGS_SET_PLAYBACK_FLAGS_H__
+#define __AGS_SET_PLAYBACK_FLAGS_H__
 
 #include <glib.h>
 #include <glib-object.h>
 
 #include <ags/thread/ags_task.h>
-#include <ags/audio/ags_devout.h>
 
-#define AGS_TYPE_SET_DEVOUT_PLAY_FLAGS                (ags_set_devout_play_flags_get_type())
-#define AGS_SET_DEVOUT_PLAY_FLAGS(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SET_DEVOUT_PLAY_FLAGS, AgsSetDevoutPlayFlags))
-#define AGS_SET_DEVOUT_PLAY_FLAGS_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_SET_DEVOUT_PLAY_FLAGS, AgsSetDevoutPlayFlagsClass))
-#define AGS_IS_SET_DEVOUT_PLAY_FLAGS(obj)             (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_SET_DEVOUT_PLAY_FLAGS))
-#define AGS_IS_SET_DEVOUT_PLAY_FLAGS_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_SET_DEVOUT_PLAY_FLAGS))
-#define AGS_SET_DEVOUT_PLAY_FLAGS_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_SET_DEVOUT_PLAY_FLAGS, AgsSetDevoutPlayFlagsClass))
+#include <ags/audio/ags_playback.h>
 
-typedef struct _AgsSetDevoutPlayFlags AgsSetDevoutPlayFlags;
-typedef struct _AgsSetDevoutPlayFlagsClass AgsSetDevoutPlayFlagsClass;
+#define AGS_TYPE_SET_PLAYBACK_FLAGS                (ags_set_playback_flags_get_type())
+#define AGS_SET_PLAYBACK_FLAGS(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SET_PLAYBACK_FLAGS, AgsSetPlaybackFlags))
+#define AGS_SET_PLAYBACK_FLAGS_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_SET_PLAYBACK_FLAGS, AgsSetPlaybackFlagsClass))
+#define AGS_IS_SET_PLAYBACK_FLAGS(obj)             (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_SET_PLAYBACK_FLAGS))
+#define AGS_IS_SET_PLAYBACK_FLAGS_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_SET_PLAYBACK_FLAGS))
+#define AGS_SET_PLAYBACK_FLAGS_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_SET_PLAYBACK_FLAGS, AgsSetPlaybackFlagsClass))
 
-struct _AgsSetDevoutPlayFlags
+typedef struct _AgsSetPlaybackFlags AgsSetPlaybackFlags;
+typedef struct _AgsSetPlaybackFlagsClass AgsSetPlaybackFlagsClass;
+
+struct _AgsSetPlaybackFlags
 {
   AgsTask task;
 
-  AgsDevoutPlay *devout_play;
-  guint devout_play_flags;
+  AgsPlayback *playback;
+  guint playback_flags;
 };
 
-struct _AgsSetDevoutPlayFlagsClass
+struct _AgsSetPlaybackFlagsClass
 {
   AgsTaskClass task;
 };
 
-GType ags_set_devout_play_flags_get_type();
+GType ags_set_playback_flags_get_type();
 
-AgsSetDevoutPlayFlags* ags_set_devout_play_flags_new(AgsDevoutPlay *play,
-						     guint devout_play_flags);
+AgsSetPlaybackFlags* ags_set_playback_flags_new(AgsPlayback *play,
+						guint playback_flags);
 
-#endif /*__AGS_SET_DEVOUT_PLAY_FLAGS_H__*/
+#endif /*__AGS_SET_PLAYBACK_FLAGS_H__*/

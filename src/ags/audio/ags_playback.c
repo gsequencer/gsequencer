@@ -16,6 +16,13 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include <ags/audio/ags_playback.h>
+
+#include <ags/object/ags_connectable.h>
+
+#include <ags/audio/ags_recall_id.h>
+#include <ags/audio/thread/ags_iterator_thread.h>
+
 /**
  * SECTION:ags_playback
  * @short_description: Outputting to soundcard context
@@ -98,22 +105,22 @@ ags_playback_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_playback_init(AgsPlayback *playback)
 {
-  play->flags = 0;
+  playback->flags = 0;
 
-  play->iterator_thread = (AgsIteratorThread **) malloc(3 * sizeof(AgsIteratorThread *));
+  playback->iterator_thread = (AgsIteratorThread **) malloc(3 * sizeof(AgsIteratorThread *));
 
-  play->iterator_thread[0] = ags_iterator_thread_new();
-  play->iterator_thread[1] = ags_iterator_thread_new();
-  play->iterator_thread[2] = ags_iterator_thread_new();
+  playback->iterator_thread[0] = ags_iterator_thread_new();
+  playback->iterator_thread[1] = ags_iterator_thread_new();
+  playback->iterator_thread[2] = ags_iterator_thread_new();
 
-  play->source = NULL;
-  play->audio_channel = 0;
+  playback->source = NULL;
+  playback->audio_channel = 0;
 
-  play->recall_id = (AgsPlaybackPlay **) malloc(3 * sizeof(AgsPlaybackPlay *));
+  playback->recall_id = (AgsRecallID **) malloc(3 * sizeof(AgsRecallID *));
 
-  play->recall_id[0] = NULL;
-  play->recall_id[1] = NULL;
-  play->recall_id[2] = NULL;
+  playback->recall_id[0] = NULL;
+  playback->recall_id[1] = NULL;
+  playback->recall_id[2] = NULL;
 }
 
 void
@@ -123,11 +130,11 @@ ags_playback_finalize(GObject *gobject)
 
   playback = AGS_PLAYBACK(gobject);
 
-  g_object_unref(G_OBJECT(play->iterator_thread[0]));
-  g_object_unref(G_OBJECT(play->iterator_thread[1]));
-  g_object_unref(G_OBJECT(play->iterator_thread[2]));
+  g_object_unref(G_OBJECT(playback->iterator_thread[0]));
+  g_object_unref(G_OBJECT(playback->iterator_thread[1]));
+  g_object_unref(G_OBJECT(playback->iterator_thread[2]));
 
-  free(play->iterator_thread);
+  free(playback->iterator_thread);
 
   /* call parent */
   G_OBJECT_CLASS(ags_playback_parent_class)->finalize(gobject);
@@ -137,17 +144,10 @@ void
 ags_playback_connect(AgsConnectable *connectable)
 {
   AgsPlayback *playback;
-  GList *list;
 
   playback = AGS_PLAYBACK(connectable);
-  
-  list = playback->audio;
 
-  while(list != NULL){
-    ags_connectable_connect(AGS_CONNECTABLE(list->data));
-
-    list = list->next;
-  }
+  //TODO:JK: implement me
 }
 
 void
@@ -157,35 +157,8 @@ ags_playback_disconnect(AgsConnectable *connectable)
 }
 
 /**
- * ags_playback_play_domain_alloc:
- *
- * Allocs an #AgsPlaybackPlayDomain.
- *
- * Returns: the playback play domain
- *
- * Since: 0.4
- */
-AgsPlaybackPlayDomain*
-ags_playback_play_domain_alloc()
-{
-  AgsPlaybackPlayDomain *playback_play_domain;
-
-  playback_play_domain = (AgsPlaybackPlayDomain *) malloc(sizeof(AgsPlaybackPlayDomain));
-
-  playback_play_domain->domain = NULL;
-
-  playback_play_domain->playback = FALSE;
-  playback_play_domain->sequencer = FALSE;
-  playback_play_domain->notation = FALSE;
-
-  playback_play_domain->playback_play = NULL;
-
-  return(playback_play_domain);
-}
-
-/**
  * ags_playback_play_find_source:
- * @playback_play: a #GList containing #AgsPlaybackPlay-struct
+ * @playback_play: a #GList containing #AgsPlayback
  * 
  * Find source
  *
@@ -193,16 +166,16 @@ ags_playback_play_domain_alloc()
  *
  * Since: 0.4
  */
-AgsPlaybackPlay*
-ags_playback_play_find_source(GList *playback_play,
-			      GObject *source)
+AgsPlayback*
+ags_playback_find_source(GList *playback,
+			 GObject *source)
 {
-  while(playback_play != NULL){
-    if(AGS_PLAYBACK_PLAY(playback_play->data)->source == source){
-      return(playback_play->data);
+  while(playback != NULL){
+    if(AGS_PLAYBACK(playback->data)->source == source){
+      return(playback->data);
     }
 
-    playback_play = playback_play->next;
+    playback = playback->next;
   }
 
   return(NULL);

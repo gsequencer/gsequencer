@@ -23,6 +23,9 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_soundcard.h>
 
+#include <ags/audio/ags_recall_id.h>
+#include <ags/audio/ags_recycling.h>
+
 #include <stdint.h>
 #include <emmintrin.h>
 #include <stdlib.h>

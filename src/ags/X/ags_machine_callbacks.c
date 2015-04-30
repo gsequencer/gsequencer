@@ -29,6 +29,9 @@
 #endif 
 #include <ags/thread/ags_task_thread.h>
 
+#include <ags/audio/ags_playback_domain.h>
+#include <ags/audio/ags_playback.h>
+
 #include <ags/audio/task/ags_start_soundcard.h>
 #include <ags/audio/task/ags_remove_audio.h>
 

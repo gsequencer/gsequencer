@@ -21,6 +21,8 @@
 #include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>
 
+#include <ags/audio/ags_devout.h>
+
 #include <ags/audio/thread/ags_audio_loop.h>
 #include <ags/audio/thread/ags_soundcard_thread.h>
 
@@ -144,6 +146,7 @@ ags_start_soundcard_finalize(GObject *gobject)
 void
 ags_start_soundcard_launch(AgsTask *task)
 {
+  AgsApplicationContext *application_context;
   AgsStartSoundcard *start_soundcard;
   AgsSoundcard *soundcard;
   AgsAudioLoop *audio_loop;
@@ -155,11 +158,15 @@ ags_start_soundcard_launch(AgsTask *task)
 
   soundcard = start_soundcard->soundcard;
 
-  if((AGS_SOUNDCARD_PLAY & (soundcard->flags)) != 0){
-    return;
+  if(AGS_IS_DEVOUT(soundcard)){
+    if((AGS_DEVOUT_PLAY & (AGS_DEVOUT(soundcard)->flags)) != 0){
+      return;
+    }
   }
-
-  audio_loop = AGS_AUDIO_LOOP(AGS_APPLICATION_CONTEXT(soundcard->application_context)->main_loop);
+  
+  application_context = ags_soundcard_get_application_context(soundcard);
+  
+  audio_loop = AGS_AUDIO_LOOP(application_context->main_loop);
   soundcard_thread = ags_thread_find_type(audio_loop,
 					  AGS_TYPE_SOUNDCARD_THREAD);
 
@@ -167,8 +174,11 @@ ags_start_soundcard_launch(AgsTask *task)
   audio_loop->flags |= (AGS_AUDIO_LOOP_PLAY_AUDIO |
 			AGS_AUDIO_LOOP_PLAY_CHANNEL |
 			AGS_AUDIO_LOOP_PLAY_RECALL);
-  soundcard->flags |= (AGS_SOUNDCARD_START_PLAY |
-		       AGS_SOUNDCARD_PLAY);
+
+  if(AGS_IS_DEVOUT(soundcard)){
+    AGS_DEVOUT(soundcard)->flags |= (AGS_DEVOUT_START_PLAY |
+				     AGS_DEVOUT_PLAY);
+  }
 
   error = soundcard_thread->error;
   soundcard_thread->error = NULL;
@@ -210,7 +220,7 @@ ags_start_soundcard_launch(AgsTask *task)
  * Since: 0.4
  */
 AgsStartSoundcard*
-ags_start_soundcard_new(AgsSoundcard *soundcard)
+ags_start_soundcard_new(GObject *soundcard)
 {
   AgsStartSoundcard *start_soundcard;
 

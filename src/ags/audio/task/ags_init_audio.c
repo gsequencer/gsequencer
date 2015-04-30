@@ -20,6 +20,7 @@
 
 #include <ags/object/ags_connectable.h>
 
+#include <ags/audio/ags_playback_domain.h>
 #include <ags/audio/ags_playback.h>
 
 void ags_init_audio_class_init(AgsInitAudioClass *init_audio);

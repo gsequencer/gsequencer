@@ -300,7 +300,7 @@ ags_audio_preferences_apply(AgsApplicable *applicable)
   str = g_strdup_printf("%u\0",
 			(guint) gtk_spin_button_get_value(audio_preferences->samplerate));
   ags_config_set_value(config,
-		       AGS_CONFIG_DEVOUT,
+		       AGS_CONFIG_SOUNDCARD,
 		       "samplerate\0",
 		       str);
   g_free(str);
@@ -309,7 +309,7 @@ ags_audio_preferences_apply(AgsApplicable *applicable)
   str = g_strdup_printf("%u\0",
 			(guint) gtk_spin_button_get_value(audio_preferences->buffer_size));
   ags_config_set_value(config,
-		       AGS_CONFIG_DEVOUT,
+		       AGS_CONFIG_SOUNDCARD,
 		       "buffer-size\0",
 		       str);
   g_free(str);
@@ -318,14 +318,14 @@ ags_audio_preferences_apply(AgsApplicable *applicable)
   str = g_strdup_printf("%u\0",
 			(guint) gtk_spin_button_get_value(audio_preferences->audio_channels));
   ags_config_set_value(config,
-		       AGS_CONFIG_DEVOUT,
+		       AGS_CONFIG_SOUNDCARD,
 		       "dsp-channels\0",
 		       str);
   g_free(str);
 
   /* card */
   ags_config_set_value(config,
-		       AGS_CONFIG_DEVOUT,
+		       AGS_CONFIG_SOUNDCARD,
 		       "alsa-handle\0",
 		       gtk_combo_box_text_get_active_text(audio_preferences->card));
 }

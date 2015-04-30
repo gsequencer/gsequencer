@@ -22,6 +22,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <gtk/gtk.h>
+
 #include <ags/thread/ags_task.h>
 
 #define AGS_TYPE_DISPLAY_TACT                (ags_display_tact_get_type())

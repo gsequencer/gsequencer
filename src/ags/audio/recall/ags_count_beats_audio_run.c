@@ -33,6 +33,7 @@
 #include <ags/file/ags_file_id_ref.h>
 #include <ags/file/ags_file_lookup.h>
 
+#include <ags/audio/ags_playback_domain.h>
 #include <ags/audio/ags_playback.h>
 #include <ags/audio/ags_recall_container.h>
 

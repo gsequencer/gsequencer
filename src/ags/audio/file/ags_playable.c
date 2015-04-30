@@ -22,6 +22,8 @@
 #include <ags/object/ags_config.h>
 #include <ags/object/ags_connectable.h>
 
+#include <ags/audio/ags_audio_signal.h>
+
 #include <math.h>
 
 void ags_playable_base_init(AgsPlayableInterface *interface);
