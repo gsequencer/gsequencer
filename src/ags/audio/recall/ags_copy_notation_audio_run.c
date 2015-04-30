@@ -433,12 +433,12 @@ ags_copy_notation_audio_run_tic_alloc_input_callback(AgsDelayAudioRun *delay_aud
 
 	while(recycling != last_recycling->next){
 	  if((AGS_COPY_NOTATION_AUDIO_FIT_AUDIO_SIGNAL & (copy_notation_audio->flags)) != 0){
-	    audio_signal = ags_audio_signal_new_with_length((GObject *) copy_notation_audio->devout,
+	    audio_signal = ags_audio_signal_new_with_length((GObject *) copy_notation_audio->soundcard,
 							    (GObject *) recycling,
 							    (GObject *) AGS_RECALL(copy_notation_audio_run)->recall_id,
 							    length);
 	  }else{
-	    audio_signal = ags_audio_signal_new((GObject *) copy_notation_audio->devout,
+	    audio_signal = ags_audio_signal_new((GObject *) copy_notation_audio->soundcard,
 						(GObject *) recycling,
 						(GObject *) AGS_RECALL(copy_notation_audio_run)->recall_id);
 	  }

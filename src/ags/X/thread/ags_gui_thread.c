@@ -20,8 +20,6 @@
 
 #include <ags/object/ags_connectable.h>
 
-#include <ags/audio/ags_devout.h>
-
 #include <math.h>
 
 void ags_gui_thread_class_init(AgsGuiThreadClass *gui_thread);

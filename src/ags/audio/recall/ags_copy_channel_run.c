@@ -250,7 +250,7 @@ ags_copy_channel_run_duplicate(AgsRecall *recall,
  * ags_copy_channel_run_new:
  * @destination: the destination #AgsChannel
  * @source: the source #AgsChannel
- * @devout: the #AgsDevout defaulting to
+ * @soundcard: the #GObject implementing #AgsSoundcard defaulting to
  *
  * Creates an #AgsCopyChannelRun
  *
@@ -261,14 +261,14 @@ ags_copy_channel_run_duplicate(AgsRecall *recall,
 AgsCopyChannelRun*
 ags_copy_channel_run_new(AgsChannel *destination,
 			 AgsChannel *source,
-			 AgsDevout *devout)
+			 GObject *soundcard)
 {
   AgsCopyChannelRun *copy_channel_run;
 
   copy_channel_run = (AgsCopyChannelRun *) g_object_new(AGS_TYPE_COPY_CHANNEL_RUN,
 							"destination\0", destination,
 							"source\0", source,
-							"devout\0", devout,
+							"soundcard\0", soundcard,
 							NULL);
 
   return(copy_channel_run);

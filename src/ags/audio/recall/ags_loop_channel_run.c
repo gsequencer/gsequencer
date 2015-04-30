@@ -586,13 +586,8 @@ ags_loop_channel_run_create_audio_signals(AgsLoopChannelRun *loop_channel_run)
   recycling = AGS_RECALL_CHANNEL_RUN(loop_channel_run)->source->first_recycling;
 
   /* delay and attack */
-  //TODO:JK: unclear
-  attack = 0;// devout->attack[((tic_counter_incr == AGS_NOTATION_TICS_PER_BEAT) ?
-  //		   0:
-  //			   tic_counter_incr)];
-  delay = 0.0; //devout->delay[((tic_counter_incr == AGS_NOTATION_TICS_PER_BEAT) ?
-  //		 0:
-  //			 tic_counter_incr)];
+  attack = 0;
+  delay = 0.0;
 
   while(recycling != AGS_RECALL_CHANNEL_RUN(loop_channel_run)->source->last_recycling->next){
     audio_signal = ags_audio_signal_new((GObject *) soundcard,

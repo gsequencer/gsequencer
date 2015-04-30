@@ -338,6 +338,19 @@ ags_soundcard_get_bpm(AgsSoundcard *soundcard)
   return(soundcard_interface->get_bpm(soundcard));
 }
 
+void
+ags_soundcard_set_bpm(AgsSoundcard *soundcard,
+		      gdouble bpm)
+{
+  AgsSoundcardInterface *soundcard_interface;
+
+  g_return_if_fail(AGS_IS_SOUNDCARD(soundcard));
+  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
+  g_return_if_fail(soundcard_interface->set_bpm);
+  soundcard_interface->set_bpm(soundcard,
+			       bpm);
+}
+
 gdouble
 ags_soundcard_get_delay(AgsSoundcard *soundcard)
 {

@@ -32,6 +32,7 @@
 #include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_playback.h>
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_recall_id.h>
 #include <ags/audio/ags_recall_container.h>
@@ -396,13 +397,8 @@ ags_play_channel_run_run_pre(AgsRecall *recall)
   /* create new audio signals */
   recycling = source->first_recycling;
 
-  //TODO:JK: unclear
-  attack = 0; //devout->attack[((tic_counter_incr == AGS_NOTATION_TICS_PER_BEAT) ?
-    //		   0:
-    //			   tic_counter_incr)];
-  delay = 0.0; // devout->delay[((tic_counter_incr == AGS_NOTATION_TICS_PER_BEAT) ?
-    //		 0:
-    //			 tic_counter_incr)];
+  attack = 0;
+  delay = 0.0;
 
   if(recycling != NULL){
     while(recycling != source->last_recycling->next){    
@@ -578,7 +574,7 @@ ags_play_channel_run_stop(AgsPlayChannelRun *play_channel_run)
 
   /* create append task */
   cancel_channel = ags_cancel_channel_new(channel,
-					  AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0], TRUE);
+					  AGS_PLAYBACK(channel->playback)->recall_id[0], TRUE);
   
   /* append AgsCancelAudio */
   ags_task_thread_append_task(task_thread,

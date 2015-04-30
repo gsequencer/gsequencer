@@ -21,7 +21,6 @@
 
 #include <glib-object.h>
 
-#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_recall_audio.h>
 #include <ags/audio/ags_notation.h>
 
@@ -45,7 +44,7 @@ struct _AgsCopyNotationAudio
 
   guint flags;
 
-  AgsDevout *devout;
+  GObject *soundcard;
 
   AgsNotation *notation;
   guint audio_channel;
@@ -58,7 +57,7 @@ struct _AgsCopyNotationAudioClass
 
 GType ags_copy_notation_audio_get_type();
 
-AgsCopyNotationAudio* ags_copy_notation_audio_new(AgsDevout *devout,
+AgsCopyNotationAudio* ags_copy_notation_audio_new(GObject *soundcard,
 						  AgsNotation *notation,
 						  guint audio_channel);
 

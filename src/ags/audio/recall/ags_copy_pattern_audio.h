@@ -23,7 +23,6 @@
 #include <glib-object.h>
 
 #include <ags/audio/ags_recall_audio.h>
-#include <ags/audio/ags_devout.h>
 
 #define AGS_TYPE_COPY_PATTERN_AUDIO                (ags_copy_pattern_audio_get_type())
 #define AGS_COPY_PATTERN_AUDIO(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_COPY_PATTERN_AUDIO, AgsCopyPatternAudio))
@@ -50,7 +49,7 @@ struct _AgsCopyPatternAudioClass
 
 GType ags_copy_pattern_audio_get_type();
 
-AgsCopyPatternAudio* ags_copy_pattern_audio_new(AgsDevout *devout,
+AgsCopyPatternAudio* ags_copy_pattern_audio_new(GObject *soundcard,
 						gdouble tact,
 						guint i, guint j);
 

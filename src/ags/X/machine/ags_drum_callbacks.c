@@ -26,7 +26,6 @@
 #include <ags/thread/ags_thread-posix.h>
 #include <ags/thread/ags_task_thread.h>
 
-#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_input.h>
 #include <ags/audio/ags_output.h>
@@ -463,21 +462,21 @@ ags_drum_done_callback(AgsAudio *audio,
 		       AgsRecallID *recall_id,
 		       AgsDrum *drum)
 {
-  GList *devout_play;
+  GList *playback;
   gboolean all_done;
 
-  devout_play = AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->devout_play;
+  playback = AGS_PLAYBACK_DOMAIN(audio->playback_domain)->playback;
 
   /* check unset */
   all_done = TRUE;
 
-  while(devout_play != NULL){
-    if(AGS_DEVOUT_PLAY(devout_play->data)->recall_id[1] != NULL){
+  while(playback != NULL){
+    if(AGS_PLAYBACK(playback->data)->recall_id[1] != NULL){
       all_done = FALSE;
       break;
     }
 
-    devout_play = devout_play->next;
+    playback = playback->next;
   }
 
   if(all_done){
