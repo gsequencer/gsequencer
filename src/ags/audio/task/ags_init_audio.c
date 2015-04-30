@@ -20,7 +20,7 @@
 
 #include <ags/object/ags_connectable.h>
 
-#include <ags/audio/ags_devout.h>
+#include <ags/audio/ags_playback.h>
 
 void ags_init_audio_class_init(AgsInitAudioClass *init_audio);
 void ags_init_audio_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -149,7 +149,7 @@ ags_init_audio_launch(AgsTask *task)
   AgsInitAudio *init_audio;
   AgsAudio *audio;
   AgsRecallID *recall_id;
-  GList *devout_play;
+  GList *playback;
   GList *list;
 
   init_audio = AGS_INIT_AUDIO(task);
@@ -158,43 +158,43 @@ ags_init_audio_launch(AgsTask *task)
 
   /* init audio */
   if(init_audio->playback){
-    devout_play = AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->devout_play;
+    playback = AGS_PLAYBACK_DOMAIN(audio->playback_domain)->playback;
 
     list = ags_audio_recursive_play_init(audio,
 					 TRUE, FALSE, FALSE);
 
     while(list != NULL){
-      AGS_DEVOUT_PLAY(devout_play->data)->recall_id[0] = list->data;
+      AGS_PLAYBACK(playback->data)->recall_id[0] = list->data;
 
-      devout_play = devout_play->next;
+      playback = playback->next;
       list = list->next;
     }
   }
 
   if(init_audio->sequencer){
-    devout_play = AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->devout_play;
+    playback = AGS_PLAYBACK_DOMAIN(audio->playback_domain)->playback;
 
     list = ags_audio_recursive_play_init(audio,
 					 FALSE, TRUE, FALSE);
 
     while(list != NULL){
-      AGS_DEVOUT_PLAY(devout_play->data)->recall_id[1] = list->data;
+      AGS_PLAYBACK(playback->data)->recall_id[1] = list->data;
 
-      devout_play = devout_play->next;
+      playback = playback->next;
       list = list->next;
     }
   }
 
   if(init_audio->notation){
-    devout_play = AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->devout_play;
+    playback = AGS_PLAYBACK_DOMAIN(audio->playback_domain)->playback;
 
     list = ags_audio_recursive_play_init(audio,
 					 FALSE, FALSE, TRUE);
 
     while(list != NULL){
-      AGS_DEVOUT_PLAY(devout_play->data)->recall_id[2] = list->data;
+      AGS_PLAYBACK(playback->data)->recall_id[2] = list->data;
 
-      devout_play = devout_play->next;
+      playback = playback->next;
       list = list->next;
     }
   }

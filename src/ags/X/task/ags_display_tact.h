@@ -23,7 +23,6 @@
 #include <glib-object.h>
 
 #include <ags/thread/ags_task.h>
-#include <ags/audio/ags_devout.h>
 
 #define AGS_TYPE_DISPLAY_TACT                (ags_display_tact_get_type())
 #define AGS_DISPLAY_TACT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_DISPLAY_TACT, AgsDisplayTact))

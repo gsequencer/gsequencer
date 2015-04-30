@@ -95,6 +95,9 @@ void ags_devout_alsa_play(AgsSoundcard *soundcard,
 void ags_devout_alsa_free(AgsSoundcard *soundcard);
 
 gdouble ags_devout_get_bpm(AgsSoundcard *soundcard);
+void ags_devout_set_bpm(AgsSoundcard *soundcard,
+			gdouble bpm);
+
 gdouble ags_devout_get_delay(AgsSoundcard *soundcard);
 guint ags_devout_get_attack(AgsSoundcard *soundcard);
 
@@ -398,6 +401,8 @@ ags_devout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
   soundcard->stop = ags_devout_alsa_free;
 
   soundcard->get_bpm = ags_devout_get_bpm;
+  soundcard->set_bpm = ags_devout_set_bpm;
+  
   soundcard->get_delay = ags_devout_get_delay;
   soundcard->get_attack = ags_devout_get_attack;
 
@@ -1396,6 +1401,38 @@ ags_devout_get_bpm(AgsSoundcard *soundcard)
   devout = AGS_DEVOUT(soundcard);
 
   return(devout->bpm);
+}
+
+void
+ags_devout_set_bpm(AgsSoundcard *soundcard,
+		   gdouble bpm)
+{
+  AgsDevout *devout;
+  gdouble delay;
+  guint default_tact_frames;
+  guint default_period;
+  guint i;  
+
+  devout = AGS_DEVOUT(soundcard);
+
+  devout->bpm = bpm;
+
+  /* delay and attack */
+  delay = ((gdouble) devout->samplerate / (gdouble) devout->buffer_size) * (gdouble)(60.0 / devout->bpm);
+  default_tact_frames = (guint) (delay * devout->buffer_size);
+  default_period = (1.0 / AGS_SOUNDCARD_DEFAULT_PERIOD) * (default_tact_frames);
+
+  devout->attack[0] = 0;
+  devout->delay[0] = delay;
+  
+  for(i = 1; i < (int)  2.0 * AGS_SOUNDCARD_DEFAULT_PERIOD; i++){
+    devout->attack[i] = (guint) ((i * default_tact_frames + devout->attack[i - 1]) / (AGS_SOUNDCARD_DEFAULT_PERIOD / (delay * i))) % (guint) (devout->buffer_size);
+  }
+  
+  for(i = 1; i < (int) 2.0 * AGS_SOUNDCARD_DEFAULT_PERIOD; i++){
+    devout->delay[i] = ((gdouble) (default_tact_frames + devout->attack[i])) / (gdouble) devout->buffer_size;
+  }
+
 }
 
 gdouble

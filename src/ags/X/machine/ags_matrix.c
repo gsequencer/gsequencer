@@ -1095,7 +1095,6 @@ ags_matrix_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 
 /**
  * ags_matrix_new:
- * @soundcard: the assigned soundcard.
  *
  * Creates an #AgsMatrix
  *
@@ -1104,21 +1103,12 @@ ags_matrix_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
  * Since: 0.3
  */
 AgsMatrix*
-ags_matrix_new(GObject *soundcard)
+ags_matrix_new()
 {
   AgsMatrix *matrix;
-  GValue value = {0,};
 
   matrix = (AgsMatrix *) g_object_new(AGS_TYPE_MATRIX,
 				      NULL);
-
-  if(soundcard != NULL){
-    g_value_init(&value, G_TYPE_OBJECT);
-    g_value_set_object(&value, soundcard);
-    g_object_set_property(G_OBJECT(AGS_MACHINE(matrix)->audio),
-			  "soundcard\0", &value);
-    g_value_unset(&value);
-  }
 
   return(matrix);
 }

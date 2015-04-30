@@ -151,17 +151,17 @@ ags_cancel_channel_launch(AgsTask *task)
   channel = cancel_channel->channel;
 
   /* cancel playback */
-  if(AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0] == NULL){
+  if(AGS_PLAYBACK(channel->playback)->recall_id[0] == NULL){
     return;
   }
 
-  g_object_ref(AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0]);
+  g_object_ref(AGS_PLAYBACK(channel->playback)->recall_id[0]);
   ags_channel_tillrecycling_cancel(channel,
-				   AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0]);
+				   AGS_PLAYBACK(channel->playback)->recall_id[0]);
 
   /* set remove flag */
-  AGS_DEVOUT_PLAY(channel->devout_play)->flags |= (AGS_DEVOUT_PLAY_DONE | AGS_DEVOUT_PLAY_REMOVE);
-  AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0] = NULL;
+  AGS_PLAYBACK(channel->playback)->flags |= (AGS_PLAYBACK_DONE | AGS_PLAYBACK_REMOVE);
+  AGS_PLAYBACK(channel->playback)->recall_id[0] = NULL;
 }
 
 /**

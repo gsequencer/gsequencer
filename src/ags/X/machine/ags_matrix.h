@@ -85,6 +85,6 @@ void ags_matrix_redraw_gutter_point(AgsMatrix *matrix, AgsChannel *channel, guin
 void ags_matrix_highlight_gutter_point(AgsMatrix *matrix, guint j, guint i);
 void ags_matrix_unpaint_gutter_point(AgsMatrix *matrix, guint j, guint i);
 
-AgsMatrix* ags_matrix_new(GObject *devout);
+AgsMatrix* ags_matrix_new();
 
 #endif /*__AGS_MATRIX_H__*/

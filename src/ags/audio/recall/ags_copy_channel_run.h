@@ -24,7 +24,6 @@
 
 #include <ags/audio/ags_recall_channel_run.h>
 
-#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_channel.h>
 
 #define AGS_TYPE_COPY_CHANNEL_RUN                (ags_copy_channel_run_get_type())
@@ -58,6 +57,6 @@ GType ags_copy_channel_run_get_type();
 
 AgsCopyChannelRun* ags_copy_channel_run_new(AgsChannel *destination,
 					    AgsChannel *source,
-					    AgsDevout *devout);
+					    GObject *soundcard);
 
 #endif /*__AGS_COPY_CHANNEL_RUN_H__*/

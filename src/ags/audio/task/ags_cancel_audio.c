@@ -160,19 +160,19 @@ ags_cancel_audio_launch(AgsTask *task)
     channel = audio->output;
 
     while(channel != NULL){
-      if(AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0] == NULL){
+      if(AGS_PLAYBACK(channel->playback)->recall_id[0] == NULL){
 	channel = channel->next;
 	
 	continue;
       }
 
-      g_object_ref(AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0]);
+      g_object_ref(AGS_PLAYBACK(channel->playback)->recall_id[0]);
       ags_channel_tillrecycling_cancel(channel,
-				       AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0]);
+				       AGS_PLAYBACK(channel->playback)->recall_id[0]);
 
       /* set remove flag */
-      AGS_DEVOUT_PLAY(channel->devout_play)->flags |= (AGS_DEVOUT_PLAY_DONE | AGS_DEVOUT_PLAY_REMOVE);
-      AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0] = NULL;
+      AGS_PLAYBACK(channel->playback)->flags |= (AGS_PLAYBACK_DONE | AGS_PLAYBACK_REMOVE);
+      AGS_PLAYBACK(channel->playback)->recall_id[0] = NULL;
 
       channel = channel->next;
     }
@@ -183,19 +183,19 @@ ags_cancel_audio_launch(AgsTask *task)
     channel = audio->output;
 
     while(channel != NULL){
-      if(AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[1] == NULL){
+      if(AGS_PLAYBACK(channel->playback)->recall_id[1] == NULL){
 	channel = channel->next;
 	
 	continue;
       }
 
-      g_object_ref(AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[1]);
+      g_object_ref(AGS_PLAYBACK(channel->playback)->recall_id[1]);
       ags_channel_tillrecycling_cancel(channel,
-				       AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[1]);
-      AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[1] = NULL;
+				       AGS_PLAYBACK(channel->playback)->recall_id[1]);
+      AGS_PLAYBACK(channel->playback)->recall_id[1] = NULL;
 
       /* set remove flag */
-      AGS_DEVOUT_PLAY(channel->devout_play)->flags |= (AGS_DEVOUT_PLAY_DONE | AGS_DEVOUT_PLAY_REMOVE);
+      AGS_PLAYBACK(channel->playback)->flags |= (AGS_PLAYBACK_DONE | AGS_PLAYBACK_REMOVE);
 
       channel = channel->next;
     }
@@ -206,19 +206,19 @@ ags_cancel_audio_launch(AgsTask *task)
     channel = audio->output;
 
     while(channel != NULL){
-      if(AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[2] == NULL){
+      if(AGS_PLAYBACK(channel->playback)->recall_id[2] == NULL){
 	channel = channel->next;
 	
 	continue;
       }
 
-      g_object_ref(AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[2]);
+      g_object_ref(AGS_PLAYBACK(channel->playback)->recall_id[2]);
       ags_channel_tillrecycling_cancel(channel,
-				       AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[2]);
-      AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[2] = NULL;
+				       AGS_PLAYBACK(channel->playback)->recall_id[2]);
+      AGS_PLAYBACK(channel->playback)->recall_id[2] = NULL;
 
       /* set remove flag */
-      AGS_DEVOUT_PLAY(channel->devout_play)->flags |= (AGS_DEVOUT_PLAY_DONE | AGS_DEVOUT_PLAY_REMOVE);
+      AGS_PLAYBACK(channel->playback)->flags |= (AGS_PLAYBACK_DONE | AGS_PLAYBACK_REMOVE);
       
       channel = channel->next;
     }
