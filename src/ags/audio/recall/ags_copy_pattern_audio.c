@@ -400,7 +400,7 @@ ags_copy_pattern_audio_bank_index_1_safe_write_callback(AgsPort *pattern,
 
 /**
  * ags_copy_pattern_audio_new:
- * @devout: the #AgsDevout defaulting to
+ * @soundcard: the #GObject implementing #AgsSoundcard defaulting to
  * @tact: the offset
  * @i: bank index 0
  * @j: bank index 1
@@ -412,14 +412,14 @@ ags_copy_pattern_audio_bank_index_1_safe_write_callback(AgsPort *pattern,
  * Since: 0.4
  */
 AgsCopyPatternAudio*
-ags_copy_pattern_audio_new(AgsDevout *devout,
+ags_copy_pattern_audio_new(GObject *soundcard,
 			   gdouble tact,
 			   guint i, guint j)
 {
   AgsCopyPatternAudio *copy_pattern_audio;
 
   copy_pattern_audio = (AgsCopyPatternAudio *) g_object_new(AGS_TYPE_COPY_PATTERN_AUDIO,
-							    "devout\0", devout,
+							    "soundcard\0", soundcard,
 							    "tact\0", tact,
 							    "bank_index_0\0", i,
 							    "bank_index_1\0", j,

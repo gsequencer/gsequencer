@@ -73,7 +73,7 @@ ags_play_note_class_init(AgsPlayNoteClass *play_note)
 void
 ags_play_note_init(AgsPlayNote *play_note)
 {
-  play_note->devout = NULL;
+  play_note->soundcard = NULL;
 
   play_note->note = NULL;
   play_note->channel = NULL;
@@ -134,7 +134,7 @@ ags_play_note_map_play_audio_signal(AgsRecall *recall, AgsRecallID *recall_id, g
     audio_signal->audio_channel = channel->audio_channel;
 
     play_audio_signal = ags_play_audio_signal_new();
-    play_audio_signal->devout = play_note->devout;
+    play_audio_signal->soundcard = play_note->soundcard;
     play_audio_signal->audio_signal = audio_signal;
     AGS_RECALL(play_audio_signal)->parent = (GObject *) play_note;
 
@@ -177,7 +177,7 @@ ags_play_note_map_play_audio_signal(AgsRecall *recall, AgsRecallID *recall_id, g
     }else{
       guint length;
       
-      length = ((double) (play_note->note->x[1] - play_note->note->x[0]) * ((double) play_note->devout->frequence * 60.0 / play_notation_audio_run->bpm[0] / 16.0));
+      length = ((double) (play_note->note->x[1] - play_note->note->x[0]) * ((double) play_note->soundcard->samplerate * 60.0 / play_notation_audio_run->bpm[0] / 16.0));
 
       while(recycling != channel->last_recycling->next){
 	audio_signal = ags_recycling_add_audio_signal_with_length(recycling, length);

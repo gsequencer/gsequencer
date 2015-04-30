@@ -99,6 +99,9 @@ struct _AgsSoundcardInterface
   signed short* (*get_next_buffer)(AgsSoundcard *soundcard);  
 
   gdouble (*get_bpm)(AgsSoundcard *soundcard);
+  void (*set_bpm)(AgsSoundcard *soundcard,
+		  gdouble bpm);
+  
   gdouble (*get_delay)(AgsSoundcard *soundcard);
   guint (*get_attack)(AgsSoundcard *soundcard);
   
@@ -149,6 +152,9 @@ signed short* ags_soundcard_get_buffer(AgsSoundcard *soundcard);
 signed short* ags_soundcard_get_next_buffer(AgsSoundcard *soundcard);
 
 gdouble ags_soundcard_get_bpm(AgsSoundcard *soundcard);
+void ags_soundcard_set_bpm(AgsSoundcard *soundcard,
+			   gdouble bpm);
+
 gdouble ags_soundcard_get_delay(AgsSoundcard *soundcard);
 guint ags_soundcard_get_attack(AgsSoundcard *soundcard);
 

@@ -23,8 +23,6 @@
 #include <ags/object/ags_plugin.h>
 #include <ags/object/ags_soundcard.h>
 
-#include <ags/audio/ags_devout.h>
-
 void ags_delay_audio_class_init(AgsDelayAudioClass *delay_audio);
 void ags_delay_audio_tactable_interface_init(AgsTactableInterface *tactable);
 void ags_delay_audio_plugin_interface_init(AgsPluginInterface *plugin);
@@ -632,7 +630,7 @@ ags_delay_audio_notify_soundcard_callback(GObject *gobject,
 				   "port-value-length", 1,
 				   NULL);
 
-  delay_audio->tact->port_value.ags_port_double = AGS_DEVOUT_DEFAULT_TACT;
+  delay_audio->tact->port_value.ags_port_double = AGS_SOUNDCARD_DEFAULT_TACT;
 
   port = g_list_prepend(port, delay_audio->tact);
 
@@ -884,7 +882,7 @@ ags_delay_audio_change_sequencer_duration(AgsTactable *tactable, gdouble duratio
   delay_audio = AGS_DELAY_AUDIO(tactable);
 
   g_value_init(&value, G_TYPE_DOUBLE);
-  g_value_set_double(&value, duration * delay * AGS_DEVOUT_DEFAULT_SCALE);
+  g_value_set_double(&value, duration * delay * AGS_SOUNDCARD_DEFAULT_SCALE);
   ags_port_safe_write(delay_audio->sequencer_duration,
 		      &value);
 }
@@ -914,7 +912,7 @@ ags_delay_audio_change_notation_duration(AgsTactable *tactable, gdouble duration
   delay = ((gdouble) samplerate / (gdouble) buffer_size) * (60.0 / bpm);
 
   g_value_init(&value, G_TYPE_DOUBLE);
-  g_value_set_double(&value, duration * delay * AGS_DEVOUT_DEFAULT_SCALE);
+  g_value_set_double(&value, duration * delay * AGS_SOUNDCARD_DEFAULT_SCALE);
   ags_port_safe_write(delay_audio->notation_duration,
 		      &value);
 }

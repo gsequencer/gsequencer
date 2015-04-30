@@ -243,13 +243,13 @@ ags_clone_channel_set_ports(AgsPlugin *plugin, GList *port)
 }
 
 AgsCloneChannel*
-ags_clone_channel_new(AgsDevout *devout,
-		     guint audio_channel)
+ags_clone_channel_new(GObject *soundcard,
+		      guint audio_channel)
 {
   AgsCloneChannel *clone_channel;
 
   clone_channel = (AgsCloneChannel *) g_object_new(AGS_TYPE_CLONE_CHANNEL,
-						   "devout\0", devout,
+						   "soundcard\0", soundcard,
 						   "audio_channel\0", audio_channel,
 						   NULL);
   

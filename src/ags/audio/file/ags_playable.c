@@ -424,7 +424,7 @@ ags_playable_close(AgsPlayable *playable)
 /**
  * ags_playable_read_audio_signal:
  * @playable: an #AgsPlayable
- * @devout: the #AgsDevout defaulting to
+ * @soundcard: the #AgsSoundcard defaulting to
  * @start_channel: read from channel
  * @channels_to_read: n-times
  *
@@ -434,10 +434,11 @@ ags_playable_close(AgsPlayable *playable)
  */
 GList*
 ags_playable_read_audio_signal(AgsPlayable *playable,
-			       AgsDevout *devout,
+			       AgsSoundcard *soundcard,
 			       guint start_channel, guint channels_to_read)
 {
   AgsAudioSignal *audio_signal;
+  AgsApplicationContext *application_context;
   AgsConfig *config;
   GList *stream, *list, *list_beginning;
   short *buffer;
@@ -451,7 +452,8 @@ ags_playable_read_audio_signal(AgsPlayable *playable,
   guint i, j, k, i_stop, j_stop;
   GError *error;
 
-  config = AGS_APPLICATION_CONTEXT(devout->application_context)->config;
+  application_context = ags_soundcard_get_application_context(soundcard);
+  config = application_context->config;
   
   ags_playable_info(playable,
 		    &channels, &frames,
@@ -459,12 +461,12 @@ ags_playable_read_audio_signal(AgsPlayable *playable,
 		    &error);
 
   samplerate = g_ascii_strtoull(ags_config_get_value(config,
-						     AGS_CONFIG_DEVOUT,
+						     AGS_CONFIG_SOUNDCARD,
 						     "samplerate\0"),
 				NULL,
 				10);
   buffer_size = g_ascii_strtoull(ags_config_get_value(config,
-						      AGS_CONFIG_DEVOUT,
+						      AGS_CONFIG_SOUNDCARD,
 						      "buffer-size\0"),
 				 NULL,
 				 10);
@@ -479,7 +481,7 @@ ags_playable_read_audio_signal(AgsPlayable *playable,
   i_stop = start_channel + channels_to_read;
 
   for(; i < i_stop; i++){
-    audio_signal = ags_audio_signal_new((GObject *) devout,
+    audio_signal = ags_audio_signal_new((GObject *) soundcard,
 					NULL,
 					NULL);
     audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
@@ -498,7 +500,7 @@ ags_playable_read_audio_signal(AgsPlayable *playable,
     audio_signal->loop_start = loop_start;
     audio_signal->loop_end = loop_end;
     //TODO:JK: read resolution of file
-    //    audio_signal->resolution = AGS_DEVOUT_RESOLUTION_16_BIT;
+    //    audio_signal->resolution = AGS_SOUNDCARD_RESOLUTION_16_BIT;
 
     error = NULL;
     buffer = ags_playable_read(playable,

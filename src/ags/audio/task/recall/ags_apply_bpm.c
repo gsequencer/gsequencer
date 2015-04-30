@@ -20,8 +20,8 @@
 
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_tactable.h>
+#include <ags/object/ags_soundcard.h>
 
-#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recall.h>
@@ -40,7 +40,7 @@ void ags_apply_bpm_launch(AgsTask *task);
 void ags_apply_bpm_recall(AgsApplyBpm *apply_bpm, AgsRecall *recall);
 void ags_apply_bpm_channel(AgsApplyBpm *apply_bpm, AgsChannel *channel);
 void ags_apply_bpm_audio(AgsApplyBpm *apply_bpm, AgsAudio *audio);
-void ags_apply_bpm_devout(AgsApplyBpm *apply_bpm, AgsDevout *devout);
+void ags_apply_bpm_soundcard(AgsApplyBpm *apply_bpm, AgsSoundcard *soundcard);
 
 /**
  * SECTION:ags_apply_bpm
@@ -158,12 +158,12 @@ ags_apply_bpm_launch(AgsTask *task)
   
   apply_bpm = AGS_APPLY_BPM(task);
   
-  if(AGS_IS_DEVOUT(apply_bpm->gobject)){
-    AgsDevout *devout;
+  if(AGS_IS_SOUNDCARD(apply_bpm->gobject)){
+    AgsSoundcard *soundcard;
 
-    devout = AGS_DEVOUT(apply_bpm->gobject);
+    soundcard = AGS_SOUNDCARD(apply_bpm->gobject);
 
-    ags_apply_bpm_devout(apply_bpm, devout);
+    ags_apply_bpm_soundcard(apply_bpm, soundcard);
   }else if(AGS_IS_AUDIO(apply_bpm->gobject)){
     AgsAudio *audio;
 
@@ -259,14 +259,15 @@ ags_apply_bpm_audio(AgsApplyBpm *apply_bpm, AgsAudio *audio)
 }
 
 void
-ags_apply_bpm_devout(AgsApplyBpm *apply_bpm, AgsDevout *devout)
+ags_apply_bpm_soundcard(AgsApplyBpm *apply_bpm, AgsSoundcard *soundcard)
 {
   GList *list;
 
-  //TODO:JK: implement me
-
+  ags_soundcard_set_bpm(soundcard,
+			apply_bpm->bpm);
+  
   /* AgsAudio */
-  list = devout->audio;
+  list = ags_soundcard_get_audio(soundcard);
 
   while(list != NULL){
     ags_apply_bpm_audio(apply_bpm,

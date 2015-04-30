@@ -334,7 +334,6 @@ ags_widget_c_sources = \
 
 # libags_audio all files
 deprecated_ags_audio_h_sources = \
-	src/ags/audio/ags_garbage_collector.h	\
 	src/ags/audio/ags_effect.h		\
 	src/ags/audio/ags_libao.h		\
 	src/ags/audio/ags_timestamp.h		\
@@ -351,6 +350,8 @@ ags_audio_h_sources = 		\
 	src/ags/audio/ags_automation.h		\
 	src/ags/audio/ags_channel.h		\
 	src/ags/audio/ags_channel_iter.h	\
+	src/ags/audio/ags_playback_domain.h	\
+	src/ags/audio/ags_playback.h		\
 	src/ags/audio/ags_devout.h		\
 	src/ags/audio/ags_input.h		\
 	src/ags/audio/ags_notation.h		\
@@ -380,7 +381,6 @@ ags_audio_h_sources = 		\
 	src/ags/audio/ags_timestamp.h
 
 deprecated_ags_audio_c_sources =  \
-	src/ags/audio/ags_garbage_collector.c	\
 	src/ags/audio/ags_libao.c		\
 	src/ags/audio/ags_timestamp.c		\
 	src/ags/audio/ags_timestamp_factory.c	
@@ -396,6 +396,8 @@ ags_audio_c_sources =  		\
 	src/ags/audio/ags_automation.c		\
 	src/ags/audio/ags_channel.c		\
 	src/ags/audio/ags_channel_iter.c	\
+	src/ags/audio/ags_playback_domain.c	\
+	src/ags/audio/ags_playback.c		\
 	src/ags/audio/ags_devout.c		\
 	src/ags/audio/ags_input.c		\
 	src/ags/audio/ags_notation.c		\
@@ -485,15 +487,11 @@ ags_audio_midi_c_sources = \
 	src/ags/audio/midi/ags_midi_parser.c
 
 deprecated_ags_audio_recall_h_sources = \
-	src/ags/audio/recall/ags_amplifier.h			\
 	src/ags/audio/recall/ags_clone_channel.h		\
 	src/ags/audio/recall/ags_clone_channel_run.h		\
-	src/ags/audio/recall/ags_down_mix.h			\
-	src/ags/audio/recall/ags_echo.h			\
 	src/ags/audio/recall/ags_loop_channel.h		\
 	src/ags/audio/recall/ags_loop_channel_run.h		\
-	src/ags/audio/recall/ags_play_note.h			\
-	src/ags/audio/recall/ags_stream.h
+	src/ags/audio/recall/ags_play_note.h
 
 ags_audio_recall_h_sources = \
 	$(deprecated_ags_audio_recall_h_sources) \
@@ -542,14 +540,11 @@ ags_audio_recall_h_sources = \
 	src/ags/audio/recall/ags_volume_recycling.h
 
 deprecated_ags_audio_recall_c_sources =  \
-	src/ags/audio/recall/ags_amplifier.c			\
 	src/ags/audio/recall/ags_clone_channel.c		\
 	src/ags/audio/recall/ags_clone_channel_run.c		\
-	src/ags/audio/recall/ags_echo.c			\
 	src/ags/audio/recall/ags_loop_channel.c		\
 	src/ags/audio/recall/ags_loop_channel_run.c		\
-	src/ags/audio/recall/ags_play_note.c			\
-	src/ags/audio/recall/ags_stream.c
+	src/ags/audio/recall/ags_play_note.c
 
 ags_audio_recall_c_sources = \
 	$(deprecated_ags_audio_recall_c_sources) \

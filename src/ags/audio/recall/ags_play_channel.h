@@ -24,7 +24,6 @@
 
 #include <ags/audio/ags_recall_channel.h>
 
-#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_channel.h>
 
 #define AGS_TYPE_PLAY_CHANNEL                (ags_play_channel_get_type())
@@ -53,7 +52,7 @@ struct _AgsPlayChannelClass
 
 GType ags_play_channel_get_type();
 
-AgsPlayChannel* ags_play_channel_new(AgsDevout *devout,
+AgsPlayChannel* ags_play_channel_new(GObject *soundcard,
 				     guint audio_channel);
 
 #endif /*__AGS_PLAY_CHANNEL_H__*/

@@ -142,15 +142,21 @@ void
 ags_add_audio_launch(AgsTask *task)
 {
   AgsAddAudio *add_audio;
-
+  GList *list;
+  
   add_audio = AGS_ADD_AUDIO(task);
 
   //TODO:JK: use AgsSoundcard
   
   /* add audio */
-  ags_devout_add_audio(add_audio->soundcard,
-		       G_OBJECT(add_audio->audio));
-
+  g_object_ref(G_OBJECT(add_audio->audio));
+  
+  list = ags_soundcard_get_audio(add_audio->soundcard);
+  list = g_list_prepend(list,
+			add_audio->audio);
+  ags_soundcard_set_audio(add_audio->soundcard,
+			  list);
+  
   /* AgsAudio */
   ags_connectable_connect(AGS_CONNECTABLE(add_audio->audio));
 }

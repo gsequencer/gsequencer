@@ -1218,7 +1218,7 @@ ags_count_beats_audio_run_sequencer_count_callback(AgsDelayAudioRun *delay_audio
 	ags_count_beats_audio_run_sequencer_stop(count_beats_audio_run,
 						 run_order);
 
-	/* set done flag in devout play */
+	/* set done flag in playback */
 	while(playback != NULL){
 	  if(AGS_PLAYBACK(playback->data)->recall_id[1] != NULL &&
 	     AGS_PLAYBACK(playback->data)->recall_id[1]->recycling_container == AGS_RECALL(count_beats_audio_run)->recall_id->recycling_container){

@@ -21,7 +21,6 @@
 
 #include <glib-object.h>
 
-#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_recall_channel.h>
 
 #define AGS_TYPE_CLONE_CHANNEL                (ags_clone_channel_get_type())
@@ -48,7 +47,7 @@ struct _AgsCloneChannelClass
 
 GType ags_clone_channel_get_type();
 
-AgsCloneChannel* ags_clone_channel_new(AgsDevout *devout,
+AgsCloneChannel* ags_clone_channel_new(GObject *soundcard,
 				       guint audio_channel);
 
 #endif /*__AGS_CLONE_CHANNEL_H__*/
