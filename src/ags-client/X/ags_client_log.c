@@ -18,7 +18,7 @@
 
 #include <ags-client/X/ags_client_log.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 void ags_client_log_class_init(AgsClientLogClass *client_log);
 void ags_client_log_connectable_interface_init(AgsConnectableInterface *connectable);

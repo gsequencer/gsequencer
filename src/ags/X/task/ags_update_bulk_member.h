@@ -22,7 +22,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/audio/ags_task.h>
+#include <ags/thread/ags_task.h>
 #include <ags/X/ags_bulk_member.h>
 
 #define AGS_TYPE_UPDATE_BULK_MEMBER                (ags_update_bulk_member_get_type())

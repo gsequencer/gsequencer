@@ -20,7 +20,7 @@
 #include <ags/audio/recall/ags_buffer_recycling.h>
 #include <ags/audio/recall/ags_buffer_channel.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 #include <ags/object/ags_dynamic_connectable.h>
 #include <ags/object/ags_soundcard.h>
 

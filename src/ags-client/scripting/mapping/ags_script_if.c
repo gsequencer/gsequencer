@@ -18,7 +18,7 @@
 
 #include <ags-client/scripting/mapping/ags_script_if.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 void ags_script_if_class_init(AgsScriptIfClass *script_if);
 void ags_script_if_connectable_interface_init(AgsConnectableInterface *connectable);

@@ -19,7 +19,7 @@
 #include <ags/X/editor/ags_machine_selector.h>
 #include <ags/X/editor/ags_machine_selector_callbacks.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 void ags_machine_selector_class_init(AgsMachineSelectorClass *machine_selector);
 void ags_machine_selector_connectable_interface_init(AgsConnectableInterface *connectable);

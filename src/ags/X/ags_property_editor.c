@@ -19,7 +19,7 @@
 #include <ags/X/ags_property_editor.h>
 #include <ags/X/ags_property_editor_callbacks.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 void ags_property_editor_class_init(AgsPropertyEditorClass *property_editor);
 void ags_property_editor_connectable_interface_init(AgsConnectableInterface *connectable);

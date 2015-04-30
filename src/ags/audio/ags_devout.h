@@ -19,21 +19,17 @@
 #ifndef __AGS_DEVOUT_H__
 #define __AGS_DEVOUT_H__
 
-#include <pthread.h>
-
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/audio/ags_recall_id.h>
+#include <ags/audio/thread/ags_iterator_thread.h>
+
 #include <sys/types.h>
 
+#include <pthread.h>
+
 #include <alsa/asoundlib.h>
-
-#include <ags/thread/ags_audio_loop.h>
-#include <ags/thread/ags_task_thread.h>
-#include <ags/thread/ags_devout_thread.h>
-#include <ags/thread/ags_iterator_thread.h>
-
-#include <ags/audio/ags_recall_id.h>
 
 #define AGS_TYPE_DEVOUT                (ags_devout_get_type())
 #define AGS_DEVOUT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_DEVOUT, AgsDevout))

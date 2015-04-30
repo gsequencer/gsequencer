@@ -19,7 +19,7 @@
 #include <ags/X/ags_navigation.h>
 #include <ags/X/ags_navigation_callbacks.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/object/ags_marshal.h>
 

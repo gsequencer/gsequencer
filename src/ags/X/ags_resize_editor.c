@@ -19,7 +19,7 @@
 #include <ags/X/ags_resize_editor.h>
 
 #include <ags/object/ags_application_context.h>
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/object/ags_applicable.h>
 

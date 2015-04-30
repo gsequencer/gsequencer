@@ -16,9 +16,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <ags/audio/task/ags_save_file.h>
+#include <ags/file/task/ags_save_file.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 void ags_save_file_class_init(AgsSaveFileClass *save_file);
 void ags_save_file_connectable_interface_init(AgsConnectableInterface *connectable);

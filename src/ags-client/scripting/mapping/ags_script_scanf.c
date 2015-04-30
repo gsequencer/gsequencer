@@ -18,7 +18,7 @@
 
 #include <ags-client/scripting/mapping/ags_script_scanf.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 void ags_script_scanf_class_init(AgsScriptScanfClass *script_scanf);
 void ags_script_scanf_connectable_interface_init(AgsConnectableInterface *connectable);

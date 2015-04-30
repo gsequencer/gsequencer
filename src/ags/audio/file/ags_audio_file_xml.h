@@ -37,7 +37,7 @@
 #include <ags/audio/ags_pattern.h>
 #include <ags/audio/ags_notation.h>
 #include <ags/audio/ags_note.h>
-#include <ags/audio/ags_task.h>
+#include <ags/thread/ags_task.h>
 #include <ags/audio/ags_recall.h>
 #include <ags/audio/ags_recall_container.h>
 #include <ags/audio/ags_port.h>

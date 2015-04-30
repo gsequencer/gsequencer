@@ -288,9 +288,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign src/ags/audio/file/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/ags/audio/file/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign src/ags/audio/file/Makefile
+	  $(AUTOMAKE) --gnu src/ags/audio/file/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \

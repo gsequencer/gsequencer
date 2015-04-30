@@ -22,7 +22,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/audio/ags_task.h>
+#include <ags/thread/ags_task.h>
 
 #define AGS_TYPE_SET_MUTED                (ags_set_muted_get_type())
 #define AGS_SET_MUTED(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SET_MUTED, AgsSetMuted))

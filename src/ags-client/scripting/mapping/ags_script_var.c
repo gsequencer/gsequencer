@@ -18,7 +18,7 @@
 
 #include <ags-client/scripting/mapping/ags_script_var.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 void ags_script_var_class_init(AgsScriptVarClass *script_var);
 void ags_script_var_connectable_interface_init(AgsConnectableInterface *connectable);

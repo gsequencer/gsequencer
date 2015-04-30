@@ -19,7 +19,7 @@
 #include <ags/X/ags_menu_bar_callbacks.h>
 
 #include <ags/object/ags_application_context.h>
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 #include <ags/object/ags_applicable.h>
 #include <ags/object/ags_soundcard.h>
 

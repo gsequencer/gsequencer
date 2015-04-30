@@ -20,7 +20,7 @@
 #include <ags/X/editor/ags_toolbar_callbacks.h>
 #include <ags/X/editor/ags_toolbar_mode_stock.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/X/ags_menu_bar.h>
 

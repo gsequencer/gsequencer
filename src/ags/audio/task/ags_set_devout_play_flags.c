@@ -18,7 +18,7 @@
 
 #include <ags/audio/task/ags_set_devout_play_flags.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 void ags_set_devout_play_flags_class_init(AgsSetDevoutPlayFlagsClass *set_devout_play_flags);
 void ags_set_devout_play_flags_connectable_interface_init(AgsConnectableInterface *connectable);

@@ -17,7 +17,7 @@
  */
 #include <ags/server/ags_server.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/object/ags_application_context.h>
 

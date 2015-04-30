@@ -18,7 +18,7 @@
 
 #include <ags/thread/ags_history.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 void ags_history_class_init(AgsHistoryClass *history);
 void ags_history_connectable_interface_init(AgsConnectableInterface *connectable);

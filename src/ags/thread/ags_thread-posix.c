@@ -18,14 +18,11 @@
 
 #include <ags/thread/ags_thread-posix.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
-#include <ags/object/ags_tree_iterator.h>
-#include <ags/object/ags_stackable.h>
 #include <ags/object/ags_main_loop.h>
 
 #include <ags/thread/ags_task_thread.h>
-#include <ags/thread/ags_gui_thread.h>
 #include <ags/thread/ags_returnable_thread.h>
 
 #include <stdlib.h>
@@ -34,9 +31,7 @@
 #include <math.h>
 
 void ags_thread_class_init(AgsThreadClass *thread);
-void ags_thread_tree_iterator_interface_init(AgsTreeIteratorInterface *tree);
 void ags_thread_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_thread_stackable_interface_init(AgsStackableInterface *stackable);
 void ags_thread_init(AgsThread *thread);
 void ags_thread_set_property(GObject *gobject,
 			     guint prop_id,
@@ -46,8 +41,6 @@ void ags_thread_get_property(GObject *gobject,
 			     guint prop_id,
 			     GValue *value,
 			     GParamSpec *param_spec);
-void ags_thread_iterate_nested(AgsTreeIterator *tree,
-			       gpointer node_id);
 void ags_thread_connect(AgsConnectable *connectable);
 void ags_thread_disconnect(AgsConnectable *connectable);
 void ags_thread_finalize(GObject *gobject);
@@ -110,20 +103,9 @@ ags_thread_get_type()
       (GInstanceInitFunc) ags_thread_init,
     };
 
-    const GInterfaceInfo ags_tree_iterator_interface_info = {
-      (GInterfaceInitFunc) ags_thread_tree_iterator_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
 
     const GInterfaceInfo ags_connectable_interface_info = {
       (GInterfaceInitFunc) ags_thread_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
-    const GInterfaceInfo ags_stackable_interface_info = {
-      (GInterfaceInitFunc) ags_thread_stackable_interface_init,
       NULL, /* interface_finalize */
       NULL, /* interface_data */
     };
@@ -132,18 +114,10 @@ ags_thread_get_type()
 					     "AgsThread\0",
 					     &ags_thread_info,
 					     0);
-    
-    g_type_add_interface_static(ags_type_thread,
-				AGS_TYPE_TREE_ITERATOR,
-				&ags_tree_iterator_interface_info);
-    
+        
     g_type_add_interface_static(ags_type_thread,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_thread,
-				AGS_TYPE_STACKABLE,
-				&ags_stackable_interface_info);
   }
   
   return(ags_type_thread);
@@ -154,12 +128,12 @@ ags_thread_class_init(AgsThreadClass *thread)
 {
   GObjectClass *gobject;
   GParamSpec *param_spec;
-
+  
   ags_thread_parent_class = g_type_class_peek_parent(thread);
-
+  
   /* GObject */
   gobject = (GObjectClass *) thread;
-
+  
   gobject->set_property = ags_thread_set_property;
   gobject->get_property = ags_thread_get_property;
 
@@ -289,25 +263,12 @@ ags_thread_class_init(AgsThreadClass *thread)
 }
 
 void
-ags_thread_tree_iterator_interface_init(AgsTreeIteratorInterface *tree)
-{
-  tree->iterate_nested = ags_thread_iterate_nested;
-}
-
-void
 ags_thread_connectable_interface_init(AgsConnectableInterface *connectable)
 {
   connectable->is_ready = NULL;
   connectable->is_connected = NULL;
   connectable->connect = ags_thread_connect;
   connectable->disconnect = ags_thread_disconnect;
-}
-
-void
-ags_thread_stackable_interface_init(AgsStackableInterface *stackable)
-{
-  stackable->push = NULL;
-  stackable->pop = NULL;
 }
 
 void
@@ -407,13 +368,6 @@ ags_thread_get_property(GObject *gobject,
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
   }
-}
-
-void
-ags_thread_iterate_nested(AgsTreeIterator *tree,
-			  gpointer node_id)
-{
-  //TODO:JK: implement me
 }
 
 void

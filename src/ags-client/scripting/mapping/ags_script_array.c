@@ -22,7 +22,7 @@
 #include <string.h>
 #include <libxml/tree.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 void ags_script_array_class_init(AgsScriptArrayClass *script_array);
 void ags_script_array_connectable_interface_init(AgsConnectableInterface *connectable);

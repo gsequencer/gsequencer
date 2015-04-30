@@ -18,7 +18,7 @@
 
 #include <ags/X/editor/ags_machine_selection.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 void ags_machine_selection_class_init(AgsMachineSelectionClass *machine_selection);
 void ags_machine_selection_connectable_interface_init(AgsConnectableInterface *connectable);

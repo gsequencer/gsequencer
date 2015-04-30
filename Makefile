@@ -108,15 +108,15 @@ libags_a_AR = $(AR) $(ARFLAGS)
 libags_a_LIBADD =
 am__objects_1 =
 am__objects_2 = $(am__objects_1) libags_a-ags_id_generator.$(OBJEXT)
-am__objects_3 = $(am__objects_1) libags_a-ags_connectable.$(OBJEXT) \
-	libags_a-ags_combo_box_text.$(OBJEXT) \
+am__objects_3 = $(am__objects_1) libags_a-ags_combo_box_text.$(OBJEXT) \
 	libags_a-ags_container.$(OBJEXT) libags_a-ags_list.$(OBJEXT) \
-	libags_a-ags_log.$(OBJEXT) libags_a-ags_parameter.$(OBJEXT)
+	libags_a-ags_parameter.$(OBJEXT)
 am__objects_4 = $(am__objects_1) libags_a-ags_init.$(OBJEXT) \
 	libags_a-ags_application_context.$(OBJEXT) \
 	libags_a-ags_config.$(OBJEXT) \
 	libags_a-ags_applicable.$(OBJEXT) \
 	libags_a-ags_countable.$(OBJEXT) \
+	libags_a-ags_connectable.$(OBJEXT) \
 	libags_a-ags_dynamic_connectable.$(OBJEXT) \
 	libags_a-ags_effect.$(OBJEXT) libags_a-ags_main_loop.$(OBJEXT) \
 	libags_a-ags_marshal.$(OBJEXT) libags_a-ags_mutable.$(OBJEXT) \
@@ -129,21 +129,30 @@ am__objects_4 = $(am__objects_1) libags_a-ags_init.$(OBJEXT) \
 	libags_a-ags_stackable.$(OBJEXT) \
 	libags_a-ags_tactable.$(OBJEXT) \
 	libags_a-ags_tree_iterator.$(OBJEXT)
+am__objects_5 = $(am__objects_1) libags_a-ags_log.$(OBJEXT)
+am__objects_6 = $(am__objects_1) libags_a-ags_log_task.$(OBJEXT)
+am__objects_7 = $(am__objects_1) libags_a-ags_file.$(OBJEXT) \
+	libags_a-ags_file_id_ref.$(OBJEXT) \
+	libags_a-ags_file_launch.$(OBJEXT) \
+	libags_a-ags_file_link.$(OBJEXT) \
+	libags_a-ags_file_lookup.$(OBJEXT) \
+	libags_a-ags_file_util.$(OBJEXT)
+am__objects_8 = $(am__objects_1) libags_a-ags_save_file.$(OBJEXT)
 am_libags_a_OBJECTS = $(am__objects_2) $(am__objects_3) \
-	$(am__objects_4)
+	$(am__objects_4) $(am__objects_5) $(am__objects_6) \
+	$(am__objects_7) $(am__objects_8)
 libags_a_OBJECTS = $(am_libags_a_OBJECTS)
 libags_audio_a_AR = $(AR) $(ARFLAGS)
 libags_audio_a_DEPENDENCIES = libags_thread.a libags.a
-am__objects_5 = libags_audio_a-ags_garbage_collector.$(OBJEXT) \
+am__objects_9 = libags_audio_a-ags_garbage_collector.$(OBJEXT) \
 	libags_audio_a-ags_libao.$(OBJEXT) \
 	libags_audio_a-ags_timestamp.$(OBJEXT) \
 	libags_audio_a-ags_timestamp_factory.$(OBJEXT)
-am__objects_6 = $(am__objects_5) \
+am__objects_10 = $(am__objects_9) \
 	libags_audio_a-ags_audio_init.$(OBJEXT) \
 	libags_audio_a-ags_audio_application_context.$(OBJEXT) \
 	libags_audio_a-ags_sound_provider.$(OBJEXT) \
 	libags_audio_a-ags_acceleration.$(OBJEXT) \
-	libags_audio_a-ags_playable.$(OBJEXT) \
 	libags_audio_a-ags_audio.$(OBJEXT) \
 	libags_audio_a-ags_audio_signal.$(OBJEXT) \
 	libags_audio_a-ags_automation.$(OBJEXT) \
@@ -174,18 +183,32 @@ am__objects_6 = $(am__objects_5) \
 	libags_audio_a-ags_recycling_container.$(OBJEXT) \
 	libags_audio_a-ags_recycling.$(OBJEXT) \
 	libags_audio_a-ags_synths.$(OBJEXT) \
-	libags_audio_a-ags_task.$(OBJEXT) \
 	libags_audio_a-ags_timestamp_factory.$(OBJEXT) \
 	libags_audio_a-ags_timestamp.$(OBJEXT)
-am__objects_7 = libags_audio_a-ags_audio_file_xml.$(OBJEXT)
-am__objects_8 = $(am__objects_7) \
+am__objects_11 = $(am__objects_1) \
+	libags_audio_a-ags_audio_loop.$(OBJEXT) \
+	libags_audio_a-ags_devout_thread.$(OBJEXT) \
+	libags_audio_a-ags_export_thread.$(OBJEXT) \
+	libags_audio_a-ags_iterator_thread.$(OBJEXT) \
+	libags_audio_a-ags_record_thread.$(OBJEXT) \
+	libags_audio_a-ags_recycling_thread_callbacks.$(OBJEXT) \
+	libags_audio_a-ags_recycling_thread.$(OBJEXT)
+am__objects_12 = libags_audio_a-ags_audio_file_xml.$(OBJEXT)
+am__objects_13 = $(am__objects_12) \
+	libags_audio_a-ags_audio_file_xml.$(OBJEXT) \
+	libags_audio_a-ags_playable.$(OBJEXT) \
 	libags_audio_a-ags_audio_file.$(OBJEXT) \
 	libags_audio_a-ags_ipatch.$(OBJEXT) \
 	libags_audio_a-ags_ipatch_sf2_reader.$(OBJEXT) \
 	libags_audio_a-ags_sndfile.$(OBJEXT)
-am__objects_9 = libags_audio_a-ags_add_audio.$(OBJEXT) \
+am__objects_14 = libags_audio_a-ags_add_audio.$(OBJEXT) \
 	libags_audio_a-ags_add_audio_signal.$(OBJEXT) \
 	libags_audio_a-ags_add_note.$(OBJEXT) \
+	libags_audio_a-ags_add_point_to_selection.$(OBJEXT) \
+	libags_audio_a-ags_remove_point_from_selection.$(OBJEXT) \
+	libags_audio_a-ags_add_region_to_selection.$(OBJEXT) \
+	libags_audio_a-ags_remove_region_from_selection.$(OBJEXT) \
+	libags_audio_a-ags_free_selection.$(OBJEXT) \
 	libags_audio_a-ags_add_recall_container.$(OBJEXT) \
 	libags_audio_a-ags_add_recall.$(OBJEXT) \
 	libags_audio_a-ags_append_audio.$(OBJEXT) \
@@ -209,7 +232,6 @@ am__objects_9 = libags_audio_a-ags_add_audio.$(OBJEXT) \
 	libags_audio_a-ags_remove_note.$(OBJEXT) \
 	libags_audio_a-ags_remove_recall_container.$(OBJEXT) \
 	libags_audio_a-ags_remove_recall.$(OBJEXT) \
-	libags_audio_a-ags_remove_region_from_selection.$(OBJEXT) \
 	libags_audio_a-ags_resize_audio.$(OBJEXT) \
 	libags_audio_a-ags_set_audio_channels.$(OBJEXT) \
 	libags_audio_a-ags_set_buffer_size.$(OBJEXT) \
@@ -217,13 +239,14 @@ am__objects_9 = libags_audio_a-ags_add_audio.$(OBJEXT) \
 	libags_audio_a-ags_set_output_device.$(OBJEXT) \
 	libags_audio_a-ags_set_samplerate.$(OBJEXT) \
 	libags_audio_a-ags_start_devout.$(OBJEXT) \
-	libags_audio_a-ags_unref_audio_signal.$(OBJEXT)
-am__objects_10 = $(am__objects_1) \
+	libags_audio_a-ags_unref_audio_signal.$(OBJEXT) \
+	libags_audio_a-ags_toggle_pattern_bit.$(OBJEXT)
+am__objects_15 = $(am__objects_1) \
 	libags_audio_a-ags_apply_bpm.$(OBJEXT) \
 	libags_audio_a-ags_apply_sequencer_length.$(OBJEXT) \
 	libags_audio_a-ags_apply_tact.$(OBJEXT) \
 	libags_audio_a-ags_set_muted.$(OBJEXT)
-am__objects_11 = libags_audio_a-ags_amplifier.$(OBJEXT) \
+am__objects_16 = libags_audio_a-ags_amplifier.$(OBJEXT) \
 	libags_audio_a-ags_clone_channel.$(OBJEXT) \
 	libags_audio_a-ags_clone_channel_run.$(OBJEXT) \
 	libags_audio_a-ags_echo.$(OBJEXT) \
@@ -231,7 +254,7 @@ am__objects_11 = libags_audio_a-ags_amplifier.$(OBJEXT) \
 	libags_audio_a-ags_loop_channel_run.$(OBJEXT) \
 	libags_audio_a-ags_play_note.$(OBJEXT) \
 	libags_audio_a-ags_stream.$(OBJEXT)
-am__objects_12 = $(am__objects_11) \
+am__objects_17 = $(am__objects_16) \
 	libags_audio_a-ags_buffer_audio_signal.$(OBJEXT) \
 	libags_audio_a-ags_buffer_channel.$(OBJEXT) \
 	libags_audio_a-ags_buffer_channel_run.$(OBJEXT) \
@@ -275,16 +298,16 @@ am__objects_12 = $(am__objects_11) \
 	libags_audio_a-ags_volume_channel.$(OBJEXT) \
 	libags_audio_a-ags_volume_channel_run.$(OBJEXT) \
 	libags_audio_a-ags_volume_recycling.$(OBJEXT)
-am__objects_13 = $(am__objects_1) \
+am__objects_18 = $(am__objects_1) \
 	libags_audio_a-ags_ladspa_manager.$(OBJEXT) \
 	libags_audio_a-ags_plugin_factory.$(OBJEXT)
-am_libags_audio_a_OBJECTS = $(am__objects_6) $(am__objects_8) \
-	$(am__objects_9) $(am__objects_10) $(am__objects_12) \
-	$(am__objects_13)
+am_libags_audio_a_OBJECTS = $(am__objects_10) $(am__objects_11) \
+	$(am__objects_13) $(am__objects_14) $(am__objects_15) \
+	$(am__objects_17) $(am__objects_18)
 libags_audio_a_OBJECTS = $(am_libags_audio_a_OBJECTS)
 libags_gui_a_AR = $(AR) $(ARFLAGS)
 libags_gui_a_LIBADD =
-am__objects_14 = $(am__objects_1) libags_gui_a-ags_gui_init.$(OBJEXT) \
+am__objects_19 = $(am__objects_1) libags_gui_a-ags_gui_init.$(OBJEXT) \
 	libags_gui_a-ags_cartesian.$(OBJEXT) \
 	libags_gui_a-ags_dial.$(OBJEXT) \
 	libags_gui_a-ags_expander.$(OBJEXT) \
@@ -301,43 +324,37 @@ am__objects_14 = $(am__objects_1) libags_gui_a-ags_gui_init.$(OBJEXT) \
 	libags_gui_a-ags_timebar.$(OBJEXT) \
 	libags_gui_a-ags_vindicator.$(OBJEXT) \
 	libags_gui_a-ags_waveform.$(OBJEXT)
-am_libags_gui_a_OBJECTS = $(am__objects_14)
+am_libags_gui_a_OBJECTS = $(am__objects_19)
 libags_gui_a_OBJECTS = $(am_libags_gui_a_OBJECTS)
 libags_thread_a_AR = $(AR) $(ARFLAGS)
 libags_thread_a_DEPENDENCIES = libags.a
-am__objects_15 = $(am__objects_1) \
+am__objects_20 = $(am__objects_1) \
 	libags_thread_a-ags_mutex_manager.$(OBJEXT) \
 	libags_thread_a-ags_thread_init.$(OBJEXT) \
 	libags_thread_a-ags_thread_application_context.$(OBJEXT) \
 	libags_thread_a-ags_concurrency_provider.$(OBJEXT) \
-	libags_thread_a-ags_async_queue.$(OBJEXT) \
-	libags_thread_a-ags_audio_loop.$(OBJEXT) \
 	libags_thread_a-ags_autosave_thread.$(OBJEXT) \
-	libags_thread_a-ags_devout_thread.$(OBJEXT) \
-	libags_thread_a-ags_export_thread.$(OBJEXT) \
-	libags_thread_a-ags_gui_thread.$(OBJEXT) \
-	libags_thread_a-ags_iterator_thread.$(OBJEXT) \
-	libags_thread_a-ags_record_thread.$(OBJEXT) \
-	libags_thread_a-ags_recycling_thread_callbacks.$(OBJEXT) \
-	libags_thread_a-ags_recycling_thread.$(OBJEXT) \
 	libags_thread_a-ags_returnable_thread.$(OBJEXT) \
 	libags_thread_a-ags_single_thread.$(OBJEXT) \
 	libags_thread_a-ags_task_thread.$(OBJEXT) \
+	libags_thread_a-ags_task.$(OBJEXT) \
 	libags_thread_a-ags_thread_pool.$(OBJEXT) \
 	libags_thread_a-ags_thread-posix.$(OBJEXT) \
 	libags_thread_a-ags_timestamp_thread.$(OBJEXT)
-am_libags_thread_a_OBJECTS = $(am__objects_15)
+am__objects_21 = $(am__objects_1) \
+	libags_thread_a-ags_thread_file_xml.$(OBJEXT)
+am_libags_thread_a_OBJECTS = $(am__objects_20) $(am__objects_21)
 libags_thread_a_OBJECTS = $(am_libags_thread_a_OBJECTS)
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
-am__objects_16 = gsequencer-main.$(OBJEXT)
-am__objects_17 = $(am__objects_1) gsequencer-ags_server_init.$(OBJEXT) \
+am__objects_22 = gsequencer-main.$(OBJEXT)
+am__objects_23 = $(am__objects_1) gsequencer-ags_server_init.$(OBJEXT) \
 	gsequencer-ags_server_application_context.$(OBJEXT) \
 	gsequencer-ags_service_provider.$(OBJEXT) \
 	gsequencer-ags_registry.$(OBJEXT) \
 	gsequencer-ags_remote_task.$(OBJEXT) \
 	gsequencer-ags_server.$(OBJEXT)
-am__objects_18 = $(am__objects_1) gsequencer-ags_xorg_init.$(OBJEXT) \
+am__objects_24 = $(am__objects_1) gsequencer-ags_xorg_init.$(OBJEXT) \
 	gsequencer-ags_xorg_application_context.$(OBJEXT) \
 	gsequencer-ags_audio_preferences_callbacks.$(OBJEXT) \
 	gsequencer-ags_audio_preferences.$(OBJEXT) \
@@ -403,7 +420,17 @@ am__objects_18 = $(am__objects_1) gsequencer-ags_xorg_init.$(OBJEXT) \
 	gsequencer-ags_server_preferences.$(OBJEXT) \
 	gsequencer-ags_window_callbacks.$(OBJEXT) \
 	gsequencer-ags_window.$(OBJEXT)
-am__objects_19 = $(am__objects_1) \
+am__objects_25 = $(am__objects_1) gsequencer-ags_gui_thread.$(OBJEXT)
+am__objects_26 = $(am__objects_1) \
+	gsequencer-ags_add_line_member.$(OBJEXT) \
+	gsequencer-ags_add_bulk_member.$(OBJEXT) \
+	gsequencer-ags_update_bulk_member.$(OBJEXT) \
+	gsequencer-ags_change_indicator.$(OBJEXT) \
+	gsequencer-ags_change_tact.$(OBJEXT) \
+	gsequencer-ags_display_tact.$(OBJEXT) \
+	gsequencer-ags_scroll_on_play.$(OBJEXT) \
+	gsequencer-ags_toggle_led.$(OBJEXT)
+am__objects_27 = $(am__objects_1) \
 	gsequencer-ags_drum_callbacks.$(OBJEXT) \
 	gsequencer-ags_drum.$(OBJEXT) \
 	gsequencer-ags_drum_input_line_callbacks.$(OBJEXT) \
@@ -454,7 +481,7 @@ am__objects_19 = $(am__objects_1) \
 	gsequencer-ags_synth_output_line.$(OBJEXT) \
 	gsequencer-ags_synth_output_pad_callbacks.$(OBJEXT) \
 	gsequencer-ags_synth_output_pad.$(OBJEXT)
-am__objects_20 = $(am__objects_1) \
+am__objects_28 = $(am__objects_1) \
 	gsequencer-ags_automation_area_callbacks.$(OBJEXT) \
 	gsequencer-ags_automation_area.$(OBJEXT) \
 	gsequencer-ags_automation_edit_callbacks.$(OBJEXT) \
@@ -485,32 +512,11 @@ am__objects_20 = $(am__objects_1) \
 	gsequencer-ags_soundset.$(OBJEXT) \
 	gsequencer-ags_toolbar_callbacks.$(OBJEXT) \
 	gsequencer-ags_toolbar.$(OBJEXT)
-am__objects_21 = gsequencer-ags_add_line_member.$(OBJEXT) \
-	gsequencer-ags_add_bulk_member.$(OBJEXT) \
-	gsequencer-ags_update_bulk_member.$(OBJEXT) \
-	gsequencer-ags_add_point_to_selection.$(OBJEXT) \
-	gsequencer-ags_add_region_to_selection.$(OBJEXT) \
-	gsequencer-ags_change_indicator.$(OBJEXT) \
-	gsequencer-ags_change_tact.$(OBJEXT) \
-	gsequencer-ags_display_tact.$(OBJEXT) \
-	gsequencer-ags_free_selection.$(OBJEXT) \
-	gsequencer-ags_remove_point_from_selection.$(OBJEXT) \
-	gsequencer-ags_save_file.$(OBJEXT) \
-	gsequencer-ags_scroll_on_play.$(OBJEXT) \
-	gsequencer-ags_toggle_led.$(OBJEXT) \
-	gsequencer-ags_toggle_pattern_bit.$(OBJEXT)
-am__objects_22 = $(am__objects_1) gsequencer-ags_file_gui.$(OBJEXT) \
-	gsequencer-ags_file.$(OBJEXT) \
-	gsequencer-ags_file_id_ref.$(OBJEXT) \
-	gsequencer-ags_file_launch.$(OBJEXT) \
-	gsequencer-ags_file_link.$(OBJEXT) \
-	gsequencer-ags_file_lookup.$(OBJEXT) \
-	gsequencer-ags_file_sound.$(OBJEXT) \
-	gsequencer-ags_file_thread.$(OBJEXT) \
-	gsequencer-ags_file_util.$(OBJEXT)
-am_gsequencer_OBJECTS = $(am__objects_16) $(am__objects_17) \
-	$(am__objects_18) $(am__objects_19) $(am__objects_20) \
-	$(am__objects_21) $(am__objects_22)
+am__objects_29 = $(am__objects_1) \
+	gsequencer-ags_gsequencer_file_xml.$(OBJEXT)
+am_gsequencer_OBJECTS = $(am__objects_22) $(am__objects_23) \
+	$(am__objects_24) $(am__objects_25) $(am__objects_26) \
+	$(am__objects_27) $(am__objects_28) $(am__objects_29)
 gsequencer_OBJECTS = $(am_gsequencer_OBJECTS)
 gsequencer_DEPENDENCIES = libags_audio.a libags_gui.a libags_thread.a \
 	libags.a
@@ -815,11 +821,11 @@ SUBDIRS = po \
 
 
 #
-libags_a_SOURCES = $(ags_util_c_sources) $(ags_lib_c_sources) $(ags_object_c_sources)
-libags_thread_a_SOURCES = $(ags_thread_c_sources)
-libags_audio_a_SOURCES = $(ags_audio_c_sources) $(ags_audio_file_c_sources) $(ags_audio_task_c_sources) $(ags_audio_task_recall_c_sources) $(ags_audio_recall_c_sources)  $(ags_plugin_c_sources)
+libags_a_SOURCES = $(ags_util_c_sources) $(ags_lib_c_sources) $(ags_object_c_sources) $(ags_log_c_sources) $(ags_log_task_c_sources) $(ags_file_c_sources) $(ags_file_task_c_sources)
+libags_thread_a_SOURCES = $(ags_thread_c_sources) $(ags_thread_file_c_sources)
+libags_audio_a_SOURCES = $(ags_audio_c_sources) $(ags_audio_thread_c_sources) $(ags_audio_file_c_sources) $(ags_audio_task_c_sources) $(ags_audio_task_recall_c_sources) $(ags_audio_recall_c_sources)  $(ags_plugin_c_sources)
 libags_gui_a_SOURCES = $(ags_widget_c_sources)
-gsequencer_SOURCES = $(gsequencer_main_c_sources) $(gsequencer_server_c_sources) $(gsequencer_xorg_c_sources) $(gsequencer_machine_c_sources) $(gsequencer_editor_c_sources) $(ags_xorg_task_c_sources) $(gsequencer_file_c_sources)
+gsequencer_SOURCES = $(gsequencer_main_c_sources) $(gsequencer_server_c_sources) $(gsequencer_xorg_c_sources) $(gsequencer_xorg_thread_c_sources) $(gsequencer_xorg_task_c_sources) $(gsequencer_machine_c_sources) $(gsequencer_editor_c_sources) $(ags_gsequencer_task_c_sources) $(gsequencer_file_c_sources)
 
 #
 TARGETS = gsequencer
@@ -850,21 +856,17 @@ ACLOCAL_AMFLAGS = -I m4
 deprecated_ags_lib_h_sources = 
 ags_lib_h_sources = \
 	$(deprecated_ags_lib_h_sources) \
-	src/ags-lib/object/ags_connectable.h	\
 	src/ags/lib/ags_combo_box_text.h		\
 	src/ags/lib/ags_container.h			\
-	src/ags/lib/ags_list.h			\
-	src/ags/lib/ags_log.h			\
+	src/ags/lib/ags_list.h				\
 	src/ags/lib/ags_parameter.h
 
 deprecated_ags_lib_c_sources = 
 ags_lib_c_sources = \
 	$(deprecated_ags_lib_c_sources) \
-	src/ags-lib/object/ags_connectable.c	\
 	src/ags/lib/ags_combo_box_text.c		\
 	src/ags/lib/ags_container.c			\
-	src/ags/lib/ags_list.c			\
-	src/ags/lib/ags_log.c			\
+	src/ags/lib/ags_list.c				\
 	src/ags/lib/ags_parameter.c
 
 deprecated_ags_util_h_sources = 
@@ -877,6 +879,26 @@ ags_util_c_sources = \
 	$(deprecated_ags_util_c_sources) \
 	src/ags/util/ags_id_generator.c
 
+deprecated_ags_log_h_sources = 
+ags_log_h_sources = \
+	$(deprecated_ags_log_h_sources) \
+	src/ags/log/ags_log.h
+
+deprecated_ags_log_c_sources = 
+ags_log_c_sources = \
+	$(deprecated_ags_log_c_sources) \
+	src/ags/log/ags_log.c
+
+deprecated_ags_log_task_h_sources = 
+ags_log_task_h_sources = \
+	$(deprecated_ags_log_task_h_sources) \
+	src/ags/log/task/ags_log_task.h
+
+deprecated_ags_log_task_c_sources = 
+ags_log_task_c_sources = \
+	$(deprecated_ags_log_task_c_sources) \
+	src/ags/log/task/ags_log_task.c
+
 deprecated_ags_object_h_sources = 
 ags_object_h_sources = \
 	$(deprecated_ags_object_h_sources) \
@@ -885,6 +907,7 @@ ags_object_h_sources = \
 	src/ags/object/ags_config.h			\
 	src/ags/object/ags_applicable.h			\
 	src/ags/object/ags_countable.h			\
+	src/ags/object/ags_connectable.h		\
 	src/ags/object/ags_dynamic_connectable.h	\
 	src/ags/object/ags_effect.h			\
 	src/ags/object/ags_main_loop.h			\
@@ -892,7 +915,6 @@ ags_object_h_sources = \
 	src/ags/object/ags_mutable.h			\
 	src/ags/object/ags_packable.h			\
 	src/ags/object/ags_persistable.h		\
-	src/ags/object/ags_playable.h			\
 	src/ags/object/ags_plugin.h			\
 	src/ags/object/ags_portlet.h			\
 	src/ags/object/ags_runnable.h			\
@@ -910,6 +932,7 @@ ags_object_c_sources = \
 	src/ags/object/ags_config.c			\
 	src/ags/object/ags_applicable.c			\
 	src/ags/object/ags_countable.c			\
+	src/ags/object/ags_connectable.c		\
 	src/ags/object/ags_dynamic_connectable.c	\
 	src/ags/object/ags_effect.c			\
 	src/ags/object/ags_main_loop.c			\
@@ -925,6 +948,41 @@ ags_object_c_sources = \
 	src/ags/object/ags_stackable.c			\
 	src/ags/object/ags_tactable.c			\
 	src/ags/object/ags_tree_iterator.c
+
+deprecated_ags_file_h_sources = \
+	src/ags/file/ags_file_link.h			\
+	src/ags/file/ags_file_read.h			\
+	src/ags/file/ags_file_value_factory.h		\
+	src/ags/file/ags_file_write.h 
+
+ags_file_h_sources = \
+	$(deprecated_ags_file_h_sources) \
+	src/ags/file/ags_file_stock.h		\
+	src/ags/file/ags_file.h			\
+	src/ags/file/ags_file_id_ref.h		\
+	src/ags/file/ags_file_launch.h		\
+	src/ags/file/ags_file_lookup.h		\
+	src/ags/file/ags_file_util.h
+
+deprecated_ags_file_c_sources = 
+ags_file_c_sources = \
+	$(deprecated_ags_file_c_sources) \
+	src/ags/file/ags_file.c			\
+	src/ags/file/ags_file_id_ref.c		\
+	src/ags/file/ags_file_launch.c		\
+	src/ags/file/ags_file_link.c		\
+	src/ags/file/ags_file_lookup.c		\
+	src/ags/file/ags_file_util.c
+
+deprecated_ags_file_task_h_sources = 
+ags_file_task_h_sources = \
+	$(deprecated_ags_file_task_h_sources) \
+	src/ags/file/task/ags_save_file.h
+
+deprecated_ags_file_task_c_sources = 
+ags_file_task_c_sources = \
+	$(deprecated_ags_file_task_c_sources) \
+	src/ags/file/task/ags_save_file.c
 
 deprecated_ags_plugin_h_sources = 
 ags_plugin_h_sources = \
@@ -950,19 +1008,11 @@ ags_thread_h_sources = \
 	src/ags/thread/ags_thread_init.h		\
 	src/ags/thread/ags_thread_application_context.h	\
 	src/ags/thread/ags_concurrency_provider.h	\
-	src/ags/thread/ags_async_queue.h		\
-	src/ags/thread/ags_audio_loop.h			\
 	src/ags/thread/ags_autosave_thread.h		\
-	src/ags/thread/ags_devout_thread.h		\
-	src/ags/thread/ags_export_thread.h		\
-	src/ags/thread/ags_gui_thread.h			\
-	src/ags/thread/ags_iterator_thread.h		\
-	src/ags/thread/ags_record_thread.h		\
-	src/ags/thread/ags_recycling_thread_callbacks.h \
-	src/ags/thread/ags_recycling_thread.h		\
 	src/ags/thread/ags_returnable_thread.h		\
 	src/ags/thread/ags_single_thread.h		\
 	src/ags/thread/ags_task_thread.h		\
+	src/ags/thread/ags_task.h			\
 	src/ags/thread/ags_thread_pool.h		\
 	src/ags/thread/ags_thread-posix.h		\
 	src/ags/thread/ags_timestamp_thread.h
@@ -974,22 +1024,24 @@ ags_thread_c_sources = \
 	src/ags/thread/ags_thread_init.c		\
 	src/ags/thread/ags_thread_application_context.c	\
 	src/ags/thread/ags_concurrency_provider.c	\
-	src/ags/thread/ags_async_queue.c		\
-	src/ags/thread/ags_audio_loop.c			\
 	src/ags/thread/ags_autosave_thread.c		\
-	src/ags/thread/ags_devout_thread.c		\
-	src/ags/thread/ags_export_thread.c		\
-	src/ags/thread/ags_gui_thread.c			\
-	src/ags/thread/ags_iterator_thread.c		\
-	src/ags/thread/ags_record_thread.c		\
-	src/ags/thread/ags_recycling_thread_callbacks.c \
-	src/ags/thread/ags_recycling_thread.c		\
 	src/ags/thread/ags_returnable_thread.c		\
 	src/ags/thread/ags_single_thread.c		\
 	src/ags/thread/ags_task_thread.c		\
+	src/ags/thread/ags_task.c			\
 	src/ags/thread/ags_thread_pool.c		\
 	src/ags/thread/ags_thread-posix.c		\
 	src/ags/thread/ags_timestamp_thread.c
+
+deprecated_ags_thread_file_h_sources = 
+ags_thread_file_h_sources = \
+	$(deprecated_ags_thread_file_h_sources) \
+	src/ags/file/ags_thread_file_xml.h
+
+deprecated_ags_thread_file_c_sources = 
+ags_thread_file_c_sources = \
+	$(deprecated_ags_thread_file_c_sources) \
+	src/ags/thread/file/ags_thread_file_xml.c
 
 
 # libags_gui all files
@@ -1082,7 +1134,6 @@ ags_audio_h_sources = \
 	src/ags/audio/ags_recycling_container.h \
 	src/ags/audio/ags_recycling.h		\
 	src/ags/audio/ags_synths.h		\
-	src/ags/audio/ags_task.h		\
 	src/ags/audio/ags_timestamp_factory.h	\
 	src/ags/audio/ags_timestamp.h
 
@@ -1098,7 +1149,6 @@ ags_audio_c_sources = \
 	src/ags/audio/ags_audio_application_context.c	\
 	src/ags/audio/ags_sound_provider.c	\
 	src/ags/audio/ags_acceleration.c	\
-	src/ags/object/ags_playable.c		\
 	src/ags/audio/ags_audio.c		\
 	src/ags/audio/ags_audio_signal.c	\
 	src/ags/audio/ags_automation.c		\
@@ -1129,15 +1179,36 @@ ags_audio_c_sources = \
 	src/ags/audio/ags_recycling_container.c \
 	src/ags/audio/ags_recycling.c		\
 	src/ags/audio/ags_synths.c		\
-	src/ags/audio/ags_task.c		\
 	src/ags/audio/ags_timestamp_factory.c	\
 	src/ags/audio/ags_timestamp.c
 
-deprecated_ags_audio_file_h_sources = \
-	src/ags/audio/file/ags_audio_file_xml.h	
+deprecated_ags_audio_thread_h_sources = 
+ags_audio_thread_h_sources = \
+	$(deprecated_ags_audio_thread_h_sources) \
+	src/ags/audio/thread/ags_audio_loop.h			\
+	src/ags/audio/thread/ags_devout_thread.h		\
+	src/ags/audio/thread/ags_export_thread.h		\
+	src/ags/audio/thread/ags_iterator_thread.h		\
+	src/ags/audio/thread/ags_record_thread.h		\
+	src/ags/audio/thread/ags_recycling_thread_callbacks.h \
+	src/ags/audio/thread/ags_recycling_thread.h
 
+deprecated_ags_audio_thread_c_sources = 
+ags_audio_thread_c_sources = \
+	$(deprecated_ags_audio_thread_c_sources) \
+	src/ags/audio/thread/ags_audio_loop.c			\
+	src/ags/audio/thread/ags_devout_thread.c		\
+	src/ags/audio/thread/ags_export_thread.c		\
+	src/ags/audio/thread/ags_iterator_thread.c		\
+	src/ags/audio/thread/ags_record_thread.c		\
+	src/ags/audio/thread/ags_recycling_thread_callbacks.c \
+	src/ags/audio/thread/ags_recycling_thread.c
+
+deprecated_ags_audio_file_h_sources = 
 ags_audio_file_h_sources = \
 	$(deprecated_ags_audio_file_h_sources) \
+	src/ags/audio/file/ags_audio_file_xml.h		\
+	src/ags/audio/file/ags_playable.h			\
 	src/ags/audio/file/ags_audio_file.h	\
 	src/ags/audio/file/ags_ipatch.h		\
 	src/ags/audio/file/ags_ipatch_sf2_reader.h	\
@@ -1148,6 +1219,8 @@ deprecated_ags_audio_file_c_sources = \
 
 ags_audio_file_c_sources = \
 	$(deprecated_ags_audio_file_c_sources) \
+	src/ags/audio/file/ags_audio_file_xml.c		\
+	src/ags/audio/file/ags_playable.c		\
 	src/ags/audio/file/ags_audio_file.c	\
 	src/ags/audio/file/ags_ipatch.c		\
 	src/ags/audio/file/ags_ipatch_sf2_reader.c	\
@@ -1281,56 +1354,45 @@ deprecated_ags_task_h_sources = \
 
 ags_audio_task_h_sources = \
 	$(deprecated_ags_audio_task_h_sources) \
-	src/ags/audio/task/ags_add_audio.h		\
-	src/ags/audio/task/ags_add_audio_signal.h	\
-	src/ags/audio/task/ags_add_note.h		\
-	src/ags/audio/task/ags_add_recall_container.h \
-	src/ags/audio/task/ags_add_recall.h	\
-	src/ags/audio/task/ags_append_audio.h	\
-	src/ags/audio/task/ags_append_audio_threaded.h \
-	src/ags/audio/task/ags_append_channel.h	\
-	src/ags/audio/task/ags_append_recall.h	\
-	src/ags/audio/task/ags_apply_synth.h	\
-	src/ags/audio/task/ags_audio_set_recycling.h \
-	src/ags/audio/task/ags_cancel_audio.h	\
-	src/ags/audio/task/ags_cancel_channel.h	\
-	src/ags/audio/task/ags_cancel_recall.h	\
-	src/ags/audio/task/ags_channel_set_recycling.h \
-	src/ags/audio/task/ags_export_output.h	\
-	src/ags/audio/task/ags_init_audio.h	\
-	src/ags/audio/task/ags_init_channel.h	\
-	src/ags/audio/task/ags_link_channel.h	\
-	src/ags/audio/task/ags_open_file.h		\
-	src/ags/audio/task/ags_open_single_file.h	\
-	src/ags/audio/task/ags_remove_audio.h	\
-	src/ags/audio/task/ags_remove_audio_signal.h \
-	src/ags/audio/task/ags_remove_note.h	\
-	src/ags/audio/task/ags_remove_recall_container.h \
-	src/ags/audio/task/ags_remove_recall.h	\
-	src/ags/audio/task/ags_remove_region_from_selection.h \
-	src/ags/audio/task/ags_resize_audio.h	\
-	src/ags/audio/task/ags_set_audio_channels.h \
-	src/ags/audio/task/ags_set_buffer_size.h	\
-	src/ags/audio/task/ags_set_devout_play_flags.h \
-	src/ags/audio/task/ags_set_output_device.h	\
-	src/ags/audio/task/ags_set_samplerate.h	\
-	src/ags/audio/task/ags_start_devout.h	\
-	src/ags/audio/task/ags_unref_audio_signal.h
-
-ags_xorg_task_h_sources = \
-	src/ags/audio/task/ags_add_point_to_selection.h	\
-	src/ags/audio/task/ags_add_region_to_selection.h	\
-	src/ags/audio/task/ags_add_line_member.h	\
-	src/ags/audio/task/ags_add_bulk_member.h	\
-	src/ags/audio/task/ags_update_bulk_member.h	\
-	src/ags/audio/task/ags_change_indicator.h		\
-	src/ags/audio/task/ags_change_tact.h		\
-	src/ags/audio/task/ags_display_tact.h		\
-	src/ags/audio/task/ags_free_selection.h		\
-	src/ags/audio/task/ags_remove_point_from_selection.h \
-	src/ags/audio/task/ags_save_file.h			\
-	src/ags/audio/task/ags_scroll_on_play.h		\
-	src/ags/audio/task/ags_toggle_led.h		\
+	src/ags/audio/task/ags_add_audio.h				\
+	src/ags/audio/task/ags_add_audio_signal.h			\
+	src/ags/audio/task/ags_add_note.h				\
+	src/ags/audio/task/ags_add_point_to_selection.h			\
+	src/ags/audio/task/ags_remove_point_from_selection.h 		\
+	src/ags/audio/task/ags_add_region_to_selection.h		\
+	src/ags/audio/task/ags_remove_region_from_selection.h 		\
+	src/ags/audio/task/ags_free_selection.h				\
+	src/ags/audio/task/ags_add_recall_container.h 			\
+	src/ags/audio/task/ags_add_recall.h				\
+	src/ags/audio/task/ags_append_audio.h				\
+	src/ags/audio/task/ags_append_audio_threaded.h 			\
+	src/ags/audio/task/ags_append_channel.h				\
+	src/ags/audio/task/ags_append_recall.h				\
+	src/ags/audio/task/ags_apply_synth.h				\
+	src/ags/audio/task/ags_audio_set_recycling.h 			\
+	src/ags/audio/task/ags_cancel_audio.h				\
+	src/ags/audio/task/ags_cancel_channel.h				\
+	src/ags/audio/task/ags_cancel_recall.h				\
+	src/ags/audio/task/ags_channel_set_recycling.h 			\
+	src/ags/audio/task/ags_export_output.h				\
+	src/ags/audio/task/ags_init_audio.h				\
+	src/ags/audio/task/ags_init_channel.h				\
+	src/ags/audio/task/ags_link_channel.h				\
+	src/ags/audio/task/ags_open_file.h				\
+	src/ags/audio/task/ags_open_single_file.h			\
+	src/ags/audio/task/ags_remove_audio.h				\
+	src/ags/audio/task/ags_remove_audio_signal.h 			\
+	src/ags/audio/task/ags_remove_note.h				\
+	src/ags/audio/task/ags_remove_recall_container.h 		\
+	src/ags/audio/task/ags_remove_recall.h				\
+	src/ags/audio/task/ags_resize_audio.h				\
+	src/ags/audio/task/ags_set_audio_channels.h 			\
+	src/ags/audio/task/ags_set_buffer_size.h			\
+	src/ags/audio/task/ags_set_devout_play_flags.h 			\
+	src/ags/audio/task/ags_set_output_device.h			\
+	src/ags/audio/task/ags_set_samplerate.h				\
+	src/ags/audio/task/ags_start_devout.h				\
+	src/ags/audio/task/ags_unref_audio_signal.h			\
 	src/ags/audio/task/ags_toggle_pattern_bit.h
 
 deprecated_ags_task_c_sources = \
@@ -1338,56 +1400,45 @@ deprecated_ags_task_c_sources = \
 
 ags_audio_task_c_sources = \
 	$(deprecated_ags_audio_task_c_sources) \
-	src/ags/audio/task/ags_add_audio.c		\
-	src/ags/audio/task/ags_add_audio_signal.c	\
-	src/ags/audio/task/ags_add_note.c		\
-	src/ags/audio/task/ags_add_recall_container.c \
-	src/ags/audio/task/ags_add_recall.c	\
-	src/ags/audio/task/ags_append_audio.c	\
-	src/ags/audio/task/ags_append_audio_threaded.c \
-	src/ags/audio/task/ags_append_channel.c	\
-	src/ags/audio/task/ags_append_recall.c	\
-	src/ags/audio/task/ags_apply_synth.c	\
-	src/ags/audio/task/ags_audio_set_recycling.c \
-	src/ags/audio/task/ags_cancel_audio.c	\
-	src/ags/audio/task/ags_cancel_channel.c	\
-	src/ags/audio/task/ags_cancel_recall.c	\
-	src/ags/audio/task/ags_channel_set_recycling.c \
-	src/ags/audio/task/ags_export_output.c	\
-	src/ags/audio/task/ags_init_audio.c	\
-	src/ags/audio/task/ags_init_channel.c	\
-	src/ags/audio/task/ags_link_channel.c	\
-	src/ags/audio/task/ags_open_file.c		\
-	src/ags/audio/task/ags_open_single_file.c	\
-	src/ags/audio/task/ags_remove_audio.c	\
-	src/ags/audio/task/ags_remove_audio_signal.c \
-	src/ags/audio/task/ags_remove_note.c	\
-	src/ags/audio/task/ags_remove_recall_container.c \
-	src/ags/audio/task/ags_remove_recall.c	\
-	src/ags/audio/task/ags_remove_region_from_selection.c \
-	src/ags/audio/task/ags_resize_audio.c	\
-	src/ags/audio/task/ags_set_audio_channels.c \
-	src/ags/audio/task/ags_set_buffer_size.c	\
-	src/ags/audio/task/ags_set_devout_play_flags.c \
-	src/ags/audio/task/ags_set_output_device.c	\
-	src/ags/audio/task/ags_set_samplerate.c	\
-	src/ags/audio/task/ags_start_devout.c	\
-	src/ags/audio/task/ags_unref_audio_signal.c
-
-ags_xorg_task_c_sources = \
-	src/ags/audio/task/ags_add_line_member.c	\
-	src/ags/audio/task/ags_add_bulk_member.c	\
-	src/ags/audio/task/ags_update_bulk_member.c	\
-	src/ags/audio/task/ags_add_point_to_selection.c	\
-	src/ags/audio/task/ags_add_region_to_selection.c	\
-	src/ags/audio/task/ags_change_indicator.c		\
-	src/ags/audio/task/ags_change_tact.c		\
-	src/ags/audio/task/ags_display_tact.c		\
-	src/ags/audio/task/ags_free_selection.c		\
-	src/ags/audio/task/ags_remove_point_from_selection.c \
-	src/ags/audio/task/ags_save_file.c			\
-	src/ags/audio/task/ags_scroll_on_play.c		\
-	src/ags/audio/task/ags_toggle_led.c		\
+	src/ags/audio/task/ags_add_audio.c				\
+	src/ags/audio/task/ags_add_audio_signal.c			\
+	src/ags/audio/task/ags_add_note.c				\
+	src/ags/audio/task/ags_add_point_to_selection.c			\
+	src/ags/audio/task/ags_remove_point_from_selection.c 		\
+	src/ags/audio/task/ags_add_region_to_selection.c		\
+	src/ags/audio/task/ags_remove_region_from_selection.c 		\
+	src/ags/audio/task/ags_free_selection.c				\
+	src/ags/audio/task/ags_add_recall_container.c 			\
+	src/ags/audio/task/ags_add_recall.c				\
+	src/ags/audio/task/ags_append_audio.c				\
+	src/ags/audio/task/ags_append_audio_threaded.c 			\
+	src/ags/audio/task/ags_append_channel.c				\
+	src/ags/audio/task/ags_append_recall.c				\
+	src/ags/audio/task/ags_apply_synth.c				\
+	src/ags/audio/task/ags_audio_set_recycling.c 			\
+	src/ags/audio/task/ags_cancel_audio.c				\
+	src/ags/audio/task/ags_cancel_channel.c				\
+	src/ags/audio/task/ags_cancel_recall.c				\
+	src/ags/audio/task/ags_channel_set_recycling.c 			\
+	src/ags/audio/task/ags_export_output.c				\
+	src/ags/audio/task/ags_init_audio.c				\
+	src/ags/audio/task/ags_init_channel.c				\
+	src/ags/audio/task/ags_link_channel.c				\
+	src/ags/audio/task/ags_open_file.c				\
+	src/ags/audio/task/ags_open_single_file.c			\
+	src/ags/audio/task/ags_remove_audio.c				\
+	src/ags/audio/task/ags_remove_audio_signal.c 			\
+	src/ags/audio/task/ags_remove_note.c				\
+	src/ags/audio/task/ags_remove_recall_container.c 		\
+	src/ags/audio/task/ags_remove_recall.c				\
+	src/ags/audio/task/ags_resize_audio.c				\
+	src/ags/audio/task/ags_set_audio_channels.c 			\
+	src/ags/audio/task/ags_set_buffer_size.c			\
+	src/ags/audio/task/ags_set_devout_play_flags.c 			\
+	src/ags/audio/task/ags_set_output_device.c			\
+	src/ags/audio/task/ags_set_samplerate.c				\
+	src/ags/audio/task/ags_start_devout.c				\
+	src/ags/audio/task/ags_unref_audio_signal.c			\
 	src/ags/audio/task/ags_toggle_pattern_bit.c
 
 deprecated_ags_audio_task_recall_h_sources = 
@@ -1574,6 +1625,40 @@ gsequencer_xorg_c_sources = \
 	src/ags/X/ags_window_callbacks.c		\
 	src/ags/X/ags_window.c
 
+deprecated_gsequencer_xorg_thread_h_sources = 
+gsequencer_xorg_thread_h_sources = \
+	$(deprecated_gsequencer_xorg_thread_h_sources) 	\
+	src/ags/X/thread/ags_gui_thread.h
+
+deprecated_gsequencer_xorg_thread_c_sources = 
+gsequencer_xorg_thread_c_sources = \
+	$(deprecated_gsequencer_xorg_thread_c_sources) 	\
+	src/ags/X/thread/ags_gui_thread.c
+
+deprecated_gsequencer_xorg_task_h_sources = 
+gsequencer_xorg_task_h_sources = \
+	$(deprecated_gsequencer_xorg_task_h_sources) 		\
+	src/ags/X/task/ags_add_line_member.h			\
+	src/ags/X/task/ags_add_bulk_member.h			\
+	src/ags/X/task/ags_update_bulk_member.h			\
+	src/ags/X/task/ags_change_indicator.h			\
+	src/ags/X/task/ags_change_tact.h			\
+	src/ags/X/task/ags_display_tact.h			\
+	src/ags/X/task/ags_scroll_on_play.h			\
+	src/ags/X/task/ags_toggle_led.h
+
+deprecated_gsequencer_xorg_task_c_sources = 
+gsequencer_xorg_task_c_sources = \
+	$(deprecated_gsequencer_xorg_task_c_sources) 	\
+	src/ags/X/task/ags_add_line_member.c			\
+	src/ags/X/task/ags_add_bulk_member.c			\
+	src/ags/X/task/ags_update_bulk_member.c			\
+	src/ags/X/task/ags_change_indicator.c			\
+	src/ags/X/task/ags_change_tact.c			\
+	src/ags/X/task/ags_display_tact.c			\
+	src/ags/X/task/ags_scroll_on_play.c			\
+	src/ags/X/task/ags_toggle_led.c
+
 deprecated_gsequencer_machine_h_sources = 
 gsequencer_machine_h_sources = \
 	$(deprecated_gsequencer_machine_h_sources) \
@@ -1754,32 +1839,12 @@ gsequencer_editor_c_sources = \
 deprecated_gsequencer_file_h_sources = 
 gsequencer_file_h_sources = \
 	$(deprecated_gsequencer_file_h_sources) \
-	src/ags/file/ags_file_gui.h			\
-	src/ags/file/ags_file.h			\
-	src/ags/file/ags_file_id_ref.h		\
-	src/ags/file/ags_file_launch.h		\
-	src/ags/file/ags_file_link.h			\
-	src/ags/file/ags_file_lookup.h		\
-	src/ags/file/ags_file_read.h			\
-	src/ags/file/ags_file_sound.h		\
-	src/ags/file/ags_file_stock.h		\
-	src/ags/file/ags_file_thread.h		\
-	src/ags/file/ags_file_util.h			\
-	src/ags/file/ags_file_value_factory.h	\
-	src/ags/file/ags_file_write.h
+	src/ags/X/file/ags_gsequencer_file_xml.h
 
 deprecated_gsequencer_file_c_sources = 
 gsequencer_file_c_sources = \
 	$(deprecated_gsequencer_file_c_sources) \
-	src/ags/file/ags_file_gui.c			\
-	src/ags/file/ags_file.c			\
-	src/ags/file/ags_file_id_ref.c		\
-	src/ags/file/ags_file_launch.c		\
-	src/ags/file/ags_file_link.c			\
-	src/ags/file/ags_file_lookup.c		\
-	src/ags/file/ags_file_sound.c		\
-	src/ags/file/ags_file_thread.c		\
-	src/ags/file/ags_file_util.c
+	src/ags/X/file/ags_gsequencer_file_xml.c
 
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
@@ -1920,8 +1985,6 @@ distclean-compile:
 
 include ./$(DEPDIR)/gsequencer-ags_add_bulk_member.Po
 include ./$(DEPDIR)/gsequencer-ags_add_line_member.Po
-include ./$(DEPDIR)/gsequencer-ags_add_point_to_selection.Po
-include ./$(DEPDIR)/gsequencer-ags_add_region_to_selection.Po
 include ./$(DEPDIR)/gsequencer-ags_audio_preferences.Po
 include ./$(DEPDIR)/gsequencer-ags_audio_preferences_callbacks.Po
 include ./$(DEPDIR)/gsequencer-ags_automation_area.Po
@@ -1969,20 +2032,12 @@ include ./$(DEPDIR)/gsequencer-ags_ffplayer_input_line.Po
 include ./$(DEPDIR)/gsequencer-ags_ffplayer_input_line_callbacks.Po
 include ./$(DEPDIR)/gsequencer-ags_ffplayer_input_pad.Po
 include ./$(DEPDIR)/gsequencer-ags_ffplayer_input_pad_callbacks.Po
-include ./$(DEPDIR)/gsequencer-ags_file.Po
-include ./$(DEPDIR)/gsequencer-ags_file_gui.Po
-include ./$(DEPDIR)/gsequencer-ags_file_id_ref.Po
-include ./$(DEPDIR)/gsequencer-ags_file_launch.Po
-include ./$(DEPDIR)/gsequencer-ags_file_link.Po
-include ./$(DEPDIR)/gsequencer-ags_file_lookup.Po
 include ./$(DEPDIR)/gsequencer-ags_file_selection.Po
 include ./$(DEPDIR)/gsequencer-ags_file_selection_callbacks.Po
-include ./$(DEPDIR)/gsequencer-ags_file_sound.Po
-include ./$(DEPDIR)/gsequencer-ags_file_thread.Po
-include ./$(DEPDIR)/gsequencer-ags_file_util.Po
-include ./$(DEPDIR)/gsequencer-ags_free_selection.Po
 include ./$(DEPDIR)/gsequencer-ags_generic_preferences.Po
 include ./$(DEPDIR)/gsequencer-ags_generic_preferences_callbacks.Po
+include ./$(DEPDIR)/gsequencer-ags_gsequencer_file_xml.Po
+include ./$(DEPDIR)/gsequencer-ags_gui_thread.Po
 include ./$(DEPDIR)/gsequencer-ags_inline_player.Po
 include ./$(DEPDIR)/gsequencer-ags_inline_player_callbacks.Po
 include ./$(DEPDIR)/gsequencer-ags_ladspa_bridge.Po
@@ -2058,9 +2113,7 @@ include ./$(DEPDIR)/gsequencer-ags_property_editor_callbacks.Po
 include ./$(DEPDIR)/gsequencer-ags_property_listing_editor.Po
 include ./$(DEPDIR)/gsequencer-ags_registry.Po
 include ./$(DEPDIR)/gsequencer-ags_remote_task.Po
-include ./$(DEPDIR)/gsequencer-ags_remove_point_from_selection.Po
 include ./$(DEPDIR)/gsequencer-ags_resize_editor.Po
-include ./$(DEPDIR)/gsequencer-ags_save_file.Po
 include ./$(DEPDIR)/gsequencer-ags_scroll_on_play.Po
 include ./$(DEPDIR)/gsequencer-ags_server.Po
 include ./$(DEPDIR)/gsequencer-ags_server_application_context.Po
@@ -2085,7 +2138,6 @@ include ./$(DEPDIR)/gsequencer-ags_synth_output_line_callbacks.Po
 include ./$(DEPDIR)/gsequencer-ags_synth_output_pad.Po
 include ./$(DEPDIR)/gsequencer-ags_synth_output_pad_callbacks.Po
 include ./$(DEPDIR)/gsequencer-ags_toggle_led.Po
-include ./$(DEPDIR)/gsequencer-ags_toggle_pattern_bit.Po
 include ./$(DEPDIR)/gsequencer-ags_toolbar.Po
 include ./$(DEPDIR)/gsequencer-ags_toolbar_callbacks.Po
 include ./$(DEPDIR)/gsequencer-ags_update_bulk_member.Po
@@ -2103,10 +2155,17 @@ include ./$(DEPDIR)/libags_a-ags_container.Po
 include ./$(DEPDIR)/libags_a-ags_countable.Po
 include ./$(DEPDIR)/libags_a-ags_dynamic_connectable.Po
 include ./$(DEPDIR)/libags_a-ags_effect.Po
+include ./$(DEPDIR)/libags_a-ags_file.Po
+include ./$(DEPDIR)/libags_a-ags_file_id_ref.Po
+include ./$(DEPDIR)/libags_a-ags_file_launch.Po
+include ./$(DEPDIR)/libags_a-ags_file_link.Po
+include ./$(DEPDIR)/libags_a-ags_file_lookup.Po
+include ./$(DEPDIR)/libags_a-ags_file_util.Po
 include ./$(DEPDIR)/libags_a-ags_id_generator.Po
 include ./$(DEPDIR)/libags_a-ags_init.Po
 include ./$(DEPDIR)/libags_a-ags_list.Po
 include ./$(DEPDIR)/libags_a-ags_log.Po
+include ./$(DEPDIR)/libags_a-ags_log_task.Po
 include ./$(DEPDIR)/libags_a-ags_main_loop.Po
 include ./$(DEPDIR)/libags_a-ags_marshal.Po
 include ./$(DEPDIR)/libags_a-ags_mutable.Po
@@ -2116,6 +2175,7 @@ include ./$(DEPDIR)/libags_a-ags_persistable.Po
 include ./$(DEPDIR)/libags_a-ags_plugin.Po
 include ./$(DEPDIR)/libags_a-ags_portlet.Po
 include ./$(DEPDIR)/libags_a-ags_runnable.Po
+include ./$(DEPDIR)/libags_a-ags_save_file.Po
 include ./$(DEPDIR)/libags_a-ags_seekable.Po
 include ./$(DEPDIR)/libags_a-ags_soundcard.Po
 include ./$(DEPDIR)/libags_a-ags_stackable.Po
@@ -2125,8 +2185,10 @@ include ./$(DEPDIR)/libags_audio_a-ags_acceleration.Po
 include ./$(DEPDIR)/libags_audio_a-ags_add_audio.Po
 include ./$(DEPDIR)/libags_audio_a-ags_add_audio_signal.Po
 include ./$(DEPDIR)/libags_audio_a-ags_add_note.Po
+include ./$(DEPDIR)/libags_audio_a-ags_add_point_to_selection.Po
 include ./$(DEPDIR)/libags_audio_a-ags_add_recall.Po
 include ./$(DEPDIR)/libags_audio_a-ags_add_recall_container.Po
+include ./$(DEPDIR)/libags_audio_a-ags_add_region_to_selection.Po
 include ./$(DEPDIR)/libags_audio_a-ags_amplifier.Po
 include ./$(DEPDIR)/libags_audio_a-ags_append_audio.Po
 include ./$(DEPDIR)/libags_audio_a-ags_append_audio_threaded.Po
@@ -2141,6 +2203,7 @@ include ./$(DEPDIR)/libags_audio_a-ags_audio_application_context.Po
 include ./$(DEPDIR)/libags_audio_a-ags_audio_file.Po
 include ./$(DEPDIR)/libags_audio_a-ags_audio_file_xml.Po
 include ./$(DEPDIR)/libags_audio_a-ags_audio_init.Po
+include ./$(DEPDIR)/libags_audio_a-ags_audio_loop.Po
 include ./$(DEPDIR)/libags_audio_a-ags_audio_set_recycling.Po
 include ./$(DEPDIR)/libags_audio_a-ags_audio_signal.Po
 include ./$(DEPDIR)/libags_audio_a-ags_automation.Po
@@ -2171,14 +2234,18 @@ include ./$(DEPDIR)/libags_audio_a-ags_count_beats_audio_run.Po
 include ./$(DEPDIR)/libags_audio_a-ags_delay_audio.Po
 include ./$(DEPDIR)/libags_audio_a-ags_delay_audio_run.Po
 include ./$(DEPDIR)/libags_audio_a-ags_devout.Po
+include ./$(DEPDIR)/libags_audio_a-ags_devout_thread.Po
 include ./$(DEPDIR)/libags_audio_a-ags_echo.Po
 include ./$(DEPDIR)/libags_audio_a-ags_export_output.Po
+include ./$(DEPDIR)/libags_audio_a-ags_export_thread.Po
+include ./$(DEPDIR)/libags_audio_a-ags_free_selection.Po
 include ./$(DEPDIR)/libags_audio_a-ags_garbage_collector.Po
 include ./$(DEPDIR)/libags_audio_a-ags_init_audio.Po
 include ./$(DEPDIR)/libags_audio_a-ags_init_channel.Po
 include ./$(DEPDIR)/libags_audio_a-ags_input.Po
 include ./$(DEPDIR)/libags_audio_a-ags_ipatch.Po
 include ./$(DEPDIR)/libags_audio_a-ags_ipatch_sf2_reader.Po
+include ./$(DEPDIR)/libags_audio_a-ags_iterator_thread.Po
 include ./$(DEPDIR)/libags_audio_a-ags_ladspa_manager.Po
 include ./$(DEPDIR)/libags_audio_a-ags_libao.Po
 include ./$(DEPDIR)/libags_audio_a-ags_link_channel.Po
@@ -2226,11 +2293,15 @@ include ./$(DEPDIR)/libags_audio_a-ags_recall_ladspa.Po
 include ./$(DEPDIR)/libags_audio_a-ags_recall_ladspa_run.Po
 include ./$(DEPDIR)/libags_audio_a-ags_recall_recycling.Po
 include ./$(DEPDIR)/libags_audio_a-ags_recall_recycling_dummy.Po
+include ./$(DEPDIR)/libags_audio_a-ags_record_thread.Po
 include ./$(DEPDIR)/libags_audio_a-ags_recycling.Po
 include ./$(DEPDIR)/libags_audio_a-ags_recycling_container.Po
+include ./$(DEPDIR)/libags_audio_a-ags_recycling_thread.Po
+include ./$(DEPDIR)/libags_audio_a-ags_recycling_thread_callbacks.Po
 include ./$(DEPDIR)/libags_audio_a-ags_remove_audio.Po
 include ./$(DEPDIR)/libags_audio_a-ags_remove_audio_signal.Po
 include ./$(DEPDIR)/libags_audio_a-ags_remove_note.Po
+include ./$(DEPDIR)/libags_audio_a-ags_remove_point_from_selection.Po
 include ./$(DEPDIR)/libags_audio_a-ags_remove_recall.Po
 include ./$(DEPDIR)/libags_audio_a-ags_remove_recall_container.Po
 include ./$(DEPDIR)/libags_audio_a-ags_remove_region_from_selection.Po
@@ -2250,9 +2321,9 @@ include ./$(DEPDIR)/libags_audio_a-ags_stream_channel.Po
 include ./$(DEPDIR)/libags_audio_a-ags_stream_channel_run.Po
 include ./$(DEPDIR)/libags_audio_a-ags_stream_recycling.Po
 include ./$(DEPDIR)/libags_audio_a-ags_synths.Po
-include ./$(DEPDIR)/libags_audio_a-ags_task.Po
 include ./$(DEPDIR)/libags_audio_a-ags_timestamp.Po
 include ./$(DEPDIR)/libags_audio_a-ags_timestamp_factory.Po
+include ./$(DEPDIR)/libags_audio_a-ags_toggle_pattern_bit.Po
 include ./$(DEPDIR)/libags_audio_a-ags_unref_audio_signal.Po
 include ./$(DEPDIR)/libags_audio_a-ags_volume_audio_signal.Po
 include ./$(DEPDIR)/libags_audio_a-ags_volume_channel.Po
@@ -2276,23 +2347,16 @@ include ./$(DEPDIR)/libags_gui_a-ags_table.Po
 include ./$(DEPDIR)/libags_gui_a-ags_timebar.Po
 include ./$(DEPDIR)/libags_gui_a-ags_vindicator.Po
 include ./$(DEPDIR)/libags_gui_a-ags_waveform.Po
-include ./$(DEPDIR)/libags_thread_a-ags_async_queue.Po
-include ./$(DEPDIR)/libags_thread_a-ags_audio_loop.Po
 include ./$(DEPDIR)/libags_thread_a-ags_autosave_thread.Po
 include ./$(DEPDIR)/libags_thread_a-ags_concurrency_provider.Po
-include ./$(DEPDIR)/libags_thread_a-ags_devout_thread.Po
-include ./$(DEPDIR)/libags_thread_a-ags_export_thread.Po
-include ./$(DEPDIR)/libags_thread_a-ags_gui_thread.Po
-include ./$(DEPDIR)/libags_thread_a-ags_iterator_thread.Po
 include ./$(DEPDIR)/libags_thread_a-ags_mutex_manager.Po
-include ./$(DEPDIR)/libags_thread_a-ags_record_thread.Po
-include ./$(DEPDIR)/libags_thread_a-ags_recycling_thread.Po
-include ./$(DEPDIR)/libags_thread_a-ags_recycling_thread_callbacks.Po
 include ./$(DEPDIR)/libags_thread_a-ags_returnable_thread.Po
 include ./$(DEPDIR)/libags_thread_a-ags_single_thread.Po
+include ./$(DEPDIR)/libags_thread_a-ags_task.Po
 include ./$(DEPDIR)/libags_thread_a-ags_task_thread.Po
 include ./$(DEPDIR)/libags_thread_a-ags_thread-posix.Po
 include ./$(DEPDIR)/libags_thread_a-ags_thread_application_context.Po
+include ./$(DEPDIR)/libags_thread_a-ags_thread_file_xml.Po
 include ./$(DEPDIR)/libags_thread_a-ags_thread_init.Po
 include ./$(DEPDIR)/libags_thread_a-ags_thread_pool.Po
 include ./$(DEPDIR)/libags_thread_a-ags_timestamp_thread.Po
@@ -2331,20 +2395,6 @@ libags_a-ags_id_generator.obj: src/ags/util/ags_id_generator.c
 #	$(AM_V_CC)source='src/ags/util/ags_id_generator.c' object='libags_a-ags_id_generator.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -c -o libags_a-ags_id_generator.obj `if test -f 'src/ags/util/ags_id_generator.c'; then $(CYGPATH_W) 'src/ags/util/ags_id_generator.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/util/ags_id_generator.c'; fi`
-
-libags_a-ags_connectable.o: src/ags-lib/object/ags_connectable.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -MT libags_a-ags_connectable.o -MD -MP -MF $(DEPDIR)/libags_a-ags_connectable.Tpo -c -o libags_a-ags_connectable.o `test -f 'src/ags-lib/object/ags_connectable.c' || echo '$(srcdir)/'`src/ags-lib/object/ags_connectable.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_a-ags_connectable.Tpo $(DEPDIR)/libags_a-ags_connectable.Po
-#	$(AM_V_CC)source='src/ags-lib/object/ags_connectable.c' object='libags_a-ags_connectable.o' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -c -o libags_a-ags_connectable.o `test -f 'src/ags-lib/object/ags_connectable.c' || echo '$(srcdir)/'`src/ags-lib/object/ags_connectable.c
-
-libags_a-ags_connectable.obj: src/ags-lib/object/ags_connectable.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -MT libags_a-ags_connectable.obj -MD -MP -MF $(DEPDIR)/libags_a-ags_connectable.Tpo -c -o libags_a-ags_connectable.obj `if test -f 'src/ags-lib/object/ags_connectable.c'; then $(CYGPATH_W) 'src/ags-lib/object/ags_connectable.c'; else $(CYGPATH_W) '$(srcdir)/src/ags-lib/object/ags_connectable.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_a-ags_connectable.Tpo $(DEPDIR)/libags_a-ags_connectable.Po
-#	$(AM_V_CC)source='src/ags-lib/object/ags_connectable.c' object='libags_a-ags_connectable.obj' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -c -o libags_a-ags_connectable.obj `if test -f 'src/ags-lib/object/ags_connectable.c'; then $(CYGPATH_W) 'src/ags-lib/object/ags_connectable.c'; else $(CYGPATH_W) '$(srcdir)/src/ags-lib/object/ags_connectable.c'; fi`
 
 libags_a-ags_combo_box_text.o: src/ags/lib/ags_combo_box_text.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -MT libags_a-ags_combo_box_text.o -MD -MP -MF $(DEPDIR)/libags_a-ags_combo_box_text.Tpo -c -o libags_a-ags_combo_box_text.o `test -f 'src/ags/lib/ags_combo_box_text.c' || echo '$(srcdir)/'`src/ags/lib/ags_combo_box_text.c
@@ -2387,20 +2437,6 @@ libags_a-ags_list.obj: src/ags/lib/ags_list.c
 #	$(AM_V_CC)source='src/ags/lib/ags_list.c' object='libags_a-ags_list.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -c -o libags_a-ags_list.obj `if test -f 'src/ags/lib/ags_list.c'; then $(CYGPATH_W) 'src/ags/lib/ags_list.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/lib/ags_list.c'; fi`
-
-libags_a-ags_log.o: src/ags/lib/ags_log.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -MT libags_a-ags_log.o -MD -MP -MF $(DEPDIR)/libags_a-ags_log.Tpo -c -o libags_a-ags_log.o `test -f 'src/ags/lib/ags_log.c' || echo '$(srcdir)/'`src/ags/lib/ags_log.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_a-ags_log.Tpo $(DEPDIR)/libags_a-ags_log.Po
-#	$(AM_V_CC)source='src/ags/lib/ags_log.c' object='libags_a-ags_log.o' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -c -o libags_a-ags_log.o `test -f 'src/ags/lib/ags_log.c' || echo '$(srcdir)/'`src/ags/lib/ags_log.c
-
-libags_a-ags_log.obj: src/ags/lib/ags_log.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -MT libags_a-ags_log.obj -MD -MP -MF $(DEPDIR)/libags_a-ags_log.Tpo -c -o libags_a-ags_log.obj `if test -f 'src/ags/lib/ags_log.c'; then $(CYGPATH_W) 'src/ags/lib/ags_log.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/lib/ags_log.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_a-ags_log.Tpo $(DEPDIR)/libags_a-ags_log.Po
-#	$(AM_V_CC)source='src/ags/lib/ags_log.c' object='libags_a-ags_log.obj' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -c -o libags_a-ags_log.obj `if test -f 'src/ags/lib/ags_log.c'; then $(CYGPATH_W) 'src/ags/lib/ags_log.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/lib/ags_log.c'; fi`
 
 libags_a-ags_parameter.o: src/ags/lib/ags_parameter.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -MT libags_a-ags_parameter.o -MD -MP -MF $(DEPDIR)/libags_a-ags_parameter.Tpo -c -o libags_a-ags_parameter.o `test -f 'src/ags/lib/ags_parameter.c' || echo '$(srcdir)/'`src/ags/lib/ags_parameter.c
@@ -2485,6 +2521,20 @@ libags_a-ags_countable.obj: src/ags/object/ags_countable.c
 #	$(AM_V_CC)source='src/ags/object/ags_countable.c' object='libags_a-ags_countable.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -c -o libags_a-ags_countable.obj `if test -f 'src/ags/object/ags_countable.c'; then $(CYGPATH_W) 'src/ags/object/ags_countable.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/object/ags_countable.c'; fi`
+
+libags_a-ags_connectable.o: src/ags/object/ags_connectable.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -MT libags_a-ags_connectable.o -MD -MP -MF $(DEPDIR)/libags_a-ags_connectable.Tpo -c -o libags_a-ags_connectable.o `test -f 'src/ags/object/ags_connectable.c' || echo '$(srcdir)/'`src/ags/object/ags_connectable.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_a-ags_connectable.Tpo $(DEPDIR)/libags_a-ags_connectable.Po
+#	$(AM_V_CC)source='src/ags/object/ags_connectable.c' object='libags_a-ags_connectable.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -c -o libags_a-ags_connectable.o `test -f 'src/ags/object/ags_connectable.c' || echo '$(srcdir)/'`src/ags/object/ags_connectable.c
+
+libags_a-ags_connectable.obj: src/ags/object/ags_connectable.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -MT libags_a-ags_connectable.obj -MD -MP -MF $(DEPDIR)/libags_a-ags_connectable.Tpo -c -o libags_a-ags_connectable.obj `if test -f 'src/ags/object/ags_connectable.c'; then $(CYGPATH_W) 'src/ags/object/ags_connectable.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/object/ags_connectable.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_a-ags_connectable.Tpo $(DEPDIR)/libags_a-ags_connectable.Po
+#	$(AM_V_CC)source='src/ags/object/ags_connectable.c' object='libags_a-ags_connectable.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -c -o libags_a-ags_connectable.obj `if test -f 'src/ags/object/ags_connectable.c'; then $(CYGPATH_W) 'src/ags/object/ags_connectable.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/object/ags_connectable.c'; fi`
 
 libags_a-ags_dynamic_connectable.o: src/ags/object/ags_dynamic_connectable.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -MT libags_a-ags_dynamic_connectable.o -MD -MP -MF $(DEPDIR)/libags_a-ags_dynamic_connectable.Tpo -c -o libags_a-ags_dynamic_connectable.o `test -f 'src/ags/object/ags_dynamic_connectable.c' || echo '$(srcdir)/'`src/ags/object/ags_dynamic_connectable.c
@@ -2696,6 +2746,132 @@ libags_a-ags_tree_iterator.obj: src/ags/object/ags_tree_iterator.c
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -c -o libags_a-ags_tree_iterator.obj `if test -f 'src/ags/object/ags_tree_iterator.c'; then $(CYGPATH_W) 'src/ags/object/ags_tree_iterator.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/object/ags_tree_iterator.c'; fi`
 
+libags_a-ags_log.o: src/ags/log/ags_log.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -MT libags_a-ags_log.o -MD -MP -MF $(DEPDIR)/libags_a-ags_log.Tpo -c -o libags_a-ags_log.o `test -f 'src/ags/log/ags_log.c' || echo '$(srcdir)/'`src/ags/log/ags_log.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_a-ags_log.Tpo $(DEPDIR)/libags_a-ags_log.Po
+#	$(AM_V_CC)source='src/ags/log/ags_log.c' object='libags_a-ags_log.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -c -o libags_a-ags_log.o `test -f 'src/ags/log/ags_log.c' || echo '$(srcdir)/'`src/ags/log/ags_log.c
+
+libags_a-ags_log.obj: src/ags/log/ags_log.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -MT libags_a-ags_log.obj -MD -MP -MF $(DEPDIR)/libags_a-ags_log.Tpo -c -o libags_a-ags_log.obj `if test -f 'src/ags/log/ags_log.c'; then $(CYGPATH_W) 'src/ags/log/ags_log.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/log/ags_log.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_a-ags_log.Tpo $(DEPDIR)/libags_a-ags_log.Po
+#	$(AM_V_CC)source='src/ags/log/ags_log.c' object='libags_a-ags_log.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -c -o libags_a-ags_log.obj `if test -f 'src/ags/log/ags_log.c'; then $(CYGPATH_W) 'src/ags/log/ags_log.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/log/ags_log.c'; fi`
+
+libags_a-ags_log_task.o: src/ags/log/task/ags_log_task.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -MT libags_a-ags_log_task.o -MD -MP -MF $(DEPDIR)/libags_a-ags_log_task.Tpo -c -o libags_a-ags_log_task.o `test -f 'src/ags/log/task/ags_log_task.c' || echo '$(srcdir)/'`src/ags/log/task/ags_log_task.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_a-ags_log_task.Tpo $(DEPDIR)/libags_a-ags_log_task.Po
+#	$(AM_V_CC)source='src/ags/log/task/ags_log_task.c' object='libags_a-ags_log_task.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -c -o libags_a-ags_log_task.o `test -f 'src/ags/log/task/ags_log_task.c' || echo '$(srcdir)/'`src/ags/log/task/ags_log_task.c
+
+libags_a-ags_log_task.obj: src/ags/log/task/ags_log_task.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -MT libags_a-ags_log_task.obj -MD -MP -MF $(DEPDIR)/libags_a-ags_log_task.Tpo -c -o libags_a-ags_log_task.obj `if test -f 'src/ags/log/task/ags_log_task.c'; then $(CYGPATH_W) 'src/ags/log/task/ags_log_task.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/log/task/ags_log_task.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_a-ags_log_task.Tpo $(DEPDIR)/libags_a-ags_log_task.Po
+#	$(AM_V_CC)source='src/ags/log/task/ags_log_task.c' object='libags_a-ags_log_task.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -c -o libags_a-ags_log_task.obj `if test -f 'src/ags/log/task/ags_log_task.c'; then $(CYGPATH_W) 'src/ags/log/task/ags_log_task.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/log/task/ags_log_task.c'; fi`
+
+libags_a-ags_file.o: src/ags/file/ags_file.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -MT libags_a-ags_file.o -MD -MP -MF $(DEPDIR)/libags_a-ags_file.Tpo -c -o libags_a-ags_file.o `test -f 'src/ags/file/ags_file.c' || echo '$(srcdir)/'`src/ags/file/ags_file.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_a-ags_file.Tpo $(DEPDIR)/libags_a-ags_file.Po
+#	$(AM_V_CC)source='src/ags/file/ags_file.c' object='libags_a-ags_file.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -c -o libags_a-ags_file.o `test -f 'src/ags/file/ags_file.c' || echo '$(srcdir)/'`src/ags/file/ags_file.c
+
+libags_a-ags_file.obj: src/ags/file/ags_file.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -MT libags_a-ags_file.obj -MD -MP -MF $(DEPDIR)/libags_a-ags_file.Tpo -c -o libags_a-ags_file.obj `if test -f 'src/ags/file/ags_file.c'; then $(CYGPATH_W) 'src/ags/file/ags_file.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/file/ags_file.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_a-ags_file.Tpo $(DEPDIR)/libags_a-ags_file.Po
+#	$(AM_V_CC)source='src/ags/file/ags_file.c' object='libags_a-ags_file.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -c -o libags_a-ags_file.obj `if test -f 'src/ags/file/ags_file.c'; then $(CYGPATH_W) 'src/ags/file/ags_file.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/file/ags_file.c'; fi`
+
+libags_a-ags_file_id_ref.o: src/ags/file/ags_file_id_ref.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -MT libags_a-ags_file_id_ref.o -MD -MP -MF $(DEPDIR)/libags_a-ags_file_id_ref.Tpo -c -o libags_a-ags_file_id_ref.o `test -f 'src/ags/file/ags_file_id_ref.c' || echo '$(srcdir)/'`src/ags/file/ags_file_id_ref.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_a-ags_file_id_ref.Tpo $(DEPDIR)/libags_a-ags_file_id_ref.Po
+#	$(AM_V_CC)source='src/ags/file/ags_file_id_ref.c' object='libags_a-ags_file_id_ref.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -c -o libags_a-ags_file_id_ref.o `test -f 'src/ags/file/ags_file_id_ref.c' || echo '$(srcdir)/'`src/ags/file/ags_file_id_ref.c
+
+libags_a-ags_file_id_ref.obj: src/ags/file/ags_file_id_ref.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -MT libags_a-ags_file_id_ref.obj -MD -MP -MF $(DEPDIR)/libags_a-ags_file_id_ref.Tpo -c -o libags_a-ags_file_id_ref.obj `if test -f 'src/ags/file/ags_file_id_ref.c'; then $(CYGPATH_W) 'src/ags/file/ags_file_id_ref.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/file/ags_file_id_ref.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_a-ags_file_id_ref.Tpo $(DEPDIR)/libags_a-ags_file_id_ref.Po
+#	$(AM_V_CC)source='src/ags/file/ags_file_id_ref.c' object='libags_a-ags_file_id_ref.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -c -o libags_a-ags_file_id_ref.obj `if test -f 'src/ags/file/ags_file_id_ref.c'; then $(CYGPATH_W) 'src/ags/file/ags_file_id_ref.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/file/ags_file_id_ref.c'; fi`
+
+libags_a-ags_file_launch.o: src/ags/file/ags_file_launch.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -MT libags_a-ags_file_launch.o -MD -MP -MF $(DEPDIR)/libags_a-ags_file_launch.Tpo -c -o libags_a-ags_file_launch.o `test -f 'src/ags/file/ags_file_launch.c' || echo '$(srcdir)/'`src/ags/file/ags_file_launch.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_a-ags_file_launch.Tpo $(DEPDIR)/libags_a-ags_file_launch.Po
+#	$(AM_V_CC)source='src/ags/file/ags_file_launch.c' object='libags_a-ags_file_launch.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -c -o libags_a-ags_file_launch.o `test -f 'src/ags/file/ags_file_launch.c' || echo '$(srcdir)/'`src/ags/file/ags_file_launch.c
+
+libags_a-ags_file_launch.obj: src/ags/file/ags_file_launch.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -MT libags_a-ags_file_launch.obj -MD -MP -MF $(DEPDIR)/libags_a-ags_file_launch.Tpo -c -o libags_a-ags_file_launch.obj `if test -f 'src/ags/file/ags_file_launch.c'; then $(CYGPATH_W) 'src/ags/file/ags_file_launch.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/file/ags_file_launch.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_a-ags_file_launch.Tpo $(DEPDIR)/libags_a-ags_file_launch.Po
+#	$(AM_V_CC)source='src/ags/file/ags_file_launch.c' object='libags_a-ags_file_launch.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -c -o libags_a-ags_file_launch.obj `if test -f 'src/ags/file/ags_file_launch.c'; then $(CYGPATH_W) 'src/ags/file/ags_file_launch.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/file/ags_file_launch.c'; fi`
+
+libags_a-ags_file_link.o: src/ags/file/ags_file_link.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -MT libags_a-ags_file_link.o -MD -MP -MF $(DEPDIR)/libags_a-ags_file_link.Tpo -c -o libags_a-ags_file_link.o `test -f 'src/ags/file/ags_file_link.c' || echo '$(srcdir)/'`src/ags/file/ags_file_link.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_a-ags_file_link.Tpo $(DEPDIR)/libags_a-ags_file_link.Po
+#	$(AM_V_CC)source='src/ags/file/ags_file_link.c' object='libags_a-ags_file_link.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -c -o libags_a-ags_file_link.o `test -f 'src/ags/file/ags_file_link.c' || echo '$(srcdir)/'`src/ags/file/ags_file_link.c
+
+libags_a-ags_file_link.obj: src/ags/file/ags_file_link.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -MT libags_a-ags_file_link.obj -MD -MP -MF $(DEPDIR)/libags_a-ags_file_link.Tpo -c -o libags_a-ags_file_link.obj `if test -f 'src/ags/file/ags_file_link.c'; then $(CYGPATH_W) 'src/ags/file/ags_file_link.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/file/ags_file_link.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_a-ags_file_link.Tpo $(DEPDIR)/libags_a-ags_file_link.Po
+#	$(AM_V_CC)source='src/ags/file/ags_file_link.c' object='libags_a-ags_file_link.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -c -o libags_a-ags_file_link.obj `if test -f 'src/ags/file/ags_file_link.c'; then $(CYGPATH_W) 'src/ags/file/ags_file_link.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/file/ags_file_link.c'; fi`
+
+libags_a-ags_file_lookup.o: src/ags/file/ags_file_lookup.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -MT libags_a-ags_file_lookup.o -MD -MP -MF $(DEPDIR)/libags_a-ags_file_lookup.Tpo -c -o libags_a-ags_file_lookup.o `test -f 'src/ags/file/ags_file_lookup.c' || echo '$(srcdir)/'`src/ags/file/ags_file_lookup.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_a-ags_file_lookup.Tpo $(DEPDIR)/libags_a-ags_file_lookup.Po
+#	$(AM_V_CC)source='src/ags/file/ags_file_lookup.c' object='libags_a-ags_file_lookup.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -c -o libags_a-ags_file_lookup.o `test -f 'src/ags/file/ags_file_lookup.c' || echo '$(srcdir)/'`src/ags/file/ags_file_lookup.c
+
+libags_a-ags_file_lookup.obj: src/ags/file/ags_file_lookup.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -MT libags_a-ags_file_lookup.obj -MD -MP -MF $(DEPDIR)/libags_a-ags_file_lookup.Tpo -c -o libags_a-ags_file_lookup.obj `if test -f 'src/ags/file/ags_file_lookup.c'; then $(CYGPATH_W) 'src/ags/file/ags_file_lookup.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/file/ags_file_lookup.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_a-ags_file_lookup.Tpo $(DEPDIR)/libags_a-ags_file_lookup.Po
+#	$(AM_V_CC)source='src/ags/file/ags_file_lookup.c' object='libags_a-ags_file_lookup.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -c -o libags_a-ags_file_lookup.obj `if test -f 'src/ags/file/ags_file_lookup.c'; then $(CYGPATH_W) 'src/ags/file/ags_file_lookup.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/file/ags_file_lookup.c'; fi`
+
+libags_a-ags_file_util.o: src/ags/file/ags_file_util.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -MT libags_a-ags_file_util.o -MD -MP -MF $(DEPDIR)/libags_a-ags_file_util.Tpo -c -o libags_a-ags_file_util.o `test -f 'src/ags/file/ags_file_util.c' || echo '$(srcdir)/'`src/ags/file/ags_file_util.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_a-ags_file_util.Tpo $(DEPDIR)/libags_a-ags_file_util.Po
+#	$(AM_V_CC)source='src/ags/file/ags_file_util.c' object='libags_a-ags_file_util.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -c -o libags_a-ags_file_util.o `test -f 'src/ags/file/ags_file_util.c' || echo '$(srcdir)/'`src/ags/file/ags_file_util.c
+
+libags_a-ags_file_util.obj: src/ags/file/ags_file_util.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -MT libags_a-ags_file_util.obj -MD -MP -MF $(DEPDIR)/libags_a-ags_file_util.Tpo -c -o libags_a-ags_file_util.obj `if test -f 'src/ags/file/ags_file_util.c'; then $(CYGPATH_W) 'src/ags/file/ags_file_util.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/file/ags_file_util.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_a-ags_file_util.Tpo $(DEPDIR)/libags_a-ags_file_util.Po
+#	$(AM_V_CC)source='src/ags/file/ags_file_util.c' object='libags_a-ags_file_util.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -c -o libags_a-ags_file_util.obj `if test -f 'src/ags/file/ags_file_util.c'; then $(CYGPATH_W) 'src/ags/file/ags_file_util.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/file/ags_file_util.c'; fi`
+
+libags_a-ags_save_file.o: src/ags/file/task/ags_save_file.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -MT libags_a-ags_save_file.o -MD -MP -MF $(DEPDIR)/libags_a-ags_save_file.Tpo -c -o libags_a-ags_save_file.o `test -f 'src/ags/file/task/ags_save_file.c' || echo '$(srcdir)/'`src/ags/file/task/ags_save_file.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_a-ags_save_file.Tpo $(DEPDIR)/libags_a-ags_save_file.Po
+#	$(AM_V_CC)source='src/ags/file/task/ags_save_file.c' object='libags_a-ags_save_file.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -c -o libags_a-ags_save_file.o `test -f 'src/ags/file/task/ags_save_file.c' || echo '$(srcdir)/'`src/ags/file/task/ags_save_file.c
+
+libags_a-ags_save_file.obj: src/ags/file/task/ags_save_file.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -MT libags_a-ags_save_file.obj -MD -MP -MF $(DEPDIR)/libags_a-ags_save_file.Tpo -c -o libags_a-ags_save_file.obj `if test -f 'src/ags/file/task/ags_save_file.c'; then $(CYGPATH_W) 'src/ags/file/task/ags_save_file.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/file/task/ags_save_file.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_a-ags_save_file.Tpo $(DEPDIR)/libags_a-ags_save_file.Po
+#	$(AM_V_CC)source='src/ags/file/task/ags_save_file.c' object='libags_a-ags_save_file.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -c -o libags_a-ags_save_file.obj `if test -f 'src/ags/file/task/ags_save_file.c'; then $(CYGPATH_W) 'src/ags/file/task/ags_save_file.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/file/task/ags_save_file.c'; fi`
+
 libags_audio_a-ags_garbage_collector.o: src/ags/audio/ags_garbage_collector.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -MT libags_audio_a-ags_garbage_collector.o -MD -MP -MF $(DEPDIR)/libags_audio_a-ags_garbage_collector.Tpo -c -o libags_audio_a-ags_garbage_collector.o `test -f 'src/ags/audio/ags_garbage_collector.c' || echo '$(srcdir)/'`src/ags/audio/ags_garbage_collector.c
 	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_a-ags_garbage_collector.Tpo $(DEPDIR)/libags_audio_a-ags_garbage_collector.Po
@@ -2807,20 +2983,6 @@ libags_audio_a-ags_acceleration.obj: src/ags/audio/ags_acceleration.c
 #	$(AM_V_CC)source='src/ags/audio/ags_acceleration.c' object='libags_audio_a-ags_acceleration.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -c -o libags_audio_a-ags_acceleration.obj `if test -f 'src/ags/audio/ags_acceleration.c'; then $(CYGPATH_W) 'src/ags/audio/ags_acceleration.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/ags_acceleration.c'; fi`
-
-libags_audio_a-ags_playable.o: src/ags/object/ags_playable.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -MT libags_audio_a-ags_playable.o -MD -MP -MF $(DEPDIR)/libags_audio_a-ags_playable.Tpo -c -o libags_audio_a-ags_playable.o `test -f 'src/ags/object/ags_playable.c' || echo '$(srcdir)/'`src/ags/object/ags_playable.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_a-ags_playable.Tpo $(DEPDIR)/libags_audio_a-ags_playable.Po
-#	$(AM_V_CC)source='src/ags/object/ags_playable.c' object='libags_audio_a-ags_playable.o' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -c -o libags_audio_a-ags_playable.o `test -f 'src/ags/object/ags_playable.c' || echo '$(srcdir)/'`src/ags/object/ags_playable.c
-
-libags_audio_a-ags_playable.obj: src/ags/object/ags_playable.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -MT libags_audio_a-ags_playable.obj -MD -MP -MF $(DEPDIR)/libags_audio_a-ags_playable.Tpo -c -o libags_audio_a-ags_playable.obj `if test -f 'src/ags/object/ags_playable.c'; then $(CYGPATH_W) 'src/ags/object/ags_playable.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/object/ags_playable.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_a-ags_playable.Tpo $(DEPDIR)/libags_audio_a-ags_playable.Po
-#	$(AM_V_CC)source='src/ags/object/ags_playable.c' object='libags_audio_a-ags_playable.obj' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -c -o libags_audio_a-ags_playable.obj `if test -f 'src/ags/object/ags_playable.c'; then $(CYGPATH_W) 'src/ags/object/ags_playable.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/object/ags_playable.c'; fi`
 
 libags_audio_a-ags_audio.o: src/ags/audio/ags_audio.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -MT libags_audio_a-ags_audio.o -MD -MP -MF $(DEPDIR)/libags_audio_a-ags_audio.Tpo -c -o libags_audio_a-ags_audio.o `test -f 'src/ags/audio/ags_audio.c' || echo '$(srcdir)/'`src/ags/audio/ags_audio.c
@@ -3242,19 +3404,103 @@ libags_audio_a-ags_synths.obj: src/ags/audio/ags_synths.c
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -c -o libags_audio_a-ags_synths.obj `if test -f 'src/ags/audio/ags_synths.c'; then $(CYGPATH_W) 'src/ags/audio/ags_synths.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/ags_synths.c'; fi`
 
-libags_audio_a-ags_task.o: src/ags/audio/ags_task.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -MT libags_audio_a-ags_task.o -MD -MP -MF $(DEPDIR)/libags_audio_a-ags_task.Tpo -c -o libags_audio_a-ags_task.o `test -f 'src/ags/audio/ags_task.c' || echo '$(srcdir)/'`src/ags/audio/ags_task.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_a-ags_task.Tpo $(DEPDIR)/libags_audio_a-ags_task.Po
-#	$(AM_V_CC)source='src/ags/audio/ags_task.c' object='libags_audio_a-ags_task.o' libtool=no \
+libags_audio_a-ags_audio_loop.o: src/ags/audio/thread/ags_audio_loop.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -MT libags_audio_a-ags_audio_loop.o -MD -MP -MF $(DEPDIR)/libags_audio_a-ags_audio_loop.Tpo -c -o libags_audio_a-ags_audio_loop.o `test -f 'src/ags/audio/thread/ags_audio_loop.c' || echo '$(srcdir)/'`src/ags/audio/thread/ags_audio_loop.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_a-ags_audio_loop.Tpo $(DEPDIR)/libags_audio_a-ags_audio_loop.Po
+#	$(AM_V_CC)source='src/ags/audio/thread/ags_audio_loop.c' object='libags_audio_a-ags_audio_loop.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -c -o libags_audio_a-ags_task.o `test -f 'src/ags/audio/ags_task.c' || echo '$(srcdir)/'`src/ags/audio/ags_task.c
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -c -o libags_audio_a-ags_audio_loop.o `test -f 'src/ags/audio/thread/ags_audio_loop.c' || echo '$(srcdir)/'`src/ags/audio/thread/ags_audio_loop.c
 
-libags_audio_a-ags_task.obj: src/ags/audio/ags_task.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -MT libags_audio_a-ags_task.obj -MD -MP -MF $(DEPDIR)/libags_audio_a-ags_task.Tpo -c -o libags_audio_a-ags_task.obj `if test -f 'src/ags/audio/ags_task.c'; then $(CYGPATH_W) 'src/ags/audio/ags_task.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/ags_task.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_a-ags_task.Tpo $(DEPDIR)/libags_audio_a-ags_task.Po
-#	$(AM_V_CC)source='src/ags/audio/ags_task.c' object='libags_audio_a-ags_task.obj' libtool=no \
+libags_audio_a-ags_audio_loop.obj: src/ags/audio/thread/ags_audio_loop.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -MT libags_audio_a-ags_audio_loop.obj -MD -MP -MF $(DEPDIR)/libags_audio_a-ags_audio_loop.Tpo -c -o libags_audio_a-ags_audio_loop.obj `if test -f 'src/ags/audio/thread/ags_audio_loop.c'; then $(CYGPATH_W) 'src/ags/audio/thread/ags_audio_loop.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/thread/ags_audio_loop.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_a-ags_audio_loop.Tpo $(DEPDIR)/libags_audio_a-ags_audio_loop.Po
+#	$(AM_V_CC)source='src/ags/audio/thread/ags_audio_loop.c' object='libags_audio_a-ags_audio_loop.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -c -o libags_audio_a-ags_task.obj `if test -f 'src/ags/audio/ags_task.c'; then $(CYGPATH_W) 'src/ags/audio/ags_task.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/ags_task.c'; fi`
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -c -o libags_audio_a-ags_audio_loop.obj `if test -f 'src/ags/audio/thread/ags_audio_loop.c'; then $(CYGPATH_W) 'src/ags/audio/thread/ags_audio_loop.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/thread/ags_audio_loop.c'; fi`
+
+libags_audio_a-ags_devout_thread.o: src/ags/audio/thread/ags_devout_thread.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -MT libags_audio_a-ags_devout_thread.o -MD -MP -MF $(DEPDIR)/libags_audio_a-ags_devout_thread.Tpo -c -o libags_audio_a-ags_devout_thread.o `test -f 'src/ags/audio/thread/ags_devout_thread.c' || echo '$(srcdir)/'`src/ags/audio/thread/ags_devout_thread.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_a-ags_devout_thread.Tpo $(DEPDIR)/libags_audio_a-ags_devout_thread.Po
+#	$(AM_V_CC)source='src/ags/audio/thread/ags_devout_thread.c' object='libags_audio_a-ags_devout_thread.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -c -o libags_audio_a-ags_devout_thread.o `test -f 'src/ags/audio/thread/ags_devout_thread.c' || echo '$(srcdir)/'`src/ags/audio/thread/ags_devout_thread.c
+
+libags_audio_a-ags_devout_thread.obj: src/ags/audio/thread/ags_devout_thread.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -MT libags_audio_a-ags_devout_thread.obj -MD -MP -MF $(DEPDIR)/libags_audio_a-ags_devout_thread.Tpo -c -o libags_audio_a-ags_devout_thread.obj `if test -f 'src/ags/audio/thread/ags_devout_thread.c'; then $(CYGPATH_W) 'src/ags/audio/thread/ags_devout_thread.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/thread/ags_devout_thread.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_a-ags_devout_thread.Tpo $(DEPDIR)/libags_audio_a-ags_devout_thread.Po
+#	$(AM_V_CC)source='src/ags/audio/thread/ags_devout_thread.c' object='libags_audio_a-ags_devout_thread.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -c -o libags_audio_a-ags_devout_thread.obj `if test -f 'src/ags/audio/thread/ags_devout_thread.c'; then $(CYGPATH_W) 'src/ags/audio/thread/ags_devout_thread.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/thread/ags_devout_thread.c'; fi`
+
+libags_audio_a-ags_export_thread.o: src/ags/audio/thread/ags_export_thread.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -MT libags_audio_a-ags_export_thread.o -MD -MP -MF $(DEPDIR)/libags_audio_a-ags_export_thread.Tpo -c -o libags_audio_a-ags_export_thread.o `test -f 'src/ags/audio/thread/ags_export_thread.c' || echo '$(srcdir)/'`src/ags/audio/thread/ags_export_thread.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_a-ags_export_thread.Tpo $(DEPDIR)/libags_audio_a-ags_export_thread.Po
+#	$(AM_V_CC)source='src/ags/audio/thread/ags_export_thread.c' object='libags_audio_a-ags_export_thread.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -c -o libags_audio_a-ags_export_thread.o `test -f 'src/ags/audio/thread/ags_export_thread.c' || echo '$(srcdir)/'`src/ags/audio/thread/ags_export_thread.c
+
+libags_audio_a-ags_export_thread.obj: src/ags/audio/thread/ags_export_thread.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -MT libags_audio_a-ags_export_thread.obj -MD -MP -MF $(DEPDIR)/libags_audio_a-ags_export_thread.Tpo -c -o libags_audio_a-ags_export_thread.obj `if test -f 'src/ags/audio/thread/ags_export_thread.c'; then $(CYGPATH_W) 'src/ags/audio/thread/ags_export_thread.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/thread/ags_export_thread.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_a-ags_export_thread.Tpo $(DEPDIR)/libags_audio_a-ags_export_thread.Po
+#	$(AM_V_CC)source='src/ags/audio/thread/ags_export_thread.c' object='libags_audio_a-ags_export_thread.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -c -o libags_audio_a-ags_export_thread.obj `if test -f 'src/ags/audio/thread/ags_export_thread.c'; then $(CYGPATH_W) 'src/ags/audio/thread/ags_export_thread.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/thread/ags_export_thread.c'; fi`
+
+libags_audio_a-ags_iterator_thread.o: src/ags/audio/thread/ags_iterator_thread.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -MT libags_audio_a-ags_iterator_thread.o -MD -MP -MF $(DEPDIR)/libags_audio_a-ags_iterator_thread.Tpo -c -o libags_audio_a-ags_iterator_thread.o `test -f 'src/ags/audio/thread/ags_iterator_thread.c' || echo '$(srcdir)/'`src/ags/audio/thread/ags_iterator_thread.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_a-ags_iterator_thread.Tpo $(DEPDIR)/libags_audio_a-ags_iterator_thread.Po
+#	$(AM_V_CC)source='src/ags/audio/thread/ags_iterator_thread.c' object='libags_audio_a-ags_iterator_thread.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -c -o libags_audio_a-ags_iterator_thread.o `test -f 'src/ags/audio/thread/ags_iterator_thread.c' || echo '$(srcdir)/'`src/ags/audio/thread/ags_iterator_thread.c
+
+libags_audio_a-ags_iterator_thread.obj: src/ags/audio/thread/ags_iterator_thread.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -MT libags_audio_a-ags_iterator_thread.obj -MD -MP -MF $(DEPDIR)/libags_audio_a-ags_iterator_thread.Tpo -c -o libags_audio_a-ags_iterator_thread.obj `if test -f 'src/ags/audio/thread/ags_iterator_thread.c'; then $(CYGPATH_W) 'src/ags/audio/thread/ags_iterator_thread.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/thread/ags_iterator_thread.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_a-ags_iterator_thread.Tpo $(DEPDIR)/libags_audio_a-ags_iterator_thread.Po
+#	$(AM_V_CC)source='src/ags/audio/thread/ags_iterator_thread.c' object='libags_audio_a-ags_iterator_thread.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -c -o libags_audio_a-ags_iterator_thread.obj `if test -f 'src/ags/audio/thread/ags_iterator_thread.c'; then $(CYGPATH_W) 'src/ags/audio/thread/ags_iterator_thread.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/thread/ags_iterator_thread.c'; fi`
+
+libags_audio_a-ags_record_thread.o: src/ags/audio/thread/ags_record_thread.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -MT libags_audio_a-ags_record_thread.o -MD -MP -MF $(DEPDIR)/libags_audio_a-ags_record_thread.Tpo -c -o libags_audio_a-ags_record_thread.o `test -f 'src/ags/audio/thread/ags_record_thread.c' || echo '$(srcdir)/'`src/ags/audio/thread/ags_record_thread.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_a-ags_record_thread.Tpo $(DEPDIR)/libags_audio_a-ags_record_thread.Po
+#	$(AM_V_CC)source='src/ags/audio/thread/ags_record_thread.c' object='libags_audio_a-ags_record_thread.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -c -o libags_audio_a-ags_record_thread.o `test -f 'src/ags/audio/thread/ags_record_thread.c' || echo '$(srcdir)/'`src/ags/audio/thread/ags_record_thread.c
+
+libags_audio_a-ags_record_thread.obj: src/ags/audio/thread/ags_record_thread.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -MT libags_audio_a-ags_record_thread.obj -MD -MP -MF $(DEPDIR)/libags_audio_a-ags_record_thread.Tpo -c -o libags_audio_a-ags_record_thread.obj `if test -f 'src/ags/audio/thread/ags_record_thread.c'; then $(CYGPATH_W) 'src/ags/audio/thread/ags_record_thread.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/thread/ags_record_thread.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_a-ags_record_thread.Tpo $(DEPDIR)/libags_audio_a-ags_record_thread.Po
+#	$(AM_V_CC)source='src/ags/audio/thread/ags_record_thread.c' object='libags_audio_a-ags_record_thread.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -c -o libags_audio_a-ags_record_thread.obj `if test -f 'src/ags/audio/thread/ags_record_thread.c'; then $(CYGPATH_W) 'src/ags/audio/thread/ags_record_thread.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/thread/ags_record_thread.c'; fi`
+
+libags_audio_a-ags_recycling_thread_callbacks.o: src/ags/audio/thread/ags_recycling_thread_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -MT libags_audio_a-ags_recycling_thread_callbacks.o -MD -MP -MF $(DEPDIR)/libags_audio_a-ags_recycling_thread_callbacks.Tpo -c -o libags_audio_a-ags_recycling_thread_callbacks.o `test -f 'src/ags/audio/thread/ags_recycling_thread_callbacks.c' || echo '$(srcdir)/'`src/ags/audio/thread/ags_recycling_thread_callbacks.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_a-ags_recycling_thread_callbacks.Tpo $(DEPDIR)/libags_audio_a-ags_recycling_thread_callbacks.Po
+#	$(AM_V_CC)source='src/ags/audio/thread/ags_recycling_thread_callbacks.c' object='libags_audio_a-ags_recycling_thread_callbacks.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -c -o libags_audio_a-ags_recycling_thread_callbacks.o `test -f 'src/ags/audio/thread/ags_recycling_thread_callbacks.c' || echo '$(srcdir)/'`src/ags/audio/thread/ags_recycling_thread_callbacks.c
+
+libags_audio_a-ags_recycling_thread_callbacks.obj: src/ags/audio/thread/ags_recycling_thread_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -MT libags_audio_a-ags_recycling_thread_callbacks.obj -MD -MP -MF $(DEPDIR)/libags_audio_a-ags_recycling_thread_callbacks.Tpo -c -o libags_audio_a-ags_recycling_thread_callbacks.obj `if test -f 'src/ags/audio/thread/ags_recycling_thread_callbacks.c'; then $(CYGPATH_W) 'src/ags/audio/thread/ags_recycling_thread_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/thread/ags_recycling_thread_callbacks.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_a-ags_recycling_thread_callbacks.Tpo $(DEPDIR)/libags_audio_a-ags_recycling_thread_callbacks.Po
+#	$(AM_V_CC)source='src/ags/audio/thread/ags_recycling_thread_callbacks.c' object='libags_audio_a-ags_recycling_thread_callbacks.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -c -o libags_audio_a-ags_recycling_thread_callbacks.obj `if test -f 'src/ags/audio/thread/ags_recycling_thread_callbacks.c'; then $(CYGPATH_W) 'src/ags/audio/thread/ags_recycling_thread_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/thread/ags_recycling_thread_callbacks.c'; fi`
+
+libags_audio_a-ags_recycling_thread.o: src/ags/audio/thread/ags_recycling_thread.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -MT libags_audio_a-ags_recycling_thread.o -MD -MP -MF $(DEPDIR)/libags_audio_a-ags_recycling_thread.Tpo -c -o libags_audio_a-ags_recycling_thread.o `test -f 'src/ags/audio/thread/ags_recycling_thread.c' || echo '$(srcdir)/'`src/ags/audio/thread/ags_recycling_thread.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_a-ags_recycling_thread.Tpo $(DEPDIR)/libags_audio_a-ags_recycling_thread.Po
+#	$(AM_V_CC)source='src/ags/audio/thread/ags_recycling_thread.c' object='libags_audio_a-ags_recycling_thread.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -c -o libags_audio_a-ags_recycling_thread.o `test -f 'src/ags/audio/thread/ags_recycling_thread.c' || echo '$(srcdir)/'`src/ags/audio/thread/ags_recycling_thread.c
+
+libags_audio_a-ags_recycling_thread.obj: src/ags/audio/thread/ags_recycling_thread.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -MT libags_audio_a-ags_recycling_thread.obj -MD -MP -MF $(DEPDIR)/libags_audio_a-ags_recycling_thread.Tpo -c -o libags_audio_a-ags_recycling_thread.obj `if test -f 'src/ags/audio/thread/ags_recycling_thread.c'; then $(CYGPATH_W) 'src/ags/audio/thread/ags_recycling_thread.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/thread/ags_recycling_thread.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_a-ags_recycling_thread.Tpo $(DEPDIR)/libags_audio_a-ags_recycling_thread.Po
+#	$(AM_V_CC)source='src/ags/audio/thread/ags_recycling_thread.c' object='libags_audio_a-ags_recycling_thread.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -c -o libags_audio_a-ags_recycling_thread.obj `if test -f 'src/ags/audio/thread/ags_recycling_thread.c'; then $(CYGPATH_W) 'src/ags/audio/thread/ags_recycling_thread.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/thread/ags_recycling_thread.c'; fi`
 
 libags_audio_a-ags_audio_file_xml.o: src/ags/audio/file/ags_audio_file_xml.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -MT libags_audio_a-ags_audio_file_xml.o -MD -MP -MF $(DEPDIR)/libags_audio_a-ags_audio_file_xml.Tpo -c -o libags_audio_a-ags_audio_file_xml.o `test -f 'src/ags/audio/file/ags_audio_file_xml.c' || echo '$(srcdir)/'`src/ags/audio/file/ags_audio_file_xml.c
@@ -3269,6 +3515,20 @@ libags_audio_a-ags_audio_file_xml.obj: src/ags/audio/file/ags_audio_file_xml.c
 #	$(AM_V_CC)source='src/ags/audio/file/ags_audio_file_xml.c' object='libags_audio_a-ags_audio_file_xml.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -c -o libags_audio_a-ags_audio_file_xml.obj `if test -f 'src/ags/audio/file/ags_audio_file_xml.c'; then $(CYGPATH_W) 'src/ags/audio/file/ags_audio_file_xml.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/file/ags_audio_file_xml.c'; fi`
+
+libags_audio_a-ags_playable.o: src/ags/audio/file/ags_playable.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -MT libags_audio_a-ags_playable.o -MD -MP -MF $(DEPDIR)/libags_audio_a-ags_playable.Tpo -c -o libags_audio_a-ags_playable.o `test -f 'src/ags/audio/file/ags_playable.c' || echo '$(srcdir)/'`src/ags/audio/file/ags_playable.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_a-ags_playable.Tpo $(DEPDIR)/libags_audio_a-ags_playable.Po
+#	$(AM_V_CC)source='src/ags/audio/file/ags_playable.c' object='libags_audio_a-ags_playable.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -c -o libags_audio_a-ags_playable.o `test -f 'src/ags/audio/file/ags_playable.c' || echo '$(srcdir)/'`src/ags/audio/file/ags_playable.c
+
+libags_audio_a-ags_playable.obj: src/ags/audio/file/ags_playable.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -MT libags_audio_a-ags_playable.obj -MD -MP -MF $(DEPDIR)/libags_audio_a-ags_playable.Tpo -c -o libags_audio_a-ags_playable.obj `if test -f 'src/ags/audio/file/ags_playable.c'; then $(CYGPATH_W) 'src/ags/audio/file/ags_playable.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/file/ags_playable.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_a-ags_playable.Tpo $(DEPDIR)/libags_audio_a-ags_playable.Po
+#	$(AM_V_CC)source='src/ags/audio/file/ags_playable.c' object='libags_audio_a-ags_playable.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -c -o libags_audio_a-ags_playable.obj `if test -f 'src/ags/audio/file/ags_playable.c'; then $(CYGPATH_W) 'src/ags/audio/file/ags_playable.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/file/ags_playable.c'; fi`
 
 libags_audio_a-ags_audio_file.o: src/ags/audio/file/ags_audio_file.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -MT libags_audio_a-ags_audio_file.o -MD -MP -MF $(DEPDIR)/libags_audio_a-ags_audio_file.Tpo -c -o libags_audio_a-ags_audio_file.o `test -f 'src/ags/audio/file/ags_audio_file.c' || echo '$(srcdir)/'`src/ags/audio/file/ags_audio_file.c
@@ -3367,6 +3627,76 @@ libags_audio_a-ags_add_note.obj: src/ags/audio/task/ags_add_note.c
 #	$(AM_V_CC)source='src/ags/audio/task/ags_add_note.c' object='libags_audio_a-ags_add_note.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -c -o libags_audio_a-ags_add_note.obj `if test -f 'src/ags/audio/task/ags_add_note.c'; then $(CYGPATH_W) 'src/ags/audio/task/ags_add_note.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/task/ags_add_note.c'; fi`
+
+libags_audio_a-ags_add_point_to_selection.o: src/ags/audio/task/ags_add_point_to_selection.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -MT libags_audio_a-ags_add_point_to_selection.o -MD -MP -MF $(DEPDIR)/libags_audio_a-ags_add_point_to_selection.Tpo -c -o libags_audio_a-ags_add_point_to_selection.o `test -f 'src/ags/audio/task/ags_add_point_to_selection.c' || echo '$(srcdir)/'`src/ags/audio/task/ags_add_point_to_selection.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_a-ags_add_point_to_selection.Tpo $(DEPDIR)/libags_audio_a-ags_add_point_to_selection.Po
+#	$(AM_V_CC)source='src/ags/audio/task/ags_add_point_to_selection.c' object='libags_audio_a-ags_add_point_to_selection.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -c -o libags_audio_a-ags_add_point_to_selection.o `test -f 'src/ags/audio/task/ags_add_point_to_selection.c' || echo '$(srcdir)/'`src/ags/audio/task/ags_add_point_to_selection.c
+
+libags_audio_a-ags_add_point_to_selection.obj: src/ags/audio/task/ags_add_point_to_selection.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -MT libags_audio_a-ags_add_point_to_selection.obj -MD -MP -MF $(DEPDIR)/libags_audio_a-ags_add_point_to_selection.Tpo -c -o libags_audio_a-ags_add_point_to_selection.obj `if test -f 'src/ags/audio/task/ags_add_point_to_selection.c'; then $(CYGPATH_W) 'src/ags/audio/task/ags_add_point_to_selection.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/task/ags_add_point_to_selection.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_a-ags_add_point_to_selection.Tpo $(DEPDIR)/libags_audio_a-ags_add_point_to_selection.Po
+#	$(AM_V_CC)source='src/ags/audio/task/ags_add_point_to_selection.c' object='libags_audio_a-ags_add_point_to_selection.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -c -o libags_audio_a-ags_add_point_to_selection.obj `if test -f 'src/ags/audio/task/ags_add_point_to_selection.c'; then $(CYGPATH_W) 'src/ags/audio/task/ags_add_point_to_selection.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/task/ags_add_point_to_selection.c'; fi`
+
+libags_audio_a-ags_remove_point_from_selection.o: src/ags/audio/task/ags_remove_point_from_selection.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -MT libags_audio_a-ags_remove_point_from_selection.o -MD -MP -MF $(DEPDIR)/libags_audio_a-ags_remove_point_from_selection.Tpo -c -o libags_audio_a-ags_remove_point_from_selection.o `test -f 'src/ags/audio/task/ags_remove_point_from_selection.c' || echo '$(srcdir)/'`src/ags/audio/task/ags_remove_point_from_selection.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_a-ags_remove_point_from_selection.Tpo $(DEPDIR)/libags_audio_a-ags_remove_point_from_selection.Po
+#	$(AM_V_CC)source='src/ags/audio/task/ags_remove_point_from_selection.c' object='libags_audio_a-ags_remove_point_from_selection.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -c -o libags_audio_a-ags_remove_point_from_selection.o `test -f 'src/ags/audio/task/ags_remove_point_from_selection.c' || echo '$(srcdir)/'`src/ags/audio/task/ags_remove_point_from_selection.c
+
+libags_audio_a-ags_remove_point_from_selection.obj: src/ags/audio/task/ags_remove_point_from_selection.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -MT libags_audio_a-ags_remove_point_from_selection.obj -MD -MP -MF $(DEPDIR)/libags_audio_a-ags_remove_point_from_selection.Tpo -c -o libags_audio_a-ags_remove_point_from_selection.obj `if test -f 'src/ags/audio/task/ags_remove_point_from_selection.c'; then $(CYGPATH_W) 'src/ags/audio/task/ags_remove_point_from_selection.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/task/ags_remove_point_from_selection.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_a-ags_remove_point_from_selection.Tpo $(DEPDIR)/libags_audio_a-ags_remove_point_from_selection.Po
+#	$(AM_V_CC)source='src/ags/audio/task/ags_remove_point_from_selection.c' object='libags_audio_a-ags_remove_point_from_selection.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -c -o libags_audio_a-ags_remove_point_from_selection.obj `if test -f 'src/ags/audio/task/ags_remove_point_from_selection.c'; then $(CYGPATH_W) 'src/ags/audio/task/ags_remove_point_from_selection.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/task/ags_remove_point_from_selection.c'; fi`
+
+libags_audio_a-ags_add_region_to_selection.o: src/ags/audio/task/ags_add_region_to_selection.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -MT libags_audio_a-ags_add_region_to_selection.o -MD -MP -MF $(DEPDIR)/libags_audio_a-ags_add_region_to_selection.Tpo -c -o libags_audio_a-ags_add_region_to_selection.o `test -f 'src/ags/audio/task/ags_add_region_to_selection.c' || echo '$(srcdir)/'`src/ags/audio/task/ags_add_region_to_selection.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_a-ags_add_region_to_selection.Tpo $(DEPDIR)/libags_audio_a-ags_add_region_to_selection.Po
+#	$(AM_V_CC)source='src/ags/audio/task/ags_add_region_to_selection.c' object='libags_audio_a-ags_add_region_to_selection.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -c -o libags_audio_a-ags_add_region_to_selection.o `test -f 'src/ags/audio/task/ags_add_region_to_selection.c' || echo '$(srcdir)/'`src/ags/audio/task/ags_add_region_to_selection.c
+
+libags_audio_a-ags_add_region_to_selection.obj: src/ags/audio/task/ags_add_region_to_selection.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -MT libags_audio_a-ags_add_region_to_selection.obj -MD -MP -MF $(DEPDIR)/libags_audio_a-ags_add_region_to_selection.Tpo -c -o libags_audio_a-ags_add_region_to_selection.obj `if test -f 'src/ags/audio/task/ags_add_region_to_selection.c'; then $(CYGPATH_W) 'src/ags/audio/task/ags_add_region_to_selection.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/task/ags_add_region_to_selection.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_a-ags_add_region_to_selection.Tpo $(DEPDIR)/libags_audio_a-ags_add_region_to_selection.Po
+#	$(AM_V_CC)source='src/ags/audio/task/ags_add_region_to_selection.c' object='libags_audio_a-ags_add_region_to_selection.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -c -o libags_audio_a-ags_add_region_to_selection.obj `if test -f 'src/ags/audio/task/ags_add_region_to_selection.c'; then $(CYGPATH_W) 'src/ags/audio/task/ags_add_region_to_selection.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/task/ags_add_region_to_selection.c'; fi`
+
+libags_audio_a-ags_remove_region_from_selection.o: src/ags/audio/task/ags_remove_region_from_selection.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -MT libags_audio_a-ags_remove_region_from_selection.o -MD -MP -MF $(DEPDIR)/libags_audio_a-ags_remove_region_from_selection.Tpo -c -o libags_audio_a-ags_remove_region_from_selection.o `test -f 'src/ags/audio/task/ags_remove_region_from_selection.c' || echo '$(srcdir)/'`src/ags/audio/task/ags_remove_region_from_selection.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_a-ags_remove_region_from_selection.Tpo $(DEPDIR)/libags_audio_a-ags_remove_region_from_selection.Po
+#	$(AM_V_CC)source='src/ags/audio/task/ags_remove_region_from_selection.c' object='libags_audio_a-ags_remove_region_from_selection.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -c -o libags_audio_a-ags_remove_region_from_selection.o `test -f 'src/ags/audio/task/ags_remove_region_from_selection.c' || echo '$(srcdir)/'`src/ags/audio/task/ags_remove_region_from_selection.c
+
+libags_audio_a-ags_remove_region_from_selection.obj: src/ags/audio/task/ags_remove_region_from_selection.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -MT libags_audio_a-ags_remove_region_from_selection.obj -MD -MP -MF $(DEPDIR)/libags_audio_a-ags_remove_region_from_selection.Tpo -c -o libags_audio_a-ags_remove_region_from_selection.obj `if test -f 'src/ags/audio/task/ags_remove_region_from_selection.c'; then $(CYGPATH_W) 'src/ags/audio/task/ags_remove_region_from_selection.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/task/ags_remove_region_from_selection.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_a-ags_remove_region_from_selection.Tpo $(DEPDIR)/libags_audio_a-ags_remove_region_from_selection.Po
+#	$(AM_V_CC)source='src/ags/audio/task/ags_remove_region_from_selection.c' object='libags_audio_a-ags_remove_region_from_selection.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -c -o libags_audio_a-ags_remove_region_from_selection.obj `if test -f 'src/ags/audio/task/ags_remove_region_from_selection.c'; then $(CYGPATH_W) 'src/ags/audio/task/ags_remove_region_from_selection.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/task/ags_remove_region_from_selection.c'; fi`
+
+libags_audio_a-ags_free_selection.o: src/ags/audio/task/ags_free_selection.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -MT libags_audio_a-ags_free_selection.o -MD -MP -MF $(DEPDIR)/libags_audio_a-ags_free_selection.Tpo -c -o libags_audio_a-ags_free_selection.o `test -f 'src/ags/audio/task/ags_free_selection.c' || echo '$(srcdir)/'`src/ags/audio/task/ags_free_selection.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_a-ags_free_selection.Tpo $(DEPDIR)/libags_audio_a-ags_free_selection.Po
+#	$(AM_V_CC)source='src/ags/audio/task/ags_free_selection.c' object='libags_audio_a-ags_free_selection.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -c -o libags_audio_a-ags_free_selection.o `test -f 'src/ags/audio/task/ags_free_selection.c' || echo '$(srcdir)/'`src/ags/audio/task/ags_free_selection.c
+
+libags_audio_a-ags_free_selection.obj: src/ags/audio/task/ags_free_selection.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -MT libags_audio_a-ags_free_selection.obj -MD -MP -MF $(DEPDIR)/libags_audio_a-ags_free_selection.Tpo -c -o libags_audio_a-ags_free_selection.obj `if test -f 'src/ags/audio/task/ags_free_selection.c'; then $(CYGPATH_W) 'src/ags/audio/task/ags_free_selection.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/task/ags_free_selection.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_a-ags_free_selection.Tpo $(DEPDIR)/libags_audio_a-ags_free_selection.Po
+#	$(AM_V_CC)source='src/ags/audio/task/ags_free_selection.c' object='libags_audio_a-ags_free_selection.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -c -o libags_audio_a-ags_free_selection.obj `if test -f 'src/ags/audio/task/ags_free_selection.c'; then $(CYGPATH_W) 'src/ags/audio/task/ags_free_selection.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/task/ags_free_selection.c'; fi`
 
 libags_audio_a-ags_add_recall_container.o: src/ags/audio/task/ags_add_recall_container.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -MT libags_audio_a-ags_add_recall_container.o -MD -MP -MF $(DEPDIR)/libags_audio_a-ags_add_recall_container.Tpo -c -o libags_audio_a-ags_add_recall_container.o `test -f 'src/ags/audio/task/ags_add_recall_container.c' || echo '$(srcdir)/'`src/ags/audio/task/ags_add_recall_container.c
@@ -3690,20 +4020,6 @@ libags_audio_a-ags_remove_recall.obj: src/ags/audio/task/ags_remove_recall.c
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -c -o libags_audio_a-ags_remove_recall.obj `if test -f 'src/ags/audio/task/ags_remove_recall.c'; then $(CYGPATH_W) 'src/ags/audio/task/ags_remove_recall.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/task/ags_remove_recall.c'; fi`
 
-libags_audio_a-ags_remove_region_from_selection.o: src/ags/audio/task/ags_remove_region_from_selection.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -MT libags_audio_a-ags_remove_region_from_selection.o -MD -MP -MF $(DEPDIR)/libags_audio_a-ags_remove_region_from_selection.Tpo -c -o libags_audio_a-ags_remove_region_from_selection.o `test -f 'src/ags/audio/task/ags_remove_region_from_selection.c' || echo '$(srcdir)/'`src/ags/audio/task/ags_remove_region_from_selection.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_a-ags_remove_region_from_selection.Tpo $(DEPDIR)/libags_audio_a-ags_remove_region_from_selection.Po
-#	$(AM_V_CC)source='src/ags/audio/task/ags_remove_region_from_selection.c' object='libags_audio_a-ags_remove_region_from_selection.o' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -c -o libags_audio_a-ags_remove_region_from_selection.o `test -f 'src/ags/audio/task/ags_remove_region_from_selection.c' || echo '$(srcdir)/'`src/ags/audio/task/ags_remove_region_from_selection.c
-
-libags_audio_a-ags_remove_region_from_selection.obj: src/ags/audio/task/ags_remove_region_from_selection.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -MT libags_audio_a-ags_remove_region_from_selection.obj -MD -MP -MF $(DEPDIR)/libags_audio_a-ags_remove_region_from_selection.Tpo -c -o libags_audio_a-ags_remove_region_from_selection.obj `if test -f 'src/ags/audio/task/ags_remove_region_from_selection.c'; then $(CYGPATH_W) 'src/ags/audio/task/ags_remove_region_from_selection.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/task/ags_remove_region_from_selection.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_a-ags_remove_region_from_selection.Tpo $(DEPDIR)/libags_audio_a-ags_remove_region_from_selection.Po
-#	$(AM_V_CC)source='src/ags/audio/task/ags_remove_region_from_selection.c' object='libags_audio_a-ags_remove_region_from_selection.obj' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -c -o libags_audio_a-ags_remove_region_from_selection.obj `if test -f 'src/ags/audio/task/ags_remove_region_from_selection.c'; then $(CYGPATH_W) 'src/ags/audio/task/ags_remove_region_from_selection.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/task/ags_remove_region_from_selection.c'; fi`
-
 libags_audio_a-ags_resize_audio.o: src/ags/audio/task/ags_resize_audio.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -MT libags_audio_a-ags_resize_audio.o -MD -MP -MF $(DEPDIR)/libags_audio_a-ags_resize_audio.Tpo -c -o libags_audio_a-ags_resize_audio.o `test -f 'src/ags/audio/task/ags_resize_audio.c' || echo '$(srcdir)/'`src/ags/audio/task/ags_resize_audio.c
 	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_a-ags_resize_audio.Tpo $(DEPDIR)/libags_audio_a-ags_resize_audio.Po
@@ -3815,6 +4131,20 @@ libags_audio_a-ags_unref_audio_signal.obj: src/ags/audio/task/ags_unref_audio_si
 #	$(AM_V_CC)source='src/ags/audio/task/ags_unref_audio_signal.c' object='libags_audio_a-ags_unref_audio_signal.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -c -o libags_audio_a-ags_unref_audio_signal.obj `if test -f 'src/ags/audio/task/ags_unref_audio_signal.c'; then $(CYGPATH_W) 'src/ags/audio/task/ags_unref_audio_signal.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/task/ags_unref_audio_signal.c'; fi`
+
+libags_audio_a-ags_toggle_pattern_bit.o: src/ags/audio/task/ags_toggle_pattern_bit.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -MT libags_audio_a-ags_toggle_pattern_bit.o -MD -MP -MF $(DEPDIR)/libags_audio_a-ags_toggle_pattern_bit.Tpo -c -o libags_audio_a-ags_toggle_pattern_bit.o `test -f 'src/ags/audio/task/ags_toggle_pattern_bit.c' || echo '$(srcdir)/'`src/ags/audio/task/ags_toggle_pattern_bit.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_a-ags_toggle_pattern_bit.Tpo $(DEPDIR)/libags_audio_a-ags_toggle_pattern_bit.Po
+#	$(AM_V_CC)source='src/ags/audio/task/ags_toggle_pattern_bit.c' object='libags_audio_a-ags_toggle_pattern_bit.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -c -o libags_audio_a-ags_toggle_pattern_bit.o `test -f 'src/ags/audio/task/ags_toggle_pattern_bit.c' || echo '$(srcdir)/'`src/ags/audio/task/ags_toggle_pattern_bit.c
+
+libags_audio_a-ags_toggle_pattern_bit.obj: src/ags/audio/task/ags_toggle_pattern_bit.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -MT libags_audio_a-ags_toggle_pattern_bit.obj -MD -MP -MF $(DEPDIR)/libags_audio_a-ags_toggle_pattern_bit.Tpo -c -o libags_audio_a-ags_toggle_pattern_bit.obj `if test -f 'src/ags/audio/task/ags_toggle_pattern_bit.c'; then $(CYGPATH_W) 'src/ags/audio/task/ags_toggle_pattern_bit.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/task/ags_toggle_pattern_bit.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_a-ags_toggle_pattern_bit.Tpo $(DEPDIR)/libags_audio_a-ags_toggle_pattern_bit.Po
+#	$(AM_V_CC)source='src/ags/audio/task/ags_toggle_pattern_bit.c' object='libags_audio_a-ags_toggle_pattern_bit.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -c -o libags_audio_a-ags_toggle_pattern_bit.obj `if test -f 'src/ags/audio/task/ags_toggle_pattern_bit.c'; then $(CYGPATH_W) 'src/ags/audio/task/ags_toggle_pattern_bit.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/task/ags_toggle_pattern_bit.c'; fi`
 
 libags_audio_a-ags_apply_bpm.o: src/ags/audio/task/recall/ags_apply_bpm.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -MT libags_audio_a-ags_apply_bpm.o -MD -MP -MF $(DEPDIR)/libags_audio_a-ags_apply_bpm.Tpo -c -o libags_audio_a-ags_apply_bpm.o `test -f 'src/ags/audio/task/recall/ags_apply_bpm.c' || echo '$(srcdir)/'`src/ags/audio/task/recall/ags_apply_bpm.c
@@ -4922,34 +5252,6 @@ libags_thread_a-ags_concurrency_provider.obj: src/ags/thread/ags_concurrency_pro
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -c -o libags_thread_a-ags_concurrency_provider.obj `if test -f 'src/ags/thread/ags_concurrency_provider.c'; then $(CYGPATH_W) 'src/ags/thread/ags_concurrency_provider.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/thread/ags_concurrency_provider.c'; fi`
 
-libags_thread_a-ags_async_queue.o: src/ags/thread/ags_async_queue.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -MT libags_thread_a-ags_async_queue.o -MD -MP -MF $(DEPDIR)/libags_thread_a-ags_async_queue.Tpo -c -o libags_thread_a-ags_async_queue.o `test -f 'src/ags/thread/ags_async_queue.c' || echo '$(srcdir)/'`src/ags/thread/ags_async_queue.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_thread_a-ags_async_queue.Tpo $(DEPDIR)/libags_thread_a-ags_async_queue.Po
-#	$(AM_V_CC)source='src/ags/thread/ags_async_queue.c' object='libags_thread_a-ags_async_queue.o' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -c -o libags_thread_a-ags_async_queue.o `test -f 'src/ags/thread/ags_async_queue.c' || echo '$(srcdir)/'`src/ags/thread/ags_async_queue.c
-
-libags_thread_a-ags_async_queue.obj: src/ags/thread/ags_async_queue.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -MT libags_thread_a-ags_async_queue.obj -MD -MP -MF $(DEPDIR)/libags_thread_a-ags_async_queue.Tpo -c -o libags_thread_a-ags_async_queue.obj `if test -f 'src/ags/thread/ags_async_queue.c'; then $(CYGPATH_W) 'src/ags/thread/ags_async_queue.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/thread/ags_async_queue.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_thread_a-ags_async_queue.Tpo $(DEPDIR)/libags_thread_a-ags_async_queue.Po
-#	$(AM_V_CC)source='src/ags/thread/ags_async_queue.c' object='libags_thread_a-ags_async_queue.obj' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -c -o libags_thread_a-ags_async_queue.obj `if test -f 'src/ags/thread/ags_async_queue.c'; then $(CYGPATH_W) 'src/ags/thread/ags_async_queue.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/thread/ags_async_queue.c'; fi`
-
-libags_thread_a-ags_audio_loop.o: src/ags/thread/ags_audio_loop.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -MT libags_thread_a-ags_audio_loop.o -MD -MP -MF $(DEPDIR)/libags_thread_a-ags_audio_loop.Tpo -c -o libags_thread_a-ags_audio_loop.o `test -f 'src/ags/thread/ags_audio_loop.c' || echo '$(srcdir)/'`src/ags/thread/ags_audio_loop.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_thread_a-ags_audio_loop.Tpo $(DEPDIR)/libags_thread_a-ags_audio_loop.Po
-#	$(AM_V_CC)source='src/ags/thread/ags_audio_loop.c' object='libags_thread_a-ags_audio_loop.o' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -c -o libags_thread_a-ags_audio_loop.o `test -f 'src/ags/thread/ags_audio_loop.c' || echo '$(srcdir)/'`src/ags/thread/ags_audio_loop.c
-
-libags_thread_a-ags_audio_loop.obj: src/ags/thread/ags_audio_loop.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -MT libags_thread_a-ags_audio_loop.obj -MD -MP -MF $(DEPDIR)/libags_thread_a-ags_audio_loop.Tpo -c -o libags_thread_a-ags_audio_loop.obj `if test -f 'src/ags/thread/ags_audio_loop.c'; then $(CYGPATH_W) 'src/ags/thread/ags_audio_loop.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/thread/ags_audio_loop.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_thread_a-ags_audio_loop.Tpo $(DEPDIR)/libags_thread_a-ags_audio_loop.Po
-#	$(AM_V_CC)source='src/ags/thread/ags_audio_loop.c' object='libags_thread_a-ags_audio_loop.obj' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -c -o libags_thread_a-ags_audio_loop.obj `if test -f 'src/ags/thread/ags_audio_loop.c'; then $(CYGPATH_W) 'src/ags/thread/ags_audio_loop.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/thread/ags_audio_loop.c'; fi`
-
 libags_thread_a-ags_autosave_thread.o: src/ags/thread/ags_autosave_thread.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -MT libags_thread_a-ags_autosave_thread.o -MD -MP -MF $(DEPDIR)/libags_thread_a-ags_autosave_thread.Tpo -c -o libags_thread_a-ags_autosave_thread.o `test -f 'src/ags/thread/ags_autosave_thread.c' || echo '$(srcdir)/'`src/ags/thread/ags_autosave_thread.c
 	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_thread_a-ags_autosave_thread.Tpo $(DEPDIR)/libags_thread_a-ags_autosave_thread.Po
@@ -4963,104 +5265,6 @@ libags_thread_a-ags_autosave_thread.obj: src/ags/thread/ags_autosave_thread.c
 #	$(AM_V_CC)source='src/ags/thread/ags_autosave_thread.c' object='libags_thread_a-ags_autosave_thread.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -c -o libags_thread_a-ags_autosave_thread.obj `if test -f 'src/ags/thread/ags_autosave_thread.c'; then $(CYGPATH_W) 'src/ags/thread/ags_autosave_thread.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/thread/ags_autosave_thread.c'; fi`
-
-libags_thread_a-ags_devout_thread.o: src/ags/thread/ags_devout_thread.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -MT libags_thread_a-ags_devout_thread.o -MD -MP -MF $(DEPDIR)/libags_thread_a-ags_devout_thread.Tpo -c -o libags_thread_a-ags_devout_thread.o `test -f 'src/ags/thread/ags_devout_thread.c' || echo '$(srcdir)/'`src/ags/thread/ags_devout_thread.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_thread_a-ags_devout_thread.Tpo $(DEPDIR)/libags_thread_a-ags_devout_thread.Po
-#	$(AM_V_CC)source='src/ags/thread/ags_devout_thread.c' object='libags_thread_a-ags_devout_thread.o' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -c -o libags_thread_a-ags_devout_thread.o `test -f 'src/ags/thread/ags_devout_thread.c' || echo '$(srcdir)/'`src/ags/thread/ags_devout_thread.c
-
-libags_thread_a-ags_devout_thread.obj: src/ags/thread/ags_devout_thread.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -MT libags_thread_a-ags_devout_thread.obj -MD -MP -MF $(DEPDIR)/libags_thread_a-ags_devout_thread.Tpo -c -o libags_thread_a-ags_devout_thread.obj `if test -f 'src/ags/thread/ags_devout_thread.c'; then $(CYGPATH_W) 'src/ags/thread/ags_devout_thread.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/thread/ags_devout_thread.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_thread_a-ags_devout_thread.Tpo $(DEPDIR)/libags_thread_a-ags_devout_thread.Po
-#	$(AM_V_CC)source='src/ags/thread/ags_devout_thread.c' object='libags_thread_a-ags_devout_thread.obj' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -c -o libags_thread_a-ags_devout_thread.obj `if test -f 'src/ags/thread/ags_devout_thread.c'; then $(CYGPATH_W) 'src/ags/thread/ags_devout_thread.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/thread/ags_devout_thread.c'; fi`
-
-libags_thread_a-ags_export_thread.o: src/ags/thread/ags_export_thread.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -MT libags_thread_a-ags_export_thread.o -MD -MP -MF $(DEPDIR)/libags_thread_a-ags_export_thread.Tpo -c -o libags_thread_a-ags_export_thread.o `test -f 'src/ags/thread/ags_export_thread.c' || echo '$(srcdir)/'`src/ags/thread/ags_export_thread.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_thread_a-ags_export_thread.Tpo $(DEPDIR)/libags_thread_a-ags_export_thread.Po
-#	$(AM_V_CC)source='src/ags/thread/ags_export_thread.c' object='libags_thread_a-ags_export_thread.o' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -c -o libags_thread_a-ags_export_thread.o `test -f 'src/ags/thread/ags_export_thread.c' || echo '$(srcdir)/'`src/ags/thread/ags_export_thread.c
-
-libags_thread_a-ags_export_thread.obj: src/ags/thread/ags_export_thread.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -MT libags_thread_a-ags_export_thread.obj -MD -MP -MF $(DEPDIR)/libags_thread_a-ags_export_thread.Tpo -c -o libags_thread_a-ags_export_thread.obj `if test -f 'src/ags/thread/ags_export_thread.c'; then $(CYGPATH_W) 'src/ags/thread/ags_export_thread.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/thread/ags_export_thread.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_thread_a-ags_export_thread.Tpo $(DEPDIR)/libags_thread_a-ags_export_thread.Po
-#	$(AM_V_CC)source='src/ags/thread/ags_export_thread.c' object='libags_thread_a-ags_export_thread.obj' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -c -o libags_thread_a-ags_export_thread.obj `if test -f 'src/ags/thread/ags_export_thread.c'; then $(CYGPATH_W) 'src/ags/thread/ags_export_thread.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/thread/ags_export_thread.c'; fi`
-
-libags_thread_a-ags_gui_thread.o: src/ags/thread/ags_gui_thread.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -MT libags_thread_a-ags_gui_thread.o -MD -MP -MF $(DEPDIR)/libags_thread_a-ags_gui_thread.Tpo -c -o libags_thread_a-ags_gui_thread.o `test -f 'src/ags/thread/ags_gui_thread.c' || echo '$(srcdir)/'`src/ags/thread/ags_gui_thread.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_thread_a-ags_gui_thread.Tpo $(DEPDIR)/libags_thread_a-ags_gui_thread.Po
-#	$(AM_V_CC)source='src/ags/thread/ags_gui_thread.c' object='libags_thread_a-ags_gui_thread.o' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -c -o libags_thread_a-ags_gui_thread.o `test -f 'src/ags/thread/ags_gui_thread.c' || echo '$(srcdir)/'`src/ags/thread/ags_gui_thread.c
-
-libags_thread_a-ags_gui_thread.obj: src/ags/thread/ags_gui_thread.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -MT libags_thread_a-ags_gui_thread.obj -MD -MP -MF $(DEPDIR)/libags_thread_a-ags_gui_thread.Tpo -c -o libags_thread_a-ags_gui_thread.obj `if test -f 'src/ags/thread/ags_gui_thread.c'; then $(CYGPATH_W) 'src/ags/thread/ags_gui_thread.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/thread/ags_gui_thread.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_thread_a-ags_gui_thread.Tpo $(DEPDIR)/libags_thread_a-ags_gui_thread.Po
-#	$(AM_V_CC)source='src/ags/thread/ags_gui_thread.c' object='libags_thread_a-ags_gui_thread.obj' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -c -o libags_thread_a-ags_gui_thread.obj `if test -f 'src/ags/thread/ags_gui_thread.c'; then $(CYGPATH_W) 'src/ags/thread/ags_gui_thread.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/thread/ags_gui_thread.c'; fi`
-
-libags_thread_a-ags_iterator_thread.o: src/ags/thread/ags_iterator_thread.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -MT libags_thread_a-ags_iterator_thread.o -MD -MP -MF $(DEPDIR)/libags_thread_a-ags_iterator_thread.Tpo -c -o libags_thread_a-ags_iterator_thread.o `test -f 'src/ags/thread/ags_iterator_thread.c' || echo '$(srcdir)/'`src/ags/thread/ags_iterator_thread.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_thread_a-ags_iterator_thread.Tpo $(DEPDIR)/libags_thread_a-ags_iterator_thread.Po
-#	$(AM_V_CC)source='src/ags/thread/ags_iterator_thread.c' object='libags_thread_a-ags_iterator_thread.o' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -c -o libags_thread_a-ags_iterator_thread.o `test -f 'src/ags/thread/ags_iterator_thread.c' || echo '$(srcdir)/'`src/ags/thread/ags_iterator_thread.c
-
-libags_thread_a-ags_iterator_thread.obj: src/ags/thread/ags_iterator_thread.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -MT libags_thread_a-ags_iterator_thread.obj -MD -MP -MF $(DEPDIR)/libags_thread_a-ags_iterator_thread.Tpo -c -o libags_thread_a-ags_iterator_thread.obj `if test -f 'src/ags/thread/ags_iterator_thread.c'; then $(CYGPATH_W) 'src/ags/thread/ags_iterator_thread.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/thread/ags_iterator_thread.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_thread_a-ags_iterator_thread.Tpo $(DEPDIR)/libags_thread_a-ags_iterator_thread.Po
-#	$(AM_V_CC)source='src/ags/thread/ags_iterator_thread.c' object='libags_thread_a-ags_iterator_thread.obj' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -c -o libags_thread_a-ags_iterator_thread.obj `if test -f 'src/ags/thread/ags_iterator_thread.c'; then $(CYGPATH_W) 'src/ags/thread/ags_iterator_thread.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/thread/ags_iterator_thread.c'; fi`
-
-libags_thread_a-ags_record_thread.o: src/ags/thread/ags_record_thread.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -MT libags_thread_a-ags_record_thread.o -MD -MP -MF $(DEPDIR)/libags_thread_a-ags_record_thread.Tpo -c -o libags_thread_a-ags_record_thread.o `test -f 'src/ags/thread/ags_record_thread.c' || echo '$(srcdir)/'`src/ags/thread/ags_record_thread.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_thread_a-ags_record_thread.Tpo $(DEPDIR)/libags_thread_a-ags_record_thread.Po
-#	$(AM_V_CC)source='src/ags/thread/ags_record_thread.c' object='libags_thread_a-ags_record_thread.o' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -c -o libags_thread_a-ags_record_thread.o `test -f 'src/ags/thread/ags_record_thread.c' || echo '$(srcdir)/'`src/ags/thread/ags_record_thread.c
-
-libags_thread_a-ags_record_thread.obj: src/ags/thread/ags_record_thread.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -MT libags_thread_a-ags_record_thread.obj -MD -MP -MF $(DEPDIR)/libags_thread_a-ags_record_thread.Tpo -c -o libags_thread_a-ags_record_thread.obj `if test -f 'src/ags/thread/ags_record_thread.c'; then $(CYGPATH_W) 'src/ags/thread/ags_record_thread.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/thread/ags_record_thread.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_thread_a-ags_record_thread.Tpo $(DEPDIR)/libags_thread_a-ags_record_thread.Po
-#	$(AM_V_CC)source='src/ags/thread/ags_record_thread.c' object='libags_thread_a-ags_record_thread.obj' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -c -o libags_thread_a-ags_record_thread.obj `if test -f 'src/ags/thread/ags_record_thread.c'; then $(CYGPATH_W) 'src/ags/thread/ags_record_thread.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/thread/ags_record_thread.c'; fi`
-
-libags_thread_a-ags_recycling_thread_callbacks.o: src/ags/thread/ags_recycling_thread_callbacks.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -MT libags_thread_a-ags_recycling_thread_callbacks.o -MD -MP -MF $(DEPDIR)/libags_thread_a-ags_recycling_thread_callbacks.Tpo -c -o libags_thread_a-ags_recycling_thread_callbacks.o `test -f 'src/ags/thread/ags_recycling_thread_callbacks.c' || echo '$(srcdir)/'`src/ags/thread/ags_recycling_thread_callbacks.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_thread_a-ags_recycling_thread_callbacks.Tpo $(DEPDIR)/libags_thread_a-ags_recycling_thread_callbacks.Po
-#	$(AM_V_CC)source='src/ags/thread/ags_recycling_thread_callbacks.c' object='libags_thread_a-ags_recycling_thread_callbacks.o' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -c -o libags_thread_a-ags_recycling_thread_callbacks.o `test -f 'src/ags/thread/ags_recycling_thread_callbacks.c' || echo '$(srcdir)/'`src/ags/thread/ags_recycling_thread_callbacks.c
-
-libags_thread_a-ags_recycling_thread_callbacks.obj: src/ags/thread/ags_recycling_thread_callbacks.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -MT libags_thread_a-ags_recycling_thread_callbacks.obj -MD -MP -MF $(DEPDIR)/libags_thread_a-ags_recycling_thread_callbacks.Tpo -c -o libags_thread_a-ags_recycling_thread_callbacks.obj `if test -f 'src/ags/thread/ags_recycling_thread_callbacks.c'; then $(CYGPATH_W) 'src/ags/thread/ags_recycling_thread_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/thread/ags_recycling_thread_callbacks.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_thread_a-ags_recycling_thread_callbacks.Tpo $(DEPDIR)/libags_thread_a-ags_recycling_thread_callbacks.Po
-#	$(AM_V_CC)source='src/ags/thread/ags_recycling_thread_callbacks.c' object='libags_thread_a-ags_recycling_thread_callbacks.obj' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -c -o libags_thread_a-ags_recycling_thread_callbacks.obj `if test -f 'src/ags/thread/ags_recycling_thread_callbacks.c'; then $(CYGPATH_W) 'src/ags/thread/ags_recycling_thread_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/thread/ags_recycling_thread_callbacks.c'; fi`
-
-libags_thread_a-ags_recycling_thread.o: src/ags/thread/ags_recycling_thread.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -MT libags_thread_a-ags_recycling_thread.o -MD -MP -MF $(DEPDIR)/libags_thread_a-ags_recycling_thread.Tpo -c -o libags_thread_a-ags_recycling_thread.o `test -f 'src/ags/thread/ags_recycling_thread.c' || echo '$(srcdir)/'`src/ags/thread/ags_recycling_thread.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_thread_a-ags_recycling_thread.Tpo $(DEPDIR)/libags_thread_a-ags_recycling_thread.Po
-#	$(AM_V_CC)source='src/ags/thread/ags_recycling_thread.c' object='libags_thread_a-ags_recycling_thread.o' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -c -o libags_thread_a-ags_recycling_thread.o `test -f 'src/ags/thread/ags_recycling_thread.c' || echo '$(srcdir)/'`src/ags/thread/ags_recycling_thread.c
-
-libags_thread_a-ags_recycling_thread.obj: src/ags/thread/ags_recycling_thread.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -MT libags_thread_a-ags_recycling_thread.obj -MD -MP -MF $(DEPDIR)/libags_thread_a-ags_recycling_thread.Tpo -c -o libags_thread_a-ags_recycling_thread.obj `if test -f 'src/ags/thread/ags_recycling_thread.c'; then $(CYGPATH_W) 'src/ags/thread/ags_recycling_thread.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/thread/ags_recycling_thread.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_thread_a-ags_recycling_thread.Tpo $(DEPDIR)/libags_thread_a-ags_recycling_thread.Po
-#	$(AM_V_CC)source='src/ags/thread/ags_recycling_thread.c' object='libags_thread_a-ags_recycling_thread.obj' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -c -o libags_thread_a-ags_recycling_thread.obj `if test -f 'src/ags/thread/ags_recycling_thread.c'; then $(CYGPATH_W) 'src/ags/thread/ags_recycling_thread.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/thread/ags_recycling_thread.c'; fi`
 
 libags_thread_a-ags_returnable_thread.o: src/ags/thread/ags_returnable_thread.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -MT libags_thread_a-ags_returnable_thread.o -MD -MP -MF $(DEPDIR)/libags_thread_a-ags_returnable_thread.Tpo -c -o libags_thread_a-ags_returnable_thread.o `test -f 'src/ags/thread/ags_returnable_thread.c' || echo '$(srcdir)/'`src/ags/thread/ags_returnable_thread.c
@@ -5104,6 +5308,20 @@ libags_thread_a-ags_task_thread.obj: src/ags/thread/ags_task_thread.c
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -c -o libags_thread_a-ags_task_thread.obj `if test -f 'src/ags/thread/ags_task_thread.c'; then $(CYGPATH_W) 'src/ags/thread/ags_task_thread.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/thread/ags_task_thread.c'; fi`
 
+libags_thread_a-ags_task.o: src/ags/thread/ags_task.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -MT libags_thread_a-ags_task.o -MD -MP -MF $(DEPDIR)/libags_thread_a-ags_task.Tpo -c -o libags_thread_a-ags_task.o `test -f 'src/ags/thread/ags_task.c' || echo '$(srcdir)/'`src/ags/thread/ags_task.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_thread_a-ags_task.Tpo $(DEPDIR)/libags_thread_a-ags_task.Po
+#	$(AM_V_CC)source='src/ags/thread/ags_task.c' object='libags_thread_a-ags_task.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -c -o libags_thread_a-ags_task.o `test -f 'src/ags/thread/ags_task.c' || echo '$(srcdir)/'`src/ags/thread/ags_task.c
+
+libags_thread_a-ags_task.obj: src/ags/thread/ags_task.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -MT libags_thread_a-ags_task.obj -MD -MP -MF $(DEPDIR)/libags_thread_a-ags_task.Tpo -c -o libags_thread_a-ags_task.obj `if test -f 'src/ags/thread/ags_task.c'; then $(CYGPATH_W) 'src/ags/thread/ags_task.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/thread/ags_task.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_thread_a-ags_task.Tpo $(DEPDIR)/libags_thread_a-ags_task.Po
+#	$(AM_V_CC)source='src/ags/thread/ags_task.c' object='libags_thread_a-ags_task.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -c -o libags_thread_a-ags_task.obj `if test -f 'src/ags/thread/ags_task.c'; then $(CYGPATH_W) 'src/ags/thread/ags_task.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/thread/ags_task.c'; fi`
+
 libags_thread_a-ags_thread_pool.o: src/ags/thread/ags_thread_pool.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -MT libags_thread_a-ags_thread_pool.o -MD -MP -MF $(DEPDIR)/libags_thread_a-ags_thread_pool.Tpo -c -o libags_thread_a-ags_thread_pool.o `test -f 'src/ags/thread/ags_thread_pool.c' || echo '$(srcdir)/'`src/ags/thread/ags_thread_pool.c
 	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_thread_a-ags_thread_pool.Tpo $(DEPDIR)/libags_thread_a-ags_thread_pool.Po
@@ -5145,6 +5363,20 @@ libags_thread_a-ags_timestamp_thread.obj: src/ags/thread/ags_timestamp_thread.c
 #	$(AM_V_CC)source='src/ags/thread/ags_timestamp_thread.c' object='libags_thread_a-ags_timestamp_thread.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -c -o libags_thread_a-ags_timestamp_thread.obj `if test -f 'src/ags/thread/ags_timestamp_thread.c'; then $(CYGPATH_W) 'src/ags/thread/ags_timestamp_thread.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/thread/ags_timestamp_thread.c'; fi`
+
+libags_thread_a-ags_thread_file_xml.o: src/ags/thread/file/ags_thread_file_xml.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -MT libags_thread_a-ags_thread_file_xml.o -MD -MP -MF $(DEPDIR)/libags_thread_a-ags_thread_file_xml.Tpo -c -o libags_thread_a-ags_thread_file_xml.o `test -f 'src/ags/thread/file/ags_thread_file_xml.c' || echo '$(srcdir)/'`src/ags/thread/file/ags_thread_file_xml.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_thread_a-ags_thread_file_xml.Tpo $(DEPDIR)/libags_thread_a-ags_thread_file_xml.Po
+#	$(AM_V_CC)source='src/ags/thread/file/ags_thread_file_xml.c' object='libags_thread_a-ags_thread_file_xml.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -c -o libags_thread_a-ags_thread_file_xml.o `test -f 'src/ags/thread/file/ags_thread_file_xml.c' || echo '$(srcdir)/'`src/ags/thread/file/ags_thread_file_xml.c
+
+libags_thread_a-ags_thread_file_xml.obj: src/ags/thread/file/ags_thread_file_xml.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -MT libags_thread_a-ags_thread_file_xml.obj -MD -MP -MF $(DEPDIR)/libags_thread_a-ags_thread_file_xml.Tpo -c -o libags_thread_a-ags_thread_file_xml.obj `if test -f 'src/ags/thread/file/ags_thread_file_xml.c'; then $(CYGPATH_W) 'src/ags/thread/file/ags_thread_file_xml.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/thread/file/ags_thread_file_xml.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_thread_a-ags_thread_file_xml.Tpo $(DEPDIR)/libags_thread_a-ags_thread_file_xml.Po
+#	$(AM_V_CC)source='src/ags/thread/file/ags_thread_file_xml.c' object='libags_thread_a-ags_thread_file_xml.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -c -o libags_thread_a-ags_thread_file_xml.obj `if test -f 'src/ags/thread/file/ags_thread_file_xml.c'; then $(CYGPATH_W) 'src/ags/thread/file/ags_thread_file_xml.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/thread/file/ags_thread_file_xml.c'; fi`
 
 gsequencer-main.o: src/ags/main.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-main.o -MD -MP -MF $(DEPDIR)/gsequencer-main.Tpo -c -o gsequencer-main.o `test -f 'src/ags/main.c' || echo '$(srcdir)/'`src/ags/main.c
@@ -6167,6 +6399,132 @@ gsequencer-ags_window.obj: src/ags/X/ags_window.c
 #	$(AM_V_CC)source='src/ags/X/ags_window.c' object='gsequencer-ags_window.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_window.obj `if test -f 'src/ags/X/ags_window.c'; then $(CYGPATH_W) 'src/ags/X/ags_window.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/ags_window.c'; fi`
+
+gsequencer-ags_gui_thread.o: src/ags/X/thread/ags_gui_thread.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_gui_thread.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_gui_thread.Tpo -c -o gsequencer-ags_gui_thread.o `test -f 'src/ags/X/thread/ags_gui_thread.c' || echo '$(srcdir)/'`src/ags/X/thread/ags_gui_thread.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_gui_thread.Tpo $(DEPDIR)/gsequencer-ags_gui_thread.Po
+#	$(AM_V_CC)source='src/ags/X/thread/ags_gui_thread.c' object='gsequencer-ags_gui_thread.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_gui_thread.o `test -f 'src/ags/X/thread/ags_gui_thread.c' || echo '$(srcdir)/'`src/ags/X/thread/ags_gui_thread.c
+
+gsequencer-ags_gui_thread.obj: src/ags/X/thread/ags_gui_thread.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_gui_thread.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_gui_thread.Tpo -c -o gsequencer-ags_gui_thread.obj `if test -f 'src/ags/X/thread/ags_gui_thread.c'; then $(CYGPATH_W) 'src/ags/X/thread/ags_gui_thread.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/thread/ags_gui_thread.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_gui_thread.Tpo $(DEPDIR)/gsequencer-ags_gui_thread.Po
+#	$(AM_V_CC)source='src/ags/X/thread/ags_gui_thread.c' object='gsequencer-ags_gui_thread.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_gui_thread.obj `if test -f 'src/ags/X/thread/ags_gui_thread.c'; then $(CYGPATH_W) 'src/ags/X/thread/ags_gui_thread.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/thread/ags_gui_thread.c'; fi`
+
+gsequencer-ags_add_line_member.o: src/ags/X/task/ags_add_line_member.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_add_line_member.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_add_line_member.Tpo -c -o gsequencer-ags_add_line_member.o `test -f 'src/ags/X/task/ags_add_line_member.c' || echo '$(srcdir)/'`src/ags/X/task/ags_add_line_member.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_add_line_member.Tpo $(DEPDIR)/gsequencer-ags_add_line_member.Po
+#	$(AM_V_CC)source='src/ags/X/task/ags_add_line_member.c' object='gsequencer-ags_add_line_member.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_add_line_member.o `test -f 'src/ags/X/task/ags_add_line_member.c' || echo '$(srcdir)/'`src/ags/X/task/ags_add_line_member.c
+
+gsequencer-ags_add_line_member.obj: src/ags/X/task/ags_add_line_member.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_add_line_member.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_add_line_member.Tpo -c -o gsequencer-ags_add_line_member.obj `if test -f 'src/ags/X/task/ags_add_line_member.c'; then $(CYGPATH_W) 'src/ags/X/task/ags_add_line_member.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/task/ags_add_line_member.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_add_line_member.Tpo $(DEPDIR)/gsequencer-ags_add_line_member.Po
+#	$(AM_V_CC)source='src/ags/X/task/ags_add_line_member.c' object='gsequencer-ags_add_line_member.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_add_line_member.obj `if test -f 'src/ags/X/task/ags_add_line_member.c'; then $(CYGPATH_W) 'src/ags/X/task/ags_add_line_member.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/task/ags_add_line_member.c'; fi`
+
+gsequencer-ags_add_bulk_member.o: src/ags/X/task/ags_add_bulk_member.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_add_bulk_member.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_add_bulk_member.Tpo -c -o gsequencer-ags_add_bulk_member.o `test -f 'src/ags/X/task/ags_add_bulk_member.c' || echo '$(srcdir)/'`src/ags/X/task/ags_add_bulk_member.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_add_bulk_member.Tpo $(DEPDIR)/gsequencer-ags_add_bulk_member.Po
+#	$(AM_V_CC)source='src/ags/X/task/ags_add_bulk_member.c' object='gsequencer-ags_add_bulk_member.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_add_bulk_member.o `test -f 'src/ags/X/task/ags_add_bulk_member.c' || echo '$(srcdir)/'`src/ags/X/task/ags_add_bulk_member.c
+
+gsequencer-ags_add_bulk_member.obj: src/ags/X/task/ags_add_bulk_member.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_add_bulk_member.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_add_bulk_member.Tpo -c -o gsequencer-ags_add_bulk_member.obj `if test -f 'src/ags/X/task/ags_add_bulk_member.c'; then $(CYGPATH_W) 'src/ags/X/task/ags_add_bulk_member.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/task/ags_add_bulk_member.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_add_bulk_member.Tpo $(DEPDIR)/gsequencer-ags_add_bulk_member.Po
+#	$(AM_V_CC)source='src/ags/X/task/ags_add_bulk_member.c' object='gsequencer-ags_add_bulk_member.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_add_bulk_member.obj `if test -f 'src/ags/X/task/ags_add_bulk_member.c'; then $(CYGPATH_W) 'src/ags/X/task/ags_add_bulk_member.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/task/ags_add_bulk_member.c'; fi`
+
+gsequencer-ags_update_bulk_member.o: src/ags/X/task/ags_update_bulk_member.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_update_bulk_member.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_update_bulk_member.Tpo -c -o gsequencer-ags_update_bulk_member.o `test -f 'src/ags/X/task/ags_update_bulk_member.c' || echo '$(srcdir)/'`src/ags/X/task/ags_update_bulk_member.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_update_bulk_member.Tpo $(DEPDIR)/gsequencer-ags_update_bulk_member.Po
+#	$(AM_V_CC)source='src/ags/X/task/ags_update_bulk_member.c' object='gsequencer-ags_update_bulk_member.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_update_bulk_member.o `test -f 'src/ags/X/task/ags_update_bulk_member.c' || echo '$(srcdir)/'`src/ags/X/task/ags_update_bulk_member.c
+
+gsequencer-ags_update_bulk_member.obj: src/ags/X/task/ags_update_bulk_member.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_update_bulk_member.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_update_bulk_member.Tpo -c -o gsequencer-ags_update_bulk_member.obj `if test -f 'src/ags/X/task/ags_update_bulk_member.c'; then $(CYGPATH_W) 'src/ags/X/task/ags_update_bulk_member.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/task/ags_update_bulk_member.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_update_bulk_member.Tpo $(DEPDIR)/gsequencer-ags_update_bulk_member.Po
+#	$(AM_V_CC)source='src/ags/X/task/ags_update_bulk_member.c' object='gsequencer-ags_update_bulk_member.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_update_bulk_member.obj `if test -f 'src/ags/X/task/ags_update_bulk_member.c'; then $(CYGPATH_W) 'src/ags/X/task/ags_update_bulk_member.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/task/ags_update_bulk_member.c'; fi`
+
+gsequencer-ags_change_indicator.o: src/ags/X/task/ags_change_indicator.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_change_indicator.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_change_indicator.Tpo -c -o gsequencer-ags_change_indicator.o `test -f 'src/ags/X/task/ags_change_indicator.c' || echo '$(srcdir)/'`src/ags/X/task/ags_change_indicator.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_change_indicator.Tpo $(DEPDIR)/gsequencer-ags_change_indicator.Po
+#	$(AM_V_CC)source='src/ags/X/task/ags_change_indicator.c' object='gsequencer-ags_change_indicator.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_change_indicator.o `test -f 'src/ags/X/task/ags_change_indicator.c' || echo '$(srcdir)/'`src/ags/X/task/ags_change_indicator.c
+
+gsequencer-ags_change_indicator.obj: src/ags/X/task/ags_change_indicator.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_change_indicator.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_change_indicator.Tpo -c -o gsequencer-ags_change_indicator.obj `if test -f 'src/ags/X/task/ags_change_indicator.c'; then $(CYGPATH_W) 'src/ags/X/task/ags_change_indicator.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/task/ags_change_indicator.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_change_indicator.Tpo $(DEPDIR)/gsequencer-ags_change_indicator.Po
+#	$(AM_V_CC)source='src/ags/X/task/ags_change_indicator.c' object='gsequencer-ags_change_indicator.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_change_indicator.obj `if test -f 'src/ags/X/task/ags_change_indicator.c'; then $(CYGPATH_W) 'src/ags/X/task/ags_change_indicator.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/task/ags_change_indicator.c'; fi`
+
+gsequencer-ags_change_tact.o: src/ags/X/task/ags_change_tact.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_change_tact.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_change_tact.Tpo -c -o gsequencer-ags_change_tact.o `test -f 'src/ags/X/task/ags_change_tact.c' || echo '$(srcdir)/'`src/ags/X/task/ags_change_tact.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_change_tact.Tpo $(DEPDIR)/gsequencer-ags_change_tact.Po
+#	$(AM_V_CC)source='src/ags/X/task/ags_change_tact.c' object='gsequencer-ags_change_tact.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_change_tact.o `test -f 'src/ags/X/task/ags_change_tact.c' || echo '$(srcdir)/'`src/ags/X/task/ags_change_tact.c
+
+gsequencer-ags_change_tact.obj: src/ags/X/task/ags_change_tact.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_change_tact.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_change_tact.Tpo -c -o gsequencer-ags_change_tact.obj `if test -f 'src/ags/X/task/ags_change_tact.c'; then $(CYGPATH_W) 'src/ags/X/task/ags_change_tact.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/task/ags_change_tact.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_change_tact.Tpo $(DEPDIR)/gsequencer-ags_change_tact.Po
+#	$(AM_V_CC)source='src/ags/X/task/ags_change_tact.c' object='gsequencer-ags_change_tact.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_change_tact.obj `if test -f 'src/ags/X/task/ags_change_tact.c'; then $(CYGPATH_W) 'src/ags/X/task/ags_change_tact.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/task/ags_change_tact.c'; fi`
+
+gsequencer-ags_display_tact.o: src/ags/X/task/ags_display_tact.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_display_tact.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_display_tact.Tpo -c -o gsequencer-ags_display_tact.o `test -f 'src/ags/X/task/ags_display_tact.c' || echo '$(srcdir)/'`src/ags/X/task/ags_display_tact.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_display_tact.Tpo $(DEPDIR)/gsequencer-ags_display_tact.Po
+#	$(AM_V_CC)source='src/ags/X/task/ags_display_tact.c' object='gsequencer-ags_display_tact.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_display_tact.o `test -f 'src/ags/X/task/ags_display_tact.c' || echo '$(srcdir)/'`src/ags/X/task/ags_display_tact.c
+
+gsequencer-ags_display_tact.obj: src/ags/X/task/ags_display_tact.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_display_tact.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_display_tact.Tpo -c -o gsequencer-ags_display_tact.obj `if test -f 'src/ags/X/task/ags_display_tact.c'; then $(CYGPATH_W) 'src/ags/X/task/ags_display_tact.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/task/ags_display_tact.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_display_tact.Tpo $(DEPDIR)/gsequencer-ags_display_tact.Po
+#	$(AM_V_CC)source='src/ags/X/task/ags_display_tact.c' object='gsequencer-ags_display_tact.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_display_tact.obj `if test -f 'src/ags/X/task/ags_display_tact.c'; then $(CYGPATH_W) 'src/ags/X/task/ags_display_tact.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/task/ags_display_tact.c'; fi`
+
+gsequencer-ags_scroll_on_play.o: src/ags/X/task/ags_scroll_on_play.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_scroll_on_play.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_scroll_on_play.Tpo -c -o gsequencer-ags_scroll_on_play.o `test -f 'src/ags/X/task/ags_scroll_on_play.c' || echo '$(srcdir)/'`src/ags/X/task/ags_scroll_on_play.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_scroll_on_play.Tpo $(DEPDIR)/gsequencer-ags_scroll_on_play.Po
+#	$(AM_V_CC)source='src/ags/X/task/ags_scroll_on_play.c' object='gsequencer-ags_scroll_on_play.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_scroll_on_play.o `test -f 'src/ags/X/task/ags_scroll_on_play.c' || echo '$(srcdir)/'`src/ags/X/task/ags_scroll_on_play.c
+
+gsequencer-ags_scroll_on_play.obj: src/ags/X/task/ags_scroll_on_play.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_scroll_on_play.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_scroll_on_play.Tpo -c -o gsequencer-ags_scroll_on_play.obj `if test -f 'src/ags/X/task/ags_scroll_on_play.c'; then $(CYGPATH_W) 'src/ags/X/task/ags_scroll_on_play.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/task/ags_scroll_on_play.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_scroll_on_play.Tpo $(DEPDIR)/gsequencer-ags_scroll_on_play.Po
+#	$(AM_V_CC)source='src/ags/X/task/ags_scroll_on_play.c' object='gsequencer-ags_scroll_on_play.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_scroll_on_play.obj `if test -f 'src/ags/X/task/ags_scroll_on_play.c'; then $(CYGPATH_W) 'src/ags/X/task/ags_scroll_on_play.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/task/ags_scroll_on_play.c'; fi`
+
+gsequencer-ags_toggle_led.o: src/ags/X/task/ags_toggle_led.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_toggle_led.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_toggle_led.Tpo -c -o gsequencer-ags_toggle_led.o `test -f 'src/ags/X/task/ags_toggle_led.c' || echo '$(srcdir)/'`src/ags/X/task/ags_toggle_led.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_toggle_led.Tpo $(DEPDIR)/gsequencer-ags_toggle_led.Po
+#	$(AM_V_CC)source='src/ags/X/task/ags_toggle_led.c' object='gsequencer-ags_toggle_led.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_toggle_led.o `test -f 'src/ags/X/task/ags_toggle_led.c' || echo '$(srcdir)/'`src/ags/X/task/ags_toggle_led.c
+
+gsequencer-ags_toggle_led.obj: src/ags/X/task/ags_toggle_led.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_toggle_led.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_toggle_led.Tpo -c -o gsequencer-ags_toggle_led.obj `if test -f 'src/ags/X/task/ags_toggle_led.c'; then $(CYGPATH_W) 'src/ags/X/task/ags_toggle_led.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/task/ags_toggle_led.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_toggle_led.Tpo $(DEPDIR)/gsequencer-ags_toggle_led.Po
+#	$(AM_V_CC)source='src/ags/X/task/ags_toggle_led.c' object='gsequencer-ags_toggle_led.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_toggle_led.obj `if test -f 'src/ags/X/task/ags_toggle_led.c'; then $(CYGPATH_W) 'src/ags/X/task/ags_toggle_led.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/task/ags_toggle_led.c'; fi`
 
 gsequencer-ags_drum_callbacks.o: src/ags/X/machine/ags_drum_callbacks.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_drum_callbacks.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_drum_callbacks.Tpo -c -o gsequencer-ags_drum_callbacks.o `test -f 'src/ags/X/machine/ags_drum_callbacks.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_drum_callbacks.c
@@ -7288,327 +7646,19 @@ gsequencer-ags_toolbar.obj: src/ags/X/editor/ags_toolbar.c
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_toolbar.obj `if test -f 'src/ags/X/editor/ags_toolbar.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_toolbar.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_toolbar.c'; fi`
 
-gsequencer-ags_add_line_member.o: src/ags/audio/task/ags_add_line_member.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_add_line_member.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_add_line_member.Tpo -c -o gsequencer-ags_add_line_member.o `test -f 'src/ags/audio/task/ags_add_line_member.c' || echo '$(srcdir)/'`src/ags/audio/task/ags_add_line_member.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_add_line_member.Tpo $(DEPDIR)/gsequencer-ags_add_line_member.Po
-#	$(AM_V_CC)source='src/ags/audio/task/ags_add_line_member.c' object='gsequencer-ags_add_line_member.o' libtool=no \
+gsequencer-ags_gsequencer_file_xml.o: src/ags/X/file/ags_gsequencer_file_xml.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_gsequencer_file_xml.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_gsequencer_file_xml.Tpo -c -o gsequencer-ags_gsequencer_file_xml.o `test -f 'src/ags/X/file/ags_gsequencer_file_xml.c' || echo '$(srcdir)/'`src/ags/X/file/ags_gsequencer_file_xml.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_gsequencer_file_xml.Tpo $(DEPDIR)/gsequencer-ags_gsequencer_file_xml.Po
+#	$(AM_V_CC)source='src/ags/X/file/ags_gsequencer_file_xml.c' object='gsequencer-ags_gsequencer_file_xml.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_add_line_member.o `test -f 'src/ags/audio/task/ags_add_line_member.c' || echo '$(srcdir)/'`src/ags/audio/task/ags_add_line_member.c
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_gsequencer_file_xml.o `test -f 'src/ags/X/file/ags_gsequencer_file_xml.c' || echo '$(srcdir)/'`src/ags/X/file/ags_gsequencer_file_xml.c
 
-gsequencer-ags_add_line_member.obj: src/ags/audio/task/ags_add_line_member.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_add_line_member.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_add_line_member.Tpo -c -o gsequencer-ags_add_line_member.obj `if test -f 'src/ags/audio/task/ags_add_line_member.c'; then $(CYGPATH_W) 'src/ags/audio/task/ags_add_line_member.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/task/ags_add_line_member.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_add_line_member.Tpo $(DEPDIR)/gsequencer-ags_add_line_member.Po
-#	$(AM_V_CC)source='src/ags/audio/task/ags_add_line_member.c' object='gsequencer-ags_add_line_member.obj' libtool=no \
+gsequencer-ags_gsequencer_file_xml.obj: src/ags/X/file/ags_gsequencer_file_xml.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_gsequencer_file_xml.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_gsequencer_file_xml.Tpo -c -o gsequencer-ags_gsequencer_file_xml.obj `if test -f 'src/ags/X/file/ags_gsequencer_file_xml.c'; then $(CYGPATH_W) 'src/ags/X/file/ags_gsequencer_file_xml.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/file/ags_gsequencer_file_xml.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_gsequencer_file_xml.Tpo $(DEPDIR)/gsequencer-ags_gsequencer_file_xml.Po
+#	$(AM_V_CC)source='src/ags/X/file/ags_gsequencer_file_xml.c' object='gsequencer-ags_gsequencer_file_xml.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_add_line_member.obj `if test -f 'src/ags/audio/task/ags_add_line_member.c'; then $(CYGPATH_W) 'src/ags/audio/task/ags_add_line_member.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/task/ags_add_line_member.c'; fi`
-
-gsequencer-ags_add_bulk_member.o: src/ags/audio/task/ags_add_bulk_member.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_add_bulk_member.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_add_bulk_member.Tpo -c -o gsequencer-ags_add_bulk_member.o `test -f 'src/ags/audio/task/ags_add_bulk_member.c' || echo '$(srcdir)/'`src/ags/audio/task/ags_add_bulk_member.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_add_bulk_member.Tpo $(DEPDIR)/gsequencer-ags_add_bulk_member.Po
-#	$(AM_V_CC)source='src/ags/audio/task/ags_add_bulk_member.c' object='gsequencer-ags_add_bulk_member.o' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_add_bulk_member.o `test -f 'src/ags/audio/task/ags_add_bulk_member.c' || echo '$(srcdir)/'`src/ags/audio/task/ags_add_bulk_member.c
-
-gsequencer-ags_add_bulk_member.obj: src/ags/audio/task/ags_add_bulk_member.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_add_bulk_member.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_add_bulk_member.Tpo -c -o gsequencer-ags_add_bulk_member.obj `if test -f 'src/ags/audio/task/ags_add_bulk_member.c'; then $(CYGPATH_W) 'src/ags/audio/task/ags_add_bulk_member.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/task/ags_add_bulk_member.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_add_bulk_member.Tpo $(DEPDIR)/gsequencer-ags_add_bulk_member.Po
-#	$(AM_V_CC)source='src/ags/audio/task/ags_add_bulk_member.c' object='gsequencer-ags_add_bulk_member.obj' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_add_bulk_member.obj `if test -f 'src/ags/audio/task/ags_add_bulk_member.c'; then $(CYGPATH_W) 'src/ags/audio/task/ags_add_bulk_member.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/task/ags_add_bulk_member.c'; fi`
-
-gsequencer-ags_update_bulk_member.o: src/ags/audio/task/ags_update_bulk_member.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_update_bulk_member.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_update_bulk_member.Tpo -c -o gsequencer-ags_update_bulk_member.o `test -f 'src/ags/audio/task/ags_update_bulk_member.c' || echo '$(srcdir)/'`src/ags/audio/task/ags_update_bulk_member.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_update_bulk_member.Tpo $(DEPDIR)/gsequencer-ags_update_bulk_member.Po
-#	$(AM_V_CC)source='src/ags/audio/task/ags_update_bulk_member.c' object='gsequencer-ags_update_bulk_member.o' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_update_bulk_member.o `test -f 'src/ags/audio/task/ags_update_bulk_member.c' || echo '$(srcdir)/'`src/ags/audio/task/ags_update_bulk_member.c
-
-gsequencer-ags_update_bulk_member.obj: src/ags/audio/task/ags_update_bulk_member.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_update_bulk_member.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_update_bulk_member.Tpo -c -o gsequencer-ags_update_bulk_member.obj `if test -f 'src/ags/audio/task/ags_update_bulk_member.c'; then $(CYGPATH_W) 'src/ags/audio/task/ags_update_bulk_member.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/task/ags_update_bulk_member.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_update_bulk_member.Tpo $(DEPDIR)/gsequencer-ags_update_bulk_member.Po
-#	$(AM_V_CC)source='src/ags/audio/task/ags_update_bulk_member.c' object='gsequencer-ags_update_bulk_member.obj' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_update_bulk_member.obj `if test -f 'src/ags/audio/task/ags_update_bulk_member.c'; then $(CYGPATH_W) 'src/ags/audio/task/ags_update_bulk_member.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/task/ags_update_bulk_member.c'; fi`
-
-gsequencer-ags_add_point_to_selection.o: src/ags/audio/task/ags_add_point_to_selection.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_add_point_to_selection.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_add_point_to_selection.Tpo -c -o gsequencer-ags_add_point_to_selection.o `test -f 'src/ags/audio/task/ags_add_point_to_selection.c' || echo '$(srcdir)/'`src/ags/audio/task/ags_add_point_to_selection.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_add_point_to_selection.Tpo $(DEPDIR)/gsequencer-ags_add_point_to_selection.Po
-#	$(AM_V_CC)source='src/ags/audio/task/ags_add_point_to_selection.c' object='gsequencer-ags_add_point_to_selection.o' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_add_point_to_selection.o `test -f 'src/ags/audio/task/ags_add_point_to_selection.c' || echo '$(srcdir)/'`src/ags/audio/task/ags_add_point_to_selection.c
-
-gsequencer-ags_add_point_to_selection.obj: src/ags/audio/task/ags_add_point_to_selection.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_add_point_to_selection.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_add_point_to_selection.Tpo -c -o gsequencer-ags_add_point_to_selection.obj `if test -f 'src/ags/audio/task/ags_add_point_to_selection.c'; then $(CYGPATH_W) 'src/ags/audio/task/ags_add_point_to_selection.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/task/ags_add_point_to_selection.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_add_point_to_selection.Tpo $(DEPDIR)/gsequencer-ags_add_point_to_selection.Po
-#	$(AM_V_CC)source='src/ags/audio/task/ags_add_point_to_selection.c' object='gsequencer-ags_add_point_to_selection.obj' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_add_point_to_selection.obj `if test -f 'src/ags/audio/task/ags_add_point_to_selection.c'; then $(CYGPATH_W) 'src/ags/audio/task/ags_add_point_to_selection.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/task/ags_add_point_to_selection.c'; fi`
-
-gsequencer-ags_add_region_to_selection.o: src/ags/audio/task/ags_add_region_to_selection.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_add_region_to_selection.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_add_region_to_selection.Tpo -c -o gsequencer-ags_add_region_to_selection.o `test -f 'src/ags/audio/task/ags_add_region_to_selection.c' || echo '$(srcdir)/'`src/ags/audio/task/ags_add_region_to_selection.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_add_region_to_selection.Tpo $(DEPDIR)/gsequencer-ags_add_region_to_selection.Po
-#	$(AM_V_CC)source='src/ags/audio/task/ags_add_region_to_selection.c' object='gsequencer-ags_add_region_to_selection.o' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_add_region_to_selection.o `test -f 'src/ags/audio/task/ags_add_region_to_selection.c' || echo '$(srcdir)/'`src/ags/audio/task/ags_add_region_to_selection.c
-
-gsequencer-ags_add_region_to_selection.obj: src/ags/audio/task/ags_add_region_to_selection.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_add_region_to_selection.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_add_region_to_selection.Tpo -c -o gsequencer-ags_add_region_to_selection.obj `if test -f 'src/ags/audio/task/ags_add_region_to_selection.c'; then $(CYGPATH_W) 'src/ags/audio/task/ags_add_region_to_selection.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/task/ags_add_region_to_selection.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_add_region_to_selection.Tpo $(DEPDIR)/gsequencer-ags_add_region_to_selection.Po
-#	$(AM_V_CC)source='src/ags/audio/task/ags_add_region_to_selection.c' object='gsequencer-ags_add_region_to_selection.obj' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_add_region_to_selection.obj `if test -f 'src/ags/audio/task/ags_add_region_to_selection.c'; then $(CYGPATH_W) 'src/ags/audio/task/ags_add_region_to_selection.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/task/ags_add_region_to_selection.c'; fi`
-
-gsequencer-ags_change_indicator.o: src/ags/audio/task/ags_change_indicator.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_change_indicator.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_change_indicator.Tpo -c -o gsequencer-ags_change_indicator.o `test -f 'src/ags/audio/task/ags_change_indicator.c' || echo '$(srcdir)/'`src/ags/audio/task/ags_change_indicator.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_change_indicator.Tpo $(DEPDIR)/gsequencer-ags_change_indicator.Po
-#	$(AM_V_CC)source='src/ags/audio/task/ags_change_indicator.c' object='gsequencer-ags_change_indicator.o' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_change_indicator.o `test -f 'src/ags/audio/task/ags_change_indicator.c' || echo '$(srcdir)/'`src/ags/audio/task/ags_change_indicator.c
-
-gsequencer-ags_change_indicator.obj: src/ags/audio/task/ags_change_indicator.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_change_indicator.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_change_indicator.Tpo -c -o gsequencer-ags_change_indicator.obj `if test -f 'src/ags/audio/task/ags_change_indicator.c'; then $(CYGPATH_W) 'src/ags/audio/task/ags_change_indicator.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/task/ags_change_indicator.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_change_indicator.Tpo $(DEPDIR)/gsequencer-ags_change_indicator.Po
-#	$(AM_V_CC)source='src/ags/audio/task/ags_change_indicator.c' object='gsequencer-ags_change_indicator.obj' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_change_indicator.obj `if test -f 'src/ags/audio/task/ags_change_indicator.c'; then $(CYGPATH_W) 'src/ags/audio/task/ags_change_indicator.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/task/ags_change_indicator.c'; fi`
-
-gsequencer-ags_change_tact.o: src/ags/audio/task/ags_change_tact.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_change_tact.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_change_tact.Tpo -c -o gsequencer-ags_change_tact.o `test -f 'src/ags/audio/task/ags_change_tact.c' || echo '$(srcdir)/'`src/ags/audio/task/ags_change_tact.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_change_tact.Tpo $(DEPDIR)/gsequencer-ags_change_tact.Po
-#	$(AM_V_CC)source='src/ags/audio/task/ags_change_tact.c' object='gsequencer-ags_change_tact.o' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_change_tact.o `test -f 'src/ags/audio/task/ags_change_tact.c' || echo '$(srcdir)/'`src/ags/audio/task/ags_change_tact.c
-
-gsequencer-ags_change_tact.obj: src/ags/audio/task/ags_change_tact.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_change_tact.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_change_tact.Tpo -c -o gsequencer-ags_change_tact.obj `if test -f 'src/ags/audio/task/ags_change_tact.c'; then $(CYGPATH_W) 'src/ags/audio/task/ags_change_tact.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/task/ags_change_tact.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_change_tact.Tpo $(DEPDIR)/gsequencer-ags_change_tact.Po
-#	$(AM_V_CC)source='src/ags/audio/task/ags_change_tact.c' object='gsequencer-ags_change_tact.obj' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_change_tact.obj `if test -f 'src/ags/audio/task/ags_change_tact.c'; then $(CYGPATH_W) 'src/ags/audio/task/ags_change_tact.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/task/ags_change_tact.c'; fi`
-
-gsequencer-ags_display_tact.o: src/ags/audio/task/ags_display_tact.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_display_tact.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_display_tact.Tpo -c -o gsequencer-ags_display_tact.o `test -f 'src/ags/audio/task/ags_display_tact.c' || echo '$(srcdir)/'`src/ags/audio/task/ags_display_tact.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_display_tact.Tpo $(DEPDIR)/gsequencer-ags_display_tact.Po
-#	$(AM_V_CC)source='src/ags/audio/task/ags_display_tact.c' object='gsequencer-ags_display_tact.o' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_display_tact.o `test -f 'src/ags/audio/task/ags_display_tact.c' || echo '$(srcdir)/'`src/ags/audio/task/ags_display_tact.c
-
-gsequencer-ags_display_tact.obj: src/ags/audio/task/ags_display_tact.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_display_tact.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_display_tact.Tpo -c -o gsequencer-ags_display_tact.obj `if test -f 'src/ags/audio/task/ags_display_tact.c'; then $(CYGPATH_W) 'src/ags/audio/task/ags_display_tact.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/task/ags_display_tact.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_display_tact.Tpo $(DEPDIR)/gsequencer-ags_display_tact.Po
-#	$(AM_V_CC)source='src/ags/audio/task/ags_display_tact.c' object='gsequencer-ags_display_tact.obj' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_display_tact.obj `if test -f 'src/ags/audio/task/ags_display_tact.c'; then $(CYGPATH_W) 'src/ags/audio/task/ags_display_tact.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/task/ags_display_tact.c'; fi`
-
-gsequencer-ags_free_selection.o: src/ags/audio/task/ags_free_selection.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_free_selection.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_free_selection.Tpo -c -o gsequencer-ags_free_selection.o `test -f 'src/ags/audio/task/ags_free_selection.c' || echo '$(srcdir)/'`src/ags/audio/task/ags_free_selection.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_free_selection.Tpo $(DEPDIR)/gsequencer-ags_free_selection.Po
-#	$(AM_V_CC)source='src/ags/audio/task/ags_free_selection.c' object='gsequencer-ags_free_selection.o' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_free_selection.o `test -f 'src/ags/audio/task/ags_free_selection.c' || echo '$(srcdir)/'`src/ags/audio/task/ags_free_selection.c
-
-gsequencer-ags_free_selection.obj: src/ags/audio/task/ags_free_selection.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_free_selection.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_free_selection.Tpo -c -o gsequencer-ags_free_selection.obj `if test -f 'src/ags/audio/task/ags_free_selection.c'; then $(CYGPATH_W) 'src/ags/audio/task/ags_free_selection.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/task/ags_free_selection.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_free_selection.Tpo $(DEPDIR)/gsequencer-ags_free_selection.Po
-#	$(AM_V_CC)source='src/ags/audio/task/ags_free_selection.c' object='gsequencer-ags_free_selection.obj' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_free_selection.obj `if test -f 'src/ags/audio/task/ags_free_selection.c'; then $(CYGPATH_W) 'src/ags/audio/task/ags_free_selection.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/task/ags_free_selection.c'; fi`
-
-gsequencer-ags_remove_point_from_selection.o: src/ags/audio/task/ags_remove_point_from_selection.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_remove_point_from_selection.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_remove_point_from_selection.Tpo -c -o gsequencer-ags_remove_point_from_selection.o `test -f 'src/ags/audio/task/ags_remove_point_from_selection.c' || echo '$(srcdir)/'`src/ags/audio/task/ags_remove_point_from_selection.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_remove_point_from_selection.Tpo $(DEPDIR)/gsequencer-ags_remove_point_from_selection.Po
-#	$(AM_V_CC)source='src/ags/audio/task/ags_remove_point_from_selection.c' object='gsequencer-ags_remove_point_from_selection.o' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_remove_point_from_selection.o `test -f 'src/ags/audio/task/ags_remove_point_from_selection.c' || echo '$(srcdir)/'`src/ags/audio/task/ags_remove_point_from_selection.c
-
-gsequencer-ags_remove_point_from_selection.obj: src/ags/audio/task/ags_remove_point_from_selection.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_remove_point_from_selection.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_remove_point_from_selection.Tpo -c -o gsequencer-ags_remove_point_from_selection.obj `if test -f 'src/ags/audio/task/ags_remove_point_from_selection.c'; then $(CYGPATH_W) 'src/ags/audio/task/ags_remove_point_from_selection.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/task/ags_remove_point_from_selection.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_remove_point_from_selection.Tpo $(DEPDIR)/gsequencer-ags_remove_point_from_selection.Po
-#	$(AM_V_CC)source='src/ags/audio/task/ags_remove_point_from_selection.c' object='gsequencer-ags_remove_point_from_selection.obj' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_remove_point_from_selection.obj `if test -f 'src/ags/audio/task/ags_remove_point_from_selection.c'; then $(CYGPATH_W) 'src/ags/audio/task/ags_remove_point_from_selection.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/task/ags_remove_point_from_selection.c'; fi`
-
-gsequencer-ags_save_file.o: src/ags/audio/task/ags_save_file.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_save_file.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_save_file.Tpo -c -o gsequencer-ags_save_file.o `test -f 'src/ags/audio/task/ags_save_file.c' || echo '$(srcdir)/'`src/ags/audio/task/ags_save_file.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_save_file.Tpo $(DEPDIR)/gsequencer-ags_save_file.Po
-#	$(AM_V_CC)source='src/ags/audio/task/ags_save_file.c' object='gsequencer-ags_save_file.o' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_save_file.o `test -f 'src/ags/audio/task/ags_save_file.c' || echo '$(srcdir)/'`src/ags/audio/task/ags_save_file.c
-
-gsequencer-ags_save_file.obj: src/ags/audio/task/ags_save_file.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_save_file.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_save_file.Tpo -c -o gsequencer-ags_save_file.obj `if test -f 'src/ags/audio/task/ags_save_file.c'; then $(CYGPATH_W) 'src/ags/audio/task/ags_save_file.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/task/ags_save_file.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_save_file.Tpo $(DEPDIR)/gsequencer-ags_save_file.Po
-#	$(AM_V_CC)source='src/ags/audio/task/ags_save_file.c' object='gsequencer-ags_save_file.obj' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_save_file.obj `if test -f 'src/ags/audio/task/ags_save_file.c'; then $(CYGPATH_W) 'src/ags/audio/task/ags_save_file.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/task/ags_save_file.c'; fi`
-
-gsequencer-ags_scroll_on_play.o: src/ags/audio/task/ags_scroll_on_play.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_scroll_on_play.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_scroll_on_play.Tpo -c -o gsequencer-ags_scroll_on_play.o `test -f 'src/ags/audio/task/ags_scroll_on_play.c' || echo '$(srcdir)/'`src/ags/audio/task/ags_scroll_on_play.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_scroll_on_play.Tpo $(DEPDIR)/gsequencer-ags_scroll_on_play.Po
-#	$(AM_V_CC)source='src/ags/audio/task/ags_scroll_on_play.c' object='gsequencer-ags_scroll_on_play.o' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_scroll_on_play.o `test -f 'src/ags/audio/task/ags_scroll_on_play.c' || echo '$(srcdir)/'`src/ags/audio/task/ags_scroll_on_play.c
-
-gsequencer-ags_scroll_on_play.obj: src/ags/audio/task/ags_scroll_on_play.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_scroll_on_play.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_scroll_on_play.Tpo -c -o gsequencer-ags_scroll_on_play.obj `if test -f 'src/ags/audio/task/ags_scroll_on_play.c'; then $(CYGPATH_W) 'src/ags/audio/task/ags_scroll_on_play.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/task/ags_scroll_on_play.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_scroll_on_play.Tpo $(DEPDIR)/gsequencer-ags_scroll_on_play.Po
-#	$(AM_V_CC)source='src/ags/audio/task/ags_scroll_on_play.c' object='gsequencer-ags_scroll_on_play.obj' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_scroll_on_play.obj `if test -f 'src/ags/audio/task/ags_scroll_on_play.c'; then $(CYGPATH_W) 'src/ags/audio/task/ags_scroll_on_play.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/task/ags_scroll_on_play.c'; fi`
-
-gsequencer-ags_toggle_led.o: src/ags/audio/task/ags_toggle_led.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_toggle_led.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_toggle_led.Tpo -c -o gsequencer-ags_toggle_led.o `test -f 'src/ags/audio/task/ags_toggle_led.c' || echo '$(srcdir)/'`src/ags/audio/task/ags_toggle_led.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_toggle_led.Tpo $(DEPDIR)/gsequencer-ags_toggle_led.Po
-#	$(AM_V_CC)source='src/ags/audio/task/ags_toggle_led.c' object='gsequencer-ags_toggle_led.o' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_toggle_led.o `test -f 'src/ags/audio/task/ags_toggle_led.c' || echo '$(srcdir)/'`src/ags/audio/task/ags_toggle_led.c
-
-gsequencer-ags_toggle_led.obj: src/ags/audio/task/ags_toggle_led.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_toggle_led.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_toggle_led.Tpo -c -o gsequencer-ags_toggle_led.obj `if test -f 'src/ags/audio/task/ags_toggle_led.c'; then $(CYGPATH_W) 'src/ags/audio/task/ags_toggle_led.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/task/ags_toggle_led.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_toggle_led.Tpo $(DEPDIR)/gsequencer-ags_toggle_led.Po
-#	$(AM_V_CC)source='src/ags/audio/task/ags_toggle_led.c' object='gsequencer-ags_toggle_led.obj' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_toggle_led.obj `if test -f 'src/ags/audio/task/ags_toggle_led.c'; then $(CYGPATH_W) 'src/ags/audio/task/ags_toggle_led.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/task/ags_toggle_led.c'; fi`
-
-gsequencer-ags_toggle_pattern_bit.o: src/ags/audio/task/ags_toggle_pattern_bit.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_toggle_pattern_bit.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_toggle_pattern_bit.Tpo -c -o gsequencer-ags_toggle_pattern_bit.o `test -f 'src/ags/audio/task/ags_toggle_pattern_bit.c' || echo '$(srcdir)/'`src/ags/audio/task/ags_toggle_pattern_bit.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_toggle_pattern_bit.Tpo $(DEPDIR)/gsequencer-ags_toggle_pattern_bit.Po
-#	$(AM_V_CC)source='src/ags/audio/task/ags_toggle_pattern_bit.c' object='gsequencer-ags_toggle_pattern_bit.o' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_toggle_pattern_bit.o `test -f 'src/ags/audio/task/ags_toggle_pattern_bit.c' || echo '$(srcdir)/'`src/ags/audio/task/ags_toggle_pattern_bit.c
-
-gsequencer-ags_toggle_pattern_bit.obj: src/ags/audio/task/ags_toggle_pattern_bit.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_toggle_pattern_bit.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_toggle_pattern_bit.Tpo -c -o gsequencer-ags_toggle_pattern_bit.obj `if test -f 'src/ags/audio/task/ags_toggle_pattern_bit.c'; then $(CYGPATH_W) 'src/ags/audio/task/ags_toggle_pattern_bit.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/task/ags_toggle_pattern_bit.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_toggle_pattern_bit.Tpo $(DEPDIR)/gsequencer-ags_toggle_pattern_bit.Po
-#	$(AM_V_CC)source='src/ags/audio/task/ags_toggle_pattern_bit.c' object='gsequencer-ags_toggle_pattern_bit.obj' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_toggle_pattern_bit.obj `if test -f 'src/ags/audio/task/ags_toggle_pattern_bit.c'; then $(CYGPATH_W) 'src/ags/audio/task/ags_toggle_pattern_bit.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/task/ags_toggle_pattern_bit.c'; fi`
-
-gsequencer-ags_file_gui.o: src/ags/file/ags_file_gui.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_file_gui.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_file_gui.Tpo -c -o gsequencer-ags_file_gui.o `test -f 'src/ags/file/ags_file_gui.c' || echo '$(srcdir)/'`src/ags/file/ags_file_gui.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_file_gui.Tpo $(DEPDIR)/gsequencer-ags_file_gui.Po
-#	$(AM_V_CC)source='src/ags/file/ags_file_gui.c' object='gsequencer-ags_file_gui.o' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_file_gui.o `test -f 'src/ags/file/ags_file_gui.c' || echo '$(srcdir)/'`src/ags/file/ags_file_gui.c
-
-gsequencer-ags_file_gui.obj: src/ags/file/ags_file_gui.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_file_gui.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_file_gui.Tpo -c -o gsequencer-ags_file_gui.obj `if test -f 'src/ags/file/ags_file_gui.c'; then $(CYGPATH_W) 'src/ags/file/ags_file_gui.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/file/ags_file_gui.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_file_gui.Tpo $(DEPDIR)/gsequencer-ags_file_gui.Po
-#	$(AM_V_CC)source='src/ags/file/ags_file_gui.c' object='gsequencer-ags_file_gui.obj' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_file_gui.obj `if test -f 'src/ags/file/ags_file_gui.c'; then $(CYGPATH_W) 'src/ags/file/ags_file_gui.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/file/ags_file_gui.c'; fi`
-
-gsequencer-ags_file.o: src/ags/file/ags_file.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_file.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_file.Tpo -c -o gsequencer-ags_file.o `test -f 'src/ags/file/ags_file.c' || echo '$(srcdir)/'`src/ags/file/ags_file.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_file.Tpo $(DEPDIR)/gsequencer-ags_file.Po
-#	$(AM_V_CC)source='src/ags/file/ags_file.c' object='gsequencer-ags_file.o' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_file.o `test -f 'src/ags/file/ags_file.c' || echo '$(srcdir)/'`src/ags/file/ags_file.c
-
-gsequencer-ags_file.obj: src/ags/file/ags_file.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_file.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_file.Tpo -c -o gsequencer-ags_file.obj `if test -f 'src/ags/file/ags_file.c'; then $(CYGPATH_W) 'src/ags/file/ags_file.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/file/ags_file.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_file.Tpo $(DEPDIR)/gsequencer-ags_file.Po
-#	$(AM_V_CC)source='src/ags/file/ags_file.c' object='gsequencer-ags_file.obj' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_file.obj `if test -f 'src/ags/file/ags_file.c'; then $(CYGPATH_W) 'src/ags/file/ags_file.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/file/ags_file.c'; fi`
-
-gsequencer-ags_file_id_ref.o: src/ags/file/ags_file_id_ref.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_file_id_ref.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_file_id_ref.Tpo -c -o gsequencer-ags_file_id_ref.o `test -f 'src/ags/file/ags_file_id_ref.c' || echo '$(srcdir)/'`src/ags/file/ags_file_id_ref.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_file_id_ref.Tpo $(DEPDIR)/gsequencer-ags_file_id_ref.Po
-#	$(AM_V_CC)source='src/ags/file/ags_file_id_ref.c' object='gsequencer-ags_file_id_ref.o' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_file_id_ref.o `test -f 'src/ags/file/ags_file_id_ref.c' || echo '$(srcdir)/'`src/ags/file/ags_file_id_ref.c
-
-gsequencer-ags_file_id_ref.obj: src/ags/file/ags_file_id_ref.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_file_id_ref.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_file_id_ref.Tpo -c -o gsequencer-ags_file_id_ref.obj `if test -f 'src/ags/file/ags_file_id_ref.c'; then $(CYGPATH_W) 'src/ags/file/ags_file_id_ref.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/file/ags_file_id_ref.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_file_id_ref.Tpo $(DEPDIR)/gsequencer-ags_file_id_ref.Po
-#	$(AM_V_CC)source='src/ags/file/ags_file_id_ref.c' object='gsequencer-ags_file_id_ref.obj' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_file_id_ref.obj `if test -f 'src/ags/file/ags_file_id_ref.c'; then $(CYGPATH_W) 'src/ags/file/ags_file_id_ref.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/file/ags_file_id_ref.c'; fi`
-
-gsequencer-ags_file_launch.o: src/ags/file/ags_file_launch.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_file_launch.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_file_launch.Tpo -c -o gsequencer-ags_file_launch.o `test -f 'src/ags/file/ags_file_launch.c' || echo '$(srcdir)/'`src/ags/file/ags_file_launch.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_file_launch.Tpo $(DEPDIR)/gsequencer-ags_file_launch.Po
-#	$(AM_V_CC)source='src/ags/file/ags_file_launch.c' object='gsequencer-ags_file_launch.o' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_file_launch.o `test -f 'src/ags/file/ags_file_launch.c' || echo '$(srcdir)/'`src/ags/file/ags_file_launch.c
-
-gsequencer-ags_file_launch.obj: src/ags/file/ags_file_launch.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_file_launch.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_file_launch.Tpo -c -o gsequencer-ags_file_launch.obj `if test -f 'src/ags/file/ags_file_launch.c'; then $(CYGPATH_W) 'src/ags/file/ags_file_launch.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/file/ags_file_launch.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_file_launch.Tpo $(DEPDIR)/gsequencer-ags_file_launch.Po
-#	$(AM_V_CC)source='src/ags/file/ags_file_launch.c' object='gsequencer-ags_file_launch.obj' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_file_launch.obj `if test -f 'src/ags/file/ags_file_launch.c'; then $(CYGPATH_W) 'src/ags/file/ags_file_launch.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/file/ags_file_launch.c'; fi`
-
-gsequencer-ags_file_link.o: src/ags/file/ags_file_link.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_file_link.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_file_link.Tpo -c -o gsequencer-ags_file_link.o `test -f 'src/ags/file/ags_file_link.c' || echo '$(srcdir)/'`src/ags/file/ags_file_link.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_file_link.Tpo $(DEPDIR)/gsequencer-ags_file_link.Po
-#	$(AM_V_CC)source='src/ags/file/ags_file_link.c' object='gsequencer-ags_file_link.o' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_file_link.o `test -f 'src/ags/file/ags_file_link.c' || echo '$(srcdir)/'`src/ags/file/ags_file_link.c
-
-gsequencer-ags_file_link.obj: src/ags/file/ags_file_link.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_file_link.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_file_link.Tpo -c -o gsequencer-ags_file_link.obj `if test -f 'src/ags/file/ags_file_link.c'; then $(CYGPATH_W) 'src/ags/file/ags_file_link.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/file/ags_file_link.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_file_link.Tpo $(DEPDIR)/gsequencer-ags_file_link.Po
-#	$(AM_V_CC)source='src/ags/file/ags_file_link.c' object='gsequencer-ags_file_link.obj' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_file_link.obj `if test -f 'src/ags/file/ags_file_link.c'; then $(CYGPATH_W) 'src/ags/file/ags_file_link.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/file/ags_file_link.c'; fi`
-
-gsequencer-ags_file_lookup.o: src/ags/file/ags_file_lookup.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_file_lookup.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_file_lookup.Tpo -c -o gsequencer-ags_file_lookup.o `test -f 'src/ags/file/ags_file_lookup.c' || echo '$(srcdir)/'`src/ags/file/ags_file_lookup.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_file_lookup.Tpo $(DEPDIR)/gsequencer-ags_file_lookup.Po
-#	$(AM_V_CC)source='src/ags/file/ags_file_lookup.c' object='gsequencer-ags_file_lookup.o' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_file_lookup.o `test -f 'src/ags/file/ags_file_lookup.c' || echo '$(srcdir)/'`src/ags/file/ags_file_lookup.c
-
-gsequencer-ags_file_lookup.obj: src/ags/file/ags_file_lookup.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_file_lookup.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_file_lookup.Tpo -c -o gsequencer-ags_file_lookup.obj `if test -f 'src/ags/file/ags_file_lookup.c'; then $(CYGPATH_W) 'src/ags/file/ags_file_lookup.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/file/ags_file_lookup.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_file_lookup.Tpo $(DEPDIR)/gsequencer-ags_file_lookup.Po
-#	$(AM_V_CC)source='src/ags/file/ags_file_lookup.c' object='gsequencer-ags_file_lookup.obj' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_file_lookup.obj `if test -f 'src/ags/file/ags_file_lookup.c'; then $(CYGPATH_W) 'src/ags/file/ags_file_lookup.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/file/ags_file_lookup.c'; fi`
-
-gsequencer-ags_file_sound.o: src/ags/file/ags_file_sound.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_file_sound.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_file_sound.Tpo -c -o gsequencer-ags_file_sound.o `test -f 'src/ags/file/ags_file_sound.c' || echo '$(srcdir)/'`src/ags/file/ags_file_sound.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_file_sound.Tpo $(DEPDIR)/gsequencer-ags_file_sound.Po
-#	$(AM_V_CC)source='src/ags/file/ags_file_sound.c' object='gsequencer-ags_file_sound.o' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_file_sound.o `test -f 'src/ags/file/ags_file_sound.c' || echo '$(srcdir)/'`src/ags/file/ags_file_sound.c
-
-gsequencer-ags_file_sound.obj: src/ags/file/ags_file_sound.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_file_sound.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_file_sound.Tpo -c -o gsequencer-ags_file_sound.obj `if test -f 'src/ags/file/ags_file_sound.c'; then $(CYGPATH_W) 'src/ags/file/ags_file_sound.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/file/ags_file_sound.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_file_sound.Tpo $(DEPDIR)/gsequencer-ags_file_sound.Po
-#	$(AM_V_CC)source='src/ags/file/ags_file_sound.c' object='gsequencer-ags_file_sound.obj' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_file_sound.obj `if test -f 'src/ags/file/ags_file_sound.c'; then $(CYGPATH_W) 'src/ags/file/ags_file_sound.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/file/ags_file_sound.c'; fi`
-
-gsequencer-ags_file_thread.o: src/ags/file/ags_file_thread.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_file_thread.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_file_thread.Tpo -c -o gsequencer-ags_file_thread.o `test -f 'src/ags/file/ags_file_thread.c' || echo '$(srcdir)/'`src/ags/file/ags_file_thread.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_file_thread.Tpo $(DEPDIR)/gsequencer-ags_file_thread.Po
-#	$(AM_V_CC)source='src/ags/file/ags_file_thread.c' object='gsequencer-ags_file_thread.o' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_file_thread.o `test -f 'src/ags/file/ags_file_thread.c' || echo '$(srcdir)/'`src/ags/file/ags_file_thread.c
-
-gsequencer-ags_file_thread.obj: src/ags/file/ags_file_thread.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_file_thread.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_file_thread.Tpo -c -o gsequencer-ags_file_thread.obj `if test -f 'src/ags/file/ags_file_thread.c'; then $(CYGPATH_W) 'src/ags/file/ags_file_thread.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/file/ags_file_thread.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_file_thread.Tpo $(DEPDIR)/gsequencer-ags_file_thread.Po
-#	$(AM_V_CC)source='src/ags/file/ags_file_thread.c' object='gsequencer-ags_file_thread.obj' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_file_thread.obj `if test -f 'src/ags/file/ags_file_thread.c'; then $(CYGPATH_W) 'src/ags/file/ags_file_thread.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/file/ags_file_thread.c'; fi`
-
-gsequencer-ags_file_util.o: src/ags/file/ags_file_util.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_file_util.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_file_util.Tpo -c -o gsequencer-ags_file_util.o `test -f 'src/ags/file/ags_file_util.c' || echo '$(srcdir)/'`src/ags/file/ags_file_util.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_file_util.Tpo $(DEPDIR)/gsequencer-ags_file_util.Po
-#	$(AM_V_CC)source='src/ags/file/ags_file_util.c' object='gsequencer-ags_file_util.o' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_file_util.o `test -f 'src/ags/file/ags_file_util.c' || echo '$(srcdir)/'`src/ags/file/ags_file_util.c
-
-gsequencer-ags_file_util.obj: src/ags/file/ags_file_util.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_file_util.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_file_util.Tpo -c -o gsequencer-ags_file_util.obj `if test -f 'src/ags/file/ags_file_util.c'; then $(CYGPATH_W) 'src/ags/file/ags_file_util.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/file/ags_file_util.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_file_util.Tpo $(DEPDIR)/gsequencer-ags_file_util.Po
-#	$(AM_V_CC)source='src/ags/file/ags_file_util.c' object='gsequencer-ags_file_util.obj' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_file_util.obj `if test -f 'src/ags/file/ags_file_util.c'; then $(CYGPATH_W) 'src/ags/file/ags_file_util.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/file/ags_file_util.c'; fi`
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_gsequencer_file_xml.obj `if test -f 'src/ags/X/file/ags_gsequencer_file_xml.c'; then $(CYGPATH_W) 'src/ags/X/file/ags_gsequencer_file_xml.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/file/ags_gsequencer_file_xml.c'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo

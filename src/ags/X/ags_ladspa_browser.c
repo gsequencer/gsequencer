@@ -21,7 +21,7 @@
 
 #include <ags/main.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/plugin/ags_ladspa_manager.h>
 

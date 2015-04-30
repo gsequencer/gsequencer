@@ -18,7 +18,7 @@
 
 #include <ags/audio/task/ags_change_indicator.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 void ags_change_indicator_class_init(AgsChangeIndicatorClass *change_indicator);
 void ags_change_indicator_connectable_interface_init(AgsConnectableInterface *connectable);

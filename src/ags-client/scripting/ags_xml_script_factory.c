@@ -18,7 +18,7 @@
 
 #include <ags-client/scripting/ags_xml_script_factory.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <libxml/xmlstring.h>
 

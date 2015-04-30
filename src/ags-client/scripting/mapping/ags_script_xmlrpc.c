@@ -18,7 +18,7 @@
 
 #include <ags-client/scripting/mapping/ags_script_xmlrpc.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 void ags_script_xmlrpc_class_init(AgsScriptXmlrpcClass *script_xmlrpc);
 void ags_script_xmlrpc_connectable_interface_init(AgsConnectableInterface *connectable);

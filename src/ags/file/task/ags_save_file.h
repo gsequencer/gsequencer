@@ -22,7 +22,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/audio/ags_task.h>
+#include <ags/thread/ags_task.h>
 #include <ags/file/ags_file.h>
 
 #define AGS_TYPE_SAVE_FILE                (ags_save_file_get_type())

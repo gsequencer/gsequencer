@@ -18,7 +18,7 @@
 
 #include <ags-client/scripting/mapping/ags_script_object.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags-client/object/ags_marshal.h>
 

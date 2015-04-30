@@ -1,6 +1,6 @@
 #include <ags/X/ags_property_listing_editor.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 void ags_property_listing_editor_class_init(AgsPropertyListingEditorClass *property_listing_editor);
 void ags_property_listing_editor_connectable_interface_init(AgsConnectableInterface *connectable);

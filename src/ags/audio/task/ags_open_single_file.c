@@ -18,7 +18,7 @@
 
 #include <ags/audio/task/ags_open_single_file.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/file/ags_file_link.h>
 

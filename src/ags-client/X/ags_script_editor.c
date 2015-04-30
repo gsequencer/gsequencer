@@ -18,7 +18,7 @@
 
 #include <ags-client/X/ags_script_editor.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 void ags_script_editor_class_init(AgsScriptEditorClass *script_editor);
 void ags_script_editor_connectable_interface_init(AgsConnectableInterface *connectable);

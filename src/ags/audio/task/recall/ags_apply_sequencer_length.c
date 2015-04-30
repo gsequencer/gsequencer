@@ -18,7 +18,7 @@
 
 #include <ags/audio/task/recall/ags_apply_sequencer_length.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 #include <ags/object/ags_tactable.h>
 
 #include <ags/audio/ags_devout.h>

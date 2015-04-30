@@ -18,7 +18,7 @@
 
 #include <ags/audio/task/ags_apply_wavetable.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 void ags_apply_wavetable_class_init(AgsApplyWavetableClass *apply_wavetable);
 void ags_apply_wavetable_connectable_interface_init(AgsConnectableInterface *connectable);

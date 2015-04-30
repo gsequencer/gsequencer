@@ -19,7 +19,7 @@
 #include <ags/audio/recall/ags_stream_channel_run.h>
 #include <ags/audio/recall/ags_stream_recycling.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/main.h>
 

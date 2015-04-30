@@ -30,7 +30,7 @@
 
 #include <ags/thread/ags_thread_pool.h>
 
-#include <ags/audio/ags_task.h>
+#include <ags/thread/ags_task.h>
 
 #define AGS_TYPE_TASK_THREAD                (ags_task_thread_get_type())
 #define AGS_TASK_THREAD(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_TASK_THREAD, AgsTaskThread))

@@ -22,7 +22,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/audio/ags_task.h>
+#include <ags/thread/ags_task.h>
 #include <ags/audio/ags_recall.h>
 
 #define AGS_TYPE_ADD_RECALL                (ags_add_recall_get_type())

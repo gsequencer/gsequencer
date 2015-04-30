@@ -22,7 +22,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/audio/ags_task.h>
+#include <ags/thread/ags_task.h>
 #include <ags/audio/ags_notation.h>
 
 #define AGS_TYPE_REMOVE_REGION_FROM_SELECTION                (ags_remove_region_from_selection_get_type())

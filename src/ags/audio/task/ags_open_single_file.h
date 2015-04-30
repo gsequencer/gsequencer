@@ -21,7 +21,7 @@
 
 #include <glib-object.h>
 
-#include <ags/audio/ags_task.h>
+#include <ags/thread/ags_task.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_devout.h>
 

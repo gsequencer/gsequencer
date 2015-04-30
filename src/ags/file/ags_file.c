@@ -17,22 +17,17 @@
  */
 
 #include <ags/file/ags_file.h>
-#include <ags/file/ags_file_thread.h>
-#include <ags/file/ags_file_sound.h>
-#include <ags/file/ags_file_gui.h>
 #include <ags/file/ags_file_stock.h>
 
 #include <ags/util/ags_id_generator.h>
 
 #include <ags/object/ags_application_context.h>
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 #include <ags/object/ags_marshal.h>
 
 #include <ags/file/ags_file_lookup.h>
 #include <ags/file/ags_file_id_ref.h>
 #include <ags/file/ags_file_launch.h>
-#include <ags/file/ags_file_sound.h>
-#include <ags/file/ags_file_gui.h>
 
 #include <ags/thread/ags_thread_pool.h>
 
@@ -41,8 +36,6 @@
 #else
 #include <ags/thread/ags_thread-posix.h>
 #endif 
-
-#include <ags/thread/ags_audio_loop.h>
 
 #include <libxml/parser.h>
 #include <libxml/xlink.h>

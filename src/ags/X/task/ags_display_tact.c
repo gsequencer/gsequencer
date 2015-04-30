@@ -18,7 +18,7 @@
 
 #include <ags/audio/task/ags_display_tact.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/X/ags_navigation.h>
 

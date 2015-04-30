@@ -19,9 +19,8 @@
 #include <ags/thread/ags_autosave_thread.h>
 
 #include <ags/object/ags_application_context.h>
-#include <ags-lib/object/ags_connectable.h>
-
-#include <ags/audio/ags_devout.h>
+#include <ags/object/ags_connectable.h>
+#include <ags/object/ags_main_loop.h>
 
 #include <sys/types.h>
 #include <pwd.h>

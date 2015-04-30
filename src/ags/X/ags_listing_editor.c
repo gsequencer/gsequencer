@@ -19,7 +19,7 @@
 #include <ags/X/ags_listing_editor.h>
 #include <ags/X/ags_listing_editor_callbacks.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 #include <ags/object/ags_applicable.h>
 
 #include <ags/audio/ags_channel.h>

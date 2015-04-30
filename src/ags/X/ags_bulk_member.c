@@ -19,7 +19,7 @@
 #include <ags/X/ags_bulk_member.h>
 #include <ags/X/ags_bulk_member_callbacks.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_task_thread.h>

@@ -22,13 +22,10 @@
 
 #include <ags/object/ags_application_context.h>
 #include <ags/object/ags_config.h>
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/thread/ags_concurrency_provider.h>
-#include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_returnable_thread.h>
-
-#include <ags/audio/ags_devout.h>
 
 #include <math.h>
 
@@ -217,59 +214,15 @@ void
 ags_task_thread_run(AgsThread *thread)
 {
   AgsTaskThread *task_thread;
-
+  AgsThread *main_loop;
+  
   GList *list;
 
-  static struct timespec play_idle;
-  static useconds_t idle;
   guint prev_pending;
-  static gboolean initialized = FALSE;
 
   task_thread = AGS_TASK_THREAD(thread);
-
-  if(!initialized){
-    AgsThread *main_loop;
-
-    AgsApplicationContext *application_context;
-    AgsConfig *config;
-
-    guint buffer_size;
-    guint samplerate;
-
-    pthread_mutex_t *application_mutex;
-    
-    main_loop = ags_thread_get_toplevel(thread);
-
-    g_object_get(main_loop,
-		 "application-mutex\0", &application_mutex,
-		 NULL);
-
-    pthread_mutex_lock(application_mutex);
-    
-    application_context = ags_main_loop_get_application_context(main_loop);
-
-    config = application_context->config;
-    
-    buffer_size = g_ascii_strtoull(ags_config_get_value(config,
-							AGS_CONFIG_DEVOUT,
-							"buffer-size\0"),
-				   NULL,
-				   10);
-    samplerate = g_ascii_strtoull(ags_config_get_value(config,
-						       AGS_CONFIG_DEVOUT,
-						       "samplerate\0"),
-				  NULL,
-				  10);
-
-    pthread_mutex_unlock(application_mutex);
-    
-    play_idle.tv_sec = 0;
-    play_idle.tv_nsec = 10 * round(sysconf(_SC_CLK_TCK) * (double) buffer_size  / (double) samplerate);
-    //    idle = sysconf(_SC_CLK_TCK) * round(sysconf(_SC_CLK_TCK) * (double) buffer_size  / (double) samplerate / 8.0);
-
-    initialized = TRUE;
-  }
-
+  main_loop = ags_thread_get_toplevel(task_thread);
+  
   /*  */
   pthread_mutex_lock(&(task_thread->read_mutex));
 
@@ -294,8 +247,8 @@ ags_task_thread_run(AgsThread *thread)
     int i;
 
     pthread_mutex_lock(&(task_thread->launch_mutex));
-    pthread_mutex_lock(&(AGS_AUDIO_LOOP(thread->parent)->recall_mutex));
-
+    ags_thread_lock(main_loop);
+    
     for(i = 0; i < g_atomic_int_get(&(task_thread->pending)); i++){
       task = AGS_TASK(list->data);
 
@@ -308,7 +261,7 @@ ags_task_thread_run(AgsThread *thread)
       list = list->next;
     }
 
-    pthread_mutex_unlock(&(AGS_AUDIO_LOOP(thread->parent)->recall_mutex));
+    ags_thread_unlock(main_loop);
     pthread_mutex_unlock(&(task_thread->launch_mutex));
   }
 

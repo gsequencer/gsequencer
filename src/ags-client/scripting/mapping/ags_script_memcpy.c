@@ -18,7 +18,7 @@
 
 #include <ags-client/scripting/mapping/ags_script_memcpy.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 void ags_script_memcpy_class_init(AgsScriptMemcpyClass *script_memcpy);
 void ags_script_memcpy_connectable_interface_init(AgsConnectableInterface *connectable);

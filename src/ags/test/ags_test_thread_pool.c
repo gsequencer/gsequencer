@@ -3,7 +3,7 @@
 
 #include <ags/main.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/object/ags_main_loop.h>
 

@@ -19,7 +19,7 @@
 #include <ags/X/editor/ags_file_selection.h>
 #include <ags/X/editor/ags_file_selection_callbacks.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/X/ags_window.h>
 

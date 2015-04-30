@@ -22,7 +22,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/audio/ags_task.h>
+#include <ags/thread/ags_task.h>
 
 #define AGS_TYPE_SET_BUFFER_SIZE                (ags_set_buffer_size_get_type())
 #define AGS_SET_BUFFER_SIZE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SET_BUFFER_SIZE, AgsSetBufferSize))

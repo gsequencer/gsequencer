@@ -19,7 +19,7 @@
 #include <ags/audio/ags_audio_application_context.h>
 
 #include <ags/object/ags_config.h>
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 #include <ags/object/ags_soundcard.h>
 
 #include <ags/file/ags_file.h>
@@ -403,6 +403,9 @@ ags_audio_application_context_register_types(AgsApplicationContext *application_
 {
   ags_audio_loop_get_type();
   ags_devout_thread_get_type();
+  ags_export_thread_get_type();
+  ags_record_thread_get_type();
+  ags_iterator_thread_get_type();
   ags_recycling_thread_get_type();
 
   /* register recalls */

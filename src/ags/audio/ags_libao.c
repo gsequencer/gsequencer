@@ -19,7 +19,7 @@
 #include <ags/audio/ags_libao.h>
 
 #include <ags/object/ags_application_context.h>
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/main.h>
 
@@ -66,7 +66,6 @@ enum{
   PROP_BUFFER,
   PROP_BPM,
   PROP_ATTACK,
-  PROP_TASK,
 };
 
 enum{
@@ -239,14 +238,6 @@ ags_libao_class_init(AgsLibaoClass *libao)
 				  PROP_ATTACK,
 				  param_spec);
 
-  param_spec = g_param_spec_object("task\0",
-				   "task to launch\0",
-				   "A task to launch\0",
-				   AGS_TYPE_TASK,
-				   G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_TASK,
-				  param_spec);
 
   /* AgsLibaoClass */
   libao->play_init = ags_libao_output_init;
@@ -269,7 +260,7 @@ ags_libao_class_init(AgsLibaoClass *libao)
 GQuark
 ags_libao_error_quark()
 {
-  return(g_quark_from_static_string("ags-libao-error-quark\0"));
+  return(g_quark_from_static_string("agsao-error-quark\0"));
 }
 
 void
@@ -470,11 +461,6 @@ ags_libao_set_property(GObject *gobject,
     }
     break;
   case PROP_BPM:
-    {
-	//TODO:JK: implement me
-    }
-    break;
-  case PROP_TASK:
     {
 	//TODO:JK: implement me
     }
