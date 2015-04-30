@@ -19,7 +19,7 @@
 #include <ags/X/ags_effect_bridge.h>
 #include <ags/X/ags_effect_bridge_callbacks.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/main.h>
 

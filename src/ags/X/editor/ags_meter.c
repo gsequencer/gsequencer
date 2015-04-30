@@ -19,7 +19,7 @@
 #include <ags/X/editor/ags_meter.h>
 #include <ags/X/editor/ags_meter_callbacks.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/X/ags_editor.h>
 

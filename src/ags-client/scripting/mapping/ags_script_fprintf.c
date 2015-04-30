@@ -18,7 +18,7 @@
 
 #include <ags-client/scripting/mapping/ags_script_fprintf.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 void ags_script_fprintf_class_init(AgsScriptFPrintfClass *script_fprintf);
 void ags_script_fprintf_connectable_interface_init(AgsConnectableInterface *connectable);

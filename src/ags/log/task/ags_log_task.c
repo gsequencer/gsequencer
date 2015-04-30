@@ -16,9 +16,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <ags/audio/task/ags_log_task.h>
+#include <ags/log/task/ags_log_task.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 void ags_log_task_class_init(AgsLogTaskClass *log_task);
 void ags_log_task_connectable_interface_init(AgsConnectableInterface *connectable);

@@ -19,7 +19,7 @@
 #include <ags/X/ags_menu_bar.h>
 #include <ags/X/ags_menu_bar_callbacks.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 void ags_menu_bar_class_init(AgsMenuBarClass *menu_bar);
 void ags_menu_bar_connectable_interface_init(AgsConnectableInterface *connectable);

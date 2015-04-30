@@ -18,7 +18,7 @@
 
 #include <ags/thread/ags_thread_pool.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/thread/ags_returnable_thread.h>
 

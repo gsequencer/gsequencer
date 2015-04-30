@@ -21,7 +21,7 @@
 
 #include <glib-object.h>
 
-#include <ags/audio/ags_task.h>
+#include <ags/thread/ags_task.h>
 
 #define AGS_TYPE_TOGGLE_LED                (ags_toggle_led_get_type())
 #define AGS_TOGGLE_LED(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_TOGGLE_LED, AgsToggleLed))

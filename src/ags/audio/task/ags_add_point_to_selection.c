@@ -18,7 +18,7 @@
 
 #include <ags/audio/task/ags_add_point_to_selection.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 void ags_add_point_to_selection_class_init(AgsAddPointToSelectionClass *add_point_to_selection);
 void ags_add_point_to_selection_connectable_interface_init(AgsConnectableInterface *connectable);

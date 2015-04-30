@@ -2,7 +2,9 @@
 
 #include <ags/object/ags_application_context.h>
 
+#include <ags/thread/ags_concurrency_provider.h>
 #include <ags/thread/ags_mutex_manager.h>
+#include <ags/thread/ags_task_thread.h>
 
 #include <ags/log/task/ags_log_task.h>
 
@@ -143,6 +145,8 @@ ags_log_set_property(GObject *gobject,
       }
 
       if(application_context != NULL){
+	AgsMutexManager *mutex_manager;
+	
 	pthread_mutex_t *mutex;
 	pthread_mutexattr_t attr;
 	
@@ -167,7 +171,7 @@ ags_log_set_property(GObject *gobject,
 				 (GObject *) log,
 				 mutex);
 	
-	pthread_mutex_unlock(&(log->application_mutex));
+	pthread_mutex_unlock(log->application_mutex);
       }else{
 	log->application_mutex = NULL;
       }
@@ -199,7 +203,7 @@ ags_log_get_property(GObject *gobject,
     break;
   case PROP_APPLICATION_CONTEXT:
     {
-      g_value_set_object(value, window->application_context);
+      g_value_set_object(value, log->application_context);
     }
     break;
   default:
@@ -212,7 +216,6 @@ void
 ags_log_finalize(GObject *gobject)
 {
   AgsLog *log;
-  GList *list;
 
   log = AGS_LOG(gobject);
 
@@ -222,6 +225,8 @@ ags_log_finalize(GObject *gobject)
   }
   
   if(log->application_context != NULL){
+    AgsMutexManager *mutex_manager;
+    
     /* remove of mutex manager */
     pthread_mutex_lock(log->application_mutex);
     
@@ -244,7 +249,7 @@ ags_log_finalize(GObject *gobject)
 }
 
 AgsLogMessage*
-ags_log_message_alloc(struct timespec timestamp, char *format, va_list args)
+ags_log_message_alloc(struct timespec *timestamp, char *format, va_list *args)
 {
   AgsLogMessage *log_message;
 
@@ -312,7 +317,7 @@ ags_log_debug(AgsLog *log, char *format, ...)
   pthread_mutex_lock(log_mutex);
 
   if((AGS_LOG_DEBUG & (log->mode)) != 0){
-    struct timespec timestamp;
+    struct timespec *timestamp;
     va_list args_copy;
       
     va_start(args, format);
@@ -322,7 +327,7 @@ ags_log_debug(AgsLog *log, char *format, ...)
     timestamp = (struct timespec *) malloc(sizeof(struct timespec));
     clock_gettime(CLOCK_REALTIME, timestamp);
     
-    log_message = ags_log_message_alloc(timestamp, format, args);
+    log_message = ags_log_message_alloc(timestamp, format, &args);
     log_message->mode = AGS_LOG_DEBUG;
     
     /* queue*/
@@ -359,7 +364,7 @@ ags_log_message(AgsLog *log, char *format, ...)
   pthread_mutex_lock(log_mutex);
 
   if((AGS_LOG_DEBUG & (log->flags)) != 0){
-    struct timespec timestamp;
+    struct timespec *timestamp;
     va_list args_copy;
       
     va_start(args, format);
@@ -369,7 +374,7 @@ ags_log_message(AgsLog *log, char *format, ...)
     timestamp = (struct timespec *) malloc(sizeof(struct timespec));
     clock_gettime(CLOCK_REALTIME, timestamp);
     
-    log_message = ags_log_message_alloc(timestamp, format, args);
+    log_message = ags_log_message_alloc(timestamp, format, &args);
     log_message->mode = AGS_LOG_MESSAGE;
 
     /* queue*/
@@ -406,7 +411,7 @@ ags_log_warn(AgsLog *log, char *format, ...)
   pthread_mutex_lock(log_mutex);
 
   if((AGS_LOG_DEBUG & (log->flags)) != 0){
-    struct timespec timestamp;
+    struct timespec *timestamp;
     va_list args_copy;
       
     va_start(args, format);
@@ -416,7 +421,7 @@ ags_log_warn(AgsLog *log, char *format, ...)
     timestamp = (struct timespec *) malloc(sizeof(struct timespec));
     clock_gettime(CLOCK_REALTIME, timestamp);
     
-    log_message = ags_log_message_alloc(timestamp, format, args);
+    log_message = ags_log_message_alloc(timestamp, format, &args);
     log_message->mode = AGS_LOG_WARN;
 
     /* queue*/
@@ -453,7 +458,7 @@ ags_log_error(AgsLog *log, char *format, ...)
   pthread_mutex_lock(log_mutex);
 
   if((AGS_LOG_DEBUG & (log->flags)) != 0){
-    struct timespec timestamp;
+    struct timespec *timestamp;
     va_list args_copy;
       
     va_start(args, format);
@@ -463,7 +468,7 @@ ags_log_error(AgsLog *log, char *format, ...)
     timestamp = (struct timespec *) malloc(sizeof(struct timespec));
     clock_gettime(CLOCK_REALTIME, timestamp);
     
-    log_message = ags_log_message_alloc(timestamp, format, args);
+    log_message = ags_log_message_alloc(timestamp, format, &args);
     log_message->mode = AGS_LOG_ERROR;
 
     /* queue*/
@@ -521,7 +526,7 @@ ags_log_output(AgsLog *log,
   while(formated_message != NULL){
     fprintf(log->file,
 	    "%*s\0",
-	    AGS_FORMATED_MESSAGE(formated_message->data)->length, AGS_FORMATED_MESSAGE(formated_message->data)->message);
+	    AGS_LOG_FORMATED_MESSAGE(formated_message->data)->length, AGS_LOG_FORMATED_MESSAGE(formated_message->data)->message);
 
     formated_message = formated_message->next;
   }

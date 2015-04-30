@@ -18,7 +18,7 @@
 
 #include <ags/audio/recall/ags_clone_channel_run.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/object/ags_dynamic_connectable.h>
 #include <ags/object/ags_plugin.h>

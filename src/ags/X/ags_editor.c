@@ -19,7 +19,7 @@
 #include <ags/X/ags_editor.h>
 #include <ags/X/ags_editor_callbacks.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_notation.h>

@@ -18,7 +18,7 @@
 
 #include <ags-client/scripting/mapping/ags_script_pop.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 void ags_script_pop_class_init(AgsScriptPopClass *script_pop);
 void ags_script_pop_connectable_interface_init(AgsConnectableInterface *connectable);

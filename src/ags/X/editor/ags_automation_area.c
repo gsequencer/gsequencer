@@ -19,7 +19,7 @@
 #include <ags/X/editor/ags_automation_area.h>
 #include <ags/X/editor/ags_automation_area_callbacks.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/X/editor/ags_automation_edit.h>
 

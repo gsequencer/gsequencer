@@ -18,7 +18,7 @@
 
 #include <ags/audio/task/ags_add_note.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 void ags_add_note_class_init(AgsAddNoteClass *add_note);
 void ags_add_note_connectable_interface_init(AgsConnectableInterface *connectable);

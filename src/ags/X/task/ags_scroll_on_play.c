@@ -18,7 +18,7 @@
 
 #include <ags/audio/task/ags_scroll_on_play.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_editor.h>

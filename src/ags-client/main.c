@@ -1,7 +1,7 @@
 #include <gtk/gtk.h>
 
 #include <ags-client/X/ags_client_window.h>
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 int
 main(int argc, char **argv)

@@ -18,7 +18,7 @@
 
 #include <ags/audio/task/ags_append_recall.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/thread/ags_audio_loop.h>
 

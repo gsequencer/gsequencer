@@ -22,7 +22,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/audio/ags_task.h>
+#include <ags/thread/ags_task.h>
 #include <ags/thread/ags_export_thread.h>
 
 #define AGS_TYPE_EXPORT_OUTPUT                (ags_export_output_get_type())

@@ -22,7 +22,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/audio/ags_task.h>
+#include <ags/thread/ags_task.h>
 #include <ags/audio/ags_devout.h>
 
 #define AGS_TYPE_APPEND_AUDIO_THREADED                (ags_append_audio_threaded_get_type())

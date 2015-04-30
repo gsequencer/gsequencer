@@ -18,7 +18,7 @@
 
 #include <ags-client/scripting/mapping/ags_script_sutex.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 void ags_script_sutex_class_init(AgsScriptSutexClass *script_sutex);
 void ags_script_sutex_connectable_interface_init(AgsConnectableInterface *connectable);

@@ -29,8 +29,6 @@
 #include <ags/thread/ags_thread-posix.h>
 #endif 
 
-#include <ags/thread/ags_async_queue.h>
-
 #define AGS_TYPE_AUDIO_LOOP                (ags_audio_loop_get_type())
 #define AGS_AUDIO_LOOP(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_AUDIO_LOOP, AgsAudioLoop))
 #define AGS_AUDIO_LOOP_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_AUDIO_LOOP, AgsAudioLoopClass))
@@ -76,13 +74,6 @@ struct _AgsAudioLoop
   
   GObject *devout;
   
-  AgsAsyncQueue *async_queue;
-  
-  AgsThread *task_thread;
-  AgsThread *gui_thread;
-  AgsThread *devout_thread;
-  AgsThread *export_thread;
-
   pthread_mutex_t recall_mutex;
 
   guint play_recall_ref;

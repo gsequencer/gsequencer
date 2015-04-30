@@ -33,6 +33,9 @@
 #define AGS_IS_LOG_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_LOG))
 #define AGS_LOG_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_LOG, AgsLogClass))
 
+#define AGS_LOG_MESSAGE(ptr) ((AgsLogMessage *)(ptr))
+#define AGS_LOG_FORMATED_MESSAGE(ptr) ((AgsLogFormatedMessage *)(ptr))
+
 #define AGS_LOG_MESSAGE_LENGTH (4096)
 #define AGS_LOG_MESSAGE_DATE_LENGTH (19)
 
@@ -46,7 +49,7 @@ typedef enum{
 }AgsLogFLags;
 
 typedef enum{
-  AGS_LOG_DEEBUG     = 1,
+  AGS_LOG_DEBUG      = 1,
   AGS_LOG_MESSAGE    = 1 << 1,
   AGS_LOG_WARN       = 1 << 2,
   AGS_LOG_ERROR      = 1 << 3,
@@ -86,7 +89,7 @@ struct _AgsLogMessage
   
   struct timespec *timestamp;
   char *format;
-  va_list args;
+  va_list *args;
 };
 
 struct _AgsLogFormatedMessage
@@ -95,7 +98,7 @@ struct _AgsLogFormatedMessage
   char *message;
 };
 
-AgsLogMessage* ags_log_message_alloc(struct timespec timestamp, char *format, va_list args);
+AgsLogMessage* ags_log_message_alloc(struct timespec *timestamp, char *format, va_list *args);
 void ags_log_message_free(AgsLogMessage *log_message);
 
 AgsLogFormatedMessage* ags_log_formated_message_alloc(guint length, char *message);

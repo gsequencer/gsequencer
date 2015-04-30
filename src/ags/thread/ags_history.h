@@ -22,7 +22,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/audio/ags_task.h>
+#include <ags/thread/ags_task.h>
 
 #define AGS_TYPE_HISTORY                (ags_history_get_type())
 #define AGS_HISTORY(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_HISTORY, AgsHistory))

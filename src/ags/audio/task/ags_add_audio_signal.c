@@ -18,7 +18,7 @@
 
 #include <ags/audio/task/ags_add_audio_signal.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 void ags_add_audio_signal_class_init(AgsAddAudioSignalClass *add_audio_signal);
 void ags_add_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable);

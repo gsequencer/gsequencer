@@ -19,7 +19,7 @@
 #include <ags/X/editor/ags_port_selection.h>
 #include <ags/X/editor/ags_port_selection_callbacks.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_output.h>

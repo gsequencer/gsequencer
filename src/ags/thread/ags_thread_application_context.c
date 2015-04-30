@@ -19,17 +19,14 @@
 #include <ags/thread/ags_thread_application_context.h>
 
 #include <ags/object/ags_config.h>
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/file/ags_file.h>
-#include <ags/file/ags_file_thread.h>
 #include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>
 
-#include <ags/thread/ags_audio_loop.h>
-#include <ags/thread/ags_gui_thread.h>
+#include <ags/thread/file/ags_thread_file_xml.h>
 #include <ags/thread/ags_autosave_thread.h>
-#include <ags/thread/ags_single_thread.h>
 
 void ags_thread_application_context_class_init(AgsThreadApplicationContextClass *thread_application_context);
 void ags_thread_application_context_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -340,7 +337,6 @@ ags_thread_application_context_register_types(AgsApplicationContext *application
   ags_thread_get_type();
 
   ags_task_thread_get_type();
-  ags_iterator_thread_get_type();
 
   ags_timestamp_thread_get_type();
 
@@ -403,8 +399,6 @@ ags_thread_application_context_read(AgsFile *file, xmlNode *node, GObject **appl
 	ags_file_read_thread(file,
 			     child,
 			     (AgsThread **) &(AGS_APPLICATION_CONTEXT(gobject)->main_loop));
-	
-	AGS_AUDIO_LOOP(gobject->main_loop)->application_context = gobject;
       }else if(!xmlStrncmp("ags-thread-pool\0",
 			   child->name,
 			   16)){

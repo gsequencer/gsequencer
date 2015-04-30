@@ -22,7 +22,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/audio/ags_task.h>
+#include <ags/thread/ags_task.h>
 #include <ags/audio/ags_devout.h>
 
 #define AGS_TYPE_SET_DEVOUT_PLAY_FLAGS                (ags_set_devout_play_flags_get_type())

@@ -18,7 +18,7 @@
 
 #include <ags/thread/ags_mutex_manager.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 void ags_mutex_manager_class_init(AgsMutexManagerClass *mutex_manager);
 void ags_mutex_manager_connectable_interface_init(AgsConnectableInterface *connectable);

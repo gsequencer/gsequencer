@@ -19,7 +19,7 @@
 #include <ags/audio/task/ags_append_channel.h>
 
 #include <ags/object/ags_application_context.h>
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/server/ags_server_application_context.h>
 #include <ags/server/ags_server.h>

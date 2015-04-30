@@ -18,7 +18,7 @@
 
 #include <ags/audio/task/ags_set_audio_channels.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 void ags_set_audio_channels_class_init(AgsSetAudioChannelsClass *set_audio_channels);
 void ags_set_audio_channels_connectable_interface_init(AgsConnectableInterface *connectable);

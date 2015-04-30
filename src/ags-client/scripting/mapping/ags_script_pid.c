@@ -18,7 +18,7 @@
 
 #include <ags-client/scripting/mapping/ags_script_pid.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 void ags_script_pid_class_init(AgsScriptPidClass *script_pid);
 void ags_script_pid_connectable_interface_init(AgsConnectableInterface *connectable);

@@ -18,7 +18,7 @@
 
 #include <ags/audio/task/ags_resize_audio.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_output.h>

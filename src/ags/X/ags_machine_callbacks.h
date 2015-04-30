@@ -23,7 +23,7 @@
 #include <gtk/gtk.h>
 
 #include <ags/X/ags_machine.h>
-#include <ags/audio/ags_task.h>
+#include <ags/thread/ags_task.h>
 
 int ags_machine_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsMachine *machine);
 int ags_machine_destroy_callback(GtkObject *object, AgsMachine *machine);

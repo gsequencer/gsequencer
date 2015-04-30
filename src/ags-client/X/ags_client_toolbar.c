@@ -18,7 +18,7 @@
 
 #include <ags-client/X/ags_client_toolbar.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 void ags_client_toolbar_class_init(AgsClientToolbarClass *client_toolbar);
 void ags_client_toolbar_connectable_interface_init(AgsConnectableInterface *connectable);

@@ -18,7 +18,7 @@
 
 #include <ags/audio/recall/ags_copy_recycling.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/main.h>
 

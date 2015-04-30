@@ -23,7 +23,7 @@
 #include <ags/thread/ags_thread-posix.h>
 #include <ags/thread/ags_task_thread.h>
 
-#include <ags/audio/ags_task.h>
+#include <ags/thread/ags_task.h>
 
 #include <ags/audio/task/ags_set_output_device.h>
 #include <ags/audio/task/ags_set_audio_channels.h>

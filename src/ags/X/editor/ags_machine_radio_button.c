@@ -18,7 +18,7 @@
 
 #include <ags/X/editor/ags_machine_radio_button.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/X/editor/ags_machine_selector.h>
 

@@ -18,7 +18,7 @@
 
 #include <ags/audio/ags_output.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 #include <ags/object/ags_soundcard.h>
 
 #include <ags/audio/ags_audio.h>

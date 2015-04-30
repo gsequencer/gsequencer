@@ -18,7 +18,7 @@
 
 #include <ags/audio/task/ags_toggle_led.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/widget/ags_led.h>
 

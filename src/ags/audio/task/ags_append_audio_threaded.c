@@ -18,7 +18,7 @@
 
 #include <ags/audio/task/ags_append_audio_threaded.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 void ags_append_audio_threaded_class_init(AgsAppendAudioThreadedClass *append_audio_threaded);
 void ags_append_audio_threaded_connectable_interface_init(AgsConnectableInterface *connectable);

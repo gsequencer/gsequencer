@@ -18,7 +18,7 @@
 
 #include <ags/audio/ags_acceleration.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <stdlib.h>
 

@@ -19,7 +19,7 @@
 #include <ags/audio/file/ags_audio_file.h>
 
 #include <ags/object/ags_config.h>
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 #include <ags/object/ags_playable.h>
 #include <ags/object/ags_soundcard.h>
 

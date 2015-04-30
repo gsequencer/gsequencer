@@ -16,17 +16,13 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef __AGS_FILE_THREAD_H__
-#define __AGS_FILE_THREAD_H__
+#ifndef __AGS_THREAD_FILE_XML_H__
+#define __AGS_THREAD_FILE_XML_H__
 
 #include <glib.h>
 #include <glib-object.h>
 
-#include <libxml/tree.h>
-
 #include <ags/file/ags_file.h>
-
-#include <ags/thread/ags_thread_pool.h>
 
 #ifdef AGS_USE_LINUX_THREADS
 #include <ags/thread/ags_thread-kthreads.h>
@@ -34,7 +30,10 @@
 #include <ags/thread/ags_thread-posix.h>
 #endif 
 
-#include <ags/thread/ags_audio_loop.h>
+#include <ags/thread/ags_thread_pool.h>
+#include <ags/thread/ags_returnable_thread.h>
+
+#include <libxml/tree.h>
 
 void ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread);
 xmlNode* ags_file_write_thread(AgsFile *file, xmlNode *parent, AgsThread *thread);
@@ -45,7 +44,7 @@ xmlNode* ags_file_write_thread_list(AgsFile *file, xmlNode *parent, GList *threa
 void ags_file_read_thread_pool(AgsFile *file, xmlNode *node, AgsThreadPool **thread_pool);
 xmlNode* ags_file_write_thread_pool(AgsFile *file, xmlNode *parent, AgsThreadPool *thread_pool);
 
-void ags_file_read_audio_loop(AgsFile *file, xmlNode *node, AgsAudioLoop *audio_loop);
-xmlNode* ags_file_write_audio_loop(AgsFile *file, xmlNode *parent, AgsAudioLoop *audio_loop);
+void ags_file_read_main_loop(AgsFile *file, xmlNode *node, AgsThread *main_loop);
+xmlNode* ags_file_write_main_loop(AgsFile *file, xmlNode *parent, AgsThread *main_loop);
 
-#endif /*__AGS_FILE_THREAD_H__*/
+#endif /*__AGS_THREAD_FILE_XML_H__*/

@@ -20,7 +20,7 @@
 
 #include <ags/object/ags_application_context.h>
 #include <ags/object/ags_config.h>
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 #include <ags/object/ags_soundcard.h>
 
 #include <ags/thread/ags_thread_init.h>

@@ -18,7 +18,7 @@
 
 #include <ags-client/scripting/mapping/ags_script_fscanf.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 void ags_script_fscanf_class_init(AgsScriptFScanfClass *script_fscanf);
 void ags_script_fscanf_connectable_interface_init(AgsConnectableInterface *connectable);

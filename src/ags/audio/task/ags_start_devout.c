@@ -19,7 +19,7 @@
 #include <ags/audio/task/ags_start_devout.h>
 
 #include <ags/object/ags_application_context.h>
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_devout_thread.h>

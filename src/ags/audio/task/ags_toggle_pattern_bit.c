@@ -18,7 +18,7 @@
 
 #include <ags/audio/task/ags_toggle_pattern_bit.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 void ags_toggle_pattern_bit_class_init(AgsTogglePatternBitClass *toggle_pattern_bit);
 void ags_toggle_pattern_bit_connectable_interface_init(AgsConnectableInterface *connectable);

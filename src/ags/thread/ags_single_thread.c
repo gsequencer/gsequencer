@@ -18,7 +18,7 @@
 
 #include <ags/thread/ags_single_thread.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 void ags_single_thread_class_init(AgsSingleThreadClass *single_thread);
 void ags_single_thread_connectable_interface_init(AgsConnectableInterface *connectable);

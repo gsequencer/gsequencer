@@ -18,7 +18,7 @@
 
 #include <ags-client/scripting/mapping/ags_script_do_while.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags-client/scripting/mapping/ags_script_array.h>
 

@@ -16,9 +16,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <ags/audio/ags_task.h>
+#include <ags/thread/ags_task.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 void ags_task_class_init(AgsTaskClass *task);
 void ags_task_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -32,7 +32,7 @@ void ags_task_finalize(GObject *gobject);
  * @short_description: Perform operations in a thread safe context.
  * @title: AgsTask
  * @section_id: 
- * @include: ags/audio/ags_task.h
+ * @include: ags/thread/ags_task.h
  *
  * #AgsTask object acts an interceptor in a thread safe context.
  */

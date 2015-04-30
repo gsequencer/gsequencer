@@ -22,7 +22,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/audio/ags_task.h>
+#include <ags/thread/ags_task.h>
 #include <ags/X/ags_line_member.h>
 
 #define AGS_TYPE_ADD_LINE_MEMBER                (ags_add_line_member_get_type())

@@ -19,7 +19,7 @@
 #include <ags/X/ags_pad.h>
 #include <ags/X/ags_pad_callbacks.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/main.h>
 

@@ -22,7 +22,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/lib/ags_log.h>
+#include <ags/log/ags_log.h>
 
 #include <ags/object/ags_config.h>
 

@@ -18,7 +18,7 @@
 
 #include <ags/audio/task/ags_add_recall.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/object/ags_dynamic_connectable.h>
 

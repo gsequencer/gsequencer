@@ -18,7 +18,7 @@
 
 #include <ags-client/scripting/mapping/ags_script_push.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 void ags_script_push_class_init(AgsScriptPushClass *script_push);
 void ags_script_push_connectable_interface_init(AgsConnectableInterface *connectable);

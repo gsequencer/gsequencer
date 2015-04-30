@@ -21,11 +21,11 @@ SUBDIRS = po \
 	doc
 
 #
-libags_a_SOURCES = $(ags_util_c_sources) $(ags_lib_c_sources) $(ags_object_c_sources)
-libags_thread_a_SOURCES = $(ags_thread_c_sources)
-libags_audio_a_SOURCES = $(ags_audio_c_sources) $(ags_audio_file_c_sources) $(ags_audio_task_c_sources) $(ags_audio_task_recall_c_sources) $(ags_audio_recall_c_sources)  $(ags_plugin_c_sources)
+libags_a_SOURCES = $(ags_util_c_sources) $(ags_lib_c_sources) $(ags_object_c_sources) $(ags_log_c_sources) $(ags_log_task_c_sources) $(ags_file_c_sources) $(ags_file_task_c_sources)
+libags_thread_a_SOURCES = $(ags_thread_c_sources) $(ags_thread_file_c_sources)
+libags_audio_a_SOURCES = $(ags_audio_c_sources) $(ags_audio_thread_c_sources) $(ags_audio_file_c_sources) $(ags_audio_task_c_sources) $(ags_audio_task_recall_c_sources) $(ags_audio_recall_c_sources)  $(ags_plugin_c_sources)
 libags_gui_a_SOURCES = $(ags_widget_c_sources)
-gsequencer_SOURCES = $(gsequencer_main_c_sources) $(gsequencer_server_c_sources) $(gsequencer_xorg_c_sources) $(gsequencer_machine_c_sources) $(gsequencer_editor_c_sources) $(ags_xorg_task_c_sources) $(gsequencer_file_c_sources)
+gsequencer_SOURCES = $(gsequencer_main_c_sources) $(gsequencer_server_c_sources) $(gsequencer_xorg_c_sources) $(gsequencer_xorg_thread_c_sources) $(gsequencer_xorg_task_c_sources) $(gsequencer_machine_c_sources) $(gsequencer_editor_c_sources) $(ags_gsequencer_task_c_sources) $(gsequencer_file_c_sources)
 
 #
 TARGETS = gsequencer
@@ -64,22 +64,18 @@ deprecated_ags_lib_h_sources =
 
 ags_lib_h_sources = \
 	$(deprecated_ags_lib_h_sources) \
-	src/ags-lib/object/ags_connectable.h	\
 	src/ags/lib/ags_combo_box_text.h		\
 	src/ags/lib/ags_container.h			\
-	src/ags/lib/ags_list.h			\
-	src/ags/lib/ags_log.h			\
+	src/ags/lib/ags_list.h				\
 	src/ags/lib/ags_parameter.h
 
 deprecated_ags_lib_c_sources = 
 
 ags_lib_c_sources = \
 	$(deprecated_ags_lib_c_sources) \
-	src/ags-lib/object/ags_connectable.c	\
 	src/ags/lib/ags_combo_box_text.c		\
 	src/ags/lib/ags_container.c			\
-	src/ags/lib/ags_list.c			\
-	src/ags/lib/ags_log.c			\
+	src/ags/lib/ags_list.c				\
 	src/ags/lib/ags_parameter.c
 
 deprecated_ags_util_h_sources =
@@ -94,6 +90,31 @@ ags_util_c_sources = \
 	$(deprecated_ags_util_c_sources) \
 	src/ags/util/ags_id_generator.c
 
+deprecated_ags_log_h_sources =
+
+ags_log_h_sources = \
+	$(deprecated_ags_log_h_sources) \
+	src/ags/log/ags_log.h
+
+deprecated_ags_log_c_sources = 
+
+ags_log_c_sources = \
+	$(deprecated_ags_log_c_sources) \
+	src/ags/log/ags_log.c
+
+
+deprecated_ags_log_task_h_sources =
+
+ags_log_task_h_sources = \
+	$(deprecated_ags_log_task_h_sources) \
+	src/ags/log/task/ags_log_task.h
+
+deprecated_ags_log_task_c_sources = 
+
+ags_log_task_c_sources = \
+	$(deprecated_ags_log_task_c_sources) \
+	src/ags/log/task/ags_log_task.c
+
 deprecated_ags_object_h_sources =
 
 ags_object_h_sources = \
@@ -103,6 +124,7 @@ ags_object_h_sources = \
 	src/ags/object/ags_config.h			\
 	src/ags/object/ags_applicable.h			\
 	src/ags/object/ags_countable.h			\
+	src/ags/object/ags_connectable.h		\
 	src/ags/object/ags_dynamic_connectable.h	\
 	src/ags/object/ags_effect.h			\
 	src/ags/object/ags_main_loop.h			\
@@ -110,7 +132,6 @@ ags_object_h_sources = \
 	src/ags/object/ags_mutable.h			\
 	src/ags/object/ags_packable.h			\
 	src/ags/object/ags_persistable.h		\
-	src/ags/object/ags_playable.h			\
 	src/ags/object/ags_plugin.h			\
 	src/ags/object/ags_portlet.h			\
 	src/ags/object/ags_runnable.h			\
@@ -129,6 +150,7 @@ ags_object_c_sources = \
 	src/ags/object/ags_config.c			\
 	src/ags/object/ags_applicable.c			\
 	src/ags/object/ags_countable.c			\
+	src/ags/object/ags_connectable.c		\
 	src/ags/object/ags_dynamic_connectable.c	\
 	src/ags/object/ags_effect.c			\
 	src/ags/object/ags_main_loop.c			\
@@ -144,6 +166,44 @@ ags_object_c_sources = \
 	src/ags/object/ags_stackable.c			\
 	src/ags/object/ags_tactable.c			\
 	src/ags/object/ags_tree_iterator.c
+
+deprecated_ags_file_h_sources = \
+	src/ags/file/ags_file_link.h			\
+	src/ags/file/ags_file_read.h			\
+	src/ags/file/ags_file_value_factory.h		\
+	src/ags/file/ags_file_write.h 
+
+ags_file_h_sources = \
+	$(deprecated_ags_file_h_sources) \
+	src/ags/file/ags_file_stock.h		\
+	src/ags/file/ags_file.h			\
+	src/ags/file/ags_file_id_ref.h		\
+	src/ags/file/ags_file_launch.h		\
+	src/ags/file/ags_file_lookup.h		\
+	src/ags/file/ags_file_util.h
+
+deprecated_ags_file_c_sources = 
+
+ags_file_c_sources = \
+	$(deprecated_ags_file_c_sources) \
+	src/ags/file/ags_file.c			\
+	src/ags/file/ags_file_id_ref.c		\
+	src/ags/file/ags_file_launch.c		\
+	src/ags/file/ags_file_link.c		\
+	src/ags/file/ags_file_lookup.c		\
+	src/ags/file/ags_file_util.c
+
+deprecated_ags_file_task_h_sources = 
+
+ags_file_task_h_sources = \
+	$(deprecated_ags_file_task_h_sources) \
+	src/ags/file/task/ags_save_file.h
+
+deprecated_ags_file_task_c_sources = 
+
+ags_file_task_c_sources = \
+	$(deprecated_ags_file_task_c_sources) \
+	src/ags/file/task/ags_save_file.c
 
 deprecated_ags_plugin_h_sources =
 
@@ -170,19 +230,11 @@ ags_thread_h_sources = \
 	src/ags/thread/ags_thread_init.h		\
 	src/ags/thread/ags_thread_application_context.h	\
 	src/ags/thread/ags_concurrency_provider.h	\
-	src/ags/thread/ags_async_queue.h		\
-	src/ags/thread/ags_audio_loop.h			\
 	src/ags/thread/ags_autosave_thread.h		\
-	src/ags/thread/ags_devout_thread.h		\
-	src/ags/thread/ags_export_thread.h		\
-	src/ags/thread/ags_gui_thread.h			\
-	src/ags/thread/ags_iterator_thread.h		\
-	src/ags/thread/ags_record_thread.h		\
-	src/ags/thread/ags_recycling_thread_callbacks.h \
-	src/ags/thread/ags_recycling_thread.h		\
 	src/ags/thread/ags_returnable_thread.h		\
 	src/ags/thread/ags_single_thread.h		\
 	src/ags/thread/ags_task_thread.h		\
+	src/ags/thread/ags_task.h			\
 	src/ags/thread/ags_thread_pool.h		\
 	src/ags/thread/ags_thread-posix.h		\
 	src/ags/thread/ags_timestamp_thread.h
@@ -195,22 +247,26 @@ ags_thread_c_sources = \
 	src/ags/thread/ags_thread_init.c		\
 	src/ags/thread/ags_thread_application_context.c	\
 	src/ags/thread/ags_concurrency_provider.c	\
-	src/ags/thread/ags_async_queue.c		\
-	src/ags/thread/ags_audio_loop.c			\
 	src/ags/thread/ags_autosave_thread.c		\
-	src/ags/thread/ags_devout_thread.c		\
-	src/ags/thread/ags_export_thread.c		\
-	src/ags/thread/ags_gui_thread.c			\
-	src/ags/thread/ags_iterator_thread.c		\
-	src/ags/thread/ags_record_thread.c		\
-	src/ags/thread/ags_recycling_thread_callbacks.c \
-	src/ags/thread/ags_recycling_thread.c		\
 	src/ags/thread/ags_returnable_thread.c		\
 	src/ags/thread/ags_single_thread.c		\
 	src/ags/thread/ags_task_thread.c		\
+	src/ags/thread/ags_task.c			\
 	src/ags/thread/ags_thread_pool.c		\
 	src/ags/thread/ags_thread-posix.c		\
 	src/ags/thread/ags_timestamp_thread.c
+
+deprecated_ags_thread_file_h_sources =
+
+ags_thread_file_h_sources = \
+	$(deprecated_ags_thread_file_h_sources) \
+	src/ags/file/ags_thread_file_xml.h
+
+deprecated_ags_thread_file_c_sources =
+
+ags_thread_file_c_sources = \
+	$(deprecated_ags_thread_file_c_sources) \
+	src/ags/thread/file/ags_thread_file_xml.c
 
 # libags_gui all files
 odeprecated_ags_widget_h_sources = 
@@ -303,7 +359,6 @@ ags_audio_h_sources = 		\
 	src/ags/audio/ags_recycling_container.h \
 	src/ags/audio/ags_recycling.h		\
 	src/ags/audio/ags_synths.h		\
-	src/ags/audio/ags_task.h		\
 	src/ags/audio/ags_timestamp_factory.h	\
 	src/ags/audio/ags_timestamp.h
 
@@ -319,7 +374,6 @@ ags_audio_c_sources =  		\
 	src/ags/audio/ags_audio_application_context.c	\
 	src/ags/audio/ags_sound_provider.c	\
 	src/ags/audio/ags_acceleration.c	\
-	src/ags/object/ags_playable.c		\
 	src/ags/audio/ags_audio.c		\
 	src/ags/audio/ags_audio_signal.c	\
 	src/ags/audio/ags_automation.c		\
@@ -350,15 +404,40 @@ ags_audio_c_sources =  		\
 	src/ags/audio/ags_recycling_container.c \
 	src/ags/audio/ags_recycling.c		\
 	src/ags/audio/ags_synths.c		\
-	src/ags/audio/ags_task.c		\
 	src/ags/audio/ags_timestamp_factory.c	\
 	src/ags/audio/ags_timestamp.c
 
-deprecated_ags_audio_file_h_sources = \
-	src/ags/audio/file/ags_audio_file_xml.h	
+
+deprecated_ags_audio_thread_h_sources =
+
+ags_audio_thread_h_sources = \
+	$(deprecated_ags_audio_thread_h_sources) \
+	src/ags/audio/thread/ags_audio_loop.h			\
+	src/ags/audio/thread/ags_devout_thread.h		\
+	src/ags/audio/thread/ags_export_thread.h		\
+	src/ags/audio/thread/ags_iterator_thread.h		\
+	src/ags/audio/thread/ags_record_thread.h		\
+	src/ags/audio/thread/ags_recycling_thread_callbacks.h \
+	src/ags/audio/thread/ags_recycling_thread.h
+
+deprecated_ags_audio_thread_c_sources =
+
+ags_audio_thread_c_sources = \
+	$(deprecated_ags_audio_thread_c_sources) \
+	src/ags/audio/thread/ags_audio_loop.c			\
+	src/ags/audio/thread/ags_devout_thread.c		\
+	src/ags/audio/thread/ags_export_thread.c		\
+	src/ags/audio/thread/ags_iterator_thread.c		\
+	src/ags/audio/thread/ags_record_thread.c		\
+	src/ags/audio/thread/ags_recycling_thread_callbacks.c \
+	src/ags/audio/thread/ags_recycling_thread.c
+
+deprecated_ags_audio_file_h_sources =
 
 ags_audio_file_h_sources = \
 	$(deprecated_ags_audio_file_h_sources) \
+	src/ags/audio/file/ags_audio_file_xml.h		\
+	src/ags/audio/file/ags_playable.h			\
 	src/ags/audio/file/ags_audio_file.h	\
 	src/ags/audio/file/ags_ipatch.h		\
 	src/ags/audio/file/ags_ipatch_sf2_reader.h	\
@@ -369,6 +448,8 @@ deprecated_ags_audio_file_c_sources = \
 
 ags_audio_file_c_sources = \
 	$(deprecated_ags_audio_file_c_sources) \
+	src/ags/audio/file/ags_audio_file_xml.c		\
+	src/ags/audio/file/ags_playable.c		\
 	src/ags/audio/file/ags_audio_file.c	\
 	src/ags/audio/file/ags_ipatch.c		\
 	src/ags/audio/file/ags_ipatch_sf2_reader.c	\
@@ -504,56 +585,45 @@ deprecated_ags_task_h_sources = \
 
 ags_audio_task_h_sources = \
 	$(deprecated_ags_audio_task_h_sources) \
-	src/ags/audio/task/ags_add_audio.h		\
-	src/ags/audio/task/ags_add_audio_signal.h	\
-	src/ags/audio/task/ags_add_note.h		\
-	src/ags/audio/task/ags_add_recall_container.h \
-	src/ags/audio/task/ags_add_recall.h	\
-	src/ags/audio/task/ags_append_audio.h	\
-	src/ags/audio/task/ags_append_audio_threaded.h \
-	src/ags/audio/task/ags_append_channel.h	\
-	src/ags/audio/task/ags_append_recall.h	\
-	src/ags/audio/task/ags_apply_synth.h	\
-	src/ags/audio/task/ags_audio_set_recycling.h \
-	src/ags/audio/task/ags_cancel_audio.h	\
-	src/ags/audio/task/ags_cancel_channel.h	\
-	src/ags/audio/task/ags_cancel_recall.h	\
-	src/ags/audio/task/ags_channel_set_recycling.h \
-	src/ags/audio/task/ags_export_output.h	\
-	src/ags/audio/task/ags_init_audio.h	\
-	src/ags/audio/task/ags_init_channel.h	\
-	src/ags/audio/task/ags_link_channel.h	\
-	src/ags/audio/task/ags_open_file.h		\
-	src/ags/audio/task/ags_open_single_file.h	\
-	src/ags/audio/task/ags_remove_audio.h	\
-	src/ags/audio/task/ags_remove_audio_signal.h \
-	src/ags/audio/task/ags_remove_note.h	\
-	src/ags/audio/task/ags_remove_recall_container.h \
-	src/ags/audio/task/ags_remove_recall.h	\
-	src/ags/audio/task/ags_remove_region_from_selection.h \
-	src/ags/audio/task/ags_resize_audio.h	\
-	src/ags/audio/task/ags_set_audio_channels.h \
-	src/ags/audio/task/ags_set_buffer_size.h	\
-	src/ags/audio/task/ags_set_devout_play_flags.h \
-	src/ags/audio/task/ags_set_output_device.h	\
-	src/ags/audio/task/ags_set_samplerate.h	\
-	src/ags/audio/task/ags_start_devout.h	\
-	src/ags/audio/task/ags_unref_audio_signal.h
-
-ags_xorg_task_h_sources = 		\
-	src/ags/audio/task/ags_add_point_to_selection.h	\
-	src/ags/audio/task/ags_add_region_to_selection.h	\
-	src/ags/audio/task/ags_add_line_member.h	\
-	src/ags/audio/task/ags_add_bulk_member.h	\
-	src/ags/audio/task/ags_update_bulk_member.h	\
-	src/ags/audio/task/ags_change_indicator.h		\
-	src/ags/audio/task/ags_change_tact.h		\
-	src/ags/audio/task/ags_display_tact.h		\
-	src/ags/audio/task/ags_free_selection.h		\
-	src/ags/audio/task/ags_remove_point_from_selection.h \
-	src/ags/audio/task/ags_save_file.h			\
-	src/ags/audio/task/ags_scroll_on_play.h		\
-	src/ags/audio/task/ags_toggle_led.h		\
+	src/ags/audio/task/ags_add_audio.h				\
+	src/ags/audio/task/ags_add_audio_signal.h			\
+	src/ags/audio/task/ags_add_note.h				\
+	src/ags/audio/task/ags_add_point_to_selection.h			\
+	src/ags/audio/task/ags_remove_point_from_selection.h 		\
+	src/ags/audio/task/ags_add_region_to_selection.h		\
+	src/ags/audio/task/ags_remove_region_from_selection.h 		\
+	src/ags/audio/task/ags_free_selection.h				\
+	src/ags/audio/task/ags_add_recall_container.h 			\
+	src/ags/audio/task/ags_add_recall.h				\
+	src/ags/audio/task/ags_append_audio.h				\
+	src/ags/audio/task/ags_append_audio_threaded.h 			\
+	src/ags/audio/task/ags_append_channel.h				\
+	src/ags/audio/task/ags_append_recall.h				\
+	src/ags/audio/task/ags_apply_synth.h				\
+	src/ags/audio/task/ags_audio_set_recycling.h 			\
+	src/ags/audio/task/ags_cancel_audio.h				\
+	src/ags/audio/task/ags_cancel_channel.h				\
+	src/ags/audio/task/ags_cancel_recall.h				\
+	src/ags/audio/task/ags_channel_set_recycling.h 			\
+	src/ags/audio/task/ags_export_output.h				\
+	src/ags/audio/task/ags_init_audio.h				\
+	src/ags/audio/task/ags_init_channel.h				\
+	src/ags/audio/task/ags_link_channel.h				\
+	src/ags/audio/task/ags_open_file.h				\
+	src/ags/audio/task/ags_open_single_file.h			\
+	src/ags/audio/task/ags_remove_audio.h				\
+	src/ags/audio/task/ags_remove_audio_signal.h 			\
+	src/ags/audio/task/ags_remove_note.h				\
+	src/ags/audio/task/ags_remove_recall_container.h 		\
+	src/ags/audio/task/ags_remove_recall.h				\
+	src/ags/audio/task/ags_resize_audio.h				\
+	src/ags/audio/task/ags_set_audio_channels.h 			\
+	src/ags/audio/task/ags_set_buffer_size.h			\
+	src/ags/audio/task/ags_set_devout_play_flags.h 			\
+	src/ags/audio/task/ags_set_output_device.h			\
+	src/ags/audio/task/ags_set_samplerate.h				\
+	src/ags/audio/task/ags_start_devout.h				\
+	src/ags/audio/task/ags_unref_audio_signal.h			\
 	src/ags/audio/task/ags_toggle_pattern_bit.h
 
 deprecated_ags_task_c_sources = \
@@ -561,56 +631,45 @@ deprecated_ags_task_c_sources = \
 
 ags_audio_task_c_sources = \
 	$(deprecated_ags_audio_task_c_sources) \
-	src/ags/audio/task/ags_add_audio.c		\
-	src/ags/audio/task/ags_add_audio_signal.c	\
-	src/ags/audio/task/ags_add_note.c		\
-	src/ags/audio/task/ags_add_recall_container.c \
-	src/ags/audio/task/ags_add_recall.c	\
-	src/ags/audio/task/ags_append_audio.c	\
-	src/ags/audio/task/ags_append_audio_threaded.c \
-	src/ags/audio/task/ags_append_channel.c	\
-	src/ags/audio/task/ags_append_recall.c	\
-	src/ags/audio/task/ags_apply_synth.c	\
-	src/ags/audio/task/ags_audio_set_recycling.c \
-	src/ags/audio/task/ags_cancel_audio.c	\
-	src/ags/audio/task/ags_cancel_channel.c	\
-	src/ags/audio/task/ags_cancel_recall.c	\
-	src/ags/audio/task/ags_channel_set_recycling.c \
-	src/ags/audio/task/ags_export_output.c	\
-	src/ags/audio/task/ags_init_audio.c	\
-	src/ags/audio/task/ags_init_channel.c	\
-	src/ags/audio/task/ags_link_channel.c	\
-	src/ags/audio/task/ags_open_file.c		\
-	src/ags/audio/task/ags_open_single_file.c	\
-	src/ags/audio/task/ags_remove_audio.c	\
-	src/ags/audio/task/ags_remove_audio_signal.c \
-	src/ags/audio/task/ags_remove_note.c	\
-	src/ags/audio/task/ags_remove_recall_container.c \
-	src/ags/audio/task/ags_remove_recall.c	\
-	src/ags/audio/task/ags_remove_region_from_selection.c \
-	src/ags/audio/task/ags_resize_audio.c	\
-	src/ags/audio/task/ags_set_audio_channels.c \
-	src/ags/audio/task/ags_set_buffer_size.c	\
-	src/ags/audio/task/ags_set_devout_play_flags.c \
-	src/ags/audio/task/ags_set_output_device.c	\
-	src/ags/audio/task/ags_set_samplerate.c	\
-	src/ags/audio/task/ags_start_devout.c	\
-	src/ags/audio/task/ags_unref_audio_signal.c
-
-ags_xorg_task_c_sources = 		\
-	src/ags/audio/task/ags_add_line_member.c	\
-	src/ags/audio/task/ags_add_bulk_member.c	\
-	src/ags/audio/task/ags_update_bulk_member.c	\
-	src/ags/audio/task/ags_add_point_to_selection.c	\
-	src/ags/audio/task/ags_add_region_to_selection.c	\
-	src/ags/audio/task/ags_change_indicator.c		\
-	src/ags/audio/task/ags_change_tact.c		\
-	src/ags/audio/task/ags_display_tact.c		\
-	src/ags/audio/task/ags_free_selection.c		\
-	src/ags/audio/task/ags_remove_point_from_selection.c \
-	src/ags/audio/task/ags_save_file.c			\
-	src/ags/audio/task/ags_scroll_on_play.c		\
-	src/ags/audio/task/ags_toggle_led.c		\
+	src/ags/audio/task/ags_add_audio.c				\
+	src/ags/audio/task/ags_add_audio_signal.c			\
+	src/ags/audio/task/ags_add_note.c				\
+	src/ags/audio/task/ags_add_point_to_selection.c			\
+	src/ags/audio/task/ags_remove_point_from_selection.c 		\
+	src/ags/audio/task/ags_add_region_to_selection.c		\
+	src/ags/audio/task/ags_remove_region_from_selection.c 		\
+	src/ags/audio/task/ags_free_selection.c				\
+	src/ags/audio/task/ags_add_recall_container.c 			\
+	src/ags/audio/task/ags_add_recall.c				\
+	src/ags/audio/task/ags_append_audio.c				\
+	src/ags/audio/task/ags_append_audio_threaded.c 			\
+	src/ags/audio/task/ags_append_channel.c				\
+	src/ags/audio/task/ags_append_recall.c				\
+	src/ags/audio/task/ags_apply_synth.c				\
+	src/ags/audio/task/ags_audio_set_recycling.c 			\
+	src/ags/audio/task/ags_cancel_audio.c				\
+	src/ags/audio/task/ags_cancel_channel.c				\
+	src/ags/audio/task/ags_cancel_recall.c				\
+	src/ags/audio/task/ags_channel_set_recycling.c 			\
+	src/ags/audio/task/ags_export_output.c				\
+	src/ags/audio/task/ags_init_audio.c				\
+	src/ags/audio/task/ags_init_channel.c				\
+	src/ags/audio/task/ags_link_channel.c				\
+	src/ags/audio/task/ags_open_file.c				\
+	src/ags/audio/task/ags_open_single_file.c			\
+	src/ags/audio/task/ags_remove_audio.c				\
+	src/ags/audio/task/ags_remove_audio_signal.c 			\
+	src/ags/audio/task/ags_remove_note.c				\
+	src/ags/audio/task/ags_remove_recall_container.c 		\
+	src/ags/audio/task/ags_remove_recall.c				\
+	src/ags/audio/task/ags_resize_audio.c				\
+	src/ags/audio/task/ags_set_audio_channels.c 			\
+	src/ags/audio/task/ags_set_buffer_size.c			\
+	src/ags/audio/task/ags_set_devout_play_flags.c 			\
+	src/ags/audio/task/ags_set_output_device.c			\
+	src/ags/audio/task/ags_set_samplerate.c				\
+	src/ags/audio/task/ags_start_devout.c				\
+	src/ags/audio/task/ags_unref_audio_signal.c			\
 	src/ags/audio/task/ags_toggle_pattern_bit.c
 
 deprecated_ags_audio_task_recall_h_sources =
@@ -803,6 +862,45 @@ gsequencer_xorg_c_sources = \
 	src/ags/X/ags_window_callbacks.c		\
 	src/ags/X/ags_window.c
 
+
+deprecated_gsequencer_xorg_thread_h_sources = 
+
+gsequencer_xorg_thread_h_sources = \
+	$(deprecated_gsequencer_xorg_thread_h_sources) 	\
+	src/ags/X/thread/ags_gui_thread.h
+
+deprecated_gsequencer_xorg_thread_c_sources = 
+
+gsequencer_xorg_thread_c_sources = \
+	$(deprecated_gsequencer_xorg_thread_c_sources) 	\
+	src/ags/X/thread/ags_gui_thread.c
+
+deprecated_gsequencer_xorg_task_h_sources = 
+
+gsequencer_xorg_task_h_sources = \
+	$(deprecated_gsequencer_xorg_task_h_sources) 		\
+	src/ags/X/task/ags_add_line_member.h			\
+	src/ags/X/task/ags_add_bulk_member.h			\
+	src/ags/X/task/ags_update_bulk_member.h			\
+	src/ags/X/task/ags_change_indicator.h			\
+	src/ags/X/task/ags_change_tact.h			\
+	src/ags/X/task/ags_display_tact.h			\
+	src/ags/X/task/ags_scroll_on_play.h			\
+	src/ags/X/task/ags_toggle_led.h
+
+deprecated_gsequencer_xorg_task_c_sources = 
+
+gsequencer_xorg_task_c_sources = \
+	$(deprecated_gsequencer_xorg_task_c_sources) 	\
+	src/ags/X/task/ags_add_line_member.c			\
+	src/ags/X/task/ags_add_bulk_member.c			\
+	src/ags/X/task/ags_update_bulk_member.c			\
+	src/ags/X/task/ags_change_indicator.c			\
+	src/ags/X/task/ags_change_tact.c			\
+	src/ags/X/task/ags_display_tact.c			\
+	src/ags/X/task/ags_scroll_on_play.c			\
+	src/ags/X/task/ags_toggle_led.c
+
 deprecated_gsequencer_machine_h_sources =
 
 gsequencer_machine_h_sources = \
@@ -988,30 +1086,10 @@ deprecated_gsequencer_file_h_sources =
 
 gsequencer_file_h_sources = \
 	$(deprecated_gsequencer_file_h_sources) \
-	src/ags/file/ags_file_gui.h			\
-	src/ags/file/ags_file.h			\
-	src/ags/file/ags_file_id_ref.h		\
-	src/ags/file/ags_file_launch.h		\
-	src/ags/file/ags_file_link.h			\
-	src/ags/file/ags_file_lookup.h		\
-	src/ags/file/ags_file_read.h			\
-	src/ags/file/ags_file_sound.h		\
-	src/ags/file/ags_file_stock.h		\
-	src/ags/file/ags_file_thread.h		\
-	src/ags/file/ags_file_util.h			\
-	src/ags/file/ags_file_value_factory.h	\
-	src/ags/file/ags_file_write.h
+	src/ags/X/file/ags_gsequencer_file_xml.h
 
 deprecated_gsequencer_file_c_sources = 
 
 gsequencer_file_c_sources = \
 	$(deprecated_gsequencer_file_c_sources) \
-	src/ags/file/ags_file_gui.c			\
-	src/ags/file/ags_file.c			\
-	src/ags/file/ags_file_id_ref.c		\
-	src/ags/file/ags_file_launch.c		\
-	src/ags/file/ags_file_link.c			\
-	src/ags/file/ags_file_lookup.c		\
-	src/ags/file/ags_file_sound.c		\
-	src/ags/file/ags_file_thread.c		\
-	src/ags/file/ags_file_util.c
+	src/ags/X/file/ags_gsequencer_file_xml.c

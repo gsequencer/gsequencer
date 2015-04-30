@@ -18,7 +18,7 @@
 
 #include <ags/X/machine/ags_panel_input_line.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/object/ags_plugin.h>
 

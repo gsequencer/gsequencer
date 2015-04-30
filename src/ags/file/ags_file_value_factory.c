@@ -18,7 +18,7 @@
 
 #include <ags/file/ags_file_value_factory.h>
 
-#include <ags-lib/object/ags_serializeable.h>
+#include <ags/object/ags_serializeable.h>
 
 void ags_file_value_factory_class_init(AgsFileValueFactoryClass *file_value_factory);
 void ags_file_value_factory_serializeable_interface_init(AgsSerializeableInterface *serializeable);

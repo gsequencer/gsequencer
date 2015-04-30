@@ -18,7 +18,7 @@
 
 #include <ags/audio/task/ags_free_selection.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 void ags_free_selection_class_init(AgsFreeSelectionClass *free_selection);
 void ags_free_selection_connectable_interface_init(AgsConnectableInterface *connectable);

@@ -18,7 +18,7 @@
 
 #include <ags/audio/task/ags_remove_audio.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 void ags_remove_audio_class_init(AgsRemoveAudioClass *remove_audio);
 void ags_remove_audio_connectable_interface_init(AgsConnectableInterface *connectable);

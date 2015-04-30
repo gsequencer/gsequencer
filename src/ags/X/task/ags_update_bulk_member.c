@@ -18,7 +18,7 @@
 
 #include <ags/audio/task/ags_update_bulk_member.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>

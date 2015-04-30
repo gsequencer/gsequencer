@@ -18,7 +18,7 @@
 
 #include <ags-client/scripting/mapping/ags_script_switch.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 void ags_script_switch_class_init(AgsScriptSwitchClass *script_switch);
 void ags_script_switch_connectable_interface_init(AgsConnectableInterface *connectable);

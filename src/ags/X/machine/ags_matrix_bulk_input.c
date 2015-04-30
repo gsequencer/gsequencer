@@ -19,7 +19,7 @@
 #include <ags/X/machine/ags_matrix_bulk_input.h>
 #include <ags/X/machine/ags_matrix_bulk_input_callbacks.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/main.h>
 

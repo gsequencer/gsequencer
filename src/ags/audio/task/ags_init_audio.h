@@ -22,7 +22,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/audio/ags_task.h>
+#include <ags/thread/ags_task.h>
 #include <ags/audio/ags_audio.h>
 
 #define AGS_TYPE_INIT_AUDIO                (ags_init_audio_get_type())

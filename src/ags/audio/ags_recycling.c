@@ -21,7 +21,7 @@
 #include <ags/lib/ags_list.h>
 
 #include <ags/object/ags_marshal.h>
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 #include <ags/object/ags_soundcard.h>
 
 #include <ags/audio/ags_audio.h>

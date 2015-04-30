@@ -22,7 +22,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/audio/ags_task.h>
+#include <ags/thread/ags_task.h>
 #include <ags/X/ags_navigation.h>
 
 #define AGS_TYPE_CHANGE_TACT                (ags_change_tact_get_type())
