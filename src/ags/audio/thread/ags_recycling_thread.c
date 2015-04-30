@@ -23,7 +23,6 @@
 
 #include <ags/audio/thread/ags_iterator_thread.h>
 
-#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_channel.h>

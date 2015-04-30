@@ -396,7 +396,6 @@ ags_ladspa_manager_get_instance()
 
 /**
  * ags_ladspa_manager_new:
- * @devout: an #AgsDevout
  *
  * Creates an #AgsLadspaManager
  *

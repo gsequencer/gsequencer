@@ -74,7 +74,7 @@ struct _AgsChannel
 
   char *note;
 
-  gpointer devout_play;
+  GObject *playback;
 
   // GObject *recycling_container; // contains child recycling
   GList *recall_id; // there may be several recall's running

@@ -25,8 +25,6 @@
 
 #include <ags/object/ags_dynamic_connectable.h>
 
-#include <ags/audio/ags_devout.h>
-
 #include <ags/audio/task/ags_remove_audio_signal.h>
 
 void ags_buffer_recycling_class_init(AgsBufferRecyclingClass *buffer_recycling);

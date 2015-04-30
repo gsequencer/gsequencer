@@ -93,6 +93,6 @@ GType ags_drum_get_type(void);
 
 void ags_drum_set_pattern(AgsDrum *drum);
 
-AgsDrum* ags_drum_new(GObject *devout);
+AgsDrum* ags_drum_new();
 
 #endif /*__AGS_DRUM_H__*/

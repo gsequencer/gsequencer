@@ -23,8 +23,6 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_soundcard.h>
 
-#include <ags/audio/ags_devout.h>
-
 #include <stdint.h>
 #include <emmintrin.h>
 #include <stdlib.h>
@@ -237,9 +235,9 @@ ags_audio_signal_init(AgsAudioSignal *audio_signal)
   audio_signal->recycling = NULL;
   audio_signal->recall_id = NULL;
 
-  audio_signal->samplerate = AGS_DEVOUT_DEFAULT_SAMPLERATE;
-  audio_signal->buffer_size = AGS_DEVOUT_DEFAULT_BUFFER_SIZE;
-  audio_signal->resolution = AGS_DEVOUT_RESOLUTION_16_BIT;
+  audio_signal->samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  audio_signal->buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  audio_signal->resolution = AGS_SOUNDCARD_RESOLUTION_16_BIT;
 
   
   audio_signal->length = 0;
@@ -874,10 +872,7 @@ ags_audio_signal_duplicate_stream(AgsAudioSignal *audio_signal,
     ags_audio_signal_stream_resize(audio_signal,
 				   0);
   }else{
-    //    AgsDevout *devout;
     GList *template_stream, *stream;
-    //    guint i, j, j_offcut;
-    //    guint k, template_k;
 
     audio_signal->buffer_size = template->buffer_size;
     ags_audio_signal_stream_resize(audio_signal,
@@ -885,9 +880,6 @@ ags_audio_signal_duplicate_stream(AgsAudioSignal *audio_signal,
 
     stream = audio_signal->stream_beginning;
     template_stream = template->stream_beginning;
-
-    //    k = 0;
-    //    template_k = 0;
 
     //TODO:JK: enhance me
     while(template_stream != NULL){
@@ -1199,7 +1191,7 @@ ags_audio_signal_scale(AgsAudioSignal *audio_signal,
     sbuffer = (gint8 *) source->data;
 
     switch(dresolution){
-    case AGS_DEVOUT_RESOLUTION_8_BIT:
+    case AGS_SOUNDCARD_RESOLUTION_8_BIT:
       {
 	gint8 *dbuffer;
 	gdouble scale;
@@ -1211,7 +1203,7 @@ ags_audio_signal_scale(AgsAudioSignal *audio_signal,
 	dbuffer[doffset] = scale * sbuffer[soffset];
       }
       break;
-    case AGS_DEVOUT_RESOLUTION_16_BIT:
+    case AGS_SOUNDCARD_RESOLUTION_16_BIT:
       {
 	gint16 *dbuffer;
 	gdouble scale;
@@ -1223,7 +1215,7 @@ ags_audio_signal_scale(AgsAudioSignal *audio_signal,
 	dbuffer[doffset] = scale * sbuffer[soffset];
       }
       break;
-    case AGS_DEVOUT_RESOLUTION_24_BIT:
+    case AGS_SOUNDCARD_RESOLUTION_24_BIT:
       {
 	unsigned char *dbuffer;
 	gint16 value;
@@ -1248,7 +1240,7 @@ ags_audio_signal_scale(AgsAudioSignal *audio_signal,
 	}
       }
       break;
-    case AGS_DEVOUT_RESOLUTION_32_BIT:
+    case AGS_SOUNDCARD_RESOLUTION_32_BIT:
       {
 	gint32 *dbuffer;
 	gdouble scale;
@@ -1260,7 +1252,7 @@ ags_audio_signal_scale(AgsAudioSignal *audio_signal,
 	dbuffer[doffset] = scale * sbuffer[soffset];
       }
       break;
-    case AGS_DEVOUT_RESOLUTION_64_BIT:
+    case AGS_SOUNDCARD_RESOLUTION_64_BIT:
       {
 	gint64 *dbuffer;
 	gdouble scale;
@@ -1282,7 +1274,7 @@ ags_audio_signal_scale(AgsAudioSignal *audio_signal,
     sbuffer = (gint16 *) source->data;
 
     switch(dresolution){
-    case AGS_DEVOUT_RESOLUTION_8_BIT:
+    case AGS_SOUNDCARD_RESOLUTION_8_BIT:
       {
 	gint8 *dbuffer;
 	gdouble scale;
@@ -1294,7 +1286,7 @@ ags_audio_signal_scale(AgsAudioSignal *audio_signal,
 	dbuffer[doffset] = (gint8) floor(scale * sbuffer[soffset]);
       }
       break;
-    case AGS_DEVOUT_RESOLUTION_16_BIT:
+    case AGS_SOUNDCARD_RESOLUTION_16_BIT:
       {
 	gint16 *dbuffer;
 
@@ -1303,7 +1295,7 @@ ags_audio_signal_scale(AgsAudioSignal *audio_signal,
 	dbuffer[doffset] = sbuffer[soffset];
       }
       break;
-    case AGS_DEVOUT_RESOLUTION_24_BIT:
+    case AGS_SOUNDCARD_RESOLUTION_24_BIT:
       {
 	unsigned char *dbuffer;
 	gint32 value;
@@ -1326,7 +1318,7 @@ ags_audio_signal_scale(AgsAudioSignal *audio_signal,
 	}
       }
       break;
-    case AGS_DEVOUT_RESOLUTION_32_BIT:
+    case AGS_SOUNDCARD_RESOLUTION_32_BIT:
       {
 	gint32 *dbuffer;
 	gdouble scale;
@@ -1338,7 +1330,7 @@ ags_audio_signal_scale(AgsAudioSignal *audio_signal,
 	dbuffer[doffset] = sbuffer[soffset];
       }
       break;
-    case AGS_DEVOUT_RESOLUTION_64_BIT:
+    case AGS_SOUNDCARD_RESOLUTION_64_BIT:
       {
 	gint64 *dbuffer;
 	gdouble scale;
@@ -1360,7 +1352,7 @@ ags_audio_signal_scale(AgsAudioSignal *audio_signal,
     sbuffer = (char *) source->data;
 
     switch(dresolution){
-    case AGS_DEVOUT_RESOLUTION_8_BIT:
+    case AGS_SOUNDCARD_RESOLUTION_8_BIT:
       {
 	gint8 *dbuffer;
 	gdouble scale;
@@ -1373,7 +1365,7 @@ ags_audio_signal_scale(AgsAudioSignal *audio_signal,
 	dbuffer[doffset] = (gint8) round(scale * (double) sbuffer[soffset]);
       }
       break;
-    case AGS_DEVOUT_RESOLUTION_16_BIT:
+    case AGS_SOUNDCARD_RESOLUTION_16_BIT:
       {
 	gint16 *dbuffer;
 	gdouble scale;
@@ -1385,7 +1377,7 @@ ags_audio_signal_scale(AgsAudioSignal *audio_signal,
 	dbuffer[doffset] = (gint16) round(scale * (double) sbuffer[soffset]);
       }
       break;
-    case AGS_DEVOUT_RESOLUTION_24_BIT:
+    case AGS_SOUNDCARD_RESOLUTION_24_BIT:
       {
 	unsigned char *dbuffer;
 	gint16 mask;
@@ -1397,7 +1389,7 @@ ags_audio_signal_scale(AgsAudioSignal *audio_signal,
 	dbuffer[doffset * 3 + 2] = sbuffer[soffset * 3 + 2];
       }
       break;
-    case AGS_DEVOUT_RESOLUTION_32_BIT:
+    case AGS_SOUNDCARD_RESOLUTION_32_BIT:
       {
 	gint32 *dbuffer;
 	gdouble scale;
@@ -1409,7 +1401,7 @@ ags_audio_signal_scale(AgsAudioSignal *audio_signal,
 	dbuffer[doffset] = scale * sbuffer[soffset];
       }
       break;
-    case AGS_DEVOUT_RESOLUTION_64_BIT:
+    case AGS_SOUNDCARD_RESOLUTION_64_BIT:
       {
 	gint64 *dbuffer;
 	gdouble scale;
@@ -1431,7 +1423,7 @@ ags_audio_signal_scale(AgsAudioSignal *audio_signal,
     sbuffer = (gint32 *) source->data;
 
     switch(dresolution){
-    case AGS_DEVOUT_RESOLUTION_8_BIT:
+    case AGS_SOUNDCARD_RESOLUTION_8_BIT:
       {
 	gint8 *dbuffer;
 	gdouble scale;
@@ -1443,7 +1435,7 @@ ags_audio_signal_scale(AgsAudioSignal *audio_signal,
 	dbuffer[doffset] = scale * sbuffer[soffset];
       }
       break;
-    case AGS_DEVOUT_RESOLUTION_16_BIT:
+    case AGS_SOUNDCARD_RESOLUTION_16_BIT:
       {
 	gint16 *dbuffer;
 	gdouble scale;
@@ -1455,7 +1447,7 @@ ags_audio_signal_scale(AgsAudioSignal *audio_signal,
 	dbuffer[doffset] = scale * sbuffer[soffset];
       }
       break;
-    case AGS_DEVOUT_RESOLUTION_24_BIT:
+    case AGS_SOUNDCARD_RESOLUTION_24_BIT:
       {
 	unsigned char *dbuffer;
 	gint32 value;
@@ -1478,7 +1470,7 @@ ags_audio_signal_scale(AgsAudioSignal *audio_signal,
 	}
       }
       break;
-    case AGS_DEVOUT_RESOLUTION_32_BIT:
+    case AGS_SOUNDCARD_RESOLUTION_32_BIT:
       {
 	gint32 *dbuffer;
 
@@ -1487,7 +1479,7 @@ ags_audio_signal_scale(AgsAudioSignal *audio_signal,
 	dbuffer[doffset] = sbuffer[soffset];
       }
       break;
-    case AGS_DEVOUT_RESOLUTION_64_BIT:
+    case AGS_SOUNDCARD_RESOLUTION_64_BIT:
       {
 	gint64 *dbuffer;
 	gdouble scale;
@@ -1509,7 +1501,7 @@ ags_audio_signal_scale(AgsAudioSignal *audio_signal,
     sbuffer = (gint64 *) source->data;
 
     switch(dresolution){
-    case AGS_DEVOUT_RESOLUTION_8_BIT:
+    case AGS_SOUNDCARD_RESOLUTION_8_BIT:
       {
 	gint8 *dbuffer;
 	gdouble scale;
@@ -1521,7 +1513,7 @@ ags_audio_signal_scale(AgsAudioSignal *audio_signal,
 	dbuffer[doffset] = scale * sbuffer[soffset];
       }
       break;
-    case AGS_DEVOUT_RESOLUTION_16_BIT:
+    case AGS_SOUNDCARD_RESOLUTION_16_BIT:
       {
 	gint16 *dbuffer;
 	gdouble scale;
@@ -1533,7 +1525,7 @@ ags_audio_signal_scale(AgsAudioSignal *audio_signal,
 	dbuffer[doffset] = scale * sbuffer[soffset];
       }
       break;
-    case AGS_DEVOUT_RESOLUTION_24_BIT:
+    case AGS_SOUNDCARD_RESOLUTION_24_BIT:
       {
 	unsigned char *dbuffer;
 	gint32 value;
@@ -1556,7 +1548,7 @@ ags_audio_signal_scale(AgsAudioSignal *audio_signal,
 	}
       }
       break;
-    case AGS_DEVOUT_RESOLUTION_32_BIT:
+    case AGS_SOUNDCARD_RESOLUTION_32_BIT:
       {
 	gint32 *dbuffer;
 	gdouble scale;
@@ -1568,7 +1560,7 @@ ags_audio_signal_scale(AgsAudioSignal *audio_signal,
 	dbuffer[doffset] = scale * sbuffer[soffset];
       }
       break;
-    case AGS_DEVOUT_RESOLUTION_64_BIT:
+    case AGS_SOUNDCARD_RESOLUTION_64_BIT:
       {
 	gint64 *dbuffer;
 
@@ -1624,35 +1616,35 @@ ags_audio_signal_scale(AgsAudioSignal *audio_signal,
       }
 
       switch(template->resolution){
-      case AGS_DEVOUT_RESOLUTION_8_BIT:
+      case AGS_SOUNDCARD_RESOLUTION_8_BIT:
 	{
 	  ags_audio_signal_scale_copy_8_bit(destination, source,
 					    j, offset,
 					    audio_signal->resolution);
 	}
 	break;
-      case AGS_DEVOUT_RESOLUTION_16_BIT:
+      case AGS_SOUNDCARD_RESOLUTION_16_BIT:
 	{
 	  ags_audio_signal_scale_copy_16_bit(destination, source,
 					     j, offset,
 					     audio_signal->resolution);
 	}
 	break;
-      case AGS_DEVOUT_RESOLUTION_24_BIT:
+      case AGS_SOUNDCARD_RESOLUTION_24_BIT:
 	{
 	  ags_audio_signal_scale_copy_24_bit(destination, source,
 					     j, offset,
 					     audio_signal->resolution);
 	}
 	break;
-      case AGS_DEVOUT_RESOLUTION_32_BIT:
+      case AGS_SOUNDCARD_RESOLUTION_32_BIT:
 	{
 	  ags_audio_signal_scale_copy_32_bit(destination, source,
 					     j, offset,
 					     audio_signal->resolution);
 	}
 	break;
-      case AGS_DEVOUT_RESOLUTION_64_BIT:
+      case AGS_SOUNDCARD_RESOLUTION_64_BIT:
 	{
 	  ags_audio_signal_scale_copy_64_bit(destination, source,
 					     j, offset,
@@ -1701,35 +1693,35 @@ ags_audio_signal_scale(AgsAudioSignal *audio_signal,
 	i++, k++, template_k++){
 
       switch(audio_signal->resolution){
-      case AGS_DEVOUT_RESOLUTION_8_BIT:
+      case AGS_SOUNDCARD_RESOLUTION_8_BIT:
 	{
 	  ags_audio_signal_scale_copy_8_bit(destination, source,
 					    i, offset,
 					    audio_signal->resolution);
 	}
 	break;
-      case AGS_DEVOUT_RESOLUTION_16_BIT:
+      case AGS_SOUNDCARD_RESOLUTION_16_BIT:
 	{
 	  ags_audio_signal_scale_copy_16_bit(destination, source,
 					     i, offset,
 					     audio_signal->resolution);
 	}
 	break;
-      case AGS_DEVOUT_RESOLUTION_24_BIT:
+      case AGS_SOUNDCARD_RESOLUTION_24_BIT:
 	{
 	  ags_audio_signal_scale_copy_24_bit(destination, source,
 					     i, offset,
 					     audio_signal->resolution);
 	}
 	break;
-      case AGS_DEVOUT_RESOLUTION_32_BIT:
+      case AGS_SOUNDCARD_RESOLUTION_32_BIT:
 	{
 	  ags_audio_signal_scale_copy_32_bit(destination, source,
 					     i, offset,
 					     audio_signal->resolution);
 	}
 	break;
-      case AGS_DEVOUT_RESOLUTION_64_BIT:
+      case AGS_SOUNDCARD_RESOLUTION_64_BIT:
 	{
 	  ags_audio_signal_scale_copy_64_bit(destination, source,
 					     i, offset,

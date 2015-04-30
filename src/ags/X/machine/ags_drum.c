@@ -924,7 +924,6 @@ ags_drum_set_pattern(AgsDrum *drum)
 
 /**
  * ags_drum_new:
- * @devout: the assigned devout.
  *
  * Creates an #AgsDrum
  *
@@ -933,22 +932,12 @@ ags_drum_set_pattern(AgsDrum *drum)
  * Since: 0.3
  */
 AgsDrum*
-ags_drum_new(GObject *devout)
+ags_drum_new()
 {
   AgsDrum *drum;
-  GValue value = {0,};
 
   drum = (AgsDrum *) g_object_new(AGS_TYPE_DRUM,
 				  NULL);
-
-  if(devout != NULL){
-    g_value_init(&value, G_TYPE_OBJECT);
-    g_value_set_object(&value, devout);
-
-    g_object_set_property(G_OBJECT(drum->machine.audio),
-			  "devout\0", &value);
-    g_value_unset(&value);
-  }
 
   return(drum);
 }

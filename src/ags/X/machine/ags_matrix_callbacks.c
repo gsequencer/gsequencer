@@ -24,6 +24,7 @@
 #include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_playback.h>
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_pattern.h>
 #include <ags/audio/ags_recall.h>
@@ -328,21 +329,21 @@ ags_matrix_done_callback(AgsAudio *audio,
 			 AgsRecallID *recall_id,
 			 AgsMatrix *matrix)
 {
-  GList *devout_play;
+  GList *playback;
   gboolean all_done;
 
-  devout_play = AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->devout_play;
+  playback = AGS_PLAYBACK_DOMAIN(audio->playback_domain)->playback;
 
   /* check unset */
   all_done = TRUE;
 
-  while(devout_play != NULL){
-    if(AGS_DEVOUT_PLAY(devout_play->data)->recall_id[1] != NULL){
+  while(playback != NULL){
+    if(AGS_PLAYBACK(playback->data)->recall_id[1] != NULL){
       all_done = FALSE;
       break;
     }
 
-    devout_play = devout_play->next;
+    playback = playback->next;
   }
 
   if(all_done){

@@ -27,7 +27,7 @@
 #endif 
 #include <ags/thread/ags_task_thread.h>
 
-#include <ags/audio/ags_devout.h>
+#include <ags/object/ags_soundcard.h>
 
 #include <ags/audio/thread/ags_export_thread.h>
 
@@ -103,7 +103,7 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
   
   soundcard = AGS_SOUNDCARD(window->soundcard);
   
-  delay = AGS_DEVOUT_DEFAULT_DELAY;
+  delay = AGS_SOUNDCARD_DEFAULT_DELAY;
 
   if(soundcard != NULL){
     attack = ags_soundcard_get_attack(soundcard);
