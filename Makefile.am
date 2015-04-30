@@ -21,8 +21,9 @@ SUBDIRS = po \
 	doc
 
 #
-libags_a_SOURCES = $(ags_util_c_sources) $(ags_lib_c_sources) $(ags_object_c_sources) $(ags_log_c_sources) $(ags_log_task_c_sources) $(ags_file_c_sources) $(ags_file_task_c_sources)
-libags_thread_a_SOURCES = $(ags_thread_c_sources) $(ags_thread_file_c_sources)
+libags_a_SOURCES = $(ags_util_c_sources) $(ags_lib_c_sources) $(ags_object_c_sources) $(ags_file_c_sources) $(ags_file_task_c_sources)
+libags_thread_a_SOURCES = $(ags_thread_c_sources) $(ags_thread_file_c_sources) $(ags_thread_task_c_sources)
+libags_log_a_SOURCES = $(ags_log_c_sources) $(ags_log_task_c_sources)
 libags_audio_a_SOURCES = $(ags_audio_c_sources) $(ags_audio_thread_c_sources) $(ags_audio_file_c_sources) $(ags_audio_task_c_sources) $(ags_audio_task_recall_c_sources) $(ags_audio_recall_c_sources)  $(ags_plugin_c_sources)
 libags_gui_a_SOURCES = $(ags_widget_c_sources)
 gsequencer_SOURCES = $(gsequencer_main_c_sources) $(gsequencer_server_c_sources) $(gsequencer_xorg_c_sources) $(gsequencer_xorg_thread_c_sources) $(gsequencer_xorg_task_c_sources) $(gsequencer_machine_c_sources) $(gsequencer_editor_c_sources) $(ags_gsequencer_task_c_sources) $(gsequencer_file_c_sources)
@@ -32,31 +33,34 @@ TARGETS = gsequencer
 
 # this lists the binaries to produce, the (non-PHONY, binary) targets in
 # the previous manual Makefile
-noinst_LIBRARIES = libags_thread.a libags.a libags_audio.a libags_gui.a
+noinst_LIBRARIES = libags.a libags_thread.a libags_log.a libags_audio.a libags_gui.a
 bin_PROGRAMS = gsequencer
 
 # application
 COMPILER_FLAGS = -g -std=gnu11
 WARN_FLAGS = -Wuninitialized -Wreturn-type -Wunused-variable -Wunused-but-set-variable -Wmaybe-uninitialized -Wimplicit-function-declaration -Wparentheses -Wpointer-sign -Wdeprecated-declarations -Wcomment
 
+libags_a_CFLAGS = @CFLAGS@ $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./src -I/usr/include $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
+libags_a_LDFLAGS = @LDFLAGS@ -L/lib -L/usr/lib -L/usr/X11/lib -lm -pthread -lrt -lgmp  $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
+
 libags_thread_a_CFLAGS = @CFLAGS@ $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./src -I/usr/include $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
 libags_thread_a_LDFLAGS = @LDFLAGS@ -L/lib -L/usr/lib -L/usr/X11/lib -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
 libags_thread_a_LIBADD = libags.a
 
-libags_a_CFLAGS = @CFLAGS@ $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./src -I/usr/include $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
-libags_a_LDFLAGS = @LDFLAGS@ -L/lib -L/usr/lib -L/usr/X11/lib -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
-libags_a_LIBADD = libags_thread.a
+libags_log_a_CFLAGS = @CFLAGS@ $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./src -I/usr/include $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
+libags_log_a_LDFLAGS = @LDFLAGS@ -L/lib -L/usr/lib -L/usr/X11/lib -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
+libags_log_a_LIBADD = libags_thread.a libags.a
 
 libags_audio_a_CFLAGS = @CFLAGS@ $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./src -I/usr/include $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
 libags_audio_a_LDFLAGS = @LDFLAGS@ -L/lib -L/usr/lib -L/usr/X11/lib -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
-libags_audio_a_LIBADD = libags_thread.a libags.a 
+libags_audio_a_LIBADD = libags_log.a libags_thread.a libags.a
 
 libags_gui_a_CFLAGS = @CFLAGS@ $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./src -I/usr/include $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
 libags_gui_a_LDFLAGS = @LDFLAGS@ -L/lib -L/usr/lib -L/usr/X11/lib -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
 
 gsequencer_CFLAGS = @CFLAGS@ $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./src -I/usr/include $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
 gsequencer_LDFLAGS = @LDFLAGS@ -L/lib -L/usr/lib -L/usr/X11/lib -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
-gsequencer_LDADD = libags_audio.a libags_gui.a libags_thread.a libags.a
+gsequencer_LDADD = libags_audio.a libags_gui.a libags_log.a libags_thread.a libags.a
 
 ACLOCAL_AMFLAGS = -I m4
 
@@ -261,13 +265,25 @@ deprecated_ags_thread_file_h_sources =
 
 ags_thread_file_h_sources = \
 	$(deprecated_ags_thread_file_h_sources) \
-	src/ags/file/ags_thread_file_xml.h
+	src/ags/thread/file/ags_thread_file_xml.h
 
 deprecated_ags_thread_file_c_sources =
 
 ags_thread_file_c_sources = \
 	$(deprecated_ags_thread_file_c_sources) \
 	src/ags/thread/file/ags_thread_file_xml.c
+
+deprecated_ags_thread_task_h_sources =
+
+ags_thread_task_h_sources = \
+	$(deprecated_ags_thread_task_h_sources) \
+	src/ags/thread/task/ags_start_thread.h
+
+deprecated_ags_thread_task_c_sources =
+
+ags_thread_task_c_sources = \
+	$(deprecated_ags_thread_task_c_sources) \
+	src/ags/thread/task/ags_start_thread.c
 
 # libags_gui all files
 odeprecated_ags_widget_h_sources = 

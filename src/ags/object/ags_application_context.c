@@ -221,17 +221,15 @@ ags_application_context_init(AgsApplicationContext *application_context)
   application_context->version = AGS_VERSION;
   application_context->build_id = AGS_BUILD_ID;
 
-  application_context->log = (AgsLog *) g_object_new(AGS_TYPE_LOG,
-						     "file\0", stdout,
-						     NULL);
-  
+  application_context->log = NULL;  
   application_context->domain = NULL;
   application_context->config = NULL;
 
   pthread_mutexattr_init(&(mutexattr));
   pthread_mutexattr_settype(&(mutexattr), PTHREAD_MUTEX_RECURSIVE);
 
-  pthread_mutex_init(&(application_context->mutex), &(mutexattr));
+  application_context->mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(application_context->mutex, &(mutexattr));
 
   application_context->main_loop = NULL;
   application_context->autosave_thread = NULL;

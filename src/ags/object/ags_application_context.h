@@ -22,8 +22,6 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/log/ags_log.h>
-
 #include <ags/object/ags_config.h>
 
 #include <ags/file/ags_file.h>
@@ -65,7 +63,7 @@ struct _AgsApplicationContext
   gchar *version;
   gchar *build_id;
 
-  AgsLog *log;
+  GObject *log;
 
   gchar *domain;
   GList *sibling;

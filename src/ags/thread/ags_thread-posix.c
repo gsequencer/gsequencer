@@ -867,6 +867,8 @@ ags_thread_add_child(AgsThread *thread, AgsThread *child)
   ags_thread_unlock(main_loop);
     
   if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(thread->flags)))) != 0){
+    guint val;
+    
     ags_thread_start(child);
   }
 }
@@ -1842,7 +1844,7 @@ ags_thread_loop(void *ptr)
 
       ags_main_loop_set_last_sync(AGS_MAIN_LOOP(main_loop), current_tic);
       ags_main_loop_set_tic(AGS_MAIN_LOOP(main_loop), next_tic);
-    }
+   }
 
     current_tic = next_tic;
   }
@@ -1951,9 +1953,7 @@ ags_thread_loop(void *ptr)
 			   (~AGS_THREAD_WAIT_0));
 
 	  /* signal AgsAudioLoop */
-	  if(AGS_IS_TASK_THREAD(thread)){
-	    pthread_cond_signal(&(thread->start_cond));
-	  } 
+	  pthread_cond_signal(&(thread->start_cond));
 	}else{
 	  /* run in hierarchy */
 	  pthread_mutex_lock(&(thread->mutex));

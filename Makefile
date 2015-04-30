@@ -105,7 +105,7 @@ am__v_AR_ = $(am__v_AR_$(AM_DEFAULT_VERBOSITY))
 am__v_AR_0 = @echo "  AR      " $@;
 am__v_AR_1 = 
 libags_a_AR = $(AR) $(ARFLAGS)
-libags_a_DEPENDENCIES = libags_thread.a
+libags_a_LIBADD =
 am__objects_1 =
 am__objects_2 = $(am__objects_1) libags_a-ags_id_generator.$(OBJEXT)
 am__objects_3 = $(am__objects_1) libags_a-ags_combo_box_text.$(OBJEXT) \
@@ -129,26 +129,23 @@ am__objects_4 = $(am__objects_1) libags_a-ags_init.$(OBJEXT) \
 	libags_a-ags_stackable.$(OBJEXT) \
 	libags_a-ags_tactable.$(OBJEXT) \
 	libags_a-ags_tree_iterator.$(OBJEXT)
-am__objects_5 = $(am__objects_1) libags_a-ags_log.$(OBJEXT)
-am__objects_6 = $(am__objects_1) libags_a-ags_log_task.$(OBJEXT)
-am__objects_7 = $(am__objects_1) libags_a-ags_file.$(OBJEXT) \
+am__objects_5 = $(am__objects_1) libags_a-ags_file.$(OBJEXT) \
 	libags_a-ags_file_id_ref.$(OBJEXT) \
 	libags_a-ags_file_launch.$(OBJEXT) \
 	libags_a-ags_file_link.$(OBJEXT) \
 	libags_a-ags_file_lookup.$(OBJEXT) \
 	libags_a-ags_file_util.$(OBJEXT)
-am__objects_8 = $(am__objects_1) libags_a-ags_save_file.$(OBJEXT)
+am__objects_6 = $(am__objects_1) libags_a-ags_save_file.$(OBJEXT)
 am_libags_a_OBJECTS = $(am__objects_2) $(am__objects_3) \
-	$(am__objects_4) $(am__objects_5) $(am__objects_6) \
-	$(am__objects_7) $(am__objects_8)
+	$(am__objects_4) $(am__objects_5) $(am__objects_6)
 libags_a_OBJECTS = $(am_libags_a_OBJECTS)
 libags_audio_a_AR = $(AR) $(ARFLAGS)
-libags_audio_a_DEPENDENCIES = libags_thread.a libags.a
-am__objects_9 = libags_audio_a-ags_garbage_collector.$(OBJEXT) \
+libags_audio_a_DEPENDENCIES = libags_log.a libags_thread.a libags.a
+am__objects_7 = libags_audio_a-ags_garbage_collector.$(OBJEXT) \
 	libags_audio_a-ags_libao.$(OBJEXT) \
 	libags_audio_a-ags_timestamp.$(OBJEXT) \
 	libags_audio_a-ags_timestamp_factory.$(OBJEXT)
-am__objects_10 = $(am__objects_9) \
+am__objects_8 = $(am__objects_7) \
 	libags_audio_a-ags_audio_init.$(OBJEXT) \
 	libags_audio_a-ags_audio_application_context.$(OBJEXT) \
 	libags_audio_a-ags_sound_provider.$(OBJEXT) \
@@ -185,7 +182,7 @@ am__objects_10 = $(am__objects_9) \
 	libags_audio_a-ags_synths.$(OBJEXT) \
 	libags_audio_a-ags_timestamp_factory.$(OBJEXT) \
 	libags_audio_a-ags_timestamp.$(OBJEXT)
-am__objects_11 = $(am__objects_1) \
+am__objects_9 = $(am__objects_1) \
 	libags_audio_a-ags_audio_loop.$(OBJEXT) \
 	libags_audio_a-ags_devout_thread.$(OBJEXT) \
 	libags_audio_a-ags_export_thread.$(OBJEXT) \
@@ -193,15 +190,15 @@ am__objects_11 = $(am__objects_1) \
 	libags_audio_a-ags_record_thread.$(OBJEXT) \
 	libags_audio_a-ags_recycling_thread_callbacks.$(OBJEXT) \
 	libags_audio_a-ags_recycling_thread.$(OBJEXT)
-am__objects_12 = libags_audio_a-ags_audio_file_xml.$(OBJEXT)
-am__objects_13 = $(am__objects_12) \
+am__objects_10 = libags_audio_a-ags_audio_file_xml.$(OBJEXT)
+am__objects_11 = $(am__objects_10) \
 	libags_audio_a-ags_audio_file_xml.$(OBJEXT) \
 	libags_audio_a-ags_playable.$(OBJEXT) \
 	libags_audio_a-ags_audio_file.$(OBJEXT) \
 	libags_audio_a-ags_ipatch.$(OBJEXT) \
 	libags_audio_a-ags_ipatch_sf2_reader.$(OBJEXT) \
 	libags_audio_a-ags_sndfile.$(OBJEXT)
-am__objects_14 = libags_audio_a-ags_add_audio.$(OBJEXT) \
+am__objects_12 = libags_audio_a-ags_add_audio.$(OBJEXT) \
 	libags_audio_a-ags_add_audio_signal.$(OBJEXT) \
 	libags_audio_a-ags_add_note.$(OBJEXT) \
 	libags_audio_a-ags_add_point_to_selection.$(OBJEXT) \
@@ -241,12 +238,12 @@ am__objects_14 = libags_audio_a-ags_add_audio.$(OBJEXT) \
 	libags_audio_a-ags_start_devout.$(OBJEXT) \
 	libags_audio_a-ags_unref_audio_signal.$(OBJEXT) \
 	libags_audio_a-ags_toggle_pattern_bit.$(OBJEXT)
-am__objects_15 = $(am__objects_1) \
+am__objects_13 = $(am__objects_1) \
 	libags_audio_a-ags_apply_bpm.$(OBJEXT) \
 	libags_audio_a-ags_apply_sequencer_length.$(OBJEXT) \
 	libags_audio_a-ags_apply_tact.$(OBJEXT) \
 	libags_audio_a-ags_set_muted.$(OBJEXT)
-am__objects_16 = libags_audio_a-ags_amplifier.$(OBJEXT) \
+am__objects_14 = libags_audio_a-ags_amplifier.$(OBJEXT) \
 	libags_audio_a-ags_clone_channel.$(OBJEXT) \
 	libags_audio_a-ags_clone_channel_run.$(OBJEXT) \
 	libags_audio_a-ags_echo.$(OBJEXT) \
@@ -254,7 +251,7 @@ am__objects_16 = libags_audio_a-ags_amplifier.$(OBJEXT) \
 	libags_audio_a-ags_loop_channel_run.$(OBJEXT) \
 	libags_audio_a-ags_play_note.$(OBJEXT) \
 	libags_audio_a-ags_stream.$(OBJEXT)
-am__objects_17 = $(am__objects_16) \
+am__objects_15 = $(am__objects_14) \
 	libags_audio_a-ags_buffer_audio_signal.$(OBJEXT) \
 	libags_audio_a-ags_buffer_channel.$(OBJEXT) \
 	libags_audio_a-ags_buffer_channel_run.$(OBJEXT) \
@@ -298,16 +295,16 @@ am__objects_17 = $(am__objects_16) \
 	libags_audio_a-ags_volume_channel.$(OBJEXT) \
 	libags_audio_a-ags_volume_channel_run.$(OBJEXT) \
 	libags_audio_a-ags_volume_recycling.$(OBJEXT)
-am__objects_18 = $(am__objects_1) \
+am__objects_16 = $(am__objects_1) \
 	libags_audio_a-ags_ladspa_manager.$(OBJEXT) \
 	libags_audio_a-ags_plugin_factory.$(OBJEXT)
-am_libags_audio_a_OBJECTS = $(am__objects_10) $(am__objects_11) \
-	$(am__objects_13) $(am__objects_14) $(am__objects_15) \
-	$(am__objects_17) $(am__objects_18)
+am_libags_audio_a_OBJECTS = $(am__objects_8) $(am__objects_9) \
+	$(am__objects_11) $(am__objects_12) $(am__objects_13) \
+	$(am__objects_15) $(am__objects_16)
 libags_audio_a_OBJECTS = $(am_libags_audio_a_OBJECTS)
 libags_gui_a_AR = $(AR) $(ARFLAGS)
 libags_gui_a_LIBADD =
-am__objects_19 = $(am__objects_1) libags_gui_a-ags_gui_init.$(OBJEXT) \
+am__objects_17 = $(am__objects_1) libags_gui_a-ags_gui_init.$(OBJEXT) \
 	libags_gui_a-ags_cartesian.$(OBJEXT) \
 	libags_gui_a-ags_dial.$(OBJEXT) \
 	libags_gui_a-ags_expander.$(OBJEXT) \
@@ -324,8 +321,14 @@ am__objects_19 = $(am__objects_1) libags_gui_a-ags_gui_init.$(OBJEXT) \
 	libags_gui_a-ags_timebar.$(OBJEXT) \
 	libags_gui_a-ags_vindicator.$(OBJEXT) \
 	libags_gui_a-ags_waveform.$(OBJEXT)
-am_libags_gui_a_OBJECTS = $(am__objects_19)
+am_libags_gui_a_OBJECTS = $(am__objects_17)
 libags_gui_a_OBJECTS = $(am_libags_gui_a_OBJECTS)
+libags_log_a_AR = $(AR) $(ARFLAGS)
+libags_log_a_DEPENDENCIES = libags_thread.a libags.a
+am__objects_18 = $(am__objects_1) libags_log_a-ags_log.$(OBJEXT)
+am__objects_19 = $(am__objects_1) libags_log_a-ags_log_task.$(OBJEXT)
+am_libags_log_a_OBJECTS = $(am__objects_18) $(am__objects_19)
+libags_log_a_OBJECTS = $(am_libags_log_a_OBJECTS)
 libags_thread_a_AR = $(AR) $(ARFLAGS)
 libags_thread_a_DEPENDENCIES = libags.a
 am__objects_20 = $(am__objects_1) \
@@ -343,18 +346,21 @@ am__objects_20 = $(am__objects_1) \
 	libags_thread_a-ags_timestamp_thread.$(OBJEXT)
 am__objects_21 = $(am__objects_1) \
 	libags_thread_a-ags_thread_file_xml.$(OBJEXT)
-am_libags_thread_a_OBJECTS = $(am__objects_20) $(am__objects_21)
+am__objects_22 = $(am__objects_1) \
+	libags_thread_a-ags_start_thread.$(OBJEXT)
+am_libags_thread_a_OBJECTS = $(am__objects_20) $(am__objects_21) \
+	$(am__objects_22)
 libags_thread_a_OBJECTS = $(am_libags_thread_a_OBJECTS)
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
-am__objects_22 = gsequencer-main.$(OBJEXT)
-am__objects_23 = $(am__objects_1) gsequencer-ags_server_init.$(OBJEXT) \
+am__objects_23 = gsequencer-main.$(OBJEXT)
+am__objects_24 = $(am__objects_1) gsequencer-ags_server_init.$(OBJEXT) \
 	gsequencer-ags_server_application_context.$(OBJEXT) \
 	gsequencer-ags_service_provider.$(OBJEXT) \
 	gsequencer-ags_registry.$(OBJEXT) \
 	gsequencer-ags_remote_task.$(OBJEXT) \
 	gsequencer-ags_server.$(OBJEXT)
-am__objects_24 = $(am__objects_1) gsequencer-ags_xorg_init.$(OBJEXT) \
+am__objects_25 = $(am__objects_1) gsequencer-ags_xorg_init.$(OBJEXT) \
 	gsequencer-ags_xorg_application_context.$(OBJEXT) \
 	gsequencer-ags_audio_preferences_callbacks.$(OBJEXT) \
 	gsequencer-ags_audio_preferences.$(OBJEXT) \
@@ -420,8 +426,8 @@ am__objects_24 = $(am__objects_1) gsequencer-ags_xorg_init.$(OBJEXT) \
 	gsequencer-ags_server_preferences.$(OBJEXT) \
 	gsequencer-ags_window_callbacks.$(OBJEXT) \
 	gsequencer-ags_window.$(OBJEXT)
-am__objects_25 = $(am__objects_1) gsequencer-ags_gui_thread.$(OBJEXT)
-am__objects_26 = $(am__objects_1) \
+am__objects_26 = $(am__objects_1) gsequencer-ags_gui_thread.$(OBJEXT)
+am__objects_27 = $(am__objects_1) \
 	gsequencer-ags_add_line_member.$(OBJEXT) \
 	gsequencer-ags_add_bulk_member.$(OBJEXT) \
 	gsequencer-ags_update_bulk_member.$(OBJEXT) \
@@ -430,7 +436,7 @@ am__objects_26 = $(am__objects_1) \
 	gsequencer-ags_display_tact.$(OBJEXT) \
 	gsequencer-ags_scroll_on_play.$(OBJEXT) \
 	gsequencer-ags_toggle_led.$(OBJEXT)
-am__objects_27 = $(am__objects_1) \
+am__objects_28 = $(am__objects_1) \
 	gsequencer-ags_drum_callbacks.$(OBJEXT) \
 	gsequencer-ags_drum.$(OBJEXT) \
 	gsequencer-ags_drum_input_line_callbacks.$(OBJEXT) \
@@ -481,7 +487,7 @@ am__objects_27 = $(am__objects_1) \
 	gsequencer-ags_synth_output_line.$(OBJEXT) \
 	gsequencer-ags_synth_output_pad_callbacks.$(OBJEXT) \
 	gsequencer-ags_synth_output_pad.$(OBJEXT)
-am__objects_28 = $(am__objects_1) \
+am__objects_29 = $(am__objects_1) \
 	gsequencer-ags_automation_area_callbacks.$(OBJEXT) \
 	gsequencer-ags_automation_area.$(OBJEXT) \
 	gsequencer-ags_automation_edit_callbacks.$(OBJEXT) \
@@ -512,14 +518,14 @@ am__objects_28 = $(am__objects_1) \
 	gsequencer-ags_soundset.$(OBJEXT) \
 	gsequencer-ags_toolbar_callbacks.$(OBJEXT) \
 	gsequencer-ags_toolbar.$(OBJEXT)
-am__objects_29 = $(am__objects_1) \
+am__objects_30 = $(am__objects_1) \
 	gsequencer-ags_gsequencer_file_xml.$(OBJEXT)
-am_gsequencer_OBJECTS = $(am__objects_22) $(am__objects_23) \
-	$(am__objects_24) $(am__objects_25) $(am__objects_26) \
-	$(am__objects_27) $(am__objects_28) $(am__objects_29)
+am_gsequencer_OBJECTS = $(am__objects_23) $(am__objects_24) \
+	$(am__objects_25) $(am__objects_26) $(am__objects_27) \
+	$(am__objects_28) $(am__objects_29) $(am__objects_30)
 gsequencer_OBJECTS = $(am_gsequencer_OBJECTS)
-gsequencer_DEPENDENCIES = libags_audio.a libags_gui.a libags_thread.a \
-	libags.a
+gsequencer_DEPENDENCIES = libags_audio.a libags_gui.a libags_log.a \
+	libags_thread.a libags.a
 AM_V_lt = $(am__v_lt_$(V))
 am__v_lt_ = $(am__v_lt_$(AM_DEFAULT_VERBOSITY))
 am__v_lt_0 = --silent
@@ -562,11 +568,11 @@ am__v_CCLD_ = $(am__v_CCLD_$(AM_DEFAULT_VERBOSITY))
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
 SOURCES = $(libags_a_SOURCES) $(libags_audio_a_SOURCES) \
-	$(libags_gui_a_SOURCES) $(libags_thread_a_SOURCES) \
-	$(gsequencer_SOURCES)
+	$(libags_gui_a_SOURCES) $(libags_log_a_SOURCES) \
+	$(libags_thread_a_SOURCES) $(gsequencer_SOURCES)
 DIST_SOURCES = $(libags_a_SOURCES) $(libags_audio_a_SOURCES) \
-	$(libags_gui_a_SOURCES) $(libags_thread_a_SOURCES) \
-	$(gsequencer_SOURCES)
+	$(libags_gui_a_SOURCES) $(libags_log_a_SOURCES) \
+	$(libags_thread_a_SOURCES) $(gsequencer_SOURCES)
 RECURSIVE_TARGETS = all-recursive check-recursive cscopelist-recursive \
 	ctags-recursive dvi-recursive html-recursive info-recursive \
 	install-data-recursive install-dvi-recursive \
@@ -821,8 +827,9 @@ SUBDIRS = po \
 
 
 #
-libags_a_SOURCES = $(ags_util_c_sources) $(ags_lib_c_sources) $(ags_object_c_sources) $(ags_log_c_sources) $(ags_log_task_c_sources) $(ags_file_c_sources) $(ags_file_task_c_sources)
-libags_thread_a_SOURCES = $(ags_thread_c_sources) $(ags_thread_file_c_sources)
+libags_a_SOURCES = $(ags_util_c_sources) $(ags_lib_c_sources) $(ags_object_c_sources) $(ags_file_c_sources) $(ags_file_task_c_sources)
+libags_thread_a_SOURCES = $(ags_thread_c_sources) $(ags_thread_file_c_sources) $(ags_thread_task_c_sources)
+libags_log_a_SOURCES = $(ags_log_c_sources) $(ags_log_task_c_sources)
 libags_audio_a_SOURCES = $(ags_audio_c_sources) $(ags_audio_thread_c_sources) $(ags_audio_file_c_sources) $(ags_audio_task_c_sources) $(ags_audio_task_recall_c_sources) $(ags_audio_recall_c_sources)  $(ags_plugin_c_sources)
 libags_gui_a_SOURCES = $(ags_widget_c_sources)
 gsequencer_SOURCES = $(gsequencer_main_c_sources) $(gsequencer_server_c_sources) $(gsequencer_xorg_c_sources) $(gsequencer_xorg_thread_c_sources) $(gsequencer_xorg_task_c_sources) $(gsequencer_machine_c_sources) $(gsequencer_editor_c_sources) $(ags_gsequencer_task_c_sources) $(gsequencer_file_c_sources)
@@ -832,25 +839,27 @@ TARGETS = gsequencer
 
 # this lists the binaries to produce, the (non-PHONY, binary) targets in
 # the previous manual Makefile
-noinst_LIBRARIES = libags_thread.a libags.a libags_audio.a libags_gui.a
+noinst_LIBRARIES = libags.a libags_thread.a libags_log.a libags_audio.a libags_gui.a
 
 # application
 COMPILER_FLAGS = -g -std=gnu11
 WARN_FLAGS = -Wuninitialized -Wreturn-type -Wunused-variable -Wunused-but-set-variable -Wmaybe-uninitialized -Wimplicit-function-declaration -Wparentheses -Wpointer-sign -Wdeprecated-declarations -Wcomment
+libags_a_CFLAGS = -g -O2 $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./src -I/usr/include $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
+libags_a_LDFLAGS =  -L/lib -L/usr/lib -L/usr/X11/lib -lm -pthread -lrt -lgmp  $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
 libags_thread_a_CFLAGS = -g -O2 $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./src -I/usr/include $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
 libags_thread_a_LDFLAGS =  -L/lib -L/usr/lib -L/usr/X11/lib -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
 libags_thread_a_LIBADD = libags.a
-libags_a_CFLAGS = -g -O2 $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./src -I/usr/include $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
-libags_a_LDFLAGS =  -L/lib -L/usr/lib -L/usr/X11/lib -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
-libags_a_LIBADD = libags_thread.a
+libags_log_a_CFLAGS = -g -O2 $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./src -I/usr/include $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
+libags_log_a_LDFLAGS =  -L/lib -L/usr/lib -L/usr/X11/lib -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
+libags_log_a_LIBADD = libags_thread.a libags.a
 libags_audio_a_CFLAGS = -g -O2 $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./src -I/usr/include $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
 libags_audio_a_LDFLAGS =  -L/lib -L/usr/lib -L/usr/X11/lib -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
-libags_audio_a_LIBADD = libags_thread.a libags.a 
+libags_audio_a_LIBADD = libags_log.a libags_thread.a libags.a
 libags_gui_a_CFLAGS = -g -O2 $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./src -I/usr/include $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
 libags_gui_a_LDFLAGS =  -L/lib -L/usr/lib -L/usr/X11/lib -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
 gsequencer_CFLAGS = -g -O2 $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./src -I/usr/include $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
 gsequencer_LDFLAGS =  -L/lib -L/usr/lib -L/usr/X11/lib -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
-gsequencer_LDADD = libags_audio.a libags_gui.a libags_thread.a libags.a
+gsequencer_LDADD = libags_audio.a libags_gui.a libags_log.a libags_thread.a libags.a
 ACLOCAL_AMFLAGS = -I m4
 
 # libags all files
@@ -1037,12 +1046,22 @@ ags_thread_c_sources = \
 deprecated_ags_thread_file_h_sources = 
 ags_thread_file_h_sources = \
 	$(deprecated_ags_thread_file_h_sources) \
-	src/ags/file/ags_thread_file_xml.h
+	src/ags/thread/file/ags_thread_file_xml.h
 
 deprecated_ags_thread_file_c_sources = 
 ags_thread_file_c_sources = \
 	$(deprecated_ags_thread_file_c_sources) \
 	src/ags/thread/file/ags_thread_file_xml.c
+
+deprecated_ags_thread_task_h_sources = 
+ags_thread_task_h_sources = \
+	$(deprecated_ags_thread_task_h_sources) \
+	src/ags/thread/task/ags_start_thread.h
+
+deprecated_ags_thread_task_c_sources = 
+ags_thread_task_c_sources = \
+	$(deprecated_ags_thread_task_c_sources) \
+	src/ags/thread/task/ags_start_thread.c
 
 
 # libags_gui all files
@@ -1920,6 +1939,11 @@ libags_gui.a: $(libags_gui_a_OBJECTS) $(libags_gui_a_DEPENDENCIES) $(EXTRA_libag
 	$(AM_V_AR)$(libags_gui_a_AR) libags_gui.a $(libags_gui_a_OBJECTS) $(libags_gui_a_LIBADD)
 	$(AM_V_at)$(RANLIB) libags_gui.a
 
+libags_log.a: $(libags_log_a_OBJECTS) $(libags_log_a_DEPENDENCIES) $(EXTRA_libags_log_a_DEPENDENCIES) 
+	$(AM_V_at)-rm -f libags_log.a
+	$(AM_V_AR)$(libags_log_a_AR) libags_log.a $(libags_log_a_OBJECTS) $(libags_log_a_LIBADD)
+	$(AM_V_at)$(RANLIB) libags_log.a
+
 libags_thread.a: $(libags_thread_a_OBJECTS) $(libags_thread_a_DEPENDENCIES) $(EXTRA_libags_thread_a_DEPENDENCIES) 
 	$(AM_V_at)-rm -f libags_thread.a
 	$(AM_V_AR)$(libags_thread_a_AR) libags_thread.a $(libags_thread_a_OBJECTS) $(libags_thread_a_LIBADD)
@@ -2165,8 +2189,6 @@ include ./$(DEPDIR)/libags_a-ags_file_util.Po
 include ./$(DEPDIR)/libags_a-ags_id_generator.Po
 include ./$(DEPDIR)/libags_a-ags_init.Po
 include ./$(DEPDIR)/libags_a-ags_list.Po
-include ./$(DEPDIR)/libags_a-ags_log.Po
-include ./$(DEPDIR)/libags_a-ags_log_task.Po
 include ./$(DEPDIR)/libags_a-ags_main_loop.Po
 include ./$(DEPDIR)/libags_a-ags_marshal.Po
 include ./$(DEPDIR)/libags_a-ags_mutable.Po
@@ -2348,11 +2370,14 @@ include ./$(DEPDIR)/libags_gui_a-ags_table.Po
 include ./$(DEPDIR)/libags_gui_a-ags_timebar.Po
 include ./$(DEPDIR)/libags_gui_a-ags_vindicator.Po
 include ./$(DEPDIR)/libags_gui_a-ags_waveform.Po
+include ./$(DEPDIR)/libags_log_a-ags_log.Po
+include ./$(DEPDIR)/libags_log_a-ags_log_task.Po
 include ./$(DEPDIR)/libags_thread_a-ags_autosave_thread.Po
 include ./$(DEPDIR)/libags_thread_a-ags_concurrency_provider.Po
 include ./$(DEPDIR)/libags_thread_a-ags_mutex_manager.Po
 include ./$(DEPDIR)/libags_thread_a-ags_returnable_thread.Po
 include ./$(DEPDIR)/libags_thread_a-ags_single_thread.Po
+include ./$(DEPDIR)/libags_thread_a-ags_start_thread.Po
 include ./$(DEPDIR)/libags_thread_a-ags_task.Po
 include ./$(DEPDIR)/libags_thread_a-ags_task_thread.Po
 include ./$(DEPDIR)/libags_thread_a-ags_thread-posix.Po
@@ -2746,34 +2771,6 @@ libags_a-ags_tree_iterator.obj: src/ags/object/ags_tree_iterator.c
 #	$(AM_V_CC)source='src/ags/object/ags_tree_iterator.c' object='libags_a-ags_tree_iterator.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -c -o libags_a-ags_tree_iterator.obj `if test -f 'src/ags/object/ags_tree_iterator.c'; then $(CYGPATH_W) 'src/ags/object/ags_tree_iterator.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/object/ags_tree_iterator.c'; fi`
-
-libags_a-ags_log.o: src/ags/log/ags_log.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -MT libags_a-ags_log.o -MD -MP -MF $(DEPDIR)/libags_a-ags_log.Tpo -c -o libags_a-ags_log.o `test -f 'src/ags/log/ags_log.c' || echo '$(srcdir)/'`src/ags/log/ags_log.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_a-ags_log.Tpo $(DEPDIR)/libags_a-ags_log.Po
-#	$(AM_V_CC)source='src/ags/log/ags_log.c' object='libags_a-ags_log.o' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -c -o libags_a-ags_log.o `test -f 'src/ags/log/ags_log.c' || echo '$(srcdir)/'`src/ags/log/ags_log.c
-
-libags_a-ags_log.obj: src/ags/log/ags_log.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -MT libags_a-ags_log.obj -MD -MP -MF $(DEPDIR)/libags_a-ags_log.Tpo -c -o libags_a-ags_log.obj `if test -f 'src/ags/log/ags_log.c'; then $(CYGPATH_W) 'src/ags/log/ags_log.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/log/ags_log.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_a-ags_log.Tpo $(DEPDIR)/libags_a-ags_log.Po
-#	$(AM_V_CC)source='src/ags/log/ags_log.c' object='libags_a-ags_log.obj' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -c -o libags_a-ags_log.obj `if test -f 'src/ags/log/ags_log.c'; then $(CYGPATH_W) 'src/ags/log/ags_log.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/log/ags_log.c'; fi`
-
-libags_a-ags_log_task.o: src/ags/log/task/ags_log_task.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -MT libags_a-ags_log_task.o -MD -MP -MF $(DEPDIR)/libags_a-ags_log_task.Tpo -c -o libags_a-ags_log_task.o `test -f 'src/ags/log/task/ags_log_task.c' || echo '$(srcdir)/'`src/ags/log/task/ags_log_task.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_a-ags_log_task.Tpo $(DEPDIR)/libags_a-ags_log_task.Po
-#	$(AM_V_CC)source='src/ags/log/task/ags_log_task.c' object='libags_a-ags_log_task.o' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -c -o libags_a-ags_log_task.o `test -f 'src/ags/log/task/ags_log_task.c' || echo '$(srcdir)/'`src/ags/log/task/ags_log_task.c
-
-libags_a-ags_log_task.obj: src/ags/log/task/ags_log_task.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -MT libags_a-ags_log_task.obj -MD -MP -MF $(DEPDIR)/libags_a-ags_log_task.Tpo -c -o libags_a-ags_log_task.obj `if test -f 'src/ags/log/task/ags_log_task.c'; then $(CYGPATH_W) 'src/ags/log/task/ags_log_task.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/log/task/ags_log_task.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_a-ags_log_task.Tpo $(DEPDIR)/libags_a-ags_log_task.Po
-#	$(AM_V_CC)source='src/ags/log/task/ags_log_task.c' object='libags_a-ags_log_task.obj' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -c -o libags_a-ags_log_task.obj `if test -f 'src/ags/log/task/ags_log_task.c'; then $(CYGPATH_W) 'src/ags/log/task/ags_log_task.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/log/task/ags_log_task.c'; fi`
 
 libags_a-ags_file.o: src/ags/file/ags_file.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -MT libags_a-ags_file.o -MD -MP -MF $(DEPDIR)/libags_a-ags_file.Tpo -c -o libags_a-ags_file.o `test -f 'src/ags/file/ags_file.c' || echo '$(srcdir)/'`src/ags/file/ags_file.c
@@ -5197,6 +5194,34 @@ libags_gui_a-ags_waveform.obj: src/ags/widget/ags_waveform.c
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_gui_a_CFLAGS) $(CFLAGS) -c -o libags_gui_a-ags_waveform.obj `if test -f 'src/ags/widget/ags_waveform.c'; then $(CYGPATH_W) 'src/ags/widget/ags_waveform.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/widget/ags_waveform.c'; fi`
 
+libags_log_a-ags_log.o: src/ags/log/ags_log.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_log_a_CFLAGS) $(CFLAGS) -MT libags_log_a-ags_log.o -MD -MP -MF $(DEPDIR)/libags_log_a-ags_log.Tpo -c -o libags_log_a-ags_log.o `test -f 'src/ags/log/ags_log.c' || echo '$(srcdir)/'`src/ags/log/ags_log.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_log_a-ags_log.Tpo $(DEPDIR)/libags_log_a-ags_log.Po
+#	$(AM_V_CC)source='src/ags/log/ags_log.c' object='libags_log_a-ags_log.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_log_a_CFLAGS) $(CFLAGS) -c -o libags_log_a-ags_log.o `test -f 'src/ags/log/ags_log.c' || echo '$(srcdir)/'`src/ags/log/ags_log.c
+
+libags_log_a-ags_log.obj: src/ags/log/ags_log.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_log_a_CFLAGS) $(CFLAGS) -MT libags_log_a-ags_log.obj -MD -MP -MF $(DEPDIR)/libags_log_a-ags_log.Tpo -c -o libags_log_a-ags_log.obj `if test -f 'src/ags/log/ags_log.c'; then $(CYGPATH_W) 'src/ags/log/ags_log.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/log/ags_log.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_log_a-ags_log.Tpo $(DEPDIR)/libags_log_a-ags_log.Po
+#	$(AM_V_CC)source='src/ags/log/ags_log.c' object='libags_log_a-ags_log.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_log_a_CFLAGS) $(CFLAGS) -c -o libags_log_a-ags_log.obj `if test -f 'src/ags/log/ags_log.c'; then $(CYGPATH_W) 'src/ags/log/ags_log.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/log/ags_log.c'; fi`
+
+libags_log_a-ags_log_task.o: src/ags/log/task/ags_log_task.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_log_a_CFLAGS) $(CFLAGS) -MT libags_log_a-ags_log_task.o -MD -MP -MF $(DEPDIR)/libags_log_a-ags_log_task.Tpo -c -o libags_log_a-ags_log_task.o `test -f 'src/ags/log/task/ags_log_task.c' || echo '$(srcdir)/'`src/ags/log/task/ags_log_task.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_log_a-ags_log_task.Tpo $(DEPDIR)/libags_log_a-ags_log_task.Po
+#	$(AM_V_CC)source='src/ags/log/task/ags_log_task.c' object='libags_log_a-ags_log_task.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_log_a_CFLAGS) $(CFLAGS) -c -o libags_log_a-ags_log_task.o `test -f 'src/ags/log/task/ags_log_task.c' || echo '$(srcdir)/'`src/ags/log/task/ags_log_task.c
+
+libags_log_a-ags_log_task.obj: src/ags/log/task/ags_log_task.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_log_a_CFLAGS) $(CFLAGS) -MT libags_log_a-ags_log_task.obj -MD -MP -MF $(DEPDIR)/libags_log_a-ags_log_task.Tpo -c -o libags_log_a-ags_log_task.obj `if test -f 'src/ags/log/task/ags_log_task.c'; then $(CYGPATH_W) 'src/ags/log/task/ags_log_task.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/log/task/ags_log_task.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_log_a-ags_log_task.Tpo $(DEPDIR)/libags_log_a-ags_log_task.Po
+#	$(AM_V_CC)source='src/ags/log/task/ags_log_task.c' object='libags_log_a-ags_log_task.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_log_a_CFLAGS) $(CFLAGS) -c -o libags_log_a-ags_log_task.obj `if test -f 'src/ags/log/task/ags_log_task.c'; then $(CYGPATH_W) 'src/ags/log/task/ags_log_task.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/log/task/ags_log_task.c'; fi`
+
 libags_thread_a-ags_mutex_manager.o: src/ags/thread/ags_mutex_manager.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -MT libags_thread_a-ags_mutex_manager.o -MD -MP -MF $(DEPDIR)/libags_thread_a-ags_mutex_manager.Tpo -c -o libags_thread_a-ags_mutex_manager.o `test -f 'src/ags/thread/ags_mutex_manager.c' || echo '$(srcdir)/'`src/ags/thread/ags_mutex_manager.c
 	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_thread_a-ags_mutex_manager.Tpo $(DEPDIR)/libags_thread_a-ags_mutex_manager.Po
@@ -5378,6 +5403,20 @@ libags_thread_a-ags_thread_file_xml.obj: src/ags/thread/file/ags_thread_file_xml
 #	$(AM_V_CC)source='src/ags/thread/file/ags_thread_file_xml.c' object='libags_thread_a-ags_thread_file_xml.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -c -o libags_thread_a-ags_thread_file_xml.obj `if test -f 'src/ags/thread/file/ags_thread_file_xml.c'; then $(CYGPATH_W) 'src/ags/thread/file/ags_thread_file_xml.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/thread/file/ags_thread_file_xml.c'; fi`
+
+libags_thread_a-ags_start_thread.o: src/ags/thread/task/ags_start_thread.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -MT libags_thread_a-ags_start_thread.o -MD -MP -MF $(DEPDIR)/libags_thread_a-ags_start_thread.Tpo -c -o libags_thread_a-ags_start_thread.o `test -f 'src/ags/thread/task/ags_start_thread.c' || echo '$(srcdir)/'`src/ags/thread/task/ags_start_thread.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_thread_a-ags_start_thread.Tpo $(DEPDIR)/libags_thread_a-ags_start_thread.Po
+#	$(AM_V_CC)source='src/ags/thread/task/ags_start_thread.c' object='libags_thread_a-ags_start_thread.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -c -o libags_thread_a-ags_start_thread.o `test -f 'src/ags/thread/task/ags_start_thread.c' || echo '$(srcdir)/'`src/ags/thread/task/ags_start_thread.c
+
+libags_thread_a-ags_start_thread.obj: src/ags/thread/task/ags_start_thread.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -MT libags_thread_a-ags_start_thread.obj -MD -MP -MF $(DEPDIR)/libags_thread_a-ags_start_thread.Tpo -c -o libags_thread_a-ags_start_thread.obj `if test -f 'src/ags/thread/task/ags_start_thread.c'; then $(CYGPATH_W) 'src/ags/thread/task/ags_start_thread.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/thread/task/ags_start_thread.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_thread_a-ags_start_thread.Tpo $(DEPDIR)/libags_thread_a-ags_start_thread.Po
+#	$(AM_V_CC)source='src/ags/thread/task/ags_start_thread.c' object='libags_thread_a-ags_start_thread.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -c -o libags_thread_a-ags_start_thread.obj `if test -f 'src/ags/thread/task/ags_start_thread.c'; then $(CYGPATH_W) 'src/ags/thread/task/ags_start_thread.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/thread/task/ags_start_thread.c'; fi`
 
 gsequencer-main.o: src/ags/main.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-main.o -MD -MP -MF $(DEPDIR)/gsequencer-main.Tpo -c -o gsequencer-main.o `test -f 'src/ags/main.c' || echo '$(srcdir)/'`src/ags/main.c
