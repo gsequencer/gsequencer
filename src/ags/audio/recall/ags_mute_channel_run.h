@@ -24,7 +24,6 @@
 
 #include <ags/audio/ags_recall_channel_run.h>
 
-#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_channel.h>
 
 #define AGS_TYPE_MUTE_CHANNEL_RUN                (ags_mute_channel_run_get_type())

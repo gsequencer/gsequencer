@@ -31,12 +31,12 @@ void ags_remove_audio_launch(AgsTask *task);
 
 /**
  * SECTION:ags_remove_audio
- * @short_description: remove audio object of devout
+ * @short_description: remove audio object of soundcard
  * @title: AgsRemoveAudio
  * @section_id:
  * @include: ags/audio/task/ags_remove_audio.h
  *
- * The #AgsRemoveAudio task removes #AgsAudio of #AgsDevout.
+ * The #AgsRemoveAudio task removes #AgsAudio of #AgsSoundcard.
  */
 
 static gpointer ags_remove_audio_parent_class = NULL;
@@ -110,7 +110,7 @@ ags_remove_audio_connectable_interface_init(AgsConnectableInterface *connectable
 void
 ags_remove_audio_init(AgsRemoveAudio *remove_audio)
 {
-  remove_audio->devout = NULL;
+  remove_audio->soundcard = NULL;
   remove_audio->audio = NULL;
 }
 
@@ -142,17 +142,23 @@ void
 ags_remove_audio_launch(AgsTask *task)
 {
   AgsRemoveAudio *remove_audio;
-
+  GList *list;
+  
   remove_audio = AGS_REMOVE_AUDIO(task);
 
   /* remove audio */
-  ags_devout_remove_audio(remove_audio->devout,
-			  G_OBJECT(remove_audio->audio));
+  list = ags_soundcard_get_audio(remove_audio->soundcard);
+  list = g_list_remove(list,
+		       G_OBJECT(remove_audio->audio));
+
+  ags_soundcard_set_audio(remove_audio->soundcard,
+			  list)
+  g_object_unref(G_OBJECT(remove_audio->audio));
 }
 
 /**
  * ags_remove_audio_new:
- * @devout: the #AgsDevout
+ * @soundcard: the #GObject implementing #AgsSoundcard
  * @audio: the #AgsAudio to remove
  *
  * Creates an #AgsRemoveAudio.
@@ -162,15 +168,15 @@ ags_remove_audio_launch(AgsTask *task)
  * Since: 0.4
  */
 AgsRemoveAudio*
-ags_remove_audio_new(AgsDevout *devout,
-		  AgsAudio *audio)
+ags_remove_audio_new(GObject *soundcard,
+		     AgsAudio *audio)
 {
   AgsRemoveAudio *remove_audio;
 
   remove_audio = (AgsRemoveAudio *) g_object_new(AGS_TYPE_REMOVE_AUDIO,
 						 NULL);
 
-  remove_audio->devout = devout;
+  remove_audio->soundcard = soundcard;
   remove_audio->audio = audio;
 
   return(remove_audio);

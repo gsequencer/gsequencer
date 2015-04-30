@@ -42,7 +42,7 @@ struct _AgsPlaybackDomain
   gboolean sequencer;
   gboolean notation;
 
-  GList *devout_play;
+  GList *playback;
 };
 
 struct _AgsPlaybackDomainClass

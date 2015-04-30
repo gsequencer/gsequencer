@@ -21,9 +21,8 @@
 
 #include <glib.h>
 #include <glib-object.h>
-#include <sndfile.h>
 
-#include <ags/audio/ags_devout.h>
+#include <sndfile.h>
 
 #define AGS_TYPE_SNDFILE                (ags_sndfile_get_type())
 #define AGS_SNDFILE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SNDFILE, AgsSndfile))

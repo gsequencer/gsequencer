@@ -22,9 +22,11 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/object/ags_soundcard.h>
+
 #include <ags/thread/ags_task.h>
+
 #include <ags/audio/ags_recycling.h>
-#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_recall_id.h>
 
 #define AGS_TYPE_ADD_AUDIO_SIGNAL                (ags_add_audio_signal_get_type())
@@ -43,7 +45,7 @@ struct _AgsAddAudioSignal
 
   AgsRecycling *recycling;
   AgsAudioSignal *audio_signal;
-  AgsDevout *devout;
+  GObject *soundcard;
   AgsRecallID *recall_id;
   guint audio_signal_flags;
 };
@@ -57,7 +59,7 @@ GType ags_add_audio_signal_get_type();
 
 AgsAddAudioSignal* ags_add_audio_signal_new(AgsRecycling *recycling,
 					    AgsAudioSignal *audio_signal,
-					    AgsDevout *devout,
+					    GObject *soundcard,
 					    AgsRecallID *recall_id,
 					    guint audio_signal_flags);
 

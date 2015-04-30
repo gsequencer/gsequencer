@@ -24,7 +24,6 @@
 
 #include <ags/thread/ags_task.h>
 
-#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_recall.h>
 
 #define AGS_TYPE_CANCEL_RECALL                (ags_cancel_recall_get_type())

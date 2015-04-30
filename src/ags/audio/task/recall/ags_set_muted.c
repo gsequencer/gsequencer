@@ -21,7 +21,6 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_mutable.h>
 
-#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recall.h>

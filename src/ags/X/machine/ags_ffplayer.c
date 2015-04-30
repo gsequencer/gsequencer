@@ -1143,7 +1143,6 @@ ags_ffplayer_paint(AgsFFPlayer *ffplayer)
 
 /**
  * ags_ffplayer_new:
- * @soundcard: the assigned soundcard.
  *
  * Creates an #AgsFFPlayer
  *
@@ -1152,21 +1151,12 @@ ags_ffplayer_paint(AgsFFPlayer *ffplayer)
  * Since: 0.3
  */
 AgsFFPlayer*
-ags_ffplayer_new(GObject *soundcard)
+ags_ffplayer_new()
 {
   AgsFFPlayer *ffplayer;
-  GValue value = {0,};
 
   ffplayer = (AgsFFPlayer *) g_object_new(AGS_TYPE_FFPLAYER,
 					  NULL);
-
-  if(soundcard != NULL){
-    g_value_init(&value, G_TYPE_OBJECT);
-    g_value_set_object(&value, soundcard);
-    g_object_set_property(G_OBJECT(ffplayer->machine.audio),
-			  "soundcard\0", &value);
-    g_value_unset(&value);
-  }
 
   return(ffplayer);
 }

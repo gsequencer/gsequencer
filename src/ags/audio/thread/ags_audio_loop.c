@@ -999,7 +999,7 @@ ags_audio_loop_remove_channel(AgsAudioLoop *audio_loop, GObject *channel)
  * Since: 0.4
  */
 void
-ags_audio_loop_add_recall(AgsAudioLoop *audio_loop, gpointer playback)
+ags_audio_loop_add_recall(AgsAudioLoop *audio_loop, GObject *playback)
 {
   /* append to AgsSoundcard */
   AGS_PLAYBACK(playback)->flags &= (~AGS_PLAYBACK_REMOVE);
@@ -1018,7 +1018,7 @@ ags_audio_loop_add_recall(AgsAudioLoop *audio_loop, gpointer playback)
  * Since: 0.4
  */
 void
-ags_audio_loop_remove_recall(AgsAudioLoop *audio_loop, gpointer playback)
+ags_audio_loop_remove_recall(AgsAudioLoop *audio_loop, GObject *playback)
 {
   audio_loop->play_recall = g_list_remove(audio_loop->play_recall,
 					  playback);
