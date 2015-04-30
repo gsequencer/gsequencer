@@ -16,6 +16,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include <ags/audio/ags_playback_domain.h>
+
+#include <ags/object/ags_connectable.h>
+
 /**
  * SECTION:ags_playback_domain
  * @short_description: Outputting to soundcard domain
@@ -100,11 +104,11 @@ ags_playback_domain_init(AgsPlaybackDomain *playback_domain)
 {
   playback_domain->domain = NULL;
 
-  playback_domain->playback_domain = FALSE;
-  playback_domain->sequencer = FALSE;
-  playback_domain->notation = FALSE;
+  playback_domain->do_playback = FALSE;
+  playback_domain->do_sequencer = FALSE;
+  playback_domain->do_notation = FALSE;
 
-  playback_domain->playback_domain = NULL;
+  playback_domain->playback = NULL;
 }
 
 void
@@ -114,7 +118,7 @@ ags_playback_domain_finalize(GObject *gobject)
 
   playback_domain = AGS_PLAYBACK_DOMAIN(gobject);
 
-  g_list_free_full(playback_domain->playback_domain,
+  g_list_free_full(playback_domain->playback,
 		   g_object_unref);
 
   /* call parent */

@@ -28,11 +28,14 @@
 #include <ags/object/ags_application_context.h>
 #include <ags/object/ags_plugin.h>
 #include <ags/object/ags_packable.h>
+#include <ags/object/ags_soundcard.h>
 
 #include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>
 #include <ags/file/ags_file_lookup.h>
 
+#include <ags/audio/ags_playback_domain.h>
+#include <ags/audio/ags_playback.h>
 #include <ags/audio/ags_recall_audio.h>
 #include <ags/audio/ags_recall_audio_run.h>
 #include <ags/audio/ags_recall_channel.h>
@@ -118,7 +121,7 @@ ags_file_read_devout(AgsFile *file, xmlNode *node, AgsDevout **devout)
   gobject->flags &= (~(AGS_DEVOUT_BUFFER1 |
 		       AGS_DEVOUT_BUFFER2 |
 		       AGS_DEVOUT_BUFFER3 |
-		       AGS_DEVOUT_PLAY));
+		       AGS_PLAYBACK_PLAYBACK));
 
   gobject->dsp_channels = (guint) g_ascii_strtoull(xmlGetProp(node, "dsp-channels\0"),
 						   NULL,
@@ -127,15 +130,15 @@ ags_file_read_devout(AgsFile *file, xmlNode *node, AgsDevout **devout)
 						   NULL,
 						   10);
 
-  gobject->bits = (guint) g_ascii_strtoull(xmlGetProp(node, "bits\0"),
-					   NULL,
-					   10);
+  gobject->format = (guint) g_ascii_strtoull(xmlGetProp(node, "bits\0"),
+					     NULL,
+					     10);
   gobject->buffer_size = (guint) g_ascii_strtoull(xmlGetProp(node, "buffer-size\0"),
 						  NULL,
 						  10);
-  gobject->frequency = (guint) g_ascii_strtoull(xmlGetProp(node, "frequency\0"),
-						NULL,
-						10);
+  gobject->samplerate = (guint) g_ascii_strtoull(xmlGetProp(node, "frequency\0"),
+						 NULL,
+						 10);
 
   gobject->bpm = (gdouble) g_ascii_strtod(xmlGetProp(node, "bpm\0"),
 					  NULL);
@@ -185,7 +188,7 @@ ags_file_read_devout(AgsFile *file, xmlNode *node, AgsDevout **devout)
 
 	  str = content;
 
-	  for(i = 0; i < (int) ceil(2.0 * AGS_DEVOUT_DEFAULT_PERIOD); i++){
+	  for(i = 0; i < (int) ceil(2.0 * AGS_SOUNDCARD_DEFAULT_PERIOD); i++){
 	    gobject->attack[i] = (guint) g_ascii_strtoull((gchar *) str,
 							  (gchar **) &endptr,
 							  10);
@@ -210,7 +213,7 @@ ags_file_read_devout(AgsFile *file, xmlNode *node, AgsDevout **devout)
 
 	  str = content;
 	  
-	  for(i = 0; i < (int) ceil(2.0 * AGS_DEVOUT_DEFAULT_PERIOD); i++){
+	  for(i = 0; i < (int) ceil(2.0 * AGS_SOUNDCARD_DEFAULT_PERIOD); i++){
 	    gobject->delay[i] = (gdouble) g_ascii_strtod((gchar *) str,
 							 (gchar **) &endptr);
 	    str = endptr;
@@ -226,9 +229,7 @@ ags_file_read_devout(AgsFile *file, xmlNode *node, AgsDevout **devout)
 						    NULL,
 						    10);
 
-  if((AGS_DEVOUT_LIBAO & (gobject->flags)) != 0){
-    //TODO:JK: implement me
-  }else if((AGS_DEVOUT_OSS & (gobject->flags)) != 0){
+  if((AGS_DEVOUT_OSS & (gobject->flags)) != 0){
     gobject->out.oss.device = xmlGetProp(node, "device\0");
   }else if((AGS_DEVOUT_ALSA & (gobject->flags)) != 0){
     gobject->out.alsa.device = xmlGetProp(node, "device\0");
@@ -275,14 +276,14 @@ ags_file_write_devout(AgsFile *file, xmlNode *parent, AgsDevout *devout)
 	     g_strdup_printf("%d\0", devout->pcm_channels));
 
   xmlNewProp(node,
-	     "bits\0",
-	     g_strdup_printf("%d\0", devout->bits));
+	     "format\0",
+	     g_strdup_printf("%d\0", devout->format));
   xmlNewProp(node,
 	     "buffer-size\0",
 	     g_strdup_printf("%d\0", devout->buffer_size));
   xmlNewProp(node,
-	     "frequency\0",
-	     g_strdup_printf("%d\0", devout->frequency));
+	     "samplerate\0",
+	     g_strdup_printf("%d\0", devout->samplerate));
 
   xmlNewProp(node,
 	     "bpm\0",
@@ -298,7 +299,7 @@ ags_file_write_devout(AgsFile *file, xmlNode *parent, AgsDevout *devout)
 		     "ags-delay-data\0");
   content = NULL;
 	  
-  for(i = 0; i < (int) ceil(2 * AGS_DEVOUT_DEFAULT_PERIOD); i++){
+  for(i = 0; i < (int) ceil(2 * AGS_SOUNDCARD_DEFAULT_PERIOD); i++){
     str = content;
 
     if(str != NULL){
@@ -328,7 +329,7 @@ ags_file_write_devout(AgsFile *file, xmlNode *parent, AgsDevout *devout)
 		     "ags-attack-data\0");
   content = NULL;
 	  
-  for(i = 0; i < (int) ceil(2 * AGS_DEVOUT_DEFAULT_PERIOD); i++){
+  for(i = 0; i < (int) ceil(2 * AGS_SOUNDCARD_DEFAULT_PERIOD); i++){
     str = content;
 
     if(str != NULL){
@@ -447,13 +448,13 @@ ags_file_write_devout_list(AgsFile *file, xmlNode *parent, GList *devout)
 }
 
 void
-ags_file_read_devout_play(AgsFile *file, xmlNode *node, AgsDevoutPlay **play)
+ags_file_read_playback(AgsFile *file, xmlNode *node, AgsPlayback **play)
 {
-  AgsDevoutPlay *pointer;
+  AgsPlayback *pointer;
   gchar *id;
   
   if(*play == NULL){
-    pointer = ags_devout_play_alloc();
+    pointer = ags_playback_new();
     *play = pointer;
   }else{
     pointer = *play;
@@ -483,7 +484,7 @@ ags_file_read_devout_play(AgsFile *file, xmlNode *node, AgsDevoutPlay **play)
 }
 
 xmlNode*
-ags_file_write_devout_play(AgsFile *file, xmlNode *parent, AgsDevoutPlay *play)
+ags_file_write_playback(AgsFile *file, xmlNode *parent, AgsPlayback *play)
 {
   xmlNode *node;
   gchar *id;
@@ -519,10 +520,10 @@ ags_file_write_devout_play(AgsFile *file, xmlNode *parent, AgsDevoutPlay *play)
 }
 
 void
-ags_file_read_devout_play_list(AgsFile *file, xmlNode *node, GList **play)
+ags_file_read_playback_list(AgsFile *file, xmlNode *node, GList **play)
 {
   GList *list;
-  AgsDevoutPlay *current;
+  AgsPlayback *current;
   xmlNode *child;
   gchar *id;
 
@@ -538,7 +539,7 @@ ags_file_read_devout_play_list(AgsFile *file, xmlNode *node, GList **play)
 		     "ags-devout-play\0",
 		     16)){
 	current = NULL;
-	ags_file_read_devout_play(file, child, &current);
+	ags_file_read_playback(file, child, &current);
 
 	list = g_list_prepend(list, current);
       }
@@ -561,7 +562,7 @@ ags_file_read_devout_play_list(AgsFile *file, xmlNode *node, GList **play)
 }
 
 xmlNode*
-ags_file_write_devout_play_list(AgsFile *file, xmlNode *parent, GList *play)
+ags_file_write_playback_list(AgsFile *file, xmlNode *parent, GList *play)
 {
   AgsDevout *current;
   xmlNode *node;
@@ -591,7 +592,7 @@ ags_file_write_devout_play_list(AgsFile *file, xmlNode *parent, GList *play)
   list = play;
 
   while(list != NULL){
-    ags_file_write_devout_play(file, node, AGS_DEVOUT_PLAY(list->data));
+    ags_file_write_playback(file, node, AGS_PLAYBACK(list->data));
 
     list = list->next;
   }
@@ -1247,10 +1248,10 @@ ags_file_read_channel(AgsFile *file, xmlNode *node, AgsChannel **channel)
 			   "ags-devout-play\0",
 			   15)){
 	/* ags-devout-play */
-	ags_file_read_devout_play(file,
+	ags_file_read_playback(file,
 				  child,
-				  (AgsDevoutPlay **) &gobject->devout_play);
-	AGS_DEVOUT_PLAY(gobject->devout_play)->source = (GObject *) gobject;
+				  (AgsPlayback **) &gobject->playback);
+	AGS_PLAYBACK(gobject->playback)->source = (GObject *) gobject;
       }
     }
 
@@ -1406,9 +1407,9 @@ ags_file_write_channel(AgsFile *file, xmlNode *parent, AgsChannel *channel)
   }
 
   /* ags-devout-play */
-  child = ags_file_write_devout_play(file,
+  child = ags_file_write_playback(file,
 				     node,
-				     channel->devout_play);
+				     channel->playback);
 
   return(node);
 }

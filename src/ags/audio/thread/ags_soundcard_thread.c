@@ -259,18 +259,10 @@ ags_soundcard_thread_start(AgsThread *thread)
   /*  */
   soundcard_thread->error = NULL;
 
-  if(ags_soundcard_get_buffer(AGS_SOUNDCARD(devout)) == NULL){
+  if(ags_soundcard_get_buffer(soundcard) == NULL){
     ags_soundcard_play_init(soundcard,
-			    &(devout_thread->error));
+			    &(soundcard_thread->error));
       
-    if(devout_thread->error == NULL){
-      devout->flags &= (~AGS_DEVOUT_START_PLAY);
-    }else{
-      /* preserve AgsAudioLoop from playing */
-	
-      return;
-    }
-
 #ifdef AGS_DEBUG
     g_message("ags_devout_alsa_play\0");
 #endif

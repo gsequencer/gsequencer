@@ -170,9 +170,9 @@ ags_play_audio_file_set_property(GObject *gobject,
   switch(prop_id){
   case PROP_SOUNDCARD:
     {
-      AgsDevout *soundcard;
+      GObject *soundcard;
 
-      soundcard = (AgsDevout *) g_value_get_object(value);
+      soundcard = (GObject *) g_value_get_object(value);
 
       if(play_audio_file->soundcard == soundcard)
 	return;

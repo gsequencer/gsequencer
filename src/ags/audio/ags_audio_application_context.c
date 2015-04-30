@@ -283,29 +283,29 @@ ags_audio_application_context_load_config(AgsApplicationContext *application_con
     soundcard = AGS_SOUNDCARD(list->data);
     
     alsa_handle = ags_config_get_value(config,
-				 AGS_CONFIG_DEVOUT,
+				 AGS_CONFIG_SOUNDCARD,
 				 "alsa-handle\0");
 
     dsp_channels = strtoul(ags_config_get_value(config,
-					  AGS_CONFIG_DEVOUT,
+					  AGS_CONFIG_SOUNDCARD,
 					  "dsp-channels\0"),
 			   NULL,
 			   10);
     
     pcm_channels = strtoul(ags_config_get_value(config,
-					  AGS_CONFIG_DEVOUT,
+					  AGS_CONFIG_SOUNDCARD,
 					  "pcm-channels\0"),
 			   NULL,
 			   10);
 
     samplerate = strtoul(ags_config_get_value(config,
-					AGS_CONFIG_DEVOUT,
+					AGS_CONFIG_SOUNDCARD,
 					"samplerate\0"),
 			 NULL,
 			 10);
 
     buffer_size = strtoul(ags_config_get_value(config,
-					 AGS_CONFIG_DEVOUT,
+					 AGS_CONFIG_SOUNDCARD,
 					 "buffer-size\0"),
 			  NULL,
 			  10);
@@ -327,7 +327,7 @@ ags_audio_application_context_set_value_callback(AgsConfig *config, gchar *group
 						 AgsAudioApplicationContext *audio_application_context)
 {
   if(!strncmp(group,
-	      AGS_CONFIG_DEVOUT,
+	      AGS_CONFIG_SOUNDCARD,
 	      7)){
     AgsSoundcard *soundcard;
 
@@ -403,7 +403,7 @@ void
 ags_audio_application_context_register_types(AgsApplicationContext *application_context)
 {
   ags_audio_loop_get_type();
-  ags_devout_thread_get_type();
+  ags_soundcard_thread_get_type();
   ags_export_thread_get_type();
   ags_record_thread_get_type();
   ags_iterator_thread_get_type();

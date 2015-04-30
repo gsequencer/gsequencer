@@ -123,7 +123,7 @@ ags_audio_file_init(AgsAudioFile *audio_file)
 
   audio_file->name = NULL;
 
-  audio_file->samplerate = AGS_DEVOUT_DEFAULT_SAMPLERATE;
+  audio_file->samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
   audio_file->frames = 0;
   audio_file->channels = 2;
   audio_file->format = SF_FORMAT_WAV | SF_FORMAT_PCM_16;

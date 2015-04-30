@@ -38,6 +38,8 @@
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_input.h>
+#include <ags/audio/ags_playback_domain.h>
+#include <ags/audio/ags_playback.h>
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_pattern.h>
 #include <ags/audio/ags_recall.h>
@@ -326,7 +328,7 @@ ags_channel_init(AgsChannel *channel)
 
   channel->note = NULL;
 
-  channel->playback = ags_playback_alloc();
+  channel->playback = ags_playback_new();
   AGS_PLAYBACK(channel->playback)->source = (GObject *) channel;
 
   channel->recall_id = NULL;
@@ -587,7 +589,7 @@ ags_channel_finalize(GObject *gobject)
     free(channel->note);
 
   if(channel->playback != NULL)
-    ags_playback_free(channel->playback);  
+    g_object_unref(channel->playback);  
 
 
   /* free some lists */
@@ -5263,7 +5265,7 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
     AgsPlayback *playback;
     GList *list;
     gboolean play;
-    gboolean playback, sequencer, notation;
+    gboolean do_playback, do_sequencer, do_notation;
 
     AgsRecycling *recycling;
     gint recycling_length;
@@ -5300,9 +5302,9 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
     while(recall_id_list != NULL){
       /* playback */
       playback = AGS_PLAYBACK(playback_list->data);
-      playback = ((AGS_PLAYBACK_PLAYBACK & (playback->flags)) != 0) ? TRUE: FALSE;
+      do_playback = ((AGS_PLAYBACK_PLAYBACK & (playback->flags)) != 0) ? TRUE: FALSE;
 
-      if(playback){
+      if(do_playback){
 #ifdef AGS_DEBUG
 	g_message("recall id reset: play\0");
 #endif
@@ -5338,9 +5340,9 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
 
       /* sequencer */
       playback = AGS_PLAYBACK(playback_list->data);
-      sequencer = ((AGS_PLAYBACK_SEQUENCER & (playback->flags)) != 0) ? TRUE: FALSE;      
+      do_sequencer = ((AGS_PLAYBACK_SEQUENCER & (playback->flags)) != 0) ? TRUE: FALSE;      
 
-      if(sequencer){
+      if(do_sequencer){
 #ifdef AGS_DEBUG
 	g_message("recall id reset: sequencer\0");
 #endif
@@ -5365,9 +5367,9 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
 
       /* notation */
       playback = AGS_PLAYBACK(playback_list->data);
-      notation = ((AGS_PLAYBACK_NOTATION & (playback->flags)) != 0) ? TRUE: FALSE;
+      do_notation = ((AGS_PLAYBACK_NOTATION & (playback->flags)) != 0) ? TRUE: FALSE;
 
-      if(notation){
+      if(do_notation){
 #ifdef AGS_DEBUG
 	g_message("recall id reset: notation\0");
 #endif
@@ -5394,7 +5396,7 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
     AgsPlayback *playback;
     GList *list;
     gboolean play;
-    gboolean playback, sequencer, notation;
+    gboolean do_playback, do_sequencer, do_notation;
 
     while(invalid_recall_id_list != NULL){
       recall_id = AGS_RECALL_ID(invalid_recall_id_list->data);
@@ -5424,9 +5426,9 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
     while(recall_id_list != NULL){
       /* playback */
       playback = AGS_PLAYBACK(playback_list->data);
-      playback = (((AGS_PLAYBACK_PLAYBACK & (playback->flags)) != 0) ? TRUE: FALSE);
+      do_playback = (((AGS_PLAYBACK_PLAYBACK & (playback->flags)) != 0) ? TRUE: FALSE);
 
-      if(playback){
+      if(do_playback){
 #ifdef AGS_DEBUG
 	g_message("recall id reset: playback\0");
 #endif
@@ -5451,9 +5453,9 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
 
       /* sequencer */
       playback = AGS_PLAYBACK(playback_list->data);
-      sequencer = (((AGS_PLAYBACK_SEQUENCER & (playback->flags)) != 0) ? TRUE: FALSE);
+      do_sequencer = (((AGS_PLAYBACK_SEQUENCER & (playback->flags)) != 0) ? TRUE: FALSE);
 
-      if(sequencer){
+      if(do_sequencer){
 #ifdef AGS_DEBUG
 	g_message("recall id reset: sequencer\0");
 #endif
@@ -5478,9 +5480,9 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
 
       /* notation */
       playback = AGS_PLAYBACK(playback_list->data);
-      notation = (((AGS_PLAYBACK_NOTATION & (playback->flags)) != 0) ? TRUE: FALSE);
+      do_notation = (((AGS_PLAYBACK_NOTATION & (playback->flags)) != 0) ? TRUE: FALSE);
 
-      if(notation){
+      if(do_notation){
 #ifdef AGS_DEBUG
 	g_message("recall id reset: notation\0");
 #endif

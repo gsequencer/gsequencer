@@ -27,6 +27,8 @@
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_playback_domain.h>
+#include <ags/audio/ags_playback.h>
 #include <ags/audio/ags_recall.h>
 
 void ags_audio_loop_class_init(AgsAudioLoopClass *audio_loop);
@@ -194,7 +196,7 @@ ags_audio_loop_class_init(AgsAudioLoopClass *audio_loop)
   param_spec = g_param_spec_object("soundcard\0",
 				   "soundcard assigned to\0",
 				   "The AgsSoundcard it is assigned to.\0",
-				   AGS_TYPE_DEVOUT,
+				   G_TYPE_OBJECT,
 				   G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_SOUNDCARD,

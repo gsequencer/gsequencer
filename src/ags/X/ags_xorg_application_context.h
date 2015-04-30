@@ -38,7 +38,7 @@
 #include <ags/thread/ags_thread_pool.h>
 
 #include <ags/audio/thread/ags_audio_loop.h>
-#include <ags/audio/thread/ags_devout_thread.h>
+#include <ags/audio/thread/ags_soundcard_thread.h>
 #include <ags/audio/thread/ags_export_thread.h>
 
 #include <ags/server/ags_server.h>
@@ -70,7 +70,7 @@ struct _AgsXorgApplicationContext
 
   AgsThreadPool *thread_pool;
 
-  AgsThread *devout_thread;
+  AgsThread *soundcard_thread;
   AgsThread *export_thread;
 
   AgsThread *gui_thread;

@@ -280,9 +280,9 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
   AGS_APPLICATION_CONTEXT(xorg_application_context)->task_thread = (AgsThread *) ags_task_thread_new();
   ags_thread_add_child(AGS_THREAD(audio_loop), AGS_APPLICATION_CONTEXT(xorg_application_context)->task_thread);
 
-  /* AgsDevoutThread */
-  xorg_application_context->devout_thread = (AgsThread *) ags_devout_thread_new(soundcard);
-  ags_thread_add_child(AGS_THREAD(audio_loop), xorg_application_context->devout_thread);
+  /* AgsSoundcardThread */
+  xorg_application_context->soundcard_thread = (AgsThread *) ags_soundcard_thread_new(soundcard);
+  ags_thread_add_child(AGS_THREAD(audio_loop), xorg_application_context->soundcard_thread);
 
   /* AgsExportThread */
   xorg_application_context->export_thread = (AgsThread *) ags_export_thread_new(soundcard,

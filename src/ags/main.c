@@ -36,7 +36,7 @@
 #include <ags/thread/task/ags_start_thread.h>
 
 #include <ags/audio/thread/ags_audio_loop.h>
-#include <ags/audio/thread/ags_devout_thread.h>
+#include <ags/audio/thread/ags_soundcard_thread.h>
 #include <ags/audio/thread/ags_export_thread.h>
 
 #include <ags/server/ags_server.h>

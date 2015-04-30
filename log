@@ -1,0 +1,253 @@
+src/ags/audio/recall/ags_count_beats_audio_run.c: In function ‘ags_count_beats_audio_run_get_type’:
+src/ags/audio/recall/ags_count_beats_audio_run.c:171:33: warning: unused variable ‘ags_seekable_interface_info’ [-Wunused-variable]
+     static const GInterfaceInfo ags_seekable_interface_info = {
+                                 ^
+src/ags/audio/recall/ags_count_beats_audio_run.c: In function ‘ags_count_beats_audio_run_read’:
+src/ags/audio/recall/ags_count_beats_audio_run.c:700:8: warning: pointer targets in passing argument 2 of ‘xmlStrncmp’ differ in signedness [-Wpointer-sign]
+        "ags-dependency-list\0",
+        ^
+In file included from /usr/include/libxml2/libxml/tree.h:18:0,
+                 from ./src/ags/audio/ags_notation.h:23,
+                 from ./src/ags/audio/ags_channel.h:28,
+                 from ./src/ags/audio/ags_audio.h:25,
+                 from ./src/ags/audio/ags_recall_audio.h:26,
+                 from ./src/ags/audio/ags_recall_audio_run.h:27,
+                 from ./src/ags/audio/recall/ags_count_beats_audio_run.h:25,
+                 from src/ags/audio/recall/ags_count_beats_audio_run.c:19:
+/usr/include/libxml2/libxml/xmlstring.h:67:17: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+                 xmlStrncmp               (const xmlChar *str1,
+                 ^
+src/ags/audio/recall/ags_count_beats_audio_run.c:709:7: warning: pointer targets in passing argument 2 of ‘xmlStrncmp’ differ in signedness [-Wpointer-sign]
+       "ags-dependency\0",
+       ^
+In file included from /usr/include/libxml2/libxml/tree.h:18:0,
+                 from ./src/ags/audio/ags_notation.h:23,
+                 from ./src/ags/audio/ags_channel.h:28,
+                 from ./src/ags/audio/ags_audio.h:25,
+                 from ./src/ags/audio/ags_recall_audio.h:26,
+                 from ./src/ags/audio/ags_recall_audio_run.h:27,
+                 from ./src/ags/audio/recall/ags_count_beats_audio_run.h:25,
+                 from src/ags/audio/recall/ags_count_beats_audio_run.c:19:
+/usr/include/libxml2/libxml/xmlstring.h:67:17: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+                 xmlStrncmp               (const xmlChar *str1,
+                 ^
+src/ags/audio/recall/ags_count_beats_audio_run.c: In function ‘ags_count_beats_audio_run_write’:
+src/ags/audio/recall/ags_count_beats_audio_run.c:745:8: warning: pointer targets in passing argument 2 of ‘xmlNewNode’ differ in signedness [-Wpointer-sign]
+        "ags-dependency-list\0");
+        ^
+In file included from ./src/ags/audio/ags_notation.h:23:0,
+                 from ./src/ags/audio/ags_channel.h:28,
+                 from ./src/ags/audio/ags_audio.h:25,
+                 from ./src/ags/audio/ags_recall_audio.h:26,
+                 from ./src/ags/audio/ags_recall_audio_run.h:27,
+                 from ./src/ags/audio/recall/ags_count_beats_audio_run.h:25,
+                 from src/ags/audio/recall/ags_count_beats_audio_run.c:19:
+/usr/include/libxml2/libxml/tree.h:836:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlNewNode  (xmlNsPtr ns,
+   ^
+In file included from src/ags/audio/recall/ags_count_beats_audio_run.c:32:0:
+./src/ags/file/ags_file_stock.h:58:26: warning: pointer targets in passing argument 2 of ‘xmlNewProp’ differ in signedness [-Wpointer-sign]
+ #define AGS_FILE_ID_PROP "id\0"
+                          ^
+src/ags/audio/recall/ags_count_beats_audio_run.c:748:7: note: in expansion of macro ‘AGS_FILE_ID_PROP’
+       AGS_FILE_ID_PROP,
+       ^
+In file included from ./src/ags/audio/ags_notation.h:23:0,
+                 from ./src/ags/audio/ags_channel.h:28,
+                 from ./src/ags/audio/ags_audio.h:25,
+                 from ./src/ags/audio/ags_recall_audio.h:26,
+                 from ./src/ags/audio/ags_recall_audio_run.h:27,
+                 from ./src/ags/audio/recall/ags_count_beats_audio_run.h:25,
+                 from src/ags/audio/recall/ags_count_beats_audio_run.c:19:
+/usr/include/libxml2/libxml/tree.h:789:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlNewProp  (xmlNodePtr node,
+   ^
+src/ags/audio/recall/ags_count_beats_audio_run.c:749:7: warning: pointer targets in passing argument 3 of ‘xmlNewProp’ differ in signedness [-Wpointer-sign]
+       ags_id_generator_create_uuid());
+       ^
+In file included from ./src/ags/audio/ags_notation.h:23:0,
+                 from ./src/ags/audio/ags_channel.h:28,
+                 from ./src/ags/audio/ags_audio.h:25,
+                 from ./src/ags/audio/ags_recall_audio.h:26,
+                 from ./src/ags/audio/ags_recall_audio_run.h:27,
+                 from ./src/ags/audio/recall/ags_count_beats_audio_run.h:25,
+                 from src/ags/audio/recall/ags_count_beats_audio_run.c:19:
+/usr/include/libxml2/libxml/tree.h:789:3: note: expected ‘const xmlChar *’ but argument is of type ‘gchar *’
+   xmlNewProp  (xmlNodePtr node,
+   ^
+src/ags/audio/recall/ags_count_beats_audio_run.c:760:6: warning: pointer targets in passing argument 2 of ‘xmlNewNode’ differ in signedness [-Wpointer-sign]
+      "ags-dependency\0");
+      ^
+In file included from ./src/ags/audio/ags_notation.h:23:0,
+                 from ./src/ags/audio/ags_channel.h:28,
+                 from ./src/ags/audio/ags_audio.h:25,
+                 from ./src/ags/audio/ags_recall_audio.h:26,
+                 from ./src/ags/audio/ags_recall_audio_run.h:27,
+                 from ./src/ags/audio/recall/ags_count_beats_audio_run.h:25,
+                 from src/ags/audio/recall/ags_count_beats_audio_run.c:19:
+/usr/include/libxml2/libxml/tree.h:836:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlNewNode  (xmlNsPtr ns,
+   ^
+In file included from src/ags/audio/recall/ags_count_beats_audio_run.c:32:0:
+./src/ags/file/ags_file_stock.h:58:26: warning: pointer targets in passing argument 2 of ‘xmlNewProp’ differ in signedness [-Wpointer-sign]
+ #define AGS_FILE_ID_PROP "id\0"
+                          ^
+src/ags/audio/recall/ags_count_beats_audio_run.c:763:9: note: in expansion of macro ‘AGS_FILE_ID_PROP’
+         AGS_FILE_ID_PROP,
+         ^
+In file included from ./src/ags/audio/ags_notation.h:23:0,
+                 from ./src/ags/audio/ags_channel.h:28,
+                 from ./src/ags/audio/ags_audio.h:25,
+                 from ./src/ags/audio/ags_recall_audio.h:26,
+                 from ./src/ags/audio/ags_recall_audio_run.h:27,
+                 from ./src/ags/audio/recall/ags_count_beats_audio_run.h:25,
+                 from src/ags/audio/recall/ags_count_beats_audio_run.c:19:
+/usr/include/libxml2/libxml/tree.h:789:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlNewProp  (xmlNodePtr node,
+   ^
+src/ags/audio/recall/ags_count_beats_audio_run.c:764:9: warning: pointer targets in passing argument 3 of ‘xmlNewProp’ differ in signedness [-Wpointer-sign]
+         id);
+         ^
+In file included from ./src/ags/audio/ags_notation.h:23:0,
+                 from ./src/ags/audio/ags_channel.h:28,
+                 from ./src/ags/audio/ags_audio.h:25,
+                 from ./src/ags/audio/ags_recall_audio.h:26,
+                 from ./src/ags/audio/ags_recall_audio_run.h:27,
+                 from ./src/ags/audio/recall/ags_count_beats_audio_run.h:25,
+                 from src/ags/audio/recall/ags_count_beats_audio_run.c:19:
+/usr/include/libxml2/libxml/tree.h:789:3: note: expected ‘const xmlChar *’ but argument is of type ‘gchar *’
+   xmlNewProp  (xmlNodePtr node,
+   ^
+src/ags/audio/recall/ags_count_beats_audio_run.c: In function ‘ags_count_beats_audio_run_resolve_dependencies’:
+src/ags/audio/recall/ags_count_beats_audio_run.c:788:26: warning: variable ‘count_beats_audio_run’ set but not used [-Wunused-but-set-variable]
+   AgsCountBeatsAudioRun *count_beats_audio_run;
+                          ^
+src/ags/audio/recall/ags_count_beats_audio_run.c: In function ‘ags_count_beats_audio_run_sequencer_alloc_output_callback’:
+src/ags/audio/recall/ags_count_beats_audio_run.c:1073:11: warning: variable ‘loop_end’ set but not used [-Wunused-but-set-variable]
+   gdouble loop_end;
+           ^
+src/ags/audio/recall/ags_count_beats_audio_run.c: In function ‘ags_count_beats_audio_run_sequencer_count_callback’:
+src/ags/audio/recall/ags_count_beats_audio_run.c:1215:2: warning: implicit declaration of function ‘AGS_PLAYBACK_DOMAIN’ [-Wimplicit-function-declaration]
+  playback = AGS_PLAYBACK_DOMAIN(audio->playback_domain)->playback;
+  ^
+src/ags/audio/recall/ags_count_beats_audio_run.c:1215:56: error: invalid type argument of ‘->’ (have ‘int’)
+  playback = AGS_PLAYBACK_DOMAIN(audio->playback_domain)->playback;
+                                                        ^
+In file included from ./src/ags/audio/ags_recall_audio_run.h:25:0,
+                 from ./src/ags/audio/recall/ags_count_beats_audio_run.h:25,
+                 from src/ags/audio/recall/ags_count_beats_audio_run.c:19:
+./src/ags/audio/ags_recall.h:30:40: warning: passing argument 3 of ‘ags_recall_find_type_with_recycling_container’ from incompatible pointer type
+ #define AGS_RECALL(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_RECALL, AgsRecall))
+                                        ^
+src/ags/audio/recall/ags_count_beats_audio_run.c:1241:10: note: in expansion of macro ‘AGS_RECALL’
+          AGS_RECALL(count_beats_audio_run)->recall_id->recycling_container);
+          ^
+In file included from ./src/ags/audio/ags_recall_audio_run.h:25:0,
+                 from ./src/ags/audio/recall/ags_count_beats_audio_run.h:25,
+                 from src/ags/audio/recall/ags_count_beats_audio_run.c:19:
+./src/ags/audio/ags_recall.h:204:8: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsRecyclingContainer *’
+ GList* ags_recall_find_type_with_recycling_container(GList *recall, GType type, GObject *recycling_container);
+        ^
+src/ags/audio/recall/ags_count_beats_audio_run.c: In function ‘ags_count_beats_audio_run_read_resolve_dependency’:
+src/ags/audio/recall/ags_count_beats_audio_run.c:1294:11: warning: pointer targets in passing argument 2 of ‘xmlGetProp’ differ in signedness [-Wpointer-sign]
+           "xpath\0");
+           ^
+In file included from ./src/ags/audio/ags_notation.h:23:0,
+                 from ./src/ags/audio/ags_channel.h:28,
+                 from ./src/ags/audio/ags_audio.h:25,
+                 from ./src/ags/audio/ags_recall_audio.h:26,
+                 from ./src/ags/audio/ags_recall_audio_run.h:27,
+                 from ./src/ags/audio/recall/ags_count_beats_audio_run.h:25,
+                 from src/ags/audio/recall/ags_count_beats_audio_run.c:19:
+/usr/include/libxml2/libxml/tree.h:1028:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlGetProp  (const xmlNode *node,
+   ^
+In file included from src/ags/audio/recall/ags_count_beats_audio_run.c:32:0:
+src/ags/audio/recall/ags_count_beats_audio_run.c: In function ‘ags_count_beats_audio_run_write_resolve_dependency’:
+./src/ags/file/ags_file_stock.h:58:26: warning: pointer targets in passing argument 2 of ‘xmlGetProp’ differ in signedness [-Wpointer-sign]
+ #define AGS_FILE_ID_PROP "id\0"
+                          ^
+src/ags/audio/recall/ags_count_beats_audio_run.c:1315:33: note: in expansion of macro ‘AGS_FILE_ID_PROP’
+   id = xmlGetProp(id_ref->node, AGS_FILE_ID_PROP);
+                                 ^
+In file included from ./src/ags/audio/ags_notation.h:23:0,
+                 from ./src/ags/audio/ags_channel.h:28,
+                 from ./src/ags/audio/ags_audio.h:25,
+                 from ./src/ags/audio/ags_recall_audio.h:26,
+                 from ./src/ags/audio/ags_recall_audio_run.h:27,
+                 from ./src/ags/audio/recall/ags_count_beats_audio_run.h:25,
+                 from src/ags/audio/recall/ags_count_beats_audio_run.c:19:
+/usr/include/libxml2/libxml/tree.h:1028:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlGetProp  (const xmlNode *node,
+   ^
+src/ags/audio/recall/ags_count_beats_audio_run.c:1315:6: warning: pointer targets in assignment differ in signedness [-Wpointer-sign]
+   id = xmlGetProp(id_ref->node, AGS_FILE_ID_PROP);
+      ^
+src/ags/audio/recall/ags_count_beats_audio_run.c:1318:7: warning: pointer targets in passing argument 2 of ‘xmlNewProp’ differ in signedness [-Wpointer-sign]
+       "xpath\0",
+       ^
+In file included from ./src/ags/audio/ags_notation.h:23:0,
+                 from ./src/ags/audio/ags_channel.h:28,
+                 from ./src/ags/audio/ags_audio.h:25,
+                 from ./src/ags/audio/ags_recall_audio.h:26,
+                 from ./src/ags/audio/ags_recall_audio_run.h:27,
+                 from ./src/ags/audio/recall/ags_count_beats_audio_run.h:25,
+                 from src/ags/audio/recall/ags_count_beats_audio_run.c:19:
+/usr/include/libxml2/libxml/tree.h:789:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlNewProp  (xmlNodePtr node,
+   ^
+src/ags/audio/recall/ags_count_beats_audio_run.c:1319:9: warning: pointer targets in passing argument 3 of ‘xmlNewProp’ differ in signedness [-Wpointer-sign]
+         g_strdup_printf("xpath=//*[@id='%s']\0", id));
+         ^
+In file included from ./src/ags/audio/ags_notation.h:23:0,
+                 from ./src/ags/audio/ags_channel.h:28,
+                 from ./src/ags/audio/ags_audio.h:25,
+                 from ./src/ags/audio/ags_recall_audio.h:26,
+                 from ./src/ags/audio/ags_recall_audio_run.h:27,
+                 from ./src/ags/audio/recall/ags_count_beats_audio_run.h:25,
+                 from src/ags/audio/recall/ags_count_beats_audio_run.c:19:
+/usr/include/libxml2/libxml/tree.h:789:3: note: expected ‘const xmlChar *’ but argument is of type ‘gchar *’
+   xmlNewProp  (xmlNodePtr node,
+   ^
+src/ags/audio/recall/ags_count_beats_audio_run.c: In function ‘ags_count_beats_audio_run_stream_audio_signal_done_callback’:
+src/ags/audio/recall/ags_count_beats_audio_run.c:1338:14: warning: passing argument 3 of ‘ags_recall_find_type_with_recycling_container’ from incompatible pointer type
+              recall->recall_id->recycling_container)) == NULL){
+              ^
+In file included from ./src/ags/audio/ags_recall_audio_run.h:25:0,
+                 from ./src/ags/audio/recall/ags_count_beats_audio_run.h:25,
+                 from src/ags/audio/recall/ags_count_beats_audio_run.c:19:
+./src/ags/audio/ags_recall.h:204:8: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsRecyclingContainer *’
+ GList* ags_recall_find_type_with_recycling_container(GList *recall, GType type, GObject *recycling_container);
+        ^
+src/ags/audio/recall/ags_count_beats_audio_run.c:1328:24: warning: variable ‘stream_channel_run’ set but not used [-Wunused-but-set-variable]
+   AgsStreamChannelRun *stream_channel_run;
+                        ^
+src/ags/audio/recall/ags_count_beats_audio_run.c: In function ‘ags_count_beats_audio_run_stop’:
+src/ags/audio/recall/ags_count_beats_audio_run.c:1382:13: warning: assignment from incompatible pointer type
+   main_loop = application_context->main_loop;
+             ^
+src/ags/audio/recall/ags_count_beats_audio_run.c:1385:57: error: invalid type argument of ‘->’ (have ‘int’)
+   playback = AGS_PLAYBACK_DOMAIN(audio->playback_domain)->playback;
+                                                         ^
+src/ags/audio/recall/ags_count_beats_audio_run.c:1424:19: warning: passing argument 1 of ‘ags_recall_done’ from incompatible pointer type
+   ags_recall_done(count_beats_audio_run);
+                   ^
+In file included from ./src/ags/audio/ags_recall_audio_run.h:25:0,
+                 from ./src/ags/audio/recall/ags_count_beats_audio_run.h:25,
+                 from src/ags/audio/recall/ags_count_beats_audio_run.c:19:
+./src/ags/audio/ags_recall.h:175:6: note: expected ‘struct AgsRecall *’ but argument is of type ‘struct AgsCountBeatsAudioRun *’
+ void ags_recall_done(AgsRecall *recall);
+      ^
+src/ags/audio/recall/ags_count_beats_audio_run.c:1429:57: error: invalid type argument of ‘->’ (have ‘int’)
+   playback = AGS_PLAYBACK_DOMAIN(audio->playback_domain)->playback;
+                                                         ^
+src/ags/audio/recall/ags_count_beats_audio_run.c:1451:5: warning: passing argument 2 of ‘ags_audio_loop_remove_audio’ from incompatible pointer type
+     audio);
+     ^
+In file included from src/ags/audio/recall/ags_count_beats_audio_run.c:39:0:
+./src/ags/audio/thread/ags_audio_loop.h:104:6: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsAudio *’
+ void ags_audio_loop_remove_audio(AgsAudioLoop *audio_loop, GObject *audio);
+      ^
+make[2]: *** [libags_audio_a-ags_count_beats_audio_run.o] Error 1
+make[1]: *** [all-recursive] Error 1
+make: *** [all] Error 2

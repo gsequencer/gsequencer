@@ -152,7 +152,7 @@ ags_remove_audio_launch(AgsTask *task)
 		       G_OBJECT(remove_audio->audio));
 
   ags_soundcard_set_audio(remove_audio->soundcard,
-			  list)
+			  list);
   g_object_unref(G_OBJECT(remove_audio->audio));
 }
 

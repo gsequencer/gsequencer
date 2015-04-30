@@ -72,6 +72,6 @@ GType ags_playback_get_type();
 AgsPlayback* ags_playback_find_source(GList *playback,
 				      GObject *source);
 
-AgsPlayback* ags_playback_new(GObject *application_context);
+AgsPlayback* ags_playback_new();
 
 #endif /*__AGS_PLAYBACK_H__*/
