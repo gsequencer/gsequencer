@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <ags/audio/task/ags_add_line_member.h>
+#include <ags/X/task/ags_add_line_member.h>
 
 #include <ags/object/ags_connectable.h>
 

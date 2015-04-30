@@ -30,9 +30,12 @@
 #include <ags/file/ags_file_id_ref.h>
 #include <ags/file/ags_file_lookup.h>
 #include <ags/file/ags_file_launch.h>
-#include <ags/file/ags_file_gui.h>
 
-#include <ags/thread/ags_audio_loop.h>
+#ifdef AGS_USE_LINUX_THREADS
+#include <ags/thread/ags_thread-kthreads.h>
+#else
+#include <ags/thread/ags_thread-posix.h>
+#endif 
 #include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_devout.h>
@@ -59,6 +62,8 @@
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_pad.h>
 #include <ags/X/ags_line.h>
+
+#include <ags/X/file/ags_gsequencer_file_xml.h>
 
 #include <ags/X/machine/ags_synth_bridge.h>
 #include <ags/X/machine/ags_synth_input_pad.h>

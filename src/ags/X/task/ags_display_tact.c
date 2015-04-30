@@ -16,13 +16,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <ags/audio/task/ags_display_tact.h>
+#include <ags/X/task/ags_display_tact.h>
 
 #include <ags/object/ags_connectable.h>
 
 #include <ags/X/ags_navigation.h>
-
-#include <ags/main.h>
 
 void ags_display_tact_class_init(AgsDisplayTactClass *display_tact);
 void ags_display_tact_connectable_interface_init(AgsConnectableInterface *connectable);

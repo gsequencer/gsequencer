@@ -20,18 +20,22 @@
 
 #include <ags/object/ags_application_context.h>
 
-#include <ags/thread/ags_audio_loop.h>
+#ifdef AGS_USE_LINUX_THREADS
+#include <ags/thread/ags_thread-kthreads.h>
+#else
+#include <ags/thread/ags_thread-posix.h>
+#endif 
 #include <ags/thread/ags_task_thread.h>
-#include <ags/thread/ags_gui_thread.h>
 
 #include <ags/audio/recall/ags_count_beats_audio.h>
-
-#include <ags/audio/task/ags_change_tact.h>
-#include <ags/audio/task/ags_display_tact.h>
 
 #include <ags/audio/task/recall/ags_apply_bpm.h>
 
 #include <ags/X/ags_window.h>
+
+
+#include <ags/X/task/ags_change_tact.h>
+#include <ags/X/task/ags_display_tact.h>
 
 void
 ags_navigation_parent_set_callback(GtkWidget *widget, GtkObject *old_parent,

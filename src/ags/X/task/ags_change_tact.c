@@ -16,13 +16,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <ags/audio/task/ags_change_tact.h>
+#include <ags/X/task/ags_change_tact.h>
 
 #include <ags/main.h>
 
 #include <ags/object/ags_connectable.h>
-
-#include <ags/thread/ags_audio_loop.h>
 
 void ags_change_tact_class_init(AgsChangeTactClass *change_tact);
 void ags_change_tact_connectable_interface_init(AgsConnectableInterface *connectable);

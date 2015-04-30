@@ -23,14 +23,18 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_soundcard.h>
 
-#include <ags/thread/ags_thread_init.h>
+#include <ags/thread/ags_concurrency_provider.h>
+#ifdef AGS_USE_LINUX_THREADS
+#include <ags/thread/ags_thread-kthreads.h>
+#else
 #include <ags/thread/ags_thread-posix.h>
+#endif
 #include <ags/thread/ags_single_thread.h>
 #include <ags/thread/ags_autosave_thread.h>
-#include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_task_thread.h>
-#include <ags/thread/ags_concurrency_provider.h>
 #include <ags/thread/ags_thread_pool.h>
+
+#include <ags/audio/thread/ags_audio_loop.h>
 
 #include <ags/server/ags_server.h>
 
@@ -40,7 +44,7 @@
 
 #include <ags/X/ags_xorg_init.h>
 #include <ags/X/ags_xorg_application_context.h>
-#include <ags/thread/ags_gui_thread.h>
+#include <ags/X/thread/ags_gui_thread.h>
 #include <ags/X/ags_window.h>
 
 #include <libintl.h>

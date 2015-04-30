@@ -29,7 +29,6 @@
 #include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>
 #include <ags/file/ags_file_lookup.h>
-#include <ags/file/ags_file_gui.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_input.h>
@@ -40,6 +39,8 @@
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_pad.h>
 #include <ags/X/ags_line.h>
+
+#include <ags/X/file/ags_gsequencer_file_xml.h>
 
 #include <ags/X/machine/ags_mixer_input_pad.h>
 #include <ags/X/machine/ags_mixer_input_line.h>

@@ -21,16 +21,18 @@
 #include <ags/object/ags_connectable.h>
 
 #include <ags/file/ags_file.h>
-#include <ags/file/ags_file_gui.h>
 #include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>
 
-#include <ags/thread/ags_gui_thread.h>
 #include <ags/thread/ags_concurrency_provider.h>
 #include <ags/thread/ags_thread-posix.h>
 #include <ags/thread/ags_thread_pool.h>
 
 #include <ags/audio/ags_sound_provider.h>
+
+#include <ags/X/file/ags_gsequencer_file_xml.h>
+
+#include <ags/X/thread/ags_gui_thread.h>
 
 void ags_xorg_application_context_class_init(AgsXorgApplicationContextClass *xorg_application_context);
 void ags_xorg_application_context_connectable_interface_init(AgsConnectableInterface *connectable);
