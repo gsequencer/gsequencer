@@ -24,8 +24,6 @@
 
 #include <ags/object/ags_applicable.h>
 
-#include <ags/audio/ags_devout.h>
-
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_preferences.h>
 

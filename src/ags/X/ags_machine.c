@@ -44,7 +44,7 @@
 
 #include <ags/audio/task/ags_init_audio.h>
 #include <ags/audio/task/ags_append_audio.h>
-#include <ags/audio/task/ags_start_devout.h>
+#include <ags/audio/task/ags_start_soundcard.h>
 #include <ags/audio/task/ags_cancel_audio.h>
 #include <ags/audio/task/ags_open_file.h>
 
@@ -316,9 +316,15 @@ ags_machine_set_property(GObject *gobject,
       
       if(machine->audio != NULL){
 	GList *pad;
+	GList *list;
 
-	ags_devout_remove_audio(window->soundcard,
-				machine->audio);
+	list = ags_soundcard_get_audio(AGS_SOUNDCARD(window->soundcard));
+	list = g_list_remove(list,
+			     machine->audio);
+	ags_soundcard_set_audio(AGS_SOUNDCARD(window->soundcard),
+				list);
+				       
+	g_object_unref(G_OBJECT(machine->audio));
 	g_object_unref(G_OBJECT(machine->audio));
 
 	if(audio == NULL){
@@ -793,7 +799,7 @@ ags_machine_set_run(AgsMachine *machine,
   if(run){
     AgsInitAudio *init_audio;
     AgsAppendAudio *append_audio;
-    AgsStartDevout *start_devout;
+    AgsStartSoundcard *start_soundcard;
     GList *list;
 
     list = NULL;
@@ -811,12 +817,12 @@ ags_machine_set_run(AgsMachine *machine,
 
     /* create start task */
     if(list != NULL){
-      start_devout = ags_start_devout_new(window->soundcard);
-      g_signal_connect_after(G_OBJECT(start_devout), "failure\0",
+      start_soundcard = ags_start_soundcard_new(window->soundcard);
+      g_signal_connect_after(G_OBJECT(start_soundcard), "failure\0",
 			     G_CALLBACK(ags_machine_start_failure_callback), machine);
-      list = g_list_prepend(list, start_devout);
+      list = g_list_prepend(list, start_soundcard);
 
-      /* append AgsStartDevout */
+      /* append AgsStartSoundcard */
       list = g_list_reverse(list);
 
       ags_task_thread_append_tasks(task_thread,

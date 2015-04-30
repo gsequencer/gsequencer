@@ -28,7 +28,6 @@
 #include <ags/object/ags_dynamic_connectable.h>
 #include <ags/object/ags_plugin.h>
 
-#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_recall_id.h>

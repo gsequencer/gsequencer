@@ -30,7 +30,6 @@
 #include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>
 
-#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_recall_id.h>

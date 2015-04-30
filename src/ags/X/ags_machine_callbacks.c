@@ -29,7 +29,7 @@
 #endif 
 #include <ags/thread/ags_task_thread.h>
 
-#include <ags/audio/task/ags_start_devout.h>
+#include <ags/audio/task/ags_start_soundcard.h>
 #include <ags/audio/task/ags_remove_audio.h>
 
 #include <ags/X/ags_window.h>
@@ -430,23 +430,23 @@ ags_machine_done_callback(AgsAudio *audio,
   channel = audio->output;
   
   while(channel != NULL){
-    if(AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0] == recall_id){
+    if(AGS_PLAYBACK(channel->playback)->recall_id[0] == recall_id){
       ags_channel_tillrecycling_cancel(channel,
-				       AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0]);
+				       AGS_PLAYBACK(channel->playback)->recall_id[0]);
     }
 
-    if(AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[1] == recall_id){
+    if(AGS_PLAYBACK(channel->playback)->recall_id[1] == recall_id){
       ags_channel_tillrecycling_cancel(channel,
-				       AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[1]);
+				       AGS_PLAYBACK(channel->playback)->recall_id[1]);
     }
 
-    if(AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[2] == recall_id){
+    if(AGS_PLAYBACK(channel->playback)->recall_id[2] == recall_id){
       ags_channel_tillrecycling_cancel(channel,
-				       AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[2]);
+				       AGS_PLAYBACK(channel->playback)->recall_id[2]);
     }
     
     /* set remove flag */
-    AGS_DEVOUT_PLAY(channel->devout_play)->flags |= (AGS_DEVOUT_PLAY_DONE | AGS_DEVOUT_PLAY_REMOVE);
+    AGS_PLAYBACK(channel->playback)->flags |= (AGS_PLAYBACK_DONE | AGS_PLAYBACK_REMOVE);
     
     channel = channel->next;
   }

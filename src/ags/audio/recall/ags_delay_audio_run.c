@@ -491,15 +491,9 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
     run_order = delay_audio_run->hide_ref_counter;
 
     /* delay and attack */
-    //TODO:JK: unclear
-    attack = 0; // devout->attack[((devout->tic_counter + 1 == AGS_NOTATION_TICS_PER_BEAT) ?
-      //	     0:
-      //		     devout->tic_counter + 1)];
-      
-    delay = 0.0; // devout->delay[((devout->tic_counter + 1 == AGS_NOTATION_TICS_PER_BEAT) ?
-      //		   0:
-      //		   devout->tic_counter + 1)];
-
+    attack = 0;      
+    delay = 0.0;
+    
     //    g_message("ags_delay_audio_run_run_pre@%llu: alloc notation[%u]\0",
     //	      delay_audio_run,
     //	      run_order);
@@ -523,13 +517,8 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
     guint attack;
 
     /* delay and attack */
-    //TODO:JK: unclear
-    attack = 0; // devout->attack[((devout->tic_counter + 1 == AGS_NOTATION_TICS_PER_BEAT) ?
-      //	     0:
-      //		     devout->tic_counter + 1)];
-    delay = 0.0; // devout->delay[((devout->tic_counter + 1 == AGS_NOTATION_TICS_PER_BEAT) ?
-      //		   0:
-      //		   devout->tic_counter + 1)];
+    attack = 0;
+    delay = 0.0;
 
     run_order = delay_audio_run->hide_ref_counter;
 

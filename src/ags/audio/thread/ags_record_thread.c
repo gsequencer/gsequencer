@@ -20,8 +20,6 @@
 
 #include <ags/object/ags_connectable.h>
 
-#include <ags/audio/ags_devout.h>
-
 void ags_record_thread_class_init(AgsRecordThreadClass *record_thread);
 void ags_record_thread_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_record_thread_init(AgsRecordThread *record_thread);
@@ -276,12 +274,12 @@ ags_record_thread_stop(AgsThread *thread)
 }
 
 AgsRecordThread*
-ags_record_thread_new(GObject *devout, AgsRegistry *registry)
+ags_record_thread_new(GObject *soundcard, AgsRegistry *registry)
 {
   AgsRecordThread *record_thread;
 
   record_thread = (AgsRecordThread *) g_object_new(AGS_TYPE_RECORD_THREAD,
-						   "devout\0", devout,
+						   "soundcard\0", soundcard,
 						   "registry\0", registry,
 						   NULL);
   

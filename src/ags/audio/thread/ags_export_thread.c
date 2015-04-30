@@ -19,7 +19,6 @@
 #include <ags/audio/thread/ags_export_thread.h>
 
 #include <ags/object/ags_connectable.h>
-
 #include <ags/object/ags_soundcard.h>
 
 void ags_export_thread_class_init(AgsExportThreadClass *export_thread);

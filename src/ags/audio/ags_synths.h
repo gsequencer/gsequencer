@@ -21,21 +21,20 @@
 
 #include <glib.h>
 #include <glib-object.h>
-#include <gtk/gtk.h>
 
-#include <ags/audio/ags_devout.h>
+#include <ags/object/ags_soundcard.h>
 
-void ags_synth_sin(AgsDevout *devout, signed short *buffer, guint offset,
+void ags_synth_sin(AgsSoundcard *soundcard, signed short *buffer, guint offset,
 		   guint freq, guint phase, guint length,
 		   double volume);
 
-void ags_synth_saw(AgsDevout *devout, signed short *buffer, guint offset,
+void ags_synth_saw(AgsSoundcard *soundcard, signed short *buffer, guint offset,
 		   guint freq, guint phase, guint length,
 		   double volume);
-void ags_synth_triangle(AgsDevout *devout, signed short *buffer, guint offset,
+void ags_synth_triangle(AgsSoundcard *soundcard, signed short *buffer, guint offset,
 			guint freq, guint phase, guint length,
 			double volume);
-void ags_synth_square(AgsDevout *devout, signed short *buffer, guint offset,
+void ags_synth_square(AgsSoundcard *soundcard, signed short *buffer, guint offset,
 		      guint freq, guint phase, guint length,
 		      double volume);
 

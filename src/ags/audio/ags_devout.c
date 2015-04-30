@@ -1047,9 +1047,19 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   static snd_pcm_format_t format = SND_PCM_FORMAT_S16;
 
   devout = AGS_DEVOUT(soundcard);
+  
+  /*  */
+  devout->flags |= (AGS_DEVOUT_BUFFER3 |
+		    AGS_DEVOUT_PLAY |
+		    AGS_DEVOUT_NONBLOCKING);
 
   devout->note_offset = 0;
-  
+
+  memset(devout->buffer[0], 0, devout->dsp_channels * devout->buffer_size * sizeof(signed short));
+  memset(devout->buffer[1], 0, devout->dsp_channels * devout->buffer_size * sizeof(signed short));
+  memset(devout->buffer[2], 0, devout->dsp_channels * devout->buffer_size * sizeof(signed short));
+  memset(devout->buffer[3], 0, devout->dsp_channels * devout->buffer_size * sizeof(signed short));
+
   /* Open PCM device for playback. */
   if ((err = snd_pcm_open(&handle, devout->out.alsa.device, SND_PCM_STREAM_PLAYBACK, 0)) < 0) {
     printf("Playback open error: %s\n", snd_strerror(err));

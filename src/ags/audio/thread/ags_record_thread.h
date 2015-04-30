@@ -59,6 +59,6 @@ struct _AgsRecordThreadClass
 
 GType ags_record_thread_get_type();
 
-AgsRecordThread* ags_record_thread_new(GObject *devout, AgsRegistry *registry);
+AgsRecordThread* ags_record_thread_new(GObject *soundcard, AgsRegistry *registry);
 
 #endif /*__AGS_RECORD_THREAD_H__*/

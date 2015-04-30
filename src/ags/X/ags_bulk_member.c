@@ -31,7 +31,6 @@
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_input.h>
-#include <ags/audio/ags_devout.h>
 
 #include <ags/widget/ags_dial.h>
 

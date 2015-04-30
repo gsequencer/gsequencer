@@ -27,7 +27,7 @@
 #endif 
 #include <ags/thread/ags_task_thread.h>
 
-#include <ags/audio/ags_devout.h>
+#include <ags/audio/ags_playback.h>
 #include <ags/audio/ags_recall.h>
 #include <ags/audio/ags_recall_audio.h>
 #include <ags/audio/ags_recall_audio_run.h>
@@ -235,7 +235,7 @@ void
 ags_line_channel_done_callback(AgsChannel *source, AgsLine *line)
 {
   AgsChannel *channel;
-  AgsDevoutPlay *devout_play;
+  AgsPlayback *playback;
   AgsChannel *next_pad;
   GList *current_recall;
   gboolean all_done;
@@ -249,9 +249,9 @@ ags_line_channel_done_callback(AgsChannel *source, AgsLine *line)
 
   while(channel != next_pad){
     current_recall = channel->play;
-    devout_play = AGS_DEVOUT_PLAY(channel->devout_play);
+    playback = AGS_PLAYBACK(channel->playback);
     
-    if(devout_play->recall_id[0] != NULL){
+    if(playback->recall_id[0] != NULL){
       all_done = FALSE;
       break;
     }

@@ -31,7 +31,6 @@
 #include <ags/server/ags_server_application_context.h>
 #include <ags/server/ags_server.h>
 
-#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_input.h>
 #include <ags/audio/ags_recall.h>
@@ -310,8 +309,8 @@ ags_audio_init(AgsAudio *audio)
   audio->output = NULL;
   audio->input = NULL;
 
-  audio->devout_play_domain = ags_devout_play_domain_alloc();
-  AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->domain = audio;
+  audio->playback_domain = ags_playback_domain_new();
+  AGS_PLAYBACK_DOMAIN(audio->playback_domain)->domain = audio;
 
   audio->notation = NULL;
   audio->automation = NULL;
@@ -1386,7 +1385,7 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 
   /* entry point */
   if(audio_channels > audio->audio_channels){
-    AgsDevoutPlayDomain *devout_play_domain;
+    AgsDevoutPlayDomain *playback_domain;
     AgsChannel *current;
 
     /* grow audio channels*/
@@ -1427,19 +1426,19 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
     }
 
     /* alloc devout play domain */
-    devout_play_domain = AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain);
+    playback_domain = AGS_PLAYBACK_DOMAIN(audio->playback_domain);
     current = ags_channel_nth(audio->output,
 			      pads - audio->output_pads);
 
     for(i = 0; i < audio_channels - audio_channels_old; i++){
-      devout_play_domain->devout_play = g_list_append(devout_play_domain->devout_play,
-						      current->devout_play);
+      playback_domain->playback = g_list_append(playback_domain->playback,
+						current->playback);
 
       current = current->next;
     }
 
   }else if(audio_channels < audio->audio_channels){
-    AgsDevoutPlayDomain *devout_play_domain;
+    AgsDevoutPlayDomain *playback_domain;
     AgsChannel *current;
 
     /* shrink audio channels */
@@ -1454,14 +1453,14 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 
     audio->input_lines = audio_channels * audio->input_pads;
 
-    devout_play_domain = AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain);
+    playback_domain = AGS_PLAYBACK_DOMAIN(audio->playback_domain);
 
     for(i = 0; i < audio->audio_channels - audio_channels; i++){
-      AgsDevoutPlay *devout_play;
+      AgsDevoutPlay *playback;
 
-      devout_play = g_list_last(devout_play_domain->devout_play);
-      devout_play_domain->devout_play = g_list_remove(devout_play_domain->devout_play,
-						      devout_play);
+      playback = g_list_last(playback_domain->playback);
+      playback_domain->playback = g_list_remove(playback_domain->playback,
+						playback);
     }
   }
 
@@ -1504,7 +1503,7 @@ ags_audio_real_set_pads(AgsAudio *audio,
   AgsRecycling *recycling;
   AgsRecycling *old_first_recycling, *first_recycling;
   AgsRecyclingContainer *recycling_container, *old_recycling_container;
-  GList *devout_play;
+  GList *playback;
   GList *recall_id;
   GList *recycling_prev, *recycling_iter;
   guint i, j;
@@ -1816,15 +1815,15 @@ ags_audio_real_set_pads(AgsAudio *audio,
   }
   void ags_audio_set_pads_add_notes(){
     /* -- useless --
-    GList *list;
+       GList *list;
 
-    list = audio->notation;
+       list = audio->notation;
 
-    while(list != NULL){
-      AGS_NOTATION(list->data)->pads = pads;
+       while(list != NULL){
+       AGS_NOTATION(list->data)->pads = pads;
 
-      list = list->next;
-    }
+       list = list->next;
+       }
     */
   }
   void ags_audio_set_pads_remove_notes(){
@@ -1893,7 +1892,7 @@ ags_audio_real_set_pads(AgsAudio *audio,
 
     /* grow one */
     if(pads_old == 0){
-      AgsDevoutPlayDomain *devout_play_domain;
+      AgsDevoutPlayDomain *playback_domain;
       AgsChannel *current;
 
       /* alloc notation */
@@ -1907,7 +1906,7 @@ ags_audio_real_set_pads(AgsAudio *audio,
       ags_audio_set_pads_grow_one();
 
       /* populate devout play domain */
-      devout_play_domain = AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain);
+      playback_domain = AGS_PLAYBACK_DOMAIN(audio->playback_domain);
 
       channel = start;
       audio->output = start;
@@ -1915,8 +1914,8 @@ ags_audio_real_set_pads(AgsAudio *audio,
       current = start;
 
       for(i = 0; i < audio->audio_channels; i++){
-	devout_play_domain->devout_play = g_list_append(devout_play_domain->devout_play,
-							current->devout_play);
+	playback_domain->playback = g_list_append(playback_domain->playback,
+						  current->playback);
 	
 	current = current->next;
       }
@@ -1929,7 +1928,7 @@ ags_audio_real_set_pads(AgsAudio *audio,
 
     /* grow or shrink */
     if(pads > audio->output_pads){
-      AgsDevoutPlayDomain *devout_play_domain;
+      AgsDevoutPlayDomain *playback_domain;
       AgsChannel *current;
 
       ags_audio_set_pads_grow();
@@ -1946,11 +1945,11 @@ ags_audio_real_set_pads(AgsAudio *audio,
       audio->output = NULL;
 
       /* remove devout play domain */
-      g_list_free(AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->devout_play);
+      g_list_free(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->playback);
 
-      AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->devout_play = NULL;
+      AGS_PLAYBACK_DOMAIN(audio->playback_domain)->playback = NULL;
     }else if(pads < audio->output_pads){
-      AgsDevoutPlayDomain *devout_play_domain;
+      AgsDevoutPlayDomain *playback_domain;
 
       ags_audio_set_pads_remove_notes();
 
@@ -1958,14 +1957,14 @@ ags_audio_real_set_pads(AgsAudio *audio,
 
       ags_audio_set_pads_shrink();
 
-      devout_play_domain = AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain);
+      playback_domain = AGS_PLAYBACK_DOMAIN(audio->playback_domain);
 
       for(i = 0; i < audio->output_pads - pads; i++){
-	AgsDevoutPlay *devout_play;
+	AgsDevoutPlay *playback;
 
-	devout_play = g_list_last(devout_play_domain->devout_play);
-	devout_play_domain->devout_play = g_list_remove(devout_play_domain->devout_play,
-							devout_play);
+	playback = g_list_last(playback_domain->playback);
+	playback_domain->playback = g_list_remove(playback_domain->playback,
+						  playback);
       }
 
     }
@@ -2739,16 +2738,16 @@ ags_audio_is_playing(AgsAudio *audio)
 {
   AgsChannel *output;
   AgsRecallID *recall_id;
-  AgsDevoutPlay *devout_play;
+  AgsDevoutPlay *playback;
   
   output = audio->output;
 
   while(output != NULL){
-    devout_play = AGS_DEVOUT_PLAY(output->devout_play);
+    playback = AGS_PLAYBACK(output->playback);
 
-    if((AGS_DEVOUT_PLAY_PLAYBACK & (devout_play->flags)) != 0 ||
-       (AGS_DEVOUT_PLAY_SEQUENCER & (devout_play->flags)) != 0 ||
-       (AGS_DEVOUT_PLAY_NOTATION & (devout_play->flags)) != 0){
+    if((AGS_PLAYBACK_PLAYBACK & (playback->flags)) != 0 ||
+       (AGS_PLAYBACK_SEQUENCER & (playback->flags)) != 0 ||
+       (AGS_PLAYBACK_NOTATION & (playback->flags)) != 0){
       return(TRUE);
     }
 
@@ -3142,7 +3141,7 @@ ags_audio_open_files(AgsAudio *audio,
 	  AGS_AUDIO_SIGNAL(audio_signal_list->data)->recycling = (GObject *) channel->first_recycling;
 	  audio_signal_source_old = ags_audio_signal_get_template(channel->first_recycling->audio_signal);
 
-	    // FIXME:JK: create a task
+	  // FIXME:JK: create a task
 	  channel->first_recycling->audio_signal = g_list_remove(channel->first_recycling->audio_signal,
 								 (gpointer) audio_signal_source_old);
 	  channel->first_recycling->audio_signal = g_list_prepend(channel->first_recycling->audio_signal,

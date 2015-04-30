@@ -47,7 +47,7 @@ struct _AgsPlayRecyclingClass
 GType ags_play_recycling_get_type();
 
 AgsPlayRecycling* ags_play_recycling_new(AgsRecycling *source,
-					 AgsDevout *devout,
+					 GObject *soundcard,
 					 guint audio_channel);
 
 #endif /*__AGS_PLAY_RECYCLING_H__*/
