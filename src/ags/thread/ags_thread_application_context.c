@@ -171,7 +171,7 @@ ags_thread_application_context_init(AgsThreadApplicationContext *thread_applicat
   thread_application_context->flags = 0;
 
   g_object_set(thread_application_context,
-	       "autosave-thread", ags_autosave_thread_new(NULL, NULL),
+	       "autosave-thread", ags_autosave_thread_new(thread_application_context),
 	       "thread-pool\0", ags_thread_pool_new(NULL),
 	       NULL);
 }

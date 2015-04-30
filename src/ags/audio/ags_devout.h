@@ -22,9 +22,6 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/audio/ags_recall_id.h>
-#include <ags/audio/thread/ags_iterator_thread.h>
-
 #include <sys/types.h>
 
 #include <pthread.h>
@@ -38,30 +35,8 @@
 #define AGS_IS_DEVOUT_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_DEVOUT))
 #define AGS_DEVOUT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_DEVOUT, AgsDevoutClass))
 
-#define AGS_DEVOUT_PLAY_DOMAIN(ptr)    ((AgsDevoutPlayDomain *)(ptr))
-#define AGS_DEVOUT_PLAY(ptr)           ((AgsDevoutPlay *)(ptr))
-
-#define AGS_DEVOUT_DEFAULT_DSP_CHANNELS (2)
-#define AGS_DEVOUT_DEFAULT_PCM_CHANNELS (2)
-#define AGS_DEVOUT_DEFAULT_SAMPLERATE (44100.0)
-#define AGS_DEVOUT_DEFAULT_FORMAT (AGS_DEVOUT_RESOLUTION_16_BIT)
-#define AGS_DEVOUT_DEFAULT_BUFFER_SIZE (944)
-#define AGS_DEVOUT_DEFAULT_DEVICE "hw:0"
-#define AGS_DEVOUT_DEFAULT_BPM (120.0)
-#define AGS_DEVOUT_DEFAULT_JIFFIE ((double) AGS_DEVOUT_DEFAULT_SAMPLERATE / (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE)
-
-#define AGS_DEVOUT_DEFAULT_TACT (1.0 / 1.0)
-#define AGS_DEVOUT_DEFAULT_TACT_JIFFIE (60.0 / AGS_DEVOUT_DEFAULT_BPM * AGS_DEVOUT_DEFAULT_TACT)
-#define AGS_DEVOUT_DEFAULT_TACTRATE (1.0 / AGS_DEVOUT_DEFAULT_TACT_JIFFIE)
-
-#define AGS_DEVOUT_DEFAULT_SCALE (1.0)
-#define AGS_DEVOUT_DEFAULT_DELAY (AGS_DEVOUT_DEFAULT_JIFFIE * (60.0 / AGS_DEVOUT_DEFAULT_BPM))
-
-#define AGS_DEVOUT_DEFAULT_PERIOD (64.0)
-
 typedef struct _AgsDevout AgsDevout;
 typedef struct _AgsDevoutClass AgsDevoutClass;
-typedef struct _AgsDevoutPlay AgsDevoutPlay;
 typedef struct _AgsDevoutPlayDomain AgsDevoutPlayDomain;
 
 typedef enum
@@ -75,39 +50,14 @@ typedef enum
 
   AGS_DEVOUT_PLAY                           = 1 << 5,
 
-  AGS_DEVOUT_LIBAO                          = 1 << 6,
-  AGS_DEVOUT_OSS                            = 1 << 7,
-  AGS_DEVOUT_ALSA                           = 1 << 8,
+  AGS_DEVOUT_OSS                            = 1 << 6,
+  AGS_DEVOUT_ALSA                           = 1 << 7,
 
-  AGS_DEVOUT_SHUTDOWN                       = 1 << 9,
-  AGS_DEVOUT_START_PLAY                     = 1 << 10,
+  AGS_DEVOUT_SHUTDOWN                       = 1 << 8,
+  AGS_DEVOUT_START_PLAY                     = 1 << 9,
 
-  AGS_DEVOUT_NONBLOCKING                    = 1 << 11,
-
-  AGS_DEVOUT_TIMING_SET_0                   = 1 << 12,
-  AGS_DEVOUT_TIMING_SET_1                   = 1 << 13,
+  AGS_DEVOUT_NONBLOCKING                    = 1 << 10,
 }AgsDevoutFlags;
-
-typedef enum
-{
-  AGS_DEVOUT_PLAY_DONE              = 1,
-  AGS_DEVOUT_PLAY_REMOVE            = 1 <<  1,
-  AGS_DEVOUT_PLAY_CHANNEL           = 1 <<  2,
-  AGS_DEVOUT_PLAY_PAD               = 1 <<  3,
-  AGS_DEVOUT_PLAY_AUDIO             = 1 <<  4,
-  AGS_DEVOUT_PLAY_PLAYBACK          = 1 <<  5,
-  AGS_DEVOUT_PLAY_SEQUENCER         = 1 <<  6,
-  AGS_DEVOUT_PLAY_NOTATION          = 1 <<  7,
-  AGS_DEVOUT_PLAY_SUPER_THREADED    = 1 <<  8,
-}AgsDevoutPlayFlags;
-
-typedef enum{
-  AGS_DEVOUT_RESOLUTION_8_BIT    = 8,
-  AGS_DEVOUT_RESOLUTION_16_BIT   = 16,
-  AGS_DEVOUT_RESOLUTION_24_BIT   = 24,
-  AGS_DEVOUT_RESOLUTION_32_BIT   = 32,
-  AGS_DEVOUT_RESOLUTION_64_BIT   = 64,
-}AgsDevoutResolutionMode;
 
 #define AGS_DEVOUT_ERROR (ags_devout_error_quark())
 
@@ -123,13 +73,13 @@ struct _AgsDevout
 
   guint dsp_channels;
   guint pcm_channels;
-  guint bits;
+  guint format;
   guint buffer_size;
-  guint frequency; // sample_rate
+  guint samplerate; // sample_rate
 
   signed short** buffer;
 
-  double bpm; // beats per minute
+  gdouble bpm; // beats per minute
 
   gdouble *delay; // count of tics within buffer size
   guint *attack; // where currently tic resides in the stream's offset, measured in 1/64 of bpm
@@ -164,69 +114,9 @@ struct _AgsDevoutClass
   GObjectClass object;
 };
 
-/**
- * AgsDevoutPlayDomain:
- * @domain: the source
- * @playback: if %TRUE playback is on
- * @sequencer: if %TRUE sequencer is on
- * @notation: if %TRUE notation is on
- * @devout_play: a #GList of #AgsDevoutPlay-struct
- *
- * A #AgsDevoutPlayDomain-struct represents the entire possible play/recall
- * context.
- */
-struct _AgsDevoutPlayDomain
-{
-  GObject *domain;
-  
-  gboolean playback;
-  gboolean sequencer;
-  gboolean notation;
-
-  GList *devout_play;
-};
-
-/**
- * AgsDevoutPlay:
- * @flags: the internal state
- * @iterator_thread: Super-threaded related #AgsThread. Index 0 playback, 1 sequencer and 2 notation.
- * @source: either #AgsChannel or #AgsRecall
- * @audio_channel: destination audio channel
- * @recall_id: array pointing to appropriate #AgsRecallID. Index 0 playback, 1 sequencer and 2 notation.
- *
- * A #AgsDevoutPlay-struct represents the play/recall in #AgsChannel or #AgsRecall
- * scope to do output to device.
- */
-struct _AgsDevoutPlay
-{
-  guint flags;
-
-  AgsIteratorThread **iterator_thread;
-
-  GObject *source;
-  guint audio_channel;
-
-  AgsRecallID **recall_id;
-};
-
 GType ags_devout_get_type();
 
 GQuark ags_devout_error_quark();
-
-AgsDevoutPlayDomain* ags_devout_play_domain_alloc();
-
-void ags_devout_play_domain_free(AgsDevoutPlayDomain *devout_play_domain);
-
-AgsDevoutPlay* ags_devout_play_alloc();
-
-void ags_devout_play_free(AgsDevoutPlay *devout_play);
-
-AgsDevoutPlay* ags_devout_play_find_source(GList *devout_play,
-					   GObject *source);
-
-void ags_devout_add_audio(AgsDevout *devout, GObject *audio);
-
-void ags_devout_remove_audio(AgsDevout *devout, GObject *audio);
 
 AgsDevout* ags_devout_new(GObject *application_context);
 

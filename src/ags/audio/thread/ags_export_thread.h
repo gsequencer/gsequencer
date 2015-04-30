@@ -38,7 +38,6 @@
 #define AGS_EXPORT_THREAD_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_EXPORT_THREAD, AgsExportThreadClass))
 
 #define AGS_EXPORT_THREAD_DEFAULT_JIFFIE (48.0) // same as devout thread
-#define AGS_EXPORT_THREAD_BUFFER_TIME (1.0 / (AGS_DEVOUT_DEFAULT_FORMAT / 8))
 
 typedef struct _AgsExportThread AgsExportThread;
 typedef struct _AgsExportThreadClass AgsExportThreadClass;
@@ -56,7 +55,7 @@ struct _AgsExportThread
   guint tic;
   guint counter;
 
-  GObject *devout;
+  GObject *soundcard;
   AgsAudioFile *audio_file;
 };
 
@@ -67,6 +66,6 @@ struct _AgsExportThreadClass
 
 GType ags_export_thread_get_type();
 
-AgsExportThread* ags_export_thread_new(GObject *devout, AgsAudioFile *audio_file);
+AgsExportThread* ags_export_thread_new(GObject *soundcard, AgsAudioFile *audio_file);
 
 #endif /*__AGS_EXPORT_THREAD_H__*/

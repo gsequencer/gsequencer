@@ -246,17 +246,17 @@ main(int argc, char **argv)
     AgsFile *file;
 
     file = g_object_new(AGS_TYPE_FILE,
+			"application-context\0", application_context,
 			"filename\0", filename,
 			NULL);
     ags_file_open(file);
     ags_file_read(file);
     ags_file_close(file);
+    
+    gui_thread = ags_thread_find_type(application_context->main_loop,
+				      AGS_TYPE_GUI_THREAD);
   }else{
-    AgsStartThread *start_thread;
-    GList *task;
     guint val;
-
-    task = NULL;
     
     /* wait for audio loop */
     thread_pool->parent = audio_loop;
@@ -306,7 +306,6 @@ main(int argc, char **argv)
   }
 
   if(!single_thread){
-    usleep(5000000);
     /* join gui thread */
 #ifdef _USE_PTH
     pth_join(gui_thread->thread,

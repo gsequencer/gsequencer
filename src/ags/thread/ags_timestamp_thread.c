@@ -142,16 +142,10 @@ void
 ags_timestamp_thread_run(AgsThread *thread)
 {
   AgsTimestampThread *timestamp_thread;
-  //  AgsDevout *devout;
   guint duration;
   time_t timer;
 
   timestamp_thread = AGS_TIMESTAMP_THREAD(thread);
-  //  devout = AGS_DEVOUT(thread->devout);
-
-  //  duration = (devout->tic_counter /
-  //	      (devout->frequency / devout->buffer_size) *
-  //	      AGS_MICROSECONDS_PER_SECOND);
 
   //FIXME:JK: definitely wrong
   duration = (AGS_THREAD_DEFAULT_JIFFIE *
