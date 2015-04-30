@@ -19,10 +19,13 @@
 #include <ags/X/ags_xorg_application_context.h>
 
 #include <ags/object/ags_connectable.h>
+#include <ags/object/ags_config.h>
 
 #include <ags/file/ags_file.h>
 #include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>
+
+#include <ags/log/ags_log.h>
 
 #include <ags/thread/ags_concurrency_provider.h>
 #include <ags/thread/ags_thread-posix.h>
@@ -33,6 +36,11 @@
 #include <ags/X/file/ags_gsequencer_file_xml.h>
 
 #include <ags/X/thread/ags_gui_thread.h>
+
+#include <sys/types.h>
+#include <pwd.h>
+
+#include <sys/mman.h>
 
 void ags_xorg_application_context_class_init(AgsXorgApplicationContextClass *xorg_application_context);
 void ags_xorg_application_context_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -50,6 +58,7 @@ void ags_xorg_application_context_get_property(GObject *gobject,
 void ags_xorg_application_context_connect(AgsConnectable *connectable);
 void ags_xorg_application_context_disconnect(AgsConnectable *connectable);
 AgsThread* ags_xorg_application_context_get_main_loop(AgsConcurrencyProvider *concurrency_provider);
+AgsThread* ags_xorg_application_context_get_task_thread(AgsConcurrencyProvider *concurrency_provider);
 AgsThreadPool* ags_xorg_application_context_get_thread_pool(AgsConcurrencyProvider *concurrency_provider);
 GList* ags_xorg_application_context_get_soundcard(AgsSoundProvider *sound_provider);
 void ags_xorg_application_context_finalize(GObject *gobject);
@@ -180,6 +189,7 @@ void
 ags_xorg_application_context_concurrency_provider_interface_init(AgsConcurrencyProviderInterface *concurrency_provider)
 {
   concurrency_provider->get_main_loop = ags_xorg_application_context_get_main_loop;
+  concurrency_provider->get_task_thread = ags_xorg_application_context_get_task_thread;
   concurrency_provider->get_thread_pool = ags_xorg_application_context_get_thread_pool;
 }
 
@@ -192,10 +202,99 @@ ags_xorg_application_context_sound_provider_interface_init(AgsSoundProviderInter
 void
 ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_context)
 {
-  xorg_application_context->thread_pool = NULL;
-  xorg_application_context->server = NULL;
-  xorg_application_context->soundcard = NULL;
-  xorg_application_context->window = NULL;
+  AgsWindow *window;
+
+  AgsServer *server;
+
+  AgsAudioLoop *audio_loop;
+  GObject *soundcard;
+
+  AgsConfig *config;
+  
+  struct passwd *pw;
+  uid_t uid;
+  gchar *wdir, *config_file;
+
+  AGS_APPLICATION_CONTEXT(xorg_application_context)->log = (AgsLog *) g_object_new(AGS_TYPE_LOG,
+										   "file\0", stderr,
+										   NULL);
+
+  /**/
+  config = ags_config_new(NULL);
+  AGS_APPLICATION_CONTEXT(xorg_application_context)->config = config;
+  g_object_set(config,
+	       "application-context\0", xorg_application_context,
+	       NULL);
+
+  uid = getuid();
+  pw = getpwuid(uid);
+
+  wdir = g_strdup_printf("%s/%s\0",
+			 pw->pw_dir,
+			 AGS_DEFAULT_DIRECTORY);
+
+  config_file = g_strdup_printf("%s/%s\0",
+				wdir,
+				AGS_DEFAULT_CONFIG);
+
+  ags_config_load_from_file(config,
+			    config_file);
+
+  g_free(wdir);
+  g_free(config_file);
+  
+  /* AgsSoundcard */
+  soundcard = ags_devout_new(xorg_application_context);
+  xorg_application_context->soundcard = g_list_prepend(xorg_application_context->soundcard,
+						       soundcard);
+  g_object_ref(G_OBJECT(soundcard));
+    
+  /* AgsWindow */
+  window = ags_window_new(xorg_application_context);
+  g_object_set(window,
+	       "soundcard\0", soundcard,
+	       NULL);
+  AGS_XORG_APPLICATION_CONTEXT(xorg_application_context)->window = window;
+  g_object_ref(G_OBJECT(window));
+
+  gtk_window_set_default_size((GtkWindow *) window, 500, 500);
+  gtk_paned_set_position((GtkPaned *) window->paned, 300);
+
+  ags_connectable_connect(AGS_CONNECTABLE(window));
+  gtk_widget_show_all((GtkWidget *) window);
+
+  /* AgsServer */
+  xorg_application_context->server = ags_server_new(xorg_application_context);
+
+  /* AgsMainLoop */
+  audio_loop = (AgsThread *) ags_audio_loop_new((GObject *) soundcard,
+						xorg_application_context);
+  g_object_set(xorg_application_context,
+	       "main-loop\0", audio_loop,
+	       NULL);
+
+  g_object_ref(audio_loop);
+  ags_connectable_connect(AGS_CONNECTABLE(audio_loop));
+
+  /* AgsTaskThread */
+  AGS_APPLICATION_CONTEXT(xorg_application_context)->task_thread = (AgsThread *) ags_task_thread_new();
+  ags_thread_add_child(AGS_THREAD(audio_loop), AGS_APPLICATION_CONTEXT(xorg_application_context)->task_thread);
+
+  /* AgsDevoutThread */
+  xorg_application_context->devout_thread = (AgsThread *) ags_devout_thread_new(soundcard);
+  ags_thread_add_child(AGS_THREAD(audio_loop), xorg_application_context->devout_thread);
+
+  /* AgsExportThread */
+  xorg_application_context->export_thread = (AgsThread *) ags_export_thread_new(soundcard,
+										NULL);
+  ags_thread_add_child(AGS_THREAD(audio_loop), xorg_application_context->export_thread);
+
+  /* AgsGuiThread */
+  xorg_application_context->gui_thread = (AgsThread *) ags_gui_thread_new();
+  ags_thread_add_child(AGS_THREAD(audio_loop), xorg_application_context->gui_thread);
+
+  /* AgsThreadPool */
+  AGS_XORG_APPLICATION_CONTEXT(xorg_application_context)->thread_pool = ags_thread_pool_new(AGS_APPLICATION_CONTEXT(xorg_application_context)->task_thread);
 }
 
 void
@@ -291,6 +390,12 @@ AgsThread*
 ags_xorg_application_context_get_main_loop(AgsConcurrencyProvider *concurrency_provider)
 {
   return(AGS_APPLICATION_CONTEXT(concurrency_provider)->main_loop);
+}
+
+AgsThread*
+ags_xorg_application_context_get_task_thread(AgsConcurrencyProvider *concurrency_provider)
+{
+  return(AGS_APPLICATION_CONTEXT(concurrency_provider)->task_thread);
 }
 
 AgsThreadPool*
@@ -468,14 +573,11 @@ ags_xorg_application_context_write(AgsFile *file, xmlNode *parent, GObject *appl
 }
 
 AgsXorgApplicationContext*
-ags_xorg_application_context_new(GObject *main_loop,
-				 AgsConfig *config)
+ags_xorg_application_context_new()
 {
   AgsXorgApplicationContext *xorg_application_context;
 
   xorg_application_context = (AgsXorgApplicationContext *) g_object_new(AGS_TYPE_XORG_APPLICATION_CONTEXT,
-									"main-loop\0", main_loop,
-									"config\0", config,
 									NULL);
 
   return(xorg_application_context);

@@ -19,7 +19,6 @@
 #include <ags/main.h>
 
 #include <ags/object/ags_application_context.h>
-#include <ags/object/ags_config.h>
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_soundcard.h>
 
@@ -34,7 +33,11 @@
 #include <ags/thread/ags_task_thread.h>
 #include <ags/thread/ags_thread_pool.h>
 
+#include <ags/thread/task/ags_start_thread.h>
+
 #include <ags/audio/thread/ags_audio_loop.h>
+#include <ags/audio/thread/ags_devout_thread.h>
+#include <ags/audio/thread/ags_export_thread.h>
 
 #include <ags/server/ags_server.h>
 
@@ -44,8 +47,9 @@
 
 #include <ags/X/ags_xorg_init.h>
 #include <ags/X/ags_xorg_application_context.h>
-#include <ags/X/thread/ags_gui_thread.h>
 #include <ags/X/ags_window.h>
+
+#include <ags/X/thread/ags_gui_thread.h>
 
 #include <libintl.h>
 #include <stdio.h>
@@ -129,10 +133,8 @@ ags_main_quit(AgsApplicationContext *application_context)
 int
 main(int argc, char **argv)
 {
-  AgsThread *audio_loop;
-  AgsThread *task_thread;
-  AgsThread *gui_thread;
-  AgsConfig *config;
+  AgsThread *audio_loop, *gui_thread, *task_thread;
+  AgsThreadPool *thread_pool;
   AgsApplicationContext *application_context;
   GFile *autosave_file;
     
@@ -208,13 +210,10 @@ main(int argc, char **argv)
   g_thread_init(NULL);  
   gtk_init(&argc, &argv);
 
-  config = ags_config_new(NULL);
-
-  application_context = ags_xorg_application_context_new(NULL,
-							 config);
-  g_object_set(config,
-	       "application-context\0", application_context,
-	       NULL);
+  application_context = ags_xorg_application_context_new();
+  audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
+  task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
+  thread_pool = ags_concurrency_provider_get_thread_pool(AGS_CONCURRENCY_PROVIDER(application_context));
   
   ags_init_context(application_context);
   ags_thread_init_context(application_context);
@@ -253,90 +252,61 @@ main(int argc, char **argv)
     ags_file_read(file);
     ags_file_close(file);
   }else{
-    AgsWindow *window;
+    AgsStartThread *start_thread;
+    GList *task;
+    guint val;
 
-    AgsServer *server;
-
-    AgsThreadPool *thread_pool;
+    task = NULL;
     
-    AgsSoundcard *soundcard;
+    /* wait for audio loop */
+    thread_pool->parent = audio_loop;
+    ags_thread_pool_start(thread_pool);
 
-    struct passwd *pw;
-    uid_t uid;
-    gchar *wdir, *config_file;
-  
-    uid = getuid();
-    pw = getpwuid(uid);
-
-    wdir = g_strdup_printf("%s/%s\0",
-			   pw->pw_dir,
-			   AGS_DEFAULT_DIRECTORY);
-
-    config_file = g_strdup_printf("%s/%s\0",
-				  wdir,
-				  AGS_DEFAULT_CONFIG);
-
-    ags_config_load_from_file(config,
-			      config_file);
-
-    g_free(wdir);
-    g_free(config_file);
-
-    /* AgsSoundcard */
-    soundcard = ags_devout_new(application_context);
-    AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard = soundcard;
-    g_object_ref(G_OBJECT(soundcard));
-    
-    /* AgsWindow */
-    window = ags_window_new(application_context);
-    g_object_set(window,
-		 "soundcard\0", soundcard,
-		 NULL);
-    AGS_XORG_APPLICATION_CONTEXT(application_context)->window = window;
-    g_object_ref(G_OBJECT(window));
-
-    gtk_window_set_default_size((GtkWindow *) window, 500, 500);
-    gtk_paned_set_position((GtkPaned *) window->paned, 300);
-
-    ags_connectable_connect(AGS_CONNECTABLE(window));
-    gtk_widget_show_all((GtkWidget *) window);
-
-    /* AgsServer */
-    server = ags_server_new(application_context);
-
-    /* AgsMainLoop */
-    audio_loop = (AgsThread *) ags_audio_loop_new((GObject *) soundcard,
-						  application_context);
-    g_object_set(application_context,
-		 "main-loop\0", audio_loop,
-		 NULL);
-
-    g_object_ref(audio_loop);
-    ags_connectable_connect(AGS_CONNECTABLE(audio_loop));
-
-    /* thread pool */
     task_thread = ags_thread_find_type(audio_loop,
 				       AGS_TYPE_TASK_THREAD);
     
-    thread_pool = 
-      AGS_XORG_APPLICATION_CONTEXT(application_context)->thread_pool = ags_thread_pool_new(task_thread);
-
-    /* complete thread pool */
-    thread_pool = ags_concurrency_provider_get_thread_pool(application_context);
-
-    ags_thread_pool_start(thread_pool);
-  }
-
-  if(!single_thread){
-    GList *children;
-
-    /* find gui thread */
     gui_thread = ags_thread_find_type(audio_loop,
 				      AGS_TYPE_GUI_THREAD);
 
-    /* start main loop */
-    ags_thread_start(AGS_THREAD(application_context->main_loop));
+    ags_thread_start(task_thread);
+    ags_thread_start(audio_loop);
+    ags_thread_start(gui_thread);
+    
+    /* wait for task thread */
+    pthread_mutex_lock(&(task_thread->start_mutex));
+  
+    while((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(AGS_THREAD(task_thread)->flags)))) != 0){
+      pthread_cond_wait(&(task_thread->start_cond),
+			&(task_thread->start_mutex));
+    }
+  
+    pthread_mutex_unlock(&(task_thread->start_mutex));
 
+    /* wait for audio loop */
+    pthread_mutex_lock(&(audio_loop->start_mutex));
+  
+    while((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(AGS_THREAD(audio_loop)->flags)))) != 0){
+      pthread_cond_wait(&(audio_loop->start_cond),
+			&(audio_loop->start_mutex));
+      val = g_atomic_int_get(&(AGS_THREAD(audio_loop)->flags));
+    }
+  
+    pthread_mutex_unlock(&(audio_loop->start_mutex));
+
+    /* wait for audio loop */
+    pthread_mutex_lock(&(gui_thread->start_mutex));
+  
+    while((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(AGS_THREAD(gui_thread)->flags)))) != 0){
+      pthread_cond_wait(&(gui_thread->start_cond),
+			&(gui_thread->start_mutex));
+      val = g_atomic_int_get(&(AGS_THREAD(gui_thread)->flags));
+    }
+  
+    pthread_mutex_unlock(&(gui_thread->start_mutex));
+  }
+
+  if(!single_thread){
+    usleep(5000000);
     /* join gui thread */
 #ifdef _USE_PTH
     pth_join(gui_thread->thread,

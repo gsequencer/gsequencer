@@ -208,8 +208,6 @@ ags_gui_thread_run(AgsThread *thread)
 		       TRUE);
     }
 
-    /*  */
-    ags_thread_lock(main_loop);
     
     if(success){
       /*  */
@@ -227,10 +225,7 @@ ags_gui_thread_run(AgsThread *thread)
 
     /*  */
     //    success = pthread_mutex_trylock(&(thread->suspend_mutex));
-      
-    /*  */
-    ags_thread_unlock(main_loop);
-
+    
     /*  */
     //    g_atomic_int_set(&(thread->critical_region),
     //		     FALSE);

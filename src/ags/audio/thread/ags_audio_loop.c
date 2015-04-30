@@ -22,6 +22,8 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_main_loop.h>
 
+#include <ags/thread/ags_concurrency_provider.h>
+
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
@@ -551,9 +553,13 @@ ags_audio_loop_start(AgsThread *thread)
 {
   AgsAudioLoop *audio_loop;
 
+  AgsApplicationContext *application_context;
+  
   audio_loop = AGS_AUDIO_LOOP(thread);
 
-  if((AGS_THREAD_SINGLE_LOOP & (thread->flags)) == 0){
+  application_context = audio_loop->application_context;
+
+  if((AGS_THREAD_SINGLE_LOOP & (thread->flags)) == 0){    
     /*  */
     AGS_THREAD_CLASS(ags_audio_loop_parent_class)->start(thread);
   }
@@ -565,17 +571,11 @@ ags_audio_loop_run(AgsThread *thread)
   AgsAudioLoop *audio_loop;
   AgsDevout *devout;
 
+  guint val;
+  
   pthread_mutex_t *application_mutex;
 
-  guint val;
-
   audio_loop = AGS_AUDIO_LOOP(thread);
-
-  g_object_get(audio_loop,
-	       "application-mutex\0", &application_mutex,
-	       NULL);
-
-  pthread_mutex_lock(application_mutex);
 
   devout = AGS_DEVOUT(audio_loop->devout);
 
@@ -617,7 +617,6 @@ ags_audio_loop_run(AgsThread *thread)
   }
 
   pthread_mutex_unlock(&(audio_loop->recall_mutex));
-  pthread_mutex_unlock(application_mutex);
 }
 
 /**

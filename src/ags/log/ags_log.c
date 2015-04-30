@@ -2,11 +2,11 @@
 
 #include <ags/object/ags_application_context.h>
 
+#include <ags/log/task/ags_log_task.h>
+
 #include <ags/thread/ags_concurrency_provider.h>
 #include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_task_thread.h>
-
-#include <ags/log/task/ags_log_task.h>
 
 #include <stdlib.h>
 #include <string.h>

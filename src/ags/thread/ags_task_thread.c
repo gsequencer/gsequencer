@@ -199,15 +199,11 @@ ags_task_thread_start(AgsThread *thread)
 	       "application-mutex\0", &application_mutex,
 	       NULL);
   
-  pthread_mutex_lock(application_mutex);
-  
   application_context = ags_main_loop_get_application_context(main_loop);
   
   if((AGS_THREAD_SINGLE_LOOP & (g_atomic_int_get(&(thread->flags)))) == 0){
     AGS_THREAD_CLASS(ags_task_thread_parent_class)->start(thread);
   }
-
-  pthread_mutex_unlock(application_mutex);
 }
 
 void
@@ -220,6 +216,9 @@ ags_task_thread_run(AgsThread *thread)
 
   guint prev_pending;
 
+  if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
+    return;
+  }
   task_thread = AGS_TASK_THREAD(thread);
   main_loop = ags_thread_get_toplevel(task_thread);
   
@@ -247,7 +246,6 @@ ags_task_thread_run(AgsThread *thread)
     int i;
 
     pthread_mutex_lock(&(task_thread->launch_mutex));
-    ags_thread_lock(main_loop);
     
     for(i = 0; i < g_atomic_int_get(&(task_thread->pending)); i++){
       task = AGS_TASK(list->data);
@@ -261,7 +259,6 @@ ags_task_thread_run(AgsThread *thread)
       list = list->next;
     }
 
-    ags_thread_unlock(main_loop);
     pthread_mutex_unlock(&(task_thread->launch_mutex));
   }
 
@@ -343,14 +340,10 @@ ags_task_thread_append_task(AgsTaskThread *task_thread, AgsTask *task)
   g_object_get(main_loop,
 	       "application-mutex\0", &application_mutex,
 	       NULL);
-
-  pthread_mutex_lock(application_mutex);
   
   application_context = ags_main_loop_get_application_context(AGS_MAIN_LOOP(main_loop));
 
   thread_pool = ags_concurrency_provider_get_thread_pool(AGS_CONCURRENCY_PROVIDER(application_context));
-
-  pthread_mutex_unlock(application_mutex);
   
   append = (AgsTaskThreadAppend *) malloc(sizeof(AgsTaskThreadAppend));
 
@@ -443,13 +436,9 @@ ags_task_thread_append_tasks(AgsTaskThread *task_thread, GList *list)
 	       "application-mutex\0", &application_mutex,
 	       NULL);
 
-  pthread_mutex_lock(application_mutex);
-  
   application_context = ags_main_loop_get_application_context(AGS_MAIN_LOOP(main_loop));
 
   thread_pool = ags_concurrency_provider_get_thread_pool(AGS_CONCURRENCY_PROVIDER(application_context));
-
-  pthread_mutex_unlock(application_mutex);
 
   append = (AgsTaskThreadAppend *) malloc(sizeof(AgsTaskThreadAppend));
 

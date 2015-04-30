@@ -26,11 +26,26 @@
 #include <ags/object/ags_application_context.h>
 #include <ags/object/ags_soundcard.h>
 
+#include <ags/thread/ags_concurrency_provider.h>
+#ifdef AGS_USE_LINUX_THREADS
+#include <ags/thread/ags_thread-kthreads.h>
+#else
+#include <ags/thread/ags_thread-posix.h>
+#endif
+#include <ags/thread/ags_single_thread.h>
+#include <ags/thread/ags_autosave_thread.h>
+#include <ags/thread/ags_task_thread.h>
 #include <ags/thread/ags_thread_pool.h>
+
+#include <ags/audio/thread/ags_audio_loop.h>
+#include <ags/audio/thread/ags_devout_thread.h>
+#include <ags/audio/thread/ags_export_thread.h>
 
 #include <ags/server/ags_server.h>
 
 #include <ags/X/ags_window.h>
+
+#include <ags/X/thread/ags_gui_thread.h>
 
 #define AGS_TYPE_XORG_APPLICATION_CONTEXT                (ags_xorg_application_context_get_type())
 #define AGS_XORG_APPLICATION_CONTEXT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_XORG_APPLICATION_CONTEXT, AgsXorgApplicationContext))
@@ -55,6 +70,13 @@ struct _AgsXorgApplicationContext
 
   AgsThreadPool *thread_pool;
 
+  AgsThread *devout_thread;
+  AgsThread *export_thread;
+
+  AgsThread *gui_thread;
+  
+  AgsThread *autosave_thread;
+
   AgsServer *server;
   
   GList *soundcard;
@@ -69,7 +91,6 @@ struct _AgsXorgApplicationContextClass
 
 GType ags_xorg_application_context_get_type();
 
-AgsXorgApplicationContext* ags_xorg_application_context_new(GObject *main_loop,
-							    AgsConfig *config);
+AgsXorgApplicationContext* ags_xorg_application_context_new();
 
 #endif /*__AGS_XORG_APPLICATION_CONTEXT_H__*/
