@@ -23,7 +23,6 @@
 
 #include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>
-#include <ags/object/ags_playable.h>
 #include <ags/object/ags_plugin.h>
 
 #include <ags/file/ags_file.h>
@@ -31,7 +30,6 @@
 #include <ags/file/ags_file_id_ref.h>
 #include <ags/file/ags_file_lookup.h>
 #include <ags/file/ags_file_launch.h>
-#include <ags/file/ags_file_gui.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_input.h>
@@ -40,6 +38,7 @@
 #include <ags/audio/ags_recall.h>
 #include <ags/audio/ags_recall_container.h>
 
+#include <ags/audio/file/ags_playable.h>
 #include <ags/audio/file/ags_audio_file.h>
 #include <ags/audio/file/ags_ipatch_sf2_reader.h>
 
@@ -58,6 +57,8 @@
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_editor.h>
+
+#include <ags/X/file/ags_gsequencer_file_xml.h>
 
 #include <ags/X/machine/ags_ffplayer_bridge.h>
 

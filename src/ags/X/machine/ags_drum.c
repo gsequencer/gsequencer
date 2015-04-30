@@ -26,6 +26,12 @@
 #include <ags/object/ags_portlet.h>
 #include <ags/object/ags_plugin.h>
 
+#include <ags/file/ags_file.h>
+#include <ags/file/ags_file_stock.h>
+#include <ags/file/ags_file_id_ref.h>
+#include <ags/file/ags_file_lookup.h>
+#include <ags/file/ags_file_launch.h>
+
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_input.h>
@@ -48,16 +54,6 @@
 
 #include <ags/audio/task/recall/ags_apply_sequencer_length.h>
 
-#include <ags/file/ags_file.h>
-#include <ags/file/ags_file_stock.h>
-#include <ags/file/ags_file_id_ref.h>
-#include <ags/file/ags_file_lookup.h>
-#include <ags/file/ags_file_launch.h>
-#include <ags/file/ags_file_gui.h>
-
-#include <ags/thread/ags_thread-posix.h>
-#include <ags/thread/ags_audio_loop.h>
-
 #include <ags/widget/ags_led.h>
 
 #include <ags/X/ags_window.h>
@@ -70,6 +66,8 @@
 #include <ags/X/machine/ags_drum_output_pad.h>
 #include <ags/X/machine/ags_drum_output_line.h>
 #include <ags/X/machine/ags_drum_input_line_callbacks.h>
+
+#include <ags/X/file/ags_gsequencer_file_xml.h>
 
 #include <math.h>
 

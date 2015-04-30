@@ -19,14 +19,9 @@
 #include <ags/X/machine/ags_ffplayer_callbacks.h>
 #include <ags/X/ags_machine_callbacks.h>
 
-#include <ags/main.h>
-
-#include <ags/object/ags_playable.h>
-#include <ags/object/ags_main_loop.h>
-
-#include <ags/thread/ags_audio_loop.h>
-
 #include <ags/audio/ags_channel.h>
+
+#include <ags/audio/file/ags_playable.h>
 
 #include <ags/audio/task/ags_link_channel.h>
 #include <ags/audio/task/ags_add_audio_signal.h>

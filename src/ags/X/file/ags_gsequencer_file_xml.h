@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef __AGS_FILE_GUI_H__
-#define __AGS_FILE_GUI_H__
+#ifndef __AGS_GSEQUENCER_FILE_XML_H__
+#define __AGS_GSEQUENCER_FILE_XML_H__
 
 #include <glib.h>
 #include <glib-object.h>
@@ -171,4 +171,4 @@ xmlNode* ags_file_write_notebook_tab(AgsFile *file, xmlNode *parent, AgsNotebook
 void ags_file_read_navigation(AgsFile *file, xmlNode *node, AgsNavigation **navigation);
 xmlNode* ags_file_write_navigation(AgsFile *file, xmlNode *parent, AgsNavigation *navigation);
 
-#endif /*__AGS_FILE_GUI_H__*/
+#endif /*__AGS_GSEQUENCER_FILE_XML_H__*/

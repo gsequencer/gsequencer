@@ -25,13 +25,17 @@
 
 #include <ags/file/ags_file.h>
 
+#ifdef AGS_USE_LINUX_THREADS
+#include <ags/thread/ags_thread-kthreads.h>
+#else
 #include <ags/thread/ags_thread-posix.h>
+#endif 
 #include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_input.h>
 #include <ags/audio/ags_output.h>
 
-#include <ags/audio/task/ags_save_file.h>
+#include <ags/file/task/ags_save_file.h>
 #include <ags/audio/task/ags_add_audio.h>
 
 #include <ags/X/ags_window.h>

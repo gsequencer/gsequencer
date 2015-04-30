@@ -20,7 +20,6 @@
 #include <ags/X/editor/ags_inline_player_callbacks.h>
 
 #include <ags/object/ags_connectable.h>
-#include <ags/object/ags_playable.h>
 
 #include <ags/X/ags_window.h>
 

@@ -18,10 +18,6 @@
 
 #include <ags/X/ags_editor_callbacks.h>
 
-#include <ags/main.h>
-
-#include <ags/thread/ags_audio_loop.h>
-
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_output.h>

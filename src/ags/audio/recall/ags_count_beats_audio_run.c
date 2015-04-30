@@ -35,6 +35,8 @@
 
 #include <ags/audio/ags_recall_container.h>
 
+#include <ags/audio/thread/ags_audio_loop.h>
+
 #include <ags/audio/recall/ags_stream_channel_run.h>
 
 #include <math.h>

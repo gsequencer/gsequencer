@@ -48,8 +48,6 @@ struct _AgsGuiThread
 
   GMutex mutex;
   GCond cond;
-
-  AgsThread *gui_task_thread;
 };
 
 struct _AgsGuiThreadClass

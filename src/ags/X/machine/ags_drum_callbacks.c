@@ -36,7 +36,6 @@
 #include <ags/audio/ags_recall_container.h>
 
 #include <ags/audio/task/ags_toggle_pattern_bit.h>
-#include <ags/audio/task/ags_toggle_led.h>
 
 #include <ags/audio/task/recall/ags_apply_bpm.h>
 #include <ags/audio/task/recall/ags_apply_sequencer_length.h>
@@ -59,6 +58,8 @@
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_pad.h>
 #include <ags/X/ags_navigation.h>
+
+#include <ags/X/task/ags_toggle_led.h>
 
 #include <stdlib.h>
 #include <math.h>

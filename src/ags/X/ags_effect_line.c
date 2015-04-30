@@ -26,19 +26,23 @@
 
 #include <ags/plugin/ags_ladspa_manager.h>
 
+#ifdef AGS_USE_LINUX_THREADS
+#include <ags/thread/ags_thread-kthreads.h>
+#else
 #include <ags/thread/ags_thread-posix.h>
+#endif 
 #include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recall_ladspa.h>
-
-#include <ags/audio/task/ags_add_line_member.h>
 
 #include <ags/widget/ags_dial.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_line_member.h>
+
+#include <ags/X/task/ags_add_line_member.h>
 
 #include <dlfcn.h>
 #include <stdio.h>

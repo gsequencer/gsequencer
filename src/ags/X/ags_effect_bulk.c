@@ -19,6 +19,7 @@
 #include <ags/X/ags_effect_bulk.h>
 #include <ags/X/ags_effect_bulk_callbacks.h>
 
+#include <ags/object/ags_application_context.h>
 #include <ags/object/ags_marshal.h>
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_plugin.h>
@@ -26,7 +27,11 @@
 
 #include <ags/plugin/ags_ladspa_manager.h>
 
-#include <ags/thread/ags_audio_loop.h>
+#ifdef AGS_USE_LINUX_THREADS
+#include <ags/thread/ags_thread-kthreads.h>
+#else
+#include <ags/thread/ags_thread-posix.h>
+#endif 
 #include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_channel.h>
@@ -43,8 +48,6 @@
 #include <ags/audio/ags_recall_ladspa.h>
 #include <ags/audio/ags_recall_ladspa_run.h>
 
-#include <ags/audio/task/ags_add_bulk_member.h>
-#include <ags/audio/task/ags_update_bulk_member.h>
 #include <ags/audio/task/ags_add_recall_container.h>
 #include <ags/audio/task/ags_add_recall.h>
 
@@ -53,6 +56,9 @@
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_ladspa_browser.h>
 #include <ags/X/ags_bulk_member.h>
+
+#include <ags/X/task/ags_add_bulk_member.h>
+#include <ags/X/task/ags_update_bulk_member.h>
 
 #include <dlfcn.h>
 #include <stdio.h>

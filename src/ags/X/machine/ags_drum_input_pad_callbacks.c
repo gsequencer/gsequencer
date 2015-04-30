@@ -23,7 +23,11 @@
 #include <ags/object/ags_application_context.h>
 #include <ags/object/ags_soundcard.h>
 
+#ifdef AGS_USE_LINUX_THREADS
+#include <ags/thread/ags_thread-kthreads.h>
+#else
 #include <ags/thread/ags_thread-posix.h>
+#endif 
 #include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_devout.h>
@@ -33,6 +37,8 @@
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_pattern.h>
 #include <ags/audio/ags_recall.h>
+
+#include <ags/audio/thread/ags_devout_thread.h>
 
 #include <ags/audio/task/ags_start_devout.h>
 #include <ags/audio/task/ags_init_channel.h>

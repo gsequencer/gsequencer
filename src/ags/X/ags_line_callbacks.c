@@ -20,6 +20,13 @@
 
 #include <ags/object/ags_application_context.h>
 
+#ifdef AGS_USE_LINUX_THREADS
+#include <ags/thread/ags_thread-kthreads.h>
+#else
+#include <ags/thread/ags_thread-posix.h>
+#endif 
+#include <ags/thread/ags_task_thread.h>
+
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_recall.h>
 #include <ags/audio/ags_recall_audio.h>
@@ -32,14 +39,14 @@
 #include <ags/audio/recall/ags_copy_pattern_channel.h>
 #include <ags/audio/recall/ags_copy_pattern_channel_run.h>
 
-#include <ags/audio/task/ags_change_indicator.h>
-
 #include <ags/widget/ags_vindicator.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_pad.h>
 #include <ags/X/ags_line_member.h>
+
+#include <ags/X/task/ags_change_indicator.h>
 
 int
 ags_line_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsLine *line)

@@ -16,14 +16,12 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <ags/audio/task/ags_scroll_on_play.h>
+#include <ags/X/task/ags_scroll_on_play.h>
 
 #include <ags/object/ags_connectable.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_editor.h>
-
-#include <ags/main.h>
 
 void ags_scroll_on_play_class_init(AgsScrollOnPlayClass *scroll_on_play);
 void ags_scroll_on_play_connectable_interface_init(AgsConnectableInterface *connectable);

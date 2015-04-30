@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <ags/file/ags_file_gui.h>
+#include <ags/X/file/ags_gsequencer_file_xml.h>
 
 #include <libxml/parser.h>
 #include <libxml/xlink.h>
