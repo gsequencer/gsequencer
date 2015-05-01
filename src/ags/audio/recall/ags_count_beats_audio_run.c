@@ -1222,7 +1222,7 @@ ags_count_beats_audio_run_sequencer_count_callback(AgsDelayAudioRun *delay_audio
 	/* set done flag in playback */
 	while(playback != NULL){
 	  if(AGS_PLAYBACK(playback->data)->recall_id[1] != NULL &&
-	     AGS_PLAYBACK(playback->data)->recall_id[1]->recycling_container == AGS_RECALL(count_beats_audio_run)->recall_id->recycling_container){
+	     AGS_PLAYBACK(playback->data)->recall_id[1]->recycling_context == AGS_RECALL(count_beats_audio_run)->recall_id->recycling_context){
 	    AgsChannel *channel;
 	    AgsStreamChannelRun *stream_channel_run;
 	    GList *list;
@@ -1237,9 +1237,9 @@ ags_count_beats_audio_run_sequencer_count_callback(AgsDelayAudioRun *delay_audio
 
 	    list = channel->play;
 
-	    list = ags_recall_find_type_with_recycling_container(list,
-								 AGS_TYPE_STREAM_CHANNEL_RUN,
-								 AGS_RECALL(count_beats_audio_run)->recall_id->recycling_container);
+	    list = ags_recall_find_type_with_recycling_context(list,
+							       AGS_TYPE_STREAM_CHANNEL_RUN,
+							       AGS_RECALL(count_beats_audio_run)->recall_id->recycling_context);
 
 	    if(list != NULL){
 	      stream_channel_run = AGS_STREAM_CHANNEL_RUN(list->data);
@@ -1334,9 +1334,9 @@ ags_count_beats_audio_run_stream_audio_signal_done_callback(AgsRecall *recall,
   audio = AGS_RECALL_AUDIO_RUN(count_beats_audio_run)->recall_audio->audio;
   channel = audio->output;
 
-  while((list = ags_recall_find_type_with_recycling_container(channel->play,
-							      AGS_TYPE_STREAM_CHANNEL_RUN,
-							      recall->recall_id->recycling_container)) == NULL){
+  while((list = ags_recall_find_type_with_recycling_context(channel->play,
+							    AGS_TYPE_STREAM_CHANNEL_RUN,
+							    recall->recall_id->recycling_context)) == NULL){
     channel = channel->next;
   }
 
@@ -1393,7 +1393,7 @@ ags_count_beats_audio_run_stop(AgsCountBeatsAudioRun *count_beats_audio_run,
 
       if(recall_id != NULL &&
 	 count_beats_audio_run != NULL &&
-	 AGS_RECALL(count_beats_audio_run)->recall_id->recycling_container == recall_id->recycling_container){
+	 AGS_RECALL(count_beats_audio_run)->recall_id->recycling_context == recall_id->recycling_context){
 	AGS_PLAYBACK(channel->playback)->flags |= AGS_PLAYBACK_DONE;
 	AGS_PLAYBACK(channel->playback)->recall_id[1] = NULL;
 	AGS_PLAYBACK(channel->playback)->flags &= (~(AGS_PLAYBACK_SEQUENCER |
@@ -1407,7 +1407,7 @@ ags_count_beats_audio_run_stop(AgsCountBeatsAudioRun *count_beats_audio_run,
 
       if(recall_id != NULL &&
 	 count_beats_audio_run != NULL &&
-	 AGS_RECALL(count_beats_audio_run)->recall_id->recycling_container == recall_id->recycling_container){
+	 AGS_RECALL(count_beats_audio_run)->recall_id->recycling_context == recall_id->recycling_context){
 	AGS_PLAYBACK(channel->playback)->flags |= AGS_PLAYBACK_DONE;
 	AGS_PLAYBACK(channel->playback)->recall_id[2] = NULL;
 	AGS_PLAYBACK(channel->playback)->flags &= (~(AGS_PLAYBACK_NOTATION |

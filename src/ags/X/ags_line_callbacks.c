@@ -33,7 +33,7 @@
 #include <ags/audio/ags_recall_audio_run.h>
 #include <ags/audio/ags_recall_id.h>
 #include <ags/audio/ags_port.h>
-#include <ags/audio/ags_recycling_container.h>
+#include <ags/audio/ags_recycling_context.h>
 
 #include <ags/audio/recall/ags_volume_channel.h>
 #include <ags/audio/recall/ags_copy_pattern_channel.h>
@@ -59,7 +59,7 @@ ags_line_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsLine *
 void
 ags_line_remove_recall_callback(AgsRecall *recall, AgsLine *line)
 {
-  if(recall->recall_id != NULL && recall->recall_id->recycling_container->parent != NULL){
+  if(recall->recall_id != NULL && recall->recall_id->recycling_context->parent != NULL){
     if(AGS_IS_RECALL_AUDIO(recall) || AGS_RECALL_AUDIO_RUN(recall)){
       ags_audio_remove_recall(AGS_AUDIO(line->channel->audio), (GObject *) recall, FALSE);
     }else{
@@ -204,7 +204,7 @@ ags_line_peak_run_post_callback(AgsRecall *peak_channel,
 
       child = gtk_bin_get_child(AGS_LINE_MEMBER(list->data));
 
-      if(AGS_RECYCLING_CONTAINER(peak_channel->recall_id->recycling_container)->parent == NULL){
+      if(AGS_RECYCLING_CONTEXT(peak_channel->recall_id->recycling_context)->parent == NULL){
 	port = AGS_LINE_MEMBER(list->data)->port;
       }else{
 	port = AGS_LINE_MEMBER(list->data)->recall_port;

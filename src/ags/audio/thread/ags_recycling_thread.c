@@ -346,21 +346,21 @@ ags_recycling_thread_real_play_audio(AgsRecyclingThread *recycling_thread,
       gint child_position;
 
       /* input_recall_id - check if there is a new recycling */
-      child_position = ags_recycling_container_find_child(recall_id->recycling_container,
-							  input->first_recycling);
+      child_position = ags_recycling_context_find_child(recall_id->recycling_context,
+							input->first_recycling);
       
       if(child_position == -1){
-	input_recall_id = ags_recall_id_find_recycling_container(input->recall_id,
-								 recall_id->recycling_container);
+	input_recall_id = ags_recall_id_find_recycling_context(input->recall_id,
+							       recall_id->recycling_context);
       }else{
 	GList *list;
 
-	list = g_list_nth(recall_id->recycling_container->children,
+	list = g_list_nth(recall_id->recycling_context->children,
 			  child_position);
 
 	if(list != NULL){
-	  input_recall_id = ags_recall_id_find_recycling_container(input->recall_id,
-								   AGS_RECYCLING_CONTAINER(list->data));
+	  input_recall_id = ags_recall_id_find_recycling_context(input->recall_id,
+								 AGS_RECYCLING_CONTEXT(list->data));
 	}else{
 	  input_recall_id = NULL;
 	}

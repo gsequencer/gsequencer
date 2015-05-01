@@ -431,7 +431,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 	  list = source->link->recall_id;
 
 	  while(list != NULL){
-	    if(AGS_RECALL_ID(list->data)->recycling_container->parent == AGS_RECALL(copy_pattern_channel_run)->recall_id->recycling_container){
+	    if(AGS_RECALL_ID(list->data)->recycling_context->parent == AGS_RECALL(copy_pattern_channel_run)->recall_id->recycling_context){
 	      child_recall_id = list->data;
 	      break;
 	    }

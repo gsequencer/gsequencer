@@ -76,7 +76,7 @@ struct _AgsChannel
 
   GObject *playback;
 
-  // GObject *recycling_container; // contains child recycling
+  // GObject *recycling_context; // contains child recycling
   GList *recall_id; // there may be several recall's running
   GList *container;
 
@@ -152,9 +152,9 @@ void ags_channel_remove_effect(AgsChannel *channel,
 void ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
 			  GError **error);
 void ags_channel_set_recycling(AgsChannel *channel, AgsRecycling *first_recycling, AgsRecycling *last_recycling, gboolean update, gboolean destroy_old);
-void ags_channel_recursive_reset_recycling_container(AgsChannel *channel,
-						     AgsRecyclingContainer *old_recycling_container,
-						     AgsRecyclingContainer *recycling_container);
+void ags_channel_recursive_reset_recycling_context(AgsChannel *channel,
+						   AgsRecyclingContext *old_recycling_context,
+						   AgsRecyclingContext *recycling_context);
 void ags_channel_recycling_changed(AgsChannel *channel,
 				   AgsRecycling *old_start_region, AgsRecycling *old_end_region,
 				   AgsRecycling *new_start_region, AgsRecycling *new_end_region,

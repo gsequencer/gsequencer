@@ -235,7 +235,7 @@ ags_buffer_audio_signal_run_init_pre(AgsRecall *recall)
   /* create new audio signal */
   destination = ags_audio_signal_new((GObject *) soundcard,
 				     (GObject *) recycling,
-				     (GObject *) recall->recall_id->recycling_container->parent->recall_id);
+				     (GObject *) recall->recall_id->recycling_context->parent->recall_id);
   length =  (guint) (2.0 * ags_soundcard_get_delay(soundcard)) + 1;
   ags_audio_signal_stream_resize(destination,
 				 length);

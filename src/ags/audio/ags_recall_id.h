@@ -23,7 +23,7 @@
 #include <glib-object.h>
 
 #include <ags/audio/ags_recycling.h>
-#include <ags/audio/ags_recycling_container.h>
+#include <ags/audio/ags_recycling_context.h>
 
 #define AGS_TYPE_RECALL_ID                (ags_recall_id_get_type ())
 #define AGS_RECALL_ID(obj)                (G_TYPE_CHECK_INSTANCE_CAST ((obj), AGS_TYPE_RECALL_ID, AgsRecallID))
@@ -57,7 +57,7 @@ struct _AgsRecallID
   guint flags;
 
   GObject *recycling;
-  AgsRecyclingContainer *recycling_container;
+  AgsRecyclingContext *recycling_context;
 };
 
 struct _AgsRecallIDClass
@@ -71,10 +71,10 @@ gboolean ags_recall_id_get_run_stage(AgsRecallID *id, gint stage);
 void ags_recall_id_set_run_stage(AgsRecallID *recall_id, gint stage);
 void ags_recall_id_unset_run_stage(AgsRecallID *recall_id, gint stage);
 
-AgsRecallID* ags_recall_id_find_recycling_container(GList *recall_id_list,
-						    AgsRecyclingContainer *recycling_container);
-AgsRecallID* ags_recall_id_find_parent_recycling_container(GList *recall_id_list,
-							   AgsRecyclingContainer *parent_recycling_container);
+AgsRecallID* ags_recall_id_find_recycling_context(GList *recall_id_list,
+						  AgsRecyclingContext *recycling_context);
+AgsRecallID* ags_recall_id_find_parent_recycling_context(GList *recall_id_list,
+							 AgsRecyclingContext *parent_recycling_context);
 
 GList* ags_recall_id_add(GList *recall_id_list,
 			 AgsRecallID *recall_id);

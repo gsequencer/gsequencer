@@ -579,7 +579,7 @@ ags_play_notation_audio_run_resolve_dependencies(AgsRecall *recall)
 	  (AGS_RECALL_OUTPUT_ORIENTATED & (AGS_RECALL(recall_dependency->dependency)->flags)) != 0)){
 	recall_id = recall->recall_id;
       }else{
-	recall_id = recall->recall_id->recycling_container->parent->recall_id;
+	recall_id = recall->recall_id->recycling_context->parent->recall_id;
       }
 
       delay_audio_run = (AgsDelayAudioRun *) ags_recall_dependency_resolve(recall_dependency, recall_id);
@@ -592,7 +592,7 @@ ags_play_notation_audio_run_resolve_dependencies(AgsRecall *recall)
 	  (AGS_RECALL_OUTPUT_ORIENTATED & (AGS_RECALL(recall_dependency->dependency)->flags)) != 0)){
 	recall_id = recall->recall_id;
       }else{
-	recall_id = recall->recall_id->recycling_container->parent->recall_id;
+	recall_id = recall->recall_id->recycling_context->parent->recall_id;
       }
 
       count_beats_audio_run = (AgsCountBeatsAudioRun *) ags_recall_dependency_resolve(recall_dependency, recall_id);
