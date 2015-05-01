@@ -249,7 +249,7 @@ ags_copy_pattern_channel_init(AgsCopyPatternChannel *copy_pattern_channel)
 						    NULL);
   copy_pattern_channel->bank_index_1->port_value.ags_port_uint = 0;
 
-  port = g_list_prepend(port, copy_pattern_channel->current_bit);
+  port = g_list_prepend(port, copy_pattern_channel->bank_index_1);
 
   copy_pattern_channel->current_bit = g_object_new(AGS_TYPE_PORT,
 						   "plugin-name\0", ags_copy_pattern_channel_plugin_name,

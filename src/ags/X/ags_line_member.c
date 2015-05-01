@@ -851,7 +851,7 @@ ags_line_member_find_port(AgsLineMember *line_member)
       g_message("search port in %s\0", G_OBJECT_TYPE_NAME(recall->data));
 #endif
 
-      while(port != NULL){
+      while(port != NULL){	
 	if(!g_strcmp0(AGS_PORT(port->data)->specifier,
 		      specifier)){
 	  return(AGS_PORT(port->data));

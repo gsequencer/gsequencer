@@ -676,6 +676,7 @@ ags_synth_update(AgsSynth *synth)
 
 /**
  * ags_synth_new:
+ * @soundcard: the assigned soundcard.
  *
  * Creates an #AgsSynth
  *
@@ -684,12 +685,21 @@ ags_synth_update(AgsSynth *synth)
  * Since: 0.3
  */
 AgsSynth*
-ags_synth_new()
+ags_synth_new(GObject *soundcard)
 {
   AgsSynth *synth;
+  GValue value = {0,};
 
   synth = (AgsSynth *) g_object_new(AGS_TYPE_SYNTH,
 				    NULL);
+
+  if(soundcard != NULL){
+    g_value_init(&value, G_TYPE_OBJECT);
+    g_value_set_object(&value, soundcard);
+    g_object_set_property(G_OBJECT(AGS_MACHINE(synth)->audio),
+			  "soundcard\0", &value);
+    g_value_unset(&value);
+  }
 
   return(synth);
 }
