@@ -171,8 +171,8 @@ ags_add_recall_launch(AgsTask *task)
     recall_id = AGS_AUDIO(add_recall->context)->recall_id;
     if(!AGS_IS_RECALL_AUDIO(add_recall->recall)){
       while(recall_id != NULL){
-	if((!add_recall->is_play && AGS_RECALL_ID(recall_id->data)->recycling_container->parent == NULL) ||
-	   (add_recall->is_play && AGS_RECALL_ID(recall_id->data)->recycling_container->parent != NULL)){
+	if((!add_recall->is_play && AGS_RECALL_ID(recall_id->data)->recycling_context->parent == NULL) ||
+	   (add_recall->is_play && AGS_RECALL_ID(recall_id->data)->recycling_context->parent != NULL)){
 	  recall_id = recall_id->next;
 	
 	  continue;
@@ -237,8 +237,8 @@ ags_add_recall_launch(AgsTask *task)
 
     if(!AGS_IS_RECALL_CHANNEL(add_recall->recall)){
       while(recall_id != NULL){
-	if((!add_recall->is_play && AGS_RECALL_ID(recall_id->data)->recycling_container->parent == NULL) ||
-	   (add_recall->is_play && AGS_RECALL_ID(recall_id->data)->recycling_container->parent != NULL)){
+	if((!add_recall->is_play && AGS_RECALL_ID(recall_id->data)->recycling_context->parent == NULL) ||
+	   (add_recall->is_play && AGS_RECALL_ID(recall_id->data)->recycling_context->parent != NULL)){
 	  recall_id = recall_id->next;
 	
 	  continue;

@@ -652,17 +652,17 @@ ags_recall_recycling_source_add_audio_signal_callback(AgsRecycling *source,
 
   if((AGS_AUDIO_SIGNAL_TEMPLATE & (audio_signal->flags)) == 0 &&
      audio_signal->recall_id != NULL && recall->recall_id != NULL &&
-     (AGS_RECALL_ID(audio_signal->recall_id)->recycling_container == recall->recall_id->recycling_container ||
+     (AGS_RECALL_ID(audio_signal->recall_id)->recycling_context == recall->recall_id->recycling_context ||
       (AGS_IS_INPUT(channel) &&
        channel->link != NULL &&
-       AGS_RECALL_ID(audio_signal->recall_id)->recycling_container->parent == recall->recall_id->recycling_container))){
+       AGS_RECALL_ID(audio_signal->recall_id)->recycling_context->parent == recall->recall_id->recycling_context))){
 
 #ifdef AGS_DEBUG
     g_message("add %s:%x -> %x @ %x\0",
 	      G_OBJECT_TYPE_NAME(recall),
 	      recall->recall_id,
 	      audio_signal->recall_id,
-	      recall->recall_id->recycling_container);
+	      recall->recall_id->recycling_context);
 
     g_message("ags_recall_recycling_source_add_audio_signal_callback %s[%llx]\0",
     	      G_OBJECT_TYPE_NAME(recall_recycling), (long long unsigned int) recall_recycling);
@@ -719,10 +719,10 @@ ags_recall_recycling_source_remove_audio_signal_callback(AgsRecycling *source,
 
   if((AGS_AUDIO_SIGNAL_TEMPLATE & (audio_signal->flags)) == 0 &&
      audio_signal->recall_id != NULL && recall->recall_id != NULL &&
-     (AGS_RECALL_ID(audio_signal->recall_id)->recycling_container == recall->recall_id->recycling_container ||
+     (AGS_RECALL_ID(audio_signal->recall_id)->recycling_context == recall->recall_id->recycling_context ||
       (AGS_IS_INPUT(channel) &&
        channel->link != NULL &&
-       AGS_RECALL_ID(audio_signal->recall_id)->recycling_container->parent == recall->recall_id->recycling_container))){
+       AGS_RECALL_ID(audio_signal->recall_id)->recycling_context->parent == recall->recall_id->recycling_context))){
 
 #ifdef AGS_DEBUG
     g_message("ags_recall_recycling_source_remove_audio_signal - channel: %s[%u]\n\0",
@@ -767,7 +767,7 @@ ags_recall_recycling_destination_add_audio_signal_callback(AgsRecycling *destina
 							   AgsAudioSignal *audio_signal,
 							   AgsRecallRecycling *recall_recycling)
 {
-  AgsRecyclingContainer *output_recycling_container;
+  AgsRecyclingContext *output_recycling_context;
   AgsRecall *recall;
 
   if(destination ||
@@ -777,11 +777,11 @@ ags_recall_recycling_destination_add_audio_signal_callback(AgsRecycling *destina
   }
 
   recall = AGS_RECALL(recall_recycling);
-  output_recycling_container = recall->recall_id->recycling_container->parent;
+  output_recycling_context = recall->recall_id->recycling_context->parent;
 
   if((AGS_AUDIO_SIGNAL_TEMPLATE & (audio_signal->flags)) == 0 &&
      audio_signal->recall_id != NULL && recall->recall_id != NULL &&
-     AGS_RECALL_ID(audio_signal->recall_id)->recycling_container == output_recycling_container &&
+     AGS_RECALL_ID(audio_signal->recall_id)->recycling_context == output_recycling_context &&
      recall_recycling->destination == (AgsRecycling *) audio_signal->recycling){
     
 #ifdef AGS_DEBUG
@@ -834,7 +834,7 @@ ags_recall_recycling_destination_remove_audio_signal_callback(AgsRecycling *dest
   //TODO:JK: recall should always have a recall_id but needs a fix
   if((AGS_AUDIO_SIGNAL_TEMPLATE & (audio_signal->flags)) == 0 &&
      audio_signal->recall_id != NULL && recall->recall_id != NULL &&
-     AGS_RECALL_ID(audio_signal->recall_id)->recycling_container == recall->recall_id->recycling_container->parent &&
+     AGS_RECALL_ID(audio_signal->recall_id)->recycling_context == recall->recall_id->recycling_context->parent &&
      recall_recycling->child_destination == audio_signal){
 
 #ifdef AGS_DEBUG

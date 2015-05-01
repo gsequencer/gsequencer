@@ -295,9 +295,9 @@ ags_matrix_tact_callback(AgsAudio *audio,
     play_count_beats_audio = AGS_COUNT_BEATS_AUDIO(list->data);
   }
 
-  list = ags_recall_find_type_with_recycling_container(audio->play,
-						       AGS_TYPE_COUNT_BEATS_AUDIO_RUN,
-						       (GObject *) recall_id->recycling_container);
+  list = ags_recall_find_type_with_recycling_context(audio->play,
+						     AGS_TYPE_COUNT_BEATS_AUDIO_RUN,
+						     (GObject *) recall_id->recycling_context);
   
   if(list != NULL){
     play_count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(list->data);

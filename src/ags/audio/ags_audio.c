@@ -56,7 +56,7 @@
  * #AgsAudio organizes #AgsChannel objects either as input or output and
  * is responsible of their alignment. The class can contain #AgsRecall objects
  * in order to perform computation on all channels or in audio context.
- * Therefor exists #AgsRecyclingContainer acting as tree context.
+ * Therefor exists #AgsRecyclingContext acting as tree context.
  *
  * At least one #AgsRecallID is assigned to it and has one more if
  * %AGS_AUDIO_OUTPUT_HAS_RECYCLING is set as flag.
@@ -318,7 +318,7 @@ ags_audio_init(AgsAudio *audio)
   audio->automation = NULL;
 
   audio->recall_id = NULL;
-  audio->recycling_container = NULL;
+  audio->recycling_context = NULL;
 
   audio->container = NULL;
   audio->recall = NULL;
@@ -712,7 +712,7 @@ ags_audio_set_flags(AgsAudio *audio, guint flags)
     }
   }
 
-  //TODO:JK: automatization of setting recycling_container root
+  //TODO:JK: automatization of setting recycling_context root
 }
     
 
@@ -1492,7 +1492,7 @@ ags_audio_real_set_pads(AgsAudio *audio,
   AgsChannel *start, *channel, *prev_pad, *input, *input_pad_last;
   AgsRecycling *recycling;
   AgsRecycling *old_first_recycling, *first_recycling;
-  AgsRecyclingContainer *recycling_container, *old_recycling_container;
+  AgsRecyclingContext *recycling_context, *old_recycling_context;
   GList *playback;
   GList *recall_id;
   GList *recycling_prev, *recycling_iter;
@@ -2011,7 +2011,7 @@ ags_audio_real_set_pads(AgsAudio *audio,
 	while(recall_id != NULL){
 	  current_recall_id = g_object_new(AGS_TYPE_RECALL_ID,
 					   "recycling\0", current->first_recycling,
-					   "recycling-container\0", AGS_RECALL_ID(recall_id->data)->recycling_container,
+					   "recycling-context\0", AGS_RECALL_ID(recall_id->data)->recycling_context,
 					   NULL);
 	  
 	  ags_channel_add_recall_id(current,
@@ -2069,7 +2069,7 @@ ags_audio_real_set_pads(AgsAudio *audio,
 	  while(recall_id != NULL){
 	    current_recall_id = g_object_new(AGS_TYPE_RECALL_ID,
 					     "recycling\0", current->first_recycling,
-					     "recycling-container\0", AGS_RECALL_ID(recall_id->data)->recycling_container,
+					     "recycling-context\0", AGS_RECALL_ID(recall_id->data)->recycling_context,
 					     NULL);
 	  
 	    ags_channel_add_recall_id(current,
@@ -2098,7 +2098,7 @@ ags_audio_real_set_pads(AgsAudio *audio,
     audio->input_pads = pads;
     audio->input_lines = pads * audio->audio_channels;
 
-    /* update recycling container of default recall id */
+    /* update recycling context of default recall id */
     recall_id = audio->recall_id;
 
     while(recall_id != NULL){
@@ -2113,30 +2113,30 @@ ags_audio_real_set_pads(AgsAudio *audio,
       old_first_recycling =
 	first_recycling = channel->first_recycling;
     
-      old_recycling_container = (AgsRecyclingContainer *) AGS_RECALL_ID(recall_id->data)->recycling_container;
+      old_recycling_context = (AgsRecyclingContext *) AGS_RECALL_ID(recall_id->data)->recycling_context;
 
       if((old_first_recycling != NULL &&
-	  ags_recycling_container_find(old_recycling_container,
-				       old_first_recycling) != -1) ||
+	  ags_recycling_context_find(old_recycling_context,
+				     old_first_recycling) != -1) ||
 	 (first_recycling->parent == NULL ||
-	  ags_recycling_container_find_parent(old_recycling_container,
-					      first_recycling->parent) == -1)){
+	  ags_recycling_context_find_parent(old_recycling_context,
+					    first_recycling->parent) == -1)){
 	recall_id = recall_id->next;
 	
 	continue;
       }
   
-      recycling_container = ags_recycling_container_reset_recycling(old_recycling_container,
-								    NULL, NULL,
-								    channel->first_recycling, ags_channel_pad_last(channel)->last_recycling);
+      recycling_context = ags_recycling_context_reset_recycling(old_recycling_context,
+								NULL, NULL,
+								channel->first_recycling, ags_channel_pad_last(channel)->last_recycling);
 
-      ags_audio_add_recycling_container(audio,
-					recycling_container);
+      ags_audio_add_recycling_context(audio,
+				      recycling_context);
 
       while(channel != NULL){
-	ags_channel_recursive_reset_recycling_container(channel,
-							old_recycling_container,
-							recycling_container);
+	ags_channel_recursive_reset_recycling_context(channel,
+						      old_recycling_context,
+						      recycling_context);
 
 	channel = channel->next_pad;
       }
@@ -2368,35 +2368,35 @@ ags_audio_remove_recall_id(AgsAudio *audio, GObject *recall_id)
 }
 
 /**
- * ags_audio_add_recycling_container:
+ * ags_audio_add_recycling_context:
  * @audio: an #AgsAudio
- * @recycling_container: the #AgsRecyclingContainer
+ * @recycling_context: the #AgsRecyclingContext
  *
  * Adds a recycling container.
  *
  * Since: 0.4
  */
 void
-ags_audio_add_recycling_container(AgsAudio *audio, GObject *recycling_container)
+ags_audio_add_recycling_context(AgsAudio *audio, GObject *recycling_context)
 {
-  g_object_ref(recycling_container);
-  audio->recycling_container = g_list_prepend(audio->recycling_container, recycling_container);
+  g_object_ref(recycling_context);
+  audio->recycling_context = g_list_prepend(audio->recycling_context, recycling_context);
 }
 
 /**
- * ags_audio_remove_recycling_container:
+ * ags_audio_remove_recycling_context:
  * @audio: an #AgsAudio
- * @recycling_container: the #AgsRecyclingContainer
+ * @recycling_context: the #AgsRecyclingContext
  *
  * Removes a recycling container.
  *
  * Since: 0.4
  */
 void
-ags_audio_remove_recycling_container(AgsAudio *audio, GObject *recycling_container)
+ags_audio_remove_recycling_context(AgsAudio *audio, GObject *recycling_context)
 {
-  audio->recycling_container = g_list_remove(audio->recycling_container, recycling_container);
-  g_object_unref(recycling_container);
+  audio->recycling_context = g_list_remove(audio->recycling_context, recycling_context);
+  g_object_unref(recycling_context);
 }
 
 /**
@@ -2529,7 +2529,7 @@ ags_audio_duplicate_recall(AgsAudio *audio,
   }
   
   /* get the appropriate list */
-  if(recall_id->recycling_container->parent == NULL){
+  if(recall_id->recycling_context->parent == NULL){
     list_recall_start = 
       list_recall = audio->play;
   }else{
@@ -2586,7 +2586,7 @@ ags_audio_duplicate_recall(AgsAudio *audio,
       }
 
       /* append to AgsAudio */
-      if(recall_id->recycling_container->parent == NULL)
+      if(recall_id->recycling_context->parent == NULL)
 	audio->play = g_list_append(audio->play, copy);
       else
 	audio->recall = g_list_append(audio->recall, copy);
@@ -2621,14 +2621,14 @@ void ags_audio_resolve_recall(AgsAudio *audio,
   }
     
   /* get the appropriate lists */
-  if(recall_id->recycling_container->parent == NULL){
+  if(recall_id->recycling_context->parent == NULL){
     list_recall = audio->play;
   }else{
     list_recall = audio->recall;
   }
 
   /* resolve */  
-  while((list_recall = ags_recall_find_recycling_container(list_recall, recall_id->recycling_container)) != NULL){
+  while((list_recall = ags_recall_find_recycling_context(list_recall, recall_id->recycling_context)) != NULL){
     recall = AGS_RECALL(list_recall->data);
     
     ags_recall_resolve_dependencies(recall);
@@ -2674,7 +2674,7 @@ ags_audio_init_recall(AgsAudio *audio, gint stage,
   }
 
   /* retrieve appropriate recalls */
-  if(recall_id->recycling_container->parent == NULL)
+  if(recall_id->recycling_context->parent == NULL)
     list_recall = audio->play;
   else
     list_recall = audio->recall;
@@ -2684,7 +2684,7 @@ ags_audio_init_recall(AgsAudio *audio, gint stage,
     recall = AGS_RECALL(list_recall->data);
     
     if(recall->recall_id == NULL ||
-       recall->recall_id->recycling_container != recall_id->recycling_container ||
+       recall->recall_id->recycling_context != recall_id->recycling_context ||
        AGS_IS_RECALL_AUDIO(recall)){
       list_recall = list_recall->next;
       continue;
@@ -2780,7 +2780,7 @@ ags_audio_play(AgsAudio *audio,
   }
 
   /* retrieve appropriate recalls */
-  if(recall_id->recycling_container->parent == NULL)
+  if(recall_id->recycling_context->parent == NULL)
     list = audio->play;
   else
     list = audio->recall;
@@ -2792,7 +2792,7 @@ ags_audio_play(AgsAudio *audio,
     recall = AGS_RECALL(list->data);
 
     if(recall == NULL){
-      if(recall_id->recycling_container->parent != NULL){
+      if(recall_id->recycling_context->parent != NULL){
 	audio->recall = g_list_remove(audio->recall,
 				      recall);
       }else{
@@ -2807,7 +2807,7 @@ ags_audio_play(AgsAudio *audio,
 
     if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0 ||
        recall->recall_id == NULL ||
-       (recall->recall_id->recycling_container != recall_id->recycling_container)){
+       (recall->recall_id->recycling_context != recall_id->recycling_context)){
       list = list_next;
 
       continue;
@@ -2914,7 +2914,7 @@ ags_audio_remove(AgsAudio *audio,
     return;
   }
   
-  if(recall_id->recycling_container->parent == NULL){
+  if(recall_id->recycling_context->parent == NULL){
     list = audio->play;
     play = TRUE;
   }else{
@@ -2929,7 +2929,7 @@ ags_audio_remove(AgsAudio *audio,
 
     if((AGS_RECALL_TEMPLATE & (recall->flags)) ||
        recall->recall_id == NULL ||
-       recall->recall_id->recycling_container != recall_id->recycling_container){
+       recall->recall_id->recycling_context != recall_id->recycling_context){
       list = list_next;
 
       continue;
@@ -2968,7 +2968,7 @@ ags_audio_cancel(AgsAudio *audio,
     return;
   }
 
-  if(recall_id->recycling_container->parent == NULL)
+  if(recall_id->recycling_context->parent == NULL)
     list = audio->play;
   else
     list = audio->recall;
@@ -2982,7 +2982,7 @@ ags_audio_cancel(AgsAudio *audio,
 
     if((AGS_RECALL_TEMPLATE & (recall->flags)) ||
        recall->recall_id == NULL ||
-       recall->recall_id->recycling_container != recall_id->recycling_container){
+       recall->recall_id->recycling_context != recall_id->recycling_context){
       list = list_next;
 
       continue;

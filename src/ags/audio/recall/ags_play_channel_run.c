@@ -447,9 +447,9 @@ ags_play_channel_run_run_post(AgsRecall *recall)
   source = AGS_RECALL_CHANNEL_RUN(recall)->source;
   found = FALSE;
 
-  list = ags_recall_find_type_with_recycling_container(source->play,
-						       AGS_TYPE_STREAM_CHANNEL_RUN,
-						       recall->recall_id->recycling_container);
+  list = ags_recall_find_type_with_recycling_context(source->play,
+						     AGS_TYPE_STREAM_CHANNEL_RUN,
+						     recall->recall_id->recycling_context);
   stream_channel_run = AGS_STREAM_CHANNEL_RUN(list->data);
   
   recall_recycling_list = AGS_RECALL(stream_channel_run)->children;

@@ -74,7 +74,7 @@ struct _AgsAudio
   GList *automation;
   
   GList *recall_id;
-  GList *recycling_container;
+  GList *recycling_context;
 
   GList *container;
   GList *recall;
@@ -130,8 +130,8 @@ void ags_audio_remove_automation(AgsAudio *audio,
 void ags_audio_add_recall_id(AgsAudio *audio, GObject *recall_id);
 void ags_audio_remove_recall_id(AgsAudio *audio, GObject *recall_id);
 
-void ags_audio_add_recycling_container(AgsAudio *audio, GObject *recycling_container);
-void ags_audio_remove_recycling_container(AgsAudio *audio, GObject *recycling_container);
+void ags_audio_add_recycling_context(AgsAudio *audio, GObject *recycling_context);
+void ags_audio_remove_recycling_context(AgsAudio *audio, GObject *recycling_context);
 
 void ags_audio_add_recall_container(AgsAudio *audio, GObject *recall_container);
 void ags_audio_remove_recall_container(AgsAudio *audio, GObject *recall_container);

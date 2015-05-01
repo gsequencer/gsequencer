@@ -231,7 +231,7 @@ ags_peak_channel_run_run_post(AgsRecall *recall)
   source = AGS_RECALL_CHANNEL_RUN(recall)->source;
   recall_channel = AGS_RECALL_CHANNEL_RUN(recall)->recall_channel;
 
-  if(AGS_RECYCLING_CONTAINER(AGS_RECALL_ID(recall->recall_id)->recycling_container)->parent == NULL){
+  if(AGS_RECYCLING_CONTEXT(AGS_RECALL_ID(recall->recall_id)->recycling_context)->parent == NULL){
     list = ags_recall_find_type(source->play,
 				AGS_TYPE_PEAK_CHANNEL_RUN);
 

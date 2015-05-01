@@ -983,7 +983,7 @@ ags_recall_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
   recall = AGS_RECALL(dynamic_connectable);
 
 #ifdef AGS_DEBUG
-      g_message("dynamic connect: %s\0", G_OBJECT_TYPE_NAME(recall));
+  g_message("dynamic connect: %s\0", G_OBJECT_TYPE_NAME(recall));
 #endif
 
   /* connect children */
@@ -1664,19 +1664,19 @@ ags_recall_remove(AgsRecall *recall)
 /**
  * ags_recall_is_done:
  * @recall: an #AgsRecall
- * @recycling_container: an #AgsRecyclingContainer
+ * @recycling_context: an #RecyclingContext
  *
  * Check if recall is over.
  * 
  * Since: 0.4
  */
 gboolean
-ags_recall_is_done(GList *recalls, GObject *recycling_container)
+ags_recall_is_done(GList *recalls, GObject *recycling_context)
 {
   AgsRecall *recall;
 
   if(recalls == NULL ||
-     !AGS_IS_RECYCLING_CONTAINER(recycling_container)){
+     !AGS_IS_RECYCLING_CONTEXT(recycling_context)){
     return(FALSE);
   }
 
@@ -1687,7 +1687,7 @@ ags_recall_is_done(GList *recalls, GObject *recycling_container)
        !AGS_IS_RECALL_AUDIO(recall) &&
        !AGS_IS_RECALL_CHANNEL(recall) &&
        recall->recall_id != NULL &&
-       recall->recall_id->recycling_container == recycling_container){
+       recall->recall_id->recycling_context == recycling_context){
       if((AGS_RECALL_DONE & (recall->flags)) == 0){
 	recall->flags &= (~AGS_RECALL_RUN_INITIALIZED);
 	g_message("done: %s\0", G_OBJECT_TYPE_NAME(recall));
@@ -2039,10 +2039,10 @@ ags_recall_find_by_effect(GList *list, AgsRecallID *recall_id, char *effect)
     
     if(((recall_id != NULL &&
 	 recall->recall_id != NULL &&
-	 recall_id->recycling_container == recall->recall_id->recycling_container) ||
+	 recall_id->recycling_context == recall->recall_id->recycling_context) ||
 	(recall_id == NULL &&
 	 recall->recall_id == NULL)) &&
-	!g_strcmp0(G_OBJECT_TYPE_NAME(G_OBJECT(recall)), effect))
+       !g_strcmp0(G_OBJECT_TYPE_NAME(G_OBJECT(recall)), effect))
       return(list);
 
     list = list->next;
@@ -2140,20 +2140,20 @@ ags_recall_template_find_type(GList *recall_i, GType type)
 }
 
 /**
- * ags_recall_find_type_with_recycling_container:
+ * ags_recall_find_type_with_recycling_context:
  * @recall_i: a #GList containing recalls
  * @type: a #GType
- * @recycling_container: an #AgsRecyclingContainer
+ * @recycling_context: an #RecyclingContext
  * 
- * Finds next matching recall for type which has @recycling_container, see #AgsRecallId for further
- * details about #AgsRecyclingContainer. Intended to be used as iteration function.
+ * Finds next matching recall for type which has @recycling_context, see #AgsRecallId for further
+ * details about #RecyclingContext. Intended to be used as iteration function.
  *
  * Returns: a #GList containing recalls, or %NULL if not found
  *
  * Since: 0.4
  */
 GList*
-ags_recall_find_type_with_recycling_container(GList *recall_i, GType type, GObject *recycling_container)
+ags_recall_find_type_with_recycling_context(GList *recall_i, GType type, GObject *recycling_context)
 {
   AgsRecall *recall;
 
@@ -2162,7 +2162,7 @@ ags_recall_find_type_with_recycling_container(GList *recall_i, GType type, GObje
 
     if(g_type_is_a(G_OBJECT_TYPE(recall), type) &&
        recall->recall_id != NULL &&
-       recall->recall_id->recycling_container == recycling_container)
+       recall->recall_id->recycling_context == recycling_context)
       return(recall_i);
 
     recall_i = recall_i->next;
@@ -2172,24 +2172,24 @@ ags_recall_find_type_with_recycling_container(GList *recall_i, GType type, GObje
 }
 
 /**
- * ags_recall_find_recycling_container:
+ * ags_recall_find_recycling_context:
  * @recall_i: a #GList containing recalls
- * @recycling_container: an #AgsRecyclingContainer
+ * @recycling_context: an #RecyclingContext
  * 
- * Finds next matching recall which has @recycling_container, see #AgsRecallId for further
- * details about #AgsRecyclingContainer. Intended to be used as iteration function.
+ * Finds next matching recall which has @recycling_context, see #AgsRecallId for further
+ * details about #RecyclingContext. Intended to be used as iteration function.
  *
  * Returns: a #GList containing recalls, or %NULL if not found
  *
  * Since: 0.4
  */
 GList*
-ags_recall_find_recycling_container(GList *recall_i, GObject *recycling_container)
+ags_recall_find_recycling_context(GList *recall_i, GObject *recycling_context)
 {
   AgsRecall *recall;
 
 #ifdef AGS_DEBUG
-  g_message("ags_recall_find_recycling_container: recycling_container = %llx\n\0", recycling_container);
+  g_message("ags_recall_find_recycling_context: recycling_context = %llx\n\0", recycling_context);
 #endif
 
   while(recall_i != NULL){
@@ -2197,12 +2197,12 @@ ags_recall_find_recycling_container(GList *recall_i, GObject *recycling_containe
 
     if(recall->recall_id != NULL)
 #ifdef AGS_DEBUG
-      g_message("ags_recall_find_recycling_container: recall_id->recycling_contianer = %llx\n\0", (long long unsigned int) recall->recall_id->recycling_container);
+      g_message("ags_recall_find_recycling_context: recall_id->recycling_contianer = %llx\n\0", (long long unsigned int) recall->recall_id->recycling_context);
 #endif
 
     if(recall->recall_id != NULL &&
-       recall->recall_id->recycling_container == recycling_container){
-	return(recall_i);
+       recall->recall_id->recycling_context == recycling_context){
+      return(recall_i);
     }
 
     recall_i = recall_i->next;
@@ -2305,19 +2305,19 @@ ags_recall_template_find_provider(GList *recall, GObject *provider)
 }
 
 /**
- * ags_recall_find_provider_with_recycling_container:
+ * ags_recall_find_provider_with_recycling_context:
  * @recall_i: a #GList containing recalls
  * @provider: a #GObject
- * @recycling_container: an #AgsRecyclingContainer
+ * @recycling_context: an #RecyclingContext
  * 
- * Like ags_recall_template_find_provider() but given additionally @recycling_container as search parameter.
+ * Like ags_recall_template_find_provider() but given additionally @recycling_context as search parameter.
  *
  * Returns: a #GList containing recalls, or %NULL if not found
  * 
  * Since: 0.4
  */
 GList*
-ags_recall_find_provider_with_recycling_container(GList *recall_i, GObject *provider, GObject *recycling_container)
+ags_recall_find_provider_with_recycling_context(GList *recall_i, GObject *provider, GObject *recycling_context)
 {
   AgsRecall *recall;
 
@@ -2325,7 +2325,7 @@ ags_recall_find_provider_with_recycling_container(GList *recall_i, GObject *prov
     recall = AGS_RECALL(recall_i->data);
     
     if(recall->recall_id != NULL &&
-       recall->recall_id->recycling_container == recycling_container){
+       recall->recall_id->recycling_context == recycling_context){
       return(recall_i);
     }
 

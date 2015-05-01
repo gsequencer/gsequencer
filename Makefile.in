@@ -178,7 +178,7 @@ am__objects_8 = $(am__objects_7) \
 	libags_audio_a-ags_recall_ladspa_run.$(OBJEXT) \
 	libags_audio_a-ags_recall_recycling_dummy.$(OBJEXT) \
 	libags_audio_a-ags_recall_recycling.$(OBJEXT) \
-	libags_audio_a-ags_recycling_container.$(OBJEXT) \
+	libags_audio_a-ags_recycling_context.$(OBJEXT) \
 	libags_audio_a-ags_recycling.$(OBJEXT) \
 	libags_audio_a-ags_synths.$(OBJEXT) \
 	libags_audio_a-ags_timestamp_factory.$(OBJEXT) \
@@ -1150,7 +1150,7 @@ ags_audio_h_sources = \
 	src/ags/audio/ags_recall_ladspa_run.h	\
 	src/ags/audio/ags_recall_recycling_dummy.h \
 	src/ags/audio/ags_recall_recycling.h	\
-	src/ags/audio/ags_recycling_container.h \
+	src/ags/audio/ags_recycling_context.h	\
 	src/ags/audio/ags_recycling.h		\
 	src/ags/audio/ags_synths.h		\
 	src/ags/audio/ags_timestamp_factory.h	\
@@ -1196,7 +1196,7 @@ ags_audio_c_sources = \
 	src/ags/audio/ags_recall_ladspa_run.c	\
 	src/ags/audio/ags_recall_recycling_dummy.c \
 	src/ags/audio/ags_recall_recycling.c	\
-	src/ags/audio/ags_recycling_container.c \
+	src/ags/audio/ags_recycling_context.c	\
 	src/ags/audio/ags_recycling.c		\
 	src/ags/audio/ags_synths.c		\
 	src/ags/audio/ags_timestamp_factory.c	\
@@ -2309,7 +2309,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_a-ags_recall_recycling_dummy.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_a-ags_record_thread.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_a-ags_recycling.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_a-ags_recycling_container.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_a-ags_recycling_context.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_a-ags_recycling_thread.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_a-ags_recycling_thread_callbacks.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_a-ags_remove_audio.Po@am__quote@
@@ -3365,19 +3365,19 @@ libags_audio_a-ags_recall_recycling.obj: src/ags/audio/ags_recall_recycling.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -c -o libags_audio_a-ags_recall_recycling.obj `if test -f 'src/ags/audio/ags_recall_recycling.c'; then $(CYGPATH_W) 'src/ags/audio/ags_recall_recycling.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/ags_recall_recycling.c'; fi`
 
-libags_audio_a-ags_recycling_container.o: src/ags/audio/ags_recycling_container.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -MT libags_audio_a-ags_recycling_container.o -MD -MP -MF $(DEPDIR)/libags_audio_a-ags_recycling_container.Tpo -c -o libags_audio_a-ags_recycling_container.o `test -f 'src/ags/audio/ags_recycling_container.c' || echo '$(srcdir)/'`src/ags/audio/ags_recycling_container.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_a-ags_recycling_container.Tpo $(DEPDIR)/libags_audio_a-ags_recycling_container.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/audio/ags_recycling_container.c' object='libags_audio_a-ags_recycling_container.o' libtool=no @AMDEPBACKSLASH@
+libags_audio_a-ags_recycling_context.o: src/ags/audio/ags_recycling_context.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -MT libags_audio_a-ags_recycling_context.o -MD -MP -MF $(DEPDIR)/libags_audio_a-ags_recycling_context.Tpo -c -o libags_audio_a-ags_recycling_context.o `test -f 'src/ags/audio/ags_recycling_context.c' || echo '$(srcdir)/'`src/ags/audio/ags_recycling_context.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_a-ags_recycling_context.Tpo $(DEPDIR)/libags_audio_a-ags_recycling_context.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/audio/ags_recycling_context.c' object='libags_audio_a-ags_recycling_context.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -c -o libags_audio_a-ags_recycling_container.o `test -f 'src/ags/audio/ags_recycling_container.c' || echo '$(srcdir)/'`src/ags/audio/ags_recycling_container.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -c -o libags_audio_a-ags_recycling_context.o `test -f 'src/ags/audio/ags_recycling_context.c' || echo '$(srcdir)/'`src/ags/audio/ags_recycling_context.c
 
-libags_audio_a-ags_recycling_container.obj: src/ags/audio/ags_recycling_container.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -MT libags_audio_a-ags_recycling_container.obj -MD -MP -MF $(DEPDIR)/libags_audio_a-ags_recycling_container.Tpo -c -o libags_audio_a-ags_recycling_container.obj `if test -f 'src/ags/audio/ags_recycling_container.c'; then $(CYGPATH_W) 'src/ags/audio/ags_recycling_container.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/ags_recycling_container.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_a-ags_recycling_container.Tpo $(DEPDIR)/libags_audio_a-ags_recycling_container.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/audio/ags_recycling_container.c' object='libags_audio_a-ags_recycling_container.obj' libtool=no @AMDEPBACKSLASH@
+libags_audio_a-ags_recycling_context.obj: src/ags/audio/ags_recycling_context.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -MT libags_audio_a-ags_recycling_context.obj -MD -MP -MF $(DEPDIR)/libags_audio_a-ags_recycling_context.Tpo -c -o libags_audio_a-ags_recycling_context.obj `if test -f 'src/ags/audio/ags_recycling_context.c'; then $(CYGPATH_W) 'src/ags/audio/ags_recycling_context.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/ags_recycling_context.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_a-ags_recycling_context.Tpo $(DEPDIR)/libags_audio_a-ags_recycling_context.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/audio/ags_recycling_context.c' object='libags_audio_a-ags_recycling_context.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -c -o libags_audio_a-ags_recycling_container.obj `if test -f 'src/ags/audio/ags_recycling_container.c'; then $(CYGPATH_W) 'src/ags/audio/ags_recycling_container.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/ags_recycling_container.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -c -o libags_audio_a-ags_recycling_context.obj `if test -f 'src/ags/audio/ags_recycling_context.c'; then $(CYGPATH_W) 'src/ags/audio/ags_recycling_context.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/ags_recycling_context.c'; fi`
 
 libags_audio_a-ags_recycling.o: src/ags/audio/ags_recycling.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -MT libags_audio_a-ags_recycling.o -MD -MP -MF $(DEPDIR)/libags_audio_a-ags_recycling.Tpo -c -o libags_audio_a-ags_recycling.o `test -f 'src/ags/audio/ags_recycling.c' || echo '$(srcdir)/'`src/ags/audio/ags_recycling.c

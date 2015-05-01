@@ -374,7 +374,7 @@ ags_audio_h_sources = 		\
 	src/ags/audio/ags_recall_ladspa_run.h	\
 	src/ags/audio/ags_recall_recycling_dummy.h \
 	src/ags/audio/ags_recall_recycling.h	\
-	src/ags/audio/ags_recycling_container.h \
+	src/ags/audio/ags_recycling_context.h	\
 	src/ags/audio/ags_recycling.h		\
 	src/ags/audio/ags_synths.h		\
 	src/ags/audio/ags_timestamp_factory.h	\
@@ -420,7 +420,7 @@ ags_audio_c_sources =  		\
 	src/ags/audio/ags_recall_ladspa_run.c	\
 	src/ags/audio/ags_recall_recycling_dummy.c \
 	src/ags/audio/ags_recall_recycling.c	\
-	src/ags/audio/ags_recycling_container.c \
+	src/ags/audio/ags_recycling_context.c	\
 	src/ags/audio/ags_recycling.c		\
 	src/ags/audio/ags_synths.c		\
 	src/ags/audio/ags_timestamp_factory.c	\
