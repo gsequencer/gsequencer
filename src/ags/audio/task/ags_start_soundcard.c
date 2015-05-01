@@ -21,8 +21,6 @@
 #include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>
 
-#include <ags/audio/ags_devout.h>
-
 #include <ags/audio/thread/ags_audio_loop.h>
 #include <ags/audio/thread/ags_soundcard_thread.h>
 
@@ -158,10 +156,9 @@ ags_start_soundcard_launch(AgsTask *task)
 
   soundcard = start_soundcard->soundcard;
 
-  if(AGS_IS_DEVOUT(soundcard)){
-    if((AGS_DEVOUT_PLAY & (AGS_DEVOUT(soundcard)->flags)) != 0){
-      return;
-    }
+  /* abort if already playing */
+  if(ags_soundcard_is_playing(soundcard)){
+    return;
   }
   
   application_context = ags_soundcard_get_application_context(soundcard);
@@ -170,21 +167,17 @@ ags_start_soundcard_launch(AgsTask *task)
   soundcard_thread = ags_thread_find_type(audio_loop,
 					  AGS_TYPE_SOUNDCARD_THREAD);
 
-  /* append to AgsSoundcard */
+  /* initialized audio loop */
   audio_loop->flags |= (AGS_AUDIO_LOOP_PLAY_AUDIO |
 			AGS_AUDIO_LOOP_PLAY_CHANNEL |
 			AGS_AUDIO_LOOP_PLAY_RECALL);
-
-  if(AGS_IS_DEVOUT(soundcard)){
-    AGS_DEVOUT(soundcard)->flags |= (AGS_DEVOUT_START_PLAY |
-				     AGS_DEVOUT_PLAY);
-  }
-
+  
   error = soundcard_thread->error;
   soundcard_thread->error = NULL;
 
   ags_thread_start(AGS_THREAD(soundcard_thread));
-  
+
+  /* wait thread to be started */
   if((AGS_THREAD_SINGLE_LOOP & (AGS_THREAD(soundcard_thread)->flags)) == 0){
     if(soundcard_thread->error != NULL &&
        error == NULL){
@@ -203,7 +196,6 @@ ags_start_soundcard_launch(AgsTask *task)
 	}
       }
     
-      //    ags_thread_unlock(AGS_THREAD(soundcard_thread));
       pthread_mutex_unlock(&(AGS_THREAD(soundcard_thread)->start_mutex));
     }
   }

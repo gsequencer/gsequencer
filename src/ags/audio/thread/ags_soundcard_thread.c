@@ -256,7 +256,12 @@ ags_soundcard_thread_start(AgsThread *thread)
 
   soundcard = AGS_SOUNDCARD(soundcard_thread->soundcard);
 
-  /*  */
+  /* abort if already playing */
+  if(ags_soundcard_is_playing(soundcard)){
+    return;
+  }
+
+  /* check if already initialized */
   soundcard_thread->error = NULL;
 
   if(ags_soundcard_get_buffer(soundcard) == NULL){
@@ -285,12 +290,14 @@ ags_soundcard_thread_run(AgsThread *thread)
 
   soundcard = AGS_SOUNDCARD(soundcard_thread->soundcard);
 
-  error = NULL;
-  ags_soundcard_play(soundcard,
-		     &error);
-
-  if(error != NULL){
-    //TODO:JK: implement me
+  if(ags_soundcard_is_playing(soundcard)){
+    error = NULL;
+    ags_soundcard_play(soundcard,
+		       &error);
+    
+    if(error != NULL){
+      //TODO:JK: implement me
+    }
   }
 }
 

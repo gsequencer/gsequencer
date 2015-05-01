@@ -25,6 +25,7 @@
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_input.h>
 
+#include <ags/X/ags_window.h>
 #include <ags/X/ags_link_collection_editor.h>
 
 void ags_machine_editor_class_init(AgsMachineEditorClass *machine_editor);
@@ -479,18 +480,30 @@ ags_machine_editor_add_children(AgsMachineEditor *machine_editor)
 void
 ags_machine_editor_real_set_machine(AgsMachineEditor *machine_editor, AgsMachine *machine)
 {
+  AgsWindow *window;
+  
   if(machine_editor->machine != NULL){
     gtk_widget_destroy(GTK_WIDGET(machine_editor->output_editor));
     gtk_widget_destroy(GTK_WIDGET(machine_editor->input_editor));
     gtk_widget_destroy(GTK_WIDGET(machine_editor->output_link_editor));
     gtk_widget_destroy(GTK_WIDGET(machine_editor->input_link_editor));
     gtk_widget_destroy(GTK_WIDGET(machine_editor->resize_editor));
-  }
-  
-  machine_editor->machine = machine;
 
-  if(machine != NULL)
+    g_object_unref(machine_editor->machine);
+  }
+
+  if(machine != NULL){
+    window = (AgsWindow *) gtk_widget_get_toplevel(machine);
+    
+    g_object_ref(machine);
+  }
+
+  machine_editor->machine = machine;
+  machine_editor->parent = window;
+  
+  if(machine != NULL){
     ags_machine_editor_add_children(machine_editor);
+  }
 }
 
 /**

@@ -88,6 +88,9 @@ void ags_devout_pcm_info(AgsSoundcard *soundcard, gchar *card_id,
 			 guint *buffer_size_min, guint *buffer_size_max,
 			 GError **error);
 
+gboolean ags_devout_is_starting(AgsSoundcard *soundcard);
+gboolean ags_devout_is_playing(AgsSoundcard *soundcard);
+
 void ags_devout_alsa_init(AgsSoundcard *soundcard,
 			  GError **error);
 void ags_devout_alsa_play(AgsSoundcard *soundcard,
@@ -395,6 +398,9 @@ ags_devout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
 
   soundcard->list_cards = ags_devout_list_cards;
   soundcard->pcm_info = ags_devout_pcm_info;
+
+  soundcard->is_starting =  ags_devout_is_starting;
+  soundcard->is_playing = ags_devout_is_playing;
 
   soundcard->play_init = ags_devout_alsa_init;
   soundcard->play = ags_devout_alsa_play;
@@ -1023,6 +1029,26 @@ ags_devout_pcm_info(AgsSoundcard *soundcard,
   snd_pcm_close(handle);
 }
 
+gboolean
+ags_devout_is_starting(AgsSoundcard *soundcard)
+{
+  AgsDevout *devout;
+
+  devout = AGS_DEVOUT(soundcard);
+  
+  return((AGS_DEVOUT_START_PLAY & (devout->flags)));
+}
+
+gboolean
+ags_devout_is_playing(AgsSoundcard *soundcard)
+{
+  AgsDevout *devout;
+
+  devout = AGS_DEVOUT(soundcard);
+  
+  return((AGS_DEVOUT_PLAY & (devout->flags)));
+}
+
 void
 ags_devout_alsa_init(AgsSoundcard *soundcard,
 		     GError **error)
@@ -1051,6 +1077,7 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   
   /*  */
   devout->flags |= (AGS_DEVOUT_BUFFER3 |
+		    AGS_DEVOUT_START_PLAY |
 		    AGS_DEVOUT_PLAY |
 		    AGS_DEVOUT_NONBLOCKING);
 

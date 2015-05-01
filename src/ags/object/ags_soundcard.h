@@ -86,6 +86,9 @@ struct _AgsSoundcardInterface
 		   guint *buffer_size_min, guint *buffer_size_max,
 		   GError **error);
 
+  gboolean (*is_starting)(AgsSoundcard *soundcard);
+  gboolean (*is_playing)(AgsSoundcard *soundcard);
+  
   void (*play_init)(AgsSoundcard *soundcard,
 		    GError **error);
   void (*play)(AgsSoundcard *soundcard,
@@ -138,6 +141,9 @@ void ags_soundcard_pcm_info(AgsSoundcard *soundcard, gchar *card_id,
 			    guint *rate_min, guint *rate_max,
 			    guint *buffer_size_min, guint *buffer_size_max,
 			    GError **error);
+
+gboolean ags_soundcard_is_starting(AgsSoundcard *soundcard);
+gboolean ags_soundcard_is_playing(AgsSoundcard *soundcard);
 
 void ags_soundcard_play_init(AgsSoundcard *soundcard,
 			     GError **error);

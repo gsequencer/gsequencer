@@ -1027,6 +1027,15 @@ ags_audio_loop_remove_recall(AgsAudioLoop *audio_loop, GObject *playback)
   audio_loop->play_recall_ref = audio_loop->play_recall_ref - 1;
 }
 
+/**
+ * ags_audio_loop_remove_recall:
+ * @audio_loop: the #AgsAudioLoop
+ * @recall: an #AgsRecall
+ *
+ * Remove recall of playback.
+ *
+ * Since: 0.4.3
+ */
 void
 ags_audio_loop_stopped_all(AgsAudioLoop *audio_loop)
 {
