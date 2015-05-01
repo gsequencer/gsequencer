@@ -388,6 +388,7 @@ ags_mixer_set_pads(AgsAudio *audio, GType type,
 
 /**
  * ags_mixer_new:
+ * @soundcard: the assigned soundcard.
  *
  * Creates an #AgsMixer
  *
@@ -396,12 +397,21 @@ ags_mixer_set_pads(AgsAudio *audio, GType type,
  * Since: 0.3
  */
 AgsMixer*
-ags_mixer_new()
+ags_mixer_new(GObject *soundcard)
 {
   AgsMixer *mixer;
+  GValue value = {0,};
 
   mixer = (AgsMixer *) g_object_new(AGS_TYPE_MIXER,
 				    NULL);
+
+  if(soundcard != NULL){
+    g_value_init(&value, G_TYPE_OBJECT);
+    g_value_set_object(&value, soundcard);
+    g_object_set_property(G_OBJECT(AGS_MACHINE(mixer)->audio),
+			  "soundcard\0", &value);
+    g_value_unset(&value);
+  }
 
   return(mixer);
 }

@@ -454,6 +454,9 @@ ags_playable_read_audio_signal(AgsPlayable *playable,
   guint i, j, k, i_stop, j_stop;
   GError *error;
 
+  g_return_val_if_fail(AGS_IS_PLAYABLE(playable),
+		       NULL);
+
   application_context = ags_soundcard_get_application_context(soundcard);
   config = application_context->config;
   
