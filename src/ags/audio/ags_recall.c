@@ -983,7 +983,7 @@ ags_recall_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
   recall = AGS_RECALL(dynamic_connectable);
 
 #ifdef AGS_DEBUG
-  g_message("dynamic connect: %s\0", G_OBJECT_TYPE_NAME(recall));
+      g_message("dynamic connect: %s\0", G_OBJECT_TYPE_NAME(recall));
 #endif
 
   /* connect children */
@@ -2042,7 +2042,7 @@ ags_recall_find_by_effect(GList *list, AgsRecallID *recall_id, char *effect)
 	 recall_id->recycling_context == recall->recall_id->recycling_context) ||
 	(recall_id == NULL &&
 	 recall->recall_id == NULL)) &&
-       !g_strcmp0(G_OBJECT_TYPE_NAME(G_OBJECT(recall)), effect))
+	!g_strcmp0(G_OBJECT_TYPE_NAME(G_OBJECT(recall)), effect))
       return(list);
 
     list = list->next;
@@ -2202,7 +2202,7 @@ ags_recall_find_recycling_context(GList *recall_i, GObject *recycling_context)
 
     if(recall->recall_id != NULL &&
        recall->recall_id->recycling_context == recycling_context){
-      return(recall_i);
+	return(recall_i);
     }
 
     recall_i = recall_i->next;
