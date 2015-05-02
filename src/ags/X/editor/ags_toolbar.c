@@ -31,7 +31,6 @@
 #include <gtk/gtktogglebutton.h>
 #include <gtk/gtkcheckbutton.h>
 #include <gtk/gtklabel.h>
-#include <gtk/gtkoptionmenu.h>
 #include <gtk/gtkimage.h>
 #include <gtk/gtkstock.h>
 
