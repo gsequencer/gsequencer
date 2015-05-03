@@ -106,8 +106,10 @@ ags_ffplayer_open_dialog_response_callback(GtkWidget *widget, gint response,
       /* Ipatch related */
       ipatch = g_object_new(AGS_TYPE_IPATCH,
 			    "mode\0", AGS_IPATCH_READ,
-			    "filename\0", filename,
 			    NULL);
+      g_object_set(ipatch,
+		   "filename\0", filename,
+		   NULL);
       ffplayer->ipatch = ipatch;
       ipatch->soundcard = window->soundcard;
 

@@ -706,17 +706,23 @@ ags_effect_bridge_real_resize_pads(AgsEffectBridge *effect_bridge,
       current = current->next_pad;
     }
   }else{
+    list = NULL;
+    
     if(channel_type == AGS_TYPE_OUTPUT){
-      list = gtk_container_get_children(effect_bridge->output);
-      list = g_list_nth(list,
-			new_size);
+      if(effect_bridge->output != NULL){
+	list = gtk_container_get_children(effect_bridge->output);
+	list = g_list_nth(list,
+			  new_size);
+      }
     }else{
-      list = gtk_container_get_children(effect_bridge->input);
-      list = g_list_nth(list,
-			new_size);
+      if(effect_bridge->input != NULL){
+	list = gtk_container_get_children(effect_bridge->input);
+	list = g_list_nth(list,
+			  new_size);
+      }
     }
     
-    for(i = 0; i < new_size - old_size; i++){
+    for(i = 0; list != NULL && i < new_size - old_size; i++){
       list_next = list->next;
       
       gtk_widget_destroy(list->data);
