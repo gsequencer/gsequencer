@@ -380,7 +380,7 @@ ags_effect_pad_real_resize_lines(AgsEffectPad *effect_pad, GType effect_line_typ
     list = g_list_nth(list,
 		      audio_channels);
 
-    while(list = list->next){
+    while(list != NULL){
       list_next = list->next;
       
       gtk_widget_destroy(list->data);

@@ -210,6 +210,8 @@ main(int argc, char **argv)
   g_thread_init(NULL);  
   gtk_init(&argc, &argv);
 
+  ipatch_init();
+  
   application_context = ags_xorg_application_context_new();
   audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
   task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
