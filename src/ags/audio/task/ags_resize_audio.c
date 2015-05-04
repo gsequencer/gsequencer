@@ -150,7 +150,6 @@ void
 ags_resize_audio_launch(AgsTask *task)
 {
   AgsResizeAudio *resize_audio;
-  AgsMachine *machine;
   AgsChannel *iter;
   GList *list;
   guint pads_old;
@@ -175,18 +174,6 @@ ags_resize_audio_launch(AgsTask *task)
 	iter = iter->next;
       }
     }
-
-    machine = resize_audio->audio->machine;
-    list = gtk_container_get_children(machine->output);
-    list = g_list_nth(list,
-		      pads_old);
-
-    while(list != NULL){
-      ags_connectable_connect(AGS_CONNECTABLE(list->data));
-      gtk_widget_show_all(list->data);
-
-      list = list->next;
-    }
   }
 
   if(resize_audio->audio->input_pads != resize_audio->input_pads){
@@ -205,18 +192,6 @@ ags_resize_audio_launch(AgsTask *task)
 	
 	iter = iter->next;
       }
-    }
-
-    machine = resize_audio->audio->machine;
-    list = gtk_container_get_children(machine->input);
-    list = g_list_nth(list,
-		      pads_old);
-
-    while(list != NULL){
-      ags_connectable_connect(AGS_CONNECTABLE(list->data));
-      gtk_widget_show_all(list->data);
-
-      list = list->next;
     }
   }
 

@@ -271,7 +271,7 @@ ags_machine_init(AgsMachine *machine)
 
   machine->audio = ags_audio_new(NULL);
   g_object_ref(G_OBJECT(machine->audio));
-  machine->audio->machine = (GtkWidget *) machine;
+  machine->audio->machine_widget = (GObject *) machine;
 
   /* AgsAudio */
   g_signal_connect_after(G_OBJECT(machine->audio), "set_audio_channels\0",
@@ -980,7 +980,7 @@ ags_machine_set_audio_channels(AgsAudio *audio,
 }
 
 void
-ags_machine_set_pads(AgsAudio *audio, GType type,
+ags_machine_set_pads(AgsAudio *audio, GType channel_type,
 		     guint pads, guint pads_old,
 		     AgsMachine *machine)
 {
@@ -991,7 +991,7 @@ ags_machine_set_pads(AgsAudio *audio, GType type,
   if(pads_old < pads){
     /* input  */
     if(machine->input != NULL){
-      if(type == AGS_TYPE_INPUT){
+      if(channel_type == AGS_TYPE_INPUT){
 	channel = ags_channel_nth(audio->input,
 				  pads_old * audio->audio_channels);
       
@@ -1009,7 +1009,7 @@ ags_machine_set_pads(AgsAudio *audio, GType type,
     }  
     /* output */
     if(machine->output != NULL){
-      if(type == AGS_TYPE_OUTPUT){
+      if(channel_type == AGS_TYPE_OUTPUT){
 	channel = ags_channel_nth(audio->output,
 				  pads_old * audio->audio_channels);
     
@@ -1023,6 +1023,22 @@ ags_machine_set_pads(AgsAudio *audio, GType type,
       
 	  channel = channel->next_pad;
 	}
+      }
+    }
+
+    /* connect and show */
+    if((AGS_MACHINE_CONNECTED & (machine->flags)) != 0){
+      GList *list;
+      
+      list = gtk_container_get_children(((channel_type == AGS_TYPE_OUTPUT) ? machine->output: machine->input));
+      list = g_list_nth(list,
+			pads_old);
+      
+      while(list != NULL){
+	ags_connectable_connect(AGS_CONNECTABLE(list->data));
+	gtk_widget_show_all(list->data);
+	
+	list = list->next;
       }
     }
   }else if(pads_old > pads){

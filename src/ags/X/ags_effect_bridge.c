@@ -659,7 +659,6 @@ ags_effect_bridge_real_resize_pads(AgsEffectBridge *effect_bridge,
   GtkTable *table;
   AgsAudio *audio;
   AgsChannel *start, *current;
-  GList *list, *list_next;
   guint i;
   
   audio = effect_bridge->audio;
@@ -705,7 +704,25 @@ ags_effect_bridge_real_resize_pads(AgsEffectBridge *effect_bridge,
 
       current = current->next_pad;
     }
+
+    /* connect and show */
+    if((AGS_EFFECT_BRIDGE_CONNECTED & (effect_bridge->flags)) != 0){
+      GList *list;
+      
+      list = gtk_container_get_children(((channel_type == AGS_TYPE_OUTPUT) ? effect_bridge->output: effect_bridge->input));
+      list = g_list_nth(list,
+			old_size);
+      
+      while(list != NULL){
+	ags_connectable_connect(AGS_CONNECTABLE(list->data));
+	gtk_widget_show_all(list->data);
+	
+	list = list->next;
+      }
+    }
   }else{
+    GList *list, *list_next;
+
     list = NULL;
     
     if(channel_type == AGS_TYPE_OUTPUT){

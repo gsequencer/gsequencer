@@ -303,7 +303,7 @@ ags_link_editor_reset(AgsApplicable *applicable)
     channel = line_editor->channel;
 
     if(channel->link != NULL)
-      machine = AGS_MACHINE(AGS_AUDIO(channel->link->audio)->machine);
+      machine = AGS_MACHINE(AGS_AUDIO(channel->link->audio)->machine_widget);
     else
       machine = NULL;
 

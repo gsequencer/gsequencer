@@ -476,7 +476,7 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
     return;
   }
   
-  matrix = (AgsMatrix *) audio->machine;
+  matrix = (AgsMatrix *) audio->machine_widget;
   machine = AGS_MACHINE(matrix);
 
   if(type == AGS_TYPE_INPUT){

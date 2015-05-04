@@ -288,7 +288,7 @@ ags_panel_input_line_map_recall(AgsLine *line,
 
   audio = AGS_AUDIO(line->channel->audio);
 
-  panel = AGS_PANEL(audio->machine);
+  panel = AGS_PANEL(audio->machine_widget);
 
   source = line->channel;
 

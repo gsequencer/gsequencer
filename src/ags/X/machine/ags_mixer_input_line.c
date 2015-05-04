@@ -239,7 +239,7 @@ ags_mixer_input_line_map_recall(AgsLine *line,
 
   audio = AGS_AUDIO(line->channel->audio);
 
-  mixer = AGS_MIXER(audio->machine);
+  mixer = AGS_MIXER(audio->machine_widget);
 
   source = line->channel;
 

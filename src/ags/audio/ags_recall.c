@@ -46,6 +46,7 @@
 #include <ags/audio/ags_recall_audio.h>
 #include <ags/audio/ags_recall_audio_run.h>
 #include <ags/audio/ags_recall_channel.h>
+#include <ags/audio/ags_recall_ladspa.h>
 #include <ags/audio/ags_recall_channel_run.h>
 #include <ags/audio/ags_recall_recycling.h>
 #include <ags/audio/ags_recall_audio_signal.h>
@@ -2009,17 +2010,62 @@ ags_recall_add_child(AgsRecall *parent, AgsRecall *child)
  * 
  * Since: 0.4
  */
-//FIXME:JK: duplicate the list
 GList*
 ags_recall_get_children(AgsRecall *recall)
 {
-  return(recall->children);
+  return(g_list_copy(recall->children));
+}
+
+/**
+ * ags_recall_get_by_effect:
+ * @list: a #GList with recalls
+ * @filename: the filename containing @effect or %NULL
+ * @effect: the effect name
+ *
+ * Finds all matching effect and filename.
+ *
+ * Returns: a GList, or %NULL if not found
+ *
+ * Since: 0.4.3
+ */
+GList*
+ags_recall_get_by_effect(GList *recall, gchar *filename, gchar *effect)
+{
+  AgsRecall *current;
+  GList *list;
+
+  list = NULL;
+
+  while(current != NULL){
+    current = AGS_RECALL(list->data);
+    
+    if(filename != NULL){
+      if(AGS_IS_RECALL_LADSPA(recall) &&
+	 !g_strcmp0(AGS_RECALL_LADSPA(current)->filename, filename) &&
+	 !g_strcmp0(AGS_RECALL_LADSPA(current)->effect, effect)){
+	list = g_list_prepend(list,
+			      current);
+      }
+    }else{
+      if(!g_strcmp0(current->effect, effect)){
+	list = g_list_prepend(list,
+			      current);
+      }
+    }
+
+    recall = recall->next;
+  }
+
+  list = g_list_reverse(list);
+  
+  return(list);
 }
 
 /**
  * ags_recall_find_by_effect:
  * @list: a #GList with recalls
  * @recall_id: an #AgsRecallId
+ * @filename: the filename containing @effect or %NULL
  * @effect: the effect name
  *
  * Finds next matching effect name. Intended to be used as
@@ -2027,24 +2073,38 @@ ags_recall_get_children(AgsRecall *recall)
  *
  * Returns: a GList, or %NULL if not found
  *
- * Since: 0.4
+ * Since: 0.4.3
  */
 GList*
-ags_recall_find_by_effect(GList *list, AgsRecallID *recall_id, char *effect)
+ags_recall_find_recall_id_with_effect(GList *list, AgsRecallID *recall_id, gchar *filename, gchar *effect)
 {
   AgsRecall *recall;
 
   while(list != NULL){
     recall = AGS_RECALL(list->data);
-    
-    if(((recall_id != NULL &&
-	 recall->recall_id != NULL &&
-	 recall_id->recycling_context == recall->recall_id->recycling_context) ||
-	(recall_id == NULL &&
-	 recall->recall_id == NULL)) &&
-	!g_strcmp0(G_OBJECT_TYPE_NAME(G_OBJECT(recall)), effect))
-      return(list);
 
+    if(filename == NULL){
+      if(((recall_id != NULL &&
+	   recall->recall_id != NULL &&
+	   recall_id->recycling_context == recall->recall_id->recycling_context) ||
+	  (recall_id == NULL &&
+	   recall->recall_id == NULL)) &&
+	 !g_strcmp0(recall->effect, effect)){
+	return(list);
+      }
+    }else{
+      if(AGS_IS_RECALL_LADSPA(recall) &&
+	 ((recall_id != NULL &&
+	   recall->recall_id != NULL &&
+	   recall_id->recycling_context == recall->recall_id->recycling_context) ||
+	  (recall_id == NULL &&
+	   recall->recall_id == NULL)) &&
+	 !g_strcmp0(AGS_RECALL_LADSPA(recall)->filename, filename) &&
+	 !g_strcmp0(AGS_RECALL_LADSPA(recall)->effect, effect)){
+	return(list);
+      }
+    }
+    
     list = list->next;
   }
 
@@ -2054,7 +2114,7 @@ ags_recall_find_by_effect(GList *list, AgsRecallID *recall_id, char *effect)
 /**
  * ags_recall_find_type:
  * @recall_i: a #GList containing recalls
- * @type: a #GType
+ * @recall_type: a #GType
  * 
  * Finds next matching recall for type. Intended to be used as
  * iteration function.
@@ -2064,14 +2124,14 @@ ags_recall_find_by_effect(GList *list, AgsRecallID *recall_id, char *effect)
  * Since: 0.4
  */
 GList*
-ags_recall_find_type(GList *recall_i, GType type)
+ags_recall_find_type(GList *recall_i, GType recall_type)
 {
   AgsRecall *recall;
 
   while(recall_i != NULL){
     recall = AGS_RECALL(recall_i->data);
 
-    if(G_OBJECT_TYPE(recall) == type)
+    if(G_OBJECT_TYPE(recall) == recall_type)
       break;
 
     recall_i = recall_i->next;
@@ -2111,7 +2171,7 @@ ags_recall_find_template(GList *recall_i)
 /**
  * ags_recall_template_find_type:
  * @recall_i: a #GList containing recalls
- * @type: a #GType
+ * @recall_type: a #GType
  * 
  * Finds next matching recall for type which is a template, see #AGS_RECALL_TEMPLATE flag.
  * Intended to be used as iteration function.
@@ -2121,7 +2181,7 @@ ags_recall_find_template(GList *recall_i)
  * Since: 0.4
  */
 GList*
-ags_recall_template_find_type(GList *recall_i, GType type)
+ags_recall_template_find_type(GList *recall_i, GType recall_type)
 {
   AgsRecall *recall;
 
@@ -2129,7 +2189,7 @@ ags_recall_template_find_type(GList *recall_i, GType type)
     recall = AGS_RECALL(recall_i->data);
 
     if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0 &&
-       G_TYPE_CHECK_INSTANCE_TYPE((recall), type)){
+       G_TYPE_CHECK_INSTANCE_TYPE((recall), recall_type)){
       break;
     }
 
