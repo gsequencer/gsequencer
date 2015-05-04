@@ -19,8 +19,8 @@
 #ifndef __AGS_CHANNEL_H__
 #define __AGS_CHANNEL_H__
 
+#include <glib.h>
 #include <glib-object.h>
-#include <gtk/gtk.h>
 
 #include <ags/audio/ags_recall_id.h>
 #include <ags/audio/ags_recall.h>
@@ -40,7 +40,8 @@ typedef struct _AgsChannel AgsChannel;
 typedef struct _AgsChannelClass AgsChannelClass;
 
 typedef enum{
-  AGS_CHANNEL_RUNNING        = 1,
+  AGS_CHANNEL_CONNECTED      = 1,
+  AGS_CHANNEL_RUNNING        = 1 << 1,
 }AgsChannelFlags;
 
 typedef enum{
@@ -89,9 +90,8 @@ struct _AgsChannel
   GObject *recycling_thread;
 
   GList *pattern;
-  AgsNotation *notation;
 
-  GtkWidget *line_widget;
+  GObject *line_widget;
   gpointer file_data;
 };
 
@@ -119,8 +119,6 @@ GType ags_channel_get_type();
 
 GQuark ags_channel_error_quark();
 
-AgsRecall* ags_channel_find_recall(AgsChannel *channel, char *effect, char *name);
-
 AgsChannel* ags_channel_first(AgsChannel *channel);
 AgsChannel* ags_channel_last(AgsChannel *channel);
 AgsChannel* ags_channel_nth(AgsChannel *channel, guint nth);
@@ -143,6 +141,7 @@ void ags_channel_remove_recall_container(AgsChannel *channel, GObject *recall_co
 void ags_channel_remove_recall(AgsChannel *channel, GObject *recall, gboolean play);
 void ags_channel_add_recall(AgsChannel *channel, GObject *recall, gboolean play);
 
+GList* ags_channel_get_recall_by_effect(AgsChannel *channel, gchar *filename, gchar *effect);
 GList* ags_channel_add_effect(AgsChannel *channel,
 			      char *filename,
 			      gchar *effect);

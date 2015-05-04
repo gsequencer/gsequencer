@@ -206,8 +206,9 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   AgsAudio *audio;
   GtkTable *table;
   GtkHScrollbar *hscrollbar;
-  GtkVBox *vbox;
+  GtkVBox *vbox, *piano_vbox;
   GtkHBox *hbox;
+  GtkAlignment *alignment;
   GtkLabel *label;
   PangoAttrList *attr_list;
   PangoAttribute *attr;
@@ -245,9 +246,22 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   ffplayer->xml_type = "ags-ffplayer\0";
 
   /* create widgets */
-  table = (GtkTable *) gtk_table_new(4, 3, FALSE);
-  gtk_container_add((GtkContainer *) (gtk_bin_get_child((GtkBin *) ffplayer)), (GtkWidget *) table);
+  vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
+  gtk_container_add((GtkContainer *) (gtk_bin_get_child((GtkBin *) ffplayer)),
+		    (GtkWidget *) vbox);
 
+  alignment = (GtkAlignment *) g_object_new(GTK_TYPE_ALIGNMENT,
+					    "xalign\0", 0.0,
+					    NULL);
+  gtk_box_pack_start((GtkBox *) vbox,
+		     (GtkWidget *) alignment,
+		     FALSE, FALSE,
+		     0);
+  
+  table = (GtkTable *) gtk_table_new(4, 3, FALSE);
+  gtk_container_add((GtkContainer *) alignment,
+		    (GtkWidget *) table);
+  
   hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
   gtk_table_attach(table,
 		   GTK_WIDGET(hbox),
@@ -256,18 +270,19 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
+  /* preset and instrument */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "label\0", "preset\0",
 				    "xalign\0", 0.0,
 				    NULL);
-  gtk_box_pack_start(GTK_BOX(hbox),
-		     GTK_WIDGET(label),
+  gtk_box_pack_start((GtkBox *) hbox,
+		     (GtkWidget *) label,
 		     FALSE, FALSE,
 		     0);
 
   ffplayer->preset = (GtkComboBoxText *) gtk_combo_box_text_new();
-  gtk_box_pack_start(GTK_BOX(hbox),
-		     GTK_WIDGET(ffplayer->preset),
+  gtk_box_pack_start((GtkBox *) hbox,
+		     (GtkWidget *) ffplayer->preset,
 		     TRUE, FALSE,
 		     0);
 
@@ -275,14 +290,14 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 				    "label\0", "instrument\0",
 				    "xalign\0", 0.0,
 				    NULL);
-  gtk_box_pack_start(GTK_BOX(hbox),
-		     GTK_WIDGET(label),
+  gtk_box_pack_start((GtkBox *) hbox,
+		     (GtkWidget *) label,
 		     FALSE, FALSE,
 		     0);
 
   ffplayer->instrument = (GtkComboBoxText *) gtk_combo_box_text_new();
-  gtk_box_pack_start(GTK_BOX(hbox),
-		     GTK_WIDGET(ffplayer->instrument),
+  gtk_box_pack_start((GtkBox *) hbox,
+		     (GtkWidget *) ffplayer->instrument,
 		     TRUE, FALSE,
 		     0);
 
@@ -290,13 +305,15 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 					      "label\0", GTK_STOCK_OPEN,
 					      "use-stock\0", TRUE,
 					      NULL);
-  gtk_box_pack_start(GTK_BOX(hbox),
-		     GTK_WIDGET(ffplayer->open),
+  gtk_box_pack_start((GtkBox *) hbox,
+		     (GtkWidget *) ffplayer->open,
 		     FALSE, FALSE,
 		     0);
 
-  vbox = (GtkVBox *) gtk_vbox_new(FALSE, 2);
-  gtk_table_attach(table, (GtkWidget *) vbox,
+  /* drawing area piano */
+  piano_vbox = (GtkVBox *) gtk_vbox_new(FALSE, 2);
+  gtk_table_attach(table,
+		   (GtkWidget *) piano_vbox,
 		   1, 2,
 		   0, 3,
 		   GTK_FILL, GTK_FILL,
@@ -314,7 +331,7 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
                          | GDK_BUTTON_PRESS_MASK
                          | GDK_POINTER_MOTION_MASK
                          | GDK_POINTER_MOTION_HINT_MASK);
-  gtk_box_pack_start((GtkBox *) vbox, (GtkWidget *) ffplayer->drawing_area, FALSE, FALSE, 0);
+  gtk_box_pack_start((GtkBox *) piano_vbox, (GtkWidget *) ffplayer->drawing_area, FALSE, FALSE, 0);
 
   ffplayer->hadjustment = (GtkAdjustment *) gtk_adjustment_new(0.0,
 							       0.0,
@@ -324,16 +341,18 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 							       (double) (16 * ffplayer->control_width));
   hscrollbar = (GtkHScrollbar *) gtk_hscrollbar_new(ffplayer->hadjustment);
   gtk_widget_set_style((GtkWidget *) hscrollbar, ffplayer_style);
-  gtk_box_pack_start((GtkBox *) vbox, (GtkWidget *) hscrollbar, FALSE, FALSE, 0);
+  gtk_box_pack_start((GtkBox *) piano_vbox,
+		     (GtkWidget *) hscrollbar,
+		     FALSE, FALSE,
+		     0);
 
   /* effect bridge */
   AGS_MACHINE(ffplayer)->bridge = ags_ffplayer_bridge_new(audio);
-  gtk_table_attach(table,
-		   (GtkWidget *) AGS_MACHINE(ffplayer)->bridge,
-		   2, 3,
-		   0, 4,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+  gtk_box_pack_start((GtkBox *) vbox,
+		     (GtkWidget *) AGS_MACHINE(ffplayer)->bridge,
+		     FALSE, FALSE,
+		     0);
+
   g_object_set(AGS_MACHINE(ffplayer)->bridge,
 	       "audio\0", AGS_MACHINE(ffplayer)->audio,
 	       NULL);
@@ -797,7 +816,7 @@ ags_ffplayer_set_audio_channels(AgsAudio *audio,
   AgsFFPlayer *ffplayer;
   gboolean grow;
 
-  ffplayer = AGS_FFPLAYER(audio->machine);
+  ffplayer = AGS_FFPLAYER(audio->machine_widget);
 
   if(audio_channels_old == audio_channels){
     return;
@@ -831,7 +850,7 @@ ags_ffplayer_set_pads(AgsAudio *audio, GType type,
   AgsFFPlayer *ffplayer;
   gboolean grow;
 
-  ffplayer = AGS_FFPLAYER(audio->machine);
+  ffplayer = AGS_FFPLAYER(audio->machine_widget);
 
   if(pads_old == pads){
     return;

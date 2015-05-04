@@ -180,8 +180,6 @@ ags_open_file_launch(AgsTask *task)
 
   /*  */
   if(open_file->create_channels){
-    AgsMachine *machine;
-    GList *list;
     guint pads_old;
 
     i_stop = g_slist_length(open_file->filenames);
@@ -209,18 +207,6 @@ ags_open_file_launch(AgsTask *task)
       ags_connectable_connect(AGS_CONNECTABLE(iter));
 
       iter = iter->next;
-    }
-
-    machine = audio->machine;
-    list = gtk_container_get_children(machine->input);
-    list = g_list_nth(list,
-		      pads_old);
-
-    while(list != NULL){
-      ags_connectable_connect(AGS_CONNECTABLE(list->data));
-      gtk_widget_show_all(list->data);
-
-      list = list->next;
     }
   }
 

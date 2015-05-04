@@ -669,7 +669,7 @@ ags_file_read_machine_resolve_audio(AgsFileLookup *file_lookup,
 	       "audio\0", (AgsAudio *) id_ref->ref,
 	       NULL);
 
-  AGS_AUDIO(id_ref->ref)->machine = machine;
+  AGS_AUDIO(id_ref->ref)->machine_widget = machine;
 
   g_signal_connect_after(G_OBJECT(machine->audio), "set_audio_channels\0",
 			 G_CALLBACK(ags_machine_set_audio_channels), machine);

@@ -50,9 +50,9 @@ ags_link_editor_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, Ag
   if(line_editor != NULL &&
      line_editor->channel != NULL &&
      line_editor->channel->audio != NULL &&
-     AGS_AUDIO(line_editor->channel->audio)->machine != NULL){
+     AGS_AUDIO(line_editor->channel->audio)->machine_widget != NULL){
     gtk_combo_box_set_model(link_editor->combo,
-			    GTK_TREE_MODEL(ags_machine_get_possible_links(AGS_MACHINE(AGS_AUDIO(line_editor->channel->audio)->machine))));
+			    GTK_TREE_MODEL(ags_machine_get_possible_links(AGS_MACHINE(AGS_AUDIO(line_editor->channel->audio)->machine_widget))));
   }
 
   return(0);

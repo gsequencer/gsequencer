@@ -327,7 +327,7 @@ ags_audio_init(AgsAudio *audio)
   audio->recall_remove= NULL;
   audio->play_remove = NULL;
 
-  audio->machine = NULL;
+  audio->machine_widget = NULL;
 }
 
 void
@@ -510,9 +510,15 @@ ags_audio_connect(AgsConnectable *connectable)
 
   audio = AGS_AUDIO(connectable);
 
+  if((AGS_AUDIO_CONNECTED & (audio->flags)) != 0){
+    return;
+  }
+  
 #ifdef AGS_DEBUG
   g_message("connecting audio\0");
 #endif
+
+  audio->flags |= AGS_AUDIO_CONNECTED;
 
   /* connect channels */
   channel = audio->output;
@@ -584,14 +590,107 @@ ags_audio_connect(AgsConnectable *connectable)
   }
 
   /* connect notation */
-  if(audio->notation != NULL)
-    ags_connectable_connect(AGS_CONNECTABLE(audio->notation));
+  list = audio->notation;
+  
+  while(list != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
 }
 
 void
 ags_audio_disconnect(AgsConnectable *connectable)
 {
-  /* empty */
+  AgsAudio *audio;
+  AgsChannel *channel;
+  GList *list;
+
+  audio = AGS_AUDIO(connectable);
+  
+  if((AGS_AUDIO_CONNECTED & (audio->flags)) == 0){
+    return;
+  }
+
+  audio->flags &= (~AGS_AUDIO_CONNECTED);
+
+  /* disconnect channels */
+  channel = audio->output;
+
+  while(channel != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(channel));
+
+    channel = channel->next;
+  }
+
+  channel = audio->input;
+
+  while(channel != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(channel));
+
+    channel = channel->next;
+  }
+
+  /* disconnect recall ids */
+  list = audio->recall_id;
+
+  while(list != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
+
+  /* disconnect recall containers */
+  list = audio->container;
+
+  while(list != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
+
+  /* disconnect recalls */
+  list = audio->recall;
+
+  while(list != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
+
+  list = audio->play;
+
+  while(list != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
+
+  /* disconnect remove recalls */
+  list = audio->recall_remove;
+
+  while(list != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
+
+  list = audio->play_remove;
+
+  while(list != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
+
+  /* disconnect notation */
+  list = audio->notation;
+  
+  while(list != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
 }
 
 /**
@@ -2508,9 +2607,9 @@ ags_audio_duplicate_recall(AgsAudio *audio,
   GList *list_recall_start, *list_recall;
   gboolean playback, sequencer, notation;
   
-  //#ifdef AGS_DEBUG
-  g_message("ags_audio_duplicate_recall: %s - audio.lines[%u,%u]\n\0", G_OBJECT_TYPE_NAME(audio->machine), audio->output_lines, audio->input_lines);
-  //#endif
+#ifdef AGS_DEBUG
+  g_message("ags_audio_duplicate_recall: %s - audio.lines[%u,%u]\n\0", G_OBJECT_TYPE_NAME(audio->machine_widget), audio->output_lines, audio->input_lines);
+#endif
 
   playback = FALSE;
   sequencer = FALSE;
