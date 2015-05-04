@@ -20,13 +20,6 @@
 
 #include <ags/object/ags_connectable.h>
 
-#include <ags/object/ags_dynamic_connectable.h>
-
-#include <ags/audio/ags_audio.h>
-#include <ags/audio/ags_channel.h>
-#include <ags/audio/ags_effect_audio.h>
-#include <ags/audio/ags_effect_channel.h>
-
 void ags_add_effect_class_init(AgsAddEffectClass *add_effect);
 void ags_add_effect_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_add_effect_init(AgsAddEffect *add_effect);
@@ -171,8 +164,7 @@ ags_add_effect_launch(AgsTask *task)
  * Since: 0.4.3
  */
 AgsAddEffect*
-ags_add_effect_new(GObject *context,
-		   AgsChannel *channel,
+ags_add_effect_new(AgsChannel *channel,
 		   gchar *filename,
 		   gchar *effect)
 {
