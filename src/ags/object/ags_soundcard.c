@@ -81,10 +81,34 @@ ags_soundcard_class_init(AgsSoundcardInterface *interface)
 }
 
 /**
+ * ags_soundcard_set_application_context:
+ * @soundcard: an #AgsSoundcard
+ * @application_context: the application context to set
+ *
+ * Set application context.
+ *
+ * Since: 0.4.3
+ */
+void
+ags_soundcard_set_application_context(AgsSoundcard *soundcard,
+				      AgsApplicationContext *application_context)
+{
+  AgsSoundcardInterface *soundcard_interface;
+
+  g_return_if_fail(AGS_IS_SOUNDCARD(soundcard));
+  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
+  g_return_if_fail(soundcard_interface->set_application_context);
+  soundcard_interface->set_application_context(soundcard,
+					       application_context);
+}
+
+/**
  * ags_soundcard_get_application_context:
  * @soundcard: an #AgsSoundcard
  *
  * Get application context. 
+ *
+ * Returns: #AgsApplicationContext
  *
  * Since: 0.4.3
  */
@@ -101,27 +125,47 @@ ags_soundcard_get_application_context(AgsSoundcard *soundcard)
 }
 
 /**
- * ags_soundcard_set_application_context:
+ * ags_soundcard_set_device:
  * @soundcard: an #AgsSoundcard
- * @application_context: the application context to set
+ * @device_id: the device to set
  *
  * Set application context.
- *
- * Returns: #AgsApplicationContext
  *
  * Since: 0.4.3
  */
 void
-ags_soundcard_set_application_context(AgsSoundcard *soundcard,
-				      AgsApplicationContext *application_context)
+ags_soundcard_set_device(AgsSoundcard *soundcard,
+			 gchar *device_id)
 {
   AgsSoundcardInterface *soundcard_interface;
 
   g_return_if_fail(AGS_IS_SOUNDCARD(soundcard));
   soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
-  g_return_if_fail(soundcard_interface->set_application_context);
-  soundcard_interface->set_application_context(soundcard,
-					       application_context);
+  g_return_if_fail(soundcard_interface->set_device);
+  soundcard_interface->set_device(soundcard,
+				  device_id);
+}
+
+/**
+ * ags_soundcard_get_device:
+ * @soundcard: an #AgsSoundcard
+ *
+ * Get application context. 
+ *
+ * Returns: the device's identifier
+ *
+ * Since: 0.4.3
+ */
+gchar*
+ags_soundcard_get_device(AgsSoundcard *soundcard)
+{
+  AgsSoundcardInterface *soundcard_interface;
+
+  g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), NULL);
+  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
+  g_return_val_if_fail(soundcard_interface->get_device, NULL);
+
+  return(soundcard_interface->get_device(soundcard));
 }
 
 /**
@@ -429,28 +473,6 @@ ags_soundcard_get_next_buffer(AgsSoundcard *soundcard)
 }
 
 /**
- * ags_soundcard_get_bpm:
- * @soundcard: an #AgsSoundcard
- *
- * Get current playback bpm. 
- *
- * Returns: bpm
- *
- * Since: 0.4.3
- */
-gdouble
-ags_soundcard_get_bpm(AgsSoundcard *soundcard)
-{
-  AgsSoundcardInterface *soundcard_interface;
-
-  g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), G_MAXUINT);
-  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
-  g_return_val_if_fail(soundcard_interface->get_bpm, G_MAXUINT);
-
-  return(soundcard_interface->get_bpm(soundcard));
-}
-
-/**
  * ags_soundcard_set_bpm:
  * @soundcard: an #AgsSoundcard
  * @bpm: the bpm to set
@@ -470,6 +492,28 @@ ags_soundcard_set_bpm(AgsSoundcard *soundcard,
   g_return_if_fail(soundcard_interface->set_bpm);
   soundcard_interface->set_bpm(soundcard,
 			       bpm);
+}
+
+/**
+ * ags_soundcard_get_bpm:
+ * @soundcard: an #AgsSoundcard
+ *
+ * Get current playback bpm. 
+ *
+ * Returns: bpm
+ *
+ * Since: 0.4.3
+ */
+gdouble
+ags_soundcard_get_bpm(AgsSoundcard *soundcard)
+{
+  AgsSoundcardInterface *soundcard_interface;
+
+  g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), G_MAXUINT);
+  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
+  g_return_val_if_fail(soundcard_interface->get_bpm, G_MAXUINT);
+
+  return(soundcard_interface->get_bpm(soundcard));
 }
 
 /**
@@ -561,28 +605,6 @@ ags_soundcard_set_note_offset(AgsSoundcard *soundcard,
 }
 
 /**
- * ags_soundcard_get_audio:
- * @soundcard: an #AgsSoundcard
- *
- * Get audio. 
- *
- * Returns: a #GList container #AgsAudio
- *
- * Since: 0.4.3
- */
-GList*
-ags_soundcard_get_audio(AgsSoundcard *soundcard)
-{
-  AgsSoundcardInterface *soundcard_interface;
-
-  g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), NULL);
-  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
-  g_return_val_if_fail(soundcard_interface->get_audio, NULL);
-
-  return(soundcard_interface->get_audio(soundcard));
-}
-
-/**
  * ags_soundcard_set_audio:
  * @soundcard: an #AgsSoundcard
  * @audio: the audio to set
@@ -602,4 +624,26 @@ ags_soundcard_set_audio(AgsSoundcard *soundcard,
   g_return_if_fail(soundcard_interface->set_audio);
   soundcard_interface->set_audio(soundcard,
 				 audio);
+}
+
+/**
+ * ags_soundcard_get_audio:
+ * @soundcard: an #AgsSoundcard
+ *
+ * Get audio. 
+ *
+ * Returns: a #GList container #AgsAudio
+ *
+ * Since: 0.4.3
+ */
+GList*
+ags_soundcard_get_audio(AgsSoundcard *soundcard)
+{
+  AgsSoundcardInterface *soundcard_interface;
+
+  g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), NULL);
+  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
+  g_return_val_if_fail(soundcard_interface->get_audio, NULL);
+
+  return(soundcard_interface->get_audio(soundcard));
 }

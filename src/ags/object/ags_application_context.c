@@ -199,25 +199,13 @@ ags_application_context_init(AgsApplicationContext *application_context)
 {
   GFile *file;
   struct passwd *pw;
-  //  uid_t uid;
-  //  gchar *wdir, *filename;
   pthread_mutexattr_t mutexattr;
-  /*
-  uid = getuid();
-  pw = getpwuid(uid);
-  
-  wdir = g_strdup_printf("%s/%s\0",
-			 pw->pw_dir,
-			 AGS_DEFAULT_DIRECTORY);
 
-  file = g_file_new_for_path(wdir);
-
-  g_file_make_directory(file,
-			NULL,
-			NULL);
-  */
   application_context->flags = 0;
 
+  application_context->argc = 0;
+  application_context->argv = NULL;
+  
   application_context->version = AGS_VERSION;
   application_context->build_id = AGS_BUILD_ID;
 

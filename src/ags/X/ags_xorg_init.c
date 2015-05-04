@@ -259,7 +259,8 @@ ags_xorg_colors_alloc()
 void
 ags_xorg_init_context(AgsApplicationContext *application_context)
 {
-  /* complete thread pool */
+  ags_audio_init_context(application_context);
+  ags_gui_init_context(application_context);
 
   /* map x11 collors */
   ags_xorg_colors_alloc();

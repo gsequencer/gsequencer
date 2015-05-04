@@ -21,5 +21,6 @@
 void
 ags_init_context(AgsApplicationContext *application_context)
 {
-  /* empty */
+  LIBXML_TEST_VERSION;
+  g_thread_init(NULL);  
 }

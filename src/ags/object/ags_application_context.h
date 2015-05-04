@@ -63,6 +63,9 @@ struct _AgsApplicationContext
   gchar *version;
   gchar *build_id;
 
+  int argc;
+  char **argv;
+  
   GObject *log;
 
   gchar *domain;

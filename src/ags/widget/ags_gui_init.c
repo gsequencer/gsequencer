@@ -21,7 +21,6 @@
 #include <ags/thread/ags_thread_init.h>
 
 void
-ags_gui_init_context(int *argc, gchar ***argv)
+ags_gui_init_context(AgsApplicationContext *application_context)
 {
-  //TODO:JK: implement me
 }

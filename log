@@ -1,0 +1,383 @@
+make  all-recursive
+make[1]: Entering directory '/home/minos/ags-devel'
+Making all in po
+make[2]: Entering directory '/home/minos/ags-devel/po'
+make[2]: Nothing to be done for 'all'.
+make[2]: Leaving directory '/home/minos/ags-devel/po'
+Making all in .
+make[2]: Entering directory '/home/minos/ags-devel'
+gcc -DHAVE_CONFIG_H -I.    -g -O2 -g -std=gnu11 -Wuninitialized -Wreturn-type -Wunused-variable -Wunused-but-set-variable -Wmaybe-uninitialized -Wimplicit-function-declaration -Wparentheses -Wpointer-sign -Wdeprecated-declarations -Wcomment -O -I./src -I/usr/include -I/usr/include/uuid   -I/usr/include/alsa  -I/usr/include/libxml2   -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include  -pthread -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include  -pthread -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng16 -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include  -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng16 -I/usr/include/harfbuzz -I/usr/include/freetype2 -I/usr/include/harfbuzz -I/usr/include/libdrm -I/usr/include/libpng16 -I/usr/X11/include  -pthread -I/usr/include/gtk-2.0 -I/usr/lib/gtk-2.0/include -I/usr/include/pango-1.0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/libdrm -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng16 -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include -I/usr/include/freetype2 -I/usr/include/libpng16 -I/usr/include/harfbuzz -I/usr/include/freetype2 -I/usr/include/libpng16 -I/usr/include/harfbuzz -I/usr/X11/include  -g -O2 -MT libags_audio_a-ags_audio_file_xml.o -MD -MP -MF .deps/libags_audio_a-ags_audio_file_xml.Tpo -c -o libags_audio_a-ags_audio_file_xml.o `test -f 'src/ags/audio/file/ags_audio_file_xml.c' || echo './'`src/ags/audio/file/ags_audio_file_xml.c
+src/ags/audio/file/ags_audio_file_xml.c: In function ‘ags_file_write_audio_list’:
+src/ags/audio/file/ags_audio_file_xml.c:978:13: warning: unused variable ‘current’ [-Wunused-variable]
+   AgsAudio *current;
+             ^
+src/ags/audio/file/ags_audio_file_xml.c: In function ‘ags_file_read_channel’:
+src/ags/audio/file/ags_audio_file_xml.c:1035:33: warning: pointer targets in passing argument 1 of ‘xmlXPathEval’ differ in signedness [-Wpointer-sign]
+     xpath_object = xmlXPathEval("./ags-output\0",
+                                 ^
+In file included from src/ags/audio/file/ags_audio_file_xml.c:23:0:
+/usr/include/libxml2/libxml/xpath.h:519:7: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+       xmlXPathEval  (const xmlChar *str,
+       ^
+src/ags/audio/file/ags_audio_file_xml.c:1130:17: warning: pointer targets in passing argument 1 of ‘xmlStrncmp’ differ in signedness [-Wpointer-sign]
+  if(!xmlStrncmp((gchar *) xmlGetProp(child, (xmlChar *) "is-play\0"),
+                 ^
+In file included from /usr/include/libxml2/libxml/tree.h:18:0,
+                 from ./src/ags/audio/file/ags_audio_file_xml.h:25,
+                 from src/ags/audio/file/ags_audio_file_xml.c:19:
+/usr/include/libxml2/libxml/xmlstring.h:67:17: note: expected ‘const xmlChar *’ but argument is of type ‘gchar *’
+                 xmlStrncmp               (const xmlChar *str1,
+                 ^
+src/ags/audio/file/ags_audio_file_xml.c:1024:12: warning: variable ‘is_output’ set but not used [-Wunused-but-set-variable]
+   gboolean is_output;
+            ^
+src/ags/audio/file/ags_audio_file_xml.c: In function ‘ags_file_write_channel’:
+src/ags/audio/file/ags_audio_file_xml.c:1343:7: warning: passing argument 3 of ‘ags_file_write_playback’ from incompatible pointer type
+       channel->playback);
+       ^
+src/ags/audio/file/ags_audio_file_xml.c:408:1: note: expected ‘struct AgsPlayback *’ but argument is of type ‘struct GObject *’
+ ags_file_write_playback(AgsFile *file, xmlNode *parent, AgsPlayback *play)
+ ^
+src/ags/audio/file/ags_audio_file_xml.c:1227:15: warning: unused variable ‘link_id’ [-Wunused-variable]
+   gchar *id, *link_id;
+               ^
+src/ags/audio/file/ags_audio_file_xml.c: In function ‘ags_file_write_input’:
+src/ags/audio/file/ags_audio_file_xml.c:1513:9: warning: passing argument 3 of ‘ags_file_write_file_link’ from incompatible pointer type
+         input->file_link);
+         ^
+In file included from src/ags/audio/file/ags_audio_file_xml.c:19:0:
+./src/ags/audio/file/ags_audio_file_xml.h:83:10: note: expected ‘struct AgsFileLink *’ but argument is of type ‘struct GObject *’
+ xmlNode* ags_file_write_file_link(AgsFile *file, xmlNode *parent, AgsFileLink *file_link);
+          ^
+src/ags/audio/file/ags_audio_file_xml.c: In function ‘ags_file_read_recall’:
+src/ags/audio/file/ags_audio_file_xml.c:1580:15: warning: pointer targets in assignment differ in signedness [-Wpointer-sign]
+     type_name = (gchar *) xmlGetProp(node,
+               ^
+src/ags/audio/file/ags_audio_file_xml.c:1583:29: warning: pointer targets in passing argument 1 of ‘g_type_from_name’ differ in signedness [-Wpointer-sign]
+     type = g_type_from_name(type_name);
+                             ^
+In file included from /usr/include/glib-2.0/gobject/gobject.h:24:0,
+                 from /usr/include/glib-2.0/gobject/gbinding.h:29,
+                 from /usr/include/glib-2.0/glib-object.h:23,
+                 from ./src/ags/audio/file/ags_audio_file_xml.h:23,
+                 from src/ags/audio/file/ags_audio_file_xml.c:19:
+/usr/include/glib-2.0/gobject/gtype.h:687:23: note: expected ‘const gchar *’ but argument is of type ‘xmlChar *’
+ GType                 g_type_from_name               (const gchar     *name);
+                       ^
+src/ags/audio/file/ags_audio_file_xml.c:1723:17: warning: unused variable ‘file_lookup’ [-Wunused-variable]
+  AgsFileLookup *file_lookup;
+                 ^
+src/ags/audio/file/ags_audio_file_xml.c:1738:2: warning: implicit declaration of function ‘ags_file_util_read_parameter’ [-Wimplicit-function-declaration]
+  ags_file_util_read_parameter(file,
+  ^
+src/ags/audio/file/ags_audio_file_xml.c: In function ‘ags_file_read_recall_resolve_audio’:
+src/ags/audio/file/ags_audio_file_xml.c:1759:15: warning: assignment from incompatible pointer type
+   file_id_ref = ags_file_find_id_ref_by_node(file_lookup->file,
+               ^
+src/ags/audio/file/ags_audio_file_xml.c: In function ‘ags_file_read_recall_resolve_channel’:
+src/ags/audio/file/ags_audio_file_xml.c:1783:15: warning: assignment from incompatible pointer type
+   file_id_ref = ags_file_find_id_ref_by_node(file_lookup->file,
+               ^
+src/ags/audio/file/ags_audio_file_xml.c: In function ‘ags_file_write_recall’:
+src/ags/audio/file/ags_audio_file_xml.c:1949:3: warning: implicit declaration of function ‘ags_file_util_write_parameter’ [-Wimplicit-function-declaration]
+   ags_file_util_write_parameter(file,
+   ^
+src/ags/audio/file/ags_audio_file_xml.c:1848:9: warning: unused variable ‘i’ [-Wunused-variable]
+   guint i;
+         ^
+src/ags/audio/file/ags_audio_file_xml.c:1846:10: warning: unused variable ‘list’ [-Wunused-variable]
+   GList *list;
+          ^
+src/ags/audio/file/ags_audio_file_xml.c: In function ‘ags_file_read_recall_container’:
+src/ags/audio/file/ags_audio_file_xml.c:2062:12: warning: unused variable ‘type_name’ [-Wunused-variable]
+   xmlChar *type_name;
+            ^
+src/ags/audio/file/ags_audio_file_xml.c:2059:18: warning: unused variable ‘file_lookup’ [-Wunused-variable]
+   AgsFileLookup *file_lookup;
+                  ^
+src/ags/audio/file/ags_audio_file_xml.c: In function ‘ags_file_write_recall_container’:
+src/ags/audio/file/ags_audio_file_xml.c:2151:18: warning: unused variable ‘file_lookup’ [-Wunused-variable]
+   AgsFileLookup *file_lookup;
+                  ^
+src/ags/audio/file/ags_audio_file_xml.c: In function ‘ags_file_write_recall_container_list’:
+src/ags/audio/file/ags_audio_file_xml.c:2299:23: warning: unused variable ‘current’ [-Wunused-variable]
+   AgsRecallContainer *current;
+                       ^
+src/ags/audio/file/ags_audio_file_xml.c: In function ‘ags_file_read_recall_audio’:
+src/ags/audio/file/ags_audio_file_xml.c:2361:7: warning: pointer targets in passing argument 2 of ‘xmlStrcmp’ differ in signedness [-Wpointer-sign]
+       ags_plugin_get_xml_type(AGS_PLUGIN(recall)))){
+       ^
+In file included from /usr/include/libxml2/libxml/tree.h:18:0,
+                 from ./src/ags/audio/file/ags_audio_file_xml.h:25,
+                 from src/ags/audio/file/ags_audio_file_xml.c:19:
+/usr/include/libxml2/libxml/xmlstring.h:64:17: note: expected ‘const xmlChar *’ but argument is of type ‘gchar *’
+                 xmlStrcmp                (const xmlChar *str1,
+                 ^
+src/ags/audio/file/ags_audio_file_xml.c: In function ‘ags_file_read_recall_audio_run’:
+src/ags/audio/file/ags_audio_file_xml.c:2433:7: warning: pointer targets in passing argument 2 of ‘xmlStrcmp’ differ in signedness [-Wpointer-sign]
+       ags_plugin_get_xml_type(AGS_PLUGIN(recall)))){
+       ^
+In file included from /usr/include/libxml2/libxml/tree.h:18:0,
+                 from ./src/ags/audio/file/ags_audio_file_xml.h:25,
+                 from src/ags/audio/file/ags_audio_file_xml.c:19:
+/usr/include/libxml2/libxml/xmlstring.h:64:17: note: expected ‘const xmlChar *’ but argument is of type ‘gchar *’
+                 xmlStrcmp                (const xmlChar *str1,
+                 ^
+src/ags/audio/file/ags_audio_file_xml.c: In function ‘ags_file_read_recall_channel’:
+src/ags/audio/file/ags_audio_file_xml.c:2505:7: warning: pointer targets in passing argument 2 of ‘xmlStrcmp’ differ in signedness [-Wpointer-sign]
+       ags_plugin_get_xml_type(AGS_PLUGIN(recall)))){
+       ^
+In file included from /usr/include/libxml2/libxml/tree.h:18:0,
+                 from ./src/ags/audio/file/ags_audio_file_xml.h:25,
+                 from src/ags/audio/file/ags_audio_file_xml.c:19:
+/usr/include/libxml2/libxml/xmlstring.h:64:17: note: expected ‘const xmlChar *’ but argument is of type ‘gchar *’
+                 xmlStrcmp                (const xmlChar *str1,
+                 ^
+src/ags/audio/file/ags_audio_file_xml.c: In function ‘ags_file_read_recall_channel_run’:
+src/ags/audio/file/ags_audio_file_xml.c:2577:7: warning: pointer targets in passing argument 2 of ‘xmlStrcmp’ differ in signedness [-Wpointer-sign]
+       ags_plugin_get_xml_type(AGS_PLUGIN(recall)))){
+       ^
+In file included from /usr/include/libxml2/libxml/tree.h:18:0,
+                 from ./src/ags/audio/file/ags_audio_file_xml.h:25,
+                 from src/ags/audio/file/ags_audio_file_xml.c:19:
+/usr/include/libxml2/libxml/xmlstring.h:64:17: note: expected ‘const xmlChar *’ but argument is of type ‘gchar *’
+                 xmlStrcmp                (const xmlChar *str1,
+                 ^
+src/ags/audio/file/ags_audio_file_xml.c: In function ‘ags_file_read_recall_recycling’:
+src/ags/audio/file/ags_audio_file_xml.c:2650:7: warning: pointer targets in passing argument 2 of ‘xmlStrcmp’ differ in signedness [-Wpointer-sign]
+       ags_plugin_get_xml_type(AGS_PLUGIN(recall)))){
+       ^
+In file included from /usr/include/libxml2/libxml/tree.h:18:0,
+                 from ./src/ags/audio/file/ags_audio_file_xml.h:25,
+                 from src/ags/audio/file/ags_audio_file_xml.c:19:
+/usr/include/libxml2/libxml/xmlstring.h:64:17: note: expected ‘const xmlChar *’ but argument is of type ‘gchar *’
+                 xmlStrcmp                (const xmlChar *str1,
+                 ^
+src/ags/audio/file/ags_audio_file_xml.c: In function ‘ags_file_read_recall_audio_signal’:
+src/ags/audio/file/ags_audio_file_xml.c:2722:7: warning: pointer targets in passing argument 2 of ‘xmlStrcmp’ differ in signedness [-Wpointer-sign]
+       ags_plugin_get_xml_type(AGS_PLUGIN(recall)))){
+       ^
+In file included from /usr/include/libxml2/libxml/tree.h:18:0,
+                 from ./src/ags/audio/file/ags_audio_file_xml.h:25,
+                 from src/ags/audio/file/ags_audio_file_xml.c:19:
+/usr/include/libxml2/libxml/xmlstring.h:64:17: note: expected ‘const xmlChar *’ but argument is of type ‘gchar *’
+                 xmlStrcmp                (const xmlChar *str1,
+                 ^
+src/ags/audio/file/ags_audio_file_xml.c: In function ‘ags_file_read_port’:
+src/ags/audio/file/ags_audio_file_xml.c:2837:2: warning: implicit declaration of function ‘ags_file_util_read_value’ [-Wimplicit-function-declaration]
+  ags_file_util_read_value(file,
+  ^
+src/ags/audio/file/ags_audio_file_xml.c: In function ‘ags_file_read_port_resolve_port_value’:
+src/ags/audio/file/ags_audio_file_xml.c:2873:15: warning: assignment from incompatible pointer type
+   file_id_ref = ags_file_find_id_ref_by_reference(file_lookup->file,
+               ^
+src/ags/audio/file/ags_audio_file_xml.c:2868:10: warning: unused variable ‘xpath’ [-Wunused-variable]
+   gchar *xpath;
+          ^
+src/ags/audio/file/ags_audio_file_xml.c: In function ‘ags_file_write_port’:
+src/ags/audio/file/ags_audio_file_xml.c:2887:5: warning: ‘return’ with no value, in function returning non-void
+     return;
+     ^
+src/ags/audio/file/ags_audio_file_xml.c:3028:3: warning: implicit declaration of function ‘ags_file_util_write_value’ [-Wimplicit-function-declaration]
+   ags_file_util_write_value(file,
+   ^
+src/ags/audio/file/ags_audio_file_xml.c:2881:18: warning: unused variable ‘file_lookup’ [-Wunused-variable]
+   AgsFileLookup *file_lookup;
+                  ^
+src/ags/audio/file/ags_audio_file_xml.c: In function ‘ags_file_read_port_list’:
+src/ags/audio/file/ags_audio_file_xml.c:3042:17: warning: unused variable ‘iter’ [-Wunused-variable]
+   GList *list, *iter;
+                 ^
+src/ags/audio/file/ags_audio_file_xml.c:3040:17: warning: unused variable ‘port_id_ref’ [-Wunused-variable]
+   AgsFileIdRef *port_id_ref;
+                 ^
+src/ags/audio/file/ags_audio_file_xml.c: In function ‘ags_file_read_stream’:
+src/ags/audio/file/ags_audio_file_xml.c:3606:12: warning: pointer targets in assignment differ in signedness [-Wpointer-sign]
+   encoding = (gchar *) xmlGetProp(node,
+            ^
+src/ags/audio/file/ags_audio_file_xml.c:3612:13: warning: pointer targets in assignment differ in signedness [-Wpointer-sign]
+     demuxer = (gchar *) xmlGetProp(node,
+             ^
+src/ags/audio/file/ags_audio_file_xml.c:3621:36: warning: pointer targets in passing argument 1 of ‘g_base64_decode’ differ in signedness [-Wpointer-sign]
+       list->data = g_base64_decode(content,
+                                    ^
+In file included from /usr/include/glib-2.0/glib.h:35:0,
+                 from ./src/ags/audio/file/ags_audio_file_xml.h:22,
+                 from src/ags/audio/file/ags_audio_file_xml.c:19:
+/usr/include/glib-2.0/glib/gbase64.h:52:9: note: expected ‘const gchar *’ but argument is of type ‘xmlChar *’
+ guchar *g_base64_decode         (const gchar  *text,
+         ^
+src/ags/audio/file/ags_audio_file_xml.c: In function ‘ags_file_write_stream’:
+src/ags/audio/file/ags_audio_file_xml.c:3669:11: warning: pointer targets in assignment differ in signedness [-Wpointer-sign]
+   content = g_base64_encode(stream->data,
+           ^
+src/ags/audio/file/ags_audio_file_xml.c: In function ‘ags_file_read_stream_list_sort’:
+src/ags/audio/file/ags_audio_file_xml.c:3695:14: warning: unused variable ‘k’ [-Wunused-variable]
+     guint j, k;
+              ^
+In file included from /usr/include/glib-2.0/gobject/gbinding.h:29:0,
+                 from /usr/include/glib-2.0/glib-object.h:23,
+                 from ./src/ags/audio/file/ags_audio_file_xml.h:23,
+                 from src/ags/audio/file/ags_audio_file_xml.c:19:
+src/ags/audio/file/ags_audio_file_xml.c: In function ‘ags_file_read_pattern_resolve_port’:
+/usr/include/glib-2.0/gobject/gobject.h:51:37: warning: passing argument 1 of ‘ags_port_safe_write’ from incompatible pointer type
+ #define G_OBJECT(object)            (G_TYPE_CHECK_INSTANCE_CAST ((object), G_TYPE_OBJECT, GObject))
+                                     ^
+src/ags/audio/file/ags_audio_file_xml.c:3919:25: note: in expansion of macro ‘G_OBJECT’
+     ags_port_safe_write(G_OBJECT(id_ref->ref),
+                         ^
+In file included from ./src/ags/audio/ags_recall.h:25:0,
+                 from ./src/ags/audio/ags_channel.h:26,
+                 from ./src/ags/audio/ags_audio.h:25,
+                 from ./src/ags/audio/file/ags_audio_file_xml.h:31,
+                 from src/ags/audio/file/ags_audio_file_xml.c:19:
+./src/ags/audio/ags_port.h:86:6: note: expected ‘struct AgsPort *’ but argument is of type ‘struct GObject *’
+ void ags_port_safe_write(AgsPort *port, GValue *value);
+      ^
+src/ags/audio/file/ags_audio_file_xml.c: In function ‘ags_file_write_pattern’:
+src/ags/audio/file/ags_audio_file_xml.c:3929:12: warning: unused variable ‘content’ [-Wunused-variable]
+   xmlChar *content;
+            ^
+src/ags/audio/file/ags_audio_file_xml.c:3928:19: warning: unused variable ‘child’ [-Wunused-variable]
+   xmlNode *node, *child;
+                   ^
+src/ags/audio/file/ags_audio_file_xml.c: In function ‘ags_file_read_pattern_data’:
+src/ags/audio/file/ags_audio_file_xml.c:4146:10: warning: pointer targets in assignment differ in signedness [-Wpointer-sign]
+   coding = (gchar *) xmlGetProp(node,
+          ^
+src/ags/audio/file/ags_audio_file_xml.c:4153:7: warning: ‘g_strncasecmp’ is deprecated (declared at /usr/include/glib-2.0/glib/gstrfuncs.h:203) [-Wdeprecated-declarations]
+       if(!g_strncasecmp(&(content[k]),
+       ^
+src/ags/audio/file/ags_audio_file_xml.c:4153:25: warning: pointer targets in passing argument 1 of ‘g_strncasecmp’ differ in signedness [-Wpointer-sign]
+       if(!g_strncasecmp(&(content[k]),
+                         ^
+In file included from /usr/include/glib-2.0/glib.h:79:0,
+                 from ./src/ags/audio/file/ags_audio_file_xml.h:22,
+                 from src/ags/audio/file/ags_audio_file_xml.c:19:
+/usr/include/glib-2.0/glib/gstrfuncs.h:203:23: note: expected ‘const gchar *’ but argument is of type ‘xmlChar *’
+ gint                  g_strncasecmp    (const gchar *s1,
+                       ^
+src/ags/audio/file/ags_audio_file_xml.c: In function ‘ags_file_write_pattern_data_list’:
+src/ags/audio/file/ags_audio_file_xml.c:4263:10: warning: unused variable ‘list’ [-Wunused-variable]
+   GList *list;
+          ^
+src/ags/audio/file/ags_audio_file_xml.c: In function ‘ags_file_read_notation’:
+src/ags/audio/file/ags_audio_file_xml.c:4354:8: warning: pointer targets in assignment differ in signedness [-Wpointer-sign]
+   prop = (gchar *) xmlGetProp(node,
+        ^
+src/ags/audio/file/ags_audio_file_xml.c:4358:52: warning: pointer targets in passing argument 1 of ‘g_ascii_strtod’ differ in signedness [-Wpointer-sign]
+     gobject->start_loop = (gdouble) g_ascii_strtod(prop,
+                                                    ^
+In file included from /usr/include/glib-2.0/glib.h:79:0,
+                 from ./src/ags/audio/file/ags_audio_file_xml.h:22,
+                 from src/ags/audio/file/ags_audio_file_xml.c:19:
+/usr/include/glib-2.0/glib/gstrfuncs.h:149:23: note: expected ‘const gchar *’ but argument is of type ‘xmlChar *’
+ gdouble               g_ascii_strtod   (const gchar  *nptr,
+                       ^
+In file included from /usr/include/glib-2.0/gobject/gbinding.h:29:0,
+                 from /usr/include/glib-2.0/glib-object.h:23,
+                 from ./src/ags/audio/file/ags_audio_file_xml.h:23,
+                 from src/ags/audio/file/ags_audio_file_xml.c:19:
+src/ags/audio/file/ags_audio_file_xml.c: In function ‘ags_file_read_notation_resolve_port’:
+/usr/include/glib-2.0/gobject/gobject.h:51:37: warning: passing argument 1 of ‘ags_port_safe_write’ from incompatible pointer type
+ #define G_OBJECT(object)            (G_TYPE_CHECK_INSTANCE_CAST ((object), G_TYPE_OBJECT, GObject))
+                                     ^
+src/ags/audio/file/ags_audio_file_xml.c:4423:25: note: in expansion of macro ‘G_OBJECT’
+     ags_port_safe_write(G_OBJECT(port),
+                         ^
+In file included from ./src/ags/audio/ags_recall.h:25:0,
+                 from ./src/ags/audio/ags_channel.h:26,
+                 from ./src/ags/audio/ags_audio.h:25,
+                 from ./src/ags/audio/file/ags_audio_file_xml.h:31,
+                 from src/ags/audio/file/ags_audio_file_xml.c:19:
+./src/ags/audio/ags_port.h:86:6: note: expected ‘struct AgsPort *’ but argument is of type ‘struct GObject *’
+ void ags_port_safe_write(AgsPort *port, GValue *value);
+      ^
+src/ags/audio/file/ags_audio_file_xml.c: In function ‘ags_file_write_recall_container_list’:
+src/ags/audio/file/ags_audio_file_xml.c:2313:9: warning: ‘list’ is used uninitialized in this function [-Wuninitialized]
+         g_object_new(AGS_TYPE_FILE_ID_REF,
+         ^
+src/ags/audio/file/ags_audio_file_xml.c: In function ‘ags_file_write_recall_audio’:
+src/ags/audio/file/ags_audio_file_xml.c:2383:3: warning: ‘node’ is used uninitialized in this function [-Wuninitialized]
+   xmlNewProp(node,
+   ^
+src/ags/audio/file/ags_audio_file_xml.c: In function ‘ags_file_write_audio_list’:
+src/ags/audio/file/ags_audio_file_xml.c:992:9: warning: ‘list’ is used uninitialized in this function [-Wuninitialized]
+         g_object_new(AGS_TYPE_FILE_ID_REF,
+         ^
+src/ags/audio/file/ags_audio_file_xml.c: In function ‘ags_file_write_soundcard_list’:
+src/ags/audio/file/ags_audio_file_xml.c:347:9: warning: ‘list’ is used uninitialized in this function [-Wuninitialized]
+         g_object_new(AGS_TYPE_FILE_ID_REF,
+         ^
+mv -f .deps/libags_audio_a-ags_audio_file_xml.Tpo .deps/libags_audio_a-ags_audio_file_xml.Po
+rm -f libags_audio.a
+ar cru libags_audio.a libags_audio_a-ags_libao.o libags_audio_a-ags_timestamp.o libags_audio_a-ags_timestamp_factory.o libags_audio_a-ags_audio_init.o libags_audio_a-ags_audio_application_context.o libags_audio_a-ags_sound_provider.o libags_audio_a-ags_acceleration.o libags_audio_a-ags_audio.o libags_audio_a-ags_audio_signal.o libags_audio_a-ags_automation.o libags_audio_a-ags_channel.o libags_audio_a-ags_channel_iter.o libags_audio_a-ags_playback_domain.o libags_audio_a-ags_playback.o libags_audio_a-ags_devout.o libags_audio_a-ags_input.o libags_audio_a-ags_notation.o libags_audio_a-ags_note.o libags_audio_a-ags_output.o libags_audio_a-ags_pattern.o libags_audio_a-ags_port.o libags_audio_a-ags_recall_audio.o libags_audio_a-ags_recall_audio_run.o libags_audio_a-ags_recall_audio_signal.o libags_audio_a-ags_recall_channel.o libags_audio_a-ags_recall_channel_run_dummy.o libags_audio_a-ags_recall_channel_run.o libags_audio_a-ags_recall_container.o libags_audio_a-ags_recall_dependency.o libags_audio_a-ags_recall_factory.o libags_audio_a-ags_recall.o libags_audio_a-ags_recall_id.o libags_audio_a-ags_recall_ladspa.o libags_audio_a-ags_recall_ladspa_run.o libags_audio_a-ags_recall_recycling_dummy.o libags_audio_a-ags_recall_recycling.o libags_audio_a-ags_recycling_context.o libags_audio_a-ags_recycling.o libags_audio_a-ags_synths.o libags_audio_a-ags_timestamp_factory.o libags_audio_a-ags_timestamp.o  libags_audio_a-ags_audio_loop.o libags_audio_a-ags_soundcard_thread.o libags_audio_a-ags_export_thread.o libags_audio_a-ags_iterator_thread.o libags_audio_a-ags_record_thread.o libags_audio_a-ags_recycling_thread_callbacks.o libags_audio_a-ags_recycling_thread.o libags_audio_a-ags_audio_file_xml.o libags_audio_a-ags_audio_file_xml.o libags_audio_a-ags_playable.o libags_audio_a-ags_audio_file.o libags_audio_a-ags_ipatch.o libags_audio_a-ags_ipatch_sf2_reader.o libags_audio_a-ags_sndfile.o libags_audio_a-ags_add_audio.o libags_audio_a-ags_add_audio_signal.o libags_audio_a-ags_add_note.o libags_audio_a-ags_add_point_to_selection.o libags_audio_a-ags_remove_point_from_selection.o libags_audio_a-ags_add_region_to_selection.o libags_audio_a-ags_remove_region_from_selection.o libags_audio_a-ags_free_selection.o libags_audio_a-ags_add_recall_container.o libags_audio_a-ags_add_recall.o libags_audio_a-ags_append_audio.o libags_audio_a-ags_append_audio_threaded.o libags_audio_a-ags_append_channel.o libags_audio_a-ags_append_recall.o libags_audio_a-ags_apply_synth.o libags_audio_a-ags_audio_set_recycling.o libags_audio_a-ags_cancel_audio.o libags_audio_a-ags_cancel_channel.o libags_audio_a-ags_cancel_recall.o libags_audio_a-ags_channel_set_recycling.o libags_audio_a-ags_export_output.o libags_audio_a-ags_init_audio.o libags_audio_a-ags_init_channel.o libags_audio_a-ags_link_channel.o libags_audio_a-ags_open_file.o libags_audio_a-ags_open_single_file.o libags_audio_a-ags_remove_audio.o libags_audio_a-ags_remove_audio_signal.o libags_audio_a-ags_remove_note.o libags_audio_a-ags_remove_recall_container.o libags_audio_a-ags_remove_recall.o libags_audio_a-ags_resize_audio.o libags_audio_a-ags_set_audio_channels.o libags_audio_a-ags_set_buffer_size.o libags_audio_a-ags_set_playback_flags.o libags_audio_a-ags_set_output_device.o libags_audio_a-ags_set_samplerate.o libags_audio_a-ags_start_soundcard.o libags_audio_a-ags_unref_audio_signal.o libags_audio_a-ags_toggle_pattern_bit.o  libags_audio_a-ags_apply_bpm.o libags_audio_a-ags_apply_sequencer_length.o libags_audio_a-ags_apply_tact.o libags_audio_a-ags_set_muted.o libags_audio_a-ags_clone_channel.o libags_audio_a-ags_clone_channel_run.o libags_audio_a-ags_loop_channel.o libags_audio_a-ags_loop_channel_run.o libags_audio_a-ags_play_note.o libags_audio_a-ags_buffer_audio_signal.o libags_audio_a-ags_buffer_channel.o libags_audio_a-ags_buffer_channel_run.o libags_audio_a-ags_buffer_recycling.o libags_audio_a-ags_copy_audio_signal.o libags_audio_a-ags_copy_channel.o libags_audio_a-ags_copy_channel_run.o libags_audio_a-ags_copy_notation_audio.o libags_audio_a-ags_copy_notation_audio_run.o libags_audio_a-ags_copy_pattern_audio.o libags_audio_a-ags_copy_pattern_audio_run.o libags_audio_a-ags_copy_pattern_channel.o libags_audio_a-ags_copy_pattern_channel_run.o libags_audio_a-ags_copy_recycling.o libags_audio_a-ags_count_beats_audio.o libags_audio_a-ags_count_beats_audio_run.o libags_audio_a-ags_delay_audio.o libags_audio_a-ags_delay_audio_run.o libags_audio_a-ags_mute_audio.o libags_audio_a-ags_mute_audio_signal.o libags_audio_a-ags_mute_channel.o libags_audio_a-ags_mute_channel_run.o libags_audio_a-ags_mute_recycling.o libags_audio_a-ags_peak_channel.o libags_audio_a-ags_peak_channel_run.o libags_audio_a-ags_play_audio_file.o libags_audio_a-ags_play_audio.o libags_audio_a-ags_play_audio_signal.o libags_audio_a-ags_play_channel.o libags_audio_a-ags_play_channel_run.o libags_audio_a-ags_play_channel_run_master.o libags_audio_a-ags_play_notation_audio.o libags_audio_a-ags_play_notation_audio_run.o libags_audio_a-ags_play_pattern.o libags_audio_a-ags_play_recycling.o libags_audio_a-ags_stream_audio_signal.o libags_audio_a-ags_stream_channel.o libags_audio_a-ags_stream_channel_run.o libags_audio_a-ags_stream_recycling.o libags_audio_a-ags_volume_audio_signal.o libags_audio_a-ags_volume_channel.o libags_audio_a-ags_volume_channel_run.o libags_audio_a-ags_volume_recycling.o  libags_audio_a-ags_ladspa_manager.o libags_audio_a-ags_plugin_factory.o libags_log.a libags_thread.a libags.a
+ranlib libags_audio.a
+/bin/sh ./libtool  --tag=CC   --mode=link gcc -g -O2 -g -std=gnu11 -Wuninitialized -Wreturn-type -Wunused-variable -Wunused-but-set-variable -Wmaybe-uninitialized -Wimplicit-function-declaration -Wparentheses -Wpointer-sign -Wdeprecated-declarations -Wcomment -O -I./src -I/usr/include -I/usr/include/uuid   -I/usr/include/alsa  -I/usr/include/libxml2   -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include  -pthread -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include  -pthread -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng16 -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include  -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng16 -I/usr/include/harfbuzz -I/usr/include/freetype2 -I/usr/include/harfbuzz -I/usr/include/libdrm -I/usr/include/libpng16 -I/usr/X11/include  -pthread -I/usr/include/gtk-2.0 -I/usr/lib/gtk-2.0/include -I/usr/include/pango-1.0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/libdrm -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng16 -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include -I/usr/include/freetype2 -I/usr/include/libpng16 -I/usr/include/harfbuzz -I/usr/include/freetype2 -I/usr/include/libpng16 -I/usr/include/harfbuzz -I/usr/X11/include  -g -O2 -L/lib -L/usr/lib -L/usr/X11/lib -lm -pthread -lrt -lgmp -luuid  -lao  -lasound  -lxml2  -lsndfile  -linstpatch-1.0 -lgobject-2.0 -lglib-2.0 -lsndfile  -lgobject-2.0 -Wl,--export-dynamic -lgmodule-2.0 -pthread -lgthread-2.0 -pthread -lglib-2.0  -lgdk_pixbuf-2.0 -lgobject-2.0 -lglib-2.0  -lcairo  -lgtk-x11-2.0 -lgdk-x11-2.0 -lpangocairo-1.0 -latk-1.0 -lcairo -lgdk_pixbuf-2.0 -lgio-2.0 -lpangoft2-1.0 -lpango-1.0 -lgobject-2.0 -lglib-2.0 -lfontconfig -lfreetype   -o gsequencer gsequencer-main.o  gsequencer-ags_server_init.o gsequencer-ags_server_application_context.o gsequencer-ags_service_provider.o gsequencer-ags_registry.o gsequencer-ags_remote_task.o gsequencer-ags_server.o  gsequencer-ags_xorg_init.o gsequencer-ags_xorg_application_context.o gsequencer-ags_audio_preferences_callbacks.o gsequencer-ags_audio_preferences.o gsequencer-ags_automation_editor_callbacks.o gsequencer-ags_automation_editor.o gsequencer-ags_editor_callbacks.o gsequencer-ags_editor.o gsequencer-ags_effect_bridge_callbacks.o gsequencer-ags_effect_bridge.o gsequencer-ags_effect_bulk_callbacks.o gsequencer-ags_effect_bulk.o gsequencer-ags_bulk_member.o gsequencer-ags_bulk_member_callbacks.o gsequencer-ags_effect_line_callbacks.o gsequencer-ags_effect_line.o gsequencer-ags_effect_pad_callbacks.o gsequencer-ags_effect_pad.o gsequencer-ags_export_window_callbacks.o gsequencer-ags_export_window.o gsequencer-ags_generic_preferences_callbacks.o gsequencer-ags_generic_preferences.o gsequencer-ags_ladspa_browser_callbacks.o gsequencer-ags_ladspa_browser.o gsequencer-ags_line_callbacks.o gsequencer-ags_line_editor_callbacks.o gsequencer-ags_line_editor.o gsequencer-ags_line.o gsequencer-ags_line_member_callbacks.o gsequencer-ags_line_member_editor_callbacks.o gsequencer-ags_line_member_editor.o gsequencer-ags_line_member.o gsequencer-ags_link_collection_editor_callbacks.o gsequencer-ags_link_collection_editor.o gsequencer-ags_link_editor_callbacks.o gsequencer-ags_link_editor.o gsequencer-ags_listing_editor_callbacks.o gsequencer-ags_listing_editor.o gsequencer-ags_machine_callbacks.o gsequencer-ags_machine_editor_callbacks.o gsequencer-ags_machine_editor.o gsequencer-ags_machine.o gsequencer-ags_menu_bar_callbacks.o gsequencer-ags_menu_bar.o gsequencer-ags_navigation_callbacks.o gsequencer-ags_navigation.o gsequencer-ags_pad_callbacks.o gsequencer-ags_pad_editor_callbacks.o gsequencer-ags_pad_editor.o gsequencer-ags_pad.o gsequencer-ags_performance_preferences_callbacks.o gsequencer-ags_performance_preferences.o gsequencer-ags_plugin_preferences_callbacks.o gsequencer-ags_plugin_preferences.o gsequencer-ags_preferences_callbacks.o gsequencer-ags_preferences.o gsequencer-ags_property_collection_editor_callbacks.o gsequencer-ags_property_collection_editor.o gsequencer-ags_property_editor_callbacks.o gsequencer-ags_property_editor.o gsequencer-ags_property_listing_editor.o gsequencer-ags_resize_editor.o gsequencer-ags_server_preferences_callbacks.o gsequencer-ags_server_preferences.o gsequencer-ags_window_callbacks.o gsequencer-ags_window.o  gsequencer-ags_gui_thread.o  gsequencer-ags_add_line_member.o gsequencer-ags_add_bulk_member.o gsequencer-ags_update_bulk_member.o gsequencer-ags_change_indicator.o gsequencer-ags_change_tact.o gsequencer-ags_display_tact.o gsequencer-ags_scroll_on_play.o gsequencer-ags_toggle_led.o  gsequencer-ags_drum_callbacks.o gsequencer-ags_drum.o gsequencer-ags_drum_input_line_callbacks.o gsequencer-ags_drum_input_line.o gsequencer-ags_drum_input_pad_callbacks.o gsequencer-ags_drum_input_pad.o gsequencer-ags_drum_output_line_callbacks.o gsequencer-ags_drum_output_line.o gsequencer-ags_drum_output_pad_callbacks.o gsequencer-ags_drum_output_pad.o gsequencer-ags_ffplayer_bridge_callbacks.o gsequencer-ags_ffplayer_bridge.o gsequencer-ags_ffplayer_bulk_input_callbacks.o gsequencer-ags_ffplayer_bulk_input.o gsequencer-ags_ffplayer_callbacks.o gsequencer-ags_ffplayer.o gsequencer-ags_ffplayer_input_line_callbacks.o gsequencer-ags_ffplayer_input_line.o gsequencer-ags_ffplayer_input_pad_callbacks.o gsequencer-ags_ffplayer_input_pad.o gsequencer-ags_ladspa_bridge_callbacks.o gsequencer-ags_ladspa_bridge.o gsequencer-ags_matrix_bridge_callbacks.o gsequencer-ags_matrix_bridge.o gsequencer-ags_matrix_bulk_input_callbacks.o gsequencer-ags_matrix_bulk_input.o gsequencer-ags_matrix_callbacks.o gsequencer-ags_matrix.o gsequencer-ags_mixer_callbacks.o gsequencer-ags_mixer.o gsequencer-ags_mixer_input_line.o gsequencer-ags_mixer_input_pad.o gsequencer-ags_oscillator_callbacks.o gsequencer-ags_oscillator.o gsequencer-ags_panel_callbacks.o gsequencer-ags_panel.o gsequencer-ags_panel_input_line.o gsequencer-ags_panel_input_pad.o gsequencer-ags_synth_bridge_callbacks.o gsequencer-ags_synth_bridge.o gsequencer-ags_synth_bulk_output_callbacks.o gsequencer-ags_synth_bulk_output.o gsequencer-ags_synth_callbacks.o gsequencer-ags_synth.o gsequencer-ags_synth_input_line.o gsequencer-ags_synth_input_pad.o gsequencer-ags_synth_output_line_callbacks.o gsequencer-ags_synth_output_line.o gsequencer-ags_synth_output_pad_callbacks.o gsequencer-ags_synth_output_pad.o  gsequencer-ags_automation_area_callbacks.o gsequencer-ags_automation_area.o gsequencer-ags_automation_edit_callbacks.o gsequencer-ags_automation_edit.o gsequencer-ags_automation_toolbar_callbacks.o gsequencer-ags_automation_toolbar.o gsequencer-ags_file_selection_callbacks.o gsequencer-ags_file_selection.o gsequencer-ags_inline_player_callbacks.o gsequencer-ags_inline_player.o gsequencer-ags_machine_radio_button.o gsequencer-ags_machine_selection.o gsequencer-ags_machine_selector_callbacks.o gsequencer-ags_machine_selector.o gsequencer-ags_meter_callbacks.o gsequencer-ags_meter.o gsequencer-ags_notebook_callbacks.o gsequencer-ags_notebook.o gsequencer-ags_note_edit_callbacks.o gsequencer-ags_note_edit.o gsequencer-ags_pattern_edit_callbacks.o gsequencer-ags_pattern_edit.o gsequencer-ags_port_selection_callbacks.o gsequencer-ags_port_selection.o gsequencer-ags_sf2_chooser_callbacks.o gsequencer-ags_sf2_chooser.o gsequencer-ags_soundset_callbacks.o gsequencer-ags_soundset.o gsequencer-ags_toolbar_callbacks.o gsequencer-ags_toolbar.o  gsequencer-ags_gsequencer_file_xml.o libags_audio.a libags_gui.a libags_log.a libags_thread.a libags.a -lrt -lm -lgmp 
+libtool: link: gcc -g -O2 -g -std=gnu11 -Wuninitialized -Wreturn-type -Wunused-variable -Wunused-but-set-variable -Wmaybe-uninitialized -Wimplicit-function-declaration -Wparentheses -Wpointer-sign -Wdeprecated-declarations -Wcomment -O -I./src -I/usr/include -I/usr/include/uuid -I/usr/include/alsa -I/usr/include/libxml2 -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include -pthread -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include -pthread -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng16 -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng16 -I/usr/include/harfbuzz -I/usr/include/freetype2 -I/usr/include/harfbuzz -I/usr/include/libdrm -I/usr/include/libpng16 -I/usr/X11/include -pthread -I/usr/include/gtk-2.0 -I/usr/lib/gtk-2.0/include -I/usr/include/pango-1.0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/libdrm -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng16 -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include -I/usr/include/freetype2 -I/usr/include/libpng16 -I/usr/include/harfbuzz -I/usr/include/freetype2 -I/usr/include/libpng16 -I/usr/include/harfbuzz -I/usr/X11/include -g -O2 -pthread -Wl,--export-dynamic -pthread -pthread -o gsequencer gsequencer-main.o gsequencer-ags_server_init.o gsequencer-ags_server_application_context.o gsequencer-ags_service_provider.o gsequencer-ags_registry.o gsequencer-ags_remote_task.o gsequencer-ags_server.o gsequencer-ags_xorg_init.o gsequencer-ags_xorg_application_context.o gsequencer-ags_audio_preferences_callbacks.o gsequencer-ags_audio_preferences.o gsequencer-ags_automation_editor_callbacks.o gsequencer-ags_automation_editor.o gsequencer-ags_editor_callbacks.o gsequencer-ags_editor.o gsequencer-ags_effect_bridge_callbacks.o gsequencer-ags_effect_bridge.o gsequencer-ags_effect_bulk_callbacks.o gsequencer-ags_effect_bulk.o gsequencer-ags_bulk_member.o gsequencer-ags_bulk_member_callbacks.o gsequencer-ags_effect_line_callbacks.o gsequencer-ags_effect_line.o gsequencer-ags_effect_pad_callbacks.o gsequencer-ags_effect_pad.o gsequencer-ags_export_window_callbacks.o gsequencer-ags_export_window.o gsequencer-ags_generic_preferences_callbacks.o gsequencer-ags_generic_preferences.o gsequencer-ags_ladspa_browser_callbacks.o gsequencer-ags_ladspa_browser.o gsequencer-ags_line_callbacks.o gsequencer-ags_line_editor_callbacks.o gsequencer-ags_line_editor.o gsequencer-ags_line.o gsequencer-ags_line_member_callbacks.o gsequencer-ags_line_member_editor_callbacks.o gsequencer-ags_line_member_editor.o gsequencer-ags_line_member.o gsequencer-ags_link_collection_editor_callbacks.o gsequencer-ags_link_collection_editor.o gsequencer-ags_link_editor_callbacks.o gsequencer-ags_link_editor.o gsequencer-ags_listing_editor_callbacks.o gsequencer-ags_listing_editor.o gsequencer-ags_machine_callbacks.o gsequencer-ags_machine_editor_callbacks.o gsequencer-ags_machine_editor.o gsequencer-ags_machine.o gsequencer-ags_menu_bar_callbacks.o gsequencer-ags_menu_bar.o gsequencer-ags_navigation_callbacks.o gsequencer-ags_navigation.o gsequencer-ags_pad_callbacks.o gsequencer-ags_pad_editor_callbacks.o gsequencer-ags_pad_editor.o gsequencer-ags_pad.o gsequencer-ags_performance_preferences_callbacks.o gsequencer-ags_performance_preferences.o gsequencer-ags_plugin_preferences_callbacks.o gsequencer-ags_plugin_preferences.o gsequencer-ags_preferences_callbacks.o gsequencer-ags_preferences.o gsequencer-ags_property_collection_editor_callbacks.o gsequencer-ags_property_collection_editor.o gsequencer-ags_property_editor_callbacks.o gsequencer-ags_property_editor.o gsequencer-ags_property_listing_editor.o gsequencer-ags_resize_editor.o gsequencer-ags_server_preferences_callbacks.o gsequencer-ags_server_preferences.o gsequencer-ags_window_callbacks.o gsequencer-ags_window.o gsequencer-ags_gui_thread.o gsequencer-ags_add_line_member.o gsequencer-ags_add_bulk_member.o gsequencer-ags_update_bulk_member.o gsequencer-ags_change_indicator.o gsequencer-ags_change_tact.o gsequencer-ags_display_tact.o gsequencer-ags_scroll_on_play.o gsequencer-ags_toggle_led.o gsequencer-ags_drum_callbacks.o gsequencer-ags_drum.o gsequencer-ags_drum_input_line_callbacks.o gsequencer-ags_drum_input_line.o gsequencer-ags_drum_input_pad_callbacks.o gsequencer-ags_drum_input_pad.o gsequencer-ags_drum_output_line_callbacks.o gsequencer-ags_drum_output_line.o gsequencer-ags_drum_output_pad_callbacks.o gsequencer-ags_drum_output_pad.o gsequencer-ags_ffplayer_bridge_callbacks.o gsequencer-ags_ffplayer_bridge.o gsequencer-ags_ffplayer_bulk_input_callbacks.o gsequencer-ags_ffplayer_bulk_input.o gsequencer-ags_ffplayer_callbacks.o gsequencer-ags_ffplayer.o gsequencer-ags_ffplayer_input_line_callbacks.o gsequencer-ags_ffplayer_input_line.o gsequencer-ags_ffplayer_input_pad_callbacks.o gsequencer-ags_ffplayer_input_pad.o gsequencer-ags_ladspa_bridge_callbacks.o gsequencer-ags_ladspa_bridge.o gsequencer-ags_matrix_bridge_callbacks.o gsequencer-ags_matrix_bridge.o gsequencer-ags_matrix_bulk_input_callbacks.o gsequencer-ags_matrix_bulk_input.o gsequencer-ags_matrix_callbacks.o gsequencer-ags_matrix.o gsequencer-ags_mixer_callbacks.o gsequencer-ags_mixer.o gsequencer-ags_mixer_input_line.o gsequencer-ags_mixer_input_pad.o gsequencer-ags_oscillator_callbacks.o gsequencer-ags_oscillator.o gsequencer-ags_panel_callbacks.o gsequencer-ags_panel.o gsequencer-ags_panel_input_line.o gsequencer-ags_panel_input_pad.o gsequencer-ags_synth_bridge_callbacks.o gsequencer-ags_synth_bridge.o gsequencer-ags_synth_bulk_output_callbacks.o gsequencer-ags_synth_bulk_output.o gsequencer-ags_synth_callbacks.o gsequencer-ags_synth.o gsequencer-ags_synth_input_line.o gsequencer-ags_synth_input_pad.o gsequencer-ags_synth_output_line_callbacks.o gsequencer-ags_synth_output_line.o gsequencer-ags_synth_output_pad_callbacks.o gsequencer-ags_synth_output_pad.o gsequencer-ags_automation_area_callbacks.o gsequencer-ags_automation_area.o gsequencer-ags_automation_edit_callbacks.o gsequencer-ags_automation_edit.o gsequencer-ags_automation_toolbar_callbacks.o gsequencer-ags_automation_toolbar.o gsequencer-ags_file_selection_callbacks.o gsequencer-ags_file_selection.o gsequencer-ags_inline_player_callbacks.o gsequencer-ags_inline_player.o gsequencer-ags_machine_radio_button.o gsequencer-ags_machine_selection.o gsequencer-ags_machine_selector_callbacks.o gsequencer-ags_machine_selector.o gsequencer-ags_meter_callbacks.o gsequencer-ags_meter.o gsequencer-ags_notebook_callbacks.o gsequencer-ags_notebook.o gsequencer-ags_note_edit_callbacks.o gsequencer-ags_note_edit.o gsequencer-ags_pattern_edit_callbacks.o gsequencer-ags_pattern_edit.o gsequencer-ags_port_selection_callbacks.o gsequencer-ags_port_selection.o gsequencer-ags_sf2_chooser_callbacks.o gsequencer-ags_sf2_chooser.o gsequencer-ags_soundset_callbacks.o gsequencer-ags_soundset.o gsequencer-ags_toolbar_callbacks.o gsequencer-ags_toolbar.o gsequencer-ags_gsequencer_file_xml.o  -L/lib -L/usr/lib -L/usr/X11/lib /usr/lib/libuuid.so /usr/lib/libao.so /usr/lib/libasound.so /usr/lib/libxml2.so /usr/lib/liblzma.so /usr/lib/libinstpatch-1.0.so -L/usr/lib/../lib64 /usr/lib/libsndfile.so /usr/lib/libgtk-x11-2.0.so /usr/lib/libgdk-x11-2.0.so /usr/lib/libpangocairo-1.0.so /usr/lib/libatk-1.0.so /usr/lib/libcairo.so /usr/lib/libpixman-1.so /usr/lib/libEGL.so /usr/lib/libgbm.so /usr/X11/lib/libxcb-shm.so /usr/X11/lib/libXrender.so /usr/lib/libGL.so /usr/lib/libglapi.so /usr/X11/lib/libXdamage.so /usr/X11/lib/libXfixes.so /usr/X11/lib/libX11-xcb.so /usr/X11/lib/libxcb-glx.so /usr/X11/lib/libxcb-dri2.so /usr/X11/lib/libxcb-dri3.so /usr/X11/lib/libxcb-present.so /usr/X11/lib/libxcb-randr.so /usr/X11/lib/libxcb-xfixes.so /usr/X11/lib/libxcb-render.so /usr/X11/lib/libxcb-shape.so /usr/X11/lib/libxcb-sync.so /usr/X11/lib/libxshmfence.so /usr/X11/lib/libXxf86vm.so /usr/X11/lib/libXext.so /usr/X11/lib/libX11.so /usr/X11/lib/libxcb.so /usr/X11/lib/libXau.so /usr/X11/lib/libXdmcp.so /usr/lib/libdrm.so /usr/lib/libgdk_pixbuf-2.0.so /usr/lib/libgio-2.0.so -lresolv /usr/lib/libpangoft2-1.0.so /usr/lib/libpango-1.0.so /usr/lib/libgmodule-2.0.so -ldl /usr/lib/libgthread-2.0.so /usr/lib/libgobject-2.0.so /usr/lib/../lib64/libffi.so /usr/lib/libfontconfig.so /usr/lib/libexpat.so /usr/lib/libharfbuzz.so /usr/lib/libglib-2.0.so /usr/lib/libpcre.so -lpthread /usr/lib/libfreetype.so -lbz2 /usr/lib/libpng16.so -lz libags_audio.a libags_gui.a libags_log.a libags_thread.a libags.a -lrt -lm /usr/lib/libgmp.so -pthread -Wl,-rpath -Wl,/usr/lib/../lib64 -Wl,-rpath -Wl,/usr/lib/../lib64
+make[2]: Leaving directory '/home/minos/ags-devel'
+Making all in src/ags/util
+make[2]: Entering directory '/home/minos/ags-devel/src/ags/util'
+make[2]: Nothing to be done for 'all'.
+make[2]: Leaving directory '/home/minos/ags-devel/src/ags/util'
+Making all in src/ags/lib
+make[2]: Entering directory '/home/minos/ags-devel/src/ags/lib'
+make[2]: Nothing to be done for 'all'.
+make[2]: Leaving directory '/home/minos/ags-devel/src/ags/lib'
+Making all in src/ags/object
+make[2]: Entering directory '/home/minos/ags-devel/src/ags/object'
+make[2]: Nothing to be done for 'all'.
+make[2]: Leaving directory '/home/minos/ags-devel/src/ags/object'
+Making all in src/ags/widget
+make[2]: Entering directory '/home/minos/ags-devel/src/ags/widget'
+make[2]: Nothing to be done for 'all'.
+make[2]: Leaving directory '/home/minos/ags-devel/src/ags/widget'
+Making all in src/ags/audio/task
+make[2]: Entering directory '/home/minos/ags-devel/src/ags/audio/task'
+make[2]: Nothing to be done for 'all'.
+make[2]: Leaving directory '/home/minos/ags-devel/src/ags/audio/task'
+Making all in src/ags/audio/task/recall
+make[2]: Entering directory '/home/minos/ags-devel/src/ags/audio/task/recall'
+make[2]: Nothing to be done for 'all'.
+make[2]: Leaving directory '/home/minos/ags-devel/src/ags/audio/task/recall'
+Making all in src/ags/audio/file
+make[2]: Entering directory '/home/minos/ags-devel/src/ags/audio/file'
+make[2]: Nothing to be done for 'all'.
+make[2]: Leaving directory '/home/minos/ags-devel/src/ags/audio/file'
+Making all in src/ags/audio/recall
+make[2]: Entering directory '/home/minos/ags-devel/src/ags/audio/recall'
+make[2]: Nothing to be done for 'all'.
+make[2]: Leaving directory '/home/minos/ags-devel/src/ags/audio/recall'
+Making all in src/ags/audio
+make[2]: Entering directory '/home/minos/ags-devel/src/ags/audio'
+make[2]: Nothing to be done for 'all'.
+make[2]: Leaving directory '/home/minos/ags-devel/src/ags/audio'
+Making all in src/ags/file
+make[2]: Entering directory '/home/minos/ags-devel/src/ags/file'
+make[2]: Nothing to be done for 'all'.
+make[2]: Leaving directory '/home/minos/ags-devel/src/ags/file'
+Making all in src/ags/server
+make[2]: Entering directory '/home/minos/ags-devel/src/ags/server'
+make[2]: Nothing to be done for 'all'.
+make[2]: Leaving directory '/home/minos/ags-devel/src/ags/server'
+Making all in src/ags/X/editor
+make[2]: Entering directory '/home/minos/ags-devel/src/ags/X/editor'
+make[2]: Nothing to be done for 'all'.
+make[2]: Leaving directory '/home/minos/ags-devel/src/ags/X/editor'
+Making all in src/ags/X/machine
+make[2]: Entering directory '/home/minos/ags-devel/src/ags/X/machine'
+make[2]: Nothing to be done for 'all'.
+make[2]: Leaving directory '/home/minos/ags-devel/src/ags/X/machine'
+Making all in src/ags/X
+make[2]: Entering directory '/home/minos/ags-devel/src/ags/X'
+make[2]: Nothing to be done for 'all'.
+make[2]: Leaving directory '/home/minos/ags-devel/src/ags/X'
+Making all in src/ags
+make[2]: Entering directory '/home/minos/ags-devel/src/ags'
+make[2]: Nothing to be done for 'all'.
+make[2]: Leaving directory '/home/minos/ags-devel/src/ags'
+Making all in doc
+make[2]: Entering directory '/home/minos/ags-devel/doc'
+make[2]: Nothing to be done for 'all'.
+make[2]: Leaving directory '/home/minos/ags-devel/doc'
+make[1]: Leaving directory '/home/minos/ags-devel'

@@ -203,26 +203,18 @@ main(int argc, char **argv)
   pw = getpwuid(uid);
 
   /* init gsequencer */
-  LIBXML_TEST_VERSION;
-  
-  ao_initialize();
-
-  g_thread_init(NULL);  
   gtk_init(&argc, &argv);
 
-  ipatch_init();
-  
   application_context = ags_xorg_application_context_new();
+  application_context->argc = argc;
+  application_context->argv = argv;
+  
+  ags_xorg_init_context(application_context);
+
   audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
   task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
   thread_pool = ags_concurrency_provider_get_thread_pool(AGS_CONCURRENCY_PROVIDER(application_context));
   
-  ags_init_context(application_context);
-  ags_thread_init_context(application_context);
-  ags_audio_init_context(application_context);
-  ags_gui_init_context(application_context);
-  ags_xorg_init_context(application_context);
-
   /* Declare ourself as a real time task */
   param.sched_priority = AGS_RT_PRIORITY;
 
