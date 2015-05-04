@@ -23,5 +23,9 @@
 void
 ags_audio_init_context(AgsApplicationContext *application_context)
 {
-  //TODO:JK: implement me
+  ags_init_context(application_context);
+  ags_thread_init_context(application_context);
+  
+  ao_initialize();
+  ipatch_init();  
 }
