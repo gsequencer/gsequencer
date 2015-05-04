@@ -601,6 +601,7 @@ ags_audio_task_h_sources = \
 	src/ags/audio/task/ags_add_audio_signal.h			\
 	src/ags/audio/task/ags_add_note.h				\
 	src/ags/audio/task/ags_add_point_to_selection.h			\
+	src/ags/audio/task/ags_add_effect.h				\
 	src/ags/audio/task/ags_remove_point_from_selection.h 		\
 	src/ags/audio/task/ags_add_region_to_selection.h		\
 	src/ags/audio/task/ags_remove_region_from_selection.h 		\
@@ -647,6 +648,7 @@ ags_audio_task_c_sources = \
 	src/ags/audio/task/ags_add_audio_signal.c			\
 	src/ags/audio/task/ags_add_note.c				\
 	src/ags/audio/task/ags_add_point_to_selection.c			\
+	src/ags/audio/task/ags_add_effect.c				\
 	src/ags/audio/task/ags_remove_point_from_selection.c 		\
 	src/ags/audio/task/ags_add_region_to_selection.c		\
 	src/ags/audio/task/ags_remove_region_from_selection.c 		\

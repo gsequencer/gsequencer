@@ -598,22 +598,14 @@ ags_line_real_add_effect(AgsLine *line,
 			 gchar *filename,
 			 gchar *effect)
 {
-  AgsWindow *window;
-  AgsMachine *machine;
   AgsLineMember *line_member;
   AgsAddLineMember *add_line_member;
   GtkAdjustment *adjustment;
 
   AgsLadspaPlugin *ladspa_plugin;
 
-  AgsThread *main_loop;
-  AgsTaskThread *task_thread;
-
-  AgsApplicationContext *application_context;
-  
   GList *list;
   GList *port;
-  GList *task;
   gdouble step;
   guint x, y;
   
@@ -625,29 +617,9 @@ ags_line_real_add_effect(AgsLine *line,
   unsigned long index;
   unsigned long i;
 
-  machine = gtk_widget_get_ancestor(line,
-				    AGS_TYPE_MACHINE);
-  
-  window = gtk_widget_get_ancestor(machine,
-				   AGS_TYPE_WINDOW);
-
-  application_context = window->application_context;
-  
-  main_loop = application_context->main_loop;
-  task_thread = ags_thread_find_type(main_loop,
-				     AGS_TYPE_TASK_THREAD);
-
-  if(ags_recall_ladpsa_find(line->channel->recall,
-			    filename, effect) != NULL){
-    /* return if duplicated */
-    return;
-  }
-
   index = ags_ladspa_manager_effect_index(filename,
 					  effect);
 
-  task = NULL;
-  
   /* load plugin */
   ags_ladspa_manager_load_file(filename);
   ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(filename);
@@ -668,11 +640,6 @@ ags_line_real_add_effect(AgsLine *line,
 
     list = list->next;
   }
-
-  /* add effect to channel */
-  port = ags_channel_add_effect(line->channel,
-				filename,
-				effect);
 
   /* load ports */
   if(index != -1 &&
@@ -738,14 +705,11 @@ ags_line_real_add_effect(AgsLine *line,
 	  gtk_adjustment_set_value(adjustment,
 				   lower_bound);
 
-	  /* create task */
-	  add_line_member = ags_add_line_member_new(line,
-						    line_member,
-						    x, y,
-						    1, 1);
-	  task = g_list_prepend(task,
-				add_line_member);
-	  
+	  ags_expander_add(line->expander,
+			   line_member,
+			   x, y,
+			   1, 1);
+
 	  x++;
 	  port = port->next;
 	}
@@ -755,11 +719,6 @@ ags_line_real_add_effect(AgsLine *line,
     }
   }
   
-  /* launch tasks */
-  task = g_list_reverse(task);      
-  ags_task_thread_append_tasks(task_thread,
-			       task);
-
   return(port);
 }
 

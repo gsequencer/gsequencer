@@ -24,8 +24,18 @@
 
 #include <ags/object/ags_plugin.h>
 
+#ifdef AGS_USE_LINUX_THREADS
+#include <ags/thread/ags_thread-kthreads.h>
+#else
+#include <ags/thread/ags_thread-posix.h>
+#endif 
+#include <ags/thread/ags_task_thread.h>
+
 #include <ags/audio/ags_output.h>
 
+#include <ags/audio/task/ags_add_effect.h>
+
+#include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_pad.h>
 #include <ags/X/ags_line.h>
@@ -57,10 +67,16 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
 							gint response,
 							AgsLineMemberEditor *line_member_editor)
 {
+  AgsWindow *window;
   AgsMachine *machine;
   AgsMachineEditor *machine_editor;
   AgsLineEditor *line_editor;
 
+  AgsThread *main_loop;
+  AgsThread *task_thread;
+  
+  AgsApplicationContext *application_context;
+  
   GList *pad, *pad_start;
   GList *list, *list_start;
   gchar *filename, *effect;
@@ -108,6 +124,16 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
 
       machine = machine_editor->machine;
 
+      window = gtk_widget_get_toplevel(machine);
+      g_object_get(window,
+		   "application-context\0" , &application_context,
+		   NULL);
+
+      main_loop = application_context->main_loop;
+
+      task_thread = ags_thread_find_type(main_loop,
+					 AGS_TYPE_TASK_THREAD);
+      
       if(AGS_IS_OUTPUT(line_editor->channel)){
 	is_output = TRUE;
       }else{
@@ -162,12 +188,16 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
 	effect = ags_ladspa_browser_get_plugin_effect(line_member_editor->ladspa_browser);
 
 	if(line != NULL){
+	  AgsAddEffect *add_effect;
+	  
 	  ags_line_member_editor_ladspa_browser_response_create_entry();
 	
 	  /* add effect */
-	  ags_line_add_effect(line,
-			      filename,
-			      effect);
+	  add_effect = ags_add_effect_new(line->channel,
+					  filename,
+					  effect);
+	  ags_task_thread_append_task(task_thread,
+				      add_effect);
 	}
       }else{
 	AgsEffectBridge *effect_bridge;
@@ -211,12 +241,16 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
 	effect = ags_ladspa_browser_get_plugin_effect(line_member_editor->ladspa_browser);
 
 	if(effect_line != NULL){
+	  AgsAddEffect *add_effect;
+	  
 	  ags_line_member_editor_ladspa_browser_response_create_entry();
 
 	  /* add effect */
-	  ags_effect_line_add_effect(effect_line,
-				     filename,
-				     effect);
+	  add_effect = ags_add_effect_new(effect_line->channel,
+					  filename,
+					  effect);
+	  ags_task_thread_append_task(task_thread,
+				      add_effect);
 	}
       }
     }

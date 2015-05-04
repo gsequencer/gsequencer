@@ -400,22 +400,14 @@ ags_effect_line_real_add_effect(AgsEffectLine *effect_line,
 				gchar *filename,
 				gchar *effect)
 {
-  AgsWindow *window;
-  AgsMachine *machine;
   AgsLineMember *line_member;
   AgsAddLineMember *add_line_member;
   GtkAdjustment *adjustment;
 
   AgsLadspaPlugin *ladspa_plugin;
-
-  AgsThread *main_loop;
-  AgsTaskThread *task_thread;
-
-  AgsApplicationContext *application_context;
   
   GList *list, *list_start;
   GList *port;
-  GList *task;
   gdouble step;
   guint x, y;
   
@@ -427,30 +419,9 @@ ags_effect_line_real_add_effect(AgsEffectLine *effect_line,
   unsigned long index;
   unsigned long i;
 
-  machine = gtk_widget_get_ancestor(effect_line,
-				    AGS_TYPE_MACHINE);
-
-  window = gtk_widget_get_ancestor(machine,
-				   AGS_TYPE_WINDOW);
-
-  application_context = window->application_context;
-  
-  main_loop = application_context->main_loop;
-  
-  task_thread = ags_thread_find_type(main_loop,
-				     AGS_TYPE_TASK_THREAD);
-
-  if(ags_recall_ladpsa_find(effect_line->channel->recall,
-			    filename, effect) != NULL){
-    /* return if duplicated */
-    return(NULL);
-  }
-
   index = ags_ladspa_manager_effect_index(filename,
 					  effect);
 
-  task = NULL;
-  
   /* load plugin */
   ags_ladspa_manager_load_file(filename);
   ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(filename);
@@ -472,11 +443,6 @@ ags_effect_line_real_add_effect(AgsEffectLine *effect_line,
 
     list = list->next;
   }
-
-  /* add effect to channel */
-  port = ags_channel_add_effect(effect_line->channel,
-				filename,
-				effect);
 
   /* load ports */
   if(index != -1 &&
@@ -542,13 +508,12 @@ ags_effect_line_real_add_effect(AgsEffectLine *effect_line,
 	  gtk_adjustment_set_value(adjustment,
 				   lower_bound);
 
-	  /* create task */
-	  add_line_member = ags_add_line_member_new(effect_line,
-						    line_member,
-						    x, y,
-						    1, 1);
-	  task = g_list_prepend(task,
-				add_line_member);
+	  gtk_table_attach(effect_line->table,
+			   line_member,
+			   x, x + 1,
+			   y, y + 1,
+			   GTK_FILL, GTK_FILL,
+			   0, 0);
 	  
 	  x++;
 	  port = port->next;
@@ -559,11 +524,6 @@ ags_effect_line_real_add_effect(AgsEffectLine *effect_line,
     }
   }
   
-  /* launch tasks */
-  task = g_list_reverse(task);      
-  ags_task_thread_append_tasks(task_thread,
-			       task);
-
   return(port);
 }
 

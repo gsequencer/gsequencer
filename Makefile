@@ -203,6 +203,7 @@ am__objects_12 = libags_audio_a-ags_add_audio.$(OBJEXT) \
 	libags_audio_a-ags_add_audio_signal.$(OBJEXT) \
 	libags_audio_a-ags_add_note.$(OBJEXT) \
 	libags_audio_a-ags_add_point_to_selection.$(OBJEXT) \
+	libags_audio_a-ags_add_effect.$(OBJEXT) \
 	libags_audio_a-ags_remove_point_from_selection.$(OBJEXT) \
 	libags_audio_a-ags_add_region_to_selection.$(OBJEXT) \
 	libags_audio_a-ags_remove_region_from_selection.$(OBJEXT) \
@@ -1371,6 +1372,7 @@ ags_audio_task_h_sources = \
 	src/ags/audio/task/ags_add_audio_signal.h			\
 	src/ags/audio/task/ags_add_note.h				\
 	src/ags/audio/task/ags_add_point_to_selection.h			\
+	src/ags/audio/task/ags_add_effect.h				\
 	src/ags/audio/task/ags_remove_point_from_selection.h 		\
 	src/ags/audio/task/ags_add_region_to_selection.h		\
 	src/ags/audio/task/ags_remove_region_from_selection.h 		\
@@ -1417,6 +1419,7 @@ ags_audio_task_c_sources = \
 	src/ags/audio/task/ags_add_audio_signal.c			\
 	src/ags/audio/task/ags_add_note.c				\
 	src/ags/audio/task/ags_add_point_to_selection.c			\
+	src/ags/audio/task/ags_add_effect.c				\
 	src/ags/audio/task/ags_remove_point_from_selection.c 		\
 	src/ags/audio/task/ags_add_region_to_selection.c		\
 	src/ags/audio/task/ags_remove_region_from_selection.c 		\
@@ -2200,6 +2203,7 @@ include ./$(DEPDIR)/libags_a-ags_tree_iterator.Po
 include ./$(DEPDIR)/libags_audio_a-ags_acceleration.Po
 include ./$(DEPDIR)/libags_audio_a-ags_add_audio.Po
 include ./$(DEPDIR)/libags_audio_a-ags_add_audio_signal.Po
+include ./$(DEPDIR)/libags_audio_a-ags_add_effect.Po
 include ./$(DEPDIR)/libags_audio_a-ags_add_note.Po
 include ./$(DEPDIR)/libags_audio_a-ags_add_point_to_selection.Po
 include ./$(DEPDIR)/libags_audio_a-ags_add_recall.Po
@@ -3644,6 +3648,20 @@ libags_audio_a-ags_add_point_to_selection.obj: src/ags/audio/task/ags_add_point_
 #	$(AM_V_CC)source='src/ags/audio/task/ags_add_point_to_selection.c' object='libags_audio_a-ags_add_point_to_selection.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -c -o libags_audio_a-ags_add_point_to_selection.obj `if test -f 'src/ags/audio/task/ags_add_point_to_selection.c'; then $(CYGPATH_W) 'src/ags/audio/task/ags_add_point_to_selection.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/task/ags_add_point_to_selection.c'; fi`
+
+libags_audio_a-ags_add_effect.o: src/ags/audio/task/ags_add_effect.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -MT libags_audio_a-ags_add_effect.o -MD -MP -MF $(DEPDIR)/libags_audio_a-ags_add_effect.Tpo -c -o libags_audio_a-ags_add_effect.o `test -f 'src/ags/audio/task/ags_add_effect.c' || echo '$(srcdir)/'`src/ags/audio/task/ags_add_effect.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_a-ags_add_effect.Tpo $(DEPDIR)/libags_audio_a-ags_add_effect.Po
+#	$(AM_V_CC)source='src/ags/audio/task/ags_add_effect.c' object='libags_audio_a-ags_add_effect.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -c -o libags_audio_a-ags_add_effect.o `test -f 'src/ags/audio/task/ags_add_effect.c' || echo '$(srcdir)/'`src/ags/audio/task/ags_add_effect.c
+
+libags_audio_a-ags_add_effect.obj: src/ags/audio/task/ags_add_effect.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -MT libags_audio_a-ags_add_effect.obj -MD -MP -MF $(DEPDIR)/libags_audio_a-ags_add_effect.Tpo -c -o libags_audio_a-ags_add_effect.obj `if test -f 'src/ags/audio/task/ags_add_effect.c'; then $(CYGPATH_W) 'src/ags/audio/task/ags_add_effect.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/task/ags_add_effect.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_a-ags_add_effect.Tpo $(DEPDIR)/libags_audio_a-ags_add_effect.Po
+#	$(AM_V_CC)source='src/ags/audio/task/ags_add_effect.c' object='libags_audio_a-ags_add_effect.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -c -o libags_audio_a-ags_add_effect.obj `if test -f 'src/ags/audio/task/ags_add_effect.c'; then $(CYGPATH_W) 'src/ags/audio/task/ags_add_effect.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/task/ags_add_effect.c'; fi`
 
 libags_audio_a-ags_remove_point_from_selection.o: src/ags/audio/task/ags_remove_point_from_selection.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -MT libags_audio_a-ags_remove_point_from_selection.o -MD -MP -MF $(DEPDIR)/libags_audio_a-ags_remove_point_from_selection.Tpo -c -o libags_audio_a-ags_remove_point_from_selection.o `test -f 'src/ags/audio/task/ags_remove_point_from_selection.c' || echo '$(srcdir)/'`src/ags/audio/task/ags_remove_point_from_selection.c
