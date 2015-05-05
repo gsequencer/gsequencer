@@ -231,21 +231,30 @@ ags_ladspa_bridge_set_build_id(AgsPlugin *plugin, gchar *build_id)
 
 /**
  * ags_ladspa_bridge_new:
- * @ladspa_bridge: the parent ladspa_bridge
+ * @soundcard: the assigned soundcard.
  *
  * Creates an #AgsLadspaBridge
  *
  * Returns: a new #AgsLadspaBridge
  *
- * Since: 0.4
+ * Since: 0.4.3
  */
 AgsLadspaBridge*
-ags_ladspa_bridge_new()
+ags_ladspa_bridge_new(GObject *soundcard)
 {
   AgsLadspaBridge *ladspa_bridge;
+  GValue value = {0,};
 
   ladspa_bridge = (AgsLadspaBridge *) g_object_new(AGS_TYPE_LADSPA_BRIDGE,
 						   NULL);
+
+  if(soundcard != NULL){
+    g_value_init(&value, G_TYPE_OBJECT);
+    g_value_set_object(&value, soundcard);
+    g_object_set_property(G_OBJECT(AGS_MACHINE(ladspa_bridge)->audio),
+			  "soundcard\0", &value);
+    g_value_unset(&value);
+  }
 
   return(ladspa_bridge);
 }
