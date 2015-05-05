@@ -58,7 +58,8 @@ struct _AgsLadspaBridge
   gchar *version;
   gchar *build_id;
 
-  AgsAudio *audio;
+  guint mapped_output;
+  guint mapped_input;
 };
 
 struct _AgsLadspaBridgeClass
@@ -68,6 +69,6 @@ struct _AgsLadspaBridgeClass
 
 GType ags_ladspa_bridge_get_type(void);
 
-AgsLadspaBridge* ags_ladspa_bridge_new();
+AgsLadspaBridge* ags_ladspa_bridge_new(GObject *soundcard);
 
 #endif /*__AGS_LADSPA_BRIDGE_H__*/
