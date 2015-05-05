@@ -395,11 +395,15 @@ ags_thread_connect(AgsConnectable *connectable)
 {
   AgsThread *thread, *child;
 
-#ifdef AGS_DEBUG
-  g_message("thread connect\0");
-#endif
-
   thread = AGS_THREAD(connectable);
+  
+  if((AGS_THREAD_CONNECTED & (thread->flags)) != 0){
+    return;
+  }  
+
+#ifdef AGS_DEBUG
+  g_message("connecting thread\0");
+#endif
 
   child = thread->children;
 

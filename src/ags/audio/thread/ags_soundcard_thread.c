@@ -26,6 +26,8 @@
 
 #include <ags/thread/ags_timestamp_thread.h>
 
+#include <ags/audio/thread/ags_audio_loop.h>
+
 void ags_soundcard_thread_class_init(AgsSoundcardThreadClass *soundcard_thread);
 void ags_soundcard_thread_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_soundcard_thread_init(AgsSoundcardThread *soundcard_thread);
@@ -44,6 +46,9 @@ void ags_soundcard_thread_finalize(GObject *gobject);
 void ags_soundcard_thread_start(AgsThread *thread);
 void ags_soundcard_thread_run(AgsThread *thread);
 void ags_soundcard_thread_stop(AgsThread *thread);
+
+void ags_soundcard_stopped_all_callback(AgsAudioLoop *audio_loop,
+					AgsSoundcardThread *soundcard_thread);
 
 /**
  * SECTION:ags_soundcard_thread
@@ -223,9 +228,19 @@ ags_soundcard_thread_get_property(GObject *gobject,
 void
 ags_soundcard_thread_connect(AgsConnectable *connectable)
 {
+  AgsThread *audio_loop, *soundcard_thread;
+
+  soundcard_thread = AGS_SOUNDCARD_THREAD(connectable);
+
+  if((AGS_THREAD_CONNECTED & (soundcard_thread->flags)) != 0){
+    return;
+  }  
+
   ags_soundcard_thread_parent_connectable_interface->connect(connectable);
 
-  /* empty */
+  audio_loop = ags_thread_get_toplevel(soundcard_thread);
+  g_signal_connect((GObject *) audio_loop, "stopped-all\0",
+		   G_CALLBACK(ags_soundcard_stopped_all_callback), soundcard_thread);    
 }
 
 void
@@ -313,6 +328,19 @@ ags_soundcard_thread_stop(AgsThread *thread)
 
   AGS_THREAD_CLASS(ags_soundcard_thread_parent_class)->stop(thread);
   ags_soundcard_stop(soundcard);
+}
+
+void
+ags_soundcard_stopped_all_callback(AgsAudioLoop *audio_loop,
+				   AgsSoundcardThread *soundcard_thread)
+{
+  AgsSoundcard *soundcard;
+  
+  soundcard = AGS_SOUNDCARD(soundcard_thread->soundcard);
+  
+  if(ags_soundcard_is_playing(soundcard)){
+    ags_thread_stop((AgsThread *) soundcard_thread);
+  }
 }
 
 /**

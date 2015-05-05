@@ -183,20 +183,20 @@ ags_start_soundcard_launch(AgsTask *task)
        error == NULL){
       ags_task_failure(AGS_TASK(start_soundcard), soundcard_thread->error);
     }else{
-      pthread_mutex_lock(&(AGS_THREAD(soundcard_thread)->start_mutex));
+      pthread_mutex_lock(AGS_THREAD(soundcard_thread)->start_mutex);
 
       val = g_atomic_int_get(&(AGS_THREAD(soundcard_thread)->flags));
 
       if((AGS_THREAD_INITIAL_RUN & val) != 0){
 	while((AGS_THREAD_INITIAL_RUN & val) != 0){
-	  pthread_cond_wait(&(AGS_THREAD(soundcard_thread)->start_cond),
-			    &(AGS_THREAD(soundcard_thread)->start_mutex));
+	  pthread_cond_wait(AGS_THREAD(soundcard_thread)->start_cond,
+			    AGS_THREAD(soundcard_thread)->start_mutex);
 
 	  val = g_atomic_int_get(&(AGS_THREAD(soundcard_thread)->flags));
 	}
       }
     
-      pthread_mutex_unlock(&(AGS_THREAD(soundcard_thread)->start_mutex));
+      pthread_mutex_unlock(AGS_THREAD(soundcard_thread)->start_mutex);
     }
   }
 }
