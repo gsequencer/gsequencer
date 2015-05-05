@@ -78,11 +78,13 @@ gboolean
 ags_note_edit_drawing_area_configure_event(GtkWidget *widget, GdkEventConfigure *event, AgsNoteEdit *note_edit)
 {
   note_edit->flags |= AGS_NOTE_EDIT_RESETING_VERTICALLY;
-  ags_note_edit_reset_vertically(note_edit, AGS_NOTE_EDIT_RESET_VSCROLLBAR);
+  ags_note_edit_reset_vertically(note_edit, (AGS_NOTE_EDIT_RESET_VSCROLLBAR |
+					     AGS_NOTE_EDIT_RESET_WIDTH));
   note_edit->flags &= (~AGS_NOTE_EDIT_RESETING_VERTICALLY);
 
   note_edit->flags |= AGS_NOTE_EDIT_RESETING_HORIZONTALLY;
-  ags_note_edit_reset_horizontally(note_edit, AGS_NOTE_EDIT_RESET_HSCROLLBAR);
+  ags_note_edit_reset_horizontally(note_edit, (AGS_NOTE_EDIT_RESET_HSCROLLBAR |
+					       AGS_NOTE_EDIT_RESET_WIDTH));
   note_edit->flags &= (~AGS_NOTE_EDIT_RESETING_HORIZONTALLY);  
 
   return(FALSE);

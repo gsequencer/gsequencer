@@ -219,6 +219,7 @@ ags_synth_init(AgsSynth *synth)
   GtkMenu *menu;
   GtkHBox *hbox;
   GtkVBox *vbox;
+  GtkVBox *control_vbox;
   GtkTable *table;
   GtkLabel *label;
   GtkFrame *frame;
@@ -254,30 +255,46 @@ ags_synth_init(AgsSynth *synth)
 
   synth->mapped_input_pad = 0;
   synth->mapped_output_pad = 0;
- 
+
+  vbox = (GtkHBox *) gtk_vbox_new(FALSE, 0);
+  gtk_container_add((GtkContainer*) (gtk_bin_get_child((GtkBin *) synth)), (GtkWidget *) vbox);
+
   hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-  gtk_container_add((GtkContainer*) (gtk_bin_get_child((GtkBin *) synth)), (GtkWidget *) hbox);
+  gtk_box_pack_start((GtkBox *) vbox,
+		     (GtkWidget *) hbox,
+		     FALSE, FALSE,
+		     0);
 
   synth->input_pad = (GtkHBox *) gtk_vbox_new(FALSE, 0);
   AGS_MACHINE(synth)->input = synth->input_pad;
   gtk_box_pack_start((GtkBox *) hbox,
 		     (GtkWidget *) AGS_MACHINE(synth)->input,
-		     FALSE,
-		     FALSE,
+		     FALSE, FALSE,
 		     0);
 
-  vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
-  gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) vbox, FALSE, FALSE, 0);
+  /* generic controls */
+  control_vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
+  gtk_box_pack_start((GtkBox *) hbox,
+		     (GtkWidget *) control_vbox,
+		     FALSE, FALSE,
+		     0);
 
   synth->auto_update = (GtkCheckButton *) gtk_check_button_new_with_label(g_strdup("auto update\0"));
-  gtk_box_pack_start((GtkBox *) vbox, (GtkWidget *) synth->auto_update, FALSE, FALSE, 0);
+  gtk_box_pack_start((GtkBox *) control_vbox,
+		     (GtkWidget *) synth->auto_update,
+		     FALSE, FALSE,
+		     0);
 
   synth->update = (GtkButton *) gtk_button_new_with_label(g_strdup("update\0"));
-  gtk_box_pack_start((GtkBox *) vbox, (GtkWidget *) synth->update, FALSE, FALSE, 0);
+  gtk_box_pack_start((GtkBox *) control_vbox, (GtkWidget *) synth->update, FALSE, FALSE, 0);
 
 
+  /* base frequency and loop control */
   table = (GtkTable *) gtk_table_new(4, 2, FALSE);
-  gtk_box_pack_start((GtkBox *) vbox, (GtkWidget *) table, FALSE, FALSE, 0);
+  gtk_box_pack_start((GtkBox *) control_vbox,
+		     (GtkWidget *) table,
+		     FALSE, FALSE,
+		     0);
 
   
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
@@ -339,8 +356,9 @@ ags_synth_init(AgsSynth *synth)
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
+  /* effect bridge */
   AGS_MACHINE(synth)->bridge = ags_synth_bridge_new(audio);
-  gtk_box_pack_start((GtkBox *) hbox,
+  gtk_box_pack_start((GtkBox *) vbox,
 		     (GtkWidget *) AGS_MACHINE(synth)->bridge,
 		     FALSE, FALSE,
 		     0);

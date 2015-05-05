@@ -28,7 +28,7 @@ extern GtkStyle *matrix_style;
 extern GtkStyle *ffplayer_style;
 extern GtkStyle *editor_style;
 extern GtkStyle *notebook_style;
-extern GtkStyle *meter_style;
+extern GtkStyle *piano_style;
 extern GtkStyle *note_edit_style;
 
 void
@@ -203,32 +203,32 @@ ags_xorg_colors_alloc()
     //    ruler_style->base[0].pixel = (gulong)(250*65536 + 250*256 + 250);
 
 
-    /* meter style */
-    meter_style = gtk_style_new();
-    meter_style->fg[0].red = 100 * (65535/255);
-    meter_style->fg[0].green = 200 *(65535/255);
-    meter_style->fg[0].blue = 255 * (65535/255);
-    meter_style->fg[0].pixel = (gulong)(100*65536 + 200*256 + 255);
+    /* piano style */
+    piano_style = gtk_style_new();
+    piano_style->fg[0].red = 100 * (65535/255);
+    piano_style->fg[0].green = 200 *(65535/255);
+    piano_style->fg[0].blue = 255 * (65535/255);
+    piano_style->fg[0].pixel = (gulong)(100*65536 + 200*256 + 255);
 
-    meter_style->bg[0].red = 40 * (65535/255);
-    meter_style->bg[0].green = 40 *(65535/255);
-    meter_style->bg[0].blue = 40 * (65535/255);
-    meter_style->bg[0].pixel = (gulong)(40*65536 + 40*256 + 40);
+    piano_style->bg[0].red = 40 * (65535/255);
+    piano_style->bg[0].green = 40 *(65535/255);
+    piano_style->bg[0].blue = 40 * (65535/255);
+    piano_style->bg[0].pixel = (gulong)(40*65536 + 40*256 + 40);
 
-    meter_style->mid[0].red = 10 * (65535/255);
-    meter_style->mid[0].green = 20 *(65535/255);
-    meter_style->mid[0].blue = 230 * (65535/255);
-    meter_style->mid[0].pixel = (gulong)(10*65536 + 20*256 + 230);
+    piano_style->mid[0].red = 10 * (65535/255);
+    piano_style->mid[0].green = 20 *(65535/255);
+    piano_style->mid[0].blue = 230 * (65535/255);
+    piano_style->mid[0].pixel = (gulong)(10*65536 + 20*256 + 230);
 
-    meter_style->light[0].red = 0 * (65535/255);
-    meter_style->light[0].green = 150 *(65535/255);
-    meter_style->light[0].blue = 255 * (65535/255);
-    meter_style->light[0].pixel = (gulong)(150*65536 + 150*256 + 250);
+    piano_style->light[0].red = 0 * (65535/255);
+    piano_style->light[0].green = 150 *(65535/255);
+    piano_style->light[0].blue = 255 * (65535/255);
+    piano_style->light[0].pixel = (gulong)(150*65536 + 150*256 + 250);
 
-    meter_style->base[0].red = 0 * (65535/255);
-    meter_style->base[0].green = 0 *(65535/255);
-    meter_style->base[0].blue = 0 * (65535/255);
-    meter_style->base[0].pixel = (gulong)(0*65536 + 0*256 + 0);
+    piano_style->base[0].red = 0 * (65535/255);
+    piano_style->base[0].green = 0 *(65535/255);
+    piano_style->base[0].blue = 0 * (65535/255);
+    piano_style->base[0].pixel = (gulong)(0*65536 + 0*256 + 0);
 
 
     /* note_edit style */

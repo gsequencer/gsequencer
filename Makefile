@@ -501,8 +501,8 @@ am__objects_29 = $(am__objects_1) \
 	gsequencer-ags_machine_selection.$(OBJEXT) \
 	gsequencer-ags_machine_selector_callbacks.$(OBJEXT) \
 	gsequencer-ags_machine_selector.$(OBJEXT) \
-	gsequencer-ags_meter_callbacks.$(OBJEXT) \
-	gsequencer-ags_meter.$(OBJEXT) \
+	gsequencer-ags_piano_callbacks.$(OBJEXT) \
+	gsequencer-ags_piano.$(OBJEXT) \
 	gsequencer-ags_notebook_callbacks.$(OBJEXT) \
 	gsequencer-ags_notebook.$(OBJEXT) \
 	gsequencer-ags_note_edit_callbacks.$(OBJEXT) \
@@ -1800,8 +1800,8 @@ gsequencer_editor_h_sources = \
 	src/ags/X/editor/ags_machine_selection.h			\
 	src/ags/X/editor/ags_machine_selector_callbacks.h	\
 	src/ags/X/editor/ags_machine_selector.h			\
-	src/ags/X/editor/ags_meter_callbacks.h			\
-	src/ags/X/editor/ags_meter.h				\
+	src/ags/X/editor/ags_piano_callbacks.h			\
+	src/ags/X/editor/ags_piano.h				\
 	src/ags/X/editor/ags_notebook_callbacks.h		\
 	src/ags/X/editor/ags_notebook.h				\
 	src/ags/X/editor/ags_note_edit_callbacks.h		\
@@ -1835,8 +1835,8 @@ gsequencer_editor_c_sources = \
 	src/ags/X/editor/ags_machine_selection.c			\
 	src/ags/X/editor/ags_machine_selector_callbacks.c	\
 	src/ags/X/editor/ags_machine_selector.c			\
-	src/ags/X/editor/ags_meter_callbacks.c			\
-	src/ags/X/editor/ags_meter.c				\
+	src/ags/X/editor/ags_piano_callbacks.c			\
+	src/ags/X/editor/ags_piano.c				\
 	src/ags/X/editor/ags_notebook_callbacks.c		\
 	src/ags/X/editor/ags_notebook.c				\
 	src/ags/X/editor/ags_note_edit_callbacks.c		\
@@ -2095,8 +2095,6 @@ include ./$(DEPDIR)/gsequencer-ags_matrix_bulk_input_callbacks.Po
 include ./$(DEPDIR)/gsequencer-ags_matrix_callbacks.Po
 include ./$(DEPDIR)/gsequencer-ags_menu_bar.Po
 include ./$(DEPDIR)/gsequencer-ags_menu_bar_callbacks.Po
-include ./$(DEPDIR)/gsequencer-ags_meter.Po
-include ./$(DEPDIR)/gsequencer-ags_meter_callbacks.Po
 include ./$(DEPDIR)/gsequencer-ags_mixer.Po
 include ./$(DEPDIR)/gsequencer-ags_mixer_callbacks.Po
 include ./$(DEPDIR)/gsequencer-ags_mixer_input_line.Po
@@ -2121,6 +2119,8 @@ include ./$(DEPDIR)/gsequencer-ags_pattern_edit.Po
 include ./$(DEPDIR)/gsequencer-ags_pattern_edit_callbacks.Po
 include ./$(DEPDIR)/gsequencer-ags_performance_preferences.Po
 include ./$(DEPDIR)/gsequencer-ags_performance_preferences_callbacks.Po
+include ./$(DEPDIR)/gsequencer-ags_piano.Po
+include ./$(DEPDIR)/gsequencer-ags_piano_callbacks.Po
 include ./$(DEPDIR)/gsequencer-ags_plugin_preferences.Po
 include ./$(DEPDIR)/gsequencer-ags_plugin_preferences_callbacks.Po
 include ./$(DEPDIR)/gsequencer-ags_port_selection.Po
@@ -7443,33 +7443,33 @@ gsequencer-ags_machine_selector.obj: src/ags/X/editor/ags_machine_selector.c
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_machine_selector.obj `if test -f 'src/ags/X/editor/ags_machine_selector.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_machine_selector.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_machine_selector.c'; fi`
 
-gsequencer-ags_meter_callbacks.o: src/ags/X/editor/ags_meter_callbacks.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_meter_callbacks.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_meter_callbacks.Tpo -c -o gsequencer-ags_meter_callbacks.o `test -f 'src/ags/X/editor/ags_meter_callbacks.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_meter_callbacks.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_meter_callbacks.Tpo $(DEPDIR)/gsequencer-ags_meter_callbacks.Po
-#	$(AM_V_CC)source='src/ags/X/editor/ags_meter_callbacks.c' object='gsequencer-ags_meter_callbacks.o' libtool=no \
+gsequencer-ags_piano_callbacks.o: src/ags/X/editor/ags_piano_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_piano_callbacks.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_piano_callbacks.Tpo -c -o gsequencer-ags_piano_callbacks.o `test -f 'src/ags/X/editor/ags_piano_callbacks.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_piano_callbacks.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_piano_callbacks.Tpo $(DEPDIR)/gsequencer-ags_piano_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/editor/ags_piano_callbacks.c' object='gsequencer-ags_piano_callbacks.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_meter_callbacks.o `test -f 'src/ags/X/editor/ags_meter_callbacks.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_meter_callbacks.c
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_piano_callbacks.o `test -f 'src/ags/X/editor/ags_piano_callbacks.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_piano_callbacks.c
 
-gsequencer-ags_meter_callbacks.obj: src/ags/X/editor/ags_meter_callbacks.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_meter_callbacks.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_meter_callbacks.Tpo -c -o gsequencer-ags_meter_callbacks.obj `if test -f 'src/ags/X/editor/ags_meter_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_meter_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_meter_callbacks.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_meter_callbacks.Tpo $(DEPDIR)/gsequencer-ags_meter_callbacks.Po
-#	$(AM_V_CC)source='src/ags/X/editor/ags_meter_callbacks.c' object='gsequencer-ags_meter_callbacks.obj' libtool=no \
+gsequencer-ags_piano_callbacks.obj: src/ags/X/editor/ags_piano_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_piano_callbacks.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_piano_callbacks.Tpo -c -o gsequencer-ags_piano_callbacks.obj `if test -f 'src/ags/X/editor/ags_piano_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_piano_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_piano_callbacks.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_piano_callbacks.Tpo $(DEPDIR)/gsequencer-ags_piano_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/editor/ags_piano_callbacks.c' object='gsequencer-ags_piano_callbacks.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_meter_callbacks.obj `if test -f 'src/ags/X/editor/ags_meter_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_meter_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_meter_callbacks.c'; fi`
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_piano_callbacks.obj `if test -f 'src/ags/X/editor/ags_piano_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_piano_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_piano_callbacks.c'; fi`
 
-gsequencer-ags_meter.o: src/ags/X/editor/ags_meter.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_meter.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_meter.Tpo -c -o gsequencer-ags_meter.o `test -f 'src/ags/X/editor/ags_meter.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_meter.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_meter.Tpo $(DEPDIR)/gsequencer-ags_meter.Po
-#	$(AM_V_CC)source='src/ags/X/editor/ags_meter.c' object='gsequencer-ags_meter.o' libtool=no \
+gsequencer-ags_piano.o: src/ags/X/editor/ags_piano.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_piano.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_piano.Tpo -c -o gsequencer-ags_piano.o `test -f 'src/ags/X/editor/ags_piano.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_piano.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_piano.Tpo $(DEPDIR)/gsequencer-ags_piano.Po
+#	$(AM_V_CC)source='src/ags/X/editor/ags_piano.c' object='gsequencer-ags_piano.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_meter.o `test -f 'src/ags/X/editor/ags_meter.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_meter.c
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_piano.o `test -f 'src/ags/X/editor/ags_piano.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_piano.c
 
-gsequencer-ags_meter.obj: src/ags/X/editor/ags_meter.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_meter.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_meter.Tpo -c -o gsequencer-ags_meter.obj `if test -f 'src/ags/X/editor/ags_meter.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_meter.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_meter.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_meter.Tpo $(DEPDIR)/gsequencer-ags_meter.Po
-#	$(AM_V_CC)source='src/ags/X/editor/ags_meter.c' object='gsequencer-ags_meter.obj' libtool=no \
+gsequencer-ags_piano.obj: src/ags/X/editor/ags_piano.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_piano.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_piano.Tpo -c -o gsequencer-ags_piano.obj `if test -f 'src/ags/X/editor/ags_piano.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_piano.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_piano.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_piano.Tpo $(DEPDIR)/gsequencer-ags_piano.Po
+#	$(AM_V_CC)source='src/ags/X/editor/ags_piano.c' object='gsequencer-ags_piano.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_meter.obj `if test -f 'src/ags/X/editor/ags_meter.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_meter.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_meter.c'; fi`
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_piano.obj `if test -f 'src/ags/X/editor/ags_piano.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_piano.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_piano.c'; fi`
 
 gsequencer-ags_notebook_callbacks.o: src/ags/X/editor/ags_notebook_callbacks.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_notebook_callbacks.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_notebook_callbacks.Tpo -c -o gsequencer-ags_notebook_callbacks.o `test -f 'src/ags/X/editor/ags_notebook_callbacks.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_notebook_callbacks.c

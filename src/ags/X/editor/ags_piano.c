@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <ags/X/editor/ags_meter.h>
-#include <ags/X/editor/ags_meter_callbacks.h>
+#include <ags/X/editor/ags_piano.h>
+#include <ags/X/editor/ags_piano_callbacks.h>
 
 #include <ags/object/ags_connectable.h>
 
@@ -25,85 +25,85 @@
 
 #include <math.h>
 
-void ags_meter_class_init(AgsMeterClass *meter);
-void ags_meter_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_meter_init(AgsMeter *meter);
-void ags_meter_connect(AgsConnectable *connectable);
-void ags_meter_disconnect(AgsConnectable *connectable);
-void ags_meter_destroy(GtkObject *object);
-void ags_meter_show(GtkWidget *widget);
+void ags_piano_class_init(AgsPianoClass *piano);
+void ags_piano_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_piano_init(AgsPiano *piano);
+void ags_piano_connect(AgsConnectable *connectable);
+void ags_piano_disconnect(AgsConnectable *connectable);
+void ags_piano_destroy(GtkObject *object);
+void ags_piano_show(GtkWidget *widget);
 
 /**
- * SECTION:ags_meter
+ * SECTION:ags_piano
  * @short_description: piano widget
- * @title: AgsMeter
+ * @title: AgsPiano
  * @section_id:
- * @include: ags/X/editor/ags_meter.h
+ * @include: ags/X/editor/ags_piano.h
  *
- * The #AgsMeter draws you a piano.
+ * The #AgsPiano draws you a piano.
  */
 
-GtkStyle *meter_style;
+GtkStyle *piano_style;
 
 GType
-ags_meter_get_type(void)
+ags_piano_get_type(void)
 {
-  static GType ags_type_meter = 0;
+  static GType ags_type_piano = 0;
 
-  if (!ags_type_meter){
-    static const GTypeInfo ags_meter_info = {
-      sizeof (AgsMeterClass),
+  if (!ags_type_piano){
+    static const GTypeInfo ags_piano_info = {
+      sizeof (AgsPianoClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
-      (GClassInitFunc) ags_meter_class_init,
+      (GClassInitFunc) ags_piano_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsMeter),
+      sizeof (AgsPiano),
       0,    /* n_preallocs */
-      (GInstanceInitFunc) ags_meter_init,
+      (GInstanceInitFunc) ags_piano_init,
     };
 
     static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_meter_connectable_interface_init,
+      (GInterfaceInitFunc) ags_piano_connectable_interface_init,
       NULL, /* interface_finalize */
       NULL, /* interface_data */
     };
 
-    ags_type_meter = g_type_register_static(GTK_TYPE_DRAWING_AREA,
-					    "AgsMeter\0", &ags_meter_info,
+    ags_type_piano = g_type_register_static(GTK_TYPE_DRAWING_AREA,
+					    "AgsPiano\0", &ags_piano_info,
 					    0);
     
-    g_type_add_interface_static(ags_type_meter,
+    g_type_add_interface_static(ags_type_piano,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
   }
 
-  return (ags_type_meter);
+  return (ags_type_piano);
 }
 
 void
-ags_meter_class_init(AgsMeterClass *meter)
+ags_piano_class_init(AgsPianoClass *piano)
 {
 }
 
 void
-ags_meter_connectable_interface_init(AgsConnectableInterface *connectable)
+ags_piano_connectable_interface_init(AgsConnectableInterface *connectable)
 {
   connectable->is_ready = NULL;
   connectable->is_connected = NULL;
-  connectable->connect = ags_meter_connect;
-  connectable->disconnect = ags_meter_disconnect;
+  connectable->connect = ags_piano_connect;
+  connectable->disconnect = ags_piano_disconnect;
 }
 
 void
-ags_meter_init(AgsMeter *meter)
+ags_piano_init(AgsPiano *piano)
 {
   GtkWidget *widget;
 
-  widget = (GtkWidget *) meter;
-  gtk_widget_set_style(widget, meter_style);
+  widget = (GtkWidget *) piano;
+  gtk_widget_set_style(widget, piano_style);
   gtk_widget_set_size_request(widget, 60, -1);
-  gtk_widget_set_events (GTK_WIDGET (meter), GDK_EXPOSURE_MASK
+  gtk_widget_set_events (GTK_WIDGET (piano), GDK_EXPOSURE_MASK
                          | GDK_LEAVE_NOTIFY_MASK
                          | GDK_BUTTON_PRESS_MASK
 			 | GDK_BUTTON_RELEASE_MASK
@@ -111,27 +111,27 @@ ags_meter_init(AgsMeter *meter)
 }
 
 void
-ags_meter_connect(AgsConnectable *connectable)
+ags_piano_connect(AgsConnectable *connectable)
 {
-  AgsMeter *meter;
+  AgsPiano *piano;
 
-  meter = AGS_METER(connectable);
+  piano = AGS_PIANO(connectable);
 
-  g_signal_connect((GObject *) meter, "expose_event\0",
-  		   G_CALLBACK(ags_meter_expose_event), (gpointer) meter);
+  g_signal_connect((GObject *) piano, "expose_event\0",
+  		   G_CALLBACK(ags_piano_expose_event), (gpointer) piano);
 
-  g_signal_connect((GObject *) meter, "configure_event\0",
-  		   G_CALLBACK(ags_meter_configure_event), (gpointer) meter);
+  g_signal_connect((GObject *) piano, "configure_event\0",
+  		   G_CALLBACK(ags_piano_configure_event), (gpointer) piano);
 }
 
 void
-ags_meter_disconnect(AgsConnectable *connectable)
+ags_piano_disconnect(AgsConnectable *connectable)
 {
   //TODO:JK: implement me
 }
 
 void
-ags_meter_paint(AgsMeter *meter)
+ags_piano_paint(AgsPiano *piano)
 {
   AgsEditor *editor;
   GtkWidget *widget;
@@ -141,7 +141,7 @@ ags_meter_paint(AgsMeter *meter)
   guint i, i_stop, j, j0;
   guint border_top;
 
-  widget = (GtkWidget *) meter;
+  widget = (GtkWidget *) piano;
   editor = (AgsEditor *) gtk_widget_get_ancestor(widget, AGS_TYPE_EDITOR);
 
   border_top = 24; // see ags_ruler.c
@@ -267,18 +267,18 @@ ags_meter_paint(AgsMeter *meter)
 }
 
 /**
- * ags_meter_new:
+ * ags_piano_new:
  *
- * Create a new #AgsMeter.
+ * Create a new #AgsPiano.
  *
  * Since: 0.4
  */
-AgsMeter*
-ags_meter_new()
+AgsPiano*
+ags_piano_new()
 {
-  AgsMeter *meter;
+  AgsPiano *piano;
 
-  meter = (AgsMeter *) g_object_new(AGS_TYPE_METER, NULL);
+  piano = (AgsPiano *) g_object_new(AGS_TYPE_PIANO, NULL);
 
-  return(meter);
+  return(piano);
 }

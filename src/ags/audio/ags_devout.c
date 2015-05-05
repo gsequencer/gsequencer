@@ -101,6 +101,10 @@ void ags_devout_alsa_play(AgsSoundcard *soundcard,
 			  GError **error);
 void ags_devout_alsa_free(AgsSoundcard *soundcard);
 
+void ags_devout_tic(AgsSoundcard *soundcard);
+void ags_devout_offset_changed(AgsSoundcard *soundcard,
+			       guint note_offset);
+
 void ags_devout_set_bpm(AgsSoundcard *soundcard,
 			gdouble bpm);
 gdouble ags_devout_get_bpm(AgsSoundcard *soundcard);
@@ -413,9 +417,9 @@ ags_devout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
   soundcard->play = ags_devout_alsa_play;
   soundcard->stop = ags_devout_alsa_free;
 
-  soundcard->tic = NULL;
-  soundcard->offset_changed = NULL;
-  
+  soundcard->tic = ags_devout_tic;
+  soundcard->offset_changed = ags_devout_offset_changed;
+    
   soundcard->set_bpm = ags_devout_set_bpm;
   soundcard->get_bpm = ags_devout_get_bpm;
   
@@ -1405,28 +1409,10 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
     //      g_message("ags_devout_play 3\0");
   }
 
-  /* determine if attack should be switched */
-  delay = devout->delay[devout->tic_counter];
-  devout->delay_counter += 1.0;
-
-  ///TODO:JK: fix me
-  if(devout->delay_counter >= delay){ //devout->delay[devout->tic_counter]
-    devout->tic_counter += 1;
-
-    if(devout->tic_counter == AGS_SOUNDCARD_DEFAULT_PERIOD){
-      devout->tic_counter = 0;
-    }
-
-    /* delay */
-    devout->delay_counter = 0.0;
-    ags_soundcard_offset_changed(soundcard,
-				 devout->note_offset);
-  } 
-
   /* tic */
   ags_soundcard_tic(soundcard);
 
-  /* switch buffer flags */
+  /* reset - switch buffer flags */
   ags_devout_switch_buffer_flag(devout);
 
   snd_pcm_prepare(devout->out.alsa.handle);
@@ -1447,6 +1433,44 @@ ags_devout_alsa_free(AgsSoundcard *soundcard)
 		      AGS_DEVOUT_BUFFER2 |
 		      AGS_DEVOUT_BUFFER3 |
 		      AGS_DEVOUT_PLAY));
+}
+
+void
+ags_devout_tic(AgsSoundcard *soundcard)
+{
+  AgsDevout *devout;
+  gdouble delay;
+  
+  devout = AGS_DEVOUT(soundcard);
+  
+  /* determine if attack should be switched */
+  delay = devout->delay[devout->tic_counter];
+  devout->delay_counter += 1.0;
+
+  if(devout->delay_counter >= delay){
+    /* delay */
+    ags_soundcard_offset_changed(soundcard,
+				 devout->note_offset);
+    
+    /* reset - delay counter */
+    devout->delay_counter = 0.0;
+  } 
+}
+
+void
+ags_devout_offset_changed(AgsSoundcard *soundcard,
+			  guint note_offset)
+{
+  AgsDevout *devout;
+  
+  devout = AGS_DEVOUT(soundcard);
+
+  devout->tic_counter += 1;
+
+  if(devout->tic_counter == AGS_SOUNDCARD_DEFAULT_PERIOD){
+    /* reset - tic counter i.e. modified delay index within period */
+    devout->tic_counter = 0;
+  }
 }
 
 void

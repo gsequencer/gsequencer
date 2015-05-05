@@ -15,8 +15,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-#ifndef __AGS_METER_H__
-#define __AGS_METER_H__
+#ifndef __AGS_PIANO_H__
+#define __AGS_PIANO_H__
 
 #include <glib.h>
 #include <glib-object.h>
@@ -24,31 +24,31 @@
 
 #include <cairo.h>
 
-#define AGS_TYPE_METER                (ags_meter_get_type())
-#define AGS_METER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_METER, AgsMeter))
-#define AGS_METER_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_METER, AgsMeterClass))
-#define AGS_IS_METER(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_METER))
-#define AGS_IS_METER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_METER))
-#define AGS_METER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS (obj, AGS_TYPE_METER, AgsMeterClass))
+#define AGS_TYPE_PIANO                (ags_piano_get_type())
+#define AGS_PIANO(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PIANO, AgsPiano))
+#define AGS_PIANO_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_PIANO, AgsPianoClass))
+#define AGS_IS_PIANO(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_PIANO))
+#define AGS_IS_PIANO_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_PIANO))
+#define AGS_PIANO_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS (obj, AGS_TYPE_PIANO, AgsPianoClass))
 
-typedef struct _AgsMeter AgsMeter;
-typedef struct _AgsMeterClass AgsMeterClass;
+typedef struct _AgsPiano AgsPiano;
+typedef struct _AgsPianoClass AgsPianoClass;
 
-struct _AgsMeter
+struct _AgsPiano
 {
   GtkDrawingArea drawing_area;
 };
 
-struct _AgsMeterClass
+struct _AgsPianoClass
 {
   GtkDrawingAreaClass drawing_area;
 };
 
-GType ags_meter_get_type(void);
+GType ags_piano_get_type(void);
 
-char* ags_meter_sound_string();
-void ags_meter_paint(AgsMeter *meter); // , guint rows, guint nth_y, guint y0
+char* ags_piano_sound_string();
+void ags_piano_paint(AgsPiano *piano); // , guint rows, guint nth_y, guint y0
 
-AgsMeter* ags_meter_new();
+AgsPiano* ags_piano_new();
 
-#endif /*__AGS_METER_H__*/
+#endif /*__AGS_PIANO_H__*/

@@ -1043,8 +1043,8 @@ gsequencer_editor_h_sources = \
 	src/ags/X/editor/ags_machine_selection.h			\
 	src/ags/X/editor/ags_machine_selector_callbacks.h	\
 	src/ags/X/editor/ags_machine_selector.h			\
-	src/ags/X/editor/ags_meter_callbacks.h			\
-	src/ags/X/editor/ags_meter.h				\
+	src/ags/X/editor/ags_piano_callbacks.h			\
+	src/ags/X/editor/ags_piano.h				\
 	src/ags/X/editor/ags_notebook_callbacks.h		\
 	src/ags/X/editor/ags_notebook.h				\
 	src/ags/X/editor/ags_note_edit_callbacks.h		\
@@ -1079,8 +1079,8 @@ gsequencer_editor_c_sources = \
 	src/ags/X/editor/ags_machine_selection.c			\
 	src/ags/X/editor/ags_machine_selector_callbacks.c	\
 	src/ags/X/editor/ags_machine_selector.c			\
-	src/ags/X/editor/ags_meter_callbacks.c			\
-	src/ags/X/editor/ags_meter.c				\
+	src/ags/X/editor/ags_piano_callbacks.c			\
+	src/ags/X/editor/ags_piano.c				\
 	src/ags/X/editor/ags_notebook_callbacks.c		\
 	src/ags/X/editor/ags_notebook.c				\
 	src/ags/X/editor/ags_note_edit_callbacks.c		\

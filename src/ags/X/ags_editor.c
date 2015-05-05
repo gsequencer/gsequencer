@@ -219,7 +219,7 @@ ags_editor_init(AgsEditor *editor)
 		   GTK_FILL|GTK_EXPAND, GTK_FILL,
 		   0, 0);
 
-  editor->piano.meter = NULL;
+  editor->meter.piano = NULL;
   editor->edit.note_edit = NULL;
 
   editor->tact_counter = 0;
@@ -344,13 +344,13 @@ ags_editor_real_machine_changed(AgsEditor *editor, AgsMachine *machine)
   if((AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0){
     editor->flags |= AGS_EDITOR_TOOL_NOTE_EDIT;
 
-    editor->piano.meter = ags_meter_new();
-    gtk_table_attach(editor->table, (GtkWidget *) editor->piano.meter,
+    editor->meter.piano = ags_piano_new();
+    gtk_table_attach(editor->table, (GtkWidget *) editor->meter.piano,
 		     0, 1, 1, 2,
 		     GTK_FILL, GTK_FILL,
 		     0, 0);
-    ags_connectable_connect(AGS_CONNECTABLE(editor->piano.meter));
-    gtk_widget_show_all(editor->piano.meter);
+    ags_connectable_connect(AGS_CONNECTABLE(editor->meter.piano));
+    gtk_widget_show_all(editor->meter.piano);
 
     editor->edit.note_edit = ags_note_edit_new();
     gtk_table_attach(table, (GtkWidget *) editor->edit.note_edit,
@@ -368,13 +368,13 @@ ags_editor_real_machine_changed(AgsEditor *editor, AgsMachine *machine)
   }else if((AGS_MACHINE_IS_SEQUENCER & (machine->flags)) != 0){
     editor->flags |= AGS_EDITOR_TOOL_PATTERN_EDIT;
 
-    editor->piano.soundset = ags_soundset_new();
-    gtk_table_attach(editor->table, (GtkWidget *) editor->piano.soundset,
+    editor->meter.soundset = ags_soundset_new();
+    gtk_table_attach(editor->table, (GtkWidget *) editor->meter.soundset,
 		     0, 1, 1, 2,
 		     GTK_FILL, GTK_FILL,
 		     0, 0);
-    ags_connectable_connect(AGS_CONNECTABLE(editor->piano.soundset));
-    gtk_widget_show_all(editor->piano.soundset);
+    ags_connectable_connect(AGS_CONNECTABLE(editor->meter.soundset));
+    gtk_widget_show_all(editor->meter.soundset);
 
     editor->edit.pattern_edit = ags_pattern_edit_new();
     gtk_table_attach(table, (GtkWidget *) editor->edit.pattern_edit,
