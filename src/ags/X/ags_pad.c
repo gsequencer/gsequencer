@@ -46,8 +46,6 @@ gchar* ags_pad_get_version(AgsPlugin *plugin);
 void ags_pad_set_version(AgsPlugin *plugin, gchar *version);
 gchar* ags_pad_get_build_id(AgsPlugin *plugin);
 void ags_pad_set_build_id(AgsPlugin *plugin, gchar *build_id);
-void ags_pad_destroy(GtkObject *object);
-void ags_pad_show(GtkWidget *widget);
 
 void ags_pad_real_set_channel(AgsPad *pad, AgsChannel *channel);
 void ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
@@ -371,14 +369,6 @@ ags_pad_connect(AgsConnectable *connectable)
     pad->flags &= (~AGS_PAD_PREMAPPED_RECALL);
   }
 
-  /* GtkObject */
-  g_signal_connect((GObject *) pad, "destroy\0",
-		   G_CALLBACK(ags_pad_destroy_callback), (gpointer) pad);
-
-  /* GtkWidget */
-  g_signal_connect((GObject *) pad, "show\0",
-		   G_CALLBACK(ags_pad_show_callback), (gpointer) pad);
-
   /* GtkButton */
   g_signal_connect_after((GObject *) pad->group, "clicked\0",
 			 G_CALLBACK(ags_pad_group_clicked_callback), (gpointer) pad);
@@ -438,20 +428,6 @@ ags_pad_set_build_id(AgsPlugin *plugin, gchar *build_id)
   pad = AGS_PAD(plugin);
 
   pad->build_id = build_id;
-}
-
-void
-ags_pad_destroy(GtkObject *object)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_pad_show(GtkWidget *widget)
-{
-  AgsPad *pad;
-
-  pad = AGS_PAD(widget);
 }
 
 void

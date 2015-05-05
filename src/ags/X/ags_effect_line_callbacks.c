@@ -17,3 +17,12 @@
  */
 
 #include <ags/X/ags_effect_line_callbacks.h>
+
+GList*
+ags_effect_line_add_effect_callback(AgsChannel *channel,
+				    gchar *filename, gchar *effect,
+				    AgsEffectLine *effect_line)
+{
+  return(ags_effect_line_add_effect(effect_line,
+				    filename, effect));
+}

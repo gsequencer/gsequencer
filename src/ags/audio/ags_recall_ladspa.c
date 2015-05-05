@@ -281,6 +281,10 @@ ags_recall_ladspa_set_property(GObject *gobject,
 	return;
       }
 
+      if(recall_ladspa->effect != NULL){
+	g_free(recall_ladspa->effect);
+      }
+
       recall_ladspa->effect = g_strdup(effect);
     }
     break;

@@ -56,6 +56,15 @@ ags_line_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsLine *
   }
 }
 
+GList*
+ags_line_add_effect_callback(AgsChannel *channel,
+			     gchar *filename, gchar *effect,
+			     AgsLine *line)
+{
+  return(ags_line_add_effect(line,
+			     filename, effect));
+}
+
 void
 ags_line_remove_recall_callback(AgsRecall *recall, AgsLine *line)
 {

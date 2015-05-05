@@ -2036,15 +2036,15 @@ ags_recall_get_by_effect(GList *recall, gchar *filename, gchar *effect)
 
   list = NULL;
 
-  while(current != NULL){
-    current = AGS_RECALL(list->data);
+  while(recall != NULL){
+    current = AGS_RECALL(recall->data);
     
     if(filename != NULL){
-      if(AGS_IS_RECALL_LADSPA(recall) &&
+      if(AGS_IS_RECALL_LADSPA(current) &&
 	 !g_strcmp0(AGS_RECALL_LADSPA(current)->filename, filename) &&
 	 !g_strcmp0(AGS_RECALL_LADSPA(current)->effect, effect)){
 	list = g_list_prepend(list,
-			      current);
+			      current);	  
       }
     }else{
       if(!g_strcmp0(current->effect, effect)){

@@ -286,7 +286,37 @@ ags_effect_pad_get_property(GObject *gobject,
 void
 ags_effect_pad_connect(AgsConnectable *connectable)
 {
-  //TODO:JK: implement me
+  AgsEffectPad *effect_pad;
+  GList *effect_line_list, *effect_line_list_start;
+
+  /* AgsEffect_Pad */
+  effect_pad = AGS_EFFECT_PAD(connectable);
+
+  if((AGS_EFFECT_PAD_CONNECTED & (effect_pad->flags)) != 0){
+    return;
+  }
+  
+  effect_pad->flags |= AGS_EFFECT_PAD_CONNECTED;
+
+  if((AGS_EFFECT_PAD_PREMAPPED_RECALL & (effect_pad->flags)) == 0){
+    if((AGS_EFFECT_PAD_MAPPED_RECALL & (effect_pad->flags)) == 0){
+      //TODO:JK: implement me
+    }
+  }else{
+    effect_pad->flags &= (~AGS_EFFECT_PAD_PREMAPPED_RECALL);
+  }
+
+  /* AgsEffectLine */
+  effect_line_list_start =  
+    effect_line_list = gtk_container_get_children(GTK_CONTAINER(effect_pad->table));
+
+  while(effect_line_list != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(effect_line_list->data));
+
+    effect_line_list = effect_line_list->next;
+  }
+
+  g_list_free(effect_line_list_start);
 }
 
 void

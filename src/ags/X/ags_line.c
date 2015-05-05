@@ -449,7 +449,6 @@ ags_line_get_property(GObject *gobject,
 void
 ags_line_connect(AgsConnectable *connectable)
 {
-  AgsMachine *machine;
   AgsLine *line;
   GList *list, *list_start;
 
@@ -473,10 +472,10 @@ ags_line_connect(AgsConnectable *connectable)
     line->flags &= (~AGS_LINE_PREMAPPED_RECALL);
   }
 
-  /* AgsMachine */
-  machine = AGS_MACHINE(gtk_widget_get_ancestor((GtkWidget *) AGS_LINE(line),
-						AGS_TYPE_MACHINE));
-
+  /* channel */
+  g_signal_connect_after((GObject *) line->channel, "add-effect\0",
+			 G_CALLBACK(ags_line_add_effect_callback), line);
+  
   /* connect group button */
   g_signal_connect_after((GObject *) line->group, "clicked\0",
 			 G_CALLBACK(ags_line_group_clicked_callback), (gpointer) line);
@@ -605,7 +604,8 @@ ags_line_real_add_effect(AgsLine *line,
   AgsLadspaPlugin *ladspa_plugin;
 
   GList *list;
-  GList *port;
+  GList *recall, *recall_start;
+  GList *port, *recall_port;
   gdouble step;
   guint x, y;
   
@@ -641,6 +641,25 @@ ags_line_real_add_effect(AgsLine *line,
     list = list->next;
   }
 
+  /* find ports */
+  recall_start =
+    recall = ags_recall_get_by_effect(line->channel->play,
+				      filename,
+				      effect);
+  recall = g_list_last(recall);
+  port = AGS_RECALL(recall->data)->port;
+
+  g_list_free(recall_start);
+
+  recall_start = 
+    recall = ags_recall_get_by_effect(line->channel->recall,
+				      filename,
+				      effect);
+  recall = g_list_last(recall);
+
+  recall_port = AGS_RECALL(recall->data)->port;
+  g_list_free(recall_start);
+  
   /* load ports */
   if(index != -1 &&
      plugin_so){
@@ -651,8 +670,8 @@ ags_line_real_add_effect(AgsLine *line,
       plugin_descriptor = ladspa_descriptor(index);
 
       port_descriptor = plugin_descriptor->PortDescriptors;   
-
-      while(port != NULL){
+      
+      while(port != NULL && recall_port != NULL){
 	if((LADSPA_IS_PORT_CONTROL(port_descriptor[i]) && 
 	    (LADSPA_IS_PORT_INPUT(port_descriptor[i]) ||
 	     LADSPA_IS_PORT_OUTPUT(port_descriptor[i])))){
@@ -710,8 +729,12 @@ ags_line_real_add_effect(AgsLine *line,
 			   x, y,
 			   1, 1);
 
+	  ags_connectable_connect(AGS_CONNECTABLE(line_member));
+	  gtk_widget_show_all(line_member);
+
 	  x++;
 	  port = port->next;
+	  recall_port = recall_port->next;
 	}
 
 	i++;
