@@ -100,7 +100,8 @@ struct _AgsSoundcardInterface
   void (*stop)(AgsSoundcard *soundcard);
 
   void (*tic)(AgsSoundcard *soundcard);
-  void (*offset_changed)(AgsSoundcard *soundcard, guint note_offset);
+  void (*offset_changed)(AgsSoundcard *soundcard,
+			 guint note_offset);
 
   signed short* (*get_buffer)(AgsSoundcard *soundcard);
   signed short* (*get_next_buffer)(AgsSoundcard *soundcard);  
@@ -160,7 +161,8 @@ void ags_soundcard_play(AgsSoundcard *soundcard,
 void ags_soundcard_stop(AgsSoundcard *soundcard);
 
 void ags_soundcard_tic(AgsSoundcard *soundcard);
-void ags_soundcard_offset_changed(AgsSoundcard *soundcard, guint note_offset);
+void ags_soundcard_offset_changed(AgsSoundcard *soundcard,
+				  guint note_offset);
 
 signed short* ags_soundcard_get_buffer(AgsSoundcard *soundcard);
 signed short* ags_soundcard_get_next_buffer(AgsSoundcard *soundcard);

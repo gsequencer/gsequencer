@@ -27,7 +27,7 @@
 
 #include <ags/X/editor/ags_toolbar.h>
 #include <ags/X/editor/ags_notebook.h>
-#include <ags/X/editor/ags_meter.h>
+#include <ags/X/editor/ags_piano.h>
 #include <ags/X/editor/ags_note_edit.h>
 
 #include <math.h>
@@ -133,9 +133,9 @@ ags_editor_edit_vscrollbar_value_changed_callback(GtkWidget *note_edit,
 						  AgsEditor *editor)
 {
   if((AGS_MACHINE_IS_SYNTHESIZER & (editor->selected_machine->flags)) != 0){
-    gtk_widget_queue_draw(editor->piano.meter);
+    gtk_widget_queue_draw(editor->meter.piano);
   }else if((AGS_MACHINE_IS_SEQUENCER & (editor->selected_machine->flags)) != 0){
-    gtk_widget_queue_draw(editor->piano.soundset);
+    gtk_widget_queue_draw(editor->meter.soundset);
   }else{
   }
 }

@@ -16,16 +16,24 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef __AGS_METER_CALLBACKS_H__
-#define __AGS_METER_CALLBACKS_H__
+#include <ags/X/editor/ags_piano_callbacks.h>
 
-#include <glib.h>
-#include <glib-object.h>
-#include <gtk/gtk.h>
+#include <ags/X/ags_editor.h>
 
-#include <ags/X/editor/ags_meter.h>
+#include <math.h>
 
-gboolean ags_meter_expose_event(GtkWidget *widget, GdkEventExpose *event, AgsMeter *meter); 
-gboolean ags_meter_configure_event(GtkWidget *widget, GdkEventConfigure *event, AgsMeter *meter); 
+gboolean
+ags_piano_expose_event(GtkWidget *widget, GdkEventExpose *event, AgsPiano *piano)
+{
+  ags_piano_paint(piano);
 
-#endif /*__AGS_METER_CALLBACKS_H__*/
+  return(TRUE);
+}
+
+gboolean
+ags_piano_configure_event(GtkWidget *widget, GdkEventConfigure *event, AgsPiano *piano)
+{
+  ags_piano_paint(piano);
+
+  return(FALSE);
+}

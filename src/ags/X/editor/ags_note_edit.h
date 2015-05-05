@@ -36,7 +36,7 @@
 #define AGS_IS_NOTE_EDIT_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_NOTE_EDIT))
 #define AGS_NOTE_EDIT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS (obj, AGS_TYPE_NOTE_EDIT, AgsNoteEditClass))
 
-#define AGS_NOTE_EDIT_MAX_CONTROLS (400) // gives you 400 * 16
+#define AGS_NOTE_EDIT_MAX_CONTROLS (1200) // gives you 1200 * 16
 
 typedef struct _AgsNoteEdit AgsNoteEdit;
 typedef struct _AgsNoteEditClass AgsNoteEditClass;

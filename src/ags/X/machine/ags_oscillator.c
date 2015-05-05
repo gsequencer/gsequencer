@@ -28,6 +28,8 @@
 #include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>
 
+#include <math.h>
+
 void ags_oscillator_class_init(AgsOscillatorClass *oscillator);
 void ags_oscillator_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_oscillator_init(AgsOscillator *oscillator);
@@ -174,7 +176,7 @@ ags_oscillator_init(AgsOscillator *oscillator)
   gtk_table_attach_defaults(table,
 			    (GtkWidget *) gtk_label_new("length\0"),
 			    4, 5, 0, 1);
-  oscillator->frame_count = (GtkSpinButton *) gtk_spin_button_new_with_range(44100.0 / 27.5, 100000.0, 1.0);
+  oscillator->frame_count = (GtkSpinButton *) gtk_spin_button_new_with_range(44100.0 / AGS_OSCILLATOR_BASE_FREQUENCY, 100000.0, 1.0);
   oscillator->frame_count->adjustment->value = 3200;
   gtk_table_attach_defaults(table, (GtkWidget *) oscillator->frame_count, 5, 6, 0, 1);
 
@@ -188,8 +190,8 @@ ags_oscillator_init(AgsOscillator *oscillator)
   gtk_table_attach_defaults(table,
 			    (GtkWidget *) gtk_label_new("frequency\0"),
 			    2, 3, 1, 2);
-  oscillator->frequency = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 100000.0, 1.0);
-  oscillator->frequency->adjustment->value = 27.5;
+  oscillator->frequency = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 100000.0, 0.0675);
+  oscillator->frequency->adjustment->value = AGS_OSCILLATOR_BASE_FREQUENCY;
   gtk_table_attach_defaults(table, (GtkWidget *) oscillator->frequency, 3, 4, 1, 2);
 
   gtk_table_attach_defaults(table,
