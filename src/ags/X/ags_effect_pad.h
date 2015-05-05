@@ -41,7 +41,12 @@ typedef struct _AgsEffectPad AgsEffectPad;
 typedef struct _AgsEffectPadClass AgsEffectPadClass;
 
 typedef enum{
-  AGS_EFFECT_PAD_CONNECTED        = 1,
+  AGS_EFFECT_PAD_CONNECTED           = 1,
+  AGS_EFFECT_PAD_SHOW_GROUPING       = 1 << 1,
+  AGS_EFFECT_PAD_GROUP_ALL           = 1 << 2,
+  AGS_EFFECT_PAD_GROUP_LINE          = 1 << 3,
+  AGS_EFFECT_PAD_MAPPED_RECALL       = 1 << 4,
+  AGS_EFFECT_PAD_PREMAPPED_RECALL    = 1 << 5,
 }AgsEffectPadFlags;
 
 struct _AgsEffectPad

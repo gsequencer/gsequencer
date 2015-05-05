@@ -752,8 +752,8 @@ gsequencer_xorg_h_sources = \
 	src/ags/X/ags_effect_bulk.h			\
 	src/ags/X/ags_bulk_member_callbacks.h		\
 	src/ags/X/ags_bulk_member.h			\
-	src/ags/X/ags_effect_line_callbacks.h		\
 	src/ags/X/ags_effect_line.h			\
+	src/ags/X/ags_effect_line_callbacks.h		\
 	src/ags/X/ags_effect_pad_callbacks.h		\
 	src/ags/X/ags_effect_pad.h			\
 	src/ags/X/ags_export_window_callbacks.h		\
@@ -823,8 +823,8 @@ gsequencer_xorg_c_sources = \
 	src/ags/X/ags_effect_bulk.c			\
 	src/ags/X/ags_bulk_member.c			\
 	src/ags/X/ags_bulk_member_callbacks.c		\
-	src/ags/X/ags_effect_line_callbacks.c		\
 	src/ags/X/ags_effect_line.c			\
+	src/ags/X/ags_effect_line_callbacks.c		\
 	src/ags/X/ags_effect_pad_callbacks.c		\
 	src/ags/X/ags_effect_pad.c			\
 	src/ags/X/ags_export_window_callbacks.c		\

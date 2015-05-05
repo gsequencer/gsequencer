@@ -40,20 +40,9 @@ ags_pad_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsPad *pa
 }
 
 int
-ags_pad_destroy_callback(GtkObject *object, AgsPad *pad)
-{
-  ags_pad_destroy(object);
-}
-
-int
-ags_pad_show_callback(GtkWidget *widget, AgsPad *pad)
-{
-  ags_pad_show(widget);
-}
-
-int
 ags_pad_option_changed_callback(GtkWidget *widget, AgsPad *pad)
 {
+  /* empty */
 
   return(0);
 }

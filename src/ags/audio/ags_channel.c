@@ -1090,7 +1090,7 @@ ags_channel_get_recall_by_effect(AgsChannel *channel, gchar *filename, gchar *ef
 
 GList*
 ags_channel_real_add_effect(AgsChannel *channel,
-			    char *filename,
+			    gchar *filename,
 			    gchar *effect)
 {
   AgsRecallContainer *recall_container;
@@ -1130,7 +1130,7 @@ ags_channel_real_add_effect(AgsChannel *channel,
 	       "recall-container\0", recall_container,
 	       NULL);
   AGS_RECALL(recall_ladspa)->flags |= AGS_RECALL_TEMPLATE;
-  ags_channel_add_recall(channel->play,
+  ags_channel_add_recall(channel,
 			 recall_ladspa,
 			 TRUE);
 
@@ -1149,7 +1149,7 @@ ags_channel_real_add_effect(AgsChannel *channel,
 	       "recall-container\0", recall_container,
 	       "recall-channel\0", recall_ladspa,
 	       NULL);
-  ags_channel_add_recall(channel->play,
+  ags_channel_add_recall(channel,
 			 recall_channel_run_dummy,
 			 TRUE);
   
@@ -1218,7 +1218,7 @@ ags_channel_real_add_effect(AgsChannel *channel,
 	       "soundcard\0", AGS_AUDIO(channel->audio)->soundcard,
 	       "recall-container\0", recall_container,
 	       NULL);
-  ags_channel_add_recall(channel->play,
+  ags_channel_add_recall(channel,
 			 recall_ladspa,
 			 FALSE);
   
@@ -1240,7 +1240,7 @@ ags_channel_real_add_effect(AgsChannel *channel,
 	       "recall-container\0", recall_container,
 	       "recall-channel\0", recall_ladspa,
 	       NULL);
-  ags_channel_add_recall(channel->play,
+  ags_channel_add_recall(channel,
 			 recall_channel_run_dummy,
 			 FALSE);  
   

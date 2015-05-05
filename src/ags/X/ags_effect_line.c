@@ -165,6 +165,23 @@ ags_effect_line_class_init(AgsEffectLineClass *effect_line)
   gobject->set_property = ags_effect_line_set_property;
   gobject->get_property = ags_effect_line_get_property;
 
+  /* properties */
+  /**
+   * AgsEffectLine:channel:
+   *
+   * The start of a bunch of #AgsChannel to visualize.
+   * 
+   * Since: 0.4
+   */
+  param_spec = g_param_spec_object("channel\0",
+				   "assigned channel\0",
+				   "The channel it is assigned with\0",
+				   AGS_TYPE_CHANNEL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_CHANNEL,
+				  param_spec);
+
   /* AgsEffectLineClass */
   effect_line->add_effect = ags_effect_line_real_add_effect;
   effect_line->remove_effect = ags_effect_line_real_remove_effect;
@@ -204,23 +221,6 @@ ags_effect_line_class_init(AgsEffectLineClass *effect_line)
 		 g_cclosure_marshal_VOID__UINT,
 		 G_TYPE_NONE, 1,
 		 G_TYPE_UINT);
-
-  /* properties */
-  /**
-   * AgsEffectLine:channel:
-   *
-   * The start of a bunch of #AgsChannel to visualize.
-   * 
-   * Since: 0.4
-   */
-  param_spec = g_param_spec_object("channel\0",
-				   "assigned channel\0",
-				   "The channel it is assigned with\0",
-				   AGS_TYPE_CHANNEL,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_CHANNEL,
-				  param_spec);
 }
 
 void
@@ -338,12 +338,47 @@ ags_effect_line_get_property(GObject *gobject,
 void
 ags_effect_line_connect(AgsConnectable *connectable)
 {
-  //TODO:JK: implement me
+  AgsEffectLine *effect_line;
+  GList *list, *list_start;
+
+  effect_line = AGS_EFFECT_LINE(connectable);
+
+  if((AGS_EFFECT_LINE_CONNECTED & (effect_line->flags)) != 0){
+    return;
+  }
+  
+  /* channel */
+  g_signal_connect_after((GObject *) effect_line->channel, "add-effect\0",
+			 G_CALLBACK(ags_effect_line_add_effect_callback), effect_line);
+
+  /* connect line members */
+  list_start = 
+    list = gtk_container_get_children(GTK_CONTAINER(effect_line->table));
+  
+  while(list != NULL){
+    if(AGS_IS_CONNECTABLE(list->data)){
+      ags_connectable_connect(AGS_CONNECTABLE(list->data));
+    }
+
+    list = list->next;
+  }
+
+  if(list_start != NULL){
+    g_list_free(list_start);
+  }
 }
 
 void
 ags_effect_line_disconnect(AgsConnectable *connectable)
 {
+  AgsEffectLine *effect_line;
+
+  effect_line = AGS_EFFECT_LINE(connectable);
+
+  if((AGS_EFFECT_LINE_CONNECTED & (effect_line->flags)) == 0){
+    return;
+  }
+
   //TODO:JK: implement me
 }
 
@@ -407,7 +442,8 @@ ags_effect_line_real_add_effect(AgsEffectLine *effect_line,
   AgsLadspaPlugin *ladspa_plugin;
   
   GList *list, *list_start;
-  GList *port;
+  GList *recall, *recall_start;
+  GList *port, *recall_port;
   gdouble step;
   guint x, y;
   
@@ -444,6 +480,25 @@ ags_effect_line_real_add_effect(AgsEffectLine *effect_line,
     list = list->next;
   }
 
+  /* find ports */
+  recall_start =
+    recall = ags_recall_get_by_effect(effect_line->channel->play,
+				      filename,
+				      effect);
+  recall = g_list_last(recall);
+  port = AGS_RECALL(recall->data)->port;
+
+  g_list_free(recall_start);
+
+  recall_start = 
+    recall = ags_recall_get_by_effect(effect_line->channel->recall,
+				      filename,
+				      effect);
+  recall = g_list_last(recall);
+
+  recall_port = AGS_RECALL(recall->data)->port;
+  g_list_free(recall_start);
+  
   /* load ports */
   if(index != -1 &&
      plugin_so){
@@ -455,7 +510,7 @@ ags_effect_line_real_add_effect(AgsEffectLine *effect_line,
 
       port_descriptor = plugin_descriptor->PortDescriptors;   
 
-      while(port != NULL){
+      while(port != NULL && recall_port != NULL){
 	if((LADSPA_IS_PORT_CONTROL(port_descriptor[i]) && 
 	    (LADSPA_IS_PORT_INPUT(port_descriptor[i]) ||
 	     LADSPA_IS_PORT_OUTPUT(port_descriptor[i])))){
@@ -514,9 +569,13 @@ ags_effect_line_real_add_effect(AgsEffectLine *effect_line,
 			   y, y + 1,
 			   GTK_FILL, GTK_FILL,
 			   0, 0);
+
+	  ags_connectable_connect(AGS_CONNECTABLE(line_member));
+	  gtk_widget_show_all(line_member);
 	  
 	  x++;
 	  port = port->next;
+	  recall_port = recall_port->next;
 	}
 
 	i++;

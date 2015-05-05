@@ -373,8 +373,8 @@ am__objects_25 = $(am__objects_1) gsequencer-ags_xorg_init.$(OBJEXT) \
 	gsequencer-ags_effect_bulk.$(OBJEXT) \
 	gsequencer-ags_bulk_member.$(OBJEXT) \
 	gsequencer-ags_bulk_member_callbacks.$(OBJEXT) \
-	gsequencer-ags_effect_line_callbacks.$(OBJEXT) \
 	gsequencer-ags_effect_line.$(OBJEXT) \
+	gsequencer-ags_effect_line_callbacks.$(OBJEXT) \
 	gsequencer-ags_effect_pad_callbacks.$(OBJEXT) \
 	gsequencer-ags_effect_pad.$(OBJEXT) \
 	gsequencer-ags_export_window_callbacks.$(OBJEXT) \
@@ -1518,8 +1518,8 @@ gsequencer_xorg_h_sources = \
 	src/ags/X/ags_effect_bulk.h			\
 	src/ags/X/ags_bulk_member_callbacks.h		\
 	src/ags/X/ags_bulk_member.h			\
-	src/ags/X/ags_effect_line_callbacks.h		\
 	src/ags/X/ags_effect_line.h			\
+	src/ags/X/ags_effect_line_callbacks.h		\
 	src/ags/X/ags_effect_pad_callbacks.h		\
 	src/ags/X/ags_effect_pad.h			\
 	src/ags/X/ags_export_window_callbacks.h		\
@@ -1588,8 +1588,8 @@ gsequencer_xorg_c_sources = \
 	src/ags/X/ags_effect_bulk.c			\
 	src/ags/X/ags_bulk_member.c			\
 	src/ags/X/ags_bulk_member_callbacks.c		\
-	src/ags/X/ags_effect_line_callbacks.c		\
 	src/ags/X/ags_effect_line.c			\
+	src/ags/X/ags_effect_line_callbacks.c		\
 	src/ags/X/ags_effect_pad_callbacks.c		\
 	src/ags/X/ags_effect_pad.c			\
 	src/ags/X/ags_export_window_callbacks.c		\
@@ -5693,20 +5693,6 @@ gsequencer-ags_bulk_member_callbacks.obj: src/ags/X/ags_bulk_member_callbacks.c
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_bulk_member_callbacks.obj `if test -f 'src/ags/X/ags_bulk_member_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/ags_bulk_member_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/ags_bulk_member_callbacks.c'; fi`
 
-gsequencer-ags_effect_line_callbacks.o: src/ags/X/ags_effect_line_callbacks.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_effect_line_callbacks.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_effect_line_callbacks.Tpo -c -o gsequencer-ags_effect_line_callbacks.o `test -f 'src/ags/X/ags_effect_line_callbacks.c' || echo '$(srcdir)/'`src/ags/X/ags_effect_line_callbacks.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_effect_line_callbacks.Tpo $(DEPDIR)/gsequencer-ags_effect_line_callbacks.Po
-#	$(AM_V_CC)source='src/ags/X/ags_effect_line_callbacks.c' object='gsequencer-ags_effect_line_callbacks.o' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_effect_line_callbacks.o `test -f 'src/ags/X/ags_effect_line_callbacks.c' || echo '$(srcdir)/'`src/ags/X/ags_effect_line_callbacks.c
-
-gsequencer-ags_effect_line_callbacks.obj: src/ags/X/ags_effect_line_callbacks.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_effect_line_callbacks.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_effect_line_callbacks.Tpo -c -o gsequencer-ags_effect_line_callbacks.obj `if test -f 'src/ags/X/ags_effect_line_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/ags_effect_line_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/ags_effect_line_callbacks.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_effect_line_callbacks.Tpo $(DEPDIR)/gsequencer-ags_effect_line_callbacks.Po
-#	$(AM_V_CC)source='src/ags/X/ags_effect_line_callbacks.c' object='gsequencer-ags_effect_line_callbacks.obj' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_effect_line_callbacks.obj `if test -f 'src/ags/X/ags_effect_line_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/ags_effect_line_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/ags_effect_line_callbacks.c'; fi`
-
 gsequencer-ags_effect_line.o: src/ags/X/ags_effect_line.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_effect_line.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_effect_line.Tpo -c -o gsequencer-ags_effect_line.o `test -f 'src/ags/X/ags_effect_line.c' || echo '$(srcdir)/'`src/ags/X/ags_effect_line.c
 	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_effect_line.Tpo $(DEPDIR)/gsequencer-ags_effect_line.Po
@@ -5720,6 +5706,20 @@ gsequencer-ags_effect_line.obj: src/ags/X/ags_effect_line.c
 #	$(AM_V_CC)source='src/ags/X/ags_effect_line.c' object='gsequencer-ags_effect_line.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_effect_line.obj `if test -f 'src/ags/X/ags_effect_line.c'; then $(CYGPATH_W) 'src/ags/X/ags_effect_line.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/ags_effect_line.c'; fi`
+
+gsequencer-ags_effect_line_callbacks.o: src/ags/X/ags_effect_line_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_effect_line_callbacks.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_effect_line_callbacks.Tpo -c -o gsequencer-ags_effect_line_callbacks.o `test -f 'src/ags/X/ags_effect_line_callbacks.c' || echo '$(srcdir)/'`src/ags/X/ags_effect_line_callbacks.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_effect_line_callbacks.Tpo $(DEPDIR)/gsequencer-ags_effect_line_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/ags_effect_line_callbacks.c' object='gsequencer-ags_effect_line_callbacks.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_effect_line_callbacks.o `test -f 'src/ags/X/ags_effect_line_callbacks.c' || echo '$(srcdir)/'`src/ags/X/ags_effect_line_callbacks.c
+
+gsequencer-ags_effect_line_callbacks.obj: src/ags/X/ags_effect_line_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_effect_line_callbacks.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_effect_line_callbacks.Tpo -c -o gsequencer-ags_effect_line_callbacks.obj `if test -f 'src/ags/X/ags_effect_line_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/ags_effect_line_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/ags_effect_line_callbacks.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_effect_line_callbacks.Tpo $(DEPDIR)/gsequencer-ags_effect_line_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/ags_effect_line_callbacks.c' object='gsequencer-ags_effect_line_callbacks.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_effect_line_callbacks.obj `if test -f 'src/ags/X/ags_effect_line_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/ags_effect_line_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/ags_effect_line_callbacks.c'; fi`
 
 gsequencer-ags_effect_pad_callbacks.o: src/ags/X/ags_effect_pad_callbacks.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_effect_pad_callbacks.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_effect_pad_callbacks.Tpo -c -o gsequencer-ags_effect_pad_callbacks.o `test -f 'src/ags/X/ags_effect_pad_callbacks.c' || echo '$(srcdir)/'`src/ags/X/ags_effect_pad_callbacks.c

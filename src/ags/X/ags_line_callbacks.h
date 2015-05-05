@@ -23,9 +23,15 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
+#include <ags/audio/ags_channel.h>
+
 #include <ags/X/ags_line.h>
 
 int ags_line_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsLine *line);
+
+GList* ags_line_add_effect_callback(AgsChannel *channel,
+				    gchar *filename, gchar *effect,
+				    AgsLine *line);
 
 void ags_line_remove_recall_callback(AgsRecall *recall, AgsLine *line);
 
