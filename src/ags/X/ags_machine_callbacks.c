@@ -469,7 +469,7 @@ ags_machine_start_failure_callback(AgsTask *task, GError *error,
 				   AGS_TYPE_MACHINE);
   
   dialog = (GtkMessageDialog *) gtk_message_dialog_new(GTK_WINDOW(window),
-						       GTK_DIALOG_MODAL,
+						       GTK_DIALOG_DESTROY_WITH_PARENT,
 						       GTK_MESSAGE_ERROR,
 						       GTK_BUTTONS_CLOSE,
 						       error->message);

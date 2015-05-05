@@ -65,9 +65,13 @@ void ags_devout_finalize(GObject *gobject);
 
 void ags_devout_switch_buffer_flag(AgsDevout *devout);
 
-AgsApplicationContext* ags_devout_get_application_context(AgsSoundcard *soundcard);
 void ags_devout_set_application_context(AgsSoundcard *soundcard,
 					AgsApplicationContext *application_context);
+AgsApplicationContext* ags_devout_get_application_context(AgsSoundcard *soundcard);
+
+void ags_devout_set_device(AgsSoundcard *soundcard,
+			   gchar *device);
+gchar* ags_devout_get_device(AgsSoundcard *soundcard);
 
 void ags_devout_set_presets(AgsSoundcard *soundcard,
 			    guint channels,
@@ -97,9 +101,9 @@ void ags_devout_alsa_play(AgsSoundcard *soundcard,
 			  GError **error);
 void ags_devout_alsa_free(AgsSoundcard *soundcard);
 
-gdouble ags_devout_get_bpm(AgsSoundcard *soundcard);
 void ags_devout_set_bpm(AgsSoundcard *soundcard,
 			gdouble bpm);
+gdouble ags_devout_get_bpm(AgsSoundcard *soundcard);
 
 gdouble ags_devout_get_delay(AgsSoundcard *soundcard);
 guint ags_devout_get_attack(AgsSoundcard *soundcard);
@@ -390,9 +394,12 @@ ags_devout_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_devout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
 {
-  soundcard->get_application_context = ags_devout_get_application_context;
   soundcard->set_application_context = ags_devout_set_application_context;
+  soundcard->get_application_context = ags_devout_get_application_context;
 
+  soundcard->set_device = ags_devout_set_device;
+  soundcard->get_device = ags_devout_get_device;
+  
   soundcard->set_presets = ags_devout_set_presets;
   soundcard->get_presets = ags_devout_get_presets;
 
@@ -406,8 +413,11 @@ ags_devout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
   soundcard->play = ags_devout_alsa_play;
   soundcard->stop = ags_devout_alsa_free;
 
-  soundcard->get_bpm = ags_devout_get_bpm;
+  soundcard->tic = NULL;
+  soundcard->offset_changed = NULL;
+  
   soundcard->set_bpm = ags_devout_set_bpm;
+  soundcard->get_bpm = ags_devout_get_bpm;
   
   soundcard->get_delay = ags_devout_get_delay;
   soundcard->get_attack = ags_devout_get_attack;
@@ -818,6 +828,16 @@ ags_devout_switch_buffer_flag(AgsDevout *devout)
   }
 }
 
+void
+ags_devout_set_application_context(AgsSoundcard *soundcard,
+				   AgsApplicationContext *application_context)
+{
+  AgsDevout *devout;
+
+  devout = AGS_DEVOUT(soundcard);
+  devout->application_context = application_context;
+}
+
 AgsApplicationContext*
 ags_devout_get_application_context(AgsSoundcard *soundcard)
 {
@@ -829,13 +849,23 @@ ags_devout_get_application_context(AgsSoundcard *soundcard)
 }
 
 void
-ags_devout_set_application_context(AgsSoundcard *soundcard,
-				   AgsApplicationContext *application_context)
+ags_devout_set_device(AgsSoundcard *soundcard,
+		      gchar *device)
 {
   AgsDevout *devout;
-
+  
   devout = AGS_DEVOUT(soundcard);
-  devout->application_context = application_context;
+  devout->out.alsa.device = device;
+}
+
+gchar*
+ags_devout_get_device(AgsSoundcard *soundcard)
+{
+  AgsDevout *devout;
+  
+  devout = AGS_DEVOUT(soundcard);
+  
+  return(devout->out.alsa.device);
 }
 
 void
@@ -1036,7 +1066,7 @@ ags_devout_is_starting(AgsSoundcard *soundcard)
 
   devout = AGS_DEVOUT(soundcard);
   
-  return((AGS_DEVOUT_START_PLAY & (devout->flags)));
+  return(((AGS_DEVOUT_START_PLAY & (devout->flags)) != 0) ? TRUE: FALSE);
 }
 
 gboolean
@@ -1046,7 +1076,7 @@ ags_devout_is_playing(AgsSoundcard *soundcard)
 
   devout = AGS_DEVOUT(soundcard);
   
-  return((AGS_DEVOUT_PLAY & (devout->flags)));
+  return(((AGS_DEVOUT_PLAY & (devout->flags)) != 0) ? TRUE: FALSE);
 }
 
 void
@@ -1230,7 +1260,9 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
   gdouble delay;
 
   devout = AGS_DEVOUT(soundcard);
-  
+
+  devout->flags &= (~AGS_DEVOUT_START_PLAY);
+
   /*  */
   if((AGS_DEVOUT_BUFFER0 & (devout->flags)) != 0){
     memset(devout->buffer[3], 0, (size_t) devout->dsp_channels * devout->buffer_size * sizeof(signed short));
@@ -1410,20 +1442,11 @@ ags_devout_alsa_free(AgsSoundcard *soundcard)
   snd_pcm_drain(devout->out.alsa.handle);
   snd_pcm_close(devout->out.alsa.handle);
   devout->out.alsa.handle = NULL;
-  devout->flags &= (~(AGS_DEVOUT_BUFFER0 &
-		      AGS_DEVOUT_BUFFER1 &
-		      AGS_DEVOUT_BUFFER2 &
-		      AGS_DEVOUT_BUFFER3));
-}
-
-gdouble
-ags_devout_get_bpm(AgsSoundcard *soundcard)
-{
-  AgsDevout *devout;
-  
-  devout = AGS_DEVOUT(soundcard);
-
-  return(devout->bpm);
+  devout->flags &= (~(AGS_DEVOUT_BUFFER0 |
+		      AGS_DEVOUT_BUFFER1 |
+		      AGS_DEVOUT_BUFFER2 |
+		      AGS_DEVOUT_BUFFER3 |
+		      AGS_DEVOUT_PLAY));
 }
 
 void
@@ -1456,6 +1479,16 @@ ags_devout_set_bpm(AgsSoundcard *soundcard,
     devout->delay[i] = ((gdouble) (default_tact_frames + devout->attack[i])) / (gdouble) devout->buffer_size;
   }
 
+}
+
+gdouble
+ags_devout_get_bpm(AgsSoundcard *soundcard)
+{
+  AgsDevout *devout;
+  
+  devout = AGS_DEVOUT(soundcard);
+
+  return(devout->bpm);
 }
 
 gdouble
