@@ -96,35 +96,35 @@ struct _AgsThread
 
   sigset_t wait_mask;
 
-  pthread_t thread;
+  pthread_t *thread;
   pthread_attr_t thread_attr;
 
   gdouble freq;
 
-  pthread_mutex_t mutex;
+  pthread_mutex_t *mutex;
   pthread_mutexattr_t mutexattr;
-  pthread_cond_t cond;
+  pthread_cond_t *cond;
 
-  pthread_mutex_t start_mutex;
-  pthread_cond_t start_cond;
+  pthread_mutex_t *start_mutex;
+  pthread_cond_t *start_cond;
 
-  pthread_barrier_t barrier[2];
+  pthread_barrier_t **barrier;
   gboolean first_barrier;
   int wait_count[2];
 
   pthread_t timelock_thread;
-  pthread_mutex_t timelock_mutex;
-  pthread_cond_t timelock_cond;
+  pthread_mutex_t *timelock_mutex;
+  pthread_cond_t *timelock_cond;
 
-  pthread_mutex_t greedy_mutex;
-  pthread_cond_t greedy_cond;
-  pthread_mutex_t greedy_run_mutex;
+  pthread_mutex_t *greedy_mutex;
+  pthread_cond_t *greedy_cond;
+  pthread_mutex_t *greedy_run_mutex;
   volatile guint locked_greedy;
 
   struct timespec timelock;
   GList *greedy_locks;
 
-  pthread_mutex_t suspend_mutex;
+  pthread_mutex_t *suspend_mutex;
   volatile gboolean critical_region;
 
   AgsThread *parent;
