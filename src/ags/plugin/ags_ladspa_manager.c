@@ -20,8 +20,6 @@
 
 #include <ags/object/ags_marshal.h>
 
-#include <ags/plugin/ags_ladspa_manager.h>
-
 #include <dlfcn.h>
 #include <stdio.h>
 #include <stdlib.h>

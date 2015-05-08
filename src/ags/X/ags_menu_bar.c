@@ -146,6 +146,7 @@ ags_menu_bar_init(AgsMenuBar *menu_bar)
   item = (GtkImageMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_ADD, NULL);
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->edit, (GtkWidget*) item);
 
+  /* add */
   menu_bar->add = (GtkMenu *) gtk_menu_new();
   gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) menu_bar->add);
 
@@ -167,6 +168,29 @@ ags_menu_bar_init(AgsMenuBar *menu_bar)
   item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label("FPlayer\0");
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
 
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label("bridge\0");
+  gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
+
+  /* bridge */
+  menu_bar->bridge = (GtkMenu *) gtk_menu_new();
+  gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) menu_bar->bridge);
+
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label("Replicator\0");
+  gtk_menu_shell_append((GtkMenuShell*) menu_bar->bridge, (GtkWidget*) item);
+
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label("Midi Input\0");
+  gtk_menu_shell_append((GtkMenuShell*) menu_bar->bridge, (GtkWidget*) item);
+
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label("Midi Output\0");
+  gtk_menu_shell_append((GtkMenuShell*) menu_bar->bridge, (GtkWidget*) item);
+
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label("LADSPA\0");
+  gtk_menu_shell_append((GtkMenuShell*) menu_bar->bridge, (GtkWidget*) item);
+
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label("lv2\0");
+  gtk_menu_shell_append((GtkMenuShell*) menu_bar->bridge, (GtkWidget*) item);
+
+  /* edit */
   item = (GtkImageMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_REMOVE, NULL);
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->edit, (GtkWidget*) item);
 
@@ -197,8 +221,8 @@ void
 ags_menu_bar_connect(AgsConnectable *connectable)
 {
   AgsMenuBar *menu_bar;
-  GList *list0, *list1, *list2;
-  GList *list1_start, *list2_start;
+  GList *list0, *list1, *list2, *list3;
+  GList *list1_start, *list2_start, *list3_start;
 
   menu_bar = AGS_MENU_BAR(connectable);
 
@@ -243,6 +267,7 @@ ags_menu_bar_connect(AgsConnectable *connectable)
   g_signal_connect (G_OBJECT (list1->data), "activate\0",
                     G_CALLBACK (ags_menu_bar_add_callback), (gpointer) menu_bar);
 
+  /* add */
   list2_start = 
     list2 = gtk_container_get_children((GtkContainer *) gtk_menu_item_get_submenu((GtkMenuItem *) list1->data));
   list1 = list1->next;
@@ -272,6 +297,13 @@ ags_menu_bar_connect(AgsConnectable *connectable)
 
   g_list_free(list2_start);
 
+  /* bridge */
+  list3_start = 
+    list3 = gtk_container_get_children((GtkContainer *) gtk_menu_item_get_submenu((GtkMenuItem *) list1->data));
+  list2 = list2->next;
+
+  
+  /* edit */
   g_signal_connect (G_OBJECT (list1->data), "activate\0",
                     G_CALLBACK (ags_menu_bar_remove_callback), (gpointer) menu_bar);
   list1 = list1->next;
@@ -453,6 +485,50 @@ ags_tact_menu_new()
   gtk_menu_shell_append((GtkMenuShell *) menu, (GtkWidget *) item);
   */
 
+  return(menu);
+}
+
+/**
+ * ags_ladspa_menu_new:
+ *
+ * Creates an #GtkMenu to select LADSPA plugin.
+ *
+ * Returns: a new #GtkMenu
+ *
+ * Since: 0.4.3
+ */
+GtkMenu*
+ags_ladspa_menu_new()
+{
+  GtkMenu *menu;
+  GtkMenuItem *item;
+
+  menu = (GtkMenu *) gtk_menu_new();
+
+  //TODO:JK: implement me
+  
+  return(menu);
+}
+
+/**
+ * ags_lv2_menu_new:
+ *
+ * Creates an #GtkMenu to select lv2 plugin.
+ *
+ * Returns: a new #GtkMenu
+ *
+ * Since: 0.4.3
+ */
+GtkMenu*
+ags_lv2_menu_new()
+{
+  GtkMenu *menu;
+  GtkMenuItem *item;
+
+  menu = (GtkMenu *) gtk_menu_new();
+
+  //TODO:JK: implement me
+  
   return(menu);
 }
 

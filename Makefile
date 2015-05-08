@@ -458,6 +458,8 @@ am__objects_28 = $(am__objects_1) \
 	gsequencer-ags_ffplayer_input_pad.$(OBJEXT) \
 	gsequencer-ags_ladspa_bridge_callbacks.$(OBJEXT) \
 	gsequencer-ags_ladspa_bridge.$(OBJEXT) \
+	gsequencer-ags_replicator_bridge_callbacks.$(OBJEXT) \
+	gsequencer-ags_replicator_bridge.$(OBJEXT) \
 	gsequencer-ags_matrix_bridge_callbacks.$(OBJEXT) \
 	gsequencer-ags_matrix_bridge.$(OBJEXT) \
 	gsequencer-ags_matrix_bulk_input_callbacks.$(OBJEXT) \
@@ -1700,6 +1702,8 @@ gsequencer_machine_h_sources = \
 	src/ags/X/machine/ags_ffplayer_input_pad.h		\
 	src/ags/X/machine/ags_ladspa_bridge_callbacks.h		\
 	src/ags/X/machine/ags_ladspa_bridge.h			\
+	src/ags/X/machine/ags_replicator_bridge_callbacks.h	\
+	src/ags/X/machine/ags_replicator_bridge.h		\
 	src/ags/X/machine/ags_matrix_bridge_callbacks.h		\
 	src/ags/X/machine/ags_matrix_bridge.h			\
 	src/ags/X/machine/ags_matrix_bulk_input_callbacks.h	\
@@ -1734,52 +1738,54 @@ gsequencer_machine_c_sources = \
 	$(deprecated_gsequencer_machine_c_sources) \
 	src/ags/X/machine/ags_drum_callbacks.c			\
 	src/ags/X/machine/ags_drum.c				\
-	src/ags/X/machine/ags_drum_input_line_callbacks.c		\
+	src/ags/X/machine/ags_drum_input_line_callbacks.c	\
 	src/ags/X/machine/ags_drum_input_line.c			\
-	src/ags/X/machine/ags_drum_input_pad_callbacks.c		\
+	src/ags/X/machine/ags_drum_input_pad_callbacks.c	\
 	src/ags/X/machine/ags_drum_input_pad.c			\
 	src/ags/X/machine/ags_drum_output_line_callbacks.c	\
-	src/ags/X/machine/ags_drum_output_line.c			\
-	src/ags/X/machine/ags_drum_output_pad_callbacks.c		\
+	src/ags/X/machine/ags_drum_output_line.c		\
+	src/ags/X/machine/ags_drum_output_pad_callbacks.c	\
 	src/ags/X/machine/ags_drum_output_pad.c			\
-	src/ags/X/machine/ags_ffplayer_bridge_callbacks.c		\
+	src/ags/X/machine/ags_ffplayer_bridge_callbacks.c	\
 	src/ags/X/machine/ags_ffplayer_bridge.c			\
 	src/ags/X/machine/ags_ffplayer_bulk_input_callbacks.c	\
 	src/ags/X/machine/ags_ffplayer_bulk_input.c		\
 	src/ags/X/machine/ags_ffplayer_callbacks.c		\
-	src/ags/X/machine/ags_ffplayer.c				\
+	src/ags/X/machine/ags_ffplayer.c			\
 	src/ags/X/machine/ags_ffplayer_input_line_callbacks.c	\
 	src/ags/X/machine/ags_ffplayer_input_line.c		\
 	src/ags/X/machine/ags_ffplayer_input_pad_callbacks.c	\
 	src/ags/X/machine/ags_ffplayer_input_pad.c		\
 	src/ags/X/machine/ags_ladspa_bridge_callbacks.c		\
 	src/ags/X/machine/ags_ladspa_bridge.c			\
+	src/ags/X/machine/ags_replicator_bridge_callbacks.c	\
+	src/ags/X/machine/ags_replicator_bridge.c		\
 	src/ags/X/machine/ags_matrix_bridge_callbacks.c		\
 	src/ags/X/machine/ags_matrix_bridge.c			\
 	src/ags/X/machine/ags_matrix_bulk_input_callbacks.c	\
-	src/ags/X/machine/ags_matrix_bulk_input.c			\
-	src/ags/X/machine/ags_matrix_callbacks.c			\
+	src/ags/X/machine/ags_matrix_bulk_input.c		\
+	src/ags/X/machine/ags_matrix_callbacks.c		\
 	src/ags/X/machine/ags_matrix.c				\
 	src/ags/X/machine/ags_mixer_callbacks.c			\
 	src/ags/X/machine/ags_mixer.c				\
-	src/ags/X/machine/ags_mixer_input_line.c			\
+	src/ags/X/machine/ags_mixer_input_line.c		\
 	src/ags/X/machine/ags_mixer_input_pad.c			\
 	src/ags/X/machine/ags_oscillator_callbacks.c		\
 	src/ags/X/machine/ags_oscillator.c			\
 	src/ags/X/machine/ags_panel_callbacks.c			\
 	src/ags/X/machine/ags_panel.c				\
-	src/ags/X/machine/ags_panel_input_line.c			\
+	src/ags/X/machine/ags_panel_input_line.c		\
 	src/ags/X/machine/ags_panel_input_pad.c			\
 	src/ags/X/machine/ags_synth_bridge_callbacks.c		\
 	src/ags/X/machine/ags_synth_bridge.c			\
 	src/ags/X/machine/ags_synth_bulk_output_callbacks.c	\
-	src/ags/X/machine/ags_synth_bulk_output.c			\
+	src/ags/X/machine/ags_synth_bulk_output.c		\
 	src/ags/X/machine/ags_synth_callbacks.c			\
 	src/ags/X/machine/ags_synth.c				\
-	src/ags/X/machine/ags_synth_input_line.c			\
+	src/ags/X/machine/ags_synth_input_line.c		\
 	src/ags/X/machine/ags_synth_input_pad.c			\
 	src/ags/X/machine/ags_synth_output_line_callbacks.c	\
-	src/ags/X/machine/ags_synth_output_line.c			\
+	src/ags/X/machine/ags_synth_output_line.c		\
 	src/ags/X/machine/ags_synth_output_pad_callbacks.c	\
 	src/ags/X/machine/ags_synth_output_pad.c
 
@@ -2134,6 +2140,8 @@ include ./$(DEPDIR)/gsequencer-ags_property_editor_callbacks.Po
 include ./$(DEPDIR)/gsequencer-ags_property_listing_editor.Po
 include ./$(DEPDIR)/gsequencer-ags_registry.Po
 include ./$(DEPDIR)/gsequencer-ags_remote_task.Po
+include ./$(DEPDIR)/gsequencer-ags_replicator_bridge.Po
+include ./$(DEPDIR)/gsequencer-ags_replicator_bridge_callbacks.Po
 include ./$(DEPDIR)/gsequencer-ags_resize_editor.Po
 include ./$(DEPDIR)/gsequencer-ags_scroll_on_play.Po
 include ./$(DEPDIR)/gsequencer-ags_server.Po
@@ -6854,6 +6862,34 @@ gsequencer-ags_ladspa_bridge.obj: src/ags/X/machine/ags_ladspa_bridge.c
 #	$(AM_V_CC)source='src/ags/X/machine/ags_ladspa_bridge.c' object='gsequencer-ags_ladspa_bridge.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_ladspa_bridge.obj `if test -f 'src/ags/X/machine/ags_ladspa_bridge.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_ladspa_bridge.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_ladspa_bridge.c'; fi`
+
+gsequencer-ags_replicator_bridge_callbacks.o: src/ags/X/machine/ags_replicator_bridge_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_replicator_bridge_callbacks.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_replicator_bridge_callbacks.Tpo -c -o gsequencer-ags_replicator_bridge_callbacks.o `test -f 'src/ags/X/machine/ags_replicator_bridge_callbacks.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_replicator_bridge_callbacks.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_replicator_bridge_callbacks.Tpo $(DEPDIR)/gsequencer-ags_replicator_bridge_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_replicator_bridge_callbacks.c' object='gsequencer-ags_replicator_bridge_callbacks.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_replicator_bridge_callbacks.o `test -f 'src/ags/X/machine/ags_replicator_bridge_callbacks.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_replicator_bridge_callbacks.c
+
+gsequencer-ags_replicator_bridge_callbacks.obj: src/ags/X/machine/ags_replicator_bridge_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_replicator_bridge_callbacks.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_replicator_bridge_callbacks.Tpo -c -o gsequencer-ags_replicator_bridge_callbacks.obj `if test -f 'src/ags/X/machine/ags_replicator_bridge_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_replicator_bridge_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_replicator_bridge_callbacks.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_replicator_bridge_callbacks.Tpo $(DEPDIR)/gsequencer-ags_replicator_bridge_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_replicator_bridge_callbacks.c' object='gsequencer-ags_replicator_bridge_callbacks.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_replicator_bridge_callbacks.obj `if test -f 'src/ags/X/machine/ags_replicator_bridge_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_replicator_bridge_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_replicator_bridge_callbacks.c'; fi`
+
+gsequencer-ags_replicator_bridge.o: src/ags/X/machine/ags_replicator_bridge.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_replicator_bridge.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_replicator_bridge.Tpo -c -o gsequencer-ags_replicator_bridge.o `test -f 'src/ags/X/machine/ags_replicator_bridge.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_replicator_bridge.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_replicator_bridge.Tpo $(DEPDIR)/gsequencer-ags_replicator_bridge.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_replicator_bridge.c' object='gsequencer-ags_replicator_bridge.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_replicator_bridge.o `test -f 'src/ags/X/machine/ags_replicator_bridge.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_replicator_bridge.c
+
+gsequencer-ags_replicator_bridge.obj: src/ags/X/machine/ags_replicator_bridge.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_replicator_bridge.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_replicator_bridge.Tpo -c -o gsequencer-ags_replicator_bridge.obj `if test -f 'src/ags/X/machine/ags_replicator_bridge.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_replicator_bridge.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_replicator_bridge.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_replicator_bridge.Tpo $(DEPDIR)/gsequencer-ags_replicator_bridge.Po
+#	$(AM_V_CC)source='src/ags/X/machine/ags_replicator_bridge.c' object='gsequencer-ags_replicator_bridge.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_replicator_bridge.obj `if test -f 'src/ags/X/machine/ags_replicator_bridge.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_replicator_bridge.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_replicator_bridge.c'; fi`
 
 gsequencer-ags_matrix_bridge_callbacks.o: src/ags/X/machine/ags_matrix_bridge_callbacks.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_matrix_bridge_callbacks.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_matrix_bridge_callbacks.Tpo -c -o gsequencer-ags_matrix_bridge_callbacks.o `test -f 'src/ags/X/machine/ags_matrix_bridge_callbacks.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_matrix_bridge_callbacks.c

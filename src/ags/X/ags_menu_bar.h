@@ -38,6 +38,7 @@ struct _AgsMenuBar
   GtkMenu *file;
   GtkMenu *edit;
   GtkMenu *add;
+  GtkMenu *bridge;
   GtkMenu *help;
 };
 
@@ -52,6 +53,9 @@ AgsMenuBar* ags_menu_bar_new();
 
 GtkMenu* ags_zoom_menu_new();
 GtkMenu* ags_tact_menu_new();
+
+GtkMenu* ags_ladspa_menu_new();
+GtkMenu* ags_lv2_menu_new();
 
 GtkComboBox* ags_zoom_combo_box_new();
 GtkComboBox* ags_tact_combo_box_new();
