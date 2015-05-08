@@ -941,6 +941,8 @@ gsequencer_machine_h_sources = \
 	src/ags/X/machine/ags_ffplayer_input_pad.h		\
 	src/ags/X/machine/ags_ladspa_bridge_callbacks.h		\
 	src/ags/X/machine/ags_ladspa_bridge.h			\
+	src/ags/X/machine/ags_replicator_bridge_callbacks.h	\
+	src/ags/X/machine/ags_replicator_bridge.h		\
 	src/ags/X/machine/ags_matrix_bridge_callbacks.h		\
 	src/ags/X/machine/ags_matrix_bridge.h			\
 	src/ags/X/machine/ags_matrix_bulk_input_callbacks.h	\
@@ -976,52 +978,54 @@ gsequencer_machine_c_sources = \
 	$(deprecated_gsequencer_machine_c_sources) \
 	src/ags/X/machine/ags_drum_callbacks.c			\
 	src/ags/X/machine/ags_drum.c				\
-	src/ags/X/machine/ags_drum_input_line_callbacks.c		\
+	src/ags/X/machine/ags_drum_input_line_callbacks.c	\
 	src/ags/X/machine/ags_drum_input_line.c			\
-	src/ags/X/machine/ags_drum_input_pad_callbacks.c		\
+	src/ags/X/machine/ags_drum_input_pad_callbacks.c	\
 	src/ags/X/machine/ags_drum_input_pad.c			\
 	src/ags/X/machine/ags_drum_output_line_callbacks.c	\
-	src/ags/X/machine/ags_drum_output_line.c			\
-	src/ags/X/machine/ags_drum_output_pad_callbacks.c		\
+	src/ags/X/machine/ags_drum_output_line.c		\
+	src/ags/X/machine/ags_drum_output_pad_callbacks.c	\
 	src/ags/X/machine/ags_drum_output_pad.c			\
-	src/ags/X/machine/ags_ffplayer_bridge_callbacks.c		\
+	src/ags/X/machine/ags_ffplayer_bridge_callbacks.c	\
 	src/ags/X/machine/ags_ffplayer_bridge.c			\
 	src/ags/X/machine/ags_ffplayer_bulk_input_callbacks.c	\
 	src/ags/X/machine/ags_ffplayer_bulk_input.c		\
 	src/ags/X/machine/ags_ffplayer_callbacks.c		\
-	src/ags/X/machine/ags_ffplayer.c				\
+	src/ags/X/machine/ags_ffplayer.c			\
 	src/ags/X/machine/ags_ffplayer_input_line_callbacks.c	\
 	src/ags/X/machine/ags_ffplayer_input_line.c		\
 	src/ags/X/machine/ags_ffplayer_input_pad_callbacks.c	\
 	src/ags/X/machine/ags_ffplayer_input_pad.c		\
 	src/ags/X/machine/ags_ladspa_bridge_callbacks.c		\
 	src/ags/X/machine/ags_ladspa_bridge.c			\
+	src/ags/X/machine/ags_replicator_bridge_callbacks.c	\
+	src/ags/X/machine/ags_replicator_bridge.c		\
 	src/ags/X/machine/ags_matrix_bridge_callbacks.c		\
 	src/ags/X/machine/ags_matrix_bridge.c			\
 	src/ags/X/machine/ags_matrix_bulk_input_callbacks.c	\
-	src/ags/X/machine/ags_matrix_bulk_input.c			\
-	src/ags/X/machine/ags_matrix_callbacks.c			\
+	src/ags/X/machine/ags_matrix_bulk_input.c		\
+	src/ags/X/machine/ags_matrix_callbacks.c		\
 	src/ags/X/machine/ags_matrix.c				\
 	src/ags/X/machine/ags_mixer_callbacks.c			\
 	src/ags/X/machine/ags_mixer.c				\
-	src/ags/X/machine/ags_mixer_input_line.c			\
+	src/ags/X/machine/ags_mixer_input_line.c		\
 	src/ags/X/machine/ags_mixer_input_pad.c			\
 	src/ags/X/machine/ags_oscillator_callbacks.c		\
 	src/ags/X/machine/ags_oscillator.c			\
 	src/ags/X/machine/ags_panel_callbacks.c			\
 	src/ags/X/machine/ags_panel.c				\
-	src/ags/X/machine/ags_panel_input_line.c			\
+	src/ags/X/machine/ags_panel_input_line.c		\
 	src/ags/X/machine/ags_panel_input_pad.c			\
 	src/ags/X/machine/ags_synth_bridge_callbacks.c		\
 	src/ags/X/machine/ags_synth_bridge.c			\
 	src/ags/X/machine/ags_synth_bulk_output_callbacks.c	\
-	src/ags/X/machine/ags_synth_bulk_output.c			\
+	src/ags/X/machine/ags_synth_bulk_output.c		\
 	src/ags/X/machine/ags_synth_callbacks.c			\
 	src/ags/X/machine/ags_synth.c				\
-	src/ags/X/machine/ags_synth_input_line.c			\
+	src/ags/X/machine/ags_synth_input_line.c		\
 	src/ags/X/machine/ags_synth_input_pad.c			\
 	src/ags/X/machine/ags_synth_output_line_callbacks.c	\
-	src/ags/X/machine/ags_synth_output_line.c			\
+	src/ags/X/machine/ags_synth_output_line.c		\
 	src/ags/X/machine/ags_synth_output_pad_callbacks.c	\
 	src/ags/X/machine/ags_synth_output_pad.c
 
