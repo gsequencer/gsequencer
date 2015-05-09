@@ -110,7 +110,7 @@ am__objects_1 =
 am__objects_2 = $(am__objects_1) libags_a-ags_id_generator.$(OBJEXT)
 am__objects_3 = $(am__objects_1) libags_a-ags_combo_box_text.$(OBJEXT) \
 	libags_a-ags_container.$(OBJEXT) libags_a-ags_list.$(OBJEXT) \
-	libags_a-ags_parameter.$(OBJEXT)
+	libags_a-ags_parameter.$(OBJEXT) libags_a-ags_turtle.$(OBJEXT)
 am__objects_4 = $(am__objects_1) libags_a-ags_init.$(OBJEXT) \
 	libags_a-ags_application_context.$(OBJEXT) \
 	libags_a-ags_config.$(OBJEXT) \
@@ -296,6 +296,7 @@ am__objects_15 = $(am__objects_14) \
 	libags_audio_a-ags_volume_recycling.$(OBJEXT)
 am__objects_16 = $(am__objects_1) \
 	libags_audio_a-ags_ladspa_manager.$(OBJEXT) \
+	libags_audio_a-ags_lv2_manager.$(OBJEXT) \
 	libags_audio_a-ags_plugin_factory.$(OBJEXT)
 am_libags_audio_a_OBJECTS = $(am__objects_8) $(am__objects_9) \
 	$(am__objects_11) $(am__objects_12) $(am__objects_13) \
@@ -870,7 +871,8 @@ ags_lib_h_sources = \
 	src/ags/lib/ags_combo_box_text.h		\
 	src/ags/lib/ags_container.h			\
 	src/ags/lib/ags_list.h				\
-	src/ags/lib/ags_parameter.h
+	src/ags/lib/ags_parameter.h			\
+	src/ags/lib/ags_turtle.h
 
 deprecated_ags_lib_c_sources = 
 ags_lib_c_sources = \
@@ -878,7 +880,8 @@ ags_lib_c_sources = \
 	src/ags/lib/ags_combo_box_text.c		\
 	src/ags/lib/ags_container.c			\
 	src/ags/lib/ags_list.c				\
-	src/ags/lib/ags_parameter.c
+	src/ags/lib/ags_parameter.c			\
+	src/ags/lib/ags_turtle.c
 
 deprecated_ags_util_h_sources = 
 ags_util_h_sources = \
@@ -999,6 +1002,7 @@ deprecated_ags_plugin_h_sources =
 ags_plugin_h_sources = \
 	$(deprecated_ags_plugin_h_sources) \
 	src/ags/plugin/ags_ladspa_manager.h		\
+	src/ags/plugin/ags_lv2_manager.h		\
 	src/ags/plugin/ags_plugin_factory.h		\
 	src/ags/plugin/ags_plugin_stock.h
 
@@ -1006,6 +1010,7 @@ deprecated_ags_plugin_c_sources =
 ags_plugin_c_sources = \
 	$(deprecated_ags_plugin_c_sources) \
 	src/ags/plugin/ags_ladspa_manager.c		\
+	src/ags/plugin/ags_lv2_manager.c		\
 	src/ags/plugin/ags_plugin_factory.c
 
 
@@ -2208,6 +2213,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_a-ags_stackable.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_a-ags_tactable.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_a-ags_tree_iterator.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_a-ags_turtle.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_a-ags_acceleration.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_a-ags_add_audio.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_a-ags_add_audio_signal.Po@am__quote@
@@ -2275,6 +2281,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_a-ags_link_channel.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_a-ags_loop_channel.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_a-ags_loop_channel_run.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_a-ags_lv2_manager.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_a-ags_mute_audio.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_a-ags_mute_audio_signal.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_a-ags_mute_channel.Po@am__quote@
@@ -2480,6 +2487,20 @@ libags_a-ags_parameter.obj: src/ags/lib/ags_parameter.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/lib/ags_parameter.c' object='libags_a-ags_parameter.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -c -o libags_a-ags_parameter.obj `if test -f 'src/ags/lib/ags_parameter.c'; then $(CYGPATH_W) 'src/ags/lib/ags_parameter.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/lib/ags_parameter.c'; fi`
+
+libags_a-ags_turtle.o: src/ags/lib/ags_turtle.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -MT libags_a-ags_turtle.o -MD -MP -MF $(DEPDIR)/libags_a-ags_turtle.Tpo -c -o libags_a-ags_turtle.o `test -f 'src/ags/lib/ags_turtle.c' || echo '$(srcdir)/'`src/ags/lib/ags_turtle.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_a-ags_turtle.Tpo $(DEPDIR)/libags_a-ags_turtle.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/lib/ags_turtle.c' object='libags_a-ags_turtle.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -c -o libags_a-ags_turtle.o `test -f 'src/ags/lib/ags_turtle.c' || echo '$(srcdir)/'`src/ags/lib/ags_turtle.c
+
+libags_a-ags_turtle.obj: src/ags/lib/ags_turtle.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -MT libags_a-ags_turtle.obj -MD -MP -MF $(DEPDIR)/libags_a-ags_turtle.Tpo -c -o libags_a-ags_turtle.obj `if test -f 'src/ags/lib/ags_turtle.c'; then $(CYGPATH_W) 'src/ags/lib/ags_turtle.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/lib/ags_turtle.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_a-ags_turtle.Tpo $(DEPDIR)/libags_a-ags_turtle.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/lib/ags_turtle.c' object='libags_a-ags_turtle.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -c -o libags_a-ags_turtle.obj `if test -f 'src/ags/lib/ags_turtle.c'; then $(CYGPATH_W) 'src/ags/lib/ags_turtle.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/lib/ags_turtle.c'; fi`
 
 libags_a-ags_init.o: src/ags/object/ags_init.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -MT libags_a-ags_init.o -MD -MP -MF $(DEPDIR)/libags_a-ags_init.Tpo -c -o libags_a-ags_init.o `test -f 'src/ags/object/ags_init.c' || echo '$(srcdir)/'`src/ags/object/ags_init.c
@@ -4916,6 +4937,20 @@ libags_audio_a-ags_ladspa_manager.obj: src/ags/plugin/ags_ladspa_manager.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/plugin/ags_ladspa_manager.c' object='libags_audio_a-ags_ladspa_manager.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -c -o libags_audio_a-ags_ladspa_manager.obj `if test -f 'src/ags/plugin/ags_ladspa_manager.c'; then $(CYGPATH_W) 'src/ags/plugin/ags_ladspa_manager.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/plugin/ags_ladspa_manager.c'; fi`
+
+libags_audio_a-ags_lv2_manager.o: src/ags/plugin/ags_lv2_manager.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -MT libags_audio_a-ags_lv2_manager.o -MD -MP -MF $(DEPDIR)/libags_audio_a-ags_lv2_manager.Tpo -c -o libags_audio_a-ags_lv2_manager.o `test -f 'src/ags/plugin/ags_lv2_manager.c' || echo '$(srcdir)/'`src/ags/plugin/ags_lv2_manager.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_a-ags_lv2_manager.Tpo $(DEPDIR)/libags_audio_a-ags_lv2_manager.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/plugin/ags_lv2_manager.c' object='libags_audio_a-ags_lv2_manager.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -c -o libags_audio_a-ags_lv2_manager.o `test -f 'src/ags/plugin/ags_lv2_manager.c' || echo '$(srcdir)/'`src/ags/plugin/ags_lv2_manager.c
+
+libags_audio_a-ags_lv2_manager.obj: src/ags/plugin/ags_lv2_manager.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -MT libags_audio_a-ags_lv2_manager.obj -MD -MP -MF $(DEPDIR)/libags_audio_a-ags_lv2_manager.Tpo -c -o libags_audio_a-ags_lv2_manager.obj `if test -f 'src/ags/plugin/ags_lv2_manager.c'; then $(CYGPATH_W) 'src/ags/plugin/ags_lv2_manager.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/plugin/ags_lv2_manager.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_a-ags_lv2_manager.Tpo $(DEPDIR)/libags_audio_a-ags_lv2_manager.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/plugin/ags_lv2_manager.c' object='libags_audio_a-ags_lv2_manager.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -c -o libags_audio_a-ags_lv2_manager.obj `if test -f 'src/ags/plugin/ags_lv2_manager.c'; then $(CYGPATH_W) 'src/ags/plugin/ags_lv2_manager.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/plugin/ags_lv2_manager.c'; fi`
 
 libags_audio_a-ags_plugin_factory.o: src/ags/plugin/ags_plugin_factory.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -MT libags_audio_a-ags_plugin_factory.o -MD -MP -MF $(DEPDIR)/libags_audio_a-ags_plugin_factory.Tpo -c -o libags_audio_a-ags_plugin_factory.o `test -f 'src/ags/plugin/ags_plugin_factory.c' || echo '$(srcdir)/'`src/ags/plugin/ags_plugin_factory.c

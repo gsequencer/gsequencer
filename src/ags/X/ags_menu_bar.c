@@ -21,6 +21,18 @@
 
 #include <ags/object/ags_connectable.h>
 
+#include <ags/plugin/ags_ladspa_manager.h>
+#include <ags/plugin/ags_lv2_manager.h>
+
+#include <dlfcn.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/types.h>
+#include <unistd.h>
+
+#include <ladspa.h>
+
 void ags_menu_bar_class_init(AgsMenuBarClass *menu_bar);
 void ags_menu_bar_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_menu_bar_init(AgsMenuBar *menu_bar);
@@ -187,9 +199,18 @@ ags_menu_bar_init(AgsMenuBar *menu_bar)
   item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label("LADSPA\0");
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->bridge, (GtkWidget*) item);
 
+  /* LADSPA */
+  menu_bar->ladspa = ags_ladspa_menu_new();
+  gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) menu_bar->ladspa);
+  
+  /* bridge */
   item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label("lv2\0");
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->bridge, (GtkWidget*) item);
-
+  
+  /* Lv2 */
+  menu_bar->lv2 = ags_lv2_menu_new();
+  gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) menu_bar->lv2);
+  
   /* edit */
   item = (GtkImageMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_REMOVE, NULL);
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->edit, (GtkWidget*) item);
@@ -503,9 +524,49 @@ ags_ladspa_menu_new()
   GtkMenu *menu;
   GtkMenuItem *item;
 
+  AgsLadspaManager *ladspa_manager;
+  AgsLadspaPlugin *ladspa_plugin;
+  
+  gchar **filename, **filename_start;
+  
+  void *plugin_so;
+  LADSPA_Descriptor_Function ladspa_descriptor;
+  LADSPA_Descriptor *plugin_descriptor;
+
   menu = (GtkMenu *) gtk_menu_new();
 
-  //TODO:JK: implement me
+  /* retrieve LADSPA filenames */
+  ags_ladspa_manager_load_default_directory();
+  filename =
+    filename_start = ags_ladspa_manager_get_filenames();
+
+  while(*filename != NULL){
+    ags_ladspa_manager_load_file(*filename);
+    ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(*filename);
+  
+    plugin_so = ladspa_plugin->plugin_so;
+
+    if(plugin_so){
+      ladspa_descriptor = (LADSPA_Descriptor_Function) dlsym(plugin_so,
+							     "ladspa_descriptor\0");
+
+      if(dlerror() == NULL && ladspa_descriptor){
+	unsigned long index;
+
+	/* We've successfully found a ladspa_descriptor function. Now load name and uuid member. */
+	for(index = 0; (plugin_descriptor = ladspa_descriptor(index)) != NULL; index++){
+	  item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup_printf("%s:%lu\0",
+									      plugin_descriptor->Name,
+									      plugin_descriptor->UniqueID));
+	  gtk_menu_shell_append((GtkMenuShell *) menu, (GtkWidget *) item);
+	}
+      }
+    }
+
+    filename++;
+  }
+
+  g_strfreev(filename_start);
   
   return(menu);
 }
@@ -525,9 +586,49 @@ ags_lv2_menu_new()
   GtkMenu *menu;
   GtkMenuItem *item;
 
+  AgsLv2Manager *lv2_manager;
+  AgsLv2Plugin *lv2_plugin;
+
+  gchar *plugin_name;
+  gchar **filename, **filename_start;
+  
+  void *plugin_so;
+  LV2_Descriptor_Function lv2_descriptor;
+  LV2_Descriptor *plugin_descriptor;
+
   menu = (GtkMenu *) gtk_menu_new();
 
-  //TODO:JK: implement me
+  /* retrieve LV2 filenames */
+  ags_lv2_manager_load_default_directory();
+  filename =
+    filename_start = ags_lv2_manager_get_filenames();
+
+  while(*filename != NULL){
+    ags_lv2_manager_load_file(*filename);
+    g_message(*filename);
+    lv2_plugin = ags_lv2_manager_find_lv2_plugin(*filename);
+    plugin_so = lv2_plugin->plugin_so;
+
+    if(plugin_so){
+      lv2_descriptor = (LV2_Descriptor_Function) dlsym(plugin_so,
+						       "lv2_descriptor\0");
+
+      if(dlerror() == NULL && lv2_descriptor){
+	uint32_t index;
+
+	/* We've successfully found a lv2_descriptor function. Now load name and uuid member. */
+	for(index = 0; (plugin_descriptor = lv2_descriptor(index)) != NULL; index++){
+	  item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup_printf("%s\0",
+									      plugin_descriptor->URI));
+	  gtk_menu_shell_append((GtkMenuShell *) menu, (GtkWidget *) item);
+	}
+      }
+    }
+
+    filename++;
+  }
+
+  g_strfreev(filename_start);
   
   return(menu);
 }

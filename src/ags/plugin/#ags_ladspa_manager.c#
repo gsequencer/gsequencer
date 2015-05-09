@@ -130,7 +130,7 @@ ags_ladspa_plugin_alloc()
 
   ladspa_plugin = (AgsLadspaPlugin *) malloc(sizeof(AgsLadspaPlugin));
 
-  ladspa_plugin->flags = 0;
+  ladspa_plugin->flagts = 0;
   ladspa_plugin->filename = NULL;
   ladspa_plugin->plugin_so = NULL;
 

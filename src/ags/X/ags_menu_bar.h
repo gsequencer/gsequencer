@@ -36,9 +36,13 @@ struct _AgsMenuBar
   GtkMenuBar menu_bar;
 
   GtkMenu *file;
+  
   GtkMenu *edit;
   GtkMenu *add;
   GtkMenu *bridge;
+  GtkMenu *ladspa;
+  GtkMenu *lv2;
+  
   GtkMenu *help;
 };
 

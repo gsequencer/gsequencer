@@ -36,9 +36,25 @@
 void ags_audio_file_class_init(AgsAudioFileClass *audio_file);
 void ags_audio_file_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_audio_file_init(AgsAudioFile *audio_file);
+void ags_audio_file_set_property(GObject *gobject,
+				 guint prop_id,
+				 const GValue *value,
+				 GParamSpec *param_spec);
+void ags_audio_file_get_property(GObject *gobject,
+				 guint prop_id,
+				 GValue *value,
+				 GParamSpec *param_spec);
 void ags_audio_file_connect(AgsConnectable *connectable);
 void ags_audio_file_disconnect(AgsConnectable *connectable);
 void ags_audio_file_finalize(GObject *object);
+
+enum{
+  PROP_0,
+  PROP_FILENAME,
+  PROP_SOUNDCARD,
+  PROP_START_CHANNEL,
+  PROP_AUDIO_CHANNELS,
+};
 
 enum{
   READ_BUFFER,
@@ -100,11 +116,85 @@ void
 ags_audio_file_class_init(AgsAudioFileClass *audio_file)
 {
   GObjectClass *gobject;
-
+  GParamSpec *param_spec;
+  
   ags_audio_file_parent_class = g_type_class_peek_parent(audio_file);
 
   gobject = (GObjectClass *) audio_file;
+
+  gobject->set_property = ags_audio_file_set_property;
+  gobject->get_property = ags_audio_file_get_property;
+
   gobject->finalize = ags_audio_file_finalize;
+  
+  /* properties */
+  /**
+   * AgsAudioFile:soundcard:
+   *
+   * The assigned soundcard.
+   * 
+   * Since: 0.4.3
+   */
+  param_spec = g_param_spec_object("soundcard\0",
+				   "soundcard of audio file\0",
+				   "The soundcard what audio file has it's presets\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SOUNDCARD,
+				  param_spec);
+
+
+  /**
+   * AgsAudioFile:filename:
+   *
+   * The assigned filename.
+   * 
+   * Since: 0.4.3
+   */
+  param_spec = g_param_spec_string("filename\0",
+				   "filename of lv2 manager\0",
+				   "The filename this lv2 manager is assigned to\0",
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FILENAME,
+				  param_spec);
+
+  /**
+   * AgsAudioFile:start-channel:
+   *
+   * The audio file's offset to start reading from.
+   * 
+   * Since: 0.4.3
+   */
+  param_spec = g_param_spec_uint("start-channel\0",
+				 "start-channel is the start offset\0",
+				 "The start-channel indicates what audio channel should be read\0",
+				 0, G_MAXUINT,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_START_CHANNEL,
+				  param_spec);
+
+
+  /**
+   * AgsAudioFile:audio-channels:
+   *
+   * The audio file's count of channels to be read.
+   * 
+   * Since: 0.4.3
+   */
+  param_spec = g_param_spec_uint("audio-channels\0",
+				 "read audio-channels of channels\0",
+				 "The audio-channels indicates how many channels should be read\0",
+				 0, G_MAXUINT,
+				 1,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_AUDIO_CHANNELS,
+				  param_spec);
 }
 
 void
@@ -121,7 +211,7 @@ ags_audio_file_init(AgsAudioFile *audio_file)
 {
   audio_file->soundcard = NULL;
 
-  audio_file->name = NULL;
+  audio_file->filename = NULL;
 
   audio_file->samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
   audio_file->frames = 0;
@@ -134,6 +224,97 @@ ags_audio_file_init(AgsAudioFile *audio_file)
   audio_file->audio_signal = NULL;
 
   audio_file->file = NULL;
+}
+
+void
+ags_audio_file_set_property(GObject *gobject,
+			    guint prop_id,
+			    const GValue *value,
+			    GParamSpec *param_spec)
+{
+  AgsAudioFile *audio_file;
+
+  audio_file = AGS_AUDIO_FILE(gobject);
+
+  switch(prop_id){
+  case PROP_FILENAME:
+    {
+      gchar *filename;
+
+      filename = (gchar *) g_value_get_string(value);
+
+      if(audio_file->filename == filename){
+	return;
+      }
+      
+      if(audio_file->filename != NULL){
+	g_free(audio_file->filename);
+      }
+
+      audio_file->filename = g_strdup(filename);
+    }
+    break;
+  case PROP_SOUNDCARD:
+    {
+      GObject *soundcard;
+      
+      soundcard = (GObject *) g_value_get_object(value);
+
+      if(soundcard == ((GObject *) audio_file->soundcard))
+	return;
+
+      if(audio_file->soundcard != NULL)
+	g_object_unref(audio_file->soundcard);
+
+      if(soundcard != NULL)
+	g_object_ref(G_OBJECT(soundcard));
+
+      audio_file->soundcard = (GObject *) soundcard;
+    }
+    break;
+  case PROP_START_CHANNEL:
+    {
+      audio_file->start_channel = g_value_get_uint(value);
+    }
+    break;
+  case PROP_AUDIO_CHANNELS:
+    {
+      audio_file->audio_channels = g_value_get_uint(value);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_audio_file_get_property(GObject *gobject,
+			    guint prop_id,
+			    GValue *value,
+			    GParamSpec *param_spec)
+{
+  AgsAudioFile *audio_file;
+
+  audio_file = AGS_AUDIO_FILE(gobject);
+
+  switch(prop_id){
+  case PROP_FILENAME:
+    g_value_set_string(value, audio_file->filename);
+    break;
+  case PROP_SOUNDCARD:
+    g_value_set_string(value, audio_file->soundcard);
+    break;
+  case PROP_START_CHANNEL:
+    g_value_set_uint(value, audio_file->start_channel);
+    break;
+  case PROP_AUDIO_CHANNELS:
+    g_value_set_uint(value, audio_file->audio_channels);
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void
@@ -186,20 +367,20 @@ gboolean
 ags_audio_file_open(AgsAudioFile *audio_file)
 {
 #ifdef AGS_DEBUG
-  g_message("ags_audio_file_open: %s\0", audio_file->name);
+  g_message("ags_audio_file_open: %s\0", audio_file->filename);
 #endif
 
-  if(g_file_test(audio_file->name, G_FILE_TEST_EXISTS)){
-    if(g_str_has_suffix(audio_file->name, ".wav\0") ||
-       g_str_has_suffix(audio_file->name, ".ogg\0") ||
-       g_str_has_suffix(audio_file->name, ".flac\0")){
+  if(g_file_test(audio_file->filename, G_FILE_TEST_EXISTS)){
+    if(g_str_has_suffix(audio_file->filename, ".wav\0") ||
+       g_str_has_suffix(audio_file->filename, ".ogg\0") ||
+       g_str_has_suffix(audio_file->filename, ".flac\0")){
       GError *error;
       guint loop_start, loop_end;
 
       audio_file->file = (GObject *) ags_sndfile_new();
 
       if(ags_playable_open(AGS_PLAYABLE(audio_file->file),
-			   audio_file->name)){
+			   audio_file->filename)){
 	//FIXME:JK: this call should occure just before reading frames because of the new iterate functions of an AgsPlayable
 
 	error = NULL;
@@ -238,24 +419,24 @@ ags_audio_file_rw_open(AgsAudioFile *audio_file,
 		       gboolean create)
 {
 #ifdef AGS_DEBUG
-  g_message("ags_audio_file_rw_open: %s\0", audio_file->name);
+  g_message("ags_audio_file_rw_open: %s\0", audio_file->filename);
 #endif
 
   if(!create &&
-     !g_file_test(audio_file->name, G_FILE_TEST_EXISTS)){
+     !g_file_test(audio_file->filename, G_FILE_TEST_EXISTS)){
     return(FALSE);
   }
 
-  if(g_str_has_suffix(audio_file->name, ".wav\0") ||
-     g_str_has_suffix(audio_file->name, ".ogg\0") ||
-     g_str_has_suffix(audio_file->name, ".flac\0")){
+  if(g_str_has_suffix(audio_file->filename, ".wav\0") ||
+     g_str_has_suffix(audio_file->filename, ".ogg\0") ||
+     g_str_has_suffix(audio_file->filename, ".flac\0")){
     GError *error;
     guint loop_start, loop_end;
 
     audio_file->file = (GObject *) ags_sndfile_new();
 
     if(ags_playable_rw_open(AGS_PLAYABLE(audio_file->file),
-			    audio_file->name,
+			    audio_file->filename,
 			    create,
 			    audio_file->samplerate, audio_file->channels,
 			    audio_file->frames,
@@ -293,9 +474,9 @@ ags_audio_file_open_from_data(AgsAudioFile *audio_file, gchar *data)
 #endif
 
   if(data != NULL){
-    if(g_str_has_suffix(audio_file->name, ".wav\0") ||
-       g_str_has_suffix(audio_file->name, ".ogg\0") ||
-       g_str_has_suffix(audio_file->name, ".flac\0")){
+    if(g_str_has_suffix(audio_file->filename, ".wav\0") ||
+       g_str_has_suffix(audio_file->filename, ".ogg\0") ||
+       g_str_has_suffix(audio_file->filename, ".flac\0")){
       GError *error;
       guint loop_start, loop_end;
 
@@ -303,7 +484,7 @@ ags_audio_file_open_from_data(AgsAudioFile *audio_file, gchar *data)
       AGS_SNDFILE(audio_file->file)->flags = AGS_SNDFILE_VIRTUAL;
 
       if(ags_playable_open(AGS_PLAYABLE(audio_file->file),
-			   audio_file->name)){
+			   audio_file->filename)){
 	AGS_SNDFILE(audio_file->file)->pointer = g_base64_decode(data,
 								 &(AGS_SNDFILE(audio_file->file)->length));
 	AGS_SNDFILE(audio_file->file)->current = AGS_SNDFILE(audio_file->file)->pointer;
@@ -415,7 +596,7 @@ ags_audio_file_flush(AgsAudioFile *audio_file)
 
 /**
  * ags_audio_file_new:
- * @name: the filename
+ * @filename: the filename
  * @soundcard: defaults of #AgsSoundcard
  * @start_channel: ommited channels
  * @audio_channels: number of channels to read
@@ -427,18 +608,18 @@ ags_audio_file_flush(AgsAudioFile *audio_file)
  * Since: 0.3
  */
 AgsAudioFile*
-ags_audio_file_new(gchar *name,
+ags_audio_file_new(gchar *filename,
 		   GObject *soundcard,
 		   guint start_channel, guint audio_channels)
 {
   AgsAudioFile *audio_file;
 
-  audio_file = (AgsAudioFile *) g_object_new(AGS_TYPE_AUDIO_FILE, NULL);
-
-  audio_file->name = g_strdup(name);
-  audio_file->soundcard = soundcard;
-  audio_file->start_channel = start_channel;
-  audio_file->audio_channels = audio_channels;
+  audio_file = (AgsAudioFile *) g_object_new(AGS_TYPE_AUDIO_FILE,
+					     "filename\0", filename,
+					     "soundcard\0", soundcard,
+					     "start-channel\0", start_channel,
+					     "audio-channel\0", audio_channels,
+					     NULL);
 
   return(audio_file);
 }

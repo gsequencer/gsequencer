@@ -140,8 +140,8 @@ ags_ladspa_browser_init(AgsLadspaBrowser *ladspa_browser)
   GtkTable *table;
   GtkComboBoxText *combo_box;
   GtkLabel *label;
-  GList *list;
 
+  GList *list;
   gchar **filenames, **filenames_start;
 
   ladspa_browser->parent = NULL;
