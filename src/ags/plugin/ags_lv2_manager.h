@@ -60,9 +60,10 @@ struct _AgsLv2ManagerClass
 struct _AgsLv2Plugin
 {
   guint flags;
-  
+
+  AgsTurtle *manifest;
+
   gchar *filename;
-  AgsTurtle *turtle;
   void *plugin_so;
 };
 
@@ -77,8 +78,10 @@ AgsLv2Plugin* ags_lv2_manager_find_lv2_plugin(gchar *filename);
 void ags_lv2_manager_load_file(gchar *filename);
 void ags_lv2_manager_load_default_directory();
 
-unsigned long ags_lv2_manager_effect_index(gchar *filename,
-					   gchar *effect);
+uint32_t ags_lv2_manager_uri_index(gchar *filename,
+				   gchar *uri);
+AgsTurtle* ags_lv2_manager_uri_turtle(gchar *filename,
+				      gchar *uri);
 
 /*  */
 AgsLv2Manager* ags_lv2_manager_get_instance();

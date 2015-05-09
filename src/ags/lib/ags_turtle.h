@@ -36,7 +36,11 @@ struct _AgsTurtle
 {
   GObject object;
 
-  gchar locale;
+  gchar *filename;
+
+  gchar **subject;
+  
+  gchar **filter;
   GHashMap *hashmap;
 };
 
@@ -55,12 +59,24 @@ gboolean ags_turtle_remove(AgsTurtle *turtle,
 gchar* ags_turtle_lookup(AgsTurtle *turtle,
 			 gchar *key);
 
-gchar** ags_turtle_value_as_array(AgsTurtle,
-				  gchar *value);
+gchar* ags_turtle_value_as_string(AgsTurtle *turtle,
+				  gchar *value,
+				  gchar **verb);
+gchar* ags_turtle_value_with_verb_as_string(AgsTurtle *turtle,
+					    gchar *value,
+					    gchar *verb);
 
+gchar** ags_turtle_value_as_array(AgsTurtle *turtle,
+				  gchar *value,
+				  gchar **verb);
+gchar** ags_turtle_value_with_verb_as_array(AgsTurtle *turtle,
+					    gchar *value,
+					    gchar *verb);
+
+gchar** ags_turtle_list_subjects(AgsTurtle *turtle);
 void ags_turtle_load(AgsTurtle *turtle);
 
 AgsTurtle* ags_turtle_new(gchar *filename,
-			  gchar locale);
+			  gchar **filter);
 
 #endif /*__AGS_TURTLE_H__*/
