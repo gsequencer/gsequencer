@@ -18,6 +18,14 @@
 
 #include <ags/lib/ags_turtle.h>
 
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
 void ags_turtle_class_init(AgsTurtleClass *turtle);
 void ags_turtle_init (AgsTurtle *turtle);
 void ags_turtle_finalize(GObject *gobject);
@@ -113,7 +121,7 @@ ags_turtle_read_subject(AgsTurtle *turtle,
 			char **end_ptr)
 {
   gchar *subject;
-  gchar *iter;
+  gchar *iter, *end;
   
   subject = NULL;
 
@@ -147,7 +155,7 @@ ags_turtle_read_subject(AgsTurtle *turtle,
     }
     
     /* read subject */
-    for(; !g_ascii_is_space(*iter); iter++);
+    for(; !g_ascii_isspace(*iter) && *iter != ',' && *iter != ';' && *iter != '.'; iter++);
 
     end = iter;
   }
@@ -165,7 +173,7 @@ ags_turtle_read_verb(AgsTurtle *turtle,
 		     gchar **end_ptr)
 {
   gchar *verb;
-  gchar *iter;
+  gchar *iter, *end;
   
   verb = NULL;
 
@@ -199,7 +207,7 @@ ags_turtle_read_verb(AgsTurtle *turtle,
     }
     
     /* read verb */
-    for(; !g_ascii_is_space(*iter); iter++);
+    for(; !g_ascii_isspace(*iter)  && *iter != ','  && *iter != ';' && *iter != '.'; iter++);
 
     end = iter;
   }
@@ -217,7 +225,7 @@ ags_turtle_read_object(AgsTurtle *turtle,
 		       gchar **end_ptr)
 {
   gchar *object;
-  gchar *iter;
+  gchar *iter, *end;
   
   object = NULL;
 
@@ -254,7 +262,7 @@ ags_turtle_read_object(AgsTurtle *turtle,
     }
     
     /* read object */
-    for(; !g_ascii_is_space(*iter); iter++);
+    for(; !g_ascii_isspace(*iter); iter++);
     
     /* look ahead - skip whitespaces and comments */
     look_ahead = iter;
@@ -391,8 +399,10 @@ ags_turtle_value_as_array(AgsTurtle *turtle,
 {
   gchar **value, *str, *current, *current_end_ptr;
   gchar *tmp0, *tmp1;
+  gchar *iter;
+  gchar *literal;
+  guint open_brackets;
   guint i;
-  gboolean string_on;
 
   str = ags_turtle_lookup(turtle,
 			  key);
@@ -428,22 +438,46 @@ ags_turtle_value_as_array(AgsTurtle *turtle,
     
     current = NULL;
     current_end_ptr = NULL;
+    literal = NULL;
+    open_brackets = 1;
     
     for(; *iter != '\0'; iter++){
-      if(*iter == '[' ||
-	 *iter == ']'){
+      if(*iter == '['){
+	if(literal == NULL){
+	  open_brackets++;
+	}
+
 	continue;
       }
 
-      if(g_ascii_is_space(*iter) ||
-	 *iter == ','){
+      if(*iter == ']'){
+	if(literal == NULL){
+	  open_brackets--;
+
+	  if(open_brackets > 0){
+	    continue;
+	  }
+	}else{
+	  continue;
+	}
+      }
+
+      if(*literal == *iter){
+	literal = NULL;
+      }
+      
+      if((g_ascii_isspace(*iter) ||
+	  *iter == ',') &&
+	 literal == NULL &&
+	 open_brackets == 0){
 	if(current != NULL){
 	  if(value == NULL){
 	    value = (gchar **) malloc(sizeof(gchar *));
 	    value[0] = g_strndup(current,
 				 iter - current);
 	  }else{
-	    value = (gchar **) realloc((i + 1) * sizeof(gchar *));
+	    value = (gchar **) realloc(value,
+				       (i + 1) * sizeof(gchar *));
 	    value[i] = g_strndup(current,
 				 iter - current);
 	  }
@@ -463,6 +497,11 @@ ags_turtle_value_as_array(AgsTurtle *turtle,
 	}
       }else{
 	current = iter;
+
+	if(*iter == '"' ||
+	   *iter == '\''){
+	  literal = iter;
+	}
       }
     }
 
@@ -480,10 +519,38 @@ ags_turtle_value_as_array(AgsTurtle *turtle,
 
     current = NULL;
     current_end_ptr = NULL;
-
+    literal = NULL;
+    open_brackets = 0;
+    
     for(; *iter != '\0'; iter++){
-      if(g_ascii_is_space(*iter) ||
-	 *iter == ','){
+      if(*iter == '['){
+	if(literal == NULL){
+	  open_brackets++;
+	}
+	
+	continue;
+      }
+
+      if(*iter == ']'){
+	if(literal == NULL){
+	  open_brackets--;
+	  
+	  if(open_brackets > 0){
+	    continue;
+	  }
+	}else{
+	  continue;
+	}
+      }
+
+      if(*literal == *iter){
+	literal = NULL;
+      }
+
+      if((g_ascii_isspace(*iter) ||
+	  *iter == ',') &&
+	 literal == NULL &&
+	 open_brackets == 0){
 	if(current != NULL){
 	  if(value == NULL){
 	    value = (gchar **) malloc(sizeof(gchar *));
@@ -511,6 +578,11 @@ ags_turtle_value_as_array(AgsTurtle *turtle,
 	}
       }else{
 	current = iter;
+
+      	if(*iter == '"' ||
+	   *iter == '\''){
+	  literal = iter;
+	}
       }
     }
 
@@ -520,10 +592,11 @@ ags_turtle_value_as_array(AgsTurtle *turtle,
       value[i] = NULL;
     }
   }else{
-    value = (gchar **) malloc(2 * sizeof(gchar *));
-    value[0] = g_strndup(current,
-			 current_end_ptr - current);
-    value[1] = NULL;
+    tmp0 = g_strndup(current,
+		     current_end_ptr - current);
+    value = g_strsplit(tmp0,
+		       " , \0",
+		       0);
   }
   
   return(value);
@@ -536,12 +609,16 @@ ags_turtle_value_with_verb_as_array(AgsTurtle *turtle,
 {
   gchar **value, *str, *current, *current_end_ptr, *current_verb, *current_verb_end_ptr;
   gchar *tmp0, *tmp1;
+  gchar *iter;
+  gchar *literal;
+  guint open_brackets;
   guint i;
-  gboolean string_on;
 
   str = ags_turtle_lookup(turtle,
 			  key);
 
+  value = NULL;
+  
   do{
     /* read verb */
     current_verb = ags_turtle_read_verb(turtle,
@@ -565,7 +642,6 @@ ags_turtle_value_with_verb_as_array(AgsTurtle *turtle,
     g_free(verb);
 
     /* read object */
-    value = NULL;
     i = 0;
   
     str = current_end_ptr;
@@ -586,22 +662,46 @@ ags_turtle_value_with_verb_as_array(AgsTurtle *turtle,
     
       current = NULL;
       current_end_ptr = NULL;
-    
+      literal = NULL;
+      open_brackets = 1;
+      
       for(; *iter != '\0'; iter++){
-	if(*iter == '[' ||
-	   *iter == ']'){
+	if(*iter == '['){
+	  if(literal == NULL){
+	    open_brackets++;
+	  }
+	  
 	  continue;
 	}
 
-	if(g_ascii_is_space(*iter) ||
-	   *iter == ','){
+	if(*iter == ']'){
+	  if(literal == NULL){
+	    open_brackets--;
+	    
+	    if(open_brackets > 0){
+	      continue;
+	    }
+	  }else{
+	    continue;
+	  }
+	}
+	
+	if(*literal == *iter){
+	  literal = NULL;
+	}
+      
+	if((g_ascii_isspace(*iter) ||
+	    *iter == ',') &&
+	   literal == NULL &&
+	   open_brackets == 0){
 	  if(current != NULL){
 	    if(value == NULL){
 	      value = (gchar **) malloc(sizeof(gchar *));
 	      value[0] = g_strndup(current,
 				   iter - current);
 	    }else{
-	      value = (gchar **) realloc((i + 1) * sizeof(gchar *));
+	      value = (gchar **) realloc(value,
+					 (i + 1) * sizeof(gchar *));
 	      value[i] = g_strndup(current,
 				   iter - current);
 	    }
@@ -621,6 +721,11 @@ ags_turtle_value_with_verb_as_array(AgsTurtle *turtle,
 	  }
 	}else{
 	  current = iter;
+
+	  if(*iter == '"' ||
+	   *iter == '\''){
+	    literal = iter;
+	  }
 	}
       }
 
@@ -638,10 +743,39 @@ ags_turtle_value_with_verb_as_array(AgsTurtle *turtle,
 
       current = NULL;
       current_end_ptr = NULL;
-
+      literal = NULL;
+      open_brackets = 0;
+      
       for(; *iter != '\0'; iter++){
-	if(g_ascii_is_space(*iter) ||
-	   *iter == ','){
+
+	if(*iter == '['){
+	  if(literal == NULL){
+	    open_brackets++;
+	  }
+	  
+	  continue;
+	}
+
+	if(*iter == ']'){
+	  if(literal == NULL){
+	    open_brackets--;
+
+	    if(open_brackets > 0){
+	      continue;
+	    }
+	  }else{
+	    continue;
+	  }
+	}
+
+	if(*literal == *iter){
+	  literal = NULL;
+	}
+      
+	if((g_ascii_isspace(*iter) ||
+	    *iter == ',')  &&
+	   literal == NULL &&
+	   open_brackets == 0){
 	  if(current != NULL){
 	    if(value == NULL){
 	      value = (gchar **) malloc(sizeof(gchar *));
@@ -669,6 +803,11 @@ ags_turtle_value_with_verb_as_array(AgsTurtle *turtle,
 	  }
 	}else{
 	  current = iter;
+
+	  if(*iter == '"' ||
+	     *iter == '\''){
+	    literal = iter;
+	  }
 	}
       }
 
@@ -678,12 +817,13 @@ ags_turtle_value_with_verb_as_array(AgsTurtle *turtle,
 	value[i] = NULL;
       }
     }else{
-      value = (gchar **) malloc(2 * sizeof(gchar *));
-      value[0] = g_strndup(current,
-			   current_end_ptr - current);
-      value[1] = NULL;
+      tmp0 = g_strndup(current,
+		       current_end_ptr - current);
+      value = g_strsplit(tmp0,
+			 " , \0",
+			 0);
     }
-  }while();
+  }while(value == NULL);
 
   return(value);
 }
@@ -691,28 +831,76 @@ ags_turtle_value_with_verb_as_array(AgsTurtle *turtle,
 gchar**
 ags_turtle_list_subjects(AgsTurtle *turtle)
 {
-  //TODO:JK: implement me
-
-  return(NULL);
+  gchar **subjects;
+  guint length;
+  
+  subjects = g_hash_table_get_keys_as_array(turtle->hash_table,
+					     &length);
+  subjects = realloc(subjects,
+		     (length + 1) * sizeof(gchar *));
+  subjects[length] = NULL;
+  
+  return(subjects);
 }
 
 void
 ags_turtle_load(AgsTurtle *turtle)
 {
-  auto void ags_turtle_load_triple(gchar *current_path,
-				   gchar **ret_key, gchar **ret_value);
-
-  void ags_turtle_load_triple(gchar *current_path,
-			      gchar **ret_key, gchar **ret_value){
-    //TODO:JK: implement me
-  }
+  FILE *file;
+  gchar *buffer, *iter;
+  gchar *current, *current_end_ptr;
   
-  //TODO:JK: implement me
+  struct stat *sb;
+
+  sb = (struct stat *) malloc(sizeof(struct stat));
+  stat(turtle->filename,
+       sb);
+  file = fopen(turtle->filename,
+	       "r\0");
+
+  buffer = (gchar *) malloc((sb->st_size + 1) * sizeof(gchar));
+  fread(buffer, sizeof(gchar), sb->st_size, file);
+  buffer[sb->st_size] = '\0';
+  fclose(file);
+
+  free(sb);
+
+  iter = buffer;
+
+  do{
+    current = NULL;
+    current_end_ptr = NULL;
+
+    ags_turtle_read_subject(turtle,
+			    iter,
+			    &current_end_ptr);
+    iter = current_end_ptr++;
+    
+    ags_turtle_read_verb(turtle,
+			 iter,
+			 &current_end_ptr);
+    iter = current_end_ptr++;
+    
+    ags_turtle_read_object(turtle,
+			   iter,
+			   &current_end_ptr);
+
+    if(iter == '.'){
+      iter = current_end_ptr++;
+    }else{
+      iter = index(iter,
+		   ".\0");
+    }
+    
+  }while(current != NULL);
+  
+  free(buffer);
 }
 
 void
 ags_turtle_substitute(AgsTurtle *turtle)
 {
+  //TODO:JK: implement me
 }
 
 AgsTurtle*
