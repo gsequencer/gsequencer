@@ -65,7 +65,13 @@ ags_turtle_class_init(AgsTurtleClass *turtle)
 void
 ags_turtle_init(AgsTurtle *turtle)
 {
-  turtle->locale = NULL;
+  turtle->filename = NULL;
+  
+  turtle->subject = NULL;
+
+  turtle->current_subject = NULL;
+
+  turtle->filter = NULL;
   turtle->hashmap = g_hash_table_new_full(g_str_hash, (GEqualFunc) g_ascii_strcasecmp,
 					  (GDestroyNotify) g_free,
 					  (GDestroyNotify) g_free);
@@ -75,10 +81,15 @@ void
 ags_turtle_finalize(GObject *gobject)
 {
   AgsTurtle *turtle;
-
+  gchar **str;
+  
   turtle = AGS_TURTLE(gobject);
 
-  g_free(turtle->locale);
+  g_strfreev(turtle->subject);
+
+  g_free(turtle->current_subject);
+
+  g_strfreev(turtle->filter);
   g_hash_table_destroy(turtle->hash_table);
 }
 
@@ -112,9 +123,48 @@ ags_turtle_lookup(AgsTurtle *turtle,
   return(value);
 }
 
+gchar*
+ags_turtle_value_as_string(AgsTurtle *turtle,
+			   gchar *value,
+			   gchar **verb)
+{
+  //TODO:JK: implement me
+
+  return(NULL);
+}
+
+gchar*
+ags_turtle_value_with_verb_as_string(AgsTurtle *turtle,
+				     gchar *value,
+				     gchar *verb)
+{
+  //TODO:JK: implement me
+
+  return(NULL);
+}
+
 gchar**
-ags_turtle_value_as_array(AgsTurtle,
-			  gchar *value)
+ags_turtle_value_as_array(AgsTurtle *turtle,
+			  gchar *value,
+			  gchar **verbd)
+{
+  //TODO:JK: implement me
+
+  return(NULL);
+}
+
+gchar**
+ags_turtle_value_with_verb_as_array(AgsTurtle *turtle,
+				    gchar *value,
+				    gchar *verb)
+{
+  //TODO:JK: implement me
+
+  return(NULL);
+}
+
+gchar**
+ags_turtle_list_subjects(AgsTurtle *turtle)
 {
   //TODO:JK: implement me
 
@@ -124,18 +174,20 @@ ags_turtle_value_as_array(AgsTurtle,
 void
 ags_turtle_load(AgsTurtle *turtle)
 {
+  auto gboolean ags_turtle_load_triple(gchar *current_path,
+				       gchar **ret_key, gchar **ret_value);
   //TODO:JK: implement me
 }
 
 AgsTurtle*
 ags_turtle_new(gchar *filename,
-	       gchar locale)
+	       gchar **filter)
 {
   AgsTurtle *turtle;
 
   turtle = g_object_new(AGS_TYPE_TURTLE,
 			"filename\0", filename,
-			"locale\0", locale,
+			"filter\0", filter,
 			NULL);
 
   return(turtle);

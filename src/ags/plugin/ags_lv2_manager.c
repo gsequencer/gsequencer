@@ -131,8 +131,10 @@ ags_lv2_plugin_alloc()
   lv2_plugin = (AgsLv2Plugin *) malloc(sizeof(AgsLv2Plugin));
 
   lv2_plugin->flags = 0;
+
+  lv2_plugin->manifest = NULL;
+
   lv2_plugin->filename = NULL;
-  lv2_plugin->turtle = NULL;
   lv2_plugin->plugin_so = NULL;
 
   return(lv2_plugin);
@@ -154,7 +156,7 @@ ags_lv2_plugin_free(AgsLv2Plugin *lv2_plugin)
   }
 
   free(lv2_plugin->filename);
-  g_object_unref(lv2->turtle);
+  g_object_unref(lv2->manifest);
   free(lv2_plugin);
 }
 
@@ -240,13 +242,13 @@ ags_lv2_manager_load_file(gchar *filename)
   AgsLv2Manager *lv2_manager;
   AgsLv2Plugin *lv2_plugin;
 
-  AgsTurtle turtle;
+  AgsTurtle manifest;
 
   GDir *dir;
   
   gchar *path;
   gchar *plugin_name;
-  gchar *turtle_path;
+  gchar *manifest;
 
   GError *error;
 
@@ -264,16 +266,13 @@ ags_lv2_manager_load_file(gchar *filename)
   }
 
   plugin_name = NULL;
-  turtle_name = NULL;
+  manifest = g_strdup_printf("%s/%s/manifest.ttl\0",
+			     ags_lv2_default_path,
+			     filename);
   
   while((plugin_name = g_dir_read_name(dir)) != NULL){
     if(g_str_has_suffix(plugin_name,
 			".so\0")){
-      turtle_path = g_strdup_printf("%s/%s/%*s.ttl\0",
-				    ags_lv2_default_path,
-				    filename,
-				    (strlen(plugin_name) - 3),
-				    plugin_name)
       break;
     }
   }
@@ -289,10 +288,23 @@ ags_lv2_manager_load_file(gchar *filename)
   g_message("loading: %s\0", filename);
 
   if(lv2_plugin == NULL){
+    static gchar **turtle_filter = {
+      lv2_manager->locale,
+      NULL,
+    };
+    
     lv2_plugin = ags_lv2_plugin_alloc();
+
+    /*  */
+    lv2_plugin->manifest = ags_turtle_new(manifest,
+					  NULL,
+					  turtle_filter);
+    
+    turtle_subjects = ags_turtle_list_subjects(lv2_plugin->manifest);    
+    ags_turtle_load(lv2_plugin->manifest);
+
     lv2_plugin->filename = g_strdup(filename);
-    lv2_plugin->turtle = ags_turtle_new(turtle_path);
-    ags_turtle_load(lv2_plugin->turtle);
+    
     lv2_manager->lv2_plugin = g_list_prepend(lv2_manager->lv2_plugin,
 					     lv2_plugin);
 
@@ -347,6 +359,93 @@ ags_lv2_manager_load_default_directory()
   }
 }
 
+uint32_t
+ags_lv2_manager_uri_index(gchar *filename,
+			  gchar *uri)
+{
+  AgsLv2Plugin *lv2_plugin;
+    
+  void *plugin_so;
+  LV2_Descriptor_Function lv2_descriptor;
+  LV2_Descriptor *plugin_descriptor;
+  LV2_PortDescriptor *port_descriptor;
+
+  uint32_t index;
+  uint32_t i;
+
+  if(filename == NULL ||
+     uri == NULL){
+    return(G_MAXULONG);
+  }
+  
+  /* load plugin */
+  ags_lv2_manager_load_file(filename);
+  lv2_plugin = ags_lv2_manager_find_lv2_plugin(filename);
+
+  plugin_so = lv2_plugin->plugin_so;
+
+  index = G_MAXULONG;
+
+  if(plugin_so){
+    lv2_descriptor = (LV2_Descriptor_Function) dlsym(plugin_so,
+						     "lv2_descriptor\0");
+    
+    if(dlerror() == NULL && lv2_descriptor){
+      for(i = 0; (plugin_descriptor = lv2_descriptor(i)) != NULL; i++){
+	if(!strncmp(plugin_descriptor->URI,
+		    uri,
+		    strlen(uri))){
+	  index = i;
+	  break;
+	}
+      }
+    }
+  }
+  
+  return(index);
+}
+
+AgsTurtle*
+ags_lv2_manager_uri_turtle(gchar *filename,
+			   gchar *uri)
+{
+  AgsLv2Plugin *lv2_plugin;
+
+  AgsTurtle *turtle;
+
+  gchar *turtle_path;
+  gchar *str;
+  
+  static gchar **turtle_filter = {
+    lv2_manager->locale,
+    NULL,
+  };
+
+  
+  if(filename == NULL ||
+     uri == NULL){
+    return(NULL);
+  }
+  
+  /* load plugin */
+  ags_lv2_manager_load_file(filename);
+  lv2_plugin = ags_lv2_manager_find_lv2_plugin(filename);
+  
+  /* instantiate and load turtle */
+  str = ags_turtle_value_with_verb_as_string(lv2_plugin->manifest,
+					     uri,
+					     "rdfs:seeAlso\0");
+  turtle_path = g_strdup_printf("%s/%s\0",
+				filename,
+				str);
+  
+  turtle = ags_turtle_new(turtle_path,
+			  turtle_filter);
+  ags_turtle_load(turtle);
+  
+  return(turtle);
+}
+
 /**
  * ags_lv2_manager_get_instance:
  *
@@ -364,7 +463,7 @@ ags_lv2_manager_get_instance()
   pthread_mutex_lock(&(mutex));
 
   if(ags_lv2_manager == NULL){
-    ags_lv2_manager = ags_lv2_manager_new();
+    ags_lv2_manager = ags_lv2_manager_new(AGS_LV2_MANAGER_DEFAULT_LOCALE);
 
     pthread_mutex_unlock(&(mutex));
 
