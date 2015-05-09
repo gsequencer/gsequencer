@@ -449,6 +449,17 @@ ags_lv2_manager_load_default_directory()
   }
 }
 
+/**
+ * ags_lv2_manager_uri_index:
+ * @filename: the plugin.so filename
+ * @uri: the uri's name within plugin
+ *
+ * Retrieve the uri's index within @filename
+ *
+ * Returns: the index, G_MAXULONG if not found
+ *
+ * Since: 0.4.3
+ */
 uint32_t
 ags_lv2_manager_uri_index(gchar *filename,
 			  gchar *uri)
@@ -494,6 +505,17 @@ ags_lv2_manager_uri_index(gchar *filename,
   return(index);
 }
 
+/**
+ * ags_lv2_manager_uri_turtle:
+ * @filename: the plugin.so filename
+ * @uri: the uri's name within plugin
+ *
+ * Retrieve the uri's turtle within @filename
+ *
+ * Returns: the turtle, G_MAXULONG if not found
+ *
+ * Since: 0.4.3
+ */
 AgsTurtle*
 ags_lv2_manager_uri_turtle(gchar *filename,
 			   gchar *uri)

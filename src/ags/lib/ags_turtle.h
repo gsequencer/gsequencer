@@ -32,12 +32,21 @@
 typedef struct _AgsTurtle AgsTurtle;
 typedef struct _AgsTurtleClass AgsTurtleClass;
 
+typedef enum{
+  AGS_TURTLE_READ_SUBJECT    = 1,
+  AGS_TURTLE_READ_VERB       = 1 << 1,
+  AGS_TURTLE_READ_OBJECT     = 1 << 2,
+  AGS_TURTLE_TRIPLE_END      = 1 << 3,
+}AgsTurtleFlags;
+
 struct _AgsTurtle
 {
   GObject object;
 
+  guint flags;
+  
   gchar *filename;
-
+  
   gchar **subject;
   
   gchar **filter;
@@ -60,21 +69,23 @@ gchar* ags_turtle_lookup(AgsTurtle *turtle,
 			 gchar *key);
 
 gchar* ags_turtle_value_as_string(AgsTurtle *turtle,
-				  gchar *value,
+				  gchar *key,
 				  gchar **verb);
 gchar* ags_turtle_value_with_verb_as_string(AgsTurtle *turtle,
-					    gchar *value,
+					    gchar *key,
 					    gchar *verb);
 
 gchar** ags_turtle_value_as_array(AgsTurtle *turtle,
-				  gchar *value,
+				  gchar *key,
 				  gchar **verb);
 gchar** ags_turtle_value_with_verb_as_array(AgsTurtle *turtle,
-					    gchar *value,
+					    gchar *key,
 					    gchar *verb);
 
 gchar** ags_turtle_list_subjects(AgsTurtle *turtle);
 void ags_turtle_load(AgsTurtle *turtle);
+
+void ags_turtle_substitute(AgsTurtle *turtle);
 
 AgsTurtle* ags_turtle_new(gchar *filename,
 			  gchar **filter);
