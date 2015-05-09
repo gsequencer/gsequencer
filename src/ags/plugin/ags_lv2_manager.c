@@ -27,10 +27,16 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#include <lv2.h>
-
 void ags_lv2_manager_class_init(AgsLv2ManagerClass *lv2_manager);
 void ags_lv2_manager_init (AgsLv2Manager *lv2_manager);
+void ags_lv2_manager_set_property(GObject *gobject,
+				  guint prop_id,
+				  const GValue *value,
+				  GParamSpec *param_spec);
+void ags_lv2_manager_get_property(GObject *gobject,
+				  guint prop_id,
+				  GValue *value,
+				  GParamSpec *param_spec);
 void ags_lv2_manager_finalize(GObject *gobject);
 
 /**
@@ -42,6 +48,12 @@ void ags_lv2_manager_finalize(GObject *gobject);
  *
  * The #AgsLv2Manager loads/unloads LV2 plugins.
  */
+
+enum{
+  PROP_0,
+  PROP_LOCALE,
+};
+
 enum{
   ADD,
   CREATE,
@@ -85,19 +97,95 @@ void
 ags_lv2_manager_class_init(AgsLv2ManagerClass *lv2_manager)
 {
   GObjectClass *gobject;
-
+  GParamSpec *param_spec;
+  
   ags_lv2_manager_parent_class = g_type_class_peek_parent(lv2_manager);
 
   /* GObjectClass */
   gobject = (GObjectClass *) lv2_manager;
 
+  gobject->set_property = ags_lv2_manager_set_property;
+  gobject->get_property = ags_lv2_manager_get_property;
+
   gobject->finalize = ags_lv2_manager_finalize;
+
+  /* properties */
+  /**
+   * AgsLv2Manager:locale:
+   *
+   * The assigned locale.
+   * 
+   * Since: 0.4.3
+   */
+  param_spec = g_param_spec_string("locale\0",
+				   "locale of lv2 manager\0",
+				   "The locale this lv2 manager is assigned to\0",
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_LOCALE,
+				  param_spec);
+
 }
 
 void
 ags_lv2_manager_init(AgsLv2Manager *lv2_manager)
 {
   lv2_manager->lv2_plugin = NULL;
+}
+
+void
+ags_lv2_manager_set_property(GObject *gobject,
+			     guint prop_id,
+			     const GValue *value,
+			     GParamSpec *param_spec)
+{
+  AgsLv2Manager *lv2_manager;
+
+  lv2_manager = AGS_LV2_MANAGER(gobject);
+
+  switch(prop_id){
+  case PROP_LOCALE:
+    {
+      gchar *locale;
+
+      locale = (gchar *) g_value_get_string(value);
+
+      if(lv2_manager->locale == locale){
+	return;
+      }
+      
+      if(lv2_manager->locale != NULL){
+	g_free(lv2_manager->locale);
+      }
+
+      lv2_manager->locale = g_strdup(locale);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_lv2_manager_get_property(GObject *gobject,
+			     guint prop_id,
+			     GValue *value,
+			     GParamSpec *param_spec)
+{
+  AgsLv2Manager *lv2_manager;
+
+  lv2_manager = AGS_LV2_MANAGER(gobject);
+
+  switch(prop_id){
+  case PROP_LOCALE:
+    g_value_set_string(value, lv2_manager->locale);
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void
@@ -156,7 +244,7 @@ ags_lv2_plugin_free(AgsLv2Plugin *lv2_plugin)
   }
 
   free(lv2_plugin->filename);
-  g_object_unref(lv2->manifest);
+  g_object_unref(lv2_plugin->manifest);
   free(lv2_plugin);
 }
 
@@ -242,8 +330,6 @@ ags_lv2_manager_load_file(gchar *filename)
   AgsLv2Manager *lv2_manager;
   AgsLv2Plugin *lv2_plugin;
 
-  AgsTurtle manifest;
-
   GDir *dir;
   
   gchar *path;
@@ -279,8 +365,7 @@ ags_lv2_manager_load_file(gchar *filename)
   
   pthread_mutex_lock(&(mutex));
 
-  path = g_strdup_printf("%s/%s/%s\0",
-			 ags_lv2_default_path,
+  path = g_strdup_printf("%s/%s\0",
 			 filename,
 			 plugin_name);
 
@@ -288,21 +373,22 @@ ags_lv2_manager_load_file(gchar *filename)
   g_message("loading: %s\0", filename);
 
   if(lv2_plugin == NULL){
-    static gchar **turtle_filter = {
-      lv2_manager->locale,
-      NULL,
-    };
+    gchar **turtle_filter;
     
     lv2_plugin = ags_lv2_plugin_alloc();
 
-    /*  */
+    /* load manifest */
+    turtle_filter = malloc(2 * sizeof(gchar *));
+    turtle_filter[0] = g_strdup(lv2_manager->locale);
+    turtle_filter[1] = NULL;
+
     lv2_plugin->manifest = ags_turtle_new(manifest,
-					  NULL,
 					  turtle_filter);
-    
-    turtle_subjects = ags_turtle_list_subjects(lv2_plugin->manifest);    
     ags_turtle_load(lv2_plugin->manifest);
 
+    g_strfreev(turtle_filter);
+
+    /* set filename and plugin file */
     lv2_plugin->filename = g_strdup(filename);
     
     lv2_manager->lv2_plugin = g_list_prepend(lv2_manager->lv2_plugin,
@@ -336,7 +422,7 @@ ags_lv2_manager_load_default_directory()
 
   GDir *dir;
 
-  gchar *filename;
+  gchar *filename, *plugin_path;
 
   GError *error;
 
@@ -352,9 +438,13 @@ ags_lv2_manager_load_default_directory()
   }
 
   while((filename = g_dir_read_name(dir)) != NULL){
-    if(g_file_test(filename,
+    plugin_path = g_strdup_printf("%s/%s\0",
+				  ags_lv2_default_path,
+				  filename);
+
+    if(g_file_test(plugin_path,
 		   G_FILE_TEST_IS_DIR)){
-      ags_lv2_manager_load_file(filename);
+      ags_lv2_manager_load_file(plugin_path);
     }
   }
 }
@@ -368,7 +458,6 @@ ags_lv2_manager_uri_index(gchar *filename,
   void *plugin_so;
   LV2_Descriptor_Function lv2_descriptor;
   LV2_Descriptor *plugin_descriptor;
-  LV2_PortDescriptor *port_descriptor;
 
   uint32_t index;
   uint32_t i;
@@ -409,6 +498,7 @@ AgsTurtle*
 ags_lv2_manager_uri_turtle(gchar *filename,
 			   gchar *uri)
 {
+  AgsLv2Manager *lv2_manager;
   AgsLv2Plugin *lv2_plugin;
 
   AgsTurtle *turtle;
@@ -416,16 +506,15 @@ ags_lv2_manager_uri_turtle(gchar *filename,
   gchar *turtle_path;
   gchar *str;
   
-  static gchar **turtle_filter = {
-    lv2_manager->locale,
-    NULL,
-  };
+  gchar **turtle_filter;
 
   
   if(filename == NULL ||
      uri == NULL){
     return(NULL);
   }
+
+  lv2_manager = ags_lv2_manager_get_instance();
   
   /* load plugin */
   ags_lv2_manager_load_file(filename);
@@ -438,10 +527,16 @@ ags_lv2_manager_uri_turtle(gchar *filename,
   turtle_path = g_strdup_printf("%s/%s\0",
 				filename,
 				str);
-  
+
+  turtle_filter = malloc(2 * sizeof(gchar *));
+  turtle_filter[0] = g_strdup(lv2_manager->locale);
+  turtle_filter[1] = NULL;
+    
   turtle = ags_turtle_new(turtle_path,
 			  turtle_filter);
   ags_turtle_load(turtle);
+
+  g_strfreev(turtle_filter);
   
   return(turtle);
 }

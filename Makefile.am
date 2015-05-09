@@ -72,7 +72,8 @@ ags_lib_h_sources = \
 	src/ags/lib/ags_combo_box_text.h		\
 	src/ags/lib/ags_container.h			\
 	src/ags/lib/ags_list.h				\
-	src/ags/lib/ags_parameter.h
+	src/ags/lib/ags_parameter.h			\
+	src/ags/lib/ags_turtle.h
 
 deprecated_ags_lib_c_sources = 
 
@@ -81,7 +82,8 @@ ags_lib_c_sources = \
 	src/ags/lib/ags_combo_box_text.c		\
 	src/ags/lib/ags_container.c			\
 	src/ags/lib/ags_list.c				\
-	src/ags/lib/ags_parameter.c
+	src/ags/lib/ags_parameter.c			\
+	src/ags/lib/ags_turtle.c
 
 deprecated_ags_util_h_sources =
 
@@ -215,6 +217,7 @@ deprecated_ags_plugin_h_sources =
 ags_plugin_h_sources = \
 	$(deprecated_ags_plugin_h_sources) \
 	src/ags/plugin/ags_ladspa_manager.h		\
+	src/ags/plugin/ags_lv2_manager.h		\
 	src/ags/plugin/ags_plugin_factory.h		\
 	src/ags/plugin/ags_plugin_stock.h
 
@@ -223,6 +226,7 @@ deprecated_ags_plugin_c_sources =
 ags_plugin_c_sources = \
 	$(deprecated_ags_plugin_c_sources) \
 	src/ags/plugin/ags_ladspa_manager.c		\
+	src/ags/plugin/ags_lv2_manager.c		\
 	src/ags/plugin/ags_plugin_factory.c
 
 # libags_thread all files

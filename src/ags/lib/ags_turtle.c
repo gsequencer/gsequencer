@@ -16,11 +16,19 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <ags/plugin/ags_turtle.h>
+#include <ags/lib/ags_turtle.h>
 
 void ags_turtle_class_init(AgsTurtleClass *turtle);
 void ags_turtle_init (AgsTurtle *turtle);
 void ags_turtle_finalize(GObject *gobject);
+
+enum{
+  PROP_0,
+  PROP_FILENAME,
+  PROP_FILTER,
+};
+
+static gpointer ags_turtle_parent_class = NULL;
 
 GType
 ags_turtle_get_type(void)
@@ -69,12 +77,10 @@ ags_turtle_init(AgsTurtle *turtle)
   
   turtle->subject = NULL;
 
-  turtle->current_subject = NULL;
-
   turtle->filter = NULL;
-  turtle->hashmap = g_hash_table_new_full(g_str_hash, (GEqualFunc) g_ascii_strcasecmp,
-					  (GDestroyNotify) g_free,
-					  (GDestroyNotify) g_free);
+  turtle->hash_table = g_hash_table_new_full(g_str_hash, (GEqualFunc) g_ascii_strcasecmp,
+					     (GDestroyNotify) g_free,
+					     (GDestroyNotify) g_free);
 }
 
 void
@@ -86,8 +92,6 @@ ags_turtle_finalize(GObject *gobject)
   turtle = AGS_TURTLE(gobject);
 
   g_strfreev(turtle->subject);
-
-  g_free(turtle->current_subject);
 
   g_strfreev(turtle->filter);
   g_hash_table_destroy(turtle->hash_table);
@@ -174,8 +178,14 @@ ags_turtle_list_subjects(AgsTurtle *turtle)
 void
 ags_turtle_load(AgsTurtle *turtle)
 {
-  auto gboolean ags_turtle_load_triple(gchar *current_path,
-				       gchar **ret_key, gchar **ret_value);
+  auto void ags_turtle_load_triple(gchar *current_path,
+				   gchar **ret_key, gchar **ret_value);
+
+  void ags_turtle_load_triple(gchar *current_path,
+			      gchar **ret_key, gchar **ret_value){
+    //TODO:JK: implement me
+  }
+  
   //TODO:JK: implement me
 }
 
@@ -184,11 +194,22 @@ ags_turtle_new(gchar *filename,
 	       gchar **filter)
 {
   AgsTurtle *turtle;
-
+  gchar **str;
+  
   turtle = g_object_new(AGS_TYPE_TURTLE,
 			"filename\0", filename,
-			"filter\0", filter,
 			NULL);
 
+  if(filter != NULL){
+    str = filter;
+
+    while(*str != NULL){
+      g_object_set(turtle,
+		   "filter\0", str,
+		   NULL);
+      str++;
+    }
+  }
+  
   return(turtle);
 }

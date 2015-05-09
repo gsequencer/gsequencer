@@ -41,7 +41,7 @@ struct _AgsTurtle
   gchar **subject;
   
   gchar **filter;
-  GHashMap *hashmap;
+  GHashTable *hash_table;
 };
 
 struct _AgsTurtleClass

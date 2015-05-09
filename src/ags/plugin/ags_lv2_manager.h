@@ -24,6 +24,11 @@
 
 #include <ags/lib/ags_turtle.h>
 
+#include <lv2.h>
+
+#include <math.h>
+#include <stdlib.h>
+
 #define AGS_TYPE_LV2_MANAGER                (ags_lv2_manager_get_type())
 #define AGS_LV2_MANAGER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_LV2_MANAGER, AgsLv2Manager))
 #define AGS_LV2_MANAGER_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_LV2_MANAGER, AgsLv2ManagerClass))

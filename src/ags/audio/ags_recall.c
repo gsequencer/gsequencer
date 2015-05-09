@@ -262,7 +262,7 @@ ags_recall_class_init(AgsRecallClass *recall)
    */
   param_spec = g_param_spec_object("recall-container\0",
 				   "container of recall\0",
-				   "The container which this recall is packed into\0",
+				   "The container what recall is packed into\0",
 				   AGS_TYPE_RECALL_CONTAINER,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

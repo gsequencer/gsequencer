@@ -38,6 +38,7 @@ ags_ladspa_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
 					    AgsLadspaBrowser *ladspa_browser)
 {
   GtkComboBoxText *filename, *effect;
+
   AgsLadspaPlugin *ladspa_plugin;
   GList *list;
 
@@ -64,8 +65,7 @@ ags_ladspa_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
     if(dlerror() == NULL && ladspa_descriptor){
       unsigned long index;
 
-      /* We've successfully found a ladspa_descriptor function. Pass
-	 it to the callback function. */
+      /* We've successfully found a ladspa_descriptor function. Now load name and uuid member. */
 
       for(index = 0; (plugin_descriptor = ladspa_descriptor(index)) != NULL; index++){
 	gtk_combo_box_text_append_text(effect,
