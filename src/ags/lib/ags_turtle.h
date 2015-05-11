@@ -22,12 +22,16 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <libxml/tree.h>
+
 #define AGS_TYPE_TURTLE                (ags_turtle_get_type())
 #define AGS_TURTLE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_TURTLE, AgsTurtle))
 #define AGS_TURTLE_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_TURTLE, AgsTurtleClass))
 #define AGS_IS_TURTLE(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_TURTLE))
 #define AGS_IS_TURTLE_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_TURTLE))
 #define AGS_TURTLE_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_TURTLE, AgsTurtleClass))
+
+#define AGS_TURTLE_DEFAULT_ENCODING "UTF-8\0"
 
 typedef struct _AgsTurtle AgsTurtle;
 typedef struct _AgsTurtleClass AgsTurtleClass;
@@ -48,6 +52,8 @@ struct _AgsTurtle
   gchar *filename;
   
   gchar **subject;
+
+  xmlDoc *doc;
   
   gchar **filter;
   GHashTable *hash_table;
@@ -61,31 +67,15 @@ struct _AgsTurtleClass
 GType ags_turtle_get_type(void);
 
 gboolean ags_turtle_insert(AgsTurtle *turtle,
-			   gchar *key, gchar *value);
+			   gchar *key, xmlNode *node);
 gboolean ags_turtle_remove(AgsTurtle *turtle,
 			   gchar *key);
 
-gchar* ags_turtle_lookup(AgsTurtle *turtle,
-			 gchar *key);
-
-gchar* ags_turtle_value_as_string(AgsTurtle *turtle,
-				  gchar *key,
-				  gchar **verb);
-gchar* ags_turtle_value_with_verb_as_string(AgsTurtle *turtle,
-					    gchar *key,
-					    gchar *verb);
-
-gchar** ags_turtle_value_as_array(AgsTurtle *turtle,
-				  gchar *key,
-				  gchar **verb);
-gchar** ags_turtle_value_with_verb_as_array(AgsTurtle *turtle,
-					    gchar *key,
-					    gchar *verb);
+xmlNode* ags_turtle_lookup(AgsTurtle *turtle,
+			   gchar *key);
 
 gchar** ags_turtle_list_subjects(AgsTurtle *turtle);
 void ags_turtle_load(AgsTurtle *turtle);
-
-void ags_turtle_substitute(AgsTurtle *turtle);
 
 AgsTurtle* ags_turtle_new(gchar *filename,
 			  gchar **filter);
