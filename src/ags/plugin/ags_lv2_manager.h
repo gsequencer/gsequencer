@@ -69,6 +69,7 @@ struct _AgsLv2Plugin
   AgsTurtle *manifest;
 
   gchar *filename;
+  gchar *path;
   void *plugin_so;
 };
 

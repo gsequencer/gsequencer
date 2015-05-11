@@ -394,9 +394,12 @@ ags_lv2_manager_load_file(gchar *filename)
     lv2_manager->lv2_plugin = g_list_prepend(lv2_manager->lv2_plugin,
 					     lv2_plugin);
 
-    lv2_plugin->plugin_so = dlopen(path,
-				   RTLD_NOW);
+    //NOTE:JK: only as needed
+    //    lv2_plugin->plugin_so = dlopen(path,
+    //				   RTLD_NOW);
+    lv2_plugin->path = g_strdup(path);
 
+    
     if(lv2_plugin->plugin_so){
       dlerror();
     }
@@ -482,8 +485,10 @@ ags_lv2_manager_uri_index(gchar *filename,
   ags_lv2_manager_load_file(filename);
   lv2_plugin = ags_lv2_manager_find_lv2_plugin(filename);
 
-  plugin_so = lv2_plugin->plugin_so;
-
+  plugin_so =
+    lv2_plugin->plugin_so = dlopen(lv2_plugin->path,
+				   RTLD_NOW);
+  
   index = G_MAXULONG;
 
   if(plugin_so){
@@ -525,6 +530,8 @@ ags_lv2_manager_uri_turtle(gchar *filename,
 
   AgsTurtle *turtle;
 
+  GList *list;
+  
   gchar *turtle_path;
   gchar *str;
   
@@ -543,9 +550,16 @@ ags_lv2_manager_uri_turtle(gchar *filename,
   lv2_plugin = ags_lv2_manager_find_lv2_plugin(filename);
   
   /* instantiate and load turtle */
-  str = ags_turtle_value_with_verb_as_string(lv2_plugin->manifest,
-					     uri,
-					     "rdfs:seeAlso\0");
+  list = ags_turtle_find_xpath(lv2_plugin->manifest,
+			       g_strdup_printf("/rdf-triple[@subject='%s']/rdf-verb[@do='rdfs:seeAlso]/rdf-value'\0",
+					       uri));
+
+  if(list == NULL){
+    return(NULL);
+  }
+  
+  str = xmlGetProp((xmlNode *) list->data,
+		   "value\0");
   turtle_path = g_strdup_printf("%s/%s\0",
 				filename,
 				str);
