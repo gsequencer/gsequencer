@@ -56,7 +56,6 @@ struct _AgsTurtle
   xmlDoc *doc;
   
   gchar **filter;
-  GHashTable *hash_table;
 };
 
 struct _AgsTurtleClass
@@ -66,13 +65,8 @@ struct _AgsTurtleClass
 
 GType ags_turtle_get_type(void);
 
-gboolean ags_turtle_insert(AgsTurtle *turtle,
-			   gchar *key, xmlNode *node);
-gboolean ags_turtle_remove(AgsTurtle *turtle,
-			   gchar *key);
-
-xmlNode* ags_turtle_lookup(AgsTurtle *turtle,
-			   gchar *key);
+GList* ags_turtle_find_xpath(AgsTurtle *turtle,
+			     gchar *xpath);
 
 gchar** ags_turtle_list_subjects(AgsTurtle *turtle);
 void ags_turtle_load(AgsTurtle *turtle);

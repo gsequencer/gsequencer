@@ -26,6 +26,10 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+#include <libxml/parser.h>
+#include <libxml/xlink.h>
+#include <libxml/xpath.h>
+
 void ags_turtle_class_init(AgsTurtleClass *turtle);
 void ags_turtle_init (AgsTurtle *turtle);
 void ags_turtle_finalize(GObject *gobject);
@@ -95,10 +99,9 @@ ags_turtle_init(AgsTurtle *turtle)
   
   turtle->subject = NULL;
 
+  turtle->doc = NULL;
+  
   turtle->filter = NULL;
-  turtle->hash_table = g_hash_table_new_full(g_str_hash, (GEqualFunc) g_ascii_strcasecmp,
-					     (GDestroyNotify) g_free,
-					     (GDestroyNotify) g_free);
 }
 
 void
@@ -112,52 +115,35 @@ ags_turtle_finalize(GObject *gobject)
   g_strfreev(turtle->subject);
 
   g_strfreev(turtle->filter);
-  g_hash_table_destroy(turtle->hash_table);
 }
 
-gboolean
-ags_turtle_insert(AgsTurtle *turtle,
-		  gchar *key, xmlNode *value)
+GList*
+ags_turtle_find_xpath(AgsTurtle *turtle,
+		      gchar *xpath)
 {
-  return(g_hash_table_insert(turtle->hash_table,
-			     key, value));
-}
+  xmlXPathContext *xpath_context;
+  xmlXPathObject *xpath_object;
+  xmlNode **node;
+  GList *list;
 
-gboolean
-ags_turtle_remove(AgsTurtle *turtle,
-		  gchar *key)
-{
-  g_hash_table_remove(turtle->hash_table,
-		      key);
+  guint i;
   
-  return(TRUE);
-}
+  xpath_context = xmlXPathNewContext(turtle->doc);
+  xpath_object = xmlXPathEval((xmlChar *) xpath,
+			      xpath_context);
 
-xmlNode*
-ags_turtle_lookup(AgsTurtle *turtle,
-		  gchar *key)
-{
-  xmlNode *node;
+  list = NULL;
 
-  node = (xmlNode *) g_hash_table_lookup(turtle->hash_table,
-					 key);
+  node = xpath_object->nodesetval->nodeTab;
 
-  return(node);
-}
-
-gchar**
-ags_turtle_list_subjects(AgsTurtle *turtle)
-{
-  gchar **subjects;
-  guint length;
+  for(i = 0; i < xpath_object->nodesetval->nodeNr; i++){
+    if(node[i]->type == XML_ELEMENT_NODE){
+      list = g_list_prepend(list,
+			    node[i]);
+    }
+  }
   
-  subjects = g_hash_table_get_keys_as_array(turtle->hash_table,
-					     &length);
-  subjects = realloc(subjects,
-		     (length + 1) * sizeof(gchar *));
-  subjects[length] = NULL;
-  
-  return(subjects);
+  return(list);
 }
 
 void
