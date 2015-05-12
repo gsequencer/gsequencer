@@ -589,13 +589,11 @@ ags_lv2_menu_new()
   AgsLv2Manager *lv2_manager;
   AgsLv2Plugin *lv2_plugin;
 
+  GList *list;
+  
   gchar *plugin_name;
   gchar **filename, **filename_start;
   
-  void *plugin_so;
-  LV2_Descriptor_Function lv2_descriptor;
-  LV2_Descriptor *plugin_descriptor;
-
   menu = (GtkMenu *) gtk_menu_new();
 
   /* retrieve LV2 filenames */
@@ -604,25 +602,20 @@ ags_lv2_menu_new()
     filename_start = ags_lv2_manager_get_filenames();
 
   while(*filename != NULL){
-    ags_lv2_manager_load_file(*filename);
     g_message(*filename);
     lv2_plugin = ags_lv2_manager_find_lv2_plugin(*filename);
-    plugin_so = lv2_plugin->plugin_so;
 
-    if(plugin_so){
-      lv2_descriptor = (LV2_Descriptor_Function) dlsym(plugin_so,
-						       "lv2_descriptor\0");
+    list = ags_turtle_find_xpath(lv2_plugin->turtle,
+				 "//rdf-triple/rdf-verb[@do=\"doap:name\"]//rdf-value[1]\0");
 
-      if(dlerror() == NULL && lv2_descriptor){
-	uint32_t index;
+    /* We've successfully found a lv2_descriptor function. Now load name and uuid member. */
+    while(list != NULL){
+      /* instantiate and load turtle */      
+      item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup(xmlGetProp(list->data,
+									      "value\0")));
+      gtk_menu_shell_append((GtkMenuShell *) menu, (GtkWidget *) item);
 
-	/* We've successfully found a lv2_descriptor function. Now load name and uuid member. */
-	for(index = 0; (plugin_descriptor = lv2_descriptor(index)) != NULL; index++){
-	  item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup_printf("%s\0",
-									      plugin_descriptor->URI));
-	  gtk_menu_shell_append((GtkMenuShell *) menu, (GtkWidget *) item);
-	}
-      }
+      list = list->next;
     }
 
     filename++;

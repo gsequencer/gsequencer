@@ -51,11 +51,7 @@ struct _AgsTurtle
   
   gchar *filename;
   
-  gchar **subject;
-
   xmlDoc *doc;
-  
-  gchar **filter;
 };
 
 struct _AgsTurtleClass
@@ -67,11 +63,8 @@ GType ags_turtle_get_type(void);
 
 GList* ags_turtle_find_xpath(AgsTurtle *turtle,
 			     gchar *xpath);
-
-gchar** ags_turtle_list_subjects(AgsTurtle *turtle);
 void ags_turtle_load(AgsTurtle *turtle);
 
-AgsTurtle* ags_turtle_new(gchar *filename,
-			  gchar **filter);
+AgsTurtle* ags_turtle_new(gchar *filename);
 
 #endif /*__AGS_TURTLE_H__*/
