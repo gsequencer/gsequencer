@@ -125,7 +125,6 @@ ags_lv2_manager_class_init(AgsLv2ManagerClass *lv2_manager)
   g_object_class_install_property(gobject,
 				  PROP_LOCALE,
 				  param_spec);
-
 }
 
 void
@@ -220,7 +219,7 @@ ags_lv2_plugin_alloc()
 
   lv2_plugin->flags = 0;
 
-  lv2_plugin->manifest = NULL;
+  lv2_plugin->turtle = NULL;
 
   lv2_plugin->filename = NULL;
   lv2_plugin->plugin_so = NULL;
@@ -244,7 +243,7 @@ ags_lv2_plugin_free(AgsLv2Plugin *lv2_plugin)
   }
 
   free(lv2_plugin->filename);
-  g_object_unref(lv2_plugin->manifest);
+  g_object_unref(lv2_plugin->turtle);
   free(lv2_plugin);
 }
 
@@ -325,16 +324,13 @@ ags_lv2_manager_find_lv2_plugin(gchar *filename)
  * Since: 0.4.3
  */
 void
-ags_lv2_manager_load_file(gchar *filename)
+ags_lv2_manager_load_file(AgsTurtle *turtle,
+			  gchar *filename)
 {
   AgsLv2Manager *lv2_manager;
   AgsLv2Plugin *lv2_plugin;
 
-  GDir *dir;
-  
-  gchar *path;
-  gchar *plugin_name;
-  gchar *manifest;
+  gchar *turtle_path;
 
   GError *error;
 
@@ -342,72 +338,32 @@ ags_lv2_manager_load_file(gchar *filename)
 
   lv2_manager = ags_lv2_manager_get_instance();
 
-  error = NULL;
-  dir = g_dir_open(filename,
-		   0,
-		   &error);
-
-  if(error != NULL){
-    g_warning(error->message);
+  if(filename == NULL){
+    return;
   }
 
-  plugin_name = NULL;
-  manifest = g_strdup_printf("%s/%s/manifest.ttl\0",
-			     ags_lv2_default_path,
-			     filename);
+  lv2_manager = ags_lv2_manager_get_instance();
   
-  while((plugin_name = g_dir_read_name(dir)) != NULL){
-    if(g_str_has_suffix(plugin_name,
-			".so\0")){
-      break;
-    }
-  }
-  
+  /* load plugin */
   pthread_mutex_lock(&(mutex));
-
-  path = g_strdup_printf("%s/%s\0",
-			 filename,
-			 plugin_name);
 
   lv2_plugin = ags_lv2_manager_find_lv2_plugin(filename);
   g_message("loading: %s\0", filename);
 
   if(lv2_plugin == NULL){
-    gchar **turtle_filter;
-    
     lv2_plugin = ags_lv2_plugin_alloc();
 
-    /* load manifest */
-    turtle_filter = malloc(2 * sizeof(gchar *));
-    turtle_filter[0] = g_strdup(lv2_manager->locale);
-    turtle_filter[1] = NULL;
-
-    lv2_plugin->manifest = ags_turtle_new(manifest,
-					  turtle_filter);
-    ags_turtle_load(lv2_plugin->manifest);
-
-    g_strfreev(turtle_filter);
+    /* set turtle */
+    lv2_plugin->turtle = turtle;
 
     /* set filename and plugin file */
     lv2_plugin->filename = g_strdup(filename);
     
     lv2_manager->lv2_plugin = g_list_prepend(lv2_manager->lv2_plugin,
 					     lv2_plugin);
-
-    //NOTE:JK: only as needed
-    //    lv2_plugin->plugin_so = dlopen(path,
-    //				   RTLD_NOW);
-    lv2_plugin->path = g_strdup(path);
-
-    
-    if(lv2_plugin->plugin_so){
-      dlerror();
-    }
   }
 
   pthread_mutex_unlock(&(mutex));
-
-  g_free(path);
 }
 
 /**
@@ -425,7 +381,7 @@ ags_lv2_manager_load_default_directory()
 
   GDir *dir;
 
-  gchar *filename, *plugin_path;
+  gchar *path, *plugin_path;
 
   GError *error;
 
@@ -440,18 +396,63 @@ ags_lv2_manager_load_default_directory()
     g_warning(error->message);
   }
 
-  while((filename = g_dir_read_name(dir)) != NULL){
+  while((path = g_dir_read_name(dir)) != NULL){
     plugin_path = g_strdup_printf("%s/%s\0",
 				  ags_lv2_default_path,
-				  filename);
+				  path);
 
     if(g_file_test(plugin_path,
 		   G_FILE_TEST_IS_DIR)){
-      ags_lv2_manager_load_file(plugin_path);
+      AgsTurtle *manifest, *turtle;
+      
+      GList *ttl_list, *binary_list;
+
+      gchar *turtle_path, *filename;
+      
+      manifest = ags_turtle_new(g_strdup_printf("%s/manifest.ttl\0",
+						plugin_path));
+      ags_turtle_load(manifest);
+  
+      /* instantiate and load turtle */
+      ttl_list = ags_turtle_find_xpath(manifest,
+				       "//rdf-triple/rdf-verb[@do=\"rdfs:seeAlso\"]/rdf-list/rdf-value\0");
+
+      /* read binary from turtle */
+      binary_list = ags_turtle_find_xpath(manifest,
+					  "//rdf-triple/rdf-verb[@do=\"lv2:binary\"]/rdf-list/rdf-value\0");
+
+      /* load */
+      if(ttl_list == NULL ||
+	 binary_list == NULL){
+	continue;
+      }
+      
+      while(ttl_list != NULL &&
+	    binary_list != NULL){
+	turtle_path = xmlGetProp((xmlNode *) ttl_list->data,
+				 "value\0");
+	g_message(turtle_path);
+	turtle = ags_turtle_new(g_strdup_printf("%s/%s\0",
+						plugin_path,
+						g_strndup(&(turtle_path[1]),
+							  strlen(turtle_path) - 2)));
+	ags_turtle_load(turtle);
+	xmlSaveFormatFileEnc("-\0", turtle->doc, "UTF-8\0", 1);
+	
+	filename = g_strdup_printf("%s/%s\0",
+				   plugin_path,
+				   binary_list->data);
+	
+	ags_lv2_manager_load_file(turtle,
+				  filename);
+
+	ttl_list = ttl_list->next;
+	binary_list = binary_list->next;
+      }
     }
   }
 }
-
+  
 /**
  * ags_lv2_manager_uri_index:
  * @filename: the plugin.so filename
@@ -482,11 +483,10 @@ ags_lv2_manager_uri_index(gchar *filename,
   }
   
   /* load plugin */
-  ags_lv2_manager_load_file(filename);
   lv2_plugin = ags_lv2_manager_find_lv2_plugin(filename);
 
   plugin_so =
-    lv2_plugin->plugin_so = dlopen(lv2_plugin->path,
+    lv2_plugin->plugin_so = dlopen(lv2_plugin->filename,
 				   RTLD_NOW);
   
   index = G_MAXULONG;
@@ -508,73 +508,6 @@ ags_lv2_manager_uri_index(gchar *filename,
   }
   
   return(index);
-}
-
-/**
- * ags_lv2_manager_uri_turtle:
- * @filename: the plugin.so filename
- * @uri: the uri's name within plugin
- *
- * Retrieve the uri's turtle within @filename
- *
- * Returns: the turtle, G_MAXULONG if not found
- *
- * Since: 0.4.3
- */
-AgsTurtle*
-ags_lv2_manager_uri_turtle(gchar *filename,
-			   gchar *uri)
-{
-  AgsLv2Manager *lv2_manager;
-  AgsLv2Plugin *lv2_plugin;
-
-  AgsTurtle *turtle;
-
-  GList *list;
-  
-  gchar *turtle_path;
-  gchar *str;
-  
-  gchar **turtle_filter;
-
-  
-  if(filename == NULL ||
-     uri == NULL){
-    return(NULL);
-  }
-
-  lv2_manager = ags_lv2_manager_get_instance();
-  
-  /* load plugin */
-  ags_lv2_manager_load_file(filename);
-  lv2_plugin = ags_lv2_manager_find_lv2_plugin(filename);
-  
-  /* instantiate and load turtle */
-  list = ags_turtle_find_xpath(lv2_plugin->manifest,
-			       g_strdup_printf("/rdf-triple[@subject='%s']/rdf-verb[@do='rdfs:seeAlso]/rdf-value'\0",
-					       uri));
-
-  if(list == NULL){
-    return(NULL);
-  }
-  
-  str = xmlGetProp((xmlNode *) list->data,
-		   "value\0");
-  turtle_path = g_strdup_printf("%s/%s\0",
-				filename,
-				str);
-
-  turtle_filter = malloc(2 * sizeof(gchar *));
-  turtle_filter[0] = g_strdup(lv2_manager->locale);
-  turtle_filter[1] = NULL;
-    
-  turtle = ags_turtle_new(turtle_path,
-			  turtle_filter);
-  ags_turtle_load(turtle);
-
-  g_strfreev(turtle_filter);
-  
-  return(turtle);
 }
 
 /**
