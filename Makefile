@@ -384,8 +384,12 @@ am__objects_25 = $(am__objects_1) gsequencer-ags_xorg_init.$(OBJEXT) \
 	gsequencer-ags_export_window.$(OBJEXT) \
 	gsequencer-ags_generic_preferences_callbacks.$(OBJEXT) \
 	gsequencer-ags_generic_preferences.$(OBJEXT) \
+	gsequencer-ags_plugin_browser_callbacks.$(OBJEXT) \
+	gsequencer-ags_plugin_browser.$(OBJEXT) \
 	gsequencer-ags_ladspa_browser_callbacks.$(OBJEXT) \
 	gsequencer-ags_ladspa_browser.$(OBJEXT) \
+	gsequencer-ags_lv2_browser_callbacks.$(OBJEXT) \
+	gsequencer-ags_lv2_browser.$(OBJEXT) \
 	gsequencer-ags_line_callbacks.$(OBJEXT) \
 	gsequencer-ags_line_editor_callbacks.$(OBJEXT) \
 	gsequencer-ags_line_editor.$(OBJEXT) \
@@ -1541,8 +1545,12 @@ gsequencer_xorg_h_sources = \
 	src/ags/X/ags_export_window.h			\
 	src/ags/X/ags_generic_preferences_callbacks.h	\
 	src/ags/X/ags_generic_preferences.h		\
+	src/ags/X/ags_plugin_browser_callbacks.h	\
+	src/ags/X/ags_plugin_browser.h			\
 	src/ags/X/ags_ladspa_browser_callbacks.h	\
 	src/ags/X/ags_ladspa_browser.h			\
+	src/ags/X/ags_lv2_browser_callbacks.h		\
+	src/ags/X/ags_lv2_browser.h			\
 	src/ags/X/ags_line_callbacks.h 			\
 	src/ags/X/ags_line_editor_callbacks.h		\
 	src/ags/X/ags_line_editor.h			\
@@ -1611,8 +1619,12 @@ gsequencer_xorg_c_sources = \
 	src/ags/X/ags_export_window.c			\
 	src/ags/X/ags_generic_preferences_callbacks.c	\
 	src/ags/X/ags_generic_preferences.c		\
+	src/ags/X/ags_plugin_browser_callbacks.c	\
+	src/ags/X/ags_plugin_browser.c			\
 	src/ags/X/ags_ladspa_browser_callbacks.c	\
 	src/ags/X/ags_ladspa_browser.c			\
+	src/ags/X/ags_lv2_browser_callbacks.c		\
+	src/ags/X/ags_lv2_browser.c			\
 	src/ags/X/ags_line_callbacks.c 			\
 	src/ags/X/ags_line_editor_callbacks.c		\
 	src/ags/X/ags_line_editor.c			\
@@ -2104,6 +2116,8 @@ include ./$(DEPDIR)/gsequencer-ags_listing_editor.Po
 include ./$(DEPDIR)/gsequencer-ags_listing_editor_callbacks.Po
 include ./$(DEPDIR)/gsequencer-ags_lv2_bridge.Po
 include ./$(DEPDIR)/gsequencer-ags_lv2_bridge_callbacks.Po
+include ./$(DEPDIR)/gsequencer-ags_lv2_browser.Po
+include ./$(DEPDIR)/gsequencer-ags_lv2_browser_callbacks.Po
 include ./$(DEPDIR)/gsequencer-ags_machine.Po
 include ./$(DEPDIR)/gsequencer-ags_machine_callbacks.Po
 include ./$(DEPDIR)/gsequencer-ags_machine_editor.Po
@@ -2146,6 +2160,8 @@ include ./$(DEPDIR)/gsequencer-ags_performance_preferences.Po
 include ./$(DEPDIR)/gsequencer-ags_performance_preferences_callbacks.Po
 include ./$(DEPDIR)/gsequencer-ags_piano.Po
 include ./$(DEPDIR)/gsequencer-ags_piano_callbacks.Po
+include ./$(DEPDIR)/gsequencer-ags_plugin_browser.Po
+include ./$(DEPDIR)/gsequencer-ags_plugin_browser_callbacks.Po
 include ./$(DEPDIR)/gsequencer-ags_plugin_preferences.Po
 include ./$(DEPDIR)/gsequencer-ags_plugin_preferences_callbacks.Po
 include ./$(DEPDIR)/gsequencer-ags_port_selection.Po
@@ -5892,6 +5908,34 @@ gsequencer-ags_generic_preferences.obj: src/ags/X/ags_generic_preferences.c
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_generic_preferences.obj `if test -f 'src/ags/X/ags_generic_preferences.c'; then $(CYGPATH_W) 'src/ags/X/ags_generic_preferences.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/ags_generic_preferences.c'; fi`
 
+gsequencer-ags_plugin_browser_callbacks.o: src/ags/X/ags_plugin_browser_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_plugin_browser_callbacks.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_plugin_browser_callbacks.Tpo -c -o gsequencer-ags_plugin_browser_callbacks.o `test -f 'src/ags/X/ags_plugin_browser_callbacks.c' || echo '$(srcdir)/'`src/ags/X/ags_plugin_browser_callbacks.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_plugin_browser_callbacks.Tpo $(DEPDIR)/gsequencer-ags_plugin_browser_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/ags_plugin_browser_callbacks.c' object='gsequencer-ags_plugin_browser_callbacks.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_plugin_browser_callbacks.o `test -f 'src/ags/X/ags_plugin_browser_callbacks.c' || echo '$(srcdir)/'`src/ags/X/ags_plugin_browser_callbacks.c
+
+gsequencer-ags_plugin_browser_callbacks.obj: src/ags/X/ags_plugin_browser_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_plugin_browser_callbacks.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_plugin_browser_callbacks.Tpo -c -o gsequencer-ags_plugin_browser_callbacks.obj `if test -f 'src/ags/X/ags_plugin_browser_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/ags_plugin_browser_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/ags_plugin_browser_callbacks.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_plugin_browser_callbacks.Tpo $(DEPDIR)/gsequencer-ags_plugin_browser_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/ags_plugin_browser_callbacks.c' object='gsequencer-ags_plugin_browser_callbacks.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_plugin_browser_callbacks.obj `if test -f 'src/ags/X/ags_plugin_browser_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/ags_plugin_browser_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/ags_plugin_browser_callbacks.c'; fi`
+
+gsequencer-ags_plugin_browser.o: src/ags/X/ags_plugin_browser.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_plugin_browser.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_plugin_browser.Tpo -c -o gsequencer-ags_plugin_browser.o `test -f 'src/ags/X/ags_plugin_browser.c' || echo '$(srcdir)/'`src/ags/X/ags_plugin_browser.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_plugin_browser.Tpo $(DEPDIR)/gsequencer-ags_plugin_browser.Po
+#	$(AM_V_CC)source='src/ags/X/ags_plugin_browser.c' object='gsequencer-ags_plugin_browser.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_plugin_browser.o `test -f 'src/ags/X/ags_plugin_browser.c' || echo '$(srcdir)/'`src/ags/X/ags_plugin_browser.c
+
+gsequencer-ags_plugin_browser.obj: src/ags/X/ags_plugin_browser.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_plugin_browser.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_plugin_browser.Tpo -c -o gsequencer-ags_plugin_browser.obj `if test -f 'src/ags/X/ags_plugin_browser.c'; then $(CYGPATH_W) 'src/ags/X/ags_plugin_browser.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/ags_plugin_browser.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_plugin_browser.Tpo $(DEPDIR)/gsequencer-ags_plugin_browser.Po
+#	$(AM_V_CC)source='src/ags/X/ags_plugin_browser.c' object='gsequencer-ags_plugin_browser.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_plugin_browser.obj `if test -f 'src/ags/X/ags_plugin_browser.c'; then $(CYGPATH_W) 'src/ags/X/ags_plugin_browser.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/ags_plugin_browser.c'; fi`
+
 gsequencer-ags_ladspa_browser_callbacks.o: src/ags/X/ags_ladspa_browser_callbacks.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_ladspa_browser_callbacks.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_ladspa_browser_callbacks.Tpo -c -o gsequencer-ags_ladspa_browser_callbacks.o `test -f 'src/ags/X/ags_ladspa_browser_callbacks.c' || echo '$(srcdir)/'`src/ags/X/ags_ladspa_browser_callbacks.c
 	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_ladspa_browser_callbacks.Tpo $(DEPDIR)/gsequencer-ags_ladspa_browser_callbacks.Po
@@ -5919,6 +5963,34 @@ gsequencer-ags_ladspa_browser.obj: src/ags/X/ags_ladspa_browser.c
 #	$(AM_V_CC)source='src/ags/X/ags_ladspa_browser.c' object='gsequencer-ags_ladspa_browser.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_ladspa_browser.obj `if test -f 'src/ags/X/ags_ladspa_browser.c'; then $(CYGPATH_W) 'src/ags/X/ags_ladspa_browser.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/ags_ladspa_browser.c'; fi`
+
+gsequencer-ags_lv2_browser_callbacks.o: src/ags/X/ags_lv2_browser_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_lv2_browser_callbacks.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_lv2_browser_callbacks.Tpo -c -o gsequencer-ags_lv2_browser_callbacks.o `test -f 'src/ags/X/ags_lv2_browser_callbacks.c' || echo '$(srcdir)/'`src/ags/X/ags_lv2_browser_callbacks.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_lv2_browser_callbacks.Tpo $(DEPDIR)/gsequencer-ags_lv2_browser_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/ags_lv2_browser_callbacks.c' object='gsequencer-ags_lv2_browser_callbacks.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_lv2_browser_callbacks.o `test -f 'src/ags/X/ags_lv2_browser_callbacks.c' || echo '$(srcdir)/'`src/ags/X/ags_lv2_browser_callbacks.c
+
+gsequencer-ags_lv2_browser_callbacks.obj: src/ags/X/ags_lv2_browser_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_lv2_browser_callbacks.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_lv2_browser_callbacks.Tpo -c -o gsequencer-ags_lv2_browser_callbacks.obj `if test -f 'src/ags/X/ags_lv2_browser_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/ags_lv2_browser_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/ags_lv2_browser_callbacks.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_lv2_browser_callbacks.Tpo $(DEPDIR)/gsequencer-ags_lv2_browser_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/ags_lv2_browser_callbacks.c' object='gsequencer-ags_lv2_browser_callbacks.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_lv2_browser_callbacks.obj `if test -f 'src/ags/X/ags_lv2_browser_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/ags_lv2_browser_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/ags_lv2_browser_callbacks.c'; fi`
+
+gsequencer-ags_lv2_browser.o: src/ags/X/ags_lv2_browser.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_lv2_browser.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_lv2_browser.Tpo -c -o gsequencer-ags_lv2_browser.o `test -f 'src/ags/X/ags_lv2_browser.c' || echo '$(srcdir)/'`src/ags/X/ags_lv2_browser.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_lv2_browser.Tpo $(DEPDIR)/gsequencer-ags_lv2_browser.Po
+#	$(AM_V_CC)source='src/ags/X/ags_lv2_browser.c' object='gsequencer-ags_lv2_browser.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_lv2_browser.o `test -f 'src/ags/X/ags_lv2_browser.c' || echo '$(srcdir)/'`src/ags/X/ags_lv2_browser.c
+
+gsequencer-ags_lv2_browser.obj: src/ags/X/ags_lv2_browser.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_lv2_browser.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_lv2_browser.Tpo -c -o gsequencer-ags_lv2_browser.obj `if test -f 'src/ags/X/ags_lv2_browser.c'; then $(CYGPATH_W) 'src/ags/X/ags_lv2_browser.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/ags_lv2_browser.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_lv2_browser.Tpo $(DEPDIR)/gsequencer-ags_lv2_browser.Po
+#	$(AM_V_CC)source='src/ags/X/ags_lv2_browser.c' object='gsequencer-ags_lv2_browser.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_lv2_browser.obj `if test -f 'src/ags/X/ags_lv2_browser.c'; then $(CYGPATH_W) 'src/ags/X/ags_lv2_browser.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/ags_lv2_browser.c'; fi`
 
 gsequencer-ags_line_callbacks.o: src/ags/X/ags_line_callbacks.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_line_callbacks.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_line_callbacks.Tpo -c -o gsequencer-ags_line_callbacks.o `test -f 'src/ags/X/ags_line_callbacks.c' || echo '$(srcdir)/'`src/ags/X/ags_line_callbacks.c

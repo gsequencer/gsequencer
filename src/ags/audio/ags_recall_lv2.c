@@ -439,7 +439,7 @@ ags_recall_lv2_set_ports(AgsPlugin *plugin, GList *port)
       port_node = ags_turtle_find_xpath(recall_lv2->turtle,
 					"//rdf-triple[@subject=\"lv2:port\"]\/rdf-verb[@has_type=\"true\"]/rdf-list/rdf-value\0");
       port_name_node = ags_turtle_find_xpath(recall_lv2->turtle,
-					     "//rdf-triple[@subject=\"lv2:port\"]/rdf-verb[do=\"lv2:name\"]/rdf-list/rdf-value\0");
+					     "//rdf-triple[@subject=\"lv2:port\"]/rdf-verb[do=\"lv2:name\"]/rdf-list/rdf-value[1]\0");
       port_index_node = ags_turtle_find_xpath(recall_lv2->turtle,
 					      "//rdf-triple[@subject=\"lv2:port\"]\/rdf-verb[@do=\"lv2:index\"]/rdf-list/rdf-value\0");
       port_default_node = ags_turtle_find_xpath(recall_lv2->turtle,
@@ -734,7 +734,7 @@ ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2)
       port_node = ags_turtle_find_xpath(recall_lv2->turtle,
 					"//rdf-triple[@subject=\"lv2:port\"]\/rdf-verb[@has_type=\"true\"]/rdf-list/rdf-value\0");
       port_name_node = ags_turtle_find_xpath(recall_lv2->turtle,
-					     "//rdf-triple[@subject=\"lv2:port\"]/rdf-verb[do=\"lv2:name\"]/rdf-list/rdf-value\0");
+					     "//rdf-triple[@subject=\"lv2:port\"]/rdf-verb[do=\"lv2:name\"]/rdf-list/rdf-value[1]\0");
       port_index_node = ags_turtle_find_xpath(recall_lv2->turtle,
 					      "//rdf-triple[@subject=\"lv2:port\"]\/rdf-verb[@do=\"lv2:index\"]/rdf-list/rdf-value\0");
       port_default_node = ags_turtle_find_xpath(recall_lv2->turtle,

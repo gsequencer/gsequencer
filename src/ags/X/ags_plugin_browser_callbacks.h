@@ -16,18 +16,18 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef __AGS_LV2_BROWSER_CALLBACKS_H__
-#define __AGS_LV2_BROWSER_CALLBACKS_H__
+#ifndef __AGS_PLUGIN_BROWSER_CALLBACKS_H__
+#define __AGS_PLUGIN_BROWSER_CALLBACKS_H__
 
 #include <glib.h>
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include <ags/X/ags_lv2_browser.h>
+#include <ags/X/ags_plugin_browser.h>
 
-void ags_lv2_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
-					      AgsLv2Browser *lv2_browser);
-void ags_lv2_browser_plugin_uri_callback(GtkComboBoxText *combo_box,
-					 AgsLv2Browser *lv2_browser);
+void ags_plugin_browser_ok_callback(GtkWidget *button,
+				    AgsPluginBrowser *plugin_browser);
+void ags_plugin_browser_cancel_callback(GtkWidget *button,
+					AgsPluginBrowser *plugin_browser);
 
-#endif /*__AGS_LV2_BROWSER_CALLBACKS_H__*/
+#endif /*__AGS_PLUGIN_BROWSER_CALLBACKS_H__*/
