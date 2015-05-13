@@ -1,5 +1,5 @@
 /* AGS - Advanced GTK Sequencer
- * Copyright (C) 2014 Joël Krähemann
+ * Copyright (C) 2015 Joël Krähemann
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,18 +16,20 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef __AGS_LADSPA_BROWSER_CALLBACKS_H__
-#define __AGS_LADSPA_BROWSER_CALLBACKS_H__
+#include <ags/X/ags_lv2_browser_callbacks.h>
 
-#include <glib.h>
-#include <glib-object.h>
-#include <gtk/gtk.h>
+#include <ags/plugin/ags_lv2_manager.h>
 
-#include <ags/X/ags_ladspa_browser.h>
+#include <ags/lib/ags_combo_box_text.h>
 
-void ags_ladspa_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
-						 AgsLadspaBrowser *ladspa_browser);
-void ags_ladspa_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
-					       AgsLadspaBrowser *ladspa_browser);
+#include <ags/object/ags_applicable.h>
 
-#endif /*__AGS_LADSPA_BROWSER_CALLBACKS_H__*/
+#include <dlfcn.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/types.h>
+#include <unistd.h>
+
+#include <lv2.h>
+

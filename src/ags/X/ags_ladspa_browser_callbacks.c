@@ -240,28 +240,3 @@ ags_ladspa_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
 
   g_list_free(list_start);
 }
-
-void
-ags_ladspa_browser_preview_close_callback(GtkWidget *preview,
-					  AgsLadspaBrowser *ladspa_browser)
-{
-  ladspa_browser->preview = NULL;
-  gtk_widget_destroy(preview);
-}
-
-int
-ags_ladspa_browser_ok_callback(GtkWidget *widget, AgsLadspaBrowser *ladspa_browser)
-{
-  gtk_widget_hide((GtkWidget *) ladspa_browser);
-
-  return(0);
-}
-
-int
-ags_ladspa_browser_cancel_callback(GtkWidget *widget, AgsLadspaBrowser *ladspa_browser)
-{
-  gtk_widget_hide((GtkWidget *) ladspa_browser);
-
-  return(0);
-}
-
