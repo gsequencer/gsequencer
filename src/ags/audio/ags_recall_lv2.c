@@ -470,12 +470,12 @@ ags_recall_lv2_set_ports(AgsPlugin *plugin, GList *port)
 	    if(recall_lv2->input_port == NULL){
 	      recall_lv2->input_port = (uint32_t *) malloc(sizeof(uint32_t));
 	      recall_lv2->input_port[0] = (uint32_t) g_ascii_strtoull(xmlGetProp(port_index_node->data,
-									      "value\0"),
-								   10,
-								   NULL);
+										 "value\0"),
+								      10,
+								      NULL);
 	    }else{
 	      recall_lv2->input_port = (uint32_t *) realloc(recall_lv2->input_port,
-							 (recall_lv2->input_lines + 1) * sizeof(uint32_t));
+							    (recall_lv2->input_lines + 1) * sizeof(uint32_t));
 	      recall_lv2->input_port[recall_lv2->input_lines] = g_ascii_strtoull(xmlGetProp(port_index_node->data,
 											    "value\0"),
 										 10,
@@ -497,7 +497,7 @@ ags_recall_lv2_set_ports(AgsPlugin *plugin, GList *port)
 							    NULL);
 	    }else{
 	      recall_lv2->output_port = (uint32_t *) realloc(recall_lv2->output_port,
-							  (recall_lv2->output_lines + 1) * sizeof(uint32_t));
+							     (recall_lv2->output_lines + 1) * sizeof(uint32_t));
 	      recall_lv2->output_port[recall_lv2->output_lines] = g_ascii_strtoull(xmlGetProp(port_index_node->data,
 											      "value\0"),
 										   10,
@@ -531,7 +531,12 @@ ags_recall_lv2_set_ports(AgsPlugin *plugin, GList *port)
 										 "value\0"),
 								      NULL);
 	
-	  g_message("connecting port: %d/%d\0", i, port_count);
+	  g_message("connecting port: %d/%d\0",
+		    g_ascii_strtoull(xmlGetProp(port_index_node->data,
+						"value\0"),
+				     10,
+				     NULL),
+		    port_count);
 	}
 	
 	port_node = port_node->next->next;
@@ -709,7 +714,7 @@ ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2)
   lv2_plugin = ags_lv2_manager_find_lv2_plugin(recall_lv2->filename);
   port = NULL;
 
-    if(lv2_plugin->plugin_so == NULL){
+  if(lv2_plugin->plugin_so == NULL){
     plugin_so =
       lv2_plugin->plugin_so = dlopen(lv2_plugin->filename,
 				     RTLD_NOW);
@@ -797,7 +802,10 @@ ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2)
 				 "plugin-name\0", plugin_name,
 				 "specifier\0", specifier,
 				 "control-port\0", g_strdup_printf("%d/%d\0",
-								   i,
+								   g_ascii_strtoull(xmlGetProp(port_index_node->data,
+											       "value\0"),
+										    10,
+										    NULL),
 								   port_count),
 				 "port-value-is-pointer\0", FALSE,
 				 "port-value-type\0", G_TYPE_FLOAT,
@@ -806,8 +814,13 @@ ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2)
 										 "value\0"),
 								      NULL);
 
-	  g_message("connecting port: %d/%d\0", i, port_count);
-
+	  g_message("connecting port: %d/%d\0",
+		    g_ascii_strtoull(xmlGetProp(port_index_node->data,
+						"value\0"),
+				     10,
+				     NULL),
+		    port_count);
+	  
 	  port = g_list_prepend(port,
 				current);
 	}

@@ -191,8 +191,6 @@ ags_recall_ladspa_run_run_init_pre(AgsRecall *recall)
   unsigned long buffer_size;
   unsigned long i;
 
-  LADSPA_PortDescriptor *port_descriptor;
-
   /* call parent */
   AGS_RECALL_CLASS(ags_recall_ladspa_run_parent_class)->run_init_pre(recall);
 
@@ -232,8 +230,6 @@ ags_recall_ladspa_run_run_init_pre(AgsRecall *recall)
 
   /* can't be done in ags_recall_ladspa_run_run_init_inter since possebility of overlapping buffers */
   /* connect audio port */
-  port_descriptor = recall_ladspa->plugin_descriptor->PortDescriptors;
-
   for(i = 0; i < recall_ladspa->input_lines; i++){
     recall_ladspa->plugin_descriptor->connect_port(recall_ladspa_run->ladspa_handle[i],
 						   recall_ladspa->input_port[i],
