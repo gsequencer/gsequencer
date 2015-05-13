@@ -55,13 +55,13 @@ void ags_lv2_browser_reset(AgsApplicable *applicable);
 
 /**
  * SECTION:ags_lv2_browser
- * @short_description: A composite to select lv2 effect.
+ * @short_description: A composite to select lv2 uri.
  * @title: AgsLv2Browser
  * @section_id:
  * @include: ags/X/ags_lv2_browser.h
  *
  * #AgsLv2Browser is a composite widget to select lv2 plugin and the desired
- * effect.
+ * uri.
  */
 
 GType
@@ -136,13 +136,130 @@ ags_lv2_browser_applicable_interface_init(AgsApplicableInterface *applicable)
 void
 ags_lv2_browser_init(AgsLv2Browser *lv2_browser)
 {
-  //TODO:JK: implement me
+  GtkTable *table;
+  GtkComboBoxText *combo_box;
+  GtkLabel *label;
+
+  GList *list;
+  gchar **filenames, **filenames_start;
+  
+  /* plugin */
+  lv2_browser->plugin = (GtkHBox *) gtk_hbox_new(FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(lv2_browser),
+		     GTK_WIDGET(lv2_browser->plugin),
+		     FALSE, FALSE,
+		     0);
+
+  label = (GtkLabel *) gtk_label_new("filename: \0");
+  gtk_box_pack_start(GTK_BOX(lv2_browser->plugin),
+		     GTK_WIDGET(label),
+		     FALSE, FALSE,
+		     0);
+
+  combo_box = (GtkComboBoxText *) gtk_combo_box_text_new();
+  gtk_box_pack_start(GTK_BOX(lv2_browser->plugin),
+		     GTK_WIDGET(combo_box),
+		     FALSE, FALSE,
+		     0);
+
+  lv2_browser->path = NULL;
+
+  ags_lv2_manager_load_default_directory();
+  filenames =
+    filenames_start = ags_lv2_manager_get_filenames();
+
+  while(*filenames != NULL){
+    gtk_combo_box_text_append_text(combo_box,
+				   *filenames);
+
+    filenames++;
+  }
+
+  free(filenames_start);
+
+  label = (GtkLabel *) gtk_label_new("uri: \0");
+  gtk_box_pack_start(GTK_BOX(lv2_browser->plugin),
+		     GTK_WIDGET(label),
+		     FALSE, FALSE,
+		     0);
+
+  combo_box = (GtkComboBoxText *) gtk_combo_box_text_new();
+  gtk_box_pack_start(GTK_BOX(lv2_browser->plugin),
+		     GTK_WIDGET(combo_box),
+		     FALSE, FALSE,
+		     0);
+
+  /* description */
+  lv2_browser->description = (GtkVBox *) gtk_vbox_new(FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(lv2_browser),
+		     GTK_WIDGET(lv2_browser->description),
+		     FALSE, FALSE,
+		     0);
+
+  label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
+				    "xalign\0", 0.0,
+				    "label\0", "Label: \0",
+				    NULL);
+  gtk_box_pack_start(GTK_BOX(lv2_browser->description),
+		     GTK_WIDGET(label),
+		     FALSE, FALSE,
+		     0);
+
+  label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
+				    "xalign\0", 0.0,
+				    "label\0", "Maker: \0",
+				    NULL);
+  gtk_box_pack_start(GTK_BOX(lv2_browser->description),
+		     GTK_WIDGET(label),
+		     FALSE, FALSE,
+		     0);
+
+  label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
+				    "xalign\0", 0.0,
+				    "label\0", "Copyright: \0",
+				    NULL);
+  gtk_box_pack_start(GTK_BOX(lv2_browser->description),
+		     GTK_WIDGET(label),
+		     FALSE, FALSE,
+		     0);
+
+  label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
+				    "xalign\0", 0.0,
+				    "label\0", "Ports: \0",
+				    NULL);
+  gtk_box_pack_start(GTK_BOX(lv2_browser->description),
+		     GTK_WIDGET(label),
+		     FALSE, FALSE,
+		     0);
+  
+  table = gtk_table_new(256, 2,
+			FALSE);
+  gtk_box_pack_start(GTK_BOX(lv2_browser->description),
+		     GTK_WIDGET(table),
+		     FALSE, FALSE,
+		     0);
 }
 
 void
 ags_lv2_browser_connect(AgsConnectable *connectable)
 {
-  //TODO:JK: implement me
+  AgsLv2Browser *lv2_browser;
+  GList *list, *list_start;
+
+  lv2_browser = AGS_LV2_BROWSER(connectable);
+
+  list_start = 
+    list = gtk_container_get_children(GTK_CONTAINER(lv2_browser->plugin));
+  list = list->next;
+
+  g_signal_connect_after(G_OBJECT(list->data), "changed\0",
+			 G_CALLBACK(ags_lv2_browser_plugin_filename_callback), lv2_browser);
+
+  list = list->next->next;
+  g_signal_connect_after(G_OBJECT(list->data), "changed\0",
+			 G_CALLBACK(ags_lv2_browser_plugin_uri_callback), lv2_browser);
+
+  g_list_free(list_start);
 }
 
 void
@@ -165,7 +282,7 @@ void
 ags_lv2_browser_apply(AgsApplicable *applicable)
 {
   AgsLv2Browser *lv2_browser;
-  GtkComboBoxText *filename, *effect;
+  GtkComboBoxText *filename, *uri;
 
   lv2_browser = AGS_LV2_BROWSER(applicable);
 
@@ -196,16 +313,16 @@ ags_lv2_browser_get_plugin_filename(AgsLv2Browser *lv2_browser)
 }
 
 /**
- * ags_lv2_browser_get_plugin_effect:
+ * ags_lv2_browser_get_plugin_uri:
  *
- * Retrieve selected lv2 effect.
+ * Retrieve selected lv2 uri.
  *
- * Returns: the active lv2 effect
+ * Returns: the active lv2 uri
  *
  * Since: 0.4.2
  */
 gchar*
-ags_lv2_browser_get_plugin_effect(AgsLv2Browser *lv2_browser)
+ags_lv2_browser_get_plugin_uri(AgsLv2Browser *lv2_browser)
 {
   //TODO:JK: implement me
 
