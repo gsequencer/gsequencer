@@ -459,7 +459,7 @@ ags_turtle_load(AgsTurtle *turtle)
     if(type_modifier){
       xmlNewProp(node,
 		 "has-type\0",
-		 "TRUE\0");
+		 "true\0");
     }else{
       xmlNewProp(node,
 		 "do\0",
