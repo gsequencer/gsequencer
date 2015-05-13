@@ -945,6 +945,8 @@ gsequencer_machine_h_sources = \
 	src/ags/X/machine/ags_ffplayer_input_pad.h		\
 	src/ags/X/machine/ags_ladspa_bridge_callbacks.h		\
 	src/ags/X/machine/ags_ladspa_bridge.h			\
+	src/ags/X/machine/ags_lv2_bridge_callbacks.h		\
+	src/ags/X/machine/ags_lv2_bridge.h			\
 	src/ags/X/machine/ags_replicator_bridge_callbacks.h	\
 	src/ags/X/machine/ags_replicator_bridge.h		\
 	src/ags/X/machine/ags_matrix_bridge_callbacks.h		\
@@ -1002,6 +1004,8 @@ gsequencer_machine_c_sources = \
 	src/ags/X/machine/ags_ffplayer_input_pad.c		\
 	src/ags/X/machine/ags_ladspa_bridge_callbacks.c		\
 	src/ags/X/machine/ags_ladspa_bridge.c			\
+	src/ags/X/machine/ags_lv2_bridge_callbacks.c		\
+	src/ags/X/machine/ags_lv2_bridge.c			\
 	src/ags/X/machine/ags_replicator_bridge_callbacks.c	\
 	src/ags/X/machine/ags_replicator_bridge.c		\
 	src/ags/X/machine/ags_matrix_bridge_callbacks.c		\
