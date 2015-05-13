@@ -35,9 +35,7 @@ typedef struct _AgsLadspaBrowserClass AgsLadspaBrowserClass;
 
 struct _AgsLadspaBrowser
 {
-  GtkDialog dialog;
-
-  GtkWidget *parent;
+  GtkVBox vbox;
 
   gchar *path;
 
@@ -45,15 +43,11 @@ struct _AgsLadspaBrowser
   GtkVBox *description;
 
   GtkWidget *preview;
-
-  GtkButton *apply;
-  GtkButton *ok;
-  GtkButton *cancel;
 };
 
 struct _AgsLadspaBrowserClass
 {
-  GtkDialogClass dialog;
+  GtkVBoxClass vbox;
 };
 
 GType ags_ladspa_browser_get_type(void);
@@ -63,6 +57,7 @@ gchar* ags_ladspa_browser_get_plugin_effect(AgsLadspaBrowser *ladspa_browser);
 
 GtkWidget* ags_ladspa_browser_combo_box_controls_new();
 GtkWidget* ags_ladspa_browser_preview_new();
-AgsLadspaBrowser* ags_ladspa_browser_new(GtkWidget *parent);
+
+AgsLadspaBrowser* ags_ladspa_browser_new();
 
 #endif /*__AGS_LADSPA_BROWSER_H__*/

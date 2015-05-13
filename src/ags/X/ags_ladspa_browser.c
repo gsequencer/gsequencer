@@ -1,5 +1,5 @@
 /* AGS - Advanced GTK Sequencer
- * Copyright (C) 2005-2011 Joël Krähemann
+ * Copyright (C) 2014 Joël Krähemann
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -94,7 +94,7 @@ ags_ladspa_browser_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_ladspa_browser = g_type_register_static(GTK_TYPE_DIALOG,
+    ags_type_ladspa_browser = g_type_register_static(GTK_TYPE_VBOX,
 						     "AgsLadspaBrowser\0", &ags_ladspa_browser_info,
 						     0);
 
@@ -136,23 +136,16 @@ ags_ladspa_browser_applicable_interface_init(AgsApplicableInterface *applicable)
 void
 ags_ladspa_browser_init(AgsLadspaBrowser *ladspa_browser)
 {
-  GtkVBox *vbox;
   GtkTable *table;
   GtkComboBoxText *combo_box;
   GtkLabel *label;
 
   GList *list;
   gchar **filenames, **filenames_start;
-
-  ladspa_browser->parent = NULL;
-
-  vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
-  gtk_container_add((GtkContainer *) gtk_dialog_get_content_area(ladspa_browser),
-		    GTK_WIDGET(vbox));
   
   /* plugin */
   ladspa_browser->plugin = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-  gtk_box_pack_start(GTK_BOX(vbox),
+  gtk_box_pack_start(GTK_BOX(ladspa_browser),
 		     GTK_WIDGET(ladspa_browser->plugin),
 		     FALSE, FALSE,
 		     0);
@@ -198,7 +191,7 @@ ags_ladspa_browser_init(AgsLadspaBrowser *ladspa_browser)
 
   /* description */
   ladspa_browser->description = (GtkVBox *) gtk_vbox_new(FALSE, 0);
-  gtk_box_pack_start(GTK_BOX(vbox),
+  gtk_box_pack_start(GTK_BOX(ladspa_browser),
 		     GTK_WIDGET(ladspa_browser->description),
 		     FALSE, FALSE,
 		     0);
@@ -245,17 +238,6 @@ ags_ladspa_browser_init(AgsLadspaBrowser *ladspa_browser)
 		     GTK_WIDGET(table),
 		     FALSE, FALSE,
 		     0);
-
-  /* action area */
-  gtk_dialog_add_buttons(ladspa_browser,
-			 GTK_STOCK_OK, GTK_RESPONSE_ACCEPT,
-			 GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT,
-			 NULL);
-
-  list = gtk_container_get_children(gtk_dialog_get_action_area(ladspa_browser));
-  ladspa_browser->ok = GTK_BUTTON(list->data);
-  ladspa_browser->cancel = GTK_BUTTON(list->next->data);
-  g_list_free(list);
 }
 
 void
@@ -278,13 +260,6 @@ ags_ladspa_browser_connect(AgsConnectable *connectable)
 			 G_CALLBACK(ags_ladspa_browser_plugin_effect_callback), ladspa_browser);
 
   g_list_free(list_start);
-
-  /* AgsLadspaBrowser buttons */
-  g_signal_connect((GObject *) ladspa_browser->ok, "clicked\0",
-		   G_CALLBACK(ags_ladspa_browser_ok_callback), (gpointer) ladspa_browser);
-
-  g_signal_connect((GObject *) ladspa_browser->cancel, "clicked\0",
-		   G_CALLBACK(ags_ladspa_browser_cancel_callback), (gpointer) ladspa_browser);
 }
 
 void
@@ -339,7 +314,7 @@ ags_ladspa_browser_reset(AgsApplicable *applicable)
  *
  * Returns: the active ladspa filename
  *
- * Since: 0.4
+ * Since: 0.4.2
  */
 gchar*
 ags_ladspa_browser_get_plugin_filename(AgsLadspaBrowser *ladspa_browser)
@@ -361,7 +336,7 @@ ags_ladspa_browser_get_plugin_filename(AgsLadspaBrowser *ladspa_browser)
  *
  * Returns: the active ladspa effect
  *
- * Since: 0.4
+ * Since: 0.4.2
  */
 gchar*
 ags_ladspa_browser_get_plugin_effect(AgsLadspaBrowser *ladspa_browser)
@@ -420,7 +395,7 @@ ags_ladspa_browser_get_plugin_effect(AgsLadspaBrowser *ladspa_browser)
  *
  * Returns: a new #GtkComboBox
  *
- * Since: 0.4
+ * Since: 0.4.2
  */
 GtkWidget*
 ags_ladspa_browser_combo_box_controls_new()
@@ -463,17 +438,15 @@ ags_ladspa_browser_preview_new()
  *
  * Returns: a new #AgsLadspaBrowser
  *
- * Since: 0.4
+ * Since: 0.4.2
  */
 AgsLadspaBrowser*
-ags_ladspa_browser_new(GtkWidget *parent)
+ags_ladspa_browser_new()
 {
   AgsLadspaBrowser *ladspa_browser;
 
   ladspa_browser = (AgsLadspaBrowser *) g_object_new(AGS_TYPE_LADSPA_BROWSER,
 						     NULL);
-
-  ladspa_browser->parent = parent;
 
   return(ladspa_browser);
 }
