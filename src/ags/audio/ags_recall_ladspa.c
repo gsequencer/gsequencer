@@ -166,7 +166,7 @@ ags_recall_ladspa_class_init(AgsRecallLadspaClass *recall_ladspa)
 				  param_spec);
 
   /**
-   * AgsRecallLadspa:recycling:
+   * AgsRecallLadspa:effect:
    *
    * The effect's name.
    * 
@@ -182,7 +182,7 @@ ags_recall_ladspa_class_init(AgsRecallLadspaClass *recall_ladspa)
 				  param_spec);
 
   /**
-   * AgsRecallLadspa:recycling:
+   * AgsRecallLadspa:index:
    *
    * The effect's index.
    * 
@@ -255,7 +255,6 @@ ags_recall_ladspa_set_property(GObject *gobject,
   switch(prop_id){
   case PROP_FILENAME:
     {
-      GObject *soundcard;
       gchar *filename;
 
       filename = g_value_get_string(value);
@@ -358,7 +357,6 @@ ags_recall_ladspa_set_ports(AgsPlugin *plugin, GList *port)
   AgsLadspaPlugin *ladspa_plugin;
   AgsPort *current;
   GList *list;
-  gchar *path;
   unsigned long port_count;
   unsigned long i;
 
@@ -375,7 +373,7 @@ ags_recall_ladspa_set_ports(AgsPlugin *plugin, GList *port)
   
   plugin_so = ladspa_plugin->plugin_so;
 
-  if(plugin_so){
+  if(plugin_so != NULL){
     ladspa_descriptor = (LADSPA_Descriptor_Function) dlsym(plugin_so,
 							   "ladspa_descriptor\0");
 
@@ -418,22 +416,22 @@ ags_recall_ladspa_set_ports(AgsPlugin *plugin, GList *port)
 	}else if(LADSPA_IS_PORT_AUDIO(port_descriptor[i])){
 	  if(LADSPA_IS_PORT_INPUT(port_descriptor[i])){
 	    if(recall_ladspa->input_port == NULL){
-	      recall_ladspa->input_port = (guint *) malloc(sizeof(guint));
+	      recall_ladspa->input_port = (unsigned long *) malloc(sizeof(unsigned long));
 	      recall_ladspa->input_port[0] = i;
 	    }else{
-	      recall_ladspa->input_port = (guint *) realloc(recall_ladspa->input_port,
-							    (recall_ladspa->input_lines + 1) * sizeof(guint));
+	      recall_ladspa->input_port = (unsigned long *) realloc(recall_ladspa->input_port,
+							    (recall_ladspa->input_lines + 1) * sizeof(unsigned long));
 	      recall_ladspa->input_port[recall_ladspa->input_lines] = i;
 	    }
 
 	    recall_ladspa->input_lines += 1;
 	  }else if(LADSPA_IS_PORT_OUTPUT(port_descriptor[i])){
 	    if(recall_ladspa->output_port == NULL){
-	      recall_ladspa->output_port = (guint *) malloc(sizeof(guint));
+	      recall_ladspa->output_port = (unsigned long *) malloc(sizeof(unsigned long));
 	      recall_ladspa->output_port[0] = i;
 	    }else{
-	      recall_ladspa->output_port = (guint *) realloc(recall_ladspa->output_port,
-							    (recall_ladspa->output_lines + 1) * sizeof(guint));
+	      recall_ladspa->output_port = (unsigned long *) realloc(recall_ladspa->output_port,
+							    (recall_ladspa->output_lines + 1) * sizeof(unsigned long));
 	      recall_ladspa->output_port[recall_ladspa->output_lines] = i;
 	    }
 
@@ -502,7 +500,6 @@ ags_recall_ladspa_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
   xmlNode *node;
   GList *list;
   gchar *id;
-  guint i;
 
   recall_ladspa = AGS_RECALL_LADSPA(plugin);
 
@@ -564,7 +561,7 @@ ags_recall_ladspa_load(AgsRecallLadspa *recall_ladspa)
   
   plugin_so = ladspa_plugin->plugin_so;
 
-  if(plugin_so){
+  if(plugin_so != NULL){
     ladspa_descriptor = (LADSPA_Descriptor_Function) dlsym(plugin_so,
 							   "ladspa_descriptor\0");
 
@@ -591,7 +588,6 @@ ags_recall_ladspa_load_ports(AgsRecallLadspa *recall_ladspa)
   AgsLadspaPlugin *ladspa_plugin;
   AgsPort *current;
   GList *port;
-  gchar *path;
   unsigned long port_count;
   unsigned long i;
 
@@ -607,7 +603,7 @@ ags_recall_ladspa_load_ports(AgsRecallLadspa *recall_ladspa)
   
   plugin_so = ladspa_plugin->plugin_so;
 
-  if(plugin_so){
+  if(plugin_so != NULL){
     ladspa_descriptor = (LADSPA_Descriptor_Function) dlsym(plugin_so,
 							   "ladspa_descriptor\0");
 

@@ -176,6 +176,8 @@ am__objects_8 = $(am__objects_7) \
 	libags_audio_a-ags_recall_id.$(OBJEXT) \
 	libags_audio_a-ags_recall_ladspa.$(OBJEXT) \
 	libags_audio_a-ags_recall_ladspa_run.$(OBJEXT) \
+	libags_audio_a-ags_recall_lv2.$(OBJEXT) \
+	libags_audio_a-ags_recall_lv2_run.$(OBJEXT) \
 	libags_audio_a-ags_recall_recycling_dummy.$(OBJEXT) \
 	libags_audio_a-ags_recall_recycling.$(OBJEXT) \
 	libags_audio_a-ags_recycling_context.$(OBJEXT) \
@@ -459,6 +461,8 @@ am__objects_28 = $(am__objects_1) \
 	gsequencer-ags_ffplayer_input_pad.$(OBJEXT) \
 	gsequencer-ags_ladspa_bridge_callbacks.$(OBJEXT) \
 	gsequencer-ags_ladspa_bridge.$(OBJEXT) \
+	gsequencer-ags_lv2_bridge_callbacks.$(OBJEXT) \
+	gsequencer-ags_lv2_bridge.$(OBJEXT) \
 	gsequencer-ags_replicator_bridge_callbacks.$(OBJEXT) \
 	gsequencer-ags_replicator_bridge.$(OBJEXT) \
 	gsequencer-ags_matrix_bridge_callbacks.$(OBJEXT) \
@@ -1156,6 +1160,8 @@ ags_audio_h_sources = \
 	src/ags/audio/ags_recall_id.h		\
 	src/ags/audio/ags_recall_ladspa.h	\
 	src/ags/audio/ags_recall_ladspa_run.h	\
+	src/ags/audio/ags_recall_lv2.h	\
+	src/ags/audio/ags_recall_lv2_run.h	\
 	src/ags/audio/ags_recall_recycling_dummy.h \
 	src/ags/audio/ags_recall_recycling.h	\
 	src/ags/audio/ags_recycling_context.h	\
@@ -1202,6 +1208,8 @@ ags_audio_c_sources = \
 	src/ags/audio/ags_recall_id.c		\
 	src/ags/audio/ags_recall_ladspa.c	\
 	src/ags/audio/ags_recall_ladspa_run.c	\
+	src/ags/audio/ags_recall_lv2.c	\
+	src/ags/audio/ags_recall_lv2_run.c	\
 	src/ags/audio/ags_recall_recycling_dummy.c \
 	src/ags/audio/ags_recall_recycling.c	\
 	src/ags/audio/ags_recycling_context.c	\
@@ -1707,6 +1715,8 @@ gsequencer_machine_h_sources = \
 	src/ags/X/machine/ags_ffplayer_input_pad.h		\
 	src/ags/X/machine/ags_ladspa_bridge_callbacks.h		\
 	src/ags/X/machine/ags_ladspa_bridge.h			\
+	src/ags/X/machine/ags_lv2_bridge_callbacks.h		\
+	src/ags/X/machine/ags_lv2_bridge.h			\
 	src/ags/X/machine/ags_replicator_bridge_callbacks.h	\
 	src/ags/X/machine/ags_replicator_bridge.h		\
 	src/ags/X/machine/ags_matrix_bridge_callbacks.h		\
@@ -1763,6 +1773,8 @@ gsequencer_machine_c_sources = \
 	src/ags/X/machine/ags_ffplayer_input_pad.c		\
 	src/ags/X/machine/ags_ladspa_bridge_callbacks.c		\
 	src/ags/X/machine/ags_ladspa_bridge.c			\
+	src/ags/X/machine/ags_lv2_bridge_callbacks.c		\
+	src/ags/X/machine/ags_lv2_bridge.c			\
 	src/ags/X/machine/ags_replicator_bridge_callbacks.c	\
 	src/ags/X/machine/ags_replicator_bridge.c		\
 	src/ags/X/machine/ags_matrix_bridge_callbacks.c		\
@@ -2090,6 +2102,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer-ags_link_editor_callbacks.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer-ags_listing_editor.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer-ags_listing_editor_callbacks.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer-ags_lv2_bridge.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer-ags_lv2_bridge_callbacks.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer-ags_machine.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer-ags_machine_callbacks.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer-ags_machine_editor.Po@am__quote@
@@ -2324,6 +2338,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_a-ags_recall_id.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_a-ags_recall_ladspa.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_a-ags_recall_ladspa_run.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_a-ags_recall_lv2.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_a-ags_recall_lv2_run.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_a-ags_recall_recycling.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_a-ags_recall_recycling_dummy.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_a-ags_record_thread.Po@am__quote@
@@ -3369,6 +3385,34 @@ libags_audio_a-ags_recall_ladspa_run.obj: src/ags/audio/ags_recall_ladspa_run.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/audio/ags_recall_ladspa_run.c' object='libags_audio_a-ags_recall_ladspa_run.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -c -o libags_audio_a-ags_recall_ladspa_run.obj `if test -f 'src/ags/audio/ags_recall_ladspa_run.c'; then $(CYGPATH_W) 'src/ags/audio/ags_recall_ladspa_run.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/ags_recall_ladspa_run.c'; fi`
+
+libags_audio_a-ags_recall_lv2.o: src/ags/audio/ags_recall_lv2.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -MT libags_audio_a-ags_recall_lv2.o -MD -MP -MF $(DEPDIR)/libags_audio_a-ags_recall_lv2.Tpo -c -o libags_audio_a-ags_recall_lv2.o `test -f 'src/ags/audio/ags_recall_lv2.c' || echo '$(srcdir)/'`src/ags/audio/ags_recall_lv2.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_a-ags_recall_lv2.Tpo $(DEPDIR)/libags_audio_a-ags_recall_lv2.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/audio/ags_recall_lv2.c' object='libags_audio_a-ags_recall_lv2.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -c -o libags_audio_a-ags_recall_lv2.o `test -f 'src/ags/audio/ags_recall_lv2.c' || echo '$(srcdir)/'`src/ags/audio/ags_recall_lv2.c
+
+libags_audio_a-ags_recall_lv2.obj: src/ags/audio/ags_recall_lv2.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -MT libags_audio_a-ags_recall_lv2.obj -MD -MP -MF $(DEPDIR)/libags_audio_a-ags_recall_lv2.Tpo -c -o libags_audio_a-ags_recall_lv2.obj `if test -f 'src/ags/audio/ags_recall_lv2.c'; then $(CYGPATH_W) 'src/ags/audio/ags_recall_lv2.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/ags_recall_lv2.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_a-ags_recall_lv2.Tpo $(DEPDIR)/libags_audio_a-ags_recall_lv2.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/audio/ags_recall_lv2.c' object='libags_audio_a-ags_recall_lv2.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -c -o libags_audio_a-ags_recall_lv2.obj `if test -f 'src/ags/audio/ags_recall_lv2.c'; then $(CYGPATH_W) 'src/ags/audio/ags_recall_lv2.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/ags_recall_lv2.c'; fi`
+
+libags_audio_a-ags_recall_lv2_run.o: src/ags/audio/ags_recall_lv2_run.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -MT libags_audio_a-ags_recall_lv2_run.o -MD -MP -MF $(DEPDIR)/libags_audio_a-ags_recall_lv2_run.Tpo -c -o libags_audio_a-ags_recall_lv2_run.o `test -f 'src/ags/audio/ags_recall_lv2_run.c' || echo '$(srcdir)/'`src/ags/audio/ags_recall_lv2_run.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_a-ags_recall_lv2_run.Tpo $(DEPDIR)/libags_audio_a-ags_recall_lv2_run.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/audio/ags_recall_lv2_run.c' object='libags_audio_a-ags_recall_lv2_run.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -c -o libags_audio_a-ags_recall_lv2_run.o `test -f 'src/ags/audio/ags_recall_lv2_run.c' || echo '$(srcdir)/'`src/ags/audio/ags_recall_lv2_run.c
+
+libags_audio_a-ags_recall_lv2_run.obj: src/ags/audio/ags_recall_lv2_run.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -MT libags_audio_a-ags_recall_lv2_run.obj -MD -MP -MF $(DEPDIR)/libags_audio_a-ags_recall_lv2_run.Tpo -c -o libags_audio_a-ags_recall_lv2_run.obj `if test -f 'src/ags/audio/ags_recall_lv2_run.c'; then $(CYGPATH_W) 'src/ags/audio/ags_recall_lv2_run.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/ags_recall_lv2_run.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_a-ags_recall_lv2_run.Tpo $(DEPDIR)/libags_audio_a-ags_recall_lv2_run.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/audio/ags_recall_lv2_run.c' object='libags_audio_a-ags_recall_lv2_run.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -c -o libags_audio_a-ags_recall_lv2_run.obj `if test -f 'src/ags/audio/ags_recall_lv2_run.c'; then $(CYGPATH_W) 'src/ags/audio/ags_recall_lv2_run.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/ags_recall_lv2_run.c'; fi`
 
 libags_audio_a-ags_recall_recycling_dummy.o: src/ags/audio/ags_recall_recycling_dummy.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -MT libags_audio_a-ags_recall_recycling_dummy.o -MD -MP -MF $(DEPDIR)/libags_audio_a-ags_recall_recycling_dummy.Tpo -c -o libags_audio_a-ags_recall_recycling_dummy.o `test -f 'src/ags/audio/ags_recall_recycling_dummy.c' || echo '$(srcdir)/'`src/ags/audio/ags_recall_recycling_dummy.c
@@ -6897,6 +6941,34 @@ gsequencer-ags_ladspa_bridge.obj: src/ags/X/machine/ags_ladspa_bridge.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/X/machine/ags_ladspa_bridge.c' object='gsequencer-ags_ladspa_bridge.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_ladspa_bridge.obj `if test -f 'src/ags/X/machine/ags_ladspa_bridge.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_ladspa_bridge.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_ladspa_bridge.c'; fi`
+
+gsequencer-ags_lv2_bridge_callbacks.o: src/ags/X/machine/ags_lv2_bridge_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_lv2_bridge_callbacks.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_lv2_bridge_callbacks.Tpo -c -o gsequencer-ags_lv2_bridge_callbacks.o `test -f 'src/ags/X/machine/ags_lv2_bridge_callbacks.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_lv2_bridge_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_lv2_bridge_callbacks.Tpo $(DEPDIR)/gsequencer-ags_lv2_bridge_callbacks.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/X/machine/ags_lv2_bridge_callbacks.c' object='gsequencer-ags_lv2_bridge_callbacks.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_lv2_bridge_callbacks.o `test -f 'src/ags/X/machine/ags_lv2_bridge_callbacks.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_lv2_bridge_callbacks.c
+
+gsequencer-ags_lv2_bridge_callbacks.obj: src/ags/X/machine/ags_lv2_bridge_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_lv2_bridge_callbacks.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_lv2_bridge_callbacks.Tpo -c -o gsequencer-ags_lv2_bridge_callbacks.obj `if test -f 'src/ags/X/machine/ags_lv2_bridge_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_lv2_bridge_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_lv2_bridge_callbacks.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_lv2_bridge_callbacks.Tpo $(DEPDIR)/gsequencer-ags_lv2_bridge_callbacks.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/X/machine/ags_lv2_bridge_callbacks.c' object='gsequencer-ags_lv2_bridge_callbacks.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_lv2_bridge_callbacks.obj `if test -f 'src/ags/X/machine/ags_lv2_bridge_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_lv2_bridge_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_lv2_bridge_callbacks.c'; fi`
+
+gsequencer-ags_lv2_bridge.o: src/ags/X/machine/ags_lv2_bridge.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_lv2_bridge.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_lv2_bridge.Tpo -c -o gsequencer-ags_lv2_bridge.o `test -f 'src/ags/X/machine/ags_lv2_bridge.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_lv2_bridge.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_lv2_bridge.Tpo $(DEPDIR)/gsequencer-ags_lv2_bridge.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/X/machine/ags_lv2_bridge.c' object='gsequencer-ags_lv2_bridge.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_lv2_bridge.o `test -f 'src/ags/X/machine/ags_lv2_bridge.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_lv2_bridge.c
+
+gsequencer-ags_lv2_bridge.obj: src/ags/X/machine/ags_lv2_bridge.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_lv2_bridge.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_lv2_bridge.Tpo -c -o gsequencer-ags_lv2_bridge.obj `if test -f 'src/ags/X/machine/ags_lv2_bridge.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_lv2_bridge.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_lv2_bridge.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_lv2_bridge.Tpo $(DEPDIR)/gsequencer-ags_lv2_bridge.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/X/machine/ags_lv2_bridge.c' object='gsequencer-ags_lv2_bridge.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_lv2_bridge.obj `if test -f 'src/ags/X/machine/ags_lv2_bridge.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_lv2_bridge.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_lv2_bridge.c'; fi`
 
 gsequencer-ags_replicator_bridge_callbacks.o: src/ags/X/machine/ags_replicator_bridge_callbacks.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_replicator_bridge_callbacks.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_replicator_bridge_callbacks.Tpo -c -o gsequencer-ags_replicator_bridge_callbacks.o `test -f 'src/ags/X/machine/ags_replicator_bridge_callbacks.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_replicator_bridge_callbacks.c

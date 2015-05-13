@@ -24,6 +24,8 @@
 
 #include <lv2.h>
 
+#include <ags/lib/ags_turtle.h>
+
 #include <ags/audio/ags_recall.h>
 #include <ags/audio/ags_recall_channel_run.h>
 #include <ags/audio/ags_channel.h>
@@ -42,6 +44,8 @@ struct _AgsRecallLv2
 {
   AgsRecallChannel recall_channel;
 
+  AgsTurtle *turtle;
+  
   gchar *filename;
   gchar *uri;
   uint32_t index;
@@ -75,6 +79,7 @@ GList* ags_recall_ladpsa_find(GList *recall,
 			      gchar *filename, gchar *uri);
 
 AgsRecallLv2* ags_recall_lv2_new(AgsChannel *source,
+				 AgsTurtle *turtle,
 				 gchar *filename,
 				 gchar *uri,
 				 uint32_t index);

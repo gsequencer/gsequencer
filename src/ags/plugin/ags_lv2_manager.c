@@ -485,9 +485,13 @@ ags_lv2_manager_uri_index(gchar *filename,
   /* load plugin */
   lv2_plugin = ags_lv2_manager_find_lv2_plugin(filename);
 
-  plugin_so =
-    lv2_plugin->plugin_so = dlopen(lv2_plugin->filename,
-				   RTLD_NOW);
+  if(lv2_plugin->plugin_so == NULL){
+    plugin_so =
+      lv2_plugin->plugin_so = dlopen(lv2_plugin->filename,
+				     RTLD_NOW);
+  }else{
+    plugin_so = lv2_plugin->plugin_so;
+  }
   
   index = G_MAXULONG;
 
