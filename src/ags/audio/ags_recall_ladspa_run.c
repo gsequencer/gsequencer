@@ -315,7 +315,7 @@ ags_recall_ladspa_run_run_inter(AgsRecall *recall)
  *
  * Set up LADSPA ports.
  *
- * Since: 0.4
+ * Since: 0.4.2
  */
 void
 ags_recall_ladspa_run_load_ports(AgsRecallLadspaRun *recall_ladspa_run)
@@ -385,6 +385,8 @@ ags_recall_ladspa_run_load_ports(AgsRecallLadspaRun *recall_ladspa_run)
  * Creates a #AgsRecallLadspaRun
  *
  * Returns: a new #AgsRecallLadspaRun
+ *
+ * Since: 0.4.2
  */
 AgsRecallLadspaRun*
 ags_recall_ladspa_run_new(AgsAudioSignal *audio_signal)
