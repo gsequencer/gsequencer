@@ -44,6 +44,8 @@ ags_lv2_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
   GList *list;
   GList *node_list;
 
+  g_message("DDD\0");
+  
   list = gtk_container_get_children(GTK_CONTAINER(lv2_browser->plugin));
 
   filename = GTK_COMBO_BOX(list->next->data);
@@ -52,15 +54,20 @@ ags_lv2_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
   ags_combo_box_text_remove_all(uri);
 
   lv2_plugin = ags_lv2_manager_find_lv2_plugin(gtk_combo_box_text_get_active_text(filename));
+
+  if(lv2_plugin == NULL){
+    g_message("BBB\0");
+    return;
+  }
   
   node_list = ags_turtle_find_xpath(lv2_plugin->turtle,
-				    "//rdf-triple/rdf-verb[@has_type=\"true\"]/rdf-list/rdf-value[1]\0");;
+				    "//rdf-triple/rdf-verb[@has_type=\"true\"]/rdf-list/rdf-value[1]\0");
   
   while(node_list != NULL){
     gtk_combo_box_text_append_text(uri,
 				   g_strdup(xmlGetProp(((xmlNode *) node_list->data)->parent->parent->parent,
 						       "subject\0")));
-				   
+    
     node_list = node_list->next;
   }
   

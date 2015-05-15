@@ -142,6 +142,11 @@ ags_lv2_browser_init(AgsLv2Browser *lv2_browser)
 
   GList *list;
   gchar **filenames, **filenames_start;
+
+  g_object_set(lv2_browser,
+	       "homogeneous\0", FALSE,
+	       "spacing\0", 0,
+	       NULL);
   
   /* plugin */
   lv2_browser->plugin = (GtkHBox *) gtk_hbox_new(FALSE, 0);
@@ -175,7 +180,7 @@ ags_lv2_browser_init(AgsLv2Browser *lv2_browser)
     filenames++;
   }
 
-  free(filenames_start);
+  //  free(filenames_start);
 
   label = (GtkLabel *) gtk_label_new("uri: \0");
   gtk_box_pack_start(GTK_BOX(lv2_browser->plugin),

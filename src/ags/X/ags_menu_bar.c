@@ -566,7 +566,7 @@ ags_ladspa_menu_new()
     filename++;
   }
 
-  g_strfreev(filename_start);
+  //  g_strfreev(filename_start);
   
   return(menu);
 }
@@ -621,7 +621,7 @@ ags_lv2_menu_new()
     filename++;
   }
 
-  g_strfreev(filename_start);
+  //  g_strfreev(filename_start);
   
   return(menu);
 }

@@ -182,7 +182,8 @@ ags_plugin_browser_connect(AgsConnectable *connectable)
 
   plugin_browser = AGS_PLUGIN_BROWSER(connectable);
 
-  //TODO:JK: implement me
+  ags_connectable_connect(AGS_CONNECTABLE(plugin_browser->lv2_browser));
+  ags_connectable_connect(AGS_CONNECTABLE(plugin_browser->ladspa_browser));
 
   /* AgsPluginBrowser buttons */
   g_signal_connect((GObject *) plugin_browser->ok, "clicked\0",

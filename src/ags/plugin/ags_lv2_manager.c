@@ -336,8 +336,6 @@ ags_lv2_manager_load_file(AgsTurtle *turtle,
 
   static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
-  lv2_manager = ags_lv2_manager_get_instance();
-
   if(filename == NULL){
     return;
   }

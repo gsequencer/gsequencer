@@ -142,6 +142,11 @@ ags_ladspa_browser_init(AgsLadspaBrowser *ladspa_browser)
 
   GList *list;
   gchar **filenames, **filenames_start;
+
+  g_object_set(ladspa_browser,
+	       "homogeneous\0", FALSE,
+	       "spacing\0", 0,
+	       NULL);
   
   /* plugin */
   ladspa_browser->plugin = (GtkHBox *) gtk_hbox_new(FALSE, 0);
@@ -175,7 +180,7 @@ ags_ladspa_browser_init(AgsLadspaBrowser *ladspa_browser)
     filenames++;
   }
 
-  free(filenames_start);
+  //  free(filenames_start);
 
   label = (GtkLabel *) gtk_label_new("effect: \0");
   gtk_box_pack_start(GTK_BOX(ladspa_browser->plugin),
