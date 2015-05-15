@@ -31,7 +31,7 @@ void ags_line_member_editor_add_callback(GtkWidget *button,
 void ags_line_member_editor_remove_callback(GtkWidget *button,
 					    AgsLineMemberEditor *line_member_editor);
 
-void ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
+void ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
 							     gint response,
 							     AgsLineMemberEditor *line_member_editor);
 

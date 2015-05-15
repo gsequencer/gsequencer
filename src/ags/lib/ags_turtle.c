@@ -196,7 +196,7 @@ ags_turtle_find_xpath(AgsTurtle *turtle,
   xpath_object = xmlXPathEval((xmlChar *) xpath,
 			      xpath_context);
 
-  xmlSaveFormatFileEnc("-\0", turtle->doc, "UTF-8\0", 1);
+  //  xmlSaveFormatFileEnc("-\0", turtle->doc, "UTF-8\0", 1);
   
   list = NULL;
 
@@ -349,7 +349,11 @@ ags_turtle_load(AgsTurtle *turtle)
   {
     gchar *subject;
     gchar *start, *end;
-  
+
+    if(buffer[sb->st_size] <= iter){
+      return(NULL);
+    }
+    
     subject = NULL;
     start = NULL;
     
@@ -476,6 +480,7 @@ ags_turtle_load(AgsTurtle *turtle)
     gchar *start, *end, *start_literal, *end_literal;
     gchar *str;
     guint current_level;
+    gboolean escaped_literal;
     gboolean more_collection;
     
     object = NULL;
@@ -525,14 +530,28 @@ ags_turtle_load(AgsTurtle *turtle)
 	start_literal = NULL;
 	end_literal = NULL;
 
-	/* read type/value */
+	/* read value */
 	for(; *iter != '\0'; iter++){
 
 	  if(*iter == '"'){
 	    if(start_literal == NULL){
 	      start_literal = iter;
+
+	      if(iter[1] != '"' && iter[2] == '"'){
+		escaped_literal = TRUE;
+		iter += 2;
+	      }else{
+		escaped_literal = FALSE;
+	      }
 	    }else{
-	      end_literal = iter;
+	      if(escaped_literal){
+		if(iter[1] != '"' && iter[2] == '"'){
+		  end_literal = iter;
+		  iter += 2;
+		}
+	      }else{
+		end_literal = iter;
+	      }
 	    }
 
 	    continue;
@@ -611,8 +630,6 @@ ags_turtle_load(AgsTurtle *turtle)
   buffer[sb->st_size] = '\0';
   fclose(file);
 
-  free(sb);
-
   turtle->doc = 
     doc = xmlNewDoc("1.0\0");
   root_node = xmlNewNode(NULL, "rdf-turtle\0");
@@ -630,6 +647,7 @@ ags_turtle_load(AgsTurtle *turtle)
     }
   }while(node != NULL);
   
+  free(sb);
   free(buffer);
 }
 

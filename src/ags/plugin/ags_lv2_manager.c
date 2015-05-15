@@ -397,6 +397,15 @@ ags_lv2_manager_load_default_directory()
   }
 
   while((path = g_dir_read_name(dir)) != NULL){
+    if(!g_ascii_strncasecmp(path,
+			    "..\0",
+			    3) ||
+       !g_ascii_strncasecmp(path,
+			    ".\0",
+			    2)){
+      continue;
+    }
+    
     plugin_path = g_strdup_printf("%s/%s\0",
 				  ags_lv2_default_path,
 				  path);
@@ -437,7 +446,7 @@ ags_lv2_manager_load_default_directory()
 						g_strndup(&(turtle_path[1]),
 							  strlen(turtle_path) - 2)));
 	ags_turtle_load(turtle);
-	xmlSaveFormatFileEnc("-\0", turtle->doc, "UTF-8\0", 1);
+	//	xmlSaveFormatFileEnc("-\0", turtle->doc, "UTF-8\0", 1);
 	
 	filename = g_strdup_printf("%s/%s\0",
 				   plugin_path,

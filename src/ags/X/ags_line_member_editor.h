@@ -23,7 +23,7 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include <ags/X/ags_ladspa_browser.h>
+#include <ags/X/ags_plugin_browser.h>
 
 #define AGS_TYPE_LINE_MEMBER_EDITOR                (ags_line_member_editor_get_type())
 #define AGS_LINE_MEMBER_EDITOR(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_LINE_MEMBER_EDITOR, AgsLineMemberEditor))
@@ -46,7 +46,7 @@ struct _AgsLineMemberEditor
 
   GtkButton *remove;
 
-  AgsLadspaBrowser *ladspa_browser;
+  AgsPluginBrowser *plugin_browser;
 };
 
 struct _AgsLineMemberEditorClass
