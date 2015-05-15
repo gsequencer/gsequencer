@@ -24,6 +24,8 @@
 #include <gtk/gtk.h>
 
 #include <ags/X/ags_plugin_browser.h>
+void ags_plugin_browser_plugin_type_changed_callback(GtkWidget *combo_box,
+						     AgsPluginBrowser *plugin_browser);
 
 void ags_plugin_browser_ok_callback(GtkWidget *button,
 				    AgsPluginBrowser *plugin_browser);

@@ -53,7 +53,7 @@ struct _AgsLv2BrowserClass
 GType ags_lv2_browser_get_type(void);
 
 gchar* ags_lv2_browser_get_plugin_filename(AgsLv2Browser *lv2_browser);
-gchar* ags_lv2_browser_get_plugin_uri(AgsLv2Browser *lv2_browser);
+gchar* ags_lv2_browser_get_plugin_effect(AgsLv2Browser *lv2_browser);
 
 GtkWidget* ags_lv2_browser_combo_box_controls_new();
 GtkWidget* ags_lv2_browser_preview_new();
