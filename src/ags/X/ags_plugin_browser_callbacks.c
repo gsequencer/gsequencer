@@ -22,11 +22,13 @@ void
 ags_plugin_browser_ok_callback(GtkWidget *button,
 			       AgsPluginBrowser *plugin_browser)
 {
+  gtk_widget_hide(plugin_browser);
 }
 
 void
 ags_plugin_browser_cancel_callback(GtkWidget *button,
 				   AgsPluginBrowser *plugin_browser)
 {
+  gtk_widget_hide(plugin_browser);
 }
 

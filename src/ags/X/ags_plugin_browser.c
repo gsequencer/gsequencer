@@ -117,14 +117,50 @@ void
 ags_plugin_browser_init(AgsPluginBrowser *plugin_browser)
 {
   GtkVBox *vbox;
-
+  GtkHBox *hbox;
+  GtkLabel *label;
+  
   GList *list;
 
   vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
   gtk_container_add((GtkContainer *) gtk_dialog_get_content_area(plugin_browser),
 		    GTK_WIDGET(vbox));
   
-  //TODO:JK: implement me
+  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
+  gtk_box_pack_start(vbox,
+		     hbox,
+		     FALSE, FALSE,
+		     0);
+
+  label = gtk_label_new("Plugin type:\0");
+  gtk_box_pack_start(hbox,
+		     label,
+		     FALSE, FALSE,
+		     0);
+
+  plugin_browser->plugin_type = gtk_combo_box_text_new();
+  gtk_box_pack_start(hbox,
+		     plugin_browser->plugin_type,
+		     FALSE, FALSE,
+		     0);
+  
+  gtk_combo_box_text_append_text(plugin_browser->plugin_type,
+				 "Lv2\0");
+  gtk_combo_box_text_append_text(plugin_browser->plugin_type,
+				 "LADSPA\0");
+
+  plugin_browser->active_browser =
+    plugin_browser->lv2_browser = ags_lv2_browser_new();
+  gtk_box_pack_start(vbox,
+		     plugin_browser->lv2_browser,
+		     FALSE, FALSE,
+		     0);
+
+  plugin_browser->ladspa_browser = ags_ladspa_browser_new();
+  gtk_box_pack_start(vbox,
+		     plugin_browser->ladspa_browser,
+		     FALSE, FALSE,
+		     0);
   
   /* action area */
   gtk_dialog_add_buttons(plugin_browser,

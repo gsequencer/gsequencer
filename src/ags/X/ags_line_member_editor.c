@@ -147,7 +147,7 @@ ags_line_member_editor_init(AgsLineMemberEditor *line_member_editor)
 		     FALSE, FALSE,
 		     0);
 
-  line_member_editor->ladspa_browser = ags_ladspa_browser_new(line_member_editor);
+  line_member_editor->plugin_browser = ags_plugin_browser_new(line_member_editor);
 }
 
 void
@@ -163,10 +163,10 @@ ags_line_member_editor_connect(AgsConnectable *connectable)
   g_signal_connect(G_OBJECT(line_member_editor->remove), "clicked\0",
 		   G_CALLBACK(ags_line_member_editor_remove_callback), line_member_editor);
 
-  ags_connectable_connect(AGS_CONNECTABLE(line_member_editor->ladspa_browser));
+  ags_connectable_connect(AGS_CONNECTABLE(line_member_editor->plugin_browser));
 
-  g_signal_connect(G_OBJECT(line_member_editor->ladspa_browser), "response\0",
-		   G_CALLBACK(ags_line_member_editor_ladspa_browser_response_callback), line_member_editor);
+  g_signal_connect(G_OBJECT(line_member_editor->plugin_browser), "response\0",
+		   G_CALLBACK(ags_line_member_editor_plugin_browser_response_callback), line_member_editor);
 }
 
 void

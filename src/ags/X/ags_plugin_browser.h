@@ -40,9 +40,11 @@ struct _AgsPluginBrowser
   GtkWidget *parent;
 
   GtkComboBoxText *plugin_type;
+
+  GtkWidget *active_browser;
   
-  GtkWidget *plugin_browser;
   GtkWidget *lv2_browser;
+  GtkWidget *ladspa_browser;
   
   GtkButton *apply;
   GtkButton *ok;
