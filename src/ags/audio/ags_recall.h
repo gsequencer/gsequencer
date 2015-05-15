@@ -201,6 +201,7 @@ GList* ags_recall_find_recall_id_with_effect(GList *list, AgsRecallID *recall_id
 GList* ags_recall_find_type(GList *recall, GType recall_type);
 GList* ags_recall_find_template(GList *recall);
 GList* ags_recall_template_find_type(GList *recall, GType recall_type);
+GList* ags_recall_template_find_all_type(GList *recall, ...);
 GList* ags_recall_find_type_with_recycling_context(GList *recall, GType recall_type, GObject *recycling_context);
 GList* ags_recall_find_recycling_context(GList *recall, GObject *recycling_context);
 GList* ags_recall_find_provider(GList *recall, GObject *provider);

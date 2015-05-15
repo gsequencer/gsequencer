@@ -487,7 +487,7 @@ ags_lv2_manager_uri_index(gchar *filename,
   LV2_Descriptor_Function lv2_descriptor;
   LV2_Descriptor *plugin_descriptor;
 
-  uint32_t index;
+  uint32_t uri_index;
   uint32_t i;
 
   if(filename == NULL ||
@@ -506,7 +506,7 @@ ags_lv2_manager_uri_index(gchar *filename,
     plugin_so = lv2_plugin->plugin_so;
   }
   
-  index = G_MAXULONG;
+  uri_index = G_MAXULONG;
 
   if(plugin_so){
     lv2_descriptor = (LV2_Descriptor_Function) dlsym(plugin_so,
@@ -517,14 +517,14 @@ ags_lv2_manager_uri_index(gchar *filename,
 	if(!strncmp(plugin_descriptor->URI,
 		    uri,
 		    strlen(uri))){
-	  index = i;
+	  uri_index = i;
 	  break;
 	}
       }
     }
   }
   
-  return(index);
+  return(uri_index);
 }
 
 /**

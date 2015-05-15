@@ -38,6 +38,8 @@
 #include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>
 
+#include <ags/plugin/ags_lv2_manager.h>
+
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recycling.h>
@@ -47,10 +49,12 @@
 #include <ags/audio/ags_recall_audio_run.h>
 #include <ags/audio/ags_recall_channel.h>
 #include <ags/audio/ags_recall_ladspa.h>
+#include <ags/audio/ags_recall_lv2.h>
 #include <ags/audio/ags_recall_channel_run.h>
 #include <ags/audio/ags_recall_recycling.h>
 #include <ags/audio/ags_recall_audio_signal.h>
 
+#include <stdarg.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -1168,9 +1172,11 @@ ags_recall_finalize(GObject *gobject)
   //  if(recall->name != NULL)
   //    g_free(recall->name);
 
-  ags_list_free_and_unref_link(recall->dependencies);
+  g_list_free_full(recall->dependencies,
+		   g_object_unref);
 
-  ags_list_free_and_unref_link(recall->children);
+  g_list_free_full(recall->children,
+		   g_object_unref);
 
   if(recall->container != NULL){
     ags_packable_unpack(recall);
@@ -2044,18 +2050,26 @@ ags_recall_get_by_effect(GList *recall, gchar *filename, gchar *effect)
 	 !g_strcmp0(AGS_RECALL_LADSPA(current)->filename, filename) &&
 	 !g_strcmp0(AGS_RECALL_LADSPA(current)->effect, effect)){
 	list = g_list_prepend(list,
-			      current);	  
-      }
-    }else{
-      if(!g_strcmp0(current->effect, effect)){
+			      current);
+      }else if(AGS_IS_RECALL_LV2(current) &&
+	       !g_strcmp0(AGS_RECALL_LV2(current)->filename, filename)){
+	gchar *uri;
+	
+	uri = effect;
+	
+	if(!g_strcmp0(AGS_RECALL_LV2(current)->uri, uri)){
+	  list = g_list_prepend(list,
+				current);
+	}
+      }else  if(!g_strcmp0(current->effect, effect)){
 	list = g_list_prepend(list,
 			      current);
       }
     }
-
+    
     recall = recall->next;
   }
-
+  
   list = g_list_reverse(list);
   
   return(list);
@@ -2102,9 +2116,39 @@ ags_recall_find_recall_id_with_effect(GList *list, AgsRecallID *recall_id, gchar
 	 !g_strcmp0(AGS_RECALL_LADSPA(recall)->filename, filename) &&
 	 !g_strcmp0(AGS_RECALL_LADSPA(recall)->effect, effect)){
 	return(list);
+      }else if(AGS_IS_RECALL_LV2(recall) &&
+	       ((recall_id != NULL &&
+		 recall->recall_id != NULL &&
+		 recall_id->recycling_context == recall->recall_id->recycling_context) ||
+		(recall_id == NULL &&
+		 recall->recall_id == NULL)) &&
+	       !g_strcmp0(AGS_RECALL_LV2(recall)->filename, filename)){
+	AgsLv2Plugin *lv2_plugin;
+	GList *uri_node;
+	
+	gchar *uri;
+	gchar *str;
+      
+	lv2_plugin = ags_lv2_manager_find_lv2_plugin(filename);
+	str = g_strdup_printf("/rdf-turtle/rdf-list/rdf-triple/rdf-verb[@do=\"doap:name\"]\0");
+	uri_node = ags_turtle_find_xpath(lv2_plugin->turtle,
+					 str);
+	free(str);
+  
+	str = xmlGetProp(((xmlNode *) uri_node->data)->parent,
+			 "subject\0");
+	uri = g_strndup(&(str[1]),
+			strlen(str) - 2);
+	free(uri);
+
+	if(!g_strcmp0(AGS_RECALL_LV2(recall)->uri, uri)){
+	  list = g_list_prepend(list,
+				recall);
+	  return(list);
+	}
       }
     }
-    
+  
     list = list->next;
   }
 
@@ -2197,6 +2241,66 @@ ags_recall_template_find_type(GList *recall_i, GType recall_type)
   }
 
   return(recall_i);
+}
+
+/**
+ * ags_recall_template_find_type:
+ * @recall_i: a #GList containing recalls
+ * @recall_type: a #GType
+ * 
+ * Finds next matching recall for type which is a template, see #AGS_RECALL_TEMPLATE flag.
+ * Intended to be used as iteration function.
+ *
+ * Returns: a #GList containing recalls, or %NULL if not found
+ *
+ * Since: 0.4.3
+ */
+GList*
+ags_recall_template_find_all_type(GList *recall_i, ...)
+{
+  AgsRecall *recall;
+  
+  GList *start, *list;
+  GType current;
+  va_list ap;
+
+  list = NULL;
+  va_start(ap,
+	   recall_i);
+
+  while((current = va_arg(ap, GType)) != G_TYPE_NONE){
+    list = g_list_prepend(list,
+			  current);
+  }
+  
+  va_end(ap);
+
+  start = list;
+  
+  while(recall_i != NULL){
+    recall = AGS_RECALL(recall_i->data);
+
+    list = start;
+    
+    while(list != NULL){
+      current = list->data;
+      
+      if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0 &&
+	 G_TYPE_CHECK_INSTANCE_TYPE((recall), current)){
+	g_list_free(start);
+	
+	return(recall_i);
+      }
+
+      list = list->next;
+    }
+
+    recall_i = recall_i->next;
+  }
+
+  g_list_free(start);
+	
+  return(NULL);
 }
 
 /**

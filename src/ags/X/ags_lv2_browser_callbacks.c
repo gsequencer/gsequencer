@@ -43,6 +43,8 @@ ags_lv2_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
 
   GList *list;
   GList *node_list;
+
+  gchar *str;
   
   list = gtk_container_get_children(GTK_CONTAINER(lv2_browser->plugin));
 
@@ -58,12 +60,16 @@ ags_lv2_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
   }
 
   node_list = ags_turtle_find_xpath(lv2_plugin->turtle,
-				    "//rdf-triple/rdf-verb[@do=\"doap:name\"]//rdf-value[1]\0");
+				    "//rdf-triple/rdf-verb[@do=\"doap:name\"]/rdf-list/rdf-value[1]\0");
 
   while(node_list != NULL){
+    str = xmlGetProp(((xmlNode *) node_list->data)->parent->parent->parent,
+		     "subject\0");
+    str = g_strndup(&(str[1]),
+		    strlen(str) - 2);
+    
     gtk_combo_box_text_append_text(uri,
-				   g_strdup(xmlGetProp(((xmlNode *) node_list->data),
-						       "value\0")));
+				   str);
     
     node_list = node_list->next;
   }

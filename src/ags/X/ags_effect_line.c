@@ -25,6 +25,7 @@
 #include <ags/object/ags_plugin.h>
 
 #include <ags/plugin/ags_ladspa_manager.h>
+#include <ags/plugin/ags_lv2_manager.h>
 
 #ifdef AGS_USE_LINUX_THREADS
 #include <ags/thread/ags_thread-kthreads.h>
