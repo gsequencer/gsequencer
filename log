@@ -1,0 +1,492 @@
+In file included from ./src/ags/server/ags_server.h:23:0,
+                 from ./src/ags/server/ags_server_application_context.h:34,
+                 from src/ags/audio/ags_channel.c:36:
+./src/ags/server/ags_registry.h:33:1: warning: useless storage class specifier in empty declaration
+ };
+ ^
+src/ags/audio/ags_channel.c: In function ‘ags_channel_get_recall_by_effect’:
+src/ags/audio/ags_channel.c:1081:14: warning: unused variable ‘recall’ [-Wunused-variable]
+   AgsRecall *recall;
+              ^
+src/ags/audio/ags_channel.c: In function ‘ags_channel_add_ladspa_effect’:
+src/ags/audio/ags_channel.c:1132:8: warning: passing argument 2 of ‘ags_channel_add_recall_container’ from incompatible pointer type
+        recall_container);
+        ^
+src/ags/audio/ags_channel.c:996:1: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsRecallContainer *’
+ ags_channel_add_recall_container(AgsChannel *channel, GObject *container)
+ ^
+src/ags/audio/ags_channel.c:1144:5: warning: passing argument 2 of ‘ags_channel_add_recall’ from incompatible pointer type
+     recall_ladspa,
+     ^
+src/ags/audio/ags_channel.c:1064:1: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsRecallLadspa *’
+ ags_channel_add_recall(AgsChannel *channel, GObject *recall, gboolean play)
+ ^
+src/ags/audio/ags_channel.c:1148:3: warning: implicit declaration of function ‘ags_recall_ladspa_load’ [-Wimplicit-function-declaration]
+   ags_recall_ladspa_load(recall_ladspa);
+   ^
+src/ags/audio/ags_channel.c:1163:5: warning: passing argument 2 of ‘ags_channel_add_recall’ from incompatible pointer type
+     recall_channel_run_dummy,
+     ^
+src/ags/audio/ags_channel.c:1064:1: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsRecallChannelRunDummy *’
+ ags_channel_add_recall(AgsChannel *channel, GObject *recall, gboolean play)
+ ^
+src/ags/audio/ags_channel.c:1179:33: warning: passing argument 1 of ‘ags_recall_duplicate’ from incompatible pointer type
+  current = ags_recall_duplicate(recall_channel_run_dummy, recall_id->data);
+                                 ^
+In file included from ./src/ags/audio/ags_channel.h:26:0,
+                 from src/ags/audio/ags_channel.c:19:
+./src/ags/audio/ags_recall.h:182:12: note: expected ‘struct AgsRecall *’ but argument is of type ‘struct AgsRecallChannelRunDummy *’
+ AgsRecall* ags_recall_duplicate(AgsRecall *recall,
+            ^
+src/ags/audio/ags_channel.c:1203:2: warning: implicit declaration of function ‘ags_dynamic_connectable_connect_dynamic’ [-Wimplicit-function-declaration]
+  ags_dynamic_connectable_connect_dynamic(AGS_DYNAMIC_CONNECTABLE(current));
+  ^
+src/ags/audio/ags_channel.c:1221:8: warning: passing argument 2 of ‘ags_channel_add_recall_container’ from incompatible pointer type
+        recall_container);
+        ^
+src/ags/audio/ags_channel.c:996:1: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsRecallContainer *’
+ ags_channel_add_recall_container(AgsChannel *channel, GObject *container)
+ ^
+src/ags/audio/ags_channel.c:1232:5: warning: passing argument 2 of ‘ags_channel_add_recall’ from incompatible pointer type
+     recall_ladspa,
+     ^
+src/ags/audio/ags_channel.c:1064:1: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsRecallLadspa *’
+ ags_channel_add_recall(AgsChannel *channel, GObject *recall, gboolean play)
+ ^
+src/ags/audio/ags_channel.c:1254:5: warning: passing argument 2 of ‘ags_channel_add_recall’ from incompatible pointer type
+     recall_channel_run_dummy,
+     ^
+src/ags/audio/ags_channel.c:1064:1: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsRecallChannelRunDummy *’
+ ags_channel_add_recall(AgsChannel *channel, GObject *recall, gboolean play)
+ ^
+src/ags/audio/ags_channel.c:1269:33: warning: passing argument 1 of ‘ags_recall_duplicate’ from incompatible pointer type
+  current = ags_recall_duplicate(recall_channel_run_dummy, recall_id->data);
+                                 ^
+In file included from ./src/ags/audio/ags_channel.h:26:0,
+                 from src/ags/audio/ags_channel.c:19:
+./src/ags/audio/ags_recall.h:182:12: note: expected ‘struct AgsRecall *’ but argument is of type ‘struct AgsRecallChannelRunDummy *’
+ AgsRecall* ags_recall_duplicate(AgsRecall *recall,
+            ^
+src/ags/audio/ags_channel.c:1119:22: warning: unused variable ‘plugin_descriptor’ [-Wunused-variable]
+   LADSPA_Descriptor *plugin_descriptor;
+                      ^
+src/ags/audio/ags_channel.c:1118:30: warning: unused variable ‘ladspa_descriptor’ [-Wunused-variable]
+   LADSPA_Descriptor_Function ladspa_descriptor;
+                              ^
+src/ags/audio/ags_channel.c:1117:9: warning: unused variable ‘plugin_so’ [-Wunused-variable]
+   void *plugin_so;
+         ^
+src/ags/audio/ags_channel.c:1113:17: warning: unused variable ‘add_recall’ [-Wunused-variable]
+   AgsAddRecall *add_recall;
+                 ^
+src/ags/audio/ags_channel.c:1112:26: warning: unused variable ‘add_recall_container’ [-Wunused-variable]
+   AgsAddRecallContainer *add_recall_container;
+                          ^
+src/ags/audio/ags_channel.c:1111:20: warning: variable ‘ladspa_plugin’ set but not used [-Wunused-but-set-variable]
+   AgsLadspaPlugin *ladspa_plugin;
+                    ^
+src/ags/audio/ags_channel.c: In function ‘ags_channel_add_lv2_effect’:
+src/ags/audio/ags_channel.c:1328:3: error: unknown type name ‘uint32_T’
+   uint32_T effect_index;
+   ^
+src/ags/audio/ags_channel.c:1330:3: warning: implicit declaration of function ‘ags_lv2_manager_effect_index’ [-Wimplicit-function-declaration]
+   effect_index = ags_lv2_manager_effect_index(filename,
+   ^
+src/ags/audio/ags_channel.c:1339:8: warning: passing argument 2 of ‘ags_channel_add_recall_container’ from incompatible pointer type
+        recall_container);
+        ^
+src/ags/audio/ags_channel.c:996:1: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsRecallContainer *’
+ ags_channel_add_recall_container(AgsChannel *channel, GObject *container)
+ ^
+src/ags/audio/ags_channel.c:1352:5: warning: passing argument 2 of ‘ags_channel_add_recall’ from incompatible pointer type
+     recall_lv2,
+     ^
+src/ags/audio/ags_channel.c:1064:1: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsRecallLv2 *’
+ ags_channel_add_recall(AgsChannel *channel, GObject *recall, gboolean play)
+ ^
+src/ags/audio/ags_channel.c:1356:3: warning: implicit declaration of function ‘ags_recall_lv2_load’ [-Wimplicit-function-declaration]
+   ags_recall_lv2_load(recall_lv2);
+   ^
+src/ags/audio/ags_channel.c:1370:5: warning: passing argument 2 of ‘ags_channel_add_recall’ from incompatible pointer type
+     recall_channel_run_dummy,
+     ^
+src/ags/audio/ags_channel.c:1064:1: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsRecallChannelRunDummy *’
+ ags_channel_add_recall(AgsChannel *channel, GObject *recall, gboolean play)
+ ^
+src/ags/audio/ags_channel.c:1386:33: warning: passing argument 1 of ‘ags_recall_duplicate’ from incompatible pointer type
+  current = ags_recall_duplicate(recall_channel_run_dummy, recall_id->data);
+                                 ^
+In file included from ./src/ags/audio/ags_channel.h:26:0,
+                 from src/ags/audio/ags_channel.c:19:
+./src/ags/audio/ags_recall.h:182:12: note: expected ‘struct AgsRecall *’ but argument is of type ‘struct AgsRecallChannelRunDummy *’
+ AgsRecall* ags_recall_duplicate(AgsRecall *recall,
+            ^
+src/ags/audio/ags_channel.c:1428:8: warning: passing argument 2 of ‘ags_channel_add_recall_container’ from incompatible pointer type
+        recall_container);
+        ^
+src/ags/audio/ags_channel.c:996:1: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsRecallContainer *’
+ ags_channel_add_recall_container(AgsChannel *channel, GObject *container)
+ ^
+src/ags/audio/ags_channel.c:1440:5: warning: passing argument 2 of ‘ags_channel_add_recall’ from incompatible pointer type
+     recall_lv2,
+     ^
+src/ags/audio/ags_channel.c:1064:1: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsRecallLv2 *’
+ ags_channel_add_recall(AgsChannel *channel, GObject *recall, gboolean play)
+ ^
+src/ags/audio/ags_channel.c:1462:5: warning: passing argument 2 of ‘ags_channel_add_recall’ from incompatible pointer type
+     recall_channel_run_dummy,
+     ^
+src/ags/audio/ags_channel.c:1064:1: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsRecallChannelRunDummy *’
+ ags_channel_add_recall(AgsChannel *channel, GObject *recall, gboolean play)
+ ^
+src/ags/audio/ags_channel.c:1477:33: warning: passing argument 1 of ‘ags_recall_duplicate’ from incompatible pointer type
+  current = ags_recall_duplicate(recall_channel_run_dummy, recall_id->data);
+                                 ^
+In file included from ./src/ags/audio/ags_channel.h:26:0,
+                 from src/ags/audio/ags_channel.c:19:
+./src/ags/audio/ags_recall.h:182:12: note: expected ‘struct AgsRecall *’ but argument is of type ‘struct AgsRecallChannelRunDummy *’
+ AgsRecall* ags_recall_duplicate(AgsRecall *recall,
+            ^
+src/ags/audio/ags_channel.c:1327:19: warning: unused variable ‘plugin_descriptor’ [-Wunused-variable]
+   LV2_Descriptor *plugin_descriptor;
+                   ^
+src/ags/audio/ags_channel.c:1326:27: warning: unused variable ‘lv2_descriptor’ [-Wunused-variable]
+   LV2_Descriptor_Function lv2_descriptor;
+                           ^
+src/ags/audio/ags_channel.c:1325:9: warning: unused variable ‘plugin_so’ [-Wunused-variable]
+   void *plugin_so;
+         ^
+src/ags/audio/ags_channel.c:1321:17: warning: unused variable ‘add_recall’ [-Wunused-variable]
+   AgsAddRecall *add_recall;
+                 ^
+src/ags/audio/ags_channel.c:1320:26: warning: unused variable ‘add_recall_container’ [-Wunused-variable]
+   AgsAddRecallContainer *add_recall_container;
+                          ^
+src/ags/audio/ags_channel.c: In function ‘ags_channel_real_add_effect’:
+src/ags/audio/ags_channel.c:1534:5: warning: implicit declaration of function ‘ags_channel_add_ladspa_plugin’ [-Wimplicit-function-declaration]
+     port = ags_channel_add_ladspa_plugin(channel,
+     ^
+src/ags/audio/ags_channel.c:1534:10: warning: assignment makes pointer from integer without a cast
+     port = ags_channel_add_ladspa_plugin(channel,
+          ^
+src/ags/audio/ags_channel.c:1538:5: warning: implicit declaration of function ‘ags_ladspa_manager_find_lv2_plugin’ [-Wimplicit-function-declaration]
+     lv2_plugin = ags_ladspa_manager_find_lv2_plugin(filename);
+     ^
+src/ags/audio/ags_channel.c:1538:16: warning: assignment makes pointer from integer without a cast
+     lv2_plugin = ags_ladspa_manager_find_lv2_plugin(filename);
+                ^
+src/ags/audio/ags_channel.c:1541:7: warning: implicit declaration of function ‘ags_channel_add_lv2_plugin’ [-Wimplicit-function-declaration]
+       port = ags_channel_add_lv2_plugin(channel,
+       ^
+src/ags/audio/ags_channel.c:1541:12: warning: assignment makes pointer from integer without a cast
+       port = ags_channel_add_lv2_plugin(channel,
+            ^
+src/ags/audio/ags_channel.c: In function ‘ags_channel_real_remove_effect’:
+src/ags/audio/ags_channel.c:1586:13: warning: assignment from incompatible pointer type
+   main_loop = application_context->main_loop;
+             ^
+src/ags/audio/ags_channel.c:1599:41: warning: passing argument 1 of ‘ags_remove_recall_new’ from incompatible pointer type
+   remove_recall = ags_remove_recall_new(channel,
+                                         ^
+In file included from src/ags/audio/ags_channel.c:65:0:
+./src/ags/audio/task/ags_remove_recall.h:57:18: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsChannel *’
+ AgsRemoveRecall* ags_remove_recall_new(GObject *context,
+                  ^
+src/ags/audio/ags_channel.c:1607:41: warning: passing argument 1 of ‘ags_remove_recall_new’ from incompatible pointer type
+   remove_recall = ags_remove_recall_new(channel,
+                                         ^
+In file included from src/ags/audio/ags_channel.c:65:0:
+./src/ags/audio/task/ags_remove_recall.h:57:18: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsChannel *’
+ AgsRemoveRecall* ags_remove_recall_new(GObject *context,
+                  ^
+In file included from ./src/ags/audio/ags_channel.h:26:0,
+                 from src/ags/audio/ags_channel.c:19:
+./src/ags/audio/ags_recall.h:30:40: warning: passing argument 2 of ‘ags_remove_recall_container_new’ from incompatible pointer type
+ #define AGS_RECALL(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_RECALL, AgsRecall))
+                                        ^
+src/ags/audio/ags_channel.c:1616:12: note: in expansion of macro ‘AGS_RECALL’
+            AGS_RECALL(g_list_nth(play_ladspa,
+            ^
+In file included from src/ags/audio/ags_channel.c:66:0:
+./src/ags/audio/task/ags_remove_recall_container.h:55:27: note: expected ‘struct AgsRecallContainer *’ but argument is of type ‘struct GObject *’
+ AgsRemoveRecallContainer* ags_remove_recall_container_new(GObject *audio,
+                           ^
+src/ags/audio/ags_channel.c:1622:41: warning: passing argument 1 of ‘ags_remove_recall_new’ from incompatible pointer type
+   remove_recall = ags_remove_recall_new(channel,
+                                         ^
+In file included from src/ags/audio/ags_channel.c:65:0:
+./src/ags/audio/task/ags_remove_recall.h:57:18: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsChannel *’
+ AgsRemoveRecall* ags_remove_recall_new(GObject *context,
+                  ^
+src/ags/audio/ags_channel.c:1630:41: warning: passing argument 1 of ‘ags_remove_recall_new’ from incompatible pointer type
+   remove_recall = ags_remove_recall_new(channel,
+                                         ^
+In file included from src/ags/audio/ags_channel.c:65:0:
+./src/ags/audio/task/ags_remove_recall.h:57:18: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsChannel *’
+ AgsRemoveRecall* ags_remove_recall_new(GObject *context,
+                  ^
+In file included from ./src/ags/audio/ags_channel.h:26:0,
+                 from src/ags/audio/ags_channel.c:19:
+./src/ags/audio/ags_recall.h:30:40: warning: passing argument 2 of ‘ags_remove_recall_container_new’ from incompatible pointer type
+ #define AGS_RECALL(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_RECALL, AgsRecall))
+                                        ^
+src/ags/audio/ags_channel.c:1639:12: note: in expansion of macro ‘AGS_RECALL’
+            AGS_RECALL(g_list_nth(recall_ladspa,
+            ^
+In file included from src/ags/audio/ags_channel.c:66:0:
+./src/ags/audio/task/ags_remove_recall_container.h:55:27: note: expected ‘struct AgsRecallContainer *’ but argument is of type ‘struct GObject *’
+ AgsRemoveRecallContainer* ags_remove_recall_container_new(GObject *audio,
+                           ^
+src/ags/audio/ags_channel.c: In function ‘ags_channel_set_recycling_recursive_input’:
+src/ags/audio/ags_channel.c:1953:9: warning: suggest explicit braces to avoid ambiguous ‘else’ [-Wparentheses]
+       if(!replace_first)
+         ^
+src/ags/audio/ags_channel.c: In function ‘ags_channel_set_recycling’:
+src/ags/audio/ags_channel.c:2338:9: warning: passing argument 2 of ‘ags_audio_add_recycling_context’ from incompatible pointer type
+         recycling_context);
+         ^
+In file included from src/ags/audio/ags_channel.c:39:0:
+./src/ags/audio/ags_audio.h:134:6: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsRecyclingContext *’
+ void ags_audio_add_recycling_context(AgsAudio *audio, GObject *recycling_context);
+      ^
+src/ags/audio/ags_channel.c: In function ‘ags_channel_recursive_reset_recycling_context’:
+src/ags/audio/ags_channel.c:2382:9: warning: unused variable ‘length’ [-Wunused-variable]
+   guint length;
+         ^
+src/ags/audio/ags_channel.c: In function ‘ags_channel_recursive_play_input_sync_threaded’:
+src/ags/audio/ags_channel.c:2775:15: warning: variable ‘audio’ set but not used [-Wunused-but-set-variable]
+     AgsAudio *audio;
+               ^
+src/ags/audio/ags_channel.c: In function ‘ags_channel_recursive_play_input_async_threaded’:
+src/ags/audio/ags_channel.c:2821:15: warning: unused variable ‘audio’ [-Wunused-variable]
+     AgsAudio *audio;
+               ^
+src/ags/audio/ags_channel.c: In function ‘ags_channel_recursive_play_down’:
+src/ags/audio/ags_channel.c:3309:28: warning: unused variable ‘recycling_context’ [-Wunused-variable]
+       AgsRecyclingContext *recycling_context;
+                            ^
+src/ags/audio/ags_channel.c:3308:19: warning: variable ‘input’ set but not used [-Wunused-but-set-variable]
+       AgsChannel *input;
+                   ^
+src/ags/audio/ags_channel.c: In function ‘ags_channel_duplicate_recall’:
+src/ags/audio/ags_channel.c:3406:13: warning: variable ‘audio’ set but not used [-Wunused-but-set-variable]
+   AgsAudio *audio;
+             ^
+src/ags/audio/ags_channel.c: In function ‘ags_channel_recursive_play_init_arrange_recall_id_up’:
+src/ags/audio/ags_channel.c:3637:7: warning: ‘return’ with no value, in function returning non-void
+       return;
+       ^
+src/ags/audio/ags_channel.c:3695:10: warning: passing argument 2 of ‘ags_audio_add_recall_id’ from incompatible pointer type
+          audio_recall_id);
+          ^
+In file included from src/ags/audio/ags_channel.c:39:0:
+./src/ags/audio/ags_audio.h:131:6: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsRecallID *’
+ void ags_audio_add_recall_id(AgsAudio *audio, GObject *recall_id);
+      ^
+src/ags/audio/ags_channel.c:3787:5: warning: passing argument 2 of ‘ags_channel_add_recall_id’ from incompatible pointer type
+     (GObject *) recall_id);
+     ^
+src/ags/audio/ags_channel.c:953:1: note: expected ‘struct AgsRecallID *’ but argument is of type ‘struct GObject *’
+ ags_channel_add_recall_id(AgsChannel *channel, AgsRecallID *recall_id)
+ ^
+src/ags/audio/ags_channel.c:3842:7: warning: passing argument 2 of ‘ags_channel_add_recall_id’ from incompatible pointer type
+       (GObject *) recall_id);
+       ^
+src/ags/audio/ags_channel.c:953:1: note: expected ‘struct AgsRecallID *’ but argument is of type ‘struct GObject *’
+ ags_channel_add_recall_id(AgsChannel *channel, AgsRecallID *recall_id)
+ ^
+src/ags/audio/ags_channel.c: In function ‘ags_channel_recursive_play_init_arrange_recall_id_down_input’:
+src/ags/audio/ags_channel.c:3907:7: warning: passing argument 2 of ‘ags_channel_add_recall_id’ from incompatible pointer type
+       (GObject *) input_recall_id);
+       ^
+src/ags/audio/ags_channel.c:953:1: note: expected ‘struct AgsRecallID *’ but argument is of type ‘struct GObject *’
+ ags_channel_add_recall_id(AgsChannel *channel, AgsRecallID *recall_id)
+ ^
+src/ags/audio/ags_channel.c:3944:5: warning: passing argument 2 of ‘ags_channel_add_recall_id’ from incompatible pointer type
+     (GObject *) input_recall_id);
+     ^
+src/ags/audio/ags_channel.c:953:1: note: expected ‘struct AgsRecallID *’ but argument is of type ‘struct GObject *’
+ ags_channel_add_recall_id(AgsChannel *channel, AgsRecallID *recall_id)
+ ^
+src/ags/audio/ags_channel.c:3881:26: warning: unused variable ‘recycling_context’ [-Wunused-variable]
+     AgsRecyclingContext *recycling_context;
+                          ^
+src/ags/audio/ags_channel.c: In function ‘ags_channel_recursive_play_init_arrange_recall_id_down’:
+src/ags/audio/ags_channel.c:3983:7: warning: ‘return’ with no value, in function returning non-void
+       return;
+       ^
+src/ags/audio/ags_channel.c:4033:5: warning: passing argument 2 of ‘ags_channel_add_recall_id’ from incompatible pointer type
+     (GObject *) output_recall_id);
+     ^
+src/ags/audio/ags_channel.c:953:1: note: expected ‘struct AgsRecallID *’ but argument is of type ‘struct GObject *’
+ ags_channel_add_recall_id(AgsChannel *channel, AgsRecallID *recall_id)
+ ^
+src/ags/audio/ags_channel.c: In function ‘ags_channel_recursive_play_init_duplicate_down’:
+src/ags/audio/ags_channel.c:4323:19: warning: variable ‘input’ set but not used [-Wunused-but-set-variable]
+       AgsChannel *input;
+                   ^
+src/ags/audio/ags_channel.c: In function ‘ags_channel_recursive_play_init_resolve_down’:
+src/ags/audio/ags_channel.c:4524:17: warning: variable ‘input’ set but not used [-Wunused-but-set-variable]
+     AgsChannel *input;
+                 ^
+src/ags/audio/ags_channel.c: In function ‘ags_channel_recursive_play_init_down’:
+src/ags/audio/ags_channel.c:4738:17: warning: variable ‘input’ set but not used [-Wunused-but-set-variable]
+     AgsChannel *input;
+                 ^
+src/ags/audio/ags_channel.c: In function ‘ags_channel_recursive_play_init’:
+src/ags/audio/ags_channel.c:4867:9: warning: passing argument 2 of ‘ags_recall_id_add’ from incompatible pointer type
+         (GObject *) default_recall_id);
+         ^
+In file included from ./src/ags/audio/ags_channel.h:25:0,
+                 from src/ags/audio/ags_channel.c:19:
+./src/ags/audio/ags_recall_id.h:79:8: note: expected ‘struct AgsRecallID *’ but argument is of type ‘struct GObject *’
+ GList* ags_recall_id_add(GList *recall_id_list,
+        ^
+src/ags/audio/ags_channel.c:4893:9: warning: passing argument 2 of ‘ags_recall_id_add’ from incompatible pointer type
+         (GObject *) recall_id);
+         ^
+In file included from ./src/ags/audio/ags_channel.h:25:0,
+                 from src/ags/audio/ags_channel.c:19:
+./src/ags/audio/ags_recall_id.h:79:8: note: expected ‘struct AgsRecallID *’ but argument is of type ‘struct GObject *’
+ GList* ags_recall_id_add(GList *recall_id_list,
+        ^
+src/ags/audio/ags_channel.c:4915:18: warning: variable ‘next_recall_id’ set but not used [-Wunused-but-set-variable]
+     AgsRecallID *next_recall_id;
+                  ^
+src/ags/audio/ags_channel.c:4936:19: warning: variable ‘input’ set but not used [-Wunused-but-set-variable]
+       AgsChannel *input;
+                   ^
+src/ags/audio/ags_channel.c: In function ‘ags_channel_remove’:
+src/ags/audio/ags_channel.c:5086:10: warning: passing argument 2 of ‘ags_channel_remove_recall’ from incompatible pointer type
+          recall,
+          ^
+src/ags/audio/ags_channel.c:1038:1: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsRecall *’
+ ags_channel_remove_recall(AgsChannel *channel, GObject *recall, gboolean play)
+ ^
+src/ags/audio/ags_channel.c: In function ‘ags_channel_tillrecycling_cancel_down’:
+src/ags/audio/ags_channel.c:5356:28: warning: unused variable ‘recycling_context’ [-Wunused-variable]
+       AgsRecyclingContext *recycling_context;
+                            ^
+src/ags/audio/ags_channel.c:5355:19: warning: variable ‘input’ set but not used [-Wunused-but-set-variable]
+       AgsChannel *input;
+                   ^
+src/ags/audio/ags_channel.c: In function ‘ags_channel_tillrecycling_cancel’:
+src/ags/audio/ags_channel.c:5402:9: warning: assignment from incompatible pointer type
+   audio = channel->audio;
+         ^
+src/ags/audio/ags_channel.c:5160:34: warning: unused variable ‘default_recall_id’ [-Wunused-variable]
+   AgsRecallID *audio_recall_id, *default_recall_id;
+                                  ^
+src/ags/audio/ags_channel.c:5160:16: warning: unused variable ‘audio_recall_id’ [-Wunused-variable]
+   AgsRecallID *audio_recall_id, *default_recall_id;
+                ^
+src/ags/audio/ags_channel.c:5159:13: warning: variable ‘audio’ set but not used [-Wunused-but-set-variable]
+   AgsAudio *audio;
+             ^
+src/ags/audio/ags_channel.c: In function ‘ags_audio_reset_recall_id’:
+src/ags/audio/ags_channel.c:5537:10: warning: unused variable ‘i’ [-Wunused-variable]
+     gint i;
+          ^
+src/ags/audio/ags_channel.c:5536:10: warning: unused variable ‘recycling_length’ [-Wunused-variable]
+     gint recycling_length;
+          ^
+src/ags/audio/ags_channel.c:5535:19: warning: unused variable ‘recycling’ [-Wunused-variable]
+     AgsRecycling *recycling;
+                   ^
+src/ags/audio/ags_channel.c: In function ‘ags_channel_reset_recall_id’:
+src/ags/audio/ags_channel.c:5670:11: warning: assignment from incompatible pointer type
+     audio = channel->audio;
+           ^
+src/ags/audio/ags_channel.c:5713:7: warning: passing argument 2 of ‘ags_channel_add_recall_id’ from incompatible pointer type
+       (GObject *) recall_id);
+       ^
+src/ags/audio/ags_channel.c:953:1: note: expected ‘struct AgsRecallID *’ but argument is of type ‘struct GObject *’
+ ags_channel_add_recall_id(AgsChannel *channel, AgsRecallID *recall_id)
+ ^
+src/ags/audio/ags_channel.c:5740:7: warning: passing argument 2 of ‘ags_channel_add_recall_id’ from incompatible pointer type
+       (GObject *) recall_id);
+       ^
+src/ags/audio/ags_channel.c:953:1: note: expected ‘struct AgsRecallID *’ but argument is of type ‘struct GObject *’
+ ags_channel_add_recall_id(AgsChannel *channel, AgsRecallID *recall_id)
+ ^
+src/ags/audio/ags_channel.c:5767:7: warning: passing argument 2 of ‘ags_channel_add_recall_id’ from incompatible pointer type
+       (GObject *) recall_id);
+       ^
+src/ags/audio/ags_channel.c:953:1: note: expected ‘struct AgsRecallID *’ but argument is of type ‘struct GObject *’
+ ags_channel_add_recall_id(AgsChannel *channel, AgsRecallID *recall_id)
+ ^
+src/ags/audio/ags_channel.c:5662:15: warning: variable ‘audio’ set but not used [-Wunused-but-set-variable]
+     AgsAudio *audio;
+               ^
+src/ags/audio/ags_channel.c: In function ‘ags_channel_recursive_reset_channel_init_recall’:
+src/ags/audio/ags_channel.c:5864:15: warning: unused variable ‘audio’ [-Wunused-variable]
+     AgsAudio *audio;
+               ^
+src/ags/audio/ags_channel.c: In function ‘ags_channel_tillrecycling_collect_playback_down_input’:
+src/ags/audio/ags_channel.c:5908:73: warning: pointer type mismatch in conditional expression
+       (collect_recall_id ? AGS_PLAYBACK(current->playback)->recall_id[0]: current->playback));
+                                                                         ^
+src/ags/audio/ags_channel.c:5918:73: warning: pointer type mismatch in conditional expression
+       (collect_recall_id ? AGS_PLAYBACK(current->playback)->recall_id[1]: current->playback));
+                                                                         ^
+src/ags/audio/ags_channel.c:5928:73: warning: pointer type mismatch in conditional expression
+       (collect_recall_id ? AGS_PLAYBACK(current->playback)->recall_id[2]: current->playback));
+                                                                         ^
+src/ags/audio/ags_channel.c:5950:71: warning: pointer type mismatch in conditional expression
+     (collect_recall_id ? AGS_PLAYBACK(current->playback)->recall_id[0]: current->playback));
+                                                                       ^
+src/ags/audio/ags_channel.c:5960:71: warning: pointer type mismatch in conditional expression
+     (collect_recall_id ? AGS_PLAYBACK(current->playback)->recall_id[1]: current->playback));
+                                                                       ^
+src/ags/audio/ags_channel.c:5970:71: warning: pointer type mismatch in conditional expression
+     (collect_recall_id ? AGS_PLAYBACK(current->playback)->recall_id[2]: current->playback));
+                                                                       ^
+src/ags/audio/ags_channel.c: In function ‘ags_channel_tillrecycling_collect_playback_down’:
+src/ags/audio/ags_channel.c:6001:76: warning: pointer type mismatch in conditional expression
+          (collect_recall_id ? AGS_PLAYBACK(current->playback)->recall_id[0]: current->playback));
+                                                                            ^
+src/ags/audio/ags_channel.c:6011:76: warning: pointer type mismatch in conditional expression
+          (collect_recall_id ? AGS_PLAYBACK(current->playback)->recall_id[1]: current->playback));
+                                                                            ^
+src/ags/audio/ags_channel.c:6021:76: warning: pointer type mismatch in conditional expression
+          (collect_recall_id ? AGS_PLAYBACK(current->playback)->recall_id[2]: current->playback));
+                                                                            ^
+src/ags/audio/ags_channel.c: In function ‘ags_channel_recursive_collect_playback_up’:
+src/ags/audio/ags_channel.c:6066:71: warning: pointer type mismatch in conditional expression
+     (collect_recall_id ? AGS_PLAYBACK(current->playback)->recall_id[0]: current->playback));
+                                                                       ^
+src/ags/audio/ags_channel.c:6076:71: warning: pointer type mismatch in conditional expression
+     (collect_recall_id ? AGS_PLAYBACK(current->playback)->recall_id[1]: current->playback));
+                                                                       ^
+src/ags/audio/ags_channel.c:6086:71: warning: pointer type mismatch in conditional expression
+     (collect_recall_id ? AGS_PLAYBACK(current->playback)->recall_id[2]: current->playback));
+                                                                       ^
+src/ags/audio/ags_channel.c:6113:71: warning: pointer type mismatch in conditional expression
+     (collect_recall_id ? AGS_PLAYBACK(current->playback)->recall_id[0]: current->playback));
+                                                                       ^
+src/ags/audio/ags_channel.c:6123:71: warning: pointer type mismatch in conditional expression
+     (collect_recall_id ? AGS_PLAYBACK(current->playback)->recall_id[1]: current->playback));
+                                                                       ^
+src/ags/audio/ags_channel.c:6133:71: warning: pointer type mismatch in conditional expression
+     (collect_recall_id ? AGS_PLAYBACK(current->playback)->recall_id[2]: current->playback));
+                                                                       ^
+src/ags/audio/ags_channel.c: In function ‘ags_channel_recursive_reset_recall_ids’:
+src/ags/audio/ags_channel.c:7259:20: warning: suggest parentheses around ‘&&’ within ‘||’ [-Wparentheses]
+   if((link != NULL && (AGS_IS_OUTPUT(link)) ||
+                    ^
+src/ags/audio/ags_channel.c:5449:10: warning: unused variable ‘list’ [-Wunused-variable]
+   GList *list;
+          ^
+src/ags/audio/ags_channel.c:5448:10: warning: unused variable ‘parent’ [-Wunused-variable]
+   GList *parent;
+          ^
+src/ags/audio/ags_channel.c:5444:24: warning: unused variable ‘recycling_context’ [-Wunused-variable]
+   AgsRecyclingContext *recycling_context;
+                        ^
+src/ags/audio/ags_channel.c: In function ‘ags_channel_recall_id_set’:
+src/ags/audio/ags_channel.c:7383:9: warning: variable ‘key’ set but not used [-Wunused-but-set-variable]
+   char *key;
+         ^
+make[2]: *** [libags_audio_a-ags_channel.o] Error 1
+make[1]: *** [all-recursive] Error 1
+make: *** [all] Error 2

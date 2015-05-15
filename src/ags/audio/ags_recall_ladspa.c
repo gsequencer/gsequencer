@@ -726,7 +726,7 @@ ags_recall_ladspa_float_to_short(float *buffer,
 }
 
 /**
- * ags_recall_ladpsa_find:
+ * ags_recall_ladspa_find:
  * @recall: a #GList containing #AgsRecall
  * @filename: plugin filename
  * @effect: effect's name
@@ -738,7 +738,7 @@ ags_recall_ladspa_float_to_short(float *buffer,
  * Since: 0.4.2
  */
 GList*
-ags_recall_ladpsa_find(GList *recall,
+ags_recall_ladspa_find(GList *recall,
 		       gchar *filename, gchar *effect)
 {
   while(recall != NULL){

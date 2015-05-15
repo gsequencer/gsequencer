@@ -21,6 +21,7 @@
 #include <ags/main.h>
 
 #include <ags/plugin/ags_ladspa_manager.h>
+#include <ags/plugin/ags_lv2_manager.h>
 
 #include <ags/object/ags_plugin.h>
 
@@ -45,6 +46,8 @@
 #include <ags/X/ags_line_member.h>
 #include <ags/X/ags_machine_editor.h>
 #include <ags/X/ags_line_editor.h>
+#include <ags/X/ags_lv2_browser.h>
+#include <ags/X/ags_ladspa_browser.h>
 
 #include <dlfcn.h>
 #include <stdio.h>

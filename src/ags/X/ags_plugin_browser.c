@@ -277,9 +277,9 @@ gchar*
 ags_plugin_browser_get_plugin_filename(AgsPluginBrowser *plugin_browser)
 {
   if(AGS_IS_LV2_BROWSER(plugin_browser->active_browser)){
-    return(ags_lv2_browser_get_plugin_filename(plugin_browser));
+    return(ags_lv2_browser_get_plugin_filename(plugin_browser->lv2_browser));
   }else if(AGS_IS_LADSPA_BROWSER(plugin_browser->active_browser)){
-    return(ags_ladspa_browser_get_plugin_filename(plugin_browser));
+    return(ags_ladspa_browser_get_plugin_filename(plugin_browser->ladspa_browser));
   }else{
     return(NULL);
   }
@@ -298,9 +298,9 @@ gchar*
 ags_plugin_browser_get_plugin_effect(AgsPluginBrowser *plugin_browser)
 {
   if(AGS_IS_LV2_BROWSER(plugin_browser->active_browser)){
-    return(ags_lv2_browser_get_plugin_effect(plugin_browser));
+    return(ags_lv2_browser_get_plugin_effect(plugin_browser->lv2_browser));
   }else if(AGS_IS_LADSPA_BROWSER(plugin_browser->active_browser)){
-    return(ags_ladspa_browser_get_plugin_effect(plugin_browser));
+    return(ags_ladspa_browser_get_plugin_effect(plugin_browser->ladspa_browser));
   }else{
     return(NULL);
   }

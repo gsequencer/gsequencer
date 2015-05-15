@@ -407,6 +407,7 @@ ags_turtle_load(AgsTurtle *turtle)
   
   xmlNode* ags_turtle_load_read_verb()
   {
+    xmlNode *node;
     gchar *verb;
     gchar *start, *end;
     gboolean type_modifier;
