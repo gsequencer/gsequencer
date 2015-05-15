@@ -43,8 +43,6 @@ ags_lv2_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
 
   GList *list;
   GList *node_list;
-
-  g_message("DDD\0");
   
   list = gtk_container_get_children(GTK_CONTAINER(lv2_browser->plugin));
 
@@ -56,17 +54,16 @@ ags_lv2_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
   lv2_plugin = ags_lv2_manager_find_lv2_plugin(gtk_combo_box_text_get_active_text(filename));
 
   if(lv2_plugin == NULL){
-    g_message("BBB\0");
     return;
   }
-  
+
   node_list = ags_turtle_find_xpath(lv2_plugin->turtle,
-				    "//rdf-triple/rdf-verb[@has_type=\"true\"]/rdf-list/rdf-value[1]\0");
-  
+				    "//rdf-triple/rdf-verb[@do=\"doap:name\"]//rdf-value[1]\0");
+
   while(node_list != NULL){
     gtk_combo_box_text_append_text(uri,
-				   g_strdup(xmlGetProp(((xmlNode *) node_list->data)->parent->parent->parent,
-						       "subject\0")));
+				   g_strdup(xmlGetProp(((xmlNode *) node_list->data),
+						       "value\0")));
     
     node_list = node_list->next;
   }
@@ -86,11 +83,12 @@ ags_lv2_browser_plugin_uri_callback(GtkComboBoxText *combo_box,
   AgsLv2Plugin *lv2_plugin;
 
   GList *project_node, *name_node, *license_node;
-  GList *port_name_node;
+  GList *port_type_node, *port_name_node;
   GList *list, *list_start, *child, *child_start;
 
   gchar *uri_str;
   gchar *str, *tmp;
+  gchar *port_type_0, *port_type_1;
   guint port_count;
   guint y;
   guint i;
@@ -113,23 +111,17 @@ ags_lv2_browser_plugin_uri_callback(GtkComboBoxText *combo_box,
   uri_str = gtk_combo_box_text_get_active_text(uri);
 
   if(uri_str != NULL){
-    str = g_strdup_printf("//rdf-triple[@subject=\"%s\"]/rdf-verb[@do=\"lv2:project\"]/rdf-list/rdf-value[1]\0",
-			  uri_str);
+    str = "//rdf-triple/rdf-verb[@do=\"lv2:project\"]/rdf-list/rdf-value[1]\0";
     project_node = ags_turtle_find_xpath(lv2_plugin->turtle,
 					 str);
-    free(str);
 
-    str = g_strdup_printf("//rdf-triple[@subject=\"%s\"]/rdf-verb[@do=\"doap:name\"]/rdf-list/rdf-value[1]\0",
-			  uri_str);
+    str = "//rdf-triple/rdf-verb[@do=\"doap:name\"]/rdf-list/rdf-value[1]\0";
     name_node = ags_turtle_find_xpath(lv2_plugin->turtle,
 				      str);
-    free(str);
 
-    str = g_strdup_printf("//rdf-triple[@subject=\"%s\"]/rdf-verb[@do=\"doap:license\"]/rdf-list/rdf-value[1]\0",
-			  uri_str);
+    str = "//rdf-triple/rdf-verb[@do=\"doap:license\"]/rdf-list/rdf-value[1]\0";
     license_node = ags_turtle_find_xpath(lv2_plugin->turtle,
 					 str);
-    free(str);
     
     /* update ui - reading plugin file */
     label = GTK_LABEL(list->data);
@@ -155,11 +147,13 @@ ags_lv2_browser_plugin_uri_callback(GtkComboBoxText *combo_box,
 					      "value\0"),
 				   NULL));
 
-    str = g_strdup_printf("//rdf-triple[@subject=\"%s\"]//rdf-triple[@subject=\"lv2:port\"]/rdf-verb[do=\"lv2:name\"]/rdf-list/rdf-value[1]\0",
-			  uri_str);
+    str = "//rdf-triple//rdf-triple[@subject=\"lv2:port\"]/rdf-verb[@has-type=\"true\"]/rdf-list/rdf-value\0";
+    port_type_node = ags_turtle_find_xpath(lv2_plugin->turtle,
+					   str);
+    
+    str = "//rdf-triple//rdf-triple[@subject=\"lv2:port\"]/rdf-verb[@do=\"lv2:name\"]/rdf-list/rdf-value[1]\0";
     port_name_node = ags_turtle_find_xpath(lv2_plugin->turtle,
 					   str);
-    free(str);
     
     port_count = g_list_length(port_name_node);
 
@@ -186,9 +180,26 @@ ags_lv2_browser_plugin_uri_callback(GtkComboBoxText *combo_box,
     g_list_free(child_start);
 
     for(i = 0, y = 0; i < port_count; i++){
+      port_type_0 = xmlGetProp(port_type_node->data,
+			       "value\0");
+      port_type_1 = xmlGetProp(port_type_node->next->data,
+			       "value\0");
+
+      if(g_ascii_strncasecmp(port_type_0,
+			     "lv2:ControlPort\0",
+			     15) &&
+	 g_ascii_strncasecmp(port_type_1,
+			     "lv2:ControlPort\0",
+			     15)){
+	port_type_node = port_type_node->next->next;
+	port_name_node = port_name_node->next;
+	
+	continue;
+      }
+      
       str = g_strdup(xmlGetProp(port_name_node->data,
 				"value\0"));
-
+      
       label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 					"xalign\0", 0.0,
 					"label\0", str,
@@ -204,6 +215,7 @@ ags_lv2_browser_plugin_uri_callback(GtkComboBoxText *combo_box,
 				y, y + 1);
 
       y++;
+      port_type_node = port_type_node->next->next;
       port_name_node = port_name_node->next;
     }
       

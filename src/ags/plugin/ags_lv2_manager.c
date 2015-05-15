@@ -380,6 +380,7 @@ ags_lv2_manager_load_default_directory()
   GDir *dir;
 
   gchar *path, *plugin_path;
+  gchar *str;
 
   GError *error;
 
@@ -445,10 +446,15 @@ ags_lv2_manager_load_default_directory()
 							  strlen(turtle_path) - 2)));
 	ags_turtle_load(turtle);
 	//	xmlSaveFormatFileEnc("-\0", turtle->doc, "UTF-8\0", 1);
-	
+
+	str = xmlGetProp(binary_list->data,
+			 "value\0");
+	str = g_strndup(&(str[1]),
+			strlen(str) - 2);
 	filename = g_strdup_printf("%s/%s\0",
 				   plugin_path,
-				   binary_list->data);
+				   str);
+	free(str);
 	
 	ags_lv2_manager_load_file(turtle,
 				  filename);

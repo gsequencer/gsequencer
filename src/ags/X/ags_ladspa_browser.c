@@ -142,11 +142,6 @@ ags_ladspa_browser_init(AgsLadspaBrowser *ladspa_browser)
 
   GList *list;
   gchar **filenames, **filenames_start;
-
-  g_object_set(ladspa_browser,
-	       "homogeneous\0", FALSE,
-	       "spacing\0", 0,
-	       NULL);
   
   /* plugin */
   ladspa_browser->plugin = (GtkHBox *) gtk_hbox_new(FALSE, 0);
@@ -451,6 +446,8 @@ ags_ladspa_browser_new()
   AgsLadspaBrowser *ladspa_browser;
 
   ladspa_browser = (AgsLadspaBrowser *) g_object_new(AGS_TYPE_LADSPA_BROWSER,
+						     "homogeneous\0", FALSE,
+						     "spacing\0", 0,
 						     NULL);
 
   return(ladspa_browser);

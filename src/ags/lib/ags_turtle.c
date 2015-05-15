@@ -195,8 +195,6 @@ ags_turtle_find_xpath(AgsTurtle *turtle,
   xpath_context = xmlXPathNewContext(turtle->doc);
   xpath_object = xmlXPathEval((xmlChar *) xpath,
 			      xpath_context);
-
-  //  xmlSaveFormatFileEnc("-\0", turtle->doc, "UTF-8\0", 1);
   
   list = NULL;
 

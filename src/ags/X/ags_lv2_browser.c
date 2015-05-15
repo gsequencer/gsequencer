@@ -142,15 +142,10 @@ ags_lv2_browser_init(AgsLv2Browser *lv2_browser)
 
   GList *list;
   gchar **filenames, **filenames_start;
-
-  g_object_set(lv2_browser,
-	       "homogeneous\0", FALSE,
-	       "spacing\0", 0,
-	       NULL);
   
   /* plugin */
   lv2_browser->plugin = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-  gtk_box_pack_start(GTK_BOX(lv2_browser),
+  gtk_box_pack_start((GtkBox *) lv2_browser,
 		     GTK_WIDGET(lv2_browser->plugin),
 		     FALSE, FALSE,
 		     0);
@@ -182,7 +177,7 @@ ags_lv2_browser_init(AgsLv2Browser *lv2_browser)
 
   //  free(filenames_start);
 
-  label = (GtkLabel *) gtk_label_new("uri: \0");
+  label = (GtkLabel *) gtk_label_new("effect: \0");
   gtk_box_pack_start(GTK_BOX(lv2_browser->plugin),
 		     GTK_WIDGET(label),
 		     FALSE, FALSE,
@@ -196,7 +191,7 @@ ags_lv2_browser_init(AgsLv2Browser *lv2_browser)
 
   /* description */
   lv2_browser->description = (GtkVBox *) gtk_vbox_new(FALSE, 0);
-  gtk_box_pack_start(GTK_BOX(lv2_browser),
+  gtk_box_pack_start((GtkBox *) lv2_browser,
 		     GTK_WIDGET(lv2_browser->description),
 		     FALSE, FALSE,
 		     0);
@@ -312,9 +307,14 @@ ags_lv2_browser_reset(AgsApplicable *applicable)
 gchar*
 ags_lv2_browser_get_plugin_filename(AgsLv2Browser *lv2_browser)
 {
-  //TODO:JK: implement me
+  GtkComboBoxText *filename;
+  GList *list;
 
-  return(NULL);
+  list = gtk_container_get_children(GTK_CONTAINER(lv2_browser->plugin));
+  filename = GTK_COMBO_BOX_TEXT(list->next->data);
+  g_list_free(list);
+
+  return(gtk_combo_box_text_get_active_text(filename));
 }
 
 /**
@@ -327,11 +327,22 @@ ags_lv2_browser_get_plugin_filename(AgsLv2Browser *lv2_browser)
  * Since: 0.4.2
  */
 gchar*
-ags_lv2_browser_get_plugin_uri(AgsLv2Browser *lv2_browser)
+ags_lv2_browser_get_plugin_effect(AgsLv2Browser *lv2_browser)
 {
-  //TODO:JK: implement me
+  GtkComboBoxText *filename, *effect;
+  AgsLv2Plugin *lv2_plugin;
+  GList *list, *list_start;
+  gchar *effect_name;
 
-  return(NULL);
+  /* retrieve filename and effect */
+  list_start = 
+    list = gtk_container_get_children(GTK_CONTAINER(lv2_browser->plugin));
+
+  filename = GTK_COMBO_BOX(list->next->data);
+  effect = GTK_COMBO_BOX(list->next->next->next->data);
+  effect_name = gtk_combo_box_text_get_active_text(effect);
+  
+  return(effect_name);
 }
 
 /**
@@ -392,6 +403,8 @@ ags_lv2_browser_new()
   AgsLv2Browser *lv2_browser;
 
   lv2_browser = (AgsLv2Browser *) g_object_new(AGS_TYPE_LV2_BROWSER,
+					       "homogeneous\0", FALSE,
+					       "spacing\0", 0,
 					       NULL);
 
   return(lv2_browser);

@@ -19,6 +19,21 @@
 #include <ags/X/ags_plugin_browser_callbacks.h>
 
 void
+ags_plugin_browser_plugin_type_changed_callback(GtkWidget *combo_box,
+						AgsPluginBrowser *plugin_browser)
+{
+  if(gtk_combo_box_get_active(combo_box) == 0){
+    plugin_browser->active_browser = plugin_browser->lv2_browser;
+    gtk_widget_show(plugin_browser->lv2_browser);
+    gtk_widget_hide(plugin_browser->ladspa_browser);
+  }else{
+    plugin_browser->active_browser = plugin_browser->ladspa_browser;
+    gtk_widget_show(plugin_browser->ladspa_browser);
+    gtk_widget_hide(plugin_browser->lv2_browser);
+  }
+}
+
+void
 ags_plugin_browser_ok_callback(GtkWidget *button,
 			       AgsPluginBrowser *plugin_browser)
 {
