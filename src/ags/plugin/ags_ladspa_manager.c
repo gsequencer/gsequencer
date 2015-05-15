@@ -241,6 +241,10 @@ ags_ladspa_manager_load_file(gchar *filename)
 
   static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
+  if(filename == NULL){
+    return;
+  }
+
   ladspa_manager = ags_ladspa_manager_get_instance();
 
   pthread_mutex_lock(&(mutex));

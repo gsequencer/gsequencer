@@ -240,6 +240,10 @@ ags_turtle_load(AgsTurtle *turtle)
     gchar  *subject;
     gchar *start, *look_ahead;
     guint current_level;
+
+    if(iter >= &(buffer[sb->st_size])){
+      return(NULL);
+    }
     
     start = iter;
     subject = ags_turtle_load_read_subject();
@@ -252,7 +256,7 @@ ags_turtle_load(AgsTurtle *turtle)
     current_level = nth_level;
     
   ags_turtle_load_read_triple_START:
-
+    
     /* skip whitespaces and comments */
     look_ahead = iter;
     
@@ -309,7 +313,7 @@ ags_turtle_load(AgsTurtle *turtle)
 	xmlAddChild(verb,
 		    value);
 
-	if((*iter == ';' || *iter == '[') && current_level == nth_level){
+	if((*iter == ';' || *iter == '[') && current_level == nth_level && iter < &(buffer[sb->st_size])){
 	  iter++;
 	  goto ags_turtle_load_read_triple_START;
 	}
@@ -336,7 +340,7 @@ ags_turtle_load(AgsTurtle *turtle)
 	xmlAddChild(node,
 		    child_node_list);
 
-	if((*iter == ';' || *iter == '[') && current_level == nth_level){
+	if((*iter == ';' || *iter == '[') && current_level == nth_level && iter < &(buffer[sb->st_size])){
 	  goto ags_turtle_load_read_triple_START;
 	}
       }
@@ -350,7 +354,7 @@ ags_turtle_load(AgsTurtle *turtle)
     gchar *subject;
     gchar *start, *end;
 
-    if(buffer[sb->st_size] <= iter){
+    if(iter >= &(buffer[sb->st_size])){
       return(NULL);
     }
     
@@ -358,7 +362,7 @@ ags_turtle_load(AgsTurtle *turtle)
     start = NULL;
     
     /* skip whitespaces and comments */
-    for(; *iter != '\0'; iter++){
+    for(; iter < &(buffer[sb->st_size]); iter++){
       if((buffer == iter && *buffer == '#') ||
 	 (buffer != iter && buffer[iter - buffer - 1] == '\n' && *iter == '#')){
 	iter = index(iter, '\n');
@@ -367,7 +371,6 @@ ags_turtle_load(AgsTurtle *turtle)
 
       /* skip line break */
       if(*iter == '.'){
-	iter++;
 	continue;
       }
 
@@ -494,7 +497,7 @@ ags_turtle_load(AgsTurtle *turtle)
       more_collection = FALSE;
       
       /* skip comments/spaces and read value */
-      for(; *iter != '\0'; iter++){
+      for(;  iter < &(buffer[sb->st_size]); iter++){
 	if((buffer == iter && *buffer == '#') ||
 	   (buffer[iter - buffer - 1] == '\n' && *iter == '#')){
 	  iter = index(iter, '\n');
@@ -519,7 +522,7 @@ ags_turtle_load(AgsTurtle *turtle)
       node = NULL;
       start = iter;
 	
-      if(*iter != '\0' && *iter != '.' && *iter != ';'){
+      if(iter < &(buffer[sb->st_size]) && *iter != '.' && *iter != ';'){
 	node = xmlNewNode(NULL, "rdf-value\0");
 	xmlAddChild(node_list,
 		    node);
@@ -531,13 +534,13 @@ ags_turtle_load(AgsTurtle *turtle)
 	end_literal = NULL;
 
 	/* read value */
-	for(; *iter != '\0'; iter++){
+	for(; iter < &(buffer[sb->st_size]); iter++){
 
 	  if(*iter == '"'){
 	    if(start_literal == NULL){
 	      start_literal = iter;
 
-	      if(iter[1] != '"' && iter[2] == '"'){
+	      if(iter[1] == '"' && iter[2] == '"'){
 		escaped_literal = TRUE;
 		iter += 2;
 	      }else{
@@ -545,7 +548,7 @@ ags_turtle_load(AgsTurtle *turtle)
 	      }
 	    }else{
 	      if(escaped_literal){
-		if(iter[1] != '"' && iter[2] == '"'){
+		if(iter[1] == '"' && iter[2] == '"'){
 		  end_literal = iter;
 		  iter += 2;
 		}
@@ -571,7 +574,7 @@ ags_turtle_load(AgsTurtle *turtle)
 			end - start);
 
 	/* skip and read value if needed */
-	for(; *iter != '\0'; iter++){
+	for(;  iter < &(buffer[sb->st_size]); iter++){
 	  if(*iter == '\n'){
 	    continue;
 	  }
@@ -611,7 +614,7 @@ ags_turtle_load(AgsTurtle *turtle)
 		   str);
 	g_message("value_str %s\0", str);
       }
-    }while(more_collection && *iter != '[');
+    }while(more_collection && *iter != '[' && iter < &(buffer[sb->st_size]));
     
     return(node_list);
   }
@@ -626,6 +629,11 @@ ags_turtle_load(AgsTurtle *turtle)
 	       "r\0");
   
   buffer = (gchar *) malloc((sb->st_size + 1) * sizeof(gchar));
+
+  if(buffer == NULL){
+    return;
+  }
+  
   fread(buffer, sizeof(gchar), sb->st_size, file);
   buffer[sb->st_size] = '\0';
   fclose(file);
@@ -645,7 +653,7 @@ ags_turtle_load(AgsTurtle *turtle)
       xmlAddChild(root_node,
 		  node);
     }
-  }while(node != NULL);
+  }while(node != NULL && iter < &(buffer[sb->st_size]));
   
   free(sb);
   free(buffer);
