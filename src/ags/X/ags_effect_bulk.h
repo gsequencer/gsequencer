@@ -71,7 +71,7 @@ struct _AgsEffectBulk
   GtkTable *table;
 
   GList *plugin;
-  GtkDialog *ladspa_browser;
+  GtkDialog *plugin_browser;
 };
 
 struct _AgsEffectBulkClass

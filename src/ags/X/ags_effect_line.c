@@ -752,12 +752,12 @@ ags_effect_line_add_lv2_effect(AgsEffectLine *effect_line,
       recall_port = recall_port->next;
 
 
-      port_name_node = port_name_node->next;
       port_default_node = port_default_node->next;
       port_min_node = port_min_node->next;
       port_max_node = port_max_node->next;
     }
 
+    port_name_node = port_name_node->next;
     port_type_node = port_type_node->next->next;
   }
   
@@ -769,6 +769,30 @@ ags_effect_line_real_add_effect(AgsEffectLine *effect_line,
 				gchar *filename,
 				gchar *effect)
 {
+  AgsLadspaPlugin *ladspa_plugin;
+  AgsLv2Plugin *lv2_plugin;
+  
+  GList *port;
+
+  /* load plugin */
+  ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(filename);
+  port = NULL;
+  
+  if(ladspa_plugin != NULL){
+    port = ags_effect_line_add_ladspa_effect(effect_line,
+					     filename,
+					     effect);
+  }else{
+    lv2_plugin = ags_lv2_manager_find_lv2_plugin(filename);
+    
+    if(lv2_plugin != NULL){
+      port = ags_effect_line_add_lv2_effect(effect_line,
+					    filename,
+					    effect);
+    }
+  }
+  
+  return(port);
 }
 
 GList*

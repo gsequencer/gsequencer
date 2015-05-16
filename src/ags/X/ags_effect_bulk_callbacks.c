@@ -18,13 +18,13 @@
 
 #include <ags/X/ags_effect_bulk_callbacks.h>
 
-#include <ags/X/ags_ladspa_browser.h>
+#include <ags/X/ags_plugin_browser.h>
 
 void
 ags_effect_bulk_add_callback(GtkWidget *button,
 			     AgsEffectBulk *effect_bulk)
 {
-  gtk_widget_show_all(effect_bulk->ladspa_browser);
+  gtk_widget_show_all(effect_bulk->plugin_browser);
 }
 
 void
@@ -35,9 +35,9 @@ ags_effect_bulk_remove_callback(GtkWidget *button,
   GList *children;
   guint nth;
   
-  auto void ags_effect_bulk_editor_ladspa_browser_response_destroy_entry();
+  auto void ags_effect_bulk_editor_plugin_browser_response_destroy_entry();
   
-  void ags_effect_bulk_editor_ladspa_browser_response_destroy_entry(){
+  void ags_effect_bulk_editor_plugin_browser_response_destroy_entry(){
     /* destroy bulk member entry */
     gtk_widget_destroy(GTK_WIDGET(bulk_member->data));
   }
@@ -54,7 +54,7 @@ ags_effect_bulk_remove_callback(GtkWidget *button,
     children = gtk_container_get_children(GTK_CONTAINER(bulk_member->data));
 
     if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(children->data))){
-      ags_effect_bulk_editor_ladspa_browser_response_destroy_entry();
+      ags_effect_bulk_editor_plugin_browser_response_destroy_entry();
 	
       /* remove effect */
       ags_effect_bulk_remove_effect(effect_bulk,
@@ -66,15 +66,15 @@ ags_effect_bulk_remove_callback(GtkWidget *button,
 }
 
 void
-ags_effect_bulk_ladspa_browser_response_callback(GtkDialog *dialog,
+ags_effect_bulk_plugin_browser_response_callback(GtkDialog *dialog,
 						 gint response,
 						 AgsEffectBulk *effect_bulk)
 {
   gchar *filename, *effect;
   
-  auto void ags_effect_bulk_ladspa_browser_response_create_entry();
+  auto void ags_effect_bulk_plugin_browser_response_create_entry();
   
-  void ags_effect_bulk_ladspa_browser_response_create_entry(){
+  void ags_effect_bulk_plugin_browser_response_create_entry(){
     GtkHBox *hbox;
     GtkCheckButton *check_button;
     GtkLabel *label;
@@ -107,10 +107,10 @@ ags_effect_bulk_ladspa_browser_response_callback(GtkDialog *dialog,
   case GTK_RESPONSE_ACCEPT:
     {
       /* retrieve plugin */
-      filename = ags_ladspa_browser_get_plugin_filename(effect_bulk->ladspa_browser);
-      effect = ags_ladspa_browser_get_plugin_effect(effect_bulk->ladspa_browser);
+      filename = ags_plugin_browser_get_plugin_filename(effect_bulk->plugin_browser);
+      effect = ags_plugin_browser_get_plugin_effect(effect_bulk->plugin_browser);
 
-      ags_effect_bulk_ladspa_browser_response_create_entry();
+      ags_effect_bulk_plugin_browser_response_create_entry();
 	
       /* add effect */
       ags_effect_bulk_add_effect(effect_bulk,

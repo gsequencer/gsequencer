@@ -26,6 +26,7 @@
 #include <ags/audio/ags_input.h>
 #include <ags/audio/ags_recall.h>
 #include <ags/audio/ags_recall_ladspa.h>
+#include <ags/audio/ags_recall_lv2.h>
 #include <ags/audio/ags_port.h>
 
 #include <ags/X/ags_effect_bulk.h>
@@ -221,10 +222,12 @@ ags_update_bulk_member_launch(AgsTask *task)
 	recall = current->recall;
 	
 	while((play = ags_recall_template_find_type(play, AGS_TYPE_RECALL_LADSPA)) != NULL){
-	  recall = ags_recall_template_find_type(recall, AGS_TYPE_RECALL_LADSPA);
+	  recall = ags_recall_template_find_all_type(recall,
+						     AGS_TYPE_RECALL_LADSPA,
+						     AGS_TYPE_RECALL_LV2,
+						     G_TYPE_NONE);
 	   
 	  if(AGS_IS_RECALL_LADSPA(play->data)){
-	  
 	    if(!g_strcmp0(AGS_RECALL_LADSPA(play->data)->filename,
 			  update_bulk_member->bulk_member->filename) &&
 	       !g_strcmp0(AGS_RECALL_LADSPA(play->data)->effect,
@@ -253,7 +256,37 @@ ags_update_bulk_member_launch(AgsTask *task)
 	    }else{
 	      k += g_list_length(AGS_RECALL(recall->data)->port);
 	    }
+	  }else if(AGS_IS_RECALL_LV2(play->data)){
+	    if(!g_strcmp0(AGS_RECALL_LV2(play->data)->filename,
+			  update_bulk_member->bulk_member->filename) &&
+	       !g_strcmp0(AGS_RECALL_LV2(play->data)->uri,
+			  update_bulk_member->bulk_member->effect)){
+	      port = AGS_RECALL(play->data)->port;
+	      recall_port = AGS_RECALL(recall->data)->port;
+
+	      while(port != NULL){
+		bulk_port = ags_bulk_port_alloc(port->data,
+						recall_port->data);
+		if(k != 0){
+		  update_bulk_member->bulk_member->bulk_port = g_list_insert(update_bulk_member->bulk_member->bulk_port,
+									     bulk_port,
+									     k);
+		}else{
+		  update_bulk_member->bulk_member->bulk_port = g_list_prepend(update_bulk_member->bulk_member->bulk_port,
+									      bulk_port);
+		}
+		
+		k++;
+		port = port->next;
+		recall_port = recall_port->next;
+	      }
+
+	      break;
+	    }else{
+	      k += g_list_length(AGS_RECALL(recall->data)->port);
+	    }
 	  }
+
 	  
 	  play = play->next;
 	  recall = recall->next;
@@ -297,7 +330,7 @@ ags_update_bulk_member_launch(AgsTask *task)
 		while(port != NULL){
 		  if(!g_strcmp0(AGS_PORT(port->data)->specifier,
 				update_bulk_member->bulk_member->specifier)){
-		    goto ags_update_bulk_member_launch_REMOVE_CURRENT_END;
+		    goto ags_update_bulk_member_launch_REMOVE_LADSPA_CURRENT_END;
 		  }
 		
 		  port = port->next;
@@ -306,11 +339,39 @@ ags_update_bulk_member_launch(AgsTask *task)
 		update_bulk_member->bulk_member->bulk_port = g_list_remove(update_bulk_member->bulk_member->bulk_port,
 									   list->data);
 	      
-	      ags_update_bulk_member_launch_REMOVE_CURRENT_END:
+	      ags_update_bulk_member_launch_REMOVE_LADSPA_CURRENT_END:
+		list = list_next;
+	      }
+	    }
+	  }else if(AGS_IS_RECALL_LV2(play->data)){
+	    if(!g_strcmp0(AGS_RECALL_LV2(play->data)->filename,
+			  update_bulk_member->bulk_member->filename) &&
+	       !g_strcmp0(AGS_RECALL_LV2(play->data)->uri,
+			  update_bulk_member->bulk_member->effect)){
+	      list = update_bulk_member->bulk_member->bulk_port;
+	    
+	      while(list != NULL){
+		list_next = list->next;
+		port = AGS_RECALL(recall->data)->port;
+	    
+		while(port != NULL){
+		  if(!g_strcmp0(AGS_PORT(port->data)->specifier,
+				update_bulk_member->bulk_member->specifier)){
+		    goto ags_update_bulk_member_launch_REMOVE_LV2_CURRENT_END;
+		  }
+		
+		  port = port->next;
+		}
+	      
+		update_bulk_member->bulk_member->bulk_port = g_list_remove(update_bulk_member->bulk_member->bulk_port,
+									   list->data);
+	      
+	      ags_update_bulk_member_launch_REMOVE_LV2_CURRENT_END:
 		list = list_next;
 	      }
 	    }
 	  }
+
 	  
 	  play = play->next;
 	  recall = recall->next;

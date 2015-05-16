@@ -48,6 +48,8 @@
 #include <ags/audio/ags_recall_recycling_dummy.h>
 #include <ags/audio/ags_recall_ladspa.h>
 #include <ags/audio/ags_recall_ladspa_run.h>
+#include <ags/audio/ags_recall_lv2.h>
+#include <ags/audio/ags_recall_lv2_run.h>
 
 #include <ags/audio/task/ags_add_recall_container.h>
 #include <ags/audio/task/ags_add_recall.h>
@@ -55,7 +57,7 @@
 #include <ags/widget/ags_dial.h>
 
 #include <ags/X/ags_window.h>
-#include <ags/X/ags_ladspa_browser.h>
+#include <ags/X/ags_plugin_browser.h>
 #include <ags/X/ags_bulk_member.h>
 
 #include <ags/X/task/ags_add_bulk_member.h>
@@ -69,6 +71,7 @@
 #include <unistd.h>
 
 #include <ladspa.h>
+#include <lv2.h>
 
 void ags_effect_bulk_class_init(AgsEffectBulkClass *effect_bulk);
 void ags_effect_bulk_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -91,6 +94,12 @@ void ags_effect_bulk_set_version(AgsPlugin *plugin, gchar *version);
 gchar* ags_effect_bulk_get_build_id(AgsPlugin *plugin);
 void ags_effect_bulk_set_build_id(AgsPlugin *plugin, gchar *build_id);
 
+GList* ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
+					 gchar *filename,
+					 gchar *effect);
+GList* ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
+				      gchar *filename,
+				      gchar *effect);
 GList* ags_effect_bulk_real_add_effect(AgsEffectBulk *effect_bulk,
 				       gchar *filename,
 				       gchar *effect);
@@ -395,7 +404,7 @@ ags_effect_bulk_init(AgsEffectBulk *effect_bulk)
 		     FALSE, FALSE,
 		     0);
 
-  effect_bulk->ladspa_browser = ags_ladspa_browser_new(effect_bulk);
+  effect_bulk->plugin_browser = ags_plugin_browser_new(effect_bulk);
 }
 
 void
@@ -526,10 +535,10 @@ ags_effect_bulk_connect(AgsConnectable *connectable)
   g_signal_connect(G_OBJECT(effect_bulk->remove), "clicked\0",
 		   G_CALLBACK(ags_effect_bulk_remove_callback), effect_bulk);
 
-  ags_connectable_connect(AGS_CONNECTABLE(effect_bulk->ladspa_browser));
+  ags_connectable_connect(AGS_CONNECTABLE(effect_bulk->plugin_browser));
 
-  g_signal_connect(G_OBJECT(effect_bulk->ladspa_browser), "response\0",
-		   G_CALLBACK(ags_effect_bulk_ladspa_browser_response_callback), effect_bulk);
+  g_signal_connect(G_OBJECT(effect_bulk->plugin_browser), "response\0",
+		   G_CALLBACK(ags_effect_bulk_plugin_browser_response_callback), effect_bulk);
 
   if(effect_bulk->audio != NULL){
     effect_bulk->set_audio_channels_handler = g_signal_connect_after(effect_bulk->audio, "set-audio-channels\0",
@@ -617,9 +626,9 @@ ags_effect_bulk_plugin_alloc(gchar *filename,
 }
 
 GList*
-ags_effect_bulk_real_add_effect(AgsEffectBulk *effect_bulk,
-				gchar *filename,
-				gchar *effect)
+ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
+				  gchar *filename,
+				  gchar *effect)
 {
   AgsWindow *window;
   AgsBulkMember *bulk_member;
@@ -653,7 +662,7 @@ ags_effect_bulk_real_add_effect(AgsEffectBulk *effect_bulk,
   LADSPA_Descriptor *plugin_descriptor;
   LADSPA_PortDescriptor *port_descriptor;
   LADSPA_Data lower_bound, upper_bound;
-  unsigned long index;
+  unsigned long effect_index;
   unsigned long k;
 
   effect_bulk->plugin = g_list_append(effect_bulk->plugin,
@@ -683,8 +692,8 @@ ags_effect_bulk_real_add_effect(AgsEffectBulk *effect_bulk,
   }
 
   /*  */
-  index = ags_ladspa_manager_effect_index(filename,
-					  effect);
+  effect_index = ags_ladspa_manager_effect_index(filename,
+						 effect);
 
   task = NULL;
   
@@ -708,7 +717,7 @@ ags_effect_bulk_real_add_effect(AgsEffectBulk *effect_bulk,
       recall_ladspa = ags_recall_ladspa_new(current,
 					    filename,
 					    effect,
-					    index);
+					    effect_index);
       g_object_set(G_OBJECT(recall_ladspa),
 		   "soundcard\0", AGS_AUDIO(current->audio)->soundcard,
 		   "recall-container\0", recall_container,
@@ -751,7 +760,7 @@ ags_effect_bulk_real_add_effect(AgsEffectBulk *effect_bulk,
       recall_ladspa = ags_recall_ladspa_new(current,
 					    filename,
 					    effect,
-					    index);
+					    effect_index);
       g_object_set(G_OBJECT(recall_ladspa),
 		   "soundcard\0", AGS_AUDIO(current->audio)->soundcard,
 		   "recall-container\0", recall_container,
@@ -804,13 +813,13 @@ ags_effect_bulk_real_add_effect(AgsEffectBulk *effect_bulk,
   }
   
   /* load ports */
-  if(index != -1 &&
+  if(effect_index != -1 &&
      plugin_so){
     ladspa_descriptor = (LADSPA_Descriptor_Function) dlsym(plugin_so,
 							   "ladspa_descriptor\0");
 
     if(dlerror() == NULL && ladspa_descriptor){
-      plugin_descriptor = ladspa_descriptor(index);
+      plugin_descriptor = ladspa_descriptor(effect_index);
 
       port_descriptor = plugin_descriptor->PortDescriptors;
 
@@ -901,6 +910,356 @@ ags_effect_bulk_real_add_effect(AgsEffectBulk *effect_bulk,
   ags_task_thread_append_tasks(task_thread,
 			       task);
 
+  return(port);
+}
+
+GList*
+ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
+			       gchar *filename,
+			       gchar *effect)
+{
+  AgsWindow *window;
+  AgsBulkMember *bulk_member;
+  AgsAddBulkMember *add_bulk_member;
+  AgsUpdateBulkMember *update_bulk_member;
+  GtkAdjustment *adjustment;
+
+  AgsChannel *current;
+  AgsRecallContainer *recall_container;
+  AgsRecallChannelRunDummy *recall_channel_run_dummy;
+  AgsRecallLv2 *recall_lv2;
+  AgsLv2Plugin *lv2_plugin;
+  AgsAddRecallContainer *add_recall_container;
+  AgsAddRecall *add_recall;
+
+  AgsThread *main_loop;
+  AgsTaskThread *task_thread;
+
+  AgsApplicationContext *application_context;
+  
+  GList *port, *recall_port;
+  GList *list, *list_start;
+  GList *task;
+  GList *node_list;
+  GList *port_type_node, *port_name_node, *port_max_node, *port_min_node, *port_default_node;
+
+  gchar *port_type_0, *port_type_1;
+  gchar *str;
+  gdouble step;
+  guint pads, audio_channels;
+  guint x, y;
+  guint i, j;
+  guint k;
+  
+  float lower_bound, upper_bound, default_bound;
+
+  effect_bulk->plugin = g_list_append(effect_bulk->plugin,
+				      ags_effect_bulk_plugin_alloc(filename,
+								   effect));
+
+  window = gtk_widget_get_ancestor(effect_bulk,
+				   AGS_TYPE_WINDOW);
+  
+  application_context = window->application_context;
+
+  main_loop = application_context->main_loop;
+
+  task_thread = ags_thread_find_type(main_loop,
+				     AGS_TYPE_TASK_THREAD);
+  
+  audio_channels = effect_bulk->audio->audio_channels;
+
+  if(effect_bulk->channel_type == AGS_TYPE_OUTPUT){
+    current = effect_bulk->audio->output;
+    
+    pads = effect_bulk->audio->output_pads;
+  }else{
+    current = effect_bulk->audio->input;
+
+    pads = effect_bulk->audio->input_pads;
+  }
+
+  /*  */
+  task = NULL;
+  
+  /* load plugin */
+  lv2_plugin = ags_lv2_manager_find_lv2_plugin(filename);
+
+  for(i = 0; i < pads; i++){
+    for(j = 0; j < audio_channels; j++){
+
+      /* lv2 play */
+      recall_container = ags_recall_container_new();
+
+      add_recall_container = ags_add_recall_container_new(current->audio,
+							  recall_container);
+      task = g_list_prepend(task,
+			    add_recall_container);
+
+      recall_lv2 = ags_recall_lv2_new(current,
+				      lv2_plugin->turtle,
+				      filename,
+				      effect,
+				      index);
+      g_object_set(G_OBJECT(recall_lv2),
+		   "soundcard\0", AGS_AUDIO(current->audio)->soundcard,
+		   "recall-container\0", recall_container,
+		   NULL);
+      AGS_RECALL(recall_lv2)->flags |= AGS_RECALL_TEMPLATE;
+      ags_recall_lv2_load(recall_lv2);
+      port = ags_recall_lv2_load_ports(recall_lv2);
+
+      add_recall = ags_add_recall_new(current,
+				      recall_lv2,
+				      TRUE);
+      task = g_list_prepend(task,
+			    add_recall);
+
+      /* dummy */
+      recall_channel_run_dummy = ags_recall_channel_run_dummy_new(current,
+								  AGS_TYPE_RECALL_RECYCLING_DUMMY,
+								  AGS_TYPE_RECALL_LV2_RUN);
+      AGS_RECALL(recall_channel_run_dummy)->flags |= AGS_RECALL_TEMPLATE;
+      g_object_set(G_OBJECT(recall_channel_run_dummy),
+		   "soundcard\0", AGS_AUDIO(current->audio)->soundcard,
+		   "recall-container\0", recall_container,
+		   "recall-channel\0", recall_lv2,
+		   NULL);
+
+      add_recall = ags_add_recall_new(current,
+				      recall_channel_run_dummy,
+				      TRUE);
+      task = g_list_prepend(task,
+			    add_recall);
+
+      /* lv2 recall */
+      recall_container = ags_recall_container_new();
+
+      add_recall_container = ags_add_recall_container_new(current->audio,
+							  recall_container);
+      task = g_list_prepend(task,
+			    add_recall_container);
+
+      recall_lv2 = ags_recall_lv2_new(current,
+				      lv2_plugin->turtle,
+				      filename,
+				      effect,
+				      index);
+      g_object_set(G_OBJECT(recall_lv2),
+		   "soundcard\0", AGS_AUDIO(current->audio)->soundcard,
+		   "recall-container\0", recall_container,
+		   NULL);
+      AGS_RECALL(recall_lv2)->flags |= AGS_RECALL_TEMPLATE;
+      ags_recall_lv2_load(recall_lv2);
+      recall_port = ags_recall_lv2_load_ports(recall_lv2);
+            
+      add_recall = ags_add_recall_new(current,
+				      recall_lv2,
+				      FALSE);
+      task = g_list_prepend(task,
+			    add_recall);
+
+      /* dummy */
+      recall_channel_run_dummy = ags_recall_channel_run_dummy_new(current,
+								  AGS_TYPE_RECALL_RECYCLING_DUMMY,
+								  AGS_TYPE_RECALL_LV2_RUN);
+      AGS_RECALL(recall_channel_run_dummy)->flags |= AGS_RECALL_TEMPLATE;
+      g_object_set(G_OBJECT(recall_channel_run_dummy),
+		   "soundcard\0", AGS_AUDIO(current->audio)->soundcard,
+		   "recall-container\0", recall_container,
+		   "recall-channel\0", recall_lv2,
+		   NULL);
+
+      add_recall = ags_add_recall_new(current,
+				      recall_channel_run_dummy,
+				      FALSE);
+      task = g_list_prepend(task,
+			    add_recall);
+
+      
+      current = current->next;
+    }
+  }
+
+  /* retrieve position within table  */
+  x = 0;
+  y = 0;
+  
+  list_start = 
+    list = effect_bulk->table->children;
+
+  while(list != NULL){
+    if(y <= ((GtkTableChild *) list->data)->top_attach){
+      y = ((GtkTableChild *) list->data)->top_attach + 1;
+    }
+
+    list = list->next;
+  }
+
+  /* find ports */
+  node_list = ags_turtle_find_xpath(lv2_plugin->turtle,
+				    "//rdf-triple/rdf-verb[@do=\"doap:name\"]/rdf-list/rdf-value[1]\0");
+
+  str = "//rdf-triple//rdf-triple[@subject=\"lv2:port\"]/rdf-verb[@has-type=\"true\"]/rdf-list/rdf-value\0";
+  port_type_node = ags_turtle_find_xpath(lv2_plugin->turtle,
+					 str);
+
+  port_name_node = ags_turtle_find_xpath(lv2_plugin->turtle,
+					 "//rdf-triple[@subject=\"lv2:port\"]/rdf-verb[@do=\"lv2:name\"]/rdf-list/rdf-value\0");
+
+  port_min_node = ags_turtle_find_xpath(lv2_plugin->turtle,
+					"//rdf-triple[@subject=\"lv2:port\"]/rdf-verb[@do=\"lv2:minimum\"]/rdf-list/rdf-value\0");
+
+  port_max_node = ags_turtle_find_xpath(lv2_plugin->turtle,
+					"//rdf-triple[@subject=\"lv2:port\"]/rdf-verb[@do=\"lv2:maximum\"]/rdf-list/rdf-value\0");
+
+  port_default_node = ags_turtle_find_xpath(lv2_plugin->turtle,
+					    "//rdf-triple[@subject=\"lv2:port\"]/rdf-verb[@do=\"lv2:default\"]/rdf-list/rdf-value\0");
+
+  /* load ports */
+  k = 0;
+  
+  while(port_type_node != NULL){
+    port_type_0 = xmlGetProp(port_type_node->data,
+			     "value\0");
+    port_type_1 = xmlGetProp(port_type_node->next->data,
+			     "value\0");
+
+    if(!g_ascii_strncasecmp(port_type_0,
+			    "lv2:ControlPort\0",
+			    15) ||
+       !g_ascii_strncasecmp(port_type_1,
+			    "lv2:ControlPort\0",
+			    15)){
+      AgsDial *dial;
+      GtkAdjustment *adjustment;
+
+      if(x == AGS_EFFECT_BULK_COLUMNS_COUNT){
+	x = 0;
+	y++;
+	gtk_table_resize(effect_bulk->table,
+			 y + 1, AGS_EFFECT_BULK_COLUMNS_COUNT);
+      }
+
+      /* add bulk member */
+      bulk_member = (AgsBulkMember *) g_object_new(AGS_TYPE_BULK_MEMBER,
+						   "widget-type\0", AGS_TYPE_DIAL,
+						   "widget-label\0", xmlGetProp(port_name_node->data,
+										"value\0"),
+						   "plugin-name\0", g_strdup_printf("lv2-%s\0", xmlGetProp(((xmlNode *) node_list->data)->parent->parent->parent,
+													   "subject\0")),
+						   "filename\0", filename,
+						   "effect\0", effect,
+						   "specifier\0", xmlGetProp(port_name_node->data,
+									     "value\0"),
+						   "control-port\0", g_strdup_printf("%d/%d\0",
+										     k,
+										     g_list_length(port_name_node)),
+						   NULL);
+      dial = ags_bulk_member_get_widget(bulk_member);
+      gtk_widget_set_size_request(dial,
+				  2 * dial->radius + 2 * dial->outline_strength + dial->button_width + 1,
+				  2 * dial->radius + 2 * dial->outline_strength + 1);
+		
+      /* add controls of ports and apply range  */
+      lower_bound = (float) g_ascii_strtod(xmlGetProp(port_min_node->data,
+						      "value\0"),
+					   NULL);
+      upper_bound = (float) g_ascii_strtod(xmlGetProp(port_max_node->data,
+						      "value\0"),
+					   NULL);
+      default_bound = (float) g_ascii_strtod(xmlGetProp(port_default_node->data,
+							"value\0"),
+					     NULL);
+
+      adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0);
+      g_object_set(dial,
+		   "adjustment", adjustment,
+		   NULL);
+
+      if(upper_bound >= 0.0 && lower_bound >= 0.0){
+	step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
+      }else if(upper_bound < 0.0 && lower_bound < 0.0){
+	step = -1.0 * (lower_bound - upper_bound) / AGS_DIAL_DEFAULT_PRECISION;
+      }else{
+	step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
+      }
+
+      gtk_adjustment_set_step_increment(adjustment,
+					step);
+      gtk_adjustment_set_lower(adjustment,
+			       lower_bound);
+      gtk_adjustment_set_upper(adjustment,
+			       upper_bound);
+      gtk_adjustment_set_value(adjustment,
+			       default_bound);
+
+      g_message("%f %f\0", lower_bound, upper_bound);
+	  
+      /* create task */
+      add_bulk_member = ags_add_bulk_member_new(effect_bulk,
+						bulk_member,
+						x, y,
+						1, 1);
+      task = g_list_prepend(task,
+			    add_bulk_member);
+
+      /* update ports */
+      update_bulk_member = ags_update_bulk_member_new(effect_bulk,
+						      bulk_member,
+						      pads,
+						      0,
+						      TRUE);
+      task = g_list_prepend(task,
+			    update_bulk_member);
+
+      port_default_node = port_default_node->next;
+      port_min_node = port_min_node->next;
+      port_max_node = port_max_node->next;
+      x++;
+      k++;
+    }
+
+    port_name_node = port_name_node->next;
+    port_type_node = port_type_node->next->next;
+  }
+
+  /* launch tasks */
+  task = g_list_reverse(task);      
+  ags_task_thread_append_tasks(task_thread,
+			       task);
+
+  return(port);
+}
+
+GList*
+ags_effect_bulk_real_add_effect(AgsEffectBulk *effect_bulk,
+				gchar *filename,
+				gchar *effect)
+{
+  AgsLv2Plugin *ladspa_plugin;
+  AgsLv2Plugin *lv2_plugin;
+  
+  GList *port;
+
+  /* load plugin */
+  ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(filename);
+  port = NULL;
+  
+  if(ladspa_plugin != NULL){
+    port = ags_effect_bulk_add_ladspa_effect(effect_bulk,
+					     filename,
+					     effect);
+  }else{
+    lv2_plugin = ags_lv2_manager_find_lv2_plugin(filename);
+    
+    if(lv2_plugin != NULL){
+      port = ags_effect_bulk_add_lv2_effect(effect_bulk,
+					    filename,
+					    effect);
+    }
+  }
+  
   return(port);
 }
 
