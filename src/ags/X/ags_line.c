@@ -907,13 +907,12 @@ ags_line_add_lv2_effect(AgsLine *line,
       port = port->next;
       recall_port = recall_port->next;
 
-
-      port_name_node = port_name_node->next;
       port_default_node = port_default_node->next;
       port_min_node = port_min_node->next;
       port_max_node = port_max_node->next;
     }
 
+    port_name_node = port_name_node->next;
     port_type_node = port_type_node->next->next;
   }
   

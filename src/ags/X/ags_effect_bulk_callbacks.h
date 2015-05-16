@@ -30,7 +30,7 @@ void ags_effect_bulk_add_callback(GtkWidget *button,
 void ags_effect_bulk_remove_callback(GtkWidget *button,
 				     AgsEffectBulk *effect_bulk);
 
-void ags_effect_bulk_ladspa_browser_response_callback(GtkDialog *dialog,
+void ags_effect_bulk_plugin_browser_response_callback(GtkDialog *dialog,
 						      gint response,
 						      AgsEffectBulk *effect_bulk);
 
