@@ -406,6 +406,7 @@ ags_recall_lv2_set_ports(AgsPlugin *plugin, GList *port)
   GList *list;
   GList *port_node, *port_name_node, *port_default_node, *port_index_node;
 
+  gchar *str;
   uint32_t port_count;
   uint32_t i;
 
@@ -436,14 +437,29 @@ ags_recall_lv2_set_ports(AgsPlugin *plugin, GList *port)
 	plugin_descriptor = lv2_descriptor(recall_lv2->index);
 
       /* connect control port */
+      str = g_strdup_printf("//rdf-triple[@subject=\"<%s>\"]//rdf-triple[@subject=\"lv2:port\"]/rdf-verb[@has-type=\"true\"]/rdf-list/rdf-value\0",
+			    plugin_descriptor->URI);
       port_node = ags_turtle_find_xpath(recall_lv2->turtle,
-					"//rdf-triple[@subject=\"lv2:port\"]/rdf-verb[@has-type=\"true\"]/rdf-list/rdf-value\0");
+					str);
+      free(str);
+      
+      str = g_strdup_printf("//rdf-triple[@subject=\"<%s>\"]//rdf-triple[@subject=\"lv2:port\"]/rdf-verb[@do=\"lv2:name\"]/rdf-list/rdf-value[1]\0",
+			    plugin_descriptor->URI);
       port_name_node = ags_turtle_find_xpath(recall_lv2->turtle,
-					     "//rdf-triple[@subject=\"lv2:port\"]/rdf-verb[@do=\"lv2:name\"]/rdf-list/rdf-value[1]\0");
+					     str);
+      free(str);
+      
+      str = g_strdup_printf("//rdf-triple[@subject=\"<%s>\"]//rdf-triple[@subject=\"lv2:port\"]/rdf-verb[@do=\"lv2:index\"]/rdf-list/rdf-value\0",
+			    plugin_descriptor->URI);
       port_index_node = ags_turtle_find_xpath(recall_lv2->turtle,
 					      "//rdf-triple[@subject=\"lv2:port\"]/rdf-verb[@do=\"lv2:index\"]/rdf-list/rdf-value\0");
+      free(str);
+      
+      str = g_strdup_printf("//rdf-triple[@subject=\"<%s>\"]//rdf-triple[@subject=\"lv2:port\"]/rdf-verb[@do=\"lv2:default\"]/rdf-list/rdf-value\0",
+			    plugin_descriptor->URI);
       port_default_node = ags_turtle_find_xpath(recall_lv2->turtle,
 						"//rdf-triple[@subject=\"lv2:port\"]/rdf-verb[@do=\"lv2:default\"]/rdf-list/rdf-value\0");
+      free(str);
       
       port_count = g_list_length(port_name_node);
 
@@ -703,6 +719,7 @@ ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2)
   GList *port;
   GList *port_node, *port_name_node, *port_default_node, *port_index_node;
 
+  gchar *str;
   uint32_t port_count;
   uint32_t i;
 
@@ -732,14 +749,31 @@ ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2)
 	plugin_descriptor = lv2_descriptor(recall_lv2->index);
 
       /* connect control port */
+      g_message(plugin_descriptor->URI);
+      
+      str = g_strdup_printf("//rdf-triple[@subject=\"<%s>\"]//rdf-triple[@subject=\"lv2:port\"]/rdf-verb[@has-type=\"true\"]/rdf-list/rdf-value\0",
+			    plugin_descriptor->URI);
       port_node = ags_turtle_find_xpath(recall_lv2->turtle,
-					"//rdf-triple[@subject=\"lv2:port\"]/rdf-verb[@has-type=\"true\"]/rdf-list/rdf-value\0");
+					str);
+      free(str);
+      
+      str = g_strdup_printf("//rdf-triple[@subject=\"<%s>\"]//rdf-triple[@subject=\"lv2:port\"]/rdf-verb[@do=\"lv2:name\"]/rdf-list/rdf-value[1]\0",
+			    plugin_descriptor->URI);
       port_name_node = ags_turtle_find_xpath(recall_lv2->turtle,
-					     "//rdf-triple[@subject=\"lv2:port\"]/rdf-verb[@do=\"lv2:name\"]/rdf-list/rdf-value[1]\0");
+					     str);
+      free(str);
+      
+      str = g_strdup_printf("//rdf-triple[@subject=\"<%s>\"]//rdf-triple[@subject=\"lv2:port\"]/rdf-verb[@do=\"lv2:index\"]/rdf-list/rdf-value\0",
+			    plugin_descriptor->URI);
       port_index_node = ags_turtle_find_xpath(recall_lv2->turtle,
 					      "//rdf-triple[@subject=\"lv2:port\"]/rdf-verb[@do=\"lv2:index\"]/rdf-list/rdf-value\0");
+      free(str);
+      
+      str = g_strdup_printf("//rdf-triple[@subject=\"<%s>\"]//rdf-triple[@subject=\"lv2:port\"]/rdf-verb[@do=\"lv2:default\"]/rdf-list/rdf-value\0",
+			    plugin_descriptor->URI);
       port_default_node = ags_turtle_find_xpath(recall_lv2->turtle,
 						"//rdf-triple[@subject=\"lv2:port\"]/rdf-verb[@do=\"lv2:default\"]/rdf-list/rdf-value\0");
+      free(str);
       
       port_count = g_list_length(port_name_node);
 

@@ -283,7 +283,7 @@ ags_turtle_load(AgsTurtle *turtle)
     for(; !g_ascii_isspace(*look_ahead) && *look_ahead != '\0'; look_ahead++);
 
     /* skip spaces */
-    for(; (*look_ahead == ' ' || *look_ahead == '\t') && *look_ahead != '\0'; look_ahead++);
+    for(; (*look_ahead == ' ' || *look_ahead == '\t' || *look_ahead == '\n') && *look_ahead != '\0'; look_ahead++);
     
     if(*look_ahead != '['){
       verb = ags_turtle_load_read_verb();
@@ -311,7 +311,7 @@ ags_turtle_load(AgsTurtle *turtle)
 	xmlAddChild(verb,
 		    value);
 
-	if((*iter == ';' || *iter == '[') && current_level == nth_level && iter < &(buffer[sb->st_size])){
+	if((*iter == ';' || *iter == '[') && *iter != '.' && *iter != ']'  && current_level == nth_level && iter < &(buffer[sb->st_size])){
 	  iter++;
 	  goto ags_turtle_load_read_triple_START;
 	}
@@ -338,7 +338,7 @@ ags_turtle_load(AgsTurtle *turtle)
 	xmlAddChild(node,
 		    child_node_list);
 
-	if((*iter == ';' || *iter == '[') && current_level == nth_level && iter < &(buffer[sb->st_size])){
+	if((*iter == ';' || *iter == '[') && *iter != '.' && *iter != ']' && current_level <= nth_level && iter < &(buffer[sb->st_size])){
 	  goto ags_turtle_load_read_triple_START;
 	}
       }
@@ -425,6 +425,10 @@ ags_turtle_load(AgsTurtle *turtle)
 	continue;
       }
 
+      if(*iter == '.'){
+	break;
+      }
+      
       if(*iter == '\n'){
 	continue;
       }
@@ -480,6 +484,7 @@ ags_turtle_load(AgsTurtle *turtle)
     xmlNode *node, *node_list;
 
     gchar *start, *end, *start_literal, *end_literal;
+    gchar *look_ahead;
     gchar *str;
     guint current_level;
     gboolean escaped_literal;
@@ -490,7 +495,6 @@ ags_turtle_load(AgsTurtle *turtle)
 
     node_list = xmlNewNode(NULL, "rdf-list\0");
     node = NULL;
-    current_level = nth_level;
     
     do{
       more_collection = FALSE;
@@ -563,7 +567,7 @@ ags_turtle_load(AgsTurtle *turtle)
 	    continue;
 	  }
 
-	  if(*iter == ' ' || *iter == '\t' || *iter == '\n'){
+	  if(*iter == ' ' || *iter == '\t' || *iter == '\n' || *iter == ';' || *iter == ','){
 	    break;
 	  }
 	}
@@ -572,7 +576,7 @@ ags_turtle_load(AgsTurtle *turtle)
 	str = g_strndup(start,
 			end - start);
 
-	/* skip and read value if needed */
+	/* skip */
 	for(;  iter < &(buffer[sb->st_size]); iter++){
 	  if(*iter == '\n'){
 	    continue;
@@ -605,7 +609,7 @@ ags_turtle_load(AgsTurtle *turtle)
 	  if(*iter != ' ' && *iter != '\t'){
 	    break;
 	  }
-	}
+      	}
 	
 	/* set value */
 	xmlNewProp(node,
@@ -614,6 +618,57 @@ ags_turtle_load(AgsTurtle *turtle)
 	g_message("value_str %s\0", str);
       }
     }while(more_collection && *iter != '[' && iter < &(buffer[sb->st_size]));
+
+    if(*iter == ';'){
+      do{
+	current_level = nth_level;
+    
+	look_ahead = iter + 1;
+
+	for(; (*look_ahead == ' ' || *look_ahead == '\t' || *look_ahead == '\n') && *look_ahead != '\0'; look_ahead++);
+
+	if(*look_ahead == ']'){
+	  g_message("look--\0");
+	  nth_level--;
+	  iter = look_ahead;
+	}
+
+	look_ahead = iter + 1;
+	  
+	for(; (*look_ahead == ' ' || *look_ahead == '\t' || *look_ahead == '\n') && *look_ahead != '\0'; look_ahead++);
+
+	if(*look_ahead == ','){
+	  iter = look_ahead;
+	}
+
+	look_ahead = iter + 1;
+	  
+	for(; (*look_ahead == ' ' || *look_ahead == '\t' || *look_ahead == '\n') && *look_ahead != '\0'; look_ahead++);
+
+	if(*look_ahead == '['){
+	  nth_level++;
+	  g_message("look++\0");
+	  iter = look_ahead;
+	  break;
+	}
+
+	look_ahead = iter + 1;
+	  
+	for(; (*look_ahead == ' ' || *look_ahead == '\t' || *look_ahead == '\n') && *look_ahead != '\0'; look_ahead++);
+
+	if(*look_ahead == '.'){
+	  iter = look_ahead;
+	}
+
+	look_ahead = iter + 1;
+	  
+	for(; (*look_ahead == ' ' || *look_ahead == '\t' || *look_ahead == '\n') && *look_ahead != '\0'; look_ahead++);
+
+	if(*look_ahead == ';'){
+	  iter = look_ahead;
+	}
+      }while(current_level != nth_level);
+    }
     
     return(node_list);
   }

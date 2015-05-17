@@ -130,36 +130,48 @@ ags_lv2_browser_plugin_uri_callback(GtkComboBoxText *combo_box,
 					 str);
     
     /* update ui - reading plugin file */
-    label = GTK_LABEL(list->data);
-    gtk_label_set_text(label,
-		       g_strconcat("Label: \0",
-				   xmlGetProp(name_node->data,
-					      "value\0"),
-				   NULL));
+    if(name_node != NULL){
+      label = GTK_LABEL(list->data);
+      gtk_label_set_text(label,
+			 g_strconcat("Label: \0",
+				     xmlGetProp(name_node->data,
+						"value\0"),
+				     NULL));
+    }
 
     list = list->next;
-    label = GTK_LABEL(list->data);
-    gtk_label_set_text(label,
-		       g_strconcat("Project: \0",
-				   xmlGetProp(project_node->data,
-					      "value\0"),
-				   NULL));
 
+    if(project_node != NULL){
+      label = GTK_LABEL(list->data);
+      gtk_label_set_text(label,
+			 g_strconcat("Project: \0",
+				     xmlGetProp(project_node->data,
+						"value\0"),
+				     NULL));
+    }
+    
     list = list->next;
-    label = GTK_LABEL(list->data);
-    gtk_label_set_text(label,
-		       g_strconcat("License: \0",
-				   xmlGetProp(license_node->data,
-					      "value\0"),
-				   NULL));
 
-    str = "//rdf-triple//rdf-triple[@subject=\"lv2:port\"]/rdf-verb[@has-type=\"true\"]/rdf-list/rdf-value\0";
+    if(license_node != NULL){
+      label = GTK_LABEL(list->data);
+      gtk_label_set_text(label,
+			 g_strconcat("License: \0",
+				     xmlGetProp(license_node->data,
+						"value\0"),
+				     NULL));
+    }
+
+    str = g_strdup_printf("//rdf-triple[@subject=\"<%s>\"]//rdf-triple[@subject=\"lv2:port\"]/rdf-verb[@has-type=\"true\"]/rdf-list/rdf-value\0",
+			  uri_str);
     port_type_node = ags_turtle_find_xpath(lv2_plugin->turtle,
 					   str);
+    free(str);
     
-    str = "//rdf-triple//rdf-triple[@subject=\"lv2:port\"]/rdf-verb[@do=\"lv2:name\"]/rdf-list/rdf-value[1]\0";
+    str = g_strdup_printf("//rdf-triple[@subject=\"<%s>\"]//rdf-triple[@subject=\"lv2:port\"]/rdf-verb[@do=\"lv2:name\"]/rdf-list/rdf-value[1]\0",
+			  uri_str);
     port_name_node = ags_turtle_find_xpath(lv2_plugin->turtle,
 					   str);
+    free(str);
     
     port_count = g_list_length(port_name_node);
 

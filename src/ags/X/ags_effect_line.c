@@ -652,21 +652,34 @@ ags_effect_line_add_lv2_effect(AgsEffectLine *effect_line,
   recall_port = AGS_RECALL(recall->data)->port;
   g_list_free(recall_start);
 
-  str = "//rdf-triple//rdf-triple[@subject=\"lv2:port\"]/rdf-verb[@has-type=\"true\"]/rdf-list/rdf-value\0";
+  str = g_strdup_printf("//rdf-triple[@subject=\"<%s>\"]//rdf-triple//rdf-triple[@subject=\"lv2:port\"]/rdf-verb[@has-type=\"true\"]/rdf-list/rdf-value\0",
+			effect);
   port_type_node = ags_turtle_find_xpath(lv2_plugin->turtle,
 					 str);
 
+  str = g_strdup_printf("//rdf-triple[@subject=\"<%s>\"]//rdf-triple[@subject=\"lv2:port\"]/rdf-verb[@do=\"lv2:name\"]/rdf-list/rdf-value\0",
+			effect);
   port_name_node = ags_turtle_find_xpath(lv2_plugin->turtle,
-					"//rdf-triple[@subject=\"lv2:port\"]/rdf-verb[@do=\"lv2:name\"]/rdf-list/rdf-value\0");
+					 str);
+  free(str);
 
+  str = g_strdup_printf("//rdf-triple[@subject=\"<%s>\"]//rdf-triple[@subject=\"lv2:port\"]/rdf-verb[@do=\"lv2:minimum\"]/rdf-list/rdf-value\0",
+			effect);
   port_min_node = ags_turtle_find_xpath(lv2_plugin->turtle,
-					"//rdf-triple[@subject=\"lv2:port\"]/rdf-verb[@do=\"lv2:minimum\"]/rdf-list/rdf-value\0");
+					str);
+  free(str);
 
+  str = g_strdup_printf("//rdf-triple[@subject=\"<%s>\"]//rdf-triple[@subject=\"lv2:port\"]/rdf-verb[@do=\"lv2:maximum\"]/rdf-list/rdf-value\0",
+			effect);
   port_max_node = ags_turtle_find_xpath(lv2_plugin->turtle,
-					"//rdf-triple[@subject=\"lv2:port\"]/rdf-verb[@do=\"lv2:maximum\"]/rdf-list/rdf-value\0");
+					str);
+  free(str);
 
+  str = g_strdup_printf("//rdf-triple[@subject=\"<%s>\"]//rdf-triple[@subject=\"lv2:port\"]/rdf-verb[@do=\"lv2:default\"]/rdf-list/rdf-value\0",
+			effect);
   port_default_node = ags_turtle_find_xpath(lv2_plugin->turtle,
-					    "//rdf-triple[@subject=\"lv2:port\"]/rdf-verb[@do=\"lv2:default\"]/rdf-list/rdf-value\0");
+					    str);
+  free(str);
 
   /* load ports */
   while(port != NULL && recall_port != NULL){

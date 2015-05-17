@@ -1009,6 +1009,7 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
   
   /* load plugin */
   lv2_plugin = ags_lv2_manager_find_lv2_plugin(filename);
+  xmlSaveFormatFileEnc("-\0", lv2_plugin->turtle->doc, "UTF-8\0", 1);
 
   for(i = 0; i < pads; i++){
     for(j = 0; j < audio_channels; j++){
@@ -1122,24 +1123,42 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
   }
 
   /* find ports */
+  g_message(effect);
+  
+  str = g_strdup_printf("//rdf-triple[@subject=\"<%s>\"]/rdf-verb[@do=\"doap:name\"]/rdf-list/rdf-value[1]\0",
+			effect);
   node_list = ags_turtle_find_xpath(lv2_plugin->turtle,
-				    "//rdf-triple/rdf-verb[@do=\"doap:name\"]/rdf-list/rdf-value[1]\0");
-
-  str = "//rdf-triple//rdf-triple[@subject=\"lv2:port\"]/rdf-verb[@has-type=\"true\"]/rdf-list/rdf-value\0";
+				    str);
+  free(str);
+  
+  str = g_strdup_printf("//rdf-triple[@subject=\"<%s>\"]//rdf-triple[@subject=\"lv2:port\"]/rdf-verb[@has-type=\"true\"]/rdf-list/rdf-value\0",
+			effect);
   port_type_node = ags_turtle_find_xpath(lv2_plugin->turtle,
 					 str);
 
+  str = g_strdup_printf("//rdf-triple[@subject=\"<%s>\"]//rdf-triple[@subject=\"lv2:port\"]/rdf-verb[@do=\"lv2:name\"]/rdf-list/rdf-value\0",
+			effect);
   port_name_node = ags_turtle_find_xpath(lv2_plugin->turtle,
-					 "//rdf-triple[@subject=\"lv2:port\"]/rdf-verb[@do=\"lv2:name\"]/rdf-list/rdf-value\0");
+					 str);
+  free(str);
 
+  str = g_strdup_printf("//rdf-triple[@subject=\"<%s>\"]//rdf-triple[@subject=\"lv2:port\"]/rdf-verb[@do=\"lv2:minimum\"]/rdf-list/rdf-value\0",
+			effect);
   port_min_node = ags_turtle_find_xpath(lv2_plugin->turtle,
-					"//rdf-triple[@subject=\"lv2:port\"]/rdf-verb[@do=\"lv2:minimum\"]/rdf-list/rdf-value\0");
+					str);
+  free(str);
 
+  str = g_strdup_printf("//rdf-triple[@subject=\"<%s>\"]//rdf-triple[@subject=\"lv2:port\"]/rdf-verb[@do=\"lv2:maximum\"]/rdf-list/rdf-value\0",
+			effect);
   port_max_node = ags_turtle_find_xpath(lv2_plugin->turtle,
-					"//rdf-triple[@subject=\"lv2:port\"]/rdf-verb[@do=\"lv2:maximum\"]/rdf-list/rdf-value\0");
+					str);
+  free(str);
 
+  str = g_strdup_printf("//rdf-triple[@subject=\"<%s>\"]//rdf-triple[@subject=\"lv2:port\"]/rdf-verb[@do=\"lv2:default\"]/rdf-list/rdf-value\0",
+			effect);
   port_default_node = ags_turtle_find_xpath(lv2_plugin->turtle,
-					    "//rdf-triple[@subject=\"lv2:port\"]/rdf-verb[@do=\"lv2:default\"]/rdf-list/rdf-value\0");
+					    str);
+  free(str);
 
   /* load ports */
   k = 0;
@@ -1149,6 +1168,7 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 			     "value\0");
     port_type_1 = xmlGetProp(port_type_node->next->data,
 			     "value\0");
+    g_message("DD\0");
 
     if(!g_ascii_strncasecmp(port_type_0,
 			    "lv2:ControlPort\0",
