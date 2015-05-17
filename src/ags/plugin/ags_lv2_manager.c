@@ -54,14 +54,7 @@ enum{
   PROP_LOCALE,
 };
 
-enum{
-  ADD,
-  CREATE,
-  LAST_SIGNAL,
-};
-
 static gpointer ags_lv2_manager_parent_class = NULL;
-static guint lv2_manager_signals[LAST_SIGNAL];
 
 AgsLv2Manager *ags_lv2_manager = NULL;
 static const gchar *ags_lv2_default_path = "/usr/lib/lv2\0";
@@ -462,6 +455,8 @@ ags_lv2_manager_load_default_directory()
 	ttl_list = ttl_list->next;
 	binary_list = binary_list->next;
       }
+
+      g_object_unref(manifest);
     }
   }
 }
@@ -558,6 +553,7 @@ ags_lv2_manager_get_instance()
 
 /**
  * ags_lv2_manager_new:
+ * @locale: the default locale
  *
  * Creates an #AgsLv2Manager
  *

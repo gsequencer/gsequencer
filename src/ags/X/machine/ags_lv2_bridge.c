@@ -232,6 +232,8 @@ ags_lv2_bridge_set_build_id(AgsPlugin *plugin, gchar *build_id)
 /**
  * ags_lv2_bridge_new:
  * @soundcard: the assigned soundcard.
+ * @filename: the ui.so
+ * @uri: the effect's URI
  *
  * Creates an #AgsLv2Bridge
  *
@@ -240,21 +242,17 @@ ags_lv2_bridge_set_build_id(AgsPlugin *plugin, gchar *build_id)
  * Since: 0.4.3
  */
 AgsLv2Bridge*
-ags_lv2_bridge_new(GObject *soundcard)
+ags_lv2_bridge_new(GObject *soundcard,
+		   gchar *filename,
+		   gchar *uri)
 {
   AgsLv2Bridge *lv2_bridge;
-  GValue value = {0,};
 
   lv2_bridge = (AgsLv2Bridge *) g_object_new(AGS_TYPE_LV2_BRIDGE,
+					     "soundcard\0", soundcard,
+					     "filename\0", filename,
+					     "uri\0", uri,
 					     NULL);
-
-  if(soundcard != NULL){
-    g_value_init(&value, G_TYPE_OBJECT);
-    g_value_set_object(&value, soundcard);
-    g_object_set_property(G_OBJECT(AGS_MACHINE(lv2_bridge)->audio),
-			  "soundcard\0", &value);
-    g_value_unset(&value);
-  }
 
   return(lv2_bridge);
 }

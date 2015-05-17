@@ -299,6 +299,7 @@ am__objects_15 = $(am__objects_14) \
 am__objects_16 = $(am__objects_1) \
 	libags_audio_a-ags_ladspa_manager.$(OBJEXT) \
 	libags_audio_a-ags_lv2_manager.$(OBJEXT) \
+	libags_audio_a-ags_lv2ui_manager.$(OBJEXT) \
 	libags_audio_a-ags_plugin_factory.$(OBJEXT)
 am_libags_audio_a_OBJECTS = $(am__objects_8) $(am__objects_9) \
 	$(am__objects_11) $(am__objects_12) $(am__objects_13) \
@@ -1011,6 +1012,7 @@ ags_plugin_h_sources = \
 	$(deprecated_ags_plugin_h_sources) \
 	src/ags/plugin/ags_ladspa_manager.h		\
 	src/ags/plugin/ags_lv2_manager.h		\
+	src/ags/plugin/ags_lv2ui_manager.h		\
 	src/ags/plugin/ags_plugin_factory.h		\
 	src/ags/plugin/ags_plugin_stock.h
 
@@ -1019,6 +1021,7 @@ ags_plugin_c_sources = \
 	$(deprecated_ags_plugin_c_sources) \
 	src/ags/plugin/ags_ladspa_manager.c		\
 	src/ags/plugin/ags_lv2_manager.c		\
+	src/ags/plugin/ags_lv2ui_manager.c		\
 	src/ags/plugin/ags_plugin_factory.c
 
 
@@ -2312,6 +2315,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_a-ags_loop_channel.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_a-ags_loop_channel_run.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_a-ags_lv2_manager.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_a-ags_lv2ui_manager.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_a-ags_mute_audio.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_a-ags_mute_audio_signal.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_a-ags_mute_channel.Po@am__quote@
@@ -5011,6 +5015,20 @@ libags_audio_a-ags_lv2_manager.obj: src/ags/plugin/ags_lv2_manager.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/plugin/ags_lv2_manager.c' object='libags_audio_a-ags_lv2_manager.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -c -o libags_audio_a-ags_lv2_manager.obj `if test -f 'src/ags/plugin/ags_lv2_manager.c'; then $(CYGPATH_W) 'src/ags/plugin/ags_lv2_manager.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/plugin/ags_lv2_manager.c'; fi`
+
+libags_audio_a-ags_lv2ui_manager.o: src/ags/plugin/ags_lv2ui_manager.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -MT libags_audio_a-ags_lv2ui_manager.o -MD -MP -MF $(DEPDIR)/libags_audio_a-ags_lv2ui_manager.Tpo -c -o libags_audio_a-ags_lv2ui_manager.o `test -f 'src/ags/plugin/ags_lv2ui_manager.c' || echo '$(srcdir)/'`src/ags/plugin/ags_lv2ui_manager.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_a-ags_lv2ui_manager.Tpo $(DEPDIR)/libags_audio_a-ags_lv2ui_manager.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/plugin/ags_lv2ui_manager.c' object='libags_audio_a-ags_lv2ui_manager.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -c -o libags_audio_a-ags_lv2ui_manager.o `test -f 'src/ags/plugin/ags_lv2ui_manager.c' || echo '$(srcdir)/'`src/ags/plugin/ags_lv2ui_manager.c
+
+libags_audio_a-ags_lv2ui_manager.obj: src/ags/plugin/ags_lv2ui_manager.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -MT libags_audio_a-ags_lv2ui_manager.obj -MD -MP -MF $(DEPDIR)/libags_audio_a-ags_lv2ui_manager.Tpo -c -o libags_audio_a-ags_lv2ui_manager.obj `if test -f 'src/ags/plugin/ags_lv2ui_manager.c'; then $(CYGPATH_W) 'src/ags/plugin/ags_lv2ui_manager.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/plugin/ags_lv2ui_manager.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_a-ags_lv2ui_manager.Tpo $(DEPDIR)/libags_audio_a-ags_lv2ui_manager.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/plugin/ags_lv2ui_manager.c' object='libags_audio_a-ags_lv2ui_manager.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -c -o libags_audio_a-ags_lv2ui_manager.obj `if test -f 'src/ags/plugin/ags_lv2ui_manager.c'; then $(CYGPATH_W) 'src/ags/plugin/ags_lv2ui_manager.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/plugin/ags_lv2ui_manager.c'; fi`
 
 libags_audio_a-ags_plugin_factory.o: src/ags/plugin/ags_plugin_factory.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -MT libags_audio_a-ags_plugin_factory.o -MD -MP -MF $(DEPDIR)/libags_audio_a-ags_plugin_factory.Tpo -c -o libags_audio_a-ags_plugin_factory.o `test -f 'src/ags/plugin/ags_plugin_factory.c' || echo '$(srcdir)/'`src/ags/plugin/ags_plugin_factory.c
