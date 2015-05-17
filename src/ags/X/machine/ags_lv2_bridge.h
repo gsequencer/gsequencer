@@ -23,6 +23,9 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
+#include <lv2.h>
+#include <lv2/lv2plug.in/ns/extensions/ui/ui.h>
+
 #include <ags/audio/ags_channel.h>
 
 #include <ags/X/ags_machine.h>
@@ -60,6 +63,12 @@ struct _AgsLv2Bridge
 
   guint mapped_output;
   guint mapped_input;
+
+  gchar *filename;
+  gchar *uri;
+
+  LV2UI_Descriptor *lv2_ui_descriptor;
+  LV2UI_Handle *lv2_ui_handle;
 };
 
 struct _AgsLv2BridgeClass
@@ -69,6 +78,10 @@ struct _AgsLv2BridgeClass
 
 GType ags_lv2_bridge_get_type(void);
 
-AgsLv2Bridge* ags_lv2_bridge_new(GObject *soundcard);
+void ags_lv2_bridge_load(AgsLv2Bridge *lv2_bridge);
+
+AgsLv2Bridge* ags_lv2_bridge_new(GObject *soundcard,
+				 gchar *filename,
+				 gchar *uri);
 
 #endif /*__AGS_LV2_BRIDGE_H__*/

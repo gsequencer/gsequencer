@@ -218,6 +218,7 @@ ags_plugin_h_sources = \
 	$(deprecated_ags_plugin_h_sources) \
 	src/ags/plugin/ags_ladspa_manager.h		\
 	src/ags/plugin/ags_lv2_manager.h		\
+	src/ags/plugin/ags_lv2ui_manager.h		\
 	src/ags/plugin/ags_plugin_factory.h		\
 	src/ags/plugin/ags_plugin_stock.h
 
@@ -227,6 +228,7 @@ ags_plugin_c_sources = \
 	$(deprecated_ags_plugin_c_sources) \
 	src/ags/plugin/ags_ladspa_manager.c		\
 	src/ags/plugin/ags_lv2_manager.c		\
+	src/ags/plugin/ags_lv2ui_manager.c		\
 	src/ags/plugin/ags_plugin_factory.c
 
 # libags_thread all files
