@@ -638,7 +638,8 @@ ags_lv2_menu_new()
   AgsLv2Plugin *lv2_plugin;
 
   GList *list;
-  
+
+  gchar *str;
   gchar *plugin_name;
   gchar **filename, **filename_start;
   
@@ -658,21 +659,28 @@ ags_lv2_menu_new()
 
     /* We've successfully found a lv2_descriptor function. Now load name and uuid member. */
     while(list != NULL){
-      /* instantiate and load turtle */      
-      item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup(xmlGetProp(list->data,
-									      "value\0")));
-      g_object_set_data_full(item,
-			     AGS_MENU_BAR_LV2_FILENAME_KEY,
-			     g_strdup(*filename),
-			     (GDestroyNotify) g_free);
-      g_object_set_data_full(item,
-			     AGS_MENU_BAR_LV2_URI_KEY,
-			     g_strdup(xmlGetProp(((xmlNode *) list->data)->parent->parent->parent,
-						 "subject\0")),
-			     (GDestroyNotify) g_free);
-      
-      gtk_menu_shell_append((GtkMenuShell *) menu, (GtkWidget *) item);
+      str = xmlGetProp(((xmlNode *) list->data)->parent->parent->parent,
+		       "subject\0");
 
+      if(str != NULL){
+	/* instantiate and load turtle */      
+	item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup(xmlGetProp(list->data,
+										"value\0")));
+	g_object_set_data_full(item,
+			       AGS_MENU_BAR_LV2_FILENAME_KEY,
+			       g_strdup(*filename),
+			       (GDestroyNotify) g_free);
+
+	g_message(str);
+	g_object_set_data_full(item,
+			       AGS_MENU_BAR_LV2_URI_KEY,
+			       g_strndup(&(str[1]),
+					 strlen(str) - 2),
+			       (GDestroyNotify) g_free);
+      
+	gtk_menu_shell_append((GtkMenuShell *) menu, (GtkWidget *) item);
+      }
+      
       list = list->next;
     }
 
