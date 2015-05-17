@@ -272,7 +272,7 @@ ags_window_set_property(GObject *gobject,
       if(application_context != NULL){
 	g_object_ref(application_context);
 
-	window->application_mutex = &(application_context->mutex);
+	window->application_mutex = application_context->mutex;
       }else{
 	window->application_mutex = NULL;
       }
@@ -530,7 +530,7 @@ ags_window_new(GObject *application_context)
   AgsWindow *window;
 
   window = (AgsWindow *) g_object_new(AGS_TYPE_WINDOW,
-				      "application-context", application_context,
+				      "application-context\0", application_context,
 				      NULL);
 
   return(window);

@@ -44,7 +44,7 @@ struct _AgsRecallLadspa
 
   gchar *filename;
   gchar *effect;
-  unsigned long index;
+  unsigned long effect_index;
 
   LADSPA_Descriptor *plugin_descriptor;
 
@@ -77,6 +77,6 @@ GList* ags_recall_ladspa_find(GList *recall,
 AgsRecallLadspa* ags_recall_ladspa_new(AgsChannel *source,
 				       gchar *filename,
 				       gchar *effect,
-				       unsigned long index);
+				       unsigned long effect_index);
 
 #endif /*__AGS_RECALL_LADSPA_H__*/

@@ -28,6 +28,12 @@
 #define AGS_IS_MENU_BAR_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_MENU_BAR))
 #define AGS_MENU_BAR_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_MENU_BAR, AgsMenuBarClass))
 
+#define AGS_MENU_BAR_LADSPA_FILENAME_KEY "ags-menu-bar-ladspa-filename\0"
+#define AGS_MENU_BAR_LADSPA_EFFECT_KEY "ags-menu-bar-ladspa-effect\0"
+
+#define AGS_MENU_BAR_LV2_FILENAME_KEY "ags-menu-bar-lv2-filename\0"
+#define AGS_MENU_BAR_LV2_URI_KEY "ags-menu-bar-lv2-uri\0"
+
 typedef struct _AgsMenuBar AgsMenuBar;
 typedef struct _AgsMenuBarClass AgsMenuBarClass;
 

@@ -242,8 +242,8 @@ void
 ags_menu_bar_connect(AgsConnectable *connectable)
 {
   AgsMenuBar *menu_bar;
-  GList *list0, *list1, *list2, *list3;
-  GList *list1_start, *list2_start, *list3_start;
+  GList *list0, *list1, *list2, *list3, *list4;
+  GList *list1_start, *list2_start, *list3_start, *list4_start;
 
   menu_bar = AGS_MENU_BAR(connectable);
 
@@ -315,15 +315,54 @@ ags_menu_bar_connect(AgsConnectable *connectable)
 
   g_signal_connect (G_OBJECT (list2->data), "activate\0",
                     G_CALLBACK (ags_menu_bar_add_ffplayer_callback), (gpointer) menu_bar);
-
-  g_list_free(list2_start);
+  list2 = list2->next;
 
   /* bridge */
   list3_start = 
-    list3 = gtk_container_get_children((GtkContainer *) gtk_menu_item_get_submenu((GtkMenuItem *) list1->data));
+    list3 = gtk_container_get_children((GtkContainer *) gtk_menu_item_get_submenu((GtkMenuItem *) list2->data));
   list2 = list2->next;
 
+  //TODO:JK: replicator bridge
+  list3 = list3->next;
+
+  //TODO:JK: midi input
+  list3 = list3->next;
+
+  //TODO:JK: midi output
+  list3 = list3->next;
+
+  /* ladspa */
+  list4_start = 
+    list4 = gtk_container_get_children((GtkContainer *) gtk_menu_item_get_submenu((GtkMenuItem *) list3->data));
+  list3 = list3->next;
+
+  while(list4 != NULL){
+    g_signal_connect(G_OBJECT(list4->data), "activate\0",
+		     G_CALLBACK(ags_menu_bar_add_ladspa_bridge_callback), (gpointer) menu_bar);
+    
+    list4 = list4->next;
+  }
+
+  g_list_free(list4_start);
+
+  /* lv2 */
+  list4_start = 
+    list4 = gtk_container_get_children((GtkContainer *) gtk_menu_item_get_submenu((GtkMenuItem *) list3->data));
+  list3 = list3->next;
+
+  while(list4 != NULL){
+    g_signal_connect(G_OBJECT(list4->data), "activate\0",
+		     G_CALLBACK(ags_menu_bar_add_lv2_bridge_callback), (gpointer) menu_bar);
+    
+    list4 = list4->next;
+  }
+
+  g_list_free(list4_start);
+
   
+  g_list_free(list3_start);
+  g_list_free(list2_start);
+
   /* edit */
   g_signal_connect (G_OBJECT (list1->data), "activate\0",
                     G_CALLBACK (ags_menu_bar_remove_callback), (gpointer) menu_bar);
@@ -558,6 +597,15 @@ ags_ladspa_menu_new()
 	  item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup_printf("%s:%lu\0",
 									      plugin_descriptor->Name,
 									      plugin_descriptor->UniqueID));
+	  g_object_set_data_full(item,
+				 AGS_MENU_BAR_LADSPA_FILENAME_KEY,
+				 g_strdup(*filename),
+				 (GDestroyNotify) g_free);
+	  g_object_set_data_full(item,
+				 AGS_MENU_BAR_LADSPA_EFFECT_KEY,
+				 g_strdup(plugin_descriptor->Name),
+				 (GDestroyNotify) g_free);
+
 	  gtk_menu_shell_append((GtkMenuShell *) menu, (GtkWidget *) item);
 	}
       }
@@ -613,6 +661,16 @@ ags_lv2_menu_new()
       /* instantiate and load turtle */      
       item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup(xmlGetProp(list->data,
 									      "value\0")));
+      g_object_set_data_full(item,
+			     AGS_MENU_BAR_LV2_FILENAME_KEY,
+			     g_strdup(*filename),
+			     (GDestroyNotify) g_free);
+      g_object_set_data_full(item,
+			     AGS_MENU_BAR_LV2_URI_KEY,
+			     g_strdup(xmlGetProp(((xmlNode *) list->data)->parent->parent->parent,
+						 "subject\0")),
+			     (GDestroyNotify) g_free);
+      
       gtk_menu_shell_append((GtkMenuShell *) menu, (GtkWidget *) item);
 
       list = list->next;

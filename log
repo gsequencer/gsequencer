@@ -1,492 +1,804 @@
-In file included from ./src/ags/server/ags_server.h:23:0,
-                 from ./src/ags/server/ags_server_application_context.h:34,
-                 from src/ags/audio/ags_channel.c:36:
-./src/ags/server/ags_registry.h:33:1: warning: useless storage class specifier in empty declaration
+make  all-recursive
+make[1]: Entering directory '/home/minos/ags-devel'
+Making all in po
+make[2]: Entering directory '/home/minos/ags-devel/po'
+make[2]: Nothing to be done for 'all'.
+make[2]: Leaving directory '/home/minos/ags-devel/po'
+Making all in .
+make[2]: Entering directory '/home/minos/ags-devel'
+gcc -DHAVE_CONFIG_H -I.    -g -O2 -g -std=gnu11 -Wuninitialized -Wreturn-type -Wunused-variable -Wunused-but-set-variable -Wmaybe-uninitialized -Wimplicit-function-declaration -Wparentheses -Wpointer-sign -Wdeprecated-declarations -Wcomment -O -I./src -I/usr/include -I/usr/include/uuid   -I/usr/include/alsa  -I/usr/include/libxml2   -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include  -pthread -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include  -pthread -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng16 -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include  -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng16 -I/usr/include/harfbuzz -I/usr/include/freetype2 -I/usr/include/harfbuzz -I/usr/include/libdrm -I/usr/include/libpng16 -I/usr/X11/include  -pthread -I/usr/include/gtk-2.0 -I/usr/lib/gtk-2.0/include -I/usr/include/pango-1.0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/libdrm -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng16 -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include -I/usr/include/freetype2 -I/usr/include/libpng16 -I/usr/include/harfbuzz -I/usr/include/freetype2 -I/usr/include/libpng16 -I/usr/include/harfbuzz -I/usr/X11/include  -g -O2 -MT gsequencer-ags_effect_bulk.o -MD -MP -MF .deps/gsequencer-ags_effect_bulk.Tpo -c -o gsequencer-ags_effect_bulk.o `test -f 'src/ags/X/ags_effect_bulk.c' || echo './'`src/ags/X/ags_effect_bulk.c
+In file included from ./src/ags/X/ags_window.h:32:0,
+                 from src/ags/X/ags_effect_bulk.c:59:
+./src/ags/X/ags_editor.h:62:1: warning: useless storage class specifier in empty declaration
  };
  ^
-src/ags/audio/ags_channel.c: In function ‘ags_channel_get_recall_by_effect’:
-src/ags/audio/ags_channel.c:1081:14: warning: unused variable ‘recall’ [-Wunused-variable]
-   AgsRecall *recall;
-              ^
-src/ags/audio/ags_channel.c: In function ‘ags_channel_add_ladspa_effect’:
-src/ags/audio/ags_channel.c:1132:8: warning: passing argument 2 of ‘ags_channel_add_recall_container’ from incompatible pointer type
-        recall_container);
-        ^
-src/ags/audio/ags_channel.c:996:1: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsRecallContainer *’
- ags_channel_add_recall_container(AgsChannel *channel, GObject *container)
- ^
-src/ags/audio/ags_channel.c:1144:5: warning: passing argument 2 of ‘ags_channel_add_recall’ from incompatible pointer type
-     recall_ladspa,
-     ^
-src/ags/audio/ags_channel.c:1064:1: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsRecallLadspa *’
- ags_channel_add_recall(AgsChannel *channel, GObject *recall, gboolean play)
- ^
-src/ags/audio/ags_channel.c:1148:3: warning: implicit declaration of function ‘ags_recall_ladspa_load’ [-Wimplicit-function-declaration]
-   ags_recall_ladspa_load(recall_ladspa);
-   ^
-src/ags/audio/ags_channel.c:1163:5: warning: passing argument 2 of ‘ags_channel_add_recall’ from incompatible pointer type
-     recall_channel_run_dummy,
-     ^
-src/ags/audio/ags_channel.c:1064:1: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsRecallChannelRunDummy *’
- ags_channel_add_recall(AgsChannel *channel, GObject *recall, gboolean play)
- ^
-src/ags/audio/ags_channel.c:1179:33: warning: passing argument 1 of ‘ags_recall_duplicate’ from incompatible pointer type
-  current = ags_recall_duplicate(recall_channel_run_dummy, recall_id->data);
-                                 ^
-In file included from ./src/ags/audio/ags_channel.h:26:0,
-                 from src/ags/audio/ags_channel.c:19:
-./src/ags/audio/ags_recall.h:182:12: note: expected ‘struct AgsRecall *’ but argument is of type ‘struct AgsRecallChannelRunDummy *’
- AgsRecall* ags_recall_duplicate(AgsRecall *recall,
-            ^
-src/ags/audio/ags_channel.c:1203:2: warning: implicit declaration of function ‘ags_dynamic_connectable_connect_dynamic’ [-Wimplicit-function-declaration]
-  ags_dynamic_connectable_connect_dynamic(AGS_DYNAMIC_CONNECTABLE(current));
-  ^
-src/ags/audio/ags_channel.c:1221:8: warning: passing argument 2 of ‘ags_channel_add_recall_container’ from incompatible pointer type
-        recall_container);
-        ^
-src/ags/audio/ags_channel.c:996:1: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsRecallContainer *’
- ags_channel_add_recall_container(AgsChannel *channel, GObject *container)
- ^
-src/ags/audio/ags_channel.c:1232:5: warning: passing argument 2 of ‘ags_channel_add_recall’ from incompatible pointer type
-     recall_ladspa,
-     ^
-src/ags/audio/ags_channel.c:1064:1: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsRecallLadspa *’
- ags_channel_add_recall(AgsChannel *channel, GObject *recall, gboolean play)
- ^
-src/ags/audio/ags_channel.c:1254:5: warning: passing argument 2 of ‘ags_channel_add_recall’ from incompatible pointer type
-     recall_channel_run_dummy,
-     ^
-src/ags/audio/ags_channel.c:1064:1: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsRecallChannelRunDummy *’
- ags_channel_add_recall(AgsChannel *channel, GObject *recall, gboolean play)
- ^
-src/ags/audio/ags_channel.c:1269:33: warning: passing argument 1 of ‘ags_recall_duplicate’ from incompatible pointer type
-  current = ags_recall_duplicate(recall_channel_run_dummy, recall_id->data);
-                                 ^
-In file included from ./src/ags/audio/ags_channel.h:26:0,
-                 from src/ags/audio/ags_channel.c:19:
-./src/ags/audio/ags_recall.h:182:12: note: expected ‘struct AgsRecall *’ but argument is of type ‘struct AgsRecallChannelRunDummy *’
- AgsRecall* ags_recall_duplicate(AgsRecall *recall,
-            ^
-src/ags/audio/ags_channel.c:1119:22: warning: unused variable ‘plugin_descriptor’ [-Wunused-variable]
-   LADSPA_Descriptor *plugin_descriptor;
+src/ags/X/ags_effect_bulk.c: In function ‘ags_effect_bulk_init’:
+src/ags/X/ags_effect_bulk.c:366:29: warning: assignment makes pointer from integer without a cast
+   effect_bulk->channel_type = G_TYPE_NONE;
+                             ^
+src/ags/X/ags_effect_bulk.c:374:22: warning: passing argument 1 of ‘gtk_box_pack_start’ from incompatible pointer type
+   gtk_box_pack_start(effect_bulk,
                       ^
-src/ags/audio/ags_channel.c:1118:30: warning: unused variable ‘ladspa_descriptor’ [-Wunused-variable]
-   LADSPA_Descriptor_Function ladspa_descriptor;
-                              ^
-src/ags/audio/ags_channel.c:1117:9: warning: unused variable ‘plugin_so’ [-Wunused-variable]
-   void *plugin_so;
-         ^
-src/ags/audio/ags_channel.c:1113:17: warning: unused variable ‘add_recall’ [-Wunused-variable]
-   AgsAddRecall *add_recall;
-                 ^
-src/ags/audio/ags_channel.c:1112:26: warning: unused variable ‘add_recall_container’ [-Wunused-variable]
-   AgsAddRecallContainer *add_recall_container;
-                          ^
-src/ags/audio/ags_channel.c:1111:20: warning: variable ‘ladspa_plugin’ set but not used [-Wunused-but-set-variable]
-   AgsLadspaPlugin *ladspa_plugin;
-                    ^
-src/ags/audio/ags_channel.c: In function ‘ags_channel_add_lv2_effect’:
-src/ags/audio/ags_channel.c:1328:3: error: unknown type name ‘uint32_T’
-   uint32_T effect_index;
-   ^
-src/ags/audio/ags_channel.c:1330:3: warning: implicit declaration of function ‘ags_lv2_manager_effect_index’ [-Wimplicit-function-declaration]
-   effect_index = ags_lv2_manager_effect_index(filename,
-   ^
-src/ags/audio/ags_channel.c:1339:8: warning: passing argument 2 of ‘ags_channel_add_recall_container’ from incompatible pointer type
-        recall_container);
+In file included from /usr/include/gtk-2.0/gtk/gtkbbox.h:34:0,
+                 from /usr/include/gtk-2.0/gtk/gtk.h:46,
+                 from ./src/ags/X/ags_effect_bulk.h:24,
+                 from src/ags/X/ags_effect_bulk.c:19:
+/usr/include/gtk-2.0/gtk/gtkbox.h:109:13: note: expected ‘struct GtkBox *’ but argument is of type ‘struct AgsEffectBulk *’
+ void        gtk_box_pack_start          (GtkBox         *box,
+             ^
+src/ags/X/ags_effect_bulk.c:375:8: warning: passing argument 2 of ‘gtk_box_pack_start’ from incompatible pointer type
+        alignment,
         ^
-src/ags/audio/ags_channel.c:996:1: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsRecallContainer *’
- ags_channel_add_recall_container(AgsChannel *channel, GObject *container)
- ^
-src/ags/audio/ags_channel.c:1352:5: warning: passing argument 2 of ‘ags_channel_add_recall’ from incompatible pointer type
-     recall_lv2,
-     ^
-src/ags/audio/ags_channel.c:1064:1: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsRecallLv2 *’
- ags_channel_add_recall(AgsChannel *channel, GObject *recall, gboolean play)
- ^
-src/ags/audio/ags_channel.c:1356:3: warning: implicit declaration of function ‘ags_recall_lv2_load’ [-Wimplicit-function-declaration]
-   ags_recall_lv2_load(recall_lv2);
-   ^
-src/ags/audio/ags_channel.c:1370:5: warning: passing argument 2 of ‘ags_channel_add_recall’ from incompatible pointer type
-     recall_channel_run_dummy,
-     ^
-src/ags/audio/ags_channel.c:1064:1: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsRecallChannelRunDummy *’
- ags_channel_add_recall(AgsChannel *channel, GObject *recall, gboolean play)
- ^
-src/ags/audio/ags_channel.c:1386:33: warning: passing argument 1 of ‘ags_recall_duplicate’ from incompatible pointer type
-  current = ags_recall_duplicate(recall_channel_run_dummy, recall_id->data);
-                                 ^
-In file included from ./src/ags/audio/ags_channel.h:26:0,
-                 from src/ags/audio/ags_channel.c:19:
-./src/ags/audio/ags_recall.h:182:12: note: expected ‘struct AgsRecall *’ but argument is of type ‘struct AgsRecallChannelRunDummy *’
- AgsRecall* ags_recall_duplicate(AgsRecall *recall,
-            ^
-src/ags/audio/ags_channel.c:1428:8: warning: passing argument 2 of ‘ags_channel_add_recall_container’ from incompatible pointer type
-        recall_container);
+In file included from /usr/include/gtk-2.0/gtk/gtkbbox.h:34:0,
+                 from /usr/include/gtk-2.0/gtk/gtk.h:46,
+                 from ./src/ags/X/ags_effect_bulk.h:24,
+                 from src/ags/X/ags_effect_bulk.c:19:
+/usr/include/gtk-2.0/gtk/gtkbox.h:109:13: note: expected ‘struct GtkWidget *’ but argument is of type ‘struct GtkAlignment *’
+ void        gtk_box_pack_start          (GtkBox         *box,
+             ^
+src/ags/X/ags_effect_bulk.c:379:8: warning: assignment from incompatible pointer type
+   hbox = gtk_hbox_new(FALSE, 0);
         ^
-src/ags/audio/ags_channel.c:996:1: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsRecallContainer *’
- ags_channel_add_recall_container(AgsChannel *channel, GObject *container)
- ^
-src/ags/audio/ags_channel.c:1440:5: warning: passing argument 2 of ‘ags_channel_add_recall’ from incompatible pointer type
-     recall_lv2,
-     ^
-src/ags/audio/ags_channel.c:1064:1: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsRecallLv2 *’
- ags_channel_add_recall(AgsChannel *channel, GObject *recall, gboolean play)
- ^
-src/ags/audio/ags_channel.c:1462:5: warning: passing argument 2 of ‘ags_channel_add_recall’ from incompatible pointer type
-     recall_channel_run_dummy,
-     ^
-src/ags/audio/ags_channel.c:1064:1: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsRecallChannelRunDummy *’
- ags_channel_add_recall(AgsChannel *channel, GObject *recall, gboolean play)
- ^
-src/ags/audio/ags_channel.c:1477:33: warning: passing argument 1 of ‘ags_recall_duplicate’ from incompatible pointer type
-  current = ags_recall_duplicate(recall_channel_run_dummy, recall_id->data);
-                                 ^
-In file included from ./src/ags/audio/ags_channel.h:26:0,
-                 from src/ags/audio/ags_channel.c:19:
-./src/ags/audio/ags_recall.h:182:12: note: expected ‘struct AgsRecall *’ but argument is of type ‘struct AgsRecallChannelRunDummy *’
- AgsRecall* ags_recall_duplicate(AgsRecall *recall,
-            ^
-src/ags/audio/ags_channel.c:1327:19: warning: unused variable ‘plugin_descriptor’ [-Wunused-variable]
-   LV2_Descriptor *plugin_descriptor;
-                   ^
-src/ags/audio/ags_channel.c:1326:27: warning: unused variable ‘lv2_descriptor’ [-Wunused-variable]
-   LV2_Descriptor_Function lv2_descriptor;
-                           ^
-src/ags/audio/ags_channel.c:1325:9: warning: unused variable ‘plugin_so’ [-Wunused-variable]
-   void *plugin_so;
+src/ags/X/ags_effect_bulk.c:380:21: warning: passing argument 1 of ‘gtk_container_add’ from incompatible pointer type
+   gtk_container_add(alignment,
+                     ^
+In file included from /usr/include/gtk-2.0/gtk/gtkbin.h:35:0,
+                 from /usr/include/gtk-2.0/gtk/gtkwindow.h:36,
+                 from /usr/include/gtk-2.0/gtk/gtkdialog.h:35,
+                 from /usr/include/gtk-2.0/gtk/gtkaboutdialog.h:32,
+                 from /usr/include/gtk-2.0/gtk/gtk.h:33,
+                 from ./src/ags/X/ags_effect_bulk.h:24,
+                 from src/ags/X/ags_effect_bulk.c:19:
+/usr/include/gtk-2.0/gtk/gtkcontainer.h:111:9: note: expected ‘struct GtkContainer *’ but argument is of type ‘struct GtkAlignment *’
+ void    gtk_container_add   (GtkContainer    *container,
          ^
-src/ags/audio/ags_channel.c:1321:17: warning: unused variable ‘add_recall’ [-Wunused-variable]
-   AgsAddRecall *add_recall;
-                 ^
-src/ags/audio/ags_channel.c:1320:26: warning: unused variable ‘add_recall_container’ [-Wunused-variable]
-   AgsAddRecallContainer *add_recall_container;
-                          ^
-src/ags/audio/ags_channel.c: In function ‘ags_channel_real_add_effect’:
-src/ags/audio/ags_channel.c:1534:5: warning: implicit declaration of function ‘ags_channel_add_ladspa_plugin’ [-Wimplicit-function-declaration]
-     port = ags_channel_add_ladspa_plugin(channel,
-     ^
-src/ags/audio/ags_channel.c:1534:10: warning: assignment makes pointer from integer without a cast
-     port = ags_channel_add_ladspa_plugin(channel,
-          ^
-src/ags/audio/ags_channel.c:1538:5: warning: implicit declaration of function ‘ags_ladspa_manager_find_lv2_plugin’ [-Wimplicit-function-declaration]
-     lv2_plugin = ags_ladspa_manager_find_lv2_plugin(filename);
-     ^
-src/ags/audio/ags_channel.c:1538:16: warning: assignment makes pointer from integer without a cast
-     lv2_plugin = ags_ladspa_manager_find_lv2_plugin(filename);
-                ^
-src/ags/audio/ags_channel.c:1541:7: warning: implicit declaration of function ‘ags_channel_add_lv2_plugin’ [-Wimplicit-function-declaration]
-       port = ags_channel_add_lv2_plugin(channel,
+src/ags/X/ags_effect_bulk.c:381:7: warning: passing argument 2 of ‘gtk_container_add’ from incompatible pointer type
+       hbox);
        ^
-src/ags/audio/ags_channel.c:1541:12: warning: assignment makes pointer from integer without a cast
-       port = ags_channel_add_lv2_plugin(channel,
-            ^
-src/ags/audio/ags_channel.c: In function ‘ags_channel_real_remove_effect’:
-src/ags/audio/ags_channel.c:1586:13: warning: assignment from incompatible pointer type
+In file included from /usr/include/gtk-2.0/gtk/gtkbin.h:35:0,
+                 from /usr/include/gtk-2.0/gtk/gtkwindow.h:36,
+                 from /usr/include/gtk-2.0/gtk/gtkdialog.h:35,
+                 from /usr/include/gtk-2.0/gtk/gtkaboutdialog.h:32,
+                 from /usr/include/gtk-2.0/gtk/gtk.h:33,
+                 from ./src/ags/X/ags_effect_bulk.h:24,
+                 from src/ags/X/ags_effect_bulk.c:19:
+/usr/include/gtk-2.0/gtk/gtkcontainer.h:111:9: note: expected ‘struct GtkWidget *’ but argument is of type ‘struct GtkHBox *’
+ void    gtk_container_add   (GtkContainer    *container,
+         ^
+src/ags/X/ags_effect_bulk.c:383:20: warning: assignment from incompatible pointer type
+   effect_bulk->add = gtk_button_new_from_stock(GTK_STOCK_ADD);
+                    ^
+src/ags/X/ags_effect_bulk.c:384:22: warning: passing argument 1 of ‘gtk_box_pack_start’ from incompatible pointer type
+   gtk_box_pack_start(hbox,
+                      ^
+In file included from /usr/include/gtk-2.0/gtk/gtkbbox.h:34:0,
+                 from /usr/include/gtk-2.0/gtk/gtk.h:46,
+                 from ./src/ags/X/ags_effect_bulk.h:24,
+                 from src/ags/X/ags_effect_bulk.c:19:
+/usr/include/gtk-2.0/gtk/gtkbox.h:109:13: note: expected ‘struct GtkBox *’ but argument is of type ‘struct GtkHBox *’
+ void        gtk_box_pack_start          (GtkBox         *box,
+             ^
+src/ags/X/ags_effect_bulk.c:385:8: warning: passing argument 2 of ‘gtk_box_pack_start’ from incompatible pointer type
+        effect_bulk->add,
+        ^
+In file included from /usr/include/gtk-2.0/gtk/gtkbbox.h:34:0,
+                 from /usr/include/gtk-2.0/gtk/gtk.h:46,
+                 from ./src/ags/X/ags_effect_bulk.h:24,
+                 from src/ags/X/ags_effect_bulk.c:19:
+/usr/include/gtk-2.0/gtk/gtkbox.h:109:13: note: expected ‘struct GtkWidget *’ but argument is of type ‘struct GtkButton *’
+ void        gtk_box_pack_start          (GtkBox         *box,
+             ^
+src/ags/X/ags_effect_bulk.c:389:23: warning: assignment from incompatible pointer type
+   effect_bulk->remove = gtk_button_new_from_stock(GTK_STOCK_REMOVE);
+                       ^
+src/ags/X/ags_effect_bulk.c:390:22: warning: passing argument 1 of ‘gtk_box_pack_start’ from incompatible pointer type
+   gtk_box_pack_start(hbox,
+                      ^
+In file included from /usr/include/gtk-2.0/gtk/gtkbbox.h:34:0,
+                 from /usr/include/gtk-2.0/gtk/gtk.h:46,
+                 from ./src/ags/X/ags_effect_bulk.h:24,
+                 from src/ags/X/ags_effect_bulk.c:19:
+/usr/include/gtk-2.0/gtk/gtkbox.h:109:13: note: expected ‘struct GtkBox *’ but argument is of type ‘struct GtkHBox *’
+ void        gtk_box_pack_start          (GtkBox         *box,
+             ^
+src/ags/X/ags_effect_bulk.c:391:8: warning: passing argument 2 of ‘gtk_box_pack_start’ from incompatible pointer type
+        effect_bulk->remove,
+        ^
+In file included from /usr/include/gtk-2.0/gtk/gtkbbox.h:34:0,
+                 from /usr/include/gtk-2.0/gtk/gtk.h:46,
+                 from ./src/ags/X/ags_effect_bulk.h:24,
+                 from src/ags/X/ags_effect_bulk.c:19:
+/usr/include/gtk-2.0/gtk/gtkbox.h:109:13: note: expected ‘struct GtkWidget *’ but argument is of type ‘struct GtkButton *’
+ void        gtk_box_pack_start          (GtkBox         *box,
+             ^
+src/ags/X/ags_effect_bulk.c:395:8: warning: assignment from incompatible pointer type
+   hbox = gtk_hbox_new(FALSE, 0);
+        ^
+src/ags/X/ags_effect_bulk.c:396:22: warning: passing argument 1 of ‘gtk_box_pack_start’ from incompatible pointer type
+   gtk_box_pack_start(effect_bulk,
+                      ^
+In file included from /usr/include/gtk-2.0/gtk/gtkbbox.h:34:0,
+                 from /usr/include/gtk-2.0/gtk/gtk.h:46,
+                 from ./src/ags/X/ags_effect_bulk.h:24,
+                 from src/ags/X/ags_effect_bulk.c:19:
+/usr/include/gtk-2.0/gtk/gtkbox.h:109:13: note: expected ‘struct GtkBox *’ but argument is of type ‘struct AgsEffectBulk *’
+ void        gtk_box_pack_start          (GtkBox         *box,
+             ^
+src/ags/X/ags_effect_bulk.c:397:8: warning: passing argument 2 of ‘gtk_box_pack_start’ from incompatible pointer type
+        hbox,
+        ^
+In file included from /usr/include/gtk-2.0/gtk/gtkbbox.h:34:0,
+                 from /usr/include/gtk-2.0/gtk/gtk.h:46,
+                 from ./src/ags/X/ags_effect_bulk.h:24,
+                 from src/ags/X/ags_effect_bulk.c:19:
+/usr/include/gtk-2.0/gtk/gtkbox.h:109:13: note: expected ‘struct GtkWidget *’ but argument is of type ‘struct GtkHBox *’
+ void        gtk_box_pack_start          (GtkBox         *box,
+             ^
+src/ags/X/ags_effect_bulk.c:402:22: warning: passing argument 1 of ‘gtk_box_pack_start’ from incompatible pointer type
+   gtk_box_pack_start(hbox,
+                      ^
+In file included from /usr/include/gtk-2.0/gtk/gtkbbox.h:34:0,
+                 from /usr/include/gtk-2.0/gtk/gtk.h:46,
+                 from ./src/ags/X/ags_effect_bulk.h:24,
+                 from src/ags/X/ags_effect_bulk.c:19:
+/usr/include/gtk-2.0/gtk/gtkbox.h:109:13: note: expected ‘struct GtkBox *’ but argument is of type ‘struct GtkHBox *’
+ void        gtk_box_pack_start          (GtkBox         *box,
+             ^
+src/ags/X/ags_effect_bulk.c:403:8: warning: passing argument 2 of ‘gtk_box_pack_start’ from incompatible pointer type
+        effect_bulk->bulk_member,
+        ^
+In file included from /usr/include/gtk-2.0/gtk/gtkbbox.h:34:0,
+                 from /usr/include/gtk-2.0/gtk/gtk.h:46,
+                 from ./src/ags/X/ags_effect_bulk.h:24,
+                 from src/ags/X/ags_effect_bulk.c:19:
+/usr/include/gtk-2.0/gtk/gtkbox.h:109:13: note: expected ‘struct GtkWidget *’ but argument is of type ‘struct GtkVBox *’
+ void        gtk_box_pack_start          (GtkBox         *box,
+             ^
+src/ags/X/ags_effect_bulk.c:409:22: warning: passing argument 1 of ‘gtk_box_pack_start’ from incompatible pointer type
+   gtk_box_pack_start(hbox,
+                      ^
+In file included from /usr/include/gtk-2.0/gtk/gtkbbox.h:34:0,
+                 from /usr/include/gtk-2.0/gtk/gtk.h:46,
+                 from ./src/ags/X/ags_effect_bulk.h:24,
+                 from src/ags/X/ags_effect_bulk.c:19:
+/usr/include/gtk-2.0/gtk/gtkbox.h:109:13: note: expected ‘struct GtkBox *’ but argument is of type ‘struct GtkHBox *’
+ void        gtk_box_pack_start          (GtkBox         *box,
+             ^
+src/ags/X/ags_effect_bulk.c:410:8: warning: passing argument 2 of ‘gtk_box_pack_start’ from incompatible pointer type
+        effect_bulk->table,
+        ^
+In file included from /usr/include/gtk-2.0/gtk/gtkbbox.h:34:0,
+                 from /usr/include/gtk-2.0/gtk/gtk.h:46,
+                 from ./src/ags/X/ags_effect_bulk.h:24,
+                 from src/ags/X/ags_effect_bulk.c:19:
+/usr/include/gtk-2.0/gtk/gtkbox.h:109:13: note: expected ‘struct GtkWidget *’ but argument is of type ‘struct GtkTable *’
+ void        gtk_box_pack_start          (GtkBox         *box,
+             ^
+src/ags/X/ags_effect_bulk.c:414:56: warning: passing argument 1 of ‘ags_plugin_browser_new’ from incompatible pointer type
+   effect_bulk->plugin_browser = ags_plugin_browser_new(effect_bulk);
+                                                        ^
+In file included from src/ags/X/ags_effect_bulk.c:60:0:
+./src/ags/X/ags_plugin_browser.h:64:19: note: expected ‘struct GtkWidget *’ but argument is of type ‘struct AgsEffectBulk *’
+ AgsPluginBrowser* ags_plugin_browser_new(GtkWidget *parent);
+                   ^
+src/ags/X/ags_effect_bulk.c:414:31: warning: assignment from incompatible pointer type
+   effect_bulk->plugin_browser = ags_plugin_browser_new(effect_bulk);
+                               ^
+src/ags/X/ags_effect_bulk.c: In function ‘ags_effect_bulk_set_property’:
+src/ags/X/ags_effect_bulk.c:446:31: warning: comparison between pointer and integer
+  if(effect_bulk->channel_type == AGS_TYPE_OUTPUT){
+                               ^
+src/ags/X/ags_effect_bulk.c:472:33: warning: comparison between pointer and integer
+    if(effect_bulk->channel_type == AGS_TYPE_OUTPUT){
+                                 ^
+src/ags/X/ags_effect_bulk.c:490:33: warning: assignment makes pointer from integer without a cast
+       effect_bulk->channel_type = channel_type;
+                                 ^
+src/ags/X/ags_effect_bulk.c: In function ‘ags_effect_bulk_get_property’:
+src/ags/X/ags_effect_bulk.c:519:4: warning: passing argument 2 of ‘g_value_set_gtype’ makes integer from pointer without a cast
+    effect_bulk->channel_type);
+    ^
+In file included from /usr/include/glib-2.0/glib-object.h:36:0,
+                 from ./src/ags/X/ags_effect_bulk.h:23,
+                 from src/ags/X/ags_effect_bulk.c:19:
+/usr/include/glib-2.0/gobject/gvaluetypes.h:256:13: note: expected ‘GType’ but argument is of type ‘GType *’
+ void        g_value_set_gtype         (GValue       *value,
+             ^
+src/ags/X/ags_effect_bulk.c: In function ‘ags_effect_bulk_show’:
+src/ags/X/ags_effect_bulk.c:631:21: warning: passing argument 1 of ‘gtk_widget_hide’ from incompatible pointer type
+     gtk_widget_hide(effect_bulk->add);
+                     ^
+In file included from /usr/include/gtk-2.0/gtk/gtkcontainer.h:35:0,
+                 from /usr/include/gtk-2.0/gtk/gtkbin.h:35,
+                 from /usr/include/gtk-2.0/gtk/gtkwindow.h:36,
+                 from /usr/include/gtk-2.0/gtk/gtkdialog.h:35,
+                 from /usr/include/gtk-2.0/gtk/gtkaboutdialog.h:32,
+                 from /usr/include/gtk-2.0/gtk/gtk.h:33,
+                 from ./src/ags/X/ags_effect_bulk.h:24,
+                 from src/ags/X/ags_effect_bulk.c:19:
+/usr/include/gtk-2.0/gtk/gtkwidget.h:853:9: note: expected ‘struct GtkWidget *’ but argument is of type ‘struct GtkButton *’
+ void    gtk_widget_hide    (GtkWidget        *widget);
+         ^
+src/ags/X/ags_effect_bulk.c:632:21: warning: passing argument 1 of ‘gtk_widget_hide’ from incompatible pointer type
+     gtk_widget_hide(effect_bulk->remove);
+                     ^
+In file included from /usr/include/gtk-2.0/gtk/gtkcontainer.h:35:0,
+                 from /usr/include/gtk-2.0/gtk/gtkbin.h:35,
+                 from /usr/include/gtk-2.0/gtk/gtkwindow.h:36,
+                 from /usr/include/gtk-2.0/gtk/gtkdialog.h:35,
+                 from /usr/include/gtk-2.0/gtk/gtkaboutdialog.h:32,
+                 from /usr/include/gtk-2.0/gtk/gtk.h:33,
+                 from ./src/ags/X/ags_effect_bulk.h:24,
+                 from src/ags/X/ags_effect_bulk.c:19:
+/usr/include/gtk-2.0/gtk/gtkwidget.h:853:9: note: expected ‘struct GtkWidget *’ but argument is of type ‘struct GtkButton *’
+ void    gtk_widget_hide    (GtkWidget        *widget);
+         ^
+src/ags/X/ags_effect_bulk.c:636:21: warning: passing argument 1 of ‘gtk_widget_hide’ from incompatible pointer type
+     gtk_widget_hide(effect_bulk->bulk_member);
+                     ^
+In file included from /usr/include/gtk-2.0/gtk/gtkcontainer.h:35:0,
+                 from /usr/include/gtk-2.0/gtk/gtkbin.h:35,
+                 from /usr/include/gtk-2.0/gtk/gtkwindow.h:36,
+                 from /usr/include/gtk-2.0/gtk/gtkdialog.h:35,
+                 from /usr/include/gtk-2.0/gtk/gtkaboutdialog.h:32,
+                 from /usr/include/gtk-2.0/gtk/gtk.h:33,
+                 from ./src/ags/X/ags_effect_bulk.h:24,
+                 from src/ags/X/ags_effect_bulk.c:19:
+/usr/include/gtk-2.0/gtk/gtkwidget.h:853:9: note: expected ‘struct GtkWidget *’ but argument is of type ‘struct GtkVBox *’
+ void    gtk_widget_hide    (GtkWidget        *widget);
+         ^
+src/ags/X/ags_effect_bulk.c: In function ‘ags_effect_bulk_add_ladspa_effect’:
+src/ags/X/ags_effect_bulk.c:698:36: warning: passing argument 1 of ‘gtk_widget_get_ancestor’ from incompatible pointer type
+   window = gtk_widget_get_ancestor(effect_bulk,
+                                    ^
+In file included from /usr/include/gtk-2.0/gtk/gtkcontainer.h:35:0,
+                 from /usr/include/gtk-2.0/gtk/gtkbin.h:35,
+                 from /usr/include/gtk-2.0/gtk/gtkwindow.h:36,
+                 from /usr/include/gtk-2.0/gtk/gtkdialog.h:35,
+                 from /usr/include/gtk-2.0/gtk/gtkaboutdialog.h:32,
+                 from /usr/include/gtk-2.0/gtk/gtk.h:33,
+                 from ./src/ags/X/ags_effect_bulk.h:24,
+                 from src/ags/X/ags_effect_bulk.c:19:
+/usr/include/gtk-2.0/gtk/gtkwidget.h:1051:14: note: expected ‘struct GtkWidget *’ but argument is of type ‘struct AgsEffectBulk *’
+ GtkWidget*   gtk_widget_get_ancestor (GtkWidget *widget,
+              ^
+src/ags/X/ags_effect_bulk.c:698:10: warning: assignment from incompatible pointer type
+   window = gtk_widget_get_ancestor(effect_bulk,
+          ^
+src/ags/X/ags_effect_bulk.c:701:23: warning: assignment from incompatible pointer type
+   application_context = window->application_context;
+                       ^
+src/ags/X/ags_effect_bulk.c:703:13: warning: assignment from incompatible pointer type
    main_loop = application_context->main_loop;
              ^
-src/ags/audio/ags_channel.c:1599:41: warning: passing argument 1 of ‘ags_remove_recall_new’ from incompatible pointer type
-   remove_recall = ags_remove_recall_new(channel,
-                                         ^
-In file included from src/ags/audio/ags_channel.c:65:0:
-./src/ags/audio/task/ags_remove_recall.h:57:18: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsChannel *’
- AgsRemoveRecall* ags_remove_recall_new(GObject *context,
-                  ^
-src/ags/audio/ags_channel.c:1607:41: warning: passing argument 1 of ‘ags_remove_recall_new’ from incompatible pointer type
-   remove_recall = ags_remove_recall_new(channel,
-                                         ^
-In file included from src/ags/audio/ags_channel.c:65:0:
-./src/ags/audio/task/ags_remove_recall.h:57:18: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsChannel *’
- AgsRemoveRecall* ags_remove_recall_new(GObject *context,
-                  ^
-In file included from ./src/ags/audio/ags_channel.h:26:0,
-                 from src/ags/audio/ags_channel.c:19:
-./src/ags/audio/ags_recall.h:30:40: warning: passing argument 2 of ‘ags_remove_recall_container_new’ from incompatible pointer type
- #define AGS_RECALL(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_RECALL, AgsRecall))
-                                        ^
-src/ags/audio/ags_channel.c:1616:12: note: in expansion of macro ‘AGS_RECALL’
-            AGS_RECALL(g_list_nth(play_ladspa,
-            ^
-In file included from src/ags/audio/ags_channel.c:66:0:
-./src/ags/audio/task/ags_remove_recall_container.h:55:27: note: expected ‘struct AgsRecallContainer *’ but argument is of type ‘struct GObject *’
- AgsRemoveRecallContainer* ags_remove_recall_container_new(GObject *audio,
-                           ^
-src/ags/audio/ags_channel.c:1622:41: warning: passing argument 1 of ‘ags_remove_recall_new’ from incompatible pointer type
-   remove_recall = ags_remove_recall_new(channel,
-                                         ^
-In file included from src/ags/audio/ags_channel.c:65:0:
-./src/ags/audio/task/ags_remove_recall.h:57:18: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsChannel *’
- AgsRemoveRecall* ags_remove_recall_new(GObject *context,
-                  ^
-src/ags/audio/ags_channel.c:1630:41: warning: passing argument 1 of ‘ags_remove_recall_new’ from incompatible pointer type
-   remove_recall = ags_remove_recall_new(channel,
-                                         ^
-In file included from src/ags/audio/ags_channel.c:65:0:
-./src/ags/audio/task/ags_remove_recall.h:57:18: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsChannel *’
- AgsRemoveRecall* ags_remove_recall_new(GObject *context,
-                  ^
-In file included from ./src/ags/audio/ags_channel.h:26:0,
-                 from src/ags/audio/ags_channel.c:19:
-./src/ags/audio/ags_recall.h:30:40: warning: passing argument 2 of ‘ags_remove_recall_container_new’ from incompatible pointer type
- #define AGS_RECALL(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_RECALL, AgsRecall))
-                                        ^
-src/ags/audio/ags_channel.c:1639:12: note: in expansion of macro ‘AGS_RECALL’
-            AGS_RECALL(g_list_nth(recall_ladspa,
-            ^
-In file included from src/ags/audio/ags_channel.c:66:0:
-./src/ags/audio/task/ags_remove_recall_container.h:55:27: note: expected ‘struct AgsRecallContainer *’ but argument is of type ‘struct GObject *’
- AgsRemoveRecallContainer* ags_remove_recall_container_new(GObject *audio,
-                           ^
-src/ags/audio/ags_channel.c: In function ‘ags_channel_set_recycling_recursive_input’:
-src/ags/audio/ags_channel.c:1953:9: warning: suggest explicit braces to avoid ambiguous ‘else’ [-Wparentheses]
-       if(!replace_first)
-         ^
-src/ags/audio/ags_channel.c: In function ‘ags_channel_set_recycling’:
-src/ags/audio/ags_channel.c:2338:9: warning: passing argument 2 of ‘ags_audio_add_recycling_context’ from incompatible pointer type
-         recycling_context);
-         ^
-In file included from src/ags/audio/ags_channel.c:39:0:
-./src/ags/audio/ags_audio.h:134:6: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsRecyclingContext *’
- void ags_audio_add_recycling_context(AgsAudio *audio, GObject *recycling_context);
-      ^
-src/ags/audio/ags_channel.c: In function ‘ags_channel_recursive_reset_recycling_context’:
-src/ags/audio/ags_channel.c:2382:9: warning: unused variable ‘length’ [-Wunused-variable]
-   guint length;
-         ^
-src/ags/audio/ags_channel.c: In function ‘ags_channel_recursive_play_input_sync_threaded’:
-src/ags/audio/ags_channel.c:2775:15: warning: variable ‘audio’ set but not used [-Wunused-but-set-variable]
-     AgsAudio *audio;
+src/ags/X/ags_effect_bulk.c:705:15: warning: assignment from incompatible pointer type
+   task_thread = ags_thread_find_type(main_loop,
                ^
-src/ags/audio/ags_channel.c: In function ‘ags_channel_recursive_play_input_async_threaded’:
-src/ags/audio/ags_channel.c:2821:15: warning: unused variable ‘audio’ [-Wunused-variable]
-     AgsAudio *audio;
+src/ags/X/ags_effect_bulk.c:710:32: warning: comparison between pointer and integer
+   if(effect_bulk->channel_type == AGS_TYPE_OUTPUT){
+                                ^
+src/ags/X/ags_effect_bulk.c:752:7: warning: implicit declaration of function ‘ags_recall_ladspa_load’ [-Wimplicit-function-declaration]
+       ags_recall_ladspa_load(recall_ladspa);
+       ^
+src/ags/X/ags_effect_bulk.c:755:39: warning: passing argument 1 of ‘ags_add_recall_new’ from incompatible pointer type
+       add_recall = ags_add_recall_new(current,
+                                       ^
+In file included from src/ags/X/ags_effect_bulk.c:55:0:
+./src/ags/audio/task/ags_add_recall.h:55:15: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsChannel *’
+ AgsAddRecall* ags_add_recall_new(GObject *context,
                ^
-src/ags/audio/ags_channel.c: In function ‘ags_channel_recursive_play_down’:
-src/ags/audio/ags_channel.c:3309:28: warning: unused variable ‘recycling_context’ [-Wunused-variable]
-       AgsRecyclingContext *recycling_context;
-                            ^
-src/ags/audio/ags_channel.c:3308:19: warning: variable ‘input’ set but not used [-Wunused-but-set-variable]
-       AgsChannel *input;
-                   ^
-src/ags/audio/ags_channel.c: In function ‘ags_channel_duplicate_recall’:
-src/ags/audio/ags_channel.c:3406:13: warning: variable ‘audio’ set but not used [-Wunused-but-set-variable]
-   AgsAudio *audio;
-             ^
-src/ags/audio/ags_channel.c: In function ‘ags_channel_recursive_play_init_arrange_recall_id_up’:
-src/ags/audio/ags_channel.c:3637:7: warning: ‘return’ with no value, in function returning non-void
-       return;
-       ^
-src/ags/audio/ags_channel.c:3695:10: warning: passing argument 2 of ‘ags_audio_add_recall_id’ from incompatible pointer type
-          audio_recall_id);
-          ^
-In file included from src/ags/audio/ags_channel.c:39:0:
-./src/ags/audio/ags_audio.h:131:6: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsRecallID *’
- void ags_audio_add_recall_id(AgsAudio *audio, GObject *recall_id);
-      ^
-src/ags/audio/ags_channel.c:3787:5: warning: passing argument 2 of ‘ags_channel_add_recall_id’ from incompatible pointer type
-     (GObject *) recall_id);
-     ^
-src/ags/audio/ags_channel.c:953:1: note: expected ‘struct AgsRecallID *’ but argument is of type ‘struct GObject *’
- ags_channel_add_recall_id(AgsChannel *channel, AgsRecallID *recall_id)
- ^
-src/ags/audio/ags_channel.c:3842:7: warning: passing argument 2 of ‘ags_channel_add_recall_id’ from incompatible pointer type
-       (GObject *) recall_id);
-       ^
-src/ags/audio/ags_channel.c:953:1: note: expected ‘struct AgsRecallID *’ but argument is of type ‘struct GObject *’
- ags_channel_add_recall_id(AgsChannel *channel, AgsRecallID *recall_id)
- ^
-src/ags/audio/ags_channel.c: In function ‘ags_channel_recursive_play_init_arrange_recall_id_down_input’:
-src/ags/audio/ags_channel.c:3907:7: warning: passing argument 2 of ‘ags_channel_add_recall_id’ from incompatible pointer type
-       (GObject *) input_recall_id);
-       ^
-src/ags/audio/ags_channel.c:953:1: note: expected ‘struct AgsRecallID *’ but argument is of type ‘struct GObject *’
- ags_channel_add_recall_id(AgsChannel *channel, AgsRecallID *recall_id)
- ^
-src/ags/audio/ags_channel.c:3944:5: warning: passing argument 2 of ‘ags_channel_add_recall_id’ from incompatible pointer type
-     (GObject *) input_recall_id);
-     ^
-src/ags/audio/ags_channel.c:953:1: note: expected ‘struct AgsRecallID *’ but argument is of type ‘struct GObject *’
- ags_channel_add_recall_id(AgsChannel *channel, AgsRecallID *recall_id)
- ^
-src/ags/audio/ags_channel.c:3881:26: warning: unused variable ‘recycling_context’ [-Wunused-variable]
-     AgsRecyclingContext *recycling_context;
-                          ^
-src/ags/audio/ags_channel.c: In function ‘ags_channel_recursive_play_init_arrange_recall_id_down’:
-src/ags/audio/ags_channel.c:3983:7: warning: ‘return’ with no value, in function returning non-void
-       return;
-       ^
-src/ags/audio/ags_channel.c:4033:5: warning: passing argument 2 of ‘ags_channel_add_recall_id’ from incompatible pointer type
-     (GObject *) output_recall_id);
-     ^
-src/ags/audio/ags_channel.c:953:1: note: expected ‘struct AgsRecallID *’ but argument is of type ‘struct GObject *’
- ags_channel_add_recall_id(AgsChannel *channel, AgsRecallID *recall_id)
- ^
-src/ags/audio/ags_channel.c: In function ‘ags_channel_recursive_play_init_duplicate_down’:
-src/ags/audio/ags_channel.c:4323:19: warning: variable ‘input’ set but not used [-Wunused-but-set-variable]
-       AgsChannel *input;
-                   ^
-src/ags/audio/ags_channel.c: In function ‘ags_channel_recursive_play_init_resolve_down’:
-src/ags/audio/ags_channel.c:4524:17: warning: variable ‘input’ set but not used [-Wunused-but-set-variable]
-     AgsChannel *input;
-                 ^
-src/ags/audio/ags_channel.c: In function ‘ags_channel_recursive_play_init_down’:
-src/ags/audio/ags_channel.c:4738:17: warning: variable ‘input’ set but not used [-Wunused-but-set-variable]
-     AgsChannel *input;
-                 ^
-src/ags/audio/ags_channel.c: In function ‘ags_channel_recursive_play_init’:
-src/ags/audio/ags_channel.c:4867:9: warning: passing argument 2 of ‘ags_recall_id_add’ from incompatible pointer type
-         (GObject *) default_recall_id);
-         ^
-In file included from ./src/ags/audio/ags_channel.h:25:0,
-                 from src/ags/audio/ags_channel.c:19:
-./src/ags/audio/ags_recall_id.h:79:8: note: expected ‘struct AgsRecallID *’ but argument is of type ‘struct GObject *’
- GList* ags_recall_id_add(GList *recall_id_list,
-        ^
-src/ags/audio/ags_channel.c:4893:9: warning: passing argument 2 of ‘ags_recall_id_add’ from incompatible pointer type
-         (GObject *) recall_id);
-         ^
-In file included from ./src/ags/audio/ags_channel.h:25:0,
-                 from src/ags/audio/ags_channel.c:19:
-./src/ags/audio/ags_recall_id.h:79:8: note: expected ‘struct AgsRecallID *’ but argument is of type ‘struct GObject *’
- GList* ags_recall_id_add(GList *recall_id_list,
-        ^
-src/ags/audio/ags_channel.c:4915:18: warning: variable ‘next_recall_id’ set but not used [-Wunused-but-set-variable]
-     AgsRecallID *next_recall_id;
-                  ^
-src/ags/audio/ags_channel.c:4936:19: warning: variable ‘input’ set but not used [-Wunused-but-set-variable]
-       AgsChannel *input;
-                   ^
-src/ags/audio/ags_channel.c: In function ‘ags_channel_remove’:
-src/ags/audio/ags_channel.c:5086:10: warning: passing argument 2 of ‘ags_channel_remove_recall’ from incompatible pointer type
-          recall,
-          ^
-src/ags/audio/ags_channel.c:1038:1: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsRecall *’
- ags_channel_remove_recall(AgsChannel *channel, GObject *recall, gboolean play)
- ^
-src/ags/audio/ags_channel.c: In function ‘ags_channel_tillrecycling_cancel_down’:
-src/ags/audio/ags_channel.c:5356:28: warning: unused variable ‘recycling_context’ [-Wunused-variable]
-       AgsRecyclingContext *recycling_context;
-                            ^
-src/ags/audio/ags_channel.c:5355:19: warning: variable ‘input’ set but not used [-Wunused-but-set-variable]
-       AgsChannel *input;
-                   ^
-src/ags/audio/ags_channel.c: In function ‘ags_channel_tillrecycling_cancel’:
-src/ags/audio/ags_channel.c:5402:9: warning: assignment from incompatible pointer type
-   audio = channel->audio;
-         ^
-src/ags/audio/ags_channel.c:5160:34: warning: unused variable ‘default_recall_id’ [-Wunused-variable]
-   AgsRecallID *audio_recall_id, *default_recall_id;
-                                  ^
-src/ags/audio/ags_channel.c:5160:16: warning: unused variable ‘audio_recall_id’ [-Wunused-variable]
-   AgsRecallID *audio_recall_id, *default_recall_id;
-                ^
-src/ags/audio/ags_channel.c:5159:13: warning: variable ‘audio’ set but not used [-Wunused-but-set-variable]
-   AgsAudio *audio;
-             ^
-src/ags/audio/ags_channel.c: In function ‘ags_audio_reset_recall_id’:
-src/ags/audio/ags_channel.c:5537:10: warning: unused variable ‘i’ [-Wunused-variable]
-     gint i;
-          ^
-src/ags/audio/ags_channel.c:5536:10: warning: unused variable ‘recycling_length’ [-Wunused-variable]
-     gint recycling_length;
-          ^
-src/ags/audio/ags_channel.c:5535:19: warning: unused variable ‘recycling’ [-Wunused-variable]
-     AgsRecycling *recycling;
-                   ^
-src/ags/audio/ags_channel.c: In function ‘ags_channel_reset_recall_id’:
-src/ags/audio/ags_channel.c:5670:11: warning: assignment from incompatible pointer type
-     audio = channel->audio;
+src/ags/X/ags_effect_bulk.c:756:11: warning: passing argument 2 of ‘ags_add_recall_new’ from incompatible pointer type
+           recall_ladspa,
            ^
-src/ags/audio/ags_channel.c:5713:7: warning: passing argument 2 of ‘ags_channel_add_recall_id’ from incompatible pointer type
-       (GObject *) recall_id);
-       ^
-src/ags/audio/ags_channel.c:953:1: note: expected ‘struct AgsRecallID *’ but argument is of type ‘struct GObject *’
- ags_channel_add_recall_id(AgsChannel *channel, AgsRecallID *recall_id)
- ^
-src/ags/audio/ags_channel.c:5740:7: warning: passing argument 2 of ‘ags_channel_add_recall_id’ from incompatible pointer type
-       (GObject *) recall_id);
-       ^
-src/ags/audio/ags_channel.c:953:1: note: expected ‘struct AgsRecallID *’ but argument is of type ‘struct GObject *’
- ags_channel_add_recall_id(AgsChannel *channel, AgsRecallID *recall_id)
- ^
-src/ags/audio/ags_channel.c:5767:7: warning: passing argument 2 of ‘ags_channel_add_recall_id’ from incompatible pointer type
-       (GObject *) recall_id);
-       ^
-src/ags/audio/ags_channel.c:953:1: note: expected ‘struct AgsRecallID *’ but argument is of type ‘struct GObject *’
- ags_channel_add_recall_id(AgsChannel *channel, AgsRecallID *recall_id)
- ^
-src/ags/audio/ags_channel.c:5662:15: warning: variable ‘audio’ set but not used [-Wunused-but-set-variable]
-     AgsAudio *audio;
+In file included from src/ags/X/ags_effect_bulk.c:55:0:
+./src/ags/audio/task/ags_add_recall.h:55:15: note: expected ‘struct AgsRecall *’ but argument is of type ‘struct AgsRecallLadspa *’
+ AgsAddRecall* ags_add_recall_new(GObject *context,
                ^
-src/ags/audio/ags_channel.c: In function ‘ags_channel_recursive_reset_channel_init_recall’:
-src/ags/audio/ags_channel.c:5864:15: warning: unused variable ‘audio’ [-Wunused-variable]
-     AgsAudio *audio;
+src/ags/X/ags_effect_bulk.c:772:39: warning: passing argument 1 of ‘ags_add_recall_new’ from incompatible pointer type
+       add_recall = ags_add_recall_new(current,
+                                       ^
+In file included from src/ags/X/ags_effect_bulk.c:55:0:
+./src/ags/audio/task/ags_add_recall.h:55:15: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsChannel *’
+ AgsAddRecall* ags_add_recall_new(GObject *context,
                ^
-src/ags/audio/ags_channel.c: In function ‘ags_channel_tillrecycling_collect_playback_down_input’:
-src/ags/audio/ags_channel.c:5908:73: warning: pointer type mismatch in conditional expression
-       (collect_recall_id ? AGS_PLAYBACK(current->playback)->recall_id[0]: current->playback));
-                                                                         ^
-src/ags/audio/ags_channel.c:5918:73: warning: pointer type mismatch in conditional expression
-       (collect_recall_id ? AGS_PLAYBACK(current->playback)->recall_id[1]: current->playback));
-                                                                         ^
-src/ags/audio/ags_channel.c:5928:73: warning: pointer type mismatch in conditional expression
-       (collect_recall_id ? AGS_PLAYBACK(current->playback)->recall_id[2]: current->playback));
-                                                                         ^
-src/ags/audio/ags_channel.c:5950:71: warning: pointer type mismatch in conditional expression
-     (collect_recall_id ? AGS_PLAYBACK(current->playback)->recall_id[0]: current->playback));
-                                                                       ^
-src/ags/audio/ags_channel.c:5960:71: warning: pointer type mismatch in conditional expression
-     (collect_recall_id ? AGS_PLAYBACK(current->playback)->recall_id[1]: current->playback));
-                                                                       ^
-src/ags/audio/ags_channel.c:5970:71: warning: pointer type mismatch in conditional expression
-     (collect_recall_id ? AGS_PLAYBACK(current->playback)->recall_id[2]: current->playback));
-                                                                       ^
-src/ags/audio/ags_channel.c: In function ‘ags_channel_tillrecycling_collect_playback_down’:
-src/ags/audio/ags_channel.c:6001:76: warning: pointer type mismatch in conditional expression
-          (collect_recall_id ? AGS_PLAYBACK(current->playback)->recall_id[0]: current->playback));
-                                                                            ^
-src/ags/audio/ags_channel.c:6011:76: warning: pointer type mismatch in conditional expression
-          (collect_recall_id ? AGS_PLAYBACK(current->playback)->recall_id[1]: current->playback));
-                                                                            ^
-src/ags/audio/ags_channel.c:6021:76: warning: pointer type mismatch in conditional expression
-          (collect_recall_id ? AGS_PLAYBACK(current->playback)->recall_id[2]: current->playback));
-                                                                            ^
-src/ags/audio/ags_channel.c: In function ‘ags_channel_recursive_collect_playback_up’:
-src/ags/audio/ags_channel.c:6066:71: warning: pointer type mismatch in conditional expression
-     (collect_recall_id ? AGS_PLAYBACK(current->playback)->recall_id[0]: current->playback));
-                                                                       ^
-src/ags/audio/ags_channel.c:6076:71: warning: pointer type mismatch in conditional expression
-     (collect_recall_id ? AGS_PLAYBACK(current->playback)->recall_id[1]: current->playback));
-                                                                       ^
-src/ags/audio/ags_channel.c:6086:71: warning: pointer type mismatch in conditional expression
-     (collect_recall_id ? AGS_PLAYBACK(current->playback)->recall_id[2]: current->playback));
-                                                                       ^
-src/ags/audio/ags_channel.c:6113:71: warning: pointer type mismatch in conditional expression
-     (collect_recall_id ? AGS_PLAYBACK(current->playback)->recall_id[0]: current->playback));
-                                                                       ^
-src/ags/audio/ags_channel.c:6123:71: warning: pointer type mismatch in conditional expression
-     (collect_recall_id ? AGS_PLAYBACK(current->playback)->recall_id[1]: current->playback));
-                                                                       ^
-src/ags/audio/ags_channel.c:6133:71: warning: pointer type mismatch in conditional expression
-     (collect_recall_id ? AGS_PLAYBACK(current->playback)->recall_id[2]: current->playback));
-                                                                       ^
-src/ags/audio/ags_channel.c: In function ‘ags_channel_recursive_reset_recall_ids’:
-src/ags/audio/ags_channel.c:7259:20: warning: suggest parentheses around ‘&&’ within ‘||’ [-Wparentheses]
-   if((link != NULL && (AGS_IS_OUTPUT(link)) ||
-                    ^
-src/ags/audio/ags_channel.c:5449:10: warning: unused variable ‘list’ [-Wunused-variable]
-   GList *list;
-          ^
-src/ags/audio/ags_channel.c:5448:10: warning: unused variable ‘parent’ [-Wunused-variable]
-   GList *parent;
-          ^
-src/ags/audio/ags_channel.c:5444:24: warning: unused variable ‘recycling_context’ [-Wunused-variable]
-   AgsRecyclingContext *recycling_context;
-                        ^
-src/ags/audio/ags_channel.c: In function ‘ags_channel_recall_id_set’:
-src/ags/audio/ags_channel.c:7383:9: warning: variable ‘key’ set but not used [-Wunused-but-set-variable]
-   char *key;
+src/ags/X/ags_effect_bulk.c:773:11: warning: passing argument 2 of ‘ags_add_recall_new’ from incompatible pointer type
+           recall_channel_run_dummy,
+           ^
+In file included from src/ags/X/ags_effect_bulk.c:55:0:
+./src/ags/audio/task/ags_add_recall.h:55:15: note: expected ‘struct AgsRecall *’ but argument is of type ‘struct AgsRecallChannelRunDummy *’
+ AgsAddRecall* ags_add_recall_new(GObject *context,
+               ^
+src/ags/X/ags_effect_bulk.c:798:39: warning: passing argument 1 of ‘ags_add_recall_new’ from incompatible pointer type
+       add_recall = ags_add_recall_new(current,
+                                       ^
+In file included from src/ags/X/ags_effect_bulk.c:55:0:
+./src/ags/audio/task/ags_add_recall.h:55:15: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsChannel *’
+ AgsAddRecall* ags_add_recall_new(GObject *context,
+               ^
+src/ags/X/ags_effect_bulk.c:799:11: warning: passing argument 2 of ‘ags_add_recall_new’ from incompatible pointer type
+           recall_ladspa,
+           ^
+In file included from src/ags/X/ags_effect_bulk.c:55:0:
+./src/ags/audio/task/ags_add_recall.h:55:15: note: expected ‘struct AgsRecall *’ but argument is of type ‘struct AgsRecallLadspa *’
+ AgsAddRecall* ags_add_recall_new(GObject *context,
+               ^
+src/ags/X/ags_effect_bulk.c:815:39: warning: passing argument 1 of ‘ags_add_recall_new’ from incompatible pointer type
+       add_recall = ags_add_recall_new(current,
+                                       ^
+In file included from src/ags/X/ags_effect_bulk.c:55:0:
+./src/ags/audio/task/ags_add_recall.h:55:15: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsChannel *’
+ AgsAddRecall* ags_add_recall_new(GObject *context,
+               ^
+src/ags/X/ags_effect_bulk.c:816:11: warning: passing argument 2 of ‘ags_add_recall_new’ from incompatible pointer type
+           recall_channel_run_dummy,
+           ^
+In file included from src/ags/X/ags_effect_bulk.c:55:0:
+./src/ags/audio/task/ags_add_recall.h:55:15: note: expected ‘struct AgsRecall *’ but argument is of type ‘struct AgsRecallChannelRunDummy *’
+ AgsAddRecall* ags_add_recall_new(GObject *context,
+               ^
+src/ags/X/ags_effect_bulk.c:848:25: warning: assignment discards ‘const’ qualifier from pointer target type
+       plugin_descriptor = ladspa_descriptor(effect_index);
+                         ^
+src/ags/X/ags_effect_bulk.c:850:23: warning: assignment discards ‘const’ qualifier from pointer target type
+       port_descriptor = plugin_descriptor->PortDescriptors;
+                       ^
+src/ags/X/ags_effect_bulk.c:878:9: warning: assignment from incompatible pointer type
+    dial = ags_bulk_member_get_widget(bulk_member);
          ^
-make[2]: *** [libags_audio_a-ags_channel.o] Error 1
+src/ags/X/ags_effect_bulk.c:879:32: warning: passing argument 1 of ‘gtk_widget_set_size_request’ from incompatible pointer type
+    gtk_widget_set_size_request(dial,
+                                ^
+In file included from /usr/include/gtk-2.0/gtk/gtkcontainer.h:35:0,
+                 from /usr/include/gtk-2.0/gtk/gtkbin.h:35,
+                 from /usr/include/gtk-2.0/gtk/gtkwindow.h:36,
+                 from /usr/include/gtk-2.0/gtk/gtkdialog.h:35,
+                 from /usr/include/gtk-2.0/gtk/gtkaboutdialog.h:32,
+                 from /usr/include/gtk-2.0/gtk/gtk.h:33,
+                 from ./src/ags/X/ags_effect_bulk.h:24,
+                 from src/ags/X/ags_effect_bulk.c:19:
+/usr/include/gtk-2.0/gtk/gtkwidget.h:1027:12: note: expected ‘struct GtkWidget *’ but argument is of type ‘struct AgsDial *’
+ void       gtk_widget_set_size_request    (GtkWidget           *widget,
+            ^
+src/ags/X/ags_effect_bulk.c:912:46: warning: passing argument 1 of ‘ags_add_bulk_member_new’ from incompatible pointer type
+    add_bulk_member = ags_add_bulk_member_new(effect_bulk,
+                                              ^
+In file included from src/ags/X/ags_effect_bulk.c:63:0:
+./src/ags/X/task/ags_add_bulk_member.h:58:19: note: expected ‘struct GtkWidget *’ but argument is of type ‘struct AgsEffectBulk *’
+ AgsAddBulkMember* ags_add_bulk_member_new(GtkWidget *effect_bulk,
+                   ^
+src/ags/X/ags_effect_bulk.c:913:11: warning: passing argument 2 of ‘ags_add_bulk_member_new’ from incompatible pointer type
+           bulk_member,
+           ^
+In file included from src/ags/X/ags_effect_bulk.c:63:0:
+./src/ags/X/task/ags_add_bulk_member.h:58:19: note: expected ‘struct AgsLineMember *’ but argument is of type ‘struct AgsBulkMember *’
+ AgsAddBulkMember* ags_add_bulk_member_new(GtkWidget *effect_bulk,
+                   ^
+src/ags/X/ags_effect_bulk.c:920:52: warning: passing argument 1 of ‘ags_update_bulk_member_new’ from incompatible pointer type
+    update_bulk_member = ags_update_bulk_member_new(effect_bulk,
+                                                    ^
+In file included from src/ags/X/ags_effect_bulk.c:64:0:
+./src/ags/X/task/ags_update_bulk_member.h:58:22: note: expected ‘struct GtkWidget *’ but argument is of type ‘struct AgsEffectBulk *’
+ AgsUpdateBulkMember* ags_update_bulk_member_new(GtkWidget *effect_bulk,
+                      ^
+src/ags/X/ags_effect_bulk.c:679:17: warning: variable ‘list_start’ set but not used [-Wunused-but-set-variable]
+   GList *list, *list_start;
+                 ^
+src/ags/X/ags_effect_bulk.c:678:17: warning: variable ‘recall_port’ set but not used [-Wunused-but-set-variable]
+   GList *port, *recall_port;
+                 ^
+src/ags/X/ags_effect_bulk.c:663:18: warning: unused variable ‘adjustment’ [-Wunused-variable]
+   GtkAdjustment *adjustment;
+                  ^
+src/ags/X/ags_effect_bulk.c: In function ‘ags_effect_bulk_add_lv2_effect’:
+src/ags/X/ags_effect_bulk.c:986:36: warning: passing argument 1 of ‘gtk_widget_get_ancestor’ from incompatible pointer type
+   window = gtk_widget_get_ancestor(effect_bulk,
+                                    ^
+In file included from /usr/include/gtk-2.0/gtk/gtkcontainer.h:35:0,
+                 from /usr/include/gtk-2.0/gtk/gtkbin.h:35,
+                 from /usr/include/gtk-2.0/gtk/gtkwindow.h:36,
+                 from /usr/include/gtk-2.0/gtk/gtkdialog.h:35,
+                 from /usr/include/gtk-2.0/gtk/gtkaboutdialog.h:32,
+                 from /usr/include/gtk-2.0/gtk/gtk.h:33,
+                 from ./src/ags/X/ags_effect_bulk.h:24,
+                 from src/ags/X/ags_effect_bulk.c:19:
+/usr/include/gtk-2.0/gtk/gtkwidget.h:1051:14: note: expected ‘struct GtkWidget *’ but argument is of type ‘struct AgsEffectBulk *’
+ GtkWidget*   gtk_widget_get_ancestor (GtkWidget *widget,
+              ^
+src/ags/X/ags_effect_bulk.c:986:10: warning: assignment from incompatible pointer type
+   window = gtk_widget_get_ancestor(effect_bulk,
+          ^
+src/ags/X/ags_effect_bulk.c:989:23: warning: assignment from incompatible pointer type
+   application_context = window->application_context;
+                       ^
+src/ags/X/ags_effect_bulk.c:991:13: warning: assignment from incompatible pointer type
+   main_loop = application_context->main_loop;
+             ^
+src/ags/X/ags_effect_bulk.c:993:15: warning: assignment from incompatible pointer type
+   task_thread = ags_thread_find_type(main_loop,
+               ^
+src/ags/X/ags_effect_bulk.c:998:32: warning: comparison between pointer and integer
+   if(effect_bulk->channel_type == AGS_TYPE_OUTPUT){
+                                ^
+src/ags/X/ags_effect_bulk.c:1029:11: warning: passing argument 5 of ‘ags_recall_lv2_new’ makes integer from pointer without a cast
+           index);
+           ^
+In file included from src/ags/X/ags_effect_bulk.c:51:0:
+./src/ags/audio/ags_recall_lv2.h:81:15: note: expected ‘uint32_t’ but argument is of type ‘char * (*)(const char *, int)’
+ AgsRecallLv2* ags_recall_lv2_new(AgsChannel *source,
+               ^
+src/ags/X/ags_effect_bulk.c:1035:7: warning: implicit declaration of function ‘ags_recall_lv2_load’ [-Wimplicit-function-declaration]
+       ags_recall_lv2_load(recall_lv2);
+       ^
+src/ags/X/ags_effect_bulk.c:1038:39: warning: passing argument 1 of ‘ags_add_recall_new’ from incompatible pointer type
+       add_recall = ags_add_recall_new(current,
+                                       ^
+In file included from src/ags/X/ags_effect_bulk.c:55:0:
+./src/ags/audio/task/ags_add_recall.h:55:15: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsChannel *’
+ AgsAddRecall* ags_add_recall_new(GObject *context,
+               ^
+src/ags/X/ags_effect_bulk.c:1039:11: warning: passing argument 2 of ‘ags_add_recall_new’ from incompatible pointer type
+           recall_lv2,
+           ^
+In file included from src/ags/X/ags_effect_bulk.c:55:0:
+./src/ags/audio/task/ags_add_recall.h:55:15: note: expected ‘struct AgsRecall *’ but argument is of type ‘struct AgsRecallLv2 *’
+ AgsAddRecall* ags_add_recall_new(GObject *context,
+               ^
+src/ags/X/ags_effect_bulk.c:1055:39: warning: passing argument 1 of ‘ags_add_recall_new’ from incompatible pointer type
+       add_recall = ags_add_recall_new(current,
+                                       ^
+In file included from src/ags/X/ags_effect_bulk.c:55:0:
+./src/ags/audio/task/ags_add_recall.h:55:15: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsChannel *’
+ AgsAddRecall* ags_add_recall_new(GObject *context,
+               ^
+src/ags/X/ags_effect_bulk.c:1056:11: warning: passing argument 2 of ‘ags_add_recall_new’ from incompatible pointer type
+           recall_channel_run_dummy,
+           ^
+In file included from src/ags/X/ags_effect_bulk.c:55:0:
+./src/ags/audio/task/ags_add_recall.h:55:15: note: expected ‘struct AgsRecall *’ but argument is of type ‘struct AgsRecallChannelRunDummy *’
+ AgsAddRecall* ags_add_recall_new(GObject *context,
+               ^
+src/ags/X/ags_effect_bulk.c:1073:11: warning: passing argument 5 of ‘ags_recall_lv2_new’ makes integer from pointer without a cast
+           index);
+           ^
+In file included from src/ags/X/ags_effect_bulk.c:51:0:
+./src/ags/audio/ags_recall_lv2.h:81:15: note: expected ‘uint32_t’ but argument is of type ‘char * (*)(const char *, int)’
+ AgsRecallLv2* ags_recall_lv2_new(AgsChannel *source,
+               ^
+src/ags/X/ags_effect_bulk.c:1082:39: warning: passing argument 1 of ‘ags_add_recall_new’ from incompatible pointer type
+       add_recall = ags_add_recall_new(current,
+                                       ^
+In file included from src/ags/X/ags_effect_bulk.c:55:0:
+./src/ags/audio/task/ags_add_recall.h:55:15: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsChannel *’
+ AgsAddRecall* ags_add_recall_new(GObject *context,
+               ^
+src/ags/X/ags_effect_bulk.c:1083:11: warning: passing argument 2 of ‘ags_add_recall_new’ from incompatible pointer type
+           recall_lv2,
+           ^
+In file included from src/ags/X/ags_effect_bulk.c:55:0:
+./src/ags/audio/task/ags_add_recall.h:55:15: note: expected ‘struct AgsRecall *’ but argument is of type ‘struct AgsRecallLv2 *’
+ AgsAddRecall* ags_add_recall_new(GObject *context,
+               ^
+src/ags/X/ags_effect_bulk.c:1099:39: warning: passing argument 1 of ‘ags_add_recall_new’ from incompatible pointer type
+       add_recall = ags_add_recall_new(current,
+                                       ^
+In file included from src/ags/X/ags_effect_bulk.c:55:0:
+./src/ags/audio/task/ags_add_recall.h:55:15: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsChannel *’
+ AgsAddRecall* ags_add_recall_new(GObject *context,
+               ^
+src/ags/X/ags_effect_bulk.c:1100:11: warning: passing argument 2 of ‘ags_add_recall_new’ from incompatible pointer type
+           recall_channel_run_dummy,
+           ^
+In file included from src/ags/X/ags_effect_bulk.c:55:0:
+./src/ags/audio/task/ags_add_recall.h:55:15: note: expected ‘struct AgsRecall *’ but argument is of type ‘struct AgsRecallChannelRunDummy *’
+ AgsAddRecall* ags_add_recall_new(GObject *context,
+               ^
+src/ags/X/ags_effect_bulk.c:1150:9: warning: pointer targets in passing argument 2 of ‘xmlGetProp’ differ in signedness [-Wpointer-sign]
+         "value\0");
+         ^
+In file included from ./src/ags/audio/ags_notation.h:23:0,
+                 from ./src/ags/audio/ags_channel.h:28,
+                 from ./src/ags/audio/ags_audio.h:25,
+                 from ./src/ags/X/ags_effect_bulk.h:26,
+                 from src/ags/X/ags_effect_bulk.c:19:
+/usr/include/libxml2/libxml/tree.h:1028:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlGetProp  (const xmlNode *node,
+   ^
+src/ags/X/ags_effect_bulk.c:1149:17: warning: pointer targets in assignment differ in signedness [-Wpointer-sign]
+     port_type_0 = xmlGetProp(port_type_node->data,
+                 ^
+src/ags/X/ags_effect_bulk.c:1152:9: warning: pointer targets in passing argument 2 of ‘xmlGetProp’ differ in signedness [-Wpointer-sign]
+         "value\0");
+         ^
+In file included from ./src/ags/audio/ags_notation.h:23:0,
+                 from ./src/ags/audio/ags_channel.h:28,
+                 from ./src/ags/audio/ags_audio.h:25,
+                 from ./src/ags/X/ags_effect_bulk.h:26,
+                 from src/ags/X/ags_effect_bulk.c:19:
+/usr/include/libxml2/libxml/tree.h:1028:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlGetProp  (const xmlNode *node,
+   ^
+src/ags/X/ags_effect_bulk.c:1151:17: warning: pointer targets in assignment differ in signedness [-Wpointer-sign]
+     port_type_1 = xmlGetProp(port_type_node->next->data,
+                 ^
+src/ags/X/ags_effect_bulk.c:1174:11: warning: pointer targets in passing argument 2 of ‘xmlGetProp’ differ in signedness [-Wpointer-sign]
+           "value\0"),
+           ^
+In file included from ./src/ags/audio/ags_notation.h:23:0,
+                 from ./src/ags/audio/ags_channel.h:28,
+                 from ./src/ags/audio/ags_audio.h:25,
+                 from ./src/ags/X/ags_effect_bulk.h:26,
+                 from src/ags/X/ags_effect_bulk.c:19:
+/usr/include/libxml2/libxml/tree.h:1028:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlGetProp  (const xmlNode *node,
+   ^
+src/ags/X/ags_effect_bulk.c:1176:17: warning: pointer targets in passing argument 2 of ‘xmlGetProp’ differ in signedness [-Wpointer-sign]
+                 "subject\0")),
+                 ^
+In file included from ./src/ags/audio/ags_notation.h:23:0,
+                 from ./src/ags/audio/ags_channel.h:28,
+                 from ./src/ags/audio/ags_audio.h:25,
+                 from ./src/ags/X/ags_effect_bulk.h:26,
+                 from src/ags/X/ags_effect_bulk.c:19:
+/usr/include/libxml2/libxml/tree.h:1028:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlGetProp  (const xmlNode *node,
+   ^
+src/ags/X/ags_effect_bulk.c:1180:15: warning: pointer targets in passing argument 2 of ‘xmlGetProp’ differ in signedness [-Wpointer-sign]
+               "value\0"),
+               ^
+In file included from ./src/ags/audio/ags_notation.h:23:0,
+                 from ./src/ags/audio/ags_channel.h:28,
+                 from ./src/ags/audio/ags_audio.h:25,
+                 from ./src/ags/X/ags_effect_bulk.h:26,
+                 from src/ags/X/ags_effect_bulk.c:19:
+/usr/include/libxml2/libxml/tree.h:1028:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlGetProp  (const xmlNode *node,
+   ^
+src/ags/X/ags_effect_bulk.c:1185:12: warning: assignment from incompatible pointer type
+       dial = ags_bulk_member_get_widget(bulk_member);
+            ^
+src/ags/X/ags_effect_bulk.c:1186:35: warning: passing argument 1 of ‘gtk_widget_set_size_request’ from incompatible pointer type
+       gtk_widget_set_size_request(dial,
+                                   ^
+In file included from /usr/include/gtk-2.0/gtk/gtkcontainer.h:35:0,
+                 from /usr/include/gtk-2.0/gtk/gtkbin.h:35,
+                 from /usr/include/gtk-2.0/gtk/gtkwindow.h:36,
+                 from /usr/include/gtk-2.0/gtk/gtkdialog.h:35,
+                 from /usr/include/gtk-2.0/gtk/gtkaboutdialog.h:32,
+                 from /usr/include/gtk-2.0/gtk/gtk.h:33,
+                 from ./src/ags/X/ags_effect_bulk.h:24,
+                 from src/ags/X/ags_effect_bulk.c:19:
+/usr/include/gtk-2.0/gtk/gtkwidget.h:1027:12: note: expected ‘struct GtkWidget *’ but argument is of type ‘struct AgsDial *’
+ void       gtk_widget_set_size_request    (GtkWidget           *widget,
+            ^
+src/ags/X/ags_effect_bulk.c:1192:13: warning: pointer targets in passing argument 2 of ‘xmlGetProp’ differ in signedness [-Wpointer-sign]
+             "value\0"),
+             ^
+In file included from ./src/ags/audio/ags_notation.h:23:0,
+                 from ./src/ags/audio/ags_channel.h:28,
+                 from ./src/ags/audio/ags_audio.h:25,
+                 from ./src/ags/X/ags_effect_bulk.h:26,
+                 from src/ags/X/ags_effect_bulk.c:19:
+/usr/include/libxml2/libxml/tree.h:1028:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlGetProp  (const xmlNode *node,
+   ^
+src/ags/X/ags_effect_bulk.c:1191:44: warning: pointer targets in passing argument 1 of ‘g_ascii_strtod’ differ in signedness [-Wpointer-sign]
+       lower_bound = (float) g_ascii_strtod(xmlGetProp(port_min_node->data,
+                                            ^
+In file included from /usr/include/glib-2.0/glib.h:79:0,
+                 from ./src/ags/X/ags_effect_bulk.h:22,
+                 from src/ags/X/ags_effect_bulk.c:19:
+/usr/include/glib-2.0/glib/gstrfuncs.h:149:23: note: expected ‘const gchar *’ but argument is of type ‘xmlChar *’
+ gdouble               g_ascii_strtod   (const gchar  *nptr,
+                       ^
+src/ags/X/ags_effect_bulk.c:1195:13: warning: pointer targets in passing argument 2 of ‘xmlGetProp’ differ in signedness [-Wpointer-sign]
+             "value\0"),
+             ^
+In file included from ./src/ags/audio/ags_notation.h:23:0,
+                 from ./src/ags/audio/ags_channel.h:28,
+                 from ./src/ags/audio/ags_audio.h:25,
+                 from ./src/ags/X/ags_effect_bulk.h:26,
+                 from src/ags/X/ags_effect_bulk.c:19:
+/usr/include/libxml2/libxml/tree.h:1028:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlGetProp  (const xmlNode *node,
+   ^
+src/ags/X/ags_effect_bulk.c:1194:44: warning: pointer targets in passing argument 1 of ‘g_ascii_strtod’ differ in signedness [-Wpointer-sign]
+       upper_bound = (float) g_ascii_strtod(xmlGetProp(port_max_node->data,
+                                            ^
+In file included from /usr/include/glib-2.0/glib.h:79:0,
+                 from ./src/ags/X/ags_effect_bulk.h:22,
+                 from src/ags/X/ags_effect_bulk.c:19:
+/usr/include/glib-2.0/glib/gstrfuncs.h:149:23: note: expected ‘const gchar *’ but argument is of type ‘xmlChar *’
+ gdouble               g_ascii_strtod   (const gchar  *nptr,
+                       ^
+src/ags/X/ags_effect_bulk.c:1198:8: warning: pointer targets in passing argument 2 of ‘xmlGetProp’ differ in signedness [-Wpointer-sign]
+        "value\0"),
+        ^
+In file included from ./src/ags/audio/ags_notation.h:23:0,
+                 from ./src/ags/audio/ags_channel.h:28,
+                 from ./src/ags/audio/ags_audio.h:25,
+                 from ./src/ags/X/ags_effect_bulk.h:26,
+                 from src/ags/X/ags_effect_bulk.c:19:
+/usr/include/libxml2/libxml/tree.h:1028:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlGetProp  (const xmlNode *node,
+   ^
+src/ags/X/ags_effect_bulk.c:1197:46: warning: pointer targets in passing argument 1 of ‘g_ascii_strtod’ differ in signedness [-Wpointer-sign]
+       default_bound = (float) g_ascii_strtod(xmlGetProp(port_default_node->data,
+                                              ^
+In file included from /usr/include/glib-2.0/glib.h:79:0,
+                 from ./src/ags/X/ags_effect_bulk.h:22,
+                 from src/ags/X/ags_effect_bulk.c:19:
+/usr/include/glib-2.0/glib/gstrfuncs.h:149:23: note: expected ‘const gchar *’ but argument is of type ‘xmlChar *’
+ gdouble               g_ascii_strtod   (const gchar  *nptr,
+                       ^
+src/ags/X/ags_effect_bulk.c:1226:49: warning: passing argument 1 of ‘ags_add_bulk_member_new’ from incompatible pointer type
+       add_bulk_member = ags_add_bulk_member_new(effect_bulk,
+                                                 ^
+In file included from src/ags/X/ags_effect_bulk.c:63:0:
+./src/ags/X/task/ags_add_bulk_member.h:58:19: note: expected ‘struct GtkWidget *’ but argument is of type ‘struct AgsEffectBulk *’
+ AgsAddBulkMember* ags_add_bulk_member_new(GtkWidget *effect_bulk,
+                   ^
+src/ags/X/ags_effect_bulk.c:1227:7: warning: passing argument 2 of ‘ags_add_bulk_member_new’ from incompatible pointer type
+       bulk_member,
+       ^
+In file included from src/ags/X/ags_effect_bulk.c:63:0:
+./src/ags/X/task/ags_add_bulk_member.h:58:19: note: expected ‘struct AgsLineMember *’ but argument is of type ‘struct AgsBulkMember *’
+ AgsAddBulkMember* ags_add_bulk_member_new(GtkWidget *effect_bulk,
+                   ^
+src/ags/X/ags_effect_bulk.c:1234:55: warning: passing argument 1 of ‘ags_update_bulk_member_new’ from incompatible pointer type
+       update_bulk_member = ags_update_bulk_member_new(effect_bulk,
+                                                       ^
+In file included from src/ags/X/ags_effect_bulk.c:64:0:
+./src/ags/X/task/ags_update_bulk_member.h:58:22: note: expected ‘struct GtkWidget *’ but argument is of type ‘struct AgsEffectBulk *’
+ AgsUpdateBulkMember* ags_update_bulk_member_new(GtkWidget *effect_bulk,
+                      ^
+src/ags/X/ags_effect_bulk.c:967:17: warning: variable ‘list_start’ set but not used [-Wunused-but-set-variable]
+   GList *list, *list_start;
+                 ^
+src/ags/X/ags_effect_bulk.c:966:17: warning: variable ‘recall_port’ set but not used [-Wunused-but-set-variable]
+   GList *port, *recall_port;
+                 ^
+src/ags/X/ags_effect_bulk.c:951:18: warning: unused variable ‘adjustment’ [-Wunused-variable]
+   GtkAdjustment *adjustment;
+                  ^
+src/ags/X/ags_effect_bulk.c: In function ‘ags_effect_bulk_real_add_effect’:
+src/ags/X/ags_effect_bulk.c:1272:17: warning: assignment from incompatible pointer type
+   ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(filename);
+                 ^
+src/ags/X/ags_effect_bulk.c: In function ‘ags_effect_bulk_real_remove_effect’:
+src/ags/X/ags_effect_bulk.c:1337:32: warning: comparison between pointer and integer
+   if(effect_bulk->channel_type == AGS_TYPE_OUTPUT){
+                                ^
+src/ags/X/ags_effect_bulk.c:1348:37: warning: passing argument 1 of ‘gtk_container_get_children’ from incompatible pointer type
+   list = gtk_container_get_children(effect_bulk->table);
+                                     ^
+In file included from /usr/include/gtk-2.0/gtk/gtkbin.h:35:0,
+                 from /usr/include/gtk-2.0/gtk/gtkwindow.h:36,
+                 from /usr/include/gtk-2.0/gtk/gtkdialog.h:35,
+                 from /usr/include/gtk-2.0/gtk/gtkaboutdialog.h:32,
+                 from /usr/include/gtk-2.0/gtk/gtk.h:33,
+                 from ./src/ags/X/ags_effect_bulk.h:24,
+                 from src/ags/X/ags_effect_bulk.c:19:
+/usr/include/gtk-2.0/gtk/gtkcontainer.h:132:10: note: expected ‘struct GtkContainer *’ but argument is of type ‘struct GtkTable *’
+ GList*   gtk_container_get_children     (GtkContainer       *container);
+          ^
+src/ags/X/ags_effect_bulk.c:1317:18: warning: unused variable ‘adjustment’ [-Wunused-variable]
+   GtkAdjustment *adjustment;
+                  ^
+src/ags/X/ags_effect_bulk.c:1316:21: warning: unused variable ‘add_bulk_member’ [-Wunused-variable]
+   AgsAddBulkMember *add_bulk_member;
+                     ^
+src/ags/X/ags_effect_bulk.c: In function ‘ags_effect_bulk_real_resize_audio_channels’:
+src/ags/X/ags_effect_bulk.c:1421:36: warning: passing argument 1 of ‘gtk_widget_get_ancestor’ from incompatible pointer type
+   window = gtk_widget_get_ancestor(effect_bulk,
+                                    ^
+In file included from /usr/include/gtk-2.0/gtk/gtkcontainer.h:35:0,
+                 from /usr/include/gtk-2.0/gtk/gtkbin.h:35,
+                 from /usr/include/gtk-2.0/gtk/gtkwindow.h:36,
+                 from /usr/include/gtk-2.0/gtk/gtkdialog.h:35,
+                 from /usr/include/gtk-2.0/gtk/gtkaboutdialog.h:32,
+                 from /usr/include/gtk-2.0/gtk/gtk.h:33,
+                 from ./src/ags/X/ags_effect_bulk.h:24,
+                 from src/ags/X/ags_effect_bulk.c:19:
+/usr/include/gtk-2.0/gtk/gtkwidget.h:1051:14: note: expected ‘struct GtkWidget *’ but argument is of type ‘struct AgsEffectBulk *’
+ GtkWidget*   gtk_widget_get_ancestor (GtkWidget *widget,
+              ^
+src/ags/X/ags_effect_bulk.c:1421:10: warning: assignment from incompatible pointer type
+   window = gtk_widget_get_ancestor(effect_bulk,
+          ^
+src/ags/X/ags_effect_bulk.c:1424:23: warning: assignment from incompatible pointer type
+   application_context = window->application_context;
+                       ^
+src/ags/X/ags_effect_bulk.c:1426:13: warning: assignment from incompatible pointer type
+   main_loop = application_context->main_loop;
+             ^
+src/ags/X/ags_effect_bulk.c:1428:15: warning: assignment from incompatible pointer type
+   task_thread = ags_thread_find_type(main_loop,
+               ^
+src/ags/X/ags_effect_bulk.c:1432:32: warning: comparison between pointer and integer
+   if(effect_bulk->channel_type == AGS_TYPE_OUTPUT){
+                                ^
+src/ags/X/ags_effect_bulk.c:1444:3: error: ‘bulk_member’ undeclared (first use in this function)
+   bulk_member = NULL;
+   ^
+src/ags/X/ags_effect_bulk.c:1444:3: note: each undeclared identifier is reported only once for each function it appears in
+src/ags/X/ags_effect_bulk.c:1446:37: warning: passing argument 1 of ‘gtk_container_get_children’ from incompatible pointer type
+   list = gtk_container_get_children(effect_bulk->table);
+                                     ^
+In file included from /usr/include/gtk-2.0/gtk/gtkbin.h:35:0,
+                 from /usr/include/gtk-2.0/gtk/gtkwindow.h:36,
+                 from /usr/include/gtk-2.0/gtk/gtkdialog.h:35,
+                 from /usr/include/gtk-2.0/gtk/gtkaboutdialog.h:32,
+                 from /usr/include/gtk-2.0/gtk/gtk.h:33,
+                 from ./src/ags/X/ags_effect_bulk.h:24,
+                 from src/ags/X/ags_effect_bulk.c:19:
+/usr/include/gtk-2.0/gtk/gtkcontainer.h:132:10: note: expected ‘struct GtkContainer *’ but argument is of type ‘struct GtkTable *’
+ GList*   gtk_container_get_children     (GtkContainer       *container);
+          ^
+src/ags/X/ags_effect_bulk.c:1451:55: warning: passing argument 1 of ‘ags_update_bulk_member_new’ from incompatible pointer type
+       update_bulk_member = ags_update_bulk_member_new(effect_bulk,
+                                                       ^
+In file included from src/ags/X/ags_effect_bulk.c:64:0:
+./src/ags/X/task/ags_update_bulk_member.h:58:22: note: expected ‘struct GtkWidget *’ but argument is of type ‘struct AgsEffectBulk *’
+ AgsUpdateBulkMember* ags_update_bulk_member_new(GtkWidget *effect_bulk,
+                      ^
+src/ags/X/ags_effect_bulk.c: In function ‘ags_effect_bulk_real_resize_pads’:
+src/ags/X/ags_effect_bulk.c:1527:36: warning: passing argument 1 of ‘gtk_widget_get_ancestor’ from incompatible pointer type
+   window = gtk_widget_get_ancestor(effect_bulk,
+                                    ^
+In file included from /usr/include/gtk-2.0/gtk/gtkcontainer.h:35:0,
+                 from /usr/include/gtk-2.0/gtk/gtkbin.h:35,
+                 from /usr/include/gtk-2.0/gtk/gtkwindow.h:36,
+                 from /usr/include/gtk-2.0/gtk/gtkdialog.h:35,
+                 from /usr/include/gtk-2.0/gtk/gtkaboutdialog.h:32,
+                 from /usr/include/gtk-2.0/gtk/gtk.h:33,
+                 from ./src/ags/X/ags_effect_bulk.h:24,
+                 from src/ags/X/ags_effect_bulk.c:19:
+/usr/include/gtk-2.0/gtk/gtkwidget.h:1051:14: note: expected ‘struct GtkWidget *’ but argument is of type ‘struct AgsEffectBulk *’
+ GtkWidget*   gtk_widget_get_ancestor (GtkWidget *widget,
+              ^
+src/ags/X/ags_effect_bulk.c:1527:10: warning: assignment from incompatible pointer type
+   window = gtk_widget_get_ancestor(effect_bulk,
+          ^
+src/ags/X/ags_effect_bulk.c:1530:23: warning: assignment from incompatible pointer type
+   application_context = window->application_context;
+                       ^
+src/ags/X/ags_effect_bulk.c:1532:13: warning: assignment from incompatible pointer type
+   main_loop = application_context->main_loop;
+             ^
+src/ags/X/ags_effect_bulk.c:1534:15: warning: assignment from incompatible pointer type
+   task_thread = ags_thread_find_type(main_loop,
+               ^
+src/ags/X/ags_effect_bulk.c:1540:32: warning: comparison between pointer and integer
+   if(effect_bulk->channel_type == AGS_TYPE_OUTPUT){
+                                ^
+src/ags/X/ags_effect_bulk.c:1548:3: error: ‘bulk_member’ undeclared (first use in this function)
+   bulk_member = NULL;
+   ^
+src/ags/X/ags_effect_bulk.c:1550:37: warning: passing argument 1 of ‘gtk_container_get_children’ from incompatible pointer type
+   list = gtk_container_get_children(effect_bulk->table);
+                                     ^
+In file included from /usr/include/gtk-2.0/gtk/gtkbin.h:35:0,
+                 from /usr/include/gtk-2.0/gtk/gtkwindow.h:36,
+                 from /usr/include/gtk-2.0/gtk/gtkdialog.h:35,
+                 from /usr/include/gtk-2.0/gtk/gtkaboutdialog.h:32,
+                 from /usr/include/gtk-2.0/gtk/gtk.h:33,
+                 from ./src/ags/X/ags_effect_bulk.h:24,
+                 from src/ags/X/ags_effect_bulk.c:19:
+/usr/include/gtk-2.0/gtk/gtkcontainer.h:132:10: note: expected ‘struct GtkContainer *’ but argument is of type ‘struct GtkTable *’
+ GList*   gtk_container_get_children     (GtkContainer       *container);
+          ^
+src/ags/X/ags_effect_bulk.c:1555:55: warning: passing argument 1 of ‘ags_update_bulk_member_new’ from incompatible pointer type
+       update_bulk_member = ags_update_bulk_member_new(effect_bulk,
+                                                       ^
+In file included from src/ags/X/ags_effect_bulk.c:64:0:
+./src/ags/X/task/ags_update_bulk_member.h:58:22: note: expected ‘struct GtkWidget *’ but argument is of type ‘struct AgsEffectBulk *’
+ AgsUpdateBulkMember* ags_update_bulk_member_new(GtkWidget *effect_bulk,
+                      ^
+Makefile:5776: recipe for target 'gsequencer-ags_effect_bulk.o' failed
+make[2]: *** [gsequencer-ags_effect_bulk.o] Error 1
+make[2]: Leaving directory '/home/minos/ags-devel'
+Makefile:7933: recipe for target 'all-recursive' failed
 make[1]: *** [all-recursive] Error 1
+make[1]: Leaving directory '/home/minos/ags-devel'
+Makefile:1904: recipe for target 'all' failed
 make: *** [all] Error 2

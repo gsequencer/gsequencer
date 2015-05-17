@@ -48,6 +48,9 @@
 #include <ags/X/machine/ags_synth.h>
 #include <ags/X/machine/ags_ffplayer.h>
 
+#include <ags/X/machine/ags_ladspa_bridge.h>
+#include <ags/X/machine/ags_lv2_bridge.h>
+
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdio.h>
@@ -519,6 +522,97 @@ ags_menu_bar_add_ffplayer_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   gtk_widget_show_all((GtkWidget *) ffplayer);
 }
 
+void
+ags_menu_bar_add_ladspa_bridge_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
+{
+  AgsWindow *window;
+  AgsLadspaBridge *ladspa_bridge;
+  AgsAddAudio *add_audio;
+  AgsThread *main_loop;
+  AgsTaskThread *task_thread;
+  AgsApplicationContext *application_context;
+
+  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) menu_bar, AGS_TYPE_WINDOW);
+
+  application_context = window->application_context;
+  
+  main_loop = application_context->main_loop;
+  task_thread = ags_thread_find_type(main_loop,
+				     AGS_TYPE_TASK_THREAD);
+
+  ladspa_bridge = ags_ladspa_bridge_new(G_OBJECT(window->soundcard),
+					g_object_get_data(menu_item,
+							  AGS_MENU_BAR_LADSPA_FILENAME_KEY),
+					g_object_get_data(menu_item,
+							  AGS_MENU_BAR_LADSPA_EFFECT_KEY));
+
+  add_audio = ags_add_audio_new(window->soundcard,
+				AGS_MACHINE(ladspa_bridge)->audio);
+  ags_task_thread_append_task(task_thread,
+			      AGS_TASK(add_audio));
+
+  gtk_box_pack_start((GtkBox *) window->machines,
+		     (GtkWidget *) ladspa_bridge,
+		     FALSE, FALSE, 0);
+  ags_ladspa_bridge_load(ladspa_bridge);
+  
+  ags_connectable_connect(AGS_CONNECTABLE(ladspa_bridge));
+
+  //  ladspa_bridge->machine.audio->frequence = ;
+  ladspa_bridge->machine.audio->audio_channels = 2;
+  ags_audio_set_pads(AGS_MACHINE(ladspa_bridge)->audio, AGS_TYPE_INPUT, 78);
+  ags_audio_set_pads(AGS_MACHINE(ladspa_bridge)->audio, AGS_TYPE_OUTPUT, 1);
+
+  ags_machine_find_port(AGS_MACHINE(ladspa_bridge));
+
+  gtk_widget_show_all((GtkWidget *) ladspa_bridge);
+}
+
+void
+ags_menu_bar_add_lv2_bridge_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
+{
+  AgsWindow *window;
+  AgsLv2Bridge *lv2_bridge;
+  AgsAddAudio *add_audio;
+  AgsThread *main_loop;
+  AgsTaskThread *task_thread;
+  AgsApplicationContext *application_context;
+
+  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) menu_bar, AGS_TYPE_WINDOW);
+
+  application_context = window->application_context;
+  
+  main_loop = application_context->main_loop;
+  task_thread = ags_thread_find_type(main_loop,
+				     AGS_TYPE_TASK_THREAD);
+
+  lv2_bridge = ags_lv2_bridge_new(G_OBJECT(window->soundcard),
+				  g_object_get_data(menu_item,
+						    AGS_MENU_BAR_LV2_FILENAME_KEY),
+				  g_object_get_data(menu_item,
+						    AGS_MENU_BAR_LV2_URI_KEY));
+  
+  add_audio = ags_add_audio_new(window->soundcard,
+				AGS_MACHINE(lv2_bridge)->audio);
+  ags_task_thread_append_task(task_thread,
+			      AGS_TASK(add_audio));
+
+  gtk_box_pack_start((GtkBox *) window->machines,
+		     (GtkWidget *) lv2_bridge,
+		     FALSE, FALSE, 0);
+  ags_lv2_bridge_load(lv2_bridge);
+  
+  ags_connectable_connect(AGS_CONNECTABLE(lv2_bridge));
+
+  //  lv2_bridge->machine.audio->frequence = ;
+  lv2_bridge->machine.audio->audio_channels = 2;
+  ags_audio_set_pads(AGS_MACHINE(lv2_bridge)->audio, AGS_TYPE_INPUT, 78);
+  ags_audio_set_pads(AGS_MACHINE(lv2_bridge)->audio, AGS_TYPE_OUTPUT, 1);
+
+  ags_machine_find_port(AGS_MACHINE(lv2_bridge));
+
+  gtk_widget_show_all((GtkWidget *) lv2_bridge);
+}
 
 void
 ags_menu_bar_remove_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)

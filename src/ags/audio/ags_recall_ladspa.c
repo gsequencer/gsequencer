@@ -231,7 +231,7 @@ ags_recall_ladspa_init(AgsRecallLadspa *recall_ladspa)
 
   recall_ladspa->filename = NULL;
   recall_ladspa->effect = NULL;
-  recall_ladspa->index = 0;
+  recall_ladspa->effect_index = 0;
 
   recall_ladspa->plugin_descriptor = NULL;
 
@@ -289,15 +289,15 @@ ags_recall_ladspa_set_property(GObject *gobject,
     break;
   case PROP_INDEX:
     {
-      unsigned long *index;
+      unsigned long *effect_index;
       
-      index = g_value_get_ulong(value);
+      effect_index = g_value_get_ulong(value);
 
-      if(index == recall_ladspa->index){
+      if(effect_index == recall_ladspa->effect_index){
 	return;
       }
 
-      recall_ladspa->index = index;
+      recall_ladspa->effect_index = effect_index;
     }
     break;
   default:
@@ -329,7 +329,7 @@ ags_recall_ladspa_get_property(GObject *gobject,
     break;
   case PROP_INDEX:
     {
-      g_value_set_ulong(value, recall_ladspa->index);
+      g_value_set_ulong(value, recall_ladspa->effect_index);
     }
     break;
   default:
@@ -379,7 +379,7 @@ ags_recall_ladspa_set_ports(AgsPlugin *plugin, GList *port)
 
     if(dlerror() == NULL && ladspa_descriptor){
       recall_ladspa->plugin_descriptor = 
-	plugin_descriptor = ladspa_descriptor(recall_ladspa->index);
+	plugin_descriptor = ladspa_descriptor(recall_ladspa->effect_index);
 
       port_count = plugin_descriptor->PortCount;
       port_descriptor = plugin_descriptor->PortDescriptors;
@@ -462,7 +462,7 @@ ags_recall_ladspa_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
   AgsRecallLadspa *gobject;
   AgsLadspaPlugin *ladspa_plugin;
   gchar *filename, *effect;
-  unsigned long index;
+  unsigned long effect_index;
 
   gobject = AGS_RECALL_LADSPA(plugin);
 
@@ -479,7 +479,7 @@ ags_recall_ladspa_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 			"filename\0");
   effect = xmlGetProp(node,
 		      "effect\0");
-  index = g_ascii_strtoull(xmlGetProp(node,
+  effect_index = g_ascii_strtoull(xmlGetProp(node,
 				      "index\0"),
 			   NULL,
 			   10);
@@ -487,7 +487,7 @@ ags_recall_ladspa_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
   g_object_set(gobject,
 	       "filename\0", filename,
 	       "effect\0", effect,
-	       "index\0", index,
+	       "index\0", effect_index,
 	       NULL);
 
   ags_recall_ladspa_load(gobject);
@@ -530,7 +530,7 @@ ags_recall_ladspa_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 
   xmlNewProp(node,
 	     "index\0",
-	     g_strdup_printf("%d\0", recall_ladspa->index));
+	     g_strdup_printf("%d\0", recall_ladspa->effect_index));
 
   xmlAddChild(parent,
 	      node);
@@ -567,7 +567,7 @@ ags_recall_ladspa_load(AgsRecallLadspa *recall_ladspa)
 
     if(dlerror() == NULL && ladspa_descriptor){
       recall_ladspa->plugin_descriptor = 
-	plugin_descriptor = ladspa_descriptor(recall_ladspa->index);
+	plugin_descriptor = ladspa_descriptor(recall_ladspa->effect_index);
     }
   }
 }
@@ -609,7 +609,7 @@ ags_recall_ladspa_load_ports(AgsRecallLadspa *recall_ladspa)
 
     if(dlerror() == NULL && ladspa_descriptor){
       recall_ladspa->plugin_descriptor = 
-	plugin_descriptor = ladspa_descriptor(recall_ladspa->index);
+	plugin_descriptor = ladspa_descriptor(recall_ladspa->effect_index);
 
       port_count = plugin_descriptor->PortCount;
       port_descriptor = plugin_descriptor->PortDescriptors;
@@ -762,7 +762,7 @@ ags_recall_ladspa_find(GList *recall,
  * @source: the source
  * @filename: the LADSPA plugin filename
  * @effect: effect's name
- * @index: effect's index
+ * @effect_index: effect's index
  *
  * Creates a #AgsRecallLadspa
  *
@@ -774,7 +774,7 @@ AgsRecallLadspa*
 ags_recall_ladspa_new(AgsChannel *source,
 		      gchar *filename,
 		      gchar *effect,
-		      unsigned long index)
+		      unsigned long effect_index)
 {
   GObject *soundcard;
   AgsRecallLadspa *recall_ladspa;
@@ -790,7 +790,7 @@ ags_recall_ladspa_new(AgsChannel *source,
 						   "source\0", source,
 						   "filename\0", filename,
 						   "effect\0", effect,
-						   "index\0", index,
+						   "index\0", effect_index,
 						   NULL);
 
   return(recall_ladspa);

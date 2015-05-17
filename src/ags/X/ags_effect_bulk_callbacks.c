@@ -100,6 +100,7 @@ ags_effect_bulk_plugin_browser_response_callback(GtkDialog *dialog,
 		       GTK_WIDGET(label),
 		       FALSE, FALSE,
 		       0);
+
     gtk_widget_show_all((GtkWidget *) hbox);
   }
   
