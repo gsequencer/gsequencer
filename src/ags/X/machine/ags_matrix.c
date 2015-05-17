@@ -189,8 +189,6 @@ ags_matrix_class_init(AgsMatrixClass *matrix)
 void
 ags_matrix_connectable_interface_init(AgsConnectableInterface *connectable)
 {
-  AgsConnectableInterface *ags_matrix_connectable_parent_interface;
-
   ags_matrix_parent_connectable_interface = g_type_interface_peek_parent(connectable);
 
   connectable->connect = ags_matrix_connect;
@@ -234,6 +232,7 @@ ags_matrix_init(AgsMatrix *matrix)
 		   AGS_AUDIO_ASYNC |
 		   AGS_AUDIO_NOTATION_DEFAULT |
 		   AGS_AUDIO_HAS_NOTATION);
+  
   //  audio->audio_channels = 1;
   AGS_MACHINE(matrix)->input_pad_type = G_TYPE_NONE;
   AGS_MACHINE(matrix)->input_line_type = G_TYPE_NONE;

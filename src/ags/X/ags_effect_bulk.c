@@ -93,6 +93,7 @@ gchar* ags_effect_bulk_get_version(AgsPlugin *plugin);
 void ags_effect_bulk_set_version(AgsPlugin *plugin, gchar *version);
 gchar* ags_effect_bulk_get_build_id(AgsPlugin *plugin);
 void ags_effect_bulk_set_build_id(AgsPlugin *plugin, gchar *build_id);
+void ags_effect_bulk_show(GtkWidget *widget);
 
 GList* ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 					 gchar *filename,
@@ -191,6 +192,7 @@ void
 ags_effect_bulk_class_init(AgsEffectBulkClass *effect_bulk)
 {
   GObjectClass *gobject;
+  GtkWidgetClass *widget;
   GParamSpec *param_spec;
 
   ags_effect_bulk_parent_class = g_type_class_peek_parent(effect_bulk);
@@ -234,6 +236,11 @@ ags_effect_bulk_class_init(AgsEffectBulkClass *effect_bulk)
   g_object_class_install_property(gobject,
 				  PROP_CHANNEL_TYPE,
 				  param_spec);
+
+  /* GtkWidgetClass */
+  widget = (GtkWidgetClass *) effect_bulk;
+
+  widget->show = ags_effect_bulk_show;
 
   /* AgsEffectBulkClass */
   effect_bulk->add_effect = ags_effect_bulk_real_add_effect;
@@ -609,6 +616,24 @@ ags_effect_bulk_set_build_id(AgsPlugin *plugin, gchar *build_id)
   effect_bulk = AGS_EFFECT_BULK(plugin);
 
   effect_bulk->build_id = build_id;
+}
+
+void
+ags_effect_bulk_show(GtkWidget *widget)
+{
+  AgsEffectBulk *effect_bulk;
+    
+  effect_bulk = AGS_EFFECT_BULK(widget);
+  
+  GTK_WIDGET_CLASS(ags_effect_bulk_parent_class)->show(widget);
+
+  if((AGS_EFFECT_BULK_HIDE_BUTTONS & (effect_bulk->flags)) != 0){
+    gtk_widget_hide(GTK_WIDGET(effect_bulk->add)->parent);
+  }
+
+  if((AGS_EFFECT_BULK_HIDE_ENTRIES & (effect_bulk->flags)) != 0){
+    gtk_widget_hide(effect_bulk->bulk_member);
+  }
 }
 
 AgsEffectBulkPlugin*
@@ -1387,7 +1412,6 @@ ags_effect_bulk_real_resize_audio_channels(AgsEffectBulk *effect_bulk,
   AgsApplicationContext *application_context;
   
   GList *task;
-  GList *bulk_member;
   GList *effect_bulk_plugin;
   GList *list;
   guint pads;
@@ -1416,29 +1440,23 @@ ags_effect_bulk_real_resize_audio_channels(AgsEffectBulk *effect_bulk,
 
   /* collect bulk member */
   task = NULL;
-  bulk_member = NULL;
 
   list = gtk_container_get_children(effect_bulk->table);
 
   while(list != NULL){
     if(AGS_IS_BULK_MEMBER(list->data)){
-      bulk_member = g_list_prepend(bulk_member,
-				   list->data);
+      /* create task */
+      update_bulk_member = ags_update_bulk_member_new(effect_bulk,
+						      list->data,
+						      new_size,
+						      old_size,
+						      FALSE);
+      task = g_list_prepend(task,
+			    update_bulk_member);
     }
       
     list = list->next;
   }
-
-  bulk_member = g_list_reverse(bulk_member);
-
-  /* create task */
-  update_bulk_member = ags_update_bulk_member_new(effect_bulk,
-						  bulk_member,
-						  new_size,
-						  old_size,
-						  FALSE);
-  task = g_list_prepend(task,
-			update_bulk_member);
 
   if(new_size > old_size){  
     /* add effect */
@@ -1499,7 +1517,6 @@ ags_effect_bulk_real_resize_pads(AgsEffectBulk *effect_bulk,
   AgsApplicationContext *application_context;
   
   GList *task;
-  GList *bulk_member;
   GList *effect_bulk_plugin;
   GList *list;
   guint audio_channels;
@@ -1526,29 +1543,24 @@ ags_effect_bulk_real_resize_pads(AgsEffectBulk *effect_bulk,
 
   /* collect bulk member */
   task = NULL;
-  bulk_member = NULL;
 
   list = gtk_container_get_children(effect_bulk->table);
 
   while(list != NULL){
     if(AGS_IS_BULK_MEMBER(list->data)){
-      bulk_member = g_list_prepend(bulk_member,
-				   list->data);
+      /* create task */
+      update_bulk_member = ags_update_bulk_member_new(effect_bulk,
+						      list->data,
+						      new_size,
+						      old_size,
+						      TRUE);
+      task = g_list_prepend(task,
+			    update_bulk_member);
+      
     }
       
     list = list->next;
   }
-
-  bulk_member = g_list_reverse(bulk_member);
-
-  /* create task */
-  update_bulk_member = ags_update_bulk_member_new(effect_bulk,
-						  bulk_member,
-						  new_size,
-						  old_size,
-						  TRUE);
-  task = g_list_prepend(task,
-			update_bulk_member);
    
   if(new_size > old_size){ 
     /* add effect */

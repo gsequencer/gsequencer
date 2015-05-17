@@ -66,7 +66,8 @@ struct _AgsLv2Bridge
 
   gchar *filename;
   gchar *uri;
-
+  guint uri_index;
+  
   LV2UI_Descriptor *lv2_ui_descriptor;
   LV2UI_Handle *lv2_ui_handle;
 };

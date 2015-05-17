@@ -21,8 +21,6 @@
 
 #include <ags/object/ags_connectable.h>
 
-#include <ags/main.h>
-
 #include <ags/object/ags_plugin.h>
 
 #include <ags/audio/ags_input.h>

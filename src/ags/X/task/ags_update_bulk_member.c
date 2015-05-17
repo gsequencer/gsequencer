@@ -158,6 +158,7 @@ ags_update_bulk_member_launch(AgsTask *task)
 {
   AgsUpdateBulkMember *update_bulk_member;
   AgsChannel *current;
+  
   AgsBulkPort *bulk_port;
 
   GList *list, *list_next;

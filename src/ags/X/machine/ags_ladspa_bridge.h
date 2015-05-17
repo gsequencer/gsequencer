@@ -60,6 +60,10 @@ struct _AgsLadspaBridge
 
   guint mapped_output;
   guint mapped_input;
+
+  gchar *filename;
+  gchar *effect;
+  unsigned long effect_index;
 };
 
 struct _AgsLadspaBridgeClass
@@ -69,6 +73,10 @@ struct _AgsLadspaBridgeClass
 
 GType ags_ladspa_bridge_get_type(void);
 
-AgsLadspaBridge* ags_ladspa_bridge_new(GObject *soundcard);
+void ags_ladspa_bridge_load(AgsLadspaBridge *ladspa_bridge);
+
+AgsLadspaBridge* ags_ladspa_bridge_new(GObject *soundcard,
+				       gchar *filename,
+				       gchar *effect);
 
 #endif /*__AGS_LADSPA_BRIDGE_H__*/
