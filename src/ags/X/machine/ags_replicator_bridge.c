@@ -26,6 +26,17 @@
 #include <ags/object/ags_marshal.h>
 #include <ags/object/ags_plugin.h>
 
+#include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_input.h>
+#include <ags/audio/ags_output.h>
+#include <ags/audio/ags_recall_factory.h>
+#include <ags/audio/ags_recall.h>
+#include <ags/audio/ags_recall_container.h>
+
+#include <ags/audio/recall/ags_clone_channel.h>
+#include <ags/audio/recall/ags_clone_channel_run.h>
+
 void ags_replicator_bridge_class_init(AgsReplicatorBridgeClass *replicator_bridge);
 void ags_replicator_bridge_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_replicator_bridge_plugin_interface_init(AgsPluginInterface *plugin);
@@ -45,6 +56,13 @@ void ags_replicator_bridge_set_version(AgsPlugin *plugin, gchar *version);
 gchar* ags_replicator_bridge_get_build_id(AgsPlugin *plugin);
 void ags_replicator_bridge_set_build_id(AgsPlugin *plugin, gchar *build_id);
 
+void ags_replicator_bridge_set_audio_channels(AgsAudio *audio,
+					      guint audio_channels, guint audio_channels_old,
+					      AgsReplicatorBridge *replicator_bridge);
+void ags_replicator_bridge_set_pads(AgsAudio *audio, GType type,
+				    guint pads, guint pads_old,
+				    AgsReplicatorBridge *replicator_bridge);
+
 /**
  * SECTION:ags_replicator_bridge
  * @short_description: A composite widget to visualize a bunch of #AgsChannel
@@ -57,6 +75,8 @@ void ags_replicator_bridge_set_build_id(AgsPlugin *plugin, gchar *build_id);
  */
 
 static gpointer ags_replicator_bridge_parent_class = NULL;
+
+static AgsConnectableInterface *ags_replicator_bridge_parent_connectable_interface;
 
 GType
 ags_replicator_bridge_get_type(void)
@@ -122,6 +142,8 @@ ags_replicator_bridge_class_init(AgsReplicatorBridgeClass *replicator_bridge)
 void
 ags_replicator_bridge_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  ags_replicator_bridge_parent_connectable_interface = g_type_interface_peek_parent(connectable);
+
   connectable->is_ready = NULL;
   connectable->is_connected = NULL;
   connectable->connect = ags_replicator_bridge_connect;
@@ -151,38 +173,42 @@ ags_replicator_bridge_init(AgsReplicatorBridge *replicator_bridge)
   GtkVBox *vbox;
   GtkExpander *expander;
 
+  AgsAudio *audio;
+
+  audio = AGS_MACHINE(replicator_bridge)->audio;
+  audio->flags |= (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
+		   AGS_AUDIO_INPUT_HAS_RECYCLING |
+		   AGS_AUDIO_SYNC |
+		   AGS_AUDIO_ASYNC);
+
   AGS_MACHINE(replicator_bridge)->input_pad_type = G_TYPE_NONE;
   AGS_MACHINE(replicator_bridge)->input_line_type = G_TYPE_NONE;
   AGS_MACHINE(replicator_bridge)->output_pad_type = G_TYPE_NONE;
   AGS_MACHINE(replicator_bridge)->output_line_type = G_TYPE_NONE;
+
+  g_signal_connect_after(G_OBJECT(AGS_MACHINE(replicator_bridge)->audio), "set-audio-channels\0",
+			 G_CALLBACK(ags_replicator_bridge_set_audio_channels), replicator_bridge);
+
+  g_signal_connect_after(G_OBJECT(AGS_MACHINE(replicator_bridge)->audio), "set-pads\0",
+			 G_CALLBACK(ags_replicator_bridge_set_pads), replicator_bridge);
 
   /* create widgets */
   vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
   gtk_container_add((GtkContainer *) (gtk_bin_get_child((GtkBin *) replicator_bridge)),
 		    (GtkWidget *) vbox);
 
-  /* selective input */
-  expander = (GtkExpander *) gtk_expander_new("selective input\0");
+
+  /* replicator_bridge */
+  expander = (GtkExpander *) gtk_expander_new("conversion replicator_bridge\0");
   gtk_box_pack_start((GtkBox *) vbox,
 		     (GtkWidget *) expander,
 		     FALSE, FALSE,
 		     0);
 
-  replicator_bridge->selective_input = (GtkHBox *) gtk_hbox_new(FALSE, 0);
+  replicator_bridge->replicator_bridge = (GtkTable *) gtk_table_new(1, 1,
+								    FALSE);
   gtk_container_add((GtkContainer *) expander,
-		    (GtkWidget *) replicator_bridge->selective_input);
-
-  /* matrix */
-  expander = (GtkExpander *) gtk_expander_new("conversion matrix\0");
-  gtk_box_pack_start((GtkBox *) vbox,
-		     (GtkWidget *) expander,
-		     FALSE, FALSE,
-		     0);
-
-  replicator_bridge->matrix = (GtkTable *) gtk_table_new(1, 1,
-							 FALSE);
-  gtk_container_add((GtkContainer *) expander,
-		    (GtkWidget *) replicator_bridge->matrix);
+		    (GtkWidget *) replicator_bridge->replicator_bridge);
 }
 
 void
@@ -222,12 +248,27 @@ ags_replicator_bridge_get_property(GObject *gobject,
 void
 ags_replicator_bridge_connect(AgsConnectable *connectable)
 {
-  //TODO:JK: implement me
+  AgsReplicatorBridge *replicator_bridge;
+
+  if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) != 0){
+    return;
+  }
+
+  ags_replicator_bridge_parent_connectable_interface->connect(connectable);
+
+  replicator_bridge = AGS_REPLICATOR_BRIDGE(connectable);
 }
 
 void
 ags_replicator_bridge_disconnect(AgsConnectable *connectable)
 {
+  AgsReplicatorBridge *replicator_bridge;
+
+  ags_replicator_bridge_parent_connectable_interface->disconnect(connectable);
+
+  /* AgsReplicator_Bridge */
+  replicator_bridge = AGS_REPLICATOR_BRIDGE(connectable);
+
   //TODO:JK: implement me
 }
 
@@ -261,6 +302,115 @@ ags_replicator_bridge_set_build_id(AgsPlugin *plugin, gchar *build_id)
   replicator_bridge = AGS_REPLICATOR_BRIDGE(plugin);
 
   replicator_bridge->build_id = build_id;
+}
+
+void
+ags_replicator_bridge_set_audio_channels(AgsAudio *audio,
+					 guint audio_channels, guint audio_channels_old,
+					 AgsReplicatorBridge *replicator_bridge)
+{
+  GtkToggleButton *toggle_button;
+  GtkLabel *label;
+  
+  gchar *str;
+  guint i, j, k;
+  
+  if(audio_channels > audio_channels_old){
+    /* resize label and matrix table */
+    gtk_table_resize(replicator_bridge->conversion_matrix,
+		     audio->output_pads * audio_channels,
+		     1);
+
+    gtk_table_resize(replicator_bridge->conversion_matrix,
+		     1,
+		     audio->input_pads * audio_channels);
+
+    
+    gtk_table_resize(replicator_bridge->conversion_matrix,
+		     audio->output_pads * audio_channels,
+		     audio->input_pads * audio_channels);
+
+    /* create vertical labels */
+    for(i = 0; i < audio->input_pads; i++){
+      for(j = audio_channels_old; j < audio_channels; j++){
+	label = gtk_label_new(g_strdup_printf("%d\0", i * audio_channels + j));
+	gtk_table_attach(replicator_bridge->conversion_matrix,
+			 label,
+			 0, 1,
+			 i * audio_channels + j, i * audio_channels + j + 1,
+			 GTK_FILL, GTK_FILL,
+			 0, 0);
+      }
+    }
+
+    /* create vertical labels */
+    for(i = 0; i < audio->input_pads; i++){
+      for(j = audio_channels_old; j < audio_channels; j++){
+	label = gtk_label_new(g_strdup_printf("%d\0", i * audio_channels + j));
+	gtk_table_attach(replicator_bridge->conversion_matrix,
+			 label,
+			 i * audio_channels + j, i * audio_channels + j + 1,
+			 0, 1,
+			 GTK_FILL, GTK_FILL,
+			 0, 0);
+      }
+    }
+
+    /* create matrix */
+    for(i = 0; i < audio->output_pads; i++){
+      for(j = 0; j < audio->input_pads; j++){
+	for(k = audio_channels_old; k < audio_channels; k++){
+	  toggle_button = gtk_toggle_button_new();
+	  gtk_table_attach(replicator_bridge->conversion_matrix,
+			   toggle_button,
+			   j * audio_channels + k, j * audio_channels + k + 1,
+			   i * audio_channels, i * audio_channels + 1,
+			   GTK_FILL, GTK_FILL,
+			   0, 0);
+	}
+      }
+    }
+  }else{
+    gtk_table_resize(replicator_bridge->conversion_matrix,
+		     audio->output_pads *audio_channels,
+		     audio->input_pads * audio_channels);
+  }
+
+}
+
+void
+ags_replicator_bridge_set_pads(AgsAudio *audio, GType type,
+			       guint pads, guint pads_old,
+			       AgsReplicatorBridge *replicator_bridge)
+{
+  GtkToggleButton *toggle_button;
+  GtkLabel *label;
+  
+  gchar *str;
+  guint i, j, k;
+  
+  if(pads > pads_old){
+    if(type == AGS_TYPE_INPUT){
+      /* resize label and matrix table */
+      gtk_table_resize(replicator_bridge->,
+		       audio->output_pads * audio_channels,
+		       1);
+
+      gtk_table_resize(replicator_bridge->,
+		       1,
+		       audio->input_pads * audio_channels);
+      
+      
+      gtk_table_resize(replicator_bridge->conversion_matrix,
+		       audio->output_pads * audio_channels,
+		       audio->input_pads * audio_channels);
+    }else{
+    }
+  }else{
+    if(type == AGS_TYPE_INPUT){
+    }else{
+    }
+  }
 }
 
 /**
