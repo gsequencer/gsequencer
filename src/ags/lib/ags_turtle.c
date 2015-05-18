@@ -545,7 +545,7 @@ ags_turtle_load(AgsTurtle *turtle)
 
 	      if(iter[1] == '"' && iter[2] == '"'){
 		escaped_literal = TRUE;
-		iter += 2;
+		iter += 3;
 	      }else{
 		escaped_literal = FALSE;
 	      }
@@ -553,7 +553,7 @@ ags_turtle_load(AgsTurtle *turtle)
 	      if(escaped_literal){
 		if(iter[1] == '"' && iter[2] == '"'){
 		  end_literal = iter;
-		  iter += 2;
+		  iter += 3;
 		}
 	      }else{
 		end_literal = iter;

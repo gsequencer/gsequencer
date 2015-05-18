@@ -647,6 +647,7 @@ ags_lv2_menu_new()
 
   /* retrieve LV2 filenames */
   ags_lv2_manager_load_default_directory();
+  ags_lv2ui_manager_load_default_directory();
   filename =
     filename_start = ags_lv2_manager_get_filenames();
 
