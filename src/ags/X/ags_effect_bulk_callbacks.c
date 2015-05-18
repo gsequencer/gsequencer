@@ -147,3 +147,8 @@ ags_effect_bulk_set_pads_callback(AgsAudio *audio,
   }
 }
 
+void
+ags_effect_bulk_lv2ui_write_function(LV2UI_Controller controller, uint32_t port_index, uint32_t buffer_size, uint32_t port_protocol, const void *buffer)
+{
+  g_message("write\0");
+}

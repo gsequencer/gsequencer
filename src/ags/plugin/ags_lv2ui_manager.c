@@ -44,7 +44,7 @@ void ags_lv2ui_manager_finalize(GObject *gobject);
 static gpointer ags_lv2ui_manager_parent_class = NULL;
 
 AgsLv2uiManager *ags_lv2ui_manager = NULL;
-static const gchar *ags_lv2ui_default_path = "/usr/lib/lv2ui\0";
+static const gchar *ags_lv2ui_default_path = "/usr/lib/lv2\0";
 
 GType
 ags_lv2ui_manager_get_type (void)
@@ -299,7 +299,7 @@ ags_lv2ui_manager_load_default_directory()
   if(error != NULL){
     g_warning(error->message);
   }
-  
+
   while((path = g_dir_read_name(dir)) != NULL){
     if(!g_ascii_strncasecmp(path,
 			    "..\0",
@@ -351,10 +351,10 @@ ags_lv2ui_manager_load_default_directory()
 					    "//rdf-triple/rdf-verb[@do=\"uiext:binary\"]/rdf-list/rdf-value\0");
 
 	if(binary_list == NULL){
-	  g_object_unref(turtle);
+	  ttl_list = ttl_list->next;
 	  continue;
 	}
-
+	
 	str = xmlGetProp(binary_list->data,
 			 "value\0");
 	str = g_strndup(&(str[1]),
@@ -393,7 +393,7 @@ ags_lv2ui_manager_uri_index(gchar *filename,
   AgsLv2uiPlugin *lv2ui_plugin;
     
   void *plugin_so;
-  LV2UI_Descriptor* (*lv2ui_descriptor)(uint32_t index);
+  LV2UI_DescriptorFunction lv2ui_descriptor;
   LV2UI_Descriptor *plugin_descriptor;
 
   uint32_t uri_index;
@@ -407,6 +407,10 @@ ags_lv2ui_manager_uri_index(gchar *filename,
   /* load plugin */
   lv2ui_plugin = ags_lv2ui_manager_find_lv2ui_plugin(filename);
 
+  if(lv2ui_plugin == NULL){
+    return(G_MAXULONG);
+  }
+    
   if(lv2ui_plugin->plugin_so == NULL){
     plugin_so =
       lv2ui_plugin->plugin_so = dlopen(lv2ui_plugin->filename,
@@ -423,6 +427,9 @@ ags_lv2ui_manager_uri_index(gchar *filename,
     
     if(dlerror() == NULL && lv2ui_descriptor){
       for(i = 0; (plugin_descriptor = lv2ui_descriptor(i)) != NULL; i++){
+	g_message(plugin_descriptor->URI);
+	g_message(uri);
+	
 	if(!strncmp(plugin_descriptor->URI,
 		    uri,
 		    strlen(uri))){
