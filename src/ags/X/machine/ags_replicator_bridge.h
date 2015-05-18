@@ -56,8 +56,9 @@ struct _AgsReplicatorBridge
 
   guint mapped_input;
   
-  GtkHBox *selective_input;
   GtkTable *matrix;
+  GtkTable *h_label;
+  GtkTable *v_label;
 };
 
 struct _AgsReplicatorBridgeClass
