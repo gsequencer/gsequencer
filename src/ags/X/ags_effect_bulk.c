@@ -1526,7 +1526,7 @@ ags_effect_bulk_add_lv2ui_effect(AgsEffectBulk *effect_bulk,
 				      effect,
 				      path,
 				      ags_effect_bulk_lv2ui_write_function,
-				      NULL,
+				      effect_bulk,
 				      &widget,
 				      feature);
   
