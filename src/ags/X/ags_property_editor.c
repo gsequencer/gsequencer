@@ -26,7 +26,6 @@ void ags_property_editor_connectable_interface_init(AgsConnectableInterface *con
 void ags_property_editor_init(AgsPropertyEditor *property_editor);
 void ags_property_editor_connect(AgsConnectable *connectable);
 void ags_property_editor_disconnect(AgsConnectable *connectable);
-void ags_property_editor_destroy(GtkObject *object);
 void ags_property_editor_show(GtkWidget *widget);
 
 /**
@@ -119,14 +118,6 @@ void
 ags_property_editor_disconnect(AgsConnectable *connectable)
 {
   /* empty */
-}
-
-void
-ags_property_editor_destroy(GtkObject *object)
-{
-  AgsPropertyEditor *property_editor;
-
-  property_editor = (AgsPropertyEditor *) object;
 }
 
 void
