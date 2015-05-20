@@ -60,6 +60,9 @@ GType ags_pad_editor_get_type(void);
 
 void ags_pad_editor_set_channel(AgsPadEditor *pad_editor, AgsChannel *channel);
 
+void ags_pad_editor_resize_lines(AgsPadEditor *pad_editor,
+				 guint audio_channels, guint audio_channels_old);
+
 AgsPadEditor* ags_pad_editor_new(AgsChannel *channel);
 
 #endif /*__AGS_PAD_EDITOR_H__*/

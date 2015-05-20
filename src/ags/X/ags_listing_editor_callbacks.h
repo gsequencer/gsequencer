@@ -32,8 +32,4 @@ int ags_listing_editor_parent_set_callback(GtkWidget *widget,
 					   GtkObject *old_parent,
 					   AgsListingEditor *listing_editor);
 
-void ags_listing_editor_set_pads_callback(AgsAudio *audio, GType channel_type,
-					  guint pads, guint pads_old,
-					  AgsListingEditor *listing_editor);
-
 #endif /*__AGS_LISTING_EDITOR_CALLBACKS_H__*/

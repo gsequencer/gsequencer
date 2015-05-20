@@ -462,27 +462,27 @@ ags_replicator_bridge_set_pads(AgsAudio *audio, GType type,
       }
 
       /* create matrix */
-      for(i = pads_old; i < pads * audio->audio_channels; i++){
-	for(j = 0; j < audio->output_pads * audio->audio_channels; j++){
+      for(i = pads_old * audio->audio_channels; i < pads * audio->audio_channels; i++){
+	for(j  = 0; j < audio->output_pads * audio->audio_channels; j++){
 	  toggle_button = gtk_toggle_button_new();
 	  gtk_widget_set_size_request(toggle_button,
 				      32, 32);
 	  gtk_table_attach(replicator_bridge->matrix,
 			   toggle_button,
-			   j, j + 1,
 			   i, i + 1,
+			   j, j + 1,
 			   GTK_FILL, GTK_FILL,
 			   0, 0);
 	}
       }
     }else{
       /* resize label and matrix table */
-      gtk_table_resize(replicator_bridge->h_label,
+      gtk_table_resize(replicator_bridge->v_label,
 		       1,
 		       pads * audio->audio_channels);
       
       gtk_table_resize(replicator_bridge->matrix,
-		       pads * audio->audio_channels,
+		       audio->input_pads * audio->audio_channels,
 		       pads * audio->audio_channels);
       
       /* create vertical labels */
@@ -501,7 +501,7 @@ ags_replicator_bridge_set_pads(AgsAudio *audio, GType type,
       }
       
       /* create matrix */
-      for(i = pads_old; i < pads * audio->audio_channels; i++){
+      for(i = pads_old * audio->audio_channels; i < pads * audio->audio_channels; i++){
 	for(j = 0; j < audio->input_pads * audio->audio_channels; j++){
 	  toggle_button = gtk_toggle_button_new();
 	  gtk_widget_set_size_request(toggle_button,
@@ -514,11 +514,11 @@ ags_replicator_bridge_set_pads(AgsAudio *audio, GType type,
 			   0, 0);
 	}
       }
-      
-      gtk_widget_show_all(replicator_bridge->v_label);
-      gtk_widget_show_all(replicator_bridge->h_label);
-      gtk_widget_show_all(replicator_bridge->matrix);
     }
+    
+    gtk_widget_show_all(replicator_bridge->v_label);
+    gtk_widget_show_all(replicator_bridge->h_label);
+    gtk_widget_show_all(replicator_bridge->matrix);
   }else{
     if(type == AGS_TYPE_INPUT){
       /* resize label and matrix table */
@@ -531,12 +531,12 @@ ags_replicator_bridge_set_pads(AgsAudio *audio, GType type,
 		       audio->output_pads * audio->audio_channels);
     }else{
       /* resize label and matrix table */
-      gtk_table_resize(replicator_bridge->h_label,
+      gtk_table_resize(replicator_bridge->v_label,
 		       1,
 		       pads * audio->audio_channels);
       
       gtk_table_resize(replicator_bridge->matrix,
-		       pads * audio->audio_channels,
+		       audio->input_pads * audio->audio_channels,
 		       pads * audio->audio_channels);
     }
   }
