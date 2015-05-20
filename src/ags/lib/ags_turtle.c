@@ -291,8 +291,10 @@ ags_turtle_load(AgsTurtle *turtle)
       if(verb == NULL){
 	g_warning("subject[%s] without verb\0", subject);
       }else{
-	g_message("verb-a\0");
-    
+#ifdef AGS_DEBUG
+	g_message("verb\0");
+#endif
+	
 	if(node_list == NULL){
 	  node_list = xmlNewNode(NULL, "rdf-list\0");
 	}
@@ -322,8 +324,10 @@ ags_turtle_load(AgsTurtle *turtle)
       child_node_list = ags_turtle_load_read_triple();
 
       if(child_node_list != NULL){
+#ifdef AGS_DEBUG
 	g_message("child node\0");
-
+#endif
+	
 	if(node_list == NULL){
 	  node_list = xmlNewNode(NULL, "rdf-list\0");
 	}
@@ -400,7 +404,9 @@ ags_turtle_load(AgsTurtle *turtle)
     subject = g_strndup(start,
 			end - start);
 
+#ifdef AGS_DEBUG
     g_message("subject %s\0", subject);
+#endif
     
     return(subject);
   }
@@ -456,8 +462,11 @@ ags_turtle_load(AgsTurtle *turtle)
 
     verb = g_strndup(start,
 		     end - start);
+    
+#ifdef AGS_DEBUG
     g_message("verb %s\0", verb);
-
+#endif
+    
     if(!g_ascii_strncasecmp(verb,
 			    "a\0",
 			    2)){
@@ -615,7 +624,9 @@ ags_turtle_load(AgsTurtle *turtle)
 	xmlNewProp(node,
 		   "value\0",
 		   str);
+#ifdef AGS_DEBUG
 	g_message("value_str %s\0", str);
+#endif
       }
     }while(more_collection && *iter != '[' && iter < &(buffer[sb->st_size]));
 
@@ -628,7 +639,6 @@ ags_turtle_load(AgsTurtle *turtle)
 	for(; (*look_ahead == ' ' || *look_ahead == '\t' || *look_ahead == '\n') && *look_ahead != '\0'; look_ahead++);
 
 	if(*look_ahead == ']'){
-	  g_message("look--\0");
 	  nth_level--;
 	  iter = look_ahead;
 	}
@@ -647,7 +657,6 @@ ags_turtle_load(AgsTurtle *turtle)
 
 	if(*look_ahead == '['){
 	  nth_level++;
-	  g_message("look++\0");
 	  iter = look_ahead;
 	  break;
 	}
