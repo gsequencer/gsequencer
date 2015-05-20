@@ -221,12 +221,6 @@ ags_pad_editor_connect(AgsConnectable *connectable)
   g_signal_connect((GObject *) pad_editor, "show\0",
 		   G_CALLBACK(ags_pad_editor_show_callback), (gpointer) pad_editor);
 
-  /* AgsAudio */
-  audio = AGS_AUDIO(pad_editor->pad->audio);
-
-  g_signal_connect_after(G_OBJECT(audio), "set_audio_channels\0",
-			 G_CALLBACK(ags_pad_editor_set_audio_channels_callback), pad_editor);
-
   /* AgsLineEditor */
   line_editor_start = 
     line_editor = gtk_container_get_children(GTK_CONTAINER(pad_editor->line_editor));
@@ -290,13 +284,21 @@ void
 ags_pad_editor_reset(AgsApplicable *applicable)
 {
   AgsPadEditor *pad_editor;
+
+  AgsAudio *audio;
+  
   GList *line_editor, *line_editor_start;
 
+  guint audio_channels_old;
+  
   pad_editor = AGS_PAD_EDITOR(applicable);
-
+  audio = pad_editor->pad->audio;
+  
   line_editor_start = 
     line_editor = gtk_container_get_children(GTK_CONTAINER(pad_editor->line_editor));
 
+  audio_channels_old = g_list_length(line_editor_start);
+  
   while(line_editor != NULL){
     ags_applicable_reset(AGS_APPLICABLE(line_editor->data));
 
@@ -304,6 +306,9 @@ ags_pad_editor_reset(AgsApplicable *applicable)
   }
 
   g_list_free(line_editor_start);
+
+  ags_pad_editor_resize_lines(pad_editor,
+			      audio->audio_channels, audio_channels_old);
 }
 
 void
@@ -332,6 +337,10 @@ ags_pad_editor_set_channel(AgsPadEditor *pad_editor, AgsChannel *channel)
 {
   GtkVBox *vbox;
 
+  if(pad_editor->pad == channel){
+    return;
+  }
+  
   if(pad_editor->line_editor != NULL){
     vbox = pad_editor->line_editor;
     pad_editor->line_editor = NULL;
@@ -365,6 +374,53 @@ ags_pad_editor_set_channel(AgsPadEditor *pad_editor, AgsChannel *channel)
   }else{
     gtk_expander_set_label(pad_editor->line_editor_expander,
 			   NULL);
+  }
+}
+
+void
+ags_pad_editor_resize_lines(AgsPadEditor *pad_editor,
+			    guint audio_channels, guint audio_channels_old)
+{  
+  if(audio_channels > audio_channels_old){
+    AgsLineEditor *line_editor;
+    AgsChannel *channel, *next_pad;
+
+    if(pad_editor->line_editor == NULL){
+      pad_editor->line_editor = (GtkVBox *) gtk_vbox_new(FALSE, 0);
+      gtk_container_add(GTK_CONTAINER(pad_editor->line_editor_expander),
+			GTK_WIDGET(pad_editor->line_editor));
+    }
+
+    channel = ags_channel_nth(pad_editor->pad, audio_channels_old);
+    next_pad = pad_editor->pad->next_pad;
+
+    while(channel != next_pad){
+      line_editor = ags_line_editor_new(channel);
+      gtk_box_pack_start(GTK_BOX(pad_editor->line_editor),
+			 GTK_WIDGET(line_editor),
+			 FALSE, FALSE,
+			 0);
+      ags_connectable_connect(AGS_CONNECTABLE(line_editor));
+      gtk_widget_show_all(GTK_WIDGET(line_editor));
+
+      channel = channel->next;
+    }
+  }else{
+    GList *list, *list_next, *list_start;
+
+    list_start = 
+      list = gtk_container_get_children(GTK_CONTAINER(pad_editor->line_editor));
+    list = g_list_nth(list, audio_channels);
+
+    while(list != NULL){
+      list_next = list->next;
+
+      gtk_widget_destroy(GTK_WIDGET(list->data));
+
+      list = list_next;
+    }
+
+    g_list_free(list_start);
   }
 }
 

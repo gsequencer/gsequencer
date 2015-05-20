@@ -18,6 +18,10 @@
 
 #include <ags/X/ags_listing_editor_callbacks.h>
 
+#include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_output.h>
+#include <ags/audio/ags_input.h>
+
 int
 ags_listing_editor_parent_set_callback(GtkWidget *widget,
 				       GtkObject *old_parent,
@@ -31,45 +35,13 @@ ags_listing_editor_parent_set_callback(GtkWidget *widget,
   machine_editor = (AgsMachineEditor *) gtk_widget_get_ancestor(widget,
 								AGS_TYPE_MACHINE_EDITOR);
 
-  if(machine_editor->machine != NULL)
-    ags_listing_editor_add_children(listing_editor,
-				    machine_editor->machine->audio, 0,
-				    FALSE);
-
-  return(0);
-}
-
-void
-ags_listing_editor_set_pads_callback(AgsAudio *audio, GType channel_type,
-				     guint pads, guint pads_old,
-				     AgsListingEditor *listing_editor)
-{
-  if(channel_type != listing_editor->channel_type)
-    return;
-
-  if(pads_old < pads){
-    guint nth_channel;
-  
-    nth_channel = pads_old * audio->audio_channels;
+  if(machine_editor->machine != NULL){
+    AgsAudio *audio;
     
-    ags_listing_editor_add_children(listing_editor,
-				    audio, nth_channel,
-				    TRUE);
-  }else{
-    GList *list, *list_next, *list_start;
-
-    list_start = 
-      list = gtk_container_get_children(GTK_CONTAINER(listing_editor->child));
-    list = g_list_nth(list, pads);
-    
-    while(list != NULL){
-      list_next = list->next;
-
-      gtk_widget_destroy(GTK_WIDGET(list->data));
-
-      list = list_next;
-    }
-
-    g_list_free(list_start);
+    audio = machine_editor->machine->audio;
+    ags_listing_editor_resize(listing_editor,
+			      ((listing_editor->channel_type == AGS_TYPE_INPUT) ? audio->input_pads: audio->output_pads), 0);
   }
+  
+  return(0);
 }

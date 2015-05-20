@@ -1145,14 +1145,6 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
       }
     }
 
-    /*
-     * join together recycling
-     */
-    if(link_recycling){
-      recycling->next = prev_channel->first_recycling;
-      prev_channel->first_recycling->prev = recycling;
-    }
-
     if(pads == 1)
       return;
 
@@ -1169,10 +1161,6 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 	prev_channel->line = i * audio_channels + j;
 
 	prev_channel = prev_channel->next;
-
-	if(link_recycling){
-	  recycling = recycling->next;
-	}
       }
 
       prev_channel->line = i * audio_channels + j;
@@ -1180,7 +1168,7 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
       // prev_channel = prev_channel->next; will be called later
 
       if(link_recycling){
-	recycling = recycling->next;
+	recycling = prev_channel->last_recycling;
       }
 
       prev_pad = start;
