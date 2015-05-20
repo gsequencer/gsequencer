@@ -1,5 +1,5 @@
 /* AGS - Advanced GTK Sequencer
- * Copyright (C) 2005-2011 Joël Krähemann
+ * Copyright (C) 2015 Joël Krähemann
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,16 +16,16 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef __AGS_PROPERTY_EDITOR_CALLBACKS_H__
-#define __AGS_PROPERTY_EDITOR_CALLBACKS_H__
+#ifndef __AGS_TRACK_COLLECTION_CALLBACKS_H__
+#define __AGS_TRACK_COLLECTION_CALLBACKS_H__
 
 #include <glib.h>
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include <ags/X/ags_property_editor.h>
+#include <ags/X/ags_track_collection.h>
 
-void ags_property_editor_enable_callback(GtkToggleButton *toggle,
-					 AgsPropertyEditor *property_editor);
+void ags_track_collection_enable_callback(GtkToggleButton *toggle,
+					  AgsTrackCollection *track_collection);
 
-#endif /*__AGS_PROPERTY_EDITOR_CALLBACKS_H__*/
+#endif /*__AGS_TRACK_COLLECTION_CALLBACKS_H__*/
