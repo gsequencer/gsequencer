@@ -172,6 +172,7 @@ ags_replicator_bridge_init(AgsReplicatorBridge *replicator_bridge)
 {
   GtkVBox *vbox;
   GtkExpander *expander;
+  GtkTable *table;
 
   AgsAudio *audio;
 
@@ -199,16 +200,44 @@ ags_replicator_bridge_init(AgsReplicatorBridge *replicator_bridge)
 
 
   /* replicator_bridge */
-  expander = (GtkExpander *) gtk_expander_new("conversion replicator_bridge\0");
+  expander = (GtkExpander *) gtk_expander_new("conversion matrix\0");
   gtk_box_pack_start((GtkBox *) vbox,
 		     (GtkWidget *) expander,
 		     FALSE, FALSE,
 		     0);
 
+  table = (GtkTable *) gtk_table_new(2, 2,
+				     FALSE);;
+  gtk_container_add((GtkContainer *) expander,
+		    (GtkWidget *) table);
+
+
+  replicator_bridge->h_label = (GtkTable *) gtk_table_new(1, 1,
+							  FALSE);
+  gtk_table_attach(table,
+		   replicator_bridge->h_label,
+		   0, 1,
+		   1, 2,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+  
+  replicator_bridge->v_label = (GtkTable *) gtk_table_new(1, 1,
+							 FALSE);
+  gtk_table_attach(table,
+		   replicator_bridge->v_label,
+		   1, 2,
+		   0, 1,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+    
   replicator_bridge->matrix = (GtkTable *) gtk_table_new(1, 1,
 							 FALSE);
-  gtk_container_add((GtkContainer *) expander,
-		    (GtkWidget *) replicator_bridge->matrix);
+  gtk_table_attach(table,
+		   replicator_bridge->matrix,
+		   0, 1,
+		   0, 1,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
 }
 
 void
@@ -333,6 +362,8 @@ ags_replicator_bridge_set_audio_channels(AgsAudio *audio,
     for(i = 0; i < audio->input_pads; i++){
       for(j = audio_channels_old; j < audio_channels; j++){
 	label = gtk_label_new(g_strdup_printf("%d\0", i * audio_channels + j));
+	gtk_widget_set_size_request(label,
+				    -1, 32);
 	gtk_table_attach(replicator_bridge->v_label,
 			 label,
 			 0, 1,
@@ -342,10 +373,12 @@ ags_replicator_bridge_set_audio_channels(AgsAudio *audio,
       }
     }
 
-    /* create vertical labels */
+    /* create horizontal labels */
     for(i = 0; i < audio->input_pads; i++){
       for(j = audio_channels_old; j < audio_channels; j++){
 	label = gtk_label_new(g_strdup_printf("%d\0", i * audio_channels + j));
+	gtk_widget_set_size_request(label,
+				    32, -1);
 	gtk_table_attach(replicator_bridge->h_label,
 			 label,
 			 i * audio_channels + j, i * audio_channels + j + 1,
@@ -360,6 +393,8 @@ ags_replicator_bridge_set_audio_channels(AgsAudio *audio,
       for(j = 0; j < audio->input_pads; j++){
 	for(k = audio_channels_old; k < audio_channels; k++){
 	  toggle_button = gtk_toggle_button_new();
+	  gtk_widget_set_size_request(toggle_button,
+				      32, 32);
 	  gtk_table_attach(replicator_bridge->matrix,
 			   toggle_button,
 			   j * audio_channels + k, j * audio_channels + k + 1,
@@ -369,6 +404,10 @@ ags_replicator_bridge_set_audio_channels(AgsAudio *audio,
 	}
       }
     }
+
+    gtk_widget_show_all(replicator_bridge->v_label);
+    gtk_widget_show_all(replicator_bridge->h_label);
+    gtk_widget_show_all(replicator_bridge->matrix);
   }else{
     gtk_table_resize(replicator_bridge->v_label,
 		     1,
@@ -394,7 +433,7 @@ ags_replicator_bridge_set_pads(AgsAudio *audio, GType type,
   GtkLabel *label;
   
   gchar *str;
-  guint i, j, k;
+  guint i, j;
   
   if(pads > pads_old){
     if(type == AGS_TYPE_INPUT){
@@ -405,20 +444,100 @@ ags_replicator_bridge_set_pads(AgsAudio *audio, GType type,
       
       gtk_table_resize(replicator_bridge->matrix,
 		       pads * audio->audio_channels,
-		       pads * audio->audio_channels);
+		       audio->output_pads * audio->audio_channels);
+
+      /* create horizontal labels */
+      for(i = pads_old; i < pads; i++){
+	for(j = 0; j < audio->audio_channels; j++){
+	  label = gtk_label_new(g_strdup_printf("%d\0", i * audio->audio_channels + j));
+	  gtk_widget_set_size_request(label,
+				      32, -1);
+	  gtk_table_attach(replicator_bridge->h_label,
+			   label,
+			   i * audio->audio_channels + j, i * audio->audio_channels + j + 1,
+			   0, 1,
+			   GTK_FILL, GTK_FILL,
+			   0, 0);
+	}
+      }
+
+      /* create matrix */
+      for(i = pads_old; i < pads * audio->audio_channels; i++){
+	for(j = 0; j < audio->output_pads * audio->audio_channels; j++){
+	  toggle_button = gtk_toggle_button_new();
+	  gtk_widget_set_size_request(toggle_button,
+				      32, 32);
+	  gtk_table_attach(replicator_bridge->matrix,
+			   toggle_button,
+			   j, j + 1,
+			   i, i + 1,
+			   GTK_FILL, GTK_FILL,
+			   0, 0);
+	}
+      }
     }else{
       /* resize label and matrix table */
-      gtk_table_resize(replicator_bridge->v_label,
+      gtk_table_resize(replicator_bridge->h_label,
 		       1,
 		       pads * audio->audio_channels);
       
       gtk_table_resize(replicator_bridge->matrix,
 		       pads * audio->audio_channels,
 		       pads * audio->audio_channels);
+      
+      /* create vertical labels */
+      for(i = pads_old; i < pads; i++){
+	for(j = 0; j < audio->audio_channels; j++){
+	  label = gtk_label_new(g_strdup_printf("%d\0", i * audio->audio_channels + j));
+	  gtk_widget_set_size_request(label,
+				      -1, 32);
+	  gtk_table_attach(replicator_bridge->v_label,
+			   label,
+			   0, 1,
+			   i * audio->audio_channels + j, i * audio->audio_channels + j + 1,
+			   GTK_FILL, GTK_FILL,
+			   0, 0);
+	}
+      }
+      
+      /* create matrix */
+      for(i = pads_old; i < pads * audio->audio_channels; i++){
+	for(j = 0; j < audio->input_pads * audio->audio_channels; j++){
+	  toggle_button = gtk_toggle_button_new();
+	  gtk_widget_set_size_request(toggle_button,
+				      32, 32);
+	  gtk_table_attach(replicator_bridge->matrix,
+			   toggle_button,
+			   j, j + 1,
+			   i, i + 1,
+			   GTK_FILL, GTK_FILL,
+			   0, 0);
+	}
+      }
+      
+      gtk_widget_show_all(replicator_bridge->v_label);
+      gtk_widget_show_all(replicator_bridge->h_label);
+      gtk_widget_show_all(replicator_bridge->matrix);
     }
   }else{
     if(type == AGS_TYPE_INPUT){
+      /* resize label and matrix table */
+      gtk_table_resize(replicator_bridge->h_label,
+		       pads * audio->audio_channels,
+		       1);
+      
+      gtk_table_resize(replicator_bridge->matrix,
+		       pads * audio->audio_channels,
+		       audio->output_pads * audio->audio_channels);
     }else{
+      /* resize label and matrix table */
+      gtk_table_resize(replicator_bridge->h_label,
+		       1,
+		       pads * audio->audio_channels);
+      
+      gtk_table_resize(replicator_bridge->matrix,
+		       pads * audio->audio_channels,
+		       pads * audio->audio_channels);
     }
   }
 }
