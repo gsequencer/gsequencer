@@ -432,11 +432,21 @@ ags_lv2_manager_load_default_directory()
 	    binary_list != NULL){
 	turtle_path = xmlGetProp((xmlNode *) ttl_list->data,
 				 "value\0");
+
+	turtle_path = g_strndup(&(turtle_path[1]),
+				strlen(turtle_path) - 2);
+	
+	if(!g_ascii_strncasecmp(turtle_path,
+				"http://\0",
+				7)){
+	  ttl_list = ttl_list->next;
+	  continue;
+	}
+	
 	g_message(turtle_path);
 	turtle = ags_turtle_new(g_strdup_printf("%s/%s\0",
 						plugin_path,
-						g_strndup(&(turtle_path[1]),
-							  strlen(turtle_path) - 2)));
+						turtle_path));
 	ags_turtle_load(turtle);
 	//	xmlSaveFormatFileEnc("-\0", turtle->doc, "UTF-8\0", 1);
 

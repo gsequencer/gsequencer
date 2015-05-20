@@ -26,6 +26,7 @@
 #include <ags/audio/ags_input.h>
 #include <ags/audio/ags_port.h>
 
+#include <ags/X/ags_menu_bar.h>
 #include <ags/X/ags_automation_editor.h>
 #include <ags/X/ags_pad.h>
 #include <ags/X/ags_line.h>
