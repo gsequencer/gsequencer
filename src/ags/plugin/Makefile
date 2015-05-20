@@ -111,16 +111,16 @@ am__can_run_installinfo = \
   esac
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
-ACLOCAL = ${SHELL} /home/joelkraehemann/ags-devel/missing aclocal-1.14
+ACLOCAL = ${SHELL} /home/minos/ags-devel/missing aclocal-1.14
 AMTAR = $${TAR-tar}
 AM_DEFAULT_VERBOSITY = 1
 AR = ar
 AS = as
-AUTOCONF = ${SHELL} /home/joelkraehemann/ags-devel/missing autoconf
-AUTOHEADER = ${SHELL} /home/joelkraehemann/ags-devel/missing autoheader
-AUTOMAKE = ${SHELL} /home/joelkraehemann/ags-devel/missing automake-1.14
+AUTOCONF = ${SHELL} /home/minos/ags-devel/missing autoconf
+AUTOHEADER = ${SHELL} /home/minos/ags-devel/missing autoheader
+AUTOMAKE = ${SHELL} /home/minos/ags-devel/missing automake-1.14
 AWK = gawk
-CAIRO_CFLAGS = -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12 
+CAIRO_CFLAGS = -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng16 -I/usr/include/harfbuzz -I/usr/include/freetype2 -I/usr/include/harfbuzz -I/usr/include/libdrm -I/usr/include/libpng16 -I/usr/X11/include 
 CAIRO_LIBS = -lcairo 
 CC = gcc
 CCDEPMODE = depmode=gcc3
@@ -143,12 +143,12 @@ ECHO_T =
 EGREP = /bin/grep -E
 EXEEXT = 
 FGREP = /bin/grep -F
-GDKPIXBUF_CFLAGS = -pthread -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include 
+GDKPIXBUF_CFLAGS = -pthread -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng16 -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include 
 GDKPIXBUF_LIBS = -lgdk_pixbuf-2.0 -lgobject-2.0 -lglib-2.0 
-GOBJECT_CFLAGS = -pthread -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include 
+GOBJECT_CFLAGS = -pthread -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include 
 GOBJECT_LIBS = -lgobject-2.0 -Wl,--export-dynamic -lgmodule-2.0 -pthread -lgthread-2.0 -pthread -lglib-2.0 
 GREP = /bin/grep
-GTK_CFLAGS = -pthread -I/usr/include/gtk-2.0 -I/usr/lib/x86_64-linux-gnu/gtk-2.0/include -I/usr/include/gio-unix-2.0/ -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/libpng12 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/pango-1.0 -I/usr/include/harfbuzz -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/freetype2 
+GTK_CFLAGS = -pthread -I/usr/include/gtk-2.0 -I/usr/lib/gtk-2.0/include -I/usr/include/pango-1.0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/libdrm -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng16 -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include -I/usr/include/freetype2 -I/usr/include/libpng16 -I/usr/include/harfbuzz -I/usr/include/freetype2 -I/usr/include/libpng16 -I/usr/include/harfbuzz -I/usr/X11/include 
 GTK_LIBS = -lgtk-x11-2.0 -lgdk-x11-2.0 -lpangocairo-1.0 -latk-1.0 -lcairo -lgdk_pixbuf-2.0 -lgio-2.0 -lpangoft2-1.0 -lpango-1.0 -lgobject-2.0 -lglib-2.0 -lfontconfig -lfreetype 
 INSTALL = /usr/bin/install -c
 INSTALL_DATA = ${INSTALL} -m 644
@@ -161,17 +161,17 @@ LIBAO_CFLAGS =
 LIBAO_LIBS = -lao 
 LIBASOUND2_CFLAGS = -I/usr/include/alsa 
 LIBASOUND2_LIBS = -lasound 
-LIBINSTPATCH_CFLAGS = -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include 
+LIBINSTPATCH_CFLAGS = -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include 
 LIBINSTPATCH_LIBS = -linstpatch-1.0 -lgobject-2.0 -lglib-2.0 -lsndfile 
 LIBOBJS = 
-LIBS = -lrt -lm 
+LIBS = -lrt -lm -lgmp 
 LIBTOOL = $(SHELL) $(top_builddir)/libtool
 LIBXML2_CFLAGS = -I/usr/include/libxml2 
 LIBXML2_LIBS = -lxml2 
 LIPO = 
 LN_S = ln -s
 LTLIBOBJS = 
-MAKEINFO = ${SHELL} /home/joelkraehemann/ags-devel/missing makeinfo
+MAKEINFO = ${SHELL} /home/minos/ags-devel/missing makeinfo
 MANIFEST_TOOL = :
 MKDIR_P = /bin/mkdir -p
 NM = /usr/bin/nm -B
@@ -190,11 +190,11 @@ PACKAGE_VERSION = 0.4.3
 PATH_SEPARATOR = :
 PKG_CONFIG = /usr/bin/pkg-config
 PKG_CONFIG_LIBDIR = 
-PKG_CONFIG_PATH = 
+PKG_CONFIG_PATH = /usr/lib/pkgconfig:/usr/share/pkgconfig:/usr/X11/lib/pkgconfig:/usr/X11/share/pkgconfig:/usr/local/lib/pkgconfig
 RANLIB = ranlib
 SED = /bin/sed
 SET_MAKE = 
-SHELL = /bin/bash
+SHELL = /bin/sh
 SNDFILE_CFLAGS = 
 SNDFILE_LIBS = -lsndfile 
 STRIP = strip
@@ -202,10 +202,10 @@ UUID_CFLAGS = -I/usr/include/uuid
 UUID_LIBS = -luuid 
 VERSION = 0.4.3
 XMKMF = 
-abs_builddir = /home/joelkraehemann/ags-devel/src/ags/plugin
-abs_srcdir = /home/joelkraehemann/ags-devel/src/ags/plugin
-abs_top_builddir = /home/joelkraehemann/ags-devel
-abs_top_srcdir = /home/joelkraehemann/ags-devel
+abs_builddir = /home/minos/ags-devel/src/ags/plugin
+abs_srcdir = /home/minos/ags-devel/src/ags/plugin
+abs_top_builddir = /home/minos/ags-devel
+abs_top_srcdir = /home/minos/ags-devel
 ac_ct_AR = ar
 ac_ct_CC = gcc
 ac_ct_CXX = g++
@@ -235,7 +235,7 @@ host_vendor = unknown
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = ${SHELL} /home/joelkraehemann/ags-devel/install-sh
+install_sh = ${SHELL} /home/minos/ags-devel/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
@@ -281,9 +281,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign src/ags/plugin/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/ags/plugin/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign src/ags/plugin/Makefile
+	  $(AUTOMAKE) --gnu src/ags/plugin/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
