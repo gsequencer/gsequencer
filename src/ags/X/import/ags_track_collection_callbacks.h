@@ -25,7 +25,4 @@
 
 #include <ags/X/import/ags_track_collection.h>
 
-void ags_track_collection_enable_callback(GtkToggleButton *toggle,
-					  AgsTrackCollection *track_collection);
-
 #endif /*__AGS_TRACK_COLLECTION_CALLBACKS_H__*/

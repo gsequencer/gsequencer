@@ -23,6 +23,8 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
+#include <libxml/tree.h>
+
 #define AGS_TYPE_TRACK_COLLECTION                (ags_track_collection_get_type())
 #define AGS_TRACK_COLLECTION(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_TRACK_COLLECTION, AgsTrackCollection))
 #define AGS_TRACK_COLLECTION_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_TRACK_COLLECTION, AgsTrackCollectionClass))
@@ -33,25 +35,17 @@
 typedef struct _AgsTrackCollection AgsTrackCollection;
 typedef struct _AgsTrackCollectionClass AgsTrackCollectionClass;
 
-typedef enum{
-  AGS_TRACK_COLLECTION_ENABLED        = 1,
-}AgsTrackCollectionFlags;
-
 struct _AgsTrackCollection
 {
   GtkVBox vbox;
 
-  guint flags;
+  xmlDoc *midi_doc;
   
-  GtkCheckButton *enabled;
-
   GType child_type;
   guint child_parameter_count;
   GParameter *child_parameter;
 
   GtkVBox *child;
-
-  GtkButton *add_collection;
 };
 
 struct _AgsTrackCollectionClass
@@ -60,6 +54,10 @@ struct _AgsTrackCollectionClass
 };
 
 GType ags_track_collection_get_type();
+
+void ags_track_collection_parse(AgsTrackCollection *track_collection);
+void ags_track_collection_add_mapper(AgsTrackCollection *track_collection,
+				     xmlNode *track);
 
 AgsTrackCollection* ags_track_collection_new(GType child_type,
 					     guint child_parameter_count,

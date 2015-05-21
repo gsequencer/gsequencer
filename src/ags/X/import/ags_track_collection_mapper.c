@@ -26,20 +26,22 @@
 
 #include <ags/X/ags_window.h>
 
-void ags_track_collection_mapper_class_init(AgsTrackCollectionkMapperClass *track_collection_mapper);
+void ags_track_collection_mapper_class_init(AgsTrackCollectionMapperClass *track_collection_mapper);
 void ags_track_collection_mapper_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_track_collection_mapper_init(AgsTrackCollectionkMapper *track_collection_mapper);
+void ags_track_collection_mapper_init(AgsTrackCollectionMapper *track_collection_mapper);
 void ags_track_collection_mapper_connect(AgsConnectable *connectable);
 void ags_track_collection_mapper_disconnect(AgsConnectable *connectable);
+
+GtkComboBoxText* ags_machine_type_combo_box_new();
 
 /**
  * SECTION:ags_track_collection_mapper
  * @short_description: pack pad editors.
- * @title: AgsTrackCollectionkMapper
+ * @title: AgsTrackCollectionMapper
  * @section_id:
  * @include: ags/X/ags_track_collection_mapper.h
  *
- * #AgsTrackCollectionkMapper is a wizard to import midi files and do track mapping..
+ * #AgsTrackCollectionMapper is a wizard to import midi files and do track mapping..
  */
 
 GType
@@ -49,13 +51,13 @@ ags_track_collection_mapper_get_type(void)
 
   if(!ags_type_track_collection_mapper){
     static const GTypeInfo ags_track_collection_mapper_info = {
-      sizeof (AgsTrackCollectionkMapperClass),
+      sizeof (AgsTrackCollectionMapperClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_track_collection_mapper_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsTrackCollectionkMapper),
+      sizeof (AgsTrackCollectionMapper),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_track_collection_mapper_init,
     };
@@ -67,7 +69,7 @@ ags_track_collection_mapper_get_type(void)
     };
 
     ags_type_track_collection_mapper = g_type_register_static(GTK_TYPE_TABLE,
-							      "AgsTrackCollectionkMapper\0", &ags_track_collection_mapper_info,
+							      "AgsTrackCollectionMapper\0", &ags_track_collection_mapper_info,
 							      0);
 
     g_type_add_interface_static(ags_type_track_collection_mapper,
@@ -79,7 +81,7 @@ ags_track_collection_mapper_get_type(void)
 }
 
 void
-ags_track_collection_mapper_class_init(AgsTrackCollectionkMapperClass *track_collection_mapper)
+ags_track_collection_mapper_class_init(AgsTrackCollectionMapperClass *track_collection_mapper)
 {
   GObjectClass *gobject;
   GParamSpec *param_spec;
@@ -98,14 +100,50 @@ ags_track_collection_mapper_connectable_interface_init(AgsConnectableInterface *
 }
 
 void
-ags_track_collection_mapper_init(AgsTrackCollectionkMapper *track_collection_mapper)
+ags_track_collection_mapper_init(AgsTrackCollectionMapper *track_collection_mapper)
 {
+  gtk_table_resize(track_collection_mapper,
+		   2, 4);
+
+  track_collection_mapper->enabled = (GtkCheckButton *) gtk_check_button_new_with_label("enabled\0");
+  gtk_table_attach(track_collection_mapper,
+		   track_collection_mapper->enabled,
+		   0, 2,
+		   0, 1,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  track_collection_mapper->machine_type = ags_machine_type_combo_box_new(NULL);
+  gtk_table_attach(track_collection_mapper,
+		   track_collection_mapper->machine_type,
+		   1, 2,
+		   1, 2,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  track_collection_mapper->audio_channels = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 16.0, 1.0);
+  gtk_spin_button_set_value(track_collection_mapper->audio_channels,
+			    2.0);
+  gtk_table_attach(track_collection_mapper,
+		   track_collection_mapper->audio_channels,
+		   2, 3,
+		   1, 2,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  track_collection_mapper->offset = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 256.0 * (gdouble) AGS_NOTE_EDIT_MAX_CONTROLS, 1.0);
+  gtk_table_attach(track_collection_mapper,
+		   track_collection_mapper->offset,
+		   3, 4,
+		   1, 2,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
 }
 
 void
 ags_track_collection_mapper_connect(AgsConnectable *connectable)
 {
-  AgsTrackCollectionkMapper *track_collection_mapper;
+  AgsTrackCollectionMapper *track_collection_mapper;
 
   track_collection_mapper = AGS_TRACK_COLLECTION_MAPPER(connectable);
 }
@@ -116,22 +154,36 @@ ags_track_collection_mapper_disconnect(AgsConnectable *connectable)
   /* empty */
 }
 
+GtkComboBoxText*
+ags_machine_type_combo_box_new(AgsWindow *window)
+{
+  GtkComboBoxText *machine_type;
+
+  machine_type = gtk_combo_box_text_new();
+
+  if(window != NULL){
+    //TODO:JK: implement me
+  }
+  
+  return(machine_type);
+}
+
 /**
  * ags_track_collection_mapper_new:
  *
- * Creates an #AgsTrackCollectionkMapper
+ * Creates an #AgsTrackCollectionMapper
  *
- * Returns: a new #AgsTrackCollectionkMapper
+ * Returns: a new #AgsTrackCollectionMapper
  *
  * Since: 0.4.3
  */
-AgsTrackCollectionkMapper*
+AgsTrackCollectionMapper*
 ags_track_collection_mapper_new()
 {
-  AgsTrackCollectionkMapper *track_collection_mapper;
+  AgsTrackCollectionMapper *track_collection_mapper;
 
-  track_collection_mapper = (AgsTrackCollectionkMapper *) g_object_new(AGS_TYPE_TRACK_COLLECTION_MAPPER,
-								       NULL);
+  track_collection_mapper = (AgsTrackCollectionMapper *) g_object_new(AGS_TYPE_TRACK_COLLECTION_MAPPER,
+								      NULL);
   
   return(track_collection_mapper);
 }

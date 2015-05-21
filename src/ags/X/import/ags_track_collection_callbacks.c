@@ -18,13 +18,3 @@
 
 #include <ags/X/import/ags_track_collection_callbacks.h>
 
-void
-ags_track_collection_enable_callback(GtkToggleButton *toggle,
-				    AgsTrackCollection *track_collection)
-{
-  if(gtk_toggle_button_get_active(toggle)){
-    track_collection->flags |= AGS_TRACK_COLLECTION_ENABLED;
-  }else{
-    track_collection->flags &= (~AGS_TRACK_COLLECTION_ENABLED);
-  }
-}
