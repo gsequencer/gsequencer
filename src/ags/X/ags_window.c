@@ -21,6 +21,8 @@
 
 #include <ags/object/ags_connectable.h>
 
+#include <ags/X/import/ags_midi_import_wizard.h>
+
 #include <ags/X/machine/ags_panel.h>
 #include <ags/X/machine/ags_mixer.h>
 #include <ags/X/machine/ags_drum.h>
@@ -211,6 +213,9 @@ ags_window_init(AgsWindow *window)
   window->export_window = ags_export_window_new();
   window->export_window->parent = window;
 
+  window->import_window = ags_midi_import_wizard_new();
+  AGS_MIDI_IMPORT_WIZARD(window->import_window)->parent = window;
+
   window->preferences = NULL;
 
   window->machine_counter = ags_window_standard_machine_counter();
@@ -343,6 +348,7 @@ ags_window_connect(AgsConnectable *connectable)
   ags_connectable_connect(AGS_CONNECTABLE(window->automation_editor));
 
   ags_connectable_connect(AGS_CONNECTABLE(window->export_window));
+  ags_connectable_connect(AGS_CONNECTABLE(window->import_window));
 }
 
 void

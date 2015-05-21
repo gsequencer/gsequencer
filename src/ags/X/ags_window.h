@@ -81,6 +81,8 @@ struct _AgsWindow
   AgsAutomationEditor *automation_editor;
 
   AgsExportWindow *export_window;
+  GtkWidget *import_window;
+
   AgsPreferences *preferences;
 };
 

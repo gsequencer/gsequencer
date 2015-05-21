@@ -25,7 +25,6 @@
 
 #include <ags/X/import/ags_midi_import_wizard.h>
 
-void ags_midi_import_wizard_enable_callback(GtkToggleButton *toggle,
-					    AgsMidiImportWizard *midi_import_wizard);
+void ags_midi_import_wizard_response_callback(GtkWidget *wizard, gint response, gpointer data);
 
 #endif /*__AGS_MIDI_IMPORT_WIZARD_CALLBACKS_H__*/

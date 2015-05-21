@@ -382,6 +382,8 @@ ags_effect_bulk_init(AgsEffectBulk *effect_bulk)
 		     0);
 
   hbox = gtk_hbox_new(FALSE, 0);
+  gtk_widget_set_no_show_all(hbox,
+			     TRUE);
   gtk_container_add(alignment,
 		    hbox);
 
@@ -390,13 +392,15 @@ ags_effect_bulk_init(AgsEffectBulk *effect_bulk)
 		     effect_bulk->add,
 		     FALSE, FALSE,
 		     0);
-
+  gtk_widget_show(effect_bulk->add);
+  
   effect_bulk->remove = gtk_button_new_from_stock(GTK_STOCK_REMOVE);
   gtk_box_pack_start(hbox,
 		     effect_bulk->remove,
 		     FALSE, FALSE,
 		     0);
-
+  gtk_widget_show(effect_bulk->remove);
+  
   hbox = gtk_hbox_new(FALSE, 0);
   gtk_box_pack_start(effect_bulk,
 		     hbox,
@@ -404,6 +408,8 @@ ags_effect_bulk_init(AgsEffectBulk *effect_bulk)
 		     0);
 
   effect_bulk->bulk_member = (GtkVBox *) gtk_vbox_new(FALSE, 0);
+  gtk_widget_set_no_show_all(effect_bulk->bulk_member,
+			     TRUE);
   gtk_box_pack_start(hbox,
 		     effect_bulk->bulk_member,
 		     FALSE, FALSE,
@@ -632,12 +638,12 @@ ags_effect_bulk_show(GtkWidget *widget)
   
   GTK_WIDGET_CLASS(ags_effect_bulk_parent_class)->show(widget);
 
-  if((AGS_EFFECT_BULK_HIDE_BUTTONS & (effect_bulk->flags)) != 0){
-    gtk_widget_hide(GTK_WIDGET(effect_bulk->add)->parent);
+  if((AGS_EFFECT_BULK_HIDE_BUTTONS & (effect_bulk->flags)) == 0){
+    gtk_widget_show(GTK_WIDGET(effect_bulk->add)->parent);
   }
 
-  if((AGS_EFFECT_BULK_HIDE_ENTRIES & (effect_bulk->flags)) != 0){
-    gtk_widget_hide(effect_bulk->bulk_member);
+  if((AGS_EFFECT_BULK_HIDE_ENTRIES & (effect_bulk->flags)) == 0){
+    gtk_widget_show(effect_bulk->bulk_member);
   }
 }
 

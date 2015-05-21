@@ -26,20 +26,20 @@
 
 #include <ags/X/ags_window.h>
 
-void ags_track_collection_mapper_class_init(AgsTracCollectionkMapperClass *track_collection_mapper);
+void ags_track_collection_mapper_class_init(AgsTrackCollectionkMapperClass *track_collection_mapper);
 void ags_track_collection_mapper_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_track_collection_mapper_init(AgsTracCollectionkMapper *track_collection_mapper);
+void ags_track_collection_mapper_init(AgsTrackCollectionkMapper *track_collection_mapper);
 void ags_track_collection_mapper_connect(AgsConnectable *connectable);
 void ags_track_collection_mapper_disconnect(AgsConnectable *connectable);
 
 /**
  * SECTION:ags_track_collection_mapper
  * @short_description: pack pad editors.
- * @title: AgsTracCollectionkMapper
+ * @title: AgsTrackCollectionkMapper
  * @section_id:
  * @include: ags/X/ags_track_collection_mapper.h
  *
- * #AgsTracCollectionkMapper is a wizard to import midi files and do track mapping..
+ * #AgsTrackCollectionkMapper is a wizard to import midi files and do track mapping..
  */
 
 GType
@@ -49,13 +49,13 @@ ags_track_collection_mapper_get_type(void)
 
   if(!ags_type_track_collection_mapper){
     static const GTypeInfo ags_track_collection_mapper_info = {
-      sizeof (AgsTracCollectionkMapperClass),
+      sizeof (AgsTrackCollectionkMapperClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_track_collection_mapper_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsTracCollectionkMapper),
+      sizeof (AgsTrackCollectionkMapper),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_track_collection_mapper_init,
     };
@@ -66,9 +66,9 @@ ags_track_collection_mapper_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_track_collection_mapper = g_type_register_static(GTK_TYPE_DIALOG,
-							 "AgsTracCollectionkMapper\0", &ags_track_collection_mapper_info,
-							 0);
+    ags_type_track_collection_mapper = g_type_register_static(GTK_TYPE_TABLE,
+							      "AgsTrackCollectionkMapper\0", &ags_track_collection_mapper_info,
+							      0);
 
     g_type_add_interface_static(ags_type_track_collection_mapper,
 				AGS_TYPE_CONNECTABLE,
@@ -79,7 +79,7 @@ ags_track_collection_mapper_get_type(void)
 }
 
 void
-ags_track_collection_mapper_class_init(AgsTracCollectionkMapperClass *track_collection_mapper)
+ags_track_collection_mapper_class_init(AgsTrackCollectionkMapperClass *track_collection_mapper)
 {
   GObjectClass *gobject;
   GParamSpec *param_spec;
@@ -98,14 +98,14 @@ ags_track_collection_mapper_connectable_interface_init(AgsConnectableInterface *
 }
 
 void
-ags_track_collection_mapper_init(AgsTracCollectionkMapper *track_collection_mapper)
+ags_track_collection_mapper_init(AgsTrackCollectionkMapper *track_collection_mapper)
 {
 }
 
 void
 ags_track_collection_mapper_connect(AgsConnectable *connectable)
 {
-  AgsTracCollectionkMapper *track_collection_mapper;
+  AgsTrackCollectionkMapper *track_collection_mapper;
 
   track_collection_mapper = AGS_TRACK_COLLECTION_MAPPER(connectable);
 }
@@ -119,19 +119,19 @@ ags_track_collection_mapper_disconnect(AgsConnectable *connectable)
 /**
  * ags_track_collection_mapper_new:
  *
- * Creates an #AgsTracCollectionkMapper
+ * Creates an #AgsTrackCollectionkMapper
  *
- * Returns: a new #AgsTracCollectionkMapper
+ * Returns: a new #AgsTrackCollectionkMapper
  *
  * Since: 0.4.3
  */
-AgsTracCollectionkMapper*
+AgsTrackCollectionkMapper*
 ags_track_collection_mapper_new()
 {
-  AgsTracCollectionkMapper *track_collection_mapper;
+  AgsTrackCollectionkMapper *track_collection_mapper;
 
-  track_collection_mapper = (AgsTracCollectionkMapper *) g_object_new(AGS_TYPE_TRACK_COLLECTION_MAPPER,
-								      NULL);
+  track_collection_mapper = (AgsTrackCollectionkMapper *) g_object_new(AGS_TYPE_TRACK_COLLECTION_MAPPER,
+								       NULL);
   
   return(track_collection_mapper);
 }
