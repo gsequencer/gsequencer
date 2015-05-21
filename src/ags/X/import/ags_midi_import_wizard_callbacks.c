@@ -17,3 +17,54 @@
  */
 
 #include <ags/X/import/ags_midi_import_wizard_callbacks.h>
+
+#include <ags/object/ags_applicable.h>
+
+void
+ags_midi_import_wizard_response_callback(GtkWidget *wizard, gint response, gpointer data)
+{
+  AgsMidiImportWizard *midi_import_wizard;
+
+  midi_import_wizard = (AgsMidiImportWizard *) wizard;
+  
+  switch(response){
+  case GTK_RESPONSE_REJECT:
+    {
+      if((AGS_MIDI_IMPORT_WIZARD_SHOW_TRACK_COLLECTION  & (midi_import_wizard->flags)) != 0){
+	midi_import_wizard->flags |= AGS_MIDI_IMPORT_WIZARD_SHOW_FILE_CHOOSER;
+	midi_import_wizard->flags &= (~AGS_MIDI_IMPORT_WIZARD_SHOW_TRACK_COLLECTION);
+
+	gtk_widget_hide(midi_import_wizard->track_collection->parent);
+
+	gtk_widget_show(midi_import_wizard->file_chooser->parent);
+	gtk_widget_show_all(midi_import_wizard->file_chooser);
+      }
+    }
+    break;
+  case GTK_RESPONSE_ACCEPT:
+    {
+      if((AGS_MIDI_IMPORT_WIZARD_SHOW_FILE_CHOOSER & (midi_import_wizard->flags)) != 0){
+	midi_import_wizard->flags |= AGS_MIDI_IMPORT_WIZARD_SHOW_TRACK_COLLECTION;
+	midi_import_wizard->flags &= (~AGS_MIDI_IMPORT_WIZARD_SHOW_FILE_CHOOSER);
+
+	gtk_widget_hide(midi_import_wizard->file_chooser->parent);
+
+	gtk_widget_show(midi_import_wizard->track_collection->parent);
+	gtk_widget_show_all(midi_import_wizard->track_collection);
+      }
+    }
+    break;
+  case GTK_RESPONSE_OK:
+    {
+      ags_applicable_apply(AGS_APPLICABLE(wizard));
+    }
+  case GTK_RESPONSE_CANCEL:
+    {
+      gtk_widget_hide(wizard);
+    }
+    break;
+  default:
+    g_warning("unknown response\0");
+  }
+}
+

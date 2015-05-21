@@ -206,7 +206,10 @@ ags_machine_editor_init(AgsMachineEditor *machine_editor)
 
   machine_editor->notebook =
     notebook = (GtkNotebook *) gtk_notebook_new();
-  gtk_box_pack_start((GtkBox *) machine_editor->dialog.vbox, (GtkWidget*) notebook, TRUE, TRUE, 0);
+  gtk_box_pack_start((GtkBox *) machine_editor->dialog.vbox,
+		     (GtkWidget*) notebook,
+		     TRUE, TRUE,
+		     0);
 
   /* AgsOutput */
   machine_editor->output_scrolled_window =

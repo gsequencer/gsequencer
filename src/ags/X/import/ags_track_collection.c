@@ -20,12 +20,17 @@
 #include <ags/X/import/ags_track_collection_callbacks.h>
 
 #include <ags/object/ags_connectable.h>
+#include <ags/object/ags_applicable.h>
 
 void ags_track_collection_class_init(AgsTrackCollectionClass *track_collection);
 void ags_track_collection_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_track_collection_applicable_interface_init(AgsApplicableInterface *applicable);
 void ags_track_collection_init(AgsTrackCollection *track_collection);
 void ags_track_collection_connect(AgsConnectable *connectable);
 void ags_track_collection_disconnect(AgsConnectable *connectable);
+void ags_track_collection_set_update(AgsApplicable *applicable, gboolean update);
+void ags_track_collection_apply(AgsApplicable *applicable);
+void ags_track_collection_reset(AgsApplicable *applicable);
 void ags_track_collection_show(GtkWidget *widget);
 
 /**
@@ -63,6 +68,12 @@ ags_track_collection_get_type(void)
       NULL, /* interface_data */
     };
 
+    static const GInterfaceInfo ags_applicable_interface_info = {
+      (GInterfaceInitFunc) ags_track_collection_applicable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_track_collection = g_type_register_static(GTK_TYPE_VBOX,
 						      "AgsTrackCollection\0", &ags_track_collection_info,
 						      0);
@@ -70,6 +81,10 @@ ags_track_collection_get_type(void)
     g_type_add_interface_static(ags_type_track_collection,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_type_add_interface_static(ags_type_track_collection,
+				AGS_TYPE_APPLICABLE,
+				&ags_applicable_interface_info);
   }
 
   return(ags_type_track_collection);
@@ -87,6 +102,14 @@ ags_track_collection_connectable_interface_init(AgsConnectableInterface *connect
   connectable->is_connected = NULL;
   connectable->connect = ags_track_collection_connect;
   connectable->disconnect = ags_track_collection_disconnect;
+}
+
+void
+ags_track_collection_applicable_interface_init(AgsApplicableInterface *applicable)
+{
+  applicable->set_update = ags_track_collection_set_update;
+  applicable->apply = ags_track_collection_apply;
+  applicable->reset = ags_track_collection_reset;
 }
 
 void
@@ -121,6 +144,30 @@ ags_track_collection_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_track_collection_set_update(AgsApplicable *applicable, gboolean update)
+{
+  AgsTrackCollection *track_collection;
+
+  track_collection = AGS_TRACK_COLLECTION(applicable);
+}
+
+void
+ags_track_collection_apply(AgsApplicable *applicable)
+{
+  AgsTrackCollection *track_collection;
+
+  track_collection = AGS_TRACK_COLLECTION(applicable);
+}
+
+void
+ags_track_collection_reset(AgsApplicable *applicable)
+{
+  AgsTrackCollection *track_collection;
+
+  track_collection = AGS_TRACK_COLLECTION(applicable);
+}
+
+void
 ags_track_collection_show(GtkWidget *widget)
 {
   AgsTrackCollection *track_collection = (AgsTrackCollection *) widget;
@@ -128,6 +175,9 @@ ags_track_collection_show(GtkWidget *widget)
 
 /**
  * ags_track_collection_new:
+ * @child_type: 
+ * @child_parameter_count:
+ * @child_parameter:
  *
  * Creates an #AgsTrackCollection
  *
@@ -144,6 +194,10 @@ ags_track_collection_new(GType child_type,
 
   track_collection = (AgsTrackCollection *) g_object_new(AGS_TYPE_TRACK_COLLECTION,
 							 NULL);
+
+  track_collection->child_type = child_type;
+  track_collection->child_parameter_count = child_parameter_count;
+  track_collection->child_parameter = child_parameter;
   
   return(track_collection);
 }
