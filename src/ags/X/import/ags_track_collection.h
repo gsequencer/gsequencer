@@ -23,8 +23,6 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include <ags/X/ags_track.h>
-
 #define AGS_TYPE_TRACK_COLLECTION                (ags_track_collection_get_type())
 #define AGS_TRACK_COLLECTION(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_TRACK_COLLECTION, AgsTrackCollection))
 #define AGS_TRACK_COLLECTION_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_TRACK_COLLECTION, AgsTrackCollectionClass))
@@ -58,7 +56,7 @@ struct _AgsTrackCollection
 
 struct _AgsTrackCollectionClass
 {
-  AgsTrackMapperClass track;
+  GtkVBoxClass vbox;
 };
 
 GType ags_track_collection_get_type();

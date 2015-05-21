@@ -86,10 +86,7 @@ DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(srcdir)/config.h.in depcomp compile config.guess config.sub \
 	install-sh missing ltmain.sh
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/m4/libtool.m4 \
-	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
-	$(top_srcdir)/m4/ltversion.m4 $(top_srcdir)/m4/lt~obsolete.m4 \
-	$(top_srcdir)/configure.ac
+am__aclocal_m4_deps = $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
@@ -433,8 +430,15 @@ am__objects_25 = $(am__objects_1) gsequencer-ags_xorg_init.$(OBJEXT) \
 	gsequencer-ags_server_preferences.$(OBJEXT) \
 	gsequencer-ags_window_callbacks.$(OBJEXT) \
 	gsequencer-ags_window.$(OBJEXT)
-am__objects_26 = $(am__objects_1) gsequencer-ags_gui_thread.$(OBJEXT)
-am__objects_27 = $(am__objects_1) \
+am__objects_26 = $(am__objects_1) \
+	gsequencer-ags_midi_import_wizard_callbacks.$(OBJEXT) \
+	gsequencer-ags_midi_import_wizard.$(OBJEXT) \
+	gsequencer-ags_track_collection_callbacks.$(OBJEXT) \
+	gsequencer-ags_track_collection.$(OBJEXT) \
+	gsequencer-ags_track_collection_mapper_callbacks.$(OBJEXT) \
+	gsequencer-ags_track_collection_mapper.$(OBJEXT)
+am__objects_27 = $(am__objects_1) gsequencer-ags_gui_thread.$(OBJEXT)
+am__objects_28 = $(am__objects_1) \
 	gsequencer-ags_add_line_member.$(OBJEXT) \
 	gsequencer-ags_add_bulk_member.$(OBJEXT) \
 	gsequencer-ags_update_bulk_member.$(OBJEXT) \
@@ -443,7 +447,7 @@ am__objects_27 = $(am__objects_1) \
 	gsequencer-ags_display_tact.$(OBJEXT) \
 	gsequencer-ags_scroll_on_play.$(OBJEXT) \
 	gsequencer-ags_toggle_led.$(OBJEXT)
-am__objects_28 = $(am__objects_1) \
+am__objects_29 = $(am__objects_1) \
 	gsequencer-ags_drum_callbacks.$(OBJEXT) \
 	gsequencer-ags_drum.$(OBJEXT) \
 	gsequencer-ags_drum_input_line_callbacks.$(OBJEXT) \
@@ -498,7 +502,7 @@ am__objects_28 = $(am__objects_1) \
 	gsequencer-ags_synth_output_line.$(OBJEXT) \
 	gsequencer-ags_synth_output_pad_callbacks.$(OBJEXT) \
 	gsequencer-ags_synth_output_pad.$(OBJEXT)
-am__objects_29 = $(am__objects_1) \
+am__objects_30 = $(am__objects_1) \
 	gsequencer-ags_automation_area_callbacks.$(OBJEXT) \
 	gsequencer-ags_automation_area.$(OBJEXT) \
 	gsequencer-ags_automation_edit_callbacks.$(OBJEXT) \
@@ -529,11 +533,12 @@ am__objects_29 = $(am__objects_1) \
 	gsequencer-ags_soundset.$(OBJEXT) \
 	gsequencer-ags_toolbar_callbacks.$(OBJEXT) \
 	gsequencer-ags_toolbar.$(OBJEXT)
-am__objects_30 = $(am__objects_1) \
+am__objects_31 = $(am__objects_1) \
 	gsequencer-ags_gsequencer_file_xml.$(OBJEXT)
 am_gsequencer_OBJECTS = $(am__objects_23) $(am__objects_24) \
 	$(am__objects_25) $(am__objects_26) $(am__objects_27) \
-	$(am__objects_28) $(am__objects_29) $(am__objects_30)
+	$(am__objects_28) $(am__objects_29) $(am__objects_30) \
+	$(am__objects_31)
 gsequencer_OBJECTS = $(am_gsequencer_OBJECTS)
 gsequencer_DEPENDENCIES = libags_audio.a libags_gui.a libags_log.a \
 	libags_thread.a libags.a
@@ -843,7 +848,7 @@ libags_thread_a_SOURCES = $(ags_thread_c_sources) $(ags_thread_file_c_sources) $
 libags_log_a_SOURCES = $(ags_log_c_sources) $(ags_log_task_c_sources)
 libags_audio_a_SOURCES = $(ags_audio_c_sources) $(ags_audio_thread_c_sources) $(ags_audio_file_c_sources) $(ags_audio_task_c_sources) $(ags_audio_task_recall_c_sources) $(ags_audio_recall_c_sources)  $(ags_plugin_c_sources)
 libags_gui_a_SOURCES = $(ags_widget_c_sources)
-gsequencer_SOURCES = $(gsequencer_main_c_sources) $(gsequencer_server_c_sources) $(gsequencer_xorg_c_sources) $(gsequencer_xorg_thread_c_sources) $(gsequencer_xorg_task_c_sources) $(gsequencer_machine_c_sources) $(gsequencer_editor_c_sources) $(ags_gsequencer_task_c_sources) $(gsequencer_file_c_sources)
+gsequencer_SOURCES = $(gsequencer_main_c_sources) $(gsequencer_server_c_sources) $(gsequencer_xorg_c_sources) $(gsequencer_xorg_import_c_sources) $(gsequencer_xorg_thread_c_sources) $(gsequencer_xorg_task_c_sources) $(gsequencer_machine_c_sources) $(gsequencer_editor_c_sources) $(ags_gsequencer_task_c_sources) $(gsequencer_file_c_sources)
 
 #
 TARGETS = gsequencer
@@ -1586,7 +1591,7 @@ gsequencer_xorg_h_sources = \
 	src/ags/X/ags_plugin_preferences.h		\
 	src/ags/X/ags_preferences_callbacks.h		\
 	src/ags/X/ags_preferences.h			\
-	src/ags/X/ags_property_collection_editor_callbacks.h \
+	src/ags/X/ags_property_collection_editor_callbacks.h	\
 	src/ags/X/ags_property_collection_editor.h	\
 	src/ags/X/ags_property_editor_callbacks.h	\
 	src/ags/X/ags_property_editor.h			\
@@ -1670,6 +1675,26 @@ gsequencer_xorg_c_sources = \
 	src/ags/X/ags_server_preferences.c		\
 	src/ags/X/ags_window_callbacks.c		\
 	src/ags/X/ags_window.c
+
+deprecated_gsequencer_xorg_import_h_sources = 
+gsequencer_xorg_import_h_sources = \
+	$(deprecated_gsequencer_xorg_import_h_sources) 	\
+	src/ags/X/import/ags_midi_import_wizard_callbacks.h		\
+	src/ags/X/import/ags_midi_import_wizard.h			\
+	src/ags/X/import/ags_track_collection_callbacks.h		\
+	src/ags/X/import/ags_track_collection.h				\
+	src/ags/X/import/ags_track_collection_mapper_callbacks.h	\
+	src/ags/X/import/ags_track_collection_mapper.h
+
+deprecated_gsequencer_xorg_import_c_sources = 
+gsequencer_xorg_import_c_sources = \
+	$(deprecated_gsequencer_xorg_import_c_sources) 	\
+	src/ags/X/import/ags_midi_import_wizard_callbacks.c		\
+	src/ags/X/import/ags_midi_import_wizard.c			\
+	src/ags/X/import/ags_track_collection_callbacks.c		\
+	src/ags/X/import/ags_track_collection.c				\
+	src/ags/X/import/ags_track_collection_mapper_callbacks.c	\
+	src/ags/X/import/ags_track_collection_mapper.c
 
 deprecated_gsequencer_xorg_thread_h_sources = 
 gsequencer_xorg_thread_h_sources = \
@@ -2137,6 +2162,8 @@ include ./$(DEPDIR)/gsequencer-ags_matrix_bulk_input_callbacks.Po
 include ./$(DEPDIR)/gsequencer-ags_matrix_callbacks.Po
 include ./$(DEPDIR)/gsequencer-ags_menu_bar.Po
 include ./$(DEPDIR)/gsequencer-ags_menu_bar_callbacks.Po
+include ./$(DEPDIR)/gsequencer-ags_midi_import_wizard.Po
+include ./$(DEPDIR)/gsequencer-ags_midi_import_wizard_callbacks.Po
 include ./$(DEPDIR)/gsequencer-ags_mixer.Po
 include ./$(DEPDIR)/gsequencer-ags_mixer_callbacks.Po
 include ./$(DEPDIR)/gsequencer-ags_mixer_input_line.Po
@@ -2207,6 +2234,10 @@ include ./$(DEPDIR)/gsequencer-ags_synth_output_pad_callbacks.Po
 include ./$(DEPDIR)/gsequencer-ags_toggle_led.Po
 include ./$(DEPDIR)/gsequencer-ags_toolbar.Po
 include ./$(DEPDIR)/gsequencer-ags_toolbar_callbacks.Po
+include ./$(DEPDIR)/gsequencer-ags_track_collection.Po
+include ./$(DEPDIR)/gsequencer-ags_track_collection_callbacks.Po
+include ./$(DEPDIR)/gsequencer-ags_track_collection_mapper.Po
+include ./$(DEPDIR)/gsequencer-ags_track_collection_mapper_callbacks.Po
 include ./$(DEPDIR)/gsequencer-ags_update_bulk_member.Po
 include ./$(DEPDIR)/gsequencer-ags_window.Po
 include ./$(DEPDIR)/gsequencer-ags_window_callbacks.Po
@@ -6597,6 +6628,90 @@ gsequencer-ags_window.obj: src/ags/X/ags_window.c
 #	$(AM_V_CC)source='src/ags/X/ags_window.c' object='gsequencer-ags_window.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_window.obj `if test -f 'src/ags/X/ags_window.c'; then $(CYGPATH_W) 'src/ags/X/ags_window.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/ags_window.c'; fi`
+
+gsequencer-ags_midi_import_wizard_callbacks.o: src/ags/X/import/ags_midi_import_wizard_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_midi_import_wizard_callbacks.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_midi_import_wizard_callbacks.Tpo -c -o gsequencer-ags_midi_import_wizard_callbacks.o `test -f 'src/ags/X/import/ags_midi_import_wizard_callbacks.c' || echo '$(srcdir)/'`src/ags/X/import/ags_midi_import_wizard_callbacks.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_midi_import_wizard_callbacks.Tpo $(DEPDIR)/gsequencer-ags_midi_import_wizard_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/import/ags_midi_import_wizard_callbacks.c' object='gsequencer-ags_midi_import_wizard_callbacks.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_midi_import_wizard_callbacks.o `test -f 'src/ags/X/import/ags_midi_import_wizard_callbacks.c' || echo '$(srcdir)/'`src/ags/X/import/ags_midi_import_wizard_callbacks.c
+
+gsequencer-ags_midi_import_wizard_callbacks.obj: src/ags/X/import/ags_midi_import_wizard_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_midi_import_wizard_callbacks.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_midi_import_wizard_callbacks.Tpo -c -o gsequencer-ags_midi_import_wizard_callbacks.obj `if test -f 'src/ags/X/import/ags_midi_import_wizard_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/import/ags_midi_import_wizard_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/import/ags_midi_import_wizard_callbacks.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_midi_import_wizard_callbacks.Tpo $(DEPDIR)/gsequencer-ags_midi_import_wizard_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/import/ags_midi_import_wizard_callbacks.c' object='gsequencer-ags_midi_import_wizard_callbacks.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_midi_import_wizard_callbacks.obj `if test -f 'src/ags/X/import/ags_midi_import_wizard_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/import/ags_midi_import_wizard_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/import/ags_midi_import_wizard_callbacks.c'; fi`
+
+gsequencer-ags_midi_import_wizard.o: src/ags/X/import/ags_midi_import_wizard.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_midi_import_wizard.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_midi_import_wizard.Tpo -c -o gsequencer-ags_midi_import_wizard.o `test -f 'src/ags/X/import/ags_midi_import_wizard.c' || echo '$(srcdir)/'`src/ags/X/import/ags_midi_import_wizard.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_midi_import_wizard.Tpo $(DEPDIR)/gsequencer-ags_midi_import_wizard.Po
+#	$(AM_V_CC)source='src/ags/X/import/ags_midi_import_wizard.c' object='gsequencer-ags_midi_import_wizard.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_midi_import_wizard.o `test -f 'src/ags/X/import/ags_midi_import_wizard.c' || echo '$(srcdir)/'`src/ags/X/import/ags_midi_import_wizard.c
+
+gsequencer-ags_midi_import_wizard.obj: src/ags/X/import/ags_midi_import_wizard.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_midi_import_wizard.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_midi_import_wizard.Tpo -c -o gsequencer-ags_midi_import_wizard.obj `if test -f 'src/ags/X/import/ags_midi_import_wizard.c'; then $(CYGPATH_W) 'src/ags/X/import/ags_midi_import_wizard.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/import/ags_midi_import_wizard.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_midi_import_wizard.Tpo $(DEPDIR)/gsequencer-ags_midi_import_wizard.Po
+#	$(AM_V_CC)source='src/ags/X/import/ags_midi_import_wizard.c' object='gsequencer-ags_midi_import_wizard.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_midi_import_wizard.obj `if test -f 'src/ags/X/import/ags_midi_import_wizard.c'; then $(CYGPATH_W) 'src/ags/X/import/ags_midi_import_wizard.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/import/ags_midi_import_wizard.c'; fi`
+
+gsequencer-ags_track_collection_callbacks.o: src/ags/X/import/ags_track_collection_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_track_collection_callbacks.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_track_collection_callbacks.Tpo -c -o gsequencer-ags_track_collection_callbacks.o `test -f 'src/ags/X/import/ags_track_collection_callbacks.c' || echo '$(srcdir)/'`src/ags/X/import/ags_track_collection_callbacks.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_track_collection_callbacks.Tpo $(DEPDIR)/gsequencer-ags_track_collection_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/import/ags_track_collection_callbacks.c' object='gsequencer-ags_track_collection_callbacks.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_track_collection_callbacks.o `test -f 'src/ags/X/import/ags_track_collection_callbacks.c' || echo '$(srcdir)/'`src/ags/X/import/ags_track_collection_callbacks.c
+
+gsequencer-ags_track_collection_callbacks.obj: src/ags/X/import/ags_track_collection_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_track_collection_callbacks.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_track_collection_callbacks.Tpo -c -o gsequencer-ags_track_collection_callbacks.obj `if test -f 'src/ags/X/import/ags_track_collection_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/import/ags_track_collection_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/import/ags_track_collection_callbacks.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_track_collection_callbacks.Tpo $(DEPDIR)/gsequencer-ags_track_collection_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/import/ags_track_collection_callbacks.c' object='gsequencer-ags_track_collection_callbacks.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_track_collection_callbacks.obj `if test -f 'src/ags/X/import/ags_track_collection_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/import/ags_track_collection_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/import/ags_track_collection_callbacks.c'; fi`
+
+gsequencer-ags_track_collection.o: src/ags/X/import/ags_track_collection.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_track_collection.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_track_collection.Tpo -c -o gsequencer-ags_track_collection.o `test -f 'src/ags/X/import/ags_track_collection.c' || echo '$(srcdir)/'`src/ags/X/import/ags_track_collection.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_track_collection.Tpo $(DEPDIR)/gsequencer-ags_track_collection.Po
+#	$(AM_V_CC)source='src/ags/X/import/ags_track_collection.c' object='gsequencer-ags_track_collection.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_track_collection.o `test -f 'src/ags/X/import/ags_track_collection.c' || echo '$(srcdir)/'`src/ags/X/import/ags_track_collection.c
+
+gsequencer-ags_track_collection.obj: src/ags/X/import/ags_track_collection.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_track_collection.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_track_collection.Tpo -c -o gsequencer-ags_track_collection.obj `if test -f 'src/ags/X/import/ags_track_collection.c'; then $(CYGPATH_W) 'src/ags/X/import/ags_track_collection.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/import/ags_track_collection.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_track_collection.Tpo $(DEPDIR)/gsequencer-ags_track_collection.Po
+#	$(AM_V_CC)source='src/ags/X/import/ags_track_collection.c' object='gsequencer-ags_track_collection.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_track_collection.obj `if test -f 'src/ags/X/import/ags_track_collection.c'; then $(CYGPATH_W) 'src/ags/X/import/ags_track_collection.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/import/ags_track_collection.c'; fi`
+
+gsequencer-ags_track_collection_mapper_callbacks.o: src/ags/X/import/ags_track_collection_mapper_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_track_collection_mapper_callbacks.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_track_collection_mapper_callbacks.Tpo -c -o gsequencer-ags_track_collection_mapper_callbacks.o `test -f 'src/ags/X/import/ags_track_collection_mapper_callbacks.c' || echo '$(srcdir)/'`src/ags/X/import/ags_track_collection_mapper_callbacks.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_track_collection_mapper_callbacks.Tpo $(DEPDIR)/gsequencer-ags_track_collection_mapper_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/import/ags_track_collection_mapper_callbacks.c' object='gsequencer-ags_track_collection_mapper_callbacks.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_track_collection_mapper_callbacks.o `test -f 'src/ags/X/import/ags_track_collection_mapper_callbacks.c' || echo '$(srcdir)/'`src/ags/X/import/ags_track_collection_mapper_callbacks.c
+
+gsequencer-ags_track_collection_mapper_callbacks.obj: src/ags/X/import/ags_track_collection_mapper_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_track_collection_mapper_callbacks.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_track_collection_mapper_callbacks.Tpo -c -o gsequencer-ags_track_collection_mapper_callbacks.obj `if test -f 'src/ags/X/import/ags_track_collection_mapper_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/import/ags_track_collection_mapper_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/import/ags_track_collection_mapper_callbacks.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_track_collection_mapper_callbacks.Tpo $(DEPDIR)/gsequencer-ags_track_collection_mapper_callbacks.Po
+#	$(AM_V_CC)source='src/ags/X/import/ags_track_collection_mapper_callbacks.c' object='gsequencer-ags_track_collection_mapper_callbacks.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_track_collection_mapper_callbacks.obj `if test -f 'src/ags/X/import/ags_track_collection_mapper_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/import/ags_track_collection_mapper_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/import/ags_track_collection_mapper_callbacks.c'; fi`
+
+gsequencer-ags_track_collection_mapper.o: src/ags/X/import/ags_track_collection_mapper.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_track_collection_mapper.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_track_collection_mapper.Tpo -c -o gsequencer-ags_track_collection_mapper.o `test -f 'src/ags/X/import/ags_track_collection_mapper.c' || echo '$(srcdir)/'`src/ags/X/import/ags_track_collection_mapper.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_track_collection_mapper.Tpo $(DEPDIR)/gsequencer-ags_track_collection_mapper.Po
+#	$(AM_V_CC)source='src/ags/X/import/ags_track_collection_mapper.c' object='gsequencer-ags_track_collection_mapper.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_track_collection_mapper.o `test -f 'src/ags/X/import/ags_track_collection_mapper.c' || echo '$(srcdir)/'`src/ags/X/import/ags_track_collection_mapper.c
+
+gsequencer-ags_track_collection_mapper.obj: src/ags/X/import/ags_track_collection_mapper.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_track_collection_mapper.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_track_collection_mapper.Tpo -c -o gsequencer-ags_track_collection_mapper.obj `if test -f 'src/ags/X/import/ags_track_collection_mapper.c'; then $(CYGPATH_W) 'src/ags/X/import/ags_track_collection_mapper.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/import/ags_track_collection_mapper.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_track_collection_mapper.Tpo $(DEPDIR)/gsequencer-ags_track_collection_mapper.Po
+#	$(AM_V_CC)source='src/ags/X/import/ags_track_collection_mapper.c' object='gsequencer-ags_track_collection_mapper.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_track_collection_mapper.obj `if test -f 'src/ags/X/import/ags_track_collection_mapper.c'; then $(CYGPATH_W) 'src/ags/X/import/ags_track_collection_mapper.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/import/ags_track_collection_mapper.c'; fi`
 
 gsequencer-ags_gui_thread.o: src/ags/X/thread/ags_gui_thread.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_gui_thread.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_gui_thread.Tpo -c -o gsequencer-ags_gui_thread.o `test -f 'src/ags/X/thread/ags_gui_thread.c' || echo '$(srcdir)/'`src/ags/X/thread/ags_gui_thread.c

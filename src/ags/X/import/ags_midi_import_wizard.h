@@ -33,19 +33,14 @@
 typedef struct _AgsMidiImportWizard AgsMidiImportWizard;
 typedef struct _AgsMidiImportWizardClass AgsMidiImportWizardClass;
 
-typedef enum{
-}AgsMidiImportWizardFlags;
-
 struct _AgsMidiImportWizard
 {
   GtkDialog dialog;
 
-  guint flags;
-
   GtkWidget *parent;
   
   GtkWidget *file_chooser;
-  GtkWidget *track_mapping;
+  GtkWidget *track_collection;
 };
 
 struct _AgsMidiImportWizardClass

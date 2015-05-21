@@ -23,6 +23,6 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include <ags/X/ags_track_collection_mapper.h>
+#include <ags/X/import/ags_track_collection_mapper.h>
 
 #endif /*__AGS_TRACK_COLLECTION_MAPPER_CALLBACKS_H__*/

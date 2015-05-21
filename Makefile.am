@@ -26,7 +26,7 @@ libags_thread_a_SOURCES = $(ags_thread_c_sources) $(ags_thread_file_c_sources) $
 libags_log_a_SOURCES = $(ags_log_c_sources) $(ags_log_task_c_sources)
 libags_audio_a_SOURCES = $(ags_audio_c_sources) $(ags_audio_thread_c_sources) $(ags_audio_file_c_sources) $(ags_audio_task_c_sources) $(ags_audio_task_recall_c_sources) $(ags_audio_recall_c_sources)  $(ags_plugin_c_sources)
 libags_gui_a_SOURCES = $(ags_widget_c_sources)
-gsequencer_SOURCES = $(gsequencer_main_c_sources) $(gsequencer_server_c_sources) $(gsequencer_xorg_c_sources) $(gsequencer_xorg_thread_c_sources) $(gsequencer_xorg_task_c_sources) $(gsequencer_machine_c_sources) $(gsequencer_editor_c_sources) $(ags_gsequencer_task_c_sources) $(gsequencer_file_c_sources)
+gsequencer_SOURCES = $(gsequencer_main_c_sources) $(gsequencer_server_c_sources) $(gsequencer_xorg_c_sources) $(gsequencer_xorg_import_c_sources) $(gsequencer_xorg_thread_c_sources) $(gsequencer_xorg_task_c_sources) $(gsequencer_machine_c_sources) $(gsequencer_editor_c_sources) $(ags_gsequencer_task_c_sources) $(gsequencer_file_c_sources)
 
 #
 TARGETS = gsequencer
@@ -808,7 +808,7 @@ gsequencer_xorg_h_sources = \
 	src/ags/X/ags_plugin_preferences.h		\
 	src/ags/X/ags_preferences_callbacks.h		\
 	src/ags/X/ags_preferences.h			\
-	src/ags/X/ags_property_collection_editor_callbacks.h \
+	src/ags/X/ags_property_collection_editor_callbacks.h	\
 	src/ags/X/ags_property_collection_editor.h	\
 	src/ags/X/ags_property_editor_callbacks.h	\
 	src/ags/X/ags_property_editor.h			\
@@ -894,6 +894,28 @@ gsequencer_xorg_c_sources = \
 	src/ags/X/ags_window_callbacks.c		\
 	src/ags/X/ags_window.c
 
+
+deprecated_gsequencer_xorg_import_h_sources = 
+
+gsequencer_xorg_import_h_sources = \
+	$(deprecated_gsequencer_xorg_import_h_sources) 	\
+	src/ags/X/import/ags_midi_import_wizard_callbacks.h		\
+	src/ags/X/import/ags_midi_import_wizard.h			\
+	src/ags/X/import/ags_track_collection_callbacks.h		\
+	src/ags/X/import/ags_track_collection.h				\
+	src/ags/X/import/ags_track_collection_mapper_callbacks.h	\
+	src/ags/X/import/ags_track_collection_mapper.h
+
+deprecated_gsequencer_xorg_import_c_sources = 
+
+gsequencer_xorg_import_c_sources = \
+	$(deprecated_gsequencer_xorg_import_c_sources) 	\
+	src/ags/X/import/ags_midi_import_wizard_callbacks.c		\
+	src/ags/X/import/ags_midi_import_wizard.c			\
+	src/ags/X/import/ags_track_collection_callbacks.c		\
+	src/ags/X/import/ags_track_collection.c				\
+	src/ags/X/import/ags_track_collection_mapper_callbacks.c	\
+	src/ags/X/import/ags_track_collection_mapper.c
 
 deprecated_gsequencer_xorg_thread_h_sources = 
 

@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <ags/X/ags_midi_import_wizard.h>
-#include <ags/X/ags_midi_import_wizard_callbacks.h>
+#include <ags/X/import/ags_midi_import_wizard.h>
+#include <ags/X/import/ags_midi_import_wizard_callbacks.h>
 
 #include <ags/object/ags_connectable.h>
 
@@ -41,8 +41,6 @@ void ags_midi_import_wizard_disconnect(AgsConnectable *connectable);
  *
  * #AgsMidiImportWizard is a wizard to import midi files and do track mapping..
  */
-
-static guint midi_import_wizard_signals[LAST_SIGNAL];
 
 GType
 ags_midi_import_wizard_get_type(void)

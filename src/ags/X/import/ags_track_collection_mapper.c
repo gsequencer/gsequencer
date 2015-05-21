@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <ags/X/ags_track_collection_mapper.h>
-#include <ags/X/ags_track_collection_mapper_callbacks.h>
+#include <ags/X/import/ags_track_collection_mapper.h>
+#include <ags/X/import/ags_track_collection_mapper_callbacks.h>
 
 #include <ags/object/ags_connectable.h>
 
@@ -41,8 +41,6 @@ void ags_track_collection_mapper_disconnect(AgsConnectable *connectable);
  *
  * #AgsTracCollectionkMapper is a wizard to import midi files and do track mapping..
  */
-
-static guint track_collection_mapper_signals[LAST_SIGNAL];
 
 GType
 ags_track_collection_mapper_get_type(void)

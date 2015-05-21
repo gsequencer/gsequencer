@@ -33,14 +33,9 @@
 typedef struct _AgsTracCollectionkMapper AgsTracCollectionkMapper;
 typedef struct _AgsTracCollectionkMapperClass AgsTracCollectionkMapperClass;
 
-typedef enum{
-}AgsTracCollectionkMapperFlags;
-
 struct _AgsTracCollectionkMapper
 {
   GtkTable table;;
-
-  guint flags;
 };
 
 struct _AgsTracCollectionkMapperClass

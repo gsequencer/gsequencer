@@ -16,16 +16,16 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef __AGS_TRACK_COLLECTION_CALLBACKS_H__
-#define __AGS_TRACK_COLLECTION_CALLBACKS_H__
+#ifndef __AGS_MIDI_IMPORT_WIZARD_CALLBACKS_H__
+#define __AGS_MIDI_IMPORT_WIZARD_CALLBACKS_H__
 
 #include <glib.h>
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include <ags/X/import/ags_track_collection.h>
+#include <ags/X/import/ags_midi_import_wizard.h>
 
-void ags_track_collection_enable_callback(GtkToggleButton *toggle,
-					  AgsTrackCollection *track_collection);
+void ags_midi_import_wizard_enable_callback(GtkToggleButton *toggle,
+					    AgsMidiImportWizard *midi_import_wizard);
 
-#endif /*__AGS_TRACK_COLLECTION_CALLBACKS_H__*/
+#endif /*__AGS_MIDI_IMPORT_WIZARD_CALLBACKS_H__*/
