@@ -20,6 +20,10 @@
 
 #include <ags/object/ags_applicable.h>
 
+#include <ags/audio/midi/ags_midi_parser.h>
+
+#include <libxml/tree.h>
+
 void
 ags_midi_import_wizard_response_callback(GtkWidget *wizard, gint response, gpointer data)
 {
@@ -43,7 +47,24 @@ ags_midi_import_wizard_response_callback(GtkWidget *wizard, gint response, gpoin
     break;
   case GTK_RESPONSE_ACCEPT:
     {
+      FILE *file;
+
+      file = fopen(gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(midi_import_wizard->file_chooser)),
+		   "r\0");
+      
       if((AGS_MIDI_IMPORT_WIZARD_SHOW_FILE_CHOOSER & (midi_import_wizard->flags)) != 0){
+	AgsMidiParser *midi_parser;
+
+	xmlDoc *midi_doc;
+	
+	midi_parser = ags_midi_parser_new(file);
+	
+	midi_doc = ags_midi_parser_parse_full(midi_parser);
+	g_object_set(midi_import_wizard->track_collection,
+		     "midi-document\0", midi_doc,
+		      NULL);
+	ags_track_collection_parse(midi_import_wizard->track_collection);
+	
 	midi_import_wizard->flags |= AGS_MIDI_IMPORT_WIZARD_SHOW_TRACK_COLLECTION;
 	midi_import_wizard->flags &= (~AGS_MIDI_IMPORT_WIZARD_SHOW_FILE_CHOOSER);
 

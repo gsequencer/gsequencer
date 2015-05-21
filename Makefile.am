@@ -24,7 +24,7 @@ SUBDIRS = po \
 libags_a_SOURCES = $(ags_util_c_sources) $(ags_lib_c_sources) $(ags_object_c_sources) $(ags_file_c_sources) $(ags_file_task_c_sources)
 libags_thread_a_SOURCES = $(ags_thread_c_sources) $(ags_thread_file_c_sources) $(ags_thread_task_c_sources)
 libags_log_a_SOURCES = $(ags_log_c_sources) $(ags_log_task_c_sources)
-libags_audio_a_SOURCES = $(ags_audio_c_sources) $(ags_audio_thread_c_sources) $(ags_audio_file_c_sources) $(ags_audio_task_c_sources) $(ags_audio_task_recall_c_sources) $(ags_audio_recall_c_sources)  $(ags_plugin_c_sources)
+libags_audio_a_SOURCES = $(ags_audio_c_sources) $(ags_audio_thread_c_sources) $(ags_audio_file_c_sources) $(ags_audio_midi_c_sources) $(ags_audio_task_c_sources) $(ags_audio_task_recall_c_sources) $(ags_audio_recall_c_sources)  $(ags_plugin_c_sources)
 libags_gui_a_SOURCES = $(ags_widget_c_sources)
 gsequencer_SOURCES = $(gsequencer_main_c_sources) $(gsequencer_server_c_sources) $(gsequencer_xorg_c_sources) $(gsequencer_xorg_import_c_sources) $(gsequencer_xorg_thread_c_sources) $(gsequencer_xorg_task_c_sources) $(gsequencer_machine_c_sources) $(gsequencer_editor_c_sources) $(ags_gsequencer_task_c_sources) $(gsequencer_file_c_sources)
 
