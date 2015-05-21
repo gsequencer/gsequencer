@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <ags/X/ags_track_collection.h>
-#include <ags/X/ags_track_collection_callbacks.h>
+#include <ags/X/import/ags_track_collection.h>
+#include <ags/X/import/ags_track_collection_callbacks.h>
 
 #include <ags/object/ags_connectable.h>
 
@@ -133,10 +133,12 @@ ags_track_collection_show(GtkWidget *widget)
  *
  * Returns: a new #AgsTrackCollection
  *
- * Since: 0.3
+ * Since: 0.4.3
  */
 AgsTrackCollection*
-ags_track_collection_new()
+ags_track_collection_new(GType child_type,
+			 guint child_parameter_count,
+			 GParameter *child_parameter)
 {
   AgsTrackCollection *track_collection;
 

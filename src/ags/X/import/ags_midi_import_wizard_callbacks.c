@@ -16,16 +16,4 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef __AGS_TRACK_COLLECTION_CALLBACKS_H__
-#define __AGS_TRACK_COLLECTION_CALLBACKS_H__
-
-#include <glib.h>
-#include <glib-object.h>
-#include <gtk/gtk.h>
-
-#include <ags/X/import/ags_track_collection.h>
-
-void ags_track_collection_enable_callback(GtkToggleButton *toggle,
-					  AgsTrackCollection *track_collection);
-
-#endif /*__AGS_TRACK_COLLECTION_CALLBACKS_H__*/
+#include <ags/X/import/ags_midi_import_wizard_callbacks.h>
