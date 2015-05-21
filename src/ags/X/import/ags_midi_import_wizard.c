@@ -188,12 +188,18 @@ ags_midi_import_wizard_connect(AgsConnectable *connectable)
 
   g_signal_connect(midi_import_wizard, "response\0",
 		   G_CALLBACK(ags_midi_import_wizard_response_callback), NULL);
+
+  ags_connectable_connect(AGS_CONNECTABLE(midi_import_wizard->track_collection));
 }
 
 void
 ags_midi_import_wizard_disconnect(AgsConnectable *connectable)
 {
-  /* empty */
+  AgsMidiImportWizard *midi_import_wizard;
+
+  midi_import_wizard = AGS_MIDI_IMPORT_WIZARD(connectable);
+
+  ags_connectable_disconnect(AGS_CONNECTABLE(midi_import_wizard->track_collection));
 }
 
 void

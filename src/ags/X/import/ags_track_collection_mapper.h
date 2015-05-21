@@ -24,27 +24,33 @@
 #include <gtk/gtk.h>
 
 #define AGS_TYPE_TRACK_COLLECTION_MAPPER                (ags_track_collection_mapper_get_type())
-#define AGS_TRACK_COLLECTION_MAPPER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_TRACK_COLLECTION_MAPPER, AgsTrackCollectionkMapper))
-#define AGS_TRACK_COLLECTION_MAPPER_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_TRACK_COLLECTION_MAPPER, AgsTrackCollectionkMapperClass))
+#define AGS_TRACK_COLLECTION_MAPPER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_TRACK_COLLECTION_MAPPER, AgsTrackCollectionMapper))
+#define AGS_TRACK_COLLECTION_MAPPER_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_TRACK_COLLECTION_MAPPER, AgsTrackCollectionMapperClass))
 #define AGS_IS_TRACK_COLLECTION_MAPPER(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_TRACK_COLLECTION_MAPPER))
 #define AGS_IS_TRACK_COLLECTION_MAPPER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_TRACK_COLLECTION_MAPPER))
-#define AGS_TRACK_COLLECTION_MAPPER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_TRACK_COLLECTION_MAPPER, AgsTrackCollectionkMapperClass))
+#define AGS_TRACK_COLLECTION_MAPPER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_TRACK_COLLECTION_MAPPER, AgsTrackCollectionMapperClass))
 
-typedef struct _AgsTrackCollectionkMapper AgsTrackCollectionkMapper;
-typedef struct _AgsTrackCollectionkMapperClass AgsTrackCollectionkMapperClass;
+typedef struct _AgsTrackCollectionMapper AgsTrackCollectionMapper;
+typedef struct _AgsTrackCollectionMapperClass AgsTrackCollectionMapperClass;
 
-struct _AgsTrackCollectionkMapper
+struct _AgsTrackCollectionMapper
 {
-  GtkTable table;;
+  GtkTable table;
+
+  GtkCheckButton *enabled;
+
+  GtkComboBoxText *machine_type;
+  GtkSpinButton *audio_channels;
+  GtkSpinButton *offset;
 };
 
-struct _AgsTrackCollectionkMapperClass
+struct _AgsTrackCollectionMapperClass
 {
   GtkTableClass table;
 };
 
 GType ags_track_collection_mapper_get_type(void);
 
-AgsTrackCollectionkMapper* ags_track_collection_mapper_new();
+AgsTrackCollectionMapper* ags_track_collection_mapper_new();
 
 #endif /*__AGS_TRACK_COLLECTION_MAPPER_H__*/
