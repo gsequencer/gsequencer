@@ -337,29 +337,95 @@ ags_track_collection_parse(AgsTrackCollection *track_collection)
 {
   xmlXPathContext *xpath_context;
   xmlXPathObject *xpath_object;
-  xmlNode **node;
-
-  guint i;
+  xmlNode **node, **instrument_node, **sequence_node;
+  GList *list, *list_start;
   
+  gchar *instrument, *sequence;
+  guint i, j;
+
+  /* collect */
   xpath_context = xmlXPathNewContext(track_collection->midi_doc);
   xpath_object = xmlXPathEval((xmlChar *) "//midi-tracks/midi-track\0",
 			      xpath_context);
 
   if(xpath_object->nodesetval != NULL){
     node = xpath_object->nodesetval->nodeTab;
-
+    
     for(i = 0; i < xpath_object->nodesetval->nodeNr; i++){
-      if(node[i]->type == XML_ELEMENT_NODE){
-	ags_track_collection_add_mapper(track_collection,
-					node[i]);
+      if(node[i]->type == XML_ELEMENT_NODE){	
+	xmlXPathContext *xpath_context;
+	xmlXPathObject *xpath_object;
+	GList *track_collection_mapper;
+
+	instrument = NULL;
+	sequence = NULL;
+	
+	xpath_context = xmlXPathNewContext(track_collection->midi_doc);
+	xpath_context->node = node[i];
+
+	xpath_object = xmlXPathEval((xmlChar *) "//midi-message[boolean(@instrument-name)]\0",
+				    xpath_context);
+
+	if(xpath_object->nodesetval != NULL){
+	  instrument_node = xpath_object->nodesetval->nodeTab;
+    
+	  for(j = 0; j < xpath_object->nodesetval->nodeNr; j++){
+	    if(instrument_node[j]->type == XML_ELEMENT_NODE){
+	      instrument = xmlGetProp(instrument_node[j],
+				      "instrument-name\0");
+	      break;
+	    }
+	  }
+	}
+
+	xpath_object = xmlXPathEval((xmlChar *) "//midi-message[boolean(@sequence-name)]\0",
+				    xpath_context);
+	
+	if(xpath_object->nodesetval != NULL){
+	  instrument_node = xpath_object->nodesetval->nodeTab;
+    
+	  for(j = 0; j < xpath_object->nodesetval->nodeNr; j++){
+	    if(instrument_node[j]->type == XML_ELEMENT_NODE){
+	      sequence = xmlGetProp(instrument_node[j],
+				    "sequence-name\0");
+	      break;
+	    }
+	  }
+	}
+
+	track_collection_mapper = ags_track_collection_mapper_get_instrument_with_sequence(track_collection->child,
+											   instrument, sequence);
+
+	if(track_collection_mapper == NULL){
+	  ags_track_collection_add_mapper(track_collection,
+					  node[i],
+					  instrument, sequence);
+	}else{
+	  g_object_set(track_collection_mapper->data,
+		       "track\0", node[i],
+		       NULL);
+	}
       }
     }
   }
+
+  /* map */
+  list_start =
+    list = gtk_container_get_children(track_collection->child);
+
+  while(list != NULL){
+    ags_track_collection_mapper_map(list->data);
+
+    list = list->next;
+  }
+
+  g_list_free(list_start);
 }
 
 void
 ags_track_collection_add_mapper(AgsTrackCollection *track_collection,
-				xmlNode *track)
+				xmlNode *track,
+				gchar *instrument, gchar *sequence)
 {
   AgsTrackCollectionMapper *track_collection_mapper;
 
@@ -368,6 +434,8 @@ ags_track_collection_add_mapper(AgsTrackCollection *track_collection,
 								       track_collection->child_parameter);
   g_object_set(track_collection_mapper,
 	       "track\0", track,
+	       "instrument\0", instrument,
+	       "sequence\0", sequence,
 	       NULL);
   gtk_box_pack_start(GTK_BOX(track_collection->child),
 		     GTK_WIDGET(track_collection_mapper),
