@@ -38,7 +38,7 @@ ags_midi_import_wizard_response_callback(GtkWidget *wizard, gint response, gpoin
 	midi_import_wizard->flags |= AGS_MIDI_IMPORT_WIZARD_SHOW_FILE_CHOOSER;
 	midi_import_wizard->flags &= (~AGS_MIDI_IMPORT_WIZARD_SHOW_TRACK_COLLECTION);
 
-	gtk_widget_hide(midi_import_wizard->track_collection->parent);
+	gtk_widget_hide(midi_import_wizard->track_collection->parent->parent);
 
 	gtk_widget_show(midi_import_wizard->file_chooser->parent);
 	gtk_widget_show_all(midi_import_wizard->file_chooser);
@@ -70,6 +70,7 @@ ags_midi_import_wizard_response_callback(GtkWidget *wizard, gint response, gpoin
 
 	gtk_widget_hide(midi_import_wizard->file_chooser->parent);
 
+	gtk_widget_show(midi_import_wizard->track_collection->parent->parent);
 	gtk_widget_show(midi_import_wizard->track_collection->parent);
 	gtk_widget_show_all(midi_import_wizard->track_collection);
       }
