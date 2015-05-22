@@ -22,6 +22,8 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_applicable.h>
 
+#include <ags/audio/midi/ags_midi_parser.h>
+
 #include <ags/X/import/ags_track_collection_mapper.h>
 
 #include <libxml/parser.h>
@@ -161,23 +163,21 @@ ags_track_collection_applicable_interface_init(AgsApplicableInterface *applicabl
 void
 ags_track_collection_init(AgsTrackCollection *track_collection)
 {
-  GtkAlignment *alignment;
+  GtkScrolledWindow *scrolled_window;
 
   track_collection->midi_doc = NULL;
-  
-  track_collection->child = (GtkVBox *) gtk_vbox_new(FALSE,
-						     0);
+
+  scrolled_window = gtk_scrolled_window_new(NULL,
+					    NULL);
   gtk_box_pack_start(GTK_BOX(track_collection),
-		     track_collection->child,
+		     scrolled_window,
 		     TRUE, TRUE,
 		     0);
   
-  alignment = (GtkAlignment *) gtk_alignment_new(0.0, 0.0,
-						 0.0, 0.0);
-  gtk_box_pack_start(GTK_BOX(track_collection),
-		     alignment,
-		     FALSE, FALSE,
-		     0);
+  track_collection->child = (GtkVBox *) gtk_vbox_new(FALSE,
+						     0);
+  gtk_scrolled_window_add_with_viewport(scrolled_window,
+					track_collection->child);
 }
 
 void
@@ -337,12 +337,61 @@ ags_track_collection_parse(AgsTrackCollection *track_collection)
 {
   xmlXPathContext *xpath_context;
   xmlXPathObject *xpath_object;
+  xmlNode *header_node, *tempo_node;
   xmlNode **node, **instrument_node, **sequence_node;
   GList *list, *list_start;
   
   gchar *instrument, *sequence;
+  gdouble sec_val;
   guint i, j;
 
+  /* bpm and first_offset */
+  xpath_context = xmlXPathNewContext(track_collection->midi_doc);
+  xpath_object = xmlXPathEval((xmlChar *) "//midi-header\0",
+			      xpath_context);
+
+  if(xpath_object->nodesetval != NULL){
+    node = xpath_object->nodesetval->nodeTab;
+    
+    for(i = 0; i < xpath_object->nodesetval->nodeNr; i++){
+      if(node[i]->type == XML_ELEMENT_NODE){
+	header_node = node[i];
+      }
+    }
+  }
+
+  xpath_context = xmlXPathNewContext(track_collection->midi_doc);
+  xpath_object = xmlXPathEval((xmlChar *) "//midi-tracks/midi-track/midi-message[@event=\"tempo-number\"]\0",
+			      xpath_context);
+
+  if(xpath_object->nodesetval != NULL){
+    node = xpath_object->nodesetval->nodeTab;
+    
+    for(i = 0; i < xpath_object->nodesetval->nodeNr; i++){
+      if(node[i]->type == XML_ELEMENT_NODE){
+	tempo_node = node[i];
+      }
+    }
+  }
+  
+  track_collection->first_offset = 0;
+  sec_val = ags_midi_parser_ticks_to_sec(NULL,
+					 (guint) g_ascii_strtoull(xmlGetProp(header_node,
+									     "division\0"),
+								  NULL,
+								  10),
+					 (gint) g_ascii_strtoll(xmlGetProp(header_node,
+									   "division\0"),
+								NULL,
+								10),
+					 (guint) g_ascii_strtoull(xmlGetProp(tempo_node,
+									     "tempo\0"),
+								  NULL,
+								  10));
+  //  g_message("", sec_val);
+  track_collection->bpm = 60.0 / sec_val;
+  g_message("bpm %f\0\0", track_collection->bpm);
+  
   /* collect */
   xpath_context = xmlXPathNewContext(track_collection->midi_doc);
   xpath_object = xmlXPathEval((xmlChar *) "//midi-tracks/midi-track\0",
@@ -352,7 +401,7 @@ ags_track_collection_parse(AgsTrackCollection *track_collection)
     node = xpath_object->nodesetval->nodeTab;
     
     for(i = 0; i < xpath_object->nodesetval->nodeNr; i++){
-      if(node[i]->type == XML_ELEMENT_NODE){	
+      if(node[i]->type == XML_ELEMENT_NODE){
 	xmlXPathContext *xpath_context;
 	xmlXPathObject *xpath_object;
 	GList *track_collection_mapper;
@@ -361,9 +410,11 @@ ags_track_collection_parse(AgsTrackCollection *track_collection)
 	sequence = NULL;
 	
 	xpath_context = xmlXPathNewContext(track_collection->midi_doc);
+	//	      xmlXPathSetContextNode(node[i],
+	//		     xpath_context);
 	xpath_context->node = node[i];
-
-	xpath_object = xmlXPathEval((xmlChar *) "//midi-message[boolean(@instrument-name)]\0",
+	      
+	xpath_object = xmlXPathEval((xmlChar *) "./midi-message[boolean(@instrument-name)]\0",
 				    xpath_context);
 
 	if(xpath_object->nodesetval != NULL){
@@ -378,7 +429,12 @@ ags_track_collection_parse(AgsTrackCollection *track_collection)
 	  }
 	}
 
-	xpath_object = xmlXPathEval((xmlChar *) "//midi-message[boolean(@sequence-name)]\0",
+	xpath_context = xmlXPathNewContext(track_collection->midi_doc);
+	//	      xmlXPathSetContextNode(node[i],
+	//		     xpath_context);
+	xpath_context->node = node[i];
+	      
+	xpath_object = xmlXPathEval((xmlChar *) "./midi-message[boolean(@sequence-name)]\0",
 				    xpath_context);
 	
 	if(xpath_object->nodesetval != NULL){
@@ -393,28 +449,36 @@ ags_track_collection_parse(AgsTrackCollection *track_collection)
 	  }
 	}
 
-	track_collection_mapper = ags_track_collection_mapper_get_instrument_with_sequence(track_collection->child,
+	list = gtk_container_get_children(track_collection->child);
+	track_collection_mapper = ags_track_collection_mapper_get_instrument_with_sequence(list,
 											   instrument, sequence);
-
+	      
 	if(track_collection_mapper == NULL){
 	  ags_track_collection_add_mapper(track_collection,
 					  node[i],
 					  instrument, sequence);
 	}else{
-	  g_object_set(track_collection_mapper->data,
+	  g_message(instrument);
+	  g_message(sequence);
+	  g_object_set(AGS_TRACK_COLLECTION_MAPPER(track_collection_mapper->data),
 		       "track\0", node[i],
 		       NULL);
 	}
+	
+	g_list_free(list);
       }
     }
   }
 
+  //  xmlSaveFormatFileEnc("-\0", track_collection->midi_doc, "UTF-8\0", 1);
+  
   /* map */
   list_start =
     list = gtk_container_get_children(track_collection->child);
 
   while(list != NULL){
     ags_track_collection_mapper_map(list->data);
+    gtk_widget_show_all(GTK_WIDGET(list->data));
 
     list = list->next;
   }
@@ -429,9 +493,12 @@ ags_track_collection_add_mapper(AgsTrackCollection *track_collection,
 {
   AgsTrackCollectionMapper *track_collection_mapper;
 
-  g_message(instrument);
-  g_message(sequence);
-
+  if(track == NULL ||
+     instrument == NULL ||
+     sequence == NULL){
+    return;
+  }
+  
   track_collection_mapper = (AgsTrackCollectionMapper *) g_object_newv(track_collection->child_type,
 								       track_collection->child_parameter_count,
 								       track_collection->child_parameter);
@@ -444,7 +511,6 @@ ags_track_collection_add_mapper(AgsTrackCollection *track_collection,
 		     GTK_WIDGET(track_collection_mapper),
 		     FALSE, FALSE,
 		     0);
-  gtk_widget_show_all(GTK_WIDGET(track_collection_mapper));
 }
 
 /**

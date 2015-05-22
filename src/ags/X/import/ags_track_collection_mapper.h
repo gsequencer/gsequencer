@@ -30,6 +30,9 @@
 #define AGS_IS_TRACK_COLLECTION_MAPPER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_TRACK_COLLECTION_MAPPER))
 #define AGS_TRACK_COLLECTION_MAPPER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_TRACK_COLLECTION_MAPPER, AgsTrackCollectionMapperClass))
 
+#define AGS_TRACK_COLLECTION_MAPPER_DEFAULT_BEATS (16.0)
+#define AGS_MIDI_DEFAULT_BEATS (4.0)
+
 typedef struct _AgsTrackCollectionMapper AgsTrackCollectionMapper;
 typedef struct _AgsTrackCollectionMapperClass AgsTrackCollectionMapperClass;
 
