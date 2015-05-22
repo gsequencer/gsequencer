@@ -134,7 +134,7 @@ ags_machine_editor_class_init(AgsMachineEditorClass *machine_editor)
 
   /* properties */
   /**
-   * AgsMachine:machine:
+   * AgsMachineEditor:machine:
    *
    * The #AgsMachine to edit.
    * 

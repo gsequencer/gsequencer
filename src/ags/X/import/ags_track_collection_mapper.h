@@ -37,8 +37,17 @@ struct _AgsTrackCollectionMapper
 {
   GtkTable table;
 
+  gchar *instrument;
+  gchar *sequence;
+  
+  GList *track;
+
+  GList *notation;
+  
   GtkCheckButton *enabled;
 
+  GtkVBox *info;
+  
   GtkComboBoxText *machine_type;
   GtkSpinButton *audio_channels;
   GtkSpinButton *offset;
@@ -50,6 +59,11 @@ struct _AgsTrackCollectionMapperClass
 };
 
 GType ags_track_collection_mapper_get_type(void);
+
+GList* ags_track_collection_mapper_get_instrument_with_sequence(GList *track_collection_mapper,
+								gchar *instrument, gchar *sequence);
+
+void ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mapper);
 
 AgsTrackCollectionMapper* ags_track_collection_mapper_new();
 

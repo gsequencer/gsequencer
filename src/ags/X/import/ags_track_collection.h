@@ -40,6 +40,9 @@ struct _AgsTrackCollection
   GtkVBox vbox;
 
   xmlDoc *midi_doc;
+
+  guint first_offset;
+  gdouble bpm;
   
   GType child_type;
   guint child_parameter_count;
@@ -57,7 +60,8 @@ GType ags_track_collection_get_type();
 
 void ags_track_collection_parse(AgsTrackCollection *track_collection);
 void ags_track_collection_add_mapper(AgsTrackCollection *track_collection,
-				     xmlNode *track);
+				     xmlNode *track,
+				     gchar *instrument, gchar *sequence);
 
 AgsTrackCollection* ags_track_collection_new(GType child_type,
 					     guint child_parameter_count,
