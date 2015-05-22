@@ -49,7 +49,7 @@ void ags_midi_import_wizard_show(GtkWidget *widget);
  * @section_id:
  * @include: ags/X/ags_midi_import_wizard.h
  *
- * #AgsMidiImportWizard is a wizard to import midi files and do track mapping..
+ * #AgsMidiImportWizard is a wizard to import midi files and do track mapping.
  */
 
 static gpointer ags_midi_import_wizard_parent_class = NULL;
@@ -139,6 +139,7 @@ ags_midi_import_wizard_applicable_interface_init(AgsApplicableInterface *applica
 void
 ags_midi_import_wizard_init(AgsMidiImportWizard *midi_import_wizard)
 {
+  GtkScrolledWindow *scrolled_window;
   GtkAlignment *alignment;
 
   midi_import_wizard->flags = AGS_MIDI_IMPORT_WIZARD_SHOW_FILE_CHOOSER;
@@ -156,14 +157,20 @@ ags_midi_import_wizard_init(AgsMidiImportWizard *midi_import_wizard)
   gtk_container_add(alignment,
 		    midi_import_wizard->file_chooser);
 
-  alignment = g_object_new(GTK_TYPE_ALIGNMENT,
-			   NULL);
-  gtk_widget_set_no_show_all(alignment,
+  /**/
+  scrolled_window = gtk_scrolled_window_new(NULL,
+					    NULL);
+  gtk_widget_set_no_show_all(scrolled_window,
 			     TRUE);
   gtk_box_pack_start((GtkBox *) midi_import_wizard->dialog.vbox,
-		     (GtkWidget*) alignment,
+		     (GtkWidget*) scrolled_window,
 		     TRUE, TRUE,
 		     0);
+
+  alignment = g_object_new(GTK_TYPE_ALIGNMENT,
+			   NULL);
+  gtk_scrolled_window_add_with_viewport(scrolled_window,
+					alignment);
   
   midi_import_wizard->track_collection = ags_track_collection_new(AGS_TYPE_TRACK_COLLECTION_MAPPER,
 								  0,
@@ -255,6 +262,7 @@ ags_midi_import_wizard_show(GtkWidget *widget)
   }
 
   if((AGS_MIDI_IMPORT_WIZARD_SHOW_TRACK_COLLECTION & (midi_import_wizard->flags)) != 0){
+    gtk_widget_show(midi_import_wizard->track_collection->parent->parent);
     gtk_widget_show(midi_import_wizard->track_collection->parent);
     gtk_widget_show_all(midi_import_wizard->track_collection);
   }

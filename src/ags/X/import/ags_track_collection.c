@@ -382,11 +382,11 @@ ags_track_collection_parse(AgsTrackCollection *track_collection)
 				    xpath_context);
 	
 	if(xpath_object->nodesetval != NULL){
-	  instrument_node = xpath_object->nodesetval->nodeTab;
+	  sequence_node = xpath_object->nodesetval->nodeTab;
     
 	  for(j = 0; j < xpath_object->nodesetval->nodeNr; j++){
-	    if(instrument_node[j]->type == XML_ELEMENT_NODE){
-	      sequence = xmlGetProp(instrument_node[j],
+	    if(sequence_node[j]->type == XML_ELEMENT_NODE){
+	      sequence = xmlGetProp(sequence_node[j],
 				    "sequence-name\0");
 	      break;
 	    }
@@ -429,6 +429,9 @@ ags_track_collection_add_mapper(AgsTrackCollection *track_collection,
 {
   AgsTrackCollectionMapper *track_collection_mapper;
 
+  g_message(instrument);
+  g_message(sequence);
+
   track_collection_mapper = (AgsTrackCollectionMapper *) g_object_newv(track_collection->child_type,
 								       track_collection->child_parameter_count,
 								       track_collection->child_parameter);
@@ -441,6 +444,7 @@ ags_track_collection_add_mapper(AgsTrackCollection *track_collection,
 		     GTK_WIDGET(track_collection_mapper),
 		     FALSE, FALSE,
 		     0);
+  gtk_widget_show_all(GTK_WIDGET(track_collection_mapper));
 }
 
 /**

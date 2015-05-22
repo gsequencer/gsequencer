@@ -406,10 +406,12 @@ ags_track_collection_mapper_get_instrument_with_sequence(GList *track_collection
 							 gchar *instrument, gchar *sequence)
 {
   while(track_collection_mapper != NULL){
-    if(!g_ascii_strcasecmp(AGS_TRACK_COLLECTION_MAPPER(track_collection_mapper->data)->instrument,
-			   instrument) &&
-       !g_ascii_strcasecmp(AGS_TRACK_COLLECTION_MAPPER(track_collection_mapper->data)->sequence,
-			   sequence)){
+    if((AGS_TRACK_COLLECTION_MAPPER(track_collection_mapper->data)->instrument == instrument &&
+       AGS_TRACK_COLLECTION_MAPPER(track_collection_mapper->data)->sequence == sequence) ||
+	(!g_ascii_strcasecmp(AGS_TRACK_COLLECTION_MAPPER(track_collection_mapper->data)->instrument,
+			     instrument) &&
+	 !g_ascii_strcasecmp(AGS_TRACK_COLLECTION_MAPPER(track_collection_mapper->data)->sequence,
+			     sequence))){
       return(track_collection_mapper);
     }
 
@@ -474,12 +476,12 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
 					   NULL) / track_collection->bpm);
 	  y = (guint) g_ascii_strtoull(xmlGetProp(child,
 						  "note\0"),
-				       10,
-				       NULL);
+				       NULL,
+				       10);
 	  velocity = (guint) g_ascii_strtoull(xmlGetProp(child,
 							 "velocity\0"),
-					      10,
-					      NULL);
+					      NULL,
+					      10);
 	  
 	  while(notation != NULL){
 	    note = ags_note_new();
@@ -506,12 +508,12 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
 					   NULL) / track_collection->bpm);
 	  y = (guint) g_ascii_strtoull(xmlGetProp(child,
 						  "note\0"),
-				       10,
-				       NULL);
+				       NULL,
+				       10);
 	  velocity = (guint) g_ascii_strtoull(xmlGetProp(child,
 							 "velocity\0"),
-					      10,
-					      NULL);
+					      NULL,
+					      10);
 	  
 	  while(notation != NULL){
 	    note = ags_note_find_prev(AGS_NOTATION(notation->data)->notes,
