@@ -139,7 +139,6 @@ ags_midi_import_wizard_applicable_interface_init(AgsApplicableInterface *applica
 void
 ags_midi_import_wizard_init(AgsMidiImportWizard *midi_import_wizard)
 {
-  GtkScrolledWindow *scrolled_window;
   GtkAlignment *alignment;
 
   midi_import_wizard->flags = AGS_MIDI_IMPORT_WIZARD_SHOW_FILE_CHOOSER;
@@ -158,20 +157,15 @@ ags_midi_import_wizard_init(AgsMidiImportWizard *midi_import_wizard)
 		    midi_import_wizard->file_chooser);
 
   /**/
-  scrolled_window = gtk_scrolled_window_new(NULL,
-					    NULL);
-  gtk_widget_set_no_show_all(scrolled_window,
+  alignment = gtk_alignment_new(0.0, 0.0,
+				1.0, 1.0);
+  gtk_widget_set_no_show_all(alignment,
 			     TRUE);
   gtk_box_pack_start((GtkBox *) midi_import_wizard->dialog.vbox,
-		     (GtkWidget*) scrolled_window,
+		     (GtkWidget*) alignment,
 		     TRUE, TRUE,
 		     0);
 
-  alignment = g_object_new(GTK_TYPE_ALIGNMENT,
-			   NULL);
-  gtk_scrolled_window_add_with_viewport(scrolled_window,
-					alignment);
-  
   midi_import_wizard->track_collection = ags_track_collection_new(AGS_TYPE_TRACK_COLLECTION_MAPPER,
 								  0,
 								  NULL);
@@ -262,7 +256,6 @@ ags_midi_import_wizard_show(GtkWidget *widget)
   }
 
   if((AGS_MIDI_IMPORT_WIZARD_SHOW_TRACK_COLLECTION & (midi_import_wizard->flags)) != 0){
-    gtk_widget_show(midi_import_wizard->track_collection->parent->parent);
     gtk_widget_show(midi_import_wizard->track_collection->parent);
     gtk_widget_show_all(midi_import_wizard->track_collection);
   }

@@ -27,6 +27,7 @@
 
 #include <ags/X/ags_window.h>
 
+#include <ags/X/import/ags_midi_import_wizard.h>
 #include <ags/X/import/ags_track_collection.h>
 
 #include <ags/X/machine/ags_drum.h>
@@ -213,7 +214,7 @@ ags_track_collection_mapper_init(AgsTrackCollectionMapper *track_collection_mapp
   track_collection_mapper->enabled = (GtkCheckButton *) gtk_check_button_new_with_label("enabled\0");
   gtk_table_attach(track_collection_mapper,
 		   track_collection_mapper->enabled,
-		   0, 2,
+		   0, 4,
 		   0, 1,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
@@ -226,16 +227,22 @@ ags_track_collection_mapper_init(AgsTrackCollectionMapper *track_collection_mapp
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
-  label = gtk_label_new("instrument: \0");
+  label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
+				    "label\0", "instrument: \0",
+				    "xalign\0", 0.0,
+				    NULL);
   gtk_box_pack_start(GTK_BOX(track_collection_mapper->info),
 		     GTK_WIDGET(label),
-		     FALSE, FALSE,
+		     TRUE, TRUE,
 		     0);
 
-  label = gtk_label_new("sequence: \0");
+  label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
+				    "label\0", "sequence: \0",
+				    "xalign\0", 0.0,
+				    NULL);
   gtk_box_pack_start(GTK_BOX(track_collection_mapper->info),
 		     GTK_WIDGET(label),
-		     FALSE, FALSE,
+		     TRUE, TRUE,
 		     0);
     
   track_collection_mapper->machine_type = gtk_combo_box_text_new();
@@ -357,6 +364,12 @@ ags_track_collection_mapper_get_property(GObject *gobject,
   case PROP_TRACK:
     g_value_set_pointer(value, g_list_copy(track_collection_mapper->track));
     break;
+  case PROP_INSTRUMENT:
+    g_value_set_string(value, g_list_copy(track_collection_mapper->instrument));
+    break;
+  case PROP_SEQUENCE:
+    g_value_set_string(value, g_list_copy(track_collection_mapper->sequence));
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -388,6 +401,7 @@ ags_track_collection_mapper_set_update(AgsApplicable *applicable, gboolean updat
 void
 ags_track_collection_mapper_apply(AgsApplicable *applicable)
 {
+  AgsMidiImportWizard *midi_import_wizard;
   AgsTrackCollectionMapper *track_collection_mapper;
 
   track_collection_mapper = AGS_TRACK_COLLECTION_MAPPER(applicable);
@@ -405,13 +419,16 @@ GList*
 ags_track_collection_mapper_get_instrument_with_sequence(GList *track_collection_mapper,
 							 gchar *instrument, gchar *sequence)
 {
+  if(instrument == NULL ||
+     sequence == NULL){
+    return(NULL);
+  }
+  
   while(track_collection_mapper != NULL){
-    if((AGS_TRACK_COLLECTION_MAPPER(track_collection_mapper->data)->instrument == instrument &&
-       AGS_TRACK_COLLECTION_MAPPER(track_collection_mapper->data)->sequence == sequence) ||
-	(!g_ascii_strcasecmp(AGS_TRACK_COLLECTION_MAPPER(track_collection_mapper->data)->instrument,
-			     instrument) &&
-	 !g_ascii_strcasecmp(AGS_TRACK_COLLECTION_MAPPER(track_collection_mapper->data)->sequence,
-			     sequence))){
+    if((!g_ascii_strcasecmp(AGS_TRACK_COLLECTION_MAPPER(track_collection_mapper->data)->instrument,
+			    instrument) &&
+	!g_ascii_strcasecmp(AGS_TRACK_COLLECTION_MAPPER(track_collection_mapper->data)->sequence,
+			    sequence))){
       return(track_collection_mapper);
     }
 
@@ -471,9 +488,11 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
 				  "event\0"),
 		       "note-on\0",
 		       8)){
-	  x = (guint) round(g_ascii_strtod(xmlGetProp(child,
-						      "delta-time\0"),
-					   NULL) / track_collection->bpm);
+	  x = (AGS_TRACK_COLLECTION_MAPPER_DEFAULT_BEATS / AGS_MIDI_DEFAULT_BEATS) *
+	    (guint) round(g_ascii_strtod(xmlGetProp(child,
+						    "delta-time\0"),
+					 NULL) / track_collection->bpm) -
+	    track_collection->first_offset;
 	  y = (guint) g_ascii_strtoull(xmlGetProp(child,
 						  "note\0"),
 				       NULL,
@@ -503,9 +522,11 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
 					"event\0"),
 			     "note-off\0",
 			     9)){	  
-	  x = (guint) round(g_ascii_strtod(xmlGetProp(child,
-						      "delta-time\0"),
-					   NULL) / track_collection->bpm);
+	  x = (AGS_TRACK_COLLECTION_MAPPER_DEFAULT_BEATS / AGS_MIDI_DEFAULT_BEATS) *
+	    (guint) round(g_ascii_strtod(xmlGetProp(child,
+						    "delta-time\0"),
+					 NULL) / track_collection->bpm) -
+	    track_collection->first_offset;
 	  y = (guint) g_ascii_strtoull(xmlGetProp(child,
 						  "note\0"),
 				       NULL,
@@ -538,18 +559,21 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
 
   /* populate machine_type */
   if(n_key_off > 0){
-    gtk_combo_box_text_append_text(track_collection_mapper,
+    gtk_combo_box_text_append_text(track_collection_mapper->machine_type,
 				   g_type_name(AGS_TYPE_SYNTH));
     
-    gtk_combo_box_text_append_text(track_collection_mapper,
+    gtk_combo_box_text_append_text(track_collection_mapper->machine_type,
 				   g_type_name(AGS_TYPE_FFPLAYER));
   }else{
-    gtk_combo_box_text_append_text(track_collection_mapper,
+    gtk_combo_box_text_append_text(track_collection_mapper->machine_type,
 				   g_type_name(AGS_TYPE_DRUM));
     
-    gtk_combo_box_text_append_text(track_collection_mapper,
+    gtk_combo_box_text_append_text(track_collection_mapper->machine_type,
 				   g_type_name(AGS_TYPE_MATRIX));
   }
+
+  gtk_combo_box_set_active(track_collection_mapper->machine_type,
+			   0);
 }
 
 /**
