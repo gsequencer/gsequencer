@@ -67,11 +67,32 @@ struct _AgsPlayableInterface
   void (*iter_start)(AgsPlayable *playable);
   gboolean (*iter_next)(AgsPlayable *playable);
 
+  /* low-level */
+  void (*set_pointer)(AgsPlayable *playable,
+		      gpointer data);
+  gpointer (*get_pointer)(AgsPlayable *playable);
+
+  void (*set_current)(AgsPlayable *playable,
+		      gpointer current);
+  gpointer (*get_current)(AgsPlayable *playable);
+  
   /* read sample data */
   void (*info)(AgsPlayable *playable,
 	       guint *channels, guint *frames,
 	       guint *loop_start, guint *loop_end,
 	       GError **error);
+
+  void (*set_presets)(AgsPlayable *playable,
+		      guint samplerate,
+		      guint buffer_size,
+		      guint channels,
+		      guint format);
+  void (*get_presets)(AgsPlayable *playable,
+		      guint *samplerate,
+		      guint *buffer_size,
+		      guint *channels,
+		      guint *format);
+    
   signed short* (*read)(AgsPlayable *playable,
 			guint channel,
 			GError **error);
