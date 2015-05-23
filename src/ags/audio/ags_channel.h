@@ -79,8 +79,8 @@ struct _AgsChannel
 
   // GObject *recycling_context; // contains child recycling
   GList *recall_id; // there may be several recall's running
+  
   GList *container;
-
   GList *recall;
   GList *play;
 

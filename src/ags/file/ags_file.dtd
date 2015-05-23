@@ -312,7 +312,7 @@
 	  flags            PCDATA     #REQUIRED
 	  samplerate       NMTOKEN    #REQUIRED
 	  buffer-size      NMTOKEN    #REQUIRED
-	  resolution       NMTOKEN    #REQUIRED
+	  format           NMTOKEN    #REQUIRED
 	  length           NMTOKEN    #REQUIRED
 	  last-frame       NMTOKEN    #REQUIRED
 	  loop-start       NMTOKEN    #REQUIRED

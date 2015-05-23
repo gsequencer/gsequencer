@@ -139,6 +139,7 @@ void ags_notation_insert_from_clipboard(AgsNotation *notation,
 
 GList* ags_notation_get_current(AgsNotation *notation);
 
-AgsNotation* ags_notation_new(guint audio_channel);
+AgsNotation* ags_notation_new(GObject *audio,
+			      guint audio_channel);
 
 #endif /*__AGS_NOTATION_H__*/

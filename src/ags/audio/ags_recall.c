@@ -152,6 +152,7 @@ enum{
   PROP_RECALL_ID,
   PROP_PARENT,
   PROP_CHILD,
+  PROP_PORT,
 };
 
 static gpointer ags_recall_parent_class = NULL;
@@ -335,6 +336,22 @@ ags_recall_class_init(AgsRecallClass *recall)
 				   G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_CHILD,
+				  param_spec);
+
+  /**
+   * AgsRecall:port:
+   *
+   * The assigned #AgsPort
+   * 
+   * Since: 0.4.3
+   */
+  param_spec = g_param_spec_object("port\0",
+				   "port of recall\0",
+				   "The port of recall\0",
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PORT,
 				  param_spec);
 
   /* AgsRecallClass */
@@ -800,6 +817,22 @@ ags_recall_set_property(GObject *gobject,
       ags_recall_add_child(recall, child);
     }
     break;
+  case PROP_PORT:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      if(port == NULL ||
+	 g_list_find(recall->port, port) != NULL){
+	return;
+      }
+
+      g_object_ref(port);
+      recall->port = g_list_prepend(recall->port,
+				    port);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -835,6 +868,11 @@ ags_recall_get_property(GObject *gobject,
   case PROP_PARENT:
     {
       g_value_set_object(value, recall->parent);
+    }
+    break;
+  case PROP_PORT:
+    {
+      g_value_set_object(value, g_list_copy(recall->port));
     }
     break;
   default:

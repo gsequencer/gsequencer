@@ -65,6 +65,11 @@ void ags_recycling_real_remove_audio_signal(AgsRecycling *recycling,
 enum{
   PROP_0,
   PROP_SOUNDCARD,
+  PROP_CHANNEL,
+  PROP_PARENT,
+  PROP_NEXT,
+  PROP_PREV,
+  PROP_AUDIO_SIGNAL,
 };
 
 enum{
@@ -148,6 +153,87 @@ ags_recycling_class_init(AgsRecyclingClass *recycling)
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_SOUNDCARD,
+				  param_spec);
+
+
+  /**
+   * AgsRecycling:channel:
+   *
+   * The assigned #AgsChannel.
+   * 
+   * Since: 0.4.3
+   */
+  param_spec = g_param_spec_object("channel\0",
+				   "assigned channel\0",
+				   "The channel it is assigned with\0",
+				   AGS_TYPE_CHANNEL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_CHANNEL,
+				  param_spec);
+
+  /**
+   * AgsRecycling:parent:
+   *
+   * The assigned parent #AgsRecycling.
+   * 
+   * Since: 0.4.3
+   */
+  param_spec = g_param_spec_object("parent\0",
+				   "assigned parent\0",
+				   "The parent it is assigned with\0",
+				   AGS_TYPE_RECYCLING,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PARENT,
+				  param_spec);
+
+  /**
+   * AgsRecycling:prev:
+   *
+   * The assigned prev #AgsRecycling.
+   * 
+   * Since: 0.4.3
+   */
+  param_spec = g_param_spec_object("prev\0",
+				   "assigned prev\0",
+				   "The prev it is assigned with\0",
+				   AGS_TYPE_RECYCLING,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PREV,
+				  param_spec);
+
+  /**
+   * AgsRecycling:next:
+   *
+   * The assigned next #AgsRecycling.
+   * 
+   * Since: 0.4.3
+   */
+  param_spec = g_param_spec_object("next\0",
+				   "assigned next\0",
+				   "The next it is assigned with\0",
+				   AGS_TYPE_RECYCLING,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_NEXT,
+				  param_spec);
+
+  /**
+   * AgsRecycling:audio-signal:
+   *
+   * The containing  #AgsAudioSignal.
+   * 
+   * Since: 0.4.3
+   */
+  param_spec = g_param_spec_object("audio-signal\0",
+				   "containing audio signal\0",
+				   "The audio signal it contains\0",
+				   AGS_TYPE_AUDIO_SIGNAL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_AUDIO_SIGNAL,
 				  param_spec);
 
   /*  */
@@ -414,7 +500,7 @@ ags_recycling_create_audio_signal_with_defaults(AgsRecycling *recycling,
 
   audio_signal->samplerate = template->samplerate;
   audio_signal->buffer_size = template->buffer_size;
-  audio_signal->resolution = template->resolution;
+  audio_signal->format = template->format;
 
   audio_signal->last_frame = (((guint)(delay *
 				       template->buffer_size) +

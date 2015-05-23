@@ -23,6 +23,7 @@
 #include <ags/object/ags_tactable.h>
 #include <ags/object/ags_portlet.h>
 
+#include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_port.h>
 #include <ags/audio/ags_timestamp.h>
 
@@ -67,7 +68,12 @@ void ags_automation_safe_get_property(AgsPortlet *portlet, gchar *property_name,
 
 enum{
   PROP_0,
+  PROP_AUDIO,
+  PROP_LINE,
+  PROP_CHANNEL_TYPE,
+  PROP_CONTROL_NAME,
   PROP_PORT,
+  PROP_ACCELERATION,
   PROP_CURRENT_ACCELERATIONS,
   PROP_NEXT_ACCELERATIONS,
 };
@@ -138,11 +144,46 @@ ags_automation_class_init(AgsAutomationClass *automation)
 
   /* properties */
   /**
+   * AgsAutomation:audio:
+   *
+   * The assigned #AgsAudio
+   * 
+   * Since: 0.4.3
+   */
+  param_spec = g_param_spec_object("audio\0",
+				   "audio of automation\0",
+				   "The audio of automation\0",
+				   AGS_TYPE_AUDIO,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_AUDIO,
+				  param_spec);
+
+
+  /**
+   * AgsAutomation:line:
+   *
+   * The effect's line.
+   * 
+   * Since: 0.4.3
+   */
+  param_spec =  g_param_spec_ulong("line\0",
+				   "line of effect\0",
+				   "The numerical line of effect\0",
+				   0,
+				   65535,
+				   0,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_LINE,
+				  param_spec);
+
+  /**
    * AgsAutomation:port:
    *
    * The assigned #AgsPort
    * 
-   * Since: 0.4.0
+   * Since: 0.4.2
    */
   param_spec = g_param_spec_object("port\0",
 				   "port of automation\0",
@@ -158,7 +199,7 @@ ags_automation_class_init(AgsAutomationClass *automation)
    *
    * Offset of current position.
    * 
-   * Since: 0.4.0
+   * Since: 0.4.2
    */
   param_spec = g_param_spec_pointer("current-accelerations\0",
 				    "current accelerations for offset\0",
@@ -173,7 +214,7 @@ ags_automation_class_init(AgsAutomationClass *automation)
    *
    * Offset of next position.
    * 
-   * Since: 0.4.0
+   * Since: 0.4.2
    */
   param_spec = g_param_spec_pointer("next-accelerations\0",
 				    "next accelerations for offset\0",
@@ -208,7 +249,29 @@ ags_automation_init(AgsAutomation *automation)
 {
   automation->flags = 0;
 
-  //TODO:JK: implement me
+  automation->timestamp = NULL;
+
+  automation->audio = NULL;
+  automation->line = 0;
+  automation->channel_type = G_TYPE_NONE;
+  automation->control_name = NULL;
+
+  automation->steps = 1;
+  automation->upper = 1.0;
+  automation->lower = 0.0;
+
+  automation->acceleration = NULL;
+
+  automation->start_loop = 0.0;
+  automation->end_loop = 0.0;
+  automation->offset = 0.0;
+
+  automation->selection = NULL;
+
+  automation->port = NULL;
+
+  automation->current_accelerations = NULL;
+  automation->next_accelerations = NULL;
 }
 
 void
@@ -515,19 +578,28 @@ ags_automation_get_current(AgsAutomation *automation)
 
 /**
  * ags_automation_new:
+ * @line: the line to apply
  *
  * Creates a #AgsAutomation.
  *
  * Returns: a new #AgsAutomation
  *
- * Since: 0.4
+ * Since: 0.4.2
  */
 AgsAutomation*
-ags_automation_new(guint audio_channel)
+ags_automation_new(GObject *audio,
+		   guint line,
+		   GType channel_type,
+		   gchar *control_name)
 {
   AgsAutomation *automation;
 
-  automation = (AgsAutomation *) g_object_new(AGS_TYPE_AUTOMATION, NULL);
+  automation = (AgsAutomation *) g_object_new(AGS_TYPE_AUTOMATION,
+					      "audio\0", audio,
+					      "line\0", line,
+					      "channel-type\0", channel_type,
+					      "control-name\0", control_name,
+					      NULL);
 
   return(automation);
 }

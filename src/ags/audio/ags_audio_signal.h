@@ -30,7 +30,6 @@
 
 typedef struct _AgsAudioSignal AgsAudioSignal;
 typedef struct _AgsAudioSignalClass AgsAudioSignalClass;
-typedef struct _AgsAttack AgsAttack;
 
 typedef enum{
   AGS_AUDIO_SIGNAL_TEMPLATE             = 1,
@@ -39,9 +38,16 @@ typedef enum{
 }AgsAudioSignalFlags;
 
 typedef enum{
-  AGS_ATTACK_INITIAL_RUN  = 1,
-  AGS_ATTACK_SWAP         = 1 << 1,
-}AgsAttackFlags;
+  AGS_AUDIO_SIGNAL_FORMAT_NONINTERLEAVED_RAW   = 1,
+  AGS_AUDIO_SIGNAL_FORMAT_8_BIT_PCM            = 1 << 1,
+  AGS_AUDIO_SIGNAL_FORMAT_16_BIT_PCM           = 1 << 2,
+  AGS_AUDIO_SIGNAL_FORMAT_24_BIT_PCM           = 1 << 3,
+  AGS_AUDIO_SIGNAL_FORMAT_32_BIT_PCM           = 1 << 4,
+  AGS_AUDIO_SIGNAL_FORMAT_64_BIT_PCM           = 1 << 5,
+  AGS_AUDIO_SIGNAL_FORMAT_16_BIT_FLOAT         = 1 << 6,
+  AGS_AUDIO_SIGNAL_FORMAT_32_BIT_FLOAT         = 1 << 7,
+  AGS_AUDIO_SIGNAL_FORMAT_64_BIT_FLOAT         = 1 << 8,
+}AgsAudioSignalFormat;
 
 struct _AgsAudioSignal
 {
@@ -56,9 +62,10 @@ struct _AgsAudioSignal
 
   guint samplerate;
   guint buffer_size;
-  guint resolution;
+  guint format;
 
   guint length;
+  guint first_frame;
   guint last_frame; // the last frame at stream_end
   guint loop_start;
   guint loop_end;
@@ -66,7 +73,7 @@ struct _AgsAudioSignal
   gdouble delay;
   guint attack;
 
-  guint lock_attack;
+  guint lock_attack; // deprecated
   
   GList *stream_beginning;
   GList *stream_current;

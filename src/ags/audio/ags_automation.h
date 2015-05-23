@@ -121,6 +121,9 @@ void ags_automation_insert_from_clipboard(AgsAutomation *automation,
 
 GList* ags_automation_get_current(AgsAutomation *automation);
 
-AgsAutomation* ags_automation_new();
+AgsAutomation* ags_automation_new(GObject *audio,
+				  guint line,
+				  GType channel_type,
+				  gchar *control_name);
 
 #endif /*__AGS_AUTOMATION_H__*/

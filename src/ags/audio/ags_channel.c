@@ -126,6 +126,19 @@ enum{
   PROP_0,
   PROP_AUDIO,
   PROP_SOUNDCARD,
+  PROP_PAD,
+  PROP_AUDIO_CHANNEL,
+  PROP_LINE,
+  PROP_NOTE,
+  PROP_PLAYBACK,
+  PROP_RECALL_ID,
+  PROP_RECALL_CONTAINER,
+  PROP_RECALL,
+  PROP_PLAY,
+  PROP_LINK,
+  PROP_FIRST_RECYCLING,
+  PROP_LAST_RECYCLING,
+  PROP_PATTERN,
 };
 
 static gpointer ags_channel_parent_class = NULL;
@@ -214,6 +227,221 @@ ags_channel_class_init(AgsChannelClass *channel)
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_SOUNDCARD,
+				  param_spec);
+
+  /**
+   * AgsAudio:audio-channel:
+   *
+   * The nth audio channel.
+   * 
+   * Since: 0.4.3
+   */
+  param_spec =  g_param_spec_uint("audio-channel\0",
+				  "nth audio channel\0",
+				  "The nth audio channel\0",
+				  0,
+				  65535,
+				  0,
+				  G_PARAM_READABLE);
+  g_object_class_install_property(gobject,
+				  PROP_AUDIO_CHANNEL,
+				  param_spec);
+
+
+  /**
+   * AgsAudio:pad:
+   *
+   * The nth pad.
+   * 
+   * Since: 0.4.3
+   */
+  param_spec =  g_param_spec_uint("pad\0",
+				  "nth pad\0",
+				  "The nth pad\0",
+				  0,
+				  65535,
+				  0,
+				  G_PARAM_READABLE);
+  g_object_class_install_property(gobject,
+				  PROP_AUDIO_CHANNEL,
+				  param_spec);
+
+  /**
+   * AgsAudio:line:
+   *
+   * The nth line.
+   * 
+   * Since: 0.4.3
+   */
+  param_spec =  g_param_spec_uint("line\0",
+				  "nth line\0",
+				  "The nth line\0",
+				  0,
+				  65535,
+				  0,
+				  G_PARAM_READABLE);
+  g_object_class_install_property(gobject,
+				  PROP_AUDIO_CHANNEL,
+				  param_spec);
+
+  /**
+   * AgsChannel:note:
+   *
+   * The assigned #AgsNote representing this channel.
+   * 
+   * Since: 0.4.3
+   */
+  param_spec = g_param_spec_string("note\0",
+				   "assigned note\0",
+				   "The note it is assigned with\0",
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_NOTE,
+				  param_spec);
+
+  /**
+   * AgsChannel:playback:
+   *
+   * The assigned #AgsPlayback.
+   * 
+   * Since: 0.4.3
+   */
+  param_spec = g_param_spec_object("playback\0",
+				   "assigned playback\0",
+				   "The playback it is assigned with\0",
+				   AGS_TYPE_PLAYBACK,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PLAYBACK,
+				  param_spec);
+
+  /**
+   * AgsChannel:recall-id:
+   *
+   * The assigned #AgsRecallID.
+   * 
+   * Since: 0.4.3
+   */
+  param_spec = g_param_spec_object("recall-id\0",
+				   "assigned recall id\0",
+				   "The recall id it is assigned with\0",
+				   AGS_TYPE_RECALL_ID,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_RECALL_ID,
+				  param_spec);
+
+  /**
+   * AgsChannel:recall-container:
+   *
+   * The containing #AgsRecallContainer.
+   * 
+   * Since: 0.4.3
+   */
+  param_spec = g_param_spec_object("recall-container\0",
+				   "containing recall-container\0",
+				   "The recall container it contains\0",
+				   AGS_TYPE_RECALL_CONTAINER,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_RECALL_CONTAINER,
+				  param_spec);
+
+  /**
+   * AgsChannel:recall:
+   *
+   * The containing #AgsRecall in recall-context.
+   * 
+   * Since: 0.4.3
+   */
+  param_spec = g_param_spec_object("recall\0",
+				   "containing recall\0",
+				   "The recall it contains\0",
+				   AGS_TYPE_RECALL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_RECALL,
+				  param_spec);
+
+  /**
+   * AgsChannel:play:
+   *
+   * The containing #AgsRecall in play-context.
+   * 
+   * Since: 0.4.3
+   */
+  param_spec = g_param_spec_object("play\0",
+				   "containing play\0",
+				   "The play it contains\0",
+				   AGS_TYPE_RECALL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PLAY,
+				  param_spec);
+
+  /**
+   * AgsChannel:link:
+   *
+   * The assigned link as #AgsChannel.
+   * 
+   * Since: 0.4.3
+   */
+  param_spec = g_param_spec_object("link\0",
+				   "assigned link\0",
+				   "The link it is assigned with\0",
+				   AGS_TYPE_CHANNEL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_LINK,
+				  param_spec);
+
+  /**
+   * AgsChannel:first-recycling:
+   *
+   * The containing #AgsRecycling it takes it #AgsAudioSignal from.
+   * 
+   * Since: 0.4.3
+   */
+  param_spec = g_param_spec_object("first-recycling\0",
+				   "containing first recycling\0",
+				   "The first recycling it contains\0",
+				   AGS_TYPE_RECYCLING,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FIRST_RECYCLING,
+				  param_spec);
+
+  /**
+   * AgsChannel:last-recycling:
+   *
+   * The containing #AgsRecycling it takes it #AgsAudioSignal from.
+   * 
+   * Since: 0.4.3
+   */
+  param_spec = g_param_spec_object("last-recycling\0",
+				   "containing last recycling\0",
+				   "The last recycling it contains\0",
+				   AGS_TYPE_RECYCLING,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_LAST_RECYCLING,
+				  param_spec);
+
+  /**
+   * AgsChannel:pattern:
+   *
+   * The containing #AgsPattern.
+   * 
+   * Since: 0.4.3
+   */
+  param_spec = g_param_spec_object("pattern\0",
+				   "containing pattern\0",
+				   "The pattern it contains\0",
+				   AGS_TYPE_PATTERN,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PATTERN,
 				  param_spec);
 
   /* AgsChannelClass */
