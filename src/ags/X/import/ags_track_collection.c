@@ -450,8 +450,8 @@ ags_track_collection_parse(AgsTrackCollection *track_collection)
 	}
 
 	list = gtk_container_get_children(track_collection->child);
-	track_collection_mapper = ags_track_collection_mapper_get_instrument_with_sequence(list,
-											   instrument, sequence);
+	track_collection_mapper = ags_track_collection_mapper_find_instrument_with_sequence(list,
+											    instrument, sequence);
 	      
 	if(track_collection_mapper == NULL){
 	  ags_track_collection_add_mapper(track_collection,
