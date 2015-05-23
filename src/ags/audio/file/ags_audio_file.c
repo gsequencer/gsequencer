@@ -50,10 +50,14 @@ void ags_audio_file_finalize(GObject *object);
 
 enum{
   PROP_0,
-  PROP_FILENAME,
   PROP_SOUNDCARD,
+  PROP_FILENAME,
   PROP_START_CHANNEL,
   PROP_AUDIO_CHANNELS,
+  PROP_SAMPLERATE,
+  PROP_BUFFER_SIZE,
+  PROP_PLAYABLE,
+  PROP_AUDIO_SIGNAL,
 };
 
 enum{
@@ -195,6 +199,74 @@ ags_audio_file_class_init(AgsAudioFileClass *audio_file)
   g_object_class_install_property(gobject,
 				  PROP_AUDIO_CHANNELS,
 				  param_spec);
+
+  /**
+   * AgsAudioFile:samplerate:
+   *
+   * The samplerate to be used.
+   * 
+   * Since: 0.4.3
+   */
+  param_spec = g_param_spec_uint("samplerate\0",
+				 "using samplerate\0",
+				 "The samplerate to be used\0",
+				 0,
+				 65535,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SAMPLERATE,
+				  param_spec);
+
+  /**
+   * AgsAudioFile:buffer-size:
+   *
+   * The buffer size to be used.
+   * 
+   * Since: 0.4.3
+   */
+  param_spec = g_param_spec_uint("buffer-size\0",
+				 "using buffer size\0",
+				 "The buffer size to be used\0",
+				 0,
+				 65535,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_BUFFER_SIZE,
+				  param_spec);
+
+  /**
+   * AgsAudioFile:playable:
+   *
+   * The containing  #AgsAudioSignal.
+   * 
+   * Since: 0.4.3
+   */
+  param_spec = g_param_spec_object("playable\0",
+				   "containing playable\0",
+				   "The playable it contains\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PLAYABLE,
+				  param_spec);
+
+  /**
+   * AgsAudioFile:audio-signal:
+   *
+   * The containing  #AgsAudioSignal.
+   * 
+   * Since: 0.4.3
+   */
+  param_spec = g_param_spec_object("audio-signal\0",
+				   "containing audio signal\0",
+				   "The audio signal it contains\0",
+				   AGS_TYPE_AUDIO_SIGNAL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_AUDIO_SIGNAL,
+				  param_spec);
 }
 
 void
@@ -221,9 +293,8 @@ ags_audio_file_init(AgsAudioFile *audio_file)
   audio_file->start_channel = 0;
   audio_file->audio_channels = 0;
 
+  audio_file->playable = NULL;
   audio_file->audio_signal = NULL;
-
-  audio_file->file = NULL;
 }
 
 void
@@ -338,7 +409,7 @@ ags_audio_file_finalize(GObject *gobject)
   }
 
   /* file */
-  g_object_unref(audio_file->file);
+  g_object_unref(audio_file->playable);
 
   G_OBJECT_CLASS(ags_audio_file_parent_class)->finalize(gobject);
 }
@@ -377,15 +448,15 @@ ags_audio_file_open(AgsAudioFile *audio_file)
       GError *error;
       guint loop_start, loop_end;
 
-      audio_file->file = (GObject *) ags_sndfile_new();
+      audio_file->playable = (GObject *) ags_sndfile_new();
 
-      if(ags_playable_open(AGS_PLAYABLE(audio_file->file),
+      if(ags_playable_open(AGS_PLAYABLE(audio_file->playable),
 			   audio_file->filename)){
 	//FIXME:JK: this call should occure just before reading frames because of the new iterate functions of an AgsPlayable
 
 	error = NULL;
 
-	ags_playable_info(AGS_PLAYABLE(audio_file->file),
+	ags_playable_info(AGS_PLAYABLE(audio_file->playable),
 			  &(audio_file->channels), &(audio_file->frames),
 			  &loop_start, &loop_end,
 			  &error);
@@ -433,9 +504,9 @@ ags_audio_file_rw_open(AgsAudioFile *audio_file,
     GError *error;
     guint loop_start, loop_end;
 
-    audio_file->file = (GObject *) ags_sndfile_new();
+    audio_file->playable = (GObject *) ags_sndfile_new();
 
-    if(ags_playable_rw_open(AGS_PLAYABLE(audio_file->file),
+    if(ags_playable_rw_open(AGS_PLAYABLE(audio_file->playable),
 			    audio_file->filename,
 			    create,
 			    audio_file->samplerate, audio_file->channels,
@@ -480,18 +551,18 @@ ags_audio_file_open_from_data(AgsAudioFile *audio_file, gchar *data)
       GError *error;
       guint loop_start, loop_end;
 
-      audio_file->file = (GObject *) ags_sndfile_new();
-      AGS_SNDFILE(audio_file->file)->flags = AGS_SNDFILE_VIRTUAL;
+      audio_file->playable = (GObject *) ags_sndfile_new();
+      AGS_SNDFILE(audio_file->playable)->flags = AGS_SNDFILE_VIRTUAL;
 
-      if(ags_playable_open(AGS_PLAYABLE(audio_file->file),
+      if(ags_playable_open(AGS_PLAYABLE(audio_file->playable),
 			   audio_file->filename)){
-	AGS_SNDFILE(audio_file->file)->pointer = g_base64_decode(data,
-								 &(AGS_SNDFILE(audio_file->file)->length));
-	AGS_SNDFILE(audio_file->file)->current = AGS_SNDFILE(audio_file->file)->pointer;
+	AGS_SNDFILE(audio_file->playable)->pointer = g_base64_decode(data,
+								     &(AGS_SNDFILE(audio_file->playable)->length));
+	AGS_SNDFILE(audio_file->playable)->current = AGS_SNDFILE(audio_file->playable)->pointer;
 
 	error = NULL;
 
-	ags_playable_info(AGS_PLAYABLE(audio_file->file),
+	ags_playable_info(AGS_PLAYABLE(audio_file->playable),
 			  &(audio_file->channels), &(audio_file->frames),
 			  &loop_start, &loop_end,
 			  &error);
@@ -522,7 +593,7 @@ ags_audio_file_open_from_data(AgsAudioFile *audio_file, gchar *data)
 void
 ags_audio_file_close(AgsAudioFile *audio_file)
 {
-  ags_playable_close(AGS_PLAYABLE(audio_file->file));
+  ags_playable_close(AGS_PLAYABLE(audio_file->playable));
 }
 
 /**
@@ -538,7 +609,7 @@ ags_audio_file_read_audio_signal(AgsAudioFile *audio_file)
 {
   GList *list;
 
-  list = ags_playable_read_audio_signal(AGS_PLAYABLE(audio_file->file),
+  list = ags_playable_read_audio_signal(AGS_PLAYABLE(audio_file->playable),
 					audio_file->soundcard,
 					audio_file->start_channel, audio_file->audio_channels);
 
@@ -558,7 +629,7 @@ ags_audio_file_read_audio_signal(AgsAudioFile *audio_file)
 void
 ags_audio_file_seek(AgsAudioFile *audio_file, guint frames, gint whence)
 {
-  ags_playable_seek(AGS_PLAYABLE(audio_file->file),
+  ags_playable_seek(AGS_PLAYABLE(audio_file->playable),
 		    frames, whence);
 }
 
@@ -576,7 +647,7 @@ void
 ags_audio_file_write(AgsAudioFile *audio_file,
 		     signed short *buffer, guint buffer_size)
 {
-  ags_playable_write(AGS_PLAYABLE(audio_file->file),
+  ags_playable_write(AGS_PLAYABLE(audio_file->playable),
 		     buffer, buffer_size);
 }
 
@@ -591,7 +662,7 @@ ags_audio_file_write(AgsAudioFile *audio_file,
 void
 ags_audio_file_flush(AgsAudioFile *audio_file)
 {
-  ags_playable_flush(AGS_PLAYABLE(audio_file->file));
+  ags_playable_flush(AGS_PLAYABLE(audio_file->playable));
 }
 
 /**

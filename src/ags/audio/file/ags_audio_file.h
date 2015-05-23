@@ -46,10 +46,10 @@ struct _AgsAudioFile
 
   guint start_channel;
   guint audio_channels;
-
+  
+  GObject *playable;
+  
   GList *audio_signal;
-
-  GObject *file;
 };
 
 struct _AgsAudioFileClass
