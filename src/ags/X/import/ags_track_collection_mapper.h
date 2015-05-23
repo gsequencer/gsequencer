@@ -63,8 +63,8 @@ struct _AgsTrackCollectionMapperClass
 
 GType ags_track_collection_mapper_get_type(void);
 
-GList* ags_track_collection_mapper_get_instrument_with_sequence(GList *track_collection_mapper,
-								gchar *instrument, gchar *sequence);
+GList* ags_track_collection_mapper_find_instrument_with_sequence(GList *track_collection_mapper,
+								 gchar *instrument, gchar *sequence);
 
 void ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mapper);
 

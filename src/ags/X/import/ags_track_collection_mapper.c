@@ -19,13 +19,25 @@
 #include <ags/X/import/ags_track_collection_mapper.h>
 #include <ags/X/import/ags_track_collection_mapper_callbacks.h>
 
+#include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_applicable.h>
+#include <ags/object/ags_soundcard.h>
+
+#ifdef AGS_USE_LINUX_THREADS
+#include <ags/thread/ags_thread-kthreads.h>
+#else
+#include <ags/thread/ags_thread-posix.h>
+#endif 
+#include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_input.h>
 
+#include <ags/audio/task/ags_add_audio.h>
+
 #include <ags/X/ags_window.h>
+#include <ags/X/ags_machine.h>
 
 #include <ags/X/import/ags_midi_import_wizard.h>
 #include <ags/X/import/ags_track_collection.h>
@@ -401,10 +413,65 @@ ags_track_collection_mapper_set_update(AgsApplicable *applicable, gboolean updat
 void
 ags_track_collection_mapper_apply(AgsApplicable *applicable)
 {
+  AgsWindow *window;
+  AgsMachine *machine;
   AgsMidiImportWizard *midi_import_wizard;
   AgsTrackCollectionMapper *track_collection_mapper;
 
+  AgsAddAudio *add_audio;
+
+  AgsThread *main_loop;
+  AgsTaskThread *task_thread;
+
+  AgsApplicationContext *application_context;
+
+  gchar *machine_type;
+  
   track_collection_mapper = AGS_TRACK_COLLECTION_MAPPER(applicable);
+  
+  midi_import_wizard = gtk_widget_get_ancestor(track_collection_mapper,
+					       AGS_TYPE_MIDI_IMPORT_WIZARD);
+  window = midi_import_wizard->parent;
+
+  application_context = window->application_context;
+  
+  main_loop = application_context->main_loop;
+  task_thread = ags_thread_find_type(main_loop,
+				     AGS_TYPE_TASK_THREAD);
+
+  /* create machine */
+  machine_type = gtk_combo_box_text_get_active_text(track_collection_mapper->machine_type);
+  
+  if(g_ascii_strcasecmp(machine_type,
+			g_type_name(AGS_TYPE_DRUM))){
+    machine = ags_drum_new(window->soundcard);
+  }else if(g_ascii_strcasecmp(machine_type,
+			      g_type_name(AGS_TYPE_MATRIX))){
+    machine = ags_matrix_new(window->soundcard);
+  }else if(g_ascii_strcasecmp(machine_type,
+			      g_type_name(AGS_TYPE_FFPLAYER))){
+    machine = ags_ffplayer_new(window->soundcard);
+  }else if(g_ascii_strcasecmp(machine_type,
+			      g_type_name(AGS_TYPE_SYNTH))){
+    machine = ags_synth_new(window->soundcard);
+  }else{
+    g_warning("unknown machine type\0");
+  }
+
+  add_audio = ags_add_audio_new(window->soundcard,
+				machine->audio);
+  ags_task_thread_append_task(task_thread,
+			      AGS_TASK(add_audio));
+  
+  gtk_box_pack_start((GtkBox *) window->machines,
+		     GTK_WIDGET(machine),
+		     FALSE, FALSE, 0);
+
+  /* connect everything */
+  ags_connectable_connect(AGS_CONNECTABLE(machine));
+
+  /* */
+  gtk_widget_show_all(GTK_WIDGET(machine));
 }
 
 void
@@ -415,9 +482,21 @@ ags_track_collection_mapper_reset(AgsApplicable *applicable)
   track_collection_mapper = AGS_TRACK_COLLECTION_MAPPER(applicable);
 }
 
+/**
+ * ags_track_collection_mapper_find_instrument_with_sequence:
+ * @track_collection_mapper: a #GList containing #AgsTrackCollectionMapper
+ * @instrument: the instrument as string
+ * @sequence: the sequence as string
+ *
+ * Finds next matching track in a #GList.
+ *
+ * Returns: the next matching #GList
+ *
+ * Since: 0.4.3
+ */
 GList*
-ags_track_collection_mapper_get_instrument_with_sequence(GList *track_collection_mapper,
-							 gchar *instrument, gchar *sequence)
+ags_track_collection_mapper_find_instrument_with_sequence(GList *track_collection_mapper,
+							  gchar *instrument, gchar *sequence)
 {
   if(instrument == NULL ||
      sequence == NULL){
@@ -438,6 +517,14 @@ ags_track_collection_mapper_get_instrument_with_sequence(GList *track_collection
   return(NULL);
 }
 
+/**
+ * ags_track_collection_mapper_map:
+ * @track_collection_mapper: an #AgsTrackCollectionMapper
+ *
+ * Maps XML tracks to #AgsNotation
+ *
+ * Since: 0.4.3
+ */
 void
 ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mapper)
 {
@@ -560,10 +647,10 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
   /* populate machine_type */
   if(n_key_off > 0){
     gtk_combo_box_text_append_text(track_collection_mapper->machine_type,
-				   g_type_name(AGS_TYPE_SYNTH));
-    
-    gtk_combo_box_text_append_text(track_collection_mapper->machine_type,
 				   g_type_name(AGS_TYPE_FFPLAYER));
+
+    gtk_combo_box_text_append_text(track_collection_mapper->machine_type,
+				   g_type_name(AGS_TYPE_SYNTH));
   }else{
     gtk_combo_box_text_append_text(track_collection_mapper->machine_type,
 				   g_type_name(AGS_TYPE_DRUM));

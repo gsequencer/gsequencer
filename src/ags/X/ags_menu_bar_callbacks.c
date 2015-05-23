@@ -365,9 +365,12 @@ ags_menu_bar_add_drum_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 {
   AgsWindow *window;
   AgsDrum *drum;
+
   AgsAddAudio *add_audio;
+
   AgsThread *main_loop;
   AgsTaskThread *task_thread;
+
   AgsApplicationContext *application_context;
 
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) menu_bar, AGS_TYPE_WINDOW);
