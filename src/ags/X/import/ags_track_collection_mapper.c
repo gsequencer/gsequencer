@@ -553,7 +553,8 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
   audio_channels = (guint) gtk_spin_button_get_value(track_collection_mapper->audio_channels);
   
   for(i = 0; i < audio_channels; i++){
-    current_notation = ags_notation_new(i);
+    current_notation = ags_notation_new(NULL,
+					i);
     notation_start = g_list_prepend(notation_start,
 				    current_notation);
   }

@@ -3355,10 +3355,10 @@ ags_file_read_audio_signal(AgsFile *file, xmlNode *node, AgsAudioSignal **audio_
 						  NULL,
 						  10);
 
-  gobject->resolution = (guint) g_ascii_strtoull((gchar *) xmlGetProp(node,
-								      (xmlChar *) "resolution\0"),
-						 NULL,
-						 10);
+  gobject->format = (guint) g_ascii_strtoull((gchar *) xmlGetProp(node,
+								  (xmlChar *) "format\0"),
+					     NULL,
+					     10);
 
   gobject->length = (guint) g_ascii_strtoull((gchar *) xmlGetProp(node,
 								  (xmlChar *) "length\0"),
@@ -3444,8 +3444,8 @@ ags_file_write_audio_signal(AgsFile *file, xmlNode *parent, AgsAudioSignal *audi
 	     (xmlChar *) g_strdup_printf("%d\0", audio_signal->buffer_size));
 
   xmlNewProp(node,
-	     (xmlChar *) "resolution\0",
-	     (xmlChar *) g_strdup_printf("%d\0", audio_signal->resolution));
+	     (xmlChar *) "format\0",
+	     (xmlChar *) g_strdup_printf("%d\0", audio_signal->format));
 
   xmlNewProp(node,
 	     (xmlChar *) "length\0",

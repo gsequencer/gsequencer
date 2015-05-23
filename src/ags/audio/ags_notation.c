@@ -23,6 +23,7 @@
 #include <ags/object/ags_tactable.h>
 #include <ags/object/ags_portlet.h>
 
+#include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_port.h>
 #include <ags/audio/ags_timestamp.h>
 
@@ -77,7 +78,10 @@ void ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
 
 enum{
   PROP_0,
+  PROP_AUDIO,
+  PROP_AUDIO_CHANNEL,
   PROP_PORT,
+  PROP_NOTE,
   PROP_CURRENT_NOTES,
   PROP_NEXT_NOTES,
 };
@@ -158,6 +162,41 @@ ags_notation_class_init(AgsNotationClass *notation)
 
   /* properties */
   /**
+   * AgsNotation:audio:
+   *
+   * The assigned #AgsAudio
+   * 
+   * Since: 0.4.3
+   */
+  param_spec = g_param_spec_object("audio\0",
+				   "audio of notation\0",
+				   "The audio of notation\0",
+				   AGS_TYPE_AUDIO,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_AUDIO,
+				  param_spec);
+
+
+  /**
+   * AgsNotation:audio-channel:
+   *
+   * The effect's audio-channel.
+   * 
+   * Since: 0.4.3
+   */
+  param_spec =  g_param_spec_ulong("audio-channel\0",
+				   "audio-channel of effect\0",
+				   "The numerical audio-channel of effect\0",
+				   0,
+				   65535,
+				   0,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_AUDIO_CHANNEL,
+				  param_spec);
+
+  /**
    * AgsNotation:port:
    *
    * The assigned #AgsPort
@@ -171,6 +210,22 @@ ags_notation_class_init(AgsNotationClass *notation)
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_PORT,
+				  param_spec);
+
+  /**
+   * AgsNotation:note:
+   *
+   * The assigned #AgsNote
+   * 
+   * Since: 0.4.3
+   */
+  param_spec = g_param_spec_object("note\0",
+				   "note of notation\0",
+				   "The note of notation\0",
+				   AGS_TYPE_NOTE,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_NOTE,
 				  param_spec);
 
   /**
@@ -285,6 +340,16 @@ ags_notation_set_property(GObject *gobject,
   notation = AGS_NOTATION(gobject);
 
   switch(prop_id){
+  case PROP_AUDIO:
+    {
+      //TODO:JK: implement me
+    }
+    break;
+  case PROP_AUDIO_CHANNEL:
+    {
+      //TODO:JK: implement me
+    }
+    break;
   case PROP_PORT:
     {
       AgsPort *port;
@@ -304,6 +369,11 @@ ags_notation_set_property(GObject *gobject,
       }
 
       notation->port = (GObject *) port;
+    }
+    break;
+  case PROP_NOTE:
+    {
+      //TODO:JK: implement me
     }
     break;
   case PROP_CURRENT_NOTES:
@@ -383,8 +453,17 @@ ags_notation_get_property(GObject *gobject,
   notation = AGS_NOTATION(gobject);
 
   switch(prop_id){
+  case PROP_AUDIO:
+    g_value_set_object(value, notation->audio);
+    break;
+  case PROP_AUDIO_CHANNEL:
+    g_value_set_uint(value, notation->audio_channel);
+    break;
   case PROP_PORT:
     g_value_set_object(value, notation->port);
+    break;
+  case PROP_NOTE:
+    g_value_set_pointer(value, g_list_copy(notation->port));
     break;
   case PROP_CURRENT_NOTES:
     {
@@ -1482,6 +1561,7 @@ ags_notation_get_current(AgsNotation *notation)
 
 /**
  * ags_notation_new:
+ * @audio: an #AgsAudio
  * @audio_channel: the audio channel to be used
  *
  * Creates a #AgsNotation, assigned to @audio_channel.
@@ -1491,13 +1571,15 @@ ags_notation_get_current(AgsNotation *notation)
  * Since: 0.4
  */
 AgsNotation*
-ags_notation_new(guint audio_channel)
+ags_notation_new(GObject *audio,
+		 guint audio_channel)
 {
   AgsNotation *notation;
 
-  notation = (AgsNotation *) g_object_new(AGS_TYPE_NOTATION, NULL);
-
-  notation->audio_channel = audio_channel;
+  notation = (AgsNotation *) g_object_new(AGS_TYPE_NOTATION,
+					  "audio\0", audio,
+					  "audio-channel\0", audio_channel,
+					  NULL);
 
   return(notation);
 }
