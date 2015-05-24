@@ -59,7 +59,7 @@ void ags_automation_safe_get_property(AgsPortlet *portlet, gchar *property_name,
  * @section_id:
  * @include: ags/audio/ags_automation.h
  *
- * #AgsAutomation acts as a container of #AgsNote.
+ * #AgsAutomation acts as a container of #AgsAcceleration.
  */
 
 #define AGS_AUTOMATION_CLIPBOARD_VERSION "0.4.3\0"
@@ -297,6 +297,58 @@ ags_automation_set_property(GObject *gobject,
   automation = AGS_AUTOMATION(gobject);
 
   switch(prop_id){
+  case PROP_AUDIO:
+    {
+      AgsAudio *audio;
+
+      audio = (AgsAudio *) g_value_get_object(value);
+
+      if(automation->audio == audio){
+	return;
+      }
+
+      if(automation->audio != NULL){
+	g_object_unref(automation->audio);
+      }
+
+      if(audio != NULL){
+	g_object_ref(audio);
+      }
+
+      automation->audio = audio;
+    }
+    break;
+  case PROP_LINE:
+    {
+      guint line;
+
+      line = g_value_get_uint(value);
+
+      automation->line = line;
+    }
+    break;
+  case PROP_CHANNEL_TYPE:
+    {
+      GType channel_type;
+
+      channel_type = (GType) g_value_get_ulong(value);
+
+      automation->channel_type = channel_type;
+    }
+    break;
+  case PROP_CONTROL_NAME:
+    {
+      gchar *control_name;
+
+      control_name = g_value_get_string(value);
+
+      if(automation->control_name != NULL){
+	g_free(automation->control_name);
+      }
+
+      automation->control_name = g_strdup(control_name);
+    }
+    break;
   case PROP_PORT:
     {
       AgsPort *port;
@@ -316,6 +368,22 @@ ags_automation_set_property(GObject *gobject,
       }
 
       automation->port = port;
+    }
+    break;
+  case PROP_ACCELERATION:
+    {
+      AgsAcceleration *acceleration;
+
+      acceleration = (AgsAcceleration *) g_value_get_object(value);
+
+      if(acceleration == NULL ||
+	 g_list_find(automation->acceleration, acceleration) != NULL){
+	return;
+      }
+
+      ags_automation_add_acceleration(automation,
+				      acceleration,
+				      FALSE);
     }
     break;
   case PROP_CURRENT_ACCELERATIONS:
@@ -385,6 +453,17 @@ ags_automation_get_property(GObject *gobject,
 void
 ags_automation_finalize(GObject *gobject)
 {
+  AgsAutomation *automation;
+
+  automation = AGS_AUTOMATION(gobject);
+  
+  if(automation->audio != NULL){
+    g_object_unref(automation->audio);
+  }
+  
+  g_list_free_full(automation->acceleration,
+		   g_object_unref);
+
   G_OBJECT_CLASS(ags_automation_parent_class)->finalize(gobject);
 }
 
@@ -434,58 +513,163 @@ ags_automation_safe_get_property(AgsPortlet *portlet, gchar *property_name, GVal
 			property_name, value);
 }
 
+/**
+ * ags_automation_find_near_timestamp:
+ * @automation: a #GList containing #AgsAutomation
+ * @line: the matching audio channel
+ * @timestamp: the matching timestamp
+ *
+ * Retrieve appropriate automation for timestamp.
+ *
+ * Returns: Next match.
+ *
+ * Since: 0.4.3
+ */
 GList*
 ags_automation_find_near_timestamp(GList *automation, guint line,
-				   GObject *timestamp)
+				   GObject *gobject)
 {
-  //TODO:JK: implement me
+  AgsTimestamp *timestamp, *current_timestamp;
+
+  if(gobject == NULL){
+    return(NULL);
+  }
+  
+  timestamp = AGS_TIMESTAMP(gobject);
+
+  while(automation != NULL){
+    if(AGS_AUTOMATION(automation->data)->line != line){
+      automation = automation->next;
+      continue;
+    }
+
+    current_timestamp = AGS_AUTOMATION(automation->data)->timestamp;
+
+    if((AGS_TIMESTAMP_UNIX & (timestamp->flags)) != 0){
+      if((AGS_TIMESTAMP_UNIX & (current_timestamp->flags)) != 0){
+	if(current_timestamp->timer.unix_time.time_val >= timestamp->timer.unix_time.time_val &&
+	   current_timestamp->timer.unix_time.time_val < timestamp->timer.unix_time.time_val + AGS_AUTOMATION_DEFAULT_DURATION){
+	  return(automation);
+	}
+      }
+    }
+
+    automation = automation->next;
+  }
 
   return(NULL);
 }
 
+/**
+ * ags_automation_add_acceleration:
+ * @automation: an #AgsAutomation
+ * @acceleration: the #AgsAcceleration to add
+ * @use_selection_list: if %TRUE add to selection, else to default automation
+ *
+ * Adds a acceleration to automation.
+ *
+ * Since: 0.4.3
+ */
 void
 ags_automation_add_acceleration(AgsAutomation *automation,
 				AgsAcceleration *acceleration,
 				gboolean use_selection_list)
 {
   //TODO:JK: implement me
-
 }
 
+/**
+ * ags_automation_remove_acceleration_at_position:
+ * @automation: an #AgsAutomation
+ * @x: offset
+ * @y: acceleration
+ *
+ * Removes one #AgsAcceleration of automation.
+ *
+ * Returns: %TRUE if successfully removed acceleration.
+ *
+ * Since: 0.4.3
+ */
 gboolean
 ags_automation_remove_acceleration_at_position(AgsAutomation *automation,
 					       guint x, guint y)
 {
   //TODO:JK: implement me
-
 }
 
+/**
+ * ags_automation_get_selection:
+ * @automation: the #AgsAutomation
+ *
+ * Retrieve selection.
+ *
+ * Returns: the selection.
+ *
+ * Since: 0.4.3
+ */
 GList*
 ags_automation_get_selection(AgsAutomation *automation)
 {
-  //TODO:JK: implement me
-
-  return(NULL);
+  return(automation->selection);
 }
 
+/**
+ * ags_automation_is_acceleration_selected:
+ * @automation: the #AgsAutomation
+ * @acceleration: the #AgsAcceleration to check for
+ *
+ * Check selection for acceleration.
+ *
+ * Returns: %TRUE if selected
+ *
+ * Since: 0.4.3
+ */
 gboolean
 ags_automation_is_acceleration_selected(AgsAutomation *automation, AgsAcceleration *acceleration)
 {
   //TODO:JK: implement me
-
+  
   return(FALSE);
 }
 
+/**
+ * ags_automation_find_point:
+ * @automation: an #AgsAutomation
+ * @x: offset
+ * @y: acceleration
+ * @use_selection_list: if %TRUE selection is searched
+ *
+ * Find acceleration by offset and tone.
+ *
+ * Returns: the matching acceleration.
+ *
+ * Since: 0.4.3
+ */ 
 AgsAcceleration*
 ags_automation_find_point(AgsAutomation *automation,
 			  guint x, guint y,
 			  gboolean use_selection_list)
 {
   //TODO:JK: implement me
-
+  
   return(NULL);
 }
 
+/**
+ * ags_automation_find_region:
+ * @automation: an #AgsAutomation
+ * @x0: start offset
+ * @y0: start tone
+ * @x1: end offset
+ * @y1: end tone
+ * @use_selection:_list if %TRUE selection is searched
+ *
+ * Find acceleration by offset and tone region.
+ *
+ * Returns: the matching acceleration as #GList.
+ *
+ * Since: 0.4.3
+ */
 GList*
 ags_automation_find_region(AgsAutomation *automation,
 			   guint x0, guint y0,
@@ -497,25 +681,111 @@ ags_automation_find_region(AgsAutomation *automation,
   return(NULL);
 }
 
+/**
+ * ags_automation_free_selection:
+ * @automation: an #AgsAutomation
+ *
+ * Clear selection.
+ *
+ * Since: 0.4.3
+ */
 void
 ags_automation_free_selection(AgsAutomation *automation)
 {
-  //TODO:JK: implement me
+  AgsAcceleration *acceleration;
+  GList *list;
+
+  list = automation->selection;
+  
+  while(list != NULL){
+    acceleration = AGS_ACCELERATION(list->data);
+    acceleration->flags &= (~AGS_ACCELERATION_IS_SELECTED);
+    g_object_unref(G_OBJECT(acceleration));
+    
+    list = list->next;
+  }
+
+  list = automation->selection;
+  automation->selection = NULL;
+  g_list_free(list);
 }
 
+/**
+ * ags_automation_add_point_to_selection:
+ * @automation: an #AgsAutomation
+ * @x: offset
+ * @y: tone
+ * @replace_current_selection: if %TRUE selection is replaced
+ *
+ * Select acceleration at position.
+ *
+ * Since: 0.4.3
+ */ 
 void
 ags_automation_add_point_to_selection(AgsAutomation *automation,
 				      guint x, guint y,
 				      gboolean replace_current_selection)
 {
-  //TODO:JK: implement me
+  AgsAcceleration *acceleration;
+
+  acceleration = ags_automation_find_point(automation,
+					   x, y,
+					   FALSE);
+
+  if(acceleration == NULL){
+    /* there is nothing to be selected */
+    if(replace_current_selection){
+      ags_automation_free_selection(automation);
+    }
+  }else{
+    /* add to or replace selection */
+    acceleration->flags |= AGS_ACCELERATION_IS_SELECTED;
+    g_object_ref(acceleration);
+
+    if(replace_current_selection){
+      GList *list;
+
+      list = g_list_alloc();
+      list->data = acceleration;
+      
+      ags_automation_free_selection(automation);
+      automation->selection = list;
+    }else{
+      if(!ags_automation_is_acceleration_selected(automation, acceleration)){
+	ags_automation_add_acceleration(automation, acceleration, TRUE);
+      }
+    }
+  }
 }
 
+/**
+ * ags_automation_remove_point_from_selection:
+ * @automation: an #AgsAutomation
+ * @x: offset
+ * @y: tone
+ *
+ * Remove acceleration at position of selection.
+ *
+ * Since: 0.4.3
+ */ 
 void
 ags_automation_remove_point_from_selection(AgsAutomation *automation,
 					   guint x, guint y)
 {
-  //TODO:JK: implement me
+  AgsAcceleration *acceleration;
+
+  acceleration = ags_automation_find_point(automation,
+					   x, y,
+					   FALSE);
+
+  if(acceleration != NULL){
+    acceleration->flags &= (~AGS_ACCELERATION_IS_SELECTED);
+
+    /* remove acceleration from selection */
+    automation->selection = g_list_remove(automation->selection, acceleration);
+
+    g_object_unref(acceleration);
+  }
 }
 
 void
@@ -524,44 +794,172 @@ ags_automation_add_region_to_selection(AgsAutomation *automation,
 				       guint x1, guint y1,
 				       gboolean replace_current_selection)
 {
-  //TODO:JK: implement me
+  AgsAcceleration *acceleration;
+  GList *region, *list;
+
+  region = ags_automation_find_region(automation,
+				      x0, y0,
+				      x1, y1,
+				      FALSE);
+
+  if(replace_current_selection){
+    ags_automation_free_selection(automation);
+
+    list = region;
+
+    while(list != NULL){
+      AGS_ACCELERATION(list->data)->flags |= AGS_ACCELERATION_IS_SELECTED;
+      g_object_ref(G_OBJECT(list->data));
+
+      list = list->next;
+    }
+
+    automation->selection = region;
+  }else{
+    while(region != NULL){
+      acceleration = AGS_ACCELERATION(region->data);
+
+      if(!ags_automation_is_acceleration_selected(automation, acceleration)){
+	acceleration->flags |= AGS_ACCELERATION_IS_SELECTED;
+	g_object_ref(G_OBJECT(acceleration));
+	ags_automation_add_acceleration(automation,
+					acceleration,
+					TRUE);
+      }
+      
+      region = region->next;
+    }
+    
+    g_list_free(region);
+  }
 }
 
+/**
+ * ags_automation_remove_region_from_selection:
+ * @automation: an #AgsAutomation
+ * @x0: start offset
+ * @y0: start tone
+ * @x1: end offset
+ * @y1: end tone
+ *
+ * Remove acceleration within region of selection.
+ *
+ * Since: 0.4.3
+ */ 
 void
 ags_automation_remove_region_from_selection(AgsAutomation *automation,
 					    guint x0, guint y0,
 					    guint x1, guint y1)
 {
-  //TODO:JK: implement me
+  AgsAcceleration *acceleration;
+  GList *region;
+
+  region = ags_automation_find_region(automation,
+				      x0, y0,
+				      x1, y1,
+				      TRUE);
+
+  while(region != NULL){
+    acceleration = AGS_ACCELERATION(region->data);
+    acceleration->flags &= (~AGS_ACCELERATION_IS_SELECTED);
+
+    automation->selection = g_list_remove(automation->selection, acceleration);
+    g_object_unref(G_OBJECT(acceleration));
+
+    region = region->next;
+  }
+
+  g_list_free(region);
 }
 
-xmlNodePtr
+/**
+ * ags_automation_copy_selection:
+ * @automation: an #AgsAutomation
+ *
+ * Copy selection to clipboard.
+ *
+ * Returns: the selection as XML.
+ *
+ * Since: 0.4.3
+ */
+xmlNode*
 ags_automation_copy_selection(AgsAutomation *automation)
 {
-  xmlNodePtr node;
-  
-  node = NULL;
+  AgsAcceleration *acceleration;
+  xmlNode *automation_node, *current_acceleration;
+  GList *selection;
+  guint x_boundary, y_boundary;
+
+  selection = automation->selection;
+
+  /* create root node */
+  automation_node = xmlNewNode(NULL, BAD_CAST "automation\0");
+
+  xmlNewProp(automation_node, BAD_CAST "program\0", BAD_CAST "ags\0");
+  xmlNewProp(automation_node, BAD_CAST "type\0", BAD_CAST AGS_AUTOMATION_CLIPBOARD_TYPE);
+  xmlNewProp(automation_node, BAD_CAST "version\0", BAD_CAST AGS_AUTOMATION_CLIPBOARD_VERSION);
+  xmlNewProp(automation_node, BAD_CAST "format\0", BAD_CAST AGS_AUTOMATION_CLIPBOARD_FORMAT);
 
   //TODO:JK: implement me
-
-  return(node);
+  
+  return(automation_node);
 }
 
-xmlNodePtr
+/**
+ * ags_automation_cut_selection:
+ * @automation: an #AgsAutomation
+ *
+ * Cut selection to clipboard.
+ *
+ * Returns: the selection as XML.
+ *
+ * Since: 0.4.3
+ */
+xmlNode*
 ags_automation_cut_selection(AgsAutomation *automation)
 {
-  xmlNodePtr node;
+  xmlNode *automation_node;
+  GList *selection, *acceleration;
   
-  node = NULL;
+  automation_node = ags_automation_copy_selection(automation);
 
-  //TODO:JK: implement me
+  selection = automation->selection;
+  acceleration = automation->acceleration;
 
-  return(node);
+  while(selection != NULL){
+    acceleration = g_list_find(acceleration, selection->data);
+
+    if(acceleration->prev == NULL){
+      automation->acceleration = g_list_remove_link(acceleration, acceleration);
+      acceleration = automation->acceleration;
+    }else{
+      GList *next_acceleration;
+
+      next_acceleration = acceleration->next;
+      acceleration->prev->next = next_acceleration;
+
+      if(next_acceleration != NULL)
+	next_acceleration->prev = acceleration->prev;
+
+      g_list_free1(acceleration);
+
+      acceleration = next_acceleration;
+    }
+
+    AGS_ACCELERATION(selection->data)->flags &= (~AGS_ACCELERATION_IS_SELECTED);
+    g_object_unref(selection->data);
+
+    selection = selection->next;
+  }
+
+  ags_automation_free_selection(automation);
+
+  return(automation_node);
 }
 
 void
 ags_automation_insert_from_clipboard(AgsAutomation *automation,
-				     xmlNodePtr content,
+				     xmlNode *content,
 				     gboolean reset_x_offset, guint x_offset,
 				     gboolean reset_y_offset, guint y_offset)
 {
@@ -578,7 +976,10 @@ ags_automation_get_current(AgsAutomation *automation)
 
 /**
  * ags_automation_new:
+ * @audio: an #AgsAudio
  * @line: the line to apply
+ * @channel_type: the channel type
+ * @control_name: the control name
  *
  * Creates a #AgsAutomation.
  *

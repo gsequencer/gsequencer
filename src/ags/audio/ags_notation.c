@@ -342,12 +342,32 @@ ags_notation_set_property(GObject *gobject,
   switch(prop_id){
   case PROP_AUDIO:
     {
-      //TODO:JK: implement me
+      AgsAudio *audio;
+
+      audio = (AgsAudio *) g_value_get_object(value);
+
+      if(notation->audio == audio){
+	return;
+      }
+
+      if(notation->audio != NULL){
+	g_object_unref(notation->audio);
+      }
+
+      if(audio != NULL){
+	g_object_ref(audio);
+      }
+
+      notation->audio = audio;
     }
     break;
   case PROP_AUDIO_CHANNEL:
     {
-      //TODO:JK: implement me
+      guint audio_channel;
+
+      audio_channel = g_value_get_uint(value);
+
+      notation->audio_channel = audio_channel;
     }
     break;
   case PROP_PORT:
@@ -373,7 +393,18 @@ ags_notation_set_property(GObject *gobject,
     break;
   case PROP_NOTE:
     {
-      //TODO:JK: implement me
+      AgsNote *note;
+
+      note = (AgsNote *) g_value_get_object(value);
+
+      if(note == NULL ||
+	 g_list_find(notation->notes, note) != NULL){
+	return;
+      }
+
+      ags_notation_add_note(notation,
+			    note,
+			    FALSE);
     }
     break;
   case PROP_CURRENT_NOTES:
@@ -525,7 +556,12 @@ ags_notation_finalize(GObject *gobject)
 
   notation = AGS_NOTATION(gobject);
 
-  ags_list_free_and_unref_link(notation->notes);
+  if(notation->audio != NULL){
+    g_object_unref(notation->audio);
+  }
+  
+  g_list_free_full(notation->notes,
+		   g_object_unref);
 
   G_OBJECT_CLASS(ags_notation_parent_class)->finalize(gobject);
 }
@@ -602,7 +638,7 @@ ags_notation_safe_get_property(AgsPortlet *portlet, gchar *property_name, GValue
  *
  * Returns: Next match.
  *
- * Since: 0.4
+ * Since: 0.4.2
  */
 GList*
 ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
@@ -655,6 +691,9 @@ ags_notation_add_note(AgsNotation *notation,
 		      gboolean use_selection_list)
 {
   GList *list, *list_new;
+
+  auto void ags_notation_add_note_add1();
+  
   void ags_notation_add_note_add1(){
     list_new = (GList *) malloc(sizeof(GList));
     list_new->data = (gpointer) note;
@@ -910,8 +949,6 @@ ags_notation_find_point(AgsNotation *notation,
 
   return(prev_note);
 }
-
-
 
 /**
  * ags_notation_find_region:
@@ -1178,11 +1215,11 @@ ags_notation_remove_region_from_selection(AgsNotation *notation,
  *
  * Since: 0.4
  */
-xmlNodePtr
+xmlNode*
 ags_notation_copy_selection(AgsNotation *notation)
 {
   AgsNote *note;
-  xmlNodePtr notation_node, current_note;
+  xmlNode *notation_node, *current_note;
   GList *selection;
   guint x_boundary, y_boundary;
 
@@ -1237,10 +1274,10 @@ ags_notation_copy_selection(AgsNotation *notation)
  *
  * Since: 0.4
  */
-xmlNodePtr
+xmlNode*
 ags_notation_cut_selection(AgsNotation *notation)
 {
-  xmlNodePtr notation_node;
+  xmlNode *notation_node;
   GList *selection, *notes;
   
   notation_node = ags_notation_copy_selection(notation);
@@ -1298,7 +1335,7 @@ ags_notation_cut_selection(AgsNotation *notation)
  */
 void
 ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
-						xmlNodePtr root_node, char *version,
+						xmlNode *root_node, char *version,
 						char *base_frequency,
 						char *x_boundary, char *y_boundary,
 						gboolean reset_x_offset, guint x_offset,
@@ -1306,7 +1343,7 @@ ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
 {
   void ags_notation_insert_native_piano_from_clipboard_version_0_3_12(){
     AgsNote *note;
-    xmlNodePtr node;
+    xmlNode *node;
     char *endptr;
     guint x_boundary_val, y_boundary_val;
     char *x0, *x1, *y;

@@ -145,7 +145,7 @@ as_fn_error ()
   as_status=$1; test $as_status -eq 0 && as_status=1
   if test "$4"; then
     as_lineno=${as_lineno-"$3"} as_lineno_stack=as_lineno_stack=$as_lineno_stack
-    $as_echo "$as_me:${as_lineno-19082}: error: $2" >&$4
+    $as_echo "$as_me:${as_lineno-19083}: error: $2" >&$4
   fi
   $as_echo "$as_me: error: $2" >&2
   as_fn_exit $as_status
@@ -826,7 +826,7 @@ do
     "depfiles") CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
     "libtool") CONFIG_COMMANDS="$CONFIG_COMMANDS libtool" ;;
 
-  *) as_fn_error $? "invalid argument: \`$ac_config_target'" "19921" 5;;
+  *) as_fn_error $? "invalid argument: \`$ac_config_target'" "19922" 5;;
   esac
 done
 
@@ -865,7 +865,7 @@ $debug ||
 {
   tmp=./conf$$-$RANDOM
   (umask 077 && mkdir "$tmp")
-} || as_fn_error $? "cannot create a temporary directory in ." "19960" 5
+} || as_fn_error $? "cannot create a temporary directory in ." "19961" 5
 ac_tmp=$tmp
 
 # Set up the scripts for CONFIG_FILES section.
@@ -1077,7 +1077,7 @@ if sed "s/$ac_cr//" < /dev/null > /dev/null 2>&1; then
 else
   cat
 fi < "$ac_tmp/subs1.awk" > "$ac_tmp/subs.awk" \
-  || as_fn_error $? "could not setup config files machinery" "20092" 5
+  || as_fn_error $? "could not setup config files machinery" "20093" 5
 fi # test -n "$CONFIG_FILES"
 
 # Set up the scripts for CONFIG_HEADERS section.
@@ -1164,7 +1164,7 @@ D["HAVE_STRTOUL"]=" 1"
 }
 { print }
 _ACAWK
-  as_fn_error $? "could not setup config headers machinery" "20226" 5
+  as_fn_error $? "could not setup config headers machinery" "20227" 5
 fi # test -n "$CONFIG_HEADERS"
 
 
@@ -1177,7 +1177,7 @@ do
   esac
   case $ac_mode$ac_tag in
   :[FHL]*:*);;
-  :L* | :C*:*) as_fn_error $? "invalid tag \`$ac_tag'" "20239" 5;;
+  :L* | :C*:*) as_fn_error $? "invalid tag \`$ac_tag'" "20240" 5;;
   :[FH]-) ac_tag=-:-;;
   :[FH]*) ac_tag=$ac_tag:$ac_tag.in;;
   esac
@@ -1205,7 +1205,7 @@ do
 	   [\\/$]*) false;;
 	   *) test -f "$srcdir/$ac_f" && ac_f="$srcdir/$ac_f";;
 	   esac ||
-	   as_fn_error 1 "cannot find input file: \`$ac_f'" "20267" 5;;
+	   as_fn_error 1 "cannot find input file: \`$ac_f'" "20268" 5;;
       esac
       case $ac_f in *\'*) ac_f=`$as_echo "$ac_f" | sed "s/'/'\\\\\\\\''/g"`;; esac
       as_fn_append ac_file_inputs " '$ac_f'"
@@ -1219,7 +1219,7 @@ do
 	`' by configure.'
     if test x"$ac_file" != x-; then
       configure_input="$ac_file.  $configure_input"
-      { $as_echo "$as_me:${as_lineno-20281}: creating $ac_file" >&5
+      { $as_echo "$as_me:${as_lineno-20282}: creating $ac_file" >&5
 $as_echo "$as_me: creating $ac_file" >&6;}
     fi
     # Neutralize special characters interpreted by sed in replacement strings.
@@ -1232,7 +1232,7 @@ $as_echo "$as_me: creating $ac_file" >&6;}
 
     case $ac_tag in
     *:-:* | *:-) cat >"$ac_tmp/stdin" \
-      || as_fn_error $? "could not create $ac_file" "20294" 5 ;;
+      || as_fn_error $? "could not create $ac_file" "20295" 5 ;;
     esac
     ;;
   esac
@@ -1327,7 +1327,7 @@ ac_sed_dataroot='
 case `eval "sed -n \"\$ac_sed_dataroot\" $ac_file_inputs"` in
 *datarootdir*) ac_datarootdir_seen=yes;;
 *@datadir@*|*@docdir@*|*@infodir@*|*@localedir@*|*@mandir@*)
-  { $as_echo "$as_me:${as_lineno-20392}: WARNING: $ac_file_inputs seems to ignore the --datarootdir setting" >&5
+  { $as_echo "$as_me:${as_lineno-20393}: WARNING: $ac_file_inputs seems to ignore the --datarootdir setting" >&5
 $as_echo "$as_me: WARNING: $ac_file_inputs seems to ignore the --datarootdir setting" >&2;}
   ac_datarootdir_hack='
   s&@datadir@&${datarootdir}&g
@@ -1371,13 +1371,13 @@ s&@MKDIR_P@&$ac_MKDIR_P&;t t
 $ac_datarootdir_hack
 "
 eval sed \"\$ac_sed_extra\" "$ac_file_inputs" | $AWK -f "$ac_tmp/subs.awk" \
-  >$ac_tmp/out || as_fn_error $? "could not create $ac_file" "20431" 5
+  >$ac_tmp/out || as_fn_error $? "could not create $ac_file" "20432" 5
 
 test -z "$ac_datarootdir_hack$ac_datarootdir_seen" &&
   { ac_out=`sed -n '/\${datarootdir}/p' "$ac_tmp/out"`; test -n "$ac_out"; } &&
   { ac_out=`sed -n '/^[	 ]*datarootdir[	 ]*:*=/p' \
       "$ac_tmp/out"`; test -z "$ac_out"; } &&
-  { $as_echo "$as_me:${as_lineno-20437}: WARNING: $ac_file contains a reference to the variable \`datarootdir'
+  { $as_echo "$as_me:${as_lineno-20438}: WARNING: $ac_file contains a reference to the variable \`datarootdir'
 which seems to be undefined.  Please make sure it is defined" >&5
 $as_echo "$as_me: WARNING: $ac_file contains a reference to the variable \`datarootdir'
 which seems to be undefined.  Please make sure it is defined" >&2;}
@@ -1387,7 +1387,7 @@ which seems to be undefined.  Please make sure it is defined" >&2;}
   -) cat "$ac_tmp/out" && rm -f "$ac_tmp/out";;
   *) rm -f "$ac_file" && mv "$ac_tmp/out" "$ac_file";;
   esac \
-  || as_fn_error $? "could not create $ac_file" "20447" 5
+  || as_fn_error $? "could not create $ac_file" "20448" 5
  ;;
   :H)
   #
@@ -1398,19 +1398,19 @@ which seems to be undefined.  Please make sure it is defined" >&2;}
       $as_echo "/* $configure_input  */" \
       && eval '$AWK -f "$ac_tmp/defines.awk"' "$ac_file_inputs"
     } >"$ac_tmp/config.h" \
-      || as_fn_error $? "could not create $ac_file" "20458" 5
+      || as_fn_error $? "could not create $ac_file" "20459" 5
     if diff "$ac_file" "$ac_tmp/config.h" >/dev/null 2>&1; then
-      { $as_echo "$as_me:${as_lineno-20460}: $ac_file is unchanged" >&5
+      { $as_echo "$as_me:${as_lineno-20461}: $ac_file is unchanged" >&5
 $as_echo "$as_me: $ac_file is unchanged" >&6;}
     else
       rm -f "$ac_file"
       mv "$ac_tmp/config.h" "$ac_file" \
-	|| as_fn_error $? "could not create $ac_file" "20465" 5
+	|| as_fn_error $? "could not create $ac_file" "20466" 5
     fi
   else
     $as_echo "/* $configure_input  */" \
       && eval '$AWK -f "$ac_tmp/defines.awk"' "$ac_file_inputs" \
-      || as_fn_error $? "could not create -" "20470" 5
+      || as_fn_error $? "could not create -" "20471" 5
   fi
 # Compute "$ac_file"'s index in $config_headers.
 _am_arg="$ac_file"
@@ -1448,7 +1448,7 @@ $as_echo X"$_am_arg" |
 	  s/.*/./; q'`/stamp-h$_am_stamp_count
  ;;
 
-  :C)  { $as_echo "$as_me:${as_lineno-20508}: executing $ac_file commands" >&5
+  :C)  { $as_echo "$as_me:${as_lineno-20509}: executing $ac_file commands" >&5
 $as_echo "$as_me: executing $ac_file commands" >&6;}
  ;;
   esac
