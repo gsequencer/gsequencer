@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsThread">
+<refentry id="AgsThread">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsThread.top_of_page">AgsThread</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsThread.top_of_page">AgsThread</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -17,515 +17,1364 @@
 <refpurpose></refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsThread.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsThread.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="MSEC-PER-SEC:CAPS">MSEC_PER_SEC</link></entry></row>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="NSEC-PER-SEC:CAPS">NSEC_PER_SEC</link></entry></row>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-THREAD-STACKSIZE:CAPS">AGS_THREAD_STACKSIZE</link></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-thread-set-sync">ags_thread_set_sync</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-thread-set-sync-all">ags_thread_set_sync_all</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-thread-lock">ags_thread_lock</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-thread-trylock">ags_thread_trylock</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-thread-unlock">ags_thread_unlock</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsThread"><returnvalue>AgsThread</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-thread-get-toplevel">ags_thread_get_toplevel</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsThread"><returnvalue>AgsThread</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-thread-first">ags_thread_first</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsThread"><returnvalue>AgsThread</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-thread-last">ags_thread_last</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-thread-remove-child">ags_thread_remove_child</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-thread-add-child">ags_thread_add_child</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-thread-parental-is-locked">ags_thread_parental_is_locked</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-thread-sibling-is-locked">ags_thread_sibling_is_locked</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-thread-children-is-locked">ags_thread_children_is_locked</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-thread-is-current-ready">ags_thread_is_current_ready</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-thread-is-tree-ready">ags_thread_is_tree_ready</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsThread"><returnvalue>AgsThread</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-thread-next-parent-locked">ags_thread_next_parent_locked</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsThread"><returnvalue>AgsThread</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-thread-next-sibling-locked">ags_thread_next_sibling_locked</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsThread"><returnvalue>AgsThread</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-thread-next-children-locked">ags_thread_next_children_locked</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-thread-lock-parent">ags_thread_lock_parent</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-thread-lock-sibling">ags_thread_lock_sibling</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-thread-lock-children">ags_thread_lock_children</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-thread-lock-all">ags_thread_lock_all</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-thread-unlock-parent">ags_thread_unlock_parent</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-thread-unlock-sibling">ags_thread_unlock_sibling</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-thread-unlock-children">ags_thread_unlock_children</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-thread-unlock-all">ags_thread_unlock_all</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-thread-wait-parent">ags_thread_wait_parent</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-thread-wait-sibling">ags_thread_wait_sibling</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-thread-wait-children">ags_thread_wait_children</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-thread-signal-parent">ags_thread_signal_parent</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-thread-signal-sibling">ags_thread_signal_sibling</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-thread-signal-children">ags_thread_signal_children</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-thread-start">ags_thread_start</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-thread-run">ags_thread_run</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-thread-suspend">ags_thread_suspend</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-thread-resume">ags_thread_resume</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-thread-timelock">ags_thread_timelock</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-thread-stop">ags_thread_stop</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-thread-hangcheck">ags_thread_hangcheck</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsThread"><returnvalue>AgsThread</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-thread-new">ags_thread_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>#define             <link linkend="AGS-THREAD-RESUME-SIG:CAPS">AGS_THREAD_RESUME_SIG</link>
-#define             <link linkend="AGS-THREAD-STACKSIZE:CAPS">AGS_THREAD_STACKSIZE</link>
-#define             <link linkend="AGS-THREAD-SUSPEND-SIG:CAPS">AGS_THREAD_SUSPEND_SIG</link>
-struct              <link linkend="AgsThread">AgsThread</link>;
-struct              <link linkend="AgsThreadClass">AgsThreadClass</link>;
-enum                <link linkend="AgsThreadFlags">AgsThreadFlags</link>;
-#define             <link linkend="MSEC-PER-SEC:CAPS">MSEC_PER_SEC</link>
-#define             <link linkend="NSEC-PER-SEC:CAPS">NSEC_PER_SEC</link>
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-thread-add-child">ags_thread_add_child</link>                (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>,
-                                                         <parameter><link linkend="AgsThread"><type>AgsThread</type></link> *child</parameter>);
-<link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            <link linkend="ags-thread-children-is-locked">ags_thread_children_is_locked</link>       (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);
-<link linkend="AgsThread"><returnvalue>AgsThread</returnvalue></link> *         <link linkend="ags-thread-first">ags_thread_first</link>                    (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);
-<link linkend="AgsThread"><returnvalue>AgsThread</returnvalue></link> *         <link linkend="ags-thread-get-toplevel">ags_thread_get_toplevel</link>             (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-thread-hangcheck">ags_thread_hangcheck</link>                (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);
-<link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            <link linkend="ags-thread-is-current-ready">ags_thread_is_current_ready</link>         (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *current</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> tic</parameter>);
-<link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            <link linkend="ags-thread-is-tree-ready">ags_thread_is_tree_ready</link>            (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> tic</parameter>);
-<link linkend="AgsThread"><returnvalue>AgsThread</returnvalue></link> *         <link linkend="ags-thread-last">ags_thread_last</link>                     (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-thread-lock">ags_thread_lock</link>                     (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-thread-lock-all">ags_thread_lock_all</link>                 (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-thread-lock-children">ags_thread_lock_children</link>            (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-thread-lock-parent">ags_thread_lock_parent</link>              (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>,
-                                                         <parameter><link linkend="AgsThread"><type>AgsThread</type></link> *parent</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-thread-lock-sibling">ags_thread_lock_sibling</link>             (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);
-<link linkend="AgsThread"><returnvalue>AgsThread</returnvalue></link> *         <link linkend="ags-thread-new">ags_thread_new</link>                      (<parameter><link linkend="gpointer"><type>gpointer</type></link> data</parameter>);
-<link linkend="AgsThread"><returnvalue>AgsThread</returnvalue></link> *         <link linkend="ags-thread-next-children-locked">ags_thread_next_children_locked</link>     (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);
-<link linkend="AgsThread"><returnvalue>AgsThread</returnvalue></link> *         <link linkend="ags-thread-next-parent-locked">ags_thread_next_parent_locked</link>       (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>,
-                                                         <parameter><link linkend="AgsThread"><type>AgsThread</type></link> *parent</parameter>);
-<link linkend="AgsThread"><returnvalue>AgsThread</returnvalue></link> *         <link linkend="ags-thread-next-sibling-locked">ags_thread_next_sibling_locked</link>      (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);
-<link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            <link linkend="ags-thread-parental-is-locked">ags_thread_parental_is_locked</link>       (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>,
-                                                         <parameter><link linkend="AgsThread"><type>AgsThread</type></link> *parent</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-thread-remove-child">ags_thread_remove_child</link>             (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>,
-                                                         <parameter><link linkend="AgsThread"><type>AgsThread</type></link> *child</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-thread-resume">ags_thread_resume</link>                   (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-thread-run">ags_thread_run</link>                      (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-thread-set-sync">ags_thread_set_sync</link>                 (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> tic</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-thread-set-sync-all">ags_thread_set_sync_all</link>             (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> tic</parameter>);
-<link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            <link linkend="ags-thread-sibling-is-locked">ags_thread_sibling_is_locked</link>        (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-thread-signal-children">ags_thread_signal_children</link>          (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>,
-                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> broadcast</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-thread-signal-parent">ags_thread_signal_parent</link>            (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>,
-                                                         <parameter><link linkend="AgsThread"><type>AgsThread</type></link> *parent</parameter>,
-                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> broadcast</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-thread-signal-sibling">ags_thread_signal_sibling</link>           (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>,
-                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> broadcast</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-thread-start">ags_thread_start</link>                    (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-thread-stop">ags_thread_stop</link>                     (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-thread-suspend">ags_thread_suspend</link>                  (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-thread-timelock">ags_thread_timelock</link>                 (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);
-<link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            <link linkend="ags-thread-trylock">ags_thread_trylock</link>                  (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-thread-unlock">ags_thread_unlock</link>                   (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-thread-unlock-all">ags_thread_unlock_all</link>               (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-thread-unlock-children">ags_thread_unlock_children</link>          (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-thread-unlock-parent">ags_thread_unlock_parent</link>            (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>,
-                                                         <parameter><link linkend="AgsThread"><type>AgsThread</type></link> *parent</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-thread-unlock-sibling">ags_thread_unlock_sibling</link>           (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-thread-wait-children">ags_thread_wait_children</link>            (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-thread-wait-parent">ags_thread_wait_parent</link>              (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>,
-                                                         <parameter><link linkend="AgsThread"><type>AgsThread</type></link> *parent</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-thread-wait-sibling">ags_thread_wait_sibling</link>             (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsThread.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsThread.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AGS-THREAD-RESUME-SIG:CAPS" role="macro">
-<title>AGS_THREAD_RESUME_SIG</title>
-<indexterm zone="AGS-THREAD-RESUME-SIG:CAPS"><primary>AGS_THREAD_RESUME_SIG</primary></indexterm>
-<programlisting>#define             AGS_THREAD_RESUME_SIG</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AGS-THREAD-STACKSIZE:CAPS" role="macro">
-<title>AGS_THREAD_STACKSIZE</title>
-<indexterm zone="AGS-THREAD-STACKSIZE:CAPS"><primary>AGS_THREAD_STACKSIZE</primary></indexterm>
-<programlisting>#define AGS_THREAD_STACKSIZE (16384)
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AGS-THREAD-SUSPEND-SIG:CAPS" role="macro">
-<title>AGS_THREAD_SUSPEND_SIG</title>
-<indexterm zone="AGS-THREAD-SUSPEND-SIG:CAPS"><primary>AGS_THREAD_SUSPEND_SIG</primary></indexterm>
-<programlisting>#define             AGS_THREAD_SUSPEND_SIG</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsThread" role="struct">
-<title>struct AgsThread</title>
-<indexterm zone="AgsThread"><primary>AgsThread</primary></indexterm>
-<programlisting>struct AgsThread {
-  GObject object;
+<refsect1 id="AgsThread.properties" role="properties">
+<title role="properties.title">Properties</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="properties_type" colwidth="150px"/>
+<colspec colname="properties_name" colwidth="300px"/>
+<colspec colname="properties_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="property_type"><link linkend="gdouble"><type>gdouble</type></link></entry><entry role="property_name"><link linkend="AgsThread--frequency">frequency</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="gdouble"><type>gdouble</type></link></entry><entry role="property_name"><link linkend="AgsThread--frequency">frequency</link></entry><entry role="property_flags">Read / Write</entry></row>
 
-  volatile guint flags;
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsThread.signals" role="signal_proto">
+<title role="signal_proto.title">Signals</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="signals_return" colwidth="150px"/>
+<colspec colname="signals_name" colwidth="300px"/>
+<colspec colname="signals_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsThread-resume">resume</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsThread-run">run</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsThread-start">start</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsThread-stop">stop</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsThread-suspend">suspend</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsThread-timelock">timelock</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsThread-resume">resume</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsThread-run">run</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsThread-start">start</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsThread-stop">stop</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsThread-suspend">suspend</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsThread-timelock">timelock</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
 
-  sigset_t wait_mask;
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsThread.other" role="other_proto">
+<title role="other_proto.title">Types and Values</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="name" colwidth="150px"/>
+<colspec colname="description"/>
+<tbody>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-THREAD-RESUME-SIG:CAPS">AGS_THREAD_RESUME_SIG</link></entry></row>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-THREAD-SUSPEND-SIG:CAPS">AGS_THREAD_SUSPEND_SIG</link></entry></row>
+<row><entry role="datatype_keyword">enum</entry><entry role="function_name"><link linkend="AgsThreadFlags">AgsThreadFlags</link></entry></row>
 
-  pthread_t thread;
-  pthread_attr_t thread_attr;
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsThread.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsThread
+        <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsAudioLoop">AgsAudioLoop</link>
+        <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsAutosaveThread">AgsAutosaveThread</link>
+        <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsExportThread">AgsExportThread</link>
+        <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsGuiThread">AgsGuiThread</link>
+        <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsIteratorThread">AgsIteratorThread</link>
+        <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsRecordThread">AgsRecordThread</link>
+        <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsRecyclingThread">AgsRecyclingThread</link>
+        <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsReturnableThread">AgsReturnableThread</link>
+        <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsSingleThread">AgsSingleThread</link>
+        <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsSoundcardThread">AgsSoundcardThread</link>
+        <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsTaskThread">AgsTaskThread</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsTimestampThread">AgsTimestampThread</link>
+</screen>
+</refsect1>
 
-  gdouble freq;
 
-  pthread_mutex_t mutex;
-  pthread_mutexattr_t mutexattr;
-  pthread_cond_t cond;
+<refsect1 id="AgsThread.description" role="desc">
+<title role="desc.title">Description</title>
 
-  pthread_mutex_t start_mutex;
-  pthread_cond_t start_cond;
-
-  pthread_barrier_t barrier[2];
-  gboolean first_barrier;
-  int wait_count[2];
-
-  pthread_t timelock_thread;
-  pthread_mutex_t timelock_mutex;
-  pthread_cond_t timelock_cond;
-
-  pthread_mutex_t greedy_mutex;
-  pthread_cond_t greedy_cond;
-  pthread_mutex_t greedy_run_mutex;
-  volatile guint locked_greedy;
-
-  struct timespec timelock;
-  GList *greedy_locks;
-
-  pthread_mutex_t suspend_mutex;
-  volatile gboolean critical_region;
-
-  GObject *devout;
-  AgsThread *parent;
-
-  AgsThread *next;
-  AgsThread *prev;
-
-  AgsThread *children;
-
-  gpointer data;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsThreadClass" role="struct">
-<title>struct AgsThreadClass</title>
-<indexterm zone="AgsThreadClass"><primary>AgsThreadClass</primary></indexterm>
-<programlisting>struct AgsThreadClass {
-  GObjectClass object;
-
-  void (*start)(AgsThread *thread);
-  void (*run)(AgsThread *thread);
-  void (*suspend)(AgsThread *thread);
-  void (*resume)(AgsThread *thread);
-  void (*timelock)(AgsThread *thread);
-  void (*stop)(AgsThread *thread);
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsThreadFlags" role="enum">
-<title>enum AgsThreadFlags</title>
-<indexterm zone="AgsThreadFlags"><primary>AgsThreadFlags</primary></indexterm>
-<programlisting>typedef enum {
-  AGS_THREAD_RUNNING                 = 1,
-  AGS_THREAD_IDLE                    = 1 &lt;&lt; 1,
-  AGS_THREAD_LOCKED                  = 1 &lt;&lt; 2,
-  AGS_THREAD_WAIT_FOR_PARENT         = 1 &lt;&lt; 3,
-  AGS_THREAD_WAIT_FOR_SIBLING        = 1 &lt;&lt; 4,
-  AGS_THREAD_WAIT_FOR_CHILDREN       = 1 &lt;&lt; 5,
-  AGS_THREAD_WAIT_FOR_BARRIER        = 1 &lt;&lt; 6,
-  AGS_THREAD_WAITING_FOR_PARENT      = 1 &lt;&lt; 7,
-  AGS_THREAD_WAITING_FOR_SIBLING     = 1 &lt;&lt; 8,
-  AGS_THREAD_WAITING_FOR_CHILDREN    = 1 &lt;&lt; 9,
-  AGS_THREAD_WAITING_FOR_BARRIER     = 1 &lt;&lt; 10,
-  AGS_THREAD_BROADCAST_PARENT        = 1 &lt;&lt; 11,
-  AGS_THREAD_BROADCAST_SIBLING       = 1 &lt;&lt; 12,
-  AGS_THREAD_BROADCAST_CHILDREN      = 1 &lt;&lt; 13,
-  AGS_THREAD_INITIAL_RUN             = 1 &lt;&lt; 14,
-  AGS_THREAD_TREE_SYNC_0             = 1 &lt;&lt; 15,
-  AGS_THREAD_WAIT_0                  = 1 &lt;&lt; 16,
-  AGS_THREAD_TREE_SYNC_1             = 1 &lt;&lt; 17,
-  AGS_THREAD_WAIT_1                  = 1 &lt;&lt; 18,
-  AGS_THREAD_TREE_SYNC_2             = 1 &lt;&lt; 19,
-  AGS_THREAD_WAIT_2                  = 1 &lt;&lt; 20,
-  AGS_THREAD_TIMELOCK_RUN            = 1 &lt;&lt; 21,
-  AGS_THREAD_TIMELOCK_WAIT           = 1 &lt;&lt; 22,
-  AGS_THREAD_TIMELOCK_RESUME         = 1 &lt;&lt; 23,
-  /*
-   * prefered way would be unlocking greedy_locks
-   * and the suspend to not become greedy
-   * but while pthread_suspend and pthread_resume
-   * are missing you need this as work-around
-   */
-  AGS_THREAD_SKIP_NON_GREEDY         = 1 &lt;&lt; 24,
-  AGS_THREAD_SKIPPED_BY_TIMELOCK     = 1 &lt;&lt; 25,
-  AGS_THREAD_LOCK_GREEDY_RUN_MUTEX   = 1 &lt;&lt; 26,
-  AGS_THREAD_SUSPENDED               = 1 &lt;&lt; 27,
-  AGS_THREAD_SINGLE_LOOP             = 1 &lt;&lt; 28,
-  AGS_THREAD_READY                   = 1 &lt;&lt; 29,
-  AGS_THREAD_UNREF_ON_EXIT           = 1 &lt;&lt; 30,
-} AgsThreadFlags;
-</programlisting>
-<para>
-</para></refsect2>
+</refsect1>
+<refsect1 id="AgsThread.functions_details" role="details">
+<title role="details.title">Functions</title>
 <refsect2 id="MSEC-PER-SEC:CAPS" role="macro">
 <title>MSEC_PER_SEC</title>
 <indexterm zone="MSEC-PER-SEC:CAPS"><primary>MSEC_PER_SEC</primary></indexterm>
-<programlisting>#define             MSEC_PER_SEC</programlisting>
-<para>
-</para></refsect2>
+<programlisting language="C">#define             MSEC_PER_SEC</programlisting>
+</refsect2>
 <refsect2 id="NSEC-PER-SEC:CAPS" role="macro">
 <title>NSEC_PER_SEC</title>
 <indexterm zone="NSEC-PER-SEC:CAPS"><primary>NSEC_PER_SEC</primary></indexterm>
-<programlisting>#define             NSEC_PER_SEC</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-thread-add-child" role="function">
-<title>ags_thread_add_child ()</title>
-<indexterm zone="ags-thread-add-child"><primary>ags_thread_add_child</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_thread_add_child                (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>,
-                                                         <parameter><link linkend="AgsThread"><type>AgsThread</type></link> *child</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-thread-children-is-locked" role="function">
-<title>ags_thread_children_is_locked ()</title>
-<indexterm zone="ags-thread-children-is-locked"><primary>ags_thread_children_is_locked</primary></indexterm>
-<programlisting><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            ags_thread_children_is_locked       (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
-<para>
-Check the AGS_THREAD_LOCKED flag within sibling.
-</para></refsect2>
-<refsect2 id="ags-thread-first" role="function">
-<title>ags_thread_first ()</title>
-<indexterm zone="ags-thread-first"><primary>ags_thread_first</primary></indexterm>
-<programlisting><link linkend="AgsThread"><returnvalue>AgsThread</returnvalue></link> *         ags_thread_first                    (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
-<para>
-Retrieve first sibling.
-</para></refsect2>
-<refsect2 id="ags-thread-get-toplevel" role="function">
-<title>ags_thread_get_toplevel ()</title>
-<indexterm zone="ags-thread-get-toplevel"><primary>ags_thread_get_toplevel</primary></indexterm>
-<programlisting><link linkend="AgsThread"><returnvalue>AgsThread</returnvalue></link> *         ags_thread_get_toplevel             (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
-<para>
-Retrieve toplevel thread.
-</para></refsect2>
-<refsect2 id="ags-thread-hangcheck" role="function">
-<title>ags_thread_hangcheck ()</title>
-<indexterm zone="ags-thread-hangcheck"><primary>ags_thread_hangcheck</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_thread_hangcheck                (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
-<para>
-Performs hangcheck of thread.
-</para></refsect2>
-<refsect2 id="ags-thread-is-current-ready" role="function">
-<title>ags_thread_is_current_ready ()</title>
-<indexterm zone="ags-thread-is-current-ready"><primary>ags_thread_is_current_ready</primary></indexterm>
-<programlisting><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            ags_thread_is_current_ready         (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *current</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> tic</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-thread-is-tree-ready" role="function">
-<title>ags_thread_is_tree_ready ()</title>
-<indexterm zone="ags-thread-is-tree-ready"><primary>ags_thread_is_tree_ready</primary></indexterm>
-<programlisting><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            ags_thread_is_tree_ready            (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> tic</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-thread-last" role="function">
-<title>ags_thread_last ()</title>
-<indexterm zone="ags-thread-last"><primary>ags_thread_last</primary></indexterm>
-<programlisting><link linkend="AgsThread"><returnvalue>AgsThread</returnvalue></link> *         ags_thread_last                     (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
-<para>
-Retrieve last sibling.
-</para></refsect2>
-<refsect2 id="ags-thread-lock" role="function">
-<title>ags_thread_lock ()</title>
-<indexterm zone="ags-thread-lock"><primary>ags_thread_lock</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_thread_lock                     (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
-<para>
-Locks the threads own mutex and sets the appropriate flag.
-</para></refsect2>
-<refsect2 id="ags-thread-lock-all" role="function">
-<title>ags_thread_lock_all ()</title>
-<indexterm zone="ags-thread-lock-all"><primary>ags_thread_lock_all</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_thread_lock_all                 (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-thread-lock-children" role="function">
-<title>ags_thread_lock_children ()</title>
-<indexterm zone="ags-thread-lock-children"><primary>ags_thread_lock_children</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_thread_lock_children            (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
-<para>
-Lock child tree structure.
-</para></refsect2>
-<refsect2 id="ags-thread-lock-parent" role="function">
-<title>ags_thread_lock_parent ()</title>
-<indexterm zone="ags-thread-lock-parent"><primary>ags_thread_lock_parent</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_thread_lock_parent              (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>,
-                                                         <parameter><link linkend="AgsThread"><type>AgsThread</type></link> *parent</parameter>);</programlisting>
-<para>
-Lock parent tree structure.
-</para></refsect2>
-<refsect2 id="ags-thread-lock-sibling" role="function">
-<title>ags_thread_lock_sibling ()</title>
-<indexterm zone="ags-thread-lock-sibling"><primary>ags_thread_lock_sibling</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_thread_lock_sibling             (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
-<para>
-Lock sibling tree structure.
-</para></refsect2>
-<refsect2 id="ags-thread-new" role="function">
-<title>ags_thread_new ()</title>
-<indexterm zone="ags-thread-new"><primary>ags_thread_new</primary></indexterm>
-<programlisting><link linkend="AgsThread"><returnvalue>AgsThread</returnvalue></link> *         ags_thread_new                      (<parameter><link linkend="gpointer"><type>gpointer</type></link> data</parameter>);</programlisting>
-<para>
-Create a new <link linkend="AgsThread"><type>AgsThread</type></link> you may provide a <link linkend="gpointer"><type>gpointer</type></link> as <parameter>data</parameter>
-to your thread routine.
-</para></refsect2>
-<refsect2 id="ags-thread-next-children-locked" role="function">
-<title>ags_thread_next_children_locked ()</title>
-<indexterm zone="ags-thread-next-children-locked"><primary>ags_thread_next_children_locked</primary></indexterm>
-<programlisting><link linkend="AgsThread"><returnvalue>AgsThread</returnvalue></link> *         ags_thread_next_children_locked     (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
-<para>
-Retrieve next locked thread following <parameter>thread</parameter>
-</para></refsect2>
-<refsect2 id="ags-thread-next-parent-locked" role="function">
-<title>ags_thread_next_parent_locked ()</title>
-<indexterm zone="ags-thread-next-parent-locked"><primary>ags_thread_next_parent_locked</primary></indexterm>
-<programlisting><link linkend="AgsThread"><returnvalue>AgsThread</returnvalue></link> *         ags_thread_next_parent_locked       (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>,
-                                                         <parameter><link linkend="AgsThread"><type>AgsThread</type></link> *parent</parameter>);</programlisting>
-<para>
-Retrieve next locked thread above <parameter>thread</parameter>.
-</para></refsect2>
-<refsect2 id="ags-thread-next-sibling-locked" role="function">
-<title>ags_thread_next_sibling_locked ()</title>
-<indexterm zone="ags-thread-next-sibling-locked"><primary>ags_thread_next_sibling_locked</primary></indexterm>
-<programlisting><link linkend="AgsThread"><returnvalue>AgsThread</returnvalue></link> *         ags_thread_next_sibling_locked      (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
-<para>
-Retrieve next locked thread neighbooring <parameter>thread</parameter>
-</para></refsect2>
-<refsect2 id="ags-thread-parental-is-locked" role="function">
-<title>ags_thread_parental_is_locked ()</title>
-<indexterm zone="ags-thread-parental-is-locked"><primary>ags_thread_parental_is_locked</primary></indexterm>
-<programlisting><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            ags_thread_parental_is_locked       (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>,
-                                                         <parameter><link linkend="AgsThread"><type>AgsThread</type></link> *parent</parameter>);</programlisting>
-<para>
-Check the AGS_THREAD_LOCKED flag in parental levels.
-</para></refsect2>
-<refsect2 id="ags-thread-remove-child" role="function">
-<title>ags_thread_remove_child ()</title>
-<indexterm zone="ags-thread-remove-child"><primary>ags_thread_remove_child</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_thread_remove_child             (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>,
-                                                         <parameter><link linkend="AgsThread"><type>AgsThread</type></link> *child</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-thread-resume" role="function">
-<title>ags_thread_resume ()</title>
-<indexterm zone="ags-thread-resume"><primary>ags_thread_resume</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_thread_resume                   (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-thread-run" role="function">
-<title>ags_thread_run ()</title>
-<indexterm zone="ags-thread-run"><primary>ags_thread_run</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_thread_run                      (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
-<para>
-Only for internal use of ags_thread_loop but you may want to set the your very own
-class function namely your thread's routine.
-</para></refsect2>
-<refsect2 id="ags-thread-set-sync" role="function">
-<title>ags_thread_set_sync ()</title>
-<indexterm zone="ags-thread-set-sync"><primary>ags_thread_set_sync</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_thread_set_sync                 (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> tic</parameter>);</programlisting>
-<para>
-Calls <link linkend="ags-thread-set-sync"><function>ags_thread_set_sync()</function></link> on all threads.
-</para></refsect2>
+<programlisting language="C">#define             NSEC_PER_SEC</programlisting>
+</refsect2>
+<refsect2 id="AGS-THREAD-STACKSIZE:CAPS" role="macro">
+<title>AGS_THREAD_STACKSIZE</title>
+<indexterm zone="AGS-THREAD-STACKSIZE:CAPS"><primary>AGS_THREAD_STACKSIZE</primary></indexterm>
+<programlisting language="C">#define AGS_THREAD_STACKSIZE (16384)
+</programlisting>
+</refsect2>
+<refsect2 id="ags-thread-set-sync" role="function" condition="since:0.4">
+<title>ags_thread_set_sync&#160;()</title>
+<indexterm zone="ags-thread-set-sync" role="0.4"><primary>ags_thread_set_sync</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_thread_set_sync (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>,
+                     <parameter><link linkend="guint"><type>guint</type></link> tic</parameter>);</programlisting>
+<para>Calls <link linkend="ags-thread-set-sync"><function>ags_thread_set_sync()</function></link> on all threads.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>thread</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsThread"><type>AgsThread</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>tic</para></entry>
+<entry role="parameter_description"><para>the tic as sync occured.</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
 <refsect2 id="ags-thread-set-sync-all" role="function">
-<title>ags_thread_set_sync_all ()</title>
+<title>ags_thread_set_sync_all&#160;()</title>
 <indexterm zone="ags-thread-set-sync-all"><primary>ags_thread_set_sync_all</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_thread_set_sync_all             (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> tic</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-thread-sibling-is-locked" role="function">
-<title>ags_thread_sibling_is_locked ()</title>
-<indexterm zone="ags-thread-sibling-is-locked"><primary>ags_thread_sibling_is_locked</primary></indexterm>
-<programlisting><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            ags_thread_sibling_is_locked        (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
-<para>
-Check the AGS_THREAD_LOCKED flag within sibling.
-</para></refsect2>
-<refsect2 id="ags-thread-signal-children" role="function">
-<title>ags_thread_signal_children ()</title>
-<indexterm zone="ags-thread-signal-children"><primary>ags_thread_signal_children</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_thread_signal_children          (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>,
-                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> broadcast</parameter>);</programlisting>
-<para>
-Signals the tree in lower levels.
-</para></refsect2>
-<refsect2 id="ags-thread-signal-parent" role="function">
-<title>ags_thread_signal_parent ()</title>
-<indexterm zone="ags-thread-signal-parent"><primary>ags_thread_signal_parent</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_thread_signal_parent            (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>,
-                                                         <parameter><link linkend="AgsThread"><type>AgsThread</type></link> *parent</parameter>,
-                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> broadcast</parameter>);</programlisting>
-<para>
-Signals the tree in higher levels.
-</para></refsect2>
-<refsect2 id="ags-thread-signal-sibling" role="function">
-<title>ags_thread_signal_sibling ()</title>
-<indexterm zone="ags-thread-signal-sibling"><primary>ags_thread_signal_sibling</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_thread_signal_sibling           (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>,
-                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> broadcast</parameter>);</programlisting>
-<para>
-Signals the tree on same level.
-</para></refsect2>
-<refsect2 id="ags-thread-start" role="function">
-<title>ags_thread_start ()</title>
-<indexterm zone="ags-thread-start"><primary>ags_thread_start</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_thread_start                    (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
-<para>
-Start the thread.
-</para></refsect2>
-<refsect2 id="ags-thread-stop" role="function">
-<title>ags_thread_stop ()</title>
-<indexterm zone="ags-thread-stop"><primary>ags_thread_stop</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_thread_stop                     (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
-<para>
-Stop the threads loop by unsetting AGS_THREAD_RUNNING flag.
-</para></refsect2>
-<refsect2 id="ags-thread-suspend" role="function">
-<title>ags_thread_suspend ()</title>
-<indexterm zone="ags-thread-suspend"><primary>ags_thread_suspend</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_thread_suspend                  (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-thread-timelock" role="function">
-<title>ags_thread_timelock ()</title>
-<indexterm zone="ags-thread-timelock"><primary>ags_thread_timelock</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_thread_timelock                 (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-thread-trylock" role="function">
-<title>ags_thread_trylock ()</title>
-<indexterm zone="ags-thread-trylock"><primary>ags_thread_trylock</primary></indexterm>
-<programlisting><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            ags_thread_trylock                  (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-thread-unlock" role="function">
-<title>ags_thread_unlock ()</title>
-<indexterm zone="ags-thread-unlock"><primary>ags_thread_unlock</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_thread_unlock                   (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
-<para>
-Unlocks the threads own mutex and unsets the appropriate flag.
-</para></refsect2>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_thread_set_sync_all (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>,
+                         <parameter><link linkend="guint"><type>guint</type></link> tic</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-thread-lock" role="function" condition="since:0.4">
+<title>ags_thread_lock&#160;()</title>
+<indexterm zone="ags-thread-lock" role="0.4"><primary>ags_thread_lock</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_thread_lock (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
+<para>Locks the threads own mutex and sets the appropriate flag.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>thread</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsThread"><type>AgsThread</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-thread-trylock" role="function" condition="since:0.4">
+<title>ags_thread_trylock&#160;()</title>
+<indexterm zone="ags-thread-trylock" role="0.4"><primary>ags_thread_trylock</primary></indexterm>
+<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+ags_thread_trylock (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
+<para>Locks the threads own mutex if available and sets the
+appropriate flag and returning <link linkend="TRUE:CAPS"><literal>TRUE</literal></link>. Otherwise return <link linkend="FALSE:CAPS"><literal>FALSE</literal></link>
+without lock.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>thread</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsThread"><type>AgsThread</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-thread-unlock" role="function" condition="since:0.4">
+<title>ags_thread_unlock&#160;()</title>
+<indexterm zone="ags-thread-unlock" role="0.4"><primary>ags_thread_unlock</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_thread_unlock (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
+<para>Unlocks the threads own mutex and unsets the appropriate flag.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>thread</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsThread"><type>AgsThread</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-thread-get-toplevel" role="function" condition="since:0.4">
+<title>ags_thread_get_toplevel&#160;()</title>
+<indexterm zone="ags-thread-get-toplevel" role="0.4"><primary>ags_thread_get_toplevel</primary></indexterm>
+<programlisting language="C"><link linkend="AgsThread"><returnvalue>AgsThread</returnvalue></link>&#160;*
+ags_thread_get_toplevel (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
+<para>Retrieve toplevel thread.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>thread</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsThread"><type>AgsThread</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> the toplevevel <link linkend="AgsThread"><type>AgsThread</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-thread-first" role="function" condition="since:0.4">
+<title>ags_thread_first&#160;()</title>
+<indexterm zone="ags-thread-first" role="0.4"><primary>ags_thread_first</primary></indexterm>
+<programlisting language="C"><link linkend="AgsThread"><returnvalue>AgsThread</returnvalue></link>&#160;*
+ags_thread_first (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
+<para>Retrieve first sibling.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>thread</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsThread"><type>AgsThread</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> the very first <link linkend="AgsThread"><type>AgsThread</type></link> within same tree level</para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-thread-last" role="function" condition="since:0.4">
+<title>ags_thread_last&#160;()</title>
+<indexterm zone="ags-thread-last" role="0.4"><primary>ags_thread_last</primary></indexterm>
+<programlisting language="C"><link linkend="AgsThread"><returnvalue>AgsThread</returnvalue></link>&#160;*
+ags_thread_last (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
+<para>Retrieve last sibling.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>thread</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsThread"><type>AgsThread</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> the very last <parameter>AgsThread</parameter>
+within same tree level</para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-thread-remove-child" role="function" condition="since:0.4">
+<title>ags_thread_remove_child&#160;()</title>
+<indexterm zone="ags-thread-remove-child" role="0.4"><primary>ags_thread_remove_child</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_thread_remove_child (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>,
+                         <parameter><link linkend="AgsThread"><type>AgsThread</type></link> *child</parameter>);</programlisting>
+<para>Remove child of thread.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>thread</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsThread"><type>AgsThread</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>child</para></entry>
+<entry role="parameter_description"><para>the child to remove</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-thread-add-child" role="function" condition="since:0.4">
+<title>ags_thread_add_child&#160;()</title>
+<indexterm zone="ags-thread-add-child" role="0.4"><primary>ags_thread_add_child</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_thread_add_child (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>,
+                      <parameter><link linkend="AgsThread"><type>AgsThread</type></link> *child</parameter>);</programlisting>
+<para>Add child to thread.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>thread</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsThread"><type>AgsThread</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>child</para></entry>
+<entry role="parameter_description"><para>the child to remove</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-thread-parental-is-locked" role="function" condition="since:0.4">
+<title>ags_thread_parental_is_locked&#160;()</title>
+<indexterm zone="ags-thread-parental-is-locked" role="0.4"><primary>ags_thread_parental_is_locked</primary></indexterm>
+<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+ags_thread_parental_is_locked (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>,
+                               <parameter><link linkend="AgsThread"><type>AgsThread</type></link> *parent</parameter>);</programlisting>
+<para>Check the AGS_THREAD_LOCKED flag in parental levels.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>thread</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsThread"><type>AgsThread</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>parent</para></entry>
+<entry role="parameter_description"><para>where to stop iteration</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> <link linkend="TRUE:CAPS"><literal>TRUE</literal></link> if locked otherwise <link linkend="FALSE:CAPS"><literal>FALSE</literal></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-thread-sibling-is-locked" role="function" condition="since:0.4">
+<title>ags_thread_sibling_is_locked&#160;()</title>
+<indexterm zone="ags-thread-sibling-is-locked" role="0.4"><primary>ags_thread_sibling_is_locked</primary></indexterm>
+<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+ags_thread_sibling_is_locked (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
+<para>Check the AGS_THREAD_LOCKED flag within sibling.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>thread</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsThread"><type>AgsThread</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> <link linkend="TRUE:CAPS"><literal>TRUE</literal></link> if locked otherwise <link linkend="FALSE:CAPS"><literal>FALSE</literal></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-thread-children-is-locked" role="function" condition="since:0.4">
+<title>ags_thread_children_is_locked&#160;()</title>
+<indexterm zone="ags-thread-children-is-locked" role="0.4"><primary>ags_thread_children_is_locked</primary></indexterm>
+<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+ags_thread_children_is_locked (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
+<para>Check the AGS_THREAD_LOCKED flag within children.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>thread</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsThread"><type>AgsThread</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> <link linkend="TRUE:CAPS"><literal>TRUE</literal></link> if locked otherwise <link linkend="FALSE:CAPS"><literal>FALSE</literal></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-thread-is-current-ready" role="function">
+<title>ags_thread_is_current_ready&#160;()</title>
+<indexterm zone="ags-thread-is-current-ready"><primary>ags_thread_is_current_ready</primary></indexterm>
+<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+ags_thread_is_current_ready (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *current</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-thread-is-tree-ready" role="function">
+<title>ags_thread_is_tree_ready&#160;()</title>
+<indexterm zone="ags-thread-is-tree-ready"><primary>ags_thread_is_tree_ready</primary></indexterm>
+<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+ags_thread_is_tree_ready (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-thread-next-parent-locked" role="function" condition="since:0.4">
+<title>ags_thread_next_parent_locked&#160;()</title>
+<indexterm zone="ags-thread-next-parent-locked" role="0.4"><primary>ags_thread_next_parent_locked</primary></indexterm>
+<programlisting language="C"><link linkend="AgsThread"><returnvalue>AgsThread</returnvalue></link>&#160;*
+ags_thread_next_parent_locked (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>,
+                               <parameter><link linkend="AgsThread"><type>AgsThread</type></link> *parent</parameter>);</programlisting>
+<para>Retrieve next locked thread above <parameter>thread</parameter>
+.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>thread</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsThread"><type>AgsThread</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>parent</para></entry>
+<entry role="parameter_description"><para>the parent <link linkend="AgsThread"><type>AgsThread</type></link> where to stop.</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-thread-next-sibling-locked" role="function" condition="since:0.4">
+<title>ags_thread_next_sibling_locked&#160;()</title>
+<indexterm zone="ags-thread-next-sibling-locked" role="0.4"><primary>ags_thread_next_sibling_locked</primary></indexterm>
+<programlisting language="C"><link linkend="AgsThread"><returnvalue>AgsThread</returnvalue></link>&#160;*
+ags_thread_next_sibling_locked (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
+<para>Retrieve next locked thread neighbooring <parameter>thread</parameter>
+</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>thread</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsThread"><type>AgsThread</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-thread-next-children-locked" role="function" condition="since:0.4">
+<title>ags_thread_next_children_locked&#160;()</title>
+<indexterm zone="ags-thread-next-children-locked" role="0.4"><primary>ags_thread_next_children_locked</primary></indexterm>
+<programlisting language="C"><link linkend="AgsThread"><returnvalue>AgsThread</returnvalue></link>&#160;*
+ags_thread_next_children_locked (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
+<para>Retrieve next locked thread following <parameter>thread</parameter>
+</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>thread</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsThread"><type>AgsThread</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-thread-lock-parent" role="function" condition="since:0.4">
+<title>ags_thread_lock_parent&#160;()</title>
+<indexterm zone="ags-thread-lock-parent" role="0.4"><primary>ags_thread_lock_parent</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_thread_lock_parent (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>,
+                        <parameter><link linkend="AgsThread"><type>AgsThread</type></link> *parent</parameter>);</programlisting>
+<para>Lock parent tree structure.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>thread</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsThread"><type>AgsThread</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>parent</para></entry>
+<entry role="parameter_description"><para>the parent <link linkend="AgsThread"><type>AgsThread</type></link> where to stop.</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-thread-lock-sibling" role="function" condition="since:0.4">
+<title>ags_thread_lock_sibling&#160;()</title>
+<indexterm zone="ags-thread-lock-sibling" role="0.4"><primary>ags_thread_lock_sibling</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_thread_lock_sibling (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
+<para>Lock sibling tree structure.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>thread</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsThread"><type>AgsThread</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-thread-lock-children" role="function" condition="since:0.4">
+<title>ags_thread_lock_children&#160;()</title>
+<indexterm zone="ags-thread-lock-children" role="0.4"><primary>ags_thread_lock_children</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_thread_lock_children (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
+<para>Lock child tree structure.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>thread</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsThread"><type>AgsThread</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-thread-lock-all" role="function">
+<title>ags_thread_lock_all&#160;()</title>
+<indexterm zone="ags-thread-lock-all"><primary>ags_thread_lock_all</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_thread_lock_all (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-thread-unlock-parent" role="function" condition="since:0.4">
+<title>ags_thread_unlock_parent&#160;()</title>
+<indexterm zone="ags-thread-unlock-parent" role="0.4"><primary>ags_thread_unlock_parent</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_thread_unlock_parent (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>,
+                          <parameter><link linkend="AgsThread"><type>AgsThread</type></link> *parent</parameter>);</programlisting>
+<para>Unlock parent tree structure.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>thread</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsThread"><type>AgsThread</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>parent</para></entry>
+<entry role="parameter_description"><para>the parent <link linkend="AgsThread"><type>AgsThread</type></link> where to stop.</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-thread-unlock-sibling" role="function" condition="since:0.4">
+<title>ags_thread_unlock_sibling&#160;()</title>
+<indexterm zone="ags-thread-unlock-sibling" role="0.4"><primary>ags_thread_unlock_sibling</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_thread_unlock_sibling (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
+<para>Unlock sibling tree structure.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>thread</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsThread"><type>AgsThread</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-thread-unlock-children" role="function" condition="since:0.4">
+<title>ags_thread_unlock_children&#160;()</title>
+<indexterm zone="ags-thread-unlock-children" role="0.4"><primary>ags_thread_unlock_children</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_thread_unlock_children (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
+<para>Unlock child tree structure.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>thread</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsThread"><type>AgsThread</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
 <refsect2 id="ags-thread-unlock-all" role="function">
-<title>ags_thread_unlock_all ()</title>
+<title>ags_thread_unlock_all&#160;()</title>
 <indexterm zone="ags-thread-unlock-all"><primary>ags_thread_unlock_all</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_thread_unlock_all               (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-thread-unlock-children" role="function">
-<title>ags_thread_unlock_children ()</title>
-<indexterm zone="ags-thread-unlock-children"><primary>ags_thread_unlock_children</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_thread_unlock_children          (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
-<para>
-Unlock child tree structure.
-</para></refsect2>
-<refsect2 id="ags-thread-unlock-parent" role="function">
-<title>ags_thread_unlock_parent ()</title>
-<indexterm zone="ags-thread-unlock-parent"><primary>ags_thread_unlock_parent</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_thread_unlock_parent            (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>,
-                                                         <parameter><link linkend="AgsThread"><type>AgsThread</type></link> *parent</parameter>);</programlisting>
-<para>
-Unlock parent tree structure.
-</para></refsect2>
-<refsect2 id="ags-thread-unlock-sibling" role="function">
-<title>ags_thread_unlock_sibling ()</title>
-<indexterm zone="ags-thread-unlock-sibling"><primary>ags_thread_unlock_sibling</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_thread_unlock_sibling           (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
-<para>
-Unlock sibling tree structure.
-</para></refsect2>
-<refsect2 id="ags-thread-wait-children" role="function">
-<title>ags_thread_wait_children ()</title>
-<indexterm zone="ags-thread-wait-children"><primary>ags_thread_wait_children</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_thread_wait_children            (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
-<para>
-Wait on child tree structure.
-</para></refsect2>
-<refsect2 id="ags-thread-wait-parent" role="function">
-<title>ags_thread_wait_parent ()</title>
-<indexterm zone="ags-thread-wait-parent"><primary>ags_thread_wait_parent</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_thread_wait_parent              (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>,
-                                                         <parameter><link linkend="AgsThread"><type>AgsThread</type></link> *parent</parameter>);</programlisting>
-<para>
-Wait on parent tree structure.
-</para></refsect2>
-<refsect2 id="ags-thread-wait-sibling" role="function">
-<title>ags_thread_wait_sibling ()</title>
-<indexterm zone="ags-thread-wait-sibling"><primary>ags_thread_wait_sibling</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_thread_wait_sibling             (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
-<para>
-Wait on sibling tree structure.
-</para></refsect2>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_thread_unlock_all (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-thread-wait-parent" role="function" condition="since:0.4">
+<title>ags_thread_wait_parent&#160;()</title>
+<indexterm zone="ags-thread-wait-parent" role="0.4"><primary>ags_thread_wait_parent</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_thread_wait_parent (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>,
+                        <parameter><link linkend="AgsThread"><type>AgsThread</type></link> *parent</parameter>);</programlisting>
+<para>Wait on parent tree structure.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>thread</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsThread"><type>AgsThread</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>parent</para></entry>
+<entry role="parameter_description"><para>the parent <link linkend="AgsThread"><type>AgsThread</type></link> where to stop.</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-thread-wait-sibling" role="function" condition="since:0.4">
+<title>ags_thread_wait_sibling&#160;()</title>
+<indexterm zone="ags-thread-wait-sibling" role="0.4"><primary>ags_thread_wait_sibling</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_thread_wait_sibling (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
+<para>Wait on sibling tree structure.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>thread</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsThread"><type>AgsThread</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-thread-wait-children" role="function" condition="since:0.4">
+<title>ags_thread_wait_children&#160;()</title>
+<indexterm zone="ags-thread-wait-children" role="0.4"><primary>ags_thread_wait_children</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_thread_wait_children (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
+<para>Wait on child tree structure.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>thread</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsThread"><type>AgsThread</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-thread-signal-parent" role="function" condition="since:0.4">
+<title>ags_thread_signal_parent&#160;()</title>
+<indexterm zone="ags-thread-signal-parent" role="0.4"><primary>ags_thread_signal_parent</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_thread_signal_parent (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>,
+                          <parameter><link linkend="AgsThread"><type>AgsThread</type></link> *parent</parameter>,
+                          <parameter><link linkend="gboolean"><type>gboolean</type></link> broadcast</parameter>);</programlisting>
+<para>Signals the tree in higher levels.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>thread</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsThread"><type>AgsThread</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>broadcast</para></entry>
+<entry role="parameter_description"><para>whether to perforam a signal or to broadcast</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-thread-signal-sibling" role="function" condition="since:0.4">
+<title>ags_thread_signal_sibling&#160;()</title>
+<indexterm zone="ags-thread-signal-sibling" role="0.4"><primary>ags_thread_signal_sibling</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_thread_signal_sibling (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>,
+                           <parameter><link linkend="gboolean"><type>gboolean</type></link> broadcast</parameter>);</programlisting>
+<para>Signals the tree on same level.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>thread</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsThread"><type>AgsThread</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>broadcast</para></entry>
+<entry role="parameter_description"><para>whether to perforam a signal or to broadcast</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-thread-signal-children" role="function" condition="since:0.4">
+<title>ags_thread_signal_children&#160;()</title>
+<indexterm zone="ags-thread-signal-children" role="0.4"><primary>ags_thread_signal_children</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_thread_signal_children (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>,
+                            <parameter><link linkend="gboolean"><type>gboolean</type></link> broadcast</parameter>);</programlisting>
+<para>Signals the tree in lower levels.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>thread</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsThread"><type>AgsThread</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>broadcast</para></entry>
+<entry role="parameter_description"><para>whether to perforam a signal or to broadcast</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-thread-start" role="function" condition="since:0.4">
+<title>ags_thread_start&#160;()</title>
+<indexterm zone="ags-thread-start" role="0.4"><primary>ags_thread_start</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_thread_start (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
+<para>Start the thread.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>thread</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsThread"><type>AgsThread</type></link> instance</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-thread-run" role="function" condition="since:0.4">
+<title>ags_thread_run&#160;()</title>
+<indexterm zone="ags-thread-run" role="0.4"><primary>ags_thread_run</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_thread_run (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
+<para>Only for internal use of ags_thread_loop but you may want to set the your very own
+class function namely your thread's routine.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>thread</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsThread"><type>AgsThread</type></link> instance</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-thread-suspend" role="function">
+<title>ags_thread_suspend&#160;()</title>
+<indexterm zone="ags-thread-suspend"><primary>ags_thread_suspend</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_thread_suspend (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-thread-resume" role="function">
+<title>ags_thread_resume&#160;()</title>
+<indexterm zone="ags-thread-resume"><primary>ags_thread_resume</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_thread_resume (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-thread-timelock" role="function">
+<title>ags_thread_timelock&#160;()</title>
+<indexterm zone="ags-thread-timelock"><primary>ags_thread_timelock</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_thread_timelock (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-thread-stop" role="function" condition="since:0.4">
+<title>ags_thread_stop&#160;()</title>
+<indexterm zone="ags-thread-stop" role="0.4"><primary>ags_thread_stop</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_thread_stop (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
+<para>Stop the threads loop by unsetting AGS_THREAD_RUNNING flag.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>thread</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsThread"><type>AgsThread</type></link> instance</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-thread-hangcheck" role="function" condition="since:0.4">
+<title>ags_thread_hangcheck&#160;()</title>
+<indexterm zone="ags-thread-hangcheck" role="0.4"><primary>ags_thread_hangcheck</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_thread_hangcheck (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
+<para>Performs hangcheck of thread.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>thread</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsThread"><type>AgsThread</type></link> instance</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-thread-new" role="function" condition="since:0.4">
+<title>ags_thread_new&#160;()</title>
+<indexterm zone="ags-thread-new" role="0.4"><primary>ags_thread_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsThread"><returnvalue>AgsThread</returnvalue></link>&#160;*
+ags_thread_new (<parameter><link linkend="gpointer"><type>gpointer</type></link> data</parameter>);</programlisting>
+<para>Create a new <link linkend="AgsThread"><type>AgsThread</type></link> you may provide a <link linkend="gpointer"><type>gpointer</type></link> as <parameter>data</parameter>
 
+to your thread routine.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>data</para></entry>
+<entry role="parameter_description"><para>an <link linkend="GObject"><type>GObject</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsThread.other_details" role="details">
+<title role="details.title">Types and Values</title>
+<refsect2 id="AGS-THREAD-RESUME-SIG:CAPS" role="macro">
+<title>AGS_THREAD_RESUME_SIG</title>
+<indexterm zone="AGS-THREAD-RESUME-SIG:CAPS"><primary>AGS_THREAD_RESUME_SIG</primary></indexterm>
+<programlisting language="C">#define             AGS_THREAD_RESUME_SIG</programlisting>
+</refsect2>
+<refsect2 id="AGS-THREAD-SUSPEND-SIG:CAPS" role="macro">
+<title>AGS_THREAD_SUSPEND_SIG</title>
+<indexterm zone="AGS-THREAD-SUSPEND-SIG:CAPS"><primary>AGS_THREAD_SUSPEND_SIG</primary></indexterm>
+<programlisting language="C">#define             AGS_THREAD_SUSPEND_SIG</programlisting>
+</refsect2>
+<refsect2 id="AgsThreadFlags" role="enum">
+<title>enum AgsThreadFlags</title>
+<indexterm zone="AgsThreadFlags"><primary>AgsThreadFlags</primary></indexterm>
+<refsect3 role="enum_members">
+<title>Members</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="enum_members_name" colwidth="300px"/>
+<colspec colname="enum_members_description"/>
+<colspec colname="enum_members_annotations" colwidth="200px"/>
+<tbody>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-THREAD-RUNNING:CAPS">AGS_THREAD_RUNNING</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-THREAD-IDLE:CAPS">AGS_THREAD_IDLE</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-THREAD-LOCKED:CAPS">AGS_THREAD_LOCKED</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-THREAD-WAIT-FOR-PARENT:CAPS">AGS_THREAD_WAIT_FOR_PARENT</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-THREAD-WAIT-FOR-SIBLING:CAPS">AGS_THREAD_WAIT_FOR_SIBLING</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-THREAD-WAIT-FOR-CHILDREN:CAPS">AGS_THREAD_WAIT_FOR_CHILDREN</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-THREAD-WAIT-FOR-BARRIER:CAPS">AGS_THREAD_WAIT_FOR_BARRIER</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-THREAD-WAITING-FOR-PARENT:CAPS">AGS_THREAD_WAITING_FOR_PARENT</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-THREAD-WAITING-FOR-SIBLING:CAPS">AGS_THREAD_WAITING_FOR_SIBLING</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-THREAD-WAITING-FOR-CHILDREN:CAPS">AGS_THREAD_WAITING_FOR_CHILDREN</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-THREAD-WAITING-FOR-BARRIER:CAPS">AGS_THREAD_WAITING_FOR_BARRIER</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-THREAD-BROADCAST-PARENT:CAPS">AGS_THREAD_BROADCAST_PARENT</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-THREAD-BROADCAST-SIBLING:CAPS">AGS_THREAD_BROADCAST_SIBLING</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-THREAD-BROADCAST-CHILDREN:CAPS">AGS_THREAD_BROADCAST_CHILDREN</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-THREAD-INITIAL-RUN:CAPS">AGS_THREAD_INITIAL_RUN</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-THREAD-TREE-SYNC-0:CAPS">AGS_THREAD_TREE_SYNC_0</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-THREAD-WAIT-0:CAPS">AGS_THREAD_WAIT_0</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-THREAD-TREE-SYNC-1:CAPS">AGS_THREAD_TREE_SYNC_1</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-THREAD-WAIT-1:CAPS">AGS_THREAD_WAIT_1</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-THREAD-TREE-SYNC-2:CAPS">AGS_THREAD_TREE_SYNC_2</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-THREAD-WAIT-2:CAPS">AGS_THREAD_WAIT_2</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-THREAD-TIMELOCK-RUN:CAPS">AGS_THREAD_TIMELOCK_RUN</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-THREAD-TIMELOCK-WAIT:CAPS">AGS_THREAD_TIMELOCK_WAIT</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-THREAD-TIMELOCK-RESUME:CAPS">AGS_THREAD_TIMELOCK_RESUME</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-THREAD-SKIP-NON-GREEDY:CAPS">AGS_THREAD_SKIP_NON_GREEDY</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-THREAD-SKIPPED-BY-TIMELOCK:CAPS">AGS_THREAD_SKIPPED_BY_TIMELOCK</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-THREAD-LOCK-GREEDY-RUN-MUTEX:CAPS">AGS_THREAD_LOCK_GREEDY_RUN_MUTEX</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-THREAD-SUSPENDED:CAPS">AGS_THREAD_SUSPENDED</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-THREAD-SINGLE-LOOP:CAPS">AGS_THREAD_SINGLE_LOOP</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-THREAD-READY:CAPS">AGS_THREAD_READY</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-THREAD-UNREF-ON-EXIT:CAPS">AGS_THREAD_UNREF_ON_EXIT</para></entry>
+<entry /><entry />
+</row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
+
+</refsect1>
+<refsect1 id="AgsThread.property-details" role="property_details">
+<title role="property_details.title">Property Details</title>
+<refsect2 id="AgsThread--frequency" role="property"><title>The <literal>“frequency”</literal> property</title>
+<indexterm zone="AgsThread--frequency" role="0.4"><primary>AgsThread:frequency</primary></indexterm>
+<programlisting>  “frequency”                <link linkend="gdouble"><type>gdouble</type></link></programlisting>
+<para>The frequency to run at in Hz.</para>
+<para>Flags: Read / Write</para>
+<para>Allowed values: [0.01,1000]</para>
+<para>Default value: 1000</para>
+<para role="since">Since 0.4</para></refsect2>
+<refsect2 id="AgsThread--frequency" role="property"><title>The <literal>“frequency”</literal> property</title>
+<indexterm zone="AgsThread--frequency" role="0.4"><primary>AgsThread:frequency</primary></indexterm>
+<programlisting>  “frequency”                <link linkend="gdouble"><type>gdouble</type></link></programlisting>
+<para>The frequency to run at in Hz.</para>
+<para>Flags: Read / Write</para>
+<para>Allowed values: [0.01,1000]</para>
+<para>Default value: 1000</para>
+<para role="since">Since 0.4</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsThread.signal-details" role="signals">
+<title role="signals.title">Signal Details</title>
+<refsect2 id="AgsThread-resume" role="signal"><title>The <literal>“resume”</literal> signal</title>
+<indexterm zone="AgsThread-resume"><primary>AgsThread::resume</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsThread"><type>AgsThread</type></link> *thread,
+               <link linkend="gpointer"><type>gpointer</type></link>   user_data)</programlisting>
+<para>The ::resume signal is invoked during resuming.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>thread</para></entry>
+<entry role="parameter_description"><para>the object playing.</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>recall_id</para></entry>
+<entry role="parameter_description"><para>the appropriate <link linkend="AgsRecallID"><type>AgsRecallID</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsThread-run" role="signal"><title>The <literal>“run”</literal> signal</title>
+<indexterm zone="AgsThread-run"><primary>AgsThread::run</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsThread"><type>AgsThread</type></link> *thread,
+               <link linkend="gpointer"><type>gpointer</type></link>   user_data)</programlisting>
+<para>The ::run signal is invoked during run loop.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>thread</para></entry>
+<entry role="parameter_description"><para>the object playing.</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsThread-start" role="signal"><title>The <literal>“start”</literal> signal</title>
+<indexterm zone="AgsThread-start"><primary>AgsThread::start</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsThread"><type>AgsThread</type></link> *thread,
+               <link linkend="gpointer"><type>gpointer</type></link>   user_data)</programlisting>
+<para>The ::start signal is invoked as thread started.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>thread</para></entry>
+<entry role="parameter_description"><para>the object playing.</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsThread-stop" role="signal"><title>The <literal>“stop”</literal> signal</title>
+<indexterm zone="AgsThread-stop"><primary>AgsThread::stop</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsThread"><type>AgsThread</type></link> *thread,
+               <link linkend="gpointer"><type>gpointer</type></link>   user_data)</programlisting>
+<para>The ::stop signal is invoked as <parameter>thread</parameter>
+ stopped.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>thread</para></entry>
+<entry role="parameter_description"><para>the object playing.</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>recall_id</para></entry>
+<entry role="parameter_description"><para>the appropriate <link linkend="AgsRecallID"><type>AgsRecallID</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsThread-suspend" role="signal"><title>The <literal>“suspend”</literal> signal</title>
+<indexterm zone="AgsThread-suspend"><primary>AgsThread::suspend</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsThread"><type>AgsThread</type></link> *thread,
+               <link linkend="gpointer"><type>gpointer</type></link>   user_data)</programlisting>
+<para>The ::suspend signal is invoked during suspending.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>thread</para></entry>
+<entry role="parameter_description"><para>the object playing.</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsThread-timelock" role="signal"><title>The <literal>“timelock”</literal> signal</title>
+<indexterm zone="AgsThread-timelock"><primary>AgsThread::timelock</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsThread"><type>AgsThread</type></link> *thread,
+               <link linkend="gpointer"><type>gpointer</type></link>   user_data)</programlisting>
+<para>The ::timelock signal is invoked as standard compution
+time exceeded.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>thread</para></entry>
+<entry role="parameter_description"><para>the object playing.</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>recall_id</para></entry>
+<entry role="parameter_description"><para>the appropriate <link linkend="AgsRecallID"><type>AgsRecallID</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsThread-resume" role="signal"><title>The <literal>“resume”</literal> signal</title>
+<indexterm zone="AgsThread-resume"><primary>AgsThread::resume</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsThread"><type>AgsThread</type></link> *thread,
+               <link linkend="gpointer"><type>gpointer</type></link>   user_data)</programlisting>
+<para>The ::resume signal is invoked during resuming.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>thread</para></entry>
+<entry role="parameter_description"><para>the object playing.</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>recall_id</para></entry>
+<entry role="parameter_description"><para>the appropriate <link linkend="AgsRecallID"><type>AgsRecallID</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsThread-run" role="signal"><title>The <literal>“run”</literal> signal</title>
+<indexterm zone="AgsThread-run"><primary>AgsThread::run</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsThread"><type>AgsThread</type></link> *thread,
+               <link linkend="gpointer"><type>gpointer</type></link>   user_data)</programlisting>
+<para>The ::run signal is invoked during run loop.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>thread</para></entry>
+<entry role="parameter_description"><para>the object playing.</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsThread-start" role="signal"><title>The <literal>“start”</literal> signal</title>
+<indexterm zone="AgsThread-start"><primary>AgsThread::start</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsThread"><type>AgsThread</type></link> *thread,
+               <link linkend="gpointer"><type>gpointer</type></link>   user_data)</programlisting>
+<para>The ::start signal is invoked as thread started.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>thread</para></entry>
+<entry role="parameter_description"><para>the object playing.</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsThread-stop" role="signal"><title>The <literal>“stop”</literal> signal</title>
+<indexterm zone="AgsThread-stop"><primary>AgsThread::stop</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsThread"><type>AgsThread</type></link> *thread,
+               <link linkend="gpointer"><type>gpointer</type></link>   user_data)</programlisting>
+<para>The ::stop signal is invoked as <parameter>thread</parameter>
+ stopped.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>thread</para></entry>
+<entry role="parameter_description"><para>the object playing.</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>recall_id</para></entry>
+<entry role="parameter_description"><para>the appropriate <link linkend="AgsRecallID"><type>AgsRecallID</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsThread-suspend" role="signal"><title>The <literal>“suspend”</literal> signal</title>
+<indexterm zone="AgsThread-suspend"><primary>AgsThread::suspend</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsThread"><type>AgsThread</type></link> *thread,
+               <link linkend="gpointer"><type>gpointer</type></link>   user_data)</programlisting>
+<para>The ::suspend signal is invoked during suspending.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>thread</para></entry>
+<entry role="parameter_description"><para>the object playing.</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsThread-timelock" role="signal"><title>The <literal>“timelock”</literal> signal</title>
+<indexterm zone="AgsThread-timelock"><primary>AgsThread::timelock</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsThread"><type>AgsThread</type></link> *thread,
+               <link linkend="gpointer"><type>gpointer</type></link>   user_data)</programlisting>
+<para>The ::timelock signal is invoked as standard compution
+time exceeded.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>thread</para></entry>
+<entry role="parameter_description"><para>the object playing.</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>recall_id</para></entry>
+<entry role="parameter_description"><para>the appropriate <link linkend="AgsRecallID"><type>AgsRecallID</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2>
 </refsect1>
 
 </refentry>

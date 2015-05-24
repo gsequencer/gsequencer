@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsInput">
+<refentry id="AgsInput">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsInput.top_of_page">AgsInput</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsInput.top_of_page">AgsInput</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -14,54 +14,93 @@
 </refmeta>
 <refnamediv>
 <refname>AgsInput</refname>
-<refpurpose></refpurpose>
+<refpurpose>Input of <link linkend="AgsAudio"><type>AgsAudio</type></link></refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsInput.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsInput.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="AgsInput"><returnvalue>AgsInput</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-input-new">ags_input_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>struct              <link linkend="AgsInput">AgsInput</link>;
-struct              <link linkend="AgsInputClass">AgsInputClass</link>;
-<link linkend="AgsInput"><returnvalue>AgsInput</returnvalue></link> *          <link linkend="ags-input-new">ags_input_new</link>                       (<parameter><link linkend="GObject"><type>GObject</type></link> *audio</parameter>);
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsInput.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsInput.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AgsInput" role="struct">
-<title>struct AgsInput</title>
-<indexterm zone="AgsInput"><primary>AgsInput</primary></indexterm>
-<programlisting>struct AgsInput {
-  AgsChannel channel;
+<refsect1 id="AgsInput.properties" role="properties">
+<title role="properties.title">Properties</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="properties_type" colwidth="150px"/>
+<colspec colname="properties_name" colwidth="300px"/>
+<colspec colname="properties_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="property_type"><link linkend="AgsFileLink"><type>AgsFileLink</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsInput--file-link">file-link</link></entry><entry role="property_flags">Read / Write</entry></row>
 
-  GObject *file_link;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsInputClass" role="struct">
-<title>struct AgsInputClass</title>
-<indexterm zone="AgsInputClass"><primary>AgsInputClass</primary></indexterm>
-<programlisting>struct AgsInputClass {
-  AgsChannelClass channel;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-input-new" role="function">
-<title>ags_input_new ()</title>
-<indexterm zone="ags-input-new"><primary>ags_input_new</primary></indexterm>
-<programlisting><link linkend="AgsInput"><returnvalue>AgsInput</returnvalue></link> *          ags_input_new                       (<parameter><link linkend="GObject"><type>GObject</type></link> *audio</parameter>);</programlisting>
-<para>
-Creates a <link linkend="AgsInput"><type>AgsInput</type></link>, linking tree to <parameter>audio</parameter>.
-</para><variablelist role="params">
-<varlistentry><term><emphasis>Returns</emphasis>&#160;:</term><listitem><simpara>a new <link linkend="AgsInput"><type>AgsInput</type></link></simpara></listitem></varlistentry>
-</variablelist></refsect2>
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsInput.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsChannel">AgsChannel</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsInput
+</screen>
+</refsect1>
+
+<refsect1 id="AgsInput.includes"><title>Includes</title><synopsis>#include &lt;ags/audio/ags_input.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsInput.description" role="desc">
+<title role="desc.title">Description</title>
+<para><link linkend="AgsInput"><type>AgsInput</type></link> represents an input channel of <link linkend="AgsAudio"><type>AgsAudio</type></link>.</para>
+
+</refsect1>
+<refsect1 id="AgsInput.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-input-new" role="function" condition="since:0.3">
+<title>ags_input_new&#160;()</title>
+<indexterm zone="ags-input-new" role="0.3"><primary>ags_input_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsInput"><returnvalue>AgsInput</returnvalue></link>&#160;*
+ags_input_new (<parameter><link linkend="GObject"><type>GObject</type></link> *audio</parameter>);</programlisting>
+<para>Creates a <link linkend="AgsInput"><type>AgsInput</type></link>, linking tree to <parameter>audio</parameter>
+.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>audio</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsAudio"><type>AgsAudio</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> a new <link linkend="AgsInput"><type>AgsInput</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.3</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsInput.other_details" role="details">
+<title role="details.title">Types and Values</title>
+
+</refsect1>
+<refsect1 id="AgsInput.property-details" role="property_details">
+<title role="property_details.title">Property Details</title>
+<refsect2 id="AgsInput--file-link" role="property"><title>The <literal>“file-link”</literal> property</title>
+<indexterm zone="AgsInput--file-link" role="0.4.0"><primary>AgsInput:file-link</primary></indexterm>
+<programlisting>  “file-link”                <link linkend="AgsFileLink"><type>AgsFileLink</type></link>&#160;*</programlisting>
+<para>The file containing audio data.</para>
+<para>Flags: Read / Write</para>
+<para role="since">Since 0.4.0</para></refsect2>
 
 </refsect1>
 

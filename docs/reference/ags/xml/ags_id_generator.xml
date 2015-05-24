@@ -1,42 +1,62 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-ags-id-generator">
+<refentry id="ags-AgsIdGenerator">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-ags-id-generator.top_of_page">ags_id_generator</refentrytitle>
+<refentrytitle role="top_of_page" id="ags-AgsIdGenerator.top_of_page">AgsIdGenerator</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
 </refmiscinfo>
 </refmeta>
 <refnamediv>
-<refname>ags_id_generator</refname>
-<refpurpose></refpurpose>
+<refname>AgsIdGenerator</refname>
+<refpurpose>UUID util functions</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-ags-id-generator.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="ags-AgsIdGenerator.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="gchar"><returnvalue>gchar</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-id-generator-create-uuid">ags_id_generator_create_uuid</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis><link linkend="gchar"><returnvalue>gchar</returnvalue></link> *             <link linkend="ags-id-generator-create-uuid">ags_id_generator_create_uuid</link>        ();
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-ags-id-generator.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-ags-id-generator.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="ags-id-generator-create-uuid" role="function">
-<title>ags_id_generator_create_uuid ()</title>
-<indexterm zone="ags-id-generator-create-uuid"><primary>ags_id_generator_create_uuid</primary></indexterm>
-<programlisting><link linkend="gchar"><returnvalue>gchar</returnvalue></link> *             ags_id_generator_create_uuid        ();</programlisting>
-<para>
-</para></refsect2>
+
+<refsect1 id="ags-AgsIdGenerator.includes"><title>Includes</title><synopsis>#include &lt;ags/util/ags_id_generator.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="ags-AgsIdGenerator.description" role="desc">
+<title role="desc.title">Description</title>
+<para>Functions related to UUID.</para>
+
+</refsect1>
+<refsect1 id="ags-AgsIdGenerator.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-id-generator-create-uuid" role="function" condition="since:0.4">
+<title>ags_id_generator_create_uuid&#160;()</title>
+<indexterm zone="ags-id-generator-create-uuid" role="0.4"><primary>ags_id_generator_create_uuid</primary></indexterm>
+<programlisting language="C"><link linkend="gchar"><returnvalue>gchar</returnvalue></link>&#160;*
+ags_id_generator_create_uuid ();</programlisting>
+<para>Creates an new string containing UUID.</para>
+<refsect3 role="returns">
+<title>Returns</title>
+<para> a new string</para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+
+</refsect1>
+<refsect1 id="ags-AgsIdGenerator.other_details" role="details">
+<title role="details.title">Types and Values</title>
 
 </refsect1>
 

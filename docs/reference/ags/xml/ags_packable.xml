@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsPackable">
+<refentry id="AgsPackable">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsPackable.top_of_page">AgsPackable</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsPackable.top_of_page">AgsPackable</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -14,59 +14,94 @@
 </refmeta>
 <refnamediv>
 <refname>AgsPackable</refname>
-<refpurpose></refpurpose>
+<refpurpose>packing recalls</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsPackable.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsPackable.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-packable-pack">ags_packable_pack</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-packable-unpack">ags_packable_unpack</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>typedef             <link linkend="AgsPackable">AgsPackable</link>;
-struct              <link linkend="AgsPackableInterface">AgsPackableInterface</link>;
-<link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            <link linkend="ags-packable-pack">ags_packable_pack</link>                   (<parameter><link linkend="AgsPackable"><type>AgsPackable</type></link> *packable</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *container</parameter>);
-<link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            <link linkend="ags-packable-unpack">ags_packable_unpack</link>                 (<parameter><link linkend="AgsPackable"><type>AgsPackable</type></link> *packable</parameter>);
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsPackable.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsPackable.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AgsPackable" role="typedef">
-<title>AgsPackable</title>
-<indexterm zone="AgsPackable"><primary>AgsPackable</primary></indexterm>
-<programlisting>typedef void AgsPackable;
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsPackableInterface" role="struct">
-<title>struct AgsPackableInterface</title>
-<indexterm zone="AgsPackableInterface"><primary>AgsPackableInterface</primary></indexterm>
-<programlisting>struct AgsPackableInterface {
-  GTypeInterface interface;
+<refsect1 id="AgsPackable.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GInterface">GInterface</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsPackable
+</screen>
+</refsect1>
 
-  gboolean (*pack)(AgsPackable *packable, GObject *container);
-  gboolean (*unpack)(AgsPackable *packable);
-};
-</programlisting>
-<para>
-</para></refsect2>
+<refsect1 id="AgsPackable.includes"><title>Includes</title><synopsis>#include &lt;ags/object/ags_packable.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsPackable.description" role="desc">
+<title role="desc.title">Description</title>
+<para>The <link linkend="AgsPackable"><type>AgsPackable</type></link> interface gives you a unique access to recalls
+to be packed into a <link linkend="AgsRecallContainer"><type>AgsRecallContainer</type></link>.</para>
+
+</refsect1>
+<refsect1 id="AgsPackable.functions_details" role="details">
+<title role="details.title">Functions</title>
 <refsect2 id="ags-packable-pack" role="function">
-<title>ags_packable_pack ()</title>
+<title>ags_packable_pack&#160;()</title>
 <indexterm zone="ags-packable-pack"><primary>ags_packable_pack</primary></indexterm>
-<programlisting><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            ags_packable_pack                   (<parameter><link linkend="AgsPackable"><type>AgsPackable</type></link> *packable</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *container</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+ags_packable_pack (<parameter><link linkend="AgsPackable"><type>AgsPackable</type></link> *packable</parameter>,
+                   <parameter><link linkend="GObject"><type>GObject</type></link> *container</parameter>);</programlisting>
+<para>Pack to container.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>packable</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsPackable"><type>AgsPackable</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> <link linkend="TRUE:CAPS"><literal>TRUE</literal></link> on success</para>
+<para></para>
+</refsect3></refsect2>
 <refsect2 id="ags-packable-unpack" role="function">
-<title>ags_packable_unpack ()</title>
+<title>ags_packable_unpack&#160;()</title>
 <indexterm zone="ags-packable-unpack"><primary>ags_packable_unpack</primary></indexterm>
-<programlisting><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            ags_packable_unpack                 (<parameter><link linkend="AgsPackable"><type>AgsPackable</type></link> *packable</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+ags_packable_unpack (<parameter><link linkend="AgsPackable"><type>AgsPackable</type></link> *packable</parameter>);</programlisting>
+<para>Unpack of container.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>packable</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsPackable"><type>AgsPackable</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> <link linkend="TRUE:CAPS"><literal>TRUE</literal></link> on success</para>
+<para></para>
+</refsect3></refsect2>
+
+</refsect1>
+<refsect1 id="AgsPackable.other_details" role="details">
+<title role="details.title">Types and Values</title>
 
 </refsect1>
 

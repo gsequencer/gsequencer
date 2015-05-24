@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsRecallRecycling">
+<refentry id="AgsRecallRecycling">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsRecallRecycling.top_of_page">AgsRecallRecycling</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsRecallRecycling.top_of_page">AgsRecallRecycling</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -14,89 +14,162 @@
 </refmeta>
 <refnamediv>
 <refname>AgsRecallRecycling</refname>
-<refpurpose></refpurpose>
+<refpurpose>recycling context of recall</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsRecallRecycling.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsRecallRecycling.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-recall-recycling-get-child-source">ags_recall_recycling_get_child_source</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsRecallRecycling"><returnvalue>AgsRecallRecycling</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-recall-recycling-new">ags_recall_recycling_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>struct              <link linkend="AgsRecallRecycling">AgsRecallRecycling</link>;
-struct              <link linkend="AgsRecallRecyclingClass">AgsRecallRecyclingClass</link>;
-enum                <link linkend="AgsRecallRecyclingFlags">AgsRecallRecyclingFlags</link>;
-<link linkend="GList"><returnvalue>GList</returnvalue></link> *             <link linkend="ags-recall-recycling-get-child-source">ags_recall_recycling_get_child_source</link>
-                                                        (<parameter><link linkend="AgsRecallRecycling"><type>AgsRecallRecycling</type></link> *recall_recycling</parameter>);
-<link linkend="AgsRecallRecycling"><returnvalue>AgsRecallRecycling</returnvalue></link> * <link linkend="ags-recall-recycling-new">ags_recall_recycling_new</link>           ();
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsRecallRecycling.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsRecallRecycling.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AgsRecallRecycling" role="struct">
-<title>struct AgsRecallRecycling</title>
-<indexterm zone="AgsRecallRecycling"><primary>AgsRecallRecycling</primary></indexterm>
-<programlisting>struct AgsRecallRecycling {
-  AgsRecall recall;
+<refsect1 id="AgsRecallRecycling.properties" role="properties">
+<title role="properties.title">Properties</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="properties_type" colwidth="150px"/>
+<colspec colname="properties_name" colwidth="300px"/>
+<colspec colname="properties_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="property_type"><link linkend="guint"><type>guint</type></link></entry><entry role="property_name"><link linkend="AgsRecallRecycling--audio-channel">audio-channel</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsRecallRecycling--child-destination">child-destination</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsRecallRecycling--child-source">child-source</link></entry><entry role="property_flags">Write</entry></row>
+<row><entry role="property_type"><link linkend="AgsRecycling"><type>AgsRecycling</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsRecallRecycling--destination">destination</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="AgsRecycling"><type>AgsRecycling</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsRecallRecycling--source">source</link></entry><entry role="property_flags">Read / Write</entry></row>
 
-  guint flags;
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsRecallRecycling.other" role="other_proto">
+<title role="other_proto.title">Types and Values</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="name" colwidth="150px"/>
+<colspec colname="description"/>
+<tbody>
+<row><entry role="datatype_keyword">enum</entry><entry role="function_name"><link linkend="AgsRecallRecyclingFlags">AgsRecallRecyclingFlags</link></entry></row>
 
-  guint audio_channel;
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsRecallRecycling.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsRecall">AgsRecall</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsRecallRecycling
+            <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsBufferRecycling">AgsBufferRecycling</link>
+            <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsCopyRecycling">AgsCopyRecycling</link>
+            <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsMuteRecycling">AgsMuteRecycling</link>
+            <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsPlayRecycling">AgsPlayRecycling</link>
+            <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsRecallRecyclingDummy">AgsRecallRecyclingDummy</link>
+            <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsStreamRecycling">AgsStreamRecycling</link>
+            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsVolumeRecycling">AgsVolumeRecycling</link>
+</screen>
+</refsect1>
 
-  AgsRecycling *destination;
-  gulong destination_add_audio_signal_handler;
-  gulong destination_remove_audio_signal_handler;
+<refsect1 id="AgsRecallRecycling.includes"><title>Includes</title><synopsis>#include &lt;ags/audio/ags_recall_recycling.h&gt;
+</synopsis></refsect1>
 
-  AgsRecycling *source;
-  gulong source_add_audio_signal_handler;
-  gulong source_remove_audio_signal_handler;
+<refsect1 id="AgsRecallRecycling.description" role="desc">
+<title role="desc.title">Description</title>
+<para><link linkend="AgsRecallRecycling"><type>AgsRecallRecycling</type></link> acts as recycling recall.</para>
 
-  AgsAudioSignal *child_destination;
-  GList *child_source;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsRecallRecyclingClass" role="struct">
-<title>struct AgsRecallRecyclingClass</title>
-<indexterm zone="AgsRecallRecyclingClass"><primary>AgsRecallRecyclingClass</primary></indexterm>
-<programlisting>struct AgsRecallRecyclingClass {
-  AgsRecallClass recall;
-};
-</programlisting>
-<para>
-</para></refsect2>
+</refsect1>
+<refsect1 id="AgsRecallRecycling.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-recall-recycling-get-child-source" role="function">
+<title>ags_recall_recycling_get_child_source&#160;()</title>
+<indexterm zone="ags-recall-recycling-get-child-source"><primary>ags_recall_recycling_get_child_source</primary></indexterm>
+<programlisting language="C"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+ags_recall_recycling_get_child_source (<parameter><link linkend="AgsRecallRecycling"><type>AgsRecallRecycling</type></link> *recall_recycling</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-recall-recycling-new" role="function" condition="since:0.4">
+<title>ags_recall_recycling_new&#160;()</title>
+<indexterm zone="ags-recall-recycling-new" role="0.4"><primary>ags_recall_recycling_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsRecallRecycling"><returnvalue>AgsRecallRecycling</returnvalue></link>&#160;*
+ags_recall_recycling_new ();</programlisting>
+<para>Creates a <link linkend="AgsRecallRecycling"><type>AgsRecallRecycling</type></link></para>
+<refsect3 role="returns">
+<title>Returns</title>
+<para> a new <link linkend="AgsRecallRecycling"><type>AgsRecallRecycling</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsRecallRecycling.other_details" role="details">
+<title role="details.title">Types and Values</title>
 <refsect2 id="AgsRecallRecyclingFlags" role="enum">
 <title>enum AgsRecallRecyclingFlags</title>
 <indexterm zone="AgsRecallRecyclingFlags"><primary>AgsRecallRecyclingFlags</primary></indexterm>
-<programlisting>typedef enum {
-  AGS_RECALL_RECYCLING_GARBAGE_COLLECTOR                = 1,
-  AGS_RECALL_RECYCLING_MAP_CHILD_DESTINATION            = 1 &lt;&lt; 1,
-  AGS_RECALL_RECYCLING_MAP_CHILD_SOURCE                 = 1 &lt;&lt; 2,
-  AGS_RECALL_RECYCLING_CREATE_DESTINATION_ON_MAP_SOURCE = 1 &lt;&lt; 3,
-} AgsRecallRecyclingFlags;
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-recall-recycling-get-child-source" role="function">
-<title>ags_recall_recycling_get_child_source ()</title>
-<indexterm zone="ags-recall-recycling-get-child-source"><primary>ags_recall_recycling_get_child_source</primary></indexterm>
-<programlisting><link linkend="GList"><returnvalue>GList</returnvalue></link> *             ags_recall_recycling_get_child_source
-                                                        (<parameter><link linkend="AgsRecallRecycling"><type>AgsRecallRecycling</type></link> *recall_recycling</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-recall-recycling-new" role="function">
-<title>ags_recall_recycling_new ()</title>
-<indexterm zone="ags-recall-recycling-new"><primary>ags_recall_recycling_new</primary></indexterm>
-<programlisting><link linkend="AgsRecallRecycling"><returnvalue>AgsRecallRecycling</returnvalue></link> * ags_recall_recycling_new           ();</programlisting>
-<para>
-Creates a <link linkend="AgsRecallRecycling"><type>AgsRecallRecycling</type></link>
-</para><variablelist role="params">
-<varlistentry><term><emphasis>Returns</emphasis>&#160;:</term><listitem><simpara>a new <link linkend="AgsRecallRecycling"><type>AgsRecallRecycling</type></link></simpara></listitem></varlistentry>
-</variablelist></refsect2>
+<refsect3 role="enum_members">
+<title>Members</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="enum_members_name" colwidth="300px"/>
+<colspec colname="enum_members_description"/>
+<colspec colname="enum_members_annotations" colwidth="200px"/>
+<tbody>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-RECALL-RECYCLING-GARBAGE-COLLECTOR:CAPS">AGS_RECALL_RECYCLING_GARBAGE_COLLECTOR</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-RECALL-RECYCLING-MAP-CHILD-DESTINATION:CAPS">AGS_RECALL_RECYCLING_MAP_CHILD_DESTINATION</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-RECALL-RECYCLING-MAP-CHILD-SOURCE:CAPS">AGS_RECALL_RECYCLING_MAP_CHILD_SOURCE</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-RECALL-RECYCLING-CREATE-DESTINATION-ON-MAP-SOURCE:CAPS">AGS_RECALL_RECYCLING_CREATE_DESTINATION_ON_MAP_SOURCE</para></entry>
+<entry /><entry />
+</row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
+
+</refsect1>
+<refsect1 id="AgsRecallRecycling.property-details" role="property_details">
+<title role="property_details.title">Property Details</title>
+<refsect2 id="AgsRecallRecycling--audio-channel" role="property"><title>The <literal>“audio-channel”</literal> property</title>
+<indexterm zone="AgsRecallRecycling--audio-channel" role="0.4.0"><primary>AgsRecallRecycling:audio-channel</primary></indexterm>
+<programlisting>  “audio-channel”            <link linkend="guint"><type>guint</type></link></programlisting>
+<para>The assigned destination recycling.</para>
+<para>Flags: Read / Write</para>
+<para>Allowed values: &lt;= 65536</para>
+<para>Default value: 0</para>
+<para role="since">Since 0.4.0</para></refsect2>
+<refsect2 id="AgsRecallRecycling--child-destination" role="property"><title>The <literal>“child-destination”</literal> property</title>
+<indexterm zone="AgsRecallRecycling--child-destination" role="0.4.0"><primary>AgsRecallRecycling:child-destination</primary></indexterm>
+<programlisting>  “child-destination”        <link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link>&#160;*</programlisting>
+<para>The assigned destination audio signal.</para>
+<para>Flags: Read / Write</para>
+<para role="since">Since 0.4.0</para></refsect2>
+<refsect2 id="AgsRecallRecycling--child-source" role="property"><title>The <literal>“child-source”</literal> property</title>
+<indexterm zone="AgsRecallRecycling--child-source" role="0.4.0"><primary>AgsRecallRecycling:child-source</primary></indexterm>
+<programlisting>  “child-source”             <link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link>&#160;*</programlisting>
+<para>The assigned source audio signal.</para>
+<para>Flags: Write</para>
+<para role="since">Since 0.4.0</para></refsect2>
+<refsect2 id="AgsRecallRecycling--destination" role="property"><title>The <literal>“destination”</literal> property</title>
+<indexterm zone="AgsRecallRecycling--destination" role="0.4.0"><primary>AgsRecallRecycling:destination</primary></indexterm>
+<programlisting>  “destination”              <link linkend="AgsRecycling"><type>AgsRecycling</type></link>&#160;*</programlisting>
+<para>The assigned source recycling.</para>
+<para>Flags: Read / Write</para>
+<para role="since">Since 0.4.0</para></refsect2>
+<refsect2 id="AgsRecallRecycling--source" role="property"><title>The <literal>“source”</literal> property</title>
+<indexterm zone="AgsRecallRecycling--source"><primary>AgsRecallRecycling:source</primary></indexterm>
+<programlisting>  “source”                   <link linkend="AgsRecycling"><type>AgsRecycling</type></link>&#160;*</programlisting>
+<para>The AgsRecycling source of this recall.</para><para>Flags: Read / Write</para>
+</refsect2>
 
 </refsect1>
 

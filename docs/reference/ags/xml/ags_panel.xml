@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsPanel">
+<refentry id="AgsPanel">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsPanel.top_of_page">AgsPanel</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsPanel.top_of_page">AgsPanel</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -14,51 +14,74 @@
 </refmeta>
 <refnamediv>
 <refname>AgsPanel</refname>
-<refpurpose></refpurpose>
+<refpurpose>panel</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsPanel.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsPanel.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="AgsPanel"><returnvalue>AgsPanel</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-panel-new">ags_panel_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>struct              <link linkend="AgsPanel">AgsPanel</link>;
-struct              <link linkend="AgsPanelClass">AgsPanelClass</link>;
-<link linkend="AgsPanel"><returnvalue>AgsPanel</returnvalue></link> *          <link linkend="ags-panel-new">ags_panel_new</link>                       ();
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsPanel.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsPanel.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AgsPanel" role="struct">
-<title>struct AgsPanel</title>
-<indexterm zone="AgsPanel"><primary>AgsPanel</primary></indexterm>
-<programlisting>struct AgsPanel {
-  AgsMachine machine;
+<refsect1 id="AgsPanel.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GInitiallyUnowned">GInitiallyUnowned</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkObject">GtkObject</link>
+            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkWidget">GtkWidget</link>
+                <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkContainer">GtkContainer</link>
+                    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkBin">GtkBin</link>
+                        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkHandleBox">GtkHandleBox</link>
+                            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsMachine">AgsMachine</link>
+                                <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsPanel
+</screen>
+</refsect1>
 
-  GtkVBox *vbox;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsPanelClass" role="struct">
-<title>struct AgsPanelClass</title>
-<indexterm zone="AgsPanelClass"><primary>AgsPanelClass</primary></indexterm>
-<programlisting>struct AgsPanelClass {
-  AgsMachineClass machine;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-panel-new" role="function">
-<title>ags_panel_new ()</title>
-<indexterm zone="ags-panel-new"><primary>ags_panel_new</primary></indexterm>
-<programlisting><link linkend="AgsPanel"><returnvalue>AgsPanel</returnvalue></link> *          ags_panel_new                       ();</programlisting>
-<para>
-</para></refsect2>
+<refsect1 id="AgsPanel.includes"><title>Includes</title><synopsis>#include &lt;ags/X/machine/ags_panel.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsPanel.description" role="desc">
+<title role="desc.title">Description</title>
+<para>The <link linkend="AgsPanel"><type>AgsPanel</type></link> is a composite widget to act as panel.</para>
+
+</refsect1>
+<refsect1 id="AgsPanel.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-panel-new" role="function" condition="since:0.3">
+<title>ags_panel_new&#160;()</title>
+<indexterm zone="ags-panel-new" role="0.3"><primary>ags_panel_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsPanel"><returnvalue>AgsPanel</returnvalue></link>&#160;*
+ags_panel_new ();</programlisting>
+<para>Creates an <link linkend="AgsPanel"><type>AgsPanel</type></link></para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>soundcard</para></entry>
+<entry role="parameter_description"><para>the assigned soundcard.</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> a new <link linkend="AgsPanel"><type>AgsPanel</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.3</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsPanel.other_details" role="details">
+<title role="details.title">Types and Values</title>
 
 </refsect1>
 

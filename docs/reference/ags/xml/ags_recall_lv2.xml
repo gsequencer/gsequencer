@@ -1,0 +1,237 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="AgsRecallLv2">
+<refmeta>
+<refentrytitle role="top_of_page" id="AgsRecallLv2.top_of_page">AgsRecallLv2</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsRecallLv2</refname>
+<refpurpose>The object interfacing with LV2</refpurpose>
+</refnamediv>
+
+<refsect1 id="AgsRecallLv2.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-recall-lv2-load-ports">ags_recall_lv2_load_ports</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-recall-lv2-short-to-float">ags_recall_lv2_short_to_float</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-recall-lv2-float-to-short">ags_recall_lv2_float_to_short</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-recall-ladpsa-find">ags_recall_ladpsa_find</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsRecallLv2"><returnvalue>AgsRecallLv2</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-recall-lv2-new">ags_recall_lv2_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsRecallLv2.properties" role="properties">
+<title role="properties.title">Properties</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="properties_type" colwidth="150px"/>
+<colspec colname="properties_name" colwidth="300px"/>
+<colspec colname="properties_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="property_type"><link linkend="gchar"><type>gchar</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsRecallLv2--filename">filename</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="gulong"><type>gulong</type></link></entry><entry role="property_name"><link linkend="AgsRecallLv2--index">index</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="AgsTurtle"><type>AgsTurtle</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsRecallLv2--turtle">turtle</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="gchar"><type>gchar</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsRecallLv2--uri">uri</link></entry><entry role="property_flags">Read / Write</entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsRecallLv2.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsRecall">AgsRecall</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsRecallChannel">AgsRecallChannel</link>
+            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsRecallLv2
+</screen>
+</refsect1>
+
+<refsect1 id="AgsRecallLv2.includes"><title>Includes</title><synopsis>#include &lt;ags/audio/ags_recall_lv2.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsRecallLv2.description" role="desc">
+<title role="desc.title">Description</title>
+<para><link linkend="AgsRecallLv2"><type>AgsRecallLv2</type></link> provides LV2 support.</para>
+
+</refsect1>
+<refsect1 id="AgsRecallLv2.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-recall-lv2-load-ports" role="function" condition="since:0.4.3">
+<title>ags_recall_lv2_load_ports&#160;()</title>
+<indexterm zone="ags-recall-lv2-load-ports" role="0.4.3"><primary>ags_recall_lv2_load_ports</primary></indexterm>
+<programlisting language="C"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+ags_recall_lv2_load_ports (<parameter><link linkend="AgsRecallLv2"><type>AgsRecallLv2</type></link> *recall_lv2</parameter>);</programlisting>
+<para>Set up LV2 ports.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>recall_lv2</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsRecallLv2"><type>AgsRecallLv2</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> a <link linkend="GList"><type>GList</type></link> containing <link linkend="AgsPort"><type>AgsPort</type></link>.</para>
+<para></para>
+</refsect3><para role="since">Since 0.4.3</para></refsect2>
+<refsect2 id="ags-recall-lv2-short-to-float" role="function" condition="since:0.4.3">
+<title>ags_recall_lv2_short_to_float&#160;()</title>
+<indexterm zone="ags-recall-lv2-short-to-float" role="0.4.3"><primary>ags_recall_lv2_short_to_float</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_recall_lv2_short_to_float (<parameter>signed <link linkend="short"><type>short</type></link> *buffer</parameter>,
+                               <parameter><link linkend="float"><type>float</type></link> *destination</parameter>,
+                               <parameter><link linkend="guint"><type>guint</type></link> buffer_size</parameter>,
+                               <parameter><link linkend="guint"><type>guint</type></link> lines</parameter>);</programlisting>
+<para>Convert data type.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>buffer</para></entry>
+<entry role="parameter_description"><para>source</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>destination</para></entry>
+<entry role="parameter_description"><para>destination</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4.3</para></refsect2>
+<refsect2 id="ags-recall-lv2-float-to-short" role="function" condition="since:0.4.3">
+<title>ags_recall_lv2_float_to_short&#160;()</title>
+<indexterm zone="ags-recall-lv2-float-to-short" role="0.4.3"><primary>ags_recall_lv2_float_to_short</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_recall_lv2_float_to_short (<parameter><link linkend="float"><type>float</type></link> *buffer</parameter>,
+                               <parameter>signed <link linkend="short"><type>short</type></link> *destination</parameter>,
+                               <parameter><link linkend="guint"><type>guint</type></link> buffer_size</parameter>,
+                               <parameter><link linkend="guint"><type>guint</type></link> lines</parameter>);</programlisting>
+<para>Convert data type.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>buffer</para></entry>
+<entry role="parameter_description"><para>source</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>destination</para></entry>
+<entry role="parameter_description"><para>destination</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>buffer_size</para></entry>
+<entry role="parameter_description"><para>buffer_size</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4.3</para></refsect2>
+<refsect2 id="ags-recall-ladpsa-find" role="function">
+<title>ags_recall_ladpsa_find&#160;()</title>
+<indexterm zone="ags-recall-ladpsa-find"><primary>ags_recall_ladpsa_find</primary></indexterm>
+<programlisting language="C"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+ags_recall_ladpsa_find (<parameter><link linkend="GList"><type>GList</type></link> *recall</parameter>,
+                        <parameter><link linkend="gchar"><type>gchar</type></link> *filename</parameter>,
+                        <parameter><link linkend="gchar"><type>gchar</type></link> *uri</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-recall-lv2-new" role="function" condition="since:0.4.3">
+<title>ags_recall_lv2_new&#160;()</title>
+<indexterm zone="ags-recall-lv2-new" role="0.4.3"><primary>ags_recall_lv2_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsRecallLv2"><returnvalue>AgsRecallLv2</returnvalue></link>&#160;*
+ags_recall_lv2_new (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *source</parameter>,
+                    <parameter><link linkend="AgsTurtle"><type>AgsTurtle</type></link> *turtle</parameter>,
+                    <parameter><link linkend="gchar"><type>gchar</type></link> *filename</parameter>,
+                    <parameter><link linkend="gchar"><type>gchar</type></link> *uri</parameter>,
+                    <parameter><link linkend="uint32-t"><type>uint32_t</type></link> index</parameter>);</programlisting>
+<para>Creates a <link linkend="AgsRecallLv2"><type>AgsRecallLv2</type></link></para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>source</para></entry>
+<entry role="parameter_description"><para>the source
+<link linkend="turtle"><type>turtle</type></link>: the .ttl file</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>filename</para></entry>
+<entry role="parameter_description"><para>the LV2 plugin filename</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>uri</para></entry>
+<entry role="parameter_description"><para>uri's name</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>index</para></entry>
+<entry role="parameter_description"><para>uri's index</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> a new <link linkend="AgsRecallLv2"><type>AgsRecallLv2</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.4.3</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsRecallLv2.other_details" role="details">
+<title role="details.title">Types and Values</title>
+
+</refsect1>
+<refsect1 id="AgsRecallLv2.property-details" role="property_details">
+<title role="property_details.title">Property Details</title>
+<refsect2 id="AgsRecallLv2--filename" role="property"><title>The <literal>“filename”</literal> property</title>
+<indexterm zone="AgsRecallLv2--filename" role="0.4.3"><primary>AgsRecallLv2:filename</primary></indexterm>
+<programlisting>  “filename”                 <link linkend="gchar"><type>gchar</type></link>&#160;*</programlisting>
+<para>The plugins filename.</para>
+<para>Flags: Read / Write</para>
+<para>Default value: NULL</para>
+<para role="since">Since 0.4.3</para></refsect2>
+<refsect2 id="AgsRecallLv2--index" role="property"><title>The <literal>“index”</literal> property</title>
+<indexterm zone="AgsRecallLv2--index" role="0.4.3"><primary>AgsRecallLv2:index</primary></indexterm>
+<programlisting>  “index”                    <link linkend="gulong"><type>gulong</type></link></programlisting>
+<para>The uri's index.</para>
+<para>Flags: Read / Write</para>
+<para>Allowed values: &lt;= 65535</para>
+<para role="since">Since 0.4.3</para></refsect2>
+<refsect2 id="AgsRecallLv2--turtle" role="property"><title>The <literal>“turtle”</literal> property</title>
+<indexterm zone="AgsRecallLv2--turtle" role="0.4.3"><primary>AgsRecallLv2:turtle</primary></indexterm>
+<programlisting>  “turtle”                   <link linkend="AgsTurtle"><type>AgsTurtle</type></link>&#160;*</programlisting>
+<para>The assigned turtle.</para>
+<para>Flags: Read / Write</para>
+<para role="since">Since 0.4.3</para></refsect2>
+<refsect2 id="AgsRecallLv2--uri" role="property"><title>The <literal>“uri”</literal> property</title>
+<indexterm zone="AgsRecallLv2--uri" role="0.4.3"><primary>AgsRecallLv2:uri</primary></indexterm>
+<programlisting>  “uri”                      <link linkend="gchar"><type>gchar</type></link>&#160;*</programlisting>
+<para>The uri's name.</para>
+<para>Flags: Read / Write</para>
+<para>Default value: NULL</para>
+<para role="since">Since 0.4.3</para></refsect2>
+
+</refsect1>
+
+</refentry>

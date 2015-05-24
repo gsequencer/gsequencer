@@ -1,0 +1,137 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-ags-bulk-member-callbacks">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-ags-bulk-member-callbacks.top_of_page">ags_bulk_member_callbacks</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>ags_bulk_member_callbacks</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsect1 id="ags-ags-bulk-member-callbacks.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="int"><returnvalue>int</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-bulk-member-parent-set-callback">ags_bulk_member_parent_set_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-bulk-member-dial-changed-callback">ags_bulk_member_dial_changed_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-bulk-member-vscale-changed-callback">ags_bulk_member_vscale_changed_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-bulk-member-hscale-changed-callback">ags_bulk_member_hscale_changed_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-bulk-member-spin-button-changed-callback">ags_bulk_member_spin_button_changed_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-bulk-member-check-button-clicked-callback">ags_bulk_member_check_button_clicked_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-bulk-member-toggle-button-clicked-callback">ags_bulk_member_toggle_button_clicked_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-bulk-member-button-clicked-callback">ags_bulk_member_button_clicked_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-bulk-member-port-safe-write-callback">ags_bulk_member_port_safe_write_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+
+
+<refsect1 id="ags-ags-bulk-member-callbacks.description" role="desc">
+<title role="desc.title">Description</title>
+
+</refsect1>
+<refsect1 id="ags-ags-bulk-member-callbacks.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-bulk-member-parent-set-callback" role="function">
+<title>ags_bulk_member_parent_set_callback&#160;()</title>
+<indexterm zone="ags-bulk-member-parent-set-callback"><primary>ags_bulk_member_parent_set_callback</primary></indexterm>
+<programlisting language="C"><link linkend="int"><returnvalue>int</returnvalue></link>
+ags_bulk_member_parent_set_callback (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                                     <parameter><link linkend="GtkObject"><type>GtkObject</type></link> *old_parent</parameter>,
+                                     <parameter><link linkend="AgsBulkMember"><type>AgsBulkMember</type></link> *bulk_member</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-bulk-member-dial-changed-callback" role="function">
+<title>ags_bulk_member_dial_changed_callback&#160;()</title>
+<indexterm zone="ags-bulk-member-dial-changed-callback"><primary>ags_bulk_member_dial_changed_callback</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_bulk_member_dial_changed_callback (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *dial</parameter>,
+                                       <parameter><link linkend="AgsBulkMember"><type>AgsBulkMember</type></link> *bulk_member</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-bulk-member-vscale-changed-callback" role="function">
+<title>ags_bulk_member_vscale_changed_callback&#160;()</title>
+<indexterm zone="ags-bulk-member-vscale-changed-callback"><primary>ags_bulk_member_vscale_changed_callback</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_bulk_member_vscale_changed_callback
+                               (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *vscale</parameter>,
+                                <parameter><link linkend="AgsBulkMember"><type>AgsBulkMember</type></link> *bulk_member</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-bulk-member-hscale-changed-callback" role="function">
+<title>ags_bulk_member_hscale_changed_callback&#160;()</title>
+<indexterm zone="ags-bulk-member-hscale-changed-callback"><primary>ags_bulk_member_hscale_changed_callback</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_bulk_member_hscale_changed_callback
+                               (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *hscale</parameter>,
+                                <parameter><link linkend="AgsBulkMember"><type>AgsBulkMember</type></link> *bulk_member</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-bulk-member-spin-button-changed-callback" role="function">
+<title>ags_bulk_member_spin_button_changed_callback&#160;()</title>
+<indexterm zone="ags-bulk-member-spin-button-changed-callback"><primary>ags_bulk_member_spin_button_changed_callback</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_bulk_member_spin_button_changed_callback
+                               (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *spin_button</parameter>,
+                                <parameter><link linkend="AgsBulkMember"><type>AgsBulkMember</type></link> *bulk_member</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-bulk-member-check-button-clicked-callback" role="function">
+<title>ags_bulk_member_check_button_clicked_callback&#160;()</title>
+<indexterm zone="ags-bulk-member-check-button-clicked-callback"><primary>ags_bulk_member_check_button_clicked_callback</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_bulk_member_check_button_clicked_callback
+                               (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *check_button</parameter>,
+                                <parameter><link linkend="AgsBulkMember"><type>AgsBulkMember</type></link> *bulk_member</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-bulk-member-toggle-button-clicked-callback" role="function">
+<title>ags_bulk_member_toggle_button_clicked_callback&#160;()</title>
+<indexterm zone="ags-bulk-member-toggle-button-clicked-callback"><primary>ags_bulk_member_toggle_button_clicked_callback</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_bulk_member_toggle_button_clicked_callback
+                               (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *toggle_button</parameter>,
+                                <parameter><link linkend="AgsBulkMember"><type>AgsBulkMember</type></link> *bulk_member</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-bulk-member-button-clicked-callback" role="function">
+<title>ags_bulk_member_button_clicked_callback&#160;()</title>
+<indexterm zone="ags-bulk-member-button-clicked-callback"><primary>ags_bulk_member_button_clicked_callback</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_bulk_member_button_clicked_callback
+                               (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *button</parameter>,
+                                <parameter><link linkend="AgsBulkMember"><type>AgsBulkMember</type></link> *bulk_member</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-bulk-member-port-safe-write-callback" role="function">
+<title>ags_bulk_member_port_safe_write_callback&#160;()</title>
+<indexterm zone="ags-bulk-member-port-safe-write-callback"><primary>ags_bulk_member_port_safe_write_callback</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_bulk_member_port_safe_write_callback
+                               (<parameter><link linkend="AgsPort"><type>AgsPort</type></link> *port</parameter>,
+                                <parameter><link linkend="GValue"><type>GValue</type></link> *value</parameter>,
+                                <parameter><link linkend="AgsBulkMember"><type>AgsBulkMember</type></link> *bulk_member</parameter>);</programlisting>
+</refsect2>
+
+</refsect1>
+<refsect1 id="ags-ags-bulk-member-callbacks.other_details" role="details">
+<title role="details.title">Types and Values</title>
+
+</refsect1>
+
+</refentry>

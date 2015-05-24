@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsPlayNotationAudio">
+<refentry id="AgsPlayNotationAudio">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsPlayNotationAudio.top_of_page">AgsPlayNotationAudio</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsPlayNotationAudio.top_of_page">AgsPlayNotationAudio</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -14,51 +14,80 @@
 </refmeta>
 <refnamediv>
 <refname>AgsPlayNotationAudio</refname>
-<refpurpose></refpurpose>
+<refpurpose>play audio notation</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsPlayNotationAudio.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsPlayNotationAudio.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="AgsPlayNotationAudio"><returnvalue>AgsPlayNotationAudio</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-play-notation-audio-new">ags_play_notation_audio_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>struct              <link linkend="AgsPlayNotationAudio">AgsPlayNotationAudio</link>;
-struct              <link linkend="AgsPlayNotationAudioClass">AgsPlayNotationAudioClass</link>;
-<link linkend="AgsPlayNotationAudio"><returnvalue>AgsPlayNotationAudio</returnvalue></link> * <link linkend="ags-play-notation-audio-new">ags_play_notation_audio_new</link>      ();
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsPlayNotationAudio.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsPlayNotationAudio.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AgsPlayNotationAudio" role="struct">
-<title>struct AgsPlayNotationAudio</title>
-<indexterm zone="AgsPlayNotationAudio"><primary>AgsPlayNotationAudio</primary></indexterm>
-<programlisting>struct AgsPlayNotationAudio {
-  AgsRecallAudio recall_audio;
+<refsect1 id="AgsPlayNotationAudio.properties" role="properties">
+<title role="properties.title">Properties</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="properties_type" colwidth="150px"/>
+<colspec colname="properties_name" colwidth="300px"/>
+<colspec colname="properties_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="property_type"><link linkend="AgsPort"><type>AgsPort</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsPlayNotationAudio--notation">notation</link></entry><entry role="property_flags">Read / Write</entry></row>
 
-  AgsPort *notation;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsPlayNotationAudioClass" role="struct">
-<title>struct AgsPlayNotationAudioClass</title>
-<indexterm zone="AgsPlayNotationAudioClass"><primary>AgsPlayNotationAudioClass</primary></indexterm>
-<programlisting>struct AgsPlayNotationAudioClass {
-  AgsRecallAudioClass recall_audio;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-play-notation-audio-new" role="function">
-<title>ags_play_notation_audio_new ()</title>
-<indexterm zone="ags-play-notation-audio-new"><primary>ags_play_notation_audio_new</primary></indexterm>
-<programlisting><link linkend="AgsPlayNotationAudio"><returnvalue>AgsPlayNotationAudio</returnvalue></link> * ags_play_notation_audio_new      ();</programlisting>
-<para>
-</para></refsect2>
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsPlayNotationAudio.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsRecall">AgsRecall</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsRecallAudio">AgsRecallAudio</link>
+            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsPlayNotationAudio
+</screen>
+</refsect1>
+
+<refsect1 id="AgsPlayNotationAudio.includes"><title>Includes</title><synopsis>#include &lt;ags/audio/recall/ags_play_notation_audio.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsPlayNotationAudio.description" role="desc">
+<title role="desc.title">Description</title>
+<para>The <link linkend="AgsPlayNotationAudio"><type>AgsPlayNotationAudio</type></link> class provides ports to the effect processor.</para>
+
+</refsect1>
+<refsect1 id="AgsPlayNotationAudio.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-play-notation-audio-new" role="function" condition="since:0.4">
+<title>ags_play_notation_audio_new&#160;()</title>
+<indexterm zone="ags-play-notation-audio-new" role="0.4"><primary>ags_play_notation_audio_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsPlayNotationAudio"><returnvalue>AgsPlayNotationAudio</returnvalue></link>&#160;*
+ags_play_notation_audio_new ();</programlisting>
+<para>Creates an <link linkend="AgsPlayNotationAudio"><type>AgsPlayNotationAudio</type></link></para>
+<refsect3 role="returns">
+<title>Returns</title>
+<para> a new <link linkend="AgsPlayNotationAudio"><type>AgsPlayNotationAudio</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsPlayNotationAudio.other_details" role="details">
+<title role="details.title">Types and Values</title>
+
+</refsect1>
+<refsect1 id="AgsPlayNotationAudio.property-details" role="property_details">
+<title role="property_details.title">Property Details</title>
+<refsect2 id="AgsPlayNotationAudio--notation" role="property"><title>The <literal>“notation”</literal> property</title>
+<indexterm zone="AgsPlayNotationAudio--notation"><primary>AgsPlayNotationAudio:notation</primary></indexterm>
+<programlisting>  “notation”                 <link linkend="AgsPort"><type>AgsPort</type></link>&#160;*</programlisting>
+<para>The notation this recall does play.</para><para>Flags: Read / Write</para>
+</refsect2>
 
 </refsect1>
 

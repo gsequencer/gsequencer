@@ -1,0 +1,325 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="AgsBulkMember">
+<refmeta>
+<refentrytitle role="top_of_page" id="AgsBulkMember.top_of_page">AgsBulkMember</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsBulkMember</refname>
+<refpurpose>Modify assigned recall's port</refpurpose>
+</refnamediv>
+
+<refsect1 id="AgsBulkMember.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-BULK-PORT:CAPS">AGS_BULK_PORT</link><phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsBulkPort"><returnvalue>AgsBulkPort</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-bulk-port-alloc">ags_bulk_port_alloc</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="GtkWidget"><returnvalue>GtkWidget</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-bulk-member-get-widget">ags_bulk_member_get_widget</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-bulk-member-set-label">ags_bulk_member_set_label</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-bulk-member-change-port">ags_bulk_member_change_port</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-bulk-member-find-port">ags_bulk_member_find_port</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsBulkMember"><returnvalue>AgsBulkMember</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-bulk-member-new">ags_bulk_member_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsBulkMember.properties" role="properties">
+<title role="properties.title">Properties</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="properties_type" colwidth="150px"/>
+<colspec colname="properties_name" colwidth="300px"/>
+<colspec colname="properties_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="property_type"><link linkend="gchar"><type>gchar</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsBulkMember--control-port">control-port</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="gchar"><type>gchar</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsBulkMember--effect">effect</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="gchar"><type>gchar</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsBulkMember--filename">filename</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="gchar"><type>gchar</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsBulkMember--plugin-name">plugin-name</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="gchar"><type>gchar</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsBulkMember--specifier">specifier</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="gchar"><type>gchar</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsBulkMember--widget-label">widget-label</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="gulong"><type>gulong</type></link></entry><entry role="property_name"><link linkend="AgsBulkMember--widget-type">widget-type</link></entry><entry role="property_flags">Read / Write</entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsBulkMember.signals" role="signal_proto">
+<title role="signal_proto.title">Signals</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="signals_return" colwidth="150px"/>
+<colspec colname="signals_name" colwidth="300px"/>
+<colspec colname="signals_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsBulkMember-change-port">change-port</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsBulkMember.other" role="other_proto">
+<title role="other_proto.title">Types and Values</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="name" colwidth="150px"/>
+<colspec colname="description"/>
+<tbody>
+<row><entry role="datatype_keyword">enum</entry><entry role="function_name"><link linkend="AgsBulkMemberFlags">AgsBulkMemberFlags</link></entry></row>
+<row><entry role="datatype_keyword">struct</entry><entry role="function_name"><link linkend="AgsBulkPort">AgsBulkPort</link></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsBulkMember.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GInitiallyUnowned">GInitiallyUnowned</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkObject">GtkObject</link>
+            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkWidget">GtkWidget</link>
+                <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkContainer">GtkContainer</link>
+                    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkBin">GtkBin</link>
+                        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkFrame">GtkFrame</link>
+                            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsBulkMember
+</screen>
+</refsect1>
+
+<refsect1 id="AgsBulkMember.includes"><title>Includes</title><synopsis>#include &lt;ags/X/ags_bulk_member.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsBulkMember.description" role="desc">
+<title role="desc.title">Description</title>
+<para><link linkend="AgsBulkMember"><type>AgsBulkMember</type></link> is a composite widget to modify ports of recalls. A bulk member
+controls only one specific port of a recall but distinguishes between simple/complex
+recall. It is generally packed into a <link linkend="AgsBulk"><type>AgsBulk</type></link>.</para>
+
+</refsect1>
+<refsect1 id="AgsBulkMember.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="AGS-BULK-PORT:CAPS" role="macro">
+<title>AGS_BULK_PORT()</title>
+<indexterm zone="AGS-BULK-PORT:CAPS"><primary>AGS_BULK_PORT</primary></indexterm>
+<programlisting language="C">#define AGS_BULK_PORT(ptr) ((AgsBulkPort *)(ptr))
+</programlisting>
+</refsect2>
+<refsect2 id="ags-bulk-port-alloc" role="function">
+<title>ags_bulk_port_alloc&#160;()</title>
+<indexterm zone="ags-bulk-port-alloc"><primary>ags_bulk_port_alloc</primary></indexterm>
+<programlisting language="C"><link linkend="AgsBulkPort"><returnvalue>AgsBulkPort</returnvalue></link>&#160;*
+ags_bulk_port_alloc (<parameter><link linkend="AgsPort"><type>AgsPort</type></link> *port</parameter>,
+                     <parameter><link linkend="AgsPort"><type>AgsPort</type></link> *recall_port</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-bulk-member-get-widget" role="function">
+<title>ags_bulk_member_get_widget&#160;()</title>
+<indexterm zone="ags-bulk-member-get-widget"><primary>ags_bulk_member_get_widget</primary></indexterm>
+<programlisting language="C"><link linkend="GtkWidget"><returnvalue>GtkWidget</returnvalue></link>&#160;*
+ags_bulk_member_get_widget (<parameter><link linkend="AgsBulkMember"><type>AgsBulkMember</type></link> *bulk_member</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-bulk-member-set-label" role="function">
+<title>ags_bulk_member_set_label&#160;()</title>
+<indexterm zone="ags-bulk-member-set-label"><primary>ags_bulk_member_set_label</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_bulk_member_set_label (<parameter><link linkend="AgsBulkMember"><type>AgsBulkMember</type></link> *bulk_member</parameter>,
+                           <parameter><link linkend="gchar"><type>gchar</type></link> *label</parameter>);</programlisting>
+<para>Modify the label of the bulk member.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>bulk_member</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsBulkMember"><type>AgsBulkMember</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>label</para></entry>
+<entry role="parameter_description"><para>the label of the control</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
+<refsect2 id="ags-bulk-member-change-port" role="function">
+<title>ags_bulk_member_change_port&#160;()</title>
+<indexterm zone="ags-bulk-member-change-port"><primary>ags_bulk_member_change_port</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_bulk_member_change_port (<parameter><link linkend="AgsBulkMember"><type>AgsBulkMember</type></link> *bulk_member</parameter>,
+                             <parameter><link linkend="gpointer"><type>gpointer</type></link> port_data</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-bulk-member-find-port" role="function" condition="since:0.4">
+<title>ags_bulk_member_find_port&#160;()</title>
+<indexterm zone="ags-bulk-member-find-port" role="0.4"><primary>ags_bulk_member_find_port</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_bulk_member_find_port (<parameter><link linkend="AgsBulkMember"><type>AgsBulkMember</type></link> *bulk_member</parameter>);</programlisting>
+<para>Lookup ports of assigned recall.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>bulk_member</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsBulkMember"><type>AgsBulkMember</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-bulk-member-new" role="function" condition="since:0.4">
+<title>ags_bulk_member_new&#160;()</title>
+<indexterm zone="ags-bulk-member-new" role="0.4"><primary>ags_bulk_member_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsBulkMember"><returnvalue>AgsBulkMember</returnvalue></link>&#160;*
+ags_bulk_member_new ();</programlisting>
+<para>Creates an <link linkend="AgsBulkMember"><type>AgsBulkMember</type></link></para>
+<refsect3 role="returns">
+<title>Returns</title>
+<para> a new <link linkend="AgsBulkMember"><type>AgsBulkMember</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsBulkMember.other_details" role="details">
+<title role="details.title">Types and Values</title>
+<refsect2 id="AgsBulkMemberFlags" role="enum">
+<title>enum AgsBulkMemberFlags</title>
+<indexterm zone="AgsBulkMemberFlags"><primary>AgsBulkMemberFlags</primary></indexterm>
+<refsect3 role="enum_members">
+<title>Members</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="enum_members_name" colwidth="300px"/>
+<colspec colname="enum_members_description"/>
+<colspec colname="enum_members_annotations" colwidth="200px"/>
+<tbody>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-BULK-MEMBER-DEFAULT-TEMPLATE:CAPS">AGS_BULK_MEMBER_DEFAULT_TEMPLATE</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-BULK-MEMBER-RESET-BY-ATOMIC:CAPS">AGS_BULK_MEMBER_RESET_BY_ATOMIC</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-BULK-MEMBER-RESET-BY-TASK:CAPS">AGS_BULK_MEMBER_RESET_BY_TASK</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-BULK-MEMBER-APPLY-RECALL:CAPS">AGS_BULK_MEMBER_APPLY_RECALL</para></entry>
+<entry /><entry />
+</row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
+<refsect2 id="AgsBulkPort" role="struct">
+<title>struct AgsBulkPort</title>
+<indexterm zone="AgsBulkPort"><primary>AgsBulkPort</primary></indexterm>
+<programlisting language="C">struct AgsBulkPort {
+  AgsPort *port;
+  gpointer port_data;
+  gboolean active;
+
+  AgsPort *recall_port;
+  gpointer recall_port_data;
+  gboolean recall_active;
+};
+</programlisting>
+</refsect2>
+
+</refsect1>
+<refsect1 id="AgsBulkMember.property-details" role="property_details">
+<title role="property_details.title">Property Details</title>
+<refsect2 id="AgsBulkMember--control-port" role="property"><title>The <literal>“control-port”</literal> property</title>
+<indexterm zone="AgsBulkMember--control-port" role="0.4"><primary>AgsBulkMember:control-port</primary></indexterm>
+<programlisting>  “control-port”             <link linkend="gchar"><type>gchar</type></link>&#160;*</programlisting>
+<para>The control port of the recall.</para>
+<para>Flags: Read / Write</para>
+<para>Default value: NULL</para>
+<para role="since">Since 0.4</para></refsect2>
+<refsect2 id="AgsBulkMember--effect" role="property"><title>The <literal>“effect”</literal> property</title>
+<indexterm zone="AgsBulkMember--effect" role="0.4"><primary>AgsBulkMember:effect</primary></indexterm>
+<programlisting>  “effect”                   <link linkend="gchar"><type>gchar</type></link>&#160;*</programlisting>
+<para>The plugin effect of the recall to apply.</para>
+<para>Flags: Read / Write</para>
+<para>Default value: NULL</para>
+<para role="since">Since 0.4</para></refsect2>
+<refsect2 id="AgsBulkMember--filename" role="property"><title>The <literal>“filename”</literal> property</title>
+<indexterm zone="AgsBulkMember--filename" role="0.4"><primary>AgsBulkMember:filename</primary></indexterm>
+<programlisting>  “filename”                 <link linkend="gchar"><type>gchar</type></link>&#160;*</programlisting>
+<para>The plugin filename of the recall to apply.</para>
+<para>Flags: Read / Write</para>
+<para>Default value: NULL</para>
+<para role="since">Since 0.4</para></refsect2>
+<refsect2 id="AgsBulkMember--plugin-name" role="property"><title>The <literal>“plugin-name”</literal> property</title>
+<indexterm zone="AgsBulkMember--plugin-name" role="0.4"><primary>AgsBulkMember:plugin-name</primary></indexterm>
+<programlisting>  “plugin-name”              <link linkend="gchar"><type>gchar</type></link>&#160;*</programlisting>
+<para>The plugin name of the recall to use.</para>
+<para>Flags: Read / Write</para>
+<para>Default value: NULL</para>
+<para role="since">Since 0.4</para></refsect2>
+<refsect2 id="AgsBulkMember--specifier" role="property"><title>The <literal>“specifier”</literal> property</title>
+<indexterm zone="AgsBulkMember--specifier" role="0.4"><primary>AgsBulkMember:specifier</primary></indexterm>
+<programlisting>  “specifier”                <link linkend="gchar"><type>gchar</type></link>&#160;*</programlisting>
+<para>The plugin specifier of the recall to apply.</para>
+<para>Flags: Read / Write</para>
+<para>Default value: NULL</para>
+<para role="since">Since 0.4</para></refsect2>
+<refsect2 id="AgsBulkMember--widget-label" role="property"><title>The <literal>“widget-label”</literal> property</title>
+<indexterm zone="AgsBulkMember--widget-label" role="0.4"><primary>AgsBulkMember:widget-label</primary></indexterm>
+<programlisting>  “widget-label”             <link linkend="gchar"><type>gchar</type></link>&#160;*</programlisting>
+<para>The widget's label to use.</para>
+<para>Flags: Read / Write</para>
+<para>Default value: NULL</para>
+<para role="since">Since 0.4</para></refsect2>
+<refsect2 id="AgsBulkMember--widget-type" role="property"><title>The <literal>“widget-type”</literal> property</title>
+<indexterm zone="AgsBulkMember--widget-type" role="0.4"><primary>AgsBulkMember:widget-type</primary></indexterm>
+<programlisting>  “widget-type”              <link linkend="gulong"><type>gulong</type></link></programlisting>
+<para>The widget type to instantiate and use as control.</para>
+<para>Flags: Read / Write</para>
+<para role="since">Since 0.4</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsBulkMember.signal-details" role="signals">
+<title role="signals.title">Signal Details</title>
+<refsect2 id="AgsBulkMember-change-port" role="signal"><title>The <literal>“change-port”</literal> signal</title>
+<indexterm zone="AgsBulkMember-change-port"><primary>AgsBulkMember::change-port</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsBulkMember"><type>AgsBulkMember</type></link> *bulk_member,
+               <link linkend="gpointer"><type>gpointer</type></link>       port_data,
+               <link linkend="gpointer"><type>gpointer</type></link>       user_data)</programlisting>
+<para>The ::change-port signal notifies modified port.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>bulk_member</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsBulkMember"><type>AgsBulkMember</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>port_data</para></entry>
+<entry role="parameter_description"><para>the port's data</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2>
+</refsect1>
+
+</refentry>

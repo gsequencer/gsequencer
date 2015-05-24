@@ -321,7 +321,6 @@ am__objects_18 = $(am__objects_1) libags_gui_a-ags_gui_init.$(OBJEXT) \
 	libags_gui_a-ags_menu_item.$(OBJEXT) \
 	libags_gui_a-ags_option_menu.$(OBJEXT) \
 	libags_gui_a-ags_ruler.$(OBJEXT) \
-	libags_gui_a-ags_segment.$(OBJEXT) \
 	libags_gui_a-ags_table.$(OBJEXT) \
 	libags_gui_a-ags_timebar.$(OBJEXT) \
 	libags_gui_a-ags_vindicator.$(OBJEXT) \
@@ -1108,7 +1107,6 @@ ags_widget_h_sources = \
 	src/ags/widget/ags_menu_item.h			\
 	src/ags/widget/ags_option_menu.h		\
 	src/ags/widget/ags_ruler.h			\
-	src/ags/widget/ags_segment.h			\
 	src/ags/widget/ags_table.h			\
 	src/ags/widget/ags_timebar.h			\
 	src/ags/widget/ags_vindicator.h		\
@@ -1130,7 +1128,6 @@ ags_widget_c_sources = \
 	src/ags/widget/ags_menu_item.c			\
 	src/ags/widget/ags_option_menu.c		\
 	src/ags/widget/ags_ruler.c			\
-	src/ags/widget/ags_segment.c			\
 	src/ags/widget/ags_table.c			\
 	src/ags/widget/ags_timebar.c			\
 	src/ags/widget/ags_vindicator.c		\
@@ -2448,7 +2445,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_gui_a-ags_menu_item.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_gui_a-ags_option_menu.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_gui_a-ags_ruler.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_gui_a-ags_segment.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_gui_a-ags_table.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_gui_a-ags_timebar.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_gui_a-ags_vindicator.Po@am__quote@
@@ -5276,20 +5272,6 @@ libags_gui_a-ags_ruler.obj: src/ags/widget/ags_ruler.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/widget/ags_ruler.c' object='libags_gui_a-ags_ruler.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_gui_a_CFLAGS) $(CFLAGS) -c -o libags_gui_a-ags_ruler.obj `if test -f 'src/ags/widget/ags_ruler.c'; then $(CYGPATH_W) 'src/ags/widget/ags_ruler.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/widget/ags_ruler.c'; fi`
-
-libags_gui_a-ags_segment.o: src/ags/widget/ags_segment.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_gui_a_CFLAGS) $(CFLAGS) -MT libags_gui_a-ags_segment.o -MD -MP -MF $(DEPDIR)/libags_gui_a-ags_segment.Tpo -c -o libags_gui_a-ags_segment.o `test -f 'src/ags/widget/ags_segment.c' || echo '$(srcdir)/'`src/ags/widget/ags_segment.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_gui_a-ags_segment.Tpo $(DEPDIR)/libags_gui_a-ags_segment.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/widget/ags_segment.c' object='libags_gui_a-ags_segment.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_gui_a_CFLAGS) $(CFLAGS) -c -o libags_gui_a-ags_segment.o `test -f 'src/ags/widget/ags_segment.c' || echo '$(srcdir)/'`src/ags/widget/ags_segment.c
-
-libags_gui_a-ags_segment.obj: src/ags/widget/ags_segment.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_gui_a_CFLAGS) $(CFLAGS) -MT libags_gui_a-ags_segment.obj -MD -MP -MF $(DEPDIR)/libags_gui_a-ags_segment.Tpo -c -o libags_gui_a-ags_segment.obj `if test -f 'src/ags/widget/ags_segment.c'; then $(CYGPATH_W) 'src/ags/widget/ags_segment.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/widget/ags_segment.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_gui_a-ags_segment.Tpo $(DEPDIR)/libags_gui_a-ags_segment.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/widget/ags_segment.c' object='libags_gui_a-ags_segment.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_gui_a_CFLAGS) $(CFLAGS) -c -o libags_gui_a-ags_segment.obj `if test -f 'src/ags/widget/ags_segment.c'; then $(CYGPATH_W) 'src/ags/widget/ags_segment.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/widget/ags_segment.c'; fi`
 
 libags_gui_a-ags_table.o: src/ags/widget/ags_table.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_gui_a_CFLAGS) $(CFLAGS) -MT libags_gui_a-ags_table.o -MD -MP -MF $(DEPDIR)/libags_gui_a-ags_table.Tpo -c -o libags_gui_a-ags_table.o `test -f 'src/ags/widget/ags_table.c' || echo '$(srcdir)/'`src/ags/widget/ags_table.c

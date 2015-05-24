@@ -1,8 +1,15 @@
 <?xml version="1.0"?>
 <!DOCTYPE indexdiv PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
 <indexdiv>
+<indexdiv><title>L</title>
+<indexentry><primaryie linkends="ags-list-free-and-free-link"><link linkend="ags-list-free-and-free-link">ags_list_free_and_free_link</link>, function in <link linkend="ags-AgsList">AgsList</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-list-free-and-unref-link"><link linkend="ags-list-free-and-unref-link">ags_list_free_and_unref_link</link>, function in <link linkend="ags-AgsList">AgsList</link></primaryie></indexentry>
+</indexdiv>
+<indexdiv><title>M</title>
+<indexentry><primaryie linkends="ags-machine-add-default-recalls"><link linkend="ags-machine-add-default-recalls">ags_machine_add_default_recalls</link>, function in <link linkend="AgsMachine">AgsMachine</link></primaryie></indexentry>
+</indexdiv>
 </indexdiv>

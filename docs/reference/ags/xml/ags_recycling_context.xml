@@ -1,0 +1,472 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="AgsRecyclingContext">
+<refmeta>
+<refentrytitle role="top_of_page" id="AgsRecyclingContext.top_of_page">AgsRecyclingContext</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsRecyclingContext</refname>
+<refpurpose>A context of recycling acting as dynamic context.</refpurpose>
+</refnamediv>
+
+<refsect1 id="AgsRecyclingContext.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-recycling-context-replace">ags_recycling_context_replace</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsRecyclingContext"><returnvalue>AgsRecyclingContext</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-recycling-context-add">ags_recycling_context_add</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsRecyclingContext"><returnvalue>AgsRecyclingContext</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-recycling-context-remove">ags_recycling_context_remove</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsRecyclingContext"><returnvalue>AgsRecyclingContext</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-recycling-context-insert">ags_recycling_context_insert</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsRecyclingContext"><returnvalue>AgsRecyclingContext</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-recycling-context-get-toplevel">ags_recycling_context_get_toplevel</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gint"><returnvalue>gint</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-recycling-context-find">ags_recycling_context_find</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gint"><returnvalue>gint</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-recycling-context-find-child">ags_recycling_context_find_child</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gint"><returnvalue>gint</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-recycling-context-find-parent">ags_recycling_context_find_parent</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-recycling-context-add-child">ags_recycling_context_add_child</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-recycling-context-remove-child">ags_recycling_context_remove_child</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-recycling-context-get-child-recall-id">ags_recycling_context_get_child_recall_id</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsRecyclingContext"><returnvalue>AgsRecyclingContext</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-recycling-context-reset-recycling">ags_recycling_context_reset_recycling</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsRecyclingContext"><returnvalue>AgsRecyclingContext</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-recycling-context-new">ags_recycling_context_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsRecyclingContext.properties" role="properties">
+<title role="properties.title">Properties</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="properties_type" colwidth="150px"/>
+<colspec colname="properties_name" colwidth="300px"/>
+<colspec colname="properties_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="property_type"><link linkend="guint64"><type>guint64</type></link></entry><entry role="property_name"><link linkend="AgsRecyclingContext--length">length</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="AgsRecyclingContext"><type>AgsRecyclingContext</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsRecyclingContext--parent">parent</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="AgsRecallID"><type>AgsRecallID</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsRecyclingContext--recall-id">recall-id</link></entry><entry role="property_flags">Read / Write</entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsRecyclingContext.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsRecyclingContext
+</screen>
+</refsect1>
+
+<refsect1 id="AgsRecyclingContext.includes"><title>Includes</title><synopsis>#include &lt;ags/audio/ags_recycling_context.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsRecyclingContext.description" role="desc">
+<title role="desc.title">Description</title>
+<para><link linkend="AgsRecyclingContext"><type>AgsRecyclingContext</type></link> organizes <link linkend="AgsRecycling"><type>AgsRecycling</type></link> objects as dynamic context
+within nested tree.</para>
+
+</refsect1>
+<refsect1 id="AgsRecyclingContext.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-recycling-context-replace" role="function" condition="since:0.4">
+<title>ags_recycling_context_replace&#160;()</title>
+<indexterm zone="ags-recycling-context-replace" role="0.4"><primary>ags_recycling_context_replace</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_recycling_context_replace (<parameter><link linkend="AgsRecyclingContext"><type>AgsRecyclingContext</type></link> *recycling_context</parameter>,
+                               <parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *recycling</parameter>,
+                               <parameter><link linkend="gint"><type>gint</type></link> position</parameter>);</programlisting>
+<para>Replaces one recycling entry in a context.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>recycling_context</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsRecyclingContext"><type>AgsRecyclingContext</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>recycling</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsRecycling"><type>AgsRecycling</type></link> to add</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>position</para></entry>
+<entry role="parameter_description"><para>the index of <parameter>recycling</parameter>
+</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> the new recycling context</para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-recycling-context-add" role="function" condition="since:0.4">
+<title>ags_recycling_context_add&#160;()</title>
+<indexterm zone="ags-recycling-context-add" role="0.4"><primary>ags_recycling_context_add</primary></indexterm>
+<programlisting language="C"><link linkend="AgsRecyclingContext"><returnvalue>AgsRecyclingContext</returnvalue></link>&#160;*
+ags_recycling_context_add (<parameter><link linkend="AgsRecyclingContext"><type>AgsRecyclingContext</type></link> *recycling_context</parameter>,
+                           <parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *recycling</parameter>);</programlisting>
+<para>Adds a recycling to a context.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>recycling_context</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsRecyclingContext"><type>AgsRecyclingContext</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>recycling</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsRecycling"><type>AgsRecycling</type></link> to add</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> the new recycling context</para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-recycling-context-remove" role="function" condition="since:0.4">
+<title>ags_recycling_context_remove&#160;()</title>
+<indexterm zone="ags-recycling-context-remove" role="0.4"><primary>ags_recycling_context_remove</primary></indexterm>
+<programlisting language="C"><link linkend="AgsRecyclingContext"><returnvalue>AgsRecyclingContext</returnvalue></link>&#160;*
+ags_recycling_context_remove (<parameter><link linkend="AgsRecyclingContext"><type>AgsRecyclingContext</type></link> *recycling_context</parameter>,
+                              <parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *recycling</parameter>);</programlisting>
+<para>Removes a recycling in a context.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>recycling_context</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsRecyclingContext"><type>AgsRecyclingContext</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>recycling</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsRecycling"><type>AgsRecycling</type></link> to remove</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> the new recycling context</para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-recycling-context-insert" role="function" condition="since:0.4">
+<title>ags_recycling_context_insert&#160;()</title>
+<indexterm zone="ags-recycling-context-insert" role="0.4"><primary>ags_recycling_context_insert</primary></indexterm>
+<programlisting language="C"><link linkend="AgsRecyclingContext"><returnvalue>AgsRecyclingContext</returnvalue></link>&#160;*
+ags_recycling_context_insert (<parameter><link linkend="AgsRecyclingContext"><type>AgsRecyclingContext</type></link> *recycling_context</parameter>,
+                              <parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *recycling</parameter>,
+                              <parameter><link linkend="gint"><type>gint</type></link> position</parameter>);</programlisting>
+<para>Inserts a recycling to a context.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>recycling_context</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsRecyclingContext"><type>AgsRecyclingContext</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>recycling</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsRecycling"><type>AgsRecycling</type></link> to insert</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>position</para></entry>
+<entry role="parameter_description"><para>the index to insert at</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> the new recycling context</para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-recycling-context-get-toplevel" role="function" condition="since:0.4">
+<title>ags_recycling_context_get_toplevel&#160;()</title>
+<indexterm zone="ags-recycling-context-get-toplevel" role="0.4"><primary>ags_recycling_context_get_toplevel</primary></indexterm>
+<programlisting language="C"><link linkend="AgsRecyclingContext"><returnvalue>AgsRecyclingContext</returnvalue></link>&#160;*
+ags_recycling_context_get_toplevel (<parameter><link linkend="AgsRecyclingContext"><type>AgsRecyclingContext</type></link> *recycling_context</parameter>);</programlisting>
+<para>Iterates the tree up to highest level.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>recycling_context</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsRecyclingContext"><type>AgsRecyclingContext</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> the topmost recycling context</para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-recycling-context-find" role="function" condition="since:0.4">
+<title>ags_recycling_context_find&#160;()</title>
+<indexterm zone="ags-recycling-context-find" role="0.4"><primary>ags_recycling_context_find</primary></indexterm>
+<programlisting language="C"><link linkend="gint"><returnvalue>gint</returnvalue></link>
+ags_recycling_context_find (<parameter><link linkend="AgsRecyclingContext"><type>AgsRecyclingContext</type></link> *recycling_context</parameter>,
+                            <parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *recycling</parameter>);</programlisting>
+<para>Find position of recycling within array.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>recycling_context</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsRecyclingContext"><type>AgsRecyclingContext</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>recycling</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsRecycling"><type>AgsRecycling</type></link> to look up</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> recycling array index</para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-recycling-context-find-child" role="function" condition="since:0.4">
+<title>ags_recycling_context_find_child&#160;()</title>
+<indexterm zone="ags-recycling-context-find-child" role="0.4"><primary>ags_recycling_context_find_child</primary></indexterm>
+<programlisting language="C"><link linkend="gint"><returnvalue>gint</returnvalue></link>
+ags_recycling_context_find_child (<parameter><link linkend="AgsRecyclingContext"><type>AgsRecyclingContext</type></link> *recycling_context</parameter>,
+                                  <parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *recycling</parameter>);</programlisting>
+<para>Find position of recycling within arrays.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>recycling_context</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsRecyclingContext"><type>AgsRecyclingContext</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>recycling</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsRecycling"><type>AgsRecycling</type></link> to look up</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> recycling array index</para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-recycling-context-find-parent" role="function" condition="since:0.4">
+<title>ags_recycling_context_find_parent&#160;()</title>
+<indexterm zone="ags-recycling-context-find-parent" role="0.4"><primary>ags_recycling_context_find_parent</primary></indexterm>
+<programlisting language="C"><link linkend="gint"><returnvalue>gint</returnvalue></link>
+ags_recycling_context_find_parent (<parameter><link linkend="AgsRecyclingContext"><type>AgsRecyclingContext</type></link> *recycling_context</parameter>,
+                                   <parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *recycling</parameter>);</programlisting>
+<para>Find position of recycling within array.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>recycling_context</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsRecyclingContext"><type>AgsRecyclingContext</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>recycling</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsRecycling"><type>AgsRecycling</type></link> to look up</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> recycling array index</para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-recycling-context-add-child" role="function" condition="since:0.4">
+<title>ags_recycling_context_add_child&#160;()</title>
+<indexterm zone="ags-recycling-context-add-child" role="0.4"><primary>ags_recycling_context_add_child</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_recycling_context_add_child (<parameter><link linkend="AgsRecyclingContext"><type>AgsRecyclingContext</type></link> *parent</parameter>,
+                                 <parameter><link linkend="AgsRecyclingContext"><type>AgsRecyclingContext</type></link> *child</parameter>);</programlisting>
+<para>Adds a recycling context as child.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>parent</para></entry>
+<entry role="parameter_description"><para>the parental <link linkend="AgsRecyclingContext"><type>AgsRecyclingContext</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>child</para></entry>
+<entry role="parameter_description"><para>the child</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-recycling-context-remove-child" role="function" condition="since:0.4">
+<title>ags_recycling_context_remove_child&#160;()</title>
+<indexterm zone="ags-recycling-context-remove-child" role="0.4"><primary>ags_recycling_context_remove_child</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_recycling_context_remove_child (<parameter><link linkend="AgsRecyclingContext"><type>AgsRecyclingContext</type></link> *parent</parameter>,
+                                    <parameter><link linkend="AgsRecyclingContext"><type>AgsRecyclingContext</type></link> *child</parameter>);</programlisting>
+<para>Removes a recycling context of its parent.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>parent</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsRecyclingContext"><type>AgsRecyclingContext</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>child</para></entry>
+<entry role="parameter_description"><para>the child to remove</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-recycling-context-get-child-recall-id" role="function" condition="since:0.4">
+<title>ags_recycling_context_get_child_recall_id&#160;()</title>
+<indexterm zone="ags-recycling-context-get-child-recall-id" role="0.4"><primary>ags_recycling_context_get_child_recall_id</primary></indexterm>
+<programlisting language="C"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+ags_recycling_context_get_child_recall_id
+                               (<parameter><link linkend="AgsRecyclingContext"><type>AgsRecyclingContext</type></link> *recycling_context</parameter>);</programlisting>
+<para>Retrieve all child recall ids.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>recycling_context</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsRecyclingContext"><type>AgsRecyclingContext</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> the <link linkend="AgsRecallID"><type>AgsRecallID</type></link> as <link linkend="GList"><type>GList</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-recycling-context-reset-recycling" role="function" condition="since:0.4">
+<title>ags_recycling_context_reset_recycling&#160;()</title>
+<indexterm zone="ags-recycling-context-reset-recycling" role="0.4"><primary>ags_recycling_context_reset_recycling</primary></indexterm>
+<programlisting language="C"><link linkend="AgsRecyclingContext"><returnvalue>AgsRecyclingContext</returnvalue></link>&#160;*
+ags_recycling_context_reset_recycling (<parameter><link linkend="AgsRecyclingContext"><type>AgsRecyclingContext</type></link> *recycling_context</parameter>,
+                                       <parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *old_first_recycling</parameter>,
+                                       <parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *old_last_recycling</parameter>,
+                                       <parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *new_first_recycling</parameter>,
+                                       <parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *new_last_recycling</parameter>);</programlisting>
+<para>Modify recycling of context.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>recycling_context</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsRecyclingContext"><type>AgsRecyclingContext</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>old_first_recycling</para></entry>
+<entry role="parameter_description"><para>the first recycling to replace</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>old_last_recycling</para></entry>
+<entry role="parameter_description"><para>the last recycling to replace</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>new_first_recycling</para></entry>
+<entry role="parameter_description"><para>the first recycling to insert</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>new_last_recycling</para></entry>
+<entry role="parameter_description"><para>the last recycling to insert</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-recycling-context-new" role="function" condition="since:0.4">
+<title>ags_recycling_context_new&#160;()</title>
+<indexterm zone="ags-recycling-context-new" role="0.4"><primary>ags_recycling_context_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsRecyclingContext"><returnvalue>AgsRecyclingContext</returnvalue></link>&#160;*
+ags_recycling_context_new (<parameter><link linkend="gint"><type>gint</type></link> length</parameter>);</programlisting>
+<para>Creates a <link linkend="AgsRecyclingContext"><type>AgsRecyclingContext</type></link>, boundaries are specified by <parameter>length</parameter>
+</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>length</para></entry>
+<entry role="parameter_description"><para>array dimension of context</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> a new <link linkend="AgsRecyclingContext"><type>AgsRecyclingContext</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsRecyclingContext.other_details" role="details">
+<title role="details.title">Types and Values</title>
+
+</refsect1>
+<refsect1 id="AgsRecyclingContext.property-details" role="property_details">
+<title role="property_details.title">Property Details</title>
+<refsect2 id="AgsRecyclingContext--length" role="property"><title>The <literal>“length”</literal> property</title>
+<indexterm zone="AgsRecyclingContext--length" role="0.4.0"><primary>AgsRecyclingContext:length</primary></indexterm>
+<programlisting>  “length”                   <link linkend="guint64"><type>guint64</type></link></programlisting>
+<para>Boundary length.</para>
+<para>Flags: Read / Write</para>
+<para>Default value: 0</para>
+<para role="since">Since 0.4.0</para></refsect2>
+<refsect2 id="AgsRecyclingContext--parent" role="property"><title>The <literal>“parent”</literal> property</title>
+<indexterm zone="AgsRecyclingContext--parent" role="0.4.0"><primary>AgsRecyclingContext:parent</primary></indexterm>
+<programlisting>  “parent”                   <link linkend="AgsRecyclingContext"><type>AgsRecyclingContext</type></link>&#160;*</programlisting>
+<para>The parent recycling context within tree.</para>
+<para>Flags: Read / Write</para>
+<para role="since">Since 0.4.0</para></refsect2>
+<refsect2 id="AgsRecyclingContext--recall-id" role="property"><title>The <literal>“recall-id”</literal> property</title>
+<indexterm zone="AgsRecyclingContext--recall-id" role="0.4.0"><primary>AgsRecyclingContext:recall-id</primary></indexterm>
+<programlisting>  “recall-id”                <link linkend="AgsRecallID"><type>AgsRecallID</type></link>&#160;*</programlisting>
+<para>The assigned <link linkend="AgsRecallID"><type>AgsRecallID</type></link>.</para>
+<para>Flags: Read / Write</para>
+<para role="since">Since 0.4.0</para></refsect2>
+
+</refsect1>
+
+</refentry>

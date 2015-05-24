@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsRemovePointFromSelection">
+<refentry id="AgsRemovePointFromSelection">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsRemovePointFromSelection.top_of_page">AgsRemovePointFromSelection</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsRemovePointFromSelection.top_of_page">AgsRemovePointFromSelection</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -17,57 +17,47 @@
 <refpurpose></refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsRemovePointFromSelection.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsRemovePointFromSelection.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="AgsRemovePointFromSelection"><returnvalue>AgsRemovePointFromSelection</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-remove-point-from-selection-new">ags_remove_point_from_selection_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>struct              <link linkend="AgsRemovePointFromSelection">AgsRemovePointFromSelection</link>;
-struct              <link linkend="AgsRemovePointFromSelectionClass">AgsRemovePointFromSelectionClass</link>;
-<link linkend="AgsRemovePointFromSelection"><returnvalue>AgsRemovePointFromSelection</returnvalue></link> * <link linkend="ags-remove-point-from-selection-new">ags_remove_point_from_selection_new</link>
-                                                        (<parameter><link linkend="AgsNotation"><type>AgsNotation</type></link> *notation</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> x</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> y</parameter>);
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsRemovePointFromSelection.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsRemovePointFromSelection.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AgsRemovePointFromSelection" role="struct">
-<title>struct AgsRemovePointFromSelection</title>
-<indexterm zone="AgsRemovePointFromSelection"><primary>AgsRemovePointFromSelection</primary></indexterm>
-<programlisting>struct AgsRemovePointFromSelection {
-  AgsTask task;
+<refsect1 id="AgsRemovePointFromSelection.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsTask">AgsTask</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsRemovePointFromSelection
+</screen>
+</refsect1>
 
-  AgsNotation *notation;
 
-  guint x;
-  guint y;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsRemovePointFromSelectionClass" role="struct">
-<title>struct AgsRemovePointFromSelectionClass</title>
-<indexterm zone="AgsRemovePointFromSelectionClass"><primary>AgsRemovePointFromSelectionClass</primary></indexterm>
-<programlisting>struct AgsRemovePointFromSelectionClass {
-  AgsTaskClass task;
-};
-</programlisting>
-<para>
-</para></refsect2>
+<refsect1 id="AgsRemovePointFromSelection.description" role="desc">
+<title role="desc.title">Description</title>
+
+</refsect1>
+<refsect1 id="AgsRemovePointFromSelection.functions_details" role="details">
+<title role="details.title">Functions</title>
 <refsect2 id="ags-remove-point-from-selection-new" role="function">
-<title>ags_remove_point_from_selection_new ()</title>
+<title>ags_remove_point_from_selection_new&#160;()</title>
 <indexterm zone="ags-remove-point-from-selection-new"><primary>ags_remove_point_from_selection_new</primary></indexterm>
-<programlisting><link linkend="AgsRemovePointFromSelection"><returnvalue>AgsRemovePointFromSelection</returnvalue></link> * ags_remove_point_from_selection_new
-                                                        (<parameter><link linkend="AgsNotation"><type>AgsNotation</type></link> *notation</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> x</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> y</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<programlisting language="C"><link linkend="AgsRemovePointFromSelection"><returnvalue>AgsRemovePointFromSelection</returnvalue></link>&#160;*
+ags_remove_point_from_selection_new (<parameter><link linkend="AgsNotation"><type>AgsNotation</type></link> *notation</parameter>,
+                                     <parameter><link linkend="guint"><type>guint</type></link> x</parameter>,
+                                     <parameter><link linkend="guint"><type>guint</type></link> y</parameter>);</programlisting>
+</refsect2>
+
+</refsect1>
+<refsect1 id="AgsRemovePointFromSelection.other_details" role="details">
+<title role="details.title">Types and Values</title>
 
 </refsect1>
 

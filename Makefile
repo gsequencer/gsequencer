@@ -321,7 +321,6 @@ am__objects_18 = $(am__objects_1) libags_gui_a-ags_gui_init.$(OBJEXT) \
 	libags_gui_a-ags_menu_item.$(OBJEXT) \
 	libags_gui_a-ags_option_menu.$(OBJEXT) \
 	libags_gui_a-ags_ruler.$(OBJEXT) \
-	libags_gui_a-ags_segment.$(OBJEXT) \
 	libags_gui_a-ags_table.$(OBJEXT) \
 	libags_gui_a-ags_timebar.$(OBJEXT) \
 	libags_gui_a-ags_vindicator.$(OBJEXT) \
@@ -679,16 +678,16 @@ distuninstallcheck_listfiles = find . -type f -print
 am__distuninstallcheck_listfiles = $(distuninstallcheck_listfiles) \
   | sed 's|^\./|$(prefix)/|' | grep -v '$(infodir)/dir$$'
 distcleancheck_listfiles = find . -type f -print
-ACLOCAL = ${SHELL} /home/minos/ags-devel/missing aclocal-1.14
+ACLOCAL = ${SHELL} /home/joelkraehemann/ags-devel/missing aclocal-1.14
 AMTAR = $${TAR-tar}
 AM_DEFAULT_VERBOSITY = 1
 AR = ar
 AS = as
-AUTOCONF = ${SHELL} /home/minos/ags-devel/missing autoconf
-AUTOHEADER = ${SHELL} /home/minos/ags-devel/missing autoheader
-AUTOMAKE = ${SHELL} /home/minos/ags-devel/missing automake-1.14
+AUTOCONF = ${SHELL} /home/joelkraehemann/ags-devel/missing autoconf
+AUTOHEADER = ${SHELL} /home/joelkraehemann/ags-devel/missing autoheader
+AUTOMAKE = ${SHELL} /home/joelkraehemann/ags-devel/missing automake-1.14
 AWK = gawk
-CAIRO_CFLAGS = -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng16 -I/usr/include/harfbuzz -I/usr/include/freetype2 -I/usr/include/harfbuzz -I/usr/include/libdrm -I/usr/include/libpng16 -I/usr/X11/include 
+CAIRO_CFLAGS = -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12 
 CAIRO_LIBS = -lcairo 
 CC = gcc
 CCDEPMODE = depmode=gcc3
@@ -711,12 +710,12 @@ ECHO_T =
 EGREP = /bin/grep -E
 EXEEXT = 
 FGREP = /bin/grep -F
-GDKPIXBUF_CFLAGS = -pthread -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng16 -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include 
+GDKPIXBUF_CFLAGS = -pthread -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include 
 GDKPIXBUF_LIBS = -lgdk_pixbuf-2.0 -lgobject-2.0 -lglib-2.0 
-GOBJECT_CFLAGS = -pthread -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include 
+GOBJECT_CFLAGS = -pthread -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include 
 GOBJECT_LIBS = -lgobject-2.0 -Wl,--export-dynamic -lgmodule-2.0 -pthread -lgthread-2.0 -pthread -lglib-2.0 
 GREP = /bin/grep
-GTK_CFLAGS = -pthread -I/usr/include/gtk-2.0 -I/usr/lib/gtk-2.0/include -I/usr/include/pango-1.0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/libdrm -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng16 -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include -I/usr/include/freetype2 -I/usr/include/libpng16 -I/usr/include/harfbuzz -I/usr/include/freetype2 -I/usr/include/libpng16 -I/usr/include/harfbuzz -I/usr/X11/include 
+GTK_CFLAGS = -pthread -I/usr/include/gtk-2.0 -I/usr/lib/x86_64-linux-gnu/gtk-2.0/include -I/usr/include/gio-unix-2.0/ -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/libpng12 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/pango-1.0 -I/usr/include/harfbuzz -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/freetype2 
 GTK_LIBS = -lgtk-x11-2.0 -lgdk-x11-2.0 -lpangocairo-1.0 -latk-1.0 -lcairo -lgdk_pixbuf-2.0 -lgio-2.0 -lpangoft2-1.0 -lpango-1.0 -lgobject-2.0 -lglib-2.0 -lfontconfig -lfreetype 
 INSTALL = /usr/bin/install -c
 INSTALL_DATA = ${INSTALL} -m 644
@@ -729,7 +728,7 @@ LIBAO_CFLAGS =
 LIBAO_LIBS = -lao 
 LIBASOUND2_CFLAGS = -I/usr/include/alsa 
 LIBASOUND2_LIBS = -lasound 
-LIBINSTPATCH_CFLAGS = -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include 
+LIBINSTPATCH_CFLAGS = -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include 
 LIBINSTPATCH_LIBS = -linstpatch-1.0 -lgobject-2.0 -lglib-2.0 -lsndfile 
 LIBOBJS = 
 LIBS = -lrt -lm -lgmp 
@@ -739,7 +738,7 @@ LIBXML2_LIBS = -lxml2
 LIPO = 
 LN_S = ln -s
 LTLIBOBJS = 
-MAKEINFO = ${SHELL} /home/minos/ags-devel/missing makeinfo
+MAKEINFO = ${SHELL} /home/joelkraehemann/ags-devel/missing makeinfo
 MANIFEST_TOOL = :
 MKDIR_P = /bin/mkdir -p
 NM = /usr/bin/nm -B
@@ -770,10 +769,10 @@ UUID_CFLAGS = -I/usr/include/uuid
 UUID_LIBS = -luuid 
 VERSION = 0.4.3
 XMKMF = 
-abs_builddir = /home/minos/ags-devel
-abs_srcdir = /home/minos/ags-devel
-abs_top_builddir = /home/minos/ags-devel
-abs_top_srcdir = /home/minos/ags-devel
+abs_builddir = /home/joelkraehemann/ags-devel
+abs_srcdir = /home/joelkraehemann/ags-devel
+abs_top_builddir = /home/joelkraehemann/ags-devel
+abs_top_srcdir = /home/joelkraehemann/ags-devel
 ac_ct_AR = ar
 ac_ct_CC = gcc
 ac_ct_CXX = g++
@@ -803,7 +802,7 @@ host_vendor = unknown
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = ${SHELL} /home/minos/ags-devel/install-sh
+install_sh = ${SHELL} /home/joelkraehemann/ags-devel/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
@@ -1108,7 +1107,6 @@ ags_widget_h_sources = \
 	src/ags/widget/ags_menu_item.h			\
 	src/ags/widget/ags_option_menu.h		\
 	src/ags/widget/ags_ruler.h			\
-	src/ags/widget/ags_segment.h			\
 	src/ags/widget/ags_table.h			\
 	src/ags/widget/ags_timebar.h			\
 	src/ags/widget/ags_vindicator.h		\
@@ -1130,7 +1128,6 @@ ags_widget_c_sources = \
 	src/ags/widget/ags_menu_item.c			\
 	src/ags/widget/ags_option_menu.c		\
 	src/ags/widget/ags_ruler.c			\
-	src/ags/widget/ags_segment.c			\
 	src/ags/widget/ags_table.c			\
 	src/ags/widget/ags_timebar.c			\
 	src/ags/widget/ags_vindicator.c		\
@@ -2448,7 +2445,6 @@ include ./$(DEPDIR)/libags_gui_a-ags_menu.Po
 include ./$(DEPDIR)/libags_gui_a-ags_menu_item.Po
 include ./$(DEPDIR)/libags_gui_a-ags_option_menu.Po
 include ./$(DEPDIR)/libags_gui_a-ags_ruler.Po
-include ./$(DEPDIR)/libags_gui_a-ags_segment.Po
 include ./$(DEPDIR)/libags_gui_a-ags_table.Po
 include ./$(DEPDIR)/libags_gui_a-ags_timebar.Po
 include ./$(DEPDIR)/libags_gui_a-ags_vindicator.Po
@@ -5276,20 +5272,6 @@ libags_gui_a-ags_ruler.obj: src/ags/widget/ags_ruler.c
 #	$(AM_V_CC)source='src/ags/widget/ags_ruler.c' object='libags_gui_a-ags_ruler.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_gui_a_CFLAGS) $(CFLAGS) -c -o libags_gui_a-ags_ruler.obj `if test -f 'src/ags/widget/ags_ruler.c'; then $(CYGPATH_W) 'src/ags/widget/ags_ruler.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/widget/ags_ruler.c'; fi`
-
-libags_gui_a-ags_segment.o: src/ags/widget/ags_segment.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_gui_a_CFLAGS) $(CFLAGS) -MT libags_gui_a-ags_segment.o -MD -MP -MF $(DEPDIR)/libags_gui_a-ags_segment.Tpo -c -o libags_gui_a-ags_segment.o `test -f 'src/ags/widget/ags_segment.c' || echo '$(srcdir)/'`src/ags/widget/ags_segment.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_gui_a-ags_segment.Tpo $(DEPDIR)/libags_gui_a-ags_segment.Po
-#	$(AM_V_CC)source='src/ags/widget/ags_segment.c' object='libags_gui_a-ags_segment.o' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_gui_a_CFLAGS) $(CFLAGS) -c -o libags_gui_a-ags_segment.o `test -f 'src/ags/widget/ags_segment.c' || echo '$(srcdir)/'`src/ags/widget/ags_segment.c
-
-libags_gui_a-ags_segment.obj: src/ags/widget/ags_segment.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_gui_a_CFLAGS) $(CFLAGS) -MT libags_gui_a-ags_segment.obj -MD -MP -MF $(DEPDIR)/libags_gui_a-ags_segment.Tpo -c -o libags_gui_a-ags_segment.obj `if test -f 'src/ags/widget/ags_segment.c'; then $(CYGPATH_W) 'src/ags/widget/ags_segment.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/widget/ags_segment.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_gui_a-ags_segment.Tpo $(DEPDIR)/libags_gui_a-ags_segment.Po
-#	$(AM_V_CC)source='src/ags/widget/ags_segment.c' object='libags_gui_a-ags_segment.obj' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_gui_a_CFLAGS) $(CFLAGS) -c -o libags_gui_a-ags_segment.obj `if test -f 'src/ags/widget/ags_segment.c'; then $(CYGPATH_W) 'src/ags/widget/ags_segment.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/widget/ags_segment.c'; fi`
 
 libags_gui_a-ags_table.o: src/ags/widget/ags_table.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_gui_a_CFLAGS) $(CFLAGS) -MT libags_gui_a-ags_table.o -MD -MP -MF $(DEPDIR)/libags_gui_a-ags_table.Tpo -c -o libags_gui_a-ags_table.o `test -f 'src/ags/widget/ags_table.c' || echo '$(srcdir)/'`src/ags/widget/ags_table.c

@@ -92,7 +92,7 @@ ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread)
   /* start */
   if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(gobject->flags)))) != 0){
     //FIXME:JK: workaround file setting AGS_THREAD_RUNNING is just ignored
-    if(AGS_IS_AUDIO_LOOP(gobject)){
+    if(AGS_IS_MAIN_LOOP(gobject)){
       file_launch = (AgsFileLaunch *) g_object_new(AGS_TYPE_FILE_LAUNCH,
 						   NULL);
       ags_file_add_launch(file, (GObject *) file_launch);

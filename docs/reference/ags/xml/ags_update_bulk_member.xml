@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="AgsUpdateBulkMember">
+<refmeta>
+<refentrytitle role="top_of_page" id="AgsUpdateBulkMember.top_of_page">AgsUpdateBulkMember</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsUpdateBulkMember</refname>
+<refpurpose>add line_member object to line</refpurpose>
+</refnamediv>
+
+<refsect1 id="AgsUpdateBulkMember.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="AgsUpdateBulkMember"><returnvalue>AgsUpdateBulkMember</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-update-bulk-member-new">ags_update_bulk_member_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsUpdateBulkMember.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsTask">AgsTask</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsUpdateBulkMember
+</screen>
+</refsect1>
+
+<refsect1 id="AgsUpdateBulkMember.includes"><title>Includes</title><synopsis>#include &lt;ags/audio/task/ags_update_bulk_member.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsUpdateBulkMember.description" role="desc">
+<title role="desc.title">Description</title>
+<para>The <link linkend="AgsUpdateBulkMember"><type>AgsUpdateBulkMember</type></link> task addspacks <link linkend="AgsLineMember"><type>AgsLineMember</type></link> to <link linkend="AgsLine"><type>AgsLine</type></link>.</para>
+
+</refsect1>
+<refsect1 id="AgsUpdateBulkMember.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-update-bulk-member-new" role="function">
+<title>ags_update_bulk_member_new&#160;()</title>
+<indexterm zone="ags-update-bulk-member-new"><primary>ags_update_bulk_member_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsUpdateBulkMember"><returnvalue>AgsUpdateBulkMember</returnvalue></link>&#160;*
+ags_update_bulk_member_new (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *effect_bulk</parameter>,
+                            <parameter><link linkend="AgsBulkMember"><type>AgsBulkMember</type></link> *bulk_member</parameter>,
+                            <parameter><link linkend="guint"><type>guint</type></link> new_size</parameter>,
+                            <parameter><link linkend="guint"><type>guint</type></link> old_size</parameter>,
+                            <parameter><link linkend="gboolean"><type>gboolean</type></link> pads</parameter>);</programlisting>
+</refsect2>
+
+</refsect1>
+<refsect1 id="AgsUpdateBulkMember.other_details" role="details">
+<title role="details.title">Types and Values</title>
+
+</refsect1>
+
+</refentry>

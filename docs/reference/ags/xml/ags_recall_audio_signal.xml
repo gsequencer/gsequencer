@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsRecallAudioSignal">
+<refentry id="AgsRecallAudioSignal">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsRecallAudioSignal.top_of_page">AgsRecallAudioSignal</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsRecallAudioSignal.top_of_page">AgsRecallAudioSignal</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -14,74 +14,151 @@
 </refmeta>
 <refnamediv>
 <refname>AgsRecallAudioSignal</refname>
-<refpurpose></refpurpose>
+<refpurpose>audio signal context of recall</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsRecallAudioSignal.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsRecallAudioSignal.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="AgsRecallAudioSignal"><returnvalue>AgsRecallAudioSignal</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-recall-audio-signal-new">ags_recall_audio_signal_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>struct              <link linkend="AgsRecallAudioSignal">AgsRecallAudioSignal</link>;
-struct              <link linkend="AgsRecallAudioSignalClass">AgsRecallAudioSignalClass</link>;
-enum                <link linkend="AgsRecallAudioSignalFlags">AgsRecallAudioSignalFlags</link>;
-<link linkend="AgsRecallAudioSignal"><returnvalue>AgsRecallAudioSignal</returnvalue></link> * <link linkend="ags-recall-audio-signal-new">ags_recall_audio_signal_new</link>      (<parameter><link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link> *destination</parameter>,
-                                                         <parameter><link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link> *source</parameter>,
-                                                         <parameter><link linkend="AgsDevout"><type>AgsDevout</type></link> *devout</parameter>);
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsRecallAudioSignal.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsRecallAudioSignal.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AgsRecallAudioSignal" role="struct">
-<title>struct AgsRecallAudioSignal</title>
-<indexterm zone="AgsRecallAudioSignal"><primary>AgsRecallAudioSignal</primary></indexterm>
-<programlisting>struct AgsRecallAudioSignal {
-  AgsRecall recall;
+<refsect1 id="AgsRecallAudioSignal.properties" role="properties">
+<title role="properties.title">Properties</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="properties_type" colwidth="150px"/>
+<colspec colname="properties_name" colwidth="300px"/>
+<colspec colname="properties_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="property_type"><link linkend="guint"><type>guint</type></link></entry><entry role="property_name"><link linkend="AgsRecallAudioSignal--audio-channel">audio-channel</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsRecallAudioSignal--destination">destination</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsRecallAudioSignal--source">source</link></entry><entry role="property_flags">Read / Write</entry></row>
 
-  guint flags;
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsRecallAudioSignal.other" role="other_proto">
+<title role="other_proto.title">Types and Values</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="name" colwidth="150px"/>
+<colspec colname="description"/>
+<tbody>
+<row><entry role="datatype_keyword">enum</entry><entry role="function_name"><link linkend="AgsRecallAudioSignalFlags">AgsRecallAudioSignalFlags</link></entry></row>
 
-  guint audio_channel;
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsRecallAudioSignal.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsRecall">AgsRecall</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsRecallAudioSignal
+            <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsBufferAudioSignal">AgsBufferAudioSignal</link>
+            <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsCopyAudioSignal">AgsCopyAudioSignal</link>
+            <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsMuteAudioSignal">AgsMuteAudioSignal</link>
+            <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsPlayAudioSignal">AgsPlayAudioSignal</link>
+            <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsRecallLadspaRun">AgsRecallLadspaRun</link>
+            <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsRecallLv2Run">AgsRecallLv2Run</link>
+            <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsStreamAudioSignal">AgsStreamAudioSignal</link>
+            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsVolumeAudioSignal">AgsVolumeAudioSignal</link>
+</screen>
+</refsect1>
 
-  AgsAudioSignal *destination;
 
-  AgsAudioSignal *source;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsRecallAudioSignalClass" role="struct">
-<title>struct AgsRecallAudioSignalClass</title>
-<indexterm zone="AgsRecallAudioSignalClass"><primary>AgsRecallAudioSignalClass</primary></indexterm>
-<programlisting>struct AgsRecallAudioSignalClass {
-  AgsRecallClass recall;
-};
-</programlisting>
-<para>
-</para></refsect2>
+<refsect1 id="AgsRecallAudioSignal.description" role="desc">
+<title role="desc.title">Description</title>
+<para><link linkend="AgsRecallAudioSignal"><type>AgsRecallAudioSignal</type></link> acts as audio signal recall.</para>
+
+</refsect1>
+<refsect1 id="AgsRecallAudioSignal.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-recall-audio-signal-new" role="function" condition="since:0.4">
+<title>ags_recall_audio_signal_new&#160;()</title>
+<indexterm zone="ags-recall-audio-signal-new" role="0.4"><primary>ags_recall_audio_signal_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsRecallAudioSignal"><returnvalue>AgsRecallAudioSignal</returnvalue></link>&#160;*
+ags_recall_audio_signal_new (<parameter><link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link> *destination</parameter>,
+                             <parameter><link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link> *source</parameter>,
+                             <parameter><link linkend="GObject"><type>GObject</type></link> *soundcard</parameter>);</programlisting>
+<para>Creates an <link linkend="AgsRecallAudioSignal"><type>AgsRecallAudioSignal</type></link>.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>destination</para></entry>
+<entry role="parameter_description"><para>destination <link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>source</para></entry>
+<entry role="parameter_description"><para>source <link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>soundcard</para></entry>
+<entry role="parameter_description"><para>default sink <link linkend="AgsSoundcard"><type>AgsSoundcard</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> a new <link linkend="AgsRecallAudioSignal"><type>AgsRecallAudioSignal</type></link>.</para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsRecallAudioSignal.other_details" role="details">
+<title role="details.title">Types and Values</title>
 <refsect2 id="AgsRecallAudioSignalFlags" role="enum">
 <title>enum AgsRecallAudioSignalFlags</title>
 <indexterm zone="AgsRecallAudioSignalFlags"><primary>AgsRecallAudioSignalFlags</primary></indexterm>
-<programlisting>typedef enum {
-  AGS_RECALL_AUDIO_SIGNAL_INITIAL_RUN      = 1,
-} AgsRecallAudioSignalFlags;
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-recall-audio-signal-new" role="function">
-<title>ags_recall_audio_signal_new ()</title>
-<indexterm zone="ags-recall-audio-signal-new"><primary>ags_recall_audio_signal_new</primary></indexterm>
-<programlisting><link linkend="AgsRecallAudioSignal"><returnvalue>AgsRecallAudioSignal</returnvalue></link> * ags_recall_audio_signal_new      (<parameter><link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link> *destination</parameter>,
-                                                         <parameter><link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link> *source</parameter>,
-                                                         <parameter><link linkend="AgsDevout"><type>AgsDevout</type></link> *devout</parameter>);</programlisting>
-<para>
-Creates an <link linkend="AgsRecallAudioSignal"><type>AgsRecallAudioSignal</type></link>.
-</para><variablelist role="params">
-<varlistentry><term><emphasis>Returns</emphasis>&#160;:</term><listitem><simpara>a new <link linkend="AgsRecallAudioSignal"><type>AgsRecallAudioSignal</type></link>.</simpara></listitem></varlistentry>
-</variablelist></refsect2>
+<refsect3 role="enum_members">
+<title>Members</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="enum_members_name" colwidth="300px"/>
+<colspec colname="enum_members_description"/>
+<colspec colname="enum_members_annotations" colwidth="200px"/>
+<tbody>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-RECALL-AUDIO-SIGNAL-INITIAL-RUN:CAPS">AGS_RECALL_AUDIO_SIGNAL_INITIAL_RUN</para></entry>
+<entry /><entry />
+</row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
+
+</refsect1>
+<refsect1 id="AgsRecallAudioSignal.property-details" role="property_details">
+<title role="property_details.title">Property Details</title>
+<refsect2 id="AgsRecallAudioSignal--audio-channel" role="property"><title>The <literal>“audio-channel”</literal> property</title>
+<indexterm zone="AgsRecallAudioSignal--audio-channel" role="0.4.0"><primary>AgsRecallAudioSignal:audio-channel</primary></indexterm>
+<programlisting>  “audio-channel”            <link linkend="guint"><type>guint</type></link></programlisting>
+<para>The audio channel to write use.</para>
+<para>Flags: Read / Write</para>
+<para>Allowed values: &lt;= 65536</para>
+<para>Default value: 0</para>
+<para role="since">Since 0.4.0</para></refsect2>
+<refsect2 id="AgsRecallAudioSignal--destination" role="property"><title>The <literal>“destination”</literal> property</title>
+<indexterm zone="AgsRecallAudioSignal--destination" role="0.4.0"><primary>AgsRecallAudioSignal:destination</primary></indexterm>
+<programlisting>  “destination”              <link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link>&#160;*</programlisting>
+<para>The destination audio signal</para>
+<para>Flags: Read / Write</para>
+<para role="since">Since 0.4.0</para></refsect2>
+<refsect2 id="AgsRecallAudioSignal--source" role="property"><title>The <literal>“source”</literal> property</title>
+<indexterm zone="AgsRecallAudioSignal--source" role="0.4.0"><primary>AgsRecallAudioSignal:source</primary></indexterm>
+<programlisting>  “source”                   <link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link>&#160;*</programlisting>
+<para>The source audio signal</para>
+<para>Flags: Read / Write</para>
+<para role="since">Since 0.4.0</para></refsect2>
 
 </refsect1>
 

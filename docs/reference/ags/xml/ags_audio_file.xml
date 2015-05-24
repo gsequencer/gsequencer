@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsAudioFile">
+<refentry id="AgsAudioFile">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsAudioFile.top_of_page">AgsAudioFile</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsAudioFile.top_of_page">AgsAudioFile</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -14,138 +14,351 @@
 </refmeta>
 <refnamediv>
 <refname>AgsAudioFile</refname>
-<refpurpose></refpurpose>
+<refpurpose>Audio file input/output</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsAudioFile.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsAudioFile.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-audio-file-open">ags_audio_file_open</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-audio-file-open-from-data">ags_audio_file_open_from_data</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-audio-file-rw-open">ags_audio_file_rw_open</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-audio-file-close">ags_audio_file_close</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-audio-file-read-audio-signal">ags_audio_file_read_audio_signal</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-audio-file-seek">ags_audio_file_seek</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-audio-file-write">ags_audio_file_write</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-audio-file-flush">ags_audio_file_flush</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsAudioFile"><returnvalue>AgsAudioFile</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-audio-file-new">ags_audio_file_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>struct              <link linkend="AgsAudioFile">AgsAudioFile</link>;
-struct              <link linkend="AgsAudioFileClass">AgsAudioFileClass</link>;
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-audio-file-close">ags_audio_file_close</link>                (<parameter><link linkend="AgsAudioFile"><type>AgsAudioFile</type></link> *audio_file</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-audio-file-flush">ags_audio_file_flush</link>                (<parameter><link linkend="AgsAudioFile"><type>AgsAudioFile</type></link> *audio_file</parameter>);
-<link linkend="AgsAudioFile"><returnvalue>AgsAudioFile</returnvalue></link> *      <link linkend="ags-audio-file-new">ags_audio_file_new</link>                  (<parameter><link linkend="gchar"><type>gchar</type></link> *name</parameter>,
-                                                         <parameter><link linkend="AgsDevout"><type>AgsDevout</type></link> *devout</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> start_channel</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> audio_channels</parameter>);
-<link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            <link linkend="ags-audio-file-open">ags_audio_file_open</link>                 (<parameter><link linkend="AgsAudioFile"><type>AgsAudioFile</type></link> *audio_file</parameter>);
-<link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            <link linkend="ags-audio-file-open-from-data">ags_audio_file_open_from_data</link>       (<parameter><link linkend="AgsAudioFile"><type>AgsAudioFile</type></link> *audio_file</parameter>,
-                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *data</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-audio-file-read-audio-signal">ags_audio_file_read_audio_signal</link>    (<parameter><link linkend="AgsAudioFile"><type>AgsAudioFile</type></link> *audio_file</parameter>);
-<link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            <link linkend="ags-audio-file-rw-open">ags_audio_file_rw_open</link>              (<parameter><link linkend="AgsAudioFile"><type>AgsAudioFile</type></link> *audio_file</parameter>,
-                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> create</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-audio-file-seek">ags_audio_file_seek</link>                 (<parameter><link linkend="AgsAudioFile"><type>AgsAudioFile</type></link> *audio_file</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> frames</parameter>,
-                                                         <parameter><link linkend="gint"><type>gint</type></link> whence</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-audio-file-write">ags_audio_file_write</link>                (<parameter><link linkend="AgsAudioFile"><type>AgsAudioFile</type></link> *audio_file</parameter>,
-                                                         <parameter>signed <link linkend="short"><type>short</type></link> *buffer</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> buffer_size</parameter>);
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsAudioFile.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsAudioFile.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AgsAudioFile" role="struct">
-<title>struct AgsAudioFile</title>
-<indexterm zone="AgsAudioFile"><primary>AgsAudioFile</primary></indexterm>
-<programlisting>struct AgsAudioFile {
-  GObject object;
+<refsect1 id="AgsAudioFile.properties" role="properties">
+<title role="properties.title">Properties</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="properties_type" colwidth="150px"/>
+<colspec colname="properties_name" colwidth="300px"/>
+<colspec colname="properties_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="property_type"><link linkend="guint"><type>guint</type></link></entry><entry role="property_name"><link linkend="AgsAudioFile--audio-channels">audio-channels</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsAudioFile--audio-signal">audio-signal</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="guint"><type>guint</type></link></entry><entry role="property_name"><link linkend="AgsAudioFile--buffer-size">buffer-size</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="gchar"><type>gchar</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsAudioFile--filename">filename</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="GObject"><type>GObject</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsAudioFile--playable">playable</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="guint"><type>guint</type></link></entry><entry role="property_name"><link linkend="AgsAudioFile--samplerate">samplerate</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="GObject"><type>GObject</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsAudioFile--soundcard">soundcard</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="guint"><type>guint</type></link></entry><entry role="property_name"><link linkend="AgsAudioFile--start-channel">start-channel</link></entry><entry role="property_flags">Read / Write</entry></row>
 
-  AgsDevout *devout;
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsAudioFile.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsAudioFile
+</screen>
+</refsect1>
 
-  gchar *name;
-  guint samplerate;
-  guint frames;
-  guint channels;
-  guint format;
+<refsect1 id="AgsAudioFile.includes"><title>Includes</title><synopsis>#include &lt;ags/audio/file/ags_audio_file.h&gt;
+</synopsis></refsect1>
 
-  guint start_channel;
-  guint audio_channels;
+<refsect1 id="AgsAudioFile.description" role="desc">
+<title role="desc.title">Description</title>
+<para><link linkend="AgsAudioFile"><type>AgsAudioFile</type></link> is the base object to read/write audio data.</para>
 
-  GList *audio_signal;
+</refsect1>
+<refsect1 id="AgsAudioFile.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-audio-file-open" role="function" condition="since:0.3">
+<title>ags_audio_file_open&#160;()</title>
+<indexterm zone="ags-audio-file-open" role="0.3"><primary>ags_audio_file_open</primary></indexterm>
+<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+ags_audio_file_open (<parameter><link linkend="AgsAudioFile"><type>AgsAudioFile</type></link> *audio_file</parameter>);</programlisting>
+<para>Open the <link linkend="AgsAudioFile"><type>AgsAudioFile</type></link> in read mode.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>audio_file</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsAudioFile"><type>AgsAudioFile</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.3</para></refsect2>
+<refsect2 id="ags-audio-file-open-from-data" role="function" condition="since:0.4">
+<title>ags_audio_file_open_from_data&#160;()</title>
+<indexterm zone="ags-audio-file-open-from-data" role="0.4"><primary>ags_audio_file_open_from_data</primary></indexterm>
+<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+ags_audio_file_open_from_data (<parameter><link linkend="AgsAudioFile"><type>AgsAudioFile</type></link> *audio_file</parameter>,
+                               <parameter><link linkend="gchar"><type>gchar</type></link> *data</parameter>);</programlisting>
+<para>Open <link linkend="AgsAudioFile"><type>AgsAudioFile</type></link> using virtual functions.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>audio_file</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsAudioFile"><type>AgsAudioFile</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>data</para></entry>
+<entry role="parameter_description"><para>the audio data</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-audio-file-rw-open" role="function" condition="since:0.4.2">
+<title>ags_audio_file_rw_open&#160;()</title>
+<indexterm zone="ags-audio-file-rw-open" role="0.4.2"><primary>ags_audio_file_rw_open</primary></indexterm>
+<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+ags_audio_file_rw_open (<parameter><link linkend="AgsAudioFile"><type>AgsAudioFile</type></link> *audio_file</parameter>,
+                        <parameter><link linkend="gboolean"><type>gboolean</type></link> create</parameter>);</programlisting>
+<para>Open the <link linkend="AgsAudioFile"><type>AgsAudioFile</type></link> in read/write mode.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>audio_file</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsAudioFile"><type>AgsAudioFile</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>create</para></entry>
+<entry role="parameter_description"><para>create the file</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4.2</para></refsect2>
+<refsect2 id="ags-audio-file-close" role="function" condition="since:0.3">
+<title>ags_audio_file_close&#160;()</title>
+<indexterm zone="ags-audio-file-close" role="0.3"><primary>ags_audio_file_close</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_audio_file_close (<parameter><link linkend="AgsAudioFile"><type>AgsAudioFile</type></link> *audio_file</parameter>);</programlisting>
+<para>Close the <link linkend="AgsAudioFile"><type>AgsAudioFile</type></link>.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>audio_file</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsAudioFile"><type>AgsAudioFile</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.3</para></refsect2>
+<refsect2 id="ags-audio-file-read-audio-signal" role="function" condition="since:0.3">
+<title>ags_audio_file_read_audio_signal&#160;()</title>
+<indexterm zone="ags-audio-file-read-audio-signal" role="0.3"><primary>ags_audio_file_read_audio_signal</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_audio_file_read_audio_signal (<parameter><link linkend="AgsAudioFile"><type>AgsAudioFile</type></link> *audio_file</parameter>);</programlisting>
+<para>Convert the <link linkend="AgsAudioFile"><type>AgsAudioFile</type></link> to a <link linkend="GList"><type>GList</type></link> of buffers.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>audio_file</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsAudioFile"><type>AgsAudioFile</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.3</para></refsect2>
+<refsect2 id="ags-audio-file-seek" role="function" condition="since:0.4">
+<title>ags_audio_file_seek&#160;()</title>
+<indexterm zone="ags-audio-file-seek" role="0.4"><primary>ags_audio_file_seek</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_audio_file_seek (<parameter><link linkend="AgsAudioFile"><type>AgsAudioFile</type></link> *audio_file</parameter>,
+                     <parameter><link linkend="guint"><type>guint</type></link> frames</parameter>,
+                     <parameter><link linkend="gint"><type>gint</type></link> whence</parameter>);</programlisting>
+<para>Position the <link linkend="AgsAudioFile"><type>AgsAudioFile</type></link>'s internal data address.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>audio_file</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsAudioFile"><type>AgsAudioFile</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>frames</para></entry>
+<entry role="parameter_description"><para>number of frames to seek</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>whence</para></entry>
+<entry role="parameter_description"><para>SEEK_SET, SEEK_CUR, or SEEK_END</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-audio-file-write" role="function" condition="since:0.4">
+<title>ags_audio_file_write&#160;()</title>
+<indexterm zone="ags-audio-file-write" role="0.4"><primary>ags_audio_file_write</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_audio_file_write (<parameter><link linkend="AgsAudioFile"><type>AgsAudioFile</type></link> *audio_file</parameter>,
+                      <parameter>signed <link linkend="short"><type>short</type></link> *buffer</parameter>,
+                      <parameter><link linkend="guint"><type>guint</type></link> buffer_size</parameter>);</programlisting>
+<para>Write the buffer to <link linkend="AgsAudioFile"><type>AgsAudioFile</type></link>.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>audio_file</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsAudioFile"><type>AgsAudioFile</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>buffer</para></entry>
+<entry role="parameter_description"><para>the audio data</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>buffer_size</para></entry>
+<entry role="parameter_description"><para>the count of frames to write</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-audio-file-flush" role="function" condition="since:0.4">
+<title>ags_audio_file_flush&#160;()</title>
+<indexterm zone="ags-audio-file-flush" role="0.4"><primary>ags_audio_file_flush</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_audio_file_flush (<parameter><link linkend="AgsAudioFile"><type>AgsAudioFile</type></link> *audio_file</parameter>);</programlisting>
+<para>Flushes the <link linkend="AgsAudioFile"><type>AgsAudioFile</type></link>'s internal buffer.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>audio_file</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsAudioFile"><type>AgsAudioFile</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-audio-file-new" role="function" condition="since:0.3">
+<title>ags_audio_file_new&#160;()</title>
+<indexterm zone="ags-audio-file-new" role="0.3"><primary>ags_audio_file_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsAudioFile"><returnvalue>AgsAudioFile</returnvalue></link>&#160;*
+ags_audio_file_new (<parameter><link linkend="gchar"><type>gchar</type></link> *filename</parameter>,
+                    <parameter><link linkend="GObject"><type>GObject</type></link> *soundcard</parameter>,
+                    <parameter><link linkend="guint"><type>guint</type></link> start_channel</parameter>,
+                    <parameter><link linkend="guint"><type>guint</type></link> audio_channels</parameter>);</programlisting>
+<para>Creates an <link linkend="AgsAudioFile"><type>AgsAudioFile</type></link>.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>filename</para></entry>
+<entry role="parameter_description"><para>the filename</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>soundcard</para></entry>
+<entry role="parameter_description"><para>defaults of <link linkend="AgsSoundcard"><type>AgsSoundcard</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>start_channel</para></entry>
+<entry role="parameter_description"><para>ommited channels</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>audio_channels</para></entry>
+<entry role="parameter_description"><para>number of channels to read</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> an empty <link linkend="AgsAudioFile"><type>AgsAudioFile</type></link>.</para>
+<para></para>
+</refsect3><para role="since">Since 0.3</para></refsect2>
 
-  GObject *file;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsAudioFileClass" role="struct">
-<title>struct AgsAudioFileClass</title>
-<indexterm zone="AgsAudioFileClass"><primary>AgsAudioFileClass</primary></indexterm>
-<programlisting>struct AgsAudioFileClass {
-  GObjectClass object;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-audio-file-close" role="function">
-<title>ags_audio_file_close ()</title>
-<indexterm zone="ags-audio-file-close"><primary>ags_audio_file_close</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_audio_file_close                (<parameter><link linkend="AgsAudioFile"><type>AgsAudioFile</type></link> *audio_file</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-audio-file-flush" role="function">
-<title>ags_audio_file_flush ()</title>
-<indexterm zone="ags-audio-file-flush"><primary>ags_audio_file_flush</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_audio_file_flush                (<parameter><link linkend="AgsAudioFile"><type>AgsAudioFile</type></link> *audio_file</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-audio-file-new" role="function">
-<title>ags_audio_file_new ()</title>
-<indexterm zone="ags-audio-file-new"><primary>ags_audio_file_new</primary></indexterm>
-<programlisting><link linkend="AgsAudioFile"><returnvalue>AgsAudioFile</returnvalue></link> *      ags_audio_file_new                  (<parameter><link linkend="gchar"><type>gchar</type></link> *name</parameter>,
-                                                         <parameter><link linkend="AgsDevout"><type>AgsDevout</type></link> *devout</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> start_channel</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> audio_channels</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-audio-file-open" role="function">
-<title>ags_audio_file_open ()</title>
-<indexterm zone="ags-audio-file-open"><primary>ags_audio_file_open</primary></indexterm>
-<programlisting><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            ags_audio_file_open                 (<parameter><link linkend="AgsAudioFile"><type>AgsAudioFile</type></link> *audio_file</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-audio-file-open-from-data" role="function">
-<title>ags_audio_file_open_from_data ()</title>
-<indexterm zone="ags-audio-file-open-from-data"><primary>ags_audio_file_open_from_data</primary></indexterm>
-<programlisting><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            ags_audio_file_open_from_data       (<parameter><link linkend="AgsAudioFile"><type>AgsAudioFile</type></link> *audio_file</parameter>,
-                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *data</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-audio-file-read-audio-signal" role="function">
-<title>ags_audio_file_read_audio_signal ()</title>
-<indexterm zone="ags-audio-file-read-audio-signal"><primary>ags_audio_file_read_audio_signal</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_audio_file_read_audio_signal    (<parameter><link linkend="AgsAudioFile"><type>AgsAudioFile</type></link> *audio_file</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-audio-file-rw-open" role="function">
-<title>ags_audio_file_rw_open ()</title>
-<indexterm zone="ags-audio-file-rw-open"><primary>ags_audio_file_rw_open</primary></indexterm>
-<programlisting><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            ags_audio_file_rw_open              (<parameter><link linkend="AgsAudioFile"><type>AgsAudioFile</type></link> *audio_file</parameter>,
-                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> create</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-audio-file-seek" role="function">
-<title>ags_audio_file_seek ()</title>
-<indexterm zone="ags-audio-file-seek"><primary>ags_audio_file_seek</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_audio_file_seek                 (<parameter><link linkend="AgsAudioFile"><type>AgsAudioFile</type></link> *audio_file</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> frames</parameter>,
-                                                         <parameter><link linkend="gint"><type>gint</type></link> whence</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-audio-file-write" role="function">
-<title>ags_audio_file_write ()</title>
-<indexterm zone="ags-audio-file-write"><primary>ags_audio_file_write</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_audio_file_write                (<parameter><link linkend="AgsAudioFile"><type>AgsAudioFile</type></link> *audio_file</parameter>,
-                                                         <parameter>signed <link linkend="short"><type>short</type></link> *buffer</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> buffer_size</parameter>);</programlisting>
-<para>
-</para></refsect2>
+</refsect1>
+<refsect1 id="AgsAudioFile.other_details" role="details">
+<title role="details.title">Types and Values</title>
+
+</refsect1>
+<refsect1 id="AgsAudioFile.property-details" role="property_details">
+<title role="property_details.title">Property Details</title>
+<refsect2 id="AgsAudioFile--audio-channels" role="property"><title>The <literal>“audio-channels”</literal> property</title>
+<indexterm zone="AgsAudioFile--audio-channels" role="0.4.3"><primary>AgsAudioFile:audio-channels</primary></indexterm>
+<programlisting>  “audio-channels”           <link linkend="guint"><type>guint</type></link></programlisting>
+<para>The audio file's count of channels to be read.</para>
+<para>Flags: Read / Write</para>
+<para>Default value: 1</para>
+<para role="since">Since 0.4.3</para></refsect2>
+<refsect2 id="AgsAudioFile--audio-signal" role="property"><title>The <literal>“audio-signal”</literal> property</title>
+<indexterm zone="AgsAudioFile--audio-signal" role="0.4.3"><primary>AgsAudioFile:audio-signal</primary></indexterm>
+<programlisting>  “audio-signal”             <link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link>&#160;*</programlisting>
+<para>The containing  <link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link>.</para>
+<para>Flags: Read / Write</para>
+<para role="since">Since 0.4.3</para></refsect2>
+<refsect2 id="AgsAudioFile--buffer-size" role="property"><title>The <literal>“buffer-size”</literal> property</title>
+<indexterm zone="AgsAudioFile--buffer-size" role="0.4.3"><primary>AgsAudioFile:buffer-size</primary></indexterm>
+<programlisting>  “buffer-size”              <link linkend="guint"><type>guint</type></link></programlisting>
+<para>The buffer size to be used.</para>
+<para>Flags: Read / Write</para>
+<para>Allowed values: &lt;= 65535</para>
+<para>Default value: 0</para>
+<para role="since">Since 0.4.3</para></refsect2>
+<refsect2 id="AgsAudioFile--filename" role="property"><title>The <literal>“filename”</literal> property</title>
+<indexterm zone="AgsAudioFile--filename" role="0.4.3"><primary>AgsAudioFile:filename</primary></indexterm>
+<programlisting>  “filename”                 <link linkend="gchar"><type>gchar</type></link>&#160;*</programlisting>
+<para>The assigned filename.</para>
+<para>Flags: Read / Write</para>
+<para>Default value: NULL</para>
+<para role="since">Since 0.4.3</para></refsect2>
+<refsect2 id="AgsAudioFile--playable" role="property"><title>The <literal>“playable”</literal> property</title>
+<indexterm zone="AgsAudioFile--playable" role="0.4.3"><primary>AgsAudioFile:playable</primary></indexterm>
+<programlisting>  “playable”                 <link linkend="GObject"><type>GObject</type></link>&#160;*</programlisting>
+<para>The containing  <link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link>.</para>
+<para>Flags: Read / Write</para>
+<para role="since">Since 0.4.3</para></refsect2>
+<refsect2 id="AgsAudioFile--samplerate" role="property"><title>The <literal>“samplerate”</literal> property</title>
+<indexterm zone="AgsAudioFile--samplerate" role="0.4.3"><primary>AgsAudioFile:samplerate</primary></indexterm>
+<programlisting>  “samplerate”               <link linkend="guint"><type>guint</type></link></programlisting>
+<para>The samplerate to be used.</para>
+<para>Flags: Read / Write</para>
+<para>Allowed values: &lt;= 65535</para>
+<para>Default value: 0</para>
+<para role="since">Since 0.4.3</para></refsect2>
+<refsect2 id="AgsAudioFile--soundcard" role="property"><title>The <literal>“soundcard”</literal> property</title>
+<indexterm zone="AgsAudioFile--soundcard" role="0.4.3"><primary>AgsAudioFile:soundcard</primary></indexterm>
+<programlisting>  “soundcard”                <link linkend="GObject"><type>GObject</type></link>&#160;*</programlisting>
+<para>The assigned soundcard.</para>
+<para>Flags: Read / Write</para>
+<para role="since">Since 0.4.3</para></refsect2>
+<refsect2 id="AgsAudioFile--start-channel" role="property"><title>The <literal>“start-channel”</literal> property</title>
+<indexterm zone="AgsAudioFile--start-channel" role="0.4.3"><primary>AgsAudioFile:start-channel</primary></indexterm>
+<programlisting>  “start-channel”            <link linkend="guint"><type>guint</type></link></programlisting>
+<para>The audio file's offset to start reading from.</para>
+<para>Flags: Read / Write</para>
+<para>Default value: 0</para>
+<para role="since">Since 0.4.3</para></refsect2>
 
 </refsect1>
 

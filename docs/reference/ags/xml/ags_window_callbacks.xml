@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
 <refentry id="ags-ags-window-callbacks">
 <refmeta>
@@ -17,28 +17,39 @@
 <refpurpose></refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-ags-window-callbacks.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="ags-ags-window-callbacks.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-window-delete-event-callback">ags_window_delete_event_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            <link linkend="ags-window-delete-event-callback">ags_window_delete_event_callback</link>    (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> data</parameter>);
-</synopsis>
-</refsynopsisdiv>
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+
 
 <refsect1 id="ags-ags-window-callbacks.description" role="desc">
 <title role="desc.title">Description</title>
-<para>
-</para>
+
 </refsect1>
-<refsect1 id="ags-ags-window-callbacks.details" role="details">
-<title role="details.title">Details</title>
+<refsect1 id="ags-ags-window-callbacks.functions_details" role="details">
+<title role="details.title">Functions</title>
 <refsect2 id="ags-window-delete-event-callback" role="function">
-<title>ags_window_delete_event_callback ()</title>
+<title>ags_window_delete_event_callback&#160;()</title>
 <indexterm zone="ags-window-delete-event-callback"><primary>ags_window_delete_event_callback</primary></indexterm>
-<programlisting><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            ags_window_delete_event_callback    (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> data</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+ags_window_delete_event_callback (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                                  <parameter><link linkend="gpointer"><type>gpointer</type></link> data</parameter>);</programlisting>
+</refsect2>
+
+</refsect1>
+<refsect1 id="ags-ags-window-callbacks.other_details" role="details">
+<title role="details.title">Types and Values</title>
 
 </refsect1>
 

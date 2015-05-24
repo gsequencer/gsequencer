@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsThreadPool">
+<refentry id="AgsThreadPool">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsThreadPool.top_of_page">AgsThreadPool</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsThreadPool.top_of_page">AgsThreadPool</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -14,100 +14,205 @@
 </refmeta>
 <refnamediv>
 <refname>AgsThreadPool</refname>
-<refpurpose></refpurpose>
+<refpurpose>thread pool</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsThreadPool.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsThreadPool.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="AgsThread"><returnvalue>AgsThread</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-thread-pool-pull">ags_thread_pool_pull</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-thread-pool-start">ags_thread_pool_start</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsThreadPool"><returnvalue>AgsThreadPool</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-thread-pool-new">ags_thread_pool_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>struct              <link linkend="AgsThreadPool">AgsThreadPool</link>;
-struct              <link linkend="AgsThreadPoolClass">AgsThreadPoolClass</link>;
-enum                <link linkend="AgsThreadPoolFlags">AgsThreadPoolFlags</link>;
-<link linkend="AgsThreadPool"><returnvalue>AgsThreadPool</returnvalue></link> *     <link linkend="ags-thread-pool-new">ags_thread_pool_new</link>                 (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *parent</parameter>);
-<link linkend="AgsThread"><returnvalue>AgsThread</returnvalue></link> *         <link linkend="ags-thread-pool-pull">ags_thread_pool_pull</link>                (<parameter><link linkend="AgsThreadPool"><type>AgsThreadPool</type></link> *thread_pool</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-thread-pool-start">ags_thread_pool_start</link>               (<parameter><link linkend="AgsThreadPool"><type>AgsThreadPool</type></link> *thread_pool</parameter>);
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsThreadPool.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsThreadPool.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AgsThreadPool" role="struct">
-<title>struct AgsThreadPool</title>
-<indexterm zone="AgsThreadPool"><primary>AgsThreadPool</primary></indexterm>
-<programlisting>struct AgsThreadPool {
-  GObject object;
+<refsect1 id="AgsThreadPool.properties" role="properties">
+<title role="properties.title">Properties</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="properties_type" colwidth="150px"/>
+<colspec colname="properties_name" colwidth="300px"/>
+<colspec colname="properties_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="property_type"><link linkend="guint"><type>guint</type></link></entry><entry role="property_name"><link linkend="AgsThreadPool--max-threads">max-threads</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="guint"><type>guint</type></link></entry><entry role="property_name"><link linkend="AgsThreadPool--max-unused-threads">max-unused-threads</link></entry><entry role="property_flags">Read / Write</entry></row>
 
-  volatile guint flags;
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsThreadPool.signals" role="signal_proto">
+<title role="signal_proto.title">Signals</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="signals_return" colwidth="150px"/>
+<colspec colname="signals_name" colwidth="300px"/>
+<colspec colname="signals_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsThreadPool-start">start</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
 
-  volatile guint max_unused_threads;
-  volatile guint max_threads;
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsThreadPool.other" role="other_proto">
+<title role="other_proto.title">Types and Values</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="name" colwidth="150px"/>
+<colspec colname="description"/>
+<tbody>
+<row><entry role="datatype_keyword">enum</entry><entry role="function_name"><link linkend="AgsThreadPoolFlags">AgsThreadPoolFlags</link></entry></row>
 
-  pthread_t thread;
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsThreadPool.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsThreadPool
+</screen>
+</refsect1>
 
-  pthread_mutex_t creation_mutex;
-  pthread_cond_t creation_cond;
+<refsect1 id="AgsThreadPool.includes"><title>Includes</title><synopsis>#include &lt;ags/thread/ags_thread_pool.h&gt;
+</synopsis></refsect1>
 
-  volatile guint n_threads;
-  volatile guint newly_pulled;
-  volatile guint queued;
+<refsect1 id="AgsThreadPool.description" role="desc">
+<title role="desc.title">Description</title>
+<para>The <link linkend="AgsThreadPool"><type>AgsThreadPool</type></link> acts as preinstantiated threads store.
+This can achieve enormeous performance.</para>
 
-  AgsThread *parent;
-  volatile GList *returnable_thread;
-  volatile GList *running_thread;
+</refsect1>
+<refsect1 id="AgsThreadPool.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-thread-pool-pull" role="function" condition="since:0.4">
+<title>ags_thread_pool_pull&#160;()</title>
+<indexterm zone="ags-thread-pool-pull" role="0.4"><primary>ags_thread_pool_pull</primary></indexterm>
+<programlisting language="C"><link linkend="AgsThread"><returnvalue>AgsThread</returnvalue></link>&#160;*
+ags_thread_pool_pull (<parameter><link linkend="AgsThreadPool"><type>AgsThreadPool</type></link> *thread_pool</parameter>);</programlisting>
+<para>Pull a previously instantiated <link linkend="AgsReturnableThread"><type>AgsReturnableThread</type></link>. Note this
+function may block until a new thread is available.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>thread_pool</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsThreadPool"><type>AgsThreadPool</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> a new <link linkend="AgsThread"><type>AgsThread</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-thread-pool-start" role="function" condition="since:0.4">
+<title>ags_thread_pool_start&#160;()</title>
+<indexterm zone="ags-thread-pool-start" role="0.4"><primary>ags_thread_pool_start</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_thread_pool_start (<parameter><link linkend="AgsThreadPool"><type>AgsThreadPool</type></link> *thread_pool</parameter>);</programlisting>
+<para>Start the thread pool.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>thread_pool</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsThreadPool"><type>AgsThreadPool</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-thread-pool-new" role="function" condition="since:0.4">
+<title>ags_thread_pool_new&#160;()</title>
+<indexterm zone="ags-thread-pool-new" role="0.4"><primary>ags_thread_pool_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsThreadPool"><returnvalue>AgsThreadPool</returnvalue></link>&#160;*
+ags_thread_pool_new (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *parent</parameter>);</programlisting>
+<para>Create a new <link linkend="AgsThreadPool"><type>AgsThreadPool</type></link>.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>parent</para></entry>
+<entry role="parameter_description"><para>the parent <link linkend="AgsThread"><type>AgsThread</type></link> of returnable threads</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> the new <link linkend="AgsThreadPool"><type>AgsThreadPool</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
 
-  pthread_mutex_t pull_mutex;
-
-  pthread_mutex_t return_mutex;
-  pthread_cond_t return_cond;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsThreadPoolClass" role="struct">
-<title>struct AgsThreadPoolClass</title>
-<indexterm zone="AgsThreadPoolClass"><primary>AgsThreadPoolClass</primary></indexterm>
-<programlisting>struct AgsThreadPoolClass {
-  GObjectClass object;
-
-  void (*start)(AgsThreadPool *thread_pool);
-};
-</programlisting>
-<para>
-</para></refsect2>
+</refsect1>
+<refsect1 id="AgsThreadPool.other_details" role="details">
+<title role="details.title">Types and Values</title>
 <refsect2 id="AgsThreadPoolFlags" role="enum">
 <title>enum AgsThreadPoolFlags</title>
 <indexterm zone="AgsThreadPoolFlags"><primary>AgsThreadPoolFlags</primary></indexterm>
-<programlisting>typedef enum {
-  AGS_THREAD_POOL_RUNNING  = 1,
-  AGS_THREAD_POOL_READY    = 1 &lt;&lt; 1,
-} AgsThreadPoolFlags;
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-thread-pool-new" role="function">
-<title>ags_thread_pool_new ()</title>
-<indexterm zone="ags-thread-pool-new"><primary>ags_thread_pool_new</primary></indexterm>
-<programlisting><link linkend="AgsThreadPool"><returnvalue>AgsThreadPool</returnvalue></link> *     ags_thread_pool_new                 (<parameter><link linkend="AgsThread"><type>AgsThread</type></link> *parent</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-thread-pool-pull" role="function">
-<title>ags_thread_pool_pull ()</title>
-<indexterm zone="ags-thread-pool-pull"><primary>ags_thread_pool_pull</primary></indexterm>
-<programlisting><link linkend="AgsThread"><returnvalue>AgsThread</returnvalue></link> *         ags_thread_pool_pull                (<parameter><link linkend="AgsThreadPool"><type>AgsThreadPool</type></link> *thread_pool</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-thread-pool-start" role="function">
-<title>ags_thread_pool_start ()</title>
-<indexterm zone="ags-thread-pool-start"><primary>ags_thread_pool_start</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_thread_pool_start               (<parameter><link linkend="AgsThreadPool"><type>AgsThreadPool</type></link> *thread_pool</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<refsect3 role="enum_members">
+<title>Members</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="enum_members_name" colwidth="300px"/>
+<colspec colname="enum_members_description"/>
+<colspec colname="enum_members_annotations" colwidth="200px"/>
+<tbody>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-THREAD-POOL-RUNNING:CAPS">AGS_THREAD_POOL_RUNNING</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-THREAD-POOL-READY:CAPS">AGS_THREAD_POOL_READY</para></entry>
+<entry /><entry />
+</row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
 
+</refsect1>
+<refsect1 id="AgsThreadPool.property-details" role="property_details">
+<title role="property_details.title">Property Details</title>
+<refsect2 id="AgsThreadPool--max-threads" role="property"><title>The <literal>“max-threads”</literal> property</title>
+<indexterm zone="AgsThreadPool--max-threads"><primary>AgsThreadPool:max-threads</primary></indexterm>
+<programlisting>  “max-threads”              <link linkend="guint"><type>guint</type></link></programlisting>
+<para>The maximum of threads to be created.</para><para>Flags: Read / Write</para>
+<para>Allowed values: [1,65535]</para>
+<para>Default value: 1024</para>
+</refsect2>
+<refsect2 id="AgsThreadPool--max-unused-threads" role="property"><title>The <literal>“max-unused-threads”</literal> property</title>
+<indexterm zone="AgsThreadPool--max-unused-threads"><primary>AgsThreadPool:max-unused-threads</primary></indexterm>
+<programlisting>  “max-unused-threads”       <link linkend="guint"><type>guint</type></link></programlisting>
+<para>The maximum of unused threads.</para><para>Flags: Read / Write</para>
+<para>Allowed values: [1,65535]</para>
+<para>Default value: 24</para>
+</refsect2>
+
+</refsect1>
+<refsect1 id="AgsThreadPool.signal-details" role="signals">
+<title role="signals.title">Signal Details</title>
+<refsect2 id="AgsThreadPool-start" role="signal"><title>The <literal>“start”</literal> signal</title>
+<indexterm zone="AgsThreadPool-start"><primary>AgsThreadPool::start</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsThreadPool"><type>AgsThreadPool</type></link> *agsthreadpool,
+               <link linkend="gpointer"><type>gpointer</type></link>       user_data)</programlisting>
+<para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2>
 </refsect1>
 
 </refentry>

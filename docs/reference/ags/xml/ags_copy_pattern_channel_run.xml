@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsCopyPatternChannelRun">
+<refentry id="AgsCopyPatternChannelRun">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsCopyPatternChannelRun.top_of_page">AgsCopyPatternChannelRun</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsCopyPatternChannelRun.top_of_page">AgsCopyPatternChannelRun</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -14,53 +14,57 @@
 </refmeta>
 <refnamediv>
 <refname>AgsCopyPatternChannelRun</refname>
-<refpurpose></refpurpose>
+<refpurpose>copys pattern</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsCopyPatternChannelRun.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsCopyPatternChannelRun.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="AgsCopyPatternChannelRun"><returnvalue>AgsCopyPatternChannelRun</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-copy-pattern-channel-run-new">ags_copy_pattern_channel_run_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>struct              <link linkend="AgsCopyPatternChannelRun">AgsCopyPatternChannelRun</link>;
-struct              <link linkend="AgsCopyPatternChannelRunClass">AgsCopyPatternChannelRunClass</link>;
-<link linkend="AgsCopyPatternChannelRun"><returnvalue>AgsCopyPatternChannelRun</returnvalue></link> * <link linkend="ags-copy-pattern-channel-run-new">ags_copy_pattern_channel_run_new</link>
-                                                        ();
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsCopyPatternChannelRun.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsCopyPatternChannelRun.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AgsCopyPatternChannelRun" role="struct">
-<title>struct AgsCopyPatternChannelRun</title>
-<indexterm zone="AgsCopyPatternChannelRun"><primary>AgsCopyPatternChannelRun</primary></indexterm>
-<programlisting>struct AgsCopyPatternChannelRun {
-  AgsRecallChannelRun recall_channel_run;
+<refsect1 id="AgsCopyPatternChannelRun.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsRecall">AgsRecall</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsRecallChannelRun">AgsRecallChannelRun</link>
+            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsCopyPatternChannelRun
+</screen>
+</refsect1>
 
-  gulong sequencer_alloc_handler;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsCopyPatternChannelRunClass" role="struct">
-<title>struct AgsCopyPatternChannelRunClass</title>
-<indexterm zone="AgsCopyPatternChannelRunClass"><primary>AgsCopyPatternChannelRunClass</primary></indexterm>
-<programlisting>struct AgsCopyPatternChannelRunClass {
-  AgsRecallChannelRunClass recall_channel_run;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-copy-pattern-channel-run-new" role="function">
-<title>ags_copy_pattern_channel_run_new ()</title>
-<indexterm zone="ags-copy-pattern-channel-run-new"><primary>ags_copy_pattern_channel_run_new</primary></indexterm>
-<programlisting><link linkend="AgsCopyPatternChannelRun"><returnvalue>AgsCopyPatternChannelRun</returnvalue></link> * ags_copy_pattern_channel_run_new
-                                                        ();</programlisting>
-<para>
-</para></refsect2>
+<refsect1 id="AgsCopyPatternChannelRun.includes"><title>Includes</title><synopsis>#include &lt;ags/audio/recall/ags_copy_pattern_channel_run.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsCopyPatternChannelRun.description" role="desc">
+<title role="desc.title">Description</title>
+<para>The <link linkend="AgsCopyPatternChannelRun"><type>AgsCopyPatternChannelRun</type></link> class copys pattern.</para>
+
+</refsect1>
+<refsect1 id="AgsCopyPatternChannelRun.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-copy-pattern-channel-run-new" role="function" condition="since:0.4">
+<title>ags_copy_pattern_channel_run_new&#160;()</title>
+<indexterm zone="ags-copy-pattern-channel-run-new" role="0.4"><primary>ags_copy_pattern_channel_run_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsCopyPatternChannelRun"><returnvalue>AgsCopyPatternChannelRun</returnvalue></link>&#160;*
+ags_copy_pattern_channel_run_new ();</programlisting>
+<para>Creates an <link linkend="AgsCopyPatternChannelRun"><type>AgsCopyPatternChannelRun</type></link></para>
+<refsect3 role="returns">
+<title>Returns</title>
+<para> a new <link linkend="AgsCopyPatternChannelRun"><type>AgsCopyPatternChannelRun</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsCopyPatternChannelRun.other_details" role="details">
+<title role="details.title">Types and Values</title>
 
 </refsect1>
 

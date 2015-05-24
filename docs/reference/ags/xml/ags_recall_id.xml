@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsRecallID">
+<refentry id="AgsRecallID">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsRecallID.top_of_page">AgsRecallID</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsRecallID.top_of_page">AgsRecallID</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -14,151 +14,317 @@
 </refmeta>
 <refnamediv>
 <refname>AgsRecallID</refname>
-<refpurpose></refpurpose>
+<refpurpose>The object specifies run context.</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsRecallID.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsRecallID.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-recall-id-get-run-stage">ags_recall_id_get_run_stage</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-recall-id-set-run-stage">ags_recall_id_set_run_stage</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-recall-id-unset-run-stage">ags_recall_id_unset_run_stage</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsRecallID"><returnvalue>AgsRecallID</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-recall-id-find-recycling-context">ags_recall_id_find_recycling_context</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsRecallID"><returnvalue>AgsRecallID</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-recall-id-find-parent-recycling-context">ags_recall_id_find_parent_recycling_context</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-recall-id-add">ags_recall_id_add</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsRecallID"><returnvalue>AgsRecallID</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-recall-id-new">ags_recall_id_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>struct              <link linkend="AgsRecallID">AgsRecallID</link>;
-struct              <link linkend="AgsRecallIDClass">AgsRecallIDClass</link>;
-enum                <link linkend="AgsRecallIDFlags">AgsRecallIDFlags</link>;
-<link linkend="GList"><returnvalue>GList</returnvalue></link> *             <link linkend="ags-recall-id-add">ags_recall_id_add</link>                   (<parameter><link linkend="GList"><type>GList</type></link> *recall_id_list</parameter>,
-                                                         <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>);
-<link linkend="AgsRecallID"><returnvalue>AgsRecallID</returnvalue></link> *       <link linkend="ags-recall-id-find-parent-recycling-container">ags_recall_id_find_parent_recycling_container</link>
-                                                        (<parameter><link linkend="GList"><type>GList</type></link> *recall_id_list</parameter>,
-                                                         <parameter><link linkend="AgsRecyclingContainer"><type>AgsRecyclingContainer</type></link> *parent_recycling_container</parameter>);
-<link linkend="AgsRecallID"><returnvalue>AgsRecallID</returnvalue></link> *       <link linkend="ags-recall-id-find-recycling-container">ags_recall_id_find_recycling_container</link>
-                                                        (<parameter><link linkend="GList"><type>GList</type></link> *recall_id_list</parameter>,
-                                                         <parameter><link linkend="AgsRecyclingContainer"><type>AgsRecyclingContainer</type></link> *recycling_container</parameter>);
-<link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            <link linkend="ags-recall-id-get-run-stage">ags_recall_id_get_run_stage</link>         (<parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *id</parameter>,
-                                                         <parameter><link linkend="gint"><type>gint</type></link> stage</parameter>);
-<link linkend="AgsRecallID"><returnvalue>AgsRecallID</returnvalue></link> *       <link linkend="ags-recall-id-new">ags_recall_id_new</link>                   (<parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *recycling</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-recall-id-set-run-stage">ags_recall_id_set_run_stage</link>         (<parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>,
-                                                         <parameter><link linkend="gint"><type>gint</type></link> stage</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-recall-id-unset-run-stage">ags_recall_id_unset_run_stage</link>       (<parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>,
-                                                         <parameter><link linkend="gint"><type>gint</type></link> stage</parameter>);
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsRecallID.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsRecallID.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AgsRecallID" role="struct">
-<title>struct AgsRecallID</title>
-<indexterm zone="AgsRecallID"><primary>AgsRecallID</primary></indexterm>
-<programlisting>struct AgsRecallID {
-  GObject object;
-  
-  guint flags;
+<refsect1 id="AgsRecallID.properties" role="properties">
+<title role="properties.title">Properties</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="properties_type" colwidth="150px"/>
+<colspec colname="properties_name" colwidth="300px"/>
+<colspec colname="properties_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="property_type"><link linkend="GObject"><type>GObject</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsRecallID--recycling">recycling</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="GObject"><type>GObject</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsRecallID--recycling-context">recycling-context</link></entry><entry role="property_flags">Read / Write</entry></row>
 
-  GObject *recycling;
-  AgsRecyclingContainer *recycling_container;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsRecallIDClass" role="struct">
-<title>struct AgsRecallIDClass</title>
-<indexterm zone="AgsRecallIDClass"><primary>AgsRecallIDClass</primary></indexterm>
-<programlisting>struct AgsRecallIDClass {
-  GObjectClass object;
-};
-</programlisting>
-<para>
-</para></refsect2>
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsRecallID.other" role="other_proto">
+<title role="other_proto.title">Types and Values</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="name" colwidth="150px"/>
+<colspec colname="description"/>
+<tbody>
+<row><entry role="datatype_keyword">enum</entry><entry role="function_name"><link linkend="AgsRecallIDFlags">AgsRecallIDFlags</link></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsRecallID.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsRecallID
+</screen>
+</refsect1>
+
+<refsect1 id="AgsRecallID.includes"><title>Includes</title><synopsis>#include &lt;ags/audio/ags_recall_id.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsRecallID.description" role="desc">
+<title role="desc.title">Description</title>
+<para><link linkend="AgsRecallID"><type>AgsRecallID</type></link> acts as dynamic context identifier.</para>
+
+</refsect1>
+<refsect1 id="AgsRecallID.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-recall-id-get-run-stage" role="function" condition="since:0.3">
+<title>ags_recall_id_get_run_stage&#160;()</title>
+<indexterm zone="ags-recall-id-get-run-stage" role="0.3"><primary>ags_recall_id_get_run_stage</primary></indexterm>
+<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+ags_recall_id_get_run_stage (<parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *id</parameter>,
+                             <parameter><link linkend="gint"><type>gint</type></link> stage</parameter>);</programlisting>
+<para>Check if a run stage already has been passed for current run. This
+function is intended to handle AGS_AUDIO_ASYNC correctly.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>id</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsRecallID"><type>AgsRecallID</type></link> to check</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>stage</para></entry>
+<entry role="parameter_description"><para>the current run stage to check against</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> <link linkend="TRUE:CAPS"><literal>TRUE</literal></link> if the stage isn't run yet otherwise <link linkend="FALSE:CAPS"><literal>FALSE</literal></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.3</para></refsect2>
+<refsect2 id="ags-recall-id-set-run-stage" role="function" condition="since:0.3">
+<title>ags_recall_id_set_run_stage&#160;()</title>
+<indexterm zone="ags-recall-id-set-run-stage" role="0.3"><primary>ags_recall_id_set_run_stage</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_recall_id_set_run_stage (<parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>,
+                             <parameter><link linkend="gint"><type>gint</type></link> stage</parameter>);</programlisting>
+<para>Marks the run stage to be passed for audio channel.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>recall_id</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsRecallID"><type>AgsRecallID</type></link> which has been passed</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>stage</para></entry>
+<entry role="parameter_description"><para>the run stage the networked channels are in</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.3</para></refsect2>
+<refsect2 id="ags-recall-id-unset-run-stage" role="function" condition="since:0.3">
+<title>ags_recall_id_unset_run_stage&#160;()</title>
+<indexterm zone="ags-recall-id-unset-run-stage" role="0.3"><primary>ags_recall_id_unset_run_stage</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_recall_id_unset_run_stage (<parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>,
+                               <parameter><link linkend="gint"><type>gint</type></link> stage</parameter>);</programlisting>
+<para>Unmarks the run stage to be passed for audio channel.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>recall_id</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsRecallID"><type>AgsRecallID</type></link> which has been passed</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>stage</para></entry>
+<entry role="parameter_description"><para>the run stage the networked channels are in</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.3</para></refsect2>
+<refsect2 id="ags-recall-id-find-recycling-context" role="function" condition="since:0.4">
+<title>ags_recall_id_find_recycling_context&#160;()</title>
+<indexterm zone="ags-recall-id-find-recycling-context" role="0.4"><primary>ags_recall_id_find_recycling_context</primary></indexterm>
+<programlisting language="C"><link linkend="AgsRecallID"><returnvalue>AgsRecallID</returnvalue></link>&#160;*
+ags_recall_id_find_recycling_context (<parameter><link linkend="GList"><type>GList</type></link> *recall_id_list</parameter>,
+                                      <parameter><link linkend="AgsRecyclingContext"><type>AgsRecyclingContext</type></link> *recycling_context</parameter>);</programlisting>
+<para>Retrieve recall id by recycling container.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>recall_id_list</para></entry>
+<entry role="parameter_description"><para>a <link linkend="GList"><type>GList</type></link> containing <link linkend="AgsRecallID"><type>AgsRecallID</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>recycling_context</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsRecyclingContext"><type>AgsRecyclingContext</type></link> to match</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> Matching recall id.</para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-recall-id-find-parent-recycling-context" role="function" condition="since:0.4">
+<title>ags_recall_id_find_parent_recycling_context&#160;()</title>
+<indexterm zone="ags-recall-id-find-parent-recycling-context" role="0.4"><primary>ags_recall_id_find_parent_recycling_context</primary></indexterm>
+<programlisting language="C"><link linkend="AgsRecallID"><returnvalue>AgsRecallID</returnvalue></link>&#160;*
+ags_recall_id_find_parent_recycling_context
+                               (<parameter><link linkend="GList"><type>GList</type></link> *recall_id_list</parameter>,
+                                <parameter><link linkend="AgsRecyclingContext"><type>AgsRecyclingContext</type></link> *parent_recycling_context</parameter>);</programlisting>
+<para>Retrieve recall id by recycling container.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>recall_id_list</para></entry>
+<entry role="parameter_description"><para>a <link linkend="GList"><type>GList</type></link> containing <link linkend="AgsRecallID"><type>AgsRecallID</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>recycling_context</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsRecyclingContext"><type>AgsRecyclingContext</type></link> to match</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> Matching recall id.</para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-recall-id-add" role="function" condition="since:0.4">
+<title>ags_recall_id_add&#160;()</title>
+<indexterm zone="ags-recall-id-add" role="0.4"><primary>ags_recall_id_add</primary></indexterm>
+<programlisting language="C"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+ags_recall_id_add (<parameter><link linkend="GList"><type>GList</type></link> *recall_id_list</parameter>,
+                   <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>);</programlisting>
+<para>Adds an <link linkend="AgsRecallID"><type>AgsRecallID</type></link> with given properties to the passed <link linkend="GList"><type>GList</type></link>.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>recall_id_list</para></entry>
+<entry role="parameter_description"><para>the <link linkend="GList"><type>GList</type></link> the new <link linkend="AgsRecallID"><type>AgsRecallID</type></link> should be added</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>recall_id</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsRecallID"><type>AgsRecallID</type></link> to add</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> the newly allocated <link linkend="GList"><type>GList</type></link> which is the new start of the <link linkend="GList"><type>GList</type></link>, too.</para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-recall-id-new" role="function" condition="since:0.3">
+<title>ags_recall_id_new&#160;()</title>
+<indexterm zone="ags-recall-id-new" role="0.3"><primary>ags_recall_id_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsRecallID"><returnvalue>AgsRecallID</returnvalue></link>&#160;*
+ags_recall_id_new (<parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *recycling</parameter>);</programlisting>
+<para>Creates a <link linkend="AgsRecallID"><type>AgsRecallID</type></link>, assigned to <parameter>recycling</parameter>
+</para>
+<refsect3 role="returns">
+<title>Returns</title>
+<para> a new <link linkend="AgsRecallID"><type>AgsRecallID</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.3</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsRecallID.other_details" role="details">
+<title role="details.title">Types and Values</title>
 <refsect2 id="AgsRecallIDFlags" role="enum">
 <title>enum AgsRecallIDFlags</title>
 <indexterm zone="AgsRecallIDFlags"><primary>AgsRecallIDFlags</primary></indexterm>
-<programlisting>typedef enum {
-  AGS_RECALL_ID_PLAYBACK          = 1,
-  AGS_RECALL_ID_SEQUENCER         = 1 &lt;&lt; 1,
-  AGS_RECALL_ID_NOTATION          = 1 &lt;&lt; 2,
-  AGS_RECALL_ID_DUPLICATE         = 1 &lt;&lt; 3,
-  AGS_RECALL_ID_RESOLVE           = 1 &lt;&lt; 4,
-  AGS_RECALL_ID_INIT_PRE          = 1 &lt;&lt; 5,
-  AGS_RECALL_ID_INIT_INTER        = 1 &lt;&lt; 6,
-  AGS_RECALL_ID_INIT_POST         = 1 &lt;&lt; 7,
-  AGS_RECALL_ID_PRE               = 1 &lt;&lt; 8,
-  AGS_RECALL_ID_INTER             = 1 &lt;&lt; 9,
-  AGS_RECALL_ID_POST              = 1 &lt;&lt; 10,
-  AGS_RECALL_ID_CANCEL            = 1 &lt;&lt; 11,
-} AgsRecallIDFlags;
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-recall-id-add" role="function">
-<title>ags_recall_id_add ()</title>
-<indexterm zone="ags-recall-id-add"><primary>ags_recall_id_add</primary></indexterm>
-<programlisting><link linkend="GList"><returnvalue>GList</returnvalue></link> *             ags_recall_id_add                   (<parameter><link linkend="GList"><type>GList</type></link> *recall_id_list</parameter>,
-                                                         <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>);</programlisting>
-<para>
-Adds an <link linkend="AgsRecallID"><type>AgsRecallID</type></link> with given properties to the passed <link linkend="GList"><type>GList</type></link>.
-</para><variablelist role="params">
-<varlistentry><term><emphasis>Returns</emphasis>&#160;:</term><listitem><simpara>the newly allocated <link linkend="GList"><type>GList</type></link> which is the new start of the <link linkend="GList"><type>GList</type></link>, too.</simpara></listitem></varlistentry>
-</variablelist></refsect2>
-<refsect2 id="ags-recall-id-find-parent-recycling-container" role="function">
-<title>ags_recall_id_find_parent_recycling_container ()</title>
-<indexterm zone="ags-recall-id-find-parent-recycling-container"><primary>ags_recall_id_find_parent_recycling_container</primary></indexterm>
-<programlisting><link linkend="AgsRecallID"><returnvalue>AgsRecallID</returnvalue></link> *       ags_recall_id_find_parent_recycling_container
-                                                        (<parameter><link linkend="GList"><type>GList</type></link> *recall_id_list</parameter>,
-                                                         <parameter><link linkend="AgsRecyclingContainer"><type>AgsRecyclingContainer</type></link> *parent_recycling_container</parameter>);</programlisting>
-<para>
-Retrieve recall id by recycling container.
-</para><variablelist role="params">
-<varlistentry><term><emphasis>Returns</emphasis>&#160;:</term><listitem><simpara>Matching recall id.</simpara></listitem></varlistentry>
-</variablelist></refsect2>
-<refsect2 id="ags-recall-id-find-recycling-container" role="function">
-<title>ags_recall_id_find_recycling_container ()</title>
-<indexterm zone="ags-recall-id-find-recycling-container"><primary>ags_recall_id_find_recycling_container</primary></indexterm>
-<programlisting><link linkend="AgsRecallID"><returnvalue>AgsRecallID</returnvalue></link> *       ags_recall_id_find_recycling_container
-                                                        (<parameter><link linkend="GList"><type>GList</type></link> *recall_id_list</parameter>,
-                                                         <parameter><link linkend="AgsRecyclingContainer"><type>AgsRecyclingContainer</type></link> *recycling_container</parameter>);</programlisting>
-<para>
-Retrieve recall id by recycling container.
-</para><variablelist role="params">
-<varlistentry><term><emphasis>Returns</emphasis>&#160;:</term><listitem><simpara>Matching recall id.</simpara></listitem></varlistentry>
-</variablelist></refsect2>
-<refsect2 id="ags-recall-id-get-run-stage" role="function">
-<title>ags_recall_id_get_run_stage ()</title>
-<indexterm zone="ags-recall-id-get-run-stage"><primary>ags_recall_id_get_run_stage</primary></indexterm>
-<programlisting><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            ags_recall_id_get_run_stage         (<parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *id</parameter>,
-                                                         <parameter><link linkend="gint"><type>gint</type></link> stage</parameter>);</programlisting>
-<para>
-Check if a run stage already has been passed for current run. This
-function is intended to handle AGS_AUDIO_ASYNC correctly.
-</para><variablelist role="params">
-<varlistentry><term><emphasis>Returns</emphasis>&#160;:</term><listitem><simpara><link linkend="TRUE:CAPS"><literal>TRUE</literal></link> if the stage isn't run yet otherwise <link linkend="FALSE:CAPS"><literal>FALSE</literal></link></simpara></listitem></varlistentry>
-</variablelist></refsect2>
-<refsect2 id="ags-recall-id-new" role="function">
-<title>ags_recall_id_new ()</title>
-<indexterm zone="ags-recall-id-new"><primary>ags_recall_id_new</primary></indexterm>
-<programlisting><link linkend="AgsRecallID"><returnvalue>AgsRecallID</returnvalue></link> *       ags_recall_id_new                   (<parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *recycling</parameter>);</programlisting>
-<para>
-Creates a <link linkend="AgsRecallLadspa"><type>AgsRecallLadspa</type></link>
-</para><variablelist role="params">
-<varlistentry><term><emphasis>Returns</emphasis>&#160;:</term><listitem><simpara>a new <link linkend="AgsRecallLadspa"><type>AgsRecallLadspa</type></link></simpara></listitem></varlistentry>
-</variablelist></refsect2>
-<refsect2 id="ags-recall-id-set-run-stage" role="function">
-<title>ags_recall_id_set_run_stage ()</title>
-<indexterm zone="ags-recall-id-set-run-stage"><primary>ags_recall_id_set_run_stage</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_recall_id_set_run_stage         (<parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>,
-                                                         <parameter><link linkend="gint"><type>gint</type></link> stage</parameter>);</programlisting>
-<para>
-Marks the run stage to be passed for audio channel.
-</para></refsect2>
-<refsect2 id="ags-recall-id-unset-run-stage" role="function">
-<title>ags_recall_id_unset_run_stage ()</title>
-<indexterm zone="ags-recall-id-unset-run-stage"><primary>ags_recall_id_unset_run_stage</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_recall_id_unset_run_stage       (<parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>,
-                                                         <parameter><link linkend="gint"><type>gint</type></link> stage</parameter>);</programlisting>
-<para>
-Unmarks the run stage to be passed for audio channel.
-</para></refsect2>
+<refsect3 role="enum_members">
+<title>Members</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="enum_members_name" colwidth="300px"/>
+<colspec colname="enum_members_description"/>
+<colspec colname="enum_members_annotations" colwidth="200px"/>
+<tbody>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-RECALL-ID-PLAYBACK:CAPS">AGS_RECALL_ID_PLAYBACK</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-RECALL-ID-SEQUENCER:CAPS">AGS_RECALL_ID_SEQUENCER</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-RECALL-ID-NOTATION:CAPS">AGS_RECALL_ID_NOTATION</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-RECALL-ID-DUPLICATE:CAPS">AGS_RECALL_ID_DUPLICATE</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-RECALL-ID-RESOLVE:CAPS">AGS_RECALL_ID_RESOLVE</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-RECALL-ID-INIT-PRE:CAPS">AGS_RECALL_ID_INIT_PRE</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-RECALL-ID-INIT-INTER:CAPS">AGS_RECALL_ID_INIT_INTER</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-RECALL-ID-INIT-POST:CAPS">AGS_RECALL_ID_INIT_POST</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-RECALL-ID-PRE:CAPS">AGS_RECALL_ID_PRE</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-RECALL-ID-INTER:CAPS">AGS_RECALL_ID_INTER</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-RECALL-ID-POST:CAPS">AGS_RECALL_ID_POST</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-RECALL-ID-CANCEL:CAPS">AGS_RECALL_ID_CANCEL</para></entry>
+<entry /><entry />
+</row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
+
+</refsect1>
+<refsect1 id="AgsRecallID.property-details" role="property_details">
+<title role="property_details.title">Property Details</title>
+<refsect2 id="AgsRecallID--recycling" role="property"><title>The <literal>“recycling”</literal> property</title>
+<indexterm zone="AgsRecallID--recycling" role="0.4.0"><primary>AgsRecallID:recycling</primary></indexterm>
+<programlisting>  “recycling”                <link linkend="GObject"><type>GObject</type></link>&#160;*</programlisting>
+<para>The assigned <link linkend="AgsRecycling"><type>AgsRecycling</type></link>.</para>
+<para>Flags: Read / Write</para>
+<para role="since">Since 0.4.0</para></refsect2>
+<refsect2 id="AgsRecallID--recycling-context" role="property"><title>The <literal>“recycling-context”</literal> property</title>
+<indexterm zone="AgsRecallID--recycling-context" role="0.4.0"><primary>AgsRecallID:recycling-context</primary></indexterm>
+<programlisting>  “recycling-context”        <link linkend="GObject"><type>GObject</type></link>&#160;*</programlisting>
+<para>The dynamic run context belonging to.</para>
+<para>Flags: Read / Write</para>
+<para role="since">Since 0.4.0</para></refsect2>
 
 </refsect1>
 

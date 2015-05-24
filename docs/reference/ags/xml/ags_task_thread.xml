@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsTaskThread">
+<refentry id="AgsTaskThread">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsTaskThread.top_of_page">AgsTaskThread</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsTaskThread.top_of_page">AgsTaskThread</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -14,105 +14,138 @@
 </refmeta>
 <refnamediv>
 <refname>AgsTaskThread</refname>
-<refpurpose></refpurpose>
+<refpurpose>task thread</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsTaskThread.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsTaskThread.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-TASK-THREAD-DEFAULT-JIFFIE:CAPS">AGS_TASK_THREAD_DEFAULT_JIFFIE</link></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-task-thread-append-task">ags_task_thread_append_task</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-task-thread-append-tasks">ags_task_thread_append_tasks</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsTaskThread"><returnvalue>AgsTaskThread</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-task-thread-new">ags_task_thread_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>#define             <link linkend="AGS-TASK-THREAD-DEFAULT-JIFFIE:CAPS">AGS_TASK_THREAD_DEFAULT_JIFFIE</link>
-struct              <link linkend="AgsTaskThread">AgsTaskThread</link>;
-struct              <link linkend="AgsTaskThreadAppend">AgsTaskThreadAppend</link>;
-struct              <link linkend="AgsTaskThreadClass">AgsTaskThreadClass</link>;
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-task-thread-append-task">ags_task_thread_append_task</link>         (<parameter><link linkend="AgsTaskThread"><type>AgsTaskThread</type></link> *task_thread</parameter>,
-                                                         <parameter><link linkend="AgsTask"><type>AgsTask</type></link> *task</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-task-thread-append-tasks">ags_task_thread_append_tasks</link>        (<parameter><link linkend="AgsTaskThread"><type>AgsTaskThread</type></link> *task_thread</parameter>,
-                                                         <parameter><link linkend="GList"><type>GList</type></link> *list</parameter>);
-<link linkend="AgsTaskThread"><returnvalue>AgsTaskThread</returnvalue></link> *     <link linkend="ags-task-thread-new">ags_task_thread_new</link>                 (<parameter><link linkend="GObject"><type>GObject</type></link> *devout</parameter>);
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsTaskThread.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsTaskThread.details" role="details">
-<title role="details.title">Details</title>
+<refsect1 id="AgsTaskThread.other" role="other_proto">
+<title role="other_proto.title">Types and Values</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="name" colwidth="150px"/>
+<colspec colname="description"/>
+<tbody>
+<row><entry role="datatype_keyword">struct</entry><entry role="function_name"><link linkend="AgsTaskThreadAppend">AgsTaskThreadAppend</link></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsTaskThread.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsThread">AgsThread</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsTaskThread
+</screen>
+</refsect1>
+
+<refsect1 id="AgsTaskThread.includes"><title>Includes</title><synopsis>#include &lt;ags/thread/ags_task_thread.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsTaskThread.description" role="desc">
+<title role="desc.title">Description</title>
+<para>The <link linkend="AgsTaskThread"><type>AgsTaskThread</type></link> acts as task queue thread.</para>
+
+</refsect1>
+<refsect1 id="AgsTaskThread.functions_details" role="details">
+<title role="details.title">Functions</title>
 <refsect2 id="AGS-TASK-THREAD-DEFAULT-JIFFIE:CAPS" role="macro">
 <title>AGS_TASK_THREAD_DEFAULT_JIFFIE</title>
 <indexterm zone="AGS-TASK-THREAD-DEFAULT-JIFFIE:CAPS"><primary>AGS_TASK_THREAD_DEFAULT_JIFFIE</primary></indexterm>
-<programlisting>#define AGS_TASK_THREAD_DEFAULT_JIFFIE (1000)
+<programlisting language="C">#define AGS_TASK_THREAD_DEFAULT_JIFFIE (1000)
 </programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsTaskThread" role="struct">
-<title>struct AgsTaskThread</title>
-<indexterm zone="AgsTaskThread"><primary>AgsTaskThread</primary></indexterm>
-<programlisting>struct AgsTaskThread {
-  AgsThread thread;
+</refsect2>
+<refsect2 id="ags-task-thread-append-task" role="function" condition="since:0.4">
+<title>ags_task_thread_append_task&#160;()</title>
+<indexterm zone="ags-task-thread-append-task" role="0.4"><primary>ags_task_thread_append_task</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_task_thread_append_task (<parameter><link linkend="AgsTaskThread"><type>AgsTaskThread</type></link> *task_thread</parameter>,
+                             <parameter><link linkend="AgsTask"><type>AgsTask</type></link> *task</parameter>);</programlisting>
+<para>Adds the task to <parameter>task_thread</parameter>
+.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>task_thread</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsTaskThread"><type>AgsTaskThread</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>task</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsTask"><type>AgsTask</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-task-thread-append-tasks" role="function" condition="since:0.4">
+<title>ags_task_thread_append_tasks&#160;()</title>
+<indexterm zone="ags-task-thread-append-tasks" role="0.4"><primary>ags_task_thread_append_tasks</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_task_thread_append_tasks (<parameter><link linkend="AgsTaskThread"><type>AgsTaskThread</type></link> *task_thread</parameter>,
+                              <parameter><link linkend="GList"><type>GList</type></link> *list</parameter>);</programlisting>
+<para>Concats the list with <parameter>task_thread</parameter>
+'s internal task list. Don't
+free the list you pass. It will be freed for you.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>task_thread</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsTaskThread"><type>AgsTaskThread</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>list</para></entry>
+<entry role="parameter_description"><para>a GList with <link linkend="AgsTask"><type>AgsTask</type></link> as data</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-task-thread-new" role="function" condition="since:0.4">
+<title>ags_task_thread_new&#160;()</title>
+<indexterm zone="ags-task-thread-new" role="0.4"><primary>ags_task_thread_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsTaskThread"><returnvalue>AgsTaskThread</returnvalue></link>&#160;*
+ags_task_thread_new ();</programlisting>
+<para>Create a new <link linkend="AgsTaskThread"><type>AgsTaskThread</type></link>.</para>
+<refsect3 role="returns">
+<title>Returns</title>
+<para> the new <link linkend="AgsTaskThread"><type>AgsTaskThread</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
 
-  guint flags;
-
-  GMutex mutex;
-  GCond cond;
-
-  pthread_mutex_t read_mutex;
-  pthread_mutex_t launch_mutex;
-
-  volatile guint queued;
-  volatile guint pending;
-
-  volatile GList *exec;
-  volatile GList *queue;
-
-  AgsThreadPool *thread_pool;
-};
-</programlisting>
-<para>
-</para></refsect2>
+</refsect1>
+<refsect1 id="AgsTaskThread.other_details" role="details">
+<title role="details.title">Types and Values</title>
 <refsect2 id="AgsTaskThreadAppend" role="struct">
 <title>struct AgsTaskThreadAppend</title>
 <indexterm zone="AgsTaskThreadAppend"><primary>AgsTaskThreadAppend</primary></indexterm>
-<programlisting>struct AgsTaskThreadAppend {
+<programlisting language="C">struct AgsTaskThreadAppend {
   volatile AgsTaskThread *task_thread;
   volatile gpointer data;
 };
 </programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsTaskThreadClass" role="struct">
-<title>struct AgsTaskThreadClass</title>
-<indexterm zone="AgsTaskThreadClass"><primary>AgsTaskThreadClass</primary></indexterm>
-<programlisting>struct AgsTaskThreadClass {
-  AgsThreadClass thread;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-task-thread-append-task" role="function">
-<title>ags_task_thread_append_task ()</title>
-<indexterm zone="ags-task-thread-append-task"><primary>ags_task_thread_append_task</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_task_thread_append_task         (<parameter><link linkend="AgsTaskThread"><type>AgsTaskThread</type></link> *task_thread</parameter>,
-                                                         <parameter><link linkend="AgsTask"><type>AgsTask</type></link> *task</parameter>);</programlisting>
-<para>
-Adds the task to <parameter>task_thread</parameter>.
-</para></refsect2>
-<refsect2 id="ags-task-thread-append-tasks" role="function">
-<title>ags_task_thread_append_tasks ()</title>
-<indexterm zone="ags-task-thread-append-tasks"><primary>ags_task_thread_append_tasks</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_task_thread_append_tasks        (<parameter><link linkend="AgsTaskThread"><type>AgsTaskThread</type></link> *task_thread</parameter>,
-                                                         <parameter><link linkend="GList"><type>GList</type></link> *list</parameter>);</programlisting>
-<para>
-Concats the list with <parameter>task_thread</parameter>'s internal task list. Don't
-free the list you pass. It will be freed for you.
-</para></refsect2>
-<refsect2 id="ags-task-thread-new" role="function">
-<title>ags_task_thread_new ()</title>
-<indexterm zone="ags-task-thread-new"><primary>ags_task_thread_new</primary></indexterm>
-<programlisting><link linkend="AgsTaskThread"><returnvalue>AgsTaskThread</returnvalue></link> *     ags_task_thread_new                 (<parameter><link linkend="GObject"><type>GObject</type></link> *devout</parameter>);</programlisting>
-<para>
-</para></refsect2>
+</refsect2>
 
 </refsect1>
 

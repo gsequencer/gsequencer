@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsRecallAudioRun">
+<refentry id="AgsRecallAudioRun">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsRecallAudioRun.top_of_page">AgsRecallAudioRun</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsRecallAudioRun.top_of_page">AgsRecallAudioRun</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -14,54 +14,83 @@
 </refmeta>
 <refnamediv>
 <refname>AgsRecallAudioRun</refname>
-<refpurpose></refpurpose>
+<refpurpose>audio context of dynamic recall</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsRecallAudioRun.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsRecallAudioRun.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="AgsRecallAudioRun"><returnvalue>AgsRecallAudioRun</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-recall-audio-run-new">ags_recall_audio_run_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>struct              <link linkend="AgsRecallAudioRun">AgsRecallAudioRun</link>;
-struct              <link linkend="AgsRecallAudioRunClass">AgsRecallAudioRunClass</link>;
-<link linkend="AgsRecallAudioRun"><returnvalue>AgsRecallAudioRun</returnvalue></link> * <link linkend="ags-recall-audio-run-new">ags_recall_audio_run_new</link>            ();
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsRecallAudioRun.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsRecallAudioRun.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AgsRecallAudioRun" role="struct">
-<title>struct AgsRecallAudioRun</title>
-<indexterm zone="AgsRecallAudioRun"><primary>AgsRecallAudioRun</primary></indexterm>
-<programlisting>struct AgsRecallAudioRun {
-  AgsRecall recall;
+<refsect1 id="AgsRecallAudioRun.properties" role="properties">
+<title role="properties.title">Properties</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="properties_type" colwidth="150px"/>
+<colspec colname="properties_name" colwidth="300px"/>
+<colspec colname="properties_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="property_type"><link linkend="AgsRecallAudio"><type>AgsRecallAudio</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsRecallAudioRun--recall-audio">recall-audio</link></entry><entry role="property_flags">Read / Write</entry></row>
 
-  AgsRecallAudio *recall_audio;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsRecallAudioRunClass" role="struct">
-<title>struct AgsRecallAudioRunClass</title>
-<indexterm zone="AgsRecallAudioRunClass"><primary>AgsRecallAudioRunClass</primary></indexterm>
-<programlisting>struct AgsRecallAudioRunClass {
-  AgsRecallClass recall;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-recall-audio-run-new" role="function">
-<title>ags_recall_audio_run_new ()</title>
-<indexterm zone="ags-recall-audio-run-new"><primary>ags_recall_audio_run_new</primary></indexterm>
-<programlisting><link linkend="AgsRecallAudioRun"><returnvalue>AgsRecallAudioRun</returnvalue></link> * ags_recall_audio_run_new            ();</programlisting>
-<para>
-Creates an <link linkend="AgsRecallAudioRun"><type>AgsRecallAudioRun</type></link>.
-</para><variablelist role="params">
-<varlistentry><term><emphasis>Returns</emphasis>&#160;:</term><listitem><simpara>a new <link linkend="AgsRecallAudioRun"><type>AgsRecallAudioRun</type></link>.</simpara></listitem></varlistentry>
-</variablelist></refsect2>
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsRecallAudioRun.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsRecall">AgsRecall</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsRecallAudioRun
+            <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsCopyNotationAudioRun">AgsCopyNotationAudioRun</link>
+            <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsCopyPatternAudioRun">AgsCopyPatternAudioRun</link>
+            <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsCountBeatsAudioRun">AgsCountBeatsAudioRun</link>
+            <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsDelayAudioRun">AgsDelayAudioRun</link>
+            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsPlayNotationAudioRun">AgsPlayNotationAudioRun</link>
+</screen>
+</refsect1>
+
+
+<refsect1 id="AgsRecallAudioRun.description" role="desc">
+<title role="desc.title">Description</title>
+<para><link linkend="AgsRecallAudioRun"><type>AgsRecallAudioRun</type></link> acts as dynamic audio recall.</para>
+
+</refsect1>
+<refsect1 id="AgsRecallAudioRun.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-recall-audio-run-new" role="function" condition="since:0.4">
+<title>ags_recall_audio_run_new&#160;()</title>
+<indexterm zone="ags-recall-audio-run-new" role="0.4"><primary>ags_recall_audio_run_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsRecallAudioRun"><returnvalue>AgsRecallAudioRun</returnvalue></link>&#160;*
+ags_recall_audio_run_new ();</programlisting>
+<para>Creates an <link linkend="AgsRecallAudioRun"><type>AgsRecallAudioRun</type></link>.</para>
+<refsect3 role="returns">
+<title>Returns</title>
+<para> a new <link linkend="AgsRecallAudioRun"><type>AgsRecallAudioRun</type></link>.</para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsRecallAudioRun.other_details" role="details">
+<title role="details.title">Types and Values</title>
+
+</refsect1>
+<refsect1 id="AgsRecallAudioRun.property-details" role="property_details">
+<title role="property_details.title">Property Details</title>
+<refsect2 id="AgsRecallAudioRun--recall-audio" role="property"><title>The <literal>“recall-audio”</literal> property</title>
+<indexterm zone="AgsRecallAudioRun--recall-audio" role="0.4.0"><primary>AgsRecallAudioRun:recall-audio</primary></indexterm>
+<programlisting>  “recall-audio”             <link linkend="AgsRecallAudio"><type>AgsRecallAudio</type></link>&#160;*</programlisting>
+<para>The recall audio belonging to.</para>
+<para>Flags: Read / Write</para>
+<para role="since">Since 0.4.0</para></refsect2>
 
 </refsect1>
 

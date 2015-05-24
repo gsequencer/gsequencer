@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsCartesian">
+<refentry id="AgsCartesian">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsCartesian.top_of_page">AgsCartesian</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsCartesian.top_of_page">AgsCartesian</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -17,46 +17,47 @@
 <refpurpose></refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsCartesian.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsCartesian.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="AgsCartesian"><returnvalue>AgsCartesian</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-cartesian-new">ags_cartesian_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>struct              <link linkend="AgsCartesian">AgsCartesian</link>;
-struct              <link linkend="AgsCartesianClass">AgsCartesianClass</link>;
-<link linkend="AgsCartesian"><returnvalue>AgsCartesian</returnvalue></link> *      <link linkend="ags-cartesian-new">ags_cartesian_new</link>                   ();
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsCartesian.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsCartesian.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AgsCartesian" role="struct">
-<title>struct AgsCartesian</title>
-<indexterm zone="AgsCartesian"><primary>AgsCartesian</primary></indexterm>
-<programlisting>struct AgsCartesian {
-  GtkWidget widget;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsCartesianClass" role="struct">
-<title>struct AgsCartesianClass</title>
-<indexterm zone="AgsCartesianClass"><primary>AgsCartesianClass</primary></indexterm>
-<programlisting>struct AgsCartesianClass {
-  GtkWidgetClass widget;
-};
-</programlisting>
-<para>
-</para></refsect2>
+<refsect1 id="AgsCartesian.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GInitiallyUnowned">GInitiallyUnowned</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkObject">GtkObject</link>
+            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkWidget">GtkWidget</link>
+                <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsCartesian
+</screen>
+</refsect1>
+
+
+<refsect1 id="AgsCartesian.description" role="desc">
+<title role="desc.title">Description</title>
+
+</refsect1>
+<refsect1 id="AgsCartesian.functions_details" role="details">
+<title role="details.title">Functions</title>
 <refsect2 id="ags-cartesian-new" role="function">
-<title>ags_cartesian_new ()</title>
+<title>ags_cartesian_new&#160;()</title>
 <indexterm zone="ags-cartesian-new"><primary>ags_cartesian_new</primary></indexterm>
-<programlisting><link linkend="AgsCartesian"><returnvalue>AgsCartesian</returnvalue></link> *      ags_cartesian_new                   ();</programlisting>
-<para>
-</para></refsect2>
+<programlisting language="C"><link linkend="AgsCartesian"><returnvalue>AgsCartesian</returnvalue></link>&#160;*
+ags_cartesian_new ();</programlisting>
+</refsect2>
+
+</refsect1>
+<refsect1 id="AgsCartesian.other_details" role="details">
+<title role="details.title">Types and Values</title>
 
 </refsect1>
 

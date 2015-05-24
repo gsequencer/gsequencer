@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsRecycling">
+<refentry id="AgsRecycling">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsRecycling.top_of_page">AgsRecycling</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsRecycling.top_of_page">AgsRecycling</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -14,191 +14,430 @@
 </refmeta>
 <refnamediv>
 <refname>AgsRecycling</refname>
-<refpurpose></refpurpose>
+<refpurpose>A container of audio signals</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsRecycling.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsRecycling.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-recycling-set-soundcard">ags_recycling_set_soundcard</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-recycling-add-audio-signal">ags_recycling_add_audio_signal</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-recycling-remove-audio-signal">ags_recycling_remove_audio_signal</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-recycling-create-audio-signal-with-defaults">ags_recycling_create_audio_signal_with_defaults</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-recycling-create-audio-signal-with-frame-count">ags_recycling_create_audio_signal_with_frame_count</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gint"><returnvalue>gint</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-recycling-position">ags_recycling_position</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsRecycling"><returnvalue>AgsRecycling</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-recycling-find-next-channel">ags_recycling_find_next_channel</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsRecycling"><returnvalue>AgsRecycling</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-recycling-new">ags_recycling_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>struct              <link linkend="AgsRecycling">AgsRecycling</link>;
-struct              <link linkend="AgsRecyclingClass">AgsRecyclingClass</link>;
-enum                <link linkend="AgsRecyclingFlags">AgsRecyclingFlags</link>;
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-recycling-add-audio-signal">ags_recycling_add_audio_signal</link>      (<parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *recycling</parameter>,
-                                                         <parameter><link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link> *audio_signal</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-recycling-create-audio-signal-with-defaults">ags_recycling_create_audio_signal_with_defaults</link>
-                                                        (<parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *recycling</parameter>,
-                                                         <parameter><link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link> *audio_signal</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> delay</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> attack</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-recycling-create-audio-signal-with-frame-count">ags_recycling_create_audio_signal_with_frame_count</link>
-                                                        (<parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *recycling</parameter>,
-                                                         <parameter><link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link> *audio_signal</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> frame_count</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> delay</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> attack</parameter>);
-<link linkend="AgsRecycling"><returnvalue>AgsRecycling</returnvalue></link> *      <link linkend="ags-recycling-find-next-channel">ags_recycling_find_next_channel</link>     (<parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *start_region</parameter>,
-                                                         <parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *end_region</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *prev_channel</parameter>);
-<link linkend="AgsRecycling"><returnvalue>AgsRecycling</returnvalue></link> *      <link linkend="ags-recycling-new">ags_recycling_new</link>                   (<parameter><link linkend="GObject"><type>GObject</type></link> *devout</parameter>);
-<link linkend="gint"><returnvalue>gint</returnvalue></link>                <link linkend="ags-recycling-position">ags_recycling_position</link>              (<parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *start_recycling</parameter>,
-                                                         <parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *end_region</parameter>,
-                                                         <parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *recycling</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-recycling-remove-audio-signal">ags_recycling_remove_audio_signal</link>   (<parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *recycling</parameter>,
-                                                         <parameter><link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link> *audio_signal</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-recycling-set-devout">ags_recycling_set_devout</link>            (<parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *recycling</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *devout</parameter>);
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsRecycling.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsRecycling.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AgsRecycling" role="struct">
-<title>struct AgsRecycling</title>
-<indexterm zone="AgsRecycling"><primary>AgsRecycling</primary></indexterm>
-<programlisting>struct AgsRecycling {
-  GObject object;
+<refsect1 id="AgsRecycling.properties" role="properties">
+<title role="properties.title">Properties</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="properties_type" colwidth="150px"/>
+<colspec colname="properties_name" colwidth="300px"/>
+<colspec colname="properties_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="property_type"><link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsRecycling--audio-signal">audio-signal</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="AgsChannel"><type>AgsChannel</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsRecycling--channel">channel</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="AgsRecycling"><type>AgsRecycling</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsRecycling--next">next</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="AgsRecycling"><type>AgsRecycling</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsRecycling--parent">parent</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="AgsRecycling"><type>AgsRecycling</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsRecycling--prev">prev</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="GObject"><type>GObject</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsRecycling--soundcard">soundcard</link></entry><entry role="property_flags">Read / Write</entry></row>
 
-  guint flags;
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsRecycling.signals" role="signal_proto">
+<title role="signal_proto.title">Signals</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="signals_return" colwidth="150px"/>
+<colspec colname="signals_name" colwidth="300px"/>
+<colspec colname="signals_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsRecycling-add-audio-signal">add-audio-signal</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsRecycling-remove-audio-signal">remove-audio-signal</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
 
-  GObject *channel;
-  GObject *devout;
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsRecycling.other" role="other_proto">
+<title role="other_proto.title">Types and Values</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="name" colwidth="150px"/>
+<colspec colname="description"/>
+<tbody>
+<row><entry role="datatype_keyword">enum</entry><entry role="function_name"><link linkend="AgsRecyclingFlags">AgsRecyclingFlags</link></entry></row>
 
-  AgsRecycling *parent;
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsRecycling.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsRecycling
+</screen>
+</refsect1>
 
-  AgsRecycling *next;
-  AgsRecycling *prev;
+<refsect1 id="AgsRecycling.includes"><title>Includes</title><synopsis>#include &lt;ags/audio/ags_recycling.h&gt;
+</synopsis></refsect1>
 
-  GList *audio_signal;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsRecyclingClass" role="struct">
-<title>struct AgsRecyclingClass</title>
-<indexterm zone="AgsRecyclingClass"><primary>AgsRecyclingClass</primary></indexterm>
-<programlisting>struct AgsRecyclingClass {
-  GObjectClass object;
+<refsect1 id="AgsRecycling.description" role="desc">
+<title role="desc.title">Description</title>
+<para><link linkend="AgsRecycling"><type>AgsRecycling</type></link> forms the nested tree of AgsChannel. Ever channel
+having own audio signal contains therefor an <link linkend="AgsRecycling"><type>AgsRecycling</type></link></para>
 
-  void (*add_audio_signal)(AgsRecycling *recycling,
-			   AgsAudioSignal *audio_signal);
-  void (*remove_audio_signal)(AgsRecycling *recycling,
-			      AgsAudioSignal *audio_signal);
-};
-</programlisting>
-<para>
-</para></refsect2>
+</refsect1>
+<refsect1 id="AgsRecycling.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-recycling-set-soundcard" role="function" condition="since:0.3">
+<title>ags_recycling_set_soundcard&#160;()</title>
+<indexterm zone="ags-recycling-set-soundcard" role="0.3"><primary>ags_recycling_set_soundcard</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_recycling_set_soundcard (<parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *recycling</parameter>,
+                             <parameter><link linkend="GObject"><type>GObject</type></link> *soundcard</parameter>);</programlisting>
+<para>Sets <link linkend="AgsSoundcard"><type>AgsSoundcard</type></link> to recycling.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>recycling</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsRecycling"><type>AgsRecycling</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>soundcard</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsSoundcard"><type>AgsSoundcard</type></link> to set</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.3</para></refsect2>
+<refsect2 id="ags-recycling-add-audio-signal" role="function" condition="since:0.3">
+<title>ags_recycling_add_audio_signal&#160;()</title>
+<indexterm zone="ags-recycling-add-audio-signal" role="0.3"><primary>ags_recycling_add_audio_signal</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_recycling_add_audio_signal (<parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *recycling</parameter>,
+                                <parameter><link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link> *audio_signal</parameter>);</programlisting>
+<para>Add <link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link> to recycling.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>recycling</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsRecycling"><type>AgsRecycling</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>audio_signal</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link> to add</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.3</para></refsect2>
+<refsect2 id="ags-recycling-remove-audio-signal" role="function" condition="since:0.3">
+<title>ags_recycling_remove_audio_signal&#160;()</title>
+<indexterm zone="ags-recycling-remove-audio-signal" role="0.3"><primary>ags_recycling_remove_audio_signal</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_recycling_remove_audio_signal (<parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *recycling</parameter>,
+                                   <parameter><link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link> *audio_signal</parameter>);</programlisting>
+<para>Remove <link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link> of recycling.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>recycling</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsRecycling"><type>AgsRecycling</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>audio_signal</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link> to remove</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.3</para></refsect2>
+<refsect2 id="ags-recycling-create-audio-signal-with-defaults" role="function" condition="since:0.4">
+<title>ags_recycling_create_audio_signal_with_defaults&#160;()</title>
+<indexterm zone="ags-recycling-create-audio-signal-with-defaults" role="0.4"><primary>ags_recycling_create_audio_signal_with_defaults</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_recycling_create_audio_signal_with_defaults
+                               (<parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *recycling</parameter>,
+                                <parameter><link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link> *audio_signal</parameter>,
+                                <parameter><link linkend="gdouble"><type>gdouble</type></link> delay</parameter>,
+                                <parameter><link linkend="guint"><type>guint</type></link> attack</parameter>);</programlisting>
+<para>Create audio signal with defaults.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>recycling</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsRecycling"><type>AgsRecycling</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>audio_signal</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link> to apply defaults </para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-recycling-create-audio-signal-with-frame-count" role="function" condition="since:0.4">
+<title>ags_recycling_create_audio_signal_with_frame_count&#160;()</title>
+<indexterm zone="ags-recycling-create-audio-signal-with-frame-count" role="0.4"><primary>ags_recycling_create_audio_signal_with_frame_count</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_recycling_create_audio_signal_with_frame_count
+                               (<parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *recycling</parameter>,
+                                <parameter><link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link> *audio_signal</parameter>,
+                                <parameter><link linkend="guint"><type>guint</type></link> frame_count</parameter>,
+                                <parameter><link linkend="gdouble"><type>gdouble</type></link> delay</parameter>,
+                                <parameter><link linkend="guint"><type>guint</type></link> attack</parameter>);</programlisting>
+<para>Create audio signal with frame count.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>recycling</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsRecycling"><type>AgsRecycling</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>audio_signal</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link> to apply defaults </para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>frame_count</para></entry>
+<entry role="parameter_description"><para>the audio data size</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-recycling-position" role="function" condition="since:0.4">
+<title>ags_recycling_position&#160;()</title>
+<indexterm zone="ags-recycling-position" role="0.4"><primary>ags_recycling_position</primary></indexterm>
+<programlisting language="C"><link linkend="gint"><returnvalue>gint</returnvalue></link>
+ags_recycling_position (<parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *start_recycling</parameter>,
+                        <parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *end_region</parameter>,
+                        <parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *recycling</parameter>);</programlisting>
+<para>Retrieve position of recycling.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>start_region</para></entry>
+<entry role="parameter_description"><para>boundary start</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>end_region</para></entry>
+<entry role="parameter_description"><para>boundary end</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>recycling</para></entry>
+<entry role="parameter_description"><para>matching recycling</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> position within boundary.</para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-recycling-find-next-channel" role="function" condition="since:0.4">
+<title>ags_recycling_find_next_channel&#160;()</title>
+<indexterm zone="ags-recycling-find-next-channel" role="0.4"><primary>ags_recycling_find_next_channel</primary></indexterm>
+<programlisting language="C"><link linkend="AgsRecycling"><returnvalue>AgsRecycling</returnvalue></link>&#160;*
+ags_recycling_find_next_channel (<parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *start_region</parameter>,
+                                 <parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *end_region</parameter>,
+                                 <parameter><link linkend="GObject"><type>GObject</type></link> *prev_channel</parameter>);</programlisting>
+<para>Retrieve next recycling with different channel.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>start_region</para></entry>
+<entry role="parameter_description"><para>boundary start</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>end_region</para></entry>
+<entry role="parameter_description"><para>boundary end</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>prev_channel</para></entry>
+<entry role="parameter_description"><para>previous channel</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> Matching recycling.</para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-recycling-new" role="function" condition="since:0.3">
+<title>ags_recycling_new&#160;()</title>
+<indexterm zone="ags-recycling-new" role="0.3"><primary>ags_recycling_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsRecycling"><returnvalue>AgsRecycling</returnvalue></link>&#160;*
+ags_recycling_new (<parameter><link linkend="GObject"><type>GObject</type></link> *soundcard</parameter>);</programlisting>
+<para>Creates a <link linkend="AgsRecycling"><type>AgsRecycling</type></link>, with defaults of <parameter>soundcard</parameter>
+.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>soundcard</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsSoundcard"><type>AgsSoundcard</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> a new <link linkend="AgsRecycling"><type>AgsRecycling</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.3</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsRecycling.other_details" role="details">
+<title role="details.title">Types and Values</title>
 <refsect2 id="AgsRecyclingFlags" role="enum">
 <title>enum AgsRecyclingFlags</title>
 <indexterm zone="AgsRecyclingFlags"><primary>AgsRecyclingFlags</primary></indexterm>
-<programlisting>typedef enum {
-  AGS_RECYCLING_MUTED           =  1,
-} AgsRecyclingFlags;
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-recycling-add-audio-signal" role="function">
-<title>ags_recycling_add_audio_signal ()</title>
-<indexterm zone="ags-recycling-add-audio-signal"><primary>ags_recycling_add_audio_signal</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_recycling_add_audio_signal      (<parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *recycling</parameter>,
-                                                         <parameter><link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link> *audio_signal</parameter>);</programlisting>
-<para>
-Add <link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link> to recycling.
-</para><variablelist role="params">
-<varlistentry><term><parameter>recycling</parameter>&#160;:</term>
-<listitem><simpara>an <link linkend="AgsRecycling"><type>AgsRecycling</type></link></simpara></listitem></varlistentry>
-<varlistentry><term><parameter>audio_signal</parameter>&#160;:</term>
-<listitem><simpara>the <link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link> to add</simpara></listitem></varlistentry>
-</variablelist></refsect2>
-<refsect2 id="ags-recycling-create-audio-signal-with-defaults" role="function">
-<title>ags_recycling_create_audio_signal_with_defaults ()</title>
-<indexterm zone="ags-recycling-create-audio-signal-with-defaults"><primary>ags_recycling_create_audio_signal_with_defaults</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_recycling_create_audio_signal_with_defaults
-                                                        (<parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *recycling</parameter>,
-                                                         <parameter><link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link> *audio_signal</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> delay</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> attack</parameter>);</programlisting>
-<para>
-Create audio signal with defaults.
-</para></refsect2>
-<refsect2 id="ags-recycling-create-audio-signal-with-frame-count" role="function">
-<title>ags_recycling_create_audio_signal_with_frame_count ()</title>
-<indexterm zone="ags-recycling-create-audio-signal-with-frame-count"><primary>ags_recycling_create_audio_signal_with_frame_count</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_recycling_create_audio_signal_with_frame_count
-                                                        (<parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *recycling</parameter>,
-                                                         <parameter><link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link> *audio_signal</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> frame_count</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> delay</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> attack</parameter>);</programlisting>
-<para>
-Create audio signal with frame count.
-</para></refsect2>
-<refsect2 id="ags-recycling-find-next-channel" role="function">
-<title>ags_recycling_find_next_channel ()</title>
-<indexterm zone="ags-recycling-find-next-channel"><primary>ags_recycling_find_next_channel</primary></indexterm>
-<programlisting><link linkend="AgsRecycling"><returnvalue>AgsRecycling</returnvalue></link> *      ags_recycling_find_next_channel     (<parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *start_region</parameter>,
-                                                         <parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *end_region</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *prev_channel</parameter>);</programlisting>
-<para>
-Retrieve next recycling with different channel.
-</para><variablelist role="params">
-<varlistentry><term><parameter>start_region</parameter>&#160;:</term>
-<listitem><simpara>boundary start</simpara></listitem></varlistentry>
-<varlistentry><term><parameter>end_region</parameter>&#160;:</term>
-<listitem><simpara>boundary end</simpara></listitem></varlistentry>
-<varlistentry><term><parameter>prev_channel</parameter>&#160;:</term>
-<listitem><simpara>previous channel</simpara></listitem></varlistentry>
-<varlistentry><term><emphasis>Returns</emphasis>&#160;:</term><listitem><simpara>Matching recycling.</simpara></listitem></varlistentry>
-</variablelist></refsect2>
-<refsect2 id="ags-recycling-new" role="function">
-<title>ags_recycling_new ()</title>
-<indexterm zone="ags-recycling-new"><primary>ags_recycling_new</primary></indexterm>
-<programlisting><link linkend="AgsRecycling"><returnvalue>AgsRecycling</returnvalue></link> *      ags_recycling_new                   (<parameter><link linkend="GObject"><type>GObject</type></link> *devout</parameter>);</programlisting>
-<para>
-Creates a <link linkend="AgsRecycling"><type>AgsRecycling</type></link>, with defaults of <parameter>devout</parameter>.
-</para><variablelist role="params">
-<varlistentry><term><emphasis>Returns</emphasis>&#160;:</term><listitem><simpara>a new <link linkend="AgsRecycling"><type>AgsRecycling</type></link></simpara></listitem></varlistentry>
-</variablelist></refsect2>
-<refsect2 id="ags-recycling-position" role="function">
-<title>ags_recycling_position ()</title>
-<indexterm zone="ags-recycling-position"><primary>ags_recycling_position</primary></indexterm>
-<programlisting><link linkend="gint"><returnvalue>gint</returnvalue></link>                ags_recycling_position              (<parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *start_recycling</parameter>,
-                                                         <parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *end_region</parameter>,
-                                                         <parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *recycling</parameter>);</programlisting>
-<para>
-Retrieve position of recycling.
-</para><variablelist role="params">
-<varlistentry><term><parameter>end_region</parameter>&#160;:</term>
-<listitem><simpara>boundary end</simpara></listitem></varlistentry>
-<varlistentry><term><parameter>recycling</parameter>&#160;:</term>
-<listitem><simpara>matching recycling</simpara></listitem></varlistentry>
-<varlistentry><term><emphasis>Returns</emphasis>&#160;:</term><listitem><simpara>position within boundary.</simpara></listitem></varlistentry>
-</variablelist></refsect2>
-<refsect2 id="ags-recycling-remove-audio-signal" role="function">
-<title>ags_recycling_remove_audio_signal ()</title>
-<indexterm zone="ags-recycling-remove-audio-signal"><primary>ags_recycling_remove_audio_signal</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_recycling_remove_audio_signal   (<parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *recycling</parameter>,
-                                                         <parameter><link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link> *audio_signal</parameter>);</programlisting>
-<para>
-Remove <link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link> of recycling.
-</para><variablelist role="params">
-<varlistentry><term><parameter>recycling</parameter>&#160;:</term>
-<listitem><simpara>an <link linkend="AgsRecycling"><type>AgsRecycling</type></link></simpara></listitem></varlistentry>
-<varlistentry><term><parameter>audio_signal</parameter>&#160;:</term>
-<listitem><simpara>the <link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link> to remove</simpara></listitem></varlistentry>
-</variablelist></refsect2>
-<refsect2 id="ags-recycling-set-devout" role="function">
-<title>ags_recycling_set_devout ()</title>
-<indexterm zone="ags-recycling-set-devout"><primary>ags_recycling_set_devout</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_recycling_set_devout            (<parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *recycling</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *devout</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<refsect3 role="enum_members">
+<title>Members</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="enum_members_name" colwidth="300px"/>
+<colspec colname="enum_members_description"/>
+<colspec colname="enum_members_annotations" colwidth="200px"/>
+<tbody>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-RECYCLING-MUTED:CAPS">AGS_RECYCLING_MUTED</para></entry>
+<entry /><entry />
+</row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
 
+</refsect1>
+<refsect1 id="AgsRecycling.property-details" role="property_details">
+<title role="property_details.title">Property Details</title>
+<refsect2 id="AgsRecycling--audio-signal" role="property"><title>The <literal>“audio-signal”</literal> property</title>
+<indexterm zone="AgsRecycling--audio-signal" role="0.4.3"><primary>AgsRecycling:audio-signal</primary></indexterm>
+<programlisting>  “audio-signal”             <link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link>&#160;*</programlisting>
+<para>The containing  <link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link>.</para>
+<para>Flags: Read / Write</para>
+<para role="since">Since 0.4.3</para></refsect2>
+<refsect2 id="AgsRecycling--channel" role="property"><title>The <literal>“channel”</literal> property</title>
+<indexterm zone="AgsRecycling--channel" role="0.4.3"><primary>AgsRecycling:channel</primary></indexterm>
+<programlisting>  “channel”                  <link linkend="AgsChannel"><type>AgsChannel</type></link>&#160;*</programlisting>
+<para>The assigned <link linkend="AgsChannel"><type>AgsChannel</type></link>.</para>
+<para>Flags: Read / Write</para>
+<para role="since">Since 0.4.3</para></refsect2>
+<refsect2 id="AgsRecycling--next" role="property"><title>The <literal>“next”</literal> property</title>
+<indexterm zone="AgsRecycling--next" role="0.4.3"><primary>AgsRecycling:next</primary></indexterm>
+<programlisting>  “next”                     <link linkend="AgsRecycling"><type>AgsRecycling</type></link>&#160;*</programlisting>
+<para>The assigned next <link linkend="AgsRecycling"><type>AgsRecycling</type></link>.</para>
+<para>Flags: Read / Write</para>
+<para role="since">Since 0.4.3</para></refsect2>
+<refsect2 id="AgsRecycling--parent" role="property"><title>The <literal>“parent”</literal> property</title>
+<indexterm zone="AgsRecycling--parent" role="0.4.3"><primary>AgsRecycling:parent</primary></indexterm>
+<programlisting>  “parent”                   <link linkend="AgsRecycling"><type>AgsRecycling</type></link>&#160;*</programlisting>
+<para>The assigned parent <link linkend="AgsRecycling"><type>AgsRecycling</type></link>.</para>
+<para>Flags: Read / Write</para>
+<para role="since">Since 0.4.3</para></refsect2>
+<refsect2 id="AgsRecycling--prev" role="property"><title>The <literal>“prev”</literal> property</title>
+<indexterm zone="AgsRecycling--prev" role="0.4.3"><primary>AgsRecycling:prev</primary></indexterm>
+<programlisting>  “prev”                     <link linkend="AgsRecycling"><type>AgsRecycling</type></link>&#160;*</programlisting>
+<para>The assigned prev <link linkend="AgsRecycling"><type>AgsRecycling</type></link>.</para>
+<para>Flags: Read / Write</para>
+<para role="since">Since 0.4.3</para></refsect2>
+<refsect2 id="AgsRecycling--soundcard" role="property"><title>The <literal>“soundcard”</literal> property</title>
+<indexterm zone="AgsRecycling--soundcard" role="0.4.0"><primary>AgsRecycling:soundcard</primary></indexterm>
+<programlisting>  “soundcard”                <link linkend="GObject"><type>GObject</type></link>&#160;*</programlisting>
+<para>The assigned <link linkend="AgsSoundcard"><type>AgsSoundcard</type></link> acting as default sink.</para>
+<para>Flags: Read / Write</para>
+<para role="since">Since 0.4.0</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsRecycling.signal-details" role="signals">
+<title role="signals.title">Signal Details</title>
+<refsect2 id="AgsRecycling-add-audio-signal" role="signal"><title>The <literal>“add-audio-signal”</literal> signal</title>
+<indexterm zone="AgsRecycling-add-audio-signal"><primary>AgsRecycling::add-audio-signal</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsRecycling"><type>AgsRecycling</type></link> *recycling,
+               <link linkend="GObject"><type>GObject</type></link>      *audio_signal,
+               <link linkend="gpointer"><type>gpointer</type></link>      user_data)</programlisting>
+<para>The ::add-audio-signal signal is emited as adding <link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link></para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>recycling</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsRecycling"><type>AgsRecycling</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>audio_signal</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link> to add</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsRecycling-remove-audio-signal" role="signal"><title>The <literal>“remove-audio-signal”</literal> signal</title>
+<indexterm zone="AgsRecycling-remove-audio-signal"><primary>AgsRecycling::remove-audio-signal</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsRecycling"><type>AgsRecycling</type></link> *recycling,
+               <link linkend="GObject"><type>GObject</type></link>      *audio_signal,
+               <link linkend="gpointer"><type>gpointer</type></link>      user_data)</programlisting>
+<para>The ::remove-audio-signal signal is emited as removing <link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link></para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>recycling</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsRecycling"><type>AgsRecycling</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>audio_signal</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsAudioSignal"><type>AgsAudioSignal</type></link> to remove</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2>
 </refsect1>
 
 </refentry>

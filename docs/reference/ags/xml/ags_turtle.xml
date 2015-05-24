@@ -1,0 +1,148 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="AgsTurtle">
+<refmeta>
+<refentrytitle role="top_of_page" id="AgsTurtle.top_of_page">AgsTurtle</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsTurtle</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsect1 id="AgsTurtle.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-turtle-find-xpath">ags_turtle_find_xpath</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-turtle-load">ags_turtle_load</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsTurtle"><returnvalue>AgsTurtle</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-turtle-new">ags_turtle_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsTurtle.properties" role="properties">
+<title role="properties.title">Properties</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="properties_type" colwidth="150px"/>
+<colspec colname="properties_name" colwidth="300px"/>
+<colspec colname="properties_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="property_type"><link linkend="gchar"><type>gchar</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsTurtle--filename">filename</link></entry><entry role="property_flags">Read / Write</entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsTurtle.other" role="other_proto">
+<title role="other_proto.title">Types and Values</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="name" colwidth="150px"/>
+<colspec colname="description"/>
+<tbody>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-TURTLE-DEFAULT-ENCODING:CAPS">AGS_TURTLE_DEFAULT_ENCODING</link></entry></row>
+<row><entry role="datatype_keyword">enum</entry><entry role="function_name"><link linkend="AgsTurtleFlags">AgsTurtleFlags</link></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsTurtle.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsTurtle
+</screen>
+</refsect1>
+
+
+<refsect1 id="AgsTurtle.description" role="desc">
+<title role="desc.title">Description</title>
+
+</refsect1>
+<refsect1 id="AgsTurtle.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-turtle-find-xpath" role="function">
+<title>ags_turtle_find_xpath&#160;()</title>
+<indexterm zone="ags-turtle-find-xpath"><primary>ags_turtle_find_xpath</primary></indexterm>
+<programlisting language="C"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+ags_turtle_find_xpath (<parameter><link linkend="AgsTurtle"><type>AgsTurtle</type></link> *turtle</parameter>,
+                       <parameter><link linkend="gchar"><type>gchar</type></link> *xpath</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-turtle-load" role="function">
+<title>ags_turtle_load&#160;()</title>
+<indexterm zone="ags-turtle-load"><primary>ags_turtle_load</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_turtle_load (<parameter><link linkend="AgsTurtle"><type>AgsTurtle</type></link> *turtle</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-turtle-new" role="function">
+<title>ags_turtle_new&#160;()</title>
+<indexterm zone="ags-turtle-new"><primary>ags_turtle_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsTurtle"><returnvalue>AgsTurtle</returnvalue></link>&#160;*
+ags_turtle_new (<parameter><link linkend="gchar"><type>gchar</type></link> *filename</parameter>);</programlisting>
+</refsect2>
+
+</refsect1>
+<refsect1 id="AgsTurtle.other_details" role="details">
+<title role="details.title">Types and Values</title>
+<refsect2 id="AGS-TURTLE-DEFAULT-ENCODING:CAPS" role="macro">
+<title>AGS_TURTLE_DEFAULT_ENCODING</title>
+<indexterm zone="AGS-TURTLE-DEFAULT-ENCODING:CAPS"><primary>AGS_TURTLE_DEFAULT_ENCODING</primary></indexterm>
+<programlisting language="C">#define AGS_TURTLE_DEFAULT_ENCODING "UTF-8\0"
+</programlisting>
+</refsect2>
+<refsect2 id="AgsTurtleFlags" role="enum">
+<title>enum AgsTurtleFlags</title>
+<indexterm zone="AgsTurtleFlags"><primary>AgsTurtleFlags</primary></indexterm>
+<refsect3 role="enum_members">
+<title>Members</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="enum_members_name" colwidth="300px"/>
+<colspec colname="enum_members_description"/>
+<colspec colname="enum_members_annotations" colwidth="200px"/>
+<tbody>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-TURTLE-READ-SUBJECT:CAPS">AGS_TURTLE_READ_SUBJECT</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-TURTLE-READ-VERB:CAPS">AGS_TURTLE_READ_VERB</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-TURTLE-READ-OBJECT:CAPS">AGS_TURTLE_READ_OBJECT</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-TURTLE-TRIPLE-END:CAPS">AGS_TURTLE_TRIPLE_END</para></entry>
+<entry /><entry />
+</row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
+
+</refsect1>
+<refsect1 id="AgsTurtle.property-details" role="property_details">
+<title role="property_details.title">Property Details</title>
+<refsect2 id="AgsTurtle--filename" role="property"><title>The <literal>“filename”</literal> property</title>
+<indexterm zone="AgsTurtle--filename" role="0.4.3"><primary>AgsTurtle:filename</primary></indexterm>
+<programlisting>  “filename”                 <link linkend="gchar"><type>gchar</type></link>&#160;*</programlisting>
+<para>The assigned filename.</para>
+<para>Flags: Read / Write</para>
+<para>Default value: NULL</para>
+<para role="since">Since 0.4.3</para></refsect2>
+
+</refsect1>
+
+</refentry>

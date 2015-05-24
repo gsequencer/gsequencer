@@ -1,0 +1,121 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="AgsTrackCollection">
+<refmeta>
+<refentrytitle role="top_of_page" id="AgsTrackCollection.top_of_page">AgsTrackCollection</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsTrackCollection</refname>
+<refpurpose>Property of audio, channels or pads in bulk mode.</refpurpose>
+</refnamediv>
+
+<refsect1 id="AgsTrackCollection.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-track-collection-parse">ags_track_collection_parse</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-track-collection-add-mapper">ags_track_collection_add_mapper</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsTrackCollection"><returnvalue>AgsTrackCollection</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-track-collection-new">ags_track_collection_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsTrackCollection.properties" role="properties">
+<title role="properties.title">Properties</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="properties_type" colwidth="150px"/>
+<colspec colname="properties_name" colwidth="300px"/>
+<colspec colname="properties_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="property_type"><link linkend="gpointer"><type>gpointer</type></link></entry><entry role="property_name"><link linkend="AgsTrackCollection--midi-document">midi-document</link></entry><entry role="property_flags">Read / Write</entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsTrackCollection.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GInitiallyUnowned">GInitiallyUnowned</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkObject">GtkObject</link>
+            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkWidget">GtkWidget</link>
+                <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkContainer">GtkContainer</link>
+                    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkBox">GtkBox</link>
+                        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkVBox">GtkVBox</link>
+                            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsTrackCollection
+</screen>
+</refsect1>
+
+<refsect1 id="AgsTrackCollection.includes"><title>Includes</title><synopsis>#include &lt;ags/X/ags_track_collection.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsTrackCollection.description" role="desc">
+<title role="desc.title">Description</title>
+<para><link linkend="AgsTrackCollection"><type>AgsTrackCollection</type></link> is a composite widget to property. A property editor 
+should be packed by a <link linkend="AgsPropertyCollectionEditor"><type>AgsPropertyCollectionEditor</type></link>.</para>
+
+</refsect1>
+<refsect1 id="AgsTrackCollection.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-track-collection-parse" role="function">
+<title>ags_track_collection_parse&#160;()</title>
+<indexterm zone="ags-track-collection-parse"><primary>ags_track_collection_parse</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_track_collection_parse (<parameter><link linkend="AgsTrackCollection"><type>AgsTrackCollection</type></link> *track_collection</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-track-collection-add-mapper" role="function">
+<title>ags_track_collection_add_mapper&#160;()</title>
+<indexterm zone="ags-track-collection-add-mapper"><primary>ags_track_collection_add_mapper</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_track_collection_add_mapper (<parameter><link linkend="AgsTrackCollection"><type>AgsTrackCollection</type></link> *track_collection</parameter>,
+                                 <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *track</parameter>,
+                                 <parameter><link linkend="gchar"><type>gchar</type></link> *instrument</parameter>,
+                                 <parameter><link linkend="gchar"><type>gchar</type></link> *sequence</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-track-collection-new" role="function" condition="since:0.4.3">
+<title>ags_track_collection_new&#160;()</title>
+<indexterm zone="ags-track-collection-new" role="0.4.3"><primary>ags_track_collection_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsTrackCollection"><returnvalue>AgsTrackCollection</returnvalue></link>&#160;*
+ags_track_collection_new (<parameter><link linkend="GType"><type>GType</type></link> child_type</parameter>,
+                          <parameter><link linkend="guint"><type>guint</type></link> child_parameter_count</parameter>,
+                          <parameter><link linkend="GParameter"><type>GParameter</type></link> *child_parameter</parameter>);</programlisting>
+<para>Creates an <link linkend="AgsTrackCollection"><type>AgsTrackCollection</type></link></para>
+<refsect3 role="returns">
+<title>Returns</title>
+<para> a new <link linkend="AgsTrackCollection"><type>AgsTrackCollection</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.4.3</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsTrackCollection.other_details" role="details">
+<title role="details.title">Types and Values</title>
+
+</refsect1>
+<refsect1 id="AgsTrackCollection.property-details" role="property_details">
+<title role="property_details.title">Property Details</title>
+<refsect2 id="AgsTrackCollection--midi-document" role="property"><title>The <literal>“midi-document”</literal> property</title>
+<indexterm zone="AgsTrackCollection--midi-document" role="0.4.3"><primary>AgsTrackCollection:midi-document</primary></indexterm>
+<programlisting>  “midi-document”            <link linkend="gpointer"><type>gpointer</type></link></programlisting>
+<para>The assigned midi document.</para>
+<para>Flags: Read / Write</para>
+<para role="since">Since 0.4.3</para></refsect2>
+
+</refsect1>
+
+</refentry>

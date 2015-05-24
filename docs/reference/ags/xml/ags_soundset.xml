@@ -1,0 +1,85 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="AgsSoundset">
+<refmeta>
+<refentrytitle role="top_of_page" id="AgsSoundset.top_of_page">AgsSoundset</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsSoundset</refname>
+<refpurpose>piano widget</refpurpose>
+</refnamediv>
+
+<refsect1 id="AgsSoundset.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="char"><returnvalue>char</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-soundset-sound-string">ags_soundset_sound_string</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-soundset-paint">ags_soundset_paint</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsSoundset"><returnvalue>AgsSoundset</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-soundset-new">ags_soundset_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsSoundset.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GInitiallyUnowned">GInitiallyUnowned</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkObject">GtkObject</link>
+            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkWidget">GtkWidget</link>
+                <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkDrawingArea">GtkDrawingArea</link>
+                    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsSoundset
+</screen>
+</refsect1>
+
+<refsect1 id="AgsSoundset.includes"><title>Includes</title><synopsis>#include &lt;ags/X/editor/ags_soundset.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsSoundset.description" role="desc">
+<title role="desc.title">Description</title>
+<para>The <link linkend="AgsSoundset"><type>AgsSoundset</type></link> draws you a piano.</para>
+
+</refsect1>
+<refsect1 id="AgsSoundset.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-soundset-sound-string" role="function">
+<title>ags_soundset_sound_string&#160;()</title>
+<indexterm zone="ags-soundset-sound-string"><primary>ags_soundset_sound_string</primary></indexterm>
+<programlisting language="C"><link linkend="char"><returnvalue>char</returnvalue></link>&#160;*
+ags_soundset_sound_string ();</programlisting>
+</refsect2>
+<refsect2 id="ags-soundset-paint" role="function">
+<title>ags_soundset_paint&#160;()</title>
+<indexterm zone="ags-soundset-paint"><primary>ags_soundset_paint</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_soundset_paint (<parameter><link linkend="AgsSoundset"><type>AgsSoundset</type></link> *soundset</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-soundset-new" role="function" condition="since:0.4">
+<title>ags_soundset_new&#160;()</title>
+<indexterm zone="ags-soundset-new" role="0.4"><primary>ags_soundset_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsSoundset"><returnvalue>AgsSoundset</returnvalue></link>&#160;*
+ags_soundset_new ();</programlisting>
+<para>Create a new <link linkend="AgsSoundset"><type>AgsSoundset</type></link>.</para>
+<para role="since">Since 0.4</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsSoundset.other_details" role="details">
+<title role="details.title">Types and Values</title>
+
+</refsect1>
+
+</refentry>

@@ -1,0 +1,127 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-ags-thread-file-xml">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-ags-thread-file-xml.top_of_page">ags_thread_file_xml</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>ags_thread_file_xml</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsect1 id="ags-ags-thread-file-xml.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-file-read-thread">ags_file_read_thread</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-file-write-thread">ags_file_write_thread</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-file-read-thread-list">ags_file_read_thread_list</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-file-write-thread-list">ags_file_write_thread_list</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-file-read-thread-pool">ags_file_read_thread_pool</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-file-write-thread-pool">ags_file_write_thread_pool</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-file-read-main-loop">ags_file_read_main_loop</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-file-write-main-loop">ags_file_write_main_loop</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+
+
+<refsect1 id="ags-ags-thread-file-xml.description" role="desc">
+<title role="desc.title">Description</title>
+
+</refsect1>
+<refsect1 id="ags-ags-thread-file-xml.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-file-read-thread" role="function">
+<title>ags_file_read_thread&#160;()</title>
+<indexterm zone="ags-file-read-thread"><primary>ags_file_read_thread</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_file_read_thread (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                      <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *node</parameter>,
+                      <parameter><link linkend="AgsThread"><type>AgsThread</type></link> **thread</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-write-thread" role="function">
+<title>ags_file_write_thread&#160;()</title>
+<indexterm zone="ags-file-write-thread"><primary>ags_file_write_thread</primary></indexterm>
+<programlisting language="C"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+ags_file_write_thread (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                       <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *parent</parameter>,
+                       <parameter><link linkend="AgsThread"><type>AgsThread</type></link> *thread</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-read-thread-list" role="function">
+<title>ags_file_read_thread_list&#160;()</title>
+<indexterm zone="ags-file-read-thread-list"><primary>ags_file_read_thread_list</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_file_read_thread_list (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                           <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *node</parameter>,
+                           <parameter><link linkend="GList"><type>GList</type></link> **thread</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-write-thread-list" role="function">
+<title>ags_file_write_thread_list&#160;()</title>
+<indexterm zone="ags-file-write-thread-list"><primary>ags_file_write_thread_list</primary></indexterm>
+<programlisting language="C"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+ags_file_write_thread_list (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                            <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *parent</parameter>,
+                            <parameter><link linkend="GList"><type>GList</type></link> *thread</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-read-thread-pool" role="function">
+<title>ags_file_read_thread_pool&#160;()</title>
+<indexterm zone="ags-file-read-thread-pool"><primary>ags_file_read_thread_pool</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_file_read_thread_pool (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                           <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *node</parameter>,
+                           <parameter><link linkend="AgsThreadPool"><type>AgsThreadPool</type></link> **thread_pool</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-write-thread-pool" role="function">
+<title>ags_file_write_thread_pool&#160;()</title>
+<indexterm zone="ags-file-write-thread-pool"><primary>ags_file_write_thread_pool</primary></indexterm>
+<programlisting language="C"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+ags_file_write_thread_pool (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                            <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *parent</parameter>,
+                            <parameter><link linkend="AgsThreadPool"><type>AgsThreadPool</type></link> *thread_pool</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-read-main-loop" role="function">
+<title>ags_file_read_main_loop&#160;()</title>
+<indexterm zone="ags-file-read-main-loop"><primary>ags_file_read_main_loop</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_file_read_main_loop (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                         <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *node</parameter>,
+                         <parameter><link linkend="AgsThread"><type>AgsThread</type></link> *main_loop</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-write-main-loop" role="function">
+<title>ags_file_write_main_loop&#160;()</title>
+<indexterm zone="ags-file-write-main-loop"><primary>ags_file_write_main_loop</primary></indexterm>
+<programlisting language="C"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+ags_file_write_main_loop (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                          <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *parent</parameter>,
+                          <parameter><link linkend="AgsThread"><type>AgsThread</type></link> *main_loop</parameter>);</programlisting>
+</refsect2>
+
+</refsect1>
+<refsect1 id="ags-ags-thread-file-xml.other_details" role="details">
+<title role="details.title">Types and Values</title>
+
+</refsect1>
+
+</refentry>

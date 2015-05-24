@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
 <refentry id="ags-AgsTimebar">
 <refmeta>
@@ -17,46 +17,38 @@
 <refpurpose></refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsTimebar.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="ags-AgsTimebar.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="AgsTimebar"><returnvalue>AgsTimebar</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-timebar-new">ags_timebar_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>struct              <link linkend="AgsTimebar">AgsTimebar</link>;
-struct              <link linkend="AgsTimebarClass">AgsTimebarClass</link>;
-<link linkend="AgsTimebar"><returnvalue>AgsTimebar</returnvalue></link> *        <link linkend="ags-timebar-new">ags_timebar_new</link>                     ();
-</synopsis>
-</refsynopsisdiv>
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+
 
 <refsect1 id="ags-AgsTimebar.description" role="desc">
 <title role="desc.title">Description</title>
-<para>
-</para>
+
 </refsect1>
-<refsect1 id="ags-AgsTimebar.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AgsTimebar" role="struct">
-<title>struct AgsTimebar</title>
-<indexterm zone="AgsTimebar"><primary>AgsTimebar</primary></indexterm>
-<programlisting>struct AgsTimebar {
-  GtkRange range;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsTimebarClass" role="struct">
-<title>struct AgsTimebarClass</title>
-<indexterm zone="AgsTimebarClass"><primary>AgsTimebarClass</primary></indexterm>
-<programlisting>struct AgsTimebarClass {
-  GtkRangeClass range;
-};
-</programlisting>
-<para>
-</para></refsect2>
+<refsect1 id="ags-AgsTimebar.functions_details" role="details">
+<title role="details.title">Functions</title>
 <refsect2 id="ags-timebar-new" role="function">
-<title>ags_timebar_new ()</title>
+<title>ags_timebar_new&#160;()</title>
 <indexterm zone="ags-timebar-new"><primary>ags_timebar_new</primary></indexterm>
-<programlisting><link linkend="AgsTimebar"><returnvalue>AgsTimebar</returnvalue></link> *        ags_timebar_new                     ();</programlisting>
-<para>
-</para></refsect2>
+<programlisting language="C"><link linkend="AgsTimebar"><returnvalue>AgsTimebar</returnvalue></link>&#160;*
+ags_timebar_new ();</programlisting>
+</refsect2>
+
+</refsect1>
+<refsect1 id="ags-AgsTimebar.other_details" role="details">
+<title role="details.title">Types and Values</title>
 
 </refsect1>
 

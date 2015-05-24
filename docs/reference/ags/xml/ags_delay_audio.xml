@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsDelayAudio">
+<refentry id="AgsDelayAudio">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsDelayAudio.top_of_page">AgsDelayAudio</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsDelayAudio.top_of_page">AgsDelayAudio</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -14,80 +14,200 @@
 </refmeta>
 <refnamediv>
 <refname>AgsDelayAudio</refname>
-<refpurpose></refpurpose>
+<refpurpose>delay audio</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsDelayAudio.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsDelayAudio.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-delay-audio-notation-duration-changed">ags_delay_audio_notation_duration_changed</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-delay-audio-sequencer-duration-changed">ags_delay_audio_sequencer_duration_changed</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsDelayAudio"><returnvalue>AgsDelayAudio</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-delay-audio-new">ags_delay_audio_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>struct              <link linkend="AgsDelayAudio">AgsDelayAudio</link>;
-struct              <link linkend="AgsDelayAudioClass">AgsDelayAudioClass</link>;
-<link linkend="AgsDelayAudio"><returnvalue>AgsDelayAudio</returnvalue></link> *     <link linkend="ags-delay-audio-new">ags_delay_audio_new</link>                 ();
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-delay-audio-notation-duration-changed">ags_delay_audio_notation_duration_changed</link>
-                                                        (<parameter><link linkend="AgsDelayAudio"><type>AgsDelayAudio</type></link> *delay_audio</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-delay-audio-sequencer-duration-changed">ags_delay_audio_sequencer_duration_changed</link>
-                                                        (<parameter><link linkend="AgsDelayAudio"><type>AgsDelayAudio</type></link> *delay_audio</parameter>);
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsDelayAudio.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsDelayAudio.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AgsDelayAudio" role="struct">
-<title>struct AgsDelayAudio</title>
-<indexterm zone="AgsDelayAudio"><primary>AgsDelayAudio</primary></indexterm>
-<programlisting>struct AgsDelayAudio {
-  AgsRecallAudio recall_audio;
+<refsect1 id="AgsDelayAudio.properties" role="properties">
+<title role="properties.title">Properties</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="properties_type" colwidth="150px"/>
+<colspec colname="properties_name" colwidth="300px"/>
+<colspec colname="properties_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="property_type"><link linkend="AgsPort"><type>AgsPort</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsDelayAudio--bpm">bpm</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="AgsPort"><type>AgsPort</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsDelayAudio--notation-delay">notation-delay</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="AgsPort"><type>AgsPort</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsDelayAudio--notation-duration">notation-duration</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="AgsPort"><type>AgsPort</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsDelayAudio--sequencer-delay">sequencer-delay</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="AgsPort"><type>AgsPort</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsDelayAudio--sequencer-duration">sequencer-duration</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="AgsPort"><type>AgsPort</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsDelayAudio--tact">tact</link></entry><entry role="property_flags">Read / Write</entry></row>
 
-  AgsPort *bpm;
-  AgsPort *tact;
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsDelayAudio.signals" role="signal_proto">
+<title role="signal_proto.title">Signals</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="signals_return" colwidth="150px"/>
+<colspec colname="signals_name" colwidth="300px"/>
+<colspec colname="signals_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsDelayAudio-notation-duration-changed">notation-duration-changed</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsDelayAudio-sequencer-duration-changed">sequencer-duration-changed</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
 
-  AgsPort *notation_delay;
-  AgsPort *sequencer_delay;
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsDelayAudio.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsRecall">AgsRecall</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsRecallAudio">AgsRecallAudio</link>
+            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsDelayAudio
+</screen>
+</refsect1>
 
-  AgsPort *sequencer_duration;
-  AgsPort *notation_duration;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsDelayAudioClass" role="struct">
-<title>struct AgsDelayAudioClass</title>
-<indexterm zone="AgsDelayAudioClass"><primary>AgsDelayAudioClass</primary></indexterm>
-<programlisting>struct AgsDelayAudioClass {
-  AgsRecallAudioClass recall_audio;
+<refsect1 id="AgsDelayAudio.includes"><title>Includes</title><synopsis>#include &lt;ags/audio/recall/ags_delay_audio.h&gt;
+</synopsis></refsect1>
 
-  void (*notation_duration_changed)(AgsDelayAudio *delay_audio);
-  void (*sequencer_duration_changed)(AgsDelayAudio *delay_audio);
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-delay-audio-new" role="function">
-<title>ags_delay_audio_new ()</title>
-<indexterm zone="ags-delay-audio-new"><primary>ags_delay_audio_new</primary></indexterm>
-<programlisting><link linkend="AgsDelayAudio"><returnvalue>AgsDelayAudio</returnvalue></link> *     ags_delay_audio_new                 ();</programlisting>
-<para>
-</para></refsect2>
+<refsect1 id="AgsDelayAudio.description" role="desc">
+<title role="desc.title">Description</title>
+<para>The <link linkend="AgsDelayAudio"><type>AgsDelayAudio</type></link> class provides ports to the effect processor.</para>
+
+</refsect1>
+<refsect1 id="AgsDelayAudio.functions_details" role="details">
+<title role="details.title">Functions</title>
 <refsect2 id="ags-delay-audio-notation-duration-changed" role="function">
-<title>ags_delay_audio_notation_duration_changed ()</title>
+<title>ags_delay_audio_notation_duration_changed&#160;()</title>
 <indexterm zone="ags-delay-audio-notation-duration-changed"><primary>ags_delay_audio_notation_duration_changed</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_delay_audio_notation_duration_changed
-                                                        (<parameter><link linkend="AgsDelayAudio"><type>AgsDelayAudio</type></link> *delay_audio</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_delay_audio_notation_duration_changed
+                               (<parameter><link linkend="AgsDelayAudio"><type>AgsDelayAudio</type></link> *delay_audio</parameter>);</programlisting>
+</refsect2>
 <refsect2 id="ags-delay-audio-sequencer-duration-changed" role="function">
-<title>ags_delay_audio_sequencer_duration_changed ()</title>
+<title>ags_delay_audio_sequencer_duration_changed&#160;()</title>
 <indexterm zone="ags-delay-audio-sequencer-duration-changed"><primary>ags_delay_audio_sequencer_duration_changed</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_delay_audio_sequencer_duration_changed
-                                                        (<parameter><link linkend="AgsDelayAudio"><type>AgsDelayAudio</type></link> *delay_audio</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_delay_audio_sequencer_duration_changed
+                               (<parameter><link linkend="AgsDelayAudio"><type>AgsDelayAudio</type></link> *delay_audio</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-delay-audio-new" role="function" condition="since:0.4">
+<title>ags_delay_audio_new&#160;()</title>
+<indexterm zone="ags-delay-audio-new" role="0.4"><primary>ags_delay_audio_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsDelayAudio"><returnvalue>AgsDelayAudio</returnvalue></link>&#160;*
+ags_delay_audio_new ();</programlisting>
+<para>Creates an <link linkend="AgsDelayAudio"><type>AgsDelayAudio</type></link></para>
+<refsect3 role="returns">
+<title>Returns</title>
+<para> a new <link linkend="AgsDelayAudio"><type>AgsDelayAudio</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
 
+</refsect1>
+<refsect1 id="AgsDelayAudio.other_details" role="details">
+<title role="details.title">Types and Values</title>
+
+</refsect1>
+<refsect1 id="AgsDelayAudio.property-details" role="property_details">
+<title role="property_details.title">Property Details</title>
+<refsect2 id="AgsDelayAudio--bpm" role="property"><title>The <literal>“bpm”</literal> property</title>
+<indexterm zone="AgsDelayAudio--bpm" role="0.4"><primary>AgsDelayAudio:bpm</primary></indexterm>
+<programlisting>  “bpm”                      <link linkend="AgsPort"><type>AgsPort</type></link>&#160;*</programlisting>
+<para>The beats per minute.</para>
+<para>Flags: Read / Write</para>
+<para role="since">Since 0.4</para></refsect2>
+<refsect2 id="AgsDelayAudio--notation-delay" role="property"><title>The <literal>“notation-delay”</literal> property</title>
+<indexterm zone="AgsDelayAudio--notation-delay" role="0.4"><primary>AgsDelayAudio:notation-delay</primary></indexterm>
+<programlisting>  “notation-delay”           <link linkend="AgsPort"><type>AgsPort</type></link>&#160;*</programlisting>
+<para>The notation's delay.</para>
+<para>Flags: Read / Write</para>
+<para role="since">Since 0.4</para></refsect2>
+<refsect2 id="AgsDelayAudio--notation-duration" role="property"><title>The <literal>“notation-duration”</literal> property</title>
+<indexterm zone="AgsDelayAudio--notation-duration" role="0.4"><primary>AgsDelayAudio:notation-duration</primary></indexterm>
+<programlisting>  “notation-duration”        <link linkend="AgsPort"><type>AgsPort</type></link>&#160;*</programlisting>
+<para>The notation's duration.</para>
+<para>Flags: Read / Write</para>
+<para role="since">Since 0.4</para></refsect2>
+<refsect2 id="AgsDelayAudio--sequencer-delay" role="property"><title>The <literal>“sequencer-delay”</literal> property</title>
+<indexterm zone="AgsDelayAudio--sequencer-delay" role="0.4"><primary>AgsDelayAudio:sequencer-delay</primary></indexterm>
+<programlisting>  “sequencer-delay”          <link linkend="AgsPort"><type>AgsPort</type></link>&#160;*</programlisting>
+<para>The sequencer's delay.</para>
+<para>Flags: Read / Write</para>
+<para role="since">Since 0.4</para></refsect2>
+<refsect2 id="AgsDelayAudio--sequencer-duration" role="property"><title>The <literal>“sequencer-duration”</literal> property</title>
+<indexterm zone="AgsDelayAudio--sequencer-duration" role="0.4"><primary>AgsDelayAudio:sequencer-duration</primary></indexterm>
+<programlisting>  “sequencer-duration”       <link linkend="AgsPort"><type>AgsPort</type></link>&#160;*</programlisting>
+<para>The sequencer's duration.</para>
+<para>Flags: Read / Write</para>
+<para role="since">Since 0.4</para></refsect2>
+<refsect2 id="AgsDelayAudio--tact" role="property"><title>The <literal>“tact”</literal> property</title>
+<indexterm zone="AgsDelayAudio--tact" role="0.4"><primary>AgsDelayAudio:tact</primary></indexterm>
+<programlisting>  “tact”                     <link linkend="AgsPort"><type>AgsPort</type></link>&#160;*</programlisting>
+<para>The tact segmentation.</para>
+<para>Flags: Read / Write</para>
+<para role="since">Since 0.4</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsDelayAudio.signal-details" role="signals">
+<title role="signals.title">Signal Details</title>
+<refsect2 id="AgsDelayAudio-notation-duration-changed" role="signal"><title>The <literal>“notation-duration-changed”</literal> signal</title>
+<indexterm zone="AgsDelayAudio-notation-duration-changed"><primary>AgsDelayAudio::notation-duration-changed</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsDelayAudio"><type>AgsDelayAudio</type></link> *delay_audio,
+               <link linkend="gpointer"><type>gpointer</type></link>       user_data)</programlisting>
+<para>The ::notation-duration-changed signal notifies about changed duration
+of notation.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>delay_audio</para></entry>
+<entry role="parameter_description"><para>the object to resolve</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsDelayAudio-sequencer-duration-changed" role="signal"><title>The <literal>“sequencer-duration-changed”</literal> signal</title>
+<indexterm zone="AgsDelayAudio-sequencer-duration-changed"><primary>AgsDelayAudio::sequencer-duration-changed</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsDelayAudio"><type>AgsDelayAudio</type></link> *delay_audio,
+               <link linkend="gpointer"><type>gpointer</type></link>       user_data)</programlisting>
+<para>The ::sequencer-duration-changed signal notifies about changed duration
+of sequencer.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>delay_audio</para></entry>
+<entry role="parameter_description"><para>the object to resolve</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2>
 </refsect1>
 
 </refentry>

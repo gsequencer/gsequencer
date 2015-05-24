@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
 <refentry id="ags-AgsLog">
 <refmeta>
@@ -17,182 +17,237 @@
 <refpurpose></refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsLog.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="ags-AgsLog.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-LOG-MESSAGE:CAPS">AGS_LOG_MESSAGE</link><phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-LOG-FORMATED-MESSAGE:CAPS">AGS_LOG_FORMATED_MESSAGE</link><phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-LOG-MESSAGE-LENGTH:CAPS">AGS_LOG_MESSAGE_LENGTH</link></entry></row>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-LOG-MESSAGE-DATE-LENGTH:CAPS">AGS_LOG_MESSAGE_DATE_LENGTH</link></entry></row>
+<row><entry role="function_type"><link linkend="AgsLogMessage"><returnvalue>AgsLogMessage</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-log-message-alloc">ags_log_message_alloc</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-log-message-free">ags_log_message_free</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsLogFormatedMessage"><returnvalue>AgsLogFormatedMessage</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-log-formated-message-alloc">ags_log_formated_message_alloc</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-log-formated-message-free">ags_log_formated_message_free</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-log-debug">ags_log_debug</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-log-message">ags_log_message</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-log-warn">ags_log_warn</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-log-error">ags_log_error</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-log-add-queue">ags_log_add_queue</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-log-output">ags_log_output</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsLog"><returnvalue>AgsLog</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-log-new">ags_log_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>struct              <link linkend="AgsLog">AgsLog</link>;
-struct              <link linkend="AgsLogClass">AgsLogClass</link>;
-enum                <link linkend="AgsLogFlags">AgsLogFlags</link>;
-struct              <link linkend="AgsLogFormatedMessage">AgsLogFormatedMessage</link>;
-struct              <link linkend="AgsLogMessage">AgsLogMessage</link>;
-#define             <link linkend="ags-default-log">ags_default_log</link>
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-log-debug">ags_log_debug</link>                       (<parameter><link linkend="AgsLog"><type>AgsLog</type></link> *log</parameter>,
-                                                         <parameter><link linkend="char"><type>char</type></link> *format</parameter>,
-                                                         <parameter>...</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-log-message">ags_log_message</link>                     (<parameter><link linkend="AgsLog"><type>AgsLog</type></link> *log</parameter>,
-                                                         <parameter><link linkend="char"><type>char</type></link> *format</parameter>,
-                                                         <parameter>...</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-log-start-queue">ags_log_start_queue</link>                 (<parameter><link linkend="AgsLog"><type>AgsLog</type></link> *log</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-log-stop-queue">ags_log_stop_queue</link>                  (<parameter><link linkend="AgsLog"><type>AgsLog</type></link> *log</parameter>);
-</synopsis>
-</refsynopsisdiv>
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="ags-AgsLog.other" role="other_proto">
+<title role="other_proto.title">Types and Values</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="name" colwidth="150px"/>
+<colspec colname="description"/>
+<tbody>
+<row><entry role="datatype_keyword">enum</entry><entry role="function_name"><link linkend="AgsLogFLags">AgsLogFLags</link></entry></row>
+<row><entry role="datatype_keyword">enum</entry><entry role="function_name"><link linkend="AgsLogMode">AgsLogMode</link></entry></row>
+<row><entry role="datatype_keyword">struct</entry><entry role="function_name"><link linkend="AgsLogMessage">AgsLogMessage</link></entry></row>
+<row><entry role="datatype_keyword">struct</entry><entry role="function_name"><link linkend="AgsLogFormatedMessage">AgsLogFormatedMessage</link></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+
 
 <refsect1 id="ags-AgsLog.description" role="desc">
 <title role="desc.title">Description</title>
-<para>
-</para>
+
 </refsect1>
-<refsect1 id="ags-AgsLog.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AgsLog" role="struct">
-<title>struct AgsLog</title>
-<indexterm zone="AgsLog"><primary>AgsLog</primary></indexterm>
-<programlisting>struct AgsLog {
-  GObject object;
-
-  guint flags;
-
-  FILE *file;
-  pthread_mutex_t start_mutex;
-  pthread_cond_t start_wait_cond;
-
-  struct timespec *log_interval;
-  struct timespec *free_float;
-  pthread_t timer_thread;
-  pthread_attr_t timer_thread_attr;
-  pthread_mutex_t timer_mutex;
-  pthread_mutexattr_t timer_mutex_attr;
-  gboolean timer_started;
-  gboolean timer_active;
-  gboolean timer_awaken;
-  pthread_cond_t timer_wait_cond;
-
-  pthread_t broker_thread;
-  pthread_attr_t broker_thread_attr;
-  pthread_mutex_t broker_mutex;
-  pthread_mutexattr_t broker_mutex_attr;
-  gboolean broker_started;
-  gboolean broker_active;
-  gboolean broker_awaken;
-  gboolean signaled_timer;
-  gboolean signaled_log;
-  gboolean signaled_queue;
-  gboolean signaled_output;
-  pthread_cond_t broker_wait_cond;
-
-  GList *output_formated_message;
-  pthread_t output_thread;
-  pthread_attr_t output_thread_attr;
-  pthread_mutex_t output_mutex;
-  pthread_mutexattr_t output_mutex_attr;
-  gboolean output_started;
-  gboolean output_active;
-  gboolean output_awaken;
-  pthread_cond_t output_wait_cond;
-
-  GList *queue_formated_message;
-  GList *queue_message;
-  pthread_t queue_thread;
-  pthread_attr_t queue_thread_attr;
-  pthread_mutex_t queue_mutex;
-  pthread_mutexattr_t queue_mutex_attr;
-  gboolean queue_started;
-  gboolean queue_active;
-  gboolean queue_awaken;
-  pthread_cond_t queue_wait_cond;
-
-  GList *log;
-  guint active_logs;
-  guint suspended_logs;
-  pthread_cond_t log_wait_cond;
-};
+<refsect1 id="ags-AgsLog.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="AGS-LOG-MESSAGE:CAPS" role="macro">
+<title>AGS_LOG_MESSAGE()</title>
+<indexterm zone="AGS-LOG-MESSAGE:CAPS"><primary>AGS_LOG_MESSAGE</primary></indexterm>
+<programlisting language="C">#define AGS_LOG_MESSAGE(ptr) ((AgsLogMessage *)(ptr))
 </programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsLogClass" role="struct">
-<title>struct AgsLogClass</title>
-<indexterm zone="AgsLogClass"><primary>AgsLogClass</primary></indexterm>
-<programlisting>struct AgsLogClass {
-  GObjectClass object;
-};
+</refsect2>
+<refsect2 id="AGS-LOG-FORMATED-MESSAGE:CAPS" role="macro">
+<title>AGS_LOG_FORMATED_MESSAGE()</title>
+<indexterm zone="AGS-LOG-FORMATED-MESSAGE:CAPS"><primary>AGS_LOG_FORMATED_MESSAGE</primary></indexterm>
+<programlisting language="C">#define AGS_LOG_FORMATED_MESSAGE(ptr) ((AgsLogFormatedMessage *)(ptr))
 </programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsLogFlags" role="enum">
-<title>enum AgsLogFlags</title>
-<indexterm zone="AgsLogFlags"><primary>AgsLogFlags</primary></indexterm>
-<programlisting>typedef enum {
-  AGS_LOG_STARTING                    = 1,
-  AGS_LOG_RUNNING                     = 1 &lt;&lt;  1,
-  AGS_LOG_TIMER_SLEEP                 = 1 &lt;&lt;  2,
-  AGS_LOG_OUTPUT_SUSPEND              = 1 &lt;&lt;  3,
-  AGS_LOG_OUTPUT_WAITS_FOR_QUEUE      = 1 &lt;&lt;  4,
-  AGS_LOG_QUEUE_SUSPEND               = 1 &lt;&lt;  5,
-  AGS_LOG_SUSPEND                     = 1 &lt;&lt;  6,
-  AGS_LOG_COPY_FROM_QUEUE_TO_OUTPUT   = 1 &lt;&lt;  7,
-  AGS_LOG_OMMIT_DEBUG                 = 1 &lt;&lt;  8,
-} AgsLogFlags;
+</refsect2>
+<refsect2 id="AGS-LOG-MESSAGE-LENGTH:CAPS" role="macro">
+<title>AGS_LOG_MESSAGE_LENGTH</title>
+<indexterm zone="AGS-LOG-MESSAGE-LENGTH:CAPS"><primary>AGS_LOG_MESSAGE_LENGTH</primary></indexterm>
+<programlisting language="C">#define AGS_LOG_MESSAGE_LENGTH (4096)
 </programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsLogFormatedMessage" role="struct">
-<title>struct AgsLogFormatedMessage</title>
-<indexterm zone="AgsLogFormatedMessage"><primary>AgsLogFormatedMessage</primary></indexterm>
-<programlisting>struct AgsLogFormatedMessage {
-  int length;
-  char *message;
-};
+</refsect2>
+<refsect2 id="AGS-LOG-MESSAGE-DATE-LENGTH:CAPS" role="macro">
+<title>AGS_LOG_MESSAGE_DATE_LENGTH</title>
+<indexterm zone="AGS-LOG-MESSAGE-DATE-LENGTH:CAPS"><primary>AGS_LOG_MESSAGE_DATE_LENGTH</primary></indexterm>
+<programlisting language="C">#define AGS_LOG_MESSAGE_DATE_LENGTH (19)
 </programlisting>
-<para>
-</para></refsect2>
+</refsect2>
+<refsect2 id="ags-log-message-alloc" role="function">
+<title>ags_log_message_alloc&#160;()</title>
+<indexterm zone="ags-log-message-alloc"><primary>ags_log_message_alloc</primary></indexterm>
+<programlisting language="C"><link linkend="AgsLogMessage"><returnvalue>AgsLogMessage</returnvalue></link>&#160;*
+ags_log_message_alloc (<parameter><type>struct timespec</type> *timestamp</parameter>,
+                       <parameter><link linkend="char"><type>char</type></link> *format</parameter>,
+                       <parameter><link linkend="va-list"><type>va_list</type></link> *args</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-log-message-free" role="function">
+<title>ags_log_message_free&#160;()</title>
+<indexterm zone="ags-log-message-free"><primary>ags_log_message_free</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_log_message_free (<parameter><link linkend="AgsLogMessage"><type>AgsLogMessage</type></link> *log_message</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-log-formated-message-alloc" role="function">
+<title>ags_log_formated_message_alloc&#160;()</title>
+<indexterm zone="ags-log-formated-message-alloc"><primary>ags_log_formated_message_alloc</primary></indexterm>
+<programlisting language="C"><link linkend="AgsLogFormatedMessage"><returnvalue>AgsLogFormatedMessage</returnvalue></link>&#160;*
+ags_log_formated_message_alloc (<parameter><link linkend="guint"><type>guint</type></link> length</parameter>,
+                                <parameter><link linkend="char"><type>char</type></link> *message</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-log-formated-message-free" role="function">
+<title>ags_log_formated_message_free&#160;()</title>
+<indexterm zone="ags-log-formated-message-free"><primary>ags_log_formated_message_free</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_log_formated_message_free (<parameter><link linkend="AgsLogFormatedMessage"><type>AgsLogFormatedMessage</type></link> *formated_message</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-log-debug" role="function">
+<title>ags_log_debug&#160;()</title>
+<indexterm zone="ags-log-debug"><primary>ags_log_debug</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_log_debug (<parameter><link linkend="AgsLog"><type>AgsLog</type></link> *log</parameter>,
+               <parameter><link linkend="char"><type>char</type></link> *format</parameter>,
+               <parameter>...</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-log-message" role="function">
+<title>ags_log_message&#160;()</title>
+<indexterm zone="ags-log-message"><primary>ags_log_message</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_log_message (<parameter><link linkend="AgsLog"><type>AgsLog</type></link> *log</parameter>,
+                 <parameter><link linkend="char"><type>char</type></link> *format</parameter>,
+                 <parameter>...</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-log-warn" role="function">
+<title>ags_log_warn&#160;()</title>
+<indexterm zone="ags-log-warn"><primary>ags_log_warn</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_log_warn (<parameter><link linkend="AgsLog"><type>AgsLog</type></link> *log</parameter>,
+              <parameter><link linkend="char"><type>char</type></link> *format</parameter>,
+              <parameter>...</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-log-error" role="function">
+<title>ags_log_error&#160;()</title>
+<indexterm zone="ags-log-error"><primary>ags_log_error</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_log_error (<parameter><link linkend="AgsLog"><type>AgsLog</type></link> *log</parameter>,
+               <parameter><link linkend="char"><type>char</type></link> *format</parameter>,
+               <parameter>...</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-log-add-queue" role="function">
+<title>ags_log_add_queue&#160;()</title>
+<indexterm zone="ags-log-add-queue"><primary>ags_log_add_queue</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_log_add_queue (<parameter><link linkend="AgsLog"><type>AgsLog</type></link> *log</parameter>,
+                   <parameter><link linkend="AgsLogMessage"><type>AgsLogMessage</type></link> *log_message</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-log-output" role="function">
+<title>ags_log_output&#160;()</title>
+<indexterm zone="ags-log-output"><primary>ags_log_output</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_log_output (<parameter><link linkend="AgsLog"><type>AgsLog</type></link> *log</parameter>,
+                <parameter><link linkend="GError"><type>GError</type></link> **error</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-log-new" role="function">
+<title>ags_log_new&#160;()</title>
+<indexterm zone="ags-log-new"><primary>ags_log_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsLog"><returnvalue>AgsLog</returnvalue></link>&#160;*
+ags_log_new (<parameter><link linkend="GObject"><type>GObject</type></link> *application_context</parameter>);</programlisting>
+</refsect2>
+
+</refsect1>
+<refsect1 id="ags-AgsLog.other_details" role="details">
+<title role="details.title">Types and Values</title>
+<refsect2 id="AgsLogFLags" role="enum">
+<title>enum AgsLogFLags</title>
+<indexterm zone="AgsLogFLags"><primary>AgsLogFLags</primary></indexterm>
+<refsect3 role="enum_members">
+<title>Members</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="enum_members_name" colwidth="300px"/>
+<colspec colname="enum_members_description"/>
+<colspec colname="enum_members_annotations" colwidth="200px"/>
+<tbody>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-LOG-TRACK:CAPS">AGS_LOG_TRACK</para></entry>
+<entry /><entry />
+</row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
+<refsect2 id="AgsLogMode" role="enum">
+<title>enum AgsLogMode</title>
+<indexterm zone="AgsLogMode"><primary>AgsLogMode</primary></indexterm>
+<refsect3 role="enum_members">
+<title>Members</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="enum_members_name" colwidth="300px"/>
+<colspec colname="enum_members_description"/>
+<colspec colname="enum_members_annotations" colwidth="200px"/>
+<tbody>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-LOG-DEBUG:CAPS">AGS_LOG_DEBUG</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-LOG-MESSAGE:CAPS">AGS_LOG_MESSAGE</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-LOG-WARN:CAPS">AGS_LOG_WARN</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-LOG-ERROR:CAPS">AGS_LOG_ERROR</para></entry>
+<entry /><entry />
+</row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
 <refsect2 id="AgsLogMessage" role="struct">
 <title>struct AgsLogMessage</title>
 <indexterm zone="AgsLogMessage"><primary>AgsLogMessage</primary></indexterm>
-<programlisting>struct AgsLogMessage {
-  gboolean debug;
-
-  struct timespec *time;
+<programlisting language="C">struct AgsLogMessage {
+  guint mode;
+  
+  struct timespec *timestamp;
   char *format;
-  va_list args;
+  va_list *args;
 };
 </programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-default-log" role="macro">
-<title>ags_default_log</title>
-<indexterm zone="ags-default-log"><primary>ags_default_log</primary></indexterm>
-<programlisting>#define ags_default_log ags_default_log
+</refsect2>
+<refsect2 id="AgsLogFormatedMessage" role="struct">
+<title>struct AgsLogFormatedMessage</title>
+<indexterm zone="AgsLogFormatedMessage"><primary>AgsLogFormatedMessage</primary></indexterm>
+<programlisting language="C">struct AgsLogFormatedMessage {
+  guint length;
+  char *message;
+};
 </programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-log-debug" role="function">
-<title>ags_log_debug ()</title>
-<indexterm zone="ags-log-debug"><primary>ags_log_debug</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_log_debug                       (<parameter><link linkend="AgsLog"><type>AgsLog</type></link> *log</parameter>,
-                                                         <parameter><link linkend="char"><type>char</type></link> *format</parameter>,
-                                                         <parameter>...</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-log-message" role="function">
-<title>ags_log_message ()</title>
-<indexterm zone="ags-log-message"><primary>ags_log_message</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_log_message                     (<parameter><link linkend="AgsLog"><type>AgsLog</type></link> *log</parameter>,
-                                                         <parameter><link linkend="char"><type>char</type></link> *format</parameter>,
-                                                         <parameter>...</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-log-start-queue" role="function">
-<title>ags_log_start_queue ()</title>
-<indexterm zone="ags-log-start-queue"><primary>ags_log_start_queue</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_log_start_queue                 (<parameter><link linkend="AgsLog"><type>AgsLog</type></link> *log</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-log-stop-queue" role="function">
-<title>ags_log_stop_queue ()</title>
-<indexterm zone="ags-log-stop-queue"><primary>ags_log_stop_queue</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_log_stop_queue                  (<parameter><link linkend="AgsLog"><type>AgsLog</type></link> *log</parameter>);</programlisting>
-<para>
-</para></refsect2>
+</refsect2>
 
 </refsect1>
 

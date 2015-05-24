@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsPlayAudioFile">
+<refentry id="AgsPlayAudioFile">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsPlayAudioFile.top_of_page">AgsPlayAudioFile</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsPlayAudioFile.top_of_page">AgsPlayAudioFile</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -17,53 +17,84 @@
 <refpurpose></refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsPlayAudioFile.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsPlayAudioFile.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="AgsPlayAudioFile"><returnvalue>AgsPlayAudioFile</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-play-audio-file-new">ags_play_audio_file_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>struct              <link linkend="AgsPlayAudioFile">AgsPlayAudioFile</link>;
-struct              <link linkend="AgsPlayAudioFileClass">AgsPlayAudioFileClass</link>;
-<link linkend="AgsPlayAudioFile"><returnvalue>AgsPlayAudioFile</returnvalue></link> *  <link linkend="ags-play-audio-file-new">ags_play_audio_file_new</link>             (<parameter><link linkend="AgsAudioFile"><type>AgsAudioFile</type></link> *audio_file</parameter>,
-                                                         <parameter><link linkend="AgsDevout"><type>AgsDevout</type></link> *devout</parameter>);
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsPlayAudioFile.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsPlayAudioFile.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AgsPlayAudioFile" role="struct">
-<title>struct AgsPlayAudioFile</title>
-<indexterm zone="AgsPlayAudioFile"><primary>AgsPlayAudioFile</primary></indexterm>
-<programlisting>struct AgsPlayAudioFile {
-  AgsRecall recall;
+<refsect1 id="AgsPlayAudioFile.properties" role="properties">
+<title role="properties.title">Properties</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="properties_type" colwidth="150px"/>
+<colspec colname="properties_name" colwidth="300px"/>
+<colspec colname="properties_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="property_type"><link linkend="GType"><type>GType</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsPlayAudioFile--audio-file">audio-file</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="GType"><type>GType</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsPlayAudioFile--current">current</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="GType"><type>GType</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsPlayAudioFile--soundcard">soundcard</link></entry><entry role="property_flags">Read / Write</entry></row>
 
-  AgsAudioFile *audio_file;
-  guint current_frame;
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsPlayAudioFile.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsRecall">AgsRecall</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsPlayAudioFile
+</screen>
+</refsect1>
 
-  AgsDevout *devout;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsPlayAudioFileClass" role="struct">
-<title>struct AgsPlayAudioFileClass</title>
-<indexterm zone="AgsPlayAudioFileClass"><primary>AgsPlayAudioFileClass</primary></indexterm>
-<programlisting>struct AgsPlayAudioFileClass {
-  AgsRecallClass recall;
-};
-</programlisting>
-<para>
-</para></refsect2>
+
+<refsect1 id="AgsPlayAudioFile.description" role="desc">
+<title role="desc.title">Description</title>
+
+</refsect1>
+<refsect1 id="AgsPlayAudioFile.functions_details" role="details">
+<title role="details.title">Functions</title>
 <refsect2 id="ags-play-audio-file-new" role="function">
-<title>ags_play_audio_file_new ()</title>
+<title>ags_play_audio_file_new&#160;()</title>
 <indexterm zone="ags-play-audio-file-new"><primary>ags_play_audio_file_new</primary></indexterm>
-<programlisting><link linkend="AgsPlayAudioFile"><returnvalue>AgsPlayAudioFile</returnvalue></link> *  ags_play_audio_file_new             (<parameter><link linkend="AgsAudioFile"><type>AgsAudioFile</type></link> *audio_file</parameter>,
-                                                         <parameter><link linkend="AgsDevout"><type>AgsDevout</type></link> *devout</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<programlisting language="C"><link linkend="AgsPlayAudioFile"><returnvalue>AgsPlayAudioFile</returnvalue></link>&#160;*
+ags_play_audio_file_new (<parameter><link linkend="AgsAudioFile"><type>AgsAudioFile</type></link> *audio_file</parameter>,
+                         <parameter><link linkend="GObject"><type>GObject</type></link> *soundcard</parameter>);</programlisting>
+</refsect2>
+
+</refsect1>
+<refsect1 id="AgsPlayAudioFile.other_details" role="details">
+<title role="details.title">Types and Values</title>
+
+</refsect1>
+<refsect1 id="AgsPlayAudioFile.property-details" role="property_details">
+<title role="property_details.title">Property Details</title>
+<refsect2 id="AgsPlayAudioFile--audio-file" role="property"><title>The <literal>“audio-file”</literal> property</title>
+<indexterm zone="AgsPlayAudioFile--audio-file"><primary>AgsPlayAudioFile:audio-file</primary></indexterm>
+<programlisting>  “audio-file”               <link linkend="GType"><type>GType</type></link>&#160;*</programlisting>
+<para>The audio file this recall is assigned to.</para><para>Flags: Read / Write</para>
+<para>Allowed values: GObject</para>
+</refsect2>
+<refsect2 id="AgsPlayAudioFile--current" role="property"><title>The <literal>“current”</literal> property</title>
+<indexterm zone="AgsPlayAudioFile--current"><primary>AgsPlayAudioFile:current</primary></indexterm>
+<programlisting>  “current”                  <link linkend="GType"><type>GType</type></link>&#160;*</programlisting>
+<para>The current frame this recall is playing.</para><para>Flags: Read / Write</para>
+<para>Allowed values: guint</para>
+</refsect2>
+<refsect2 id="AgsPlayAudioFile--soundcard" role="property"><title>The <literal>“soundcard”</literal> property</title>
+<indexterm zone="AgsPlayAudioFile--soundcard"><primary>AgsPlayAudioFile:soundcard</primary></indexterm>
+<programlisting>  “soundcard”                <link linkend="GType"><type>GType</type></link>&#160;*</programlisting>
+<para>The soundcard this recall is assigned to.</para><para>Flags: Read / Write</para>
+<para>Allowed values: GObject</para>
+</refsect2>
 
 </refsect1>
 

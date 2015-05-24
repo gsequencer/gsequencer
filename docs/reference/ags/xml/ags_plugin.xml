@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsPlugin">
+<refentry id="AgsPlugin">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsPlugin.top_of_page">AgsPlugin</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsPlugin.top_of_page">AgsPlugin</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -14,164 +14,365 @@
 </refmeta>
 <refnamediv>
 <refname>AgsPlugin</refname>
-<refpurpose></refpurpose>
+<refpurpose>interfacing plugins</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsPlugin.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsPlugin.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="gchar"><returnvalue>gchar</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-plugin-get-name">ags_plugin_get_name</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-plugin-set-name">ags_plugin_set_name</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gchar"><returnvalue>gchar</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-plugin-get-version">ags_plugin_get_version</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-plugin-set-version">ags_plugin_set_version</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gchar"><returnvalue>gchar</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-plugin-get-build-id">ags_plugin_get_build_id</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-plugin-set-build-id">ags_plugin_set_build_id</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gchar"><returnvalue>gchar</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-plugin-get-xml-type">ags_plugin_get_xml_type</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-plugin-set-xml-type">ags_plugin_set_xml_type</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-plugin-get-ports">ags_plugin_get_ports</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-plugin-set-ports">ags_plugin_set_ports</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-plugin-read">ags_plugin_read</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-plugin-write">ags_plugin_write</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>typedef             <link linkend="AgsPlugin">AgsPlugin</link>;
-struct              <link linkend="AgsPluginInterface">AgsPluginInterface</link>;
-<link linkend="gchar"><returnvalue>gchar</returnvalue></link> *             <link linkend="ags-plugin-get-build-id">ags_plugin_get_build_id</link>             (<parameter><link linkend="AgsPlugin"><type>AgsPlugin</type></link> *plugin</parameter>);
-<link linkend="gchar"><returnvalue>gchar</returnvalue></link> *             <link linkend="ags-plugin-get-name">ags_plugin_get_name</link>                 (<parameter><link linkend="AgsPlugin"><type>AgsPlugin</type></link> *plugin</parameter>);
-<link linkend="GList"><returnvalue>GList</returnvalue></link> *             <link linkend="ags-plugin-get-ports">ags_plugin_get_ports</link>                (<parameter><link linkend="AgsPlugin"><type>AgsPlugin</type></link> *plugin</parameter>);
-<link linkend="gchar"><returnvalue>gchar</returnvalue></link> *             <link linkend="ags-plugin-get-version">ags_plugin_get_version</link>              (<parameter><link linkend="AgsPlugin"><type>AgsPlugin</type></link> *plugin</parameter>);
-<link linkend="gchar"><returnvalue>gchar</returnvalue></link> *             <link linkend="ags-plugin-get-xml-type">ags_plugin_get_xml_type</link>             (<parameter><link linkend="AgsPlugin"><type>AgsPlugin</type></link> *plugin</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-plugin-read">ags_plugin_read</link>                     (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
-                                                         <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *node</parameter>,
-                                                         <parameter><link linkend="AgsPlugin"><type>AgsPlugin</type></link> *plugin</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-plugin-set-build-id">ags_plugin_set_build_id</link>             (<parameter><link linkend="AgsPlugin"><type>AgsPlugin</type></link> *plugin</parameter>,
-                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *build_id</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-plugin-set-name">ags_plugin_set_name</link>                 (<parameter><link linkend="AgsPlugin"><type>AgsPlugin</type></link> *plugin</parameter>,
-                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *name</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-plugin-set-ports">ags_plugin_set_ports</link>                (<parameter><link linkend="AgsPlugin"><type>AgsPlugin</type></link> *plugin</parameter>,
-                                                         <parameter><link linkend="GList"><type>GList</type></link> *ports</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-plugin-set-version">ags_plugin_set_version</link>              (<parameter><link linkend="AgsPlugin"><type>AgsPlugin</type></link> *plugin</parameter>,
-                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *version</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-plugin-set-xml-type">ags_plugin_set_xml_type</link>             (<parameter><link linkend="AgsPlugin"><type>AgsPlugin</type></link> *plugin</parameter>,
-                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *xml_type</parameter>);
-<link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link> *           <link linkend="ags-plugin-write">ags_plugin_write</link>                    (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
-                                                         <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *parent</parameter>,
-                                                         <parameter><link linkend="AgsPlugin"><type>AgsPlugin</type></link> *plugin</parameter>);
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsPlugin.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsPlugin.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AgsPlugin" role="typedef">
-<title>AgsPlugin</title>
-<indexterm zone="AgsPlugin"><primary>AgsPlugin</primary></indexterm>
-<programlisting>typedef void AgsPlugin;
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsPluginInterface" role="struct">
-<title>struct AgsPluginInterface</title>
-<indexterm zone="AgsPluginInterface"><primary>AgsPluginInterface</primary></indexterm>
-<programlisting>struct AgsPluginInterface {
-  GTypeInterface interface;
-  
-  gchar* (*get_name)(AgsPlugin *plugin);
-  void (*set_name)(AgsPlugin *plugin, gchar *name);
+<refsect1 id="AgsPlugin.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GInterface">GInterface</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsPlugin
+</screen>
+</refsect1>
 
-  gchar* (*get_version)(AgsPlugin *plugin);
-  void (*set_version)(AgsPlugin *plugin, gchar *version);
+<refsect1 id="AgsPlugin.includes"><title>Includes</title><synopsis>#include &lt;ags/object/ags_plugin.h&gt;
+</synopsis></refsect1>
 
-  gchar* (*get_build_id)(AgsPlugin *plugin);
-  void (*set_build_id)(AgsPlugin *plugin, gchar *build_id);
+<refsect1 id="AgsPlugin.description" role="desc">
+<title role="desc.title">Description</title>
+<para>The <link linkend="AgsPlugin"><type>AgsPlugin</type></link> interface gives you a unique access to recalls,
+line members, lines, pads or machines ...</para>
 
-  gchar* (*get_xml_type)(AgsPlugin *plugin);
-  void (*set_xml_type)(AgsPlugin *plugin, gchar *xml_type);  
-
-  GList* (*get_ports)(AgsPlugin *plugin);
-  void (*set_ports)(AgsPlugin *plugin, GList *ports);
-
-  void (*read)(AgsFile *file,
-	       xmlNode *node,
-	       AgsPlugin *plugin);
-  xmlNode* (*write)(AgsFile *file,
-		    xmlNode *parent,
-		    AgsPlugin *plugin);
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-plugin-get-build-id" role="function">
-<title>ags_plugin_get_build_id ()</title>
-<indexterm zone="ags-plugin-get-build-id"><primary>ags_plugin_get_build_id</primary></indexterm>
-<programlisting><link linkend="gchar"><returnvalue>gchar</returnvalue></link> *             ags_plugin_get_build_id             (<parameter><link linkend="AgsPlugin"><type>AgsPlugin</type></link> *plugin</parameter>);</programlisting>
-<para>
-</para></refsect2>
+</refsect1>
+<refsect1 id="AgsPlugin.functions_details" role="details">
+<title role="details.title">Functions</title>
 <refsect2 id="ags-plugin-get-name" role="function">
-<title>ags_plugin_get_name ()</title>
+<title>ags_plugin_get_name&#160;()</title>
 <indexterm zone="ags-plugin-get-name"><primary>ags_plugin_get_name</primary></indexterm>
-<programlisting><link linkend="gchar"><returnvalue>gchar</returnvalue></link> *             ags_plugin_get_name                 (<parameter><link linkend="AgsPlugin"><type>AgsPlugin</type></link> *plugin</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-plugin-get-ports" role="function">
-<title>ags_plugin_get_ports ()</title>
-<indexterm zone="ags-plugin-get-ports"><primary>ags_plugin_get_ports</primary></indexterm>
-<programlisting><link linkend="GList"><returnvalue>GList</returnvalue></link> *             ags_plugin_get_ports                (<parameter><link linkend="AgsPlugin"><type>AgsPlugin</type></link> *plugin</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-plugin-get-version" role="function">
-<title>ags_plugin_get_version ()</title>
-<indexterm zone="ags-plugin-get-version"><primary>ags_plugin_get_version</primary></indexterm>
-<programlisting><link linkend="gchar"><returnvalue>gchar</returnvalue></link> *             ags_plugin_get_version              (<parameter><link linkend="AgsPlugin"><type>AgsPlugin</type></link> *plugin</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-plugin-get-xml-type" role="function">
-<title>ags_plugin_get_xml_type ()</title>
-<indexterm zone="ags-plugin-get-xml-type"><primary>ags_plugin_get_xml_type</primary></indexterm>
-<programlisting><link linkend="gchar"><returnvalue>gchar</returnvalue></link> *             ags_plugin_get_xml_type             (<parameter><link linkend="AgsPlugin"><type>AgsPlugin</type></link> *plugin</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-plugin-read" role="function">
-<title>ags_plugin_read ()</title>
-<indexterm zone="ags-plugin-read"><primary>ags_plugin_read</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_plugin_read                     (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
-                                                         <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *node</parameter>,
-                                                         <parameter><link linkend="AgsPlugin"><type>AgsPlugin</type></link> *plugin</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-plugin-set-build-id" role="function">
-<title>ags_plugin_set_build_id ()</title>
-<indexterm zone="ags-plugin-set-build-id"><primary>ags_plugin_set_build_id</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_plugin_set_build_id             (<parameter><link linkend="AgsPlugin"><type>AgsPlugin</type></link> *plugin</parameter>,
-                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *build_id</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<programlisting language="C"><link linkend="gchar"><returnvalue>gchar</returnvalue></link>&#160;*
+ags_plugin_get_name (<parameter><link linkend="AgsPlugin"><type>AgsPlugin</type></link> *plugin</parameter>);</programlisting>
+<para>Retrieve the name of the plugin.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>plugin</para></entry>
+<entry role="parameter_description"><para>an <parameter>AgsPlugin</parameter>
+</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> the plugins name</para>
+<para></para>
+</refsect3></refsect2>
 <refsect2 id="ags-plugin-set-name" role="function">
-<title>ags_plugin_set_name ()</title>
+<title>ags_plugin_set_name&#160;()</title>
 <indexterm zone="ags-plugin-set-name"><primary>ags_plugin_set_name</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_plugin_set_name                 (<parameter><link linkend="AgsPlugin"><type>AgsPlugin</type></link> *plugin</parameter>,
-                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *name</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-plugin-set-ports" role="function">
-<title>ags_plugin_set_ports ()</title>
-<indexterm zone="ags-plugin-set-ports"><primary>ags_plugin_set_ports</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_plugin_set_ports                (<parameter><link linkend="AgsPlugin"><type>AgsPlugin</type></link> *plugin</parameter>,
-                                                         <parameter><link linkend="GList"><type>GList</type></link> *ports</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_plugin_set_name (<parameter><link linkend="AgsPlugin"><type>AgsPlugin</type></link> *plugin</parameter>,
+                     <parameter><link linkend="gchar"><type>gchar</type></link> *name</parameter>);</programlisting>
+<para>Set the name of the plugin.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>plugin</para></entry>
+<entry role="parameter_description"><para>an <parameter>AgsPlugin</parameter>
+</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>name</para></entry>
+<entry role="parameter_description"><para>the name of plugin</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
+<refsect2 id="ags-plugin-get-version" role="function">
+<title>ags_plugin_get_version&#160;()</title>
+<indexterm zone="ags-plugin-get-version"><primary>ags_plugin_get_version</primary></indexterm>
+<programlisting language="C"><link linkend="gchar"><returnvalue>gchar</returnvalue></link>&#160;*
+ags_plugin_get_version (<parameter><link linkend="AgsPlugin"><type>AgsPlugin</type></link> *plugin</parameter>);</programlisting>
+<para>Retrieve the version of the plugin.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>plugin</para></entry>
+<entry role="parameter_description"><para>an <parameter>AgsPlugin</parameter>
+</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> the plugins version</para>
+<para></para>
+</refsect3></refsect2>
 <refsect2 id="ags-plugin-set-version" role="function">
-<title>ags_plugin_set_version ()</title>
+<title>ags_plugin_set_version&#160;()</title>
 <indexterm zone="ags-plugin-set-version"><primary>ags_plugin_set_version</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_plugin_set_version              (<parameter><link linkend="AgsPlugin"><type>AgsPlugin</type></link> *plugin</parameter>,
-                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *version</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_plugin_set_version (<parameter><link linkend="AgsPlugin"><type>AgsPlugin</type></link> *plugin</parameter>,
+                        <parameter><link linkend="gchar"><type>gchar</type></link> *version</parameter>);</programlisting>
+<para>Set the version of the plugin.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>plugin</para></entry>
+<entry role="parameter_description"><para>an <parameter>AgsPlugin</parameter>
+</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>version</para></entry>
+<entry role="parameter_description"><para>the version of plugin</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
+<refsect2 id="ags-plugin-get-build-id" role="function">
+<title>ags_plugin_get_build_id&#160;()</title>
+<indexterm zone="ags-plugin-get-build-id"><primary>ags_plugin_get_build_id</primary></indexterm>
+<programlisting language="C"><link linkend="gchar"><returnvalue>gchar</returnvalue></link>&#160;*
+ags_plugin_get_build_id (<parameter><link linkend="AgsPlugin"><type>AgsPlugin</type></link> *plugin</parameter>);</programlisting>
+<para>Retrieve the build id of the plugin.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>plugin</para></entry>
+<entry role="parameter_description"><para>an <parameter>AgsPlugin</parameter>
+</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> the plugins build id</para>
+<para></para>
+</refsect3></refsect2>
+<refsect2 id="ags-plugin-set-build-id" role="function">
+<title>ags_plugin_set_build_id&#160;()</title>
+<indexterm zone="ags-plugin-set-build-id"><primary>ags_plugin_set_build_id</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_plugin_set_build_id (<parameter><link linkend="AgsPlugin"><type>AgsPlugin</type></link> *plugin</parameter>,
+                         <parameter><link linkend="gchar"><type>gchar</type></link> *build_id</parameter>);</programlisting>
+<para>Set the build id of the plugin.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>plugin</para></entry>
+<entry role="parameter_description"><para>an <parameter>AgsPlugin</parameter>
+</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>build_id</para></entry>
+<entry role="parameter_description"><para>the build id of plugin</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
+<refsect2 id="ags-plugin-get-xml-type" role="function">
+<title>ags_plugin_get_xml_type&#160;()</title>
+<indexterm zone="ags-plugin-get-xml-type"><primary>ags_plugin_get_xml_type</primary></indexterm>
+<programlisting language="C"><link linkend="gchar"><returnvalue>gchar</returnvalue></link>&#160;*
+ags_plugin_get_xml_type (<parameter><link linkend="AgsPlugin"><type>AgsPlugin</type></link> *plugin</parameter>);</programlisting>
+<para>Retrieve the xml type of the plugin.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>plugin</para></entry>
+<entry role="parameter_description"><para>an <parameter>AgsPlugin</parameter>
+</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> the plugins xml type</para>
+<para></para>
+</refsect3></refsect2>
 <refsect2 id="ags-plugin-set-xml-type" role="function">
-<title>ags_plugin_set_xml_type ()</title>
+<title>ags_plugin_set_xml_type&#160;()</title>
 <indexterm zone="ags-plugin-set-xml-type"><primary>ags_plugin_set_xml_type</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_plugin_set_xml_type             (<parameter><link linkend="AgsPlugin"><type>AgsPlugin</type></link> *plugin</parameter>,
-                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *xml_type</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_plugin_set_xml_type (<parameter><link linkend="AgsPlugin"><type>AgsPlugin</type></link> *plugin</parameter>,
+                         <parameter><link linkend="gchar"><type>gchar</type></link> *xml_type</parameter>);</programlisting>
+<para>Set the build id of the plugin.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>plugin</para></entry>
+<entry role="parameter_description"><para>an <parameter>AgsPlugin</parameter>
+</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>xml_type</para></entry>
+<entry role="parameter_description"><para>the build id of plugin</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
+<refsect2 id="ags-plugin-get-ports" role="function">
+<title>ags_plugin_get_ports&#160;()</title>
+<indexterm zone="ags-plugin-get-ports"><primary>ags_plugin_get_ports</primary></indexterm>
+<programlisting language="C"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+ags_plugin_get_ports (<parameter><link linkend="AgsPlugin"><type>AgsPlugin</type></link> *plugin</parameter>);</programlisting>
+<para>Retrieve the ports of the plugin.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>plugin</para></entry>
+<entry role="parameter_description"><para>an <parameter>AgsPlugin</parameter>
+</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> the plugins ports</para>
+<para></para>
+</refsect3></refsect2>
+<refsect2 id="ags-plugin-set-ports" role="function">
+<title>ags_plugin_set_ports&#160;()</title>
+<indexterm zone="ags-plugin-set-ports"><primary>ags_plugin_set_ports</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_plugin_set_ports (<parameter><link linkend="AgsPlugin"><type>AgsPlugin</type></link> *plugin</parameter>,
+                      <parameter><link linkend="GList"><type>GList</type></link> *ports</parameter>);</programlisting>
+<para>Set the build id of the plugin.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>plugin</para></entry>
+<entry role="parameter_description"><para>an <parameter>AgsPlugin</parameter>
+</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>ports</para></entry>
+<entry role="parameter_description"><para>the build id of plugin</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
+<refsect2 id="ags-plugin-read" role="function">
+<title>ags_plugin_read&#160;()</title>
+<indexterm zone="ags-plugin-read"><primary>ags_plugin_read</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_plugin_read (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                 <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *node</parameter>,
+                 <parameter><link linkend="AgsPlugin"><type>AgsPlugin</type></link> *plugin</parameter>);</programlisting>
+<para>Read of file.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>file</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsFile"><type>AgsFile</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>node</para></entry>
+<entry role="parameter_description"><para>the node</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>plugin</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsPlugin"><type>AgsPlugin</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
 <refsect2 id="ags-plugin-write" role="function">
-<title>ags_plugin_write ()</title>
+<title>ags_plugin_write&#160;()</title>
 <indexterm zone="ags-plugin-write"><primary>ags_plugin_write</primary></indexterm>
-<programlisting><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link> *           ags_plugin_write                    (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
-                                                         <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *parent</parameter>,
-                                                         <parameter><link linkend="AgsPlugin"><type>AgsPlugin</type></link> *plugin</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<programlisting language="C"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+ags_plugin_write (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                  <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *parent</parameter>,
+                  <parameter><link linkend="AgsPlugin"><type>AgsPlugin</type></link> *plugin</parameter>);</programlisting>
+<para>Write to file.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>file</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsFile"><type>AgsFile</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>parent</para></entry>
+<entry role="parameter_description"><para>the parent node</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>plugin</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsPlugin"><type>AgsPlugin</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> the new node you created</para>
+<para></para>
+</refsect3></refsect2>
+
+</refsect1>
+<refsect1 id="AgsPlugin.other_details" role="details">
+<title role="details.title">Types and Values</title>
 
 </refsect1>
 

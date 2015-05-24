@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsPlayNotationAudioRun">
+<refentry id="AgsPlayNotationAudioRun">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsPlayNotationAudioRun.top_of_page">AgsPlayNotationAudioRun</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsPlayNotationAudioRun.top_of_page">AgsPlayNotationAudioRun</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -14,68 +14,127 @@
 </refmeta>
 <refnamediv>
 <refname>AgsPlayNotationAudioRun</refname>
-<refpurpose></refpurpose>
+<refpurpose>play notation</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsPlayNotationAudioRun.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsPlayNotationAudioRun.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="AgsPlayNotationAudioRun"><returnvalue>AgsPlayNotationAudioRun</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-play-notation-audio-run-new">ags_play_notation_audio_run_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>struct              <link linkend="AgsPlayNotationAudioRun">AgsPlayNotationAudioRun</link>;
-struct              <link linkend="AgsPlayNotationAudioRunClass">AgsPlayNotationAudioRunClass</link>;
-enum                <link linkend="AgsPlayNotationAudioRunFlags">AgsPlayNotationAudioRunFlags</link>;
-<link linkend="AgsPlayNotationAudioRun"><returnvalue>AgsPlayNotationAudioRun</returnvalue></link> * <link linkend="ags-play-notation-audio-run-new">ags_play_notation_audio_run_new</link>
-                                                        ();
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsPlayNotationAudioRun.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsPlayNotationAudioRun.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AgsPlayNotationAudioRun" role="struct">
-<title>struct AgsPlayNotationAudioRun</title>
-<indexterm zone="AgsPlayNotationAudioRun"><primary>AgsPlayNotationAudioRun</primary></indexterm>
-<programlisting>struct AgsPlayNotationAudioRun {
-  AgsRecallAudioRun recall;
+<refsect1 id="AgsPlayNotationAudioRun.properties" role="properties">
+<title role="properties.title">Properties</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="properties_type" colwidth="150px"/>
+<colspec colname="properties_name" colwidth="300px"/>
+<colspec colname="properties_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="property_type"><link linkend="AgsCountBeatsAudioRun"><type>AgsCountBeatsAudioRun</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsPlayNotationAudioRun--count-beats-audio-run">count-beats-audio-run</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="AgsDelayAudioRun"><type>AgsDelayAudioRun</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsPlayNotationAudioRun--delay-audio-run">delay-audio-run</link></entry><entry role="property_flags">Read / Write</entry></row>
 
-  guint flags;
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsPlayNotationAudioRun.other" role="other_proto">
+<title role="other_proto.title">Types and Values</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="name" colwidth="150px"/>
+<colspec colname="description"/>
+<tbody>
+<row><entry role="datatype_keyword">enum</entry><entry role="function_name"><link linkend="AgsPlayNotationAudioRunFlags">AgsPlayNotationAudioRunFlags</link></entry></row>
 
-  AgsDelayAudioRun *delay_audio_run;
-  gulong notation_alloc_input_handler;
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsPlayNotationAudioRun.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsRecall">AgsRecall</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsRecallAudioRun">AgsRecallAudioRun</link>
+            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsPlayNotationAudioRun
+</screen>
+</refsect1>
 
-  AgsCountBeatsAudioRun *count_beats_audio_run;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsPlayNotationAudioRunClass" role="struct">
-<title>struct AgsPlayNotationAudioRunClass</title>
-<indexterm zone="AgsPlayNotationAudioRunClass"><primary>AgsPlayNotationAudioRunClass</primary></indexterm>
-<programlisting>struct AgsPlayNotationAudioRunClass {
-  AgsRecallAudioRunClass recall;
-};
-</programlisting>
-<para>
-</para></refsect2>
+<refsect1 id="AgsPlayNotationAudioRun.includes"><title>Includes</title><synopsis>#include &lt;ags/audio/recall/ags_play_notation_audio_run.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsPlayNotationAudioRun.description" role="desc">
+<title role="desc.title">Description</title>
+<para>The <link linkend="AgsPlayNotationAudioRun"><type>AgsPlayNotationAudioRun</type></link> class play notation.</para>
+
+</refsect1>
+<refsect1 id="AgsPlayNotationAudioRun.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-play-notation-audio-run-new" role="function" condition="since:0.4">
+<title>ags_play_notation_audio_run_new&#160;()</title>
+<indexterm zone="ags-play-notation-audio-run-new" role="0.4"><primary>ags_play_notation_audio_run_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsPlayNotationAudioRun"><returnvalue>AgsPlayNotationAudioRun</returnvalue></link>&#160;*
+ags_play_notation_audio_run_new ();</programlisting>
+<para>Creates an <link linkend="AgsPlayNotationAudioRun"><type>AgsPlayNotationAudioRun</type></link></para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>count_beats_audio_run</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsCountBeatsAudioRun"><type>AgsCountBeatsAudioRun</type></link> as dependency</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> a new <link linkend="AgsPlayNotationAudioRun"><type>AgsPlayNotationAudioRun</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsPlayNotationAudioRun.other_details" role="details">
+<title role="details.title">Types and Values</title>
 <refsect2 id="AgsPlayNotationAudioRunFlags" role="enum">
 <title>enum AgsPlayNotationAudioRunFlags</title>
 <indexterm zone="AgsPlayNotationAudioRunFlags"><primary>AgsPlayNotationAudioRunFlags</primary></indexterm>
-<programlisting>typedef enum {
-  AGS_PLAY_NOTATION_AUDIO_RUN_DEFAULT  =  1,
-} AgsPlayNotationAudioRunFlags;
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-play-notation-audio-run-new" role="function">
-<title>ags_play_notation_audio_run_new ()</title>
-<indexterm zone="ags-play-notation-audio-run-new"><primary>ags_play_notation_audio_run_new</primary></indexterm>
-<programlisting><link linkend="AgsPlayNotationAudioRun"><returnvalue>AgsPlayNotationAudioRun</returnvalue></link> * ags_play_notation_audio_run_new
-                                                        ();</programlisting>
-<para>
-</para></refsect2>
+<refsect3 role="enum_members">
+<title>Members</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="enum_members_name" colwidth="300px"/>
+<colspec colname="enum_members_description"/>
+<colspec colname="enum_members_annotations" colwidth="200px"/>
+<tbody>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-PLAY-NOTATION-AUDIO-RUN-DEFAULT:CAPS">AGS_PLAY_NOTATION_AUDIO_RUN_DEFAULT</para></entry>
+<entry /><entry />
+</row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
+
+</refsect1>
+<refsect1 id="AgsPlayNotationAudioRun.property-details" role="property_details">
+<title role="property_details.title">Property Details</title>
+<refsect2 id="AgsPlayNotationAudioRun--count-beats-audio-run" role="property"><title>The <literal>“count-beats-audio-run”</literal> property</title>
+<indexterm zone="AgsPlayNotationAudioRun--count-beats-audio-run"><primary>AgsPlayNotationAudioRun:count-beats-audio-run</primary></indexterm>
+<programlisting>  “count-beats-audio-run”    <link linkend="AgsCountBeatsAudioRun"><type>AgsCountBeatsAudioRun</type></link>&#160;*</programlisting>
+<para>the AgsCountBeatsAudioRun which just counts.</para><para>Flags: Read / Write</para>
+</refsect2>
+<refsect2 id="AgsPlayNotationAudioRun--delay-audio-run" role="property"><title>The <literal>“delay-audio-run”</literal> property</title>
+<indexterm zone="AgsPlayNotationAudioRun--delay-audio-run"><primary>AgsPlayNotationAudioRun:delay-audio-run</primary></indexterm>
+<programlisting>  “delay-audio-run”          <link linkend="AgsDelayAudioRun"><type>AgsDelayAudioRun</type></link>&#160;*</programlisting>
+<para>the AgsDelayAudioRun which emits notation_alloc_input signal.</para><para>Flags: Read / Write</para>
+</refsect2>
 
 </refsect1>
 

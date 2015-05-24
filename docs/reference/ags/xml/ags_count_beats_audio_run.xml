@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsCountBeatsAudioRun">
+<refentry id="AgsCountBeatsAudioRun">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsCountBeatsAudioRun.top_of_page">AgsCountBeatsAudioRun</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsCountBeatsAudioRun.top_of_page">AgsCountBeatsAudioRun</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -14,149 +14,447 @@
 </refmeta>
 <refnamediv>
 <refname>AgsCountBeatsAudioRun</refname>
-<refpurpose></refpurpose>
+<refpurpose>count beats</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsCountBeatsAudioRun.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsCountBeatsAudioRun.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-count-beats-audio-run-notation-start">ags_count_beats_audio_run_notation_start</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-count-beats-audio-run-notation-loop">ags_count_beats_audio_run_notation_loop</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-count-beats-audio-run-notation-stop">ags_count_beats_audio_run_notation_stop</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-count-beats-audio-run-sequencer-start">ags_count_beats_audio_run_sequencer_start</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-count-beats-audio-run-sequencer-loop">ags_count_beats_audio_run_sequencer_loop</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-count-beats-audio-run-sequencer-stop">ags_count_beats_audio_run_sequencer_stop</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsCountBeatsAudioRun"><returnvalue>AgsCountBeatsAudioRun</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-count-beats-audio-run-new">ags_count_beats_audio_run_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>struct              <link linkend="AgsCountBeatsAudioRun">AgsCountBeatsAudioRun</link>;
-struct              <link linkend="AgsCountBeatsAudioRunClass">AgsCountBeatsAudioRunClass</link>;
-<link linkend="AgsCountBeatsAudioRun"><returnvalue>AgsCountBeatsAudioRun</returnvalue></link> * <link linkend="ags-count-beats-audio-run-new">ags_count_beats_audio_run_new</link>   (<parameter><link linkend="AgsDelayAudioRun"><type>AgsDelayAudioRun</type></link> *delay_audio_run</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-count-beats-audio-run-notation-loop">ags_count_beats_audio_run_notation_loop</link>
-                                                        (<parameter><link linkend="AgsCountBeatsAudioRun"><type>AgsCountBeatsAudioRun</type></link> *count_beats_audio_run</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> run_order</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-count-beats-audio-run-notation-start">ags_count_beats_audio_run_notation_start</link>
-                                                        (<parameter><link linkend="AgsCountBeatsAudioRun"><type>AgsCountBeatsAudioRun</type></link> *count_beats_audio_run</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> run_order</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-count-beats-audio-run-notation-stop">ags_count_beats_audio_run_notation_stop</link>
-                                                        (<parameter><link linkend="AgsCountBeatsAudioRun"><type>AgsCountBeatsAudioRun</type></link> *count_beats_audio_run</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> run_order</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-count-beats-audio-run-sequencer-loop">ags_count_beats_audio_run_sequencer_loop</link>
-                                                        (<parameter><link linkend="AgsCountBeatsAudioRun"><type>AgsCountBeatsAudioRun</type></link> *count_beats_audio_run</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> run_order</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-count-beats-audio-run-sequencer-start">ags_count_beats_audio_run_sequencer_start</link>
-                                                        (<parameter><link linkend="AgsCountBeatsAudioRun"><type>AgsCountBeatsAudioRun</type></link> *count_beats_audio_run</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> run_order</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-count-beats-audio-run-sequencer-stop">ags_count_beats_audio_run_sequencer_stop</link>
-                                                        (<parameter><link linkend="AgsCountBeatsAudioRun"><type>AgsCountBeatsAudioRun</type></link> *count_beats_audio_run</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> run_order</parameter>);
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsCountBeatsAudioRun.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsCountBeatsAudioRun.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AgsCountBeatsAudioRun" role="struct">
-<title>struct AgsCountBeatsAudioRun</title>
-<indexterm zone="AgsCountBeatsAudioRun"><primary>AgsCountBeatsAudioRun</primary></indexterm>
-<programlisting>struct AgsCountBeatsAudioRun {
-  AgsRecallAudioRun recall_audio_run;
+<refsect1 id="AgsCountBeatsAudioRun.properties" role="properties">
+<title role="properties.title">Properties</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="properties_type" colwidth="150px"/>
+<colspec colname="properties_name" colwidth="300px"/>
+<colspec colname="properties_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="property_type"><link linkend="AgsDelayAudioRun"><type>AgsDelayAudioRun</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsCountBeatsAudioRun--delay-audio-run">delay-audio-run</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="guint"><type>guint</type></link></entry><entry role="property_name"><link linkend="AgsCountBeatsAudioRun--notation-counter">notation-counter</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="guint"><type>guint</type></link></entry><entry role="property_name"><link linkend="AgsCountBeatsAudioRun--sequencer-counter">sequencer-counter</link></entry><entry role="property_flags">Read / Write</entry></row>
 
-  gboolean first_run;
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsCountBeatsAudioRun.signals" role="signal_proto">
+<title role="signal_proto.title">Signals</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="signals_return" colwidth="150px"/>
+<colspec colname="signals_name" colwidth="300px"/>
+<colspec colname="signals_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsCountBeatsAudioRun-notation-loop">notation-loop</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsCountBeatsAudioRun-notation-start">notation-start</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsCountBeatsAudioRun-notation-stop">notation-stop</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsCountBeatsAudioRun-sequencer-loop">sequencer-loop</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsCountBeatsAudioRun-sequencer-start">sequencer-start</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsCountBeatsAudioRun-sequencer-stop">sequencer-stop</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
 
-  guint notation_counter;
-  guint sequencer_counter;
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsCountBeatsAudioRun.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsRecall">AgsRecall</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsRecallAudioRun">AgsRecallAudioRun</link>
+            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsCountBeatsAudioRun
+</screen>
+</refsect1>
 
-  guint recall_ref;
+<refsect1 id="AgsCountBeatsAudioRun.includes"><title>Includes</title><synopsis>#include &lt;ags/audio/recall/ags_count_beats_audio_run.h&gt;
+</synopsis></refsect1>
 
-  guint hide_ref;
-  guint notation_hide_ref_counter;
-  guint sequencer_hide_ref_counter;
+<refsect1 id="AgsCountBeatsAudioRun.description" role="desc">
+<title role="desc.title">Description</title>
+<para>The <link linkend="AgsCountBeatsAudioRun"><type>AgsCountBeatsAudioRun</type></link> class count beats.</para>
 
-  gulong sequencer_alloc_output_handler;
-  gulong sequencer_count_handler;
+</refsect1>
+<refsect1 id="AgsCountBeatsAudioRun.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-count-beats-audio-run-notation-start" role="function" condition="since:0.4">
+<title>ags_count_beats_audio_run_notation_start&#160;()</title>
+<indexterm zone="ags-count-beats-audio-run-notation-start" role="0.4"><primary>ags_count_beats_audio_run_notation_start</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_count_beats_audio_run_notation_start
+                               (<parameter><link linkend="AgsCountBeatsAudioRun"><type>AgsCountBeatsAudioRun</type></link> *count_beats_audio_run</parameter>,
+                                <parameter><link linkend="guint"><type>guint</type></link> run_order</parameter>);</programlisting>
+<para>Emitted as notation starts playback.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>count_beats_audio_run</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsCountBeatsAudioRun"><type>AgsCountBeatsAudioRun</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>run_order</para></entry>
+<entry role="parameter_description"><para>the nth run order</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-count-beats-audio-run-notation-loop" role="function" condition="since:0.4">
+<title>ags_count_beats_audio_run_notation_loop&#160;()</title>
+<indexterm zone="ags-count-beats-audio-run-notation-loop" role="0.4"><primary>ags_count_beats_audio_run_notation_loop</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_count_beats_audio_run_notation_loop
+                               (<parameter><link linkend="AgsCountBeatsAudioRun"><type>AgsCountBeatsAudioRun</type></link> *count_beats_audio_run</parameter>,
+                                <parameter><link linkend="guint"><type>guint</type></link> run_order</parameter>);</programlisting>
+<para>Emitted as notation loops playback.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>count_beats_audio_run</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsCountBeatsAudioRun"><type>AgsCountBeatsAudioRun</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>run_order</para></entry>
+<entry role="parameter_description"><para>the nth run order</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-count-beats-audio-run-notation-stop" role="function" condition="since:0.4">
+<title>ags_count_beats_audio_run_notation_stop&#160;()</title>
+<indexterm zone="ags-count-beats-audio-run-notation-stop" role="0.4"><primary>ags_count_beats_audio_run_notation_stop</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_count_beats_audio_run_notation_stop
+                               (<parameter><link linkend="AgsCountBeatsAudioRun"><type>AgsCountBeatsAudioRun</type></link> *count_beats_audio_run</parameter>,
+                                <parameter><link linkend="guint"><type>guint</type></link> run_order</parameter>);</programlisting>
+<para>Emitted as notation stops playback.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>count_beats_audio_run</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsCountBeatsAudioRun"><type>AgsCountBeatsAudioRun</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>run_order</para></entry>
+<entry role="parameter_description"><para>the nth run order</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-count-beats-audio-run-sequencer-start" role="function" condition="since:0.4">
+<title>ags_count_beats_audio_run_sequencer_start&#160;()</title>
+<indexterm zone="ags-count-beats-audio-run-sequencer-start" role="0.4"><primary>ags_count_beats_audio_run_sequencer_start</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_count_beats_audio_run_sequencer_start
+                               (<parameter><link linkend="AgsCountBeatsAudioRun"><type>AgsCountBeatsAudioRun</type></link> *count_beats_audio_run</parameter>,
+                                <parameter><link linkend="guint"><type>guint</type></link> run_order</parameter>);</programlisting>
+<para>Emitted as sequencer starts playback.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>count_beats_audio_run</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsCountBeatsAudioRun"><type>AgsCountBeatsAudioRun</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>run_order</para></entry>
+<entry role="parameter_description"><para>the nth run order</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-count-beats-audio-run-sequencer-loop" role="function" condition="since:0.4">
+<title>ags_count_beats_audio_run_sequencer_loop&#160;()</title>
+<indexterm zone="ags-count-beats-audio-run-sequencer-loop" role="0.4"><primary>ags_count_beats_audio_run_sequencer_loop</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_count_beats_audio_run_sequencer_loop
+                               (<parameter><link linkend="AgsCountBeatsAudioRun"><type>AgsCountBeatsAudioRun</type></link> *count_beats_audio_run</parameter>,
+                                <parameter><link linkend="guint"><type>guint</type></link> run_order</parameter>);</programlisting>
+<para>Emitted as sequencer loops playback.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>count_beats_audio_run</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsCountBeatsAudioRun"><type>AgsCountBeatsAudioRun</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>run_order</para></entry>
+<entry role="parameter_description"><para>the nth run order</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-count-beats-audio-run-sequencer-stop" role="function" condition="since:0.4">
+<title>ags_count_beats_audio_run_sequencer_stop&#160;()</title>
+<indexterm zone="ags-count-beats-audio-run-sequencer-stop" role="0.4"><primary>ags_count_beats_audio_run_sequencer_stop</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_count_beats_audio_run_sequencer_stop
+                               (<parameter><link linkend="AgsCountBeatsAudioRun"><type>AgsCountBeatsAudioRun</type></link> *count_beats_audio_run</parameter>,
+                                <parameter><link linkend="guint"><type>guint</type></link> run_order</parameter>);</programlisting>
+<para>Emitted as sequencer stops playback.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>count_beats_audio_run</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsCountBeatsAudioRun"><type>AgsCountBeatsAudioRun</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>run_order</para></entry>
+<entry role="parameter_description"><para>the nth run order</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-count-beats-audio-run-new" role="function" condition="since:0.4">
+<title>ags_count_beats_audio_run_new&#160;()</title>
+<indexterm zone="ags-count-beats-audio-run-new" role="0.4"><primary>ags_count_beats_audio_run_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsCountBeatsAudioRun"><returnvalue>AgsCountBeatsAudioRun</returnvalue></link>&#160;*
+ags_count_beats_audio_run_new (<parameter><link linkend="AgsDelayAudioRun"><type>AgsDelayAudioRun</type></link> *delay_audio_run</parameter>);</programlisting>
+<para>Creates an <link linkend="AgsCountBeatsAudioRun"><type>AgsCountBeatsAudioRun</type></link></para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>delay_audio_run</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsDelayAudioRun"><type>AgsDelayAudioRun</type></link> dependency</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> a new <link linkend="AgsCountBeatsAudioRun"><type>AgsCountBeatsAudioRun</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
 
-  gulong notation_alloc_output_handler;
-  gulong notation_count_handler;
+</refsect1>
+<refsect1 id="AgsCountBeatsAudioRun.other_details" role="details">
+<title role="details.title">Types and Values</title>
 
-  AgsDelayAudioRun *delay_audio_run;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsCountBeatsAudioRunClass" role="struct">
-<title>struct AgsCountBeatsAudioRunClass</title>
-<indexterm zone="AgsCountBeatsAudioRunClass"><primary>AgsCountBeatsAudioRunClass</primary></indexterm>
-<programlisting>struct AgsCountBeatsAudioRunClass {
-  AgsRecallAudioRunClass recall_audio_run;
-  
-  void (*notation_start)(AgsCountBeatsAudioRun *count_beats_audio_run,
-			 guint run_order);
-  void (*notation_loop)(AgsCountBeatsAudioRun *count_beats_audio_run,
-			guint run_order);
-  void (*notation_stop)(AgsCountBeatsAudioRun *count_beats_audio_run,
-			guint run_order);
-  
-  void (*sequencer_start)(AgsCountBeatsAudioRun *count_beats_audio_run,
-			  guint run_order);
-  void (*sequencer_loop)(AgsCountBeatsAudioRun *count_beats_audio_run,
-			 guint run_order);
-  void (*sequencer_stop)(AgsCountBeatsAudioRun *count_beats_audio_run,
-			 guint run_order);
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-count-beats-audio-run-new" role="function">
-<title>ags_count_beats_audio_run_new ()</title>
-<indexterm zone="ags-count-beats-audio-run-new"><primary>ags_count_beats_audio_run_new</primary></indexterm>
-<programlisting><link linkend="AgsCountBeatsAudioRun"><returnvalue>AgsCountBeatsAudioRun</returnvalue></link> * ags_count_beats_audio_run_new   (<parameter><link linkend="AgsDelayAudioRun"><type>AgsDelayAudioRun</type></link> *delay_audio_run</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-count-beats-audio-run-notation-loop" role="function">
-<title>ags_count_beats_audio_run_notation_loop ()</title>
-<indexterm zone="ags-count-beats-audio-run-notation-loop"><primary>ags_count_beats_audio_run_notation_loop</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_count_beats_audio_run_notation_loop
-                                                        (<parameter><link linkend="AgsCountBeatsAudioRun"><type>AgsCountBeatsAudioRun</type></link> *count_beats_audio_run</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> run_order</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-count-beats-audio-run-notation-start" role="function">
-<title>ags_count_beats_audio_run_notation_start ()</title>
-<indexterm zone="ags-count-beats-audio-run-notation-start"><primary>ags_count_beats_audio_run_notation_start</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_count_beats_audio_run_notation_start
-                                                        (<parameter><link linkend="AgsCountBeatsAudioRun"><type>AgsCountBeatsAudioRun</type></link> *count_beats_audio_run</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> run_order</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-count-beats-audio-run-notation-stop" role="function">
-<title>ags_count_beats_audio_run_notation_stop ()</title>
-<indexterm zone="ags-count-beats-audio-run-notation-stop"><primary>ags_count_beats_audio_run_notation_stop</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_count_beats_audio_run_notation_stop
-                                                        (<parameter><link linkend="AgsCountBeatsAudioRun"><type>AgsCountBeatsAudioRun</type></link> *count_beats_audio_run</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> run_order</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-count-beats-audio-run-sequencer-loop" role="function">
-<title>ags_count_beats_audio_run_sequencer_loop ()</title>
-<indexterm zone="ags-count-beats-audio-run-sequencer-loop"><primary>ags_count_beats_audio_run_sequencer_loop</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_count_beats_audio_run_sequencer_loop
-                                                        (<parameter><link linkend="AgsCountBeatsAudioRun"><type>AgsCountBeatsAudioRun</type></link> *count_beats_audio_run</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> run_order</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-count-beats-audio-run-sequencer-start" role="function">
-<title>ags_count_beats_audio_run_sequencer_start ()</title>
-<indexterm zone="ags-count-beats-audio-run-sequencer-start"><primary>ags_count_beats_audio_run_sequencer_start</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_count_beats_audio_run_sequencer_start
-                                                        (<parameter><link linkend="AgsCountBeatsAudioRun"><type>AgsCountBeatsAudioRun</type></link> *count_beats_audio_run</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> run_order</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-count-beats-audio-run-sequencer-stop" role="function">
-<title>ags_count_beats_audio_run_sequencer_stop ()</title>
-<indexterm zone="ags-count-beats-audio-run-sequencer-stop"><primary>ags_count_beats_audio_run_sequencer_stop</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_count_beats_audio_run_sequencer_stop
-                                                        (<parameter><link linkend="AgsCountBeatsAudioRun"><type>AgsCountBeatsAudioRun</type></link> *count_beats_audio_run</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> run_order</parameter>);</programlisting>
-<para>
-</para></refsect2>
+</refsect1>
+<refsect1 id="AgsCountBeatsAudioRun.property-details" role="property_details">
+<title role="property_details.title">Property Details</title>
+<refsect2 id="AgsCountBeatsAudioRun--delay-audio-run" role="property"><title>The <literal>“delay-audio-run”</literal> property</title>
+<indexterm zone="AgsCountBeatsAudioRun--delay-audio-run" role="0.4.0"><primary>AgsCountBeatsAudioRun:delay-audio-run</primary></indexterm>
+<programlisting>  “delay-audio-run”          <link linkend="AgsDelayAudioRun"><type>AgsDelayAudioRun</type></link>&#160;*</programlisting>
+<para>The assigned <link linkend="AgsDelayAudioRun"><type>AgsDelayAudioRun</type></link> dependency.</para>
+<para>Flags: Read / Write</para>
+<para role="since">Since 0.4.0</para></refsect2>
+<refsect2 id="AgsCountBeatsAudioRun--notation-counter" role="property"><title>The <literal>“notation-counter”</literal> property</title>
+<indexterm zone="AgsCountBeatsAudioRun--notation-counter" role="0.4.0"><primary>AgsCountBeatsAudioRun:notation-counter</primary></indexterm>
+<programlisting>  “notation-counter”         <link linkend="guint"><type>guint</type></link></programlisting>
+<para>The notation counter.</para>
+<para>Flags: Read / Write</para>
+<para>Allowed values: &lt;= 65535</para>
+<para>Default value: 0</para>
+<para role="since">Since 0.4.0</para></refsect2>
+<refsect2 id="AgsCountBeatsAudioRun--sequencer-counter" role="property"><title>The <literal>“sequencer-counter”</literal> property</title>
+<indexterm zone="AgsCountBeatsAudioRun--sequencer-counter" role="0.4.0"><primary>AgsCountBeatsAudioRun:sequencer-counter</primary></indexterm>
+<programlisting>  “sequencer-counter”        <link linkend="guint"><type>guint</type></link></programlisting>
+<para>The sequencer counter.</para>
+<para>Flags: Read / Write</para>
+<para>Allowed values: &lt;= 65535</para>
+<para>Default value: 0</para>
+<para role="since">Since 0.4.0</para></refsect2>
 
+</refsect1>
+<refsect1 id="AgsCountBeatsAudioRun.signal-details" role="signals">
+<title role="signals.title">Signal Details</title>
+<refsect2 id="AgsCountBeatsAudioRun-notation-loop" role="signal"><title>The <literal>“notation-loop”</literal> signal</title>
+<indexterm zone="AgsCountBeatsAudioRun-notation-loop"><primary>AgsCountBeatsAudioRun::notation-loop</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsCountBeatsAudioRun"><type>AgsCountBeatsAudioRun</type></link> *count_beats_audio_run,
+               <link linkend="guint"><type>guint</type></link>                  run_order,
+               <link linkend="gpointer"><type>gpointer</type></link>               user_data)</programlisting>
+<para>The ::notation-loop signal is emited while looping notation playback.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>count_beats_audio_run</para></entry>
+<entry role="parameter_description"><para>the object</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>run_order</para></entry>
+<entry role="parameter_description"><para>the nth run</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsCountBeatsAudioRun-notation-start" role="signal"><title>The <literal>“notation-start”</literal> signal</title>
+<indexterm zone="AgsCountBeatsAudioRun-notation-start"><primary>AgsCountBeatsAudioRun::notation-start</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsCountBeatsAudioRun"><type>AgsCountBeatsAudioRun</type></link> *count_beats_audio_run,
+               <link linkend="guint"><type>guint</type></link>                  run_order,
+               <link linkend="gpointer"><type>gpointer</type></link>               user_data)</programlisting>
+<para>The ::notation-start signal is emited while starting notation playback.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>count_beats_audio_run</para></entry>
+<entry role="parameter_description"><para>the object</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>run_order</para></entry>
+<entry role="parameter_description"><para>the nth run</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsCountBeatsAudioRun-notation-stop" role="signal"><title>The <literal>“notation-stop”</literal> signal</title>
+<indexterm zone="AgsCountBeatsAudioRun-notation-stop"><primary>AgsCountBeatsAudioRun::notation-stop</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsCountBeatsAudioRun"><type>AgsCountBeatsAudioRun</type></link> *count_beats_audio_run,
+               <link linkend="guint"><type>guint</type></link>                  run_order,
+               <link linkend="gpointer"><type>gpointer</type></link>               user_data)</programlisting>
+<para>The ::notation-loop signal is emited while stoping notation playback.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>count_beats_audio_run</para></entry>
+<entry role="parameter_description"><para>the object</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>run_order</para></entry>
+<entry role="parameter_description"><para>the nth run</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsCountBeatsAudioRun-sequencer-loop" role="signal"><title>The <literal>“sequencer-loop”</literal> signal</title>
+<indexterm zone="AgsCountBeatsAudioRun-sequencer-loop"><primary>AgsCountBeatsAudioRun::sequencer-loop</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsCountBeatsAudioRun"><type>AgsCountBeatsAudioRun</type></link> *count_beats_audio_run,
+               <link linkend="guint"><type>guint</type></link>                  run_order,
+               <link linkend="gpointer"><type>gpointer</type></link>               user_data)</programlisting>
+<para>The ::sequencer-loop signal is emited while looping sequencer playback.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>count_beats_audio_run</para></entry>
+<entry role="parameter_description"><para>the object</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>run_order</para></entry>
+<entry role="parameter_description"><para>the nth run</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsCountBeatsAudioRun-sequencer-start" role="signal"><title>The <literal>“sequencer-start”</literal> signal</title>
+<indexterm zone="AgsCountBeatsAudioRun-sequencer-start"><primary>AgsCountBeatsAudioRun::sequencer-start</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsCountBeatsAudioRun"><type>AgsCountBeatsAudioRun</type></link> *count_beats_audio_run,
+               <link linkend="guint"><type>guint</type></link>                  run_order,
+               <link linkend="gpointer"><type>gpointer</type></link>               user_data)</programlisting>
+<para>The ::sequencer-start signal is emited while starting sequencer playback.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>count_beats_audio_run</para></entry>
+<entry role="parameter_description"><para>the object</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>run_order</para></entry>
+<entry role="parameter_description"><para>the nth run</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsCountBeatsAudioRun-sequencer-stop" role="signal"><title>The <literal>“sequencer-stop”</literal> signal</title>
+<indexterm zone="AgsCountBeatsAudioRun-sequencer-stop"><primary>AgsCountBeatsAudioRun::sequencer-stop</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsCountBeatsAudioRun"><type>AgsCountBeatsAudioRun</type></link> *count_beats_audio_run,
+               <link linkend="guint"><type>guint</type></link>                  run_order,
+               <link linkend="gpointer"><type>gpointer</type></link>               user_data)</programlisting>
+<para>The ::sequencer-loop signal is emited while stoping sequencer playback.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>count_beats_audio_run</para></entry>
+<entry role="parameter_description"><para>the object</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>run_order</para></entry>
+<entry role="parameter_description"><para>the nth run</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2>
 </refsect1>
 
 </refentry>

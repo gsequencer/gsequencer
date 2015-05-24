@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsMatrix">
+<refentry id="AgsMatrix">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsMatrix.top_of_page">AgsMatrix</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsMatrix.top_of_page">AgsMatrix</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -14,171 +14,179 @@
 </refmeta>
 <refnamediv>
 <refname>AgsMatrix</refname>
-<refpurpose></refpurpose>
+<refpurpose>matrix sequencer</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsMatrix.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsMatrix.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-MATRIX-PATTERN-CONTROLS:CAPS">AGS_MATRIX_PATTERN_CONTROLS</link></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-matrix-input-map-recall">ags_matrix_input_map_recall</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-matrix-output-map-recall">ags_matrix_output_map_recall</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-matrix-draw-gutter">ags_matrix_draw_gutter</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-matrix-draw-matrix">ags_matrix_draw_matrix</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-matrix-redraw-gutter-point">ags_matrix_redraw_gutter_point</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-matrix-highlight-gutter-point">ags_matrix_highlight_gutter_point</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-matrix-unpaint-gutter-point">ags_matrix_unpaint_gutter_point</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsMatrix"><returnvalue>AgsMatrix</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-matrix-new">ags_matrix_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>#define             <link linkend="AGS-MATRIX-CELL-HEIGHT:CAPS">AGS_MATRIX_CELL_HEIGHT</link>
-#define             <link linkend="AGS-MATRIX-CELL-WIDTH:CAPS">AGS_MATRIX_CELL_WIDTH</link>
-#define             <link linkend="AGS-MATRIX-OCTAVE:CAPS">AGS_MATRIX_OCTAVE</link>
-#define             <link linkend="AGS-MATRIX-PATTERN-CONTROLS:CAPS">AGS_MATRIX_PATTERN_CONTROLS</link>
-struct              <link linkend="AgsMatrix">AgsMatrix</link>;
-struct              <link linkend="AgsMatrixClass">AgsMatrixClass</link>;
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-matrix-draw-gutter">ags_matrix_draw_gutter</link>              (<parameter><link linkend="AgsMatrix"><type>AgsMatrix</type></link> *matrix</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-matrix-draw-matrix">ags_matrix_draw_matrix</link>              (<parameter><link linkend="AgsMatrix"><type>AgsMatrix</type></link> *matrix</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-matrix-highlight-gutter-point">ags_matrix_highlight_gutter_point</link>   (<parameter><link linkend="AgsMatrix"><type>AgsMatrix</type></link> *matrix</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> j</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> i</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-matrix-input-map-recall">ags_matrix_input_map_recall</link>         (<parameter><link linkend="AgsMatrix"><type>AgsMatrix</type></link> *matrix</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> input_pad_start</parameter>);
-<link linkend="AgsMatrix"><returnvalue>AgsMatrix</returnvalue></link> *         <link linkend="ags-matrix-new">ags_matrix_new</link>                      (<parameter><link linkend="GObject"><type>GObject</type></link> *devout</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-matrix-output-map-recall">ags_matrix_output_map_recall</link>        (<parameter><link linkend="AgsMatrix"><type>AgsMatrix</type></link> *matrix</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> output_pad_start</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-matrix-redraw-gutter-point">ags_matrix_redraw_gutter_point</link>      (<parameter><link linkend="AgsMatrix"><type>AgsMatrix</type></link> *matrix</parameter>,
-                                                         <parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> j</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> i</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-matrix-unpaint-gutter-point">ags_matrix_unpaint_gutter_point</link>     (<parameter><link linkend="AgsMatrix"><type>AgsMatrix</type></link> *matrix</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> j</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> i</parameter>);
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsMatrix.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsMatrix.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AGS-MATRIX-CELL-HEIGHT:CAPS" role="macro">
-<title>AGS_MATRIX_CELL_HEIGHT</title>
-<indexterm zone="AGS-MATRIX-CELL-HEIGHT:CAPS"><primary>AGS_MATRIX_CELL_HEIGHT</primary></indexterm>
-<programlisting>#define AGS_MATRIX_CELL_HEIGHT  10
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AGS-MATRIX-CELL-WIDTH:CAPS" role="macro">
-<title>AGS_MATRIX_CELL_WIDTH</title>
-<indexterm zone="AGS-MATRIX-CELL-WIDTH:CAPS"><primary>AGS_MATRIX_CELL_WIDTH</primary></indexterm>
-<programlisting>#define AGS_MATRIX_CELL_WIDTH   12
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AGS-MATRIX-OCTAVE:CAPS" role="macro">
-<title>AGS_MATRIX_OCTAVE</title>
-<indexterm zone="AGS-MATRIX-OCTAVE:CAPS"><primary>AGS_MATRIX_OCTAVE</primary></indexterm>
-<programlisting>#define AGS_MATRIX_OCTAVE 10
-</programlisting>
-<para>
-</para></refsect2>
+<refsect1 id="AgsMatrix.other" role="other_proto">
+<title role="other_proto.title">Types and Values</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="name" colwidth="150px"/>
+<colspec colname="description"/>
+<tbody>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-MATRIX-OCTAVE:CAPS">AGS_MATRIX_OCTAVE</link></entry></row>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-MATRIX-CELL-WIDTH:CAPS">AGS_MATRIX_CELL_WIDTH</link></entry></row>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-MATRIX-CELL-HEIGHT:CAPS">AGS_MATRIX_CELL_HEIGHT</link></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsMatrix.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GInitiallyUnowned">GInitiallyUnowned</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkObject">GtkObject</link>
+            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkWidget">GtkWidget</link>
+                <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkContainer">GtkContainer</link>
+                    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkBin">GtkBin</link>
+                        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkHandleBox">GtkHandleBox</link>
+                            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsMachine">AgsMachine</link>
+                                <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsMatrix
+</screen>
+</refsect1>
+
+<refsect1 id="AgsMatrix.includes"><title>Includes</title><synopsis>#include &lt;ags/X/machine/ags_matrix.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsMatrix.description" role="desc">
+<title role="desc.title">Description</title>
+<para>The <link linkend="AgsMatrix"><type>AgsMatrix</type></link> is a composite widget to act as matrix sequencer.</para>
+
+</refsect1>
+<refsect1 id="AgsMatrix.functions_details" role="details">
+<title role="details.title">Functions</title>
 <refsect2 id="AGS-MATRIX-PATTERN-CONTROLS:CAPS" role="macro">
 <title>AGS_MATRIX_PATTERN_CONTROLS</title>
 <indexterm zone="AGS-MATRIX-PATTERN-CONTROLS:CAPS"><primary>AGS_MATRIX_PATTERN_CONTROLS</primary></indexterm>
-<programlisting>#define AGS_MATRIX_PATTERN_CONTROLS (16)
+<programlisting language="C">#define AGS_MATRIX_PATTERN_CONTROLS (16)
 </programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsMatrix" role="struct">
-<title>struct AgsMatrix</title>
-<indexterm zone="AgsMatrix"><primary>AgsMatrix</primary></indexterm>
-<programlisting>struct AgsMatrix {
-  AgsMachine machine;
-
-  guint flags;
-
-  gchar *name;
-  gchar *xml_type;
-
-  guint mapped_output_pad;
-  guint mapped_input_pad;
-
-  GtkTable *table;
-
-  GtkToggleButton *run;
-  GtkToggleButton *selected;
-  GtkToggleButton *index[9];
-
-  GtkDrawingArea *drawing_area;
-  guint active_led;
-  GtkHBox *led;
-
-  GtkAdjustment *adjustment;
-
-  GtkSpinButton *length_spin;
-  GtkCheckButton *loop_button;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsMatrixClass" role="struct">
-<title>struct AgsMatrixClass</title>
-<indexterm zone="AgsMatrixClass"><primary>AgsMatrixClass</primary></indexterm>
-<programlisting>struct AgsMatrixClass {
-  AgsMachineClass machine;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-matrix-draw-gutter" role="function">
-<title>ags_matrix_draw_gutter ()</title>
-<indexterm zone="ags-matrix-draw-gutter"><primary>ags_matrix_draw_gutter</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_matrix_draw_gutter              (<parameter><link linkend="AgsMatrix"><type>AgsMatrix</type></link> *matrix</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-matrix-draw-matrix" role="function">
-<title>ags_matrix_draw_matrix ()</title>
-<indexterm zone="ags-matrix-draw-matrix"><primary>ags_matrix_draw_matrix</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_matrix_draw_matrix              (<parameter><link linkend="AgsMatrix"><type>AgsMatrix</type></link> *matrix</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-matrix-highlight-gutter-point" role="function">
-<title>ags_matrix_highlight_gutter_point ()</title>
-<indexterm zone="ags-matrix-highlight-gutter-point"><primary>ags_matrix_highlight_gutter_point</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_matrix_highlight_gutter_point   (<parameter><link linkend="AgsMatrix"><type>AgsMatrix</type></link> *matrix</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> j</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> i</parameter>);</programlisting>
-<para>
-</para></refsect2>
+</refsect2>
 <refsect2 id="ags-matrix-input-map-recall" role="function">
-<title>ags_matrix_input_map_recall ()</title>
+<title>ags_matrix_input_map_recall&#160;()</title>
 <indexterm zone="ags-matrix-input-map-recall"><primary>ags_matrix_input_map_recall</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_matrix_input_map_recall         (<parameter><link linkend="AgsMatrix"><type>AgsMatrix</type></link> *matrix</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> input_pad_start</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-matrix-new" role="function">
-<title>ags_matrix_new ()</title>
-<indexterm zone="ags-matrix-new"><primary>ags_matrix_new</primary></indexterm>
-<programlisting><link linkend="AgsMatrix"><returnvalue>AgsMatrix</returnvalue></link> *         ags_matrix_new                      (<parameter><link linkend="GObject"><type>GObject</type></link> *devout</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_matrix_input_map_recall (<parameter><link linkend="AgsMatrix"><type>AgsMatrix</type></link> *matrix</parameter>,
+                             <parameter><link linkend="guint"><type>guint</type></link> input_pad_start</parameter>);</programlisting>
+</refsect2>
 <refsect2 id="ags-matrix-output-map-recall" role="function">
-<title>ags_matrix_output_map_recall ()</title>
+<title>ags_matrix_output_map_recall&#160;()</title>
 <indexterm zone="ags-matrix-output-map-recall"><primary>ags_matrix_output_map_recall</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_matrix_output_map_recall        (<parameter><link linkend="AgsMatrix"><type>AgsMatrix</type></link> *matrix</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> output_pad_start</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_matrix_output_map_recall (<parameter><link linkend="AgsMatrix"><type>AgsMatrix</type></link> *matrix</parameter>,
+                              <parameter><link linkend="guint"><type>guint</type></link> output_pad_start</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-matrix-draw-gutter" role="function">
+<title>ags_matrix_draw_gutter&#160;()</title>
+<indexterm zone="ags-matrix-draw-gutter"><primary>ags_matrix_draw_gutter</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_matrix_draw_gutter (<parameter><link linkend="AgsMatrix"><type>AgsMatrix</type></link> *matrix</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-matrix-draw-matrix" role="function">
+<title>ags_matrix_draw_matrix&#160;()</title>
+<indexterm zone="ags-matrix-draw-matrix"><primary>ags_matrix_draw_matrix</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_matrix_draw_matrix (<parameter><link linkend="AgsMatrix"><type>AgsMatrix</type></link> *matrix</parameter>);</programlisting>
+</refsect2>
 <refsect2 id="ags-matrix-redraw-gutter-point" role="function">
-<title>ags_matrix_redraw_gutter_point ()</title>
+<title>ags_matrix_redraw_gutter_point&#160;()</title>
 <indexterm zone="ags-matrix-redraw-gutter-point"><primary>ags_matrix_redraw_gutter_point</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_matrix_redraw_gutter_point      (<parameter><link linkend="AgsMatrix"><type>AgsMatrix</type></link> *matrix</parameter>,
-                                                         <parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> j</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> i</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_matrix_redraw_gutter_point (<parameter><link linkend="AgsMatrix"><type>AgsMatrix</type></link> *matrix</parameter>,
+                                <parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>,
+                                <parameter><link linkend="guint"><type>guint</type></link> j</parameter>,
+                                <parameter><link linkend="guint"><type>guint</type></link> i</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-matrix-highlight-gutter-point" role="function">
+<title>ags_matrix_highlight_gutter_point&#160;()</title>
+<indexterm zone="ags-matrix-highlight-gutter-point"><primary>ags_matrix_highlight_gutter_point</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_matrix_highlight_gutter_point (<parameter><link linkend="AgsMatrix"><type>AgsMatrix</type></link> *matrix</parameter>,
+                                   <parameter><link linkend="guint"><type>guint</type></link> j</parameter>,
+                                   <parameter><link linkend="guint"><type>guint</type></link> i</parameter>);</programlisting>
+</refsect2>
 <refsect2 id="ags-matrix-unpaint-gutter-point" role="function">
-<title>ags_matrix_unpaint_gutter_point ()</title>
+<title>ags_matrix_unpaint_gutter_point&#160;()</title>
 <indexterm zone="ags-matrix-unpaint-gutter-point"><primary>ags_matrix_unpaint_gutter_point</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_matrix_unpaint_gutter_point     (<parameter><link linkend="AgsMatrix"><type>AgsMatrix</type></link> *matrix</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> j</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> i</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_matrix_unpaint_gutter_point (<parameter><link linkend="AgsMatrix"><type>AgsMatrix</type></link> *matrix</parameter>,
+                                 <parameter><link linkend="guint"><type>guint</type></link> j</parameter>,
+                                 <parameter><link linkend="guint"><type>guint</type></link> i</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-matrix-new" role="function" condition="since:0.3">
+<title>ags_matrix_new&#160;()</title>
+<indexterm zone="ags-matrix-new" role="0.3"><primary>ags_matrix_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsMatrix"><returnvalue>AgsMatrix</returnvalue></link>&#160;*
+ags_matrix_new (<parameter><link linkend="GObject"><type>GObject</type></link> *soundcard</parameter>);</programlisting>
+<para>Creates an <link linkend="AgsMatrix"><type>AgsMatrix</type></link></para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>soundcard</para></entry>
+<entry role="parameter_description"><para>the assigned soundcard.</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> a new <link linkend="AgsMatrix"><type>AgsMatrix</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.3</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsMatrix.other_details" role="details">
+<title role="details.title">Types and Values</title>
+<refsect2 id="AGS-MATRIX-OCTAVE:CAPS" role="macro">
+<title>AGS_MATRIX_OCTAVE</title>
+<indexterm zone="AGS-MATRIX-OCTAVE:CAPS"><primary>AGS_MATRIX_OCTAVE</primary></indexterm>
+<programlisting language="C">#define AGS_MATRIX_OCTAVE 10
+</programlisting>
+</refsect2>
+<refsect2 id="AGS-MATRIX-CELL-WIDTH:CAPS" role="macro">
+<title>AGS_MATRIX_CELL_WIDTH</title>
+<indexterm zone="AGS-MATRIX-CELL-WIDTH:CAPS"><primary>AGS_MATRIX_CELL_WIDTH</primary></indexterm>
+<programlisting language="C">#define AGS_MATRIX_CELL_WIDTH   12
+</programlisting>
+</refsect2>
+<refsect2 id="AGS-MATRIX-CELL-HEIGHT:CAPS" role="macro">
+<title>AGS_MATRIX_CELL_HEIGHT</title>
+<indexterm zone="AGS-MATRIX-CELL-HEIGHT:CAPS"><primary>AGS_MATRIX_CELL_HEIGHT</primary></indexterm>
+<programlisting language="C">#define AGS_MATRIX_CELL_HEIGHT  10
+</programlisting>
+</refsect2>
 
 </refsect1>
 

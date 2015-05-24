@@ -1,0 +1,132 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="AgsPlayback">
+<refmeta>
+<refentrytitle role="top_of_page" id="AgsPlayback.top_of_page">AgsPlayback</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsPlayback</refname>
+<refpurpose>Outputting to soundcard context</refpurpose>
+</refnamediv>
+
+<refsect1 id="AgsPlayback.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="AgsPlayback"><returnvalue>AgsPlayback</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-playback-find-source">ags_playback_find_source</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsPlayback"><returnvalue>AgsPlayback</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-playback-new">ags_playback_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsPlayback.other" role="other_proto">
+<title role="other_proto.title">Types and Values</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="name" colwidth="150px"/>
+<colspec colname="description"/>
+<tbody>
+<row><entry role="datatype_keyword">enum</entry><entry role="function_name"><link linkend="AgsPlaybackFlags">AgsPlaybackFlags</link></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsPlayback.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsPlayback
+</screen>
+</refsect1>
+
+<refsect1 id="AgsPlayback.includes"><title>Includes</title><synopsis>#include &lt;ags/audio/ags_playback.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsPlayback.description" role="desc">
+<title role="desc.title">Description</title>
+<para><link linkend="AgsPlayback"><type>AgsPlayback</type></link> represents a context to output.</para>
+
+</refsect1>
+<refsect1 id="AgsPlayback.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-playback-find-source" role="function">
+<title>ags_playback_find_source&#160;()</title>
+<indexterm zone="ags-playback-find-source"><primary>ags_playback_find_source</primary></indexterm>
+<programlisting language="C"><link linkend="AgsPlayback"><returnvalue>AgsPlayback</returnvalue></link>&#160;*
+ags_playback_find_source (<parameter><link linkend="GList"><type>GList</type></link> *playback</parameter>,
+                          <parameter><link linkend="GObject"><type>GObject</type></link> *source</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-playback-new" role="function" condition="since:0.4">
+<title>ags_playback_new&#160;()</title>
+<indexterm zone="ags-playback-new" role="0.4"><primary>ags_playback_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsPlayback"><returnvalue>AgsPlayback</returnvalue></link>&#160;*
+ags_playback_new ();</programlisting>
+<para>Creates an <link linkend="AgsPlayback"><type>AgsPlayback</type></link>, refering to <parameter>application_context</parameter>
+.</para>
+<refsect3 role="returns">
+<title>Returns</title>
+<para> a new <link linkend="AgsPlayback"><type>AgsPlayback</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsPlayback.other_details" role="details">
+<title role="details.title">Types and Values</title>
+<refsect2 id="AgsPlaybackFlags" role="enum">
+<title>enum AgsPlaybackFlags</title>
+<indexterm zone="AgsPlaybackFlags"><primary>AgsPlaybackFlags</primary></indexterm>
+<refsect3 role="enum_members">
+<title>Members</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="enum_members_name" colwidth="300px"/>
+<colspec colname="enum_members_description"/>
+<colspec colname="enum_members_annotations" colwidth="200px"/>
+<tbody>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-PLAYBACK-DONE:CAPS">AGS_PLAYBACK_DONE</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-PLAYBACK-REMOVE:CAPS">AGS_PLAYBACK_REMOVE</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-PLAYBACK-CHANNEL:CAPS">AGS_PLAYBACK_CHANNEL</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-PLAYBACK-PAD:CAPS">AGS_PLAYBACK_PAD</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-PLAYBACK-AUDIO:CAPS">AGS_PLAYBACK_AUDIO</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-PLAYBACK-PLAYBACK:CAPS">AGS_PLAYBACK_PLAYBACK</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-PLAYBACK-SEQUENCER:CAPS">AGS_PLAYBACK_SEQUENCER</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-PLAYBACK-NOTATION:CAPS">AGS_PLAYBACK_NOTATION</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-PLAYBACK-SUPER-THREADED:CAPS">AGS_PLAYBACK_SUPER_THREADED</para></entry>
+<entry /><entry />
+</row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
+
+</refsect1>
+
+</refentry>

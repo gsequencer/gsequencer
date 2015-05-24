@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsIndicator">
+<refentry id="AgsIndicator">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsIndicator.top_of_page">AgsIndicator</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsIndicator.top_of_page">AgsIndicator</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -14,51 +14,84 @@
 </refmeta>
 <refnamediv>
 <refname>AgsIndicator</refname>
-<refpurpose></refpurpose>
+<refpurpose>A indicator widget</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsIndicator.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsIndicator.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="AgsIndicator"><returnvalue>AgsIndicator</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-indicator-new">ags_indicator_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>struct              <link linkend="AgsIndicator">AgsIndicator</link>;
-struct              <link linkend="AgsIndicatorClass">AgsIndicatorClass</link>;
-<link linkend="AgsIndicator"><returnvalue>AgsIndicator</returnvalue></link> *      <link linkend="ags-indicator-new">ags_indicator_new</link>                   ();
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsIndicator.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsIndicator.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AgsIndicator" role="struct">
-<title>struct AgsIndicator</title>
-<indexterm zone="AgsIndicator"><primary>AgsIndicator</primary></indexterm>
-<programlisting>struct AgsIndicator {
-  GtkWidget widget;
+<refsect1 id="AgsIndicator.properties" role="properties">
+<title role="properties.title">Properties</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="properties_type" colwidth="150px"/>
+<colspec colname="properties_name" colwidth="300px"/>
+<colspec colname="properties_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="property_type"><link linkend="GObject"><type>GObject</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsIndicator--adjustment">adjustment</link></entry><entry role="property_flags">Read / Write</entry></row>
 
-  GtkAdjustment *adjustment;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsIndicatorClass" role="struct">
-<title>struct AgsIndicatorClass</title>
-<indexterm zone="AgsIndicatorClass"><primary>AgsIndicatorClass</primary></indexterm>
-<programlisting>struct AgsIndicatorClass {
-  GtkWidgetClass widget;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-indicator-new" role="function">
-<title>ags_indicator_new ()</title>
-<indexterm zone="ags-indicator-new"><primary>ags_indicator_new</primary></indexterm>
-<programlisting><link linkend="AgsIndicator"><returnvalue>AgsIndicator</returnvalue></link> *      ags_indicator_new                   ();</programlisting>
-<para>
-</para></refsect2>
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsIndicator.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GInitiallyUnowned">GInitiallyUnowned</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkObject">GtkObject</link>
+            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkWidget">GtkWidget</link>
+                <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsIndicator
+                    <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsHIndicator">AgsHIndicator</link>
+                    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsVIndicator">AgsVIndicator</link>
+</screen>
+</refsect1>
+
+<refsect1 id="AgsIndicator.includes"><title>Includes</title><synopsis>#include &lt;ags/widget/ags_indicator.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsIndicator.description" role="desc">
+<title role="desc.title">Description</title>
+<para><link linkend="AgsIndicator"><type>AgsIndicator</type></link> is a widget representing a <link linkend="GtkAdjustment"><type>GtkAdjustment</type></link>.</para>
+
+</refsect1>
+<refsect1 id="AgsIndicator.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-indicator-new" role="function" condition="since:0.4">
+<title>ags_indicator_new&#160;()</title>
+<indexterm zone="ags-indicator-new" role="0.4"><primary>ags_indicator_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsIndicator"><returnvalue>AgsIndicator</returnvalue></link>&#160;*
+ags_indicator_new ();</programlisting>
+<para>Creates an <link linkend="AgsIndicator"><type>AgsIndicator</type></link>. Note, use rather its implementation <link linkend="AgsVIndicator"><type>AgsVIndicator</type></link> or
+<link linkend="AgsHIndicator"><type>AgsHIndicator</type></link>.</para>
+<refsect3 role="returns">
+<title>Returns</title>
+<para> a new <link linkend="AgsIndicator"><type>AgsIndicator</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsIndicator.other_details" role="details">
+<title role="details.title">Types and Values</title>
+
+</refsect1>
+<refsect1 id="AgsIndicator.property-details" role="property_details">
+<title role="property_details.title">Property Details</title>
+<refsect2 id="AgsIndicator--adjustment" role="property"><title>The <literal>“adjustment”</literal> property</title>
+<indexterm zone="AgsIndicator--adjustment"><primary>AgsIndicator:adjustment</primary></indexterm>
+<programlisting>  “adjustment”               <link linkend="GObject"><type>GObject</type></link>&#160;*</programlisting>
+<para>The adjustment it is assigned with.</para><para>Flags: Read / Write</para>
+</refsect2>
 
 </refsect1>
 

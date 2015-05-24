@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsStackable">
+<refentry id="AgsStackable">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsStackable.top_of_page">AgsStackable</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsStackable.top_of_page">AgsStackable</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -17,54 +17,52 @@
 <refpurpose></refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsStackable.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsStackable.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-stackable-push">ags_stackable_push</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-stackable-pop">ags_stackable_pop</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>typedef             <link linkend="AgsStackable">AgsStackable</link>;
-struct              <link linkend="AgsStackableInterface">AgsStackableInterface</link>;
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-stackable-pop">ags_stackable_pop</link>                   (<parameter><link linkend="AgsStackable"><type>AgsStackable</type></link> *stackable</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-stackable-push">ags_stackable_push</link>                  (<parameter><link linkend="AgsStackable"><type>AgsStackable</type></link> *stackable</parameter>);
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsStackable.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsStackable.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AgsStackable" role="typedef">
-<title>AgsStackable</title>
-<indexterm zone="AgsStackable"><primary>AgsStackable</primary></indexterm>
-<programlisting>typedef void AgsStackable;
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsStackableInterface" role="struct">
-<title>struct AgsStackableInterface</title>
-<indexterm zone="AgsStackableInterface"><primary>AgsStackableInterface</primary></indexterm>
-<programlisting>struct AgsStackableInterface {
-  GTypeInterface interface;
+<refsect1 id="AgsStackable.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GInterface">GInterface</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsStackable
+</screen>
+</refsect1>
 
-  void (*push)(AgsStackable *stackable);
-  void (*pop)(AgsStackable *stackable);
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-stackable-pop" role="function">
-<title>ags_stackable_pop ()</title>
-<indexterm zone="ags-stackable-pop"><primary>ags_stackable_pop</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_stackable_pop                   (<parameter><link linkend="AgsStackable"><type>AgsStackable</type></link> *stackable</parameter>);</programlisting>
-<para>
-</para></refsect2>
+
+<refsect1 id="AgsStackable.description" role="desc">
+<title role="desc.title">Description</title>
+
+</refsect1>
+<refsect1 id="AgsStackable.functions_details" role="details">
+<title role="details.title">Functions</title>
 <refsect2 id="ags-stackable-push" role="function">
-<title>ags_stackable_push ()</title>
+<title>ags_stackable_push&#160;()</title>
 <indexterm zone="ags-stackable-push"><primary>ags_stackable_push</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_stackable_push                  (<parameter><link linkend="AgsStackable"><type>AgsStackable</type></link> *stackable</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_stackable_push (<parameter><link linkend="AgsStackable"><type>AgsStackable</type></link> *stackable</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-stackable-pop" role="function">
+<title>ags_stackable_pop&#160;()</title>
+<indexterm zone="ags-stackable-pop"><primary>ags_stackable_pop</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_stackable_pop (<parameter><link linkend="AgsStackable"><type>AgsStackable</type></link> *stackable</parameter>);</programlisting>
+</refsect2>
+
+</refsect1>
+<refsect1 id="AgsStackable.other_details" role="details">
+<title role="details.title">Types and Values</title>
 
 </refsect1>
 

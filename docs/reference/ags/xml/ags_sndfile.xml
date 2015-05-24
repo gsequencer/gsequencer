@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsSndfile">
+<refentry id="AgsSndfile">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsSndfile.top_of_page">AgsSndfile</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsSndfile.top_of_page">AgsSndfile</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -14,69 +14,87 @@
 </refmeta>
 <refnamediv>
 <refname>AgsSndfile</refname>
-<refpurpose></refpurpose>
+<refpurpose>Libsndfile wrapper</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsSndfile.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsSndfile.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="AgsSndfile"><returnvalue>AgsSndfile</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-sndfile-new">ags_sndfile_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>struct              <link linkend="AgsSndfile">AgsSndfile</link>;
-struct              <link linkend="AgsSndfileClass">AgsSndfileClass</link>;
-enum                <link linkend="AgsSndfileFlags">AgsSndfileFlags</link>;
-<link linkend="AgsSndfile"><returnvalue>AgsSndfile</returnvalue></link> *        <link linkend="ags-sndfile-new">ags_sndfile_new</link>                     ();
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsSndfile.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsSndfile.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AgsSndfile" role="struct">
-<title>struct AgsSndfile</title>
-<indexterm zone="AgsSndfile"><primary>AgsSndfile</primary></indexterm>
-<programlisting>struct AgsSndfile {
-  GObject object;
+<refsect1 id="AgsSndfile.other" role="other_proto">
+<title role="other_proto.title">Types and Values</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="name" colwidth="150px"/>
+<colspec colname="description"/>
+<tbody>
+<row><entry role="datatype_keyword">enum</entry><entry role="function_name"><link linkend="AgsSndfileFlags">AgsSndfileFlags</link></entry></row>
 
-  guint flags;
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsSndfile.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsSndfile
+</screen>
+</refsect1>
 
-  SF_INFO *info;
-  SNDFILE *file;
+<refsect1 id="AgsSndfile.includes"><title>Includes</title><synopsis>#include &lt;ags/audio/file/ags_sndfile.h&gt;
+</synopsis></refsect1>
 
-  guchar *pointer;
-  guchar *current;
-  gsize length;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsSndfileClass" role="struct">
-<title>struct AgsSndfileClass</title>
-<indexterm zone="AgsSndfileClass"><primary>AgsSndfileClass</primary></indexterm>
-<programlisting>struct AgsSndfileClass {
-  GObjectClass object;
-};
-</programlisting>
-<para>
-</para></refsect2>
+<refsect1 id="AgsSndfile.description" role="desc">
+<title role="desc.title">Description</title>
+<para><link linkend="AgsSndfile"><type>AgsSndfile</type></link> is the base object to ineract with libsndfile.</para>
+
+</refsect1>
+<refsect1 id="AgsSndfile.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-sndfile-new" role="function" condition="since:0.3">
+<title>ags_sndfile_new&#160;()</title>
+<indexterm zone="ags-sndfile-new" role="0.3"><primary>ags_sndfile_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsSndfile"><returnvalue>AgsSndfile</returnvalue></link>&#160;*
+ags_sndfile_new ();</programlisting>
+<para>Creates an <link linkend="AgsSndfile"><type>AgsSndfile</type></link>.</para>
+<refsect3 role="returns">
+<title>Returns</title>
+<para> an empty <link linkend="AgsSndfile"><type>AgsSndfile</type></link>.</para>
+<para></para>
+</refsect3><para role="since">Since 0.3</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsSndfile.other_details" role="details">
+<title role="details.title">Types and Values</title>
 <refsect2 id="AgsSndfileFlags" role="enum">
 <title>enum AgsSndfileFlags</title>
 <indexterm zone="AgsSndfileFlags"><primary>AgsSndfileFlags</primary></indexterm>
-<programlisting>typedef enum {
-  AGS_SNDFILE_ITER_START    = 1,
-  AGS_SNDFILE_VIRTUAL       = 1 &lt;&lt; 1,
-} AgsSndfileFlags;
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-sndfile-new" role="function">
-<title>ags_sndfile_new ()</title>
-<indexterm zone="ags-sndfile-new"><primary>ags_sndfile_new</primary></indexterm>
-<programlisting><link linkend="AgsSndfile"><returnvalue>AgsSndfile</returnvalue></link> *        ags_sndfile_new                     ();</programlisting>
-<para>
-</para></refsect2>
+<refsect3 role="enum_members">
+<title>Members</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="enum_members_name" colwidth="300px"/>
+<colspec colname="enum_members_description"/>
+<colspec colname="enum_members_annotations" colwidth="200px"/>
+<tbody>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-SNDFILE-ITER-START:CAPS">AGS_SNDFILE_ITER_START</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-SNDFILE-VIRTUAL:CAPS">AGS_SNDFILE_VIRTUAL</para></entry>
+<entry /><entry />
+</row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
 
 </refsect1>
 

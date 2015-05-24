@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsMainLoop">
+<refentry id="AgsMainLoop">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsMainLoop.top_of_page">AgsMainLoop</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsMainLoop.top_of_page">AgsMainLoop</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -14,97 +14,162 @@
 </refmeta>
 <refnamediv>
 <refname>AgsMainLoop</refname>
-<refpurpose></refpurpose>
+<refpurpose>toplevel threads</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsMainLoop.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsMainLoop.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-main-loop-set-application-context">ags_main_loop_set_application_context</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsApplicationContext"><returnvalue>AgsApplicationContext</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-main-loop-get-application-context">ags_main_loop_get_application_context</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-main-loop-set-tic">ags_main_loop_set_tic</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="guint"><returnvalue>guint</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-main-loop-get-tic">ags_main_loop_get_tic</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-main-loop-set-last-sync">ags_main_loop_set_last_sync</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="guint"><returnvalue>guint</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-main-loop-get-last-sync">ags_main_loop_get_last_sync</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>typedef             <link linkend="AgsMainLoop">AgsMainLoop</link>;
-struct              <link linkend="AgsMainLoopInterface">AgsMainLoopInterface</link>;
-<link linkend="AgsAsyncQueue"><returnvalue>AgsAsyncQueue</returnvalue></link> *     <link linkend="ags-main-loop-get-async-queue">ags_main_loop_get_async_queue</link>       (<parameter><link linkend="AgsMainLoop"><type>AgsMainLoop</type></link> *main_loop</parameter>);
-<link linkend="guint"><returnvalue>guint</returnvalue></link>               <link linkend="ags-main-loop-get-last-sync">ags_main_loop_get_last_sync</link>         (<parameter><link linkend="AgsMainLoop"><type>AgsMainLoop</type></link> *main_loop</parameter>);
-<link linkend="guint"><returnvalue>guint</returnvalue></link>               <link linkend="ags-main-loop-get-tic">ags_main_loop_get_tic</link>               (<parameter><link linkend="AgsMainLoop"><type>AgsMainLoop</type></link> *main_loop</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-main-loop-set-async-queue">ags_main_loop_set_async_queue</link>       (<parameter><link linkend="AgsMainLoop"><type>AgsMainLoop</type></link> *main_loop</parameter>,
-                                                         <parameter><link linkend="AgsAsyncQueue"><type>AgsAsyncQueue</type></link> *async_queue</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-main-loop-set-last-sync">ags_main_loop_set_last_sync</link>         (<parameter><link linkend="AgsMainLoop"><type>AgsMainLoop</type></link> *main_loop</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> last_sync</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-main-loop-set-tic">ags_main_loop_set_tic</link>               (<parameter><link linkend="AgsMainLoop"><type>AgsMainLoop</type></link> *main_loop</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> tic</parameter>);
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsMainLoop.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsMainLoop.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AgsMainLoop" role="typedef">
-<title>AgsMainLoop</title>
-<indexterm zone="AgsMainLoop"><primary>AgsMainLoop</primary></indexterm>
-<programlisting>typedef void AgsMainLoop;
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsMainLoopInterface" role="struct">
-<title>struct AgsMainLoopInterface</title>
-<indexterm zone="AgsMainLoopInterface"><primary>AgsMainLoopInterface</primary></indexterm>
-<programlisting>struct AgsMainLoopInterface {
-  GTypeInterface interface;
+<refsect1 id="AgsMainLoop.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GInterface">GInterface</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsMainLoop
+</screen>
+</refsect1>
 
-  void (*set_async_queue)(AgsMainLoop *main_loop, AgsAsyncQueue *async_queue);
-  AgsAsyncQueue* (*get_async_queue)(AgsMainLoop *main_loop);
-  
-  void (*set_tic)(AgsMainLoop *main_loop, guint tic);
-  guint (*get_tic)(AgsMainLoop *main_loop);
+<refsect1 id="AgsMainLoop.includes"><title>Includes</title><synopsis>#include &lt;ags/object/ags_main_loop.h&gt;
+</synopsis></refsect1>
 
-  void (*set_last_sync)(AgsMainLoop *main_loop, guint last_sync);
-  guint (*get_last_sync)(AgsMainLoop *main_loop);
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-main-loop-get-async-queue" role="function">
-<title>ags_main_loop_get_async_queue ()</title>
-<indexterm zone="ags-main-loop-get-async-queue"><primary>ags_main_loop_get_async_queue</primary></indexterm>
-<programlisting><link linkend="AgsAsyncQueue"><returnvalue>AgsAsyncQueue</returnvalue></link> *     ags_main_loop_get_async_queue       (<parameter><link linkend="AgsMainLoop"><type>AgsMainLoop</type></link> *main_loop</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-main-loop-get-last-sync" role="function">
-<title>ags_main_loop_get_last_sync ()</title>
-<indexterm zone="ags-main-loop-get-last-sync"><primary>ags_main_loop_get_last_sync</primary></indexterm>
-<programlisting><link linkend="guint"><returnvalue>guint</returnvalue></link>               ags_main_loop_get_last_sync         (<parameter><link linkend="AgsMainLoop"><type>AgsMainLoop</type></link> *main_loop</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-main-loop-get-tic" role="function">
-<title>ags_main_loop_get_tic ()</title>
-<indexterm zone="ags-main-loop-get-tic"><primary>ags_main_loop_get_tic</primary></indexterm>
-<programlisting><link linkend="guint"><returnvalue>guint</returnvalue></link>               ags_main_loop_get_tic               (<parameter><link linkend="AgsMainLoop"><type>AgsMainLoop</type></link> *main_loop</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-main-loop-set-async-queue" role="function">
-<title>ags_main_loop_set_async_queue ()</title>
-<indexterm zone="ags-main-loop-set-async-queue"><primary>ags_main_loop_set_async_queue</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_main_loop_set_async_queue       (<parameter><link linkend="AgsMainLoop"><type>AgsMainLoop</type></link> *main_loop</parameter>,
-                                                         <parameter><link linkend="AgsAsyncQueue"><type>AgsAsyncQueue</type></link> *async_queue</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-main-loop-set-last-sync" role="function">
-<title>ags_main_loop_set_last_sync ()</title>
-<indexterm zone="ags-main-loop-set-last-sync"><primary>ags_main_loop_set_last_sync</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_main_loop_set_last_sync         (<parameter><link linkend="AgsMainLoop"><type>AgsMainLoop</type></link> *main_loop</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> last_sync</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<refsect1 id="AgsMainLoop.description" role="desc">
+<title role="desc.title">Description</title>
+<para>The <link linkend="AgsMainLoop"><type>AgsMainLoop</type></link> interface gives you a unique access to toplevel
+threads.</para>
+
+</refsect1>
+<refsect1 id="AgsMainLoop.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-main-loop-set-application-context" role="function">
+<title>ags_main_loop_set_application_context&#160;()</title>
+<indexterm zone="ags-main-loop-set-application-context"><primary>ags_main_loop_set_application_context</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_main_loop_set_application_context (<parameter><link linkend="AgsMainLoop"><type>AgsMainLoop</type></link> *main_loop</parameter>,
+                                       <parameter><link linkend="AgsApplicationContext"><type>AgsApplicationContext</type></link> *application_context</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-main-loop-get-application-context" role="function">
+<title>ags_main_loop_get_application_context&#160;()</title>
+<indexterm zone="ags-main-loop-get-application-context"><primary>ags_main_loop_get_application_context</primary></indexterm>
+<programlisting language="C"><link linkend="AgsApplicationContext"><returnvalue>AgsApplicationContext</returnvalue></link>&#160;*
+ags_main_loop_get_application_context (<parameter><link linkend="AgsMainLoop"><type>AgsMainLoop</type></link> *main_loop</parameter>);</programlisting>
+</refsect2>
 <refsect2 id="ags-main-loop-set-tic" role="function">
-<title>ags_main_loop_set_tic ()</title>
+<title>ags_main_loop_set_tic&#160;()</title>
 <indexterm zone="ags-main-loop-set-tic"><primary>ags_main_loop_set_tic</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_main_loop_set_tic               (<parameter><link linkend="AgsMainLoop"><type>AgsMainLoop</type></link> *main_loop</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> tic</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_main_loop_set_tic (<parameter><link linkend="AgsMainLoop"><type>AgsMainLoop</type></link> *main_loop</parameter>,
+                       <parameter><link linkend="guint"><type>guint</type></link> tic</parameter>);</programlisting>
+<para>Sets tic to <parameter>tic</parameter>
+.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>main_loop</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsMainLoop"><type>AgsMainLoop</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>tic</para></entry>
+<entry role="parameter_description"><para>tic</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
+<refsect2 id="ags-main-loop-get-tic" role="function">
+<title>ags_main_loop_get_tic&#160;()</title>
+<indexterm zone="ags-main-loop-get-tic"><primary>ags_main_loop_get_tic</primary></indexterm>
+<programlisting language="C"><link linkend="guint"><returnvalue>guint</returnvalue></link>
+ags_main_loop_get_tic (<parameter><link linkend="AgsMainLoop"><type>AgsMainLoop</type></link> *main_loop</parameter>);</programlisting>
+<para>Retrieve tic.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>main_loop</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsMainLoop"><type>AgsMainLoop</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> tic</para>
+<para></para>
+</refsect3></refsect2>
+<refsect2 id="ags-main-loop-set-last-sync" role="function">
+<title>ags_main_loop_set_last_sync&#160;()</title>
+<indexterm zone="ags-main-loop-set-last-sync"><primary>ags_main_loop_set_last_sync</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_main_loop_set_last_sync (<parameter><link linkend="AgsMainLoop"><type>AgsMainLoop</type></link> *main_loop</parameter>,
+                             <parameter><link linkend="guint"><type>guint</type></link> last_sync</parameter>);</programlisting>
+<para>Sets last sync to <parameter>last_sync</parameter>
+.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>main_loop</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsMainLoop"><type>AgsMainLoop</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>last_sync</para></entry>
+<entry role="parameter_description"><para>last sync</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
+<refsect2 id="ags-main-loop-get-last-sync" role="function">
+<title>ags_main_loop_get_last_sync&#160;()</title>
+<indexterm zone="ags-main-loop-get-last-sync"><primary>ags_main_loop_get_last_sync</primary></indexterm>
+<programlisting language="C"><link linkend="guint"><returnvalue>guint</returnvalue></link>
+ags_main_loop_get_last_sync (<parameter><link linkend="AgsMainLoop"><type>AgsMainLoop</type></link> *main_loop</parameter>);</programlisting>
+<para>Retrieve last sync.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>main_loop</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsMainLoop"><type>AgsMainLoop</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> last sync</para>
+<para></para>
+</refsect3></refsect2>
+
+</refsect1>
+<refsect1 id="AgsMainLoop.other_details" role="details">
+<title role="details.title">Types and Values</title>
 
 </refsect1>
 

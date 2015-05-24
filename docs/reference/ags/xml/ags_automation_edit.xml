@@ -1,0 +1,259 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="AgsAutomationEdit">
+<refmeta>
+<refentrytitle role="top_of_page" id="AgsAutomationEdit.top_of_page">AgsAutomationEdit</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsAutomationEdit</refname>
+<refpurpose>edit automations</refpurpose>
+</refnamediv>
+
+<refsect1 id="AgsAutomationEdit.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-automation-edit-reset-vertically">ags_automation_edit_reset_vertically</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-automation-edit-reset-horizontally">ags_automation_edit_reset_horizontally</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-automation-edit-draw-position">ags_automation_edit_draw_position</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-automation-edit-draw-scroll">ags_automation_edit_draw_scroll</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="GtkDrawingArea"><returnvalue>GtkDrawingArea</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-automation-edit-add-area">ags_automation_edit_add_area</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsAutomationEdit"><returnvalue>AgsAutomationEdit</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-automation-edit-new">ags_automation_edit_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsAutomationEdit.other" role="other_proto">
+<title role="other_proto.title">Types and Values</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="name" colwidth="150px"/>
+<colspec colname="description"/>
+<tbody>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-AUTOMATION-EDIT-MAX-CONTROLS:CAPS">AGS_AUTOMATION_EDIT_MAX_CONTROLS</link></entry></row>
+<row><entry role="datatype_keyword">enum</entry><entry role="function_name"><link linkend="AgsAutomationEditFlags">AgsAutomationEditFlags</link></entry></row>
+<row><entry role="datatype_keyword">enum</entry><entry role="function_name"><link linkend="AgsAutomationEditResetFlags">AgsAutomationEditResetFlags</link></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsAutomationEdit.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GInitiallyUnowned">GInitiallyUnowned</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkObject">GtkObject</link>
+            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkWidget">GtkWidget</link>
+                <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkContainer">GtkContainer</link>
+                    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkTable">GtkTable</link>
+                        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsAutomationEdit
+</screen>
+</refsect1>
+
+<refsect1 id="AgsAutomationEdit.includes"><title>Includes</title><synopsis>#include &lt;ags/X/editor/ags_automation_edit.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsAutomationEdit.description" role="desc">
+<title role="desc.title">Description</title>
+<para>The <link linkend="AgsAutomationEdit"><type>AgsAutomationEdit</type></link> lets you edit automations.</para>
+
+</refsect1>
+<refsect1 id="AgsAutomationEdit.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-automation-edit-reset-vertically" role="function" condition="since:0.4">
+<title>ags_automation_edit_reset_vertically&#160;()</title>
+<indexterm zone="ags-automation-edit-reset-vertically" role="0.4"><primary>ags_automation_edit_reset_vertically</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_automation_edit_reset_vertically (<parameter><link linkend="AgsAutomationEdit"><type>AgsAutomationEdit</type></link> *automation_edit</parameter>,
+                                      <parameter><link linkend="guint"><type>guint</type></link> flags</parameter>);</programlisting>
+<para>Reset <parameter>automation_edit</parameter>
+ as configured vertically.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>automation_edit</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsAutomationEdit"><type>AgsAutomationEdit</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>flags</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsAutomationEditResetFlags"><type>AgsAutomationEditResetFlags</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-automation-edit-reset-horizontally" role="function" condition="since:0.4">
+<title>ags_automation_edit_reset_horizontally&#160;()</title>
+<indexterm zone="ags-automation-edit-reset-horizontally" role="0.4"><primary>ags_automation_edit_reset_horizontally</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_automation_edit_reset_horizontally
+                               (<parameter><link linkend="AgsAutomationEdit"><type>AgsAutomationEdit</type></link> *automation_edit</parameter>,
+                                <parameter><link linkend="guint"><type>guint</type></link> flags</parameter>);</programlisting>
+<para>Reset <parameter>automation_edit</parameter>
+ as configured horizontally.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>automation_edit</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsAutomationEdit"><type>AgsAutomationEdit</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>flags</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsAutomationEditResetFlags"><type>AgsAutomationEditResetFlags</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-automation-edit-draw-position" role="function" condition="since:0.4">
+<title>ags_automation_edit_draw_position&#160;()</title>
+<indexterm zone="ags-automation-edit-draw-position" role="0.4"><primary>ags_automation_edit_draw_position</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_automation_edit_draw_position (<parameter><link linkend="GtkVBox"><type>GtkVBox</type></link> *drawing_area</parameter>);</programlisting>
+<para>Draws the cursor.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>drawing_area</para></entry>
+<entry role="parameter_description"><para>the <link linkend="GtkVBox"><type>GtkVBox</type></link> containing drawing area</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-automation-edit-draw-scroll" role="function" condition="since:0.4">
+<title>ags_automation_edit_draw_scroll&#160;()</title>
+<indexterm zone="ags-automation-edit-draw-scroll" role="0.4"><primary>ags_automation_edit_draw_scroll</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_automation_edit_draw_scroll (<parameter><link linkend="GtkVBox"><type>GtkVBox</type></link> *drawing_area</parameter>,
+                                 <parameter><link linkend="gdouble"><type>gdouble</type></link> position</parameter>);</programlisting>
+<para>Change visible x-position of <parameter>automation_edit</parameter>
+.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>automation_edit</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsAutomationEdit"><type>AgsAutomationEdit</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>cr</para></entry>
+<entry role="parameter_description"><para>the <link linkend="cairo-t"><type>cairo_t</type></link> surface</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>position</para></entry>
+<entry role="parameter_description"><para>the new position</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-automation-edit-add-area" role="function">
+<title>ags_automation_edit_add_area&#160;()</title>
+<indexterm zone="ags-automation-edit-add-area"><primary>ags_automation_edit_add_area</primary></indexterm>
+<programlisting language="C"><link linkend="GtkDrawingArea"><returnvalue>GtkDrawingArea</returnvalue></link>&#160;*
+ags_automation_edit_add_area (<parameter><link linkend="AgsAutomationEdit"><type>AgsAutomationEdit</type></link> *automation_edit</parameter>,
+                              <parameter><link linkend="AgsAutomation"><type>AgsAutomation</type></link> *automation</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-automation-edit-new" role="function" condition="since:0.4">
+<title>ags_automation_edit_new&#160;()</title>
+<indexterm zone="ags-automation-edit-new" role="0.4"><primary>ags_automation_edit_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsAutomationEdit"><returnvalue>AgsAutomationEdit</returnvalue></link>&#160;*
+ags_automation_edit_new ();</programlisting>
+<para>Create a new <link linkend="AgsAutomationEdit"><type>AgsAutomationEdit</type></link>.</para>
+<para role="since">Since 0.4</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsAutomationEdit.other_details" role="details">
+<title role="details.title">Types and Values</title>
+<refsect2 id="AGS-AUTOMATION-EDIT-MAX-CONTROLS:CAPS" role="macro">
+<title>AGS_AUTOMATION_EDIT_MAX_CONTROLS</title>
+<indexterm zone="AGS-AUTOMATION-EDIT-MAX-CONTROLS:CAPS"><primary>AGS_AUTOMATION_EDIT_MAX_CONTROLS</primary></indexterm>
+<programlisting language="C">#define AGS_AUTOMATION_EDIT_MAX_CONTROLS 1200
+</programlisting>
+</refsect2>
+<refsect2 id="AgsAutomationEditFlags" role="enum">
+<title>enum AgsAutomationEditFlags</title>
+<indexterm zone="AgsAutomationEditFlags"><primary>AgsAutomationEditFlags</primary></indexterm>
+<refsect3 role="enum_members">
+<title>Members</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="enum_members_name" colwidth="300px"/>
+<colspec colname="enum_members_description"/>
+<colspec colname="enum_members_annotations" colwidth="200px"/>
+<tbody>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-AUTOMATION-EDIT-RESETING-VERTICALLY:CAPS">AGS_AUTOMATION_EDIT_RESETING_VERTICALLY</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-AUTOMATION-EDIT-RESETING-HORIZONTALLY:CAPS">AGS_AUTOMATION_EDIT_RESETING_HORIZONTALLY</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-AUTOMATION-EDIT-POSITION-CURSOR:CAPS">AGS_AUTOMATION_EDIT_POSITION_CURSOR</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-AUTOMATION-EDIT-ADDING-AUTOMATION:CAPS">AGS_AUTOMATION_EDIT_ADDING_AUTOMATION</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-AUTOMATION-EDIT-DELETING-AUTOMATION:CAPS">AGS_AUTOMATION_EDIT_DELETING_AUTOMATION</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-AUTOMATION-EDIT-SELECTING-AUTOMATIONS:CAPS">AGS_AUTOMATION_EDIT_SELECTING_AUTOMATIONS</para></entry>
+<entry /><entry />
+</row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
+<refsect2 id="AgsAutomationEditResetFlags" role="enum">
+<title>enum AgsAutomationEditResetFlags</title>
+<indexterm zone="AgsAutomationEditResetFlags"><primary>AgsAutomationEditResetFlags</primary></indexterm>
+<refsect3 role="enum_members">
+<title>Members</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="enum_members_name" colwidth="300px"/>
+<colspec colname="enum_members_description"/>
+<colspec colname="enum_members_annotations" colwidth="200px"/>
+<tbody>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-AUTOMATION-EDIT-RESET-VSCROLLBAR:CAPS">AGS_AUTOMATION_EDIT_RESET_VSCROLLBAR</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-AUTOMATION-EDIT-RESET-HSCROLLBAR:CAPS">AGS_AUTOMATION_EDIT_RESET_HSCROLLBAR</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-AUTOMATION-EDIT-RESET-WIDTH:CAPS">AGS_AUTOMATION_EDIT_RESET_WIDTH</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-AUTOMATION-EDIT-RESET-HEIGHT:CAPS">AGS_AUTOMATION_EDIT_RESET_HEIGHT</para></entry>
+<entry /><entry />
+</row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
+
+</refsect1>
+
+</refentry>

@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
 <refentry id="ags-ags-marshal">
 <refmeta>
@@ -17,397 +17,431 @@
 <refpurpose></refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-ags-marshal.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="ags-ags-marshal.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="g-cclosure-user-marshal-VOID--UINT-UINT">g_cclosure_user_marshal_VOID__UINT_UINT</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="g-cclosure-user-marshal-VOID--UINT-UINT-UINT">g_cclosure_user_marshal_VOID__UINT_UINT_UINT</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="g-cclosure-user-marshal-VOID--UINT-DOUBLE-UINT">g_cclosure_user_marshal_VOID__UINT_DOUBLE_UINT</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="g-cclosure-user-marshal-VOID--UINT-INT">g_cclosure_user_marshal_VOID__UINT_INT</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="g-cclosure-user-marshal-VOID--UINT-DOUBLE">g_cclosure_user_marshal_VOID__UINT_DOUBLE</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="g-cclosure-user-marshal-VOID--ULONG-UINT">g_cclosure_user_marshal_VOID__ULONG_UINT</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="g-cclosure-user-marshal-VOID--ULONG-UINT-BOOLEAN">g_cclosure_user_marshal_VOID__ULONG_UINT_BOOLEAN</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="g-cclosure-user-marshal-VOID--DOUBLE-DOUBLE">g_cclosure_user_marshal_VOID__DOUBLE_DOUBLE</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="g-cclosure-user-marshal-VOID--ULONG-UINT-UINT">g_cclosure_user_marshal_VOID__ULONG_UINT_UINT</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="g-cclosure-user-marshal-VOID--STRING-UINT">g_cclosure_user_marshal_VOID__STRING_UINT</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="g-cclosure-user-marshal-VOID--STRING-POINTER">g_cclosure_user_marshal_VOID__STRING_POINTER</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="g-cclosure-user-marshal-VOID--STRING-STRING-STRING">g_cclosure_user_marshal_VOID__STRING_STRING_STRING</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="g-cclosure-user-marshal-VOID--OBJECT-UINT">g_cclosure_user_marshal_VOID__OBJECT_UINT</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="g-cclosure-user-marshal-VOID--OBJECT-OBJECT">g_cclosure_user_marshal_VOID__OBJECT_OBJECT</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="g-cclosure-user-marshal-VOID--OBJECT-OBJECT-OBJECT-INT-BOOLEAN">g_cclosure_user_marshal_VOID__OBJECT_OBJECT_OBJECT_INT_BOOLEAN</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="g-cclosure-user-marshal-VOID--OBJECT-OBJECT-OBJECT-OBJECT-OBJECT-OBJECT-UINT-INT-BOOLEAN">g_cclosure_user_marshal_VOID__OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_UINT_INT_BOOLEAN</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="g-cclosure-user-marshal-VOID--OBJECT-OBJECT-OBJECT-OBJECT-OBJECT-OBJECT-OBJECT-OBJECT">g_cclosure_user_marshal_VOID__OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="g-cclosure-user-marshal-ULONG--VOID">g_cclosure_user_marshal_ULONG__VOID</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="g-cclosure-user-marshal-INT--VOID">g_cclosure_user_marshal_INT__VOID</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="g-cclosure-user-marshal-BOOLEAN--OBJECT-OBJECT">g_cclosure_user_marshal_BOOLEAN__OBJECT_OBJECT</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="g-cclosure-user-marshal-STRING--STRING-STRING">g_cclosure_user_marshal_STRING__STRING_STRING</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="g-cclosure-user-marshal-STRING--ULONG-STRING-STRING-STRING-STRING-UINT-POINTER">g_cclosure_user_marshal_STRING__ULONG_STRING_STRING_STRING_STRING_UINT_POINTER</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="g-cclosure-user-marshal-POINTER--VOID">g_cclosure_user_marshal_POINTER__VOID</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="g-cclosure-user-marshal-POINTER--UINT">g_cclosure_user_marshal_POINTER__UINT</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="g-cclosure-user-marshal-POINTER--STRING-STRING">g_cclosure_user_marshal_POINTER__STRING_STRING</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="g-cclosure-user-marshal-OBJECT--VOID">g_cclosure_user_marshal_OBJECT__VOID</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="g-cclosure-user-marshal-OBJECT--STRING-STRING-STRING">g_cclosure_user_marshal_OBJECT__STRING_STRING_STRING</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="g-cclosure-user-marshal-OBJECT--OBJECT-POINTER-POINTER">g_cclosure_user_marshal_OBJECT__OBJECT_POINTER_POINTER</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="g-cclosure-user-marshal-OBJECT--OBJECT-OBJECT">g_cclosure_user_marshal_OBJECT__OBJECT_OBJECT</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis><link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="g-cclosure-user-marshal-BOOLEAN--OBJECT-OBJECT">g_cclosure_user_marshal_BOOLEAN__OBJECT_OBJECT</link>
-                                                        (<parameter><link linkend="GClosure"><type>GClosure</type></link> *closure</parameter>,
-                                                         <parameter><link linkend="GValue"><type>GValue</type></link> *return_value</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> n_param_values</parameter>,
-                                                         <parameter>const <link linkend="GValue"><type>GValue</type></link> *param_values</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> invocation_hint</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> marshal_data</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="g-cclosure-user-marshal-OBJECT--OBJECT-OBJECT">g_cclosure_user_marshal_OBJECT__OBJECT_OBJECT</link>
-                                                        (<parameter><link linkend="GClosure"><type>GClosure</type></link> *closure</parameter>,
-                                                         <parameter><link linkend="GValue"><type>GValue</type></link> *return_value</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> n_param_values</parameter>,
-                                                         <parameter>const <link linkend="GValue"><type>GValue</type></link> *param_values</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> invocation_hint</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> marshal_data</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="g-cclosure-user-marshal-OBJECT--OBJECT-POINTER-POINTER">g_cclosure_user_marshal_OBJECT__OBJECT_POINTER_POINTER</link>
-                                                        (<parameter><link linkend="GClosure"><type>GClosure</type></link> *closure</parameter>,
-                                                         <parameter><link linkend="GValue"><type>GValue</type></link> *return_value</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> n_param_values</parameter>,
-                                                         <parameter>const <link linkend="GValue"><type>GValue</type></link> *param_values</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> invocation_hint</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> marshal_data</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="g-cclosure-user-marshal-OBJECT--STRING-STRING-STRING">g_cclosure_user_marshal_OBJECT__STRING_STRING_STRING</link>
-                                                        (<parameter><link linkend="GClosure"><type>GClosure</type></link> *closure</parameter>,
-                                                         <parameter><link linkend="GValue"><type>GValue</type></link> *return_value</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> n_param_values</parameter>,
-                                                         <parameter>const <link linkend="GValue"><type>GValue</type></link> *param_values</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> invocation_hint</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> marshal_data</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="g-cclosure-user-marshal-OBJECT--VOID">g_cclosure_user_marshal_OBJECT__VOID</link>
-                                                        (<parameter><link linkend="GClosure"><type>GClosure</type></link> *closure</parameter>,
-                                                         <parameter><link linkend="GValue"><type>GValue</type></link> *return_value</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> n_param_values</parameter>,
-                                                         <parameter>const <link linkend="GValue"><type>GValue</type></link> *param_values</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> invocation_hint</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> marshal_data</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="g-cclosure-user-marshal-STRING--ULONG-STRING-STRING-STRING-STRING-UINT-POINTER">g_cclosure_user_marshal_STRING__ULONG_STRING_STRING_STRING_STRING_UINT_POINTER</link>
-                                                        (<parameter><link linkend="GClosure"><type>GClosure</type></link> *closure</parameter>,
-                                                         <parameter><link linkend="GValue"><type>GValue</type></link> *return_value</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> n_param_values</parameter>,
-                                                         <parameter>const <link linkend="GValue"><type>GValue</type></link> *param_values</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> invocation_hint</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> marshal_data</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="g-cclosure-user-marshal-ULONG--VOID">g_cclosure_user_marshal_ULONG__VOID</link> (<parameter><link linkend="GClosure"><type>GClosure</type></link> *closure</parameter>,
-                                                         <parameter><link linkend="GValue"><type>GValue</type></link> *return_value</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> n_param_values</parameter>,
-                                                         <parameter>const <link linkend="GValue"><type>GValue</type></link> *param_values</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> invocation_hint</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> marshal_data</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="g-cclosure-user-marshal-VOID--DOUBLE-DOUBLE">g_cclosure_user_marshal_VOID__DOUBLE_DOUBLE</link>
-                                                        (<parameter><link linkend="GClosure"><type>GClosure</type></link> *closure</parameter>,
-                                                         <parameter><link linkend="GValue"><type>GValue</type></link> *return_value</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> n_param_values</parameter>,
-                                                         <parameter>const <link linkend="GValue"><type>GValue</type></link> *param_values</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> invocation_hint</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> marshal_data</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="g-cclosure-user-marshal-VOID--OBJECT-OBJECT">g_cclosure_user_marshal_VOID__OBJECT_OBJECT</link>
-                                                        (<parameter><link linkend="GClosure"><type>GClosure</type></link> *closure</parameter>,
-                                                         <parameter><link linkend="GValue"><type>GValue</type></link> *return_value</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> n_param_values</parameter>,
-                                                         <parameter>const <link linkend="GValue"><type>GValue</type></link> *param_values</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> invocation_hint</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> marshal_data</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="g-cclosure-user-marshal-VOID--OBJECT-OBJECT-OBJECT-INT-BOOLEAN">g_cclosure_user_marshal_VOID__OBJECT_OBJECT_OBJECT_INT_BOOLEAN</link>
-                                                        (<parameter><link linkend="GClosure"><type>GClosure</type></link> *closure</parameter>,
-                                                         <parameter><link linkend="GValue"><type>GValue</type></link> *return_value</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> n_param_values</parameter>,
-                                                         <parameter>const <link linkend="GValue"><type>GValue</type></link> *param_values</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> invocation_hint</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> marshal_data</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="g-cclosure-user-marshal-VOID--OBJECT-OBJECT-OBJECT-OBJECT-OBJECT-OBJECT-OBJECT-OBJECT">g_cclosure_user_marshal_VOID__OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT</link>
-                                                        (<parameter><link linkend="GClosure"><type>GClosure</type></link> *closure</parameter>,
-                                                         <parameter><link linkend="GValue"><type>GValue</type></link> *return_value</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> n_param_values</parameter>,
-                                                         <parameter>const <link linkend="GValue"><type>GValue</type></link> *param_values</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> invocation_hint</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> marshal_data</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="g-cclosure-user-marshal-VOID--OBJECT-OBJECT-OBJECT-OBJECT-OBJECT-OBJECT-UINT-INT-BOOLEAN">g_cclosure_user_marshal_VOID__OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_UINT_INT_BOOLEAN</link>
-                                                        (<parameter><link linkend="GClosure"><type>GClosure</type></link> *closure</parameter>,
-                                                         <parameter><link linkend="GValue"><type>GValue</type></link> *return_value</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> n_param_values</parameter>,
-                                                         <parameter>const <link linkend="GValue"><type>GValue</type></link> *param_values</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> invocation_hint</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> marshal_data</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="g-cclosure-user-marshal-VOID--OBJECT-UINT">g_cclosure_user_marshal_VOID__OBJECT_UINT</link>
-                                                        (<parameter><link linkend="GClosure"><type>GClosure</type></link> *closure</parameter>,
-                                                         <parameter><link linkend="GValue"><type>GValue</type></link> *return_value</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> n_param_values</parameter>,
-                                                         <parameter>const <link linkend="GValue"><type>GValue</type></link> *param_values</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> invocation_hint</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> marshal_data</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="g-cclosure-user-marshal-VOID--STRING-POINTER">g_cclosure_user_marshal_VOID__STRING_POINTER</link>
-                                                        (<parameter><link linkend="GClosure"><type>GClosure</type></link> *closure</parameter>,
-                                                         <parameter><link linkend="GValue"><type>GValue</type></link> *return_value</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> n_param_values</parameter>,
-                                                         <parameter>const <link linkend="GValue"><type>GValue</type></link> *param_values</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> invocation_hint</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> marshal_data</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="g-cclosure-user-marshal-VOID--UINT-DOUBLE">g_cclosure_user_marshal_VOID__UINT_DOUBLE</link>
-                                                        (<parameter><link linkend="GClosure"><type>GClosure</type></link> *closure</parameter>,
-                                                         <parameter><link linkend="GValue"><type>GValue</type></link> *return_value</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> n_param_values</parameter>,
-                                                         <parameter>const <link linkend="GValue"><type>GValue</type></link> *param_values</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> invocation_hint</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> marshal_data</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="g-cclosure-user-marshal-VOID--UINT-INT">g_cclosure_user_marshal_VOID__UINT_INT</link>
-                                                        (<parameter><link linkend="GClosure"><type>GClosure</type></link> *closure</parameter>,
-                                                         <parameter><link linkend="GValue"><type>GValue</type></link> *return_value</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> n_param_values</parameter>,
-                                                         <parameter>const <link linkend="GValue"><type>GValue</type></link> *param_values</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> invocation_hint</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> marshal_data</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="g-cclosure-user-marshal-VOID--UINT-UINT">g_cclosure_user_marshal_VOID__UINT_UINT</link>
-                                                        (<parameter><link linkend="GClosure"><type>GClosure</type></link> *closure</parameter>,
-                                                         <parameter><link linkend="GValue"><type>GValue</type></link> *return_value</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> n_param_values</parameter>,
-                                                         <parameter>const <link linkend="GValue"><type>GValue</type></link> *param_values</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> invocation_hint</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> marshal_data</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="g-cclosure-user-marshal-VOID--UINT-UINT-UINT">g_cclosure_user_marshal_VOID__UINT_UINT_UINT</link>
-                                                        (<parameter><link linkend="GClosure"><type>GClosure</type></link> *closure</parameter>,
-                                                         <parameter><link linkend="GValue"><type>GValue</type></link> *return_value</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> n_param_values</parameter>,
-                                                         <parameter>const <link linkend="GValue"><type>GValue</type></link> *param_values</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> invocation_hint</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> marshal_data</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="g-cclosure-user-marshal-VOID--ULONG-UINT">g_cclosure_user_marshal_VOID__ULONG_UINT</link>
-                                                        (<parameter><link linkend="GClosure"><type>GClosure</type></link> *closure</parameter>,
-                                                         <parameter><link linkend="GValue"><type>GValue</type></link> *return_value</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> n_param_values</parameter>,
-                                                         <parameter>const <link linkend="GValue"><type>GValue</type></link> *param_values</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> invocation_hint</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> marshal_data</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="g-cclosure-user-marshal-VOID--ULONG-UINT-UINT">g_cclosure_user_marshal_VOID__ULONG_UINT_UINT</link>
-                                                        (<parameter><link linkend="GClosure"><type>GClosure</type></link> *closure</parameter>,
-                                                         <parameter><link linkend="GValue"><type>GValue</type></link> *return_value</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> n_param_values</parameter>,
-                                                         <parameter>const <link linkend="GValue"><type>GValue</type></link> *param_values</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> invocation_hint</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> marshal_data</parameter>);
-</synopsis>
-</refsynopsisdiv>
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+
 
 <refsect1 id="ags-ags-marshal.description" role="desc">
 <title role="desc.title">Description</title>
-<para>
-</para>
+
 </refsect1>
-<refsect1 id="ags-ags-marshal.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="g-cclosure-user-marshal-BOOLEAN--OBJECT-OBJECT" role="function">
-<title>g_cclosure_user_marshal_BOOLEAN__OBJECT_OBJECT ()</title>
-<indexterm zone="g-cclosure-user-marshal-BOOLEAN--OBJECT-OBJECT"><primary>g_cclosure_user_marshal_BOOLEAN__OBJECT_OBJECT</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                g_cclosure_user_marshal_BOOLEAN__OBJECT_OBJECT
-                                                        (<parameter><link linkend="GClosure"><type>GClosure</type></link> *closure</parameter>,
-                                                         <parameter><link linkend="GValue"><type>GValue</type></link> *return_value</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> n_param_values</parameter>,
-                                                         <parameter>const <link linkend="GValue"><type>GValue</type></link> *param_values</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> invocation_hint</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> marshal_data</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="g-cclosure-user-marshal-OBJECT--OBJECT-OBJECT" role="function">
-<title>g_cclosure_user_marshal_OBJECT__OBJECT_OBJECT ()</title>
-<indexterm zone="g-cclosure-user-marshal-OBJECT--OBJECT-OBJECT"><primary>g_cclosure_user_marshal_OBJECT__OBJECT_OBJECT</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                g_cclosure_user_marshal_OBJECT__OBJECT_OBJECT
-                                                        (<parameter><link linkend="GClosure"><type>GClosure</type></link> *closure</parameter>,
-                                                         <parameter><link linkend="GValue"><type>GValue</type></link> *return_value</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> n_param_values</parameter>,
-                                                         <parameter>const <link linkend="GValue"><type>GValue</type></link> *param_values</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> invocation_hint</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> marshal_data</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="g-cclosure-user-marshal-OBJECT--OBJECT-POINTER-POINTER" role="function">
-<title>g_cclosure_user_marshal_OBJECT__OBJECT_POINTER_POINTER ()</title>
-<indexterm zone="g-cclosure-user-marshal-OBJECT--OBJECT-POINTER-POINTER"><primary>g_cclosure_user_marshal_OBJECT__OBJECT_POINTER_POINTER</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                g_cclosure_user_marshal_OBJECT__OBJECT_POINTER_POINTER
-                                                        (<parameter><link linkend="GClosure"><type>GClosure</type></link> *closure</parameter>,
-                                                         <parameter><link linkend="GValue"><type>GValue</type></link> *return_value</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> n_param_values</parameter>,
-                                                         <parameter>const <link linkend="GValue"><type>GValue</type></link> *param_values</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> invocation_hint</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> marshal_data</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="g-cclosure-user-marshal-OBJECT--STRING-STRING-STRING" role="function">
-<title>g_cclosure_user_marshal_OBJECT__STRING_STRING_STRING ()</title>
-<indexterm zone="g-cclosure-user-marshal-OBJECT--STRING-STRING-STRING"><primary>g_cclosure_user_marshal_OBJECT__STRING_STRING_STRING</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                g_cclosure_user_marshal_OBJECT__STRING_STRING_STRING
-                                                        (<parameter><link linkend="GClosure"><type>GClosure</type></link> *closure</parameter>,
-                                                         <parameter><link linkend="GValue"><type>GValue</type></link> *return_value</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> n_param_values</parameter>,
-                                                         <parameter>const <link linkend="GValue"><type>GValue</type></link> *param_values</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> invocation_hint</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> marshal_data</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="g-cclosure-user-marshal-OBJECT--VOID" role="function">
-<title>g_cclosure_user_marshal_OBJECT__VOID ()</title>
-<indexterm zone="g-cclosure-user-marshal-OBJECT--VOID"><primary>g_cclosure_user_marshal_OBJECT__VOID</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                g_cclosure_user_marshal_OBJECT__VOID
-                                                        (<parameter><link linkend="GClosure"><type>GClosure</type></link> *closure</parameter>,
-                                                         <parameter><link linkend="GValue"><type>GValue</type></link> *return_value</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> n_param_values</parameter>,
-                                                         <parameter>const <link linkend="GValue"><type>GValue</type></link> *param_values</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> invocation_hint</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> marshal_data</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="g-cclosure-user-marshal-STRING--ULONG-STRING-STRING-STRING-STRING-UINT-POINTER" role="function">
-<title>g_cclosure_user_marshal_STRING__ULONG_STRING_STRING_STRING_STRING_UINT_POINTER ()</title>
-<indexterm zone="g-cclosure-user-marshal-STRING--ULONG-STRING-STRING-STRING-STRING-UINT-POINTER"><primary>g_cclosure_user_marshal_STRING__ULONG_STRING_STRING_STRING_STRING_UINT_POINTER</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                g_cclosure_user_marshal_STRING__ULONG_STRING_STRING_STRING_STRING_UINT_POINTER
-                                                        (<parameter><link linkend="GClosure"><type>GClosure</type></link> *closure</parameter>,
-                                                         <parameter><link linkend="GValue"><type>GValue</type></link> *return_value</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> n_param_values</parameter>,
-                                                         <parameter>const <link linkend="GValue"><type>GValue</type></link> *param_values</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> invocation_hint</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> marshal_data</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="g-cclosure-user-marshal-ULONG--VOID" role="function">
-<title>g_cclosure_user_marshal_ULONG__VOID ()</title>
-<indexterm zone="g-cclosure-user-marshal-ULONG--VOID"><primary>g_cclosure_user_marshal_ULONG__VOID</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                g_cclosure_user_marshal_ULONG__VOID (<parameter><link linkend="GClosure"><type>GClosure</type></link> *closure</parameter>,
-                                                         <parameter><link linkend="GValue"><type>GValue</type></link> *return_value</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> n_param_values</parameter>,
-                                                         <parameter>const <link linkend="GValue"><type>GValue</type></link> *param_values</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> invocation_hint</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> marshal_data</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="g-cclosure-user-marshal-VOID--DOUBLE-DOUBLE" role="function">
-<title>g_cclosure_user_marshal_VOID__DOUBLE_DOUBLE ()</title>
-<indexterm zone="g-cclosure-user-marshal-VOID--DOUBLE-DOUBLE"><primary>g_cclosure_user_marshal_VOID__DOUBLE_DOUBLE</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                g_cclosure_user_marshal_VOID__DOUBLE_DOUBLE
-                                                        (<parameter><link linkend="GClosure"><type>GClosure</type></link> *closure</parameter>,
-                                                         <parameter><link linkend="GValue"><type>GValue</type></link> *return_value</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> n_param_values</parameter>,
-                                                         <parameter>const <link linkend="GValue"><type>GValue</type></link> *param_values</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> invocation_hint</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> marshal_data</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="g-cclosure-user-marshal-VOID--OBJECT-OBJECT" role="function">
-<title>g_cclosure_user_marshal_VOID__OBJECT_OBJECT ()</title>
-<indexterm zone="g-cclosure-user-marshal-VOID--OBJECT-OBJECT"><primary>g_cclosure_user_marshal_VOID__OBJECT_OBJECT</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                g_cclosure_user_marshal_VOID__OBJECT_OBJECT
-                                                        (<parameter><link linkend="GClosure"><type>GClosure</type></link> *closure</parameter>,
-                                                         <parameter><link linkend="GValue"><type>GValue</type></link> *return_value</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> n_param_values</parameter>,
-                                                         <parameter>const <link linkend="GValue"><type>GValue</type></link> *param_values</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> invocation_hint</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> marshal_data</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="g-cclosure-user-marshal-VOID--OBJECT-OBJECT-OBJECT-INT-BOOLEAN" role="function">
-<title>g_cclosure_user_marshal_VOID__OBJECT_OBJECT_OBJECT_INT_BOOLEAN ()</title>
-<indexterm zone="g-cclosure-user-marshal-VOID--OBJECT-OBJECT-OBJECT-INT-BOOLEAN"><primary>g_cclosure_user_marshal_VOID__OBJECT_OBJECT_OBJECT_INT_BOOLEAN</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                g_cclosure_user_marshal_VOID__OBJECT_OBJECT_OBJECT_INT_BOOLEAN
-                                                        (<parameter><link linkend="GClosure"><type>GClosure</type></link> *closure</parameter>,
-                                                         <parameter><link linkend="GValue"><type>GValue</type></link> *return_value</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> n_param_values</parameter>,
-                                                         <parameter>const <link linkend="GValue"><type>GValue</type></link> *param_values</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> invocation_hint</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> marshal_data</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="g-cclosure-user-marshal-VOID--OBJECT-OBJECT-OBJECT-OBJECT-OBJECT-OBJECT-OBJECT-OBJECT" role="function">
-<title>g_cclosure_user_marshal_VOID__OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT ()</title>
-<indexterm zone="g-cclosure-user-marshal-VOID--OBJECT-OBJECT-OBJECT-OBJECT-OBJECT-OBJECT-OBJECT-OBJECT"><primary>g_cclosure_user_marshal_VOID__OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                g_cclosure_user_marshal_VOID__OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT
-                                                        (<parameter><link linkend="GClosure"><type>GClosure</type></link> *closure</parameter>,
-                                                         <parameter><link linkend="GValue"><type>GValue</type></link> *return_value</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> n_param_values</parameter>,
-                                                         <parameter>const <link linkend="GValue"><type>GValue</type></link> *param_values</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> invocation_hint</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> marshal_data</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="g-cclosure-user-marshal-VOID--OBJECT-OBJECT-OBJECT-OBJECT-OBJECT-OBJECT-UINT-INT-BOOLEAN" role="function">
-<title>g_cclosure_user_marshal_VOID__OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_UINT_INT_BOOLEAN ()</title>
-<indexterm zone="g-cclosure-user-marshal-VOID--OBJECT-OBJECT-OBJECT-OBJECT-OBJECT-OBJECT-UINT-INT-BOOLEAN"><primary>g_cclosure_user_marshal_VOID__OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_UINT_INT_BOOLEAN</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                g_cclosure_user_marshal_VOID__OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_UINT_INT_BOOLEAN
-                                                        (<parameter><link linkend="GClosure"><type>GClosure</type></link> *closure</parameter>,
-                                                         <parameter><link linkend="GValue"><type>GValue</type></link> *return_value</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> n_param_values</parameter>,
-                                                         <parameter>const <link linkend="GValue"><type>GValue</type></link> *param_values</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> invocation_hint</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> marshal_data</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="g-cclosure-user-marshal-VOID--OBJECT-UINT" role="function">
-<title>g_cclosure_user_marshal_VOID__OBJECT_UINT ()</title>
-<indexterm zone="g-cclosure-user-marshal-VOID--OBJECT-UINT"><primary>g_cclosure_user_marshal_VOID__OBJECT_UINT</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                g_cclosure_user_marshal_VOID__OBJECT_UINT
-                                                        (<parameter><link linkend="GClosure"><type>GClosure</type></link> *closure</parameter>,
-                                                         <parameter><link linkend="GValue"><type>GValue</type></link> *return_value</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> n_param_values</parameter>,
-                                                         <parameter>const <link linkend="GValue"><type>GValue</type></link> *param_values</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> invocation_hint</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> marshal_data</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="g-cclosure-user-marshal-VOID--STRING-POINTER" role="function">
-<title>g_cclosure_user_marshal_VOID__STRING_POINTER ()</title>
-<indexterm zone="g-cclosure-user-marshal-VOID--STRING-POINTER"><primary>g_cclosure_user_marshal_VOID__STRING_POINTER</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                g_cclosure_user_marshal_VOID__STRING_POINTER
-                                                        (<parameter><link linkend="GClosure"><type>GClosure</type></link> *closure</parameter>,
-                                                         <parameter><link linkend="GValue"><type>GValue</type></link> *return_value</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> n_param_values</parameter>,
-                                                         <parameter>const <link linkend="GValue"><type>GValue</type></link> *param_values</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> invocation_hint</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> marshal_data</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="g-cclosure-user-marshal-VOID--UINT-DOUBLE" role="function">
-<title>g_cclosure_user_marshal_VOID__UINT_DOUBLE ()</title>
-<indexterm zone="g-cclosure-user-marshal-VOID--UINT-DOUBLE"><primary>g_cclosure_user_marshal_VOID__UINT_DOUBLE</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                g_cclosure_user_marshal_VOID__UINT_DOUBLE
-                                                        (<parameter><link linkend="GClosure"><type>GClosure</type></link> *closure</parameter>,
-                                                         <parameter><link linkend="GValue"><type>GValue</type></link> *return_value</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> n_param_values</parameter>,
-                                                         <parameter>const <link linkend="GValue"><type>GValue</type></link> *param_values</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> invocation_hint</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> marshal_data</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="g-cclosure-user-marshal-VOID--UINT-INT" role="function">
-<title>g_cclosure_user_marshal_VOID__UINT_INT ()</title>
-<indexterm zone="g-cclosure-user-marshal-VOID--UINT-INT"><primary>g_cclosure_user_marshal_VOID__UINT_INT</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                g_cclosure_user_marshal_VOID__UINT_INT
-                                                        (<parameter><link linkend="GClosure"><type>GClosure</type></link> *closure</parameter>,
-                                                         <parameter><link linkend="GValue"><type>GValue</type></link> *return_value</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> n_param_values</parameter>,
-                                                         <parameter>const <link linkend="GValue"><type>GValue</type></link> *param_values</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> invocation_hint</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> marshal_data</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<refsect1 id="ags-ags-marshal.functions_details" role="details">
+<title role="details.title">Functions</title>
 <refsect2 id="g-cclosure-user-marshal-VOID--UINT-UINT" role="function">
-<title>g_cclosure_user_marshal_VOID__UINT_UINT ()</title>
+<title>g_cclosure_user_marshal_VOID__UINT_UINT&#160;()</title>
 <indexterm zone="g-cclosure-user-marshal-VOID--UINT-UINT"><primary>g_cclosure_user_marshal_VOID__UINT_UINT</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                g_cclosure_user_marshal_VOID__UINT_UINT
-                                                        (<parameter><link linkend="GClosure"><type>GClosure</type></link> *closure</parameter>,
-                                                         <parameter><link linkend="GValue"><type>GValue</type></link> *return_value</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> n_param_values</parameter>,
-                                                         <parameter>const <link linkend="GValue"><type>GValue</type></link> *param_values</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> invocation_hint</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> marshal_data</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+g_cclosure_user_marshal_VOID__UINT_UINT
+                               (<parameter><link linkend="GClosure"><type>GClosure</type></link> *closure</parameter>,
+                                <parameter><link linkend="GValue"><type>GValue</type></link> *return_value</parameter>,
+                                <parameter><link linkend="guint"><type>guint</type></link> n_param_values</parameter>,
+                                <parameter>const <link linkend="GValue"><type>GValue</type></link> *param_values</parameter>,
+                                <parameter><link linkend="gpointer"><type>gpointer</type></link> invocation_hint</parameter>,
+                                <parameter><link linkend="gpointer"><type>gpointer</type></link> marshal_data</parameter>);</programlisting>
+</refsect2>
 <refsect2 id="g-cclosure-user-marshal-VOID--UINT-UINT-UINT" role="function">
-<title>g_cclosure_user_marshal_VOID__UINT_UINT_UINT ()</title>
+<title>g_cclosure_user_marshal_VOID__UINT_UINT_UINT&#160;()</title>
 <indexterm zone="g-cclosure-user-marshal-VOID--UINT-UINT-UINT"><primary>g_cclosure_user_marshal_VOID__UINT_UINT_UINT</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                g_cclosure_user_marshal_VOID__UINT_UINT_UINT
-                                                        (<parameter><link linkend="GClosure"><type>GClosure</type></link> *closure</parameter>,
-                                                         <parameter><link linkend="GValue"><type>GValue</type></link> *return_value</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> n_param_values</parameter>,
-                                                         <parameter>const <link linkend="GValue"><type>GValue</type></link> *param_values</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> invocation_hint</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> marshal_data</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+g_cclosure_user_marshal_VOID__UINT_UINT_UINT
+                               (<parameter><link linkend="GClosure"><type>GClosure</type></link> *closure</parameter>,
+                                <parameter><link linkend="GValue"><type>GValue</type></link> *return_value</parameter>,
+                                <parameter><link linkend="guint"><type>guint</type></link> n_param_values</parameter>,
+                                <parameter>const <link linkend="GValue"><type>GValue</type></link> *param_values</parameter>,
+                                <parameter><link linkend="gpointer"><type>gpointer</type></link> invocation_hint</parameter>,
+                                <parameter><link linkend="gpointer"><type>gpointer</type></link> marshal_data</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="g-cclosure-user-marshal-VOID--UINT-DOUBLE-UINT" role="function">
+<title>g_cclosure_user_marshal_VOID__UINT_DOUBLE_UINT&#160;()</title>
+<indexterm zone="g-cclosure-user-marshal-VOID--UINT-DOUBLE-UINT"><primary>g_cclosure_user_marshal_VOID__UINT_DOUBLE_UINT</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+g_cclosure_user_marshal_VOID__UINT_DOUBLE_UINT
+                               (<parameter><link linkend="GClosure"><type>GClosure</type></link> *closure</parameter>,
+                                <parameter><link linkend="GValue"><type>GValue</type></link> *return_value</parameter>,
+                                <parameter><link linkend="guint"><type>guint</type></link> n_param_values</parameter>,
+                                <parameter>const <link linkend="GValue"><type>GValue</type></link> *param_values</parameter>,
+                                <parameter><link linkend="gpointer"><type>gpointer</type></link> invocation_hint</parameter>,
+                                <parameter><link linkend="gpointer"><type>gpointer</type></link> marshal_data</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="g-cclosure-user-marshal-VOID--UINT-INT" role="function">
+<title>g_cclosure_user_marshal_VOID__UINT_INT&#160;()</title>
+<indexterm zone="g-cclosure-user-marshal-VOID--UINT-INT"><primary>g_cclosure_user_marshal_VOID__UINT_INT</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+g_cclosure_user_marshal_VOID__UINT_INT
+                               (<parameter><link linkend="GClosure"><type>GClosure</type></link> *closure</parameter>,
+                                <parameter><link linkend="GValue"><type>GValue</type></link> *return_value</parameter>,
+                                <parameter><link linkend="guint"><type>guint</type></link> n_param_values</parameter>,
+                                <parameter>const <link linkend="GValue"><type>GValue</type></link> *param_values</parameter>,
+                                <parameter><link linkend="gpointer"><type>gpointer</type></link> invocation_hint</parameter>,
+                                <parameter><link linkend="gpointer"><type>gpointer</type></link> marshal_data</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="g-cclosure-user-marshal-VOID--UINT-DOUBLE" role="function">
+<title>g_cclosure_user_marshal_VOID__UINT_DOUBLE&#160;()</title>
+<indexterm zone="g-cclosure-user-marshal-VOID--UINT-DOUBLE"><primary>g_cclosure_user_marshal_VOID__UINT_DOUBLE</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+g_cclosure_user_marshal_VOID__UINT_DOUBLE
+                               (<parameter><link linkend="GClosure"><type>GClosure</type></link> *closure</parameter>,
+                                <parameter><link linkend="GValue"><type>GValue</type></link> *return_value</parameter>,
+                                <parameter><link linkend="guint"><type>guint</type></link> n_param_values</parameter>,
+                                <parameter>const <link linkend="GValue"><type>GValue</type></link> *param_values</parameter>,
+                                <parameter><link linkend="gpointer"><type>gpointer</type></link> invocation_hint</parameter>,
+                                <parameter><link linkend="gpointer"><type>gpointer</type></link> marshal_data</parameter>);</programlisting>
+</refsect2>
 <refsect2 id="g-cclosure-user-marshal-VOID--ULONG-UINT" role="function">
-<title>g_cclosure_user_marshal_VOID__ULONG_UINT ()</title>
+<title>g_cclosure_user_marshal_VOID__ULONG_UINT&#160;()</title>
 <indexterm zone="g-cclosure-user-marshal-VOID--ULONG-UINT"><primary>g_cclosure_user_marshal_VOID__ULONG_UINT</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                g_cclosure_user_marshal_VOID__ULONG_UINT
-                                                        (<parameter><link linkend="GClosure"><type>GClosure</type></link> *closure</parameter>,
-                                                         <parameter><link linkend="GValue"><type>GValue</type></link> *return_value</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> n_param_values</parameter>,
-                                                         <parameter>const <link linkend="GValue"><type>GValue</type></link> *param_values</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> invocation_hint</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> marshal_data</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+g_cclosure_user_marshal_VOID__ULONG_UINT
+                               (<parameter><link linkend="GClosure"><type>GClosure</type></link> *closure</parameter>,
+                                <parameter><link linkend="GValue"><type>GValue</type></link> *return_value</parameter>,
+                                <parameter><link linkend="guint"><type>guint</type></link> n_param_values</parameter>,
+                                <parameter>const <link linkend="GValue"><type>GValue</type></link> *param_values</parameter>,
+                                <parameter><link linkend="gpointer"><type>gpointer</type></link> invocation_hint</parameter>,
+                                <parameter><link linkend="gpointer"><type>gpointer</type></link> marshal_data</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="g-cclosure-user-marshal-VOID--ULONG-UINT-BOOLEAN" role="function">
+<title>g_cclosure_user_marshal_VOID__ULONG_UINT_BOOLEAN&#160;()</title>
+<indexterm zone="g-cclosure-user-marshal-VOID--ULONG-UINT-BOOLEAN"><primary>g_cclosure_user_marshal_VOID__ULONG_UINT_BOOLEAN</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+g_cclosure_user_marshal_VOID__ULONG_UINT_BOOLEAN
+                               (<parameter><link linkend="GClosure"><type>GClosure</type></link> *closure</parameter>,
+                                <parameter><link linkend="GValue"><type>GValue</type></link> *return_value</parameter>,
+                                <parameter><link linkend="guint"><type>guint</type></link> n_param_values</parameter>,
+                                <parameter>const <link linkend="GValue"><type>GValue</type></link> *param_values</parameter>,
+                                <parameter><link linkend="gpointer"><type>gpointer</type></link> invocation_hint</parameter>,
+                                <parameter><link linkend="gpointer"><type>gpointer</type></link> marshal_data</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="g-cclosure-user-marshal-VOID--DOUBLE-DOUBLE" role="function">
+<title>g_cclosure_user_marshal_VOID__DOUBLE_DOUBLE&#160;()</title>
+<indexterm zone="g-cclosure-user-marshal-VOID--DOUBLE-DOUBLE"><primary>g_cclosure_user_marshal_VOID__DOUBLE_DOUBLE</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+g_cclosure_user_marshal_VOID__DOUBLE_DOUBLE
+                               (<parameter><link linkend="GClosure"><type>GClosure</type></link> *closure</parameter>,
+                                <parameter><link linkend="GValue"><type>GValue</type></link> *return_value</parameter>,
+                                <parameter><link linkend="guint"><type>guint</type></link> n_param_values</parameter>,
+                                <parameter>const <link linkend="GValue"><type>GValue</type></link> *param_values</parameter>,
+                                <parameter><link linkend="gpointer"><type>gpointer</type></link> invocation_hint</parameter>,
+                                <parameter><link linkend="gpointer"><type>gpointer</type></link> marshal_data</parameter>);</programlisting>
+</refsect2>
 <refsect2 id="g-cclosure-user-marshal-VOID--ULONG-UINT-UINT" role="function">
-<title>g_cclosure_user_marshal_VOID__ULONG_UINT_UINT ()</title>
+<title>g_cclosure_user_marshal_VOID__ULONG_UINT_UINT&#160;()</title>
 <indexterm zone="g-cclosure-user-marshal-VOID--ULONG-UINT-UINT"><primary>g_cclosure_user_marshal_VOID__ULONG_UINT_UINT</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                g_cclosure_user_marshal_VOID__ULONG_UINT_UINT
-                                                        (<parameter><link linkend="GClosure"><type>GClosure</type></link> *closure</parameter>,
-                                                         <parameter><link linkend="GValue"><type>GValue</type></link> *return_value</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> n_param_values</parameter>,
-                                                         <parameter>const <link linkend="GValue"><type>GValue</type></link> *param_values</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> invocation_hint</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> marshal_data</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+g_cclosure_user_marshal_VOID__ULONG_UINT_UINT
+                               (<parameter><link linkend="GClosure"><type>GClosure</type></link> *closure</parameter>,
+                                <parameter><link linkend="GValue"><type>GValue</type></link> *return_value</parameter>,
+                                <parameter><link linkend="guint"><type>guint</type></link> n_param_values</parameter>,
+                                <parameter>const <link linkend="GValue"><type>GValue</type></link> *param_values</parameter>,
+                                <parameter><link linkend="gpointer"><type>gpointer</type></link> invocation_hint</parameter>,
+                                <parameter><link linkend="gpointer"><type>gpointer</type></link> marshal_data</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="g-cclosure-user-marshal-VOID--STRING-UINT" role="function">
+<title>g_cclosure_user_marshal_VOID__STRING_UINT&#160;()</title>
+<indexterm zone="g-cclosure-user-marshal-VOID--STRING-UINT"><primary>g_cclosure_user_marshal_VOID__STRING_UINT</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+g_cclosure_user_marshal_VOID__STRING_UINT
+                               (<parameter><link linkend="GClosure"><type>GClosure</type></link> *closure</parameter>,
+                                <parameter><link linkend="GValue"><type>GValue</type></link> *return_value</parameter>,
+                                <parameter><link linkend="guint"><type>guint</type></link> n_param_values</parameter>,
+                                <parameter>const <link linkend="GValue"><type>GValue</type></link> *param_values</parameter>,
+                                <parameter><link linkend="gpointer"><type>gpointer</type></link> invocation_hint</parameter>,
+                                <parameter><link linkend="gpointer"><type>gpointer</type></link> marshal_data</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="g-cclosure-user-marshal-VOID--STRING-POINTER" role="function">
+<title>g_cclosure_user_marshal_VOID__STRING_POINTER&#160;()</title>
+<indexterm zone="g-cclosure-user-marshal-VOID--STRING-POINTER"><primary>g_cclosure_user_marshal_VOID__STRING_POINTER</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+g_cclosure_user_marshal_VOID__STRING_POINTER
+                               (<parameter><link linkend="GClosure"><type>GClosure</type></link> *closure</parameter>,
+                                <parameter><link linkend="GValue"><type>GValue</type></link> *return_value</parameter>,
+                                <parameter><link linkend="guint"><type>guint</type></link> n_param_values</parameter>,
+                                <parameter>const <link linkend="GValue"><type>GValue</type></link> *param_values</parameter>,
+                                <parameter><link linkend="gpointer"><type>gpointer</type></link> invocation_hint</parameter>,
+                                <parameter><link linkend="gpointer"><type>gpointer</type></link> marshal_data</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="g-cclosure-user-marshal-VOID--STRING-STRING-STRING" role="function">
+<title>g_cclosure_user_marshal_VOID__STRING_STRING_STRING&#160;()</title>
+<indexterm zone="g-cclosure-user-marshal-VOID--STRING-STRING-STRING"><primary>g_cclosure_user_marshal_VOID__STRING_STRING_STRING</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+g_cclosure_user_marshal_VOID__STRING_STRING_STRING
+                               (<parameter><link linkend="GClosure"><type>GClosure</type></link> *closure</parameter>,
+                                <parameter><link linkend="GValue"><type>GValue</type></link> *return_value</parameter>,
+                                <parameter><link linkend="guint"><type>guint</type></link> n_param_values</parameter>,
+                                <parameter>const <link linkend="GValue"><type>GValue</type></link> *param_values</parameter>,
+                                <parameter><link linkend="gpointer"><type>gpointer</type></link> invocation_hint</parameter>,
+                                <parameter><link linkend="gpointer"><type>gpointer</type></link> marshal_data</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="g-cclosure-user-marshal-VOID--OBJECT-UINT" role="function">
+<title>g_cclosure_user_marshal_VOID__OBJECT_UINT&#160;()</title>
+<indexterm zone="g-cclosure-user-marshal-VOID--OBJECT-UINT"><primary>g_cclosure_user_marshal_VOID__OBJECT_UINT</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+g_cclosure_user_marshal_VOID__OBJECT_UINT
+                               (<parameter><link linkend="GClosure"><type>GClosure</type></link> *closure</parameter>,
+                                <parameter><link linkend="GValue"><type>GValue</type></link> *return_value</parameter>,
+                                <parameter><link linkend="guint"><type>guint</type></link> n_param_values</parameter>,
+                                <parameter>const <link linkend="GValue"><type>GValue</type></link> *param_values</parameter>,
+                                <parameter><link linkend="gpointer"><type>gpointer</type></link> invocation_hint</parameter>,
+                                <parameter><link linkend="gpointer"><type>gpointer</type></link> marshal_data</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="g-cclosure-user-marshal-VOID--OBJECT-OBJECT" role="function">
+<title>g_cclosure_user_marshal_VOID__OBJECT_OBJECT&#160;()</title>
+<indexterm zone="g-cclosure-user-marshal-VOID--OBJECT-OBJECT"><primary>g_cclosure_user_marshal_VOID__OBJECT_OBJECT</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+g_cclosure_user_marshal_VOID__OBJECT_OBJECT
+                               (<parameter><link linkend="GClosure"><type>GClosure</type></link> *closure</parameter>,
+                                <parameter><link linkend="GValue"><type>GValue</type></link> *return_value</parameter>,
+                                <parameter><link linkend="guint"><type>guint</type></link> n_param_values</parameter>,
+                                <parameter>const <link linkend="GValue"><type>GValue</type></link> *param_values</parameter>,
+                                <parameter><link linkend="gpointer"><type>gpointer</type></link> invocation_hint</parameter>,
+                                <parameter><link linkend="gpointer"><type>gpointer</type></link> marshal_data</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="g-cclosure-user-marshal-VOID--OBJECT-OBJECT-OBJECT-INT-BOOLEAN" role="function">
+<title>g_cclosure_user_marshal_VOID__OBJECT_OBJECT_OBJECT_INT_BOOLEAN&#160;()</title>
+<indexterm zone="g-cclosure-user-marshal-VOID--OBJECT-OBJECT-OBJECT-INT-BOOLEAN"><primary>g_cclosure_user_marshal_VOID__OBJECT_OBJECT_OBJECT_INT_BOOLEAN</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+g_cclosure_user_marshal_VOID__OBJECT_OBJECT_OBJECT_INT_BOOLEAN
+                               (<parameter><link linkend="GClosure"><type>GClosure</type></link> *closure</parameter>,
+                                <parameter><link linkend="GValue"><type>GValue</type></link> *return_value</parameter>,
+                                <parameter><link linkend="guint"><type>guint</type></link> n_param_values</parameter>,
+                                <parameter>const <link linkend="GValue"><type>GValue</type></link> *param_values</parameter>,
+                                <parameter><link linkend="gpointer"><type>gpointer</type></link> invocation_hint</parameter>,
+                                <parameter><link linkend="gpointer"><type>gpointer</type></link> marshal_data</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="g-cclosure-user-marshal-VOID--OBJECT-OBJECT-OBJECT-OBJECT-OBJECT-OBJECT-UINT-INT-BOOLEAN" role="function">
+<title>g_cclosure_user_marshal_VOID__OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_UINT_INT_BOOLEAN&#160;()</title>
+<indexterm zone="g-cclosure-user-marshal-VOID--OBJECT-OBJECT-OBJECT-OBJECT-OBJECT-OBJECT-UINT-INT-BOOLEAN"><primary>g_cclosure_user_marshal_VOID__OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_UINT_INT_BOOLEAN</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+g_cclosure_user_marshal_VOID__OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_UINT_INT_BOOLEAN
+                               (<parameter><link linkend="GClosure"><type>GClosure</type></link> *closure</parameter>,
+                                <parameter><link linkend="GValue"><type>GValue</type></link> *return_value</parameter>,
+                                <parameter><link linkend="guint"><type>guint</type></link> n_param_values</parameter>,
+                                <parameter>const <link linkend="GValue"><type>GValue</type></link> *param_values</parameter>,
+                                <parameter><link linkend="gpointer"><type>gpointer</type></link> invocation_hint</parameter>,
+                                <parameter><link linkend="gpointer"><type>gpointer</type></link> marshal_data</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="g-cclosure-user-marshal-VOID--OBJECT-OBJECT-OBJECT-OBJECT-OBJECT-OBJECT-OBJECT-OBJECT" role="function">
+<title>g_cclosure_user_marshal_VOID__OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT&#160;()</title>
+<indexterm zone="g-cclosure-user-marshal-VOID--OBJECT-OBJECT-OBJECT-OBJECT-OBJECT-OBJECT-OBJECT-OBJECT"><primary>g_cclosure_user_marshal_VOID__OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+g_cclosure_user_marshal_VOID__OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT
+                               (<parameter><link linkend="GClosure"><type>GClosure</type></link> *closure</parameter>,
+                                <parameter><link linkend="GValue"><type>GValue</type></link> *return_value</parameter>,
+                                <parameter><link linkend="guint"><type>guint</type></link> n_param_values</parameter>,
+                                <parameter>const <link linkend="GValue"><type>GValue</type></link> *param_values</parameter>,
+                                <parameter><link linkend="gpointer"><type>gpointer</type></link> invocation_hint</parameter>,
+                                <parameter><link linkend="gpointer"><type>gpointer</type></link> marshal_data</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="g-cclosure-user-marshal-ULONG--VOID" role="function">
+<title>g_cclosure_user_marshal_ULONG__VOID&#160;()</title>
+<indexterm zone="g-cclosure-user-marshal-ULONG--VOID"><primary>g_cclosure_user_marshal_ULONG__VOID</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+g_cclosure_user_marshal_ULONG__VOID (<parameter><link linkend="GClosure"><type>GClosure</type></link> *closure</parameter>,
+                                     <parameter><link linkend="GValue"><type>GValue</type></link> *return_value</parameter>,
+                                     <parameter><link linkend="guint"><type>guint</type></link> n_param_values</parameter>,
+                                     <parameter>const <link linkend="GValue"><type>GValue</type></link> *param_values</parameter>,
+                                     <parameter><link linkend="gpointer"><type>gpointer</type></link> invocation_hint</parameter>,
+                                     <parameter><link linkend="gpointer"><type>gpointer</type></link> marshal_data</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="g-cclosure-user-marshal-INT--VOID" role="function">
+<title>g_cclosure_user_marshal_INT__VOID&#160;()</title>
+<indexterm zone="g-cclosure-user-marshal-INT--VOID"><primary>g_cclosure_user_marshal_INT__VOID</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+g_cclosure_user_marshal_INT__VOID (<parameter><link linkend="GClosure"><type>GClosure</type></link> *closure</parameter>,
+                                   <parameter><link linkend="GValue"><type>GValue</type></link> *return_value</parameter>,
+                                   <parameter><link linkend="guint"><type>guint</type></link> n_param_values</parameter>,
+                                   <parameter>const <link linkend="GValue"><type>GValue</type></link> *param_values</parameter>,
+                                   <parameter><link linkend="gpointer"><type>gpointer</type></link> invocation_hint</parameter>,
+                                   <parameter><link linkend="gpointer"><type>gpointer</type></link> marshal_data</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="g-cclosure-user-marshal-BOOLEAN--OBJECT-OBJECT" role="function">
+<title>g_cclosure_user_marshal_BOOLEAN__OBJECT_OBJECT&#160;()</title>
+<indexterm zone="g-cclosure-user-marshal-BOOLEAN--OBJECT-OBJECT"><primary>g_cclosure_user_marshal_BOOLEAN__OBJECT_OBJECT</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+g_cclosure_user_marshal_BOOLEAN__OBJECT_OBJECT
+                               (<parameter><link linkend="GClosure"><type>GClosure</type></link> *closure</parameter>,
+                                <parameter><link linkend="GValue"><type>GValue</type></link> *return_value</parameter>,
+                                <parameter><link linkend="guint"><type>guint</type></link> n_param_values</parameter>,
+                                <parameter>const <link linkend="GValue"><type>GValue</type></link> *param_values</parameter>,
+                                <parameter><link linkend="gpointer"><type>gpointer</type></link> invocation_hint</parameter>,
+                                <parameter><link linkend="gpointer"><type>gpointer</type></link> marshal_data</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="g-cclosure-user-marshal-STRING--STRING-STRING" role="function">
+<title>g_cclosure_user_marshal_STRING__STRING_STRING&#160;()</title>
+<indexterm zone="g-cclosure-user-marshal-STRING--STRING-STRING"><primary>g_cclosure_user_marshal_STRING__STRING_STRING</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+g_cclosure_user_marshal_STRING__STRING_STRING
+                               (<parameter><link linkend="GClosure"><type>GClosure</type></link> *closure</parameter>,
+                                <parameter><link linkend="GValue"><type>GValue</type></link> *return_value</parameter>,
+                                <parameter><link linkend="guint"><type>guint</type></link> n_param_values</parameter>,
+                                <parameter>const <link linkend="GValue"><type>GValue</type></link> *param_values</parameter>,
+                                <parameter><link linkend="gpointer"><type>gpointer</type></link> invocation_hint</parameter>,
+                                <parameter><link linkend="gpointer"><type>gpointer</type></link> marshal_data</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="g-cclosure-user-marshal-STRING--ULONG-STRING-STRING-STRING-STRING-UINT-POINTER" role="function">
+<title>g_cclosure_user_marshal_STRING__ULONG_STRING_STRING_STRING_STRING_UINT_POINTER&#160;()</title>
+<indexterm zone="g-cclosure-user-marshal-STRING--ULONG-STRING-STRING-STRING-STRING-UINT-POINTER"><primary>g_cclosure_user_marshal_STRING__ULONG_STRING_STRING_STRING_STRING_UINT_POINTER</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+g_cclosure_user_marshal_STRING__ULONG_STRING_STRING_STRING_STRING_UINT_POINTER
+                               (<parameter><link linkend="GClosure"><type>GClosure</type></link> *closure</parameter>,
+                                <parameter><link linkend="GValue"><type>GValue</type></link> *return_value</parameter>,
+                                <parameter><link linkend="guint"><type>guint</type></link> n_param_values</parameter>,
+                                <parameter>const <link linkend="GValue"><type>GValue</type></link> *param_values</parameter>,
+                                <parameter><link linkend="gpointer"><type>gpointer</type></link> invocation_hint</parameter>,
+                                <parameter><link linkend="gpointer"><type>gpointer</type></link> marshal_data</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="g-cclosure-user-marshal-POINTER--VOID" role="function">
+<title>g_cclosure_user_marshal_POINTER__VOID&#160;()</title>
+<indexterm zone="g-cclosure-user-marshal-POINTER--VOID"><primary>g_cclosure_user_marshal_POINTER__VOID</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+g_cclosure_user_marshal_POINTER__VOID (<parameter><link linkend="GClosure"><type>GClosure</type></link> *closure</parameter>,
+                                       <parameter><link linkend="GValue"><type>GValue</type></link> *return_value</parameter>,
+                                       <parameter><link linkend="guint"><type>guint</type></link> n_param_values</parameter>,
+                                       <parameter>const <link linkend="GValue"><type>GValue</type></link> *param_values</parameter>,
+                                       <parameter><link linkend="gpointer"><type>gpointer</type></link> invocation_hint</parameter>,
+                                       <parameter><link linkend="gpointer"><type>gpointer</type></link> marshal_data</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="g-cclosure-user-marshal-POINTER--UINT" role="function">
+<title>g_cclosure_user_marshal_POINTER__UINT&#160;()</title>
+<indexterm zone="g-cclosure-user-marshal-POINTER--UINT"><primary>g_cclosure_user_marshal_POINTER__UINT</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+g_cclosure_user_marshal_POINTER__UINT (<parameter><link linkend="GClosure"><type>GClosure</type></link> *closure</parameter>,
+                                       <parameter><link linkend="GValue"><type>GValue</type></link> *return_value</parameter>,
+                                       <parameter><link linkend="guint"><type>guint</type></link> n_param_values</parameter>,
+                                       <parameter>const <link linkend="GValue"><type>GValue</type></link> *param_values</parameter>,
+                                       <parameter><link linkend="gpointer"><type>gpointer</type></link> invocation_hint</parameter>,
+                                       <parameter><link linkend="gpointer"><type>gpointer</type></link> marshal_data</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="g-cclosure-user-marshal-POINTER--STRING-STRING" role="function">
+<title>g_cclosure_user_marshal_POINTER__STRING_STRING&#160;()</title>
+<indexterm zone="g-cclosure-user-marshal-POINTER--STRING-STRING"><primary>g_cclosure_user_marshal_POINTER__STRING_STRING</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+g_cclosure_user_marshal_POINTER__STRING_STRING
+                               (<parameter><link linkend="GClosure"><type>GClosure</type></link> *closure</parameter>,
+                                <parameter><link linkend="GValue"><type>GValue</type></link> *return_value</parameter>,
+                                <parameter><link linkend="guint"><type>guint</type></link> n_param_values</parameter>,
+                                <parameter>const <link linkend="GValue"><type>GValue</type></link> *param_values</parameter>,
+                                <parameter><link linkend="gpointer"><type>gpointer</type></link> invocation_hint</parameter>,
+                                <parameter><link linkend="gpointer"><type>gpointer</type></link> marshal_data</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="g-cclosure-user-marshal-OBJECT--VOID" role="function">
+<title>g_cclosure_user_marshal_OBJECT__VOID&#160;()</title>
+<indexterm zone="g-cclosure-user-marshal-OBJECT--VOID"><primary>g_cclosure_user_marshal_OBJECT__VOID</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+g_cclosure_user_marshal_OBJECT__VOID (<parameter><link linkend="GClosure"><type>GClosure</type></link> *closure</parameter>,
+                                      <parameter><link linkend="GValue"><type>GValue</type></link> *return_value</parameter>,
+                                      <parameter><link linkend="guint"><type>guint</type></link> n_param_values</parameter>,
+                                      <parameter>const <link linkend="GValue"><type>GValue</type></link> *param_values</parameter>,
+                                      <parameter><link linkend="gpointer"><type>gpointer</type></link> invocation_hint</parameter>,
+                                      <parameter><link linkend="gpointer"><type>gpointer</type></link> marshal_data</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="g-cclosure-user-marshal-OBJECT--STRING-STRING-STRING" role="function">
+<title>g_cclosure_user_marshal_OBJECT__STRING_STRING_STRING&#160;()</title>
+<indexterm zone="g-cclosure-user-marshal-OBJECT--STRING-STRING-STRING"><primary>g_cclosure_user_marshal_OBJECT__STRING_STRING_STRING</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+g_cclosure_user_marshal_OBJECT__STRING_STRING_STRING
+                               (<parameter><link linkend="GClosure"><type>GClosure</type></link> *closure</parameter>,
+                                <parameter><link linkend="GValue"><type>GValue</type></link> *return_value</parameter>,
+                                <parameter><link linkend="guint"><type>guint</type></link> n_param_values</parameter>,
+                                <parameter>const <link linkend="GValue"><type>GValue</type></link> *param_values</parameter>,
+                                <parameter><link linkend="gpointer"><type>gpointer</type></link> invocation_hint</parameter>,
+                                <parameter><link linkend="gpointer"><type>gpointer</type></link> marshal_data</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="g-cclosure-user-marshal-OBJECT--OBJECT-POINTER-POINTER" role="function">
+<title>g_cclosure_user_marshal_OBJECT__OBJECT_POINTER_POINTER&#160;()</title>
+<indexterm zone="g-cclosure-user-marshal-OBJECT--OBJECT-POINTER-POINTER"><primary>g_cclosure_user_marshal_OBJECT__OBJECT_POINTER_POINTER</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+g_cclosure_user_marshal_OBJECT__OBJECT_POINTER_POINTER
+                               (<parameter><link linkend="GClosure"><type>GClosure</type></link> *closure</parameter>,
+                                <parameter><link linkend="GValue"><type>GValue</type></link> *return_value</parameter>,
+                                <parameter><link linkend="guint"><type>guint</type></link> n_param_values</parameter>,
+                                <parameter>const <link linkend="GValue"><type>GValue</type></link> *param_values</parameter>,
+                                <parameter><link linkend="gpointer"><type>gpointer</type></link> invocation_hint</parameter>,
+                                <parameter><link linkend="gpointer"><type>gpointer</type></link> marshal_data</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="g-cclosure-user-marshal-OBJECT--OBJECT-OBJECT" role="function">
+<title>g_cclosure_user_marshal_OBJECT__OBJECT_OBJECT&#160;()</title>
+<indexterm zone="g-cclosure-user-marshal-OBJECT--OBJECT-OBJECT"><primary>g_cclosure_user_marshal_OBJECT__OBJECT_OBJECT</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+g_cclosure_user_marshal_OBJECT__OBJECT_OBJECT
+                               (<parameter><link linkend="GClosure"><type>GClosure</type></link> *closure</parameter>,
+                                <parameter><link linkend="GValue"><type>GValue</type></link> *return_value</parameter>,
+                                <parameter><link linkend="guint"><type>guint</type></link> n_param_values</parameter>,
+                                <parameter>const <link linkend="GValue"><type>GValue</type></link> *param_values</parameter>,
+                                <parameter><link linkend="gpointer"><type>gpointer</type></link> invocation_hint</parameter>,
+                                <parameter><link linkend="gpointer"><type>gpointer</type></link> marshal_data</parameter>);</programlisting>
+</refsect2>
+
+</refsect1>
+<refsect1 id="ags-ags-marshal.other_details" role="details">
+<title role="details.title">Types and Values</title>
 
 </refsect1>
 

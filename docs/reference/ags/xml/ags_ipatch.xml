@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsIpatch">
+<refentry id="AgsIpatch">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsIpatch.top_of_page">AgsIpatch</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsIpatch.top_of_page">AgsIpatch</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -14,105 +14,141 @@
 </refmeta>
 <refnamediv>
 <refname>AgsIpatch</refname>
-<refpurpose></refpurpose>
+<refpurpose>Libinstpatch wrapper</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsIpatch.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsIpatch.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="AgsIpatch"><returnvalue>AgsIpatch</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-ipatch-new">ags_ipatch_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>#define             <link linkend="AGS-IPATCH-DEFAULT-CHANNELS:CAPS">AGS_IPATCH_DEFAULT_CHANNELS</link>
-#define             <link linkend="AGS-IPATCH-READ:CAPS">AGS_IPATCH_READ</link>
-#define             <link linkend="AGS-IPATCH-WRITE:CAPS">AGS_IPATCH_WRITE</link>
-struct              <link linkend="AgsIpatch">AgsIpatch</link>;
-struct              <link linkend="AgsIpatchClass">AgsIpatchClass</link>;
-enum                <link linkend="AgsIpatchFlags">AgsIpatchFlags</link>;
-<link linkend="AgsIpatch"><returnvalue>AgsIpatch</returnvalue></link> *         <link linkend="ags-ipatch-new">ags_ipatch_new</link>                      ();
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsIpatch.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsIpatch.details" role="details">
-<title role="details.title">Details</title>
+<refsect1 id="AgsIpatch.properties" role="properties">
+<title role="properties.title">Properties</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="properties_type" colwidth="150px"/>
+<colspec colname="properties_name" colwidth="300px"/>
+<colspec colname="properties_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="property_type"><link linkend="gchar"><type>gchar</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsIpatch--filename">filename</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="gpointer"><type>gpointer</type></link></entry><entry role="property_name"><link linkend="AgsIpatch--mode">mode</link></entry><entry role="property_flags">Read / Write</entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsIpatch.other" role="other_proto">
+<title role="other_proto.title">Types and Values</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="name" colwidth="150px"/>
+<colspec colname="description"/>
+<tbody>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-IPATCH-DEFAULT-CHANNELS:CAPS">AGS_IPATCH_DEFAULT_CHANNELS</link></entry></row>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-IPATCH-READ:CAPS">AGS_IPATCH_READ</link></entry></row>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-IPATCH-WRITE:CAPS">AGS_IPATCH_WRITE</link></entry></row>
+<row><entry role="datatype_keyword">enum</entry><entry role="function_name"><link linkend="AgsIpatchFlags">AgsIpatchFlags</link></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsIpatch.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsIpatch
+</screen>
+</refsect1>
+
+<refsect1 id="AgsIpatch.includes"><title>Includes</title><synopsis>#include &lt;ags/audio/file/ags_ipatch.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsIpatch.description" role="desc">
+<title role="desc.title">Description</title>
+<para><link linkend="AgsIpatch"><type>AgsIpatch</type></link> is the base object to ineract with libinstpatch.</para>
+
+</refsect1>
+<refsect1 id="AgsIpatch.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-ipatch-new" role="function" condition="since:0.4">
+<title>ags_ipatch_new&#160;()</title>
+<indexterm zone="ags-ipatch-new" role="0.4"><primary>ags_ipatch_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsIpatch"><returnvalue>AgsIpatch</returnvalue></link>&#160;*
+ags_ipatch_new ();</programlisting>
+<para>Creates an <link linkend="AgsIpatch"><type>AgsIpatch</type></link>.</para>
+<refsect3 role="returns">
+<title>Returns</title>
+<para> an empty <link linkend="AgsIpatch"><type>AgsIpatch</type></link>.</para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsIpatch.other_details" role="details">
+<title role="details.title">Types and Values</title>
 <refsect2 id="AGS-IPATCH-DEFAULT-CHANNELS:CAPS" role="macro">
 <title>AGS_IPATCH_DEFAULT_CHANNELS</title>
 <indexterm zone="AGS-IPATCH-DEFAULT-CHANNELS:CAPS"><primary>AGS_IPATCH_DEFAULT_CHANNELS</primary></indexterm>
-<programlisting>#define AGS_IPATCH_DEFAULT_CHANNELS 2
+<programlisting language="C">#define AGS_IPATCH_DEFAULT_CHANNELS 2
 </programlisting>
-<para>
-</para></refsect2>
+</refsect2>
 <refsect2 id="AGS-IPATCH-READ:CAPS" role="macro">
 <title>AGS_IPATCH_READ</title>
 <indexterm zone="AGS-IPATCH-READ:CAPS"><primary>AGS_IPATCH_READ</primary></indexterm>
-<programlisting>#define AGS_IPATCH_READ "r"
+<programlisting language="C">#define AGS_IPATCH_READ "r"
 </programlisting>
-<para>
-</para></refsect2>
+</refsect2>
 <refsect2 id="AGS-IPATCH-WRITE:CAPS" role="macro">
 <title>AGS_IPATCH_WRITE</title>
 <indexterm zone="AGS-IPATCH-WRITE:CAPS"><primary>AGS_IPATCH_WRITE</primary></indexterm>
-<programlisting>#define AGS_IPATCH_WRITE "w"
+<programlisting language="C">#define AGS_IPATCH_WRITE "w"
 </programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsIpatch" role="struct">
-<title>struct AgsIpatch</title>
-<indexterm zone="AgsIpatch"><primary>AgsIpatch</primary></indexterm>
-<programlisting>struct AgsIpatch {
-  GObject object;
-
-  guint flags;
-
-  AgsDevout *devout;
-  GList *audio_signal;
-
-  IpatchFile *file;
-  char *filename;
-  char *mode;
-
-  IpatchFileHandle *handle;
-  GError *error;
-
-  IpatchBase *base;
-  GObject *reader;
-
-  IpatchList *samples;
-  GList *iter;
-
-  guint nth_level;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsIpatchClass" role="struct">
-<title>struct AgsIpatchClass</title>
-<indexterm zone="AgsIpatchClass"><primary>AgsIpatchClass</primary></indexterm>
-<programlisting>struct AgsIpatchClass {
-  GObjectClass object;
-};
-</programlisting>
-<para>
-</para></refsect2>
+</refsect2>
 <refsect2 id="AgsIpatchFlags" role="enum">
 <title>enum AgsIpatchFlags</title>
 <indexterm zone="AgsIpatchFlags"><primary>AgsIpatchFlags</primary></indexterm>
-<programlisting>typedef enum {
-  AGS_IPATCH_DLS2   = 1,
-  AGS_IPATCH_SF2    = 1 &lt;&lt; 1,
-  AGS_IPATCH_GIG    = 1 &lt;&lt; 2,
-} AgsIpatchFlags;
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-ipatch-new" role="function">
-<title>ags_ipatch_new ()</title>
-<indexterm zone="ags-ipatch-new"><primary>ags_ipatch_new</primary></indexterm>
-<programlisting><link linkend="AgsIpatch"><returnvalue>AgsIpatch</returnvalue></link> *         ags_ipatch_new                      ();</programlisting>
-<para>
-</para></refsect2>
+<refsect3 role="enum_members">
+<title>Members</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="enum_members_name" colwidth="300px"/>
+<colspec colname="enum_members_description"/>
+<colspec colname="enum_members_annotations" colwidth="200px"/>
+<tbody>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-IPATCH-DLS2:CAPS">AGS_IPATCH_DLS2</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-IPATCH-SF2:CAPS">AGS_IPATCH_SF2</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-IPATCH-GIG:CAPS">AGS_IPATCH_GIG</para></entry>
+<entry /><entry />
+</row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
+
+</refsect1>
+<refsect1 id="AgsIpatch.property-details" role="property_details">
+<title role="property_details.title">Property Details</title>
+<refsect2 id="AgsIpatch--filename" role="property"><title>The <literal>“filename”</literal> property</title>
+<indexterm zone="AgsIpatch--filename"><primary>AgsIpatch:filename</primary></indexterm>
+<programlisting>  “filename”                 <link linkend="gchar"><type>gchar</type></link>&#160;*</programlisting>
+<para>The filename to open.</para><para>Flags: Read / Write</para>
+<para>Default value: NULL</para>
+</refsect2>
+<refsect2 id="AgsIpatch--mode" role="property"><title>The <literal>“mode”</literal> property</title>
+<indexterm zone="AgsIpatch--mode"><primary>AgsIpatch:mode</primary></indexterm>
+<programlisting>  “mode”                     <link linkend="gpointer"><type>gpointer</type></link></programlisting>
+<para>The mode to open the file.</para><para>Flags: Read / Write</para>
+</refsect2>
 
 </refsect1>
 

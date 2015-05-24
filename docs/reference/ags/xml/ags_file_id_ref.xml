@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsFileIdRef">
+<refentry id="AgsFileIdRef">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsFileIdRef.top_of_page">AgsFileIdRef</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsFileIdRef.top_of_page">AgsFileIdRef</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -14,97 +14,178 @@
 </refmeta>
 <refnamediv>
 <refname>AgsFileIdRef</refname>
-<refpurpose></refpurpose>
+<refpurpose>file id reference</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsFileIdRef.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsFileIdRef.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-FILE-RESOLVE:CAPS">AGS_FILE_RESOLVE</link><phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><phrase role="c_punctuation">(</phrase><link linkend="AgsFileResolve">*AgsFileResolve</link><phrase role="c_punctuation">)</phrase>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-file-id-ref-resolved">ags_file_id_ref_resolved</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsFileIdRef"><returnvalue>AgsFileIdRef</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-file-id-ref-new">ags_file_id_ref_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>#define             <link linkend="AGS-FILE-ID-REF-RESOLVE-DATA:CAPS">AGS_FILE_ID_REF_RESOLVE_DATA</link>
-#define             <link linkend="AGS-FILE-ID-REF-SERIALIZE-DATA:CAPS">AGS_FILE_ID_REF_SERIALIZE_DATA</link>
-#define             <link linkend="AGS-FILE-RESOLVE:CAPS">AGS_FILE_RESOLVE</link>                    (f)
-struct              <link linkend="AgsFileIdRef">AgsFileIdRef</link>;
-struct              <link linkend="AgsFileIdRefClass">AgsFileIdRefClass</link>;
-<link linkend="void"><returnvalue>void</returnvalue></link>                (<link linkend="AgsFileResolve">*AgsFileResolve</link>)                   (<parameter><type>void</type></parameter>);
-<link linkend="AgsFileIdRef"><returnvalue>AgsFileIdRef</returnvalue></link> *      <link linkend="ags-file-id-ref-new">ags_file_id_ref_new</link>                 ();
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-file-id-ref-resolved">ags_file_id_ref_resolved</link>            (<parameter><link linkend="AgsFileIdRef"><type>AgsFileIdRef</type></link> *file_id_ref</parameter>);
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsFileIdRef.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsFileIdRef.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AGS-FILE-ID-REF-RESOLVE-DATA:CAPS" role="macro">
-<title>AGS_FILE_ID_REF_RESOLVE_DATA</title>
-<indexterm zone="AGS-FILE-ID-REF-RESOLVE-DATA:CAPS"><primary>AGS_FILE_ID_REF_RESOLVE_DATA</primary></indexterm>
-<programlisting>#define AGS_FILE_ID_REF_RESOLVE_DATA "ags-file-id-ref-resolve-data\0"
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AGS-FILE-ID-REF-SERIALIZE-DATA:CAPS" role="macro">
-<title>AGS_FILE_ID_REF_SERIALIZE_DATA</title>
-<indexterm zone="AGS-FILE-ID-REF-SERIALIZE-DATA:CAPS"><primary>AGS_FILE_ID_REF_SERIALIZE_DATA</primary></indexterm>
-<programlisting>#define AGS_FILE_ID_REF_SERIALIZE_DATA "ags-file-id-ref-serizalize-data\0"
-</programlisting>
-<para>
-</para></refsect2>
+<refsect1 id="AgsFileIdRef.properties" role="properties">
+<title role="properties.title">Properties</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="properties_type" colwidth="150px"/>
+<colspec colname="properties_name" colwidth="300px"/>
+<colspec colname="properties_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="property_type"><link linkend="GObject"><type>GObject</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsFileIdRef--file">file</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="GObject"><type>GObject</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsFileIdRef--main">main</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="gpointer"><type>gpointer</type></link></entry><entry role="property_name"><link linkend="AgsFileIdRef--node">node</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="gpointer"><type>gpointer</type></link></entry><entry role="property_name"><link linkend="AgsFileIdRef--reference">reference</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="gchar"><type>gchar</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsFileIdRef--xpath">xpath</link></entry><entry role="property_flags">Read / Write</entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsFileIdRef.signals" role="signal_proto">
+<title role="signal_proto.title">Signals</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="signals_return" colwidth="150px"/>
+<colspec colname="signals_name" colwidth="300px"/>
+<colspec colname="signals_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsFileIdRef-resolved">resolved</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsFileIdRef.other" role="other_proto">
+<title role="other_proto.title">Types and Values</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="name" colwidth="150px"/>
+<colspec colname="description"/>
+<tbody>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-FILE-ID-REF-SERIALIZE-DATA:CAPS">AGS_FILE_ID_REF_SERIALIZE_DATA</link></entry></row>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-FILE-ID-REF-RESOLVE-DATA:CAPS">AGS_FILE_ID_REF_RESOLVE_DATA</link></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsFileIdRef.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsFileIdRef
+</screen>
+</refsect1>
+
+<refsect1 id="AgsFileIdRef.includes"><title>Includes</title><synopsis>#include &lt;ags/file/ags_file_id_ref.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsFileIdRef.description" role="desc">
+<title role="desc.title">Description</title>
+<para>The <link linkend="AgsFileIdRef"><type>AgsFileIdRef</type></link> referes a XML node by its ID. It's used
+to perform XPath lookup.</para>
+
+</refsect1>
+<refsect1 id="AgsFileIdRef.functions_details" role="details">
+<title role="details.title">Functions</title>
 <refsect2 id="AGS-FILE-RESOLVE:CAPS" role="macro">
 <title>AGS_FILE_RESOLVE()</title>
 <indexterm zone="AGS-FILE-RESOLVE:CAPS"><primary>AGS_FILE_RESOLVE</primary></indexterm>
-<programlisting>#define AGS_FILE_RESOLVE(f)          ((AgsFileResolve)(f))
+<programlisting language="C">#define AGS_FILE_RESOLVE(f)          ((AgsFileResolve)(f))
 </programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsFileIdRef" role="struct">
-<title>struct AgsFileIdRef</title>
-<indexterm zone="AgsFileIdRef"><primary>AgsFileIdRef</primary></indexterm>
-<programlisting>struct AgsFileIdRef {
-  GObject object;
-
-  GObject *main;
-  GObject *file;
-
-  xmlNode *node;
-  gchar *xpath;
-  gpointer ref;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsFileIdRefClass" role="struct">
-<title>struct AgsFileIdRefClass</title>
-<indexterm zone="AgsFileIdRefClass"><primary>AgsFileIdRefClass</primary></indexterm>
-<programlisting>struct AgsFileIdRefClass {
-  GObjectClass object;
-
-  void (*resolved)(AgsFileIdRef *file_id_ref);
-};
-</programlisting>
-<para>
-</para></refsect2>
+</refsect2>
 <refsect2 id="AgsFileResolve" role="function">
-<title>AgsFileResolve ()</title>
+<title>AgsFileResolve&#160;()</title>
 <indexterm zone="AgsFileResolve"><primary>AgsFileResolve</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                (*AgsFileResolve)                   (<parameter><type>void</type></parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-file-id-ref-new" role="function">
-<title>ags_file_id_ref_new ()</title>
-<indexterm zone="ags-file-id-ref-new"><primary>ags_file_id_ref_new</primary></indexterm>
-<programlisting><link linkend="AgsFileIdRef"><returnvalue>AgsFileIdRef</returnvalue></link> *      ags_file_id_ref_new                 ();</programlisting>
-<para>
-</para></refsect2>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+<phrase role="c_punctuation">(</phrase>*AgsFileResolve<phrase role="c_punctuation">)</phrase> (<parameter><type>void</type></parameter>);</programlisting>
+</refsect2>
 <refsect2 id="ags-file-id-ref-resolved" role="function">
-<title>ags_file_id_ref_resolved ()</title>
+<title>ags_file_id_ref_resolved&#160;()</title>
 <indexterm zone="ags-file-id-ref-resolved"><primary>ags_file_id_ref_resolved</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_file_id_ref_resolved            (<parameter><link linkend="AgsFileIdRef"><type>AgsFileIdRef</type></link> *file_id_ref</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_file_id_ref_resolved (<parameter><link linkend="AgsFileIdRef"><type>AgsFileIdRef</type></link> *file_id_ref</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-id-ref-new" role="function" condition="since:0.4">
+<title>ags_file_id_ref_new&#160;()</title>
+<indexterm zone="ags-file-id-ref-new" role="0.4"><primary>ags_file_id_ref_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsFileIdRef"><returnvalue>AgsFileIdRef</returnvalue></link>&#160;*
+ags_file_id_ref_new ();</programlisting>
+<para>Creates an <link linkend="AgsFileIdRef"><type>AgsFileIdRef</type></link></para>
+<refsect3 role="returns">
+<title>Returns</title>
+<para> a new <link linkend="AgsFileIdRef"><type>AgsFileIdRef</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
 
+</refsect1>
+<refsect1 id="AgsFileIdRef.other_details" role="details">
+<title role="details.title">Types and Values</title>
+<refsect2 id="AGS-FILE-ID-REF-SERIALIZE-DATA:CAPS" role="macro">
+<title>AGS_FILE_ID_REF_SERIALIZE_DATA</title>
+<indexterm zone="AGS-FILE-ID-REF-SERIALIZE-DATA:CAPS"><primary>AGS_FILE_ID_REF_SERIALIZE_DATA</primary></indexterm>
+<programlisting language="C">#define AGS_FILE_ID_REF_SERIALIZE_DATA "ags-file-id-ref-serizalize-data\0"
+</programlisting>
+</refsect2>
+<refsect2 id="AGS-FILE-ID-REF-RESOLVE-DATA:CAPS" role="macro">
+<title>AGS_FILE_ID_REF_RESOLVE_DATA</title>
+<indexterm zone="AGS-FILE-ID-REF-RESOLVE-DATA:CAPS"><primary>AGS_FILE_ID_REF_RESOLVE_DATA</primary></indexterm>
+<programlisting language="C">#define AGS_FILE_ID_REF_RESOLVE_DATA "ags-file-id-ref-resolve-data\0"
+</programlisting>
+</refsect2>
+
+</refsect1>
+<refsect1 id="AgsFileIdRef.property-details" role="property_details">
+<title role="property_details.title">Property Details</title>
+<refsect2 id="AgsFileIdRef--file" role="property"><title>The <literal>“file”</literal> property</title>
+<indexterm zone="AgsFileIdRef--file"><primary>AgsFileIdRef:file</primary></indexterm>
+<programlisting>  “file”                     <link linkend="GObject"><type>GObject</type></link>&#160;*</programlisting>
+<para>The entire file assigned to.</para><para>Flags: Read / Write</para>
+</refsect2>
+<refsect2 id="AgsFileIdRef--main" role="property"><title>The <literal>“main”</literal> property</title>
+<indexterm zone="AgsFileIdRef--main"><primary>AgsFileIdRef:main</primary></indexterm>
+<programlisting>  “main”                     <link linkend="GObject"><type>GObject</type></link>&#160;*</programlisting>
+<para>The main object to access the tree.</para><para>Flags: Read / Write</para>
+</refsect2>
+<refsect2 id="AgsFileIdRef--node" role="property"><title>The <literal>“node”</literal> property</title>
+<indexterm zone="AgsFileIdRef--node"><primary>AgsFileIdRef:node</primary></indexterm>
+<programlisting>  “node”                     <link linkend="gpointer"><type>gpointer</type></link></programlisting>
+<para>The node to find the element.</para><para>Flags: Read / Write</para>
+</refsect2>
+<refsect2 id="AgsFileIdRef--reference" role="property"><title>The <literal>“reference”</literal> property</title>
+<indexterm zone="AgsFileIdRef--reference"><primary>AgsFileIdRef:reference</primary></indexterm>
+<programlisting>  “reference”                <link linkend="gpointer"><type>gpointer</type></link></programlisting>
+<para>The reference resulted by the xpath locator.</para><para>Flags: Read / Write</para>
+</refsect2>
+<refsect2 id="AgsFileIdRef--xpath" role="property"><title>The <literal>“xpath”</literal> property</title>
+<indexterm zone="AgsFileIdRef--xpath"><primary>AgsFileIdRef:xpath</primary></indexterm>
+<programlisting>  “xpath”                    <link linkend="gchar"><type>gchar</type></link>&#160;*</programlisting>
+<para>The xpath to find the element.</para><para>Flags: Read / Write</para>
+<para>Default value: NULL</para>
+</refsect2>
+
+</refsect1>
+<refsect1 id="AgsFileIdRef.signal-details" role="signals">
+<title role="signals.title">Signal Details</title>
+<refsect2 id="AgsFileIdRef-resolved" role="signal"><title>The <literal>“resolved”</literal> signal</title>
+<indexterm zone="AgsFileIdRef-resolved"><primary>AgsFileIdRef::resolved</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsFileIdRef"><type>AgsFileIdRef</type></link> *agsfileidref,
+               <link linkend="gpointer"><type>gpointer</type></link>      user_data)</programlisting>
+<para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2>
 </refsect1>
 
 </refentry>

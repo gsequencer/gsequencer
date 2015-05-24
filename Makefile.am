@@ -309,7 +309,6 @@ ags_widget_h_sources = \
 	src/ags/widget/ags_menu_item.h			\
 	src/ags/widget/ags_option_menu.h		\
 	src/ags/widget/ags_ruler.h			\
-	src/ags/widget/ags_segment.h			\
 	src/ags/widget/ags_table.h			\
 	src/ags/widget/ags_timebar.h			\
 	src/ags/widget/ags_vindicator.h		\
@@ -332,7 +331,6 @@ ags_widget_c_sources = \
 	src/ags/widget/ags_menu_item.c			\
 	src/ags/widget/ags_option_menu.c		\
 	src/ags/widget/ags_ruler.c			\
-	src/ags/widget/ags_segment.c			\
 	src/ags/widget/ags_table.c			\
 	src/ags/widget/ags_timebar.c			\
 	src/ags/widget/ags_vindicator.c		\

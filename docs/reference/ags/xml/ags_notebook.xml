@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsNotebook">
+<refentry id="AgsNotebook">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsNotebook.top_of_page">AgsNotebook</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsNotebook.top_of_page">AgsNotebook</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -14,150 +14,173 @@
 </refmeta>
 <refnamediv>
 <refname>AgsNotebook</refname>
-<refpurpose></refpurpose>
+<refpurpose>select channel</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsNotebook.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsNotebook.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-NOTEBOOK-TAB:CAPS">AGS_NOTEBOOK_TAB</link><phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gint"><returnvalue>gint</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-notebook-tab-index">ags_notebook_tab_index</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gint"><returnvalue>gint</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-notebook-next-active-tab">ags_notebook_next_active_tab</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gint"><returnvalue>gint</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-notebook-add-tab">ags_notebook_add_tab</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-notebook-insert-tab">ags_notebook_insert_tab</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-notebook-remove-tab">ags_notebook_remove_tab</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-notebook-add-child">ags_notebook_add_child</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-notebook-remove-child">ags_notebook_remove_child</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsNotebook"><returnvalue>AgsNotebook</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-notebook-new">ags_notebook_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>#define             <link linkend="AGS-NOTEBOOK-TAB:CAPS">AGS_NOTEBOOK_TAB</link>                    (x)
-struct              <link linkend="AgsNotebook">AgsNotebook</link>;
-struct              <link linkend="AgsNotebookClass">AgsNotebookClass</link>;
-struct              <link linkend="AgsNotebookTab">AgsNotebookTab</link>;
-enum                <link linkend="AgsNotebookTabFlags">AgsNotebookTabFlags</link>;
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-notebook-add-child">ags_notebook_add_child</link>              (<parameter><link linkend="AgsNotebook"><type>AgsNotebook</type></link> *notebook</parameter>,
-                                                         <parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *child</parameter>);
-<link linkend="gint"><returnvalue>gint</returnvalue></link>                <link linkend="ags-notebook-add-tab">ags_notebook_add_tab</link>                (<parameter><link linkend="AgsNotebook"><type>AgsNotebook</type></link> *notebook</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-notebook-insert-tab">ags_notebook_insert_tab</link>             (<parameter><link linkend="AgsNotebook"><type>AgsNotebook</type></link> *notebook</parameter>,
-                                                         <parameter><link linkend="gint"><type>gint</type></link> position</parameter>);
-<link linkend="AgsNotebook"><returnvalue>AgsNotebook</returnvalue></link> *       <link linkend="ags-notebook-new">ags_notebook_new</link>                    ();
-<link linkend="gint"><returnvalue>gint</returnvalue></link>                <link linkend="ags-notebook-next-active-tab">ags_notebook_next_active_tab</link>        (<parameter><link linkend="AgsNotebook"><type>AgsNotebook</type></link> *notebook</parameter>,
-                                                         <parameter><link linkend="gint"><type>gint</type></link> position</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-notebook-remove-child">ags_notebook_remove_child</link>           (<parameter><link linkend="AgsNotebook"><type>AgsNotebook</type></link> *notebook</parameter>,
-                                                         <parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *child</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-notebook-remove-tab">ags_notebook_remove_tab</link>             (<parameter><link linkend="AgsNotebook"><type>AgsNotebook</type></link> *notebook</parameter>,
-                                                         <parameter><link linkend="gint"><type>gint</type></link> nth</parameter>);
-<link linkend="gint"><returnvalue>gint</returnvalue></link>                <link linkend="ags-notebook-tab-index">ags_notebook_tab_index</link>              (<parameter><link linkend="AgsNotebook"><type>AgsNotebook</type></link> *notebook</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *notation</parameter>);
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsNotebook.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsNotebook.details" role="details">
-<title role="details.title">Details</title>
+<refsect1 id="AgsNotebook.other" role="other_proto">
+<title role="other_proto.title">Types and Values</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="name" colwidth="150px"/>
+<colspec colname="description"/>
+<tbody>
+<row><entry role="datatype_keyword">enum</entry><entry role="function_name"><link linkend="AgsNotebookTabFlags">AgsNotebookTabFlags</link></entry></row>
+<row><entry role="datatype_keyword">struct</entry><entry role="function_name"><link linkend="AgsNotebookTab">AgsNotebookTab</link></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsNotebook.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GInitiallyUnowned">GInitiallyUnowned</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkObject">GtkObject</link>
+            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkWidget">GtkWidget</link>
+                <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkContainer">GtkContainer</link>
+                    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkBox">GtkBox</link>
+                        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkVBox">GtkVBox</link>
+                            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsNotebook
+</screen>
+</refsect1>
+
+<refsect1 id="AgsNotebook.includes"><title>Includes</title><synopsis>#include &lt;ags/X/editor/ags_notebook.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsNotebook.description" role="desc">
+<title role="desc.title">Description</title>
+<para>The <link linkend="AgsNotebook"><type>AgsNotebook</type></link> lets select/deselect channels to edit.</para>
+
+</refsect1>
+<refsect1 id="AgsNotebook.functions_details" role="details">
+<title role="details.title">Functions</title>
 <refsect2 id="AGS-NOTEBOOK-TAB:CAPS" role="macro">
 <title>AGS_NOTEBOOK_TAB()</title>
 <indexterm zone="AGS-NOTEBOOK-TAB:CAPS"><primary>AGS_NOTEBOOK_TAB</primary></indexterm>
-<programlisting>#define AGS_NOTEBOOK_TAB(x) ((AgsNotebookTab *)(x))
+<programlisting language="C">#define AGS_NOTEBOOK_TAB(x) ((AgsNotebookTab *)(x))
 </programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsNotebook" role="struct">
-<title>struct AgsNotebook</title>
-<indexterm zone="AgsNotebook"><primary>AgsNotebook</primary></indexterm>
-<programlisting>struct AgsNotebook {
-  GtkVBox vbox;
+</refsect2>
+<refsect2 id="ags-notebook-tab-index" role="function">
+<title>ags_notebook_tab_index&#160;()</title>
+<indexterm zone="ags-notebook-tab-index"><primary>ags_notebook_tab_index</primary></indexterm>
+<programlisting language="C"><link linkend="gint"><returnvalue>gint</returnvalue></link>
+ags_notebook_tab_index (<parameter><link linkend="AgsNotebook"><type>AgsNotebook</type></link> *notebook</parameter>,
+                        <parameter><link linkend="GObject"><type>GObject</type></link> *notation</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-notebook-next-active-tab" role="function">
+<title>ags_notebook_next_active_tab&#160;()</title>
+<indexterm zone="ags-notebook-next-active-tab"><primary>ags_notebook_next_active_tab</primary></indexterm>
+<programlisting language="C"><link linkend="gint"><returnvalue>gint</returnvalue></link>
+ags_notebook_next_active_tab (<parameter><link linkend="AgsNotebook"><type>AgsNotebook</type></link> *notebook</parameter>,
+                              <parameter><link linkend="gint"><type>gint</type></link> position</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-notebook-add-tab" role="function">
+<title>ags_notebook_add_tab&#160;()</title>
+<indexterm zone="ags-notebook-add-tab"><primary>ags_notebook_add_tab</primary></indexterm>
+<programlisting language="C"><link linkend="gint"><returnvalue>gint</returnvalue></link>
+ags_notebook_add_tab (<parameter><link linkend="AgsNotebook"><type>AgsNotebook</type></link> *notebook</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-notebook-insert-tab" role="function">
+<title>ags_notebook_insert_tab&#160;()</title>
+<indexterm zone="ags-notebook-insert-tab"><primary>ags_notebook_insert_tab</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_notebook_insert_tab (<parameter><link linkend="AgsNotebook"><type>AgsNotebook</type></link> *notebook</parameter>,
+                         <parameter><link linkend="gint"><type>gint</type></link> position</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-notebook-remove-tab" role="function">
+<title>ags_notebook_remove_tab&#160;()</title>
+<indexterm zone="ags-notebook-remove-tab"><primary>ags_notebook_remove_tab</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_notebook_remove_tab (<parameter><link linkend="AgsNotebook"><type>AgsNotebook</type></link> *notebook</parameter>,
+                         <parameter><link linkend="gint"><type>gint</type></link> nth</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-notebook-add-child" role="function">
+<title>ags_notebook_add_child&#160;()</title>
+<indexterm zone="ags-notebook-add-child"><primary>ags_notebook_add_child</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_notebook_add_child (<parameter><link linkend="AgsNotebook"><type>AgsNotebook</type></link> *notebook</parameter>,
+                        <parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *child</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-notebook-remove-child" role="function">
+<title>ags_notebook_remove_child&#160;()</title>
+<indexterm zone="ags-notebook-remove-child"><primary>ags_notebook_remove_child</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_notebook_remove_child (<parameter><link linkend="AgsNotebook"><type>AgsNotebook</type></link> *notebook</parameter>,
+                           <parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *child</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-notebook-new" role="function" condition="since:0.4">
+<title>ags_notebook_new&#160;()</title>
+<indexterm zone="ags-notebook-new" role="0.4"><primary>ags_notebook_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsNotebook"><returnvalue>AgsNotebook</returnvalue></link>&#160;*
+ags_notebook_new ();</programlisting>
+<para>Create a new <link linkend="AgsNotebook"><type>AgsNotebook</type></link>.</para>
+<para role="since">Since 0.4</para></refsect2>
 
-  guint flags;
-
-  GtkHBox *hbox;
-
-  GList *tabs;
-  GtkWidget *child;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsNotebookClass" role="struct">
-<title>struct AgsNotebookClass</title>
-<indexterm zone="AgsNotebookClass"><primary>AgsNotebookClass</primary></indexterm>
-<programlisting>struct AgsNotebookClass {
-  GtkVBoxClass vbox;
-};
-</programlisting>
-<para>
-</para></refsect2>
+</refsect1>
+<refsect1 id="AgsNotebook.other_details" role="details">
+<title role="details.title">Types and Values</title>
+<refsect2 id="AgsNotebookTabFlags" role="enum">
+<title>enum AgsNotebookTabFlags</title>
+<indexterm zone="AgsNotebookTabFlags"><primary>AgsNotebookTabFlags</primary></indexterm>
+<refsect3 role="enum_members">
+<title>Members</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="enum_members_name" colwidth="300px"/>
+<colspec colname="enum_members_description"/>
+<colspec colname="enum_members_annotations" colwidth="200px"/>
+<tbody>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-NOTEBOOK-TAB-VISIBLE:CAPS">AGS_NOTEBOOK_TAB_VISIBLE</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-NOTEBOOK-TAB-MODE-NORMAL:CAPS">AGS_NOTEBOOK_TAB_MODE_NORMAL</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-NOTEBOOK-TAB-MODE-OVERLAY:CAPS">AGS_NOTEBOOK_TAB_MODE_OVERLAY</para></entry>
+<entry /><entry />
+</row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
 <refsect2 id="AgsNotebookTab" role="struct">
 <title>struct AgsNotebookTab</title>
 <indexterm zone="AgsNotebookTab"><primary>AgsNotebookTab</primary></indexterm>
-<programlisting>struct AgsNotebookTab {
+<programlisting language="C">struct AgsNotebookTab {
   guint flags;
 
   GtkToggleButton *toggle;
   GObject *notation;
 };
 </programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsNotebookTabFlags" role="enum">
-<title>enum AgsNotebookTabFlags</title>
-<indexterm zone="AgsNotebookTabFlags"><primary>AgsNotebookTabFlags</primary></indexterm>
-<programlisting>typedef enum {
-  AGS_NOTEBOOK_TAB_VISIBLE           = 1,
-  AGS_NOTEBOOK_TAB_MODE_NORMAL       = 1 &lt;&lt; 1,
-  AGS_NOTEBOOK_TAB_MODE_OVERLAY      = 1 &lt;&lt; 2,
-} AgsNotebookTabFlags;
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-notebook-add-child" role="function">
-<title>ags_notebook_add_child ()</title>
-<indexterm zone="ags-notebook-add-child"><primary>ags_notebook_add_child</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_notebook_add_child              (<parameter><link linkend="AgsNotebook"><type>AgsNotebook</type></link> *notebook</parameter>,
-                                                         <parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *child</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-notebook-add-tab" role="function">
-<title>ags_notebook_add_tab ()</title>
-<indexterm zone="ags-notebook-add-tab"><primary>ags_notebook_add_tab</primary></indexterm>
-<programlisting><link linkend="gint"><returnvalue>gint</returnvalue></link>                ags_notebook_add_tab                (<parameter><link linkend="AgsNotebook"><type>AgsNotebook</type></link> *notebook</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-notebook-insert-tab" role="function">
-<title>ags_notebook_insert_tab ()</title>
-<indexterm zone="ags-notebook-insert-tab"><primary>ags_notebook_insert_tab</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_notebook_insert_tab             (<parameter><link linkend="AgsNotebook"><type>AgsNotebook</type></link> *notebook</parameter>,
-                                                         <parameter><link linkend="gint"><type>gint</type></link> position</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-notebook-new" role="function">
-<title>ags_notebook_new ()</title>
-<indexterm zone="ags-notebook-new"><primary>ags_notebook_new</primary></indexterm>
-<programlisting><link linkend="AgsNotebook"><returnvalue>AgsNotebook</returnvalue></link> *       ags_notebook_new                    ();</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-notebook-next-active-tab" role="function">
-<title>ags_notebook_next_active_tab ()</title>
-<indexterm zone="ags-notebook-next-active-tab"><primary>ags_notebook_next_active_tab</primary></indexterm>
-<programlisting><link linkend="gint"><returnvalue>gint</returnvalue></link>                ags_notebook_next_active_tab        (<parameter><link linkend="AgsNotebook"><type>AgsNotebook</type></link> *notebook</parameter>,
-                                                         <parameter><link linkend="gint"><type>gint</type></link> position</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-notebook-remove-child" role="function">
-<title>ags_notebook_remove_child ()</title>
-<indexterm zone="ags-notebook-remove-child"><primary>ags_notebook_remove_child</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_notebook_remove_child           (<parameter><link linkend="AgsNotebook"><type>AgsNotebook</type></link> *notebook</parameter>,
-                                                         <parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *child</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-notebook-remove-tab" role="function">
-<title>ags_notebook_remove_tab ()</title>
-<indexterm zone="ags-notebook-remove-tab"><primary>ags_notebook_remove_tab</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_notebook_remove_tab             (<parameter><link linkend="AgsNotebook"><type>AgsNotebook</type></link> *notebook</parameter>,
-                                                         <parameter><link linkend="gint"><type>gint</type></link> nth</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-notebook-tab-index" role="function">
-<title>ags_notebook_tab_index ()</title>
-<indexterm zone="ags-notebook-tab-index"><primary>ags_notebook_tab_index</primary></indexterm>
-<programlisting><link linkend="gint"><returnvalue>gint</returnvalue></link>                ags_notebook_tab_index              (<parameter><link linkend="AgsNotebook"><type>AgsNotebook</type></link> *notebook</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *notation</parameter>);</programlisting>
-<para>
-</para></refsect2>
+</refsect2>
 
 </refsect1>
 

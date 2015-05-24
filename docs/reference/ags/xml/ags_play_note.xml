@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsPlayNote">
+<refentry id="AgsPlayNote">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsPlayNote.top_of_page">AgsPlayNote</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsPlayNote.top_of_page">AgsPlayNote</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -17,51 +17,45 @@
 <refpurpose></refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsPlayNote.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsPlayNote.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="AgsPlayNote"><returnvalue>AgsPlayNote</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-play-note-new">ags_play_note_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>struct              <link linkend="AgsPlayNote">AgsPlayNote</link>;
-struct              <link linkend="AgsPlayNoteClass">AgsPlayNoteClass</link>;
-<link linkend="AgsPlayNote"><returnvalue>AgsPlayNote</returnvalue></link> *       <link linkend="ags-play-note-new">ags_play_note_new</link>                   ();
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsPlayNote.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsPlayNote.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AgsPlayNote" role="struct">
-<title>struct AgsPlayNote</title>
-<indexterm zone="AgsPlayNote"><primary>AgsPlayNote</primary></indexterm>
-<programlisting>struct AgsPlayNote {
-  AgsRecall recall;
+<refsect1 id="AgsPlayNote.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsRecall">AgsRecall</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsPlayNote
+</screen>
+</refsect1>
 
-  AgsDevout *devout;
 
-  AgsChannel *channel;
-  AgsNote *note;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsPlayNoteClass" role="struct">
-<title>struct AgsPlayNoteClass</title>
-<indexterm zone="AgsPlayNoteClass"><primary>AgsPlayNoteClass</primary></indexterm>
-<programlisting>struct AgsPlayNoteClass {
-  AgsRecallClass recall;
-};
-</programlisting>
-<para>
-</para></refsect2>
+<refsect1 id="AgsPlayNote.description" role="desc">
+<title role="desc.title">Description</title>
+
+</refsect1>
+<refsect1 id="AgsPlayNote.functions_details" role="details">
+<title role="details.title">Functions</title>
 <refsect2 id="ags-play-note-new" role="function">
-<title>ags_play_note_new ()</title>
+<title>ags_play_note_new&#160;()</title>
 <indexterm zone="ags-play-note-new"><primary>ags_play_note_new</primary></indexterm>
-<programlisting><link linkend="AgsPlayNote"><returnvalue>AgsPlayNote</returnvalue></link> *       ags_play_note_new                   ();</programlisting>
-<para>
-</para></refsect2>
+<programlisting language="C"><link linkend="AgsPlayNote"><returnvalue>AgsPlayNote</returnvalue></link>&#160;*
+ags_play_note_new ();</programlisting>
+</refsect2>
+
+</refsect1>
+<refsect1 id="AgsPlayNote.other_details" role="details">
+<title role="details.title">Types and Values</title>
 
 </refsect1>
 
