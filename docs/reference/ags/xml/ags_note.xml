@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsNote">
+<refentry id="AgsNote">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsNote.top_of_page">AgsNote</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsNote.top_of_page">AgsNote</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -14,85 +14,187 @@
 </refmeta>
 <refnamediv>
 <refname>AgsNote</refname>
-<refpurpose></refpurpose>
+<refpurpose>Note class.</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsNote.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsNote.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-note-find-prev">ags_note_find_prev</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-note-find-next">ags_note_find_next</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsNote"><returnvalue>AgsNote</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-note-duplicate">ags_note_duplicate</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsNote"><returnvalue>AgsNote</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-note-new">ags_note_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>struct              <link linkend="AgsNote">AgsNote</link>;
-struct              <link linkend="AgsNoteClass">AgsNoteClass</link>;
-enum                <link linkend="AgsNoteFlags">AgsNoteFlags</link>;
-<link linkend="AgsNote"><returnvalue>AgsNote</returnvalue></link> *           <link linkend="ags-note-duplicate">ags_note_duplicate</link>                  (<parameter><link linkend="AgsNote"><type>AgsNote</type></link> *note</parameter>);
-<link linkend="AgsNote"><returnvalue>AgsNote</returnvalue></link> *           <link linkend="ags-note-new">ags_note_new</link>                        ();
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsNote.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsNote.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AgsNote" role="struct">
-<title>struct AgsNote</title>
-<indexterm zone="AgsNote"><primary>AgsNote</primary></indexterm>
-<programlisting>struct AgsNote {
-  GObject object;
+<refsect1 id="AgsNote.other" role="other_proto">
+<title role="other_proto.title">Types and Values</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="name" colwidth="150px"/>
+<colspec colname="description"/>
+<tbody>
+<row><entry role="datatype_keyword">enum</entry><entry role="function_name"><link linkend="AgsNoteFlags">AgsNoteFlags</link></entry></row>
 
-  guint flags;
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsNote.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsNote
+</screen>
+</refsect1>
 
-  // gui format, convert easy to visualization
-  guint x[2];
-  guint y;
+<refsect1 id="AgsNote.includes"><title>Includes</title><synopsis>#include &lt;ags/audio/ags_note.h&gt;
+</synopsis></refsect1>
 
-  gchar *name;
-  gdouble frequency;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsNoteClass" role="struct">
-<title>struct AgsNoteClass</title>
-<indexterm zone="AgsNoteClass"><primary>AgsNoteClass</primary></indexterm>
-<programlisting>struct AgsNoteClass {
-  GObjectClass object;
-};
-</programlisting>
-<para>
-</para></refsect2>
+<refsect1 id="AgsNote.description" role="desc">
+<title role="desc.title">Description</title>
+<para><link linkend="AgsNote"><type>AgsNote</type></link> represents a tone.</para>
+
+</refsect1>
+<refsect1 id="AgsNote.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-note-find-prev" role="function" condition="since:0.4.3">
+<title>ags_note_find_prev&#160;()</title>
+<indexterm zone="ags-note-find-prev" role="0.4.3"><primary>ags_note_find_prev</primary></indexterm>
+<programlisting language="C"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+ags_note_find_prev (<parameter><link linkend="GList"><type>GList</type></link> *note</parameter>,
+                    <parameter><link linkend="guint"><type>guint</type></link> x0</parameter>,
+                    <parameter><link linkend="guint"><type>guint</type></link> y</parameter>);</programlisting>
+<para>Find prev note.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>note</para></entry>
+<entry role="parameter_description"><para>a <link linkend="GList"><type>GList</type></link> containing <link linkend="AgsNote"><type>AgsNote</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>x0</para></entry>
+<entry role="parameter_description"><para>x offset</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>y</para></entry>
+<entry role="parameter_description"><para>y offset</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> the matching entry as <link linkend="GList"><type>GList</type></link>.</para>
+<para></para>
+</refsect3><para role="since">Since 0.4.3</para></refsect2>
+<refsect2 id="ags-note-find-next" role="function" condition="since:0.4.3">
+<title>ags_note_find_next&#160;()</title>
+<indexterm zone="ags-note-find-next" role="0.4.3"><primary>ags_note_find_next</primary></indexterm>
+<programlisting language="C"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+ags_note_find_next (<parameter><link linkend="GList"><type>GList</type></link> *note</parameter>,
+                    <parameter><link linkend="guint"><type>guint</type></link> x0</parameter>,
+                    <parameter><link linkend="guint"><type>guint</type></link> y</parameter>);</programlisting>
+<para>Find next note.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>note</para></entry>
+<entry role="parameter_description"><para>a <link linkend="GList"><type>GList</type></link> containing <link linkend="AgsNote"><type>AgsNote</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>x0</para></entry>
+<entry role="parameter_description"><para>x offset</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>y</para></entry>
+<entry role="parameter_description"><para>y offset</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> the matching entry as <link linkend="GList"><type>GList</type></link>.</para>
+<para></para>
+</refsect3><para role="since">Since 0.4.3</para></refsect2>
+<refsect2 id="ags-note-duplicate" role="function" condition="since:0.4">
+<title>ags_note_duplicate&#160;()</title>
+<indexterm zone="ags-note-duplicate" role="0.4"><primary>ags_note_duplicate</primary></indexterm>
+<programlisting language="C"><link linkend="AgsNote"><returnvalue>AgsNote</returnvalue></link>&#160;*
+ags_note_duplicate (<parameter><link linkend="AgsNote"><type>AgsNote</type></link> *note</parameter>);</programlisting>
+<para>Duplicate a note.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>note</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsNote"><type>AgsNote</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> the duplicated <link linkend="AgsNote"><type>AgsNote</type></link>.</para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-note-new" role="function" condition="since:0.4">
+<title>ags_note_new&#160;()</title>
+<indexterm zone="ags-note-new" role="0.4"><primary>ags_note_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsNote"><returnvalue>AgsNote</returnvalue></link>&#160;*
+ags_note_new ();</programlisting>
+<para>Creates an <link linkend="AgsNote"><type>AgsNote</type></link></para>
+<refsect3 role="returns">
+<title>Returns</title>
+<para> a new <link linkend="AgsNote"><type>AgsNote</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsNote.other_details" role="details">
+<title role="details.title">Types and Values</title>
 <refsect2 id="AgsNoteFlags" role="enum">
 <title>enum AgsNoteFlags</title>
 <indexterm zone="AgsNoteFlags"><primary>AgsNoteFlags</primary></indexterm>
-<programlisting>typedef enum {
-  AGS_NOTE_GUI             =  1,
-  AGS_NOTE_RUNTIME         =  1 &lt;&lt;  1,
-  AGS_NOTE_HUMAN_READABLE  =  1 &lt;&lt;  2,
-  AGS_NOTE_DEFAULT_LENGTH  =  1 &lt;&lt;  3,
-  AGS_NOTE_IS_SELECTED     =  1 &lt;&lt;  4,
-} AgsNoteFlags;
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-note-duplicate" role="function">
-<title>ags_note_duplicate ()</title>
-<indexterm zone="ags-note-duplicate"><primary>ags_note_duplicate</primary></indexterm>
-<programlisting><link linkend="AgsNote"><returnvalue>AgsNote</returnvalue></link> *           ags_note_duplicate                  (<parameter><link linkend="AgsNote"><type>AgsNote</type></link> *note</parameter>);</programlisting>
-<para>
-Duplicate a note.
-</para><variablelist role="params">
-<varlistentry><term><emphasis>Returns</emphasis>&#160;:</term><listitem><simpara>the duplicated <link linkend="AgsNote"><type>AgsNote</type></link>.</simpara></listitem></varlistentry>
-</variablelist></refsect2>
-<refsect2 id="ags-note-new" role="function">
-<title>ags_note_new ()</title>
-<indexterm zone="ags-note-new"><primary>ags_note_new</primary></indexterm>
-<programlisting><link linkend="AgsNote"><returnvalue>AgsNote</returnvalue></link> *           ags_note_new                        ();</programlisting>
-<para>
-Creates an <link linkend="AgsNote"><type>AgsNote</type></link>
-</para><variablelist role="params">
-<varlistentry><term><emphasis>Returns</emphasis>&#160;:</term><listitem><simpara>a new <link linkend="AgsNote"><type>AgsNote</type></link></simpara></listitem></varlistentry>
-</variablelist></refsect2>
+<refsect3 role="enum_members">
+<title>Members</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="enum_members_name" colwidth="300px"/>
+<colspec colname="enum_members_description"/>
+<colspec colname="enum_members_annotations" colwidth="200px"/>
+<tbody>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-NOTE-GUI:CAPS">AGS_NOTE_GUI</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-NOTE-RUNTIME:CAPS">AGS_NOTE_RUNTIME</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-NOTE-HUMAN-READABLE:CAPS">AGS_NOTE_HUMAN_READABLE</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-NOTE-DEFAULT-LENGTH:CAPS">AGS_NOTE_DEFAULT_LENGTH</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-NOTE-IS-SELECTED:CAPS">AGS_NOTE_IS_SELECTED</para></entry>
+<entry /><entry />
+</row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
 
 </refsect1>
 

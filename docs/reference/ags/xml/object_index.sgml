@@ -1,0 +1,556 @@
+<?xml version="1.0"?>
+<!DOCTYPE informaltable PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colwidth="1*"/>
+<colspec colwidth="1*"/>
+<colspec colwidth="1*"/>
+<tbody>
+<row>
+<entry><link linkend="AgsAcceleration">AgsAcceleration</link></entry>
+<entry><link linkend="AgsAddAudio">AgsAddAudio</link></entry>
+<entry><link linkend="AgsAddAudioSignal">AgsAddAudioSignal</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsAddBulkMember">AgsAddBulkMember</link></entry>
+<entry><link linkend="AgsAddEffect">AgsAddEffect</link></entry>
+<entry><link linkend="AgsAddLineMember">AgsAddLineMember</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsAddNote">AgsAddNote</link></entry>
+<entry><link linkend="AgsAddPointToSelection">AgsAddPointToSelection</link></entry>
+<entry><link linkend="AgsAddRecall">AgsAddRecall</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsAddRecallContainer">AgsAddRecallContainer</link></entry>
+<entry><link linkend="AgsAddRegionToSelection">AgsAddRegionToSelection</link></entry>
+<entry><link linkend="AgsAppendAudio">AgsAppendAudio</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsAppendAudioThreaded">AgsAppendAudioThreaded</link></entry>
+<entry><link linkend="AgsAppendChannel">AgsAppendChannel</link></entry>
+<entry><link linkend="AgsAppendRecall">AgsAppendRecall</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsApplicable">AgsApplicable</link></entry>
+<entry><link linkend="AgsApplicationContext">AgsApplicationContext</link></entry>
+<entry><link linkend="AgsApplyBpm">AgsApplyBpm</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsApplySequencerLength">AgsApplySequencerLength</link></entry>
+<entry><link linkend="AgsApplySynth">AgsApplySynth</link></entry>
+<entry><link linkend="AgsApplyTact">AgsApplyTact</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsAudio">AgsAudio</link></entry>
+<entry><link linkend="AgsAudioApplicationContext">AgsAudioApplicationContext</link></entry>
+<entry><link linkend="AgsAudioFile">AgsAudioFile</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsAudioLoop">AgsAudioLoop</link></entry>
+<entry><link linkend="AgsAudioPreferences">AgsAudioPreferences</link></entry>
+<entry><link linkend="AgsAudioSetRecycling">AgsAudioSetRecycling</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsAudioSignal">AgsAudioSignal</link></entry>
+<entry><link linkend="AgsAutomation">AgsAutomation</link></entry>
+<entry><link linkend="AgsAutomationArea">AgsAutomationArea</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsAutomationEdit">AgsAutomationEdit</link></entry>
+<entry><link linkend="AgsAutomationEditor">AgsAutomationEditor</link></entry>
+<entry><link linkend="AgsAutomationToolbar">AgsAutomationToolbar</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsAutosaveThread">AgsAutosaveThread</link></entry>
+<entry><link linkend="AgsBufferAudioSignal">AgsBufferAudioSignal</link></entry>
+<entry><link linkend="AgsBufferChannel">AgsBufferChannel</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsBufferChannelRun">AgsBufferChannelRun</link></entry>
+<entry><link linkend="AgsBufferRecycling">AgsBufferRecycling</link></entry>
+<entry><link linkend="AgsBulkMember">AgsBulkMember</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsCancelAudio">AgsCancelAudio</link></entry>
+<entry><link linkend="AgsCancelChannel">AgsCancelChannel</link></entry>
+<entry><link linkend="AgsCancelRecall">AgsCancelRecall</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsCartesian">AgsCartesian</link></entry>
+<entry><link linkend="AgsChangeIndicator">AgsChangeIndicator</link></entry>
+<entry><link linkend="AgsChangeTact">AgsChangeTact</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsChannel">AgsChannel</link></entry>
+<entry><link linkend="AgsChannelSetRecycling">AgsChannelSetRecycling</link></entry>
+<entry><link linkend="AgsCloneChannel">AgsCloneChannel</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsCloneChannelRun">AgsCloneChannelRun</link></entry>
+<entry><link linkend="AgsConcurrencyProvider">AgsConcurrencyProvider</link></entry>
+<entry><link linkend="AgsConfig">AgsConfig</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsConnectable">AgsConnectable</link></entry>
+<entry><link linkend="AgsCopyAudioSignal">AgsCopyAudioSignal</link></entry>
+<entry><link linkend="AgsCopyChannel">AgsCopyChannel</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsCopyChannelRun">AgsCopyChannelRun</link></entry>
+<entry><link linkend="AgsCopyNotationAudio">AgsCopyNotationAudio</link></entry>
+<entry><link linkend="AgsCopyNotationAudioRun">AgsCopyNotationAudioRun</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsCopyPatternAudio">AgsCopyPatternAudio</link></entry>
+<entry><link linkend="AgsCopyPatternAudioRun">AgsCopyPatternAudioRun</link></entry>
+<entry><link linkend="AgsCopyPatternChannel">AgsCopyPatternChannel</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsCopyPatternChannelRun">AgsCopyPatternChannelRun</link></entry>
+<entry><link linkend="AgsCopyRecycling">AgsCopyRecycling</link></entry>
+<entry><link linkend="AgsCountBeatsAudio">AgsCountBeatsAudio</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsCountBeatsAudioRun">AgsCountBeatsAudioRun</link></entry>
+<entry><link linkend="AgsCountable">AgsCountable</link></entry>
+<entry><link linkend="AgsDelayAudio">AgsDelayAudio</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsDelayAudioRun">AgsDelayAudioRun</link></entry>
+<entry><link linkend="AgsDevout">AgsDevout</link></entry>
+<entry><link linkend="AgsDial">AgsDial</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsDisplayTact">AgsDisplayTact</link></entry>
+<entry><link linkend="AgsDrum">AgsDrum</link></entry>
+<entry><link linkend="AgsDrumInputLine">AgsDrumInputLine</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsDrumInputPad">AgsDrumInputPad</link></entry>
+<entry><link linkend="AgsDrumOutputLine">AgsDrumOutputLine</link></entry>
+<entry><link linkend="AgsDrumOutputPad">AgsDrumOutputPad</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsDynamicConnectable">AgsDynamicConnectable</link></entry>
+<entry><link linkend="AgsEditor">AgsEditor</link></entry>
+<entry><link linkend="AgsEffect">AgsEffect</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsEffectBridge">AgsEffectBridge</link></entry>
+<entry><link linkend="AgsEffectBulk">AgsEffectBulk</link></entry>
+<entry><link linkend="AgsEffectLine">AgsEffectLine</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsEffectPad">AgsEffectPad</link></entry>
+<entry><link linkend="AgsExpander">AgsExpander</link></entry>
+<entry><link linkend="AgsExpanderSet">AgsExpanderSet</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsExportOutput">AgsExportOutput</link></entry>
+<entry><link linkend="AgsExportThread">AgsExportThread</link></entry>
+<entry><link linkend="AgsExportWindow">AgsExportWindow</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsFFPlayer">AgsFFPlayer</link></entry>
+<entry><link linkend="AgsFFPlayerBridge">AgsFFPlayerBridge</link></entry>
+<entry><link linkend="AgsFFPlayerBulkInput">AgsFFPlayerBulkInput</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsFFPlayerInputLine">AgsFFPlayerInputLine</link></entry>
+<entry><link linkend="AgsFFPlayerInputPad">AgsFFPlayerInputPad</link></entry>
+<entry><link linkend="AgsFile">AgsFile</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsFileIdRef">AgsFileIdRef</link></entry>
+<entry><link linkend="AgsFileLaunch">AgsFileLaunch</link></entry>
+<entry><link linkend="AgsFileLink">AgsFileLink</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsFileLookup">AgsFileLookup</link></entry>
+<entry><link linkend="AgsFileSelection">AgsFileSelection</link></entry>
+<entry><link linkend="AgsFreeSelection">AgsFreeSelection</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsGenericPreferences">AgsGenericPreferences</link></entry>
+<entry><link linkend="AgsGuiThread">AgsGuiThread</link></entry>
+<entry><link linkend="AgsHIndicator">AgsHIndicator</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsIndicator">AgsIndicator</link></entry>
+<entry><link linkend="AgsInitAudio">AgsInitAudio</link></entry>
+<entry><link linkend="AgsInitChannel">AgsInitChannel</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsInlinePlayer">AgsInlinePlayer</link></entry>
+<entry><link linkend="AgsInput">AgsInput</link></entry>
+<entry><link linkend="AgsIpatch">AgsIpatch</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsIpatchSF2Reader">AgsIpatchSF2Reader</link></entry>
+<entry><link linkend="AgsIteratorThread">AgsIteratorThread</link></entry>
+<entry><link linkend="AgsLadspaBridge">AgsLadspaBridge</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsLadspaBrowser">AgsLadspaBrowser</link></entry>
+<entry><link linkend="AgsLadspaManager">AgsLadspaManager</link></entry>
+<entry><link linkend="AgsLed">AgsLed</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsLibao">AgsLibao</link></entry>
+<entry><link linkend="AgsLine">AgsLine</link></entry>
+<entry><link linkend="AgsLineEditor">AgsLineEditor</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsLineMember">AgsLineMember</link></entry>
+<entry><link linkend="AgsLineMemberEditor">AgsLineMemberEditor</link></entry>
+<entry><link linkend="AgsLinkChannel">AgsLinkChannel</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsLinkCollectionEditor">AgsLinkCollectionEditor</link></entry>
+<entry><link linkend="AgsLinkEditor">AgsLinkEditor</link></entry>
+<entry><link linkend="AgsListingEditor">AgsListingEditor</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsLogTask">AgsLogTask</link></entry>
+<entry><link linkend="AgsLoopChannel">AgsLoopChannel</link></entry>
+<entry><link linkend="AgsLoopChannelRun">AgsLoopChannelRun</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsLv2Bridge">AgsLv2Bridge</link></entry>
+<entry><link linkend="AgsLv2Browser">AgsLv2Browser</link></entry>
+<entry><link linkend="AgsLv2Manager">AgsLv2Manager</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsLv2uiManager">AgsLv2uiManager</link></entry>
+<entry><link linkend="AgsMachine">AgsMachine</link></entry>
+<entry><link linkend="AgsMachineEditor">AgsMachineEditor</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsMachineRadioButton">AgsMachineRadioButton</link></entry>
+<entry><link linkend="AgsMachineSelection">AgsMachineSelection</link></entry>
+<entry><link linkend="AgsMachineSelector">AgsMachineSelector</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsMainLoop">AgsMainLoop</link></entry>
+<entry><link linkend="AgsMatrix">AgsMatrix</link></entry>
+<entry><link linkend="AgsMatrixBridge">AgsMatrixBridge</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsMatrixBulkInput">AgsMatrixBulkInput</link></entry>
+<entry><link linkend="AgsMenu">AgsMenu</link></entry>
+<entry><link linkend="AgsMenuBar">AgsMenuBar</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsMenuItem">AgsMenuItem</link></entry>
+<entry><link linkend="AgsMidiImportWizard">AgsMidiImportWizard</link></entry>
+<entry><link linkend="AgsMidiParser">AgsMidiParser</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsMixer">AgsMixer</link></entry>
+<entry><link linkend="AgsMixerInputLine">AgsMixerInputLine</link></entry>
+<entry><link linkend="AgsMixerInputPad">AgsMixerInputPad</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsMutable">AgsMutable</link></entry>
+<entry><link linkend="AgsMuteAudio">AgsMuteAudio</link></entry>
+<entry><link linkend="AgsMuteAudioSignal">AgsMuteAudioSignal</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsMuteChannel">AgsMuteChannel</link></entry>
+<entry><link linkend="AgsMuteChannelRun">AgsMuteChannelRun</link></entry>
+<entry><link linkend="AgsMuteRecycling">AgsMuteRecycling</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsMutexManager">AgsMutexManager</link></entry>
+<entry><link linkend="AgsNavigation">AgsNavigation</link></entry>
+<entry><link linkend="AgsNotation">AgsNotation</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsNote">AgsNote</link></entry>
+<entry><link linkend="AgsNoteEdit">AgsNoteEdit</link></entry>
+<entry><link linkend="AgsNotebook">AgsNotebook</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsOpenFile">AgsOpenFile</link></entry>
+<entry><link linkend="AgsOpenSingleFile">AgsOpenSingleFile</link></entry>
+<entry><link linkend="AgsOptionMenu">AgsOptionMenu</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsOscillator">AgsOscillator</link></entry>
+<entry><link linkend="AgsOutput">AgsOutput</link></entry>
+<entry><link linkend="AgsPackable">AgsPackable</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsPad">AgsPad</link></entry>
+<entry><link linkend="AgsPadEditor">AgsPadEditor</link></entry>
+<entry><link linkend="AgsPanel">AgsPanel</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsPanelInputLine">AgsPanelInputLine</link></entry>
+<entry><link linkend="AgsPanelInputPad">AgsPanelInputPad</link></entry>
+<entry><link linkend="AgsPattern">AgsPattern</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsPatternEdit">AgsPatternEdit</link></entry>
+<entry><link linkend="AgsPeakChannel">AgsPeakChannel</link></entry>
+<entry><link linkend="AgsPeakChannelRun">AgsPeakChannelRun</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsPerformancePreferences">AgsPerformancePreferences</link></entry>
+<entry><link linkend="AgsPersistable">AgsPersistable</link></entry>
+<entry><link linkend="AgsPiano">AgsPiano</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsPlayAudio">AgsPlayAudio</link></entry>
+<entry><link linkend="AgsPlayAudioFile">AgsPlayAudioFile</link></entry>
+<entry><link linkend="AgsPlayAudioSignal">AgsPlayAudioSignal</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsPlayChannel">AgsPlayChannel</link></entry>
+<entry><link linkend="AgsPlayChannelRun">AgsPlayChannelRun</link></entry>
+<entry><link linkend="AgsPlayChannelRunMaster">AgsPlayChannelRunMaster</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsPlayNotationAudio">AgsPlayNotationAudio</link></entry>
+<entry><link linkend="AgsPlayNotationAudioRun">AgsPlayNotationAudioRun</link></entry>
+<entry><link linkend="AgsPlayNote">AgsPlayNote</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsPlayPattern">AgsPlayPattern</link></entry>
+<entry><link linkend="AgsPlayRecycling">AgsPlayRecycling</link></entry>
+<entry><link linkend="AgsPlayable">AgsPlayable</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsPlayback">AgsPlayback</link></entry>
+<entry><link linkend="AgsPlaybackDomain">AgsPlaybackDomain</link></entry>
+<entry><link linkend="AgsPlugin">AgsPlugin</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsPluginBrowser">AgsPluginBrowser</link></entry>
+<entry><link linkend="AgsPluginFactory">AgsPluginFactory</link></entry>
+<entry><link linkend="AgsPluginPreferences">AgsPluginPreferences</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsPort">AgsPort</link></entry>
+<entry><link linkend="AgsPortSelection">AgsPortSelection</link></entry>
+<entry><link linkend="AgsPortlet">AgsPortlet</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsPreferences">AgsPreferences</link></entry>
+<entry><link linkend="AgsPropertyCollectionEditor">AgsPropertyCollectionEditor</link></entry>
+<entry><link linkend="AgsPropertyEditor">AgsPropertyEditor</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsPropertyListingEditor">AgsPropertyListingEditor</link></entry>
+<entry><link linkend="AgsRecall">AgsRecall</link></entry>
+<entry><link linkend="AgsRecallAudio">AgsRecallAudio</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsRecallAudioRun">AgsRecallAudioRun</link></entry>
+<entry><link linkend="AgsRecallAudioSignal">AgsRecallAudioSignal</link></entry>
+<entry><link linkend="AgsRecallChannel">AgsRecallChannel</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsRecallChannelRun">AgsRecallChannelRun</link></entry>
+<entry><link linkend="AgsRecallChannelRunDummy">AgsRecallChannelRunDummy</link></entry>
+<entry><link linkend="AgsRecallContainer">AgsRecallContainer</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsRecallDependency">AgsRecallDependency</link></entry>
+<entry><link linkend="AgsRecallFactory">AgsRecallFactory</link></entry>
+<entry><link linkend="AgsRecallID">AgsRecallID</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsRecallLadspa">AgsRecallLadspa</link></entry>
+<entry><link linkend="AgsRecallLadspaRun">AgsRecallLadspaRun</link></entry>
+<entry><link linkend="AgsRecallLv2">AgsRecallLv2</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsRecallLv2Run">AgsRecallLv2Run</link></entry>
+<entry><link linkend="AgsRecallRecycling">AgsRecallRecycling</link></entry>
+<entry><link linkend="AgsRecallRecyclingDummy">AgsRecallRecyclingDummy</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsRecordThread">AgsRecordThread</link></entry>
+<entry><link linkend="AgsRecycling">AgsRecycling</link></entry>
+<entry><link linkend="AgsRecyclingContext">AgsRecyclingContext</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsRecyclingThread">AgsRecyclingThread</link></entry>
+<entry><link linkend="AgsRegistry">AgsRegistry</link></entry>
+<entry><link linkend="AgsRemoteTask">AgsRemoteTask</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsRemoveAudio">AgsRemoveAudio</link></entry>
+<entry><link linkend="AgsRemoveAudioSignal">AgsRemoveAudioSignal</link></entry>
+<entry><link linkend="AgsRemoveNote">AgsRemoveNote</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsRemovePointFromSelection">AgsRemovePointFromSelection</link></entry>
+<entry><link linkend="AgsRemoveRecall">AgsRemoveRecall</link></entry>
+<entry><link linkend="AgsRemoveRecallContainer">AgsRemoveRecallContainer</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsRemoveRegionFromSelection">AgsRemoveRegionFromSelection</link></entry>
+<entry><link linkend="AgsReplicatorBridge">AgsReplicatorBridge</link></entry>
+<entry><link linkend="AgsResizeAudio">AgsResizeAudio</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsReturnableThread">AgsReturnableThread</link></entry>
+<entry><link linkend="AgsRuler">AgsRuler</link></entry>
+<entry><link linkend="AgsRunnable">AgsRunnable</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsSF2Chooser">AgsSF2Chooser</link></entry>
+<entry><link linkend="AgsSaveFile">AgsSaveFile</link></entry>
+<entry><link linkend="AgsScrollOnPlay">AgsScrollOnPlay</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsSeekable">AgsSeekable</link></entry>
+<entry><link linkend="AgsServer">AgsServer</link></entry>
+<entry><link linkend="AgsServerApplicationContext">AgsServerApplicationContext</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsServerPreferences">AgsServerPreferences</link></entry>
+<entry><link linkend="AgsServiceProvider">AgsServiceProvider</link></entry>
+<entry><link linkend="AgsSetAudioChannels">AgsSetAudioChannels</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsSetBufferSize">AgsSetBufferSize</link></entry>
+<entry><link linkend="AgsSetMuted">AgsSetMuted</link></entry>
+<entry><link linkend="AgsSetOutputDevice">AgsSetOutputDevice</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsSetPlaybackFlags">AgsSetPlaybackFlags</link></entry>
+<entry><link linkend="AgsSetSamplerate">AgsSetSamplerate</link></entry>
+<entry><link linkend="AgsSingleThread">AgsSingleThread</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsSndfile">AgsSndfile</link></entry>
+<entry><link linkend="AgsSoundProvider">AgsSoundProvider</link></entry>
+<entry><link linkend="AgsSoundcard">AgsSoundcard</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsSoundcardThread">AgsSoundcardThread</link></entry>
+<entry><link linkend="AgsSoundset">AgsSoundset</link></entry>
+<entry><link linkend="AgsStackable">AgsStackable</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsStartSoundcard">AgsStartSoundcard</link></entry>
+<entry><link linkend="AgsStartThread">AgsStartThread</link></entry>
+<entry><link linkend="AgsStreamAudioSignal">AgsStreamAudioSignal</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsStreamChannel">AgsStreamChannel</link></entry>
+<entry><link linkend="AgsStreamChannelRun">AgsStreamChannelRun</link></entry>
+<entry><link linkend="AgsStreamRecycling">AgsStreamRecycling</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsSynth">AgsSynth</link></entry>
+<entry><link linkend="AgsSynthBridge">AgsSynthBridge</link></entry>
+<entry><link linkend="AgsSynthBulkOutput">AgsSynthBulkOutput</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsSynthInputLine">AgsSynthInputLine</link></entry>
+<entry><link linkend="AgsSynthInputPad">AgsSynthInputPad</link></entry>
+<entry><link linkend="AgsSynthOutputLine">AgsSynthOutputLine</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsSynthOutputPad">AgsSynthOutputPad</link></entry>
+<entry><link linkend="AgsTable">AgsTable</link></entry>
+<entry><link linkend="AgsTactable">AgsTactable</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsTask">AgsTask</link></entry>
+<entry><link linkend="AgsTaskThread">AgsTaskThread</link></entry>
+<entry><link linkend="AgsThread">AgsThread</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsThreadApplicationContext">AgsThreadApplicationContext</link></entry>
+<entry><link linkend="AgsThreadPool">AgsThreadPool</link></entry>
+<entry><link linkend="AgsTimestamp">AgsTimestamp</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsTimestampFactory">AgsTimestampFactory</link></entry>
+<entry><link linkend="AgsTimestampThread">AgsTimestampThread</link></entry>
+<entry><link linkend="AgsToggleLed">AgsToggleLed</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsTogglePatternBit">AgsTogglePatternBit</link></entry>
+<entry><link linkend="AgsToolbar">AgsToolbar</link></entry>
+<entry><link linkend="AgsTrackCollection">AgsTrackCollection</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsTrackCollectionMapper">AgsTrackCollectionMapper</link></entry>
+<entry><link linkend="AgsTreeIterator">AgsTreeIterator</link></entry>
+<entry><link linkend="AgsTurtle">AgsTurtle</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsUnrefAudioSignal">AgsUnrefAudioSignal</link></entry>
+<entry><link linkend="AgsUpdateBulkMember">AgsUpdateBulkMember</link></entry>
+<entry><link linkend="AgsVIndicator">AgsVIndicator</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsVolumeAudioSignal">AgsVolumeAudioSignal</link></entry>
+<entry><link linkend="AgsVolumeChannel">AgsVolumeChannel</link></entry>
+<entry><link linkend="AgsVolumeChannelRun">AgsVolumeChannelRun</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsVolumeRecycling">AgsVolumeRecycling</link></entry>
+<entry><link linkend="AgsWaveform">AgsWaveform</link></entry>
+<entry><link linkend="AgsWindow">AgsWindow</link></entry>
+</row>
+<row>
+<entry><link linkend="AgsXorgApplicationContext">AgsXorgApplicationContext</link></entry>
+<entry><link linkend="GInitiallyUnowned">GInitiallyUnowned</link></entry>
+<entry><link linkend="GInterface">GInterface</link></entry>
+</row>
+<row>
+<entry><link linkend="GObject">GObject</link></entry>
+<entry><link linkend="GtkBin">GtkBin</link></entry>
+<entry><link linkend="GtkBox">GtkBox</link></entry>
+</row>
+<row>
+<entry><link linkend="GtkButton">GtkButton</link></entry>
+<entry><link linkend="GtkCheckButton">GtkCheckButton</link></entry>
+<entry><link linkend="GtkContainer">GtkContainer</link></entry>
+</row>
+<row>
+<entry><link linkend="GtkDialog">GtkDialog</link></entry>
+<entry><link linkend="GtkDrawingArea">GtkDrawingArea</link></entry>
+<entry><link linkend="GtkExpander">GtkExpander</link></entry>
+</row>
+<row>
+<entry><link linkend="GtkFrame">GtkFrame</link></entry>
+<entry><link linkend="GtkHBox">GtkHBox</link></entry>
+<entry><link linkend="GtkHandleBox">GtkHandleBox</link></entry>
+</row>
+<row>
+<entry><link linkend="GtkMenuBar">GtkMenuBar</link></entry>
+<entry><link linkend="GtkMenuShell">GtkMenuShell</link></entry>
+<entry><link linkend="GtkMenuToolButton">GtkMenuToolButton</link></entry>
+</row>
+<row>
+<entry><link linkend="GtkObject">GtkObject</link></entry>
+<entry><link linkend="GtkRadioButton">GtkRadioButton</link></entry>
+<entry><link linkend="GtkTable">GtkTable</link></entry>
+</row>
+<row>
+<entry><link linkend="GtkToggleButton">GtkToggleButton</link></entry>
+<entry><link linkend="GtkToolButton">GtkToolButton</link></entry>
+<entry><link linkend="GtkToolItem">GtkToolItem</link></entry>
+</row>
+<row>
+<entry><link linkend="GtkToolbar">GtkToolbar</link></entry>
+<entry><link linkend="GtkVBox">GtkVBox</link></entry>
+<entry><link linkend="GtkWidget">GtkWidget</link></entry>
+</row>
+<row>
+<entry><link linkend="GtkWindow">GtkWindow</link></entry>
+</row>
+</tbody></tgroup></informaltable>

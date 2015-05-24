@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsRunnable">
+<refentry id="AgsRunnable">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsRunnable.top_of_page">AgsRunnable</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsRunnable.top_of_page">AgsRunnable</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -17,54 +17,52 @@
 <refpurpose></refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsRunnable.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsRunnable.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-runnable-run">ags_runnable_run</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-runnable-stop">ags_runnable_stop</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>typedef             <link linkend="AgsRunnable">AgsRunnable</link>;
-struct              <link linkend="AgsRunnableInterface">AgsRunnableInterface</link>;
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-runnable-run">ags_runnable_run</link>                    (<parameter><link linkend="AgsRunnable"><type>AgsRunnable</type></link> *runnable</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-runnable-stop">ags_runnable_stop</link>                   (<parameter><link linkend="AgsRunnable"><type>AgsRunnable</type></link> *runnable</parameter>);
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsRunnable.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsRunnable.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AgsRunnable" role="typedef">
-<title>AgsRunnable</title>
-<indexterm zone="AgsRunnable"><primary>AgsRunnable</primary></indexterm>
-<programlisting>typedef void AgsRunnable;
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsRunnableInterface" role="struct">
-<title>struct AgsRunnableInterface</title>
-<indexterm zone="AgsRunnableInterface"><primary>AgsRunnableInterface</primary></indexterm>
-<programlisting>struct AgsRunnableInterface {
-  GTypeInterface interface;
+<refsect1 id="AgsRunnable.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GInterface">GInterface</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsRunnable
+</screen>
+</refsect1>
 
-  void (*run)(AgsRunnable *runnable);
-  void (*stop)(AgsRunnable *runnable);
-};
-</programlisting>
-<para>
-</para></refsect2>
+
+<refsect1 id="AgsRunnable.description" role="desc">
+<title role="desc.title">Description</title>
+
+</refsect1>
+<refsect1 id="AgsRunnable.functions_details" role="details">
+<title role="details.title">Functions</title>
 <refsect2 id="ags-runnable-run" role="function">
-<title>ags_runnable_run ()</title>
+<title>ags_runnable_run&#160;()</title>
 <indexterm zone="ags-runnable-run"><primary>ags_runnable_run</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_runnable_run                    (<parameter><link linkend="AgsRunnable"><type>AgsRunnable</type></link> *runnable</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_runnable_run (<parameter><link linkend="AgsRunnable"><type>AgsRunnable</type></link> *runnable</parameter>);</programlisting>
+</refsect2>
 <refsect2 id="ags-runnable-stop" role="function">
-<title>ags_runnable_stop ()</title>
+<title>ags_runnable_stop&#160;()</title>
 <indexterm zone="ags-runnable-stop"><primary>ags_runnable_stop</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_runnable_stop                   (<parameter><link linkend="AgsRunnable"><type>AgsRunnable</type></link> *runnable</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_runnable_stop (<parameter><link linkend="AgsRunnable"><type>AgsRunnable</type></link> *runnable</parameter>);</programlisting>
+</refsect2>
+
+</refsect1>
+<refsect1 id="AgsRunnable.other_details" role="details">
+<title role="details.title">Types and Values</title>
 
 </refsect1>
 

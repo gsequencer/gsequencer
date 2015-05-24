@@ -145,7 +145,7 @@ as_fn_error ()
   as_status=$1; test $as_status -eq 0 && as_status=1
   if test "$4"; then
     as_lineno=${as_lineno-"$3"} as_lineno_stack=as_lineno_stack=$as_lineno_stack
-    $as_echo "$as_me:${as_lineno-$LINENO}: error: $2" >&$4
+    $as_echo "$as_me:${as_lineno-19082}: error: $2" >&$4
   fi
   $as_echo "$as_me: error: $2" >&2
   as_fn_exit $as_status
@@ -437,7 +437,7 @@ Copyright (C) 2012 Free Software Foundation, Inc.
 This config.status script is free software; the Free Software Foundation
 gives unlimited permission to copy, distribute and modify it."
 
-ac_pwd='/home/minos/ags-devel'
+ac_pwd='/home/joelkraehemann/ags-devel'
 srcdir='.'
 INSTALL='/usr/bin/install -c'
 MKDIR_P='/bin/mkdir -p'
@@ -679,8 +679,8 @@ postuninstall_cmds=''
 finish_cmds='PATH="\$PATH:/sbin" ldconfig -n $libdir'
 finish_eval=''
 hardcode_into_libs='yes'
-sys_lib_search_path_spec='/usr/lib/gcc/x86_64-unknown-linux-gnu/4.9.2 /usr/lib64 /lib64 /usr/lib /lib '
-sys_lib_dlsearch_path_spec='/lib /usr/lib /usr/local/lib /opt/lib /usr/X11/lib '
+sys_lib_search_path_spec='/usr/lib/gcc/x86_64-linux-gnu/4.9 /usr/lib/x86_64-linux-gnu /usr/lib /lib/x86_64-linux-gnu /lib '
+sys_lib_dlsearch_path_spec='/lib /usr/lib /usr/lib/x86_64-linux-gnu/libfakeroot /usr/local/lib /lib/x86_64-linux-gnu /usr/lib/x86_64-linux-gnu '
 hardcode_action='immediate'
 enable_dlopen='unknown'
 enable_dlopen_self='unknown'
@@ -735,12 +735,12 @@ prelink_cmds_CXX=''
 postlink_cmds_CXX=''
 file_list_spec_CXX=''
 hardcode_action_CXX='immediate'
-compiler_lib_search_dirs_CXX='/usr/lib/gcc/x86_64-unknown-linux-gnu/4.9.2 /usr/lib/gcc/x86_64-unknown-linux-gnu/4.9.2/../../../../lib64 /lib/../lib64 /usr/lib/../lib64 /usr/lib/gcc/x86_64-unknown-linux-gnu/4.9.2/../../..'
-predep_objects_CXX='/usr/lib/gcc/x86_64-unknown-linux-gnu/4.9.2/../../../../lib64/crti.o /usr/lib/gcc/x86_64-unknown-linux-gnu/4.9.2/crtbeginS.o'
-postdep_objects_CXX='/usr/lib/gcc/x86_64-unknown-linux-gnu/4.9.2/crtendS.o /usr/lib/gcc/x86_64-unknown-linux-gnu/4.9.2/../../../../lib64/crtn.o'
+compiler_lib_search_dirs_CXX='/usr/lib/gcc/x86_64-linux-gnu/4.9 /usr/lib/gcc/x86_64-linux-gnu/4.9/../../../x86_64-linux-gnu /usr/lib/gcc/x86_64-linux-gnu/4.9/../../../../lib /lib/x86_64-linux-gnu /lib/../lib /usr/lib/x86_64-linux-gnu /usr/lib/../lib /usr/lib/gcc/x86_64-linux-gnu/4.9/../../..'
+predep_objects_CXX='/usr/lib/gcc/x86_64-linux-gnu/4.9/../../../x86_64-linux-gnu/crti.o /usr/lib/gcc/x86_64-linux-gnu/4.9/crtbeginS.o'
+postdep_objects_CXX='/usr/lib/gcc/x86_64-linux-gnu/4.9/crtendS.o /usr/lib/gcc/x86_64-linux-gnu/4.9/../../../x86_64-linux-gnu/crtn.o'
 predeps_CXX=''
 postdeps_CXX='-lstdc++ -lm -lgcc_s -lc -lgcc_s'
-compiler_lib_search_path_CXX='-L/usr/lib/gcc/x86_64-unknown-linux-gnu/4.9.2 -L/usr/lib/gcc/x86_64-unknown-linux-gnu/4.9.2/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/usr/lib/gcc/x86_64-unknown-linux-gnu/4.9.2/../../..'
+compiler_lib_search_path_CXX='-L/usr/lib/gcc/x86_64-linux-gnu/4.9 -L/usr/lib/gcc/x86_64-linux-gnu/4.9/../../../x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/4.9/../../../../lib -L/lib/x86_64-linux-gnu -L/lib/../lib -L/usr/lib/x86_64-linux-gnu -L/usr/lib/../lib -L/usr/lib/gcc/x86_64-linux-gnu/4.9/../../..'
 
 LTCC='gcc'
 LTCFLAGS='-g -O2'
@@ -826,7 +826,7 @@ do
     "depfiles") CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
     "libtool") CONFIG_COMMANDS="$CONFIG_COMMANDS libtool" ;;
 
-  *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
+  *) as_fn_error $? "invalid argument: \`$ac_config_target'" "19921" 5;;
   esac
 done
 
@@ -865,7 +865,7 @@ $debug ||
 {
   tmp=./conf$$-$RANDOM
   (umask 077 && mkdir "$tmp")
-} || as_fn_error $? "cannot create a temporary directory in ." "$LINENO" 5
+} || as_fn_error $? "cannot create a temporary directory in ." "19960" 5
 ac_tmp=$tmp
 
 # Set up the scripts for CONFIG_FILES section.
@@ -896,19 +896,19 @@ S["LTLIBOBJS"]=""
 S["LIBOBJS"]=""
 S["GTK_LIBS"]="-lgtk-x11-2.0 -lgdk-x11-2.0 -lpangocairo-1.0 -latk-1.0 -lcairo -lgdk_pixbuf-2.0 -lgio-2.0 -lpangoft2-1.0 -lpango-1.0 -lgobject-2.0 -lglib-2.0 -lfont"\
 "config -lfreetype "
-S["GTK_CFLAGS"]="-pthread -I/usr/include/gtk-2.0 -I/usr/lib/gtk-2.0/include -I/usr/include/pango-1.0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixma"\
-"n-1 -I/usr/include/libdrm -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng16 -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0"\
-"/include -I/usr/include/freetype2 -I/usr/include/libpng16 -I/usr/include/harfbuzz -I/usr/include/freetype2 -I/usr/include/libpng16 -I/usr/include/ha"\
-"rfbuzz -I/usr/X11/include "
+S["GTK_CFLAGS"]="-pthread -I/usr/include/gtk-2.0 -I/usr/lib/x86_64-linux-gnu/gtk-2.0/include -I/usr/include/gio-unix-2.0/ -I/usr/include/cairo -I/usr/include/pango-1"\
+".0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/libpng12 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12"\
+" -I/usr/include/pango-1.0 -I/usr/include/harfbuzz -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/u"\
+"sr/include/freetype2 "
 S["CAIRO_LIBS"]="-lcairo "
-S["CAIRO_CFLAGS"]="-I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng16 -I"\
-"/usr/include/harfbuzz -I/usr/include/freetype2 -I/usr/include/harfbuzz -I/usr/include/libdrm -I/usr/include/libpng16 -I/usr/X11/include "
+S["CAIRO_CFLAGS"]="-I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/in"\
+"clude/libpng12 "
 S["GDKPIXBUF_LIBS"]="-lgdk_pixbuf-2.0 -lgobject-2.0 -lglib-2.0 "
-S["GDKPIXBUF_CFLAGS"]="-pthread -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng16 -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include "
+S["GDKPIXBUF_CFLAGS"]="-pthread -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include "
 S["GOBJECT_LIBS"]="-lgobject-2.0 -Wl,--export-dynamic -lgmodule-2.0 -pthread -lgthread-2.0 -pthread -lglib-2.0 "
-S["GOBJECT_CFLAGS"]="-pthread -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include "
+S["GOBJECT_CFLAGS"]="-pthread -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include "
 S["LIBINSTPATCH_LIBS"]="-linstpatch-1.0 -lgobject-2.0 -lglib-2.0 -lsndfile "
-S["LIBINSTPATCH_CFLAGS"]="-I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include "
+S["LIBINSTPATCH_CFLAGS"]="-I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include "
 S["SNDFILE_LIBS"]="-lsndfile "
 S["SNDFILE_CFLAGS"]=""
 S["LIBXML2_LIBS"]="-lxml2 "
@@ -992,12 +992,12 @@ S["mkdir_p"]="$(MKDIR_P)"
 S["MKDIR_P"]="/bin/mkdir -p"
 S["INSTALL_STRIP_PROGRAM"]="$(install_sh) -c -s"
 S["STRIP"]="strip"
-S["install_sh"]="${SHELL} /home/minos/ags-devel/install-sh"
-S["MAKEINFO"]="${SHELL} /home/minos/ags-devel/missing makeinfo"
-S["AUTOHEADER"]="${SHELL} /home/minos/ags-devel/missing autoheader"
-S["AUTOMAKE"]="${SHELL} /home/minos/ags-devel/missing automake-1.14"
-S["AUTOCONF"]="${SHELL} /home/minos/ags-devel/missing autoconf"
-S["ACLOCAL"]="${SHELL} /home/minos/ags-devel/missing aclocal-1.14"
+S["install_sh"]="${SHELL} /home/joelkraehemann/ags-devel/install-sh"
+S["MAKEINFO"]="${SHELL} /home/joelkraehemann/ags-devel/missing makeinfo"
+S["AUTOHEADER"]="${SHELL} /home/joelkraehemann/ags-devel/missing autoheader"
+S["AUTOMAKE"]="${SHELL} /home/joelkraehemann/ags-devel/missing automake-1.14"
+S["AUTOCONF"]="${SHELL} /home/joelkraehemann/ags-devel/missing autoconf"
+S["ACLOCAL"]="${SHELL} /home/joelkraehemann/ags-devel/missing aclocal-1.14"
 S["VERSION"]="0.4.3"
 S["PACKAGE"]="gsequencer"
 S["CYGPATH_W"]="echo"
@@ -1077,7 +1077,7 @@ if sed "s/$ac_cr//" < /dev/null > /dev/null 2>&1; then
 else
   cat
 fi < "$ac_tmp/subs1.awk" > "$ac_tmp/subs.awk" \
-  || as_fn_error $? "could not setup config files machinery" "$LINENO" 5
+  || as_fn_error $? "could not setup config files machinery" "20092" 5
 fi # test -n "$CONFIG_FILES"
 
 # Set up the scripts for CONFIG_HEADERS section.
@@ -1164,7 +1164,7 @@ D["HAVE_STRTOUL"]=" 1"
 }
 { print }
 _ACAWK
-  as_fn_error $? "could not setup config headers machinery" "$LINENO" 5
+  as_fn_error $? "could not setup config headers machinery" "20226" 5
 fi # test -n "$CONFIG_HEADERS"
 
 
@@ -1177,7 +1177,7 @@ do
   esac
   case $ac_mode$ac_tag in
   :[FHL]*:*);;
-  :L* | :C*:*) as_fn_error $? "invalid tag \`$ac_tag'" "$LINENO" 5;;
+  :L* | :C*:*) as_fn_error $? "invalid tag \`$ac_tag'" "20239" 5;;
   :[FH]-) ac_tag=-:-;;
   :[FH]*) ac_tag=$ac_tag:$ac_tag.in;;
   esac
@@ -1205,7 +1205,7 @@ do
 	   [\\/$]*) false;;
 	   *) test -f "$srcdir/$ac_f" && ac_f="$srcdir/$ac_f";;
 	   esac ||
-	   as_fn_error 1 "cannot find input file: \`$ac_f'" "$LINENO" 5;;
+	   as_fn_error 1 "cannot find input file: \`$ac_f'" "20267" 5;;
       esac
       case $ac_f in *\'*) ac_f=`$as_echo "$ac_f" | sed "s/'/'\\\\\\\\''/g"`;; esac
       as_fn_append ac_file_inputs " '$ac_f'"
@@ -1219,7 +1219,7 @@ do
 	`' by configure.'
     if test x"$ac_file" != x-; then
       configure_input="$ac_file.  $configure_input"
-      { $as_echo "$as_me:${as_lineno-$LINENO}: creating $ac_file" >&5
+      { $as_echo "$as_me:${as_lineno-20281}: creating $ac_file" >&5
 $as_echo "$as_me: creating $ac_file" >&6;}
     fi
     # Neutralize special characters interpreted by sed in replacement strings.
@@ -1232,7 +1232,7 @@ $as_echo "$as_me: creating $ac_file" >&6;}
 
     case $ac_tag in
     *:-:* | *:-) cat >"$ac_tmp/stdin" \
-      || as_fn_error $? "could not create $ac_file" "$LINENO" 5 ;;
+      || as_fn_error $? "could not create $ac_file" "20294" 5 ;;
     esac
     ;;
   esac
@@ -1327,7 +1327,7 @@ ac_sed_dataroot='
 case `eval "sed -n \"\$ac_sed_dataroot\" $ac_file_inputs"` in
 *datarootdir*) ac_datarootdir_seen=yes;;
 *@datadir@*|*@docdir@*|*@infodir@*|*@localedir@*|*@mandir@*)
-  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: $ac_file_inputs seems to ignore the --datarootdir setting" >&5
+  { $as_echo "$as_me:${as_lineno-20392}: WARNING: $ac_file_inputs seems to ignore the --datarootdir setting" >&5
 $as_echo "$as_me: WARNING: $ac_file_inputs seems to ignore the --datarootdir setting" >&2;}
   ac_datarootdir_hack='
   s&@datadir@&${datarootdir}&g
@@ -1371,13 +1371,13 @@ s&@MKDIR_P@&$ac_MKDIR_P&;t t
 $ac_datarootdir_hack
 "
 eval sed \"\$ac_sed_extra\" "$ac_file_inputs" | $AWK -f "$ac_tmp/subs.awk" \
-  >$ac_tmp/out || as_fn_error $? "could not create $ac_file" "$LINENO" 5
+  >$ac_tmp/out || as_fn_error $? "could not create $ac_file" "20431" 5
 
 test -z "$ac_datarootdir_hack$ac_datarootdir_seen" &&
   { ac_out=`sed -n '/\${datarootdir}/p' "$ac_tmp/out"`; test -n "$ac_out"; } &&
   { ac_out=`sed -n '/^[	 ]*datarootdir[	 ]*:*=/p' \
       "$ac_tmp/out"`; test -z "$ac_out"; } &&
-  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: $ac_file contains a reference to the variable \`datarootdir'
+  { $as_echo "$as_me:${as_lineno-20437}: WARNING: $ac_file contains a reference to the variable \`datarootdir'
 which seems to be undefined.  Please make sure it is defined" >&5
 $as_echo "$as_me: WARNING: $ac_file contains a reference to the variable \`datarootdir'
 which seems to be undefined.  Please make sure it is defined" >&2;}
@@ -1387,7 +1387,7 @@ which seems to be undefined.  Please make sure it is defined" >&2;}
   -) cat "$ac_tmp/out" && rm -f "$ac_tmp/out";;
   *) rm -f "$ac_file" && mv "$ac_tmp/out" "$ac_file";;
   esac \
-  || as_fn_error $? "could not create $ac_file" "$LINENO" 5
+  || as_fn_error $? "could not create $ac_file" "20447" 5
  ;;
   :H)
   #
@@ -1398,19 +1398,19 @@ which seems to be undefined.  Please make sure it is defined" >&2;}
       $as_echo "/* $configure_input  */" \
       && eval '$AWK -f "$ac_tmp/defines.awk"' "$ac_file_inputs"
     } >"$ac_tmp/config.h" \
-      || as_fn_error $? "could not create $ac_file" "$LINENO" 5
+      || as_fn_error $? "could not create $ac_file" "20458" 5
     if diff "$ac_file" "$ac_tmp/config.h" >/dev/null 2>&1; then
-      { $as_echo "$as_me:${as_lineno-$LINENO}: $ac_file is unchanged" >&5
+      { $as_echo "$as_me:${as_lineno-20460}: $ac_file is unchanged" >&5
 $as_echo "$as_me: $ac_file is unchanged" >&6;}
     else
       rm -f "$ac_file"
       mv "$ac_tmp/config.h" "$ac_file" \
-	|| as_fn_error $? "could not create $ac_file" "$LINENO" 5
+	|| as_fn_error $? "could not create $ac_file" "20465" 5
     fi
   else
     $as_echo "/* $configure_input  */" \
       && eval '$AWK -f "$ac_tmp/defines.awk"' "$ac_file_inputs" \
-      || as_fn_error $? "could not create -" "$LINENO" 5
+      || as_fn_error $? "could not create -" "20470" 5
   fi
 # Compute "$ac_file"'s index in $config_headers.
 _am_arg="$ac_file"
@@ -1448,7 +1448,7 @@ $as_echo X"$_am_arg" |
 	  s/.*/./; q'`/stamp-h$_am_stamp_count
  ;;
 
-  :C)  { $as_echo "$as_me:${as_lineno-$LINENO}: executing $ac_file commands" >&5
+  :C)  { $as_echo "$as_me:${as_lineno-20508}: executing $ac_file commands" >&5
 $as_echo "$as_me: executing $ac_file commands" >&6;}
  ;;
   esac

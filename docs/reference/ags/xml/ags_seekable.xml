@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsSeekable">
+<refentry id="AgsSeekable">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsSeekable.top_of_page">AgsSeekable</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsSeekable.top_of_page">AgsSeekable</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -17,50 +17,46 @@
 <refpurpose></refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsSeekable.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsSeekable.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-seekable-seek">ags_seekable_seek</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>typedef             <link linkend="AgsSeekable">AgsSeekable</link>;
-struct              <link linkend="AgsSeekableInterface">AgsSeekableInterface</link>;
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-seekable-seek">ags_seekable_seek</link>                   (<parameter><link linkend="AgsSeekable"><type>AgsSeekable</type></link> *seekable</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> steps</parameter>,
-                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> forward</parameter>);
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsSeekable.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsSeekable.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AgsSeekable" role="typedef">
-<title>AgsSeekable</title>
-<indexterm zone="AgsSeekable"><primary>AgsSeekable</primary></indexterm>
-<programlisting>typedef void AgsSeekable;
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsSeekableInterface" role="struct">
-<title>struct AgsSeekableInterface</title>
-<indexterm zone="AgsSeekableInterface"><primary>AgsSeekableInterface</primary></indexterm>
-<programlisting>struct AgsSeekableInterface {
-  GTypeInterface interface;
+<refsect1 id="AgsSeekable.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GInterface">GInterface</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsSeekable
+</screen>
+</refsect1>
 
-  void (*seek)(AgsSeekable *seekable, guint steps, gboolean forward);
-};
-</programlisting>
-<para>
-</para></refsect2>
+
+<refsect1 id="AgsSeekable.description" role="desc">
+<title role="desc.title">Description</title>
+
+</refsect1>
+<refsect1 id="AgsSeekable.functions_details" role="details">
+<title role="details.title">Functions</title>
 <refsect2 id="ags-seekable-seek" role="function">
-<title>ags_seekable_seek ()</title>
+<title>ags_seekable_seek&#160;()</title>
 <indexterm zone="ags-seekable-seek"><primary>ags_seekable_seek</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_seekable_seek                   (<parameter><link linkend="AgsSeekable"><type>AgsSeekable</type></link> *seekable</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> steps</parameter>,
-                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> forward</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_seekable_seek (<parameter><link linkend="AgsSeekable"><type>AgsSeekable</type></link> *seekable</parameter>,
+                   <parameter><link linkend="guint"><type>guint</type></link> steps</parameter>,
+                   <parameter><link linkend="gboolean"><type>gboolean</type></link> forward</parameter>);</programlisting>
+</refsect2>
+
+</refsect1>
+<refsect1 id="AgsSeekable.other_details" role="details">
+<title role="details.title">Types and Values</title>
 
 </refsect1>
 

@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsPersistable">
+<refentry id="AgsPersistable">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsPersistable.top_of_page">AgsPersistable</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsPersistable.top_of_page">AgsPersistable</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -17,85 +17,75 @@
 <refpurpose></refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsPersistable.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsPersistable.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="AgsPersistable"><returnvalue>AgsPersistable</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-persistable-read">ags_persistable_read</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-persistable-read-link">ags_persistable_read_link</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="xmlNodePtr"><returnvalue>xmlNodePtr</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-persistable-write">ags_persistable_write</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-persistable-write-link">ags_persistable_write_link</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>typedef             <link linkend="AgsPersistable">AgsPersistable</link>;
-struct              <link linkend="AgsPersistableInterface">AgsPersistableInterface</link>;
-<link linkend="AgsPersistable"><returnvalue>AgsPersistable</returnvalue></link> *    <link linkend="ags-persistable-read">ags_persistable_read</link>                (<parameter><link linkend="AgsPersistable"><type>AgsPersistable</type></link> *persistable</parameter>,
-                                                         <parameter><link linkend="xmlDocPtr"><type>xmlDocPtr</type></link> doc</parameter>,
-                                                         <parameter><link linkend="xmlNodePtr"><type>xmlNodePtr</type></link> node</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-persistable-read-link">ags_persistable_read_link</link>           (<parameter><link linkend="AgsPersistable"><type>AgsPersistable</type></link> *persistable</parameter>,
-                                                         <parameter><link linkend="xmlDocPtr"><type>xmlDocPtr</type></link> doc</parameter>,
-                                                         <parameter><link linkend="xmlNodePtr"><type>xmlNodePtr</type></link> node</parameter>);
-<link linkend="xmlNodePtr"><returnvalue>xmlNodePtr</returnvalue></link>          <link linkend="ags-persistable-write">ags_persistable_write</link>               (<parameter><link linkend="AgsPersistable"><type>AgsPersistable</type></link> *persistable</parameter>,
-                                                         <parameter><link linkend="xmlDocPtr"><type>xmlDocPtr</type></link> doc</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-persistable-write-link">ags_persistable_write_link</link>          (<parameter><link linkend="AgsPersistable"><type>AgsPersistable</type></link> *persistable</parameter>,
-                                                         <parameter><link linkend="xmlDocPtr"><type>xmlDocPtr</type></link> doc</parameter>,
-                                                         <parameter><link linkend="xmlNodePtr"><type>xmlNodePtr</type></link> node</parameter>);
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsPersistable.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsPersistable.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AgsPersistable" role="typedef">
-<title>AgsPersistable</title>
-<indexterm zone="AgsPersistable"><primary>AgsPersistable</primary></indexterm>
-<programlisting>typedef void AgsPersistable;
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsPersistableInterface" role="struct">
-<title>struct AgsPersistableInterface</title>
-<indexterm zone="AgsPersistableInterface"><primary>AgsPersistableInterface</primary></indexterm>
-<programlisting>struct AgsPersistableInterface {
-  GTypeInterface interface;
-  
-  AgsPersistable* (*read)(AgsPersistable *persistable, xmlDocPtr doc, xmlNodePtr node);
-  void (*read_link)(AgsPersistable *persistable, xmlDocPtr doc, xmlNodePtr node);
+<refsect1 id="AgsPersistable.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GInterface">GInterface</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsPersistable
+</screen>
+</refsect1>
 
-  xmlNodePtr (*write)(AgsPersistable *persistable, xmlDocPtr doc);
-  void (*write_link)(AgsPersistable *persistable, xmlDocPtr doc, xmlNodePtr node);
-};
-</programlisting>
-<para>
-</para></refsect2>
+
+<refsect1 id="AgsPersistable.description" role="desc">
+<title role="desc.title">Description</title>
+
+</refsect1>
+<refsect1 id="AgsPersistable.functions_details" role="details">
+<title role="details.title">Functions</title>
 <refsect2 id="ags-persistable-read" role="function">
-<title>ags_persistable_read ()</title>
+<title>ags_persistable_read&#160;()</title>
 <indexterm zone="ags-persistable-read"><primary>ags_persistable_read</primary></indexterm>
-<programlisting><link linkend="AgsPersistable"><returnvalue>AgsPersistable</returnvalue></link> *    ags_persistable_read                (<parameter><link linkend="AgsPersistable"><type>AgsPersistable</type></link> *persistable</parameter>,
-                                                         <parameter><link linkend="xmlDocPtr"><type>xmlDocPtr</type></link> doc</parameter>,
-                                                         <parameter><link linkend="xmlNodePtr"><type>xmlNodePtr</type></link> node</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<programlisting language="C"><link linkend="AgsPersistable"><returnvalue>AgsPersistable</returnvalue></link>&#160;*
+ags_persistable_read (<parameter><link linkend="AgsPersistable"><type>AgsPersistable</type></link> *persistable</parameter>,
+                      <parameter><link linkend="xmlDocPtr"><type>xmlDocPtr</type></link> doc</parameter>,
+                      <parameter><link linkend="xmlNodePtr"><type>xmlNodePtr</type></link> node</parameter>);</programlisting>
+</refsect2>
 <refsect2 id="ags-persistable-read-link" role="function">
-<title>ags_persistable_read_link ()</title>
+<title>ags_persistable_read_link&#160;()</title>
 <indexterm zone="ags-persistable-read-link"><primary>ags_persistable_read_link</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_persistable_read_link           (<parameter><link linkend="AgsPersistable"><type>AgsPersistable</type></link> *persistable</parameter>,
-                                                         <parameter><link linkend="xmlDocPtr"><type>xmlDocPtr</type></link> doc</parameter>,
-                                                         <parameter><link linkend="xmlNodePtr"><type>xmlNodePtr</type></link> node</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_persistable_read_link (<parameter><link linkend="AgsPersistable"><type>AgsPersistable</type></link> *persistable</parameter>,
+                           <parameter><link linkend="xmlDocPtr"><type>xmlDocPtr</type></link> doc</parameter>,
+                           <parameter><link linkend="xmlNodePtr"><type>xmlNodePtr</type></link> node</parameter>);</programlisting>
+</refsect2>
 <refsect2 id="ags-persistable-write" role="function">
-<title>ags_persistable_write ()</title>
+<title>ags_persistable_write&#160;()</title>
 <indexterm zone="ags-persistable-write"><primary>ags_persistable_write</primary></indexterm>
-<programlisting><link linkend="xmlNodePtr"><returnvalue>xmlNodePtr</returnvalue></link>          ags_persistable_write               (<parameter><link linkend="AgsPersistable"><type>AgsPersistable</type></link> *persistable</parameter>,
-                                                         <parameter><link linkend="xmlDocPtr"><type>xmlDocPtr</type></link> doc</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<programlisting language="C"><link linkend="xmlNodePtr"><returnvalue>xmlNodePtr</returnvalue></link>
+ags_persistable_write (<parameter><link linkend="AgsPersistable"><type>AgsPersistable</type></link> *persistable</parameter>,
+                       <parameter><link linkend="xmlDocPtr"><type>xmlDocPtr</type></link> doc</parameter>);</programlisting>
+</refsect2>
 <refsect2 id="ags-persistable-write-link" role="function">
-<title>ags_persistable_write_link ()</title>
+<title>ags_persistable_write_link&#160;()</title>
 <indexterm zone="ags-persistable-write-link"><primary>ags_persistable_write_link</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_persistable_write_link          (<parameter><link linkend="AgsPersistable"><type>AgsPersistable</type></link> *persistable</parameter>,
-                                                         <parameter><link linkend="xmlDocPtr"><type>xmlDocPtr</type></link> doc</parameter>,
-                                                         <parameter><link linkend="xmlNodePtr"><type>xmlNodePtr</type></link> node</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_persistable_write_link (<parameter><link linkend="AgsPersistable"><type>AgsPersistable</type></link> *persistable</parameter>,
+                            <parameter><link linkend="xmlDocPtr"><type>xmlDocPtr</type></link> doc</parameter>,
+                            <parameter><link linkend="xmlNodePtr"><type>xmlNodePtr</type></link> node</parameter>);</programlisting>
+</refsect2>
+
+</refsect1>
+<refsect1 id="AgsPersistable.other_details" role="details">
+<title role="details.title">Types and Values</title>
 
 </refsect1>
 

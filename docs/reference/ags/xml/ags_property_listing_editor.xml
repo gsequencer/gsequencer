@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsPropertyListingEditor">
+<refentry id="AgsPropertyListingEditor">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsPropertyListingEditor.top_of_page">AgsPropertyListingEditor</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsPropertyListingEditor.top_of_page">AgsPropertyListingEditor</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -17,50 +17,52 @@
 <refpurpose></refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsPropertyListingEditor.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsPropertyListingEditor.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="AgsPropertyListingEditor"><returnvalue>AgsPropertyListingEditor</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-property-listing-editor-new">ags_property_listing_editor_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>struct              <link linkend="AgsPropertyListingEditor">AgsPropertyListingEditor</link>;
-struct              <link linkend="AgsPropertyListingEditorClass">AgsPropertyListingEditorClass</link>;
-<link linkend="AgsPropertyListingEditor"><returnvalue>AgsPropertyListingEditor</returnvalue></link> * <link linkend="ags-property-listing-editor-new">ags_property_listing_editor_new</link>
-                                                        ();
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsPropertyListingEditor.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsPropertyListingEditor.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AgsPropertyListingEditor" role="struct">
-<title>struct AgsPropertyListingEditor</title>
-<indexterm zone="AgsPropertyListingEditor"><primary>AgsPropertyListingEditor</primary></indexterm>
-<programlisting>struct AgsPropertyListingEditor {
-  AgsPropertyEditor property_editor;
+<refsect1 id="AgsPropertyListingEditor.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GInitiallyUnowned">GInitiallyUnowned</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkObject">GtkObject</link>
+            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkWidget">GtkWidget</link>
+                <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkContainer">GtkContainer</link>
+                    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkBox">GtkBox</link>
+                        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkVBox">GtkVBox</link>
+                            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsPropertyEditor">AgsPropertyEditor</link>
+                                <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsPropertyListingEditor
+                                    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsListingEditor">AgsListingEditor</link>
+</screen>
+</refsect1>
 
-  GtkVBox *child;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsPropertyListingEditorClass" role="struct">
-<title>struct AgsPropertyListingEditorClass</title>
-<indexterm zone="AgsPropertyListingEditorClass"><primary>AgsPropertyListingEditorClass</primary></indexterm>
-<programlisting>struct AgsPropertyListingEditorClass {
-  AgsPropertyEditorClass property_editor;
-};
-</programlisting>
-<para>
-</para></refsect2>
+
+<refsect1 id="AgsPropertyListingEditor.description" role="desc">
+<title role="desc.title">Description</title>
+
+</refsect1>
+<refsect1 id="AgsPropertyListingEditor.functions_details" role="details">
+<title role="details.title">Functions</title>
 <refsect2 id="ags-property-listing-editor-new" role="function">
-<title>ags_property_listing_editor_new ()</title>
+<title>ags_property_listing_editor_new&#160;()</title>
 <indexterm zone="ags-property-listing-editor-new"><primary>ags_property_listing_editor_new</primary></indexterm>
-<programlisting><link linkend="AgsPropertyListingEditor"><returnvalue>AgsPropertyListingEditor</returnvalue></link> * ags_property_listing_editor_new
-                                                        ();</programlisting>
-<para>
-</para></refsect2>
+<programlisting language="C"><link linkend="AgsPropertyListingEditor"><returnvalue>AgsPropertyListingEditor</returnvalue></link>&#160;*
+ags_property_listing_editor_new ();</programlisting>
+</refsect2>
+
+</refsect1>
+<refsect1 id="AgsPropertyListingEditor.other_details" role="details">
+<title role="details.title">Types and Values</title>
 
 </refsect1>
 

@@ -1,0 +1,696 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-ags-gsequencer-file-xml">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-ags-gsequencer-file-xml.top_of_page">ags_gsequencer_file_xml</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>ags_gsequencer_file_xml</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsect1 id="ags-ags-gsequencer-file-xml.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-file-read-widget">ags_file_read_widget</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-file-write-widget">ags_file_write_widget</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-file-read-window">ags_file_read_window</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-file-write-window">ags_file_write_window</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-file-read-menu-bar">ags_file_read_menu_bar</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-file-write-menu-bar">ags_file_write_menu_bar</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-file-read-machine-counter">ags_file_read_machine_counter</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-file-write-machine-counter">ags_file_write_machine_counter</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-file-read-machine-counter-list">ags_file_read_machine_counter_list</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-file-write-machine-counter-list">ags_file_write_machine_counter_list</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-file-read-machine">ags_file_read_machine</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-file-write-machine">ags_file_write_machine</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-file-read-machine-list">ags_file_read_machine_list</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-file-write-machine-list">ags_file_write_machine_list</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-file-read-machine-resolve-audio">ags_file_read_machine_resolve_audio</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-file-read-pad">ags_file_read_pad</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-file-write-pad">ags_file_write_pad</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-file-read-pad-list">ags_file_read_pad_list</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-file-write-pad-list">ags_file_write_pad_list</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-file-read-mixer-input-pad">ags_file_read_mixer_input_pad</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-file-write-mixer-input-pad">ags_file_write_mixer_input_pad</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-file-read-mixer-output-pad">ags_file_read_mixer_output_pad</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-file-write-mixer-output-pad">ags_file_write_mixer_output_pad</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-file-read-line">ags_file_read_line</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-file-write-line">ags_file_write_line</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-file-read-line-list">ags_file_read_line_list</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-file-write-line-list">ags_file_write_line_list</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-file-read-line-member">ags_file_read_line_member</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-file-write-line-member">ags_file_write_line_member</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-file-read-line-member-list">ags_file_read_line_member_list</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-file-write-line-member-list">ags_file_write_line_member_list</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-file-read-dialog">ags_file_read_dialog</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-file-write-dialog">ags_file_write_dialog</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-file-read-dialog-list">ags_file_read_dialog_list</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-file-write-dialog-list">ags_file_write_dialog_list</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-file-read-machine-editor">ags_file_read_machine_editor</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-file-write-machine-editor">ags_file_write_machine_editor</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-file-read-machine-editor-list">ags_file_read_machine_editor_list</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-file-write-machine-editor-list">ags_file_write_machine_editor_list</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-file-read-pad-editor">ags_file_read_pad_editor</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-file-write-pad-editor">ags_file_write_pad_editor</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-file-read-line-editor">ags_file_read_line_editor</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-file-write-line-editor">ags_file_write_line_editor</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-file-read-link-editor">ags_file_read_link_editor</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-file-write-link-editor">ags_file_write_link_editor</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-file-read-line-member-editor">ags_file_read_line_member_editor</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-file-write-line-member-editor">ags_file_write_line_member_editor</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-file-read-link-collection-editor">ags_file_read_link_collection_editor</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-file-write-link-collection-editor">ags_file_write_link_collection_editor</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-file-read-resize-editor">ags_file_read_resize_editor</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-file-write-resize-editor">ags_file_write_resize_editor</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-file-read-editor">ags_file_read_editor</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-file-write-editor">ags_file_write_editor</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-file-read-toolbar">ags_file_read_toolbar</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-file-write-toolbar">ags_file_write_toolbar</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-file-read-machine-selector">ags_file_read_machine_selector</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-file-write-machine-selector">ags_file_write_machine_selector</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-file-read-notebook">ags_file_read_notebook</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-file-write-notebook">ags_file_write_notebook</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-file-read-notebook-tab-list">ags_file_read_notebook_tab_list</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-file-write-notebook-tab-list">ags_file_write_notebook_tab_list</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-file-read-notebook-tab">ags_file_read_notebook_tab</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-file-write-notebook-tab">ags_file_write_notebook_tab</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-file-read-navigation">ags_file_read_navigation</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-file-write-navigation">ags_file_write_navigation</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+
+
+<refsect1 id="ags-ags-gsequencer-file-xml.description" role="desc">
+<title role="desc.title">Description</title>
+
+</refsect1>
+<refsect1 id="ags-ags-gsequencer-file-xml.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-file-read-widget" role="function">
+<title>ags_file_read_widget&#160;()</title>
+<indexterm zone="ags-file-read-widget"><primary>ags_file_read_widget</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_file_read_widget (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                      <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *node</parameter>,
+                      <parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-write-widget" role="function">
+<title>ags_file_write_widget&#160;()</title>
+<indexterm zone="ags-file-write-widget"><primary>ags_file_write_widget</primary></indexterm>
+<programlisting language="C"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+ags_file_write_widget (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                       <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *parent</parameter>,
+                       <parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-read-window" role="function">
+<title>ags_file_read_window&#160;()</title>
+<indexterm zone="ags-file-read-window"><primary>ags_file_read_window</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_file_read_window (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                      <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *node</parameter>,
+                      <parameter><link linkend="AgsWindow"><type>AgsWindow</type></link> **window</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-write-window" role="function">
+<title>ags_file_write_window&#160;()</title>
+<indexterm zone="ags-file-write-window"><primary>ags_file_write_window</primary></indexterm>
+<programlisting language="C"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+ags_file_write_window (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                       <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *parent</parameter>,
+                       <parameter><link linkend="AgsWindow"><type>AgsWindow</type></link> *window</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-read-menu-bar" role="function">
+<title>ags_file_read_menu_bar&#160;()</title>
+<indexterm zone="ags-file-read-menu-bar"><primary>ags_file_read_menu_bar</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_file_read_menu_bar (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                        <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *node</parameter>,
+                        <parameter><link linkend="AgsMenuBar"><type>AgsMenuBar</type></link> **menu_bar</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-write-menu-bar" role="function">
+<title>ags_file_write_menu_bar&#160;()</title>
+<indexterm zone="ags-file-write-menu-bar"><primary>ags_file_write_menu_bar</primary></indexterm>
+<programlisting language="C"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+ags_file_write_menu_bar (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                         <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *parent</parameter>,
+                         <parameter><link linkend="AgsMenuBar"><type>AgsMenuBar</type></link> *menu_bar</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-read-machine-counter" role="function">
+<title>ags_file_read_machine_counter&#160;()</title>
+<indexterm zone="ags-file-read-machine-counter"><primary>ags_file_read_machine_counter</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_file_read_machine_counter (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                               <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *node</parameter>,
+                               <parameter><link linkend="AgsMachineCounter"><type>AgsMachineCounter</type></link> **machine_counter</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-write-machine-counter" role="function">
+<title>ags_file_write_machine_counter&#160;()</title>
+<indexterm zone="ags-file-write-machine-counter"><primary>ags_file_write_machine_counter</primary></indexterm>
+<programlisting language="C"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+ags_file_write_machine_counter (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                                <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *parent</parameter>,
+                                <parameter><link linkend="AgsMachineCounter"><type>AgsMachineCounter</type></link> *machine_counter</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-read-machine-counter-list" role="function">
+<title>ags_file_read_machine_counter_list&#160;()</title>
+<indexterm zone="ags-file-read-machine-counter-list"><primary>ags_file_read_machine_counter_list</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_file_read_machine_counter_list (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                                    <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *node</parameter>,
+                                    <parameter><link linkend="GList"><type>GList</type></link> **machine_counter</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-write-machine-counter-list" role="function">
+<title>ags_file_write_machine_counter_list&#160;()</title>
+<indexterm zone="ags-file-write-machine-counter-list"><primary>ags_file_write_machine_counter_list</primary></indexterm>
+<programlisting language="C"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+ags_file_write_machine_counter_list (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                                     <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *parent</parameter>,
+                                     <parameter><link linkend="GList"><type>GList</type></link> *machine_counter</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-read-machine" role="function">
+<title>ags_file_read_machine&#160;()</title>
+<indexterm zone="ags-file-read-machine"><primary>ags_file_read_machine</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_file_read_machine (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                       <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *node</parameter>,
+                       <parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> **machine</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-write-machine" role="function">
+<title>ags_file_write_machine&#160;()</title>
+<indexterm zone="ags-file-write-machine"><primary>ags_file_write_machine</primary></indexterm>
+<programlisting language="C"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+ags_file_write_machine (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                        <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *parent</parameter>,
+                        <parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-read-machine-list" role="function">
+<title>ags_file_read_machine_list&#160;()</title>
+<indexterm zone="ags-file-read-machine-list"><primary>ags_file_read_machine_list</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_file_read_machine_list (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                            <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *node</parameter>,
+                            <parameter><link linkend="GList"><type>GList</type></link> **machine</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-write-machine-list" role="function">
+<title>ags_file_write_machine_list&#160;()</title>
+<indexterm zone="ags-file-write-machine-list"><primary>ags_file_write_machine_list</primary></indexterm>
+<programlisting language="C"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+ags_file_write_machine_list (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                             <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *parent</parameter>,
+                             <parameter><link linkend="GList"><type>GList</type></link> *machine</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-read-machine-resolve-audio" role="function">
+<title>ags_file_read_machine_resolve_audio&#160;()</title>
+<indexterm zone="ags-file-read-machine-resolve-audio"><primary>ags_file_read_machine_resolve_audio</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_file_read_machine_resolve_audio (<parameter><link linkend="AgsFileLookup"><type>AgsFileLookup</type></link> *file_lookup</parameter>,
+                                     <parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-read-pad" role="function">
+<title>ags_file_read_pad&#160;()</title>
+<indexterm zone="ags-file-read-pad"><primary>ags_file_read_pad</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_file_read_pad (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                   <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *node</parameter>,
+                   <parameter><link linkend="AgsPad"><type>AgsPad</type></link> **pad</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-write-pad" role="function">
+<title>ags_file_write_pad&#160;()</title>
+<indexterm zone="ags-file-write-pad"><primary>ags_file_write_pad</primary></indexterm>
+<programlisting language="C"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+ags_file_write_pad (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                    <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *parent</parameter>,
+                    <parameter><link linkend="AgsPad"><type>AgsPad</type></link> *pad</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-read-pad-list" role="function">
+<title>ags_file_read_pad_list&#160;()</title>
+<indexterm zone="ags-file-read-pad-list"><primary>ags_file_read_pad_list</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_file_read_pad_list (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                        <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *node</parameter>,
+                        <parameter><link linkend="GList"><type>GList</type></link> **pad</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-write-pad-list" role="function">
+<title>ags_file_write_pad_list&#160;()</title>
+<indexterm zone="ags-file-write-pad-list"><primary>ags_file_write_pad_list</primary></indexterm>
+<programlisting language="C"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+ags_file_write_pad_list (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                         <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *parent</parameter>,
+                         <parameter><link linkend="GList"><type>GList</type></link> *pad</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-read-mixer-input-pad" role="function">
+<title>ags_file_read_mixer_input_pad&#160;()</title>
+<indexterm zone="ags-file-read-mixer-input-pad"><primary>ags_file_read_mixer_input_pad</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_file_read_mixer_input_pad (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                               <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *node</parameter>,
+                               <parameter><link linkend="AgsPad"><type>AgsPad</type></link> *mixer_input_pad</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-write-mixer-input-pad" role="function">
+<title>ags_file_write_mixer_input_pad&#160;()</title>
+<indexterm zone="ags-file-write-mixer-input-pad"><primary>ags_file_write_mixer_input_pad</primary></indexterm>
+<programlisting language="C"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+ags_file_write_mixer_input_pad (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                                <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *parent</parameter>,
+                                <parameter><link linkend="AgsPad"><type>AgsPad</type></link> *mixer_input_pad</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-read-mixer-output-pad" role="function">
+<title>ags_file_read_mixer_output_pad&#160;()</title>
+<indexterm zone="ags-file-read-mixer-output-pad"><primary>ags_file_read_mixer_output_pad</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_file_read_mixer_output_pad (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                                <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *node</parameter>,
+                                <parameter><link linkend="AgsPad"><type>AgsPad</type></link> *mixer_output_pad</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-write-mixer-output-pad" role="function">
+<title>ags_file_write_mixer_output_pad&#160;()</title>
+<indexterm zone="ags-file-write-mixer-output-pad"><primary>ags_file_write_mixer_output_pad</primary></indexterm>
+<programlisting language="C"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+ags_file_write_mixer_output_pad (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                                 <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *parent</parameter>,
+                                 <parameter><link linkend="AgsPad"><type>AgsPad</type></link> *mixer_output_pad</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-read-line" role="function">
+<title>ags_file_read_line&#160;()</title>
+<indexterm zone="ags-file-read-line"><primary>ags_file_read_line</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_file_read_line (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                    <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *node</parameter>,
+                    <parameter><link linkend="AgsLine"><type>AgsLine</type></link> **line</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-write-line" role="function">
+<title>ags_file_write_line&#160;()</title>
+<indexterm zone="ags-file-write-line"><primary>ags_file_write_line</primary></indexterm>
+<programlisting language="C"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+ags_file_write_line (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                     <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *parent</parameter>,
+                     <parameter><link linkend="AgsLine"><type>AgsLine</type></link> *line</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-read-line-list" role="function">
+<title>ags_file_read_line_list&#160;()</title>
+<indexterm zone="ags-file-read-line-list"><primary>ags_file_read_line_list</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_file_read_line_list (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                         <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *node</parameter>,
+                         <parameter><link linkend="GList"><type>GList</type></link> **line</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-write-line-list" role="function">
+<title>ags_file_write_line_list&#160;()</title>
+<indexterm zone="ags-file-write-line-list"><primary>ags_file_write_line_list</primary></indexterm>
+<programlisting language="C"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+ags_file_write_line_list (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                          <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *parent</parameter>,
+                          <parameter><link linkend="GList"><type>GList</type></link> *line</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-read-line-member" role="function">
+<title>ags_file_read_line_member&#160;()</title>
+<indexterm zone="ags-file-read-line-member"><primary>ags_file_read_line_member</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_file_read_line_member (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                           <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *node</parameter>,
+                           <parameter><link linkend="AgsLineMember"><type>AgsLineMember</type></link> **line_member</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-write-line-member" role="function">
+<title>ags_file_write_line_member&#160;()</title>
+<indexterm zone="ags-file-write-line-member"><primary>ags_file_write_line_member</primary></indexterm>
+<programlisting language="C"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+ags_file_write_line_member (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                            <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *parent</parameter>,
+                            <parameter><link linkend="AgsLineMember"><type>AgsLineMember</type></link> *line_member</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-read-line-member-list" role="function">
+<title>ags_file_read_line_member_list&#160;()</title>
+<indexterm zone="ags-file-read-line-member-list"><primary>ags_file_read_line_member_list</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_file_read_line_member_list (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                                <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *node</parameter>,
+                                <parameter><link linkend="GList"><type>GList</type></link> **line_member</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-write-line-member-list" role="function">
+<title>ags_file_write_line_member_list&#160;()</title>
+<indexterm zone="ags-file-write-line-member-list"><primary>ags_file_write_line_member_list</primary></indexterm>
+<programlisting language="C"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+ags_file_write_line_member_list (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                                 <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *parent</parameter>,
+                                 <parameter><link linkend="GList"><type>GList</type></link> *line_member</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-read-dialog" role="function">
+<title>ags_file_read_dialog&#160;()</title>
+<indexterm zone="ags-file-read-dialog"><primary>ags_file_read_dialog</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_file_read_dialog (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                      <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *node</parameter>,
+                      <parameter><link linkend="GtkDialog"><type>GtkDialog</type></link> **dialog</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-write-dialog" role="function">
+<title>ags_file_write_dialog&#160;()</title>
+<indexterm zone="ags-file-write-dialog"><primary>ags_file_write_dialog</primary></indexterm>
+<programlisting language="C"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+ags_file_write_dialog (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                       <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *parent</parameter>,
+                       <parameter><link linkend="GtkDialog"><type>GtkDialog</type></link> *dialog</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-read-dialog-list" role="function">
+<title>ags_file_read_dialog_list&#160;()</title>
+<indexterm zone="ags-file-read-dialog-list"><primary>ags_file_read_dialog_list</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_file_read_dialog_list (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                           <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *node</parameter>,
+                           <parameter><link linkend="GList"><type>GList</type></link> **dialog</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-write-dialog-list" role="function">
+<title>ags_file_write_dialog_list&#160;()</title>
+<indexterm zone="ags-file-write-dialog-list"><primary>ags_file_write_dialog_list</primary></indexterm>
+<programlisting language="C"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+ags_file_write_dialog_list (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                            <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *parent</parameter>,
+                            <parameter><link linkend="GList"><type>GList</type></link> *dialog</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-read-machine-editor" role="function">
+<title>ags_file_read_machine_editor&#160;()</title>
+<indexterm zone="ags-file-read-machine-editor"><primary>ags_file_read_machine_editor</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_file_read_machine_editor (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                              <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *node</parameter>,
+                              <parameter><link linkend="AgsMachineEditor"><type>AgsMachineEditor</type></link> **machine_editor</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-write-machine-editor" role="function">
+<title>ags_file_write_machine_editor&#160;()</title>
+<indexterm zone="ags-file-write-machine-editor"><primary>ags_file_write_machine_editor</primary></indexterm>
+<programlisting language="C"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+ags_file_write_machine_editor (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                               <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *parent</parameter>,
+                               <parameter><link linkend="AgsMachineEditor"><type>AgsMachineEditor</type></link> *machine_editor</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-read-machine-editor-list" role="function">
+<title>ags_file_read_machine_editor_list&#160;()</title>
+<indexterm zone="ags-file-read-machine-editor-list"><primary>ags_file_read_machine_editor_list</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_file_read_machine_editor_list (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                                   <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *node</parameter>,
+                                   <parameter><link linkend="GList"><type>GList</type></link> **machine_editor</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-write-machine-editor-list" role="function">
+<title>ags_file_write_machine_editor_list&#160;()</title>
+<indexterm zone="ags-file-write-machine-editor-list"><primary>ags_file_write_machine_editor_list</primary></indexterm>
+<programlisting language="C"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+ags_file_write_machine_editor_list (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                                    <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *parent</parameter>,
+                                    <parameter><link linkend="GList"><type>GList</type></link> *machine_editor</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-read-pad-editor" role="function">
+<title>ags_file_read_pad_editor&#160;()</title>
+<indexterm zone="ags-file-read-pad-editor"><primary>ags_file_read_pad_editor</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_file_read_pad_editor (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                          <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *node</parameter>,
+                          <parameter><link linkend="AgsPadEditor"><type>AgsPadEditor</type></link> **pad_editor</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-write-pad-editor" role="function">
+<title>ags_file_write_pad_editor&#160;()</title>
+<indexterm zone="ags-file-write-pad-editor"><primary>ags_file_write_pad_editor</primary></indexterm>
+<programlisting language="C"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+ags_file_write_pad_editor (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                           <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *parent</parameter>,
+                           <parameter><link linkend="AgsPadEditor"><type>AgsPadEditor</type></link> *pad_editor</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-read-line-editor" role="function">
+<title>ags_file_read_line_editor&#160;()</title>
+<indexterm zone="ags-file-read-line-editor"><primary>ags_file_read_line_editor</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_file_read_line_editor (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                           <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *node</parameter>,
+                           <parameter><link linkend="AgsLineEditor"><type>AgsLineEditor</type></link> **line_editor</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-write-line-editor" role="function">
+<title>ags_file_write_line_editor&#160;()</title>
+<indexterm zone="ags-file-write-line-editor"><primary>ags_file_write_line_editor</primary></indexterm>
+<programlisting language="C"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+ags_file_write_line_editor (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                            <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *parent</parameter>,
+                            <parameter><link linkend="AgsLineEditor"><type>AgsLineEditor</type></link> *line_editor</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-read-link-editor" role="function">
+<title>ags_file_read_link_editor&#160;()</title>
+<indexterm zone="ags-file-read-link-editor"><primary>ags_file_read_link_editor</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_file_read_link_editor (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                           <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *node</parameter>,
+                           <parameter><link linkend="AgsLinkEditor"><type>AgsLinkEditor</type></link> **link_editor</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-write-link-editor" role="function">
+<title>ags_file_write_link_editor&#160;()</title>
+<indexterm zone="ags-file-write-link-editor"><primary>ags_file_write_link_editor</primary></indexterm>
+<programlisting language="C"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+ags_file_write_link_editor (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                            <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *parent</parameter>,
+                            <parameter><link linkend="AgsLinkEditor"><type>AgsLinkEditor</type></link> *link_editor</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-read-line-member-editor" role="function">
+<title>ags_file_read_line_member_editor&#160;()</title>
+<indexterm zone="ags-file-read-line-member-editor"><primary>ags_file_read_line_member_editor</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_file_read_line_member_editor (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                                  <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *node</parameter>,
+                                  <parameter><link linkend="AgsLineMemberEditor"><type>AgsLineMemberEditor</type></link> **line_member_editor</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-write-line-member-editor" role="function">
+<title>ags_file_write_line_member_editor&#160;()</title>
+<indexterm zone="ags-file-write-line-member-editor"><primary>ags_file_write_line_member_editor</primary></indexterm>
+<programlisting language="C"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+ags_file_write_line_member_editor (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                                   <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *parent</parameter>,
+                                   <parameter><link linkend="AgsLineMemberEditor"><type>AgsLineMemberEditor</type></link> *line_member_editor</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-read-link-collection-editor" role="function">
+<title>ags_file_read_link_collection_editor&#160;()</title>
+<indexterm zone="ags-file-read-link-collection-editor"><primary>ags_file_read_link_collection_editor</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_file_read_link_collection_editor (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                                      <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *node</parameter>,
+                                      <parameter><link linkend="AgsLinkCollectionEditor"><type>AgsLinkCollectionEditor</type></link> **link_collection_editor</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-write-link-collection-editor" role="function">
+<title>ags_file_write_link_collection_editor&#160;()</title>
+<indexterm zone="ags-file-write-link-collection-editor"><primary>ags_file_write_link_collection_editor</primary></indexterm>
+<programlisting language="C"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+ags_file_write_link_collection_editor (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                                       <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *parent</parameter>,
+                                       <parameter><link linkend="AgsLinkCollectionEditor"><type>AgsLinkCollectionEditor</type></link> *link_collection_editor</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-read-resize-editor" role="function">
+<title>ags_file_read_resize_editor&#160;()</title>
+<indexterm zone="ags-file-read-resize-editor"><primary>ags_file_read_resize_editor</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_file_read_resize_editor (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                             <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *node</parameter>,
+                             <parameter><link linkend="AgsResizeEditor"><type>AgsResizeEditor</type></link> **resize_editor</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-write-resize-editor" role="function">
+<title>ags_file_write_resize_editor&#160;()</title>
+<indexterm zone="ags-file-write-resize-editor"><primary>ags_file_write_resize_editor</primary></indexterm>
+<programlisting language="C"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+ags_file_write_resize_editor (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                              <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *parent</parameter>,
+                              <parameter><link linkend="AgsResizeEditor"><type>AgsResizeEditor</type></link> *resize_editor</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-read-editor" role="function">
+<title>ags_file_read_editor&#160;()</title>
+<indexterm zone="ags-file-read-editor"><primary>ags_file_read_editor</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_file_read_editor (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                      <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *node</parameter>,
+                      <parameter><link linkend="AgsEditor"><type>AgsEditor</type></link> **editor</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-write-editor" role="function">
+<title>ags_file_write_editor&#160;()</title>
+<indexterm zone="ags-file-write-editor"><primary>ags_file_write_editor</primary></indexterm>
+<programlisting language="C"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+ags_file_write_editor (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                       <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *parent</parameter>,
+                       <parameter><link linkend="AgsEditor"><type>AgsEditor</type></link> *editor</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-read-toolbar" role="function">
+<title>ags_file_read_toolbar&#160;()</title>
+<indexterm zone="ags-file-read-toolbar"><primary>ags_file_read_toolbar</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_file_read_toolbar (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                       <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *node</parameter>,
+                       <parameter><link linkend="AgsToolbar"><type>AgsToolbar</type></link> **toolbar</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-write-toolbar" role="function">
+<title>ags_file_write_toolbar&#160;()</title>
+<indexterm zone="ags-file-write-toolbar"><primary>ags_file_write_toolbar</primary></indexterm>
+<programlisting language="C"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+ags_file_write_toolbar (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                        <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *parent</parameter>,
+                        <parameter><link linkend="AgsToolbar"><type>AgsToolbar</type></link> *toolbar</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-read-machine-selector" role="function">
+<title>ags_file_read_machine_selector&#160;()</title>
+<indexterm zone="ags-file-read-machine-selector"><primary>ags_file_read_machine_selector</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_file_read_machine_selector (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                                <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *parent</parameter>,
+                                <parameter><link linkend="AgsMachineSelector"><type>AgsMachineSelector</type></link> **machine_selector</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-write-machine-selector" role="function">
+<title>ags_file_write_machine_selector&#160;()</title>
+<indexterm zone="ags-file-write-machine-selector"><primary>ags_file_write_machine_selector</primary></indexterm>
+<programlisting language="C"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+ags_file_write_machine_selector (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                                 <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *node</parameter>,
+                                 <parameter><link linkend="AgsMachineSelector"><type>AgsMachineSelector</type></link> *machine_selector</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-read-notebook" role="function">
+<title>ags_file_read_notebook&#160;()</title>
+<indexterm zone="ags-file-read-notebook"><primary>ags_file_read_notebook</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_file_read_notebook (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                        <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *node</parameter>,
+                        <parameter><link linkend="AgsNotebook"><type>AgsNotebook</type></link> **notebook</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-write-notebook" role="function">
+<title>ags_file_write_notebook&#160;()</title>
+<indexterm zone="ags-file-write-notebook"><primary>ags_file_write_notebook</primary></indexterm>
+<programlisting language="C"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+ags_file_write_notebook (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                         <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *parent</parameter>,
+                         <parameter><link linkend="AgsNotebook"><type>AgsNotebook</type></link> *notebook</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-read-notebook-tab-list" role="function">
+<title>ags_file_read_notebook_tab_list&#160;()</title>
+<indexterm zone="ags-file-read-notebook-tab-list"><primary>ags_file_read_notebook_tab_list</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_file_read_notebook_tab_list (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                                 <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *node</parameter>,
+                                 <parameter><link linkend="GList"><type>GList</type></link> **notebook_tab_list</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-write-notebook-tab-list" role="function">
+<title>ags_file_write_notebook_tab_list&#160;()</title>
+<indexterm zone="ags-file-write-notebook-tab-list"><primary>ags_file_write_notebook_tab_list</primary></indexterm>
+<programlisting language="C"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+ags_file_write_notebook_tab_list (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                                  <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *parent</parameter>,
+                                  <parameter><link linkend="GList"><type>GList</type></link> *notebook_tab_list</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-read-notebook-tab" role="function">
+<title>ags_file_read_notebook_tab&#160;()</title>
+<indexterm zone="ags-file-read-notebook-tab"><primary>ags_file_read_notebook_tab</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_file_read_notebook_tab (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                            <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *node</parameter>,
+                            <parameter><link linkend="AgsNotebookTab"><type>AgsNotebookTab</type></link> **notebook_tab</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-write-notebook-tab" role="function">
+<title>ags_file_write_notebook_tab&#160;()</title>
+<indexterm zone="ags-file-write-notebook-tab"><primary>ags_file_write_notebook_tab</primary></indexterm>
+<programlisting language="C"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+ags_file_write_notebook_tab (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                             <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *parent</parameter>,
+                             <parameter><link linkend="AgsNotebookTab"><type>AgsNotebookTab</type></link> *notebook_tab</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-read-navigation" role="function">
+<title>ags_file_read_navigation&#160;()</title>
+<indexterm zone="ags-file-read-navigation"><primary>ags_file_read_navigation</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_file_read_navigation (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                          <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *node</parameter>,
+                          <parameter><link linkend="AgsNavigation"><type>AgsNavigation</type></link> **navigation</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-write-navigation" role="function">
+<title>ags_file_write_navigation&#160;()</title>
+<indexterm zone="ags-file-write-navigation"><primary>ags_file_write_navigation</primary></indexterm>
+<programlisting language="C"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+ags_file_write_navigation (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                           <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *parent</parameter>,
+                           <parameter><link linkend="AgsNavigation"><type>AgsNavigation</type></link> *navigation</parameter>);</programlisting>
+</refsect2>
+
+</refsect1>
+<refsect1 id="ags-ags-gsequencer-file-xml.other_details" role="details">
+<title role="details.title">Types and Values</title>
+
+</refsect1>
+
+</refentry>

@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsDevout">
+<refentry id="AgsDevout">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsDevout.top_of_page">AgsDevout</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsDevout.top_of_page">AgsDevout</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -14,451 +14,264 @@
 </refmeta>
 <refnamediv>
 <refname>AgsDevout</refname>
-<refpurpose></refpurpose>
+<refpurpose>Outputting to soundcard</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsDevout.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsDevout.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-DEVOUT-ERROR:CAPS">AGS_DEVOUT_ERROR</link></entry></row>
+<row><entry role="function_type"><link linkend="GQuark"><returnvalue>GQuark</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-devout-error-quark">ags_devout_error_quark</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsDevout"><returnvalue>AgsDevout</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-devout-new">ags_devout_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>#define             <link linkend="AGS-DEVOUT-DEFAULT-BPM:CAPS">AGS_DEVOUT_DEFAULT_BPM</link>
-#define             <link linkend="AGS-DEVOUT-DEFAULT-BUFFER-SIZE:CAPS">AGS_DEVOUT_DEFAULT_BUFFER_SIZE</link>
-#define             <link linkend="AGS-DEVOUT-DEFAULT-DELAY:CAPS">AGS_DEVOUT_DEFAULT_DELAY</link>
-#define             <link linkend="AGS-DEVOUT-DEFAULT-FORMAT:CAPS">AGS_DEVOUT_DEFAULT_FORMAT</link>
-#define             <link linkend="AGS-DEVOUT-DEFAULT-JIFFIE:CAPS">AGS_DEVOUT_DEFAULT_JIFFIE</link>
-#define             <link linkend="AGS-DEVOUT-DEFAULT-SAMPLERATE:CAPS">AGS_DEVOUT_DEFAULT_SAMPLERATE</link>
-#define             <link linkend="AGS-DEVOUT-DEFAULT-SCALE:CAPS">AGS_DEVOUT_DEFAULT_SCALE</link>
-#define             <link linkend="AGS-DEVOUT-DEFAULT-TACT:CAPS">AGS_DEVOUT_DEFAULT_TACT</link>
-#define             <link linkend="AGS-DEVOUT-DEFAULT-TACTRATE:CAPS">AGS_DEVOUT_DEFAULT_TACTRATE</link>
-#define             <link linkend="AGS-DEVOUT-DEFAULT-TACT-JIFFIE:CAPS">AGS_DEVOUT_DEFAULT_TACT_JIFFIE</link>
-#define             <link linkend="AGS-DEVOUT-ERROR:CAPS">AGS_DEVOUT_ERROR</link>
-#define             <link linkend="AGS-DEVOUT-PLAY:CAPS">AGS_DEVOUT_PLAY</link>                     (ptr)
-#define             <link linkend="AGS-DEVOUT-PLAY-DOMAIN:CAPS">AGS_DEVOUT_PLAY_DOMAIN</link>              (ptr)
-struct              <link linkend="AgsDevout">AgsDevout</link>;
-struct              <link linkend="AgsDevoutClass">AgsDevoutClass</link>;
-enum                <link linkend="AgsDevoutError">AgsDevoutError</link>;
-enum                <link linkend="AgsDevoutFlags">AgsDevoutFlags</link>;
-struct              <link linkend="AgsDevoutPlay">AgsDevoutPlay</link>;
-struct              <link linkend="AgsDevoutPlayDomain">AgsDevoutPlayDomain</link>;
-enum                <link linkend="AgsDevoutPlayFlags">AgsDevoutPlayFlags</link>;
-enum                <link linkend="AgsDevoutResolutionMode">AgsDevoutResolutionMode</link>;
-<link linkend="GQuark"><returnvalue>GQuark</returnvalue></link>              <link linkend="ags-devout-error-quark">ags_devout_error_quark</link>              ();
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-devout-list-cards">ags_devout_list_cards</link>               (<parameter><link linkend="GList"><type>GList</type></link> **card_id</parameter>,
-                                                         <parameter><link linkend="GList"><type>GList</type></link> **card_name</parameter>);
-<link linkend="AgsDevout"><returnvalue>AgsDevout</returnvalue></link> *         <link linkend="ags-devout-new">ags_devout_new</link>                      (<parameter><link linkend="GObject"><type>GObject</type></link> *ags_main</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-devout-note-offset-changed">ags_devout_note_offset_changed</link>      (<parameter><link linkend="AgsDevout"><type>AgsDevout</type></link> *devout</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> note_offset</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-devout-pcm-info">ags_devout_pcm_info</link>                 (<parameter><link linkend="char"><type>char</type></link> *card_id</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> *channels_min</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> *channels_max</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> *rate_min</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> *rate_max</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> *buffer_size_min</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> *buffer_size_max</parameter>,
-                                                         <parameter><link linkend="GError"><type>GError</type></link> **error</parameter>);
-<link linkend="AgsDevoutPlay"><returnvalue>AgsDevoutPlay</returnvalue></link> *     <link linkend="ags-devout-play-alloc">ags_devout_play_alloc</link>               ();
-<link linkend="AgsDevoutPlayDomain"><returnvalue>AgsDevoutPlayDomain</returnvalue></link> * <link linkend="ags-devout-play-domain-alloc">ags_devout_play_domain_alloc</link>      ();
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-devout-play-domain-free">ags_devout_play_domain_free</link>         (<parameter><link linkend="AgsDevoutPlayDomain"><type>AgsDevoutPlayDomain</type></link> *devout_play_domain</parameter>);
-<link linkend="AgsDevoutPlay"><returnvalue>AgsDevoutPlay</returnvalue></link> *     <link linkend="ags-devout-play-find-source">ags_devout_play_find_source</link>         (<parameter><link linkend="GList"><type>GList</type></link> *devout_play</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *source</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-devout-play-free">ags_devout_play_free</link>                (<parameter><link linkend="AgsDevoutPlay"><type>AgsDevoutPlay</type></link> *devout_play</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-devout-tic">ags_devout_tic</link>                      (<parameter><link linkend="AgsDevout"><type>AgsDevout</type></link> *devout</parameter>);
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsDevout.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsDevout.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AGS-DEVOUT-DEFAULT-BPM:CAPS" role="macro">
-<title>AGS_DEVOUT_DEFAULT_BPM</title>
-<indexterm zone="AGS-DEVOUT-DEFAULT-BPM:CAPS"><primary>AGS_DEVOUT_DEFAULT_BPM</primary></indexterm>
-<programlisting>#define AGS_DEVOUT_DEFAULT_BPM (120.0)
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AGS-DEVOUT-DEFAULT-BUFFER-SIZE:CAPS" role="macro">
-<title>AGS_DEVOUT_DEFAULT_BUFFER_SIZE</title>
-<indexterm zone="AGS-DEVOUT-DEFAULT-BUFFER-SIZE:CAPS"><primary>AGS_DEVOUT_DEFAULT_BUFFER_SIZE</primary></indexterm>
-<programlisting>#define AGS_DEVOUT_DEFAULT_BUFFER_SIZE (944)
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AGS-DEVOUT-DEFAULT-DELAY:CAPS" role="macro">
-<title>AGS_DEVOUT_DEFAULT_DELAY</title>
-<indexterm zone="AGS-DEVOUT-DEFAULT-DELAY:CAPS"><primary>AGS_DEVOUT_DEFAULT_DELAY</primary></indexterm>
-<programlisting>#define AGS_DEVOUT_DEFAULT_DELAY (AGS_DEVOUT_DEFAULT_JIFFIE * (60.0 / AGS_DEVOUT_DEFAULT_BPM))
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AGS-DEVOUT-DEFAULT-FORMAT:CAPS" role="macro">
-<title>AGS_DEVOUT_DEFAULT_FORMAT</title>
-<indexterm zone="AGS-DEVOUT-DEFAULT-FORMAT:CAPS"><primary>AGS_DEVOUT_DEFAULT_FORMAT</primary></indexterm>
-<programlisting>#define AGS_DEVOUT_DEFAULT_FORMAT (16)
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AGS-DEVOUT-DEFAULT-JIFFIE:CAPS" role="macro">
-<title>AGS_DEVOUT_DEFAULT_JIFFIE</title>
-<indexterm zone="AGS-DEVOUT-DEFAULT-JIFFIE:CAPS"><primary>AGS_DEVOUT_DEFAULT_JIFFIE</primary></indexterm>
-<programlisting>#define AGS_DEVOUT_DEFAULT_JIFFIE ((double) AGS_DEVOUT_DEFAULT_SAMPLERATE / (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE)
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AGS-DEVOUT-DEFAULT-SAMPLERATE:CAPS" role="macro">
-<title>AGS_DEVOUT_DEFAULT_SAMPLERATE</title>
-<indexterm zone="AGS-DEVOUT-DEFAULT-SAMPLERATE:CAPS"><primary>AGS_DEVOUT_DEFAULT_SAMPLERATE</primary></indexterm>
-<programlisting>#define AGS_DEVOUT_DEFAULT_SAMPLERATE (44100.0)
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AGS-DEVOUT-DEFAULT-SCALE:CAPS" role="macro">
-<title>AGS_DEVOUT_DEFAULT_SCALE</title>
-<indexterm zone="AGS-DEVOUT-DEFAULT-SCALE:CAPS"><primary>AGS_DEVOUT_DEFAULT_SCALE</primary></indexterm>
-<programlisting>#define AGS_DEVOUT_DEFAULT_SCALE (1.0)
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AGS-DEVOUT-DEFAULT-TACT:CAPS" role="macro">
-<title>AGS_DEVOUT_DEFAULT_TACT</title>
-<indexterm zone="AGS-DEVOUT-DEFAULT-TACT:CAPS"><primary>AGS_DEVOUT_DEFAULT_TACT</primary></indexterm>
-<programlisting>#define AGS_DEVOUT_DEFAULT_TACT (1.0 / 1.0)
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AGS-DEVOUT-DEFAULT-TACTRATE:CAPS" role="macro">
-<title>AGS_DEVOUT_DEFAULT_TACTRATE</title>
-<indexterm zone="AGS-DEVOUT-DEFAULT-TACTRATE:CAPS"><primary>AGS_DEVOUT_DEFAULT_TACTRATE</primary></indexterm>
-<programlisting>#define AGS_DEVOUT_DEFAULT_TACTRATE (1.0 / AGS_DEVOUT_DEFAULT_TACT_JIFFIE)
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AGS-DEVOUT-DEFAULT-TACT-JIFFIE:CAPS" role="macro">
-<title>AGS_DEVOUT_DEFAULT_TACT_JIFFIE</title>
-<indexterm zone="AGS-DEVOUT-DEFAULT-TACT-JIFFIE:CAPS"><primary>AGS_DEVOUT_DEFAULT_TACT_JIFFIE</primary></indexterm>
-<programlisting>#define AGS_DEVOUT_DEFAULT_TACT_JIFFIE (60.0 / AGS_DEVOUT_DEFAULT_BPM * AGS_DEVOUT_DEFAULT_TACT)
-</programlisting>
-<para>
-</para></refsect2>
+<refsect1 id="AgsDevout.properties" role="properties">
+<title role="properties.title">Properties</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="properties_type" colwidth="150px"/>
+<colspec colname="properties_name" colwidth="300px"/>
+<colspec colname="properties_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="property_type"><link linkend="AgsApplicationContext"><type>AgsApplicationContext</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsDevout--application-context">application-context</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="gpointer"><type>gpointer</type></link></entry><entry role="property_name"><link linkend="AgsDevout--attack">attack</link></entry><entry role="property_flags">Read</entry></row>
+<row><entry role="property_type"><link linkend="gdouble"><type>gdouble</type></link></entry><entry role="property_name"><link linkend="AgsDevout--bpm">bpm</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="gpointer"><type>gpointer</type></link></entry><entry role="property_name"><link linkend="AgsDevout--buffer">buffer</link></entry><entry role="property_flags">Read</entry></row>
+<row><entry role="property_type"><link linkend="guint"><type>guint</type></link></entry><entry role="property_name"><link linkend="AgsDevout--buffer-size">buffer-size</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="gchar"><type>gchar</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsDevout--device">device</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="guint"><type>guint</type></link></entry><entry role="property_name"><link linkend="AgsDevout--dsp-channels">dsp-channels</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="guint"><type>guint</type></link></entry><entry role="property_name"><link linkend="AgsDevout--format">format</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="guint"><type>guint</type></link></entry><entry role="property_name"><link linkend="AgsDevout--pcm-channels">pcm-channels</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="guint"><type>guint</type></link></entry><entry role="property_name"><link linkend="AgsDevout--samplerate">samplerate</link></entry><entry role="property_flags">Read / Write</entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsDevout.other" role="other_proto">
+<title role="other_proto.title">Types and Values</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="name" colwidth="150px"/>
+<colspec colname="description"/>
+<tbody>
+<row><entry role="datatype_keyword">enum</entry><entry role="function_name"><link linkend="AgsDevoutFlags">AgsDevoutFlags</link></entry></row>
+<row><entry role="datatype_keyword">enum</entry><entry role="function_name"><link linkend="AgsDevoutError">AgsDevoutError</link></entry></row>
+<row><entry role="datatype_keyword"></entry><entry role="function_name"><link linkend="AgsDevoutPlayDomain">AgsDevoutPlayDomain</link></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsDevout.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsDevout
+</screen>
+</refsect1>
+
+<refsect1 id="AgsDevout.includes"><title>Includes</title><synopsis>#include &lt;ags/audio/ags_devout.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsDevout.description" role="desc">
+<title role="desc.title">Description</title>
+<para><link linkend="AgsDevout"><type>AgsDevout</type></link> represents a soundcard and supports output.</para>
+
+</refsect1>
+<refsect1 id="AgsDevout.functions_details" role="details">
+<title role="details.title">Functions</title>
 <refsect2 id="AGS-DEVOUT-ERROR:CAPS" role="macro">
 <title>AGS_DEVOUT_ERROR</title>
 <indexterm zone="AGS-DEVOUT-ERROR:CAPS"><primary>AGS_DEVOUT_ERROR</primary></indexterm>
-<programlisting>#define AGS_DEVOUT_ERROR (ags_devout_error_quark())
+<programlisting language="C">#define AGS_DEVOUT_ERROR (ags_devout_error_quark())
 </programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AGS-DEVOUT-PLAY:CAPS" role="macro">
-<title>AGS_DEVOUT_PLAY()</title>
-<indexterm zone="AGS-DEVOUT-PLAY:CAPS"><primary>AGS_DEVOUT_PLAY</primary></indexterm>
-<programlisting>#define AGS_DEVOUT_PLAY(ptr)           ((AgsDevoutPlay *)(ptr))
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AGS-DEVOUT-PLAY-DOMAIN:CAPS" role="macro">
-<title>AGS_DEVOUT_PLAY_DOMAIN()</title>
-<indexterm zone="AGS-DEVOUT-PLAY-DOMAIN:CAPS"><primary>AGS_DEVOUT_PLAY_DOMAIN</primary></indexterm>
-<programlisting>#define AGS_DEVOUT_PLAY_DOMAIN(ptr)    ((AgsDevoutPlayDomain *)(ptr))
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsDevout" role="struct">
-<title>struct AgsDevout</title>
-<indexterm zone="AgsDevout"><primary>AgsDevout</primary></indexterm>
-<programlisting>struct AgsDevout {
-  GObject object;
+</refsect2>
+<refsect2 id="ags-devout-error-quark" role="function">
+<title>ags_devout_error_quark&#160;()</title>
+<indexterm zone="ags-devout-error-quark"><primary>ags_devout_error_quark</primary></indexterm>
+<programlisting language="C"><link linkend="GQuark"><returnvalue>GQuark</returnvalue></link>
+ags_devout_error_quark ();</programlisting>
+</refsect2>
+<refsect2 id="ags-devout-new" role="function" condition="since:0.3">
+<title>ags_devout_new&#160;()</title>
+<indexterm zone="ags-devout-new" role="0.3"><primary>ags_devout_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsDevout"><returnvalue>AgsDevout</returnvalue></link>&#160;*
+ags_devout_new (<parameter><link linkend="GObject"><type>GObject</type></link> *application_context</parameter>);</programlisting>
+<para>Creates an <link linkend="AgsDevout"><type>AgsDevout</type></link>, refering to <parameter>application_context</parameter>
+.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>application_context</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsApplicationContext"><type>AgsApplicationContext</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> a new <link linkend="AgsDevout"><type>AgsDevout</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.3</para></refsect2>
 
-  guint flags;
-
-  guint dsp_channels;
-  guint pcm_channels;
-  guint bits;
-  guint buffer_size;
-  guint frequency; // sample_rate
-
-  signed short** buffer;
-
-  double bpm; // beats per minute
-
-  gdouble *delay; // count of tics within buffer size
-  guint *attack; // where currently tic resides in the stream's offset, measured in 1/64 of bpm
-
-  gdouble delay_counter; // next time attack changeing when delay_counter == delay
-  guint tic_counter;
-
-  union{
-    struct _AgsAO{
-      ao_device *device;
-      ao_sample_format *format;
-      int driver_ao;
-    }ao;
-    struct _AgsOss{
-      int device_fd;
-      char *device;
-    }oss;
-    struct _AgsAlsa{
-      char *device;
-      int rc;
-      snd_pcm_t *handle;
-      snd_async_handler_t *ahandler;
-      snd_pcm_hw_params_t *params;
-    }alsa;
-  }out;
-
-  GObject *ags_main;
-  
-  GList *audio;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsDevoutClass" role="struct">
-<title>struct AgsDevoutClass</title>
-<indexterm zone="AgsDevoutClass"><primary>AgsDevoutClass</primary></indexterm>
-<programlisting>struct AgsDevoutClass {
-  GObjectClass object;
-
-  void (*play_init)(AgsDevout *devout,
-		    GError **error);
-  void (*play)(AgsDevout *devout,
-	       GError **error);
-  void (*stop)(AgsDevout *devout);
-
-  void (*tic)(AgsDevout *devout);
-
-  void (*note_offset_changed)(AgsDevout *devout, guint note_offset);
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsDevoutError" role="enum">
-<title>enum AgsDevoutError</title>
-<indexterm zone="AgsDevoutError"><primary>AgsDevoutError</primary></indexterm>
-<programlisting>typedef enum {
-  AGS_DEVOUT_ERROR_LOCKED_SOUNDCARD,
-} AgsDevoutError;
-</programlisting>
-<para>
-</para></refsect2>
+</refsect1>
+<refsect1 id="AgsDevout.other_details" role="details">
+<title role="details.title">Types and Values</title>
 <refsect2 id="AgsDevoutFlags" role="enum">
 <title>enum AgsDevoutFlags</title>
 <indexterm zone="AgsDevoutFlags"><primary>AgsDevoutFlags</primary></indexterm>
-<programlisting>typedef enum {
-  AGS_DEVOUT_BUFFER0                        = 1,
-  AGS_DEVOUT_BUFFER1                        = 1 &lt;&lt; 1,
-  AGS_DEVOUT_BUFFER2                        = 1 &lt;&lt; 2,
-  AGS_DEVOUT_BUFFER3                        = 1 &lt;&lt; 3,
-
-  AGS_DEVOUT_ATTACK_FIRST                   = 1 &lt;&lt; 4,
-
-  AGS_DEVOUT_PLAY                           = 1 &lt;&lt; 5,
-
-  AGS_DEVOUT_LIBAO                          = 1 &lt;&lt; 6,
-  AGS_DEVOUT_OSS                            = 1 &lt;&lt; 7,
-  AGS_DEVOUT_ALSA                           = 1 &lt;&lt; 8,
-
-  AGS_DEVOUT_SHUTDOWN                       = 1 &lt;&lt; 9,
-  AGS_DEVOUT_START_PLAY                     = 1 &lt;&lt; 10,
-
-  AGS_DEVOUT_NONBLOCKING                    = 1 &lt;&lt; 11,
-
-  AGS_DEVOUT_TIMING_SET_0                   = 1 &lt;&lt; 12,
-  AGS_DEVOUT_TIMING_SET_1                   = 1 &lt;&lt; 13,
-} AgsDevoutFlags;
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsDevoutPlay" role="struct">
-<title>struct AgsDevoutPlay</title>
-<indexterm zone="AgsDevoutPlay"><primary>AgsDevoutPlay</primary></indexterm>
-<programlisting>struct AgsDevoutPlay {
-  guint flags;
-
-  AgsIteratorThread **iterator_thread;
-
-  GObject *source;
-  guint audio_channel;
-
-  AgsRecallID **recall_id;
-};
-</programlisting>
-<para>
-A <link linkend="AgsDevoutPlay-struct"><type>AgsDevoutPlay</type></link> represents the play/recall in <link linkend="AgsChannel"><type>AgsChannel</type></link> or <link linkend="AgsRecall"><type>AgsRecall</type></link>
-scope to do output to device.
-</para><variablelist role="struct">
-<varlistentry><term><link linkend="guint"><type>guint</type></link>&#160;<structfield id="AgsDevoutPlay.flags">flags</structfield>;</term>
-<listitem><simpara>the internal state</simpara></listitem>
-</varlistentry>
-<varlistentry><term><link linkend="AgsIteratorThread"><type>AgsIteratorThread</type></link>&#160;**<structfield id="AgsDevoutPlay.iterator-thread">iterator_thread</structfield>;</term>
-<listitem><simpara>Super-threaded related <link linkend="AgsThread"><type>AgsThread</type></link>. Index 0 playback, 1 sequencer and 2 notation.</simpara></listitem>
-</varlistentry>
-<varlistentry><term><link linkend="GObject"><type>GObject</type></link>&#160;*<structfield id="AgsDevoutPlay.source">source</structfield>;</term>
-<listitem><simpara>either <link linkend="AgsChannel"><type>AgsChannel</type></link> or <link linkend="AgsRecall"><type>AgsRecall</type></link></simpara></listitem>
-</varlistentry>
-<varlistentry><term><link linkend="guint"><type>guint</type></link>&#160;<structfield id="AgsDevoutPlay.audio-channel">audio_channel</structfield>;</term>
-<listitem><simpara>destination audio channel</simpara></listitem>
-</varlistentry>
-<varlistentry><term><link linkend="AgsRecallID"><type>AgsRecallID</type></link>&#160;**<structfield id="AgsDevoutPlay.recall-id">recall_id</structfield>;</term>
-<listitem><simpara>array pointing to appropriate <link linkend="AgsRecallID"><type>AgsRecallID</type></link>. Index 0 playback, 1 sequencer and 2 notation.</simpara></listitem>
-</varlistentry>
-</variablelist></refsect2>
+<refsect3 role="enum_members">
+<title>Members</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="enum_members_name" colwidth="300px"/>
+<colspec colname="enum_members_description"/>
+<colspec colname="enum_members_annotations" colwidth="200px"/>
+<tbody>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-DEVOUT-BUFFER0:CAPS">AGS_DEVOUT_BUFFER0</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-DEVOUT-BUFFER1:CAPS">AGS_DEVOUT_BUFFER1</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-DEVOUT-BUFFER2:CAPS">AGS_DEVOUT_BUFFER2</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-DEVOUT-BUFFER3:CAPS">AGS_DEVOUT_BUFFER3</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-DEVOUT-ATTACK-FIRST:CAPS">AGS_DEVOUT_ATTACK_FIRST</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-DEVOUT-PLAY:CAPS">AGS_DEVOUT_PLAY</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-DEVOUT-OSS:CAPS">AGS_DEVOUT_OSS</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-DEVOUT-ALSA:CAPS">AGS_DEVOUT_ALSA</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-DEVOUT-SHUTDOWN:CAPS">AGS_DEVOUT_SHUTDOWN</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-DEVOUT-START-PLAY:CAPS">AGS_DEVOUT_START_PLAY</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-DEVOUT-NONBLOCKING:CAPS">AGS_DEVOUT_NONBLOCKING</para></entry>
+<entry /><entry />
+</row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
+<refsect2 id="AgsDevoutError" role="enum">
+<title>enum AgsDevoutError</title>
+<indexterm zone="AgsDevoutError"><primary>AgsDevoutError</primary></indexterm>
+<refsect3 role="enum_members">
+<title>Members</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="enum_members_name" colwidth="300px"/>
+<colspec colname="enum_members_description"/>
+<colspec colname="enum_members_annotations" colwidth="200px"/>
+<tbody>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-DEVOUT-ERROR-LOCKED-SOUNDCARD:CAPS">AGS_DEVOUT_ERROR_LOCKED_SOUNDCARD</para></entry>
+<entry /><entry />
+</row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
 <refsect2 id="AgsDevoutPlayDomain" role="struct">
-<title>struct AgsDevoutPlayDomain</title>
+<title>AgsDevoutPlayDomain</title>
 <indexterm zone="AgsDevoutPlayDomain"><primary>AgsDevoutPlayDomain</primary></indexterm>
-<programlisting>struct AgsDevoutPlayDomain {
-  GObject *domain;
-  
-  gboolean playback;
-  gboolean sequencer;
-  gboolean notation;
+<programlisting language="C">typedef struct _AgsDevoutPlayDomain AgsDevoutPlayDomain;</programlisting>
+</refsect2>
 
-  GList *devout_play;
-};
-</programlisting>
-<para>
-A <link linkend="AgsDevoutPlayDomain-struct"><type>AgsDevoutPlayDomain</type></link> represents the entire possible play/recall
-context.
-</para><variablelist role="struct">
-<varlistentry><term><link linkend="GObject"><type>GObject</type></link>&#160;*<structfield id="AgsDevoutPlayDomain.domain">domain</structfield>;</term>
-<listitem><simpara>the source</simpara></listitem>
-</varlistentry>
-<varlistentry><term><link linkend="gboolean"><type>gboolean</type></link>&#160;<structfield id="AgsDevoutPlayDomain.playback">playback</structfield>;</term>
-<listitem><simpara>if <link linkend="TRUE:CAPS"><literal>TRUE</literal></link> playback is on</simpara></listitem>
-</varlistentry>
-<varlistentry><term><link linkend="gboolean"><type>gboolean</type></link>&#160;<structfield id="AgsDevoutPlayDomain.sequencer">sequencer</structfield>;</term>
-<listitem><simpara>if <link linkend="TRUE:CAPS"><literal>TRUE</literal></link> sequencer is on</simpara></listitem>
-</varlistentry>
-<varlistentry><term><link linkend="gboolean"><type>gboolean</type></link>&#160;<structfield id="AgsDevoutPlayDomain.notation">notation</structfield>;</term>
-<listitem><simpara>if <link linkend="TRUE:CAPS"><literal>TRUE</literal></link> notation is on</simpara></listitem>
-</varlistentry>
-<varlistentry><term><link linkend="GList"><type>GList</type></link>&#160;*<structfield id="AgsDevoutPlayDomain.devout-play">devout_play</structfield>;</term>
-<listitem><simpara>a <link linkend="GList"><type>GList</type></link> of <link linkend="AgsDevoutPlay-struct"><type>AgsDevoutPlay</type></link></simpara></listitem>
-</varlistentry>
-</variablelist></refsect2>
-<refsect2 id="AgsDevoutPlayFlags" role="enum">
-<title>enum AgsDevoutPlayFlags</title>
-<indexterm zone="AgsDevoutPlayFlags"><primary>AgsDevoutPlayFlags</primary></indexterm>
-<programlisting>typedef enum {
-  AGS_DEVOUT_PLAY_DONE              = 1,
-  AGS_DEVOUT_PLAY_REMOVE            = 1 &lt;&lt;  1,
-  AGS_DEVOUT_PLAY_CHANNEL           = 1 &lt;&lt;  2,
-  AGS_DEVOUT_PLAY_PAD               = 1 &lt;&lt;  3,
-  AGS_DEVOUT_PLAY_AUDIO             = 1 &lt;&lt;  4,
-  AGS_DEVOUT_PLAY_PLAYBACK          = 1 &lt;&lt;  5,
-  AGS_DEVOUT_PLAY_SEQUENCER         = 1 &lt;&lt;  6,
-  AGS_DEVOUT_PLAY_NOTATION          = 1 &lt;&lt;  7,
-  AGS_DEVOUT_PLAY_SUPER_THREADED    = 1 &lt;&lt;  8,
-} AgsDevoutPlayFlags;
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsDevoutResolutionMode" role="enum">
-<title>enum AgsDevoutResolutionMode</title>
-<indexterm zone="AgsDevoutResolutionMode"><primary>AgsDevoutResolutionMode</primary></indexterm>
-<programlisting>typedef enum {
-  AGS_DEVOUT_RESOLUTION_8_BIT    = 8,
-  AGS_DEVOUT_RESOLUTION_16_BIT   = 16,
-  AGS_DEVOUT_RESOLUTION_24_BIT   = 24,
-  AGS_DEVOUT_RESOLUTION_32_BIT   = 32,
-  AGS_DEVOUT_RESOLUTION_64_BIT   = 64,
-} AgsDevoutResolutionMode;
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-devout-error-quark" role="function">
-<title>ags_devout_error_quark ()</title>
-<indexterm zone="ags-devout-error-quark"><primary>ags_devout_error_quark</primary></indexterm>
-<programlisting><link linkend="GQuark"><returnvalue>GQuark</returnvalue></link>              ags_devout_error_quark              ();</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-devout-list-cards" role="function">
-<title>ags_devout_list_cards ()</title>
-<indexterm zone="ags-devout-list-cards"><primary>ags_devout_list_cards</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_devout_list_cards               (<parameter><link linkend="GList"><type>GList</type></link> **card_id</parameter>,
-                                                         <parameter><link linkend="GList"><type>GList</type></link> **card_name</parameter>);</programlisting>
-<para>
-List available soundcards.
-</para></refsect2>
-<refsect2 id="ags-devout-new" role="function">
-<title>ags_devout_new ()</title>
-<indexterm zone="ags-devout-new"><primary>ags_devout_new</primary></indexterm>
-<programlisting><link linkend="AgsDevout"><returnvalue>AgsDevout</returnvalue></link> *         ags_devout_new                      (<parameter><link linkend="GObject"><type>GObject</type></link> *ags_main</parameter>);</programlisting>
-<para>
-Creates an <link linkend="AgsDevout"><type>AgsDevout</type></link>, refering to <parameter>ags_main</parameter>.
-</para><variablelist role="params">
-<varlistentry><term><emphasis>Returns</emphasis>&#160;:</term><listitem><simpara>a new <link linkend="AgsDevout"><type>AgsDevout</type></link></simpara></listitem></varlistentry>
-</variablelist></refsect2>
-<refsect2 id="ags-devout-note-offset-changed" role="function">
-<title>ags_devout_note_offset_changed ()</title>
-<indexterm zone="ags-devout-note-offset-changed"><primary>ags_devout_note_offset_changed</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_devout_note_offset_changed      (<parameter><link linkend="AgsDevout"><type>AgsDevout</type></link> *devout</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> note_offset</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-devout-pcm-info" role="function">
-<title>ags_devout_pcm_info ()</title>
-<indexterm zone="ags-devout-pcm-info"><primary>ags_devout_pcm_info</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_devout_pcm_info                 (<parameter><link linkend="char"><type>char</type></link> *card_id</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> *channels_min</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> *channels_max</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> *rate_min</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> *rate_max</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> *buffer_size_min</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> *buffer_size_max</parameter>,
-                                                         <parameter><link linkend="GError"><type>GError</type></link> **error</parameter>);</programlisting>
-<para>
-List available soundcards.
-</para></refsect2>
-<refsect2 id="ags-devout-play-alloc" role="function">
-<title>ags_devout_play_alloc ()</title>
-<indexterm zone="ags-devout-play-alloc"><primary>ags_devout_play_alloc</primary></indexterm>
-<programlisting><link linkend="AgsDevoutPlay"><returnvalue>AgsDevoutPlay</returnvalue></link> *     ags_devout_play_alloc               ();</programlisting>
-<para>
-Allocs an <link linkend="AgsDevoutPlay"><type>AgsDevoutPlay</type></link>.
-</para><variablelist role="params">
-<varlistentry><term><emphasis>Returns</emphasis>&#160;:</term><listitem><simpara>the devout play</simpara></listitem></varlistentry>
-</variablelist></refsect2>
-<refsect2 id="ags-devout-play-domain-alloc" role="function">
-<title>ags_devout_play_domain_alloc ()</title>
-<indexterm zone="ags-devout-play-domain-alloc"><primary>ags_devout_play_domain_alloc</primary></indexterm>
-<programlisting><link linkend="AgsDevoutPlayDomain"><returnvalue>AgsDevoutPlayDomain</returnvalue></link> * ags_devout_play_domain_alloc      ();</programlisting>
-<para>
-Allocs an <link linkend="AgsDevoutPlayDomain"><type>AgsDevoutPlayDomain</type></link>.
-</para><variablelist role="params">
-<varlistentry><term><emphasis>Returns</emphasis>&#160;:</term><listitem><simpara>the devout play domain</simpara></listitem></varlistentry>
-</variablelist></refsect2>
-<refsect2 id="ags-devout-play-domain-free" role="function">
-<title>ags_devout_play_domain_free ()</title>
-<indexterm zone="ags-devout-play-domain-free"><primary>ags_devout_play_domain_free</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_devout_play_domain_free         (<parameter><link linkend="AgsDevoutPlayDomain"><type>AgsDevoutPlayDomain</type></link> *devout_play_domain</parameter>);</programlisting>
-<para>
-Frees an <link linkend="AgsDevoutPlayDomain"><type>AgsDevoutPlayDomain</type></link>.
-</para></refsect2>
-<refsect2 id="ags-devout-play-find-source" role="function">
-<title>ags_devout_play_find_source ()</title>
-<indexterm zone="ags-devout-play-find-source"><primary>ags_devout_play_find_source</primary></indexterm>
-<programlisting><link linkend="AgsDevoutPlay"><returnvalue>AgsDevoutPlay</returnvalue></link> *     ags_devout_play_find_source         (<parameter><link linkend="GList"><type>GList</type></link> *devout_play</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *source</parameter>);</programlisting>
-<para>
-Find source
-</para><variablelist role="params">
-<varlistentry><term><emphasis>Returns</emphasis>&#160;:</term><listitem><simpara>the matching devout play</simpara></listitem></varlistentry>
-</variablelist></refsect2>
-<refsect2 id="ags-devout-play-free" role="function">
-<title>ags_devout_play_free ()</title>
-<indexterm zone="ags-devout-play-free"><primary>ags_devout_play_free</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_devout_play_free                (<parameter><link linkend="AgsDevoutPlay"><type>AgsDevoutPlay</type></link> *devout_play</parameter>);</programlisting>
-<para>
-Frees an <link linkend="AgsDevoutPlay"><type>AgsDevoutPlay</type></link>.
-</para></refsect2>
-<refsect2 id="ags-devout-tic" role="function">
-<title>ags_devout_tic ()</title>
-<indexterm zone="ags-devout-tic"><primary>ags_devout_tic</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_devout_tic                      (<parameter><link linkend="AgsDevout"><type>AgsDevout</type></link> *devout</parameter>);</programlisting>
-<para>
-The tic of devout.
-</para></refsect2>
+</refsect1>
+<refsect1 id="AgsDevout.property-details" role="property_details">
+<title role="property_details.title">Property Details</title>
+<refsect2 id="AgsDevout--application-context" role="property"><title>The <literal>“application-context”</literal> property</title>
+<indexterm zone="AgsDevout--application-context" role="0.4.0"><primary>AgsDevout:application-context</primary></indexterm>
+<programlisting>  “application-context”      <link linkend="AgsApplicationContext"><type>AgsApplicationContext</type></link>&#160;*</programlisting>
+<para>The assigned <link linkend="AgsApplicationContext"><type>AgsApplicationContext</type></link></para>
+<para>Flags: Read / Write</para>
+<para role="since">Since 0.4.0</para></refsect2>
+<refsect2 id="AgsDevout--attack" role="property"><title>The <literal>“attack”</literal> property</title>
+<indexterm zone="AgsDevout--attack"><primary>AgsDevout:attack</primary></indexterm>
+<programlisting>  “attack”                   <link linkend="gpointer"><type>gpointer</type></link></programlisting>
+<para>The attack to use for the buffer.</para><para>Flags: Read</para>
+</refsect2>
+<refsect2 id="AgsDevout--bpm" role="property"><title>The <literal>“bpm”</literal> property</title>
+<indexterm zone="AgsDevout--bpm" role="0.4.0"><primary>AgsDevout:bpm</primary></indexterm>
+<programlisting>  “bpm”                      <link linkend="gdouble"><type>gdouble</type></link></programlisting>
+<para>Attack of the buffer</para>
+<para>Flags: Read / Write</para>
+<para>Allowed values: [1,240]</para>
+<para>Default value: 120</para>
+<para role="since">Since 0.4.0</para></refsect2>
+<refsect2 id="AgsDevout--buffer" role="property"><title>The <literal>“buffer”</literal> property</title>
+<indexterm zone="AgsDevout--buffer" role="0.4.0"><primary>AgsDevout:buffer</primary></indexterm>
+<programlisting>  “buffer”                   <link linkend="gpointer"><type>gpointer</type></link></programlisting>
+<para>The buffer</para>
+<para>Flags: Read</para>
+<para role="since">Since 0.4.0</para></refsect2>
+<refsect2 id="AgsDevout--buffer-size" role="property"><title>The <literal>“buffer-size”</literal> property</title>
+<indexterm zone="AgsDevout--buffer-size" role="0.4.0"><primary>AgsDevout:buffer-size</primary></indexterm>
+<programlisting>  “buffer-size”              <link linkend="guint"><type>guint</type></link></programlisting>
+<para>The buffer size</para>
+<para>Flags: Read / Write</para>
+<para>Allowed values: [1,44100]</para>
+<para>Default value: 940</para>
+<para role="since">Since 0.4.0</para></refsect2>
+<refsect2 id="AgsDevout--device" role="property"><title>The <literal>“device”</literal> property</title>
+<indexterm zone="AgsDevout--device" role="0.4.0"><primary>AgsDevout:device</primary></indexterm>
+<programlisting>  “device”                   <link linkend="gchar"><type>gchar</type></link>&#160;*</programlisting>
+<para>The alsa soundcard indentifier</para>
+<para>Flags: Read / Write</para>
+<para>Default value: "hw:0"</para>
+<para role="since">Since 0.4.0</para></refsect2>
+<refsect2 id="AgsDevout--dsp-channels" role="property"><title>The <literal>“dsp-channels”</literal> property</title>
+<indexterm zone="AgsDevout--dsp-channels" role="0.4.0"><primary>AgsDevout:dsp-channels</primary></indexterm>
+<programlisting>  “dsp-channels”             <link linkend="guint"><type>guint</type></link></programlisting>
+<para>The dsp channel count</para>
+<para>Flags: Read / Write</para>
+<para>Allowed values: [1,64]</para>
+<para>Default value: 2</para>
+<para role="since">Since 0.4.0</para></refsect2>
+<refsect2 id="AgsDevout--format" role="property"><title>The <literal>“format”</literal> property</title>
+<indexterm zone="AgsDevout--format" role="0.4.0"><primary>AgsDevout:format</primary></indexterm>
+<programlisting>  “format”                   <link linkend="guint"><type>guint</type></link></programlisting>
+<para>The precision of the buffer</para>
+<para>Flags: Read / Write</para>
+<para>Allowed values: [1,64]</para>
+<para>Default value: 16</para>
+<para role="since">Since 0.4.0</para></refsect2>
+<refsect2 id="AgsDevout--pcm-channels" role="property"><title>The <literal>“pcm-channels”</literal> property</title>
+<indexterm zone="AgsDevout--pcm-channels" role="0.4.0"><primary>AgsDevout:pcm-channels</primary></indexterm>
+<programlisting>  “pcm-channels”             <link linkend="guint"><type>guint</type></link></programlisting>
+<para>The pcm channel count</para>
+<para>Flags: Read / Write</para>
+<para>Allowed values: [1,64]</para>
+<para>Default value: 2</para>
+<para role="since">Since 0.4.0</para></refsect2>
+<refsect2 id="AgsDevout--samplerate" role="property"><title>The <literal>“samplerate”</literal> property</title>
+<indexterm zone="AgsDevout--samplerate" role="0.4.0"><primary>AgsDevout:samplerate</primary></indexterm>
+<programlisting>  “samplerate”               <link linkend="guint"><type>guint</type></link></programlisting>
+<para>The samplerate</para>
+<para>Flags: Read / Write</para>
+<para>Allowed values: [8000,96000]</para>
+<para>Default value: 44100</para>
+<para role="since">Since 0.4.0</para></refsect2>
 
 </refsect1>
 

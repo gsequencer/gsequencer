@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsScrollOnPlay">
+<refentry id="AgsScrollOnPlay">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsScrollOnPlay.top_of_page">AgsScrollOnPlay</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsScrollOnPlay.top_of_page">AgsScrollOnPlay</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -14,51 +14,68 @@
 </refmeta>
 <refnamediv>
 <refname>AgsScrollOnPlay</refname>
-<refpurpose></refpurpose>
+<refpurpose>scrolls the editor</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsScrollOnPlay.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsScrollOnPlay.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="AgsScrollOnPlay"><returnvalue>AgsScrollOnPlay</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-scroll-on-play-new">ags_scroll_on_play_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>struct              <link linkend="AgsScrollOnPlay">AgsScrollOnPlay</link>;
-struct              <link linkend="AgsScrollOnPlayClass">AgsScrollOnPlayClass</link>;
-<link linkend="AgsScrollOnPlay"><returnvalue>AgsScrollOnPlay</returnvalue></link> *   <link linkend="ags-scroll-on-play-new">ags_scroll_on_play_new</link>              (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *editor</parameter>);
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsScrollOnPlay.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsScrollOnPlay.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AgsScrollOnPlay" role="struct">
-<title>struct AgsScrollOnPlay</title>
-<indexterm zone="AgsScrollOnPlay"><primary>AgsScrollOnPlay</primary></indexterm>
-<programlisting>struct AgsScrollOnPlay {
-  AgsTask task;
+<refsect1 id="AgsScrollOnPlay.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsTask">AgsTask</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsScrollOnPlay
+</screen>
+</refsect1>
 
-  GtkWidget *editor;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsScrollOnPlayClass" role="struct">
-<title>struct AgsScrollOnPlayClass</title>
-<indexterm zone="AgsScrollOnPlayClass"><primary>AgsScrollOnPlayClass</primary></indexterm>
-<programlisting>struct AgsScrollOnPlayClass {
-  AgsTaskClass task;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-scroll-on-play-new" role="function">
-<title>ags_scroll_on_play_new ()</title>
-<indexterm zone="ags-scroll-on-play-new"><primary>ags_scroll_on_play_new</primary></indexterm>
-<programlisting><link linkend="AgsScrollOnPlay"><returnvalue>AgsScrollOnPlay</returnvalue></link> *   ags_scroll_on_play_new              (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *editor</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<refsect1 id="AgsScrollOnPlay.includes"><title>Includes</title><synopsis>#include &lt;ags/audio/task/ags_scroll_on_play.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsScrollOnPlay.description" role="desc">
+<title role="desc.title">Description</title>
+<para>The <link linkend="AgsScrollOnPlay"><type>AgsScrollOnPlay</type></link> task scrolls the specified <link linkend="AgsEditor"><type>AgsEditor</type></link>.</para>
+
+</refsect1>
+<refsect1 id="AgsScrollOnPlay.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-scroll-on-play-new" role="function" condition="since:0.4">
+<title>ags_scroll_on_play_new&#160;()</title>
+<indexterm zone="ags-scroll-on-play-new" role="0.4"><primary>ags_scroll_on_play_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsScrollOnPlay"><returnvalue>AgsScrollOnPlay</returnvalue></link>&#160;*
+ags_scroll_on_play_new (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *editor</parameter>);</programlisting>
+<para>Creates an <link linkend="AgsScrollOnPlay"><type>AgsScrollOnPlay</type></link>.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>editor</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsEditor"><type>AgsEditor</type></link> to scroll</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> an new <link linkend="AgsScrollOnPlay"><type>AgsScrollOnPlay</type></link>.</para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsScrollOnPlay.other_details" role="details">
+<title role="details.title">Types and Values</title>
 
 </refsect1>
 

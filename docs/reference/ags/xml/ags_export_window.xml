@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsExportWindow">
+<refentry id="AgsExportWindow">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsExportWindow.top_of_page">AgsExportWindow</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsExportWindow.top_of_page">AgsExportWindow</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -14,76 +14,110 @@
 </refmeta>
 <refnamediv>
 <refname>AgsExportWindow</refname>
-<refpurpose></refpurpose>
+<refpurpose>The export dialog</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsExportWindow.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsExportWindow.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="AgsExportWindow"><returnvalue>AgsExportWindow</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-export-window-new">ags_export_window_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>struct              <link linkend="AgsExportWindow">AgsExportWindow</link>;
-struct              <link linkend="AgsExportWindowClass">AgsExportWindowClass</link>;
-enum                <link linkend="AgsExportWindowFlags">AgsExportWindowFlags</link>;
-<link linkend="AgsExportWindow"><returnvalue>AgsExportWindow</returnvalue></link> *   <link linkend="ags-export-window-new">ags_export_window_new</link>               ();
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsExportWindow.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsExportWindow.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AgsExportWindow" role="struct">
-<title>struct AgsExportWindow</title>
-<indexterm zone="AgsExportWindow"><primary>AgsExportWindow</primary></indexterm>
-<programlisting>struct AgsExportWindow {
-  GtkWindow window;
+<refsect1 id="AgsExportWindow.properties" role="properties">
+<title role="properties.title">Properties</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="properties_type" colwidth="150px"/>
+<colspec colname="properties_name" colwidth="300px"/>
+<colspec colname="properties_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="property_type"><link linkend="GObject"><type>GObject</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsExportWindow--soundcard">soundcard</link></entry><entry role="property_flags">Read / Write</entry></row>
 
-  guint flags;
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsExportWindow.other" role="other_proto">
+<title role="other_proto.title">Types and Values</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="name" colwidth="150px"/>
+<colspec colname="description"/>
+<tbody>
+<row><entry role="datatype_keyword">enum</entry><entry role="function_name"><link linkend="AgsExportWindowFlags">AgsExportWindowFlags</link></entry></row>
 
-  GObject *ags_main;
-  AgsDevout *devout;
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsExportWindow.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GInitiallyUnowned">GInitiallyUnowned</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkObject">GtkObject</link>
+            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkWidget">GtkWidget</link>
+                <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkContainer">GtkContainer</link>
+                    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkBin">GtkBin</link>
+                        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkWindow">GtkWindow</link>
+                            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsExportWindow
+</screen>
+</refsect1>
 
-  GtkCheckButton *live_export;
+<refsect1 id="AgsExportWindow.includes"><title>Includes</title><synopsis>#include &lt;ags/X/ags_export_window.h&gt;
+</synopsis></refsect1>
 
-  GtkEntry *filename;
-  GtkFileChooserButton *file_chooser_button;
+<refsect1 id="AgsExportWindow.description" role="desc">
+<title role="desc.title">Description</title>
+<para><link linkend="AgsExportWindow"><type>AgsExportWindow</type></link> lets you export to audio files. Currently only
+WAV supported.</para>
 
-  GtkComboBoxText *mode;
-  GtkSpinButton *tact;
-  GtkLabel *duration;
-  GtkComboBoxText *output_format;
+</refsect1>
+<refsect1 id="AgsExportWindow.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-export-window-new" role="function">
+<title>ags_export_window_new&#160;()</title>
+<indexterm zone="ags-export-window-new"><primary>ags_export_window_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsExportWindow"><returnvalue>AgsExportWindow</returnvalue></link>&#160;*
+ags_export_window_new ();</programlisting>
+</refsect2>
 
-  GtkToggleButton *export;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsExportWindowClass" role="struct">
-<title>struct AgsExportWindowClass</title>
-<indexterm zone="AgsExportWindowClass"><primary>AgsExportWindowClass</primary></indexterm>
-<programlisting>struct AgsExportWindowClass {
-  GtkWindowClass window;
-};
-</programlisting>
-<para>
-</para></refsect2>
+</refsect1>
+<refsect1 id="AgsExportWindow.other_details" role="details">
+<title role="details.title">Types and Values</title>
 <refsect2 id="AgsExportWindowFlags" role="enum">
 <title>enum AgsExportWindowFlags</title>
 <indexterm zone="AgsExportWindowFlags"><primary>AgsExportWindowFlags</primary></indexterm>
-<programlisting>typedef enum {
-  AGS_EXPORT_WINDOW_LIVE_EXPORT   = 1,
-} AgsExportWindowFlags;
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-export-window-new" role="function">
-<title>ags_export_window_new ()</title>
-<indexterm zone="ags-export-window-new"><primary>ags_export_window_new</primary></indexterm>
-<programlisting><link linkend="AgsExportWindow"><returnvalue>AgsExportWindow</returnvalue></link> *   ags_export_window_new               ();</programlisting>
-<para>
-</para></refsect2>
+<refsect3 role="enum_members">
+<title>Members</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="enum_members_name" colwidth="300px"/>
+<colspec colname="enum_members_description"/>
+<colspec colname="enum_members_annotations" colwidth="200px"/>
+<tbody>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-EXPORT-WINDOW-LIVE-EXPORT:CAPS">AGS_EXPORT_WINDOW_LIVE_EXPORT</para></entry>
+<entry /><entry />
+</row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
+
+</refsect1>
+<refsect1 id="AgsExportWindow.property-details" role="property_details">
+<title role="property_details.title">Property Details</title>
+<refsect2 id="AgsExportWindow--soundcard" role="property"><title>The <literal>“soundcard”</literal> property</title>
+<indexterm zone="AgsExportWindow--soundcard" role="0.4"><primary>AgsExportWindow:soundcard</primary></indexterm>
+<programlisting>  “soundcard”                <link linkend="GObject"><type>GObject</type></link>&#160;*</programlisting>
+<para>The assigned <link linkend="AgsSoundcard"><type>AgsSoundcard</type></link> acting as default sink.</para>
+<para>Flags: Read / Write</para>
+<para role="since">Since 0.4</para></refsect2>
 
 </refsect1>
 

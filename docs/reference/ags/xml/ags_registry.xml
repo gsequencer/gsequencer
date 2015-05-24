@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsRegistry">
+<refentry id="AgsRegistry">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsRegistry.top_of_page">AgsRegistry</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsRegistry.top_of_page">AgsRegistry</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -17,119 +17,109 @@
 <refpurpose></refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsRegistry.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsRegistry.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="AgsRegistryEntry"><returnvalue>AgsRegistryEntry</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-registry-entry-alloc">ags_registry_entry_alloc</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-registry-add">ags_registry_add</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsRegistryEntry"><returnvalue>AgsRegistryEntry</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-registry-entry-find">ags_registry_entry_find</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="xmlrpc-value"><returnvalue>xmlrpc_value</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-registry-entry-bulk">ags_registry_entry_bulk</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsRegistry"><returnvalue>AgsRegistry</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-registry-new">ags_registry_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>#define             <link linkend="AGS-REGISTRY-DEFAULT-ID-LENGTH:CAPS">AGS_REGISTRY_DEFAULT_ID_LENGTH</link>
-struct              <link linkend="AgsRegistry">AgsRegistry</link>;
-struct              <link linkend="AgsRegistryClass">AgsRegistryClass</link>;
-struct              <link linkend="AgsRegistryEntry">AgsRegistryEntry</link>;
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-registry-add">ags_registry_add</link>                    (<parameter><link linkend="AgsRegistry"><type>AgsRegistry</type></link> *registry</parameter>,
-                                                         <parameter><link linkend="AgsRegistryEntry"><type>AgsRegistryEntry</type></link> *registry_entry</parameter>);
-<link linkend="AgsRegistryEntry"><returnvalue>AgsRegistryEntry</returnvalue></link> *  <link linkend="ags-registry-entry-alloc">ags_registry_entry_alloc</link>            (<parameter><link linkend="AgsRegistry"><type>AgsRegistry</type></link> *registry</parameter>);
-<link linkend="xmlrpc-value"><returnvalue>xmlrpc_value</returnvalue></link> *      <link linkend="ags-registry-entry-bulk">ags_registry_entry_bulk</link>             (<parameter><link linkend="xmlrpc-env"><type>xmlrpc_env</type></link> *env</parameter>,
-                                                         <parameter><link linkend="xmlrpc-value"><type>xmlrpc_value</type></link> *param_array</parameter>,
-                                                         <parameter><link linkend="void"><type>void</type></link> *server_info</parameter>);
-<link linkend="AgsRegistryEntry"><returnvalue>AgsRegistryEntry</returnvalue></link> *  <link linkend="ags-registry-entry-find">ags_registry_entry_find</link>             (<parameter><link linkend="AgsRegistry"><type>AgsRegistry</type></link> *registry</parameter>,
-                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *id</parameter>);
-<link linkend="AgsRegistry"><returnvalue>AgsRegistry</returnvalue></link> *       <link linkend="ags-registry-new">ags_registry_new</link>                    ();
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsRegistry.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsRegistry.details" role="details">
-<title role="details.title">Details</title>
+<refsect1 id="AgsRegistry.other" role="other_proto">
+<title role="other_proto.title">Types and Values</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="name" colwidth="150px"/>
+<colspec colname="description"/>
+<tbody>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-REGISTRY-DEFAULT-ID-LENGTH:CAPS">AGS_REGISTRY_DEFAULT_ID_LENGTH</link></entry></row>
+<row><entry role="datatype_keyword">struct</entry><entry role="function_name"><link linkend="AgsRegistryEntry">AgsRegistryEntry</link></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsRegistry.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsRegistry
+</screen>
+</refsect1>
+
+
+<refsect1 id="AgsRegistry.description" role="desc">
+<title role="desc.title">Description</title>
+
+</refsect1>
+<refsect1 id="AgsRegistry.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-registry-entry-alloc" role="function">
+<title>ags_registry_entry_alloc&#160;()</title>
+<indexterm zone="ags-registry-entry-alloc"><primary>ags_registry_entry_alloc</primary></indexterm>
+<programlisting language="C"><link linkend="AgsRegistryEntry"><returnvalue>AgsRegistryEntry</returnvalue></link>&#160;*
+ags_registry_entry_alloc (<parameter><link linkend="AgsRegistry"><type>AgsRegistry</type></link> *registry</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-registry-add" role="function">
+<title>ags_registry_add&#160;()</title>
+<indexterm zone="ags-registry-add"><primary>ags_registry_add</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_registry_add (<parameter><link linkend="AgsRegistry"><type>AgsRegistry</type></link> *registry</parameter>,
+                  <parameter><link linkend="AgsRegistryEntry"><type>AgsRegistryEntry</type></link> *registry_entry</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-registry-entry-find" role="function">
+<title>ags_registry_entry_find&#160;()</title>
+<indexterm zone="ags-registry-entry-find"><primary>ags_registry_entry_find</primary></indexterm>
+<programlisting language="C"><link linkend="AgsRegistryEntry"><returnvalue>AgsRegistryEntry</returnvalue></link>&#160;*
+ags_registry_entry_find (<parameter><link linkend="AgsRegistry"><type>AgsRegistry</type></link> *registry</parameter>,
+                         <parameter><link linkend="gchar"><type>gchar</type></link> *id</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-registry-entry-bulk" role="function">
+<title>ags_registry_entry_bulk&#160;()</title>
+<indexterm zone="ags-registry-entry-bulk"><primary>ags_registry_entry_bulk</primary></indexterm>
+<programlisting language="C"><link linkend="xmlrpc-value"><returnvalue>xmlrpc_value</returnvalue></link>&#160;*
+ags_registry_entry_bulk (<parameter><link linkend="xmlrpc-env"><type>xmlrpc_env</type></link> *env</parameter>,
+                         <parameter><link linkend="xmlrpc-value"><type>xmlrpc_value</type></link> *param_array</parameter>,
+                         <parameter><link linkend="void"><type>void</type></link> *server_info</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-registry-new" role="function">
+<title>ags_registry_new&#160;()</title>
+<indexterm zone="ags-registry-new"><primary>ags_registry_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsRegistry"><returnvalue>AgsRegistry</returnvalue></link>&#160;*
+ags_registry_new ();</programlisting>
+</refsect2>
+
+</refsect1>
+<refsect1 id="AgsRegistry.other_details" role="details">
+<title role="details.title">Types and Values</title>
 <refsect2 id="AGS-REGISTRY-DEFAULT-ID-LENGTH:CAPS" role="macro">
 <title>AGS_REGISTRY_DEFAULT_ID_LENGTH</title>
 <indexterm zone="AGS-REGISTRY-DEFAULT-ID-LENGTH:CAPS"><primary>AGS_REGISTRY_DEFAULT_ID_LENGTH</primary></indexterm>
-<programlisting>#define AGS_REGISTRY_DEFAULT_ID_LENGTH 16
+<programlisting language="C">#define AGS_REGISTRY_DEFAULT_ID_LENGTH 16
 </programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsRegistry" role="struct">
-<title>struct AgsRegistry</title>
-<indexterm zone="AgsRegistry"><primary>AgsRegistry</primary></indexterm>
-<programlisting>struct AgsRegistry {
-  GObject object;
-
-  guint flags;
-
-  pthread_mutex_t mutex;
-
-  AgsFile *previous;
-  AgsFile *current;
-
-#ifdef AGS_WITH_XMLRPC_C
-  xmlrpc_registry *registry;
-#endif
-
-  GObject *server;
-
-  guint id_length;
-  guint counter;
-
-  GList *entry;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsRegistryClass" role="struct">
-<title>struct AgsRegistryClass</title>
-<indexterm zone="AgsRegistryClass"><primary>AgsRegistryClass</primary></indexterm>
-<programlisting>struct AgsRegistryClass {
-  GObjectClass object;
-};
-</programlisting>
-<para>
-</para></refsect2>
+</refsect2>
 <refsect2 id="AgsRegistryEntry" role="struct">
 <title>struct AgsRegistryEntry</title>
 <indexterm zone="AgsRegistryEntry"><primary>AgsRegistryEntry</primary></indexterm>
-<programlisting>struct AgsRegistryEntry {
+<programlisting language="C">struct AgsRegistryEntry {
   gchar *id;
   GValue entry;
 };
 </programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-registry-add" role="function">
-<title>ags_registry_add ()</title>
-<indexterm zone="ags-registry-add"><primary>ags_registry_add</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_registry_add                    (<parameter><link linkend="AgsRegistry"><type>AgsRegistry</type></link> *registry</parameter>,
-                                                         <parameter><link linkend="AgsRegistryEntry"><type>AgsRegistryEntry</type></link> *registry_entry</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-registry-entry-alloc" role="function">
-<title>ags_registry_entry_alloc ()</title>
-<indexterm zone="ags-registry-entry-alloc"><primary>ags_registry_entry_alloc</primary></indexterm>
-<programlisting><link linkend="AgsRegistryEntry"><returnvalue>AgsRegistryEntry</returnvalue></link> *  ags_registry_entry_alloc            (<parameter><link linkend="AgsRegistry"><type>AgsRegistry</type></link> *registry</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-registry-entry-bulk" role="function">
-<title>ags_registry_entry_bulk ()</title>
-<indexterm zone="ags-registry-entry-bulk"><primary>ags_registry_entry_bulk</primary></indexterm>
-<programlisting><link linkend="xmlrpc-value"><returnvalue>xmlrpc_value</returnvalue></link> *      ags_registry_entry_bulk             (<parameter><link linkend="xmlrpc-env"><type>xmlrpc_env</type></link> *env</parameter>,
-                                                         <parameter><link linkend="xmlrpc-value"><type>xmlrpc_value</type></link> *param_array</parameter>,
-                                                         <parameter><link linkend="void"><type>void</type></link> *server_info</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-registry-entry-find" role="function">
-<title>ags_registry_entry_find ()</title>
-<indexterm zone="ags-registry-entry-find"><primary>ags_registry_entry_find</primary></indexterm>
-<programlisting><link linkend="AgsRegistryEntry"><returnvalue>AgsRegistryEntry</returnvalue></link> *  ags_registry_entry_find             (<parameter><link linkend="AgsRegistry"><type>AgsRegistry</type></link> *registry</parameter>,
-                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *id</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-registry-new" role="function">
-<title>ags_registry_new ()</title>
-<indexterm zone="ags-registry-new"><primary>ags_registry_new</primary></indexterm>
-<programlisting><link linkend="AgsRegistry"><returnvalue>AgsRegistry</returnvalue></link> *       ags_registry_new                    ();</programlisting>
-<para>
-</para></refsect2>
+</refsect2>
 
 </refsect1>
 

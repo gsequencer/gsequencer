@@ -502,11 +502,11 @@ ags_audio_application_context_read(AgsFile *file, xmlNode *node, GObject **appli
   while(child != NULL){
     if(child->type == XML_ELEMENT_NODE){
       if(!xmlStrncmp("ags-devout-list\0",
-			   child->name,
-			   16)){
-	ags_file_read_devout_list(file,
-				  child,
-				  &(gobject->soundcard));
+		     child->name,
+		     16)){
+	ags_file_read_soundcard_list(file,
+				     child,
+				     &(gobject->soundcard));
       }
     }
 
@@ -558,9 +558,9 @@ ags_audio_application_context_write(AgsFile *file, xmlNode *parent, GObject *app
   xmlAddChild(parent,
 	      node);
 
-  ags_file_write_devout_list(file,
-			     node,
-			     AGS_AUDIO_APPLICATION_CONTEXT(application_context)->soundcard);
+  ags_file_write_soundcard_list(file,
+				node,
+				AGS_AUDIO_APPLICATION_CONTEXT(application_context)->soundcard);
 
   return(node);
 }

@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsDelayAudioRun">
+<refentry id="AgsDelayAudioRun">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsDelayAudioRun.top_of_page">AgsDelayAudioRun</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsDelayAudioRun.top_of_page">AgsDelayAudioRun</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -14,158 +14,493 @@
 </refmeta>
 <refnamediv>
 <refname>AgsDelayAudioRun</refname>
-<refpurpose></refpurpose>
+<refpurpose>delay</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsDelayAudioRun.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsDelayAudioRun.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-delay-audio-run-notation-alloc-output">ags_delay_audio_run_notation_alloc_output</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-delay-audio-run-notation-alloc-input">ags_delay_audio_run_notation_alloc_input</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-delay-audio-run-notation-count">ags_delay_audio_run_notation_count</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-delay-audio-run-sequencer-alloc-output">ags_delay_audio_run_sequencer_alloc_output</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-delay-audio-run-sequencer-alloc-input">ags_delay_audio_run_sequencer_alloc_input</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-delay-audio-run-sequencer-count">ags_delay_audio_run_sequencer_count</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsDelayAudioRun"><returnvalue>AgsDelayAudioRun</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-delay-audio-run-new">ags_delay_audio_run_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>struct              <link linkend="AgsDelayAudioRun">AgsDelayAudioRun</link>;
-struct              <link linkend="AgsDelayAudioRunClass">AgsDelayAudioRunClass</link>;
-<link linkend="AgsDelayAudioRun"><returnvalue>AgsDelayAudioRun</returnvalue></link> *  <link linkend="ags-delay-audio-run-new">ags_delay_audio_run_new</link>             ();
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-delay-audio-run-notation-alloc-input">ags_delay_audio_run_notation_alloc_input</link>
-                                                        (<parameter><link linkend="AgsDelayAudioRun"><type>AgsDelayAudioRun</type></link> *delay_audio_run</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> run_order</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> delay</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> attack</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-delay-audio-run-notation-alloc-output">ags_delay_audio_run_notation_alloc_output</link>
-                                                        (<parameter><link linkend="AgsDelayAudioRun"><type>AgsDelayAudioRun</type></link> *delay_audio_run</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> run_order</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> delay</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> attack</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-delay-audio-run-notation-count">ags_delay_audio_run_notation_count</link>  (<parameter><link linkend="AgsDelayAudioRun"><type>AgsDelayAudioRun</type></link> *delay_audio_run</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> run_order</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> delay</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> attack</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-delay-audio-run-sequencer-alloc-input">ags_delay_audio_run_sequencer_alloc_input</link>
-                                                        (<parameter><link linkend="AgsDelayAudioRun"><type>AgsDelayAudioRun</type></link> *delay_audio_run</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> run_order</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> delay</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> attack</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-delay-audio-run-sequencer-alloc-output">ags_delay_audio_run_sequencer_alloc_output</link>
-                                                        (<parameter><link linkend="AgsDelayAudioRun"><type>AgsDelayAudioRun</type></link> *delay_audio_run</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> run_order</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> delay</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> attack</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-delay-audio-run-sequencer-count">ags_delay_audio_run_sequencer_count</link> (<parameter><link linkend="AgsDelayAudioRun"><type>AgsDelayAudioRun</type></link> *delay_audio_run</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> run_order</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> delay</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> attack</parameter>);
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsDelayAudioRun.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsDelayAudioRun.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AgsDelayAudioRun" role="struct">
-<title>struct AgsDelayAudioRun</title>
-<indexterm zone="AgsDelayAudioRun"><primary>AgsDelayAudioRun</primary></indexterm>
-<programlisting>struct AgsDelayAudioRun {
-  AgsRecallAudioRun recall_audio_run;
+<refsect1 id="AgsDelayAudioRun.signals" role="signal_proto">
+<title role="signal_proto.title">Signals</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="signals_return" colwidth="150px"/>
+<colspec colname="signals_name" colwidth="300px"/>
+<colspec colname="signals_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsDelayAudioRun-notation-alloc-input">notation-alloc-input</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsDelayAudioRun-notation-alloc-output">notation-alloc-output</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsDelayAudioRun-notation-count">notation-count</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsDelayAudioRun-sequencer-alloc-input">sequencer-alloc-input</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsDelayAudioRun-sequencer-alloc-output">sequencer-alloc-output</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsDelayAudioRun-sequencer-count">sequencer-count</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
 
-  guint dependency_ref;
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsDelayAudioRun.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsRecall">AgsRecall</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsRecallAudioRun">AgsRecallAudioRun</link>
+            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsDelayAudioRun
+</screen>
+</refsect1>
 
-  guint hide_ref;
-  guint hide_ref_counter;
-  
-  guint notation_counter;
-  guint sequencer_counter;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsDelayAudioRunClass" role="struct">
-<title>struct AgsDelayAudioRunClass</title>
-<indexterm zone="AgsDelayAudioRunClass"><primary>AgsDelayAudioRunClass</primary></indexterm>
-<programlisting>struct AgsDelayAudioRunClass {
-  AgsRecallAudioRunClass recall_audio_run;
+<refsect1 id="AgsDelayAudioRun.includes"><title>Includes</title><synopsis>#include &lt;ags/audio/recall/ags_delay_audio_run.h&gt;
+</synopsis></refsect1>
 
-  void (*notation_alloc_output)(AgsDelayAudioRun *delay_audio_run, guint run_order,
-				guint delay, guint attack);
-  void (*notation_alloc_input)(AgsDelayAudioRun *delay_audio_run, guint run_order,
-			       guint delay, guint attack);
-  void (*notation_count)(AgsDelayAudioRun *delay_audio_run, guint run_order,
-			 guint delay, guint attack);
+<refsect1 id="AgsDelayAudioRun.description" role="desc">
+<title role="desc.title">Description</title>
+<para>The <link linkend="AgsDelayNotationAudioRun"><type>AgsDelayNotationAudioRun</type></link> class delays.</para>
 
-  void (*sequencer_alloc_output)(AgsDelayAudioRun *delay_audio_run, guint run_order,
-				 guint delay, guint attack);
-  void (*sequencer_alloc_input)(AgsDelayAudioRun *delay_audio_run, guint run_order,
-				guint delay, guint attack);
-  void (*sequencer_count)(AgsDelayAudioRun *delay_audio_run, guint run_order,
-			  guint delay, guint attack);
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-delay-audio-run-new" role="function">
-<title>ags_delay_audio_run_new ()</title>
-<indexterm zone="ags-delay-audio-run-new"><primary>ags_delay_audio_run_new</primary></indexterm>
-<programlisting><link linkend="AgsDelayAudioRun"><returnvalue>AgsDelayAudioRun</returnvalue></link> *  ags_delay_audio_run_new             ();</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-delay-audio-run-notation-alloc-input" role="function">
-<title>ags_delay_audio_run_notation_alloc_input ()</title>
-<indexterm zone="ags-delay-audio-run-notation-alloc-input"><primary>ags_delay_audio_run_notation_alloc_input</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_delay_audio_run_notation_alloc_input
-                                                        (<parameter><link linkend="AgsDelayAudioRun"><type>AgsDelayAudioRun</type></link> *delay_audio_run</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> run_order</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> delay</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> attack</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-delay-audio-run-notation-alloc-output" role="function">
-<title>ags_delay_audio_run_notation_alloc_output ()</title>
-<indexterm zone="ags-delay-audio-run-notation-alloc-output"><primary>ags_delay_audio_run_notation_alloc_output</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_delay_audio_run_notation_alloc_output
-                                                        (<parameter><link linkend="AgsDelayAudioRun"><type>AgsDelayAudioRun</type></link> *delay_audio_run</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> run_order</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> delay</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> attack</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-delay-audio-run-notation-count" role="function">
-<title>ags_delay_audio_run_notation_count ()</title>
-<indexterm zone="ags-delay-audio-run-notation-count"><primary>ags_delay_audio_run_notation_count</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_delay_audio_run_notation_count  (<parameter><link linkend="AgsDelayAudioRun"><type>AgsDelayAudioRun</type></link> *delay_audio_run</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> run_order</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> delay</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> attack</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-delay-audio-run-sequencer-alloc-input" role="function">
-<title>ags_delay_audio_run_sequencer_alloc_input ()</title>
-<indexterm zone="ags-delay-audio-run-sequencer-alloc-input"><primary>ags_delay_audio_run_sequencer_alloc_input</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_delay_audio_run_sequencer_alloc_input
-                                                        (<parameter><link linkend="AgsDelayAudioRun"><type>AgsDelayAudioRun</type></link> *delay_audio_run</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> run_order</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> delay</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> attack</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-delay-audio-run-sequencer-alloc-output" role="function">
-<title>ags_delay_audio_run_sequencer_alloc_output ()</title>
-<indexterm zone="ags-delay-audio-run-sequencer-alloc-output"><primary>ags_delay_audio_run_sequencer_alloc_output</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_delay_audio_run_sequencer_alloc_output
-                                                        (<parameter><link linkend="AgsDelayAudioRun"><type>AgsDelayAudioRun</type></link> *delay_audio_run</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> run_order</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> delay</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> attack</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-delay-audio-run-sequencer-count" role="function">
-<title>ags_delay_audio_run_sequencer_count ()</title>
-<indexterm zone="ags-delay-audio-run-sequencer-count"><primary>ags_delay_audio_run_sequencer_count</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_delay_audio_run_sequencer_count (<parameter><link linkend="AgsDelayAudioRun"><type>AgsDelayAudioRun</type></link> *delay_audio_run</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> run_order</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> delay</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> attack</parameter>);</programlisting>
-<para>
-</para></refsect2>
+</refsect1>
+<refsect1 id="AgsDelayAudioRun.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-delay-audio-run-notation-alloc-output" role="function" condition="since:0.4">
+<title>ags_delay_audio_run_notation_alloc_output&#160;()</title>
+<indexterm zone="ags-delay-audio-run-notation-alloc-output" role="0.4"><primary>ags_delay_audio_run_notation_alloc_output</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_delay_audio_run_notation_alloc_output
+                               (<parameter><link linkend="AgsDelayAudioRun"><type>AgsDelayAudioRun</type></link> *delay_audio_run</parameter>,
+                                <parameter><link linkend="guint"><type>guint</type></link> run_order</parameter>,
+                                <parameter><link linkend="gdouble"><type>gdouble</type></link> delay</parameter>,
+                                <parameter><link linkend="guint"><type>guint</type></link> attack</parameter>);</programlisting>
+<para>Emitted as notation allocs output.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>delay_audio_run</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsDelayAudioRun"><type>AgsDelayAudioRun</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>run_order</para></entry>
+<entry role="parameter_description"><para>the nth run</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>delay</para></entry>
+<entry role="parameter_description"><para>the delay</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>attack</para></entry>
+<entry role="parameter_description"><para>the attack</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-delay-audio-run-notation-alloc-input" role="function" condition="since:0.4">
+<title>ags_delay_audio_run_notation_alloc_input&#160;()</title>
+<indexterm zone="ags-delay-audio-run-notation-alloc-input" role="0.4"><primary>ags_delay_audio_run_notation_alloc_input</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_delay_audio_run_notation_alloc_input
+                               (<parameter><link linkend="AgsDelayAudioRun"><type>AgsDelayAudioRun</type></link> *delay_audio_run</parameter>,
+                                <parameter><link linkend="guint"><type>guint</type></link> run_order</parameter>,
+                                <parameter><link linkend="gdouble"><type>gdouble</type></link> delay</parameter>,
+                                <parameter><link linkend="guint"><type>guint</type></link> attack</parameter>);</programlisting>
+<para>Emitted as notation allocs output.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>delay_audio_run</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsDelayAudioRun"><type>AgsDelayAudioRun</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>run_order</para></entry>
+<entry role="parameter_description"><para>the nth run</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>delay</para></entry>
+<entry role="parameter_description"><para>the delay</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>attack</para></entry>
+<entry role="parameter_description"><para>the attack</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-delay-audio-run-notation-count" role="function" condition="since:0.4">
+<title>ags_delay_audio_run_notation_count&#160;()</title>
+<indexterm zone="ags-delay-audio-run-notation-count" role="0.4"><primary>ags_delay_audio_run_notation_count</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_delay_audio_run_notation_count (<parameter><link linkend="AgsDelayAudioRun"><type>AgsDelayAudioRun</type></link> *delay_audio_run</parameter>,
+                                    <parameter><link linkend="guint"><type>guint</type></link> run_order</parameter>,
+                                    <parameter><link linkend="gdouble"><type>gdouble</type></link> delay</parameter>,
+                                    <parameter><link linkend="guint"><type>guint</type></link> attack</parameter>);</programlisting>
+<para>Emitted as notation counts.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>delay_audio_run</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsDelayAudioRun"><type>AgsDelayAudioRun</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>run_order</para></entry>
+<entry role="parameter_description"><para>the nth run</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>delay</para></entry>
+<entry role="parameter_description"><para>the delay</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>attack</para></entry>
+<entry role="parameter_description"><para>the attack</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-delay-audio-run-sequencer-alloc-output" role="function" condition="since:0.4">
+<title>ags_delay_audio_run_sequencer_alloc_output&#160;()</title>
+<indexterm zone="ags-delay-audio-run-sequencer-alloc-output" role="0.4"><primary>ags_delay_audio_run_sequencer_alloc_output</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_delay_audio_run_sequencer_alloc_output
+                               (<parameter><link linkend="AgsDelayAudioRun"><type>AgsDelayAudioRun</type></link> *delay_audio_run</parameter>,
+                                <parameter><link linkend="guint"><type>guint</type></link> run_order</parameter>,
+                                <parameter><link linkend="gdouble"><type>gdouble</type></link> delay</parameter>,
+                                <parameter><link linkend="guint"><type>guint</type></link> attack</parameter>);</programlisting>
+<para>Emitted as sequencer allocs output.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>delay_audio_run</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsDelayAudioRun"><type>AgsDelayAudioRun</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>run_order</para></entry>
+<entry role="parameter_description"><para>the nth run</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>delay</para></entry>
+<entry role="parameter_description"><para>the delay</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>attack</para></entry>
+<entry role="parameter_description"><para>the attack</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-delay-audio-run-sequencer-alloc-input" role="function" condition="since:0.4">
+<title>ags_delay_audio_run_sequencer_alloc_input&#160;()</title>
+<indexterm zone="ags-delay-audio-run-sequencer-alloc-input" role="0.4"><primary>ags_delay_audio_run_sequencer_alloc_input</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_delay_audio_run_sequencer_alloc_input
+                               (<parameter><link linkend="AgsDelayAudioRun"><type>AgsDelayAudioRun</type></link> *delay_audio_run</parameter>,
+                                <parameter><link linkend="guint"><type>guint</type></link> run_order</parameter>,
+                                <parameter><link linkend="gdouble"><type>gdouble</type></link> delay</parameter>,
+                                <parameter><link linkend="guint"><type>guint</type></link> attack</parameter>);</programlisting>
+<para>Emitted as sequencer allocs output.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>delay_audio_run</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsDelayAudioRun"><type>AgsDelayAudioRun</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>run_order</para></entry>
+<entry role="parameter_description"><para>the nth run</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>delay</para></entry>
+<entry role="parameter_description"><para>the delay</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>attack</para></entry>
+<entry role="parameter_description"><para>the attack</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-delay-audio-run-sequencer-count" role="function" condition="since:0.4">
+<title>ags_delay_audio_run_sequencer_count&#160;()</title>
+<indexterm zone="ags-delay-audio-run-sequencer-count" role="0.4"><primary>ags_delay_audio_run_sequencer_count</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_delay_audio_run_sequencer_count (<parameter><link linkend="AgsDelayAudioRun"><type>AgsDelayAudioRun</type></link> *delay_audio_run</parameter>,
+                                     <parameter><link linkend="guint"><type>guint</type></link> run_order</parameter>,
+                                     <parameter><link linkend="gdouble"><type>gdouble</type></link> delay</parameter>,
+                                     <parameter><link linkend="guint"><type>guint</type></link> attack</parameter>);</programlisting>
+<para>Emitted as sequencer counts.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>delay_audio_run</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsDelayAudioRun"><type>AgsDelayAudioRun</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>run_order</para></entry>
+<entry role="parameter_description"><para>the nth run</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>delay</para></entry>
+<entry role="parameter_description"><para>the delay</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>attack</para></entry>
+<entry role="parameter_description"><para>the attack</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-delay-audio-run-new" role="function" condition="since:0.4">
+<title>ags_delay_audio_run_new&#160;()</title>
+<indexterm zone="ags-delay-audio-run-new" role="0.4"><primary>ags_delay_audio_run_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsDelayAudioRun"><returnvalue>AgsDelayAudioRun</returnvalue></link>&#160;*
+ags_delay_audio_run_new ();</programlisting>
+<para>Creates an <link linkend="AgsDelayAudioRun"><type>AgsDelayAudioRun</type></link></para>
+<refsect3 role="returns">
+<title>Returns</title>
+<para> a new <link linkend="AgsDelayAudioRun"><type>AgsDelayAudioRun</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
 
+</refsect1>
+<refsect1 id="AgsDelayAudioRun.other_details" role="details">
+<title role="details.title">Types and Values</title>
+
+</refsect1>
+<refsect1 id="AgsDelayAudioRun.signal-details" role="signals">
+<title role="signals.title">Signal Details</title>
+<refsect2 id="AgsDelayAudioRun-notation-alloc-input" role="signal"><title>The <literal>“notation-alloc-input”</literal> signal</title>
+<indexterm zone="AgsDelayAudioRun-notation-alloc-input"><primary>AgsDelayAudioRun::notation-alloc-input</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsDelayAudioRun"><type>AgsDelayAudioRun</type></link> *delay_audio_run,
+               <link linkend="guint"><type>guint</type></link>             run_order,
+               <link linkend="gdouble"><type>gdouble</type></link>           delay,
+               <link linkend="guint"><type>guint</type></link>             attack,
+               <link linkend="gpointer"><type>gpointer</type></link>          user_data)</programlisting>
+<para>The ::notation-alloc-input signal is emited while allocating
+notation input.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>delay_audio_run</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsDelayAudioRun"><type>AgsDelayAudioRun</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>run_order</para></entry>
+<entry role="parameter_description"><para>the nth run</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>delay</para></entry>
+<entry role="parameter_description"><para>the delay</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>attack</para></entry>
+<entry role="parameter_description"><para>the attack</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsDelayAudioRun-notation-alloc-output" role="signal"><title>The <literal>“notation-alloc-output”</literal> signal</title>
+<indexterm zone="AgsDelayAudioRun-notation-alloc-output"><primary>AgsDelayAudioRun::notation-alloc-output</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsDelayAudioRun"><type>AgsDelayAudioRun</type></link> *delay_audio_run,
+               <link linkend="guint"><type>guint</type></link>             run_order,
+               <link linkend="gdouble"><type>gdouble</type></link>           delay,
+               <link linkend="guint"><type>guint</type></link>             attack,
+               <link linkend="gpointer"><type>gpointer</type></link>          user_data)</programlisting>
+<para>The ::notation-alloc-output signal is emited while allocating
+notation output.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>delay_audio_run</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsDelayAudioRun"><type>AgsDelayAudioRun</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>run_order</para></entry>
+<entry role="parameter_description"><para>the nth run</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>delay</para></entry>
+<entry role="parameter_description"><para>the delay</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>attack</para></entry>
+<entry role="parameter_description"><para>the attack</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsDelayAudioRun-notation-count" role="signal"><title>The <literal>“notation-count”</literal> signal</title>
+<indexterm zone="AgsDelayAudioRun-notation-count"><primary>AgsDelayAudioRun::notation-count</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsDelayAudioRun"><type>AgsDelayAudioRun</type></link> *delay_audio_run,
+               <link linkend="guint"><type>guint</type></link>             run_order,
+               <link linkend="gdouble"><type>gdouble</type></link>           delay,
+               <link linkend="guint"><type>guint</type></link>             attack,
+               <link linkend="gpointer"><type>gpointer</type></link>          user_data)</programlisting>
+<para>The ::notation-count signal is emited while counting
+notation.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>delay_audio_run</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsDelayAudioRun"><type>AgsDelayAudioRun</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>run_order</para></entry>
+<entry role="parameter_description"><para>the nth run</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>delay</para></entry>
+<entry role="parameter_description"><para>the delay</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>attack</para></entry>
+<entry role="parameter_description"><para>the attack</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsDelayAudioRun-sequencer-alloc-input" role="signal"><title>The <literal>“sequencer-alloc-input”</literal> signal</title>
+<indexterm zone="AgsDelayAudioRun-sequencer-alloc-input"><primary>AgsDelayAudioRun::sequencer-alloc-input</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsDelayAudioRun"><type>AgsDelayAudioRun</type></link> *delay_audio_run,
+               <link linkend="guint"><type>guint</type></link>             run_order,
+               <link linkend="gdouble"><type>gdouble</type></link>           delay,
+               <link linkend="guint"><type>guint</type></link>             attack,
+               <link linkend="gpointer"><type>gpointer</type></link>          user_data)</programlisting>
+<para>The ::sequencer-alloc-input signal is emited while allocating
+sequencer input.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>delay_audio_run</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsDelayAudioRun"><type>AgsDelayAudioRun</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>run_order</para></entry>
+<entry role="parameter_description"><para>the nth run</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>delay</para></entry>
+<entry role="parameter_description"><para>the delay</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>attack</para></entry>
+<entry role="parameter_description"><para>the attack</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsDelayAudioRun-sequencer-alloc-output" role="signal"><title>The <literal>“sequencer-alloc-output”</literal> signal</title>
+<indexterm zone="AgsDelayAudioRun-sequencer-alloc-output"><primary>AgsDelayAudioRun::sequencer-alloc-output</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsDelayAudioRun"><type>AgsDelayAudioRun</type></link> *delay_audio_run,
+               <link linkend="guint"><type>guint</type></link>             run_order,
+               <link linkend="gdouble"><type>gdouble</type></link>           delay,
+               <link linkend="guint"><type>guint</type></link>             attack,
+               <link linkend="gpointer"><type>gpointer</type></link>          user_data)</programlisting>
+<para>The ::sequencer-alloc-output signal is emited while allocating
+sequencer output.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>delay_audio_run</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsDelayAudioRun"><type>AgsDelayAudioRun</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>run_order</para></entry>
+<entry role="parameter_description"><para>the nth run</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>delay</para></entry>
+<entry role="parameter_description"><para>the delay</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>attack</para></entry>
+<entry role="parameter_description"><para>the attack</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsDelayAudioRun-sequencer-count" role="signal"><title>The <literal>“sequencer-count”</literal> signal</title>
+<indexterm zone="AgsDelayAudioRun-sequencer-count"><primary>AgsDelayAudioRun::sequencer-count</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsDelayAudioRun"><type>AgsDelayAudioRun</type></link> *delay_audio_run,
+               <link linkend="guint"><type>guint</type></link>             run_order,
+               <link linkend="gdouble"><type>gdouble</type></link>           delay,
+               <link linkend="guint"><type>guint</type></link>             attack,
+               <link linkend="gpointer"><type>gpointer</type></link>          user_data)</programlisting>
+<para>The ::sequencer-count signal is emited while counting
+sequencer.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>delay_audio_run</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsDelayAudioRun"><type>AgsDelayAudioRun</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>run_order</para></entry>
+<entry role="parameter_description"><para>the nth run</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>delay</para></entry>
+<entry role="parameter_description"><para>the delay</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>attack</para></entry>
+<entry role="parameter_description"><para>the attack</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2>
 </refsect1>
 
 </refentry>

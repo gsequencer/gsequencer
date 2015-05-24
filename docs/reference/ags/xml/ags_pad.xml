@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsPad">
+<refentry id="AgsPad">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsPad.top_of_page">AgsPad</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsPad.top_of_page">AgsPad</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -14,131 +14,400 @@
 </refmeta>
 <refnamediv>
 <refname>AgsPad</refname>
-<refpurpose></refpurpose>
+<refpurpose>A composite widget to visualize a bunch of <link linkend="AgsChannel"><type>AgsChannel</type></link></refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsPad.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsPad.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-pad-set-channel">ags_pad_set_channel</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-pad-resize-lines">ags_pad_resize_lines</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-pad-map-recall">ags_pad_map_recall</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-pad-find-port">ags_pad_find_port</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsPad"><returnvalue>AgsPad</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-pad-new">ags_pad_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>#define             <link linkend="AGS-PAD-DEFAULT-BUILD-ID:CAPS">AGS_PAD_DEFAULT_BUILD_ID</link>
-#define             <link linkend="AGS-PAD-DEFAULT-VERSION:CAPS">AGS_PAD_DEFAULT_VERSION</link>
-struct              <link linkend="AgsPad">AgsPad</link>;
-struct              <link linkend="AgsPadClass">AgsPadClass</link>;
-enum                <link linkend="AgsPadFlags">AgsPadFlags</link>;
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-pad-find-port">ags_pad_find_port</link>                   (<parameter><link linkend="AgsPad"><type>AgsPad</type></link> *pad</parameter>);
-<link linkend="AgsPad"><returnvalue>AgsPad</returnvalue></link> *            <link linkend="ags-pad-new">ags_pad_new</link>                         (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-pad-resize-lines">ags_pad_resize_lines</link>                (<parameter><link linkend="AgsPad"><type>AgsPad</type></link> *pad</parameter>,
-                                                         <parameter><link linkend="GType"><type>GType</type></link> line_type</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> audio_channels</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> audio_channels_old</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-pad-set-channel">ags_pad_set_channel</link>                 (<parameter><link linkend="AgsPad"><type>AgsPad</type></link> *pad</parameter>,
-                                                         <parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>);
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsPad.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsPad.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AGS-PAD-DEFAULT-BUILD-ID:CAPS" role="macro">
-<title>AGS_PAD_DEFAULT_BUILD_ID</title>
-<indexterm zone="AGS-PAD-DEFAULT-BUILD-ID:CAPS"><primary>AGS_PAD_DEFAULT_BUILD_ID</primary></indexterm>
-<programlisting>#define AGS_PAD_DEFAULT_BUILD_ID "CEST 02-10-2014 19:36\0"
-</programlisting>
-<para>
-</para></refsect2>
+<refsect1 id="AgsPad.properties" role="properties">
+<title role="properties.title">Properties</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="properties_type" colwidth="150px"/>
+<colspec colname="properties_name" colwidth="300px"/>
+<colspec colname="properties_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="property_type"><link linkend="AgsChannel"><type>AgsChannel</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsPad--channel">channel</link></entry><entry role="property_flags">Read / Write</entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsPad.signals" role="signal_proto">
+<title role="signal_proto.title">Signals</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="signals_return" colwidth="150px"/>
+<colspec colname="signals_name" colwidth="300px"/>
+<colspec colname="signals_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="signal_type"><link linkend="gpointer"><returnvalue>gpointer</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsPad-find-port">find-port</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsPad-map-recall">map-recall</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsPad-resize-lines">resize-lines</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsPad-set-channel">set-channel</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsPad.other" role="other_proto">
+<title role="other_proto.title">Types and Values</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="name" colwidth="150px"/>
+<colspec colname="description"/>
+<tbody>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-PAD-DEFAULT-VERSION:CAPS">AGS_PAD_DEFAULT_VERSION</link></entry></row>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-PAD-DEFAULT-BUILD-ID:CAPS">AGS_PAD_DEFAULT_BUILD_ID</link></entry></row>
+<row><entry role="datatype_keyword">enum</entry><entry role="function_name"><link linkend="AgsPadFlags">AgsPadFlags</link></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsPad.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GInitiallyUnowned">GInitiallyUnowned</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkObject">GtkObject</link>
+            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkWidget">GtkWidget</link>
+                <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkContainer">GtkContainer</link>
+                    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkBox">GtkBox</link>
+                        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkVBox">GtkVBox</link>
+                            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsPad
+                                <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsDrumInputPad">AgsDrumInputPad</link>
+                                <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsDrumOutputPad">AgsDrumOutputPad</link>
+                                <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsMixerInputPad">AgsMixerInputPad</link>
+                                <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsPanelInputPad">AgsPanelInputPad</link>
+                                <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsSynthInputPad">AgsSynthInputPad</link>
+</screen>
+</refsect1>
+
+<refsect1 id="AgsPad.includes"><title>Includes</title><synopsis>#include &lt;ags/X/ags_pad.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsPad.description" role="desc">
+<title role="desc.title">Description</title>
+<para><link linkend="AgsPad"><type>AgsPad</type></link> is a composite widget to visualize a bunch of <link linkend="AgsChannel"><type>AgsChannel</type></link>. It should be
+packed by an <link linkend="AgsMachine"><type>AgsMachine</type></link>.</para>
+
+</refsect1>
+<refsect1 id="AgsPad.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-pad-set-channel" role="function" condition="since:0.3">
+<title>ags_pad_set_channel&#160;()</title>
+<indexterm zone="ags-pad-set-channel" role="0.3"><primary>ags_pad_set_channel</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_pad_set_channel (<parameter><link linkend="AgsPad"><type>AgsPad</type></link> *pad</parameter>,
+                     <parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>);</programlisting>
+<para>Is emitted as channel gets modified.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>pad</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsPad"><type>AgsPad</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>channel</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsChannel"><type>AgsChannel</type></link> to set</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.3</para></refsect2>
+<refsect2 id="ags-pad-resize-lines" role="function" condition="since:0.3">
+<title>ags_pad_resize_lines&#160;()</title>
+<indexterm zone="ags-pad-resize-lines" role="0.3"><primary>ags_pad_resize_lines</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_pad_resize_lines (<parameter><link linkend="AgsPad"><type>AgsPad</type></link> *pad</parameter>,
+                      <parameter><link linkend="GType"><type>GType</type></link> line_type</parameter>,
+                      <parameter><link linkend="guint"><type>guint</type></link> audio_channels</parameter>,
+                      <parameter><link linkend="guint"><type>guint</type></link> audio_channels_old</parameter>);</programlisting>
+<para>Resize the count of <link linkend="AgsLine"><type>AgsLine</type></link> packe by <link linkend="AgsPad"><type>AgsPad</type></link>.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>pad</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsPad"><type>AgsPad</type></link> to resize</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>line_type</para></entry>
+<entry role="parameter_description"><para>channel type, either <link linkend="AGS-TYPE-INPUT:CAPS"><literal>AGS_TYPE_INPUT</literal></link> or <link linkend="AGS-TYPE-OUTPUT:CAPS"><literal>AGS_TYPE_OUTPUT</literal></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>audio_channels</para></entry>
+<entry role="parameter_description"><para>count of lines</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>audio_channels_old</para></entry>
+<entry role="parameter_description"><para>old count of lines</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.3</para></refsect2>
+<refsect2 id="ags-pad-map-recall" role="function" condition="since:0.4">
+<title>ags_pad_map_recall&#160;()</title>
+<indexterm zone="ags-pad-map-recall" role="0.4"><primary>ags_pad_map_recall</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_pad_map_recall (<parameter><link linkend="AgsPad"><type>AgsPad</type></link> *pad</parameter>,
+                    <parameter><link linkend="guint"><type>guint</type></link> output_pad_start</parameter>);</programlisting>
+<para>Start of output pad</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>pad</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsPad"><type>AgsPad</type></link> to resize</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>output_pad_start</para></entry>
+<entry role="parameter_description"><para>start of output pad</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-pad-find-port" role="function" condition="since:0.4">
+<title>ags_pad_find_port&#160;()</title>
+<indexterm zone="ags-pad-find-port" role="0.4"><primary>ags_pad_find_port</primary></indexterm>
+<programlisting language="C"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+ags_pad_find_port (<parameter><link linkend="AgsPad"><type>AgsPad</type></link> *pad</parameter>);</programlisting>
+<para>Lookup ports of assigned recalls.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>pad</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsPad"><type>AgsPad</type></link>
+Returns: an <link linkend="GList"><type>GList</type></link> containing all related <link linkend="AgsPort"><type>AgsPort</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-pad-new" role="function" condition="since:0.3">
+<title>ags_pad_new&#160;()</title>
+<indexterm zone="ags-pad-new" role="0.3"><primary>ags_pad_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsPad"><returnvalue>AgsPad</returnvalue></link>&#160;*
+ags_pad_new (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>);</programlisting>
+<para>Creates an <link linkend="AgsPad"><type>AgsPad</type></link></para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>pad</para></entry>
+<entry role="parameter_description"><para>the parent pad</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>channel</para></entry>
+<entry role="parameter_description"><para>the bunch of channel to visualize</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> a new <link linkend="AgsPad"><type>AgsPad</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.3</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsPad.other_details" role="details">
+<title role="details.title">Types and Values</title>
 <refsect2 id="AGS-PAD-DEFAULT-VERSION:CAPS" role="macro">
 <title>AGS_PAD_DEFAULT_VERSION</title>
 <indexterm zone="AGS-PAD-DEFAULT-VERSION:CAPS"><primary>AGS_PAD_DEFAULT_VERSION</primary></indexterm>
-<programlisting>#define AGS_PAD_DEFAULT_VERSION "0.4.2\0"
+<programlisting language="C">#define AGS_PAD_DEFAULT_VERSION "0.4.2\0"
 </programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsPad" role="struct">
-<title>struct AgsPad</title>
-<indexterm zone="AgsPad"><primary>AgsPad</primary></indexterm>
-<programlisting>struct AgsPad {
-  GtkVBox vbox;
-
-  guint flags;
-
-  gchar *name;
-
-  gchar *version;
-  gchar *build_id;
-
-  AgsChannel *channel;
-
-  guint cols;
-  AgsExpanderSet *expander_set;
-
-  GtkToggleButton *group;
-  GtkToggleButton *mute;
-  GtkToggleButton *solo;
-
-  GtkToggleButton *play;
-};
+</refsect2>
+<refsect2 id="AGS-PAD-DEFAULT-BUILD-ID:CAPS" role="macro">
+<title>AGS_PAD_DEFAULT_BUILD_ID</title>
+<indexterm zone="AGS-PAD-DEFAULT-BUILD-ID:CAPS"><primary>AGS_PAD_DEFAULT_BUILD_ID</primary></indexterm>
+<programlisting language="C">#define AGS_PAD_DEFAULT_BUILD_ID "CEST 02-10-2014 19:36\0"
 </programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsPadClass" role="struct">
-<title>struct AgsPadClass</title>
-<indexterm zone="AgsPadClass"><primary>AgsPadClass</primary></indexterm>
-<programlisting>struct AgsPadClass {
-  GtkVBoxClass vbox;
-
-  void (*set_channel)(AgsPad *pad, AgsChannel *channel);
-
-  void (*resize_lines)(AgsPad *pad, GType line_type,
-		       guint audio_channels, guint audio_channels_old);
-};
-</programlisting>
-<para>
-</para></refsect2>
+</refsect2>
 <refsect2 id="AgsPadFlags" role="enum">
 <title>enum AgsPadFlags</title>
 <indexterm zone="AgsPadFlags"><primary>AgsPadFlags</primary></indexterm>
-<programlisting>typedef enum {
-  AGS_PAD_CONNECTED           = 1,
-  AGS_PAD_SHOW_GROUPING       = 1 &lt;&lt; 1,
-  AGS_PAD_GROUP_ALL           = 1 &lt;&lt; 2,
-  AGS_PAD_GROUP_LINE          = 1 &lt;&lt; 3,
-} AgsPadFlags;
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-pad-find-port" role="function">
-<title>ags_pad_find_port ()</title>
-<indexterm zone="ags-pad-find-port"><primary>ags_pad_find_port</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_pad_find_port                   (<parameter><link linkend="AgsPad"><type>AgsPad</type></link> *pad</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-pad-new" role="function">
-<title>ags_pad_new ()</title>
-<indexterm zone="ags-pad-new"><primary>ags_pad_new</primary></indexterm>
-<programlisting><link linkend="AgsPad"><returnvalue>AgsPad</returnvalue></link> *            ags_pad_new                         (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-pad-resize-lines" role="function">
-<title>ags_pad_resize_lines ()</title>
-<indexterm zone="ags-pad-resize-lines"><primary>ags_pad_resize_lines</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_pad_resize_lines                (<parameter><link linkend="AgsPad"><type>AgsPad</type></link> *pad</parameter>,
-                                                         <parameter><link linkend="GType"><type>GType</type></link> line_type</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> audio_channels</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> audio_channels_old</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-pad-set-channel" role="function">
-<title>ags_pad_set_channel ()</title>
-<indexterm zone="ags-pad-set-channel"><primary>ags_pad_set_channel</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_pad_set_channel                 (<parameter><link linkend="AgsPad"><type>AgsPad</type></link> *pad</parameter>,
-                                                         <parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<refsect3 role="enum_members">
+<title>Members</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="enum_members_name" colwidth="300px"/>
+<colspec colname="enum_members_description"/>
+<colspec colname="enum_members_annotations" colwidth="200px"/>
+<tbody>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-PAD-CONNECTED:CAPS">AGS_PAD_CONNECTED</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-PAD-SHOW-GROUPING:CAPS">AGS_PAD_SHOW_GROUPING</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-PAD-GROUP-ALL:CAPS">AGS_PAD_GROUP_ALL</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-PAD-GROUP-LINE:CAPS">AGS_PAD_GROUP_LINE</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-PAD-MAPPED-RECALL:CAPS">AGS_PAD_MAPPED_RECALL</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-PAD-PREMAPPED-RECALL:CAPS">AGS_PAD_PREMAPPED_RECALL</para></entry>
+<entry /><entry />
+</row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
 
+</refsect1>
+<refsect1 id="AgsPad.property-details" role="property_details">
+<title role="property_details.title">Property Details</title>
+<refsect2 id="AgsPad--channel" role="property"><title>The <literal>“channel”</literal> property</title>
+<indexterm zone="AgsPad--channel" role="0.4"><primary>AgsPad:channel</primary></indexterm>
+<programlisting>  “channel”                  <link linkend="AgsChannel"><type>AgsChannel</type></link>&#160;*</programlisting>
+<para>The start of a bunch of <link linkend="AgsChannel"><type>AgsChannel</type></link> to visualize.</para>
+<para>Flags: Read / Write</para>
+<para role="since">Since 0.4</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsPad.signal-details" role="signals">
+<title role="signals.title">Signal Details</title>
+<refsect2 id="AgsPad-find-port" role="signal"><title>The <literal>“find-port”</literal> signal</title>
+<indexterm zone="AgsPad-find-port"><primary>AgsPad::find-port</primary></indexterm>
+<programlisting language="C"><link linkend="gpointer"><returnvalue>gpointer</returnvalue></link>
+user_function (<link linkend="AgsPad"><type>AgsPad</type></link>  *pad,
+               <link linkend="gpointer"><type>gpointer</type></link> user_data)</programlisting>
+<para>The ::find-port retrieves all associated ports</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>pad</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsPad"><type>AgsPad</type></link> to resize
+Returns: a <link linkend="GList"><type>GList</type></link> with associated ports</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsPad-map-recall" role="signal"><title>The <literal>“map-recall”</literal> signal</title>
+<indexterm zone="AgsPad-map-recall"><primary>AgsPad::map-recall</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsPad"><type>AgsPad</type></link>  *pad,
+               <link linkend="guint"><type>guint</type></link>    output_pad_start,
+               <link linkend="gpointer"><type>gpointer</type></link> user_data)</programlisting>
+<para>The ::map-recall as recall should be mapped</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>pad</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsPad"><type>AgsPad</type></link> to resize</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>output_pad_start</para></entry>
+<entry role="parameter_description"><para>start of output pad</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsPad-resize-lines" role="signal"><title>The <literal>“resize-lines”</literal> signal</title>
+<indexterm zone="AgsPad-resize-lines"><primary>AgsPad::resize-lines</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsPad"><type>AgsPad</type></link>  *pad,
+               <link linkend="gulong"><type>gulong</type></link>   line_type,
+               <link linkend="guint"><type>guint</type></link>    audio_channels,
+               <link linkend="guint"><type>guint</type></link>    audio_channels_old,
+               <link linkend="gpointer"><type>gpointer</type></link> user_data)</programlisting>
+<para>The ::resize-lines is emitted as count of lines pack is modified.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>pad</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsPad"><type>AgsPad</type></link> to resize</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>line_type</para></entry>
+<entry role="parameter_description"><para>the channel type</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>audio_channels</para></entry>
+<entry role="parameter_description"><para>count of lines</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>audio_channels_old</para></entry>
+<entry role="parameter_description"><para>old count of lines</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsPad-set-channel" role="signal"><title>The <literal>“set-channel”</literal> signal</title>
+<indexterm zone="AgsPad-set-channel"><primary>AgsPad::set-channel</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsPad"><type>AgsPad</type></link>  *pad,
+               <link linkend="GObject"><type>GObject</type></link> *channel,
+               <link linkend="gpointer"><type>gpointer</type></link> user_data)</programlisting>
+<para>The ::set-channel signal notifies about changed channel.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>pad</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsPad"><type>AgsPad</type></link> to modify</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>channel</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsChannel"><type>AgsChannel</type></link> to set</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2>
 </refsect1>
 
 </refentry>

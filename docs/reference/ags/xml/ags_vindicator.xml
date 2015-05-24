@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsVIndicator">
+<refentry id="AgsVIndicator">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsVIndicator.top_of_page">AgsVIndicator</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsVIndicator.top_of_page">AgsVIndicator</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -14,49 +14,55 @@
 </refmeta>
 <refnamediv>
 <refname>AgsVIndicator</refname>
-<refpurpose></refpurpose>
+<refpurpose>A vertical indicator widget</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsVIndicator.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsVIndicator.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="AgsVIndicator"><returnvalue>AgsVIndicator</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-vindicator-new">ags_vindicator_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>struct              <link linkend="AgsVIndicator">AgsVIndicator</link>;
-struct              <link linkend="AgsVIndicatorClass">AgsVIndicatorClass</link>;
-<link linkend="AgsVIndicator"><returnvalue>AgsVIndicator</returnvalue></link> *     <link linkend="ags-vindicator-new">ags_vindicator_new</link>                  ();
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsVIndicator.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsVIndicator.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AgsVIndicator" role="struct">
-<title>struct AgsVIndicator</title>
-<indexterm zone="AgsVIndicator"><primary>AgsVIndicator</primary></indexterm>
-<programlisting>struct AgsVIndicator {
-  AgsIndicator indicator;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsVIndicatorClass" role="struct">
-<title>struct AgsVIndicatorClass</title>
-<indexterm zone="AgsVIndicatorClass"><primary>AgsVIndicatorClass</primary></indexterm>
-<programlisting>struct AgsVIndicatorClass {
-  GtkWidgetClass indicator;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-vindicator-new" role="function">
-<title>ags_vindicator_new ()</title>
-<indexterm zone="ags-vindicator-new"><primary>ags_vindicator_new</primary></indexterm>
-<programlisting><link linkend="AgsVIndicator"><returnvalue>AgsVIndicator</returnvalue></link> *     ags_vindicator_new                  ();</programlisting>
-<para>
-</para></refsect2>
+<refsect1 id="AgsVIndicator.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GInitiallyUnowned">GInitiallyUnowned</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkObject">GtkObject</link>
+            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkWidget">GtkWidget</link>
+                <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsIndicator">AgsIndicator</link>
+                    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsVIndicator
+</screen>
+</refsect1>
+
+<refsect1 id="AgsVIndicator.includes"><title>Includes</title><synopsis>#include &lt;ags/widget/ags_vindicator.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsVIndicator.description" role="desc">
+<title role="desc.title">Description</title>
+<para><link linkend="AgsVIndicator"><type>AgsVIndicator</type></link> is a widget visualizing a <link linkend="GtkAdjustment"><type>GtkAdjustment</type></link>.</para>
+
+</refsect1>
+<refsect1 id="AgsVIndicator.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-vindicator-new" role="function" condition="since:0.4">
+<title>ags_vindicator_new&#160;()</title>
+<indexterm zone="ags-vindicator-new" role="0.4"><primary>ags_vindicator_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsVIndicator"><returnvalue>AgsVIndicator</returnvalue></link>&#160;*
+ags_vindicator_new ();</programlisting>
+<para>Creates an <link linkend="AgsVIndicator"><type>AgsVIndicator</type></link>.</para>
+<para role="since">Since 0.4</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsVIndicator.other_details" role="details">
+<title role="details.title">Types and Values</title>
 
 </refsect1>
 

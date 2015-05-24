@@ -1,48 +1,88 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-ags-parameter">
+<refentry id="ags-AgsParameter">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-ags-parameter.top_of_page">ags_parameter</refentrytitle>
+<refentrytitle role="top_of_page" id="ags-AgsParameter.top_of_page">AgsParameter</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
 </refmiscinfo>
 </refmeta>
 <refnamediv>
-<refname>ags_parameter</refname>
-<refpurpose></refpurpose>
+<refname>AgsParameter</refname>
+<refpurpose>Complete GParameter</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-ags-parameter.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="ags-AgsParameter.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="GParameter"><returnvalue>GParameter</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-parameter-grow">ags_parameter_grow</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis><link linkend="GParameter"><returnvalue>GParameter</returnvalue></link> *        <link linkend="ags-parameter-grow">ags_parameter_grow</link>                  (<parameter><link linkend="GType"><type>GType</type></link> type</parameter>,
-                                                         <parameter><link linkend="GParameter"><type>GParameter</type></link> *params</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> *n_params</parameter>,
-                                                         <parameter>...</parameter>);
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-ags-parameter.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-ags-parameter.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="ags-parameter-grow" role="function">
-<title>ags_parameter_grow ()</title>
-<indexterm zone="ags-parameter-grow"><primary>ags_parameter_grow</primary></indexterm>
-<programlisting><link linkend="GParameter"><returnvalue>GParameter</returnvalue></link> *        ags_parameter_grow                  (<parameter><link linkend="GType"><type>GType</type></link> type</parameter>,
-                                                         <parameter><link linkend="GParameter"><type>GParameter</type></link> *params</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> *n_params</parameter>,
-                                                         <parameter>...</parameter>);</programlisting>
-<para>
-</para></refsect2>
+
+<refsect1 id="ags-AgsParameter.includes"><title>Includes</title><synopsis>#include &lt;ags/lib/ags_parameter.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="ags-AgsParameter.description" role="desc">
+<title role="desc.title">Description</title>
+<para>Functions completing <link linkend="GParameter"><type>GParameter</type></link> API.</para>
+
+</refsect1>
+<refsect1 id="ags-AgsParameter.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-parameter-grow" role="function" condition="since:0.3">
+<title>ags_parameter_grow&#160;()</title>
+<indexterm zone="ags-parameter-grow" role="0.3"><primary>ags_parameter_grow</primary></indexterm>
+<programlisting language="C"><link linkend="GParameter"><returnvalue>GParameter</returnvalue></link>&#160;*
+ags_parameter_grow (<parameter><link linkend="GType"><type>GType</type></link> type</parameter>,
+                    <parameter><link linkend="GParameter"><type>GParameter</type></link> *params</parameter>,
+                    <parameter><link linkend="guint"><type>guint</type></link> *n_params</parameter>,
+                    <parameter>...</parameter>);</programlisting>
+<para>Grow parameter array of <parameter>object_type</parameter>
+ object. This function is mainly used to
+prepare a <link linkend="GParameter"><type>GParameter</type></link> array to instantiate a new <link linkend="GObject"><type>GObject</type></link> by using <link linkend="g-object-newv"><function>g_object_newv()</function></link>.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>object_type</para></entry>
+<entry role="parameter_description"><para>the <link linkend="GType"><type>GType</type></link> of the object's properties</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>params</para></entry>
+<entry role="parameter_description"><para>the <link linkend="GParameter"><type>GParameter</type></link> array</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>n_params</para></entry>
+<entry role="parameter_description"><para>location to store new size</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>...</para></entry>
+<entry role="parameter_description"><para>a <link linkend="NULL:CAPS"><literal>NULL</literal></link>-terminated list of properties name and value</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> the resized GParameter array</para>
+<para></para>
+</refsect3><para role="since">Since 0.3</para></refsect2>
+
+</refsect1>
+<refsect1 id="ags-AgsParameter.other_details" role="details">
+<title role="details.title">Types and Values</title>
 
 </refsect1>
 

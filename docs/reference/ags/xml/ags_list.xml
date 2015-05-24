@@ -1,58 +1,104 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-ags-list">
+<refentry id="ags-AgsList">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-ags-list.top_of_page">ags_list</refentrytitle>
+<refentrytitle role="top_of_page" id="ags-AgsList.top_of_page">AgsList</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
 </refmiscinfo>
 </refmeta>
 <refnamediv>
-<refname>ags_list</refname>
-<refpurpose></refpurpose>
+<refname>AgsList</refname>
+<refpurpose>Complete GList</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-ags-list.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="ags-AgsList.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-list-free-and-free-link">ags_list_free_and_free_link</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-list-free-and-unref-link">ags_list_free_and_unref_link</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-list-duplicate-list">ags_list_duplicate_list</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis><link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-list-duplicate-list">ags_list_duplicate_list</link>             (<parameter><link linkend="gpointer"><type>gpointer</type></link> entry</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> target</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-list-free-and-free-link">ags_list_free_and_free_link</link>         (<parameter><link linkend="GList"><type>GList</type></link> *list</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-list-free-and-unref-link">ags_list_free_and_unref_link</link>        (<parameter><link linkend="GList"><type>GList</type></link> *list</parameter>);
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-ags-list.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-ags-list.details" role="details">
-<title role="details.title">Details</title>
+
+<refsect1 id="ags-AgsList.includes"><title>Includes</title><synopsis>#include &lt;ags/lib/ags_list.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="ags-AgsList.description" role="desc">
+<title role="desc.title">Description</title>
+<para>Functions completing <link linkend="GList"><type>GList</type></link> API.</para>
+
+</refsect1>
+<refsect1 id="ags-AgsList.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-list-free-and-free-link" role="function" condition="deprecated:Use g_list_free_full() with g_free() instead|since:0.3">
+<title>ags_list_free_and_free_link&#160;()</title>
+<indexterm zone="ags-list-free-and-free-link" role="deprecated"><primary>ags_list_free_and_free_link</primary></indexterm><indexterm zone="ags-list-free-and-free-link" role="0.3"><primary>ags_list_free_and_free_link</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_list_free_and_free_link (<parameter><link linkend="GList"><type>GList</type></link> *list</parameter>);</programlisting>
+<warning><para><literal>ags_list_free_and_free_link</literal> is deprecated and should not be used in newly-written code.</para> <para>Use <link linkend="g-list-free-full"><function>g_list_free_full()</function></link> with <link linkend="g-free"><function>g_free()</function></link> instead</para>
+</warning>
+<para>Free list and free data.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>list</para></entry>
+<entry role="parameter_description"><para>the <link linkend="GList"><type>GList</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.3</para></refsect2>
+<refsect2 id="ags-list-free-and-unref-link" role="function" condition="deprecated:Use g_list_free_full() with g_ojbect_unref() instead|since:0.3">
+<title>ags_list_free_and_unref_link&#160;()</title>
+<indexterm zone="ags-list-free-and-unref-link" role="deprecated"><primary>ags_list_free_and_unref_link</primary></indexterm><indexterm zone="ags-list-free-and-unref-link" role="0.3"><primary>ags_list_free_and_unref_link</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_list_free_and_unref_link (<parameter><link linkend="GList"><type>GList</type></link> *list</parameter>);</programlisting>
+<warning><para><literal>ags_list_free_and_unref_link</literal> is deprecated and should not be used in newly-written code.</para> <para>Use <link linkend="g-list-free-full"><function>g_list_free_full()</function></link> with <link linkend="g-ojbect-unref"><function>g_ojbect_unref()</function></link> instead</para>
+</warning>
+<para>Free list and unref data.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>list</para></entry>
+<entry role="parameter_description"><para>the <link linkend="GList"><type>GList</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.3</para></refsect2>
 <refsect2 id="ags-list-duplicate-list" role="function">
-<title>ags_list_duplicate_list ()</title>
+<title>ags_list_duplicate_list&#160;()</title>
 <indexterm zone="ags-list-duplicate-list"><primary>ags_list_duplicate_list</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_list_duplicate_list             (<parameter><link linkend="gpointer"><type>gpointer</type></link> entry</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> target</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-list-free-and-free-link" role="function">
-<title>ags_list_free_and_free_link ()</title>
-<indexterm zone="ags-list-free-and-free-link"><primary>ags_list_free_and_free_link</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_list_free_and_free_link         (<parameter><link linkend="GList"><type>GList</type></link> *list</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-list-free-and-unref-link" role="function">
-<title>ags_list_free_and_unref_link ()</title>
-<indexterm zone="ags-list-free-and-unref-link"><primary>ags_list_free_and_unref_link</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_list_free_and_unref_link        (<parameter><link linkend="GList"><type>GList</type></link> *list</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_list_duplicate_list (<parameter><link linkend="gpointer"><type>gpointer</type></link> entry</parameter>,
+                         <parameter><link linkend="gpointer"><type>gpointer</type></link> target</parameter>);</programlisting>
+</refsect2>
+
+</refsect1>
+<refsect1 id="ags-AgsList.other_details" role="details">
+<title role="details.title">Types and Values</title>
 
 </refsect1>
 

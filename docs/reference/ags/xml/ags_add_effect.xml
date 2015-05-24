@@ -1,0 +1,91 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="AgsAddEffect">
+<refmeta>
+<refentrytitle role="top_of_page" id="AgsAddEffect.top_of_page">AgsAddEffect</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsAddEffect</refname>
+<refpurpose>add effect object to context</refpurpose>
+</refnamediv>
+
+<refsect1 id="AgsAddEffect.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="AgsAddEffect"><returnvalue>AgsAddEffect</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-add-effect-new">ags_add_effect_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsAddEffect.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsTask">AgsTask</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsAddEffect
+</screen>
+</refsect1>
+
+<refsect1 id="AgsAddEffect.includes"><title>Includes</title><synopsis>#include &lt;ags/audio/task/ags_add_effect.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsAddEffect.description" role="desc">
+<title role="desc.title">Description</title>
+<para>The <link linkend="AgsAddEffect"><type>AgsAddEffect</type></link> task adds <link linkend="AgsEffect"><type>AgsEffect</type></link> to context.</para>
+
+</refsect1>
+<refsect1 id="AgsAddEffect.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-add-effect-new" role="function" condition="since:0.4.3">
+<title>ags_add_effect_new&#160;()</title>
+<indexterm zone="ags-add-effect-new" role="0.4.3"><primary>ags_add_effect_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsAddEffect"><returnvalue>AgsAddEffect</returnvalue></link>&#160;*
+ags_add_effect_new (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>,
+                    <parameter><link linkend="gchar"><type>gchar</type></link> *filename</parameter>,
+                    <parameter><link linkend="gchar"><type>gchar</type></link> *effect</parameter>);</programlisting>
+<para>Creates an <link linkend="AgsAddEffect"><type>AgsAddEffect</type></link>.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>channel</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsChannel"><type>AgsChannel</type></link> to set up the effect</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>filename</para></entry>
+<entry role="parameter_description"><para>the filename including <parameter>effect</parameter>
+</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>effect</para></entry>
+<entry role="parameter_description"><para>the effect's name</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> an new <link linkend="AgsAddEffect"><type>AgsAddEffect</type></link>.</para>
+<para></para>
+</refsect3><para role="since">Since 0.4.3</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsAddEffect.other_details" role="details">
+<title role="details.title">Types and Values</title>
+
+</refsect1>
+
+</refentry>

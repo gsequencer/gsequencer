@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsVolumeChannelRun">
+<refentry id="AgsVolumeChannelRun">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsVolumeChannelRun.top_of_page">AgsVolumeChannelRun</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsVolumeChannelRun.top_of_page">AgsVolumeChannelRun</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -14,49 +14,57 @@
 </refmeta>
 <refnamediv>
 <refname>AgsVolumeChannelRun</refname>
-<refpurpose></refpurpose>
+<refpurpose>volumes channel</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsVolumeChannelRun.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsVolumeChannelRun.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="AgsVolumeChannelRun"><returnvalue>AgsVolumeChannelRun</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-volume-channel-run-new">ags_volume_channel_run_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>struct              <link linkend="AgsVolumeChannelRun">AgsVolumeChannelRun</link>;
-struct              <link linkend="AgsVolumeChannelRunClass">AgsVolumeChannelRunClass</link>;
-<link linkend="AgsVolumeChannelRun"><returnvalue>AgsVolumeChannelRun</returnvalue></link> * <link linkend="ags-volume-channel-run-new">ags_volume_channel_run_new</link>        (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>);
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsVolumeChannelRun.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsVolumeChannelRun.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AgsVolumeChannelRun" role="struct">
-<title>struct AgsVolumeChannelRun</title>
-<indexterm zone="AgsVolumeChannelRun"><primary>AgsVolumeChannelRun</primary></indexterm>
-<programlisting>struct AgsVolumeChannelRun {
-  AgsRecallChannelRun recall_channel_run;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsVolumeChannelRunClass" role="struct">
-<title>struct AgsVolumeChannelRunClass</title>
-<indexterm zone="AgsVolumeChannelRunClass"><primary>AgsVolumeChannelRunClass</primary></indexterm>
-<programlisting>struct AgsVolumeChannelRunClass {
-  AgsRecallChannelRunClass recall_channel_run;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-volume-channel-run-new" role="function">
-<title>ags_volume_channel_run_new ()</title>
-<indexterm zone="ags-volume-channel-run-new"><primary>ags_volume_channel_run_new</primary></indexterm>
-<programlisting><link linkend="AgsVolumeChannelRun"><returnvalue>AgsVolumeChannelRun</returnvalue></link> * ags_volume_channel_run_new        (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<refsect1 id="AgsVolumeChannelRun.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsRecall">AgsRecall</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsRecallChannelRun">AgsRecallChannelRun</link>
+            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsVolumeChannelRun
+</screen>
+</refsect1>
+
+<refsect1 id="AgsVolumeChannelRun.includes"><title>Includes</title><synopsis>#include &lt;ags/audio/recall/ags_volume_channel_run.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsVolumeChannelRun.description" role="desc">
+<title role="desc.title">Description</title>
+<para>The <link linkend="AgsVolumeChannelRun"><type>AgsVolumeChannelRun</type></link> class volumes the channel.</para>
+
+</refsect1>
+<refsect1 id="AgsVolumeChannelRun.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-volume-channel-run-new" role="function" condition="since:0.4">
+<title>ags_volume_channel_run_new&#160;()</title>
+<indexterm zone="ags-volume-channel-run-new" role="0.4"><primary>ags_volume_channel_run_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsVolumeChannelRun"><returnvalue>AgsVolumeChannelRun</returnvalue></link>&#160;*
+ags_volume_channel_run_new (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>);</programlisting>
+<para>Creates an <link linkend="AgsVolumeChannelRun"><type>AgsVolumeChannelRun</type></link></para>
+<refsect3 role="returns">
+<title>Returns</title>
+<para> a new <link linkend="AgsVolumeChannelRun"><type>AgsVolumeChannelRun</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsVolumeChannelRun.other_details" role="details">
+<title role="details.title">Types and Values</title>
 
 </refsect1>
 

@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
 <refentry id="ags-ags-editor-callbacks">
 <refmeta>
@@ -17,82 +17,94 @@
 <refpurpose></refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-ags-editor-callbacks.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="ags-ags-editor-callbacks.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-editor-parent-set-callback">ags_editor_parent_set_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-editor-set-audio-channels-callback">ags_editor_set_audio_channels_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-editor-set-pads-callback">ags_editor_set_pads_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-editor-machine-changed-callback">ags_editor_machine_changed_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-editor-change-position-callback">ags_editor_change_position_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-editor-edit-vscrollbar-value-changed-callback">ags_editor_edit_vscrollbar_value_changed_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis><link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-editor-change-position-callback">ags_editor_change_position_callback</link> (<parameter><link linkend="AgsNavigation"><type>AgsNavigation</type></link> *navigation</parameter>,
-                                                         <parameter><link linkend="gdouble"><type>gdouble</type></link> tact</parameter>,
-                                                         <parameter><link linkend="AgsEditor"><type>AgsEditor</type></link> *editor</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-editor-machine-changed-callback">ags_editor_machine_changed_callback</link> (<parameter><link linkend="AgsMachineSelector"><type>AgsMachineSelector</type></link> *machine_selector</parameter>,
-                                                         <parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>,
-                                                         <parameter><link linkend="AgsEditor"><type>AgsEditor</type></link> *editor</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-editor-parent-set-callback">ags_editor_parent_set_callback</link>      (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
-                                                         <parameter><link linkend="GtkObject"><type>GtkObject</type></link> *old_parent</parameter>,
-                                                         <parameter><link linkend="AgsEditor"><type>AgsEditor</type></link> *editor</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-editor-set-audio-channels-callback">ags_editor_set_audio_channels_callback</link>
-                                                        (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> audio_channels</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> audio_channels_old</parameter>,
-                                                         <parameter><link linkend="AgsEditor"><type>AgsEditor</type></link> *editor</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-editor-set-pads-callback">ags_editor_set_pads_callback</link>        (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
-                                                         <parameter><link linkend="GType"><type>GType</type></link> channel_type</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> pads</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> pads_old</parameter>,
-                                                         <parameter><link linkend="AgsEditor"><type>AgsEditor</type></link> *editor</parameter>);
-</synopsis>
-</refsynopsisdiv>
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+
 
 <refsect1 id="ags-ags-editor-callbacks.description" role="desc">
 <title role="desc.title">Description</title>
-<para>
-</para>
+
 </refsect1>
-<refsect1 id="ags-ags-editor-callbacks.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="ags-editor-change-position-callback" role="function">
-<title>ags_editor_change_position_callback ()</title>
-<indexterm zone="ags-editor-change-position-callback"><primary>ags_editor_change_position_callback</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_editor_change_position_callback (<parameter><link linkend="AgsNavigation"><type>AgsNavigation</type></link> *navigation</parameter>,
-                                                         <parameter><link linkend="gdouble"><type>gdouble</type></link> tact</parameter>,
-                                                         <parameter><link linkend="AgsEditor"><type>AgsEditor</type></link> *editor</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-editor-machine-changed-callback" role="function">
-<title>ags_editor_machine_changed_callback ()</title>
-<indexterm zone="ags-editor-machine-changed-callback"><primary>ags_editor_machine_changed_callback</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_editor_machine_changed_callback (<parameter><link linkend="AgsMachineSelector"><type>AgsMachineSelector</type></link> *machine_selector</parameter>,
-                                                         <parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>,
-                                                         <parameter><link linkend="AgsEditor"><type>AgsEditor</type></link> *editor</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<refsect1 id="ags-ags-editor-callbacks.functions_details" role="details">
+<title role="details.title">Functions</title>
 <refsect2 id="ags-editor-parent-set-callback" role="function">
-<title>ags_editor_parent_set_callback ()</title>
+<title>ags_editor_parent_set_callback&#160;()</title>
 <indexterm zone="ags-editor-parent-set-callback"><primary>ags_editor_parent_set_callback</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_editor_parent_set_callback      (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
-                                                         <parameter><link linkend="GtkObject"><type>GtkObject</type></link> *old_parent</parameter>,
-                                                         <parameter><link linkend="AgsEditor"><type>AgsEditor</type></link> *editor</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_editor_parent_set_callback (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                                <parameter><link linkend="GtkObject"><type>GtkObject</type></link> *old_parent</parameter>,
+                                <parameter><link linkend="AgsEditor"><type>AgsEditor</type></link> *editor</parameter>);</programlisting>
+</refsect2>
 <refsect2 id="ags-editor-set-audio-channels-callback" role="function">
-<title>ags_editor_set_audio_channels_callback ()</title>
+<title>ags_editor_set_audio_channels_callback&#160;()</title>
 <indexterm zone="ags-editor-set-audio-channels-callback"><primary>ags_editor_set_audio_channels_callback</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_editor_set_audio_channels_callback
-                                                        (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> audio_channels</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> audio_channels_old</parameter>,
-                                                         <parameter><link linkend="AgsEditor"><type>AgsEditor</type></link> *editor</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_editor_set_audio_channels_callback
+                               (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
+                                <parameter><link linkend="guint"><type>guint</type></link> audio_channels</parameter>,
+                                <parameter><link linkend="guint"><type>guint</type></link> audio_channels_old</parameter>,
+                                <parameter><link linkend="AgsEditor"><type>AgsEditor</type></link> *editor</parameter>);</programlisting>
+</refsect2>
 <refsect2 id="ags-editor-set-pads-callback" role="function">
-<title>ags_editor_set_pads_callback ()</title>
+<title>ags_editor_set_pads_callback&#160;()</title>
 <indexterm zone="ags-editor-set-pads-callback"><primary>ags_editor_set_pads_callback</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_editor_set_pads_callback        (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
-                                                         <parameter><link linkend="GType"><type>GType</type></link> channel_type</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> pads</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> pads_old</parameter>,
-                                                         <parameter><link linkend="AgsEditor"><type>AgsEditor</type></link> *editor</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_editor_set_pads_callback (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
+                              <parameter><link linkend="GType"><type>GType</type></link> channel_type</parameter>,
+                              <parameter><link linkend="guint"><type>guint</type></link> pads</parameter>,
+                              <parameter><link linkend="guint"><type>guint</type></link> pads_old</parameter>,
+                              <parameter><link linkend="AgsEditor"><type>AgsEditor</type></link> *editor</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-editor-machine-changed-callback" role="function">
+<title>ags_editor_machine_changed_callback&#160;()</title>
+<indexterm zone="ags-editor-machine-changed-callback"><primary>ags_editor_machine_changed_callback</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_editor_machine_changed_callback (<parameter><link linkend="AgsMachineSelector"><type>AgsMachineSelector</type></link> *machine_selector</parameter>,
+                                     <parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>,
+                                     <parameter><link linkend="AgsEditor"><type>AgsEditor</type></link> *editor</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-editor-change-position-callback" role="function">
+<title>ags_editor_change_position_callback&#160;()</title>
+<indexterm zone="ags-editor-change-position-callback"><primary>ags_editor_change_position_callback</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_editor_change_position_callback (<parameter><link linkend="AgsNavigation"><type>AgsNavigation</type></link> *navigation</parameter>,
+                                     <parameter><link linkend="gdouble"><type>gdouble</type></link> tact</parameter>,
+                                     <parameter><link linkend="AgsEditor"><type>AgsEditor</type></link> *editor</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-editor-edit-vscrollbar-value-changed-callback" role="function">
+<title>ags_editor_edit_vscrollbar_value_changed_callback&#160;()</title>
+<indexterm zone="ags-editor-edit-vscrollbar-value-changed-callback"><primary>ags_editor_edit_vscrollbar_value_changed_callback</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_editor_edit_vscrollbar_value_changed_callback
+                               (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *note_edit</parameter>,
+                                <parameter><link linkend="AgsEditor"><type>AgsEditor</type></link> *editor</parameter>);</programlisting>
+</refsect2>
+
+</refsect1>
+<refsect1 id="ags-ags-editor-callbacks.other_details" role="details">
+<title role="details.title">Types and Values</title>
 
 </refsect1>
 

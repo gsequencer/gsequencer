@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-ags-plugin-browser-callbacks">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-ags-plugin-browser-callbacks.top_of_page">ags_plugin_browser_callbacks</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>ags_plugin_browser_callbacks</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsect1 id="ags-ags-plugin-browser-callbacks.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-plugin-browser-plugin-type-changed-callback">ags_plugin_browser_plugin_type_changed_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-plugin-browser-ok-callback">ags_plugin_browser_ok_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-plugin-browser-cancel-callback">ags_plugin_browser_cancel_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+
+
+<refsect1 id="ags-ags-plugin-browser-callbacks.description" role="desc">
+<title role="desc.title">Description</title>
+
+</refsect1>
+<refsect1 id="ags-ags-plugin-browser-callbacks.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-plugin-browser-plugin-type-changed-callback" role="function">
+<title>ags_plugin_browser_plugin_type_changed_callback&#160;()</title>
+<indexterm zone="ags-plugin-browser-plugin-type-changed-callback"><primary>ags_plugin_browser_plugin_type_changed_callback</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_plugin_browser_plugin_type_changed_callback
+                               (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *combo_box</parameter>,
+                                <parameter><link linkend="AgsPluginBrowser"><type>AgsPluginBrowser</type></link> *plugin_browser</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-plugin-browser-ok-callback" role="function">
+<title>ags_plugin_browser_ok_callback&#160;()</title>
+<indexterm zone="ags-plugin-browser-ok-callback"><primary>ags_plugin_browser_ok_callback</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_plugin_browser_ok_callback (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *button</parameter>,
+                                <parameter><link linkend="AgsPluginBrowser"><type>AgsPluginBrowser</type></link> *plugin_browser</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-plugin-browser-cancel-callback" role="function">
+<title>ags_plugin_browser_cancel_callback&#160;()</title>
+<indexterm zone="ags-plugin-browser-cancel-callback"><primary>ags_plugin_browser_cancel_callback</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_plugin_browser_cancel_callback (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *button</parameter>,
+                                    <parameter><link linkend="AgsPluginBrowser"><type>AgsPluginBrowser</type></link> *plugin_browser</parameter>);</programlisting>
+</refsect2>
+
+</refsect1>
+<refsect1 id="ags-ags-plugin-browser-callbacks.other_details" role="details">
+<title role="details.title">Types and Values</title>
+
+</refsect1>
+
+</refentry>

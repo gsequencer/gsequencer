@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsRecyclingThread">
+<refentry id="AgsRecyclingThread">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsRecyclingThread.top_of_page">AgsRecyclingThread</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsRecyclingThread.top_of_page">AgsRecyclingThread</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -17,112 +17,179 @@
 <refpurpose></refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsRecyclingThread.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsRecyclingThread.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-RECYCLING-THREAD-DEFAULT-JIFFIE:CAPS">AGS_RECYCLING_THREAD_DEFAULT_JIFFIE</link></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-recycling-thread-play-channel">ags_recycling_thread_play_channel</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-recycling-thread-play-audio">ags_recycling_thread_play_audio</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsRecyclingThread"><returnvalue>AgsRecyclingThread</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-recycling-thread-new">ags_recycling_thread_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>#define             <link linkend="AGS-RECYCLING-THREAD-DEFAULT-JIFFIE:CAPS">AGS_RECYCLING_THREAD_DEFAULT_JIFFIE</link>
-struct              <link linkend="AgsRecyclingThread">AgsRecyclingThread</link>;
-struct              <link linkend="AgsRecyclingThreadClass">AgsRecyclingThreadClass</link>;
-enum                <link linkend="AgsRecyclingThreadFlags">AgsRecyclingThreadFlags</link>;
-<link linkend="AgsRecyclingThread"><returnvalue>AgsRecyclingThread</returnvalue></link> * <link linkend="ags-recycling-thread-new">ags_recycling_thread_new</link>           ();
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-recycling-thread-play-audio">ags_recycling_thread_play_audio</link>     (<parameter><link linkend="AgsRecyclingThread"><type>AgsRecyclingThread</type></link> *recycling_thread</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *output</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *audio</parameter>,
-                                                         <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>,
-                                                         <parameter><link linkend="gint"><type>gint</type></link> stage</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-recycling-thread-play-channel">ags_recycling_thread_play_channel</link>   (<parameter><link linkend="AgsRecyclingThread"><type>AgsRecyclingThread</type></link> *recycling_thread</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *channel</parameter>,
-                                                         <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>,
-                                                         <parameter><link linkend="gint"><type>gint</type></link> stage</parameter>);
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsRecyclingThread.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsRecyclingThread.details" role="details">
-<title role="details.title">Details</title>
+<refsect1 id="AgsRecyclingThread.properties" role="properties">
+<title role="properties.title">Properties</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="properties_type" colwidth="150px"/>
+<colspec colname="properties_name" colwidth="300px"/>
+<colspec colname="properties_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="property_type"><link linkend="AgsIteratorThread"><type>AgsIteratorThread</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsRecyclingThread--iterator-thread">iterator-thread</link></entry><entry role="property_flags">Read / Write</entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsRecyclingThread.signals" role="signal_proto">
+<title role="signal_proto.title">Signals</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="signals_return" colwidth="150px"/>
+<colspec colname="signals_name" colwidth="300px"/>
+<colspec colname="signals_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsRecyclingThread-play-audio">play-audio</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsRecyclingThread-play-channel">play-channel</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsRecyclingThread.other" role="other_proto">
+<title role="other_proto.title">Types and Values</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="name" colwidth="150px"/>
+<colspec colname="description"/>
+<tbody>
+<row><entry role="datatype_keyword">enum</entry><entry role="function_name"><link linkend="AgsRecyclingThreadFlags">AgsRecyclingThreadFlags</link></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsRecyclingThread.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsThread">AgsThread</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsRecyclingThread
+</screen>
+</refsect1>
+
+
+<refsect1 id="AgsRecyclingThread.description" role="desc">
+<title role="desc.title">Description</title>
+
+</refsect1>
+<refsect1 id="AgsRecyclingThread.functions_details" role="details">
+<title role="details.title">Functions</title>
 <refsect2 id="AGS-RECYCLING-THREAD-DEFAULT-JIFFIE:CAPS" role="macro">
 <title>AGS_RECYCLING_THREAD_DEFAULT_JIFFIE</title>
 <indexterm zone="AGS-RECYCLING-THREAD-DEFAULT-JIFFIE:CAPS"><primary>AGS_RECYCLING_THREAD_DEFAULT_JIFFIE</primary></indexterm>
-<programlisting>#define AGS_RECYCLING_THREAD_DEFAULT_JIFFIE (100)
+<programlisting language="C">#define AGS_RECYCLING_THREAD_DEFAULT_JIFFIE (100)
 </programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsRecyclingThread" role="struct">
-<title>struct AgsRecyclingThread</title>
-<indexterm zone="AgsRecyclingThread"><primary>AgsRecyclingThread</primary></indexterm>
-<programlisting>struct AgsRecyclingThread {
-  AgsThread thread;
+</refsect2>
+<refsect2 id="ags-recycling-thread-play-channel" role="function">
+<title>ags_recycling_thread_play_channel&#160;()</title>
+<indexterm zone="ags-recycling-thread-play-channel"><primary>ags_recycling_thread_play_channel</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_recycling_thread_play_channel (<parameter><link linkend="AgsRecyclingThread"><type>AgsRecyclingThread</type></link> *recycling_thread</parameter>,
+                                   <parameter><link linkend="GObject"><type>GObject</type></link> *channel</parameter>,
+                                   <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>,
+                                   <parameter><link linkend="gint"><type>gint</type></link> stage</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-recycling-thread-play-audio" role="function">
+<title>ags_recycling_thread_play_audio&#160;()</title>
+<indexterm zone="ags-recycling-thread-play-audio"><primary>ags_recycling_thread_play_audio</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_recycling_thread_play_audio (<parameter><link linkend="AgsRecyclingThread"><type>AgsRecyclingThread</type></link> *recycling_thread</parameter>,
+                                 <parameter><link linkend="GObject"><type>GObject</type></link> *output</parameter>,
+                                 <parameter><link linkend="GObject"><type>GObject</type></link> *audio</parameter>,
+                                 <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>,
+                                 <parameter><link linkend="gint"><type>gint</type></link> stage</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-recycling-thread-new" role="function">
+<title>ags_recycling_thread_new&#160;()</title>
+<indexterm zone="ags-recycling-thread-new"><primary>ags_recycling_thread_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsRecyclingThread"><returnvalue>AgsRecyclingThread</returnvalue></link>&#160;*
+ags_recycling_thread_new ();</programlisting>
+</refsect2>
 
-  guint flags;
-
-  AgsThread *iterator_thread;
-
-  pthread_mutex_t iteration_mutex;
-  pthread_cond_t iteration_cond;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsRecyclingThreadClass" role="struct">
-<title>struct AgsRecyclingThreadClass</title>
-<indexterm zone="AgsRecyclingThreadClass"><primary>AgsRecyclingThreadClass</primary></indexterm>
-<programlisting>struct AgsRecyclingThreadClass {
-  AgsThreadClass thread;
-
-  void (*play_channel)(AgsRecyclingThread *recycling_thread,
-		       GObject *channel,
-		       AgsRecallID *recall_id,
-		       gint stage);
-
-  void (*play_audio)(AgsRecyclingThread *recycling_thread,
-		     GObject *output, GObject *audio,
-		     AgsRecallID *recall_id,
-		     gint stage);
-};
-</programlisting>
-<para>
-</para></refsect2>
+</refsect1>
+<refsect1 id="AgsRecyclingThread.other_details" role="details">
+<title role="details.title">Types and Values</title>
 <refsect2 id="AgsRecyclingThreadFlags" role="enum">
 <title>enum AgsRecyclingThreadFlags</title>
 <indexterm zone="AgsRecyclingThreadFlags"><primary>AgsRecyclingThreadFlags</primary></indexterm>
-<programlisting>typedef enum {
-  AGS_RECYCLING_THREAD_RUNNING   = 1,
-  AGS_RECYCLING_THREAD_WAIT      = 1 &lt;&lt; 1,
-  AGS_RECYCLING_THREAD_DONE      = 1 &lt;&lt; 2,
-} AgsRecyclingThreadFlags;
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-recycling-thread-new" role="function">
-<title>ags_recycling_thread_new ()</title>
-<indexterm zone="ags-recycling-thread-new"><primary>ags_recycling_thread_new</primary></indexterm>
-<programlisting><link linkend="AgsRecyclingThread"><returnvalue>AgsRecyclingThread</returnvalue></link> * ags_recycling_thread_new           ();</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-recycling-thread-play-audio" role="function">
-<title>ags_recycling_thread_play_audio ()</title>
-<indexterm zone="ags-recycling-thread-play-audio"><primary>ags_recycling_thread_play_audio</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_recycling_thread_play_audio     (<parameter><link linkend="AgsRecyclingThread"><type>AgsRecyclingThread</type></link> *recycling_thread</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *output</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *audio</parameter>,
-                                                         <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>,
-                                                         <parameter><link linkend="gint"><type>gint</type></link> stage</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-recycling-thread-play-channel" role="function">
-<title>ags_recycling_thread_play_channel ()</title>
-<indexterm zone="ags-recycling-thread-play-channel"><primary>ags_recycling_thread_play_channel</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_recycling_thread_play_channel   (<parameter><link linkend="AgsRecyclingThread"><type>AgsRecyclingThread</type></link> *recycling_thread</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *channel</parameter>,
-                                                         <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>,
-                                                         <parameter><link linkend="gint"><type>gint</type></link> stage</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<refsect3 role="enum_members">
+<title>Members</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="enum_members_name" colwidth="300px"/>
+<colspec colname="enum_members_description"/>
+<colspec colname="enum_members_annotations" colwidth="200px"/>
+<tbody>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-RECYCLING-THREAD-RUNNING:CAPS">AGS_RECYCLING_THREAD_RUNNING</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-RECYCLING-THREAD-WAIT:CAPS">AGS_RECYCLING_THREAD_WAIT</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-RECYCLING-THREAD-DONE:CAPS">AGS_RECYCLING_THREAD_DONE</para></entry>
+<entry /><entry />
+</row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
 
+</refsect1>
+<refsect1 id="AgsRecyclingThread.property-details" role="property_details">
+<title role="property_details.title">Property Details</title>
+<refsect2 id="AgsRecyclingThread--iterator-thread" role="property"><title>The <literal>“iterator-thread”</literal> property</title>
+<indexterm zone="AgsRecyclingThread--iterator-thread"><primary>AgsRecyclingThread:iterator-thread</primary></indexterm>
+<programlisting>  “iterator-thread”          <link linkend="AgsIteratorThread"><type>AgsIteratorThread</type></link>&#160;*</programlisting>
+<para>The iterator thread object it is assigned to.</para><para>Flags: Read / Write</para>
+</refsect2>
+
+</refsect1>
+<refsect1 id="AgsRecyclingThread.signal-details" role="signals">
+<title role="signals.title">Signal Details</title>
+<refsect2 id="AgsRecyclingThread-play-audio" role="signal"><title>The <literal>“play-audio”</literal> signal</title>
+<indexterm zone="AgsRecyclingThread-play-audio"><primary>AgsRecyclingThread::play-audio</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsRecyclingThread"><type>AgsRecyclingThread</type></link> *agsrecyclingthread,
+               <link linkend="GObject"><type>GObject</type></link>            *arg1,
+               <link linkend="GObject"><type>GObject</type></link>            *arg2,
+               <link linkend="GObject"><type>GObject</type></link>            *arg3,
+               <link linkend="GObject"><type>GObject</type></link>            *arg4,
+               <link linkend="GObject"><type>GObject</type></link>            *arg5,
+               <link linkend="GObject"><type>GObject</type></link>            *arg6,
+               <link linkend="guint"><type>guint</type></link>               arg7,
+               <link linkend="gint"><type>gint</type></link>                arg8,
+               <link linkend="gboolean"><type>gboolean</type></link>            arg9,
+               <link linkend="gpointer"><type>gpointer</type></link>            user_data)</programlisting>
+<para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsRecyclingThread-play-channel" role="signal"><title>The <literal>“play-channel”</literal> signal</title>
+<indexterm zone="AgsRecyclingThread-play-channel"><primary>AgsRecyclingThread::play-channel</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsRecyclingThread"><type>AgsRecyclingThread</type></link> *agsrecyclingthread,
+               <link linkend="GObject"><type>GObject</type></link>            *arg1,
+               <link linkend="GObject"><type>GObject</type></link>            *arg2,
+               <link linkend="GObject"><type>GObject</type></link>            *arg3,
+               <link linkend="gint"><type>gint</type></link>                arg4,
+               <link linkend="gboolean"><type>gboolean</type></link>            arg5,
+               <link linkend="gpointer"><type>gpointer</type></link>            user_data)</programlisting>
+<para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2>
 </refsect1>
 
 </refentry>

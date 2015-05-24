@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
 <refentry id="ags-AgsPortableThread">
 <refmeta>
@@ -17,442 +17,481 @@
 <refpurpose></refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsPortableThread.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="ags-AgsPortableThread.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-portable-thread-lock">ags_portable_thread_lock</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-portable-thread-trylock">ags_portable_thread_trylock</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-portable-thread-unlock">ags_portable_thread_unlock</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsPortableThread"><returnvalue>AgsPortableThread</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-portable-thread-get-toplevel">ags_portable_thread_get_toplevel</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsPortableThread"><returnvalue>AgsPortableThread</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-portable-thread-first">ags_portable_thread_first</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsPortableThread"><returnvalue>AgsPortableThread</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-portable-thread-last">ags_portable_thread_last</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-portable-thread-remove-child">ags_portable_thread_remove_child</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-portable-thread-add-child">ags_portable_thread_add_child</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-portable-thread-parental-is-locked">ags_portable_thread_parental_is_locked</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-portable-thread-sibling-is-locked">ags_portable_thread_sibling_is_locked</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-portable-thread-children-is-locked">ags_portable_thread_children_is_locked</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-portable-thread-is-current-ready">ags_portable_thread_is_current_ready</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-portable-thread-is-current-synced">ags_portable_thread_is_current_synced</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-portable-thread-is-tree-ready">ags_portable_thread_is_tree_ready</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-portable-thread-is-tree-synced">ags_portable_thread_is_tree_synced</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-portable-thread-main-loop-unlock-children">ags_portable_thread_main_loop_unlock_children</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsPortableThread"><returnvalue>AgsPortableThread</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-portable-thread-next-parent-locked">ags_portable_thread_next_parent_locked</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsPortableThread"><returnvalue>AgsPortableThread</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-portable-thread-next-sibling-locked">ags_portable_thread_next_sibling_locked</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsPortableThread"><returnvalue>AgsPortableThread</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-portable-thread-next-children-locked">ags_portable_thread_next_children_locked</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-portable-thread-lock-parent">ags_portable_thread_lock_parent</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-portable-thread-lock-sibling">ags_portable_thread_lock_sibling</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-portable-thread-lock-children">ags_portable_thread_lock_children</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-portable-thread-lock-all">ags_portable_thread_lock_all</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-portable-thread-unlock-parent">ags_portable_thread_unlock_parent</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-portable-thread-unlock-sibling">ags_portable_thread_unlock_sibling</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-portable-thread-unlock-children">ags_portable_thread_unlock_children</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-portable-thread-unlock-all">ags_portable_thread_unlock_all</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-portable-thread-wait-parent">ags_portable_thread_wait_parent</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-portable-thread-wait-sibling">ags_portable_thread_wait_sibling</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-portable-thread-wait-children">ags_portable_thread_wait_children</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-portable-thread-signal-parent">ags_portable_thread_signal_parent</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-portable-thread-signal-sibling">ags_portable_thread_signal_sibling</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-portable-thread-signal-children">ags_portable_thread_signal_children</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-portable-thread-start">ags_portable_thread_start</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-portable-thread-run">ags_portable_thread_run</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-portable-thread-timelock">ags_portable_thread_timelock</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-portable-thread-stop">ags_portable_thread_stop</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsPortableThread"><returnvalue>AgsPortableThread</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-portable-thread-new">ags_portable_thread_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>struct              <link linkend="AgsPortableThread">AgsPortableThread</link>;
-struct              <link linkend="AgsPortableThreadClass">AgsPortableThreadClass</link>;
-enum                <link linkend="AgsPortableThreadFlags">AgsPortableThreadFlags</link>;
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-portable-thread-add-child">ags_portable_thread_add_child</link>       (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>,
-                                                         <parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *child</parameter>);
-<link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            <link linkend="ags-portable-thread-children-is-locked">ags_portable_thread_children_is_locked</link>
-                                                        (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);
-<link linkend="AgsPortableThread"><returnvalue>AgsPortableThread</returnvalue></link> * <link linkend="ags-portable-thread-first">ags_portable_thread_first</link>           (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);
-<link linkend="AgsPortableThread"><returnvalue>AgsPortableThread</returnvalue></link> * <link linkend="ags-portable-thread-get-toplevel">ags_portable_thread_get_toplevel</link>    (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);
-<link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            <link linkend="ags-portable-thread-is-current-ready">ags_portable_thread_is_current_ready</link>
-                                                        (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *current</parameter>);
-<link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            <link linkend="ags-portable-thread-is-current-synced">ags_portable_thread_is_current_synced</link>
-                                                        (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *current</parameter>);
-<link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            <link linkend="ags-portable-thread-is-tree-ready">ags_portable_thread_is_tree_ready</link>   (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);
-<link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            <link linkend="ags-portable-thread-is-tree-synced">ags_portable_thread_is_tree_synced</link>  (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);
-<link linkend="AgsPortableThread"><returnvalue>AgsPortableThread</returnvalue></link> * <link linkend="ags-portable-thread-last">ags_portable_thread_last</link>            (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-portable-thread-lock">ags_portable_thread_lock</link>            (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-portable-thread-lock-all">ags_portable_thread_lock_all</link>        (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-portable-thread-lock-children">ags_portable_thread_lock_children</link>   (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-portable-thread-lock-parent">ags_portable_thread_lock_parent</link>     (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>,
-                                                         <parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *parent</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-portable-thread-lock-sibling">ags_portable_thread_lock_sibling</link>    (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-portable-thread-main-loop-unlock-children">ags_portable_thread_main_loop_unlock_children</link>
-                                                        (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);
-<link linkend="AgsPortableThread"><returnvalue>AgsPortableThread</returnvalue></link> * <link linkend="ags-portable-thread-new">ags_portable_thread_new</link>             (<parameter><link linkend="GObject"><type>GObject</type></link> *data</parameter>);
-<link linkend="AgsPortableThread"><returnvalue>AgsPortableThread</returnvalue></link> * <link linkend="ags-portable-thread-next-children-locked">ags_portable_thread_next_children_locked</link>
-                                                        (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);
-<link linkend="AgsPortableThread"><returnvalue>AgsPortableThread</returnvalue></link> * <link linkend="ags-portable-thread-next-parent-locked">ags_portable_thread_next_parent_locked</link>
-                                                        (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>,
-                                                         <parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *parent</parameter>);
-<link linkend="AgsPortableThread"><returnvalue>AgsPortableThread</returnvalue></link> * <link linkend="ags-portable-thread-next-sibling-locked">ags_portable_thread_next_sibling_locked</link>
-                                                        (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);
-<link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            <link linkend="ags-portable-thread-parental-is-locked">ags_portable_thread_parental_is_locked</link>
-                                                        (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>,
-                                                         <parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *parent</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-portable-thread-remove-child">ags_portable_thread_remove_child</link>    (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>,
-                                                         <parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *child</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-portable-thread-run">ags_portable_thread_run</link>             (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);
-<link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            <link linkend="ags-portable-thread-sibling-is-locked">ags_portable_thread_sibling_is_locked</link>
-                                                        (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-portable-thread-signal-children">ags_portable_thread_signal_children</link> (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>,
-                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> broadcast</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-portable-thread-signal-parent">ags_portable_thread_signal_parent</link>   (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>,
-                                                         <parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *parent</parameter>,
-                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> broadcast</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-portable-thread-signal-sibling">ags_portable_thread_signal_sibling</link>  (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>,
-                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> broadcast</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-portable-thread-start">ags_portable_thread_start</link>           (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-portable-thread-stop">ags_portable_thread_stop</link>            (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-portable-thread-timelock">ags_portable_thread_timelock</link>        (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);
-<link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            <link linkend="ags-portable-thread-trylock">ags_portable_thread_trylock</link>         (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-portable-thread-unlock">ags_portable_thread_unlock</link>          (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-portable-thread-unlock-all">ags_portable_thread_unlock_all</link>      (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-portable-thread-unlock-children">ags_portable_thread_unlock_children</link> (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-portable-thread-unlock-parent">ags_portable_thread_unlock_parent</link>   (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>,
-                                                         <parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *parent</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-portable-thread-unlock-sibling">ags_portable_thread_unlock_sibling</link>  (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-portable-thread-wait-children">ags_portable_thread_wait_children</link>   (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-portable-thread-wait-parent">ags_portable_thread_wait_parent</link>     (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>,
-                                                         <parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *parent</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-portable-thread-wait-sibling">ags_portable_thread_wait_sibling</link>    (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);
-</synopsis>
-</refsynopsisdiv>
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="ags-AgsPortableThread.other" role="other_proto">
+<title role="other_proto.title">Types and Values</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="name" colwidth="150px"/>
+<colspec colname="description"/>
+<tbody>
+<row><entry role="datatype_keyword">enum</entry><entry role="function_name"><link linkend="AgsPortableThreadFlags">AgsPortableThreadFlags</link></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+
 
 <refsect1 id="ags-AgsPortableThread.description" role="desc">
 <title role="desc.title">Description</title>
-<para>
-</para>
+
 </refsect1>
-<refsect1 id="ags-AgsPortableThread.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AgsPortableThread" role="struct">
-<title>struct AgsPortableThread</title>
-<indexterm zone="AgsPortableThread"><primary>AgsPortableThread</primary></indexterm>
-<programlisting>struct AgsPortableThread {
-  GObject object;
+<refsect1 id="ags-AgsPortableThread.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-portable-thread-lock" role="function">
+<title>ags_portable_thread_lock&#160;()</title>
+<indexterm zone="ags-portable-thread-lock"><primary>ags_portable_thread_lock</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_portable_thread_lock (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);</programlisting>
+<para>Locks the threads own mutex and sets the appropriate flag.</para>
+</refsect2>
+<refsect2 id="ags-portable-thread-trylock" role="function">
+<title>ags_portable_thread_trylock&#160;()</title>
+<indexterm zone="ags-portable-thread-trylock"><primary>ags_portable_thread_trylock</primary></indexterm>
+<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+ags_portable_thread_trylock (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-portable-thread-unlock" role="function">
+<title>ags_portable_thread_unlock&#160;()</title>
+<indexterm zone="ags-portable-thread-unlock"><primary>ags_portable_thread_unlock</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_portable_thread_unlock (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);</programlisting>
+<para>Unlocks the threads own mutex and unsets the appropriate flag.</para>
+</refsect2>
+<refsect2 id="ags-portable-thread-get-toplevel" role="function">
+<title>ags_portable_thread_get_toplevel&#160;()</title>
+<indexterm zone="ags-portable-thread-get-toplevel"><primary>ags_portable_thread_get_toplevel</primary></indexterm>
+<programlisting language="C"><link linkend="AgsPortableThread"><returnvalue>AgsPortableThread</returnvalue></link>&#160;*
+ags_portable_thread_get_toplevel (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);</programlisting>
+<para>Retrieve toplevel thread.</para>
+</refsect2>
+<refsect2 id="ags-portable-thread-first" role="function">
+<title>ags_portable_thread_first&#160;()</title>
+<indexterm zone="ags-portable-thread-first"><primary>ags_portable_thread_first</primary></indexterm>
+<programlisting language="C"><link linkend="AgsPortableThread"><returnvalue>AgsPortableThread</returnvalue></link>&#160;*
+ags_portable_thread_first (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);</programlisting>
+<para>Retrieve first sibling.</para>
+</refsect2>
+<refsect2 id="ags-portable-thread-last" role="function">
+<title>ags_portable_thread_last&#160;()</title>
+<indexterm zone="ags-portable-thread-last"><primary>ags_portable_thread_last</primary></indexterm>
+<programlisting language="C"><link linkend="AgsPortableThread"><returnvalue>AgsPortableThread</returnvalue></link>&#160;*
+ags_portable_thread_last (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);</programlisting>
+<para>Retrieve last sibling.</para>
+</refsect2>
+<refsect2 id="ags-portable-thread-remove-child" role="function">
+<title>ags_portable_thread_remove_child&#160;()</title>
+<indexterm zone="ags-portable-thread-remove-child"><primary>ags_portable_thread_remove_child</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_portable_thread_remove_child (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>,
+                                  <parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *child</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-portable-thread-add-child" role="function">
+<title>ags_portable_thread_add_child&#160;()</title>
+<indexterm zone="ags-portable-thread-add-child"><primary>ags_portable_thread_add_child</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_portable_thread_add_child (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>,
+                               <parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *child</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-portable-thread-parental-is-locked" role="function">
+<title>ags_portable_thread_parental_is_locked&#160;()</title>
+<indexterm zone="ags-portable-thread-parental-is-locked"><primary>ags_portable_thread_parental_is_locked</primary></indexterm>
+<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+ags_portable_thread_parental_is_locked
+                               (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>,
+                                <parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *parent</parameter>);</programlisting>
+<para>Check the AGS_PORTABLE_THREAD_LOCKED flag in parental levels.</para>
+</refsect2>
+<refsect2 id="ags-portable-thread-sibling-is-locked" role="function">
+<title>ags_portable_thread_sibling_is_locked&#160;()</title>
+<indexterm zone="ags-portable-thread-sibling-is-locked"><primary>ags_portable_thread_sibling_is_locked</primary></indexterm>
+<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+ags_portable_thread_sibling_is_locked (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);</programlisting>
+<para>Check the AGS_PORTABLE_THREAD_LOCKED flag within sibling.</para>
+</refsect2>
+<refsect2 id="ags-portable-thread-children-is-locked" role="function">
+<title>ags_portable_thread_children_is_locked&#160;()</title>
+<indexterm zone="ags-portable-thread-children-is-locked"><primary>ags_portable_thread_children_is_locked</primary></indexterm>
+<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+ags_portable_thread_children_is_locked
+                               (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-portable-thread-is-current-ready" role="function">
+<title>ags_portable_thread_is_current_ready&#160;()</title>
+<indexterm zone="ags-portable-thread-is-current-ready"><primary>ags_portable_thread_is_current_ready</primary></indexterm>
+<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+ags_portable_thread_is_current_ready (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *current</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-portable-thread-is-current-synced" role="function">
+<title>ags_portable_thread_is_current_synced&#160;()</title>
+<indexterm zone="ags-portable-thread-is-current-synced"><primary>ags_portable_thread_is_current_synced</primary></indexterm>
+<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+ags_portable_thread_is_current_synced (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *current</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-portable-thread-is-tree-ready" role="function">
+<title>ags_portable_thread_is_tree_ready&#160;()</title>
+<indexterm zone="ags-portable-thread-is-tree-ready"><primary>ags_portable_thread_is_tree_ready</primary></indexterm>
+<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+ags_portable_thread_is_tree_ready (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-portable-thread-is-tree-synced" role="function">
+<title>ags_portable_thread_is_tree_synced&#160;()</title>
+<indexterm zone="ags-portable-thread-is-tree-synced"><primary>ags_portable_thread_is_tree_synced</primary></indexterm>
+<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+ags_portable_thread_is_tree_synced (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-portable-thread-main-loop-unlock-children" role="function">
+<title>ags_portable_thread_main_loop_unlock_children&#160;()</title>
+<indexterm zone="ags-portable-thread-main-loop-unlock-children"><primary>ags_portable_thread_main_loop_unlock_children</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_portable_thread_main_loop_unlock_children
+                               (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-portable-thread-next-parent-locked" role="function">
+<title>ags_portable_thread_next_parent_locked&#160;()</title>
+<indexterm zone="ags-portable-thread-next-parent-locked"><primary>ags_portable_thread_next_parent_locked</primary></indexterm>
+<programlisting language="C"><link linkend="AgsPortableThread"><returnvalue>AgsPortableThread</returnvalue></link>&#160;*
+ags_portable_thread_next_parent_locked
+                               (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>,
+                                <parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *parent</parameter>);</programlisting>
+<para>Retrieve next locked thread above <parameter>thread</parameter>
+.</para>
+</refsect2>
+<refsect2 id="ags-portable-thread-next-sibling-locked" role="function">
+<title>ags_portable_thread_next_sibling_locked&#160;()</title>
+<indexterm zone="ags-portable-thread-next-sibling-locked"><primary>ags_portable_thread_next_sibling_locked</primary></indexterm>
+<programlisting language="C"><link linkend="AgsPortableThread"><returnvalue>AgsPortableThread</returnvalue></link>&#160;*
+ags_portable_thread_next_sibling_locked
+                               (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);</programlisting>
+<para>Retrieve next locked thread neighbooring <parameter>thread</parameter>
+</para>
+</refsect2>
+<refsect2 id="ags-portable-thread-next-children-locked" role="function">
+<title>ags_portable_thread_next_children_locked&#160;()</title>
+<indexterm zone="ags-portable-thread-next-children-locked"><primary>ags_portable_thread_next_children_locked</primary></indexterm>
+<programlisting language="C"><link linkend="AgsPortableThread"><returnvalue>AgsPortableThread</returnvalue></link>&#160;*
+ags_portable_thread_next_children_locked
+                               (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);</programlisting>
+<para>Retrieve next locked thread following <parameter>thread</parameter>
+</para>
+</refsect2>
+<refsect2 id="ags-portable-thread-lock-parent" role="function">
+<title>ags_portable_thread_lock_parent&#160;()</title>
+<indexterm zone="ags-portable-thread-lock-parent"><primary>ags_portable_thread_lock_parent</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_portable_thread_lock_parent (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>,
+                                 <parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *parent</parameter>);</programlisting>
+<para>Lock parent tree structure.</para>
+</refsect2>
+<refsect2 id="ags-portable-thread-lock-sibling" role="function">
+<title>ags_portable_thread_lock_sibling&#160;()</title>
+<indexterm zone="ags-portable-thread-lock-sibling"><primary>ags_portable_thread_lock_sibling</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_portable_thread_lock_sibling (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);</programlisting>
+<para>Lock sibling tree structure.</para>
+</refsect2>
+<refsect2 id="ags-portable-thread-lock-children" role="function">
+<title>ags_portable_thread_lock_children&#160;()</title>
+<indexterm zone="ags-portable-thread-lock-children"><primary>ags_portable_thread_lock_children</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_portable_thread_lock_children (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);</programlisting>
+<para>Lock child tree structure.</para>
+</refsect2>
+<refsect2 id="ags-portable-thread-lock-all" role="function">
+<title>ags_portable_thread_lock_all&#160;()</title>
+<indexterm zone="ags-portable-thread-lock-all"><primary>ags_portable_thread_lock_all</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_portable_thread_lock_all (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-portable-thread-unlock-parent" role="function">
+<title>ags_portable_thread_unlock_parent&#160;()</title>
+<indexterm zone="ags-portable-thread-unlock-parent"><primary>ags_portable_thread_unlock_parent</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_portable_thread_unlock_parent (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>,
+                                   <parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *parent</parameter>);</programlisting>
+<para>Unlock parent tree structure.</para>
+</refsect2>
+<refsect2 id="ags-portable-thread-unlock-sibling" role="function">
+<title>ags_portable_thread_unlock_sibling&#160;()</title>
+<indexterm zone="ags-portable-thread-unlock-sibling"><primary>ags_portable_thread_unlock_sibling</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_portable_thread_unlock_sibling (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);</programlisting>
+<para>Unlock sibling tree structure.</para>
+</refsect2>
+<refsect2 id="ags-portable-thread-unlock-children" role="function">
+<title>ags_portable_thread_unlock_children&#160;()</title>
+<indexterm zone="ags-portable-thread-unlock-children"><primary>ags_portable_thread_unlock_children</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_portable_thread_unlock_children (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);</programlisting>
+<para>Unlock child tree structure.</para>
+</refsect2>
+<refsect2 id="ags-portable-thread-unlock-all" role="function">
+<title>ags_portable_thread_unlock_all&#160;()</title>
+<indexterm zone="ags-portable-thread-unlock-all"><primary>ags_portable_thread_unlock_all</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_portable_thread_unlock_all (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-portable-thread-wait-parent" role="function">
+<title>ags_portable_thread_wait_parent&#160;()</title>
+<indexterm zone="ags-portable-thread-wait-parent"><primary>ags_portable_thread_wait_parent</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_portable_thread_wait_parent (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>,
+                                 <parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *parent</parameter>);</programlisting>
+<para>Wait on parent tree structure.</para>
+</refsect2>
+<refsect2 id="ags-portable-thread-wait-sibling" role="function">
+<title>ags_portable_thread_wait_sibling&#160;()</title>
+<indexterm zone="ags-portable-thread-wait-sibling"><primary>ags_portable_thread_wait_sibling</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_portable_thread_wait_sibling (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);</programlisting>
+<para>Wait on sibling tree structure.</para>
+</refsect2>
+<refsect2 id="ags-portable-thread-wait-children" role="function">
+<title>ags_portable_thread_wait_children&#160;()</title>
+<indexterm zone="ags-portable-thread-wait-children"><primary>ags_portable_thread_wait_children</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_portable_thread_wait_children (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);</programlisting>
+<para>Wait on child tree structure.</para>
+</refsect2>
+<refsect2 id="ags-portable-thread-signal-parent" role="function">
+<title>ags_portable_thread_signal_parent&#160;()</title>
+<indexterm zone="ags-portable-thread-signal-parent"><primary>ags_portable_thread_signal_parent</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_portable_thread_signal_parent (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>,
+                                   <parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *parent</parameter>,
+                                   <parameter><link linkend="gboolean"><type>gboolean</type></link> broadcast</parameter>);</programlisting>
+<para>Signals the tree in higher levels.</para>
+</refsect2>
+<refsect2 id="ags-portable-thread-signal-sibling" role="function">
+<title>ags_portable_thread_signal_sibling&#160;()</title>
+<indexterm zone="ags-portable-thread-signal-sibling"><primary>ags_portable_thread_signal_sibling</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_portable_thread_signal_sibling (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>,
+                                    <parameter><link linkend="gboolean"><type>gboolean</type></link> broadcast</parameter>);</programlisting>
+<para>Signals the tree on same level.</para>
+</refsect2>
+<refsect2 id="ags-portable-thread-signal-children" role="function">
+<title>ags_portable_thread_signal_children&#160;()</title>
+<indexterm zone="ags-portable-thread-signal-children"><primary>ags_portable_thread_signal_children</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_portable_thread_signal_children (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>,
+                                     <parameter><link linkend="gboolean"><type>gboolean</type></link> broadcast</parameter>);</programlisting>
+<para>Signals the tree in lower levels.</para>
+</refsect2>
+<refsect2 id="ags-portable-thread-start" role="function">
+<title>ags_portable_thread_start&#160;()</title>
+<indexterm zone="ags-portable-thread-start"><primary>ags_portable_thread_start</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_portable_thread_start (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);</programlisting>
+<para>Start the thread.</para>
+</refsect2>
+<refsect2 id="ags-portable-thread-run" role="function">
+<title>ags_portable_thread_run&#160;()</title>
+<indexterm zone="ags-portable-thread-run"><primary>ags_portable_thread_run</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_portable_thread_run (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);</programlisting>
+<para>Only for internal use of ags_portable_thread_loop but you may want to set the your very own
+class function namely your thread's routine.</para>
+</refsect2>
+<refsect2 id="ags-portable-thread-timelock" role="function">
+<title>ags_portable_thread_timelock&#160;()</title>
+<indexterm zone="ags-portable-thread-timelock"><primary>ags_portable_thread_timelock</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_portable_thread_timelock (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-portable-thread-stop" role="function">
+<title>ags_portable_thread_stop&#160;()</title>
+<indexterm zone="ags-portable-thread-stop"><primary>ags_portable_thread_stop</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_portable_thread_stop (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);</programlisting>
+<para>Stop the threads loop by unsetting AGS_PORTABLE_THREAD_RUNNING flag.</para>
+</refsect2>
+<refsect2 id="ags-portable-thread-new" role="function">
+<title>ags_portable_thread_new&#160;()</title>
+<indexterm zone="ags-portable-thread-new"><primary>ags_portable_thread_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsPortableThread"><returnvalue>AgsPortableThread</returnvalue></link>&#160;*
+ags_portable_thread_new (<parameter><link linkend="GObject"><type>GObject</type></link> *data</parameter>);</programlisting>
+<para>Create a new <link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> you may provide an <link linkend="GObject"><type>GObject</type></link> as <parameter>data</parameter>
 
-  volatile guint flags;
+to your thread routine.</para>
+</refsect2>
 
-  pth_t thread;
-  pth_attr_t thread_attr;
-
-  pth_mutex_t mutex;
-  pth_cond_t cond;
-
-  pth_mutex_t start_mutex;
-  pth_cond_t start_cond;
-
-  pth_barrier_t barrier[2];
-  gboolean first_barrier;
-  int wait_count[2];
-
-  pth_t timelock_thread;
-  pth_mutex_t timelock_mutex;
-  pth_cond_t timelock_cond;
-
-  long timelock;
-
-  GObject *devout;
-  AgsPortableThread *parent;
-
-  AgsPortableThread *next;
-  AgsPortableThread *prev;
-
-  AgsPortableThread *children;
-
-  GObject *data;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsPortableThreadClass" role="struct">
-<title>struct AgsPortableThreadClass</title>
-<indexterm zone="AgsPortableThreadClass"><primary>AgsPortableThreadClass</primary></indexterm>
-<programlisting>struct AgsPortableThreadClass {
-  GObjectClass object;
-
-  void (*start)(AgsPortableThread *thread);
-  void (*run)(AgsPortableThread *thread);
-  void (*timelock)(AgsPortableThread *thread);
-  void (*stop)(AgsPortableThread *thread);
-};
-</programlisting>
-<para>
-</para></refsect2>
+</refsect1>
+<refsect1 id="ags-AgsPortableThread.other_details" role="details">
+<title role="details.title">Types and Values</title>
 <refsect2 id="AgsPortableThreadFlags" role="enum">
 <title>enum AgsPortableThreadFlags</title>
 <indexterm zone="AgsPortableThreadFlags"><primary>AgsPortableThreadFlags</primary></indexterm>
-<programlisting>typedef enum {
-  AGS_PORTABLE_THREAD_RUNNING                 = 1,
-  AGS_PORTABLE_THREAD_IDLE                    = 1 &lt;&lt; 1,
-  AGS_PORTABLE_THREAD_LOCKED                  = 1 &lt;&lt; 2,
-  AGS_PORTABLE_THREAD_WAIT_FOR_PARENT         = 1 &lt;&lt; 3,
-  AGS_PORTABLE_THREAD_WAIT_FOR_SIBLING        = 1 &lt;&lt; 4,
-  AGS_PORTABLE_THREAD_WAIT_FOR_CHILDREN       = 1 &lt;&lt; 5,
-  AGS_PORTABLE_THREAD_WAIT_FOR_BARRIER        = 1 &lt;&lt; 6,
-  AGS_PORTABLE_THREAD_WAITING_FOR_PARENT      = 1 &lt;&lt; 7,
-  AGS_PORTABLE_THREAD_WAITING_FOR_SIBLING     = 1 &lt;&lt; 8,
-  AGS_PORTABLE_THREAD_WAITING_FOR_CHILDREN    = 1 &lt;&lt; 9,
-  AGS_PORTABLE_THREAD_WAITING_FOR_BARRIER     = 1 &lt;&lt; 10,
-  AGS_PORTABLE_THREAD_BROADCAST_PARENT        = 1 &lt;&lt; 11,
-  AGS_PORTABLE_THREAD_BROADCAST_SIBLING       = 1 &lt;&lt; 12,
-  AGS_PORTABLE_THREAD_BROADCAST_CHILDREN      = 1 &lt;&lt; 13,
-  AGS_PORTABLE_THREAD_INITIAL_RUN             = 1 &lt;&lt; 14,
-  AGS_PORTABLE_THREAD_TREE_SYNC_0             = 1 &lt;&lt; 15,
-  AGS_PORTABLE_THREAD_WAIT_0                  = 1 &lt;&lt; 16,
-  AGS_PORTABLE_THREAD_TREE_SYNC_1             = 1 &lt;&lt; 17,
-  AGS_PORTABLE_THREAD_WAIT_1                  = 1 &lt;&lt; 18,
-  AGS_PORTABLE_THREAD_TREE_SYNC_2             = 1 &lt;&lt; 19,
-  AGS_PORTABLE_THREAD_WAIT_2                  = 1 &lt;&lt; 20,
-  AGS_PORTABLE_THREAD_TIMELOCK_RUN            = 1 &lt;&lt; 21,
-  AGS_PORTABLE_THREAD_TIMELOCK_WAIT           = 1 &lt;&lt; 22,
-  AGS_PORTABLE_THREAD_TIMELOCK_RESUME         = 1 &lt;&lt; 23,
-} AgsPortableThreadFlags;
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-portable-thread-add-child" role="function">
-<title>ags_portable_thread_add_child ()</title>
-<indexterm zone="ags-portable-thread-add-child"><primary>ags_portable_thread_add_child</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_portable_thread_add_child       (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>,
-                                                         <parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *child</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-portable-thread-children-is-locked" role="function">
-<title>ags_portable_thread_children_is_locked ()</title>
-<indexterm zone="ags-portable-thread-children-is-locked"><primary>ags_portable_thread_children_is_locked</primary></indexterm>
-<programlisting><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            ags_portable_thread_children_is_locked
-                                                        (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-portable-thread-first" role="function">
-<title>ags_portable_thread_first ()</title>
-<indexterm zone="ags-portable-thread-first"><primary>ags_portable_thread_first</primary></indexterm>
-<programlisting><link linkend="AgsPortableThread"><returnvalue>AgsPortableThread</returnvalue></link> * ags_portable_thread_first           (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);</programlisting>
-<para>
-Retrieve first sibling.
-</para></refsect2>
-<refsect2 id="ags-portable-thread-get-toplevel" role="function">
-<title>ags_portable_thread_get_toplevel ()</title>
-<indexterm zone="ags-portable-thread-get-toplevel"><primary>ags_portable_thread_get_toplevel</primary></indexterm>
-<programlisting><link linkend="AgsPortableThread"><returnvalue>AgsPortableThread</returnvalue></link> * ags_portable_thread_get_toplevel    (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);</programlisting>
-<para>
-Retrieve toplevel thread.
-</para></refsect2>
-<refsect2 id="ags-portable-thread-is-current-ready" role="function">
-<title>ags_portable_thread_is_current_ready ()</title>
-<indexterm zone="ags-portable-thread-is-current-ready"><primary>ags_portable_thread_is_current_ready</primary></indexterm>
-<programlisting><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            ags_portable_thread_is_current_ready
-                                                        (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *current</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-portable-thread-is-current-synced" role="function">
-<title>ags_portable_thread_is_current_synced ()</title>
-<indexterm zone="ags-portable-thread-is-current-synced"><primary>ags_portable_thread_is_current_synced</primary></indexterm>
-<programlisting><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            ags_portable_thread_is_current_synced
-                                                        (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *current</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-portable-thread-is-tree-ready" role="function">
-<title>ags_portable_thread_is_tree_ready ()</title>
-<indexterm zone="ags-portable-thread-is-tree-ready"><primary>ags_portable_thread_is_tree_ready</primary></indexterm>
-<programlisting><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            ags_portable_thread_is_tree_ready   (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-portable-thread-is-tree-synced" role="function">
-<title>ags_portable_thread_is_tree_synced ()</title>
-<indexterm zone="ags-portable-thread-is-tree-synced"><primary>ags_portable_thread_is_tree_synced</primary></indexterm>
-<programlisting><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            ags_portable_thread_is_tree_synced  (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-portable-thread-last" role="function">
-<title>ags_portable_thread_last ()</title>
-<indexterm zone="ags-portable-thread-last"><primary>ags_portable_thread_last</primary></indexterm>
-<programlisting><link linkend="AgsPortableThread"><returnvalue>AgsPortableThread</returnvalue></link> * ags_portable_thread_last            (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);</programlisting>
-<para>
-Retrieve last sibling.
-</para></refsect2>
-<refsect2 id="ags-portable-thread-lock" role="function">
-<title>ags_portable_thread_lock ()</title>
-<indexterm zone="ags-portable-thread-lock"><primary>ags_portable_thread_lock</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_portable_thread_lock            (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);</programlisting>
-<para>
-Locks the threads own mutex and sets the appropriate flag.
-</para></refsect2>
-<refsect2 id="ags-portable-thread-lock-all" role="function">
-<title>ags_portable_thread_lock_all ()</title>
-<indexterm zone="ags-portable-thread-lock-all"><primary>ags_portable_thread_lock_all</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_portable_thread_lock_all        (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-portable-thread-lock-children" role="function">
-<title>ags_portable_thread_lock_children ()</title>
-<indexterm zone="ags-portable-thread-lock-children"><primary>ags_portable_thread_lock_children</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_portable_thread_lock_children   (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);</programlisting>
-<para>
-Lock child tree structure.
-</para></refsect2>
-<refsect2 id="ags-portable-thread-lock-parent" role="function">
-<title>ags_portable_thread_lock_parent ()</title>
-<indexterm zone="ags-portable-thread-lock-parent"><primary>ags_portable_thread_lock_parent</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_portable_thread_lock_parent     (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>,
-                                                         <parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *parent</parameter>);</programlisting>
-<para>
-Lock parent tree structure.
-</para></refsect2>
-<refsect2 id="ags-portable-thread-lock-sibling" role="function">
-<title>ags_portable_thread_lock_sibling ()</title>
-<indexterm zone="ags-portable-thread-lock-sibling"><primary>ags_portable_thread_lock_sibling</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_portable_thread_lock_sibling    (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);</programlisting>
-<para>
-Lock sibling tree structure.
-</para></refsect2>
-<refsect2 id="ags-portable-thread-main-loop-unlock-children" role="function">
-<title>ags_portable_thread_main_loop_unlock_children ()</title>
-<indexterm zone="ags-portable-thread-main-loop-unlock-children"><primary>ags_portable_thread_main_loop_unlock_children</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_portable_thread_main_loop_unlock_children
-                                                        (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-portable-thread-new" role="function">
-<title>ags_portable_thread_new ()</title>
-<indexterm zone="ags-portable-thread-new"><primary>ags_portable_thread_new</primary></indexterm>
-<programlisting><link linkend="AgsPortableThread"><returnvalue>AgsPortableThread</returnvalue></link> * ags_portable_thread_new             (<parameter><link linkend="GObject"><type>GObject</type></link> *data</parameter>);</programlisting>
-<para>
-Create a new <link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> you may provide an <link linkend="GObject"><type>GObject</type></link> as <parameter>data</parameter>
-to your thread routine.
-</para></refsect2>
-<refsect2 id="ags-portable-thread-next-children-locked" role="function">
-<title>ags_portable_thread_next_children_locked ()</title>
-<indexterm zone="ags-portable-thread-next-children-locked"><primary>ags_portable_thread_next_children_locked</primary></indexterm>
-<programlisting><link linkend="AgsPortableThread"><returnvalue>AgsPortableThread</returnvalue></link> * ags_portable_thread_next_children_locked
-                                                        (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);</programlisting>
-<para>
-Retrieve next locked thread following <parameter>thread</parameter>
-</para></refsect2>
-<refsect2 id="ags-portable-thread-next-parent-locked" role="function">
-<title>ags_portable_thread_next_parent_locked ()</title>
-<indexterm zone="ags-portable-thread-next-parent-locked"><primary>ags_portable_thread_next_parent_locked</primary></indexterm>
-<programlisting><link linkend="AgsPortableThread"><returnvalue>AgsPortableThread</returnvalue></link> * ags_portable_thread_next_parent_locked
-                                                        (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>,
-                                                         <parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *parent</parameter>);</programlisting>
-<para>
-Retrieve next locked thread above <parameter>thread</parameter>.
-</para></refsect2>
-<refsect2 id="ags-portable-thread-next-sibling-locked" role="function">
-<title>ags_portable_thread_next_sibling_locked ()</title>
-<indexterm zone="ags-portable-thread-next-sibling-locked"><primary>ags_portable_thread_next_sibling_locked</primary></indexterm>
-<programlisting><link linkend="AgsPortableThread"><returnvalue>AgsPortableThread</returnvalue></link> * ags_portable_thread_next_sibling_locked
-                                                        (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);</programlisting>
-<para>
-Retrieve next locked thread neighbooring <parameter>thread</parameter>
-</para></refsect2>
-<refsect2 id="ags-portable-thread-parental-is-locked" role="function">
-<title>ags_portable_thread_parental_is_locked ()</title>
-<indexterm zone="ags-portable-thread-parental-is-locked"><primary>ags_portable_thread_parental_is_locked</primary></indexterm>
-<programlisting><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            ags_portable_thread_parental_is_locked
-                                                        (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>,
-                                                         <parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *parent</parameter>);</programlisting>
-<para>
-Check the AGS_PORTABLE_THREAD_LOCKED flag in parental levels.
-</para></refsect2>
-<refsect2 id="ags-portable-thread-remove-child" role="function">
-<title>ags_portable_thread_remove_child ()</title>
-<indexterm zone="ags-portable-thread-remove-child"><primary>ags_portable_thread_remove_child</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_portable_thread_remove_child    (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>,
-                                                         <parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *child</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-portable-thread-run" role="function">
-<title>ags_portable_thread_run ()</title>
-<indexterm zone="ags-portable-thread-run"><primary>ags_portable_thread_run</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_portable_thread_run             (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);</programlisting>
-<para>
-Only for internal use of ags_portable_thread_loop but you may want to set the your very own
-class function namely your thread's routine.
-</para></refsect2>
-<refsect2 id="ags-portable-thread-sibling-is-locked" role="function">
-<title>ags_portable_thread_sibling_is_locked ()</title>
-<indexterm zone="ags-portable-thread-sibling-is-locked"><primary>ags_portable_thread_sibling_is_locked</primary></indexterm>
-<programlisting><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            ags_portable_thread_sibling_is_locked
-                                                        (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);</programlisting>
-<para>
-Check the AGS_PORTABLE_THREAD_LOCKED flag within sibling.
-</para></refsect2>
-<refsect2 id="ags-portable-thread-signal-children" role="function">
-<title>ags_portable_thread_signal_children ()</title>
-<indexterm zone="ags-portable-thread-signal-children"><primary>ags_portable_thread_signal_children</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_portable_thread_signal_children (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>,
-                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> broadcast</parameter>);</programlisting>
-<para>
-Signals the tree in lower levels.
-</para></refsect2>
-<refsect2 id="ags-portable-thread-signal-parent" role="function">
-<title>ags_portable_thread_signal_parent ()</title>
-<indexterm zone="ags-portable-thread-signal-parent"><primary>ags_portable_thread_signal_parent</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_portable_thread_signal_parent   (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>,
-                                                         <parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *parent</parameter>,
-                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> broadcast</parameter>);</programlisting>
-<para>
-Signals the tree in higher levels.
-</para></refsect2>
-<refsect2 id="ags-portable-thread-signal-sibling" role="function">
-<title>ags_portable_thread_signal_sibling ()</title>
-<indexterm zone="ags-portable-thread-signal-sibling"><primary>ags_portable_thread_signal_sibling</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_portable_thread_signal_sibling  (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>,
-                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> broadcast</parameter>);</programlisting>
-<para>
-Signals the tree on same level.
-</para></refsect2>
-<refsect2 id="ags-portable-thread-start" role="function">
-<title>ags_portable_thread_start ()</title>
-<indexterm zone="ags-portable-thread-start"><primary>ags_portable_thread_start</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_portable_thread_start           (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);</programlisting>
-<para>
-Start the thread.
-</para></refsect2>
-<refsect2 id="ags-portable-thread-stop" role="function">
-<title>ags_portable_thread_stop ()</title>
-<indexterm zone="ags-portable-thread-stop"><primary>ags_portable_thread_stop</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_portable_thread_stop            (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);</programlisting>
-<para>
-Stop the threads loop by unsetting AGS_PORTABLE_THREAD_RUNNING flag.
-</para></refsect2>
-<refsect2 id="ags-portable-thread-timelock" role="function">
-<title>ags_portable_thread_timelock ()</title>
-<indexterm zone="ags-portable-thread-timelock"><primary>ags_portable_thread_timelock</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_portable_thread_timelock        (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-portable-thread-trylock" role="function">
-<title>ags_portable_thread_trylock ()</title>
-<indexterm zone="ags-portable-thread-trylock"><primary>ags_portable_thread_trylock</primary></indexterm>
-<programlisting><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            ags_portable_thread_trylock         (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-portable-thread-unlock" role="function">
-<title>ags_portable_thread_unlock ()</title>
-<indexterm zone="ags-portable-thread-unlock"><primary>ags_portable_thread_unlock</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_portable_thread_unlock          (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);</programlisting>
-<para>
-Unlocks the threads own mutex and unsets the appropriate flag.
-</para></refsect2>
-<refsect2 id="ags-portable-thread-unlock-all" role="function">
-<title>ags_portable_thread_unlock_all ()</title>
-<indexterm zone="ags-portable-thread-unlock-all"><primary>ags_portable_thread_unlock_all</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_portable_thread_unlock_all      (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-portable-thread-unlock-children" role="function">
-<title>ags_portable_thread_unlock_children ()</title>
-<indexterm zone="ags-portable-thread-unlock-children"><primary>ags_portable_thread_unlock_children</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_portable_thread_unlock_children (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);</programlisting>
-<para>
-Unlock child tree structure.
-</para></refsect2>
-<refsect2 id="ags-portable-thread-unlock-parent" role="function">
-<title>ags_portable_thread_unlock_parent ()</title>
-<indexterm zone="ags-portable-thread-unlock-parent"><primary>ags_portable_thread_unlock_parent</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_portable_thread_unlock_parent   (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>,
-                                                         <parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *parent</parameter>);</programlisting>
-<para>
-Unlock parent tree structure.
-</para></refsect2>
-<refsect2 id="ags-portable-thread-unlock-sibling" role="function">
-<title>ags_portable_thread_unlock_sibling ()</title>
-<indexterm zone="ags-portable-thread-unlock-sibling"><primary>ags_portable_thread_unlock_sibling</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_portable_thread_unlock_sibling  (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);</programlisting>
-<para>
-Unlock sibling tree structure.
-</para></refsect2>
-<refsect2 id="ags-portable-thread-wait-children" role="function">
-<title>ags_portable_thread_wait_children ()</title>
-<indexterm zone="ags-portable-thread-wait-children"><primary>ags_portable_thread_wait_children</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_portable_thread_wait_children   (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);</programlisting>
-<para>
-Wait on child tree structure.
-</para></refsect2>
-<refsect2 id="ags-portable-thread-wait-parent" role="function">
-<title>ags_portable_thread_wait_parent ()</title>
-<indexterm zone="ags-portable-thread-wait-parent"><primary>ags_portable_thread_wait_parent</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_portable_thread_wait_parent     (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>,
-                                                         <parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *parent</parameter>);</programlisting>
-<para>
-Wait on parent tree structure.
-</para></refsect2>
-<refsect2 id="ags-portable-thread-wait-sibling" role="function">
-<title>ags_portable_thread_wait_sibling ()</title>
-<indexterm zone="ags-portable-thread-wait-sibling"><primary>ags_portable_thread_wait_sibling</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_portable_thread_wait_sibling    (<parameter><link linkend="AgsPortableThread"><type>AgsPortableThread</type></link> *thread</parameter>);</programlisting>
-<para>
-Wait on sibling tree structure.
-</para></refsect2>
+<refsect3 role="enum_members">
+<title>Members</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="enum_members_name" colwidth="300px"/>
+<colspec colname="enum_members_description"/>
+<colspec colname="enum_members_annotations" colwidth="200px"/>
+<tbody>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-PORTABLE-THREAD-RUNNING:CAPS">AGS_PORTABLE_THREAD_RUNNING</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-PORTABLE-THREAD-IDLE:CAPS">AGS_PORTABLE_THREAD_IDLE</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-PORTABLE-THREAD-LOCKED:CAPS">AGS_PORTABLE_THREAD_LOCKED</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-PORTABLE-THREAD-WAIT-FOR-PARENT:CAPS">AGS_PORTABLE_THREAD_WAIT_FOR_PARENT</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-PORTABLE-THREAD-WAIT-FOR-SIBLING:CAPS">AGS_PORTABLE_THREAD_WAIT_FOR_SIBLING</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-PORTABLE-THREAD-WAIT-FOR-CHILDREN:CAPS">AGS_PORTABLE_THREAD_WAIT_FOR_CHILDREN</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-PORTABLE-THREAD-WAIT-FOR-BARRIER:CAPS">AGS_PORTABLE_THREAD_WAIT_FOR_BARRIER</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-PORTABLE-THREAD-WAITING-FOR-PARENT:CAPS">AGS_PORTABLE_THREAD_WAITING_FOR_PARENT</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-PORTABLE-THREAD-WAITING-FOR-SIBLING:CAPS">AGS_PORTABLE_THREAD_WAITING_FOR_SIBLING</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-PORTABLE-THREAD-WAITING-FOR-CHILDREN:CAPS">AGS_PORTABLE_THREAD_WAITING_FOR_CHILDREN</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-PORTABLE-THREAD-WAITING-FOR-BARRIER:CAPS">AGS_PORTABLE_THREAD_WAITING_FOR_BARRIER</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-PORTABLE-THREAD-BROADCAST-PARENT:CAPS">AGS_PORTABLE_THREAD_BROADCAST_PARENT</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-PORTABLE-THREAD-BROADCAST-SIBLING:CAPS">AGS_PORTABLE_THREAD_BROADCAST_SIBLING</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-PORTABLE-THREAD-BROADCAST-CHILDREN:CAPS">AGS_PORTABLE_THREAD_BROADCAST_CHILDREN</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-PORTABLE-THREAD-INITIAL-RUN:CAPS">AGS_PORTABLE_THREAD_INITIAL_RUN</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-PORTABLE-THREAD-TREE-SYNC-0:CAPS">AGS_PORTABLE_THREAD_TREE_SYNC_0</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-PORTABLE-THREAD-WAIT-0:CAPS">AGS_PORTABLE_THREAD_WAIT_0</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-PORTABLE-THREAD-TREE-SYNC-1:CAPS">AGS_PORTABLE_THREAD_TREE_SYNC_1</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-PORTABLE-THREAD-WAIT-1:CAPS">AGS_PORTABLE_THREAD_WAIT_1</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-PORTABLE-THREAD-TREE-SYNC-2:CAPS">AGS_PORTABLE_THREAD_TREE_SYNC_2</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-PORTABLE-THREAD-WAIT-2:CAPS">AGS_PORTABLE_THREAD_WAIT_2</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-PORTABLE-THREAD-TIMELOCK-RUN:CAPS">AGS_PORTABLE_THREAD_TIMELOCK_RUN</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-PORTABLE-THREAD-TIMELOCK-WAIT:CAPS">AGS_PORTABLE_THREAD_TIMELOCK_WAIT</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-PORTABLE-THREAD-TIMELOCK-RESUME:CAPS">AGS_PORTABLE_THREAD_TIMELOCK_RESUME</para></entry>
+<entry /><entry />
+</row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
 
 </refsect1>
 

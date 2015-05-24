@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
 <refentry id="ags-ags-pad-editor-callbacks">
 <refmeta>
@@ -17,63 +17,58 @@
 <refpurpose></refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-ags-pad-editor-callbacks.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="ags-ags-pad-editor-callbacks.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="int"><returnvalue>int</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-pad-editor-parent-set-callback">ags_pad_editor_parent_set_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="int"><returnvalue>int</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-pad-editor-destroy-callback">ags_pad_editor_destroy_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="int"><returnvalue>int</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-pad-editor-show-callback">ags_pad_editor_show_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis><link linkend="int"><returnvalue>int</returnvalue></link>                 <link linkend="ags-pad-editor-destroy-callback">ags_pad_editor_destroy_callback</link>     (<parameter><link linkend="GtkObject"><type>GtkObject</type></link> *object</parameter>,
-                                                         <parameter><link linkend="AgsPadEditor"><type>AgsPadEditor</type></link> *pad_editor</parameter>);
-<link linkend="int"><returnvalue>int</returnvalue></link>                 <link linkend="ags-pad-editor-parent-set-callback">ags_pad_editor_parent_set_callback</link>  (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
-                                                         <parameter><link linkend="GtkObject"><type>GtkObject</type></link> *old_parent</parameter>,
-                                                         <parameter><link linkend="AgsPadEditor"><type>AgsPadEditor</type></link> *pad_editor</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-pad-editor-set-audio-channels-callback">ags_pad_editor_set_audio_channels_callback</link>
-                                                        (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> audio_channels</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> audio_channels_old</parameter>,
-                                                         <parameter><link linkend="AgsPadEditor"><type>AgsPadEditor</type></link> *pad_editor</parameter>);
-<link linkend="int"><returnvalue>int</returnvalue></link>                 <link linkend="ags-pad-editor-show-callback">ags_pad_editor_show_callback</link>        (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
-                                                         <parameter><link linkend="AgsPadEditor"><type>AgsPadEditor</type></link> *pad_editor</parameter>);
-</synopsis>
-</refsynopsisdiv>
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+
 
 <refsect1 id="ags-ags-pad-editor-callbacks.description" role="desc">
 <title role="desc.title">Description</title>
-<para>
-</para>
+
 </refsect1>
-<refsect1 id="ags-ags-pad-editor-callbacks.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="ags-pad-editor-destroy-callback" role="function">
-<title>ags_pad_editor_destroy_callback ()</title>
-<indexterm zone="ags-pad-editor-destroy-callback"><primary>ags_pad_editor_destroy_callback</primary></indexterm>
-<programlisting><link linkend="int"><returnvalue>int</returnvalue></link>                 ags_pad_editor_destroy_callback     (<parameter><link linkend="GtkObject"><type>GtkObject</type></link> *object</parameter>,
-                                                         <parameter><link linkend="AgsPadEditor"><type>AgsPadEditor</type></link> *pad_editor</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<refsect1 id="ags-ags-pad-editor-callbacks.functions_details" role="details">
+<title role="details.title">Functions</title>
 <refsect2 id="ags-pad-editor-parent-set-callback" role="function">
-<title>ags_pad_editor_parent_set_callback ()</title>
+<title>ags_pad_editor_parent_set_callback&#160;()</title>
 <indexterm zone="ags-pad-editor-parent-set-callback"><primary>ags_pad_editor_parent_set_callback</primary></indexterm>
-<programlisting><link linkend="int"><returnvalue>int</returnvalue></link>                 ags_pad_editor_parent_set_callback  (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
-                                                         <parameter><link linkend="GtkObject"><type>GtkObject</type></link> *old_parent</parameter>,
-                                                         <parameter><link linkend="AgsPadEditor"><type>AgsPadEditor</type></link> *pad_editor</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-pad-editor-set-audio-channels-callback" role="function">
-<title>ags_pad_editor_set_audio_channels_callback ()</title>
-<indexterm zone="ags-pad-editor-set-audio-channels-callback"><primary>ags_pad_editor_set_audio_channels_callback</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_pad_editor_set_audio_channels_callback
-                                                        (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> audio_channels</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> audio_channels_old</parameter>,
-                                                         <parameter><link linkend="AgsPadEditor"><type>AgsPadEditor</type></link> *pad_editor</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<programlisting language="C"><link linkend="int"><returnvalue>int</returnvalue></link>
+ags_pad_editor_parent_set_callback (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                                    <parameter><link linkend="GtkObject"><type>GtkObject</type></link> *old_parent</parameter>,
+                                    <parameter><link linkend="AgsPadEditor"><type>AgsPadEditor</type></link> *pad_editor</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-pad-editor-destroy-callback" role="function">
+<title>ags_pad_editor_destroy_callback&#160;()</title>
+<indexterm zone="ags-pad-editor-destroy-callback"><primary>ags_pad_editor_destroy_callback</primary></indexterm>
+<programlisting language="C"><link linkend="int"><returnvalue>int</returnvalue></link>
+ags_pad_editor_destroy_callback (<parameter><link linkend="GtkObject"><type>GtkObject</type></link> *object</parameter>,
+                                 <parameter><link linkend="AgsPadEditor"><type>AgsPadEditor</type></link> *pad_editor</parameter>);</programlisting>
+</refsect2>
 <refsect2 id="ags-pad-editor-show-callback" role="function">
-<title>ags_pad_editor_show_callback ()</title>
+<title>ags_pad_editor_show_callback&#160;()</title>
 <indexterm zone="ags-pad-editor-show-callback"><primary>ags_pad_editor_show_callback</primary></indexterm>
-<programlisting><link linkend="int"><returnvalue>int</returnvalue></link>                 ags_pad_editor_show_callback        (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
-                                                         <parameter><link linkend="AgsPadEditor"><type>AgsPadEditor</type></link> *pad_editor</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<programlisting language="C"><link linkend="int"><returnvalue>int</returnvalue></link>
+ags_pad_editor_show_callback (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                              <parameter><link linkend="AgsPadEditor"><type>AgsPadEditor</type></link> *pad_editor</parameter>);</programlisting>
+</refsect2>
+
+</refsect1>
+<refsect1 id="ags-ags-pad-editor-callbacks.other_details" role="details">
+<title role="details.title">Types and Values</title>
 
 </refsect1>
 

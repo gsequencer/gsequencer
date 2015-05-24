@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsSetMuted">
+<refentry id="AgsSetMuted">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsSetMuted.top_of_page">AgsSetMuted</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsSetMuted.top_of_page">AgsSetMuted</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -14,55 +14,72 @@
 </refmeta>
 <refnamediv>
 <refname>AgsSetMuted</refname>
-<refpurpose></refpurpose>
+<refpurpose>set muted to delay audio</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsSetMuted.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsSetMuted.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="AgsSetMuted"><returnvalue>AgsSetMuted</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-set-muted-new">ags_set_muted_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>struct              <link linkend="AgsSetMuted">AgsSetMuted</link>;
-struct              <link linkend="AgsSetMutedClass">AgsSetMutedClass</link>;
-<link linkend="AgsSetMuted"><returnvalue>AgsSetMuted</returnvalue></link> *       <link linkend="ags-set-muted-new">ags_set_muted_new</link>                   (<parameter><link linkend="GObject"><type>GObject</type></link> *gobject</parameter>,
-                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> muted</parameter>);
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsSetMuted.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsSetMuted.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AgsSetMuted" role="struct">
-<title>struct AgsSetMuted</title>
-<indexterm zone="AgsSetMuted"><primary>AgsSetMuted</primary></indexterm>
-<programlisting>struct AgsSetMuted {
-  AgsTask task;
+<refsect1 id="AgsSetMuted.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsTask">AgsTask</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsSetMuted
+</screen>
+</refsect1>
 
-  GObject *gobject;
+<refsect1 id="AgsSetMuted.includes"><title>Includes</title><synopsis>#include &lt;ags/audio/task/recall/ags_set_muted.h&gt;
+</synopsis></refsect1>
 
-  gboolean muted;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsSetMutedClass" role="struct">
-<title>struct AgsSetMutedClass</title>
-<indexterm zone="AgsSetMutedClass"><primary>AgsSetMutedClass</primary></indexterm>
-<programlisting>struct AgsSetMutedClass {
-  AgsTaskClass task;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-set-muted-new" role="function">
-<title>ags_set_muted_new ()</title>
-<indexterm zone="ags-set-muted-new"><primary>ags_set_muted_new</primary></indexterm>
-<programlisting><link linkend="AgsSetMuted"><returnvalue>AgsSetMuted</returnvalue></link> *       ags_set_muted_new                   (<parameter><link linkend="GObject"><type>GObject</type></link> *gobject</parameter>,
-                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> muted</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<refsect1 id="AgsSetMuted.description" role="desc">
+<title role="desc.title">Description</title>
+<para>The <link linkend="AgsSetMuted"><type>AgsSetMuted</type></link> task sets muted to <link linkend="AgsMutable"><type>AgsMutable</type></link>.</para>
+
+</refsect1>
+<refsect1 id="AgsSetMuted.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-set-muted-new" role="function" condition="since:0.4">
+<title>ags_set_muted_new&#160;()</title>
+<indexterm zone="ags-set-muted-new" role="0.4"><primary>ags_set_muted_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsSetMuted"><returnvalue>AgsSetMuted</returnvalue></link>&#160;*
+ags_set_muted_new (<parameter><link linkend="GObject"><type>GObject</type></link> *gobject</parameter>,
+                   <parameter><link linkend="gboolean"><type>gboolean</type></link> muted</parameter>);</programlisting>
+<para>Creates an <link linkend="AgsSetMuted"><type>AgsSetMuted</type></link>.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>gobject</para></entry>
+<entry role="parameter_description"><para>the <link linkend="GObject"><type>GObject</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>muted</para></entry>
+<entry role="parameter_description"><para>muted to set</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> an new <link linkend="AgsSetMuted"><type>AgsSetMuted</type></link>.</para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsSetMuted.other_details" role="details">
+<title role="details.title">Types and Values</title>
 
 </refsect1>
 

@@ -1,0 +1,108 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="AgsMidiImportWizard">
+<refmeta>
+<refentrytitle role="top_of_page" id="AgsMidiImportWizard.top_of_page">AgsMidiImportWizard</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsMidiImportWizard</refname>
+<refpurpose>pack pad editors.</refpurpose>
+</refnamediv>
+
+<refsect1 id="AgsMidiImportWizard.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="AgsMidiImportWizard"><returnvalue>AgsMidiImportWizard</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-midi-import-wizard-new">ags_midi_import_wizard_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsMidiImportWizard.other" role="other_proto">
+<title role="other_proto.title">Types and Values</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="name" colwidth="150px"/>
+<colspec colname="description"/>
+<tbody>
+<row><entry role="datatype_keyword">enum</entry><entry role="function_name"><link linkend="AgsMidiImportWizardFlags">AgsMidiImportWizardFlags</link></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsMidiImportWizard.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GInitiallyUnowned">GInitiallyUnowned</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkObject">GtkObject</link>
+            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkWidget">GtkWidget</link>
+                <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkContainer">GtkContainer</link>
+                    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkBin">GtkBin</link>
+                        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkWindow">GtkWindow</link>
+                            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkDialog">GtkDialog</link>
+                                <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsMidiImportWizard
+</screen>
+</refsect1>
+
+<refsect1 id="AgsMidiImportWizard.includes"><title>Includes</title><synopsis>#include &lt;ags/X/ags_midi_import_wizard.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsMidiImportWizard.description" role="desc">
+<title role="desc.title">Description</title>
+<para><link linkend="AgsMidiImportWizard"><type>AgsMidiImportWizard</type></link> is a wizard to import midi files and do track mapping.</para>
+
+</refsect1>
+<refsect1 id="AgsMidiImportWizard.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-midi-import-wizard-new" role="function" condition="since:0.4.3">
+<title>ags_midi_import_wizard_new&#160;()</title>
+<indexterm zone="ags-midi-import-wizard-new" role="0.4.3"><primary>ags_midi_import_wizard_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsMidiImportWizard"><returnvalue>AgsMidiImportWizard</returnvalue></link>&#160;*
+ags_midi_import_wizard_new ();</programlisting>
+<para>Creates an <link linkend="AgsMidiImportWizard"><type>AgsMidiImportWizard</type></link></para>
+<refsect3 role="returns">
+<title>Returns</title>
+<para> a new <link linkend="AgsMidiImportWizard"><type>AgsMidiImportWizard</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.4.3</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsMidiImportWizard.other_details" role="details">
+<title role="details.title">Types and Values</title>
+<refsect2 id="AgsMidiImportWizardFlags" role="enum">
+<title>enum AgsMidiImportWizardFlags</title>
+<indexterm zone="AgsMidiImportWizardFlags"><primary>AgsMidiImportWizardFlags</primary></indexterm>
+<refsect3 role="enum_members">
+<title>Members</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="enum_members_name" colwidth="300px"/>
+<colspec colname="enum_members_description"/>
+<colspec colname="enum_members_annotations" colwidth="200px"/>
+<tbody>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-MIDI-IMPORT-WIZARD-SHOW-FILE-CHOOSER:CAPS">AGS_MIDI_IMPORT_WIZARD_SHOW_FILE_CHOOSER</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-MIDI-IMPORT-WIZARD-SHOW-TRACK-COLLECTION:CAPS">AGS_MIDI_IMPORT_WIZARD_SHOW_TRACK_COLLECTION</para></entry>
+<entry /><entry />
+</row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
+
+</refsect1>
+
+</refentry>

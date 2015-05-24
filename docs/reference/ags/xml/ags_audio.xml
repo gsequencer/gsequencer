@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsAudio">
+<refentry id="AgsAudio">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsAudio.top_of_page">AgsAudio</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsAudio.top_of_page">AgsAudio</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -14,369 +14,1270 @@
 </refmeta>
 <refnamediv>
 <refname>AgsAudio</refname>
-<refpurpose></refpurpose>
+<refpurpose>A container of channels organizing them as input or output</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsAudio.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsAudio.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-audio-set-flags">ags_audio_set_flags</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-audio-unset-flags">ags_audio_unset_flags</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-audio-set-audio-channels">ags_audio_set_audio_channels</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-audio-set-pads">ags_audio_set_pads</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsRecallID"><returnvalue>AgsRecallID</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-audio-init-run">ags_audio_init_run</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-audio-tact">ags_audio_tact</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-audio-done">ags_audio_done</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-audio-set-sequence-length">ags_audio_set_sequence_length</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-audio-set-soundcard">ags_audio_set_soundcard</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-audio-add-notation">ags_audio_add_notation</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-audio-remove-notation">ags_audio_remove_notation</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-audio-add-automation">ags_audio_add_automation</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-audio-remove-automation">ags_audio_remove_automation</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-audio-add-recall-id">ags_audio_add_recall_id</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-audio-remove-recall-id">ags_audio_remove_recall_id</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-audio-add-recycling-context">ags_audio_add_recycling_context</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-audio-remove-recycling-context">ags_audio_remove_recycling_context</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-audio-add-recall-container">ags_audio_add_recall_container</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-audio-remove-recall-container">ags_audio_remove_recall_container</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-audio-add-recall">ags_audio_add_recall</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-audio-remove-recall">ags_audio_remove_recall</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-audio-recall-change-state">ags_audio_recall_change_state</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-audio-duplicate-recall">ags_audio_duplicate_recall</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-audio-init-recall">ags_audio_init_recall</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-audio-resolve-recall">ags_audio_resolve_recall</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-audio-is-playing">ags_audio_is_playing</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-audio-play">ags_audio_play</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-audio-recursive-play-init">ags_audio_recursive_play_init</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-audio-cancel">ags_audio_cancel</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-audio-remove">ags_audio_remove</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-audio-open-files">ags_audio_open_files</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-audio-find-port">ags_audio_find_port</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsAudio"><returnvalue>AgsAudio</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-audio-new">ags_audio_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>struct              <link linkend="AgsAudio">AgsAudio</link>;
-struct              <link linkend="AgsAudioClass">AgsAudioClass</link>;
-enum                <link linkend="AgsAudioFlags">AgsAudioFlags</link>;
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-audio-add-recall">ags_audio_add_recall</link>                (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *recall</parameter>,
-                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> play</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-audio-add-recall-container">ags_audio_add_recall_container</link>      (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *recall_container</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-audio-add-recall-id">ags_audio_add_recall_id</link>             (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *recall_id</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-audio-cancel">ags_audio_cancel</link>                    (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
-                                                         <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-audio-done">ags_audio_done</link>                      (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
-                                                         <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-audio-duplicate-recall">ags_audio_duplicate_recall</link>          (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
-                                                         <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-audio-init-recall">ags_audio_init_recall</link>               (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
-                                                         <parameter><link linkend="gint"><type>gint</type></link> stage</parameter>,
-                                                         <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>);
-<link linkend="AgsRecallID"><returnvalue>AgsRecallID</returnvalue></link> *       <link linkend="ags-audio-init-run">ags_audio_init_run</link>                  (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>);
-<link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            <link linkend="ags-audio-is-playing">ags_audio_is_playing</link>                (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>);
-<link linkend="AgsAudio"><returnvalue>AgsAudio</returnvalue></link> *          <link linkend="ags-audio-new">ags_audio_new</link>                       ();
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-audio-open-files">ags_audio_open_files</link>                (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
-                                                         <parameter><link linkend="GSList"><type>GSList</type></link> *filenames</parameter>,
-                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> overwrite_channels</parameter>,
-                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> create_channels</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-audio-play">ags_audio_play</link>                      (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
-                                                         <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>,
-                                                         <parameter><link linkend="gint"><type>gint</type></link> stage</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-audio-recall-change-state">ags_audio_recall_change_state</link>       (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
-                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> enable</parameter>);
-<link linkend="GList"><returnvalue>GList</returnvalue></link> *             <link linkend="ags-audio-recursive-play-init">ags_audio_recursive_play_init</link>       (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
-                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> playback</parameter>,
-                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> sequencer</parameter>,
-                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> notation</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-audio-remove-recall">ags_audio_remove_recall</link>             (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *recall</parameter>,
-                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> play</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-audio-remove-recall-container">ags_audio_remove_recall_container</link>   (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *recall_container</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-audio-remove-recall-id">ags_audio_remove_recall_id</link>          (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *recall_id</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-audio-resolve-recall">ags_audio_resolve_recall</link>            (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
-                                                         <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-audio-set-audio-channels">ags_audio_set_audio_channels</link>        (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> audio_channels</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-audio-set-devout">ags_audio_set_devout</link>                (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *devout</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-audio-set-flags">ags_audio_set_flags</link>                 (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> flags</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-audio-set-pads">ags_audio_set_pads</link>                  (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
-                                                         <parameter><link linkend="GType"><type>GType</type></link> type</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> pads</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-audio-set-sequence-length">ags_audio_set_sequence_length</link>       (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> sequence_length</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-audio-tact">ags_audio_tact</link>                      (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
-                                                         <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-audio-unset-flags">ags_audio_unset_flags</link>               (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> flags</parameter>);
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsAudio.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsAudio.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AgsAudio" role="struct">
-<title>struct AgsAudio</title>
-<indexterm zone="AgsAudio"><primary>AgsAudio</primary></indexterm>
-<programlisting>struct AgsAudio {
-  GObject object;
+<refsect1 id="AgsAudio.properties" role="properties">
+<title role="properties.title">Properties</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="properties_type" colwidth="150px"/>
+<colspec colname="properties_name" colwidth="300px"/>
+<colspec colname="properties_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="property_type"><link linkend="guint"><type>guint</type></link></entry><entry role="property_name"><link linkend="AgsAudio--audio-channels">audio-channels</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="AgsAutomation"><type>AgsAutomation</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsAudio--automation">automation</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="AgsInput"><type>AgsInput</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsAudio--input">input</link></entry><entry role="property_flags">Read</entry></row>
+<row><entry role="property_type"><link linkend="guint"><type>guint</type></link></entry><entry role="property_name"><link linkend="AgsAudio--input-lines">input-lines</link></entry><entry role="property_flags">Read</entry></row>
+<row><entry role="property_type"><link linkend="guint"><type>guint</type></link></entry><entry role="property_name"><link linkend="AgsAudio--input-pads">input-pads</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="AgsNotation"><type>AgsNotation</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsAudio--notation">notation</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="AgsOutput"><type>AgsOutput</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsAudio--output">output</link></entry><entry role="property_flags">Read</entry></row>
+<row><entry role="property_type"><link linkend="guint"><type>guint</type></link></entry><entry role="property_name"><link linkend="AgsAudio--output-lines">output-lines</link></entry><entry role="property_flags">Read</entry></row>
+<row><entry role="property_type"><link linkend="guint"><type>guint</type></link></entry><entry role="property_name"><link linkend="AgsAudio--output-pads">output-pads</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="AgsRecall"><type>AgsRecall</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsAudio--play">play</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="AgsPlaybackDomain"><type>AgsPlaybackDomain</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsAudio--playback-domain">playback-domain</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="AgsRecall"><type>AgsRecall</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsAudio--recall">recall</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="AgsRecallContainer"><type>AgsRecallContainer</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsAudio--recall-container">recall-container</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="AgsRecallID"><type>AgsRecallID</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsAudio--recall-id">recall-id</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="AgsRecyclingContext"><type>AgsRecyclingContext</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsAudio--recycling-context">recycling-context</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="GObject"><type>GObject</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsAudio--soundcard">soundcard</link></entry><entry role="property_flags">Read / Write</entry></row>
 
-  guint flags;
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsAudio.signals" role="signal_proto">
+<title role="signal_proto.title">Signals</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="signals_return" colwidth="150px"/>
+<colspec colname="signals_name" colwidth="300px"/>
+<colspec colname="signals_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsAudio-done">done</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="GObject"><returnvalue>GObject</returnvalue></link>*</entry><entry role="signal_name"><link linkend="AgsAudio-init-run">init-run</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsAudio-set-audio-channels">set-audio-channels</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsAudio-set-pads">set-pads</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsAudio-tact">tact</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
 
-  GObject *devout;
-  guint level;
-  
-  guint sequence_length;
-  guint audio_channels;
-  guint frequence;
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsAudio.other" role="other_proto">
+<title role="other_proto.title">Types and Values</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="name" colwidth="150px"/>
+<colspec colname="description"/>
+<tbody>
+<row><entry role="datatype_keyword">enum</entry><entry role="function_name"><link linkend="AgsAudioFlags">AgsAudioFlags</link></entry></row>
 
-  guint output_pads;
-  guint output_lines;
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsAudio.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsAudio
+</screen>
+</refsect1>
 
-  guint input_pads;
-  guint input_lines;
+<refsect1 id="AgsAudio.includes"><title>Includes</title><synopsis>#include &lt;ags/audio/ags_audio.h&gt;
+</synopsis></refsect1>
 
-  AgsChannel *output;
-  AgsChannel *input;
+<refsect1 id="AgsAudio.description" role="desc">
+<title role="desc.title">Description</title>
+<para><link linkend="AgsAudio"><type>AgsAudio</type></link> organizes <link linkend="AgsChannel"><type>AgsChannel</type></link> objects either as input or output and
+is responsible of their alignment. The class can contain <link linkend="AgsRecall"><type>AgsRecall</type></link> objects
+in order to perform computation on all channels or in audio context.
+Therefor exists <link linkend="AgsRecyclingContext"><type>AgsRecyclingContext</type></link> acting as tree context.</para>
+<para>At least one <link linkend="AgsRecallID"><type>AgsRecallID</type></link> is assigned to it and has one more if
+<link linkend="AGS-AUDIO-OUTPUT-HAS-RECYCLING:CAPS"><literal>AGS_AUDIO_OUTPUT_HAS_RECYCLING</literal></link> is set as flag.</para>
+<para>If <link linkend="AGS-AUDIO-HAS-NOTATION:CAPS"><literal>AGS_AUDIO_HAS_NOTATION</literal></link> is set as flag one <link linkend="AgsNotation"><type>AgsNotation</type></link> is allocated per audio
+channel.</para>
 
-  gpointer devout_play_domain;
+</refsect1>
+<refsect1 id="AgsAudio.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-audio-set-flags" role="function" condition="since:0.4">
+<title>ags_audio_set_flags&#160;()</title>
+<indexterm zone="ags-audio-set-flags" role="0.4"><primary>ags_audio_set_flags</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_audio_set_flags (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
+                     <parameter><link linkend="guint"><type>guint</type></link> flags</parameter>);</programlisting>
+<para>Enable a feature of AgsAudio.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>audio</para></entry>
+<entry role="parameter_description"><para>an AgsAudio</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>flags</para></entry>
+<entry role="parameter_description"><para>see enum AgsAudioFlags</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-audio-unset-flags" role="function" condition="since:0.4">
+<title>ags_audio_unset_flags&#160;()</title>
+<indexterm zone="ags-audio-unset-flags" role="0.4"><primary>ags_audio_unset_flags</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_audio_unset_flags (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
+                       <parameter><link linkend="guint"><type>guint</type></link> flags</parameter>);</programlisting>
+<para>Disable a feature of AgsAudio.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>audio</para></entry>
+<entry role="parameter_description"><para>an AgsAudio</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>flags</para></entry>
+<entry role="parameter_description"><para>see enum AgsAudioFlags</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-audio-set-audio-channels" role="function" condition="since:0.3">
+<title>ags_audio_set_audio_channels&#160;()</title>
+<indexterm zone="ags-audio-set-audio-channels" role="0.3"><primary>ags_audio_set_audio_channels</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_audio_set_audio_channels (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
+                              <parameter><link linkend="guint"><type>guint</type></link> audio_channels</parameter>);</programlisting>
+<para>Resize audio channels AgsInput will be allocated first.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>audio</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsAudio"><type>AgsAudio</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>audio_channels</para></entry>
+<entry role="parameter_description"><para>new audio channels</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.3</para></refsect2>
+<refsect2 id="ags-audio-set-pads" role="function" condition="since:0.3">
+<title>ags_audio_set_pads&#160;()</title>
+<indexterm zone="ags-audio-set-pads" role="0.3"><primary>ags_audio_set_pads</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_audio_set_pads (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
+                    <parameter><link linkend="GType"><type>GType</type></link> type</parameter>,
+                    <parameter><link linkend="guint"><type>guint</type></link> pads</parameter>);</programlisting>
+<para>Sets pad count for the apropriate <parameter>type</parameter>
+</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>audio</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsAudio"><type>AgsAudio</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>type</para></entry>
+<entry role="parameter_description"><para>AGS_TYPE_INPUT or AGS_TYPE_OUTPUT</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>pads</para></entry>
+<entry role="parameter_description"><para>new pad count</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.3</para></refsect2>
+<refsect2 id="ags-audio-init-run" role="function" condition="since:0.4">
+<title>ags_audio_init_run&#160;()</title>
+<indexterm zone="ags-audio-init-run" role="0.4"><primary>ags_audio_init_run</primary></indexterm>
+<programlisting language="C"><link linkend="AgsRecallID"><returnvalue>AgsRecallID</returnvalue></link>&#160;*
+ags_audio_init_run (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>);</programlisting>
+<para>Is emitted as audio is initialized.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>audio</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsAudio"><type>AgsAudio</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> the current <link linkend="AgsRecallID"><type>AgsRecallID</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-audio-tact" role="function" condition="since:0.4">
+<title>ags_audio_tact&#160;()</title>
+<indexterm zone="ags-audio-tact" role="0.4"><primary>ags_audio_tact</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_audio_tact (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
+                <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>);</programlisting>
+<para>Is emitted as audio is played.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>audio</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsAudio"><type>AgsAudio</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>recall_id</para></entry>
+<entry role="parameter_description"><para>the current <link linkend="AgsRecallID"><type>AgsRecallID</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-audio-done" role="function" condition="since:0.4">
+<title>ags_audio_done&#160;()</title>
+<indexterm zone="ags-audio-done" role="0.4"><primary>ags_audio_done</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_audio_done (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
+                <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>);</programlisting>
+<para>Is emitted as playing audio is done.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>audio</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsAudio"><type>AgsAudio</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>recall_id</para></entry>
+<entry role="parameter_description"><para>the current <link linkend="AgsRecallID"><type>AgsRecallID</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-audio-set-sequence-length" role="function" condition="since:0.4">
+<title>ags_audio_set_sequence_length&#160;()</title>
+<indexterm zone="ags-audio-set-sequence-length" role="0.4"><primary>ags_audio_set_sequence_length</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_audio_set_sequence_length (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
+                               <parameter><link linkend="guint"><type>guint</type></link> sequence_length</parameter>);</programlisting>
+<para>Sets sequence length.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>audio</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsAudio"><type>AgsAudio</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>sequence_length</para></entry>
+<entry role="parameter_description"><para>the sequence length</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-audio-set-soundcard" role="function" condition="since:0.4">
+<title>ags_audio_set_soundcard&#160;()</title>
+<indexterm zone="ags-audio-set-soundcard" role="0.4"><primary>ags_audio_set_soundcard</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_audio_set_soundcard (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
+                         <parameter><link linkend="GObject"><type>GObject</type></link> *soundcard</parameter>);</programlisting>
+<para>Sets a soundcard object on audio.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>audio</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsAudio"><type>AgsAudio</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>soundcard</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsSoundcard"><type>AgsSoundcard</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-audio-add-notation" role="function" condition="since:0.4">
+<title>ags_audio_add_notation&#160;()</title>
+<indexterm zone="ags-audio-add-notation" role="0.4"><primary>ags_audio_add_notation</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_audio_add_notation (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
+                        <parameter><link linkend="GObject"><type>GObject</type></link> *notation</parameter>);</programlisting>
+<para>Adds a notation.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>audio</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsAudio"><type>AgsAudio</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>notation</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsNotation"><type>AgsNotation</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-audio-remove-notation" role="function" condition="since:0.4">
+<title>ags_audio_remove_notation&#160;()</title>
+<indexterm zone="ags-audio-remove-notation" role="0.4"><primary>ags_audio_remove_notation</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_audio_remove_notation (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
+                           <parameter><link linkend="GObject"><type>GObject</type></link> *notation</parameter>);</programlisting>
+<para>Removes a notation.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>audio</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsAudio"><type>AgsAudio</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>notation</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsNotation"><type>AgsNotation</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-audio-add-automation" role="function" condition="since:0.4">
+<title>ags_audio_add_automation&#160;()</title>
+<indexterm zone="ags-audio-add-automation" role="0.4"><primary>ags_audio_add_automation</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_audio_add_automation (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
+                          <parameter><link linkend="GObject"><type>GObject</type></link> *automation</parameter>);</programlisting>
+<para>Adds an automation.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>audio</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsAudio"><type>AgsAudio</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>automation</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsAutomation"><type>AgsAutomation</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-audio-remove-automation" role="function" condition="since:0.4">
+<title>ags_audio_remove_automation&#160;()</title>
+<indexterm zone="ags-audio-remove-automation" role="0.4"><primary>ags_audio_remove_automation</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_audio_remove_automation (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
+                             <parameter><link linkend="GObject"><type>GObject</type></link> *automation</parameter>);</programlisting>
+<para>Removes an automation.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>audio</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsAudio"><type>AgsAudio</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>automation</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsAutomation"><type>AgsAutomation</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-audio-add-recall-id" role="function" condition="since:0.4">
+<title>ags_audio_add_recall_id&#160;()</title>
+<indexterm zone="ags-audio-add-recall-id" role="0.4"><primary>ags_audio_add_recall_id</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_audio_add_recall_id (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
+                         <parameter><link linkend="GObject"><type>GObject</type></link> *recall_id</parameter>);</programlisting>
+<para>Adds a recall id.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>audio</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsAudio"><type>AgsAudio</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>recall_id</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsRecallID"><type>AgsRecallID</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-audio-remove-recall-id" role="function" condition="since:0.4">
+<title>ags_audio_remove_recall_id&#160;()</title>
+<indexterm zone="ags-audio-remove-recall-id" role="0.4"><primary>ags_audio_remove_recall_id</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_audio_remove_recall_id (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
+                            <parameter><link linkend="GObject"><type>GObject</type></link> *recall_id</parameter>);</programlisting>
+<para>Removes a recall id.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>audio</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsAudio"><type>AgsAudio</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>recall_id</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsRecallID"><type>AgsRecallID</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-audio-add-recycling-context" role="function" condition="since:0.4">
+<title>ags_audio_add_recycling_context&#160;()</title>
+<indexterm zone="ags-audio-add-recycling-context" role="0.4"><primary>ags_audio_add_recycling_context</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_audio_add_recycling_context (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
+                                 <parameter><link linkend="GObject"><type>GObject</type></link> *recycling_context</parameter>);</programlisting>
+<para>Adds a recycling container.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>audio</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsAudio"><type>AgsAudio</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>recycling_context</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsRecyclingContext"><type>AgsRecyclingContext</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-audio-remove-recycling-context" role="function" condition="since:0.4">
+<title>ags_audio_remove_recycling_context&#160;()</title>
+<indexterm zone="ags-audio-remove-recycling-context" role="0.4"><primary>ags_audio_remove_recycling_context</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_audio_remove_recycling_context (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
+                                    <parameter><link linkend="GObject"><type>GObject</type></link> *recycling_context</parameter>);</programlisting>
+<para>Removes a recycling container.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>audio</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsAudio"><type>AgsAudio</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>recycling_context</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsRecyclingContext"><type>AgsRecyclingContext</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-audio-add-recall-container" role="function" condition="since:0.4">
+<title>ags_audio_add_recall_container&#160;()</title>
+<indexterm zone="ags-audio-add-recall-container" role="0.4"><primary>ags_audio_add_recall_container</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_audio_add_recall_container (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
+                                <parameter><link linkend="GObject"><type>GObject</type></link> *recall_container</parameter>);</programlisting>
+<para>Adds a recall container.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>audio</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsAudio"><type>AgsAudio</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>recall_container</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsRecallContainer"><type>AgsRecallContainer</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-audio-remove-recall-container" role="function" condition="since:0.4">
+<title>ags_audio_remove_recall_container&#160;()</title>
+<indexterm zone="ags-audio-remove-recall-container" role="0.4"><primary>ags_audio_remove_recall_container</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_audio_remove_recall_container (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
+                                   <parameter><link linkend="GObject"><type>GObject</type></link> *recall_container</parameter>);</programlisting>
+<para>Removes a recall container.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>audio</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsAudio"><type>AgsAudio</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>recall_container</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsRecallContainer"><type>AgsRecallContainer</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-audio-add-recall" role="function" condition="since:0.4">
+<title>ags_audio_add_recall&#160;()</title>
+<indexterm zone="ags-audio-add-recall" role="0.4"><primary>ags_audio_add_recall</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_audio_add_recall (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
+                      <parameter><link linkend="GObject"><type>GObject</type></link> *recall</parameter>,
+                      <parameter><link linkend="gboolean"><type>gboolean</type></link> play</parameter>);</programlisting>
+<para>Adds a recall.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>audio</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsAudio"><type>AgsAudio</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>recall_container</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsRecall"><type>AgsRecall</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>play</para></entry>
+<entry role="parameter_description"><para><link linkend="TRUE:CAPS"><literal>TRUE</literal></link> if simple playback.</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-audio-remove-recall" role="function" condition="since:0.4">
+<title>ags_audio_remove_recall&#160;()</title>
+<indexterm zone="ags-audio-remove-recall" role="0.4"><primary>ags_audio_remove_recall</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_audio_remove_recall (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
+                         <parameter><link linkend="GObject"><type>GObject</type></link> *recall</parameter>,
+                         <parameter><link linkend="gboolean"><type>gboolean</type></link> play</parameter>);</programlisting>
+<para>Removes a recall.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>audio</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsAudio"><type>AgsAudio</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>recall_container</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsRecall"><type>AgsRecall</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>play</para></entry>
+<entry role="parameter_description"><para><link linkend="TRUE:CAPS"><literal>TRUE</literal></link> if simple playback.</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-audio-recall-change-state" role="function">
+<title>ags_audio_recall_change_state&#160;()</title>
+<indexterm zone="ags-audio-recall-change-state"><primary>ags_audio_recall_change_state</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_audio_recall_change_state (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
+                               <parameter><link linkend="gboolean"><type>gboolean</type></link> enable</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-audio-duplicate-recall" role="function" condition="since:0.4">
+<title>ags_audio_duplicate_recall&#160;()</title>
+<indexterm zone="ags-audio-duplicate-recall" role="0.4"><primary>ags_audio_duplicate_recall</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_audio_duplicate_recall (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
+                            <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>);</programlisting>
+<para>Duplicate all <link linkend="AgsRecall"><type>AgsRecall</type></link> templates of this <link linkend="AgsAudio"><type>AgsAudio</type></link>.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>audio</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsAudio"><type>AgsAudio</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>recall_id</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsRecallID"><type>AgsRecallID</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-audio-init-recall" role="function" condition="since:0.4">
+<title>ags_audio_init_recall&#160;()</title>
+<indexterm zone="ags-audio-init-recall" role="0.4"><primary>ags_audio_init_recall</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_audio_init_recall (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
+                       <parameter><link linkend="gint"><type>gint</type></link> stage</parameter>,
+                       <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>);</programlisting>
+<para>Initializes the recalls of <parameter>audio</parameter>
+</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>audio</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsAudio"><type>AgsAudio</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>stage</para></entry>
+<entry role="parameter_description"><para>stage benning at 0 up to 2, or just -1</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>recall_id</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsRecallID"><type>AgsRecallID</type></link> to use or <link linkend="NULL:CAPS"><type>NULL</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-audio-resolve-recall" role="function" condition="since:0.4">
+<title>ags_audio_resolve_recall&#160;()</title>
+<indexterm zone="ags-audio-resolve-recall" role="0.4"><primary>ags_audio_resolve_recall</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_audio_resolve_recall (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
+                          <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>);</programlisting>
+<para>Performs resolving of recalls.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>audio</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsAudio"><type>AgsAudio</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>recall_id</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsRecallID"><type>AgsRecallID</type></link> to use</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-audio-is-playing" role="function" condition="since:0.4">
+<title>ags_audio_is_playing&#160;()</title>
+<indexterm zone="ags-audio-is-playing" role="0.4"><primary>ags_audio_is_playing</primary></indexterm>
+<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+ags_audio_is_playing (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>);</programlisting>
+<para>Determine if <link linkend="AgsAudio"><type>AgsAudio</type></link> is playing.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>audio</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsAudio"><type>AgsAudio</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> TRUE if it's playing otherwise FALSE</para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-audio-play" role="function" condition="since:0.4">
+<title>ags_audio_play&#160;()</title>
+<indexterm zone="ags-audio-play" role="0.4"><primary>ags_audio_play</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_audio_play (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
+                <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>,
+                <parameter><link linkend="gint"><type>gint</type></link> stage</parameter>);</programlisting>
+<para>Performs on single play call of appropriate stage.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>audio</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsAudio"><type>AgsAudio</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>recall_id</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsRecallID"><type>AgsRecallID</type></link> to apply to</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>stage</para></entry>
+<entry role="parameter_description"><para>valid range is from 0 up to 2</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-audio-recursive-play-init" role="function" condition="since:0.4">
+<title>ags_audio_recursive_play_init&#160;()</title>
+<indexterm zone="ags-audio-recursive-play-init" role="0.4"><primary>ags_audio_recursive_play_init</primary></indexterm>
+<programlisting language="C"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+ags_audio_recursive_play_init (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
+                               <parameter><link linkend="gboolean"><type>gboolean</type></link> playback</parameter>,
+                               <parameter><link linkend="gboolean"><type>gboolean</type></link> sequencer</parameter>,
+                               <parameter><link linkend="gboolean"><type>gboolean</type></link> notation</parameter>);</programlisting>
+<para>Initializes <link linkend="AgsAudio"><type>AgsAudio</type></link> in order to do playback, sequencer or notation.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>audio</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsAudio"><type>AgsAudio</type></link> object</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>playback</para></entry>
+<entry role="parameter_description"><para>if doing playback</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>sequencer</para></entry>
+<entry role="parameter_description"><para>if doing sequencer</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>notation</para></entry>
+<entry role="parameter_description"><para>if doing notation</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> a list containing all <link linkend="AgsRecallID"><type>AgsRecallID</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-audio-cancel" role="function" condition="since:0.4">
+<title>ags_audio_cancel&#160;()</title>
+<indexterm zone="ags-audio-cancel" role="0.4"><primary>ags_audio_cancel</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_audio_cancel (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
+                  <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>);</programlisting>
+<para>Cancel processing audio data.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>audio</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsAudio"><type>AgsAudio</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>recall_id</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsRecallID"><type>AgsRecallID</type></link> to apply to</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-audio-remove" role="function" condition="since:0.4">
+<title>ags_audio_remove&#160;()</title>
+<indexterm zone="ags-audio-remove" role="0.4"><primary>ags_audio_remove</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_audio_remove (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
+                  <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>);</programlisting>
+<para>Remove processing audio data.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>audio</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsAudio"><type>AgsAudio</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>recall_id</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsRecallID"><type>AgsRecallID</type></link> to apply to</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-audio-open-files" role="function" condition="since:0.4">
+<title>ags_audio_open_files&#160;()</title>
+<indexterm zone="ags-audio-open-files" role="0.4"><primary>ags_audio_open_files</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_audio_open_files (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
+                      <parameter><link linkend="GSList"><type>GSList</type></link> *filenames</parameter>,
+                      <parameter><link linkend="gboolean"><type>gboolean</type></link> overwrite_channels</parameter>,
+                      <parameter><link linkend="gboolean"><type>gboolean</type></link> create_channels</parameter>);</programlisting>
+<para>Open some files.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>audio</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsAudio"><type>AgsAudio</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>filenames</para></entry>
+<entry role="parameter_description"><para>the files to open</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>overwrite_channels</para></entry>
+<entry role="parameter_description"><para>if existing channels should be assigned</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>create_channels</para></entry>
+<entry role="parameter_description"><para>if new channels should be created as not fitting if combined with <parameter>overwrite_channels</parameter>
+</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-audio-find-port" role="function" condition="since:0.4">
+<title>ags_audio_find_port&#160;()</title>
+<indexterm zone="ags-audio-find-port" role="0.4"><primary>ags_audio_find_port</primary></indexterm>
+<programlisting language="C"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+ags_audio_find_port (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>);</programlisting>
+<para>Retrieve all ports of <link linkend="AgsAudio"><type>AgsAudio</type></link>.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>audio</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsAudio"><type>AgsAudio</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> a new <link linkend="GList"><type>GList</type></link> containing <link linkend="AgsPort"><type>AgsPort</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-audio-new" role="function" condition="since:0.3">
+<title>ags_audio_new&#160;()</title>
+<indexterm zone="ags-audio-new" role="0.3"><primary>ags_audio_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsAudio"><returnvalue>AgsAudio</returnvalue></link>&#160;*
+ags_audio_new (<parameter><link linkend="GObject"><type>GObject</type></link> *soundcard</parameter>);</programlisting>
+<para>Creates an <link linkend="AgsAudio"><type>AgsAudio</type></link>, with defaults of <parameter>soundcard</parameter>
+.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>soundcard</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsSoundcard"><type>AgsSoundcard</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> a new <link linkend="AgsAudio"><type>AgsAudio</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.3</para></refsect2>
 
-  GList *notation;
-
-  GList *recall_id;
-
-  GList *container;
-
-  GList *recall;
-  GList *play;
-
-  GList *recall_remove; //TODO:JK: verify deprecation
-  GList *play_remove; //TODO:JK: verify deprecation
-
-  GtkWidget *machine;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsAudioClass" role="struct">
-<title>struct AgsAudioClass</title>
-<indexterm zone="AgsAudioClass"><primary>AgsAudioClass</primary></indexterm>
-<programlisting>struct AgsAudioClass {
-  GObjectClass object;
-
-  void (*set_audio_channels)(AgsAudio *audio,
-			     guint audio_channels, guint audio_channels_old);
-  void (*set_pads)(AgsAudio *audio,
-		   GType type,
-		   guint pads, guint pads_old);
-
-  AgsRecallID* (*init_run)(AgsAudio *audio);
-  void (*tact)(AgsAudio *audio, AgsRecallID *recall_id);
-  void (*done)(AgsAudio *audio, AgsRecallID *recall_id);
-};
-</programlisting>
-<para>
-</para></refsect2>
+</refsect1>
+<refsect1 id="AgsAudio.other_details" role="details">
+<title role="details.title">Types and Values</title>
 <refsect2 id="AgsAudioFlags" role="enum">
 <title>enum AgsAudioFlags</title>
 <indexterm zone="AgsAudioFlags"><primary>AgsAudioFlags</primary></indexterm>
-<programlisting>typedef enum {
-  AGS_AUDIO_OUTPUT_HAS_RECYCLING        = 1,
-  AGS_AUDIO_INPUT_HAS_RECYCLING         = 1 &lt;&lt;  1,
-  AGS_AUDIO_INPUT_TAKES_FILE            = 1 &lt;&lt;  2,
-  AGS_AUDIO_HAS_NOTATION                = 1 &lt;&lt;  3,
-  AGS_AUDIO_SYNC                        = 1 &lt;&lt;  4, // can be combined with below
-  AGS_AUDIO_ASYNC                       = 1 &lt;&lt;  5,
-  AGS_AUDIO_RUNNING                     = 1 &lt;&lt;  6,
-  AGS_AUDIO_PLAYING                     = 1 &lt;&lt;  7,
-  AGS_AUDIO_NOTATION_DEFAULT            = 1 &lt;&lt;  8,
-} AgsAudioFlags;
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-audio-add-recall" role="function">
-<title>ags_audio_add_recall ()</title>
-<indexterm zone="ags-audio-add-recall"><primary>ags_audio_add_recall</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_audio_add_recall                (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *recall</parameter>,
-                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> play</parameter>);</programlisting>
-<para>
-Adds a recall.
-</para></refsect2>
-<refsect2 id="ags-audio-add-recall-container" role="function">
-<title>ags_audio_add_recall_container ()</title>
-<indexterm zone="ags-audio-add-recall-container"><primary>ags_audio_add_recall_container</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_audio_add_recall_container      (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *recall_container</parameter>);</programlisting>
-<para>
-Adds a recall container.
-</para></refsect2>
-<refsect2 id="ags-audio-add-recall-id" role="function">
-<title>ags_audio_add_recall_id ()</title>
-<indexterm zone="ags-audio-add-recall-id"><primary>ags_audio_add_recall_id</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_audio_add_recall_id             (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *recall_id</parameter>);</programlisting>
-<para>
-Adds a recall id.
-</para></refsect2>
-<refsect2 id="ags-audio-cancel" role="function">
-<title>ags_audio_cancel ()</title>
-<indexterm zone="ags-audio-cancel"><primary>ags_audio_cancel</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_audio_cancel                    (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
-                                                         <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>);</programlisting>
-<para>
-Cancel processing audio data.
-</para></refsect2>
-<refsect2 id="ags-audio-done" role="function">
-<title>ags_audio_done ()</title>
-<indexterm zone="ags-audio-done"><primary>ags_audio_done</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_audio_done                      (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
-                                                         <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-audio-duplicate-recall" role="function">
-<title>ags_audio_duplicate_recall ()</title>
-<indexterm zone="ags-audio-duplicate-recall"><primary>ags_audio_duplicate_recall</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_audio_duplicate_recall          (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
-                                                         <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>);</programlisting>
-<para>
-Duplicate all <link linkend="AgsRecall"><type>AgsRecall</type></link> templates of this <link linkend="AgsAudio"><type>AgsAudio</type></link>.
-</para></refsect2>
-<refsect2 id="ags-audio-init-recall" role="function">
-<title>ags_audio_init_recall ()</title>
-<indexterm zone="ags-audio-init-recall"><primary>ags_audio_init_recall</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_audio_init_recall               (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
-                                                         <parameter><link linkend="gint"><type>gint</type></link> stage</parameter>,
-                                                         <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>);</programlisting>
-<para>
-Initializes the recalls of <parameter>audio</parameter>
-</para></refsect2>
-<refsect2 id="ags-audio-init-run" role="function">
-<title>ags_audio_init_run ()</title>
-<indexterm zone="ags-audio-init-run"><primary>ags_audio_init_run</primary></indexterm>
-<programlisting><link linkend="AgsRecallID"><returnvalue>AgsRecallID</returnvalue></link> *       ags_audio_init_run                  (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>);</programlisting>
-<para>
-Is emitted as playing audio is done.
-</para></refsect2>
-<refsect2 id="ags-audio-is-playing" role="function">
-<title>ags_audio_is_playing ()</title>
-<indexterm zone="ags-audio-is-playing"><primary>ags_audio_is_playing</primary></indexterm>
-<programlisting><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            ags_audio_is_playing                (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>);</programlisting>
-<para>
-Determine if <link linkend="AgsAudio"><type>AgsAudio</type></link> is playing.
-</para><variablelist role="params">
-<varlistentry><term><emphasis>Returns</emphasis>&#160;:</term><listitem><simpara>TRUE if it's playing otherwise FALSE</simpara></listitem></varlistentry>
-</variablelist></refsect2>
-<refsect2 id="ags-audio-new" role="function">
-<title>ags_audio_new ()</title>
-<indexterm zone="ags-audio-new"><primary>ags_audio_new</primary></indexterm>
-<programlisting><link linkend="AgsAudio"><returnvalue>AgsAudio</returnvalue></link> *          ags_audio_new                       ();</programlisting>
-<para>
-Creates a <link linkend="AgsAudio"><type>AgsAudio</type></link>, with defaults of <parameter>devout</parameter>.
-</para><variablelist role="params">
-<varlistentry><term><emphasis>Returns</emphasis>&#160;:</term><listitem><simpara>a new <link linkend="AgsAudio"><type>AgsAudio</type></link></simpara></listitem></varlistentry>
-</variablelist></refsect2>
-<refsect2 id="ags-audio-open-files" role="function">
-<title>ags_audio_open_files ()</title>
-<indexterm zone="ags-audio-open-files"><primary>ags_audio_open_files</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_audio_open_files                (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
-                                                         <parameter><link linkend="GSList"><type>GSList</type></link> *filenames</parameter>,
-                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> overwrite_channels</parameter>,
-                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> create_channels</parameter>);</programlisting>
-<para>
-Open some files.
-</para></refsect2>
-<refsect2 id="ags-audio-play" role="function">
-<title>ags_audio_play ()</title>
-<indexterm zone="ags-audio-play"><primary>ags_audio_play</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_audio_play                      (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
-                                                         <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>,
-                                                         <parameter><link linkend="gint"><type>gint</type></link> stage</parameter>);</programlisting>
-<para>
-Performs on single play call of appropriate stage.
-</para></refsect2>
-<refsect2 id="ags-audio-recall-change-state" role="function">
-<title>ags_audio_recall_change_state ()</title>
-<indexterm zone="ags-audio-recall-change-state"><primary>ags_audio_recall_change_state</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_audio_recall_change_state       (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
-                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> enable</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-audio-recursive-play-init" role="function">
-<title>ags_audio_recursive_play_init ()</title>
-<indexterm zone="ags-audio-recursive-play-init"><primary>ags_audio_recursive_play_init</primary></indexterm>
-<programlisting><link linkend="GList"><returnvalue>GList</returnvalue></link> *             ags_audio_recursive_play_init       (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
-                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> playback</parameter>,
-                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> sequencer</parameter>,
-                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> notation</parameter>);</programlisting>
-<para>
-Initializes <link linkend="AgsAudio"><type>AgsAudio</type></link> in order to do playback, sequencer or notation.
-</para><variablelist role="params">
-<varlistentry><term><emphasis>Returns</emphasis>&#160;:</term><listitem><simpara>a list containing all <link linkend="AgsRecallID"><type>AgsRecallID</type></link></simpara></listitem></varlistentry>
-</variablelist></refsect2>
-<refsect2 id="ags-audio-remove-recall" role="function">
-<title>ags_audio_remove_recall ()</title>
-<indexterm zone="ags-audio-remove-recall"><primary>ags_audio_remove_recall</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_audio_remove_recall             (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *recall</parameter>,
-                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> play</parameter>);</programlisting>
-<para>
-Removes a recall.
-</para></refsect2>
-<refsect2 id="ags-audio-remove-recall-container" role="function">
-<title>ags_audio_remove_recall_container ()</title>
-<indexterm zone="ags-audio-remove-recall-container"><primary>ags_audio_remove_recall_container</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_audio_remove_recall_container   (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *recall_container</parameter>);</programlisting>
-<para>
-Removes a recall container.
-</para></refsect2>
-<refsect2 id="ags-audio-remove-recall-id" role="function">
-<title>ags_audio_remove_recall_id ()</title>
-<indexterm zone="ags-audio-remove-recall-id"><primary>ags_audio_remove_recall_id</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_audio_remove_recall_id          (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *recall_id</parameter>);</programlisting>
-<para>
-Removes a recall id.
-</para></refsect2>
-<refsect2 id="ags-audio-resolve-recall" role="function">
-<title>ags_audio_resolve_recall ()</title>
-<indexterm zone="ags-audio-resolve-recall"><primary>ags_audio_resolve_recall</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_audio_resolve_recall            (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
-                                                         <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>);</programlisting>
-<para>
-Performs resolving of recalls.
-</para></refsect2>
-<refsect2 id="ags-audio-set-audio-channels" role="function">
-<title>ags_audio_set_audio_channels ()</title>
-<indexterm zone="ags-audio-set-audio-channels"><primary>ags_audio_set_audio_channels</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_audio_set_audio_channels        (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> audio_channels</parameter>);</programlisting>
-<para>
-Resize audio channels AgsInput will be allocated first.
-</para></refsect2>
-<refsect2 id="ags-audio-set-devout" role="function">
-<title>ags_audio_set_devout ()</title>
-<indexterm zone="ags-audio-set-devout"><primary>ags_audio_set_devout</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_audio_set_devout                (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *devout</parameter>);</programlisting>
-<para>
-Sets a devout object on audio.
-</para></refsect2>
-<refsect2 id="ags-audio-set-flags" role="function">
-<title>ags_audio_set_flags ()</title>
-<indexterm zone="ags-audio-set-flags"><primary>ags_audio_set_flags</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_audio_set_flags                 (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> flags</parameter>);</programlisting>
-<para>
-Disable a feature of AgsAudio.
-</para></refsect2>
-<refsect2 id="ags-audio-set-pads" role="function">
-<title>ags_audio_set_pads ()</title>
-<indexterm zone="ags-audio-set-pads"><primary>ags_audio_set_pads</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_audio_set_pads                  (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
-                                                         <parameter><link linkend="GType"><type>GType</type></link> type</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> pads</parameter>);</programlisting>
-<para>
-Sets pad count for the apropriate <parameter>type</parameter>
-</para></refsect2>
-<refsect2 id="ags-audio-set-sequence-length" role="function">
-<title>ags_audio_set_sequence_length ()</title>
-<indexterm zone="ags-audio-set-sequence-length"><primary>ags_audio_set_sequence_length</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_audio_set_sequence_length       (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> sequence_length</parameter>);</programlisting>
-<para>
-Sets sequence length.
-</para></refsect2>
-<refsect2 id="ags-audio-tact" role="function">
-<title>ags_audio_tact ()</title>
-<indexterm zone="ags-audio-tact"><primary>ags_audio_tact</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_audio_tact                      (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
-                                                         <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-audio-unset-flags" role="function">
-<title>ags_audio_unset_flags ()</title>
-<indexterm zone="ags-audio-unset-flags"><primary>ags_audio_unset_flags</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_audio_unset_flags               (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> flags</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<refsect3 role="enum_members">
+<title>Members</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="enum_members_name" colwidth="300px"/>
+<colspec colname="enum_members_description"/>
+<colspec colname="enum_members_annotations" colwidth="200px"/>
+<tbody>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-AUDIO-CONNECTED:CAPS">AGS_AUDIO_CONNECTED</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-AUDIO-OUTPUT-HAS-RECYCLING:CAPS">AGS_AUDIO_OUTPUT_HAS_RECYCLING</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-AUDIO-INPUT-HAS-RECYCLING:CAPS">AGS_AUDIO_INPUT_HAS_RECYCLING</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-AUDIO-INPUT-TAKES-FILE:CAPS">AGS_AUDIO_INPUT_TAKES_FILE</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-AUDIO-HAS-NOTATION:CAPS">AGS_AUDIO_HAS_NOTATION</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-AUDIO-SYNC:CAPS">AGS_AUDIO_SYNC</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-AUDIO-ASYNC:CAPS">AGS_AUDIO_ASYNC</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-AUDIO-RUNNING:CAPS">AGS_AUDIO_RUNNING</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-AUDIO-PLAYING:CAPS">AGS_AUDIO_PLAYING</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-AUDIO-NOTATION-DEFAULT:CAPS">AGS_AUDIO_NOTATION_DEFAULT</para></entry>
+<entry /><entry />
+</row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
 
+</refsect1>
+<refsect1 id="AgsAudio.property-details" role="property_details">
+<title role="property_details.title">Property Details</title>
+<refsect2 id="AgsAudio--audio-channels" role="property"><title>The <literal>“audio-channels”</literal> property</title>
+<indexterm zone="AgsAudio--audio-channels" role="0.4.3"><primary>AgsAudio:audio-channels</primary></indexterm>
+<programlisting>  “audio-channels”           <link linkend="guint"><type>guint</type></link></programlisting>
+<para>The audio channels count.</para>
+<para>Flags: Read / Write</para>
+<para>Allowed values: &lt;= 65535</para>
+<para>Default value: 0</para>
+<para role="since">Since 0.4.3</para></refsect2>
+<refsect2 id="AgsAudio--automation" role="property"><title>The <literal>“automation”</literal> property</title>
+<indexterm zone="AgsAudio--automation" role="0.4.3"><primary>AgsAudio:automation</primary></indexterm>
+<programlisting>  “automation”               <link linkend="AgsAutomation"><type>AgsAutomation</type></link>&#160;*</programlisting>
+<para>The <link linkend="AgsAutomation"><type>AgsAutomation</type></link> it contains.</para>
+<para>Flags: Read / Write</para>
+<para role="since">Since 0.4.3</para></refsect2>
+<refsect2 id="AgsAudio--input" role="property"><title>The <literal>“input”</literal> property</title>
+<indexterm zone="AgsAudio--input" role="0.4.3"><primary>AgsAudio:input</primary></indexterm>
+<programlisting>  “input”                    <link linkend="AgsInput"><type>AgsInput</type></link>&#160;*</programlisting>
+<para>The <link linkend="AgsInput"><type>AgsInput</type></link> it contains.</para>
+<para>Flags: Read</para>
+<para role="since">Since 0.4.3</para></refsect2>
+<refsect2 id="AgsAudio--input-lines" role="property"><title>The <literal>“input-lines”</literal> property</title>
+<indexterm zone="AgsAudio--input-lines" role="0.4.3"><primary>AgsAudio:input-lines</primary></indexterm>
+<programlisting>  “input-lines”              <link linkend="guint"><type>guint</type></link></programlisting>
+<para>The input lines count.</para>
+<para>Flags: Read</para>
+<para>Allowed values: &lt;= 65535</para>
+<para>Default value: 0</para>
+<para role="since">Since 0.4.3</para></refsect2>
+<refsect2 id="AgsAudio--input-pads" role="property"><title>The <literal>“input-pads”</literal> property</title>
+<indexterm zone="AgsAudio--input-pads" role="0.4.3"><primary>AgsAudio:input-pads</primary></indexterm>
+<programlisting>  “input-pads”               <link linkend="guint"><type>guint</type></link></programlisting>
+<para>The input pads count.</para>
+<para>Flags: Read / Write</para>
+<para>Allowed values: &lt;= 65535</para>
+<para>Default value: 0</para>
+<para role="since">Since 0.4.3</para></refsect2>
+<refsect2 id="AgsAudio--notation" role="property"><title>The <literal>“notation”</literal> property</title>
+<indexterm zone="AgsAudio--notation" role="0.4.3"><primary>AgsAudio:notation</primary></indexterm>
+<programlisting>  “notation”                 <link linkend="AgsNotation"><type>AgsNotation</type></link>&#160;*</programlisting>
+<para>The <link linkend="AgsNotation"><type>AgsNotation</type></link> it contains.</para>
+<para>Flags: Read / Write</para>
+<para role="since">Since 0.4.3</para></refsect2>
+<refsect2 id="AgsAudio--output" role="property"><title>The <literal>“output”</literal> property</title>
+<indexterm zone="AgsAudio--output" role="0.4.3"><primary>AgsAudio:output</primary></indexterm>
+<programlisting>  “output”                   <link linkend="AgsOutput"><type>AgsOutput</type></link>&#160;*</programlisting>
+<para>The <link linkend="AgsOutput"><type>AgsOutput</type></link> it contains.</para>
+<para>Flags: Read</para>
+<para role="since">Since 0.4.3</para></refsect2>
+<refsect2 id="AgsAudio--output-lines" role="property"><title>The <literal>“output-lines”</literal> property</title>
+<indexterm zone="AgsAudio--output-lines" role="0.4.3"><primary>AgsAudio:output-lines</primary></indexterm>
+<programlisting>  “output-lines”             <link linkend="guint"><type>guint</type></link></programlisting>
+<para>The output lines count.</para>
+<para>Flags: Read</para>
+<para>Allowed values: &lt;= 65535</para>
+<para>Default value: 0</para>
+<para role="since">Since 0.4.3</para></refsect2>
+<refsect2 id="AgsAudio--output-pads" role="property"><title>The <literal>“output-pads”</literal> property</title>
+<indexterm zone="AgsAudio--output-pads" role="0.4.3"><primary>AgsAudio:output-pads</primary></indexterm>
+<programlisting>  “output-pads”              <link linkend="guint"><type>guint</type></link></programlisting>
+<para>The output pads count.</para>
+<para>Flags: Read / Write</para>
+<para>Allowed values: &lt;= 65535</para>
+<para>Default value: 0</para>
+<para role="since">Since 0.4.3</para></refsect2>
+<refsect2 id="AgsAudio--play" role="property"><title>The <literal>“play”</literal> property</title>
+<indexterm zone="AgsAudio--play" role="0.4.3"><primary>AgsAudio:play</primary></indexterm>
+<programlisting>  “play”                     <link linkend="AgsRecall"><type>AgsRecall</type></link>&#160;*</programlisting>
+<para>The <link linkend="AgsRecall"><type>AgsRecall</type></link> it contains in play-context.</para>
+<para>Flags: Read / Write</para>
+<para role="since">Since 0.4.3</para></refsect2>
+<refsect2 id="AgsAudio--playback-domain" role="property"><title>The <literal>“playback-domain”</literal> property</title>
+<indexterm zone="AgsAudio--playback-domain" role="0.4.3"><primary>AgsAudio:playback-domain</primary></indexterm>
+<programlisting>  “playback-domain”          <link linkend="AgsPlaybackDomain"><type>AgsPlaybackDomain</type></link>&#160;*</programlisting>
+<para>The assigned <link linkend="AgsPlaybackDomain"><type>AgsPlaybackDomain</type></link>.</para>
+<para>Flags: Read / Write</para>
+<para role="since">Since 0.4.3</para></refsect2>
+<refsect2 id="AgsAudio--recall" role="property"><title>The <literal>“recall”</literal> property</title>
+<indexterm zone="AgsAudio--recall" role="0.4.3"><primary>AgsAudio:recall</primary></indexterm>
+<programlisting>  “recall”                   <link linkend="AgsRecall"><type>AgsRecall</type></link>&#160;*</programlisting>
+<para>The <link linkend="AgsRecall"><type>AgsRecall</type></link> it contains in recall-context.</para>
+<para>Flags: Read / Write</para>
+<para role="since">Since 0.4.3</para></refsect2>
+<refsect2 id="AgsAudio--recall-container" role="property"><title>The <literal>“recall-container”</literal> property</title>
+<indexterm zone="AgsAudio--recall-container" role="0.4.3"><primary>AgsAudio:recall-container</primary></indexterm>
+<programlisting>  “recall-container”         <link linkend="AgsRecallContainer"><type>AgsRecallContainer</type></link>&#160;*</programlisting>
+<para>The <link linkend="AgsRecallContainer"><type>AgsRecallContainer</type></link> it contains in container-context.</para>
+<para>Flags: Read / Write</para>
+<para role="since">Since 0.4.3</para></refsect2>
+<refsect2 id="AgsAudio--recall-id" role="property"><title>The <literal>“recall-id”</literal> property</title>
+<indexterm zone="AgsAudio--recall-id" role="0.4.3"><primary>AgsAudio:recall-id</primary></indexterm>
+<programlisting>  “recall-id”                <link linkend="AgsRecallID"><type>AgsRecallID</type></link>&#160;*</programlisting>
+<para>The assigned <link linkend="AgsRecallID"><type>AgsRecallID</type></link>.</para>
+<para>Flags: Read / Write</para>
+<para role="since">Since 0.4.3</para></refsect2>
+<refsect2 id="AgsAudio--recycling-context" role="property"><title>The <literal>“recycling-context”</literal> property</title>
+<indexterm zone="AgsAudio--recycling-context" role="0.4.3"><primary>AgsAudio:recycling-context</primary></indexterm>
+<programlisting>  “recycling-context”        <link linkend="AgsRecyclingContext"><type>AgsRecyclingContext</type></link>&#160;*</programlisting>
+<para>The assigned <link linkend="AgsRecyclingContext"><type>AgsRecyclingContext</type></link>.</para>
+<para>Flags: Read / Write</para>
+<para role="since">Since 0.4.3</para></refsect2>
+<refsect2 id="AgsAudio--soundcard" role="property"><title>The <literal>“soundcard”</literal> property</title>
+<indexterm zone="AgsAudio--soundcard" role="0.4"><primary>AgsAudio:soundcard</primary></indexterm>
+<programlisting>  “soundcard”                <link linkend="GObject"><type>GObject</type></link>&#160;*</programlisting>
+<para>The assigned <link linkend="AgsSoundcard"><type>AgsSoundcard</type></link> acting as default sink.</para>
+<para>Flags: Read / Write</para>
+<para role="since">Since 0.4</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsAudio.signal-details" role="signals">
+<title role="signals.title">Signal Details</title>
+<refsect2 id="AgsAudio-done" role="signal"><title>The <literal>“done”</literal> signal</title>
+<indexterm zone="AgsAudio-done"><primary>AgsAudio::done</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsAudio"><type>AgsAudio</type></link> *audio,
+               <link linkend="GObject"><type>GObject</type></link>  *recall_id,
+               <link linkend="gpointer"><type>gpointer</type></link>  user_data)</programlisting>
+<para>The ::done signal is invoked while terminating playback
+of <parameter>audio</parameter>
+.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>audio</para></entry>
+<entry role="parameter_description"><para>the object done playing.</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>recall_id</para></entry>
+<entry role="parameter_description"><para>the appropriate <link linkend="AgsRecallID"><type>AgsRecallID</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsAudio-init-run" role="signal"><title>The <literal>“init-run”</literal> signal</title>
+<indexterm zone="AgsAudio-init-run"><primary>AgsAudio::init-run</primary></indexterm>
+<programlisting language="C"><link linkend="GObject"><returnvalue>GObject</returnvalue></link>*
+user_function (<link linkend="AgsAudio"><type>AgsAudio</type></link> *audio,
+               <link linkend="gpointer"><type>gpointer</type></link>  user_data)</programlisting>
+<para>The ::init-run signal is invoked during dynamic initialization of recalls
+of <parameter>audio</parameter>
+.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>audio</para></entry>
+<entry role="parameter_description"><para>the object to init run.</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> the current <link linkend="AgsRecallID"><type>AgsRecallID</type></link></para>
+<para></para>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsAudio-set-audio-channels" role="signal"><title>The <literal>“set-audio-channels”</literal> signal</title>
+<indexterm zone="AgsAudio-set-audio-channels"><primary>AgsAudio::set-audio-channels</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsAudio"><type>AgsAudio</type></link> *audio,
+               <link linkend="guint"><type>guint</type></link>     audio_channels_new,
+               <link linkend="guint"><type>guint</type></link>     audio_channels_old,
+               <link linkend="gpointer"><type>gpointer</type></link>  user_data)</programlisting>
+<para>The ::set-audio-channels signal notifies about changes in channel
+alignment.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>audio</para></entry>
+<entry role="parameter_description"><para>the object to adjust the channels.</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>audio_channels_new</para></entry>
+<entry role="parameter_description"><para>new audio channel count</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>audio_channels_old</para></entry>
+<entry role="parameter_description"><para>old audio channel count</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsAudio-set-pads" role="signal"><title>The <literal>“set-pads”</literal> signal</title>
+<indexterm zone="AgsAudio-set-pads"><primary>AgsAudio::set-pads</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsAudio"><type>AgsAudio</type></link> *audio,
+               <link linkend="gulong"><type>gulong</type></link>    type,
+               <link linkend="guint"><type>guint</type></link>     pads_new,
+               <link linkend="guint"><type>guint</type></link>     pads_old,
+               <link linkend="gpointer"><type>gpointer</type></link>  user_data)</programlisting>
+<para>The ::set-pads signal notifies about changes in channel
+alignment.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>audio</para></entry>
+<entry role="parameter_description"><para>the object to adjust pads.</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>type</para></entry>
+<entry role="parameter_description"><para>either <link linkend="AGS-TYPE-INPUT:CAPS"><type>AGS_TYPE_INPUT</type></link> or <link linkend="AGS-TYPE-OUTPUT:CAPS"><type>AGS_TYPE_OUTPUT</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>pads_new</para></entry>
+<entry role="parameter_description"><para>new pad count</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>pads_old</para></entry>
+<entry role="parameter_description"><para>old pad count</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsAudio-tact" role="signal"><title>The <literal>“tact”</literal> signal</title>
+<indexterm zone="AgsAudio-tact"><primary>AgsAudio::tact</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsAudio"><type>AgsAudio</type></link> *audio,
+               <link linkend="GObject"><type>GObject</type></link>  *recall_id,
+               <link linkend="gpointer"><type>gpointer</type></link>  user_data)</programlisting>
+<para>The ::tact signal is invoked during playback of recalls
+of <parameter>audio</parameter>
+.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>audio</para></entry>
+<entry role="parameter_description"><para>the object playing.</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>recall_id</para></entry>
+<entry role="parameter_description"><para>the appropriate <link linkend="AgsRecallID"><type>AgsRecallID</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2>
 </refsect1>
 
 </refentry>

@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsMuteAudio">
+<refentry id="AgsMuteAudio">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsMuteAudio.top_of_page">AgsMuteAudio</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsMuteAudio.top_of_page">AgsMuteAudio</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -14,51 +14,80 @@
 </refmeta>
 <refnamediv>
 <refname>AgsMuteAudio</refname>
-<refpurpose></refpurpose>
+<refpurpose>mute audio</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsMuteAudio.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsMuteAudio.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="AgsMuteAudio"><returnvalue>AgsMuteAudio</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-mute-audio-new">ags_mute_audio_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>struct              <link linkend="AgsMuteAudio">AgsMuteAudio</link>;
-struct              <link linkend="AgsMuteAudioClass">AgsMuteAudioClass</link>;
-<link linkend="AgsMuteAudio"><returnvalue>AgsMuteAudio</returnvalue></link> *      <link linkend="ags-mute-audio-new">ags_mute_audio_new</link>                  ();
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsMuteAudio.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsMuteAudio.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AgsMuteAudio" role="struct">
-<title>struct AgsMuteAudio</title>
-<indexterm zone="AgsMuteAudio"><primary>AgsMuteAudio</primary></indexterm>
-<programlisting>struct AgsMuteAudio {
-  AgsRecallAudio recall_audio;
+<refsect1 id="AgsMuteAudio.properties" role="properties">
+<title role="properties.title">Properties</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="properties_type" colwidth="150px"/>
+<colspec colname="properties_name" colwidth="300px"/>
+<colspec colname="properties_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="property_type"><link linkend="AgsPort"><type>AgsPort</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsMuteAudio--muted">muted</link></entry><entry role="property_flags">Read / Write</entry></row>
 
-  AgsPort *muted;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsMuteAudioClass" role="struct">
-<title>struct AgsMuteAudioClass</title>
-<indexterm zone="AgsMuteAudioClass"><primary>AgsMuteAudioClass</primary></indexterm>
-<programlisting>struct AgsMuteAudioClass {
-  AgsRecallAudioClass recall_audio;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-mute-audio-new" role="function">
-<title>ags_mute_audio_new ()</title>
-<indexterm zone="ags-mute-audio-new"><primary>ags_mute_audio_new</primary></indexterm>
-<programlisting><link linkend="AgsMuteAudio"><returnvalue>AgsMuteAudio</returnvalue></link> *      ags_mute_audio_new                  ();</programlisting>
-<para>
-</para></refsect2>
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsMuteAudio.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsRecall">AgsRecall</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsRecallAudio">AgsRecallAudio</link>
+            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsMuteAudio
+</screen>
+</refsect1>
+
+<refsect1 id="AgsMuteAudio.includes"><title>Includes</title><synopsis>#include &lt;ags/audio/recall/ags_mute_audio.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsMuteAudio.description" role="desc">
+<title role="desc.title">Description</title>
+<para>The <link linkend="AgsMuteAudio"><type>AgsMuteAudio</type></link> class provides ports to the effect processor.</para>
+
+</refsect1>
+<refsect1 id="AgsMuteAudio.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-mute-audio-new" role="function" condition="since:0.4">
+<title>ags_mute_audio_new&#160;()</title>
+<indexterm zone="ags-mute-audio-new" role="0.4"><primary>ags_mute_audio_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsMuteAudio"><returnvalue>AgsMuteAudio</returnvalue></link>&#160;*
+ags_mute_audio_new ();</programlisting>
+<para>Creates an <link linkend="AgsMuteAudio"><type>AgsMuteAudio</type></link></para>
+<refsect3 role="returns">
+<title>Returns</title>
+<para> a new <link linkend="AgsMuteAudio"><type>AgsMuteAudio</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsMuteAudio.other_details" role="details">
+<title role="details.title">Types and Values</title>
+
+</refsect1>
+<refsect1 id="AgsMuteAudio.property-details" role="property_details">
+<title role="property_details.title">Property Details</title>
+<refsect2 id="AgsMuteAudio--muted" role="property"><title>The <literal>“muted”</literal> property</title>
+<indexterm zone="AgsMuteAudio--muted"><primary>AgsMuteAudio:muted</primary></indexterm>
+<programlisting>  “muted”                    <link linkend="AgsPort"><type>AgsPort</type></link>&#160;*</programlisting>
+<para>Mute the audio.</para><para>Flags: Read / Write</para>
+</refsect2>
 
 </refsect1>
 

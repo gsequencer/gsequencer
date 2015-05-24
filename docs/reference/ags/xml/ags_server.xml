@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsServer">
+<refentry id="AgsServer">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsServer.top_of_page">AgsServer</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsServer.top_of_page">AgsServer</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -17,112 +17,161 @@
 <refpurpose></refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsServer.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsServer.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-server-start">ags_server_start</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsServer"><returnvalue>AgsServer</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-server-lookup">ags_server_lookup</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="xmlrpc-value"><returnvalue>xmlrpc_value</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-server-create-object">ags_server_create_object</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="xmlrpc-value"><returnvalue>xmlrpc_value</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-server-object-set-property">ags_server_object_set_property</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsServer"><returnvalue>AgsServer</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-server-new">ags_server_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>struct              <link linkend="AgsServer">AgsServer</link>;
-struct              <link linkend="AgsServerClass">AgsServerClass</link>;
-enum                <link linkend="AgsServerFlags">AgsServerFlags</link>;
-<link linkend="xmlrpc-value"><returnvalue>xmlrpc_value</returnvalue></link> *      <link linkend="ags-server-create-object">ags_server_create_object</link>            (<parameter><link linkend="xmlrpc-env"><type>xmlrpc_env</type></link> *env</parameter>,
-                                                         <parameter><link linkend="xmlrpc-value"><type>xmlrpc_value</type></link> *param_array</parameter>,
-                                                         <parameter><link linkend="void"><type>void</type></link> *server_info</parameter>);
-<link linkend="AgsServer"><returnvalue>AgsServer</returnvalue></link> *         <link linkend="ags-server-lookup">ags_server_lookup</link>                   (<parameter><link linkend="void"><type>void</type></link> *server_info</parameter>);
-<link linkend="AgsServer"><returnvalue>AgsServer</returnvalue></link> *         <link linkend="ags-server-new">ags_server_new</link>                      (<parameter><link linkend="GObject"><type>GObject</type></link> *main</parameter>);
-<link linkend="xmlrpc-value"><returnvalue>xmlrpc_value</returnvalue></link> *      <link linkend="ags-server-object-set-property">ags_server_object_set_property</link>      (<parameter><link linkend="xmlrpc-env"><type>xmlrpc_env</type></link> *env</parameter>,
-                                                         <parameter><link linkend="xmlrpc-value"><type>xmlrpc_value</type></link> *param_array</parameter>,
-                                                         <parameter><link linkend="void"><type>void</type></link> *server_info</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-server-start">ags_server_start</link>                    (<parameter><link linkend="AgsServer"><type>AgsServer</type></link> *server</parameter>);
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsServer.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsServer.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AgsServer" role="struct">
-<title>struct AgsServer</title>
-<indexterm zone="AgsServer"><primary>AgsServer</primary></indexterm>
-<programlisting>struct AgsServer {
-  GObject object;
+<refsect1 id="AgsServer.properties" role="properties">
+<title role="properties.title">Properties</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="properties_type" colwidth="150px"/>
+<colspec colname="properties_name" colwidth="300px"/>
+<colspec colname="properties_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="property_type"><link linkend="AgsApplicationContext"><type>AgsApplicationContext</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsServer--application-context">application-context</link></entry><entry role="property_flags">Read / Write</entry></row>
 
-  guint flags;
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsServer.signals" role="signal_proto">
+<title role="signal_proto.title">Signals</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="signals_return" colwidth="150px"/>
+<colspec colname="signals_name" colwidth="300px"/>
+<colspec colname="signals_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsServer-start">start</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
 
-#ifdef AGS_WITH_XMLRPC_C
-  TServer abyss_server;
-  TSocket *socket;
-#endif
-  int socket_fd;
-  struct sockaddr_in address;
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsServer.other" role="other_proto">
+<title role="other_proto.title">Types and Values</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="name" colwidth="150px"/>
+<colspec colname="description"/>
+<tbody>
+<row><entry role="datatype_keyword">enum</entry><entry role="function_name"><link linkend="AgsServerFlags">AgsServerFlags</link></entry></row>
 
-  void *server_info;
-  
-  GObject *main;
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsServer.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsServer
+</screen>
+</refsect1>
 
-  AgsRegistry *registry;
-  AgsRemoteTask *remote_task;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsServerClass" role="struct">
-<title>struct AgsServerClass</title>
-<indexterm zone="AgsServerClass"><primary>AgsServerClass</primary></indexterm>
-<programlisting>struct AgsServerClass {
-  GObjectClass object;
-  
-  void (*start)(AgsServer *server);
-};
-</programlisting>
-<para>
-</para></refsect2>
+
+<refsect1 id="AgsServer.description" role="desc">
+<title role="desc.title">Description</title>
+
+</refsect1>
+<refsect1 id="AgsServer.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-server-start" role="function">
+<title>ags_server_start&#160;()</title>
+<indexterm zone="ags-server-start"><primary>ags_server_start</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_server_start (<parameter><link linkend="AgsServer"><type>AgsServer</type></link> *server</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-server-lookup" role="function">
+<title>ags_server_lookup&#160;()</title>
+<indexterm zone="ags-server-lookup"><primary>ags_server_lookup</primary></indexterm>
+<programlisting language="C"><link linkend="AgsServer"><returnvalue>AgsServer</returnvalue></link>&#160;*
+ags_server_lookup (<parameter><link linkend="void"><type>void</type></link> *server_info</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-server-create-object" role="function">
+<title>ags_server_create_object&#160;()</title>
+<indexterm zone="ags-server-create-object"><primary>ags_server_create_object</primary></indexterm>
+<programlisting language="C"><link linkend="xmlrpc-value"><returnvalue>xmlrpc_value</returnvalue></link>&#160;*
+ags_server_create_object (<parameter><link linkend="xmlrpc-env"><type>xmlrpc_env</type></link> *env</parameter>,
+                          <parameter><link linkend="xmlrpc-value"><type>xmlrpc_value</type></link> *param_array</parameter>,
+                          <parameter><link linkend="void"><type>void</type></link> *server_info</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-server-object-set-property" role="function">
+<title>ags_server_object_set_property&#160;()</title>
+<indexterm zone="ags-server-object-set-property"><primary>ags_server_object_set_property</primary></indexterm>
+<programlisting language="C"><link linkend="xmlrpc-value"><returnvalue>xmlrpc_value</returnvalue></link>&#160;*
+ags_server_object_set_property (<parameter><link linkend="xmlrpc-env"><type>xmlrpc_env</type></link> *env</parameter>,
+                                <parameter><link linkend="xmlrpc-value"><type>xmlrpc_value</type></link> *param_array</parameter>,
+                                <parameter><link linkend="void"><type>void</type></link> *server_info</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-server-new" role="function">
+<title>ags_server_new&#160;()</title>
+<indexterm zone="ags-server-new"><primary>ags_server_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsServer"><returnvalue>AgsServer</returnvalue></link>&#160;*
+ags_server_new (<parameter><link linkend="GObject"><type>GObject</type></link> *application_context</parameter>);</programlisting>
+</refsect2>
+
+</refsect1>
+<refsect1 id="AgsServer.other_details" role="details">
+<title role="details.title">Types and Values</title>
 <refsect2 id="AgsServerFlags" role="enum">
 <title>enum AgsServerFlags</title>
 <indexterm zone="AgsServerFlags"><primary>AgsServerFlags</primary></indexterm>
-<programlisting>typedef enum {
-  AGS_SERVER_STARTED        = 1,
-  AGS_SERVER_RUNNING        = 1 &lt;&lt; 1,
-} AgsServerFlags;
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-server-create-object" role="function">
-<title>ags_server_create_object ()</title>
-<indexterm zone="ags-server-create-object"><primary>ags_server_create_object</primary></indexterm>
-<programlisting><link linkend="xmlrpc-value"><returnvalue>xmlrpc_value</returnvalue></link> *      ags_server_create_object            (<parameter><link linkend="xmlrpc-env"><type>xmlrpc_env</type></link> *env</parameter>,
-                                                         <parameter><link linkend="xmlrpc-value"><type>xmlrpc_value</type></link> *param_array</parameter>,
-                                                         <parameter><link linkend="void"><type>void</type></link> *server_info</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-server-lookup" role="function">
-<title>ags_server_lookup ()</title>
-<indexterm zone="ags-server-lookup"><primary>ags_server_lookup</primary></indexterm>
-<programlisting><link linkend="AgsServer"><returnvalue>AgsServer</returnvalue></link> *         ags_server_lookup                   (<parameter><link linkend="void"><type>void</type></link> *server_info</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-server-new" role="function">
-<title>ags_server_new ()</title>
-<indexterm zone="ags-server-new"><primary>ags_server_new</primary></indexterm>
-<programlisting><link linkend="AgsServer"><returnvalue>AgsServer</returnvalue></link> *         ags_server_new                      (<parameter><link linkend="GObject"><type>GObject</type></link> *main</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-server-object-set-property" role="function">
-<title>ags_server_object_set_property ()</title>
-<indexterm zone="ags-server-object-set-property"><primary>ags_server_object_set_property</primary></indexterm>
-<programlisting><link linkend="xmlrpc-value"><returnvalue>xmlrpc_value</returnvalue></link> *      ags_server_object_set_property      (<parameter><link linkend="xmlrpc-env"><type>xmlrpc_env</type></link> *env</parameter>,
-                                                         <parameter><link linkend="xmlrpc-value"><type>xmlrpc_value</type></link> *param_array</parameter>,
-                                                         <parameter><link linkend="void"><type>void</type></link> *server_info</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-server-start" role="function">
-<title>ags_server_start ()</title>
-<indexterm zone="ags-server-start"><primary>ags_server_start</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_server_start                    (<parameter><link linkend="AgsServer"><type>AgsServer</type></link> *server</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<refsect3 role="enum_members">
+<title>Members</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="enum_members_name" colwidth="300px"/>
+<colspec colname="enum_members_description"/>
+<colspec colname="enum_members_annotations" colwidth="200px"/>
+<tbody>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-SERVER-STARTED:CAPS">AGS_SERVER_STARTED</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-SERVER-RUNNING:CAPS">AGS_SERVER_RUNNING</para></entry>
+<entry /><entry />
+</row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
 
+</refsect1>
+<refsect1 id="AgsServer.property-details" role="property_details">
+<title role="property_details.title">Property Details</title>
+<refsect2 id="AgsServer--application-context" role="property"><title>The <literal>“application-context”</literal> property</title>
+<indexterm zone="AgsServer--application-context" role="0.4.0"><primary>AgsServer:application-context</primary></indexterm>
+<programlisting>  “application-context”      <link linkend="AgsApplicationContext"><type>AgsApplicationContext</type></link>&#160;*</programlisting>
+<para>The assigned <link linkend="AgsApplicationContext"><type>AgsApplicationContext</type></link></para>
+<para>Flags: Read / Write</para>
+<para role="since">Since 0.4.0</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsServer.signal-details" role="signals">
+<title role="signals.title">Signal Details</title>
+<refsect2 id="AgsServer-start" role="signal"><title>The <literal>“start”</literal> signal</title>
+<indexterm zone="AgsServer-start"><primary>AgsServer::start</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsServer"><type>AgsServer</type></link> *agsserver,
+               <link linkend="gpointer"><type>gpointer</type></link>   user_data)</programlisting>
+<para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2>
 </refsect1>
 
 </refentry>

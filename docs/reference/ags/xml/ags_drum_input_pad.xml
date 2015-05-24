@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsDrumInputPad">
+<refentry id="AgsDrumInputPad">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsDrumInputPad.top_of_page">AgsDrumInputPad</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsDrumInputPad.top_of_page">AgsDrumInputPad</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -14,75 +14,103 @@
 </refmeta>
 <refnamediv>
 <refname>AgsDrumInputPad</refname>
-<refpurpose></refpurpose>
+<refpurpose>drum sequencer input pad</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsDrumInputPad.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsDrumInputPad.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="AgsDrumInputPad"><returnvalue>AgsDrumInputPad</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-drum-input-pad-new">ags_drum_input_pad_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>struct              <link linkend="AgsDrumInputPad">AgsDrumInputPad</link>;
-struct              <link linkend="AgsDrumInputPadClass">AgsDrumInputPadClass</link>;
-enum                <link linkend="AgsDrumInputPadFlags">AgsDrumInputPadFlags</link>;
-<link linkend="AgsDrumInputPad"><returnvalue>AgsDrumInputPad</returnvalue></link> *   <link linkend="ags-drum-input-pad-new">ags_drum_input_pad_new</link>              (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>);
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsDrumInputPad.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsDrumInputPad.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AgsDrumInputPad" role="struct">
-<title>struct AgsDrumInputPad</title>
-<indexterm zone="AgsDrumInputPad"><primary>AgsDrumInputPad</primary></indexterm>
-<programlisting>struct AgsDrumInputPad {
-  AgsPad pad;
+<refsect1 id="AgsDrumInputPad.other" role="other_proto">
+<title role="other_proto.title">Types and Values</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="name" colwidth="150px"/>
+<colspec colname="description"/>
+<tbody>
+<row><entry role="datatype_keyword">enum</entry><entry role="function_name"><link linkend="AgsDrumInputPadFlags">AgsDrumInputPadFlags</link></entry></row>
 
-  guint flags;
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsDrumInputPad.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GInitiallyUnowned">GInitiallyUnowned</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkObject">GtkObject</link>
+            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkWidget">GtkWidget</link>
+                <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkContainer">GtkContainer</link>
+                    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkBox">GtkBox</link>
+                        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkVBox">GtkVBox</link>
+                            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsPad">AgsPad</link>
+                                <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsDrumInputPad
+</screen>
+</refsect1>
 
-  gchar *name;
-  gchar *xml_type;
+<refsect1 id="AgsDrumInputPad.includes"><title>Includes</title><synopsis>#include &lt;ags/X/machine/ags_drum_input_pad.h&gt;
+</synopsis></refsect1>
 
-  GtkButton *open;
-  GtkToggleButton *play;
-  GtkToggleButton *edit;
+<refsect1 id="AgsDrumInputPad.description" role="desc">
+<title role="desc.title">Description</title>
+<para>The <link linkend="AgsDrumInputPad"><type>AgsDrumInputPad</type></link> is a composite widget to act as drum sequencer input pad.</para>
 
-  GList *pad_open_recalls;
-  guint pad_open_play_ref;
+</refsect1>
+<refsect1 id="AgsDrumInputPad.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-drum-input-pad-new" role="function" condition="since:0.4">
+<title>ags_drum_input_pad_new&#160;()</title>
+<indexterm zone="ags-drum-input-pad-new" role="0.4"><primary>ags_drum_input_pad_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsDrumInputPad"><returnvalue>AgsDrumInputPad</returnvalue></link>&#160;*
+ags_drum_input_pad_new (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>);</programlisting>
+<para>Creates an <link linkend="AgsDrumInputPad"><type>AgsDrumInputPad</type></link></para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>channel</para></entry>
+<entry role="parameter_description"><para>the assigned channel</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> a new <link linkend="AgsDrumInputPad"><type>AgsDrumInputPad</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
 
-  GtkFileChooserDialog *file_chooser;
-
-  guint pad_play_ref;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsDrumInputPadClass" role="struct">
-<title>struct AgsDrumInputPadClass</title>
-<indexterm zone="AgsDrumInputPadClass"><primary>AgsDrumInputPadClass</primary></indexterm>
-<programlisting>struct AgsDrumInputPadClass {
-  AgsPadClass pad;
-};
-</programlisting>
-<para>
-</para></refsect2>
+</refsect1>
+<refsect1 id="AgsDrumInputPad.other_details" role="details">
+<title role="details.title">Types and Values</title>
 <refsect2 id="AgsDrumInputPadFlags" role="enum">
 <title>enum AgsDrumInputPadFlags</title>
 <indexterm zone="AgsDrumInputPadFlags"><primary>AgsDrumInputPadFlags</primary></indexterm>
-<programlisting>typedef enum {
-  AGS_DRUM_INPUT_PAD_OPEN_PLAY_DONE   = 1,
-} AgsDrumInputPadFlags;
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-drum-input-pad-new" role="function">
-<title>ags_drum_input_pad_new ()</title>
-<indexterm zone="ags-drum-input-pad-new"><primary>ags_drum_input_pad_new</primary></indexterm>
-<programlisting><link linkend="AgsDrumInputPad"><returnvalue>AgsDrumInputPad</returnvalue></link> *   ags_drum_input_pad_new              (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<refsect3 role="enum_members">
+<title>Members</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="enum_members_name" colwidth="300px"/>
+<colspec colname="enum_members_description"/>
+<colspec colname="enum_members_annotations" colwidth="200px"/>
+<tbody>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-DRUM-INPUT-PAD-OPEN-PLAY-DONE:CAPS">AGS_DRUM_INPUT_PAD_OPEN_PLAY_DONE</para></entry>
+<entry /><entry />
+</row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
 
 </refsect1>
 

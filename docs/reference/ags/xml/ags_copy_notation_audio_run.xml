@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsCopyNotationAudioRun">
+<refentry id="AgsCopyNotationAudioRun">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsCopyNotationAudioRun.top_of_page">AgsCopyNotationAudioRun</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsCopyNotationAudioRun.top_of_page">AgsCopyNotationAudioRun</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -14,57 +14,80 @@
 </refmeta>
 <refnamediv>
 <refname>AgsCopyNotationAudioRun</refname>
-<refpurpose></refpurpose>
+<refpurpose>copy notations</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsCopyNotationAudioRun.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsCopyNotationAudioRun.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="AgsCopyNotationAudioRun"><returnvalue>AgsCopyNotationAudioRun</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-copy-notation-audio-run-new">ags_copy_notation_audio_run_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>struct              <link linkend="AgsCopyNotationAudioRun">AgsCopyNotationAudioRun</link>;
-struct              <link linkend="AgsCopyNotationAudioRunClass">AgsCopyNotationAudioRunClass</link>;
-<link linkend="AgsCopyNotationAudioRun"><returnvalue>AgsCopyNotationAudioRun</returnvalue></link> * <link linkend="ags-copy-notation-audio-run-new">ags_copy_notation_audio_run_new</link>
-                                                        (<parameter><link linkend="AgsCountBeatsAudioRun"><type>AgsCountBeatsAudioRun</type></link> *count_beats_audio_run</parameter>);
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsCopyNotationAudioRun.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsCopyNotationAudioRun.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AgsCopyNotationAudioRun" role="struct">
-<title>struct AgsCopyNotationAudioRun</title>
-<indexterm zone="AgsCopyNotationAudioRun"><primary>AgsCopyNotationAudioRun</primary></indexterm>
-<programlisting>struct AgsCopyNotationAudioRun {
-  AgsRecallAudioRun recall_audio_run;
+<refsect1 id="AgsCopyNotationAudioRun.properties" role="properties">
+<title role="properties.title">Properties</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="properties_type" colwidth="150px"/>
+<colspec colname="properties_name" colwidth="300px"/>
+<colspec colname="properties_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="property_type"><link linkend="AgsCountBeatsAudioRun"><type>AgsCountBeatsAudioRun</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsCopyNotationAudioRun--count-beats-audio-run">count-beats-audio-run</link></entry><entry role="property_flags">Read / Write</entry></row>
 
-  AgsCountBeatsAudioRun *count_beats_audio_run;
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsCopyNotationAudioRun.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsRecall">AgsRecall</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsRecallAudioRun">AgsRecallAudioRun</link>
+            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsCopyNotationAudioRun
+</screen>
+</refsect1>
 
-  gulong tic_alloc_input_handler;
+<refsect1 id="AgsCopyNotationAudioRun.includes"><title>Includes</title><synopsis>#include &lt;ags/audio/recall/ags_copy_notation_audio_run.h&gt;
+</synopsis></refsect1>
 
-  GList *current_note;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsCopyNotationAudioRunClass" role="struct">
-<title>struct AgsCopyNotationAudioRunClass</title>
-<indexterm zone="AgsCopyNotationAudioRunClass"><primary>AgsCopyNotationAudioRunClass</primary></indexterm>
-<programlisting>struct AgsCopyNotationAudioRunClass {
-  AgsRecallAudioRunClass recall_audio_run;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-copy-notation-audio-run-new" role="function">
-<title>ags_copy_notation_audio_run_new ()</title>
-<indexterm zone="ags-copy-notation-audio-run-new"><primary>ags_copy_notation_audio_run_new</primary></indexterm>
-<programlisting><link linkend="AgsCopyNotationAudioRun"><returnvalue>AgsCopyNotationAudioRun</returnvalue></link> * ags_copy_notation_audio_run_new
-                                                        (<parameter><link linkend="AgsCountBeatsAudioRun"><type>AgsCountBeatsAudioRun</type></link> *count_beats_audio_run</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<refsect1 id="AgsCopyNotationAudioRun.description" role="desc">
+<title role="desc.title">Description</title>
+<para>The <link linkend="AgsCopyNotationAudioRun"><type>AgsCopyNotationAudioRun</type></link> class copy notations.</para>
+
+</refsect1>
+<refsect1 id="AgsCopyNotationAudioRun.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-copy-notation-audio-run-new" role="function" condition="since:0.4">
+<title>ags_copy_notation_audio_run_new&#160;()</title>
+<indexterm zone="ags-copy-notation-audio-run-new" role="0.4"><primary>ags_copy_notation_audio_run_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsCopyNotationAudioRun"><returnvalue>AgsCopyNotationAudioRun</returnvalue></link>&#160;*
+ags_copy_notation_audio_run_new (<parameter><link linkend="AgsCountBeatsAudioRun"><type>AgsCountBeatsAudioRun</type></link> *count_beats_audio_run</parameter>);</programlisting>
+<para>Creates an <link linkend="AgsCopyNotationAudioRun"><type>AgsCopyNotationAudioRun</type></link></para>
+<refsect3 role="returns">
+<title>Returns</title>
+<para> a new <link linkend="AgsCopyNotationAudioRun"><type>AgsCopyNotationAudioRun</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsCopyNotationAudioRun.other_details" role="details">
+<title role="details.title">Types and Values</title>
+
+</refsect1>
+<refsect1 id="AgsCopyNotationAudioRun.property-details" role="property_details">
+<title role="property_details.title">Property Details</title>
+<refsect2 id="AgsCopyNotationAudioRun--count-beats-audio-run" role="property"><title>The <literal>“count-beats-audio-run”</literal> property</title>
+<indexterm zone="AgsCopyNotationAudioRun--count-beats-audio-run"><primary>AgsCopyNotationAudioRun:count-beats-audio-run</primary></indexterm>
+<programlisting>  “count-beats-audio-run”    <link linkend="AgsCountBeatsAudioRun"><type>AgsCountBeatsAudioRun</type></link>&#160;*</programlisting>
+<para>The AgsCountBeatsAudioRun which emits beat signal.</para><para>Flags: Read / Write</para>
+</refsect2>
 
 </refsect1>
 

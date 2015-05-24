@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsPluginPreferences">
+<refentry id="AgsPluginPreferences">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsPluginPreferences.top_of_page">AgsPluginPreferences</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsPluginPreferences.top_of_page">AgsPluginPreferences</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -14,71 +14,91 @@
 </refmeta>
 <refnamediv>
 <refname>AgsPluginPreferences</refname>
-<refpurpose></refpurpose>
+<refpurpose>A composite widget to do plugin related preferences</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsPluginPreferences.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsPluginPreferences.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="AgsLadspaPluginPreferences"><returnvalue>AgsLadspaPluginPreferences</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-ladspa-plugin-preferences-alloc">ags_ladspa_plugin_preferences_alloc</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsPluginPreferences"><returnvalue>AgsPluginPreferences</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-plugin-preferences-new">ags_plugin_preferences_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>struct              <link linkend="AgsLadspaPluginPreferences">AgsLadspaPluginPreferences</link>;
-struct              <link linkend="AgsPluginPreferences">AgsPluginPreferences</link>;
-struct              <link linkend="AgsPluginPreferencesClass">AgsPluginPreferencesClass</link>;
-<link linkend="AgsLadspaPluginPreferences"><returnvalue>AgsLadspaPluginPreferences</returnvalue></link> * <link linkend="ags-ladspa-plugin-preferences-alloc">ags_ladspa_plugin_preferences_alloc</link>
-                                                        ();
-<link linkend="AgsPluginPreferences"><returnvalue>AgsPluginPreferences</returnvalue></link> * <link linkend="ags-plugin-preferences-new">ags_plugin_preferences_new</link>       ();
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsPluginPreferences.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsPluginPreferences.details" role="details">
-<title role="details.title">Details</title>
+<refsect1 id="AgsPluginPreferences.other" role="other_proto">
+<title role="other_proto.title">Types and Values</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="name" colwidth="150px"/>
+<colspec colname="description"/>
+<tbody>
+<row><entry role="datatype_keyword">struct</entry><entry role="function_name"><link linkend="AgsLadspaPluginPreferences">AgsLadspaPluginPreferences</link></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsPluginPreferences.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GInitiallyUnowned">GInitiallyUnowned</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkObject">GtkObject</link>
+            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkWidget">GtkWidget</link>
+                <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkContainer">GtkContainer</link>
+                    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkBox">GtkBox</link>
+                        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkVBox">GtkVBox</link>
+                            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsPluginPreferences
+</screen>
+</refsect1>
+
+<refsect1 id="AgsPluginPreferences.includes"><title>Includes</title><synopsis>#include &lt;ags/X/ags_plugin_preferences.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsPluginPreferences.description" role="desc">
+<title role="desc.title">Description</title>
+<para><link linkend="AgsPluginPreferences"><type>AgsPluginPreferences</type></link> enables you to make plugin related preferences.</para>
+
+</refsect1>
+<refsect1 id="AgsPluginPreferences.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-ladspa-plugin-preferences-alloc" role="function">
+<title>ags_ladspa_plugin_preferences_alloc&#160;()</title>
+<indexterm zone="ags-ladspa-plugin-preferences-alloc"><primary>ags_ladspa_plugin_preferences_alloc</primary></indexterm>
+<programlisting language="C"><link linkend="AgsLadspaPluginPreferences"><returnvalue>AgsLadspaPluginPreferences</returnvalue></link>&#160;*
+ags_ladspa_plugin_preferences_alloc ();</programlisting>
+</refsect2>
+<refsect2 id="ags-plugin-preferences-new" role="function" condition="since:0.4">
+<title>ags_plugin_preferences_new&#160;()</title>
+<indexterm zone="ags-plugin-preferences-new" role="0.4"><primary>ags_plugin_preferences_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsPluginPreferences"><returnvalue>AgsPluginPreferences</returnvalue></link>&#160;*
+ags_plugin_preferences_new ();</programlisting>
+<para>Creates an <link linkend="AgsPluginPreferences"><type>AgsPluginPreferences</type></link></para>
+<refsect3 role="returns">
+<title>Returns</title>
+<para> a new <link linkend="AgsPluginPreferences"><type>AgsPluginPreferences</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsPluginPreferences.other_details" role="details">
+<title role="details.title">Types and Values</title>
 <refsect2 id="AgsLadspaPluginPreferences" role="struct">
 <title>struct AgsLadspaPluginPreferences</title>
 <indexterm zone="AgsLadspaPluginPreferences"><primary>AgsLadspaPluginPreferences</primary></indexterm>
-<programlisting>struct AgsLadspaPluginPreferences {
+<programlisting language="C">struct AgsLadspaPluginPreferences {
   GtkEntry *ladspa_path;
   GtkCellView *plugin_file;
 };
 </programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsPluginPreferences" role="struct">
-<title>struct AgsPluginPreferences</title>
-<indexterm zone="AgsPluginPreferences"><primary>AgsPluginPreferences</primary></indexterm>
-<programlisting>struct AgsPluginPreferences {
-  GtkVBox vbox;
-
-  AgsLadspaPluginPreferences *ladspa_plugin_preferencens;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsPluginPreferencesClass" role="struct">
-<title>struct AgsPluginPreferencesClass</title>
-<indexterm zone="AgsPluginPreferencesClass"><primary>AgsPluginPreferencesClass</primary></indexterm>
-<programlisting>struct AgsPluginPreferencesClass {
-  GtkVBoxClass vbox;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-ladspa-plugin-preferences-alloc" role="function">
-<title>ags_ladspa_plugin_preferences_alloc ()</title>
-<indexterm zone="ags-ladspa-plugin-preferences-alloc"><primary>ags_ladspa_plugin_preferences_alloc</primary></indexterm>
-<programlisting><link linkend="AgsLadspaPluginPreferences"><returnvalue>AgsLadspaPluginPreferences</returnvalue></link> * ags_ladspa_plugin_preferences_alloc
-                                                        ();</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-plugin-preferences-new" role="function">
-<title>ags_plugin_preferences_new ()</title>
-<indexterm zone="ags-plugin-preferences-new"><primary>ags_plugin_preferences_new</primary></indexterm>
-<programlisting><link linkend="AgsPluginPreferences"><returnvalue>AgsPluginPreferences</returnvalue></link> * ags_plugin_preferences_new       ();</programlisting>
-<para>
-</para></refsect2>
+</refsect2>
 
 </refsect1>
 

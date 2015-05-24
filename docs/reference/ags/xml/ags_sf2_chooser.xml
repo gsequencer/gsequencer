@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsSF2Chooser">
+<refentry id="AgsSF2Chooser">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsSF2Chooser.top_of_page">AgsSF2Chooser</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsSF2Chooser.top_of_page">AgsSF2Chooser</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -17,77 +17,98 @@
 <refpurpose></refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsSF2Chooser.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsSF2Chooser.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-sf2-chooser-open">ags_sf2_chooser_open</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-sf2-chooser-completed">ags_sf2_chooser_completed</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-sf2-chooser-remove-all-from-combo">ags_sf2_chooser_remove_all_from_combo</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsSF2Chooser"><returnvalue>AgsSF2Chooser</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-sf2-chooser-new">ags_sf2_chooser_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>struct              <link linkend="AgsSF2Chooser">AgsSF2Chooser</link>;
-struct              <link linkend="AgsSF2ChooserClass">AgsSF2ChooserClass</link>;
-<link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            <link linkend="ags-sf2-chooser-completed">ags_sf2_chooser_completed</link>           (<parameter><link linkend="AgsSF2Chooser"><type>AgsSF2Chooser</type></link> *sf2_chooser</parameter>);
-<link linkend="AgsSF2Chooser"><returnvalue>AgsSF2Chooser</returnvalue></link> *     <link linkend="ags-sf2-chooser-new">ags_sf2_chooser_new</link>                 ();
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-sf2-chooser-open">ags_sf2_chooser_open</link>                (<parameter><link linkend="AgsSF2Chooser"><type>AgsSF2Chooser</type></link> *sf2_chooser</parameter>,
-                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *filename</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-sf2-chooser-remove-all-from-combo">ags_sf2_chooser_remove_all_from_combo</link>
-                                                        (<parameter><link linkend="GtkComboBoxText"><type>GtkComboBoxText</type></link> *combo</parameter>);
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsSF2Chooser.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsSF2Chooser.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AgsSF2Chooser" role="struct">
-<title>struct AgsSF2Chooser</title>
-<indexterm zone="AgsSF2Chooser"><primary>AgsSF2Chooser</primary></indexterm>
-<programlisting>struct AgsSF2Chooser {
-  GtkVBox vbox;
+<refsect1 id="AgsSF2Chooser.properties" role="properties">
+<title role="properties.title">Properties</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="properties_type" colwidth="150px"/>
+<colspec colname="properties_name" colwidth="300px"/>
+<colspec colname="properties_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="property_type"><link linkend="AgsIpatch"><type>AgsIpatch</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsSF2Chooser--ipatch">ipatch</link></entry><entry role="property_flags">Read / Write</entry></row>
 
-  AgsIpatch *ipatch;
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsSF2Chooser.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GInitiallyUnowned">GInitiallyUnowned</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkObject">GtkObject</link>
+            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkWidget">GtkWidget</link>
+                <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkContainer">GtkContainer</link>
+                    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkBox">GtkBox</link>
+                        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkVBox">GtkVBox</link>
+                            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsSF2Chooser
+</screen>
+</refsect1>
 
-  GtkComboBoxText *preset;
-  GtkComboBoxText *instrument;
-  GtkComboBoxText *sample;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsSF2ChooserClass" role="struct">
-<title>struct AgsSF2ChooserClass</title>
-<indexterm zone="AgsSF2ChooserClass"><primary>AgsSF2ChooserClass</primary></indexterm>
-<programlisting>struct AgsSF2ChooserClass {
-  GtkVBoxClass vbox;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-sf2-chooser-completed" role="function">
-<title>ags_sf2_chooser_completed ()</title>
-<indexterm zone="ags-sf2-chooser-completed"><primary>ags_sf2_chooser_completed</primary></indexterm>
-<programlisting><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            ags_sf2_chooser_completed           (<parameter><link linkend="AgsSF2Chooser"><type>AgsSF2Chooser</type></link> *sf2_chooser</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-sf2-chooser-new" role="function">
-<title>ags_sf2_chooser_new ()</title>
-<indexterm zone="ags-sf2-chooser-new"><primary>ags_sf2_chooser_new</primary></indexterm>
-<programlisting><link linkend="AgsSF2Chooser"><returnvalue>AgsSF2Chooser</returnvalue></link> *     ags_sf2_chooser_new                 ();</programlisting>
-<para>
-</para></refsect2>
+
+<refsect1 id="AgsSF2Chooser.description" role="desc">
+<title role="desc.title">Description</title>
+
+</refsect1>
+<refsect1 id="AgsSF2Chooser.functions_details" role="details">
+<title role="details.title">Functions</title>
 <refsect2 id="ags-sf2-chooser-open" role="function">
-<title>ags_sf2_chooser_open ()</title>
+<title>ags_sf2_chooser_open&#160;()</title>
 <indexterm zone="ags-sf2-chooser-open"><primary>ags_sf2_chooser_open</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_sf2_chooser_open                (<parameter><link linkend="AgsSF2Chooser"><type>AgsSF2Chooser</type></link> *sf2_chooser</parameter>,
-                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *filename</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_sf2_chooser_open (<parameter><link linkend="AgsSF2Chooser"><type>AgsSF2Chooser</type></link> *sf2_chooser</parameter>,
+                      <parameter><link linkend="gchar"><type>gchar</type></link> *filename</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-sf2-chooser-completed" role="function">
+<title>ags_sf2_chooser_completed&#160;()</title>
+<indexterm zone="ags-sf2-chooser-completed"><primary>ags_sf2_chooser_completed</primary></indexterm>
+<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+ags_sf2_chooser_completed (<parameter><link linkend="AgsSF2Chooser"><type>AgsSF2Chooser</type></link> *sf2_chooser</parameter>);</programlisting>
+</refsect2>
 <refsect2 id="ags-sf2-chooser-remove-all-from-combo" role="function">
-<title>ags_sf2_chooser_remove_all_from_combo ()</title>
+<title>ags_sf2_chooser_remove_all_from_combo&#160;()</title>
 <indexterm zone="ags-sf2-chooser-remove-all-from-combo"><primary>ags_sf2_chooser_remove_all_from_combo</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_sf2_chooser_remove_all_from_combo
-                                                        (<parameter><link linkend="GtkComboBoxText"><type>GtkComboBoxText</type></link> *combo</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_sf2_chooser_remove_all_from_combo (<parameter><link linkend="GtkComboBoxText"><type>GtkComboBoxText</type></link> *combo</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-sf2-chooser-new" role="function">
+<title>ags_sf2_chooser_new&#160;()</title>
+<indexterm zone="ags-sf2-chooser-new"><primary>ags_sf2_chooser_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsSF2Chooser"><returnvalue>AgsSF2Chooser</returnvalue></link>&#160;*
+ags_sf2_chooser_new ();</programlisting>
+</refsect2>
+
+</refsect1>
+<refsect1 id="AgsSF2Chooser.other_details" role="details">
+<title role="details.title">Types and Values</title>
+
+</refsect1>
+<refsect1 id="AgsSF2Chooser.property-details" role="property_details">
+<title role="property_details.title">Property Details</title>
+<refsect2 id="AgsSF2Chooser--ipatch" role="property"><title>The <literal>“ipatch”</literal> property</title>
+<indexterm zone="AgsSF2Chooser--ipatch"><primary>AgsSF2Chooser:ipatch</primary></indexterm>
+<programlisting>  “ipatch”                   <link linkend="AgsIpatch"><type>AgsIpatch</type></link>&#160;*</programlisting>
+<para>The current AgsIpatch.</para><para>Flags: Read / Write</para>
+</refsect2>
 
 </refsect1>
 

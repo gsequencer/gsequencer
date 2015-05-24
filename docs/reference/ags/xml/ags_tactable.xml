@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsTactable">
+<refentry id="AgsTactable">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsTactable.top_of_page">AgsTactable</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsTactable.top_of_page">AgsTactable</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -14,86 +14,271 @@
 </refmeta>
 <refnamediv>
 <refname>AgsTactable</refname>
-<refpurpose></refpurpose>
+<refpurpose>Unique tempo set or attributes access</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsTactable.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsTactable.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-tactable-change-sequencer-duration">ags_tactable_change_sequencer_duration</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-tactable-change-notation-duration">ags_tactable_change_notation_duration</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-tactable-change-tact">ags_tactable_change_tact</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-tactable-change-bpm">ags_tactable_change_bpm</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>typedef             <link linkend="AgsTactable">AgsTactable</link>;
-struct              <link linkend="AgsTactableInterface">AgsTactableInterface</link>;
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-tactable-change-bpm">ags_tactable_change_bpm</link>             (<parameter><link linkend="AgsTactable"><type>AgsTactable</type></link> *tactable</parameter>,
-                                                         <parameter><link linkend="gdouble"><type>gdouble</type></link> bpm</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-tactable-change-notation-duration">ags_tactable_change_notation_duration</link>
-                                                        (<parameter><link linkend="AgsTactable"><type>AgsTactable</type></link> *tactable</parameter>,
-                                                         <parameter><link linkend="gdouble"><type>gdouble</type></link> duration</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-tactable-change-sequencer-duration">ags_tactable_change_sequencer_duration</link>
-                                                        (<parameter><link linkend="AgsTactable"><type>AgsTactable</type></link> *tactable</parameter>,
-                                                         <parameter><link linkend="gdouble"><type>gdouble</type></link> duration</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-tactable-change-tact">ags_tactable_change_tact</link>            (<parameter><link linkend="AgsTactable"><type>AgsTactable</type></link> *tactable</parameter>,
-                                                         <parameter><link linkend="gdouble"><type>gdouble</type></link> tact</parameter>);
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsTactable.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsTactable.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AgsTactable" role="typedef">
-<title>AgsTactable</title>
-<indexterm zone="AgsTactable"><primary>AgsTactable</primary></indexterm>
-<programlisting>typedef void AgsTactable;
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsTactableInterface" role="struct">
-<title>struct AgsTactableInterface</title>
-<indexterm zone="AgsTactableInterface"><primary>AgsTactableInterface</primary></indexterm>
-<programlisting>struct AgsTactableInterface {
-  GTypeInterface interface;
+<refsect1 id="AgsTactable.signals" role="signal_proto">
+<title role="signal_proto.title">Signals</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="signals_return" colwidth="150px"/>
+<colspec colname="signals_name" colwidth="300px"/>
+<colspec colname="signals_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsTactable-change-bpm">change-bpm</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsTactable-change-notation-duration">change-notation-duration</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsTactable-change-sequencer-duration">change-sequencer-duration</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsTactable-change-tact">change-tact</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
 
-  void (*change_sequencer_duration)(AgsTactable *tactable, gdouble duration);
-  void (*change_notation_duration)(AgsTactable *tactable, gdouble duration);
-  void (*change_tact)(AgsTactable *tactable, gdouble tact);
-  void (*change_bpm)(AgsTactable *tactable, gdouble bpm);
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-tactable-change-bpm" role="function">
-<title>ags_tactable_change_bpm ()</title>
-<indexterm zone="ags-tactable-change-bpm"><primary>ags_tactable_change_bpm</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_tactable_change_bpm             (<parameter><link linkend="AgsTactable"><type>AgsTactable</type></link> *tactable</parameter>,
-                                                         <parameter><link linkend="gdouble"><type>gdouble</type></link> bpm</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-tactable-change-notation-duration" role="function">
-<title>ags_tactable_change_notation_duration ()</title>
-<indexterm zone="ags-tactable-change-notation-duration"><primary>ags_tactable_change_notation_duration</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_tactable_change_notation_duration
-                                                        (<parameter><link linkend="AgsTactable"><type>AgsTactable</type></link> *tactable</parameter>,
-                                                         <parameter><link linkend="gdouble"><type>gdouble</type></link> duration</parameter>);</programlisting>
-<para>
-</para></refsect2>
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsTactable.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GInterface">GInterface</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsTactable
+</screen>
+</refsect1>
+
+<refsect1 id="AgsTactable.includes"><title>Includes</title><synopsis>#include &lt;ags/object/ags_tactable.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsTactable.description" role="desc">
+<title role="desc.title">Description</title>
+<para>The <link linkend="AgsTactable"><type>AgsTactable</type></link> interface gives you a unique access to modify tempo.</para>
+
+</refsect1>
+<refsect1 id="AgsTactable.functions_details" role="details">
+<title role="details.title">Functions</title>
 <refsect2 id="ags-tactable-change-sequencer-duration" role="function">
-<title>ags_tactable_change_sequencer_duration ()</title>
+<title>ags_tactable_change_sequencer_duration&#160;()</title>
 <indexterm zone="ags-tactable-change-sequencer-duration"><primary>ags_tactable_change_sequencer_duration</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_tactable_change_sequencer_duration
-                                                        (<parameter><link linkend="AgsTactable"><type>AgsTactable</type></link> *tactable</parameter>,
-                                                         <parameter><link linkend="gdouble"><type>gdouble</type></link> duration</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_tactable_change_sequencer_duration
+                               (<parameter><link linkend="AgsTactable"><type>AgsTactable</type></link> *tactable</parameter>,
+                                <parameter><link linkend="gdouble"><type>gdouble</type></link> duration</parameter>);</programlisting>
+<para>Sequencer duration changed.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>tactable</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsTactable"><type>AgsTactable</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>duration</para></entry>
+<entry role="parameter_description"><para>the duration</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
+<refsect2 id="ags-tactable-change-notation-duration" role="function">
+<title>ags_tactable_change_notation_duration&#160;()</title>
+<indexterm zone="ags-tactable-change-notation-duration"><primary>ags_tactable_change_notation_duration</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_tactable_change_notation_duration (<parameter><link linkend="AgsTactable"><type>AgsTactable</type></link> *tactable</parameter>,
+                                       <parameter><link linkend="gdouble"><type>gdouble</type></link> duration</parameter>);</programlisting>
+<para>Notation duration changed.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>tactable</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsTactable"><type>AgsTactable</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>duration</para></entry>
+<entry role="parameter_description"><para>the duration</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
 <refsect2 id="ags-tactable-change-tact" role="function">
-<title>ags_tactable_change_tact ()</title>
+<title>ags_tactable_change_tact&#160;()</title>
 <indexterm zone="ags-tactable-change-tact"><primary>ags_tactable_change_tact</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_tactable_change_tact            (<parameter><link linkend="AgsTactable"><type>AgsTactable</type></link> *tactable</parameter>,
-                                                         <parameter><link linkend="gdouble"><type>gdouble</type></link> tact</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_tactable_change_tact (<parameter><link linkend="AgsTactable"><type>AgsTactable</type></link> *tactable</parameter>,
+                          <parameter><link linkend="gdouble"><type>gdouble</type></link> tact</parameter>);</programlisting>
+<para>Tact changed.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>tactable</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsTactable"><type>AgsTactable</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>tact</para></entry>
+<entry role="parameter_description"><para>the tact</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
+<refsect2 id="ags-tactable-change-bpm" role="function">
+<title>ags_tactable_change_bpm&#160;()</title>
+<indexterm zone="ags-tactable-change-bpm"><primary>ags_tactable_change_bpm</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_tactable_change_bpm (<parameter><link linkend="AgsTactable"><type>AgsTactable</type></link> *tactable</parameter>,
+                         <parameter><link linkend="gdouble"><type>gdouble</type></link> bpm</parameter>);</programlisting>
+<para>Bpm changed.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>tactable</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsTactable"><type>AgsTactable</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>bpm</para></entry>
+<entry role="parameter_description"><para>the bpm</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
 
+</refsect1>
+<refsect1 id="AgsTactable.other_details" role="details">
+<title role="details.title">Types and Values</title>
+
+</refsect1>
+<refsect1 id="AgsTactable.signal-details" role="signals">
+<title role="signals.title">Signal Details</title>
+<refsect2 id="AgsTactable-change-bpm" role="signal"><title>The <literal>“change-bpm”</literal> signal</title>
+<indexterm zone="AgsTactable-change-bpm"><primary>AgsTactable::change-bpm</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsTactable"><type>AgsTactable</type></link> *tactable,
+               <link linkend="gdouble"><type>gdouble</type></link>      duration,
+               <link linkend="gpointer"><type>gpointer</type></link>     user_data)</programlisting>
+<para>The ::change-bpm signal notifies about changed bpm.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>tactable</para></entry>
+<entry role="parameter_description"><para>the object</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>duration</para></entry>
+<entry role="parameter_description"><para>new duration</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsTactable-change-notation-duration" role="signal"><title>The <literal>“change-notation-duration”</literal> signal</title>
+<indexterm zone="AgsTactable-change-notation-duration"><primary>AgsTactable::change-notation-duration</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsTactable"><type>AgsTactable</type></link> *tactable,
+               <link linkend="gdouble"><type>gdouble</type></link>      duration,
+               <link linkend="gpointer"><type>gpointer</type></link>     user_data)</programlisting>
+<para>The ::change-notation-duration signal notifies about changed duration
+of notation.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>tactable</para></entry>
+<entry role="parameter_description"><para>the object</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>duration</para></entry>
+<entry role="parameter_description"><para>new duration</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsTactable-change-sequencer-duration" role="signal"><title>The <literal>“change-sequencer-duration”</literal> signal</title>
+<indexterm zone="AgsTactable-change-sequencer-duration"><primary>AgsTactable::change-sequencer-duration</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsTactable"><type>AgsTactable</type></link> *tactable,
+               <link linkend="gdouble"><type>gdouble</type></link>      duration,
+               <link linkend="gpointer"><type>gpointer</type></link>     user_data)</programlisting>
+<para>The ::change-sequencer-duration signal notifies about changed duration
+of sequencer.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>tactable</para></entry>
+<entry role="parameter_description"><para>the object</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>duration</para></entry>
+<entry role="parameter_description"><para>new duration</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsTactable-change-tact" role="signal"><title>The <literal>“change-tact”</literal> signal</title>
+<indexterm zone="AgsTactable-change-tact"><primary>AgsTactable::change-tact</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsTactable"><type>AgsTactable</type></link> *tactable,
+               <link linkend="gdouble"><type>gdouble</type></link>      tact,
+               <link linkend="gpointer"><type>gpointer</type></link>     user_data)</programlisting>
+<para>The ::change-tact signal notifies about changed tact.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>tactable</para></entry>
+<entry role="parameter_description"><para>the object</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>tact</para></entry>
+<entry role="parameter_description"><para>new tact</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2>
 </refsect1>
 
 </refentry>

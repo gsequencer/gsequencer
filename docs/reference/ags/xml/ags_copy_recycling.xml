@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsCopyRecycling">
+<refentry id="AgsCopyRecycling">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsCopyRecycling.top_of_page">AgsCopyRecycling</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsCopyRecycling.top_of_page">AgsCopyRecycling</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -14,53 +14,77 @@
 </refmeta>
 <refnamediv>
 <refname>AgsCopyRecycling</refname>
-<refpurpose></refpurpose>
+<refpurpose>copys recycling</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsCopyRecycling.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsCopyRecycling.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="AgsCopyRecycling"><returnvalue>AgsCopyRecycling</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-copy-recycling-new">ags_copy_recycling_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>struct              <link linkend="AgsCopyRecycling">AgsCopyRecycling</link>;
-struct              <link linkend="AgsCopyRecyclingClass">AgsCopyRecyclingClass</link>;
-<link linkend="AgsCopyRecycling"><returnvalue>AgsCopyRecycling</returnvalue></link> *  <link linkend="ags-copy-recycling-new">ags_copy_recycling_new</link>              (<parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *destination</parameter>,
-                                                         <parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *source</parameter>,
-                                                         <parameter><link linkend="AgsDevout"><type>AgsDevout</type></link> *devout</parameter>);
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsCopyRecycling.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsCopyRecycling.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AgsCopyRecycling" role="struct">
-<title>struct AgsCopyRecycling</title>
-<indexterm zone="AgsCopyRecycling"><primary>AgsCopyRecycling</primary></indexterm>
-<programlisting>struct AgsCopyRecycling {
-  AgsRecallRecycling recall_recycling;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsCopyRecyclingClass" role="struct">
-<title>struct AgsCopyRecyclingClass</title>
-<indexterm zone="AgsCopyRecyclingClass"><primary>AgsCopyRecyclingClass</primary></indexterm>
-<programlisting>struct AgsCopyRecyclingClass {
-  AgsRecallRecyclingClass recall_recycling;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-copy-recycling-new" role="function">
-<title>ags_copy_recycling_new ()</title>
-<indexterm zone="ags-copy-recycling-new"><primary>ags_copy_recycling_new</primary></indexterm>
-<programlisting><link linkend="AgsCopyRecycling"><returnvalue>AgsCopyRecycling</returnvalue></link> *  ags_copy_recycling_new              (<parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *destination</parameter>,
-                                                         <parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *source</parameter>,
-                                                         <parameter><link linkend="AgsDevout"><type>AgsDevout</type></link> *devout</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<refsect1 id="AgsCopyRecycling.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsRecall">AgsRecall</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsRecallRecycling">AgsRecallRecycling</link>
+            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsCopyRecycling
+</screen>
+</refsect1>
+
+<refsect1 id="AgsCopyRecycling.includes"><title>Includes</title><synopsis>#include &lt;ags/audio/recall/ags_copy_recycling.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsCopyRecycling.description" role="desc">
+<title role="desc.title">Description</title>
+<para>The <link linkend="AgsCopyRecycling"><type>AgsCopyRecycling</type></link> class copys the recycling.</para>
+
+</refsect1>
+<refsect1 id="AgsCopyRecycling.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-copy-recycling-new" role="function" condition="since:0.4">
+<title>ags_copy_recycling_new&#160;()</title>
+<indexterm zone="ags-copy-recycling-new" role="0.4"><primary>ags_copy_recycling_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsCopyRecycling"><returnvalue>AgsCopyRecycling</returnvalue></link>&#160;*
+ags_copy_recycling_new (<parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *destination</parameter>,
+                        <parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *source</parameter>,
+                        <parameter><link linkend="GObject"><type>GObject</type></link> *soundcard</parameter>);</programlisting>
+<para>Creates an <link linkend="AgsCopyRecycling"><type>AgsCopyRecycling</type></link></para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>destination</para></entry>
+<entry role="parameter_description"><para>the destination <link linkend="AgsRecycling"><type>AgsRecycling</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>source</para></entry>
+<entry role="parameter_description"><para>the source <link linkend="AgsRecycling"><type>AgsRecycling</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>soundcard</para></entry>
+<entry role="parameter_description"><para>the <link linkend="GObject"><type>GObject</type></link> implementing <link linkend="AgsSoundcard"><type>AgsSoundcard</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> a new <link linkend="AgsCopyRecycling"><type>AgsCopyRecycling</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsCopyRecycling.other_details" role="details">
+<title role="details.title">Types and Values</title>
 
 </refsect1>
 

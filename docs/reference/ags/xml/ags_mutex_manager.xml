@@ -1,0 +1,97 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="AgsMutexManager">
+<refmeta>
+<refentrytitle role="top_of_page" id="AgsMutexManager.top_of_page">AgsMutexManager</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsMutexManager</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsect1 id="AgsMutexManager.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-mutex-manager-insert">ags_mutex_manager_insert</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-mutex-manager-remove">ags_mutex_manager_remove</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="pthread-mutex-t"><returnvalue>pthread_mutex_t</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-mutex-manager-lookup">ags_mutex_manager_lookup</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsMutexManager"><returnvalue>AgsMutexManager</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-mutex-manager-get-instance">ags_mutex_manager_get_instance</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsMutexManager"><returnvalue>AgsMutexManager</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-mutex-manager-new">ags_mutex_manager_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsMutexManager.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsMutexManager
+</screen>
+</refsect1>
+
+
+<refsect1 id="AgsMutexManager.description" role="desc">
+<title role="desc.title">Description</title>
+
+</refsect1>
+<refsect1 id="AgsMutexManager.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-mutex-manager-insert" role="function">
+<title>ags_mutex_manager_insert&#160;()</title>
+<indexterm zone="ags-mutex-manager-insert"><primary>ags_mutex_manager_insert</primary></indexterm>
+<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+ags_mutex_manager_insert (<parameter><link linkend="AgsMutexManager"><type>AgsMutexManager</type></link> *mutex_manager</parameter>,
+                          <parameter><link linkend="GObject"><type>GObject</type></link> *lock_object</parameter>,
+                          <parameter><link linkend="pthread-mutex-t"><type>pthread_mutex_t</type></link> *mutex</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-mutex-manager-remove" role="function">
+<title>ags_mutex_manager_remove&#160;()</title>
+<indexterm zone="ags-mutex-manager-remove"><primary>ags_mutex_manager_remove</primary></indexterm>
+<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+ags_mutex_manager_remove (<parameter><link linkend="AgsMutexManager"><type>AgsMutexManager</type></link> *mutex_manager</parameter>,
+                          <parameter><link linkend="GObject"><type>GObject</type></link> *lock_object</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-mutex-manager-lookup" role="function">
+<title>ags_mutex_manager_lookup&#160;()</title>
+<indexterm zone="ags-mutex-manager-lookup"><primary>ags_mutex_manager_lookup</primary></indexterm>
+<programlisting language="C"><link linkend="pthread-mutex-t"><returnvalue>pthread_mutex_t</returnvalue></link>&#160;*
+ags_mutex_manager_lookup (<parameter><link linkend="AgsMutexManager"><type>AgsMutexManager</type></link> *mutex_manager</parameter>,
+                          <parameter><link linkend="GObject"><type>GObject</type></link> *lock_object</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-mutex-manager-get-instance" role="function">
+<title>ags_mutex_manager_get_instance&#160;()</title>
+<indexterm zone="ags-mutex-manager-get-instance"><primary>ags_mutex_manager_get_instance</primary></indexterm>
+<programlisting language="C"><link linkend="AgsMutexManager"><returnvalue>AgsMutexManager</returnvalue></link>&#160;*
+ags_mutex_manager_get_instance ();</programlisting>
+</refsect2>
+<refsect2 id="ags-mutex-manager-new" role="function">
+<title>ags_mutex_manager_new&#160;()</title>
+<indexterm zone="ags-mutex-manager-new"><primary>ags_mutex_manager_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsMutexManager"><returnvalue>AgsMutexManager</returnvalue></link>&#160;*
+ags_mutex_manager_new ();</programlisting>
+</refsect2>
+
+</refsect1>
+<refsect1 id="AgsMutexManager.other_details" role="details">
+<title role="details.title">Types and Values</title>
+
+</refsect1>
+
+</refentry>

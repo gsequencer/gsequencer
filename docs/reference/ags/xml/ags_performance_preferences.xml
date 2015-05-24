@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsPerformancePreferences">
+<refentry id="AgsPerformancePreferences">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsPerformancePreferences.top_of_page">AgsPerformancePreferences</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsPerformancePreferences.top_of_page">AgsPerformancePreferences</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -14,53 +14,61 @@
 </refmeta>
 <refnamediv>
 <refname>AgsPerformancePreferences</refname>
-<refpurpose></refpurpose>
+<refpurpose>A composite widget to do performance related preferences</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsPerformancePreferences.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsPerformancePreferences.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="AgsPerformancePreferences"><returnvalue>AgsPerformancePreferences</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-performance-preferences-new">ags_performance_preferences_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>struct              <link linkend="AgsPerformancePreferences">AgsPerformancePreferences</link>;
-struct              <link linkend="AgsPerformancePreferencesClass">AgsPerformancePreferencesClass</link>;
-<link linkend="AgsPerformancePreferences"><returnvalue>AgsPerformancePreferences</returnvalue></link> * <link linkend="ags-performance-preferences-new">ags_performance_preferences_new</link>
-                                                        ();
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsPerformancePreferences.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsPerformancePreferences.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AgsPerformancePreferences" role="struct">
-<title>struct AgsPerformancePreferences</title>
-<indexterm zone="AgsPerformancePreferences"><primary>AgsPerformancePreferences</primary></indexterm>
-<programlisting>struct AgsPerformancePreferences {
-  GtkVBox vbox;
+<refsect1 id="AgsPerformancePreferences.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GInitiallyUnowned">GInitiallyUnowned</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkObject">GtkObject</link>
+            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkWidget">GtkWidget</link>
+                <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkContainer">GtkContainer</link>
+                    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkBox">GtkBox</link>
+                        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkVBox">GtkVBox</link>
+                            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsPerformancePreferences
+</screen>
+</refsect1>
 
-  GtkCheckButton *super_threaded;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsPerformancePreferencesClass" role="struct">
-<title>struct AgsPerformancePreferencesClass</title>
-<indexterm zone="AgsPerformancePreferencesClass"><primary>AgsPerformancePreferencesClass</primary></indexterm>
-<programlisting>struct AgsPerformancePreferencesClass {
-  GtkVBoxClass vbox;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-performance-preferences-new" role="function">
-<title>ags_performance_preferences_new ()</title>
-<indexterm zone="ags-performance-preferences-new"><primary>ags_performance_preferences_new</primary></indexterm>
-<programlisting><link linkend="AgsPerformancePreferences"><returnvalue>AgsPerformancePreferences</returnvalue></link> * ags_performance_preferences_new
-                                                        ();</programlisting>
-<para>
-</para></refsect2>
+<refsect1 id="AgsPerformancePreferences.includes"><title>Includes</title><synopsis>#include &lt;ags/X/ags_performance_preferences.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsPerformancePreferences.description" role="desc">
+<title role="desc.title">Description</title>
+<para><link linkend="AgsPerformancePreferences"><type>AgsPerformancePreferences</type></link> enables you to make performance related preferences.</para>
+
+</refsect1>
+<refsect1 id="AgsPerformancePreferences.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-performance-preferences-new" role="function" condition="since:0.4">
+<title>ags_performance_preferences_new&#160;()</title>
+<indexterm zone="ags-performance-preferences-new" role="0.4"><primary>ags_performance_preferences_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsPerformancePreferences"><returnvalue>AgsPerformancePreferences</returnvalue></link>&#160;*
+ags_performance_preferences_new ();</programlisting>
+<para>Creates an <link linkend="AgsPerformancePreferences"><type>AgsPerformancePreferences</type></link></para>
+<refsect3 role="returns">
+<title>Returns</title>
+<para> a new <link linkend="AgsPerformancePreferences"><type>AgsPerformancePreferences</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsPerformancePreferences.other_details" role="details">
+<title role="details.title">Types and Values</title>
 
 </refsect1>
 

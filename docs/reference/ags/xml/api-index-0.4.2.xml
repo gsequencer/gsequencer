@@ -1,8 +1,58 @@
 <?xml version="1.0"?>
 <!DOCTYPE indexdiv PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
 <indexdiv>
+<indexdiv><title>A</title>
+<indexentry><primaryie linkends="ags-audio-file-rw-open"><link linkend="ags-audio-file-rw-open">ags_audio_file_rw_open</link>, function in <link linkend="AgsAudioFile">AgsAudioFile</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsAutomation--current-accelerations"><link linkend="AgsAutomation--current-accelerations">AgsAutomation:current-accelerations</link>, object property in <link linkend="AgsAutomation">AgsAutomation</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsAutomation--next-accelerations"><link linkend="AgsAutomation--next-accelerations">AgsAutomation:next-accelerations</link>, object property in <link linkend="AgsAutomation">AgsAutomation</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsAutomation--port"><link linkend="AgsAutomation--port">AgsAutomation:port</link>, object property in <link linkend="AgsAutomation">AgsAutomation</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-automation-new"><link linkend="ags-automation-new">ags_automation_new</link>, function in <link linkend="AgsAutomation">AgsAutomation</link></primaryie></indexentry>
+</indexdiv>
+<indexdiv><title>L</title>
+<indexentry><primaryie linkends="ags-ladspa-browser-combo-box-controls-new"><link linkend="ags-ladspa-browser-combo-box-controls-new">ags_ladspa_browser_combo_box_controls_new</link>, function in <link linkend="AgsLadspaBrowser">AgsLadspaBrowser</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-ladspa-browser-get-plugin-effect"><link linkend="ags-ladspa-browser-get-plugin-effect">ags_ladspa_browser_get_plugin_effect</link>, function in <link linkend="AgsLadspaBrowser">AgsLadspaBrowser</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-ladspa-browser-get-plugin-filename"><link linkend="ags-ladspa-browser-get-plugin-filename">ags_ladspa_browser_get_plugin_filename</link>, function in <link linkend="AgsLadspaBrowser">AgsLadspaBrowser</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-ladspa-browser-new"><link linkend="ags-ladspa-browser-new">ags_ladspa_browser_new</link>, function in <link linkend="AgsLadspaBrowser">AgsLadspaBrowser</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-lv2-browser-combo-box-controls-new"><link linkend="ags-lv2-browser-combo-box-controls-new">ags_lv2_browser_combo_box_controls_new</link>, function in <link linkend="AgsLv2Browser">AgsLv2Browser</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-lv2-browser-get-plugin-filename"><link linkend="ags-lv2-browser-get-plugin-filename">ags_lv2_browser_get_plugin_filename</link>, function in <link linkend="AgsLv2Browser">AgsLv2Browser</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-lv2-browser-new"><link linkend="ags-lv2-browser-new">ags_lv2_browser_new</link>, function in <link linkend="AgsLv2Browser">AgsLv2Browser</link></primaryie></indexentry>
+</indexdiv>
+<indexdiv><title>P</title>
+<indexentry><primaryie linkends="ags-playable-flush"><link linkend="ags-playable-flush">ags_playable_flush</link>, function in <link linkend="AgsPlayable">AgsPlayable</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-playable-info"><link linkend="ags-playable-info">ags_playable_info</link>, function in <link linkend="AgsPlayable">AgsPlayable</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-playable-read"><link linkend="ags-playable-read">ags_playable_read</link>, function in <link linkend="AgsPlayable">AgsPlayable</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-playable-rw-open"><link linkend="ags-playable-rw-open">ags_playable_rw_open</link>, function in <link linkend="AgsPlayable">AgsPlayable</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-playable-seek"><link linkend="ags-playable-seek">ags_playable_seek</link>, function in <link linkend="AgsPlayable">AgsPlayable</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-playable-write"><link linkend="ags-playable-write">ags_playable_write</link>, function in <link linkend="AgsPlayable">AgsPlayable</link></primaryie></indexentry>
+</indexdiv>
+<indexdiv><title>R</title>
+<indexentry><primaryie linkends="AgsRecallLadspa--effect"><link linkend="AgsRecallLadspa--effect">AgsRecallLadspa:effect</link>, object property in <link linkend="AgsRecallLadspa">AgsRecallLadspa</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsRecallLadspa--filename"><link linkend="AgsRecallLadspa--filename">AgsRecallLadspa:filename</link>, object property in <link linkend="AgsRecallLadspa">AgsRecallLadspa</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsRecallLadspa--index"><link linkend="AgsRecallLadspa--index">AgsRecallLadspa:index</link>, object property in <link linkend="AgsRecallLadspa">AgsRecallLadspa</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-recall-ladspa-find"><link linkend="ags-recall-ladspa-find">ags_recall_ladspa_find</link>, function in <link linkend="AgsRecallLadspa">AgsRecallLadspa</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-recall-ladspa-float-to-short"><link linkend="ags-recall-ladspa-float-to-short">ags_recall_ladspa_float_to_short</link>, function in <link linkend="AgsRecallLadspa">AgsRecallLadspa</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-recall-ladspa-load-ports"><link linkend="ags-recall-ladspa-load-ports">ags_recall_ladspa_load_ports</link>, function in <link linkend="AgsRecallLadspa">AgsRecallLadspa</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-recall-ladspa-new"><link linkend="ags-recall-ladspa-new">ags_recall_ladspa_new</link>, function in <link linkend="AgsRecallLadspa">AgsRecallLadspa</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-recall-ladspa-run-new"><link linkend="ags-recall-ladspa-run-new">ags_recall_ladspa_run_new</link>, function in <link linkend="AgsRecallLadspaRun">AgsRecallLadspaRun</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-recall-ladspa-short-to-float"><link linkend="ags-recall-ladspa-short-to-float">ags_recall_ladspa_short_to_float</link>, function in <link linkend="AgsRecallLadspa">AgsRecallLadspa</link></primaryie></indexentry>
+</indexdiv>
+<indexdiv><title>S</title>
+<indexentry><primaryie linkends="ags-soundcard-get-attack"><link linkend="ags-soundcard-get-attack">ags_soundcard_get_attack</link>, function in <link linkend="AgsSoundcard">AgsSoundcard</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-soundcard-get-buffer"><link linkend="ags-soundcard-get-buffer">ags_soundcard_get_buffer</link>, function in <link linkend="AgsSoundcard">AgsSoundcard</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-soundcard-get-delay"><link linkend="ags-soundcard-get-delay">ags_soundcard_get_delay</link>, function in <link linkend="AgsSoundcard">AgsSoundcard</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-soundcard-get-next-buffer"><link linkend="ags-soundcard-get-next-buffer">ags_soundcard_get_next_buffer</link>, function in <link linkend="AgsSoundcard">AgsSoundcard</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-soundcard-get-note-offset"><link linkend="ags-soundcard-get-note-offset">ags_soundcard_get_note_offset</link>, function in <link linkend="AgsSoundcard">AgsSoundcard</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-soundcard-get-presets"><link linkend="ags-soundcard-get-presets">ags_soundcard_get_presets</link>, function in <link linkend="AgsSoundcard">AgsSoundcard</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-soundcard-list-cards"><link linkend="ags-soundcard-list-cards">ags_soundcard_list_cards</link>, function in <link linkend="AgsSoundcard">AgsSoundcard</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-soundcard-pcm-info"><link linkend="ags-soundcard-pcm-info">ags_soundcard_pcm_info</link>, function in <link linkend="AgsSoundcard">AgsSoundcard</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-soundcard-play"><link linkend="ags-soundcard-play">ags_soundcard_play</link>, function in <link linkend="AgsSoundcard">AgsSoundcard</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-soundcard-set-note-offset"><link linkend="ags-soundcard-set-note-offset">ags_soundcard_set_note_offset</link>, function in <link linkend="AgsSoundcard">AgsSoundcard</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-soundcard-set-presets"><link linkend="ags-soundcard-set-presets">ags_soundcard_set_presets</link>, function in <link linkend="AgsSoundcard">AgsSoundcard</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-soundcard-stop"><link linkend="ags-soundcard-stop">ags_soundcard_stop</link>, function in <link linkend="AgsSoundcard">AgsSoundcard</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-soundcard-tic"><link linkend="ags-soundcard-tic">ags_soundcard_tic</link>, function in <link linkend="AgsSoundcard">AgsSoundcard</link></primaryie></indexentry>
+</indexdiv>
 </indexdiv>

@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
 <refentry id="ags-ags-navigation-callbacks">
 <refmeta>
@@ -17,191 +17,195 @@
 <refpurpose></refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-ags-navigation-callbacks.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="ags-ags-navigation-callbacks.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-navigation-parent-set-callback">ags_navigation_parent_set_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-navigation-destroy-callback">ags_navigation_destroy_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-navigation-show-callback">ags_navigation_show_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-navigation-expander-callback">ags_navigation_expander_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-navigation-bpm-callback">ags_navigation_bpm_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-navigation-rewind-callback">ags_navigation_rewind_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-navigation-prev-callback">ags_navigation_prev_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-navigation-play-callback">ags_navigation_play_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-navigation-stop-callback">ags_navigation_stop_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-navigation-next-callback">ags_navigation_next_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-navigation-forward-callback">ags_navigation_forward_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-navigation-loop-callback">ags_navigation_loop_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-navigation-position-tact-callback">ags_navigation_position_tact_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-navigation-duration-tact-callback">ags_navigation_duration_tact_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-navigation-loop-left-tact-callback">ags_navigation_loop_left_tact_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-navigation-loop-right-tact-callback">ags_navigation_loop_right_tact_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-navigation-raster-callback">ags_navigation_raster_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-navigation-tic-callback">ags_navigation_tic_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis><link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-navigation-bpm-callback">ags_navigation_bpm_callback</link>         (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
-                                                         <parameter><link linkend="AgsNavigation"><type>AgsNavigation</type></link> *navigation</parameter>);
-<link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            <link linkend="ags-navigation-destroy-callback">ags_navigation_destroy_callback</link>     (<parameter><link linkend="GtkObject"><type>GtkObject</type></link> *object</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> data</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-navigation-duration-tact-callback">ags_navigation_duration_tact_callback</link>
-                                                        (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
-                                                         <parameter><link linkend="AgsNavigation"><type>AgsNavigation</type></link> *navigation</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-navigation-expander-callback">ags_navigation_expander_callback</link>    (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
-                                                         <parameter><link linkend="AgsNavigation"><type>AgsNavigation</type></link> *navigation</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-navigation-forward-callback">ags_navigation_forward_callback</link>     (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
-                                                         <parameter><link linkend="AgsNavigation"><type>AgsNavigation</type></link> *navigation</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-navigation-loop-callback">ags_navigation_loop_callback</link>        (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
-                                                         <parameter><link linkend="AgsNavigation"><type>AgsNavigation</type></link> *navigation</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-navigation-loop-left-tact-callback">ags_navigation_loop_left_tact_callback</link>
-                                                        (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
-                                                         <parameter><link linkend="AgsNavigation"><type>AgsNavigation</type></link> *navigation</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-navigation-loop-right-tact-callback">ags_navigation_loop_right_tact_callback</link>
-                                                        (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
-                                                         <parameter><link linkend="AgsNavigation"><type>AgsNavigation</type></link> *navigation</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-navigation-next-callback">ags_navigation_next_callback</link>        (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
-                                                         <parameter><link linkend="AgsNavigation"><type>AgsNavigation</type></link> *navigation</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-navigation-parent-set-callback">ags_navigation_parent_set_callback</link>  (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
-                                                         <parameter><link linkend="GtkObject"><type>GtkObject</type></link> *old_parent</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> data</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-navigation-play-callback">ags_navigation_play_callback</link>        (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
-                                                         <parameter><link linkend="AgsNavigation"><type>AgsNavigation</type></link> *navigation</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-navigation-position-tact-callback">ags_navigation_position_tact_callback</link>
-                                                        (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
-                                                         <parameter><link linkend="AgsNavigation"><type>AgsNavigation</type></link> *navigation</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-navigation-prev-callback">ags_navigation_prev_callback</link>        (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
-                                                         <parameter><link linkend="AgsNavigation"><type>AgsNavigation</type></link> *navigation</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-navigation-raster-callback">ags_navigation_raster_callback</link>      (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
-                                                         <parameter><link linkend="AgsNavigation"><type>AgsNavigation</type></link> *navigation</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-navigation-rewind-callback">ags_navigation_rewind_callback</link>      (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
-                                                         <parameter><link linkend="AgsNavigation"><type>AgsNavigation</type></link> *navigation</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-navigation-show-callback">ags_navigation_show_callback</link>        (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> data</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-navigation-stop-callback">ags_navigation_stop_callback</link>        (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
-                                                         <parameter><link linkend="AgsNavigation"><type>AgsNavigation</type></link> *navigation</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-navigation-tic-callback">ags_navigation_tic_callback</link>         (<parameter><link linkend="AgsDevout"><type>AgsDevout</type></link> *devout</parameter>,
-                                                         <parameter><link linkend="AgsNavigation"><type>AgsNavigation</type></link> *navigation</parameter>);
-</synopsis>
-</refsynopsisdiv>
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+
 
 <refsect1 id="ags-ags-navigation-callbacks.description" role="desc">
 <title role="desc.title">Description</title>
-<para>
-</para>
+
 </refsect1>
-<refsect1 id="ags-ags-navigation-callbacks.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="ags-navigation-bpm-callback" role="function">
-<title>ags_navigation_bpm_callback ()</title>
-<indexterm zone="ags-navigation-bpm-callback"><primary>ags_navigation_bpm_callback</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_navigation_bpm_callback         (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
-                                                         <parameter><link linkend="AgsNavigation"><type>AgsNavigation</type></link> *navigation</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-navigation-destroy-callback" role="function">
-<title>ags_navigation_destroy_callback ()</title>
-<indexterm zone="ags-navigation-destroy-callback"><primary>ags_navigation_destroy_callback</primary></indexterm>
-<programlisting><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            ags_navigation_destroy_callback     (<parameter><link linkend="GtkObject"><type>GtkObject</type></link> *object</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> data</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-navigation-duration-tact-callback" role="function">
-<title>ags_navigation_duration_tact_callback ()</title>
-<indexterm zone="ags-navigation-duration-tact-callback"><primary>ags_navigation_duration_tact_callback</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_navigation_duration_tact_callback
-                                                        (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
-                                                         <parameter><link linkend="AgsNavigation"><type>AgsNavigation</type></link> *navigation</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-navigation-expander-callback" role="function">
-<title>ags_navigation_expander_callback ()</title>
-<indexterm zone="ags-navigation-expander-callback"><primary>ags_navigation_expander_callback</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_navigation_expander_callback    (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
-                                                         <parameter><link linkend="AgsNavigation"><type>AgsNavigation</type></link> *navigation</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-navigation-forward-callback" role="function">
-<title>ags_navigation_forward_callback ()</title>
-<indexterm zone="ags-navigation-forward-callback"><primary>ags_navigation_forward_callback</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_navigation_forward_callback     (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
-                                                         <parameter><link linkend="AgsNavigation"><type>AgsNavigation</type></link> *navigation</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-navigation-loop-callback" role="function">
-<title>ags_navigation_loop_callback ()</title>
-<indexterm zone="ags-navigation-loop-callback"><primary>ags_navigation_loop_callback</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_navigation_loop_callback        (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
-                                                         <parameter><link linkend="AgsNavigation"><type>AgsNavigation</type></link> *navigation</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-navigation-loop-left-tact-callback" role="function">
-<title>ags_navigation_loop_left_tact_callback ()</title>
-<indexterm zone="ags-navigation-loop-left-tact-callback"><primary>ags_navigation_loop_left_tact_callback</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_navigation_loop_left_tact_callback
-                                                        (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
-                                                         <parameter><link linkend="AgsNavigation"><type>AgsNavigation</type></link> *navigation</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-navigation-loop-right-tact-callback" role="function">
-<title>ags_navigation_loop_right_tact_callback ()</title>
-<indexterm zone="ags-navigation-loop-right-tact-callback"><primary>ags_navigation_loop_right_tact_callback</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_navigation_loop_right_tact_callback
-                                                        (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
-                                                         <parameter><link linkend="AgsNavigation"><type>AgsNavigation</type></link> *navigation</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-navigation-next-callback" role="function">
-<title>ags_navigation_next_callback ()</title>
-<indexterm zone="ags-navigation-next-callback"><primary>ags_navigation_next_callback</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_navigation_next_callback        (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
-                                                         <parameter><link linkend="AgsNavigation"><type>AgsNavigation</type></link> *navigation</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<refsect1 id="ags-ags-navigation-callbacks.functions_details" role="details">
+<title role="details.title">Functions</title>
 <refsect2 id="ags-navigation-parent-set-callback" role="function">
-<title>ags_navigation_parent_set_callback ()</title>
+<title>ags_navigation_parent_set_callback&#160;()</title>
 <indexterm zone="ags-navigation-parent-set-callback"><primary>ags_navigation_parent_set_callback</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_navigation_parent_set_callback  (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
-                                                         <parameter><link linkend="GtkObject"><type>GtkObject</type></link> *old_parent</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> data</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-navigation-play-callback" role="function">
-<title>ags_navigation_play_callback ()</title>
-<indexterm zone="ags-navigation-play-callback"><primary>ags_navigation_play_callback</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_navigation_play_callback        (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
-                                                         <parameter><link linkend="AgsNavigation"><type>AgsNavigation</type></link> *navigation</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-navigation-position-tact-callback" role="function">
-<title>ags_navigation_position_tact_callback ()</title>
-<indexterm zone="ags-navigation-position-tact-callback"><primary>ags_navigation_position_tact_callback</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_navigation_position_tact_callback
-                                                        (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
-                                                         <parameter><link linkend="AgsNavigation"><type>AgsNavigation</type></link> *navigation</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-navigation-prev-callback" role="function">
-<title>ags_navigation_prev_callback ()</title>
-<indexterm zone="ags-navigation-prev-callback"><primary>ags_navigation_prev_callback</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_navigation_prev_callback        (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
-                                                         <parameter><link linkend="AgsNavigation"><type>AgsNavigation</type></link> *navigation</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-navigation-raster-callback" role="function">
-<title>ags_navigation_raster_callback ()</title>
-<indexterm zone="ags-navigation-raster-callback"><primary>ags_navigation_raster_callback</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_navigation_raster_callback      (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
-                                                         <parameter><link linkend="AgsNavigation"><type>AgsNavigation</type></link> *navigation</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-navigation-rewind-callback" role="function">
-<title>ags_navigation_rewind_callback ()</title>
-<indexterm zone="ags-navigation-rewind-callback"><primary>ags_navigation_rewind_callback</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_navigation_rewind_callback      (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
-                                                         <parameter><link linkend="AgsNavigation"><type>AgsNavigation</type></link> *navigation</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_navigation_parent_set_callback (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                                    <parameter><link linkend="GtkObject"><type>GtkObject</type></link> *old_parent</parameter>,
+                                    <parameter><link linkend="gpointer"><type>gpointer</type></link> data</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-navigation-destroy-callback" role="function">
+<title>ags_navigation_destroy_callback&#160;()</title>
+<indexterm zone="ags-navigation-destroy-callback"><primary>ags_navigation_destroy_callback</primary></indexterm>
+<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+ags_navigation_destroy_callback (<parameter><link linkend="GtkObject"><type>GtkObject</type></link> *object</parameter>,
+                                 <parameter><link linkend="gpointer"><type>gpointer</type></link> data</parameter>);</programlisting>
+</refsect2>
 <refsect2 id="ags-navigation-show-callback" role="function">
-<title>ags_navigation_show_callback ()</title>
+<title>ags_navigation_show_callback&#160;()</title>
 <indexterm zone="ags-navigation-show-callback"><primary>ags_navigation_show_callback</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_navigation_show_callback        (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> data</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_navigation_show_callback (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                              <parameter><link linkend="gpointer"><type>gpointer</type></link> data</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-navigation-expander-callback" role="function">
+<title>ags_navigation_expander_callback&#160;()</title>
+<indexterm zone="ags-navigation-expander-callback"><primary>ags_navigation_expander_callback</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_navigation_expander_callback (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                                  <parameter><link linkend="AgsNavigation"><type>AgsNavigation</type></link> *navigation</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-navigation-bpm-callback" role="function">
+<title>ags_navigation_bpm_callback&#160;()</title>
+<indexterm zone="ags-navigation-bpm-callback"><primary>ags_navigation_bpm_callback</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_navigation_bpm_callback (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                             <parameter><link linkend="AgsNavigation"><type>AgsNavigation</type></link> *navigation</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-navigation-rewind-callback" role="function">
+<title>ags_navigation_rewind_callback&#160;()</title>
+<indexterm zone="ags-navigation-rewind-callback"><primary>ags_navigation_rewind_callback</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_navigation_rewind_callback (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                                <parameter><link linkend="AgsNavigation"><type>AgsNavigation</type></link> *navigation</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-navigation-prev-callback" role="function">
+<title>ags_navigation_prev_callback&#160;()</title>
+<indexterm zone="ags-navigation-prev-callback"><primary>ags_navigation_prev_callback</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_navigation_prev_callback (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                              <parameter><link linkend="AgsNavigation"><type>AgsNavigation</type></link> *navigation</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-navigation-play-callback" role="function">
+<title>ags_navigation_play_callback&#160;()</title>
+<indexterm zone="ags-navigation-play-callback"><primary>ags_navigation_play_callback</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_navigation_play_callback (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                              <parameter><link linkend="AgsNavigation"><type>AgsNavigation</type></link> *navigation</parameter>);</programlisting>
+</refsect2>
 <refsect2 id="ags-navigation-stop-callback" role="function">
-<title>ags_navigation_stop_callback ()</title>
+<title>ags_navigation_stop_callback&#160;()</title>
 <indexterm zone="ags-navigation-stop-callback"><primary>ags_navigation_stop_callback</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_navigation_stop_callback        (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
-                                                         <parameter><link linkend="AgsNavigation"><type>AgsNavigation</type></link> *navigation</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_navigation_stop_callback (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                              <parameter><link linkend="AgsNavigation"><type>AgsNavigation</type></link> *navigation</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-navigation-next-callback" role="function">
+<title>ags_navigation_next_callback&#160;()</title>
+<indexterm zone="ags-navigation-next-callback"><primary>ags_navigation_next_callback</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_navigation_next_callback (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                              <parameter><link linkend="AgsNavigation"><type>AgsNavigation</type></link> *navigation</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-navigation-forward-callback" role="function">
+<title>ags_navigation_forward_callback&#160;()</title>
+<indexterm zone="ags-navigation-forward-callback"><primary>ags_navigation_forward_callback</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_navigation_forward_callback (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                                 <parameter><link linkend="AgsNavigation"><type>AgsNavigation</type></link> *navigation</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-navigation-loop-callback" role="function">
+<title>ags_navigation_loop_callback&#160;()</title>
+<indexterm zone="ags-navigation-loop-callback"><primary>ags_navigation_loop_callback</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_navigation_loop_callback (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                              <parameter><link linkend="AgsNavigation"><type>AgsNavigation</type></link> *navigation</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-navigation-position-tact-callback" role="function">
+<title>ags_navigation_position_tact_callback&#160;()</title>
+<indexterm zone="ags-navigation-position-tact-callback"><primary>ags_navigation_position_tact_callback</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_navigation_position_tact_callback (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                                       <parameter><link linkend="AgsNavigation"><type>AgsNavigation</type></link> *navigation</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-navigation-duration-tact-callback" role="function">
+<title>ags_navigation_duration_tact_callback&#160;()</title>
+<indexterm zone="ags-navigation-duration-tact-callback"><primary>ags_navigation_duration_tact_callback</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_navigation_duration_tact_callback (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                                       <parameter><link linkend="AgsNavigation"><type>AgsNavigation</type></link> *navigation</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-navigation-loop-left-tact-callback" role="function">
+<title>ags_navigation_loop_left_tact_callback&#160;()</title>
+<indexterm zone="ags-navigation-loop-left-tact-callback"><primary>ags_navigation_loop_left_tact_callback</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_navigation_loop_left_tact_callback
+                               (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                                <parameter><link linkend="AgsNavigation"><type>AgsNavigation</type></link> *navigation</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-navigation-loop-right-tact-callback" role="function">
+<title>ags_navigation_loop_right_tact_callback&#160;()</title>
+<indexterm zone="ags-navigation-loop-right-tact-callback"><primary>ags_navigation_loop_right_tact_callback</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_navigation_loop_right_tact_callback
+                               (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                                <parameter><link linkend="AgsNavigation"><type>AgsNavigation</type></link> *navigation</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-navigation-raster-callback" role="function">
+<title>ags_navigation_raster_callback&#160;()</title>
+<indexterm zone="ags-navigation-raster-callback"><primary>ags_navigation_raster_callback</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_navigation_raster_callback (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                                <parameter><link linkend="AgsNavigation"><type>AgsNavigation</type></link> *navigation</parameter>);</programlisting>
+</refsect2>
 <refsect2 id="ags-navigation-tic-callback" role="function">
-<title>ags_navigation_tic_callback ()</title>
+<title>ags_navigation_tic_callback&#160;()</title>
 <indexterm zone="ags-navigation-tic-callback"><primary>ags_navigation_tic_callback</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_navigation_tic_callback         (<parameter><link linkend="AgsDevout"><type>AgsDevout</type></link> *devout</parameter>,
-                                                         <parameter><link linkend="AgsNavigation"><type>AgsNavigation</type></link> *navigation</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_navigation_tic_callback (<parameter><link linkend="AgsSoundcard"><type>AgsSoundcard</type></link> *soundcard</parameter>,
+                             <parameter><link linkend="AgsNavigation"><type>AgsNavigation</type></link> *navigation</parameter>);</programlisting>
+</refsect2>
+
+</refsect1>
+<refsect1 id="ags-ags-navigation-callbacks.other_details" role="details">
+<title role="details.title">Types and Values</title>
 
 </refsect1>
 

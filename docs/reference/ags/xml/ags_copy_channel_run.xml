@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsCopyChannelRun">
+<refentry id="AgsCopyChannelRun">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsCopyChannelRun.top_of_page">AgsCopyChannelRun</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsCopyChannelRun.top_of_page">AgsCopyChannelRun</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -14,66 +14,109 @@
 </refmeta>
 <refnamediv>
 <refname>AgsCopyChannelRun</refname>
-<refpurpose></refpurpose>
+<refpurpose>copys channel</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsCopyChannelRun.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsCopyChannelRun.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="AgsCopyChannelRun"><returnvalue>AgsCopyChannelRun</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-copy-channel-run-new">ags_copy_channel_run_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>struct              <link linkend="AgsCopyChannelRun">AgsCopyChannelRun</link>;
-struct              <link linkend="AgsCopyChannelRunClass">AgsCopyChannelRunClass</link>;
-enum                <link linkend="AgsCopyChannelRunFlags">AgsCopyChannelRunFlags</link>;
-<link linkend="AgsCopyChannelRun"><returnvalue>AgsCopyChannelRun</returnvalue></link> * <link linkend="ags-copy-channel-run-new">ags_copy_channel_run_new</link>            (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *destination</parameter>,
-                                                         <parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *source</parameter>,
-                                                         <parameter><link linkend="AgsDevout"><type>AgsDevout</type></link> *devout</parameter>);
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsCopyChannelRun.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsCopyChannelRun.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AgsCopyChannelRun" role="struct">
-<title>struct AgsCopyChannelRun</title>
-<indexterm zone="AgsCopyChannelRun"><primary>AgsCopyChannelRun</primary></indexterm>
-<programlisting>struct AgsCopyChannelRun {
-  AgsRecallChannelRun recall_channel_run;
+<refsect1 id="AgsCopyChannelRun.other" role="other_proto">
+<title role="other_proto.title">Types and Values</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="name" colwidth="150px"/>
+<colspec colname="description"/>
+<tbody>
+<row><entry role="datatype_keyword">enum</entry><entry role="function_name"><link linkend="AgsCopyChannelRunFlags">AgsCopyChannelRunFlags</link></entry></row>
 
-  guint flags;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsCopyChannelRunClass" role="struct">
-<title>struct AgsCopyChannelRunClass</title>
-<indexterm zone="AgsCopyChannelRunClass"><primary>AgsCopyChannelRunClass</primary></indexterm>
-<programlisting>struct AgsCopyChannelRunClass {
-  AgsRecallChannelRunClass recall_channel_run;
-};
-</programlisting>
-<para>
-</para></refsect2>
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsCopyChannelRun.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsRecall">AgsRecall</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsRecallChannelRun">AgsRecallChannelRun</link>
+            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsCopyChannelRun
+</screen>
+</refsect1>
+
+<refsect1 id="AgsCopyChannelRun.includes"><title>Includes</title><synopsis>#include &lt;ags/audio/recall/ags_copy_channel_run.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsCopyChannelRun.description" role="desc">
+<title role="desc.title">Description</title>
+<para>The <link linkend="AgsCopyChannelRun"><type>AgsCopyChannelRun</type></link> class copys the channel.</para>
+
+</refsect1>
+<refsect1 id="AgsCopyChannelRun.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-copy-channel-run-new" role="function" condition="since:0.4">
+<title>ags_copy_channel_run_new&#160;()</title>
+<indexterm zone="ags-copy-channel-run-new" role="0.4"><primary>ags_copy_channel_run_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsCopyChannelRun"><returnvalue>AgsCopyChannelRun</returnvalue></link>&#160;*
+ags_copy_channel_run_new (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *destination</parameter>,
+                          <parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *source</parameter>,
+                          <parameter><link linkend="GObject"><type>GObject</type></link> *soundcard</parameter>);</programlisting>
+<para>Creates an <link linkend="AgsCopyChannelRun"><type>AgsCopyChannelRun</type></link></para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>destination</para></entry>
+<entry role="parameter_description"><para>the destination <link linkend="AgsChannel"><type>AgsChannel</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>source</para></entry>
+<entry role="parameter_description"><para>the source <link linkend="AgsChannel"><type>AgsChannel</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>soundcard</para></entry>
+<entry role="parameter_description"><para>the <link linkend="GObject"><type>GObject</type></link> implementing <link linkend="AgsSoundcard"><type>AgsSoundcard</type></link> defaulting to</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> a new <link linkend="AgsCopyChannelRun"><type>AgsCopyChannelRun</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsCopyChannelRun.other_details" role="details">
+<title role="details.title">Types and Values</title>
 <refsect2 id="AgsCopyChannelRunFlags" role="enum">
 <title>enum AgsCopyChannelRunFlags</title>
 <indexterm zone="AgsCopyChannelRunFlags"><primary>AgsCopyChannelRunFlags</primary></indexterm>
-<programlisting>typedef enum {
-  AGS_COPY_CHANNEL_RUN_EXACT_LENGTH         = 1,
-  AGS_COPY_CHANNEL_RUN_OMIT_FURTHER_ATTACK  = 1 &lt;&lt; 1,
-} AgsCopyChannelRunFlags;
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-copy-channel-run-new" role="function">
-<title>ags_copy_channel_run_new ()</title>
-<indexterm zone="ags-copy-channel-run-new"><primary>ags_copy_channel_run_new</primary></indexterm>
-<programlisting><link linkend="AgsCopyChannelRun"><returnvalue>AgsCopyChannelRun</returnvalue></link> * ags_copy_channel_run_new            (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *destination</parameter>,
-                                                         <parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *source</parameter>,
-                                                         <parameter><link linkend="AgsDevout"><type>AgsDevout</type></link> *devout</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<refsect3 role="enum_members">
+<title>Members</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="enum_members_name" colwidth="300px"/>
+<colspec colname="enum_members_description"/>
+<colspec colname="enum_members_annotations" colwidth="200px"/>
+<tbody>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-COPY-CHANNEL-RUN-EXACT-LENGTH:CAPS">AGS_COPY_CHANNEL_RUN_EXACT_LENGTH</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-COPY-CHANNEL-RUN-OMIT-FURTHER-ATTACK:CAPS">AGS_COPY_CHANNEL_RUN_OMIT_FURTHER_ATTACK</para></entry>
+<entry /><entry />
+</row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
 
 </refsect1>
 

@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsStreamChannel">
+<refentry id="AgsStreamChannel">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsStreamChannel.top_of_page">AgsStreamChannel</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsStreamChannel.top_of_page">AgsStreamChannel</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -14,49 +14,80 @@
 </refmeta>
 <refnamediv>
 <refname>AgsStreamChannel</refname>
-<refpurpose></refpurpose>
+<refpurpose>streams channel</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsStreamChannel.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsStreamChannel.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="AgsStreamChannel"><returnvalue>AgsStreamChannel</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-stream-channel-new">ags_stream_channel_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>struct              <link linkend="AgsStreamChannel">AgsStreamChannel</link>;
-struct              <link linkend="AgsStreamChannelClass">AgsStreamChannelClass</link>;
-<link linkend="AgsStreamChannel"><returnvalue>AgsStreamChannel</returnvalue></link> *  <link linkend="ags-stream-channel-new">ags_stream_channel_new</link>              ();
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsStreamChannel.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsStreamChannel.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AgsStreamChannel" role="struct">
-<title>struct AgsStreamChannel</title>
-<indexterm zone="AgsStreamChannel"><primary>AgsStreamChannel</primary></indexterm>
-<programlisting>struct AgsStreamChannel {
-  AgsRecallChannel recall_channel;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsStreamChannelClass" role="struct">
-<title>struct AgsStreamChannelClass</title>
-<indexterm zone="AgsStreamChannelClass"><primary>AgsStreamChannelClass</primary></indexterm>
-<programlisting>struct AgsStreamChannelClass {
-  AgsRecallChannelClass recall_channel;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-stream-channel-new" role="function">
-<title>ags_stream_channel_new ()</title>
-<indexterm zone="ags-stream-channel-new"><primary>ags_stream_channel_new</primary></indexterm>
-<programlisting><link linkend="AgsStreamChannel"><returnvalue>AgsStreamChannel</returnvalue></link> *  ags_stream_channel_new              ();</programlisting>
-<para>
-</para></refsect2>
+<refsect1 id="AgsStreamChannel.properties" role="properties">
+<title role="properties.title">Properties</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="properties_type" colwidth="150px"/>
+<colspec colname="properties_name" colwidth="300px"/>
+<colspec colname="properties_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="property_type"><link linkend="AgsPort"><type>AgsPort</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsStreamChannel--auto-sense">auto-sense</link></entry><entry role="property_flags">Read / Write</entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsStreamChannel.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsRecall">AgsRecall</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsRecallChannel">AgsRecallChannel</link>
+            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsStreamChannel
+</screen>
+</refsect1>
+
+<refsect1 id="AgsStreamChannel.includes"><title>Includes</title><synopsis>#include &lt;ags/audio/recall/ags_stream_channel.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsStreamChannel.description" role="desc">
+<title role="desc.title">Description</title>
+<para>The <link linkend="AgsStreamChannel"><type>AgsStreamChannel</type></link> class provides ports to the effect processor.</para>
+
+</refsect1>
+<refsect1 id="AgsStreamChannel.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-stream-channel-new" role="function" condition="since:0.4">
+<title>ags_stream_channel_new&#160;()</title>
+<indexterm zone="ags-stream-channel-new" role="0.4"><primary>ags_stream_channel_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsStreamChannel"><returnvalue>AgsStreamChannel</returnvalue></link>&#160;*
+ags_stream_channel_new ();</programlisting>
+<para>Creates an <link linkend="AgsStreamChannel"><type>AgsStreamChannel</type></link></para>
+<refsect3 role="returns">
+<title>Returns</title>
+<para> a new <link linkend="AgsStreamChannel"><type>AgsStreamChannel</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsStreamChannel.other_details" role="details">
+<title role="details.title">Types and Values</title>
+
+</refsect1>
+<refsect1 id="AgsStreamChannel.property-details" role="property_details">
+<title role="property_details.title">Property Details</title>
+<refsect2 id="AgsStreamChannel--auto-sense" role="property"><title>The <literal>“auto-sense”</literal> property</title>
+<indexterm zone="AgsStreamChannel--auto-sense"><primary>AgsStreamChannel:auto-sense</primary></indexterm>
+<programlisting>  “auto-sense”               <link linkend="AgsPort"><type>AgsPort</type></link>&#160;*</programlisting>
+<para>Mute the channel.</para><para>Flags: Read / Write</para>
+</refsect2>
 
 </refsect1>
 

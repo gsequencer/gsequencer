@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsApplicable">
+<refentry id="AgsApplicable">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsApplicable.top_of_page">AgsApplicable</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsApplicable.top_of_page">AgsApplicable</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -14,67 +14,109 @@
 </refmeta>
 <refnamediv>
 <refname>AgsApplicable</refname>
-<refpurpose></refpurpose>
+<refpurpose>unique access to dialogs</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsApplicable.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsApplicable.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-applicable-set-update">ags_applicable_set_update</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-applicable-apply">ags_applicable_apply</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-applicable-reset">ags_applicable_reset</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>typedef             <link linkend="AgsApplicable">AgsApplicable</link>;
-struct              <link linkend="AgsApplicableInterface">AgsApplicableInterface</link>;
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-applicable-apply">ags_applicable_apply</link>                (<parameter><link linkend="AgsApplicable"><type>AgsApplicable</type></link> *applicable</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-applicable-reset">ags_applicable_reset</link>                (<parameter><link linkend="AgsApplicable"><type>AgsApplicable</type></link> *applicable</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-applicable-set-update">ags_applicable_set_update</link>           (<parameter><link linkend="AgsApplicable"><type>AgsApplicable</type></link> *applicable</parameter>,
-                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> update</parameter>);
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsApplicable.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsApplicable.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AgsApplicable" role="typedef">
-<title>AgsApplicable</title>
-<indexterm zone="AgsApplicable"><primary>AgsApplicable</primary></indexterm>
-<programlisting>typedef void AgsApplicable;
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsApplicableInterface" role="struct">
-<title>struct AgsApplicableInterface</title>
-<indexterm zone="AgsApplicableInterface"><primary>AgsApplicableInterface</primary></indexterm>
-<programlisting>struct AgsApplicableInterface {
-  GTypeInterface interface;
-  
-  void (*set_update)(AgsApplicable *applicable, gboolean update);
-  void (*apply)(AgsApplicable *applicable);
-  void (*reset)(AgsApplicable *applicable);
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-applicable-apply" role="function">
-<title>ags_applicable_apply ()</title>
-<indexterm zone="ags-applicable-apply"><primary>ags_applicable_apply</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_applicable_apply                (<parameter><link linkend="AgsApplicable"><type>AgsApplicable</type></link> *applicable</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-applicable-reset" role="function">
-<title>ags_applicable_reset ()</title>
-<indexterm zone="ags-applicable-reset"><primary>ags_applicable_reset</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_applicable_reset                (<parameter><link linkend="AgsApplicable"><type>AgsApplicable</type></link> *applicable</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<refsect1 id="AgsApplicable.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GInterface">GInterface</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsApplicable
+</screen>
+</refsect1>
+
+<refsect1 id="AgsApplicable.includes"><title>Includes</title><synopsis>#include &lt;ags/object/ags_applicable.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsApplicable.description" role="desc">
+<title role="desc.title">Description</title>
+<para>The <link linkend="AgsApplicable"><type>AgsApplicable</type></link> interface gives you a unique access to dialogs.</para>
+
+</refsect1>
+<refsect1 id="AgsApplicable.functions_details" role="details">
+<title role="details.title">Functions</title>
 <refsect2 id="ags-applicable-set-update" role="function">
-<title>ags_applicable_set_update ()</title>
+<title>ags_applicable_set_update&#160;()</title>
 <indexterm zone="ags-applicable-set-update"><primary>ags_applicable_set_update</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_applicable_set_update           (<parameter><link linkend="AgsApplicable"><type>AgsApplicable</type></link> *applicable</parameter>,
-                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> update</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_applicable_set_update (<parameter><link linkend="AgsApplicable"><type>AgsApplicable</type></link> *applicable</parameter>,
+                           <parameter><link linkend="gboolean"><type>gboolean</type></link> update</parameter>);</programlisting>
+<para>Update behaviour.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>applicable</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsApplicable"><type>AgsApplicable</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>update</para></entry>
+<entry role="parameter_description"><para>if <link linkend="TRUE:CAPS"><literal>TRUE</literal></link> do ::reset after ::update</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
+<refsect2 id="ags-applicable-apply" role="function">
+<title>ags_applicable_apply&#160;()</title>
+<indexterm zone="ags-applicable-apply"><primary>ags_applicable_apply</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_applicable_apply (<parameter><link linkend="AgsApplicable"><type>AgsApplicable</type></link> *applicable</parameter>);</programlisting>
+<para>Apply.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>applicable</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsApplicable"><type>AgsApplicable</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
+<refsect2 id="ags-applicable-reset" role="function">
+<title>ags_applicable_reset&#160;()</title>
+<indexterm zone="ags-applicable-reset"><primary>ags_applicable_reset</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_applicable_reset (<parameter><link linkend="AgsApplicable"><type>AgsApplicable</type></link> *applicable</parameter>);</programlisting>
+<para>Reset.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>applicable</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsApplicable"><type>AgsApplicable</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
+
+</refsect1>
+<refsect1 id="AgsApplicable.other_details" role="details">
+<title role="details.title">Types and Values</title>
 
 </refsect1>
 

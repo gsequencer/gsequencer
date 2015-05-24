@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsNavigation">
+<refentry id="AgsNavigation">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsNavigation.top_of_page">AgsNavigation</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsNavigation.top_of_page">AgsNavigation</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -14,152 +14,272 @@
 </refmeta>
 <refnamediv>
 <refname>AgsNavigation</refname>
-<refpurpose></refpurpose>
+<refpurpose>control audio object's playback.</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsNavigation.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsNavigation.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-NAVIGATION-DEFAULT-TACT-STEP:CAPS">AGS_NAVIGATION_DEFAULT_TACT_STEP</link></entry></row>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-NAVIGATION-SEEK-STEPS:CAPS">AGS_NAVIGATION_SEEK_STEPS</link></entry></row>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-NAVIGATION-REWIND-STEPS:CAPS">AGS_NAVIGATION_REWIND_STEPS</link></entry></row>
+<row><entry role="function_type"><link linkend="gchar"><returnvalue>gchar</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-navigation-tact-to-time-string">ags_navigation_tact_to_time_string</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-navigation-update-time-string">ags_navigation_update_time_string</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-navigation-set-seeking-sensitive">ags_navigation_set_seeking_sensitive</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-navigation-change-position">ags_navigation_change_position</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsNavigation"><returnvalue>AgsNavigation</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-navigation-new">ags_navigation_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>#define             <link linkend="AGS-NAVIGATION-DEFAULT-TACT-STEP:CAPS">AGS_NAVIGATION_DEFAULT_TACT_STEP</link>
-#define             <link linkend="AGS-NAVIGATION-REWIND-STEPS:CAPS">AGS_NAVIGATION_REWIND_STEPS</link>
-#define             <link linkend="AGS-NAVIGATION-SEEK-STEPS:CAPS">AGS_NAVIGATION_SEEK_STEPS</link>
-struct              <link linkend="AgsNavigation">AgsNavigation</link>;
-struct              <link linkend="AgsNavigationClass">AgsNavigationClass</link>;
-enum                <link linkend="AgsNavigationFlags">AgsNavigationFlags</link>;
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-navigation-change-position">ags_navigation_change_position</link>      (<parameter><link linkend="AgsNavigation"><type>AgsNavigation</type></link> *navigation</parameter>,
-                                                         <parameter><link linkend="gdouble"><type>gdouble</type></link> tact</parameter>);
-<link linkend="AgsNavigation"><returnvalue>AgsNavigation</returnvalue></link> *     <link linkend="ags-navigation-new">ags_navigation_new</link>                  ();
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-navigation-set-seeking-sensitive">ags_navigation_set_seeking_sensitive</link>
-                                                        (<parameter><link linkend="AgsNavigation"><type>AgsNavigation</type></link> *navigation</parameter>,
-                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> enabled</parameter>);
-<link linkend="gchar"><returnvalue>gchar</returnvalue></link> *             <link linkend="ags-navigation-tact-to-time-string">ags_navigation_tact_to_time_string</link>  (<parameter><link linkend="gdouble"><type>gdouble</type></link> tact</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-navigation-update-time-string">ags_navigation_update_time_string</link>   (<parameter><link linkend="double"><type>double</type></link> tact</parameter>,
-                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *time_string</parameter>);
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsNavigation.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsNavigation.details" role="details">
-<title role="details.title">Details</title>
+<refsect1 id="AgsNavigation.properties" role="properties">
+<title role="properties.title">Properties</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="properties_type" colwidth="150px"/>
+<colspec colname="properties_name" colwidth="300px"/>
+<colspec colname="properties_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="property_type"><link linkend="GObject"><type>GObject</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsNavigation--soundcard">soundcard</link></entry><entry role="property_flags">Read / Write</entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsNavigation.signals" role="signal_proto">
+<title role="signal_proto.title">Signals</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="signals_return" colwidth="150px"/>
+<colspec colname="signals_name" colwidth="300px"/>
+<colspec colname="signals_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsNavigation-change-position">change-position</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsNavigation.other" role="other_proto">
+<title role="other_proto.title">Types and Values</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="name" colwidth="150px"/>
+<colspec colname="description"/>
+<tbody>
+<row><entry role="datatype_keyword">enum</entry><entry role="function_name"><link linkend="AgsNavigationFlags">AgsNavigationFlags</link></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsNavigation.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GInitiallyUnowned">GInitiallyUnowned</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkObject">GtkObject</link>
+            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkWidget">GtkWidget</link>
+                <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkContainer">GtkContainer</link>
+                    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkBox">GtkBox</link>
+                        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkVBox">GtkVBox</link>
+                            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsNavigation
+</screen>
+</refsect1>
+
+<refsect1 id="AgsNavigation.includes"><title>Includes</title><synopsis>#include &lt;ags/X/ags_navigation.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsNavigation.description" role="desc">
+<title role="desc.title">Description</title>
+<para><link linkend="AgsNavigation"><type>AgsNavigation</type></link> is a composite widget to control playback of <link linkend="AgsAudio"><type>AgsAudio</type></link> objects.
+It can start <link linkend="AgsMachine"><type>AgsMachine</type></link> in bulk mode or position the stream.</para>
+
+</refsect1>
+<refsect1 id="AgsNavigation.functions_details" role="details">
+<title role="details.title">Functions</title>
 <refsect2 id="AGS-NAVIGATION-DEFAULT-TACT-STEP:CAPS" role="macro">
 <title>AGS_NAVIGATION_DEFAULT_TACT_STEP</title>
 <indexterm zone="AGS-NAVIGATION-DEFAULT-TACT-STEP:CAPS"><primary>AGS_NAVIGATION_DEFAULT_TACT_STEP</primary></indexterm>
-<programlisting>#define AGS_NAVIGATION_DEFAULT_TACT_STEP (1.0)
+<programlisting language="C">#define AGS_NAVIGATION_DEFAULT_TACT_STEP (1.0)
 </programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AGS-NAVIGATION-REWIND-STEPS:CAPS" role="macro">
-<title>AGS_NAVIGATION_REWIND_STEPS</title>
-<indexterm zone="AGS-NAVIGATION-REWIND-STEPS:CAPS"><primary>AGS_NAVIGATION_REWIND_STEPS</primary></indexterm>
-<programlisting>#define AGS_NAVIGATION_REWIND_STEPS (4.0)
-</programlisting>
-<para>
-</para></refsect2>
+</refsect2>
 <refsect2 id="AGS-NAVIGATION-SEEK-STEPS:CAPS" role="macro">
 <title>AGS_NAVIGATION_SEEK_STEPS</title>
 <indexterm zone="AGS-NAVIGATION-SEEK-STEPS:CAPS"><primary>AGS_NAVIGATION_SEEK_STEPS</primary></indexterm>
-<programlisting>#define AGS_NAVIGATION_SEEK_STEPS (1.0)
+<programlisting language="C">#define AGS_NAVIGATION_SEEK_STEPS (1.0)
 </programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsNavigation" role="struct">
-<title>struct AgsNavigation</title>
-<indexterm zone="AgsNavigation"><primary>AgsNavigation</primary></indexterm>
-<programlisting>struct AgsNavigation {
-  GtkVBox vbox;
-
-  guint flags;
-
-  AgsDevout *devout;
-
-  GtkToggleButton *expander;
-
-  GtkSpinButton *bpm;
-  gdouble current_bpm;
-
-  GtkToggleButton *rewind;
-  GtkButton *previous;
-  GtkToggleButton *play;
-  GtkButton *stop;
-  GtkButton *next;
-  GtkToggleButton *forward;
-
-  GtkCheckButton *loop;
-
-  GtkLabel *position_time;
-  GtkSpinButton *position_tact;
-
-  GtkLabel *duration_time;
-  GtkSpinButton *duration_tact;
-
-  GtkSpinButton *loop_left_tact;
-  GtkSpinButton *loop_right_tact;
-
-  GtkCheckButton *scroll;
-};
+</refsect2>
+<refsect2 id="AGS-NAVIGATION-REWIND-STEPS:CAPS" role="macro">
+<title>AGS_NAVIGATION_REWIND_STEPS</title>
+<indexterm zone="AGS-NAVIGATION-REWIND-STEPS:CAPS"><primary>AGS_NAVIGATION_REWIND_STEPS</primary></indexterm>
+<programlisting language="C">#define AGS_NAVIGATION_REWIND_STEPS (4.0)
 </programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsNavigationClass" role="struct">
-<title>struct AgsNavigationClass</title>
-<indexterm zone="AgsNavigationClass"><primary>AgsNavigationClass</primary></indexterm>
-<programlisting>struct AgsNavigationClass {
-  GtkVBoxClass vbox;
+</refsect2>
+<refsect2 id="ags-navigation-tact-to-time-string" role="function" condition="since:0.4">
+<title>ags_navigation_tact_to_time_string&#160;()</title>
+<indexterm zone="ags-navigation-tact-to-time-string" role="0.4"><primary>ags_navigation_tact_to_time_string</primary></indexterm>
+<programlisting language="C"><link linkend="gchar"><returnvalue>gchar</returnvalue></link>&#160;*
+ags_navigation_tact_to_time_string (<parameter><link linkend="gdouble"><type>gdouble</type></link> tact</parameter>,
+                                    <parameter><link linkend="gdouble"><type>gdouble</type></link> bpm</parameter>);</programlisting>
+<para>Convert tact unit to time.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>tact</para></entry>
+<entry role="parameter_description"><para>the new position</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> tact as time string</para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-navigation-update-time-string" role="function" condition="since:0.4">
+<title>ags_navigation_update_time_string&#160;()</title>
+<indexterm zone="ags-navigation-update-time-string" role="0.4"><primary>ags_navigation_update_time_string</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_navigation_update_time_string (<parameter><link linkend="double"><type>double</type></link> tact</parameter>,
+                                   <parameter><link linkend="gchar"><type>gchar</type></link> *time_string</parameter>,
+                                   <parameter><link linkend="gdouble"><type>gdouble</type></link> bpm</parameter>);</programlisting>
+<para>Updates time as string.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>tact</para></entry>
+<entry role="parameter_description"><para>the new position</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>time_str</para></entry>
+<entry role="parameter_description"><para>the pointer location to set</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-navigation-set-seeking-sensitive" role="function">
+<title>ags_navigation_set_seeking_sensitive&#160;()</title>
+<indexterm zone="ags-navigation-set-seeking-sensitive"><primary>ags_navigation_set_seeking_sensitive</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_navigation_set_seeking_sensitive (<parameter><link linkend="AgsNavigation"><type>AgsNavigation</type></link> *navigation</parameter>,
+                                      <parameter><link linkend="gboolean"><type>gboolean</type></link> enabled</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-navigation-change-position" role="function" condition="since:0.4">
+<title>ags_navigation_change_position&#160;()</title>
+<indexterm zone="ags-navigation-change-position" role="0.4"><primary>ags_navigation_change_position</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_navigation_change_position (<parameter><link linkend="AgsNavigation"><type>AgsNavigation</type></link> *navigation</parameter>,
+                                <parameter><link linkend="gdouble"><type>gdouble</type></link> tact</parameter>,
+                                <parameter><link linkend="gdouble"><type>gdouble</type></link> bpm</parameter>);</programlisting>
+<para>Change tact position of editor. The scrollbar is adjustet
+and its playback position seeked.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>navigation</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsNavigation"><type>AgsNavigation</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>tact</para></entry>
+<entry role="parameter_description"><para>the new position</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-navigation-new" role="function" condition="since:0.4">
+<title>ags_navigation_new&#160;()</title>
+<indexterm zone="ags-navigation-new" role="0.4"><primary>ags_navigation_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsNavigation"><returnvalue>AgsNavigation</returnvalue></link>&#160;*
+ags_navigation_new ();</programlisting>
+<para>Creates an <link linkend="AgsNavigation"><type>AgsNavigation</type></link> to control the tree.</para>
+<refsect3 role="returns">
+<title>Returns</title>
+<para> a new <link linkend="AgsNavigation"><type>AgsNavigation</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
 
-  void (*change_position)(AgsNavigation *navigation,
-			  gdouble tact);
-};
-</programlisting>
-<para>
-</para></refsect2>
+</refsect1>
+<refsect1 id="AgsNavigation.other_details" role="details">
+<title role="details.title">Types and Values</title>
 <refsect2 id="AgsNavigationFlags" role="enum">
 <title>enum AgsNavigationFlags</title>
 <indexterm zone="AgsNavigationFlags"><primary>AgsNavigationFlags</primary></indexterm>
-<programlisting>typedef enum {
-  AGS_NAVIGATION_BLOCK_TACT   = 1,
-} AgsNavigationFlags;
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-navigation-change-position" role="function">
-<title>ags_navigation_change_position ()</title>
-<indexterm zone="ags-navigation-change-position"><primary>ags_navigation_change_position</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_navigation_change_position      (<parameter><link linkend="AgsNavigation"><type>AgsNavigation</type></link> *navigation</parameter>,
-                                                         <parameter><link linkend="gdouble"><type>gdouble</type></link> tact</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-navigation-new" role="function">
-<title>ags_navigation_new ()</title>
-<indexterm zone="ags-navigation-new"><primary>ags_navigation_new</primary></indexterm>
-<programlisting><link linkend="AgsNavigation"><returnvalue>AgsNavigation</returnvalue></link> *     ags_navigation_new                  ();</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-navigation-set-seeking-sensitive" role="function">
-<title>ags_navigation_set_seeking_sensitive ()</title>
-<indexterm zone="ags-navigation-set-seeking-sensitive"><primary>ags_navigation_set_seeking_sensitive</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_navigation_set_seeking_sensitive
-                                                        (<parameter><link linkend="AgsNavigation"><type>AgsNavigation</type></link> *navigation</parameter>,
-                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> enabled</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-navigation-tact-to-time-string" role="function">
-<title>ags_navigation_tact_to_time_string ()</title>
-<indexterm zone="ags-navigation-tact-to-time-string"><primary>ags_navigation_tact_to_time_string</primary></indexterm>
-<programlisting><link linkend="gchar"><returnvalue>gchar</returnvalue></link> *             ags_navigation_tact_to_time_string  (<parameter><link linkend="gdouble"><type>gdouble</type></link> tact</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-navigation-update-time-string" role="function">
-<title>ags_navigation_update_time_string ()</title>
-<indexterm zone="ags-navigation-update-time-string"><primary>ags_navigation_update_time_string</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_navigation_update_time_string   (<parameter><link linkend="double"><type>double</type></link> tact</parameter>,
-                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *time_string</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<refsect3 role="enum_members">
+<title>Members</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="enum_members_name" colwidth="300px"/>
+<colspec colname="enum_members_description"/>
+<colspec colname="enum_members_annotations" colwidth="200px"/>
+<tbody>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-NAVIGATION-BLOCK-TACT:CAPS">AGS_NAVIGATION_BLOCK_TACT</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-NAVIGATION-BLOCK-PLAY:CAPS">AGS_NAVIGATION_BLOCK_PLAY</para></entry>
+<entry /><entry />
+</row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
 
+</refsect1>
+<refsect1 id="AgsNavigation.property-details" role="property_details">
+<title role="property_details.title">Property Details</title>
+<refsect2 id="AgsNavigation--soundcard" role="property"><title>The <literal>“soundcard”</literal> property</title>
+<indexterm zone="AgsNavigation--soundcard" role="0.4"><primary>AgsNavigation:soundcard</primary></indexterm>
+<programlisting>  “soundcard”                <link linkend="GObject"><type>GObject</type></link>&#160;*</programlisting>
+<para>The assigned <link linkend="GObject"><type>GObject</type></link> to use as default sink.</para>
+<para>Flags: Read / Write</para>
+<para role="since">Since 0.4</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsNavigation.signal-details" role="signals">
+<title role="signals.title">Signal Details</title>
+<refsect2 id="AgsNavigation-change-position" role="signal"><title>The <literal>“change-position”</literal> signal</title>
+<indexterm zone="AgsNavigation-change-position"><primary>AgsNavigation::change-position</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsNavigation"><type>AgsNavigation</type></link> *navigation,
+               <link linkend="gdouble"><type>gdouble</type></link>        tact,
+               <link linkend="gpointer"><type>gpointer</type></link>       user_data)</programlisting>
+<para>The ::change-position seeks the stream.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>navigation</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsNavigation"><type>AgsNavigation</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>tact</para></entry>
+<entry role="parameter_description"><para>the new position</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2>
 </refsect1>
 
 </refentry>

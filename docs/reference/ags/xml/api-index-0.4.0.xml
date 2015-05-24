@@ -1,8 +1,96 @@
 <?xml version="1.0"?>
 <!DOCTYPE indexdiv PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
 <indexdiv>
+<indexdiv><title>A</title>
+<indexentry><primaryie linkends="AgsAudioSignal--recall-id"><link linkend="AgsAudioSignal--recall-id">AgsAudioSignal:recall-id</link>, object property in <link linkend="AgsAudioSignal">AgsAudioSignal</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsAudioSignal--recycling"><link linkend="AgsAudioSignal--recycling">AgsAudioSignal:recycling</link>, object property in <link linkend="AgsAudioSignal">AgsAudioSignal</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsAudioSignal--soundcard"><link linkend="AgsAudioSignal--soundcard">AgsAudioSignal:soundcard</link>, object property in <link linkend="AgsAudioSignal">AgsAudioSignal</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsAutomationArea--automation"><link linkend="AgsAutomationArea--automation">AgsAutomationArea:automation</link>, object property in <link linkend="AgsAutomationArea">AgsAutomationArea</link></primaryie></indexentry>
+</indexdiv>
+<indexdiv><title>C</title>
+<indexentry><primaryie linkends="AgsChannel--audio"><link linkend="AgsChannel--audio">AgsChannel:audio</link>, object property in <link linkend="AgsChannel">AgsChannel</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsChannel--soundcard"><link linkend="AgsChannel--soundcard">AgsChannel:soundcard</link>, object property in <link linkend="AgsChannel">AgsChannel</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsCountBeatsAudioRun--delay-audio-run"><link linkend="AgsCountBeatsAudioRun--delay-audio-run">AgsCountBeatsAudioRun:delay-audio-run</link>, object property in <link linkend="AgsCountBeatsAudioRun">AgsCountBeatsAudioRun</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsCountBeatsAudioRun--notation-counter"><link linkend="AgsCountBeatsAudioRun--notation-counter">AgsCountBeatsAudioRun:notation-counter</link>, object property in <link linkend="AgsCountBeatsAudioRun">AgsCountBeatsAudioRun</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsCountBeatsAudioRun--sequencer-counter"><link linkend="AgsCountBeatsAudioRun--sequencer-counter">AgsCountBeatsAudioRun:sequencer-counter</link>, object property in <link linkend="AgsCountBeatsAudioRun">AgsCountBeatsAudioRun</link></primaryie></indexentry>
+</indexdiv>
+<indexdiv><title>D</title>
+<indexentry><primaryie linkends="AgsDevout--application-context"><link linkend="AgsDevout--application-context">AgsDevout:application-context</link>, object property in <link linkend="AgsDevout">AgsDevout</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsDevout--bpm"><link linkend="AgsDevout--bpm">AgsDevout:bpm</link>, object property in <link linkend="AgsDevout">AgsDevout</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsDevout--buffer"><link linkend="AgsDevout--buffer">AgsDevout:buffer</link>, object property in <link linkend="AgsDevout">AgsDevout</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsDevout--buffer-size"><link linkend="AgsDevout--buffer-size">AgsDevout:buffer-size</link>, object property in <link linkend="AgsDevout">AgsDevout</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsDevout--device"><link linkend="AgsDevout--device">AgsDevout:device</link>, object property in <link linkend="AgsDevout">AgsDevout</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsDevout--dsp-channels"><link linkend="AgsDevout--dsp-channels">AgsDevout:dsp-channels</link>, object property in <link linkend="AgsDevout">AgsDevout</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsDevout--format"><link linkend="AgsDevout--format">AgsDevout:format</link>, object property in <link linkend="AgsDevout">AgsDevout</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsDevout--pcm-channels"><link linkend="AgsDevout--pcm-channels">AgsDevout:pcm-channels</link>, object property in <link linkend="AgsDevout">AgsDevout</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsDevout--samplerate"><link linkend="AgsDevout--samplerate">AgsDevout:samplerate</link>, object property in <link linkend="AgsDevout">AgsDevout</link></primaryie></indexentry>
+</indexdiv>
+<indexdiv><title>I</title>
+<indexentry><primaryie linkends="AgsInput--file-link"><link linkend="AgsInput--file-link">AgsInput:file-link</link>, object property in <link linkend="AgsInput">AgsInput</link></primaryie></indexentry>
+</indexdiv>
+<indexdiv><title>N</title>
+<indexentry><primaryie linkends="AgsNotation--current-notes"><link linkend="AgsNotation--current-notes">AgsNotation:current-notes</link>, object property in <link linkend="AgsNotation">AgsNotation</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsNotation--next-notes"><link linkend="AgsNotation--next-notes">AgsNotation:next-notes</link>, object property in <link linkend="AgsNotation">AgsNotation</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsNotation--port"><link linkend="AgsNotation--port">AgsNotation:port</link>, object property in <link linkend="AgsNotation">AgsNotation</link></primaryie></indexentry>
+</indexdiv>
+<indexdiv><title>P</title>
+<indexentry><primaryie linkends="AgsPattern--current-bit"><link linkend="AgsPattern--current-bit">AgsPattern:current-bit</link>, object property in <link linkend="AgsPattern">AgsPattern</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsPattern--first-index"><link linkend="AgsPattern--first-index">AgsPattern:first-index</link>, object property in <link linkend="AgsPattern">AgsPattern</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsPattern--offset"><link linkend="AgsPattern--offset">AgsPattern:offset</link>, object property in <link linkend="AgsPattern">AgsPattern</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsPattern--port"><link linkend="AgsPattern--port">AgsPattern:port</link>, object property in <link linkend="AgsPattern">AgsPattern</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsPattern--second-index"><link linkend="AgsPattern--second-index">AgsPattern:second-index</link>, object property in <link linkend="AgsPattern">AgsPattern</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-playable-close"><link linkend="ags-playable-close">ags_playable_close</link>, function in <link linkend="AgsPlayable">AgsPlayable</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-playable-iter-next"><link linkend="ags-playable-iter-next">ags_playable_iter_next</link>, function in <link linkend="AgsPlayable">AgsPlayable</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-playable-iter-start"><link linkend="ags-playable-iter-start">ags_playable_iter_start</link>, function in <link linkend="AgsPlayable">AgsPlayable</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-playable-level-count"><link linkend="ags-playable-level-count">ags_playable_level_count</link>, function in <link linkend="AgsPlayable">AgsPlayable</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-playable-level-select"><link linkend="ags-playable-level-select">ags_playable_level_select</link>, function in <link linkend="AgsPlayable">AgsPlayable</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-playable-level-up"><link linkend="ags-playable-level-up">ags_playable_level_up</link>, function in <link linkend="AgsPlayable">AgsPlayable</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-playable-nth-level"><link linkend="ags-playable-nth-level">ags_playable_nth_level</link>, function in <link linkend="AgsPlayable">AgsPlayable</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-playable-open"><link linkend="ags-playable-open">ags_playable_open</link>, function in <link linkend="AgsPlayable">AgsPlayable</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-playable-read-audio-signal"><link linkend="ags-playable-read-audio-signal">ags_playable_read_audio_signal</link>, function in <link linkend="AgsPlayable">AgsPlayable</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-playable-selected-level"><link linkend="ags-playable-selected-level">ags_playable_selected_level</link>, function in <link linkend="AgsPlayable">AgsPlayable</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-playable-sublevel-names"><link linkend="ags-playable-sublevel-names">ags_playable_sublevel_names</link>, function in <link linkend="AgsPlayable">AgsPlayable</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsPort--control-port"><link linkend="AgsPort--control-port">AgsPort:control-port</link>, object property in <link linkend="AgsPort">AgsPort</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsPort--plugin-name"><link linkend="AgsPort--plugin-name">AgsPort:plugin-name</link>, object property in <link linkend="AgsPort">AgsPort</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsPort--port-value-is-pointer"><link linkend="AgsPort--port-value-is-pointer">AgsPort:port-value-is-pointer</link>, object property in <link linkend="AgsPort">AgsPort</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsPort--port-value-length"><link linkend="AgsPort--port-value-length">AgsPort:port-value-length</link>, object property in <link linkend="AgsPort">AgsPort</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsPort--port-value-size"><link linkend="AgsPort--port-value-size">AgsPort:port-value-size</link>, object property in <link linkend="AgsPort">AgsPort</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsPort--port-value-type"><link linkend="AgsPort--port-value-type">AgsPort:port-value-type</link>, object property in <link linkend="AgsPort">AgsPort</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsPort--specifier"><link linkend="AgsPort--specifier">AgsPort:specifier</link>, object property in <link linkend="AgsPort">AgsPort</link></primaryie></indexentry>
+</indexdiv>
+<indexdiv><title>R</title>
+<indexentry><primaryie linkends="AgsRecallAudio--audio"><link linkend="AgsRecallAudio--audio">AgsRecallAudio:audio</link>, object property in <link linkend="AgsRecallAudio">AgsRecallAudio</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsRecallAudioRun--recall-audio"><link linkend="AgsRecallAudioRun--recall-audio">AgsRecallAudioRun:recall-audio</link>, object property in <link linkend="AgsRecallAudioRun">AgsRecallAudioRun</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsRecallAudioSignal--audio-channel"><link linkend="AgsRecallAudioSignal--audio-channel">AgsRecallAudioSignal:audio-channel</link>, object property in <link linkend="AgsRecallAudioSignal">AgsRecallAudioSignal</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsRecallAudioSignal--destination"><link linkend="AgsRecallAudioSignal--destination">AgsRecallAudioSignal:destination</link>, object property in <link linkend="AgsRecallAudioSignal">AgsRecallAudioSignal</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsRecallAudioSignal--source"><link linkend="AgsRecallAudioSignal--source">AgsRecallAudioSignal:source</link>, object property in <link linkend="AgsRecallAudioSignal">AgsRecallAudioSignal</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsRecallChannel--destination"><link linkend="AgsRecallChannel--destination">AgsRecallChannel:destination</link>, object property in <link linkend="AgsRecallChannel">AgsRecallChannel</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsRecallChannel--source"><link linkend="AgsRecallChannel--source">AgsRecallChannel:source</link>, object property in <link linkend="AgsRecallChannel">AgsRecallChannel</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsRecallChannelRun--audio-channel"><link linkend="AgsRecallChannelRun--audio-channel">AgsRecallChannelRun:audio-channel</link>, object property in <link linkend="AgsRecallChannelRun">AgsRecallChannelRun</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsRecallChannelRun--destination"><link linkend="AgsRecallChannelRun--destination">AgsRecallChannelRun:destination</link>, object property in <link linkend="AgsRecallChannelRun">AgsRecallChannelRun</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsRecallChannelRun--recall-audio-run"><link linkend="AgsRecallChannelRun--recall-audio-run">AgsRecallChannelRun:recall-audio-run</link>, object property in <link linkend="AgsRecallChannelRun">AgsRecallChannelRun</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsRecallChannelRun--recall-channel"><link linkend="AgsRecallChannelRun--recall-channel">AgsRecallChannelRun:recall-channel</link>, object property in <link linkend="AgsRecallChannelRun">AgsRecallChannelRun</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsRecallChannelRun--source"><link linkend="AgsRecallChannelRun--source">AgsRecallChannelRun:source</link>, object property in <link linkend="AgsRecallChannelRun">AgsRecallChannelRun</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsRecallID--recycling"><link linkend="AgsRecallID--recycling">AgsRecallID:recycling</link>, object property in <link linkend="AgsRecallID">AgsRecallID</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsRecallID--recycling-context"><link linkend="AgsRecallID--recycling-context">AgsRecallID:recycling-context</link>, object property in <link linkend="AgsRecallID">AgsRecallID</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsRecallRecycling--audio-channel"><link linkend="AgsRecallRecycling--audio-channel">AgsRecallRecycling:audio-channel</link>, object property in <link linkend="AgsRecallRecycling">AgsRecallRecycling</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsRecallRecycling--child-destination"><link linkend="AgsRecallRecycling--child-destination">AgsRecallRecycling:child-destination</link>, object property in <link linkend="AgsRecallRecycling">AgsRecallRecycling</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsRecallRecycling--child-source"><link linkend="AgsRecallRecycling--child-source">AgsRecallRecycling:child-source</link>, object property in <link linkend="AgsRecallRecycling">AgsRecallRecycling</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsRecallRecycling--destination"><link linkend="AgsRecallRecycling--destination">AgsRecallRecycling:destination</link>, object property in <link linkend="AgsRecallRecycling">AgsRecallRecycling</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-recall-dependency-find-dependency"><link linkend="ags-recall-dependency-find-dependency">ags_recall_dependency_find_dependency</link>, function in <link linkend="AgsRecallDependency">AgsRecallDependency</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-recall-dependency-find-dependency-by-provider"><link linkend="ags-recall-dependency-find-dependency-by-provider">ags_recall_dependency_find_dependency_by_provider</link>, function in <link linkend="AgsRecallDependency">AgsRecallDependency</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-recall-dependency-new"><link linkend="ags-recall-dependency-new">ags_recall_dependency_new</link>, function in <link linkend="AgsRecallDependency">AgsRecallDependency</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-recall-dependency-resolve"><link linkend="ags-recall-dependency-resolve">ags_recall_dependency_resolve</link>, function in <link linkend="AgsRecallDependency">AgsRecallDependency</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsRecycling--soundcard"><link linkend="AgsRecycling--soundcard">AgsRecycling:soundcard</link>, object property in <link linkend="AgsRecycling">AgsRecycling</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsRecyclingContext--length"><link linkend="AgsRecyclingContext--length">AgsRecyclingContext:length</link>, object property in <link linkend="AgsRecyclingContext">AgsRecyclingContext</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsRecyclingContext--parent"><link linkend="AgsRecyclingContext--parent">AgsRecyclingContext:parent</link>, object property in <link linkend="AgsRecyclingContext">AgsRecyclingContext</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsRecyclingContext--recall-id"><link linkend="AgsRecyclingContext--recall-id">AgsRecyclingContext:recall-id</link>, object property in <link linkend="AgsRecyclingContext">AgsRecyclingContext</link></primaryie></indexentry>
+</indexdiv>
+<indexdiv><title>S</title>
+<indexentry><primaryie linkends="AgsServer--application-context"><link linkend="AgsServer--application-context">AgsServer:application-context</link>, object property in <link linkend="AgsServer">AgsServer</link></primaryie></indexentry>
+</indexdiv>
 </indexdiv>

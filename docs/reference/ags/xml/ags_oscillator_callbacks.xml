@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
 <refentry id="ags-ags-oscillator-callbacks">
 <refmeta>
@@ -17,73 +17,84 @@
 <refpurpose></refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-ags-oscillator-callbacks.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="ags-ags-oscillator-callbacks.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-oscillator-wave-callback">ags_oscillator_wave_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-oscillator-attack-callback">ags_oscillator_attack_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-oscillator-frame-count-callback">ags_oscillator_frame_count_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-oscillator-frequency-callback">ags_oscillator_frequency_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-oscillator-phase-callback">ags_oscillator_phase_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-oscillator-volume-callback">ags_oscillator_volume_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis><link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-oscillator-attack-callback">ags_oscillator_attack_callback</link>      (<parameter><link linkend="GtkSpinButton"><type>GtkSpinButton</type></link> *spin_button</parameter>,
-                                                         <parameter><link linkend="AgsOscillator"><type>AgsOscillator</type></link> *oscillator</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-oscillator-frame-count-callback">ags_oscillator_frame_count_callback</link> (<parameter><link linkend="GtkSpinButton"><type>GtkSpinButton</type></link> *spin_button</parameter>,
-                                                         <parameter><link linkend="AgsOscillator"><type>AgsOscillator</type></link> *oscillator</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-oscillator-frequency-callback">ags_oscillator_frequency_callback</link>   (<parameter><link linkend="GtkSpinButton"><type>GtkSpinButton</type></link> *spin_button</parameter>,
-                                                         <parameter><link linkend="AgsOscillator"><type>AgsOscillator</type></link> *oscillator</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-oscillator-phase-callback">ags_oscillator_phase_callback</link>       (<parameter><link linkend="GtkSpinButton"><type>GtkSpinButton</type></link> *spin_button</parameter>,
-                                                         <parameter><link linkend="AgsOscillator"><type>AgsOscillator</type></link> *oscillator</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-oscillator-volume-callback">ags_oscillator_volume_callback</link>      (<parameter><link linkend="GtkSpinButton"><type>GtkSpinButton</type></link> *spin_button</parameter>,
-                                                         <parameter><link linkend="AgsOscillator"><type>AgsOscillator</type></link> *oscillator</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-oscillator-wave-callback">ags_oscillator_wave_callback</link>        (<parameter><link linkend="GtkComboBox"><type>GtkComboBox</type></link> *combo</parameter>,
-                                                         <parameter><link linkend="AgsOscillator"><type>AgsOscillator</type></link> *oscillator</parameter>);
-</synopsis>
-</refsynopsisdiv>
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+
 
 <refsect1 id="ags-ags-oscillator-callbacks.description" role="desc">
 <title role="desc.title">Description</title>
-<para>
-</para>
+
 </refsect1>
-<refsect1 id="ags-ags-oscillator-callbacks.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="ags-oscillator-attack-callback" role="function">
-<title>ags_oscillator_attack_callback ()</title>
-<indexterm zone="ags-oscillator-attack-callback"><primary>ags_oscillator_attack_callback</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_oscillator_attack_callback      (<parameter><link linkend="GtkSpinButton"><type>GtkSpinButton</type></link> *spin_button</parameter>,
-                                                         <parameter><link linkend="AgsOscillator"><type>AgsOscillator</type></link> *oscillator</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-oscillator-frame-count-callback" role="function">
-<title>ags_oscillator_frame_count_callback ()</title>
-<indexterm zone="ags-oscillator-frame-count-callback"><primary>ags_oscillator_frame_count_callback</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_oscillator_frame_count_callback (<parameter><link linkend="GtkSpinButton"><type>GtkSpinButton</type></link> *spin_button</parameter>,
-                                                         <parameter><link linkend="AgsOscillator"><type>AgsOscillator</type></link> *oscillator</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-oscillator-frequency-callback" role="function">
-<title>ags_oscillator_frequency_callback ()</title>
-<indexterm zone="ags-oscillator-frequency-callback"><primary>ags_oscillator_frequency_callback</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_oscillator_frequency_callback   (<parameter><link linkend="GtkSpinButton"><type>GtkSpinButton</type></link> *spin_button</parameter>,
-                                                         <parameter><link linkend="AgsOscillator"><type>AgsOscillator</type></link> *oscillator</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-oscillator-phase-callback" role="function">
-<title>ags_oscillator_phase_callback ()</title>
-<indexterm zone="ags-oscillator-phase-callback"><primary>ags_oscillator_phase_callback</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_oscillator_phase_callback       (<parameter><link linkend="GtkSpinButton"><type>GtkSpinButton</type></link> *spin_button</parameter>,
-                                                         <parameter><link linkend="AgsOscillator"><type>AgsOscillator</type></link> *oscillator</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-oscillator-volume-callback" role="function">
-<title>ags_oscillator_volume_callback ()</title>
-<indexterm zone="ags-oscillator-volume-callback"><primary>ags_oscillator_volume_callback</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_oscillator_volume_callback      (<parameter><link linkend="GtkSpinButton"><type>GtkSpinButton</type></link> *spin_button</parameter>,
-                                                         <parameter><link linkend="AgsOscillator"><type>AgsOscillator</type></link> *oscillator</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<refsect1 id="ags-ags-oscillator-callbacks.functions_details" role="details">
+<title role="details.title">Functions</title>
 <refsect2 id="ags-oscillator-wave-callback" role="function">
-<title>ags_oscillator_wave_callback ()</title>
+<title>ags_oscillator_wave_callback&#160;()</title>
 <indexterm zone="ags-oscillator-wave-callback"><primary>ags_oscillator_wave_callback</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_oscillator_wave_callback        (<parameter><link linkend="GtkComboBox"><type>GtkComboBox</type></link> *combo</parameter>,
-                                                         <parameter><link linkend="AgsOscillator"><type>AgsOscillator</type></link> *oscillator</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_oscillator_wave_callback (<parameter><link linkend="GtkComboBox"><type>GtkComboBox</type></link> *combo</parameter>,
+                              <parameter><link linkend="AgsOscillator"><type>AgsOscillator</type></link> *oscillator</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-oscillator-attack-callback" role="function">
+<title>ags_oscillator_attack_callback&#160;()</title>
+<indexterm zone="ags-oscillator-attack-callback"><primary>ags_oscillator_attack_callback</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_oscillator_attack_callback (<parameter><link linkend="GtkSpinButton"><type>GtkSpinButton</type></link> *spin_button</parameter>,
+                                <parameter><link linkend="AgsOscillator"><type>AgsOscillator</type></link> *oscillator</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-oscillator-frame-count-callback" role="function">
+<title>ags_oscillator_frame_count_callback&#160;()</title>
+<indexterm zone="ags-oscillator-frame-count-callback"><primary>ags_oscillator_frame_count_callback</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_oscillator_frame_count_callback (<parameter><link linkend="GtkSpinButton"><type>GtkSpinButton</type></link> *spin_button</parameter>,
+                                     <parameter><link linkend="AgsOscillator"><type>AgsOscillator</type></link> *oscillator</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-oscillator-frequency-callback" role="function">
+<title>ags_oscillator_frequency_callback&#160;()</title>
+<indexterm zone="ags-oscillator-frequency-callback"><primary>ags_oscillator_frequency_callback</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_oscillator_frequency_callback (<parameter><link linkend="GtkSpinButton"><type>GtkSpinButton</type></link> *spin_button</parameter>,
+                                   <parameter><link linkend="AgsOscillator"><type>AgsOscillator</type></link> *oscillator</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-oscillator-phase-callback" role="function">
+<title>ags_oscillator_phase_callback&#160;()</title>
+<indexterm zone="ags-oscillator-phase-callback"><primary>ags_oscillator_phase_callback</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_oscillator_phase_callback (<parameter><link linkend="GtkSpinButton"><type>GtkSpinButton</type></link> *spin_button</parameter>,
+                               <parameter><link linkend="AgsOscillator"><type>AgsOscillator</type></link> *oscillator</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-oscillator-volume-callback" role="function">
+<title>ags_oscillator_volume_callback&#160;()</title>
+<indexterm zone="ags-oscillator-volume-callback"><primary>ags_oscillator_volume_callback</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_oscillator_volume_callback (<parameter><link linkend="GtkSpinButton"><type>GtkSpinButton</type></link> *spin_button</parameter>,
+                                <parameter><link linkend="AgsOscillator"><type>AgsOscillator</type></link> *oscillator</parameter>);</programlisting>
+</refsect2>
+
+</refsect1>
+<refsect1 id="ags-ags-oscillator-callbacks.other_details" role="details">
+<title role="details.title">Types and Values</title>
 
 </refsect1>
 

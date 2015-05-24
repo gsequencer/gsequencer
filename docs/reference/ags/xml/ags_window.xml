@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsWindow">
+<refentry id="AgsWindow">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsWindow.top_of_page">AgsWindow</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsWindow.top_of_page">AgsWindow</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -14,51 +14,176 @@
 </refmeta>
 <refnamediv>
 <refname>AgsWindow</refname>
-<refpurpose></refpurpose>
+<refpurpose>The window object.</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsWindow.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsWindow.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-MACHINE-COUNTER:CAPS">AGS_MACHINE_COUNTER</link><phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsMachineCounter"><returnvalue>AgsMachineCounter</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-window-find-machine-counter">ags_window_find_machine_counter</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-window-increment-machine-counter">ags_window_increment_machine_counter</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-window-decrement-machine-counter">ags_window_decrement_machine_counter</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsMachineCounter"><returnvalue>AgsMachineCounter</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-machine-counter-alloc">ags_machine_counter_alloc</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsWindow"><returnvalue>AgsWindow</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-window-new">ags_window_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>#define             <link linkend="AGS-MACHINE-COUNTER:CAPS">AGS_MACHINE_COUNTER</link>                 (ptr)
-struct              <link linkend="AgsMachineCounter">AgsMachineCounter</link>;
-struct              <link linkend="AgsWindow">AgsWindow</link>;
-struct              <link linkend="AgsWindowClass">AgsWindowClass</link>;
-enum                <link linkend="AgsWindowFlags">AgsWindowFlags</link>;
-<link linkend="AgsMachineCounter"><returnvalue>AgsMachineCounter</returnvalue></link> * <link linkend="ags-machine-counter-alloc">ags_machine_counter_alloc</link>           (<parameter><link linkend="gchar"><type>gchar</type></link> *version</parameter>,
-                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *build_id</parameter>,
-                                                         <parameter><link linkend="GType"><type>GType</type></link> machine_type</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> initial_value</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-window-decrement-machine-counter">ags_window_decrement_machine_counter</link>
-                                                        (<parameter><link linkend="AgsWindow"><type>AgsWindow</type></link> *window</parameter>,
-                                                         <parameter><link linkend="GType"><type>GType</type></link> machine_type</parameter>);
-<link linkend="AgsMachineCounter"><returnvalue>AgsMachineCounter</returnvalue></link> * <link linkend="ags-window-find-machine-counter">ags_window_find_machine_counter</link>     (<parameter><link linkend="AgsWindow"><type>AgsWindow</type></link> *window</parameter>,
-                                                         <parameter><link linkend="GType"><type>GType</type></link> machine_type</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-window-increment-machine-counter">ags_window_increment_machine_counter</link>
-                                                        (<parameter><link linkend="AgsWindow"><type>AgsWindow</type></link> *window</parameter>,
-                                                         <parameter><link linkend="GType"><type>GType</type></link> machine_type</parameter>);
-<link linkend="AgsWindow"><returnvalue>AgsWindow</returnvalue></link> *         <link linkend="ags-window-new">ags_window_new</link>                      (<parameter><link linkend="GObject"><type>GObject</type></link> *ags_main</parameter>);
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsWindow.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsWindow.details" role="details">
-<title role="details.title">Details</title>
+<refsect1 id="AgsWindow.properties" role="properties">
+<title role="properties.title">Properties</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="properties_type" colwidth="150px"/>
+<colspec colname="properties_name" colwidth="300px"/>
+<colspec colname="properties_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="property_type"><link linkend="GObject"><type>GObject</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsWindow--application-context">application-context</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="GObject"><type>GObject</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsWindow--soundcard">soundcard</link></entry><entry role="property_flags">Read / Write</entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsWindow.other" role="other_proto">
+<title role="other_proto.title">Types and Values</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="name" colwidth="150px"/>
+<colspec colname="description"/>
+<tbody>
+<row><entry role="datatype_keyword">enum</entry><entry role="function_name"><link linkend="AgsWindowFlags">AgsWindowFlags</link></entry></row>
+<row><entry role="datatype_keyword">struct</entry><entry role="function_name"><link linkend="AgsMachineCounter">AgsMachineCounter</link></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsWindow.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GInitiallyUnowned">GInitiallyUnowned</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkObject">GtkObject</link>
+            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkWidget">GtkWidget</link>
+                <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkContainer">GtkContainer</link>
+                    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkBin">GtkBin</link>
+                        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkWindow">GtkWindow</link>
+                            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsWindow
+</screen>
+</refsect1>
+
+<refsect1 id="AgsWindow.includes"><title>Includes</title><synopsis>#include &lt;ags/X/ags_window.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsWindow.description" role="desc">
+<title role="desc.title">Description</title>
+<para><link linkend="AgsWindow"><type>AgsWindow</type></link> is a composite toplevel widget.</para>
+
+</refsect1>
+<refsect1 id="AgsWindow.functions_details" role="details">
+<title role="details.title">Functions</title>
 <refsect2 id="AGS-MACHINE-COUNTER:CAPS" role="macro">
 <title>AGS_MACHINE_COUNTER()</title>
 <indexterm zone="AGS-MACHINE-COUNTER:CAPS"><primary>AGS_MACHINE_COUNTER</primary></indexterm>
-<programlisting>#define AGS_MACHINE_COUNTER(ptr) ((AgsMachineCounter *)(ptr))
+<programlisting language="C">#define AGS_MACHINE_COUNTER(ptr) ((AgsMachineCounter *)(ptr))
 </programlisting>
-<para>
-</para></refsect2>
+</refsect2>
+<refsect2 id="ags-window-find-machine-counter" role="function">
+<title>ags_window_find_machine_counter&#160;()</title>
+<indexterm zone="ags-window-find-machine-counter"><primary>ags_window_find_machine_counter</primary></indexterm>
+<programlisting language="C"><link linkend="AgsMachineCounter"><returnvalue>AgsMachineCounter</returnvalue></link>&#160;*
+ags_window_find_machine_counter (<parameter><link linkend="AgsWindow"><type>AgsWindow</type></link> *window</parameter>,
+                                 <parameter><link linkend="GType"><type>GType</type></link> machine_type</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-window-increment-machine-counter" role="function">
+<title>ags_window_increment_machine_counter&#160;()</title>
+<indexterm zone="ags-window-increment-machine-counter"><primary>ags_window_increment_machine_counter</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_window_increment_machine_counter (<parameter><link linkend="AgsWindow"><type>AgsWindow</type></link> *window</parameter>,
+                                      <parameter><link linkend="GType"><type>GType</type></link> machine_type</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-window-decrement-machine-counter" role="function">
+<title>ags_window_decrement_machine_counter&#160;()</title>
+<indexterm zone="ags-window-decrement-machine-counter"><primary>ags_window_decrement_machine_counter</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_window_decrement_machine_counter (<parameter><link linkend="AgsWindow"><type>AgsWindow</type></link> *window</parameter>,
+                                      <parameter><link linkend="GType"><type>GType</type></link> machine_type</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-machine-counter-alloc" role="function">
+<title>ags_machine_counter_alloc&#160;()</title>
+<indexterm zone="ags-machine-counter-alloc"><primary>ags_machine_counter_alloc</primary></indexterm>
+<programlisting language="C"><link linkend="AgsMachineCounter"><returnvalue>AgsMachineCounter</returnvalue></link>&#160;*
+ags_machine_counter_alloc (<parameter><link linkend="gchar"><type>gchar</type></link> *version</parameter>,
+                           <parameter><link linkend="gchar"><type>gchar</type></link> *build_id</parameter>,
+                           <parameter><link linkend="GType"><type>GType</type></link> machine_type</parameter>,
+                           <parameter><link linkend="guint"><type>guint</type></link> initial_value</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-window-new" role="function" condition="since:0.3">
+<title>ags_window_new&#160;()</title>
+<indexterm zone="ags-window-new" role="0.3"><primary>ags_window_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsWindow"><returnvalue>AgsWindow</returnvalue></link>&#160;*
+ags_window_new (<parameter><link linkend="GObject"><type>GObject</type></link> *application_context</parameter>);</programlisting>
+<para>Creates an <link linkend="AgsWindow"><type>AgsWindow</type></link></para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>application_context</para></entry>
+<entry role="parameter_description"><para>the application object.</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> a new <link linkend="AgsWindow"><type>AgsWindow</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.3</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsWindow.other_details" role="details">
+<title role="details.title">Types and Values</title>
+<refsect2 id="AgsWindowFlags" role="enum">
+<title>enum AgsWindowFlags</title>
+<indexterm zone="AgsWindowFlags"><primary>AgsWindowFlags</primary></indexterm>
+<refsect3 role="enum_members">
+<title>Members</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="enum_members_name" colwidth="300px"/>
+<colspec colname="enum_members_description"/>
+<colspec colname="enum_members_annotations" colwidth="200px"/>
+<tbody>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-WINDOW-READY:CAPS">AGS_WINDOW_READY</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-WINDOW-LOADING:CAPS">AGS_WINDOW_LOADING</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-WINDOW-SAVING:CAPS">AGS_WINDOW_SAVING</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-WINDOW-TERMINATING:CAPS">AGS_WINDOW_TERMINATING</para></entry>
+<entry /><entry />
+</row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
 <refsect2 id="AgsMachineCounter" role="struct">
 <title>struct AgsMachineCounter</title>
 <indexterm zone="AgsMachineCounter"><primary>AgsMachineCounter</primary></indexterm>
-<programlisting>struct AgsMachineCounter {
+<programlisting language="C">struct AgsMachineCounter {
   gchar *version;
   gchar *build_id;
 
@@ -66,98 +191,21 @@ enum                <link linkend="AgsWindowFlags">AgsWindowFlags</link>;
   guint counter;
 };
 </programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsWindow" role="struct">
-<title>struct AgsWindow</title>
-<indexterm zone="AgsWindow"><primary>AgsWindow</primary></indexterm>
-<programlisting>struct AgsWindow {
-  GtkWindow window;
+</refsect2>
 
-  guint flags;
-
-  GObject *ags_main;
-
-  AgsDevout *devout;
-
-  char *name;
-
-  AgsMenuBar *menu_bar;
-
-  GtkVPaned *paned;
-
-  GtkVBox *machines;
-  GList *machine_counter;
-  AgsMachine *selected;
-
-  AgsEditor *editor;
-  AgsNavigation *navigation;
-
-  AgsExportWindow *export_window;
-  AgsPreferences *preferences;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsWindowClass" role="struct">
-<title>struct AgsWindowClass</title>
-<indexterm zone="AgsWindowClass"><primary>AgsWindowClass</primary></indexterm>
-<programlisting>struct AgsWindowClass {
-  GtkWindowClass window;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsWindowFlags" role="enum">
-<title>enum AgsWindowFlags</title>
-<indexterm zone="AgsWindowFlags"><primary>AgsWindowFlags</primary></indexterm>
-<programlisting>typedef enum {
-  AGS_WINDOW_READY        = 1,
-  AGS_WINDOW_LOADING      = 1 &lt;&lt; 1,
-  AGS_WINDOW_SAVING       = 1 &lt;&lt; 2,
-  AGS_WINDOW_TERMINATING  = 1 &lt;&lt; 3,
-} AgsWindowFlags;
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-machine-counter-alloc" role="function">
-<title>ags_machine_counter_alloc ()</title>
-<indexterm zone="ags-machine-counter-alloc"><primary>ags_machine_counter_alloc</primary></indexterm>
-<programlisting><link linkend="AgsMachineCounter"><returnvalue>AgsMachineCounter</returnvalue></link> * ags_machine_counter_alloc           (<parameter><link linkend="gchar"><type>gchar</type></link> *version</parameter>,
-                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *build_id</parameter>,
-                                                         <parameter><link linkend="GType"><type>GType</type></link> machine_type</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> initial_value</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-window-decrement-machine-counter" role="function">
-<title>ags_window_decrement_machine_counter ()</title>
-<indexterm zone="ags-window-decrement-machine-counter"><primary>ags_window_decrement_machine_counter</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_window_decrement_machine_counter
-                                                        (<parameter><link linkend="AgsWindow"><type>AgsWindow</type></link> *window</parameter>,
-                                                         <parameter><link linkend="GType"><type>GType</type></link> machine_type</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-window-find-machine-counter" role="function">
-<title>ags_window_find_machine_counter ()</title>
-<indexterm zone="ags-window-find-machine-counter"><primary>ags_window_find_machine_counter</primary></indexterm>
-<programlisting><link linkend="AgsMachineCounter"><returnvalue>AgsMachineCounter</returnvalue></link> * ags_window_find_machine_counter     (<parameter><link linkend="AgsWindow"><type>AgsWindow</type></link> *window</parameter>,
-                                                         <parameter><link linkend="GType"><type>GType</type></link> machine_type</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-window-increment-machine-counter" role="function">
-<title>ags_window_increment_machine_counter ()</title>
-<indexterm zone="ags-window-increment-machine-counter"><primary>ags_window_increment_machine_counter</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_window_increment_machine_counter
-                                                        (<parameter><link linkend="AgsWindow"><type>AgsWindow</type></link> *window</parameter>,
-                                                         <parameter><link linkend="GType"><type>GType</type></link> machine_type</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-window-new" role="function">
-<title>ags_window_new ()</title>
-<indexterm zone="ags-window-new"><primary>ags_window_new</primary></indexterm>
-<programlisting><link linkend="AgsWindow"><returnvalue>AgsWindow</returnvalue></link> *         ags_window_new                      (<parameter><link linkend="GObject"><type>GObject</type></link> *ags_main</parameter>);</programlisting>
-<para>
-</para></refsect2>
+</refsect1>
+<refsect1 id="AgsWindow.property-details" role="property_details">
+<title role="property_details.title">Property Details</title>
+<refsect2 id="AgsWindow--application-context" role="property"><title>The <literal>“application-context”</literal> property</title>
+<indexterm zone="AgsWindow--application-context"><primary>AgsWindow:application-context</primary></indexterm>
+<programlisting>  “application-context”      <link linkend="GObject"><type>GObject</type></link>&#160;*</programlisting>
+<para>The AgsApplicationContext it is assigned with.</para><para>Flags: Read / Write</para>
+</refsect2>
+<refsect2 id="AgsWindow--soundcard" role="property"><title>The <literal>“soundcard”</literal> property</title>
+<indexterm zone="AgsWindow--soundcard"><primary>AgsWindow:soundcard</primary></indexterm>
+<programlisting>  “soundcard”                <link linkend="GObject"><type>GObject</type></link>&#160;*</programlisting>
+<para>The soundcard it is assigned with.</para><para>Flags: Read / Write</para>
+</refsect2>
 
 </refsect1>
 

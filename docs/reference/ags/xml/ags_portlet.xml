@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsPortlet">
+<refentry id="AgsPortlet">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsPortlet.top_of_page">AgsPortlet</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsPortlet.top_of_page">AgsPortlet</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -14,93 +14,176 @@
 </refmeta>
 <refnamediv>
 <refname>AgsPortlet</refname>
-<refpurpose></refpurpose>
+<refpurpose>interfacing portlets</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsPortlet.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsPortlet.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="AgsPort"><returnvalue>AgsPort</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-portlet-get-port">ags_portlet_get_port</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-portlet-set-port">ags_portlet_set_port</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-portlet-list-safe-properties">ags_portlet_list_safe_properties</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-portlet-safe-get-property">ags_portlet_safe_get_property</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-portlet-safe-set-property">ags_portlet_safe_set_property</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>typedef             <link linkend="AgsPortlet">AgsPortlet</link>;
-struct              <link linkend="AgsPortletInterface">AgsPortletInterface</link>;
-<link linkend="AgsPort"><returnvalue>AgsPort</returnvalue></link> *           <link linkend="ags-portlet-get-port">ags_portlet_get_port</link>                (<parameter><link linkend="AgsPortlet"><type>AgsPortlet</type></link> *portlet</parameter>);
-<link linkend="GList"><returnvalue>GList</returnvalue></link> *             <link linkend="ags-portlet-list-safe-properties">ags_portlet_list_safe_properties</link>    (<parameter><link linkend="AgsPortlet"><type>AgsPortlet</type></link> *portlet</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-portlet-safe-get-property">ags_portlet_safe_get_property</link>       (<parameter><link linkend="AgsPortlet"><type>AgsPortlet</type></link> *portlet</parameter>,
-                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *property_name</parameter>,
-                                                         <parameter><link linkend="GValue"><type>GValue</type></link> *value</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-portlet-safe-set-property">ags_portlet_safe_set_property</link>       (<parameter><link linkend="AgsPortlet"><type>AgsPortlet</type></link> *portlet</parameter>,
-                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *property_name</parameter>,
-                                                         <parameter><link linkend="GValue"><type>GValue</type></link> *value</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-portlet-set-port">ags_portlet_set_port</link>                (<parameter><link linkend="AgsPortlet"><type>AgsPortlet</type></link> *portlet</parameter>,
-                                                         <parameter><link linkend="AgsPort"><type>AgsPort</type></link> *port</parameter>);
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsPortlet.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsPortlet.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AgsPortlet" role="typedef">
-<title>AgsPortlet</title>
-<indexterm zone="AgsPortlet"><primary>AgsPortlet</primary></indexterm>
-<programlisting>typedef void AgsPortlet;
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsPortletInterface" role="struct">
-<title>struct AgsPortletInterface</title>
-<indexterm zone="AgsPortletInterface"><primary>AgsPortletInterface</primary></indexterm>
-<programlisting>struct AgsPortletInterface {
-  GTypeInterface interface;
+<refsect1 id="AgsPortlet.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GInterface">GInterface</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsPortlet
+</screen>
+</refsect1>
 
-  AgsPort* (*get_port)(AgsPortlet *portlet);
-  void (*set_port)(AgsPortlet *portlet, AgsPort *port);
+<refsect1 id="AgsPortlet.includes"><title>Includes</title><synopsis>#include &lt;ags/object/ags_portlet.h&gt;
+</synopsis></refsect1>
 
-  GList* (*list_safe_properties)(AgsPortlet *portlet);
+<refsect1 id="AgsPortlet.description" role="desc">
+<title role="desc.title">Description</title>
+<para>The <link linkend="AgsPortlet"><type>AgsPortlet</type></link> interface is intended to use with ports containing <link linkend="GObject"><type>GObject</type></link>.
+Whereas its should implement this interface.</para>
 
-  void (*safe_get_property)(AgsPortlet *portlet, gchar *property_name, GValue *value);
-  void (*safe_set_property)(AgsPortlet *portlet, gchar *property_name, GValue *value);
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-portlet-get-port" role="function">
-<title>ags_portlet_get_port ()</title>
-<indexterm zone="ags-portlet-get-port"><primary>ags_portlet_get_port</primary></indexterm>
-<programlisting><link linkend="AgsPort"><returnvalue>AgsPort</returnvalue></link> *           ags_portlet_get_port                (<parameter><link linkend="AgsPortlet"><type>AgsPortlet</type></link> *portlet</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-portlet-list-safe-properties" role="function">
-<title>ags_portlet_list_safe_properties ()</title>
-<indexterm zone="ags-portlet-list-safe-properties"><primary>ags_portlet_list_safe_properties</primary></indexterm>
-<programlisting><link linkend="GList"><returnvalue>GList</returnvalue></link> *             ags_portlet_list_safe_properties    (<parameter><link linkend="AgsPortlet"><type>AgsPortlet</type></link> *portlet</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-portlet-safe-get-property" role="function">
-<title>ags_portlet_safe_get_property ()</title>
-<indexterm zone="ags-portlet-safe-get-property"><primary>ags_portlet_safe_get_property</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_portlet_safe_get_property       (<parameter><link linkend="AgsPortlet"><type>AgsPortlet</type></link> *portlet</parameter>,
-                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *property_name</parameter>,
-                                                         <parameter><link linkend="GValue"><type>GValue</type></link> *value</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-portlet-safe-set-property" role="function">
-<title>ags_portlet_safe_set_property ()</title>
-<indexterm zone="ags-portlet-safe-set-property"><primary>ags_portlet_safe_set_property</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_portlet_safe_set_property       (<parameter><link linkend="AgsPortlet"><type>AgsPortlet</type></link> *portlet</parameter>,
-                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *property_name</parameter>,
-                                                         <parameter><link linkend="GValue"><type>GValue</type></link> *value</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-portlet-set-port" role="function">
-<title>ags_portlet_set_port ()</title>
-<indexterm zone="ags-portlet-set-port"><primary>ags_portlet_set_port</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_portlet_set_port                (<parameter><link linkend="AgsPortlet"><type>AgsPortlet</type></link> *portlet</parameter>,
-                                                         <parameter><link linkend="AgsPort"><type>AgsPort</type></link> *port</parameter>);</programlisting>
-<para>
-</para></refsect2>
+</refsect1>
+<refsect1 id="AgsPortlet.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-portlet-get-port" role="function" condition="since:0.4">
+<title>ags_portlet_get_port&#160;()</title>
+<indexterm zone="ags-portlet-get-port" role="0.4"><primary>ags_portlet_get_port</primary></indexterm>
+<programlisting language="C"><link linkend="AgsPort"><returnvalue>AgsPort</returnvalue></link>&#160;*
+ags_portlet_get_port (<parameter><link linkend="AgsPortlet"><type>AgsPortlet</type></link> *portlet</parameter>);</programlisting>
+<para>Get port.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>portlet</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsPortlet"><type>AgsPortlet</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> the <link linkend="AgsPort"><type>AgsPort</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-portlet-set-port" role="function" condition="since:0.4">
+<title>ags_portlet_set_port&#160;()</title>
+<indexterm zone="ags-portlet-set-port" role="0.4"><primary>ags_portlet_set_port</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_portlet_set_port (<parameter><link linkend="AgsPortlet"><type>AgsPortlet</type></link> *portlet</parameter>,
+                      <parameter><link linkend="AgsPort"><type>AgsPort</type></link> *port</parameter>);</programlisting>
+<para>Set port.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>portlet</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsPortlet"><type>AgsPortlet</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>port</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsPort"><type>AgsPort</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-portlet-list-safe-properties" role="function" condition="since:0.4">
+<title>ags_portlet_list_safe_properties&#160;()</title>
+<indexterm zone="ags-portlet-list-safe-properties" role="0.4"><primary>ags_portlet_list_safe_properties</primary></indexterm>
+<programlisting language="C"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+ags_portlet_list_safe_properties (<parameter><link linkend="AgsPortlet"><type>AgsPortlet</type></link> *portlet</parameter>);</programlisting>
+<para>Retrieve thread-safe properties.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>portlet</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsPortlet"><type>AgsPortlet</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> a <link linkend="GList"><type>GList</type></link> containing properties</para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-portlet-safe-get-property" role="function" condition="since:0.4">
+<title>ags_portlet_safe_get_property&#160;()</title>
+<indexterm zone="ags-portlet-safe-get-property" role="0.4"><primary>ags_portlet_safe_get_property</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_portlet_safe_get_property (<parameter><link linkend="AgsPortlet"><type>AgsPortlet</type></link> *portlet</parameter>,
+                               <parameter><link linkend="gchar"><type>gchar</type></link> *property_name</parameter>,
+                               <parameter><link linkend="GValue"><type>GValue</type></link> *value</parameter>);</programlisting>
+<para>Get property thread safe.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>portlet</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsPortlet"><type>AgsPortlet</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>property_name</para></entry>
+<entry role="parameter_description"><para>propertie's name</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>value</para></entry>
+<entry role="parameter_description"><para>the <link linkend="GValue"><type>GValue</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-portlet-safe-set-property" role="function" condition="since:0.4">
+<title>ags_portlet_safe_set_property&#160;()</title>
+<indexterm zone="ags-portlet-safe-set-property" role="0.4"><primary>ags_portlet_safe_set_property</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_portlet_safe_set_property (<parameter><link linkend="AgsPortlet"><type>AgsPortlet</type></link> *portlet</parameter>,
+                               <parameter><link linkend="gchar"><type>gchar</type></link> *property_name</parameter>,
+                               <parameter><link linkend="GValue"><type>GValue</type></link> *value</parameter>);</programlisting>
+<para>Set property thread safe.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>portlet</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsPortlet"><type>AgsPortlet</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>property_name</para></entry>
+<entry role="parameter_description"><para>propertie's name</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>value</para></entry>
+<entry role="parameter_description"><para>the <link linkend="GValue"><type>GValue</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsPortlet.other_details" role="details">
+<title role="details.title">Types and Values</title>
 
 </refsect1>
 

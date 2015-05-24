@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsAutosaveThread">
+<refentry id="AgsAutosaveThread">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsAutosaveThread.top_of_page">AgsAutosaveThread</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsAutosaveThread.top_of_page">AgsAutosaveThread</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -14,76 +14,117 @@
 </refmeta>
 <refnamediv>
 <refname>AgsAutosaveThread</refname>
-<refpurpose></refpurpose>
+<refpurpose>auto safe</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsAutosaveThread.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsAutosaveThread.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-AUTOSAVE-THREAD-DEFAULT-JIFFIE:CAPS">AGS_AUTOSAVE_THREAD_DEFAULT_JIFFIE</link></entry></row>
+<row><entry role="function_type"><link linkend="AgsAutosaveThread"><returnvalue>AgsAutosaveThread</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-autosave-thread-new">ags_autosave_thread_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>#define             <link linkend="AGS-AUTOSAVE-THREAD-DEFAULT-FILENAME:CAPS">AGS_AUTOSAVE_THREAD_DEFAULT_FILENAME</link>
-#define             <link linkend="AGS-AUTOSAVE-THREAD-DEFAULT-JIFFIE:CAPS">AGS_AUTOSAVE_THREAD_DEFAULT_JIFFIE</link>
-struct              <link linkend="AgsAutosaveThread">AgsAutosaveThread</link>;
-struct              <link linkend="AgsAutosaveThreadClass">AgsAutosaveThreadClass</link>;
-<link linkend="AgsAutosaveThread"><returnvalue>AgsAutosaveThread</returnvalue></link> * <link linkend="ags-autosave-thread-new">ags_autosave_thread_new</link>             (<parameter><link linkend="GObject"><type>GObject</type></link> *devout</parameter>,
-                                                         <parameter><link linkend="AgsMain"><type>AgsMain</type></link> *ags_main</parameter>);
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsAutosaveThread.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsAutosaveThread.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AGS-AUTOSAVE-THREAD-DEFAULT-FILENAME:CAPS" role="macro">
-<title>AGS_AUTOSAVE_THREAD_DEFAULT_FILENAME</title>
-<indexterm zone="AGS-AUTOSAVE-THREAD-DEFAULT-FILENAME:CAPS"><primary>AGS_AUTOSAVE_THREAD_DEFAULT_FILENAME</primary></indexterm>
-<programlisting>#define AGS_AUTOSAVE_THREAD_DEFAULT_FILENAME "ags-autosaved.xml\0"
-</programlisting>
-<para>
-</para></refsect2>
+<refsect1 id="AgsAutosaveThread.properties" role="properties">
+<title role="properties.title">Properties</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="properties_type" colwidth="150px"/>
+<colspec colname="properties_name" colwidth="300px"/>
+<colspec colname="properties_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="property_type"><link linkend="AgsApplicationContext"><type>AgsApplicationContext</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsAutosaveThread--application-context">application-context</link></entry><entry role="property_flags">Read / Write</entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsAutosaveThread.other" role="other_proto">
+<title role="other_proto.title">Types and Values</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="name" colwidth="150px"/>
+<colspec colname="description"/>
+<tbody>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-AUTOSAVE-THREAD-DEFAULT-FILENAME:CAPS">AGS_AUTOSAVE_THREAD_DEFAULT_FILENAME</link></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsAutosaveThread.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsThread">AgsThread</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsAutosaveThread
+</screen>
+</refsect1>
+
+<refsect1 id="AgsAutosaveThread.includes"><title>Includes</title><synopsis>#include &lt;ags/thread/ags_autosave_thread.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsAutosaveThread.description" role="desc">
+<title role="desc.title">Description</title>
+<para>The <link linkend="AgsAutosaveThread"><type>AgsAutosaveThread</type></link> performs auto-safe.</para>
+
+</refsect1>
+<refsect1 id="AgsAutosaveThread.functions_details" role="details">
+<title role="details.title">Functions</title>
 <refsect2 id="AGS-AUTOSAVE-THREAD-DEFAULT-JIFFIE:CAPS" role="macro">
 <title>AGS_AUTOSAVE_THREAD_DEFAULT_JIFFIE</title>
 <indexterm zone="AGS-AUTOSAVE-THREAD-DEFAULT-JIFFIE:CAPS"><primary>AGS_AUTOSAVE_THREAD_DEFAULT_JIFFIE</primary></indexterm>
-<programlisting>#define AGS_AUTOSAVE_THREAD_DEFAULT_JIFFIE (0.2)
+<programlisting language="C">#define AGS_AUTOSAVE_THREAD_DEFAULT_JIFFIE (0.2)
 </programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsAutosaveThread" role="struct">
-<title>struct AgsAutosaveThread</title>
-<indexterm zone="AgsAutosaveThread"><primary>AgsAutosaveThread</primary></indexterm>
-<programlisting>struct AgsAutosaveThread {
-  AgsThread thread;
+</refsect2>
+<refsect2 id="ags-autosave-thread-new" role="function" condition="since:0.4">
+<title>ags_autosave_thread_new&#160;()</title>
+<indexterm zone="ags-autosave-thread-new" role="0.4"><primary>ags_autosave_thread_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsAutosaveThread"><returnvalue>AgsAutosaveThread</returnvalue></link>&#160;*
+ags_autosave_thread_new (<parameter><link linkend="GObject"><type>GObject</type></link> *application_context</parameter>);</programlisting>
+<para>Create a new <link linkend="AgsAutosaveThread"><type>AgsAutosaveThread</type></link>.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>application_context</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsApplicationContext"><type>AgsApplicationContext</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> the new <link linkend="AgsAutosaveThread"><type>AgsAutosaveThread</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
 
-
-  volatile guint tic;
-  volatile guint last_sync;
-
-  AgsMain *ags_main;
-
-  guint delay;
-  guint counter;
-};
+</refsect1>
+<refsect1 id="AgsAutosaveThread.other_details" role="details">
+<title role="details.title">Types and Values</title>
+<refsect2 id="AGS-AUTOSAVE-THREAD-DEFAULT-FILENAME:CAPS" role="macro">
+<title>AGS_AUTOSAVE_THREAD_DEFAULT_FILENAME</title>
+<indexterm zone="AGS-AUTOSAVE-THREAD-DEFAULT-FILENAME:CAPS"><primary>AGS_AUTOSAVE_THREAD_DEFAULT_FILENAME</primary></indexterm>
+<programlisting language="C">#define AGS_AUTOSAVE_THREAD_DEFAULT_FILENAME "ags-autosaved.xml\0"
 </programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsAutosaveThreadClass" role="struct">
-<title>struct AgsAutosaveThreadClass</title>
-<indexterm zone="AgsAutosaveThreadClass"><primary>AgsAutosaveThreadClass</primary></indexterm>
-<programlisting>struct AgsAutosaveThreadClass {
-  AgsThreadClass thread;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-autosave-thread-new" role="function">
-<title>ags_autosave_thread_new ()</title>
-<indexterm zone="ags-autosave-thread-new"><primary>ags_autosave_thread_new</primary></indexterm>
-<programlisting><link linkend="AgsAutosaveThread"><returnvalue>AgsAutosaveThread</returnvalue></link> * ags_autosave_thread_new             (<parameter><link linkend="GObject"><type>GObject</type></link> *devout</parameter>,
-                                                         <parameter><link linkend="AgsMain"><type>AgsMain</type></link> *ags_main</parameter>);</programlisting>
-<para>
-</para></refsect2>
+</refsect2>
+
+</refsect1>
+<refsect1 id="AgsAutosaveThread.property-details" role="property_details">
+<title role="property_details.title">Property Details</title>
+<refsect2 id="AgsAutosaveThread--application-context" role="property"><title>The <literal>“application-context”</literal> property</title>
+<indexterm zone="AgsAutosaveThread--application-context"><primary>AgsAutosaveThread:application-context</primary></indexterm>
+<programlisting>  “application-context”      <link linkend="AgsApplicationContext"><type>AgsApplicationContext</type></link>&#160;*</programlisting>
+<para>The application context to check against serialization.</para><para>Flags: Read / Write</para>
+</refsect2>
 
 </refsect1>
 
