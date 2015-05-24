@@ -320,6 +320,105 @@ ags_recycling_set_property(GObject *gobject,
       ags_recycling_set_soundcard(recycling, (GObject *) soundcard);
     }
     break;
+  case PROP_CHANNEL:
+    {
+      AgsChannel *channel;
+
+      channel = (AgsChannel *) g_value_get_object(value);
+
+      if(recycling->channel == channel){
+	return;
+      }
+
+      if(recycling->channel != NULL){
+	g_object_unref(recycling->channel);
+      }
+
+      if(channel != NULL){
+	g_object_ref(channel);
+      }
+
+      recycling->channel = channel;
+    }
+    break;
+  case PROP_PARENT:
+    {
+      AgsRecycling *recycling;
+
+      recycling = (AgsRecycling *) g_value_get_object(value);
+
+      if(recycling->parent == recycling){
+	return;
+      }
+
+      if(recycling->parent != NULL){
+	g_object_unref(recycling->parent);
+      }
+
+      if(recycling != NULL){
+	g_object_ref(recycling);
+      }
+
+      recycling->parent = recycling;
+    }
+    break;
+  case PROP_NEXT:
+    {
+      AgsRecycling *recycling;
+
+      recycling = (AgsRecycling *) g_value_get_object(value);
+
+      if(recycling->next == recycling){
+	return;
+      }
+
+      if(recycling->next != NULL){
+	g_object_unref(recycling->next);
+      }
+
+      if(recycling != NULL){
+	g_object_ref(recycling);
+      }
+
+      recycling->next = recycling;
+    }
+    break;
+  case PROP_PREV:
+    {
+      AgsRecycling *recycling;
+
+      recycling = (AgsRecycling *) g_value_get_object(value);
+
+      if(recycling->prev == recycling){
+	return;
+      }
+
+      if(recycling->prev != NULL){
+	g_object_unref(recycling->prev);
+      }
+
+      if(recycling != NULL){
+	g_object_ref(recycling);
+      }
+
+      recycling->prev = recycling;
+    }
+    break;
+  case PROP_AUDIO_SIGNAL:
+    {
+      AgsAudioSignal *audio_signal;
+
+      audio_signal = g_value_get_object(value);
+
+      if(audio_signal == NULL ||
+	 g_list_find(recycling->audio_signal, audio_signal) != NULL){
+	return;
+      }
+
+      ags_recycling_add_audio_signal(recycling,
+				     audio_signal);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -338,7 +437,34 @@ ags_recycling_get_property(GObject *gobject,
 
   switch(prop_id){
   case PROP_SOUNDCARD:
-    g_value_set_object(value, recycling->soundcard);
+    {
+      g_value_set_object(value, recycling->soundcard);
+    }
+    break;
+  case PROP_CHANNEL:
+    {
+      g_value_set_object(value, recycling->channel);
+    }
+    break;
+  case PROP_PARENT:
+    {
+      g_value_set_object(value, recycling->parent);
+    }
+    break;
+  case PROP_NEXT:
+    {
+      g_value_set_object(value, recycling->next);
+    }
+    break;
+  case PROP_PREV:
+    {
+      g_value_set_object(value, recycling->prev);
+    }
+    break;
+  case PROP_AUDIO_SIGNAL:
+    {
+      g_value_set_pointer(value, g_list_copy(recycling->audio_signal));
+    }
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);

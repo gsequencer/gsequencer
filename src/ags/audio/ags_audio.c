@@ -297,7 +297,7 @@ ags_audio_class_init(AgsAudioClass *audio)
 				   "containing output\0",
 				   "The output it contains\0",
 				   AGS_TYPE_OUTPUT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+				   G_PARAM_READABLE);
   g_object_class_install_property(gobject,
 				  PROP_OUTPUT,
 				  param_spec);
@@ -313,7 +313,7 @@ ags_audio_class_init(AgsAudioClass *audio)
 				   "containing input\0",
 				   "The input it contains\0",
 				   AGS_TYPE_INPUT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+				   G_PARAM_READABLE);
   g_object_class_install_property(gobject,
 				  PROP_INPUT,
 				  param_spec);
@@ -620,6 +620,164 @@ ags_audio_set_property(GObject *gobject,
       ags_audio_set_soundcard(audio, (GObject *) soundcard);
     }
     break;
+  case PROP_AUDIO_CHANNELS:
+    {
+      guint audio_channels;
+
+      audio_channels = g_value_get_uint(value);
+
+      ags_audio_set_audio_channels(audio,
+				   audio_channels);
+    }
+    break;
+  case PROP_INPUT_PADS:
+    {
+      guint input_pads;
+
+      input_pads = g_value_get_uint(value);
+
+      ags_audio_set_pads(audio, AGS_TYPE_INPUT,
+			 input_pads);
+    }
+    break;
+  case PROP_OUTPUT_PADS:
+    {
+      guint output_pads;
+
+      output_pads = g_value_get_uint(value);
+
+      ags_audio_set_pads(audio, AGS_TYPE_OUTPUT,
+			 output_pads);
+    }
+    break;
+  case PROP_PLAYBACK_DOMAIN:
+    {
+      AgsPlaybackDomain *playback_domain;
+
+      playback_domain = (AgsPlaybackDomain *) g_value_get_object(value);
+
+      if(audio->playback_domain == playback_domain){
+	return;
+      }
+
+      if(audio->playback_domain != NULL){
+	g_object_unref(audio->playback_domain);
+      }
+      
+      if(playback_domain != NULL){
+	g_object_ref(playback_domain);
+      }
+
+      audio->playback_domain = playback_domain;
+    }
+    break;
+  case PROP_NOTATION:
+    {
+      AgsNotation *notation;
+
+      notation = (AgsNotation *) g_value_get_object(value);
+
+      if(notation == NULL ||
+	 g_list_find(audio->notation, notation) != NULL){
+	return;
+      }
+
+      ags_audio_add_notation(audio,
+			     notation);
+    }
+    break;
+  case PROP_AUTOMATION:
+    {
+      AgsAutomation *automation;
+
+      automation = (AgsAutomation *) g_value_get_object(value);
+
+      if(automation == NULL ||
+	 g_list_find(audio->automation, automation) != NULL){
+	return;
+      }
+
+      ags_audio_add_automation(audio,
+			       automation);
+    }
+    break;
+  case PROP_RECALL_ID:
+    {
+      AgsRecallID *recall_id;
+
+      recall_id = (AgsRecallID *) g_value_get_object(value);
+
+      if(recall_id == NULL ||
+	 g_list_find(audio->recall_id, recall_id) != NULL){
+	return;
+      }
+
+      ags_audio_add_recall_id(audio,
+			      recall_id);
+    }
+    break;
+  case PROP_RECYCLING_CONTEXT:
+    {
+      AgsRecyclingContext *recycling_context;
+
+      recycling_context = (AgsRecyclingContext *) g_value_get_object(value);
+
+      if(recycling_context == NULL ||
+	 g_list_find(audio->recycling_context, recycling_context) != NULL){
+	return;
+      }
+
+      ags_audio_add_recycling_context(audio,
+				      recycling_context);
+    }
+    break;
+  case PROP_RECALL_CONTAINER:
+    {
+      AgsRecallContainer *recall_container;
+
+      recall_container = (AgsRecallContainer *) g_value_get_object(value);
+
+      if(recall_container == NULL ||
+	 g_list_find(audio->container, recall_container) != NULL){
+	return;
+      }
+
+      ags_audio_add_recall_container(audio,
+				     recall_container);
+    }
+    break;
+  case PROP_PLAY:
+    {
+      AgsRecall *recall;
+
+      recall = (AgsRecall *) g_value_get_object(value);
+
+      if(recall == NULL ||
+	 g_list_find(audio->play, recall) != NULL){
+	return;
+      }
+
+      ags_audio_add_recall(audio,
+			   recall,
+			   TRUE);
+    }
+    break;
+  case PROP_RECALL:
+    {
+      AgsRecall *recall;
+
+      recall = (AgsRecall *) g_value_get_object(value);
+
+      if(recall == NULL ||
+	 g_list_find(audio->recall, recall) != NULL){
+	return;
+      }
+
+      ags_audio_add_recall(audio,
+			   recall,
+			   FALSE);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -638,7 +796,84 @@ ags_audio_get_property(GObject *gobject,
 
   switch(prop_id){
   case PROP_SOUNDCARD:
-    g_value_set_object(value, audio->soundcard);
+    {
+      g_value_set_object(value, audio->soundcard);
+    }
+    break;
+  case PROP_AUDIO_CHANNELS:
+    {
+      g_value_set_uint(value, audio->audio_channels);
+    }
+    break;
+  case PROP_INPUT_PADS:
+    {
+      g_value_set_uint(value, audio->input_pads);
+    }
+    break;
+  case PROP_INPUT_LINES:
+    {
+      g_value_set_uint(value, audio->input_lines);
+    }
+    break;
+  case PROP_OUTPUT_PADS:
+    {
+      g_value_set_uint(value, audio->output_pads);
+    }
+    break;
+  case PROP_OUTPUT_LINES:
+    {
+      g_value_set_uint(value, audio->output_lines);
+    }
+    break;
+  case PROP_INPUT:
+    {
+      g_value_set_object(value, audio->input);
+    }
+    break;
+  case PROP_OUTPUT:
+    {
+      g_value_set_object(value, audio->output);
+    }
+    break;
+  case PROP_PLAYBACK_DOMAIN:
+    {
+      g_value_set_object(value, audio->playback_domain);
+    }
+    break;
+  case PROP_NOTATION:
+    {
+      g_value_set_pointer(value, g_list_copy(audio->notation));
+    }
+    break;
+  case PROP_AUTOMATION:
+    {
+      g_value_set_pointer(value, g_list_copy(audio->automation));
+    }
+    break;
+  case PROP_RECALL_ID:
+    {
+      g_value_set_pointer(value, g_list_copy(audio->recall_id));
+    }
+    break;
+  case PROP_RECYCLING_CONTEXT:
+    {
+      g_value_set_pointer(value, g_list_copy(audio->recycling_context));
+    }
+    break;
+  case PROP_RECALL_CONTAINER:
+    {
+      g_value_set_pointer(value, g_list_copy(audio->container));
+    }
+    break;
+  case PROP_PLAY:
+    {
+      g_value_set_pointer(value, g_list_copy(audio->play));
+    }
+    break;
+  case PROP_RECALL:
+    {
+      g_value_set_pointer(value, g_list_copy(audio->recall));
+    }
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);

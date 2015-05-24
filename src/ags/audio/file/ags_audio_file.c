@@ -483,7 +483,7 @@ ags_audio_file_open(AgsAudioFile *audio_file)
  *
  * Open the #AgsAudioFile in read/write mode.
  *
- * Since: 0.4
+ * Since: 0.4.2
  */
 gboolean
 ags_audio_file_rw_open(AgsAudioFile *audio_file,
@@ -505,13 +505,17 @@ ags_audio_file_rw_open(AgsAudioFile *audio_file,
     guint loop_start, loop_end;
 
     audio_file->playable = (GObject *) ags_sndfile_new();
-
+    ags_playable_set_presets(AGS_PLAYABLE(audio_file->playable),
+			     audio_file->samplerate,
+			     AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE,
+			     audio_file->channels,
+			     audio_file->format);
+    ags_playable_set_frames(AGS_PLAYABLE(audio_file->playable),
+			    audio_file->frames);
+    
     if(ags_playable_rw_open(AGS_PLAYABLE(audio_file->playable),
 			    audio_file->filename,
-			    create,
-			    audio_file->samplerate, audio_file->channels,
-			    audio_file->frames,
-			    audio_file->format)){
+			    create)){
       error = NULL;
 
       if(error != NULL){
