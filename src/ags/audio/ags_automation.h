@@ -61,7 +61,8 @@ struct _AgsAutomation
   guint steps;
   gdouble upper;
   gdouble lower;
-
+  gdouble default_value;
+  
   GList *acceleration;
 
   gdouble start_loop;
