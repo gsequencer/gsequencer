@@ -595,6 +595,125 @@ ags_audio_signal_set_property(GObject *gobject,
       audio_signal->recall_id = recall_id;
     }
     break;
+  case PROP_SAMPLERATE:
+    {
+      guint samplerate;
+
+      samplerate = g_value_get_uint(value);
+
+      audio_signal->samplerate = samplerate;
+    }
+    break;
+  case PROP_BUFFER_SIZE:
+    {
+      guint buffer_size;
+
+      buffer_size = g_value_get_uint(value);
+
+      audio_signal->buffer_size = buffer_size;
+    }
+  case PROP_FORMAT:
+    {
+      guint format;
+
+      format = g_value_get_uint(value);
+      
+      audio_signal->format = format;
+    }
+    break;
+  case PROP_WORD_SIZE:
+    {
+      //TODO:JK: implement me
+    }
+    break;
+  case PROP_LENGTH:
+    {
+      guint length;
+
+      length = g_value_get_uint(value);
+
+      audio_signal->length = length;
+    }
+    break;
+  case PROP_FIRST_FRAME:
+    {
+      guint first_frame;
+
+      first_frame = g_value_get_uint(value);
+
+      audio_signal->first_frame = first_frame;
+    }
+    break;
+  case PROP_LAST_FRAME:
+    {
+      guint last_frame;
+
+      last_frame = g_value_get_uint(value);
+
+      audio_signal->last_frame = last_frame;
+    }
+    break;
+  case PROP_LOOP_START:
+    {
+      guint loop_start;
+
+      loop_start = g_value_get_uint(value);
+
+      audio_signal->loop_start = loop_start;
+    }
+    break;
+  case PROP_LOOP_END:
+    {
+      guint loop_end;
+
+      loop_end = g_value_get_uint(value);
+
+      audio_signal->loop_end = loop_end;
+    }
+    break;
+  case PROP_DELAY:
+    {
+      gdouble delay;
+
+      delay = g_value_get_double(value);
+
+      audio_signal->delay = delay;
+    }
+    break;
+  case PROP_ATTACK:
+    {
+      guint attack;
+
+      attack = g_value_get_uint(value);
+
+      audio_signal->attack = attack;
+    }
+    break;
+  case PROP_STREAM:
+    {
+      gpointer data;
+
+      data = g_value_get_pointer(value);
+
+      if(data == NULL ||
+	 g_list_find(audio_signal->stream_beginning,
+		     data) != NULL){
+      }
+
+      audio_signal = g_list_append(audio_signal->stream_beginning,
+				   data);
+      audio_signal->stream_end = g_list_last(audio_signal->stream_beginning);
+    }
+    break;
+  case PROP_STREAM_CURRENT:
+    {
+      GList *current;
+
+      current = g_value_get_pointer(value);
+
+      audio_signal->stream_current = current;
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -613,13 +732,88 @@ ags_audio_signal_get_property(GObject *gobject,
 
   switch(prop_id){
   case PROP_SOUNDCARD:
-    g_value_set_object(value, audio_signal->soundcard);
+    {
+      g_value_set_object(value, audio_signal->soundcard);
+    }
     break;
   case PROP_RECYCLING:
-    g_value_set_object(value, audio_signal->recycling);
+    {
+      g_value_set_object(value, audio_signal->recycling);
+    }
     break;
   case PROP_RECALL_ID:
-    g_value_set_object(value, audio_signal->recall_id);
+    {
+      g_value_set_object(value, audio_signal->recall_id);
+    }
+    break;
+  case PROP_SAMPLERATE:
+    {
+      g_value_set_uint(value, audio_signal->samplerate);
+    }
+    break;
+  case PROP_BUFFER_SIZE:
+    {
+      g_value_set_uint(value, audio_signal->buffer_size);
+    }
+  case PROP_FORMAT:
+    {
+      g_value_set_uint(value, audio_signal->format);
+    }
+    break;
+  case PROP_WORD_SIZE:
+    {
+      //TODO:JK: implement me
+    }
+    break;
+  case PROP_LENGTH:
+    {
+      g_value_set_uint(value, audio_signal->length);
+    }
+    break;
+  case PROP_FIRST_FRAME:
+    {
+      g_value_set_uint(value, audio_signal->first_frame);
+    }
+    break;
+  case PROP_LAST_FRAME:
+    {
+      g_value_set_uint(value, audio_signal->last_frame);
+    }
+    break;
+  case PROP_LOOP_START:
+    {
+      g_value_set_uint(value, audio_signal->loop_start);
+    }
+    break;
+  case PROP_LOOP_END:
+    {
+      g_value_set_uint(value, audio_signal->loop_end);
+    }
+    break;
+  case PROP_DELAY:
+    {
+      g_value_set_double(value, audio_signal->delay);
+    }
+    break;
+  case PROP_ATTACK:
+    {
+      g_value_set_uint(value, audio_signal->attack);
+    }
+    break;
+  case PROP_STREAM:
+    {
+      g_value_set_pointer(value, g_list_copy(audio_signal->stream_beginning));
+    }
+    break;
+  case PROP_STREAM_END:
+    {
+      g_value_set_pointer(value, audio_signal->stream_end);
+    }
+    break;
+  case PROP_STREAM_CURRENT:
+    {
+      g_value_set_pointer(value, audio_signal->stream_current);
+    }
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);

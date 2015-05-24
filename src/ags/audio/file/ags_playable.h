@@ -46,10 +46,7 @@ struct _AgsPlayableInterface
 
   gboolean (*open)(AgsPlayable *playable, gchar *name);
   gboolean (*rw_open)(AgsPlayable *playable, gchar *name,
-		      gboolean create,
-		      guint samplerate, guint channels,
-		      guint frames,
-		      guint format);
+		      gboolean create);
 
   /* these functions are especially for soundfonts */
   guint (*level_count)(AgsPlayable *playable);
@@ -69,12 +66,12 @@ struct _AgsPlayableInterface
 
   /* low-level */
   void (*set_pointer)(AgsPlayable *playable,
-		      gpointer data);
-  gpointer (*get_pointer)(AgsPlayable *playable);
+		      guchar *data);
+  guchar* (*get_pointer)(AgsPlayable *playable);
 
   void (*set_current)(AgsPlayable *playable,
-		      gpointer current);
-  gpointer (*get_current)(AgsPlayable *playable);
+		      guchar *current);
+  guchar* (*get_current)(AgsPlayable *playable);
   
   /* read sample data */
   void (*info)(AgsPlayable *playable,
@@ -92,12 +89,25 @@ struct _AgsPlayableInterface
 		      guint *buffer_size,
 		      guint *channels,
 		      guint *format);
-    
+
+  void (*set_channels)(AgsPlayable *playable,
+		       guint channels);
+  guint (*get_channels)(AgsPlayable *playable);
+
+  void (*set_frames)(AgsPlayable *playable,
+		      guint frames);
+  guint (*get_frames)(AgsPlayable *playable);
+
+  void (*set_loop)(AgsPlayable *playable,
+		   guint loop_start, guint loop_end);
+  void (*get_loop)(AgsPlayable *playable,
+		   guint *loop_start, guint *loop_end);
+
+  /* read/write sample data */
   signed short* (*read)(AgsPlayable *playable,
 			guint channel,
 			GError **error);
 
-  /* write sample data */
   void (*write)(AgsPlayable *playable,
 		signed short *buffer, guint buffer_length);
   void (*flush)(AgsPlayable *playable);
@@ -116,10 +126,7 @@ GQuark ags_playable_error_quark();
 
 gboolean ags_playable_open(AgsPlayable *playable, gchar *name);
 gboolean ags_playable_rw_open(AgsPlayable *playable, gchar *name,
-			      gboolean create,
-			      guint samplerate, guint channels,
-			      guint frames,
-			      guint format);
+			      gboolean create);
 
 guint ags_playable_level_count(AgsPlayable *playable);
 guint ags_playable_nth_level(AgsPlayable *playable);
@@ -134,14 +141,46 @@ void ags_playable_level_up(AgsPlayable *playable, guint levels, GError **error);
 void ags_playable_iter_start(AgsPlayable *playable);
 gboolean ags_playable_iter_next(AgsPlayable *playable);
 
+void ags_playable_set_pointer(AgsPlayable *playable,
+			      guchar *data);
+guchar* ags_playable_get_pointer(AgsPlayable *playable);
+
+void ags_playable_set_current(AgsPlayable *playable,
+			      guchar *current);
+guchar* ags_playable_get_current(AgsPlayable *playable);
+
 void ags_playable_info(AgsPlayable *playable,
 		       guint *channels, guint *frames,
 		       guint *loop_start, guint *loop_end,
 		       GError **error);
+
+void ags_playable_set_presets(AgsPlayable *playable,
+			      guint samplerate,
+			      guint buffer_size,
+			      guint channels,
+			      guint format);
+void ags_playable_get_presets(AgsPlayable *playable,
+			      guint *samplerate,
+			      guint *buffer_size,
+			      guint *channels,
+			      guint *format);
+
+void ags_playable_set_channels(AgsPlayable *playable,
+			       guint channels);
+guint ags_playable_get_channels(AgsPlayable *playable);
+
+void ags_playable_set_frames(AgsPlayable *playable,
+			     guint frames);
+guint ags_playable_get_frames(AgsPlayable *playable);
+
+void ags_playable_set_loop(AgsPlayable *playable,
+			   guint loop_start, guint loop_end);
+void ags_playable_get_loop(AgsPlayable *playable,
+			   guint *loop_start, guint *loop_end);
+
 signed short* ags_playable_read(AgsPlayable *playable,
 				guint channel,
 				GError **error);
-
 void ags_playable_write(AgsPlayable *playable,
 			signed short *buffer, guint buffer_length);
 void ags_playable_flush(AgsPlayable *playable);

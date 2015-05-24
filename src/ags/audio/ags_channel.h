@@ -141,6 +141,9 @@ void ags_channel_remove_recall_container(AgsChannel *channel, GObject *recall_co
 void ags_channel_remove_recall(AgsChannel *channel, GObject *recall, gboolean play);
 void ags_channel_add_recall(AgsChannel *channel, GObject *recall, gboolean play);
 
+void ags_channel_remove_pattern(AgsChannel *channel, GObject *pattern);
+void ags_channel_add_pattern(AgsChannel *channel, GObject *pattern);
+
 GList* ags_channel_get_recall_by_effect(AgsChannel *channel, gchar *filename, gchar *effect);
 GList* ags_channel_add_effect(AgsChannel *channel,
 			      char *filename,
