@@ -185,13 +185,13 @@ ags_notation_class_init(AgsNotationClass *notation)
    * 
    * Since: 0.4.3
    */
-  param_spec =  g_param_spec_ulong("audio-channel\0",
-				   "audio-channel of effect\0",
-				   "The numerical audio-channel of effect\0",
-				   0,
-				   65535,
-				   0,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec =  g_param_spec_uint("audio-channel\0",
+				  "audio-channel of effect\0",
+				  "The numerical audio-channel of effect\0",
+				  0,
+				  65535,
+				  0,
+				  G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_AUDIO_CHANNEL,
 				  param_spec);

@@ -102,7 +102,7 @@ ags_recycling_context_class_init(AgsRecyclingContextClass *recycling_context)
    *
    * The parent recycling context within tree.
    * 
-   * Since: 0.4.0
+   * Since: 0.4.2
    */
   param_spec = g_param_spec_object("parent\0",
 				   "parent context\0",
@@ -118,7 +118,7 @@ ags_recycling_context_class_init(AgsRecyclingContextClass *recycling_context)
    *
    * Boundary length.
    * 
-   * Since: 0.4.0
+   * Since: 0.4.2
    */
   param_spec = g_param_spec_uint64("length\0",
 				   "length of the array of assigned recycling\0",
@@ -135,7 +135,7 @@ ags_recycling_context_class_init(AgsRecyclingContextClass *recycling_context)
    *
    * The assigned #AgsRecallID.
    * 
-   * Since: 0.4.0
+   * Since: 0.4.2
    */
   param_spec = g_param_spec_object("recall-id\0",
 				   "the default recall id\0",
@@ -283,7 +283,7 @@ ags_recycling_context_finalize(GObject *gobject)
  *
  * Returns: the new recycling context
  *
- * Since: 0.4
+ * Since: 0.4.2
  */
 void
 ags_recycling_context_replace(AgsRecyclingContext *recycling_context,
@@ -306,7 +306,7 @@ ags_recycling_context_replace(AgsRecyclingContext *recycling_context,
  *
  * Returns: the new recycling context
  *
- * Since: 0.4
+ * Since: 0.4.2
  */
 AgsRecyclingContext*
 ags_recycling_context_add(AgsRecyclingContext *recycling_context,
@@ -339,7 +339,7 @@ ags_recycling_context_add(AgsRecyclingContext *recycling_context,
  *
  * Returns: the new recycling context
  *
- * Since: 0.4
+ * Since: 0.4.2
  */
 AgsRecyclingContext*
 ags_recycling_context_remove(AgsRecyclingContext *recycling_context,
@@ -374,7 +374,7 @@ ags_recycling_context_remove(AgsRecyclingContext *recycling_context,
  *
  * Returns: the new recycling context
  *
- * Since: 0.4
+ * Since: 0.4.2
  */
 AgsRecyclingContext*
 ags_recycling_context_insert(AgsRecyclingContext *recycling_context,
@@ -406,7 +406,7 @@ ags_recycling_context_insert(AgsRecyclingContext *recycling_context,
  *
  * Returns: the topmost recycling context
  *
- * Since: 0.4
+ * Since: 0.4.2
  */
 AgsRecyclingContext*
 ags_recycling_context_get_toplevel(AgsRecyclingContext *recycling_context)
@@ -431,7 +431,7 @@ ags_recycling_context_get_toplevel(AgsRecyclingContext *recycling_context)
  *
  * Returns: recycling array index
  *
- * Since: 0.4
+ * Since: 0.4.2
  */
 gint
 ags_recycling_context_find(AgsRecyclingContext *recycling_context,
@@ -457,7 +457,7 @@ ags_recycling_context_find(AgsRecyclingContext *recycling_context,
  *
  * Returns: recycling array index
  *
- * Since: 0.4
+ * Since: 0.4.2
  */
 gint
 ags_recycling_context_find_child(AgsRecyclingContext *recycling_context,
@@ -489,7 +489,7 @@ ags_recycling_context_find_child(AgsRecyclingContext *recycling_context,
  *
  * Returns: recycling array index
  *
- * Since: 0.4
+ * Since: 0.4.2
  */
 gint
 ags_recycling_context_find_parent(AgsRecyclingContext *recycling_context,
@@ -513,7 +513,7 @@ ags_recycling_context_find_parent(AgsRecyclingContext *recycling_context,
  *
  * Adds a recycling context as child.
  *
- * Since: 0.4
+ * Since: 0.4.2
  */
 void
 ags_recycling_context_add_child(AgsRecyclingContext *parent,
@@ -538,7 +538,7 @@ ags_recycling_context_add_child(AgsRecyclingContext *parent,
  *
  * Removes a recycling context of its parent.
  *
- * Since: 0.4
+ * Since: 0.4.2
  */
 void
 ags_recycling_context_remove_child(AgsRecyclingContext *parent,
@@ -564,7 +564,7 @@ ags_recycling_context_remove_child(AgsRecyclingContext *parent,
  *
  * Returns: the #AgsRecallID as #GList
  *
- * Since: 0.4
+ * Since: 0.4.2
  */
 GList*
 ags_recycling_context_get_child_recall_id(AgsRecyclingContext *recycling_context)
@@ -599,7 +599,7 @@ ags_recycling_context_get_child_recall_id(AgsRecyclingContext *recycling_context
  *
  * Modify recycling of context.
  *
- * Since: 0.4
+ * Since: 0.4.2
  */
 AgsRecyclingContext*
 ags_recycling_context_reset_recycling(AgsRecyclingContext *recycling_context,
@@ -689,7 +689,7 @@ ags_recycling_context_reset_recycling(AgsRecyclingContext *recycling_context,
  *
  * Returns: a new #AgsRecyclingContext
  *
- * Since: 0.4
+ * Since: 0.4.2
  */
 AgsRecyclingContext*
 ags_recycling_context_new(gint length)

@@ -73,6 +73,10 @@ enum{
   PROP_CHANNEL_TYPE,
   PROP_CONTROL_NAME,
   PROP_PORT,
+  PROP_STEPS,
+  PROP_UPPER,
+  PROP_LOWER,
+  PROP_DEFAULT_VALUE,
   PROP_ACCELERATION,
   PROP_CURRENT_ACCELERATIONS,
   PROP_NEXT_ACCELERATIONS,
@@ -167,15 +171,50 @@ ags_automation_class_init(AgsAutomationClass *automation)
    * 
    * Since: 0.4.3
    */
-  param_spec =  g_param_spec_ulong("line\0",
-				   "line of effect\0",
-				   "The numerical line of effect\0",
-				   0,
-				   65535,
-				   0,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec =  g_param_spec_uint("line\0",
+				  "line of effect\0",
+				  "The numerical line of effect\0",
+				  0,
+				  65535,
+				  0,
+				  G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_LINE,
+				  param_spec);
+
+  /**
+   * AgsAutomation:channel-type:
+   *
+   * The effect's assigned channel type.
+   * 
+   * Since: 0.4.3
+   */
+  param_spec =  g_param_spec_uint("channel-type\0",
+				  "channel type to apply\0",
+				  "The channel type to apply\0",
+				  0,
+				  65535,
+				  0,
+				  G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_CHANNEL_TYPE,
+				  param_spec);
+
+  
+  /**
+   * AgsAutomation:control-name:
+   *
+   * The effect's assigned control name.
+   * 
+   * Since: 0.4.3
+   */
+  param_spec =  g_param_spec_string("control-name\0",
+				    "control name\0",
+				    "The control name\0",
+				    NULL,
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_CHANNEL_TYPE,
 				  param_spec);
 
   /**
@@ -194,6 +233,80 @@ ags_automation_class_init(AgsAutomationClass *automation)
 				  PROP_PORT,
 				  param_spec);
 
+  /**
+   * AgsAutomation:steps:
+   *
+   * The effect's steps.
+   * 
+   * Since: 0.4.3
+   */
+  param_spec =  g_param_spec_uint("steps\0",
+				  "steps of effect\0",
+				  "The steps of effect\0",
+				  0,
+				  65535,
+				  0,
+				  G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_STEPS,
+				  param_spec);
+
+  /**
+   * AgsAutomation:upper:
+   *
+   * The effect's upper.
+   * 
+   * Since: 0.4.3
+   */
+  param_spec =  g_param_spec_double("upper\0",
+				    "upper of effect\0",
+				    "The upper of effect\0",
+				    -65535.0,
+				    65535.0,
+				    0,
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_UPPER,
+				  param_spec);
+
+  /**
+   * AgsAutomation:lower:
+   *
+   * The effect's lower.
+   * 
+   * Since: 0.4.3
+   */
+  param_spec =  g_param_spec_double("lower\0",
+				    "lower of effect\0",
+				    "The lower of effect\0",
+				    -65535.0,
+				    65535.0,
+				    0,
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_LOWER,
+				  param_spec);
+
+
+  /**
+   * AgsAutomation:default-value:
+   *
+   * The effect's default-value.
+   * 
+   * Since: 0.4.3
+   */
+  param_spec =  g_param_spec_double("default-value\0",
+				    "default value of effect\0",
+				    "The default value of effect\0",
+				    -65535.0,
+				    65535.0,
+				    0,
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_DEFAULT-VALUE,
+				  param_spec);
+
+    
   /**
    * AgsAutomation:current-accelerations:
    *
@@ -259,7 +372,8 @@ ags_automation_init(AgsAutomation *automation)
   automation->steps = 1;
   automation->upper = 1.0;
   automation->lower = 0.0;
-
+  automation->default_value = 0.0;
+  
   automation->acceleration = NULL;
 
   automation->start_loop = 0.0;
