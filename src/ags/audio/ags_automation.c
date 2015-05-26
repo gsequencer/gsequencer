@@ -303,7 +303,7 @@ ags_automation_class_init(AgsAutomationClass *automation)
 				    0,
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_DEFAULT-VALUE,
+				  PROP_DEFAULT_VALUE,
 				  param_spec);
 
     
@@ -689,7 +689,49 @@ ags_automation_add_acceleration(AgsAutomation *automation,
 				AgsAcceleration *acceleration,
 				gboolean use_selection_list)
 {
-  //TODO:JK: implement me
+  GList *list, *prev_match, *current;
+
+  if(!use_selection_list){
+    list = automation->acceleration;
+  }else{
+    list = automation->selection;
+  }
+  
+  prev_match = NULL;
+  
+  while(list != NULL){
+    if(AGS_ACCELERATION(list->data) <= acceleration->x){
+      prev_match = list;
+    }else{
+      break;
+    }
+    
+    list = list->next;
+  }
+
+  current = g_list_alloc();
+  current->data = acceleration;
+  
+  if(prev_match == NULL){
+    if(!use_selection_list){
+      automation->acceleration = current;
+    }else{
+      automation->selection = current;
+    }
+    
+    if(list != NULL){
+      current->next = list;
+      list->prev = current;
+    }
+  }else{
+    prev_match->next = current;
+    current->prev = prev_match;
+    
+    if(list != NULL){
+      list->prev = current;
+      current->next = list;
+    }
+  }
 }
 
 /**
@@ -708,7 +750,32 @@ gboolean
 ags_automation_remove_acceleration_at_position(AgsAutomation *automation,
 					       guint x, guint y)
 {
-  //TODO:JK: implement me
+  GList *list, *current;
+  gboolean retval;
+  
+  list = automation->acceleration;
+  current = NULL;
+  retval = FALSE;
+  
+  while(list != NULL){
+    if(AGS_ACCELERATION(list->data)->x == x &&
+       AGS_ACCELERATION(list->data)->y == y){
+      current = list;
+      retval = TRUE;
+      break;
+    }
+
+    if(AGS_ACCELERATION(list->data)->x > x){
+      break;
+    }
+    
+    list = list->next;
+  }
+
+  automation->acceleration = g_list_delete_link(automation->acceleration,
+						current);
+
+  return(retval);
 }
 
 /**
