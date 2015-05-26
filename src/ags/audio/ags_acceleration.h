@@ -33,11 +33,13 @@ typedef struct _AgsAcceleration AgsAcceleration;
 typedef struct _AgsAccelerationClass AgsAccelerationClass;
 
 typedef enum{
-  AGS_ACCELERATION_GUI             =  1,
-  AGS_ACCELERATION_RUNTIME         =  1 <<  1,
-  AGS_ACCELERATION_HUMAN_READABLE  =  1 <<  2,
-  AGS_ACCELERATION_DEFAULT_LENGTH  =  1 <<  3,
-  AGS_ACCELERATION_IS_SELECTED     =  1 <<  4,
+  AGS_ACCELERATION_DEFAULT_START   = 1,
+  AGS_ACCELERATION_DEFAULT_END     = 1 <<  1,
+  AGS_ACCELERATION_GUI             = 1 <<  2,
+  AGS_ACCELERATION_RUNTIME         = 1 <<  3,
+  AGS_ACCELERATION_HUMAN_READABLE  = 1 <<  4,
+  AGS_ACCELERATION_DEFAULT_LENGTH  = 1 <<  5,
+  AGS_ACCELERATION_IS_SELECTED     = 1 <<  6,
 }AgsAccelerationFlags;
 
 struct _AgsAcceleration
@@ -51,7 +53,6 @@ struct _AgsAcceleration
   guint y;
 
   gchar *name;
-  gdouble frequency;
 };
 
 struct _AgsAccelerationClass
