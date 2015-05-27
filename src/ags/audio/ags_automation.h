@@ -122,8 +122,8 @@ void ags_automation_remove_region_from_selection(AgsAutomation *automation,
 						 guint x0, guint y0,
 						 guint x1, guint y1);
 
-xmlNodePtr ags_automation_copy_selection(AgsAutomation *automation);
-xmlNodePtr ags_automation_cut_selection(AgsAutomation *automation);
+xmlNode* ags_automation_copy_selection(AgsAutomation *automation);
+xmlNode* ags_automation_cut_selection(AgsAutomation *automation);
 
 void ags_automation_insert_from_clipboard(AgsAutomation *automation,
 					  xmlNodePtr content,
