@@ -131,8 +131,11 @@ ags_iterator_thread_init(AgsIteratorThread *iterator_thread)
 {
   iterator_thread->flags = 0;
 
-  pthread_mutex_init(&(iterator_thread->tic_mutex), NULL);
-  pthread_cond_init(&(iterator_thread->tic_cond), NULL);
+  iterator_thread->tic_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(iterator_thread->tic_mutex, NULL);
+
+  iterator_thread->tic_cond = (pthread_cond_t *) malloc(sizeof(pthread_cond_t));
+  pthread_cond_init(iterator_thread->tic_cond, NULL);
 
   iterator_thread->recycling_thread = NULL;
 
@@ -186,7 +189,7 @@ ags_iterator_thread_run(AgsThread *thread)
   iterator_thread = AGS_ITERATOR_THREAD(thread);
 
   /*  */
-  pthread_mutex_lock(&(iterator_thread->tic_mutex));
+  pthread_mutex_lock(iterator_thread->tic_mutex);
 
   iterator_thread->flags &= (~AGS_ITERATOR_THREAD_DONE);
 
@@ -194,14 +197,14 @@ ags_iterator_thread_run(AgsThread *thread)
      (AGS_ITERATOR_THREAD_DONE & (iterator_thread->flags)) == 0){
     while((AGS_ITERATOR_THREAD_WAIT & (iterator_thread->flags)) != 0 &&
 	  (AGS_ITERATOR_THREAD_DONE & (iterator_thread->flags)) == 0){
-      pthread_cond_wait(&(iterator_thread->tic_cond),
-			&(iterator_thread->tic_mutex));
+      pthread_cond_wait(iterator_thread->tic_cond,
+			iterator_thread->tic_mutex);
     }
   }
 
   iterator_thread->flags |= AGS_ITERATOR_THREAD_WAIT;
 
-  pthread_mutex_unlock(&(iterator_thread->tic_mutex));
+  pthread_mutex_unlock(iterator_thread->tic_mutex);
 
   /*  */
   AGS_THREAD_CLASS(ags_iterator_thread_parent_class)->run(thread);
@@ -219,12 +222,12 @@ ags_iterator_thread_real_children_ready(AgsIteratorThread *iterator_thread,
 
   recycling_thread = AGS_RECYCLING_THREAD(current);
 
-  pthread_mutex_lock(&(recycling_thread->iteration_mutex));
+  pthread_mutex_lock(recycling_thread->iteration_mutex);
 
   recycling_thread->flags &= (~AGS_RECYCLING_THREAD_WAIT);
-  pthread_cond_signal(&(recycling_thread->iteration_cond));
+  pthread_cond_signal(recycling_thread->iteration_cond);
 
-  pthread_mutex_unlock(&(recycling_thread->iteration_mutex));
+  pthread_mutex_unlock(recycling_thread->iteration_mutex);
 }
 
 void

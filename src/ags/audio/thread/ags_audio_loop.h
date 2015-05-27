@@ -74,7 +74,7 @@ struct _AgsAudioLoop
   
   GObject *soundcard;
   
-  pthread_mutex_t recall_mutex;
+  pthread_mutex_t *recall_mutex;
 
   guint play_recall_ref;
   GList *play_recall; // play AgsRecall

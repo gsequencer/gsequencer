@@ -56,8 +56,8 @@ struct _AgsRecyclingThread
 
   AgsThread *iterator_thread;
 
-  pthread_mutex_t iteration_mutex;
-  pthread_cond_t iteration_cond;
+  pthread_mutex_t *iteration_mutex;
+  pthread_cond_t *iteration_cond;
 };
 
 struct _AgsRecyclingThreadClass

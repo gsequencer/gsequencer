@@ -193,8 +193,11 @@ ags_recycling_thread_init(AgsRecyclingThread *recycling_thread)
 
   recycling_thread->iterator_thread = NULL;
 
-  pthread_mutex_init(&(recycling_thread->iteration_mutex), NULL);
-  pthread_cond_init(&(recycling_thread->iteration_cond), NULL);
+  recycling_thread->iteration_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(recycling_thread->iteration_mutex, NULL);
+
+  recycling_thread->iteration_cond = (pthread_cond_t *) malloc(sizeof(pthread_cond_t));
+  pthread_cond_init(recycling_thread->iteration_cond, NULL);
 }
 
 
@@ -399,19 +402,19 @@ ags_recycling_thread_play_audio(AgsRecyclingThread *recycling_thread,
 void
 ags_recycling_thread_fifo(AgsRecyclingThread *recycling_thread)
 {
-  pthread_mutex_lock(&(recycling_thread->iteration_mutex));
+  pthread_mutex_lock(recycling_thread->iteration_mutex);
 
   recycling_thread->flags |= AGS_RECYCLING_THREAD_WAIT;
 
   while((AGS_RECYCLING_THREAD_WAIT & (recycling_thread->flags)) != 0 &&
 	(AGS_RECYCLING_THREAD_DONE & (recycling_thread->flags)) == 0){
-    pthread_cond_wait(&(recycling_thread->iteration_cond),
-		      &(recycling_thread->iteration_mutex));
+    pthread_cond_wait(recycling_thread->iteration_cond,
+		      recycling_thread->iteration_mutex);
   }
 
   recycling_thread->flags &= (~AGS_RECYCLING_THREAD_WAIT);
 
-  pthread_mutex_unlock(&(recycling_thread->iteration_mutex));
+  pthread_mutex_unlock(recycling_thread->iteration_mutex);
 }
 
 AgsRecyclingThread*

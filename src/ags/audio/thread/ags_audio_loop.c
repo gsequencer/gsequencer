@@ -320,7 +320,8 @@ ags_audio_loop_init(AgsAudioLoop *audio_loop)
   audio_loop->soundcard = NULL;
 
   /* recall mutex */
-  pthread_mutex_init(&(audio_loop->recall_mutex), NULL);
+  audio_loop->recall_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(audio_loop->recall_mutex, NULL);
 
   /* recall related lists */
   audio_loop->play_recall_ref = 0;
@@ -360,7 +361,7 @@ ags_audio_loop_set_property(GObject *gobject,
       if(application_context != NULL){
 	g_object_ref(G_OBJECT(application_context));
 
-	audio_loop->application_mutex = &(application_context->mutex);
+	audio_loop->application_mutex = application_context->mutex;
       }
 
       audio_loop->application_context = application_context;
@@ -581,7 +582,7 @@ ags_audio_loop_run(AgsThread *thread)
 
   soundcard = G_OBJECT(audio_loop->soundcard);
 
-  pthread_mutex_lock(&(audio_loop->recall_mutex));
+  pthread_mutex_lock(audio_loop->recall_mutex);
 
   /* play recall */
   if((AGS_AUDIO_LOOP_PLAY_RECALL & (audio_loop->flags)) != 0){
@@ -618,7 +619,7 @@ ags_audio_loop_run(AgsThread *thread)
     ags_audio_loop_stopped_all(audio_loop);
   }
 
-  pthread_mutex_unlock(&(audio_loop->recall_mutex));
+  pthread_mutex_unlock(audio_loop->recall_mutex);
 }
 
 /**
@@ -758,17 +759,17 @@ ags_audio_loop_play_channel(AgsAudioLoop *audio_loop)
 	  /* super threaded */
 	  if((AGS_PLAYBACK_PLAYBACK & (play->flags)) != 0){
 	    play->iterator_thread[0]->flags |= AGS_ITERATOR_THREAD_DONE;
-	    pthread_cond_signal(&(play->iterator_thread[0]->tic_cond));
+	    pthread_cond_signal(play->iterator_thread[0]->tic_cond);
 	  }
 
 	  if((AGS_PLAYBACK_SEQUENCER & (play->flags)) != 0){
 	    play->iterator_thread[1]->flags |= AGS_ITERATOR_THREAD_DONE;
-	    pthread_cond_signal(&(play->iterator_thread[1]->tic_cond));
+	    pthread_cond_signal(play->iterator_thread[1]->tic_cond);
 	  }
 
 	  if((AGS_PLAYBACK_NOTATION & (play->flags)) != 0){
 	    play->iterator_thread[2]->flags |= AGS_ITERATOR_THREAD_DONE;
-	    pthread_cond_signal(&(play->iterator_thread[2]->tic_cond));
+	    pthread_cond_signal(play->iterator_thread[2]->tic_cond);
 	  }
 	}
       }
@@ -869,17 +870,17 @@ ags_audio_loop_play_audio(AgsAudioLoop *audio_loop)
 	    /* super threaded */
 	    if((AGS_PLAYBACK_PLAYBACK & (play->flags)) != 0){
 	      play->iterator_thread[0]->flags |= AGS_ITERATOR_THREAD_DONE;
-	      pthread_cond_signal(&(play->iterator_thread[0]->tic_cond));
+	      pthread_cond_signal(play->iterator_thread[0]->tic_cond);
 	    }
 
 	    if((AGS_PLAYBACK_SEQUENCER & (play->flags)) != 0){
 	      play->iterator_thread[1]->flags |= AGS_ITERATOR_THREAD_DONE;
-	      pthread_cond_signal(&(play->iterator_thread[1]->tic_cond));
+	      pthread_cond_signal(play->iterator_thread[1]->tic_cond);
 	    }
 
 	    if((AGS_PLAYBACK_NOTATION & (play->flags)) != 0){
 	      play->iterator_thread[2]->flags |= AGS_ITERATOR_THREAD_DONE;
-	      pthread_cond_signal(&(play->iterator_thread[2]->tic_cond));
+	      pthread_cond_signal(play->iterator_thread[2]->tic_cond);
 	    }
 	  }
 	}
