@@ -808,8 +808,18 @@ ags_automation_get_selection(AgsAutomation *automation)
 gboolean
 ags_automation_is_acceleration_selected(AgsAutomation *automation, AgsAcceleration *acceleration)
 {
-  //TODO:JK: implement me
-  
+  GList *selection;
+
+  selection = automation->selection;
+
+  while(selection != NULL && AGS_ACCELERATION(selection->data)->x <= acceleration->x){
+    if(selection->data == acceleration){
+      return(TRUE);
+    }
+
+    selection = selection->next;
+  }
+
   return(FALSE);
 }
 
@@ -820,7 +830,7 @@ ags_automation_is_acceleration_selected(AgsAutomation *automation, AgsAccelerati
  * @y: acceleration
  * @use_selection_list: if %TRUE selection is searched
  *
- * Find acceleration by offset and tone.
+ * Find acceleration by offset and acceleration.
  *
  * Returns: the matching acceleration.
  *
@@ -831,9 +841,23 @@ ags_automation_find_point(AgsAutomation *automation,
 			  guint x, guint y,
 			  gboolean use_selection_list)
 {
-  //TODO:JK: implement me
-  
-  return(NULL);
+  GList *acceleration;
+
+  if(use_selection_list){
+    acceleration = automation->selection;
+  }else{
+    acceleration = automation->acceleration;
+  }
+
+  while(acceleration != NULL && AGS_ACCELERATION(acceleration->data)->x < x){
+    acceleration = acceleration->next;
+  }
+
+  if(acceleration == NULL || AGS_ACCELERATION(acceleration->data)->y != y){
+    return(NULL);
+  }else{
+    return(acceleration->data);
+  }
 }
 
 /**
@@ -857,9 +881,33 @@ ags_automation_find_region(AgsAutomation *automation,
 			   guint x1, guint y1,
 			   gboolean use_selection_list)
 {
-  //TODO:JK: implement me
+  AgsAcceleration *current;
+  GList *acceleration;
+  GList *region;
 
-  return(NULL);
+  if(use_selection_list){
+    acceleration = automation->selection;
+  }else{
+    acceleration = automation->acceleration;
+  }
+
+  while(acceleration != NULL && AGS_ACCELERATION(acceleration->data)->x < x0){
+    acceleration = acceleration->next;
+  }
+
+  region = NULL;
+
+  while(acceleration != NULL && (current = AGS_ACCELERATION(acceleration->data))->x < x1){
+    if(current->y >= y0 && current->y < y1){
+      region = g_list_prepend(region, current);
+    }
+
+    acceleration = acceleration->next;
+  }
+
+  region = g_list_reverse(region);
+
+  return(region);
 }
 
 /**
@@ -1081,7 +1129,31 @@ ags_automation_copy_selection(AgsAutomation *automation)
   xmlNewProp(automation_node, BAD_CAST "version\0", BAD_CAST AGS_AUTOMATION_CLIPBOARD_VERSION);
   xmlNewProp(automation_node, BAD_CAST "format\0", BAD_CAST AGS_AUTOMATION_CLIPBOARD_FORMAT);
 
-  //TODO:JK: implement me
+  selection = automation->selection;
+
+  if(selection != NULL){
+    x_boundary = AGS_ACCELERATION(selection->data)->x;
+    y_boundary = G_MAXUINT;
+  }else{
+    x_boundary = 0;
+    y_boundary = 0;
+  }
+
+  while(selection != NULL){
+    acceleration = AGS_ACCELERATION(selection->data);
+    current_acceleration = xmlNewChild(automation_node, NULL, BAD_CAST "acceleration\0", NULL);
+
+    xmlNewProp(current_acceleration, BAD_CAST "x\0", BAD_CAST g_strdup_printf("%u\0", acceleration->x));
+    xmlNewProp(current_acceleration, BAD_CAST "y\0", BAD_CAST g_strdup_printf("%u\0", acceleration->y));
+
+    if(y_boundary > acceleration->y)
+      y_boundary = acceleration->y;
+
+    selection = selection->next;
+  }
+
+  xmlNewProp(automation_node, BAD_CAST "x_boundary\0", BAD_CAST g_strdup_printf("%u\0", x_boundary));
+  xmlNewProp(automation_node, BAD_CAST "y_boundary\0", BAD_CAST g_strdup_printf("%u\0", y_boundary));
   
   return(automation_node);
 }
@@ -1140,11 +1212,204 @@ ags_automation_cut_selection(AgsAutomation *automation)
 
 void
 ags_automation_insert_from_clipboard(AgsAutomation *automation,
-				     xmlNode *content,
+				     xmlNode *automation_node,
 				     gboolean reset_x_offset, guint x_offset,
 				     gboolean reset_y_offset, guint y_offset)
 {
-  //TODO:JK: implement me
+  char *program, *version, *type, *format;
+  char *base_frequency;
+  char *x_boundary, *y_boundary;
+
+  auto void ags_automation_insert_from_clipboard_version_0_4_3(AgsAutomation *automation,
+							       xmlNode *root_node, char *version,
+							       char *x_boundary, char *y_boundary,
+							       gboolean reset_x_offset, guint x_offset,
+							       gboolean reset_y_offset, guint y_offset);
+  
+  void ags_automation_insert_from_clipboard_version_0_4_3(AgsAutomation *automation,
+							  xmlNode *root_node, char *version,
+							  char *x_boundary, char *y_boundary,
+							  gboolean reset_x_offset, guint x_offset,
+							  gboolean reset_y_offset, guint y_offset){
+    AgsAcceleration *acceleration;
+    xmlNode *node;
+    char *endptr;
+    guint x_boundary_val, y_boundary_val;
+    char *x, *y;
+    guint x_val, y_val;
+    guint base_x_difference, base_y_difference;
+    gboolean subtract_x, subtract_y;
+
+    node = root_node->children;
+
+    /* retrieve x values for resetting */
+    if(reset_x_offset){
+      if(x_boundary != NULL){
+	errno = 0;
+	x_boundary_val = strtoul(x_boundary, &endptr, 10);
+
+	if(errno == ERANGE){
+	  goto dont_reset_x_offset;
+	} 
+
+	if(x_boundary == endptr){
+	  goto dont_reset_x_offset;
+	}
+
+	if(x_boundary_val < x_offset){
+	  base_x_difference = x_offset - x_boundary_val;
+	  subtract_x = FALSE;
+	}else{
+	  base_x_difference = x_boundary_val - x_offset;
+	  subtract_x = TRUE;
+	}
+      }else{
+      dont_reset_x_offset:
+	reset_x_offset = FALSE;
+      }
+    }
+
+    /* retrieve y values for resetting */
+    if(reset_y_offset){
+      if(y_boundary != NULL){
+	errno = 0;
+	y_boundary_val = strtoul(y_boundary, &endptr, 10);
+
+	if(errno == ERANGE){
+	  goto dont_reset_y_offset;
+	} 
+
+	if(y_boundary == endptr){
+	  goto dont_reset_y_offset;
+	}
+
+	if(y_boundary_val < y_offset){
+	  base_y_difference = y_offset - y_boundary_val;
+	  subtract_y = FALSE;
+	}else{
+	  base_y_difference = y_boundary_val - y_offset;
+	  subtract_y = TRUE;
+	}
+      }else{
+      dont_reset_y_offset:
+	reset_y_offset = FALSE;
+      }
+    }
+    
+    for(; node != NULL; node = node->next){
+      if(node->type == XML_ELEMENT_NODE && !xmlStrncmp("acceleration\0", node->name, 5)){
+	/* retrieve x0 offset */
+	x = xmlGetProp(node, "x\0");
+
+	if(x == NULL)
+	  continue;
+
+	errno = 0;
+	x_val = strtoul(x, &endptr, 10);
+
+	if(errno == ERANGE){
+	  continue;
+	} 
+
+	if(x == endptr){
+	  continue;
+	}
+	
+	/* retrieve y offset */
+	y = xmlGetProp(node, "y\0");
+
+	if(y == NULL)
+	  continue;
+
+	errno = 0;
+	y_val = strtoul(y, &endptr, 10);
+
+	if(errno == ERANGE){
+	  continue;
+	} 
+
+	if(y == endptr){
+	  continue;
+	}
+
+	/* calculate new offset */
+	if(reset_x_offset){
+	  errno = 0;
+
+	  if(subtract_x){
+	    x_val -= base_x_difference;
+
+	    if(errno != 0)
+	      continue;
+	  }else{
+	    x_val += base_x_difference;
+
+	    if(errno != 0)
+	      continue;
+	  }
+	}
+
+	if(reset_y_offset){
+	  errno = 0;
+
+	  if(subtract_y){
+	    y_val -= base_y_difference;
+	  }else{
+	    y_val += base_y_difference;
+	  }
+
+	  if(errno != 0)
+	    continue;
+	}
+
+	/* add acceleration */
+	acceleration = ags_acceleration_new();
+
+	acceleration->x = x_val;
+	acceleration->y = y_val;
+
+	g_message("adding acceleration at: [%u|%u]\n\0", x_val, y_val);
+
+	ags_automation_add_acceleration(automation,
+					acceleration,
+					FALSE);
+      }
+    }
+
+
+  }
+  
+  while(automation_node != NULL){
+    if(automation_node->type == XML_ELEMENT_NODE && !xmlStrncmp("automation\0", automation_node->name, 9))
+      break;
+
+    automation_node = automation_node->next;
+  }
+
+  if(automation_node != NULL){
+    program = xmlGetProp(automation_node, "program\0");
+
+    if(!xmlStrncmp("ags\0", program, 4)){
+      version = xmlGetProp(automation_node, "version\0");
+      type = xmlGetProp(automation_node, "type\0");
+      format = xmlGetProp(automation_node, "format\0");
+
+      if(!xmlStrncmp("AgsAutomationNativePiano\0", format, 22)){
+	AgsAcceleration *acceleration;
+	
+	base_frequency = xmlGetProp(automation_node, "base_frequency\0");
+
+	x_boundary = xmlGetProp(automation_node, "x_boundary\0");
+	y_boundary = xmlGetProp(automation_node, "y_boundary\0");
+
+	ags_automation_insert_from_clipboard_version_0_4_3(automation,
+							   automation_node, version,
+							   x_boundary, y_boundary,
+							   reset_x_offset, x_offset,
+							   reset_y_offset, y_offset);
+      }
+    }
+  }
 }
 
 GList*

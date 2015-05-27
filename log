@@ -1,15 +1,213 @@
 make  all-recursive
-make[1]: Entering directory '/home/minos/ags-devel'
+make[1]: Entering directory '/home/joelkraehemann/gsequencer'
 Making all in po
-make[2]: Entering directory '/home/minos/ags-devel/po'
+make[2]: Entering directory '/home/joelkraehemann/gsequencer/po'
 make[2]: Nothing to be done for 'all'.
-make[2]: Leaving directory '/home/minos/ags-devel/po'
+make[2]: Leaving directory '/home/joelkraehemann/gsequencer/po'
 Making all in .
-make[2]: Entering directory '/home/minos/ags-devel'
-make[2]: *** No rule to make target 'src/ags/X/ags_import_midi_wizard_callbacks.c', needed by 'gsequencer-ags_import_midi_wizard_callbacks.o'.  Stop.
-make[2]: Leaving directory '/home/minos/ags-devel'
-Makefile:8041: recipe for target 'all-recursive' failed
+make[2]: Entering directory '/home/joelkraehemann/gsequencer'
+gcc -DHAVE_CONFIG_H -I.    -g -O2 -g -std=gnu11 -Wuninitialized -Wreturn-type -Wunused-variable -Wunused-but-set-variable -Wmaybe-uninitialized -Wimplicit-function-declaration -Wparentheses -Wpointer-sign -Wdeprecated-declarations -Wcomment -O -I./src -I/usr/include -I/usr/include/uuid   -I/usr/include/alsa  -I/usr/include/libxml2   -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12  -pthread -I/usr/include/gtk-2.0 -I/usr/lib/x86_64-linux-gnu/gtk-2.0/include -I/usr/include/gio-unix-2.0/ -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/libpng12 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/pango-1.0 -I/usr/include/harfbuzz -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/freetype2  -g -O2 -MT libags_audio_a-ags_automation.o -MD -MP -MF .deps/libags_audio_a-ags_automation.Tpo -c -o libags_audio_a-ags_automation.o `test -f 'src/ags/audio/ags_automation.c' || echo './'`src/ags/audio/ags_automation.c
+src/ags/audio/ags_automation.c: In function ‘ags_automation_set_property’:
+src/ags/audio/ags_automation.c:420:28: warning: comparison of distinct pointer types lacks a cast
+       if(automation->audio == audio){
+                            ^
+src/ags/audio/ags_automation.c:432:25: warning: assignment from incompatible pointer type
+       automation->audio = audio;
+                         ^
+src/ags/audio/ags_automation.c:457:20: warning: assignment discards ‘const’ qualifier from pointer target type
+       control_name = g_value_get_string(value);
+                    ^
+src/ags/audio/ags_automation.c:472:15: warning: comparison of distinct pointer types lacks a cast
+       if(port == automation->port){
+               ^
+src/ags/audio/ags_automation.c:484:24: warning: assignment from incompatible pointer type
+       automation->port = port;
+                        ^
+src/ags/audio/ags_automation.c: In function ‘ags_automation_find_near_timestamp’:
+src/ags/audio/ags_automation.c:660:23: warning: assignment from incompatible pointer type
+     current_timestamp = AGS_AUTOMATION(automation->data)->timestamp;
+                       ^
+src/ags/audio/ags_automation.c: In function ‘ags_automation_add_acceleration’:
+src/ags/audio/ags_automation.c:703:37: warning: comparison between pointer and integer
+     if(AGS_ACCELERATION(list->data) <= acceleration->x){
+                                     ^
+src/ags/audio/ags_automation.c: In function ‘ags_automation_find_region’:
+src/ags/audio/ags_automation.c:889:20: error: ‘notation’ undeclared (first use in this function)
+     acceleration = notation->selection;
+                    ^
+src/ags/audio/ags_automation.c:889:20: note: each undeclared identifier is reported only once for each function it appears in
+src/ags/audio/ags_automation.c: In function ‘ags_automation_insert_from_clipboard_version_0_4_3’:
+src/ags/audio/ags_automation.c:1300:56: warning: pointer targets in passing argument 1 of ‘xmlStrncmp’ differ in signedness [-Wpointer-sign]
+       if(node->type == XML_ELEMENT_NODE && !xmlStrncmp("acceleration\0", node->name, 5)){
+                                                        ^
+In file included from /usr/include/libxml2/libxml/tree.h:18:0,
+                 from ./src/ags/audio/ags_automation.h:24,
+                 from src/ags/audio/ags_automation.c:19:
+/usr/include/libxml2/libxml/xmlstring.h:67:17: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+                 xmlStrncmp               (const xmlChar *str1,
+                 ^
+src/ags/audio/ags_automation.c:1302:23: warning: pointer targets in passing argument 2 of ‘xmlGetProp’ differ in signedness [-Wpointer-sign]
+  x = xmlGetProp(node, "x\0");
+                       ^
+In file included from ./src/ags/audio/ags_automation.h:24:0,
+                 from src/ags/audio/ags_automation.c:19:
+/usr/include/libxml2/libxml/tree.h:1021:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlGetProp  (xmlNodePtr node,
+   ^
+src/ags/audio/ags_automation.c:1302:4: warning: pointer targets in assignment differ in signedness [-Wpointer-sign]
+  x = xmlGetProp(node, "x\0");
+    ^
+src/ags/audio/ags_automation.c:1319:23: warning: pointer targets in passing argument 2 of ‘xmlGetProp’ differ in signedness [-Wpointer-sign]
+  y = xmlGetProp(node, "y\0");
+                       ^
+In file included from ./src/ags/audio/ags_automation.h:24:0,
+                 from src/ags/audio/ags_automation.c:19:
+/usr/include/libxml2/libxml/tree.h:1021:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlGetProp  (xmlNodePtr node,
+   ^
+src/ags/audio/ags_automation.c:1319:4: warning: pointer targets in assignment differ in signedness [-Wpointer-sign]
+  y = xmlGetProp(node, "y\0");
+    ^
+src/ags/audio/ags_automation.c:1373:34: error: ‘notation’ undeclared (first use in this function)
+  ags_automation_add_acceleration(notation,
+                                  ^
+src/ags/audio/ags_automation.c: In function ‘ags_automation_insert_from_clipboard’:
+src/ags/audio/ags_automation.c:1383:65: warning: pointer targets in passing argument 1 of ‘xmlStrncmp’ differ in signedness [-Wpointer-sign]
+     if(automation_node->type == XML_ELEMENT_NODE && !xmlStrncmp("automation\0", automation_node->name, 9))
+                                                                 ^
+In file included from /usr/include/libxml2/libxml/tree.h:18:0,
+                 from ./src/ags/audio/ags_automation.h:24,
+                 from src/ags/audio/ags_automation.c:19:
+/usr/include/libxml2/libxml/xmlstring.h:67:17: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+                 xmlStrncmp               (const xmlChar *str1,
+                 ^
+src/ags/audio/ags_automation.c:1390:43: warning: pointer targets in passing argument 2 of ‘xmlGetProp’ differ in signedness [-Wpointer-sign]
+     program = xmlGetProp(automation_node, "program\0");
+                                           ^
+In file included from ./src/ags/audio/ags_automation.h:24:0,
+                 from src/ags/audio/ags_automation.c:19:
+/usr/include/libxml2/libxml/tree.h:1021:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlGetProp  (xmlNodePtr node,
+   ^
+src/ags/audio/ags_automation.c:1390:13: warning: pointer targets in assignment differ in signedness [-Wpointer-sign]
+     program = xmlGetProp(automation_node, "program\0");
+             ^
+src/ags/audio/ags_automation.c:1392:20: warning: pointer targets in passing argument 1 of ‘xmlStrncmp’ differ in signedness [-Wpointer-sign]
+     if(!xmlStrncmp("ags\0", program, 4)){
+                    ^
+In file included from /usr/include/libxml2/libxml/tree.h:18:0,
+                 from ./src/ags/audio/ags_automation.h:24,
+                 from src/ags/audio/ags_automation.c:19:
+/usr/include/libxml2/libxml/xmlstring.h:67:17: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+                 xmlStrncmp               (const xmlChar *str1,
+                 ^
+src/ags/audio/ags_automation.c:1392:29: warning: pointer targets in passing argument 2 of ‘xmlStrncmp’ differ in signedness [-Wpointer-sign]
+     if(!xmlStrncmp("ags\0", program, 4)){
+                             ^
+In file included from /usr/include/libxml2/libxml/tree.h:18:0,
+                 from ./src/ags/audio/ags_automation.h:24,
+                 from src/ags/audio/ags_automation.c:19:
+/usr/include/libxml2/libxml/xmlstring.h:67:17: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+                 xmlStrncmp               (const xmlChar *str1,
+                 ^
+src/ags/audio/ags_automation.c:1393:45: warning: pointer targets in passing argument 2 of ‘xmlGetProp’ differ in signedness [-Wpointer-sign]
+       version = xmlGetProp(automation_node, "version\0");
+                                             ^
+In file included from ./src/ags/audio/ags_automation.h:24:0,
+                 from src/ags/audio/ags_automation.c:19:
+/usr/include/libxml2/libxml/tree.h:1021:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlGetProp  (xmlNodePtr node,
+   ^
+src/ags/audio/ags_automation.c:1393:15: warning: pointer targets in assignment differ in signedness [-Wpointer-sign]
+       version = xmlGetProp(automation_node, "version\0");
+               ^
+src/ags/audio/ags_automation.c:1394:42: warning: pointer targets in passing argument 2 of ‘xmlGetProp’ differ in signedness [-Wpointer-sign]
+       type = xmlGetProp(automation_node, "type\0");
+                                          ^
+In file included from ./src/ags/audio/ags_automation.h:24:0,
+                 from src/ags/audio/ags_automation.c:19:
+/usr/include/libxml2/libxml/tree.h:1021:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlGetProp  (xmlNodePtr node,
+   ^
+src/ags/audio/ags_automation.c:1394:12: warning: pointer targets in assignment differ in signedness [-Wpointer-sign]
+       type = xmlGetProp(automation_node, "type\0");
+            ^
+src/ags/audio/ags_automation.c:1395:44: warning: pointer targets in passing argument 2 of ‘xmlGetProp’ differ in signedness [-Wpointer-sign]
+       format = xmlGetProp(automation_node, "format\0");
+                                            ^
+In file included from ./src/ags/audio/ags_automation.h:24:0,
+                 from src/ags/audio/ags_automation.c:19:
+/usr/include/libxml2/libxml/tree.h:1021:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlGetProp  (xmlNodePtr node,
+   ^
+src/ags/audio/ags_automation.c:1395:14: warning: pointer targets in assignment differ in signedness [-Wpointer-sign]
+       format = xmlGetProp(automation_node, "format\0");
+              ^
+src/ags/audio/ags_automation.c:1397:22: warning: pointer targets in passing argument 1 of ‘xmlStrncmp’ differ in signedness [-Wpointer-sign]
+       if(!xmlStrncmp("AgsAutomationNativePiano\0", format, 22)){
+                      ^
+In file included from /usr/include/libxml2/libxml/tree.h:18:0,
+                 from ./src/ags/audio/ags_automation.h:24,
+                 from src/ags/audio/ags_automation.c:19:
+/usr/include/libxml2/libxml/xmlstring.h:67:17: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+                 xmlStrncmp               (const xmlChar *str1,
+                 ^
+src/ags/audio/ags_automation.c:1397:52: warning: pointer targets in passing argument 2 of ‘xmlStrncmp’ differ in signedness [-Wpointer-sign]
+       if(!xmlStrncmp("AgsAutomationNativePiano\0", format, 22)){
+                                                    ^
+In file included from /usr/include/libxml2/libxml/tree.h:18:0,
+                 from ./src/ags/audio/ags_automation.h:24,
+                 from src/ags/audio/ags_automation.c:19:
+/usr/include/libxml2/libxml/xmlstring.h:67:17: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+                 xmlStrncmp               (const xmlChar *str1,
+                 ^
+src/ags/audio/ags_automation.c:1400:47: warning: pointer targets in passing argument 2 of ‘xmlGetProp’ differ in signedness [-Wpointer-sign]
+  base_frequency = xmlGetProp(automation_node, "base_frequency\0");
+                                               ^
+In file included from ./src/ags/audio/ags_automation.h:24:0,
+                 from src/ags/audio/ags_automation.c:19:
+/usr/include/libxml2/libxml/tree.h:1021:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlGetProp  (xmlNodePtr node,
+   ^
+src/ags/audio/ags_automation.c:1400:17: warning: pointer targets in assignment differ in signedness [-Wpointer-sign]
+  base_frequency = xmlGetProp(automation_node, "base_frequency\0");
+                 ^
+src/ags/audio/ags_automation.c:1402:43: warning: pointer targets in passing argument 2 of ‘xmlGetProp’ differ in signedness [-Wpointer-sign]
+  x_boundary = xmlGetProp(automation_node, "x_boundary\0");
+                                           ^
+In file included from ./src/ags/audio/ags_automation.h:24:0,
+                 from src/ags/audio/ags_automation.c:19:
+/usr/include/libxml2/libxml/tree.h:1021:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlGetProp  (xmlNodePtr node,
+   ^
+src/ags/audio/ags_automation.c:1402:13: warning: pointer targets in assignment differ in signedness [-Wpointer-sign]
+  x_boundary = xmlGetProp(automation_node, "x_boundary\0");
+             ^
+src/ags/audio/ags_automation.c:1403:43: warning: pointer targets in passing argument 2 of ‘xmlGetProp’ differ in signedness [-Wpointer-sign]
+  y_boundary = xmlGetProp(automation_node, "y_boundary\0");
+                                           ^
+In file included from ./src/ags/audio/ags_automation.h:24:0,
+                 from src/ags/audio/ags_automation.c:19:
+/usr/include/libxml2/libxml/tree.h:1021:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlGetProp  (xmlNodePtr node,
+   ^
+src/ags/audio/ags_automation.c:1403:13: warning: pointer targets in assignment differ in signedness [-Wpointer-sign]
+  y_boundary = xmlGetProp(automation_node, "y_boundary\0");
+             ^
+src/ags/audio/ags_automation.c:1398:19: warning: unused variable ‘acceleration’ [-Wunused-variable]
+  AgsAcceleration *acceleration;
+                   ^
+src/ags/audio/ags_automation.c:1220:9: warning: variable ‘base_frequency’ set but not used [-Wunused-but-set-variable]
+   char *base_frequency;
+         ^
+src/ags/audio/ags_automation.c:1219:29: warning: variable ‘type’ set but not used [-Wunused-but-set-variable]
+   char *program, *version, *type, *format;
+                             ^
+Makefile:3093: recipe for target 'libags_audio_a-ags_automation.o' failed
+make[2]: *** [libags_audio_a-ags_automation.o] Error 1
+make[2]: Leaving directory '/home/joelkraehemann/gsequencer'
+Makefile:8050: recipe for target 'all-recursive' failed
 make[1]: *** [all-recursive] Error 1
-make[1]: Leaving directory '/home/minos/ags-devel'
-Makefile:1922: recipe for target 'all' failed
+make[1]: Leaving directory '/home/joelkraehemann/gsequencer'
+Makefile:1931: recipe for target 'all' failed
 make: *** [all] Error 2

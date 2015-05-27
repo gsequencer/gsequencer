@@ -887,8 +887,9 @@ ags_notation_is_note_selected(AgsNotation *notation, AgsNote *note)
   selection = notation->selection;
 
   while(selection != NULL && AGS_NOTE(selection->data)->x[0] <= note->x[0]){
-    if(selection->data == note)
+    if(selection->data == note){
       return(TRUE);
+    }
 
     selection = selection->next;
   }
@@ -1341,6 +1342,8 @@ ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
 						gboolean reset_x_offset, guint x_offset,
 						gboolean reset_y_offset, guint y_offset)
 {
+  auto void ags_notation_insert_native_piano_from_clipboard_version_0_3_12();
+
   void ags_notation_insert_native_piano_from_clipboard_version_0_3_12(){
     AgsNote *note;
     xmlNode *node;
@@ -1521,9 +1524,9 @@ ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
 			      FALSE);
       }
     }
-
   }
 
+  /* entry point */
   if(!xmlStrncmp("0.3.12\0", version, 7)){
     ags_notation_insert_native_piano_from_clipboard_version_0_3_12();
   }

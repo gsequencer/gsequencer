@@ -67,7 +67,7 @@ void ags_effect_bridge_real_resize_pads(AgsEffectBridge *effect_bridge,
  * @section_id:
  * @include: ags/X/ags_effect_bridge.h
  *
- * #AgsEffectBridge is a composite widget to visualize all #AgsChannel. It should be
+ * #AgsEffectBridge is a composite widget containing #AgsEffectBulk or #AgsEffectPad. It should be
  * packed by an #AgsMachine.
  */
 
@@ -151,7 +151,7 @@ ags_effect_bridge_class_init(AgsEffectBridgeClass *effect_bridge)
    *
    * The start of a bunch of #AgsAudio to visualize.
    * 
-   * Since: 0.4
+   * Since: 0.4.3
    */
   param_spec = g_param_spec_object("audio\0",
 				   "assigned audio\0",
@@ -775,7 +775,7 @@ ags_effect_bridge_resize_pads(AgsEffectBridge *effect_bridge,
  *
  * Returns: a new #AgsEffectBridge
  *
- * Since: 0.4
+ * Since: 0.4.3
  */
 AgsEffectBridge*
 ags_effect_bridge_new(AgsAudio *audio)
