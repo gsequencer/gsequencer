@@ -84,9 +84,9 @@ struct _AgsMachine
   GtkContainer *input;
 
   GtkContainer *bridge;
-  
-  GList *port;
 
+  gchar **automation_port;
+  
   GtkMenu *popup;
   GtkDialog *properties;
   GtkDialog *rename;

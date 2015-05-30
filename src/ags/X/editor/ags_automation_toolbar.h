@@ -54,7 +54,7 @@ struct _AgsAutomationToolbar
 
   GtkComboBox *zoom;
 
-  AgsPortSelection *port_selection;
+  GtkComboBox *port;
 };
 
 struct _AgsAutomationToolbarClass
@@ -63,6 +63,8 @@ struct _AgsAutomationToolbarClass
 };
 
 GType ags_automation_toolbar_get_type(void);
+
+void ags_automation_toolbar_load_port(AgsAutomationToolbar *automation_toolbar);
 
 AgsAutomationToolbar* ags_automation_toolbar_new();
 

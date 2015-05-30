@@ -1421,13 +1421,58 @@ ags_automation_get_current(AgsAutomation *automation)
 }
 
 /**
+ * ags_automation_get_specifier_unique:
+ * @automation: a #GList containing #AgsAutomation
+ *
+ * Retrieve automation port specifier.
+ *
+ * Returns: a %NULL terminated string array
+ *
+ * Since: 0.4.3
+ */
+gchar**
+ags_automation_get_specifier_unique(GList *automation)
+{
+  gchar **specifier, **current;
+  guint length, i;
+  
+  specifier = (gchar **) malloc(sizeof(gchar*));
+  specifier[0] = NULL;
+  length = 1;
+  
+  while(automation != NULL){
+    current = specifier;
+
+    if(AGS_AUTOMATION(automation->data)->port == NULL){
+      automation = automation->next;
+
+      continue;
+    }
+    
+    if(!g_strv_contains(specifier,
+			AGS_PORT(AGS_AUTOMATION(automation->data)->port)->specifier)){
+      specifier = (gchar **) realloc(specifier,
+				     (length + 1) * sizeof(gchar *));
+      specifier[length - 1] = AGS_PORT(AGS_AUTOMATION(automation->data)->port)->specifier;
+      specifier[length] = NULL;
+
+      length++;
+    }
+
+    automation = automation->next;
+  }
+
+  return(specifier);
+}
+
+/**
  * ags_automation_new:
  * @audio: an #AgsAudio
  * @line: the line to apply
  * @channel_type: the channel type
  * @control_name: the control name
  *
- * Creates a #AgsAutomation.
+ * Creates an #AgsAutomation.
  *
  * Returns: a new #AgsAutomation
  *

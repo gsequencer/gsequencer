@@ -287,8 +287,9 @@ ags_machine_init(AgsMachine *machine)
 
   machine->bridge = NULL;
 
-  machine->port = NULL;
-
+  machine->automation_port = (gchar **) malloc(sizeof(gchar *));
+  machine->automation_port[0] = NULL;
+  
   machine->popup = ags_machine_popup_new(machine);
   machine->properties = NULL;
   machine->rename = NULL;

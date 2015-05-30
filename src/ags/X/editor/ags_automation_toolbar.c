@@ -185,9 +185,9 @@ ags_automation_toolbar_init(AgsAutomationToolbar *automation_toolbar)
 			    NULL);
 
   /*  */
-  automation_toolbar->port_selection = ags_port_selection_new();
+  automation_toolbar->port = gtk_combo_box_new();
   gtk_toolbar_append_widget((GtkToolbar *) automation_toolbar,
-			    (GtkWidget *) automation_toolbar->port_selection,
+			    (GtkWidget *) automation_toolbar->port,
 			    NULL,
 			    NULL);
 }
@@ -214,11 +214,51 @@ ags_automation_toolbar_disconnect(AgsConnectable *connectable)
 }
 
 /**
+ * ags_automation_toolbar_load_port:
+ * @automation_toolbar: an #AgsAutomationToolbar
+ *
+ * Fill in port field with available ports.
+ *
+ * Since: 0.4.3
+ */
+void
+ags_automation_toolbar_load_port(AgsAutomationToolbar *automation_toolbar)
+{
+  AgsAutomationEditor *automation_editor;
+  AgsMachine *machine;
+  
+  GtkListStore *list_store;
+  GtkTreeIter iter;
+
+  gchar **specifier;
+  
+  automation_editor = gtk_widget_get_ancestor(automation_toolbar,
+					      AGS_TYPE_AUTOMATION_EDITOR);
+  machine = automation_editor->selected_machine;
+
+  list_store = gtk_list_store_new(2,
+				  G_TYPE_BOOLEAN,
+				  G_TYPE_STRING);
+  gtk_combo_box_set_model(automation_toolbar->port,
+			  GTK_TREE_MODEL(list_store));
+
+  specifier = ags_automation_get_specifier_unique(machine->audio->automation);
+  
+  for(; *specifier != NULL; specifier++){
+    gtk_list_store_append(list_store, &iter);
+    gtk_list_store_set(list_store, &iter,
+		       0, g_strv_contains(machine->automation_port, *specifier),
+		       1, g_strdup(*specifier),
+		       -1);
+  }
+}
+
+/**
  * ags_automation_toolbar_new:
  *
  * Create a new #AgsAutomationToolbar.
  *
- * Since: 0.4
+ * Since: 0.4.3
  */
 AgsAutomationToolbar*
 ags_automation_toolbar_new()
