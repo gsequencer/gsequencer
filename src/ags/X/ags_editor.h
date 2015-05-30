@@ -91,7 +91,6 @@ struct _AgsEditor
   union AgsEdit{
     AgsNoteEdit *note_edit;
     AgsPatternEdit *pattern_edit;
-    AgsAutomationEdit *automation_edit;
   }edit;
 
   guint tact_counter;

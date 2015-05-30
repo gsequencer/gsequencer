@@ -30,9 +30,6 @@
 
 #include <ags/X/editor/ags_machine_selector.h>
 
-gboolean ags_automation_editor_delete_event_callback(GtkWidget *automation_editor,
-						     gpointer data);
-
 void ags_automation_editor_set_audio_channels_callback(AgsAudio *audio,
 						       guint audio_channels, guint audio_channels_old,
 						       AgsAutomationEditor *automation_editor);

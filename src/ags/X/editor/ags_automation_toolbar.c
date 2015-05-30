@@ -245,6 +245,7 @@ ags_automation_toolbar_load_port(AgsAutomationToolbar *automation_toolbar)
   specifier = ags_automation_get_specifier_unique(machine->audio->automation);
   
   for(; *specifier != NULL; specifier++){
+    g_message(*specifier);
     gtk_list_store_append(list_store, &iter);
     gtk_list_store_set(list_store, &iter,
 		       0, g_strv_contains(machine->automation_port, *specifier),

@@ -378,7 +378,7 @@ ags_menu_bar_connect(AgsConnectable *connectable)
   list1 = list1->next;
 
   g_signal_connect(G_OBJECT(list1->data), "activate\0",
-		   G_CALLBACK(ags_menu_bar_automation_editor_callback), (gpointer) menu_bar);
+		   G_CALLBACK(ags_menu_bar_automation_window_callback), (gpointer) menu_bar);
   list1 = list1->next;
   list1 = list1->next;
 

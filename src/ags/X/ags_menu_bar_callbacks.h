@@ -52,7 +52,7 @@ void ags_menu_bar_add_lv2_bridge_callback(GtkWidget *menu_item, AgsMenuBar *menu
 
 void ags_menu_bar_remove_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar);
 
-void ags_menu_bar_automation_editor_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar);
+void ags_menu_bar_automation_window_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar);
 
 void ags_menu_bar_preferences_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar);
 

@@ -18,10 +18,6 @@
 
 #include <ags/X/editor/ags_piano_callbacks.h>
 
-#include <ags/X/ags_editor.h>
-
-#include <math.h>
-
 gboolean
 ags_piano_expose_event(GtkWidget *widget, GdkEventExpose *event, AgsPiano *piano)
 {

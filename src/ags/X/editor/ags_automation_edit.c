@@ -24,7 +24,6 @@
 #include <ags/X/ags_automation_editor.h>
 
 #include <ags/X/editor/ags_automation_edit.h>
-#include <ags/X/editor/ags_automation_area.h>
 
 void ags_automation_edit_class_init(AgsAutomationEditClass *automation_edit);
 void ags_automation_edit_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -43,6 +42,8 @@ void ags_automation_edit_disconnect(AgsConnectable *connectable);
  */
 
 static gpointer ags_automation_edit_parent_class = NULL;
+
+GtkStyle *automation_edit_style;
 
 GType
 ags_automation_edit_get_type(void)
@@ -99,41 +100,57 @@ void
 ags_automation_edit_init(AgsAutomationEdit *automation_edit)
 {
   GtkAdjustment *adjustment;
-
-  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, 1.0, 1.0);
-
+  
   automation_edit->ruler = ags_ruler_new();
   gtk_table_attach(GTK_TABLE(automation_edit),
 		   (GtkWidget *) automation_edit->ruler,
-		   0, 1, 0, 1,
+		   0, 1,
+		   0, 1,
 		   GTK_FILL|GTK_EXPAND,
 		   GTK_FILL,
 		   0, 0);
 
-  automation_edit->map_width = AGS_AUTOMATION_EDIT_MAX_CONTROLS * 64;
-  automation_edit->map_height = 0;
-
-  /* drawing area box and its viewport */
-  automation_edit->scrolled_window = gtk_scrolled_window_new(NULL,
-							     NULL);
-  gtk_widget_set_events(GTK_WIDGET(automation_edit->scrolled_window), GDK_EXPOSURE_MASK
-			| GDK_LEAVE_NOTIFY_MASK
-			| GDK_BUTTON_PRESS_MASK
-			| GDK_BUTTON_RELEASE_MASK
-			| GDK_POINTER_MOTION_MASK
-			| GDK_POINTER_MOTION_HINT_MASK
-			);
+  automation_edit->drawing_area = (GtkDrawingArea *) gtk_drawing_area_new();
+  gtk_widget_set_style((GtkWidget *) automation_edit->drawing_area, automation_edit_style);
+  gtk_widget_set_events (GTK_WIDGET (automation_edit->drawing_area), GDK_EXPOSURE_MASK
+                         | GDK_LEAVE_NOTIFY_MASK
+                         | GDK_BUTTON_PRESS_MASK
+			 | GDK_BUTTON_RELEASE_MASK
+                         | GDK_POINTER_MOTION_MASK
+			 | GDK_POINTER_MOTION_HINT_MASK
+			 );
+    
   gtk_table_attach(GTK_TABLE(automation_edit),
-		   (GtkWidget *) automation_edit->scrolled_window,
+		   (GtkWidget *) automation_edit->drawing_area,
 		   0, 1,
 		   1, 2,
 		   GTK_FILL|GTK_EXPAND,
 		   GTK_FILL|GTK_EXPAND,
 		   0, 0);
 
-  automation_edit->automation_area = gtk_vbox_new(FALSE, 0);
-  gtk_scrolled_window_add_with_viewport(automation_edit->scrolled_window,
-					automation_edit->automation_area);
+  automation_edit->map_width = AGS_AUTOMATION_EDIT_MAX_CONTROLS * 64;
+  automation_edit->map_height = 0;
+
+  automation_edit->automation_area = NULL;
+  
+  /* GtkScrollbars */
+  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, 1.0, 1.0);
+  automation_edit->vscrollbar = (GtkVScrollbar *) gtk_vscrollbar_new(adjustment);
+  gtk_table_attach(GTK_TABLE(automation_edit),
+		   (GtkWidget *) automation_edit->vscrollbar,
+		   1, 2,
+		   1, 2,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, 1.0, 1.0);
+  automation_edit->hscrollbar = (GtkHScrollbar *) gtk_hscrollbar_new(adjustment);
+  gtk_table_attach(GTK_TABLE(automation_edit),
+		   (GtkWidget *) automation_edit->hscrollbar,
+		   0, 1,
+		   2, 3,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
 }
 
 void
@@ -144,11 +161,11 @@ ags_automation_edit_connect(AgsConnectable *connectable)
   automation_edit = AGS_AUTOMATION_EDIT(connectable);
 
   /*  */
-  g_signal_connect_after((GObject *) automation_edit->scrolled_window, "expose_event\0",
-			 G_CALLBACK (ags_automation_edit_scrolled_window_expose_event), (gpointer) automation_edit);
+  g_signal_connect_after((GObject *) automation_edit->drawing_area, "expose_event\0",
+			 G_CALLBACK (ags_automation_edit_drawing_area_expose_event), (gpointer) automation_edit);
 
-  g_signal_connect_after((GObject *) automation_edit->scrolled_window, "configure_event\0",
-			 G_CALLBACK (ags_automation_edit_scrolled_window_configure_event), (gpointer) automation_edit);
+  g_signal_connect_after((GObject *) automation_edit->drawing_area, "configure_event\0",
+			 G_CALLBACK (ags_automation_edit_drawing_area_configure_event), (gpointer) automation_edit);
 
   /*  */
 
@@ -177,9 +194,9 @@ ags_automation_edit_reset_vertically(AgsAutomationEdit *automation_edit, guint f
     GtkAdjustment *vadjustment;
     guint height;
 
-    height = GTK_WIDGET(automation_edit->automation_area)->allocation.height;
+    height = GTK_WIDGET(automation_edit->drawing_area)->allocation.height;
 
-    vadjustment = gtk_scrolled_window_get_vadjustment(automation_edit->scrolled_window);
+    vadjustment = GTK_RANGE(automation_edit->vscrollbar)->adjustment;
 
     gtk_adjustment_set_upper(vadjustment,
 			     (gdouble) (automation_edit->map_height - height));
@@ -206,9 +223,9 @@ ags_automation_edit_reset_horizontally(AgsAutomationEdit *automation_edit, guint
     GtkAdjustment *hadjustment;
     guint width;
 
-    width = GTK_WIDGET(automation_edit->automation_area)->allocation.width;
+    width = GTK_WIDGET(automation_edit->drawing_area)->allocation.width;
 
-    hadjustment = gtk_scrolled_window_get_hadjustment(automation_edit->scrolled_window);
+    hadjustment = GTK_RANGE(automation_edit->hscrollbar)->adjustment;
 
     gtk_adjustment_set_upper(hadjustment,
 			     (gdouble) (automation_edit->map_width - width));
@@ -221,23 +238,19 @@ ags_automation_edit_reset_horizontally(AgsAutomationEdit *automation_edit, guint
 
 /**
  * ags_automation_edit_draw_position:
- * @automation_area: the #GtkVBox containing automation area
+ * @automation_edit: the #AgsAutomationEdit
  *
  * Draws the cursor.
  *
  * Since: 0.4.3
  */
 void
-ags_automation_edit_draw_position(GtkVBox *automation_area)
+ags_automation_edit_draw_position(AgsAutomationEdit *automation_edit)
 {
-  AgsAutomationEdit *automation_edit;
   gdouble width, height;
 
-  automation_edit = gtk_widget_get_ancestor(automation_area,
-					    AGS_TYPE_AUTOMATION_EDIT);
-
-  width = (gdouble) GTK_WIDGET(automation_area)->allocation.width;
-  height = (gdouble) GTK_WIDGET(automation_area)->allocation.height;
+  width = (gdouble) GTK_WIDGET(automation_edit->drawing_area)->allocation.width;
+  height = (gdouble) GTK_WIDGET(automation_edit->drawing_area)->allocation.height;
 
   //TODO:JK: implement me
 }
@@ -253,58 +266,15 @@ ags_automation_edit_draw_position(GtkVBox *automation_area)
  * Since: 0.4.3
  */
 void
-ags_automation_edit_draw_scroll(GtkVBox *automation_area,
+ags_automation_edit_draw_scroll(AgsAutomationEdit *automation_edit,
 				gdouble position)
 {
-  AgsAutomationEdit *automation_edit;
   gdouble width, height;
 
-  automation_edit = gtk_widget_get_ancestor(automation_area,
-					    AGS_TYPE_AUTOMATION_EDIT);
-
-  width = (gdouble) GTK_WIDGET(automation_area)->allocation.width;
-  height = (gdouble) GTK_WIDGET(automation_area)->allocation.height;
+  width = (gdouble) GTK_WIDGET(automation_edit->drawing_area)->allocation.width;
+  height = (gdouble) GTK_WIDGET(automation_edit->drawing_area)->allocation.height;
 
   //TODO:JK: implement me
-}
-
-/**
- * ags_automation_edit_add_automation_area:
- * @automation_edit:
- * @automation:
- * 
- * 
- */
-GtkDrawingArea*
-ags_automation_edit_add_drawing_area(AgsAutomationEdit *automation_edit,
-				     AgsAutomation *automation)
-{
-  GtkDrawingArea *drawing_area;
-  guint width;
-  
-  width = GTK_WIDGET(automation_edit->automation_area)->allocation.width;
-
-  /* resize */
-  automation_edit->map_height += AGS_AUTOMATION_AREA_DEFAULT_HEIGHT;
-
-  automation_edit->flags |= AGS_AUTOMATION_EDIT_RESETING_VERTICALLY;
-  ags_automation_edit_reset_vertically(automation_edit, AGS_AUTOMATION_EDIT_RESET_VSCROLLBAR);
-  automation_edit->flags &= (~AGS_AUTOMATION_EDIT_RESETING_VERTICALLY);
-
-  /* add */
-  drawing_area = (GtkDrawingArea *) g_object_new(AGS_TYPE_AUTOMATION_AREA,
-						 "automation\0", automation,
-						 NULL);
-  gtk_widget_set_size_request(drawing_area,
-			      width, AGS_AUTOMATION_AREA_DEFAULT_HEIGHT);
-  gtk_box_pack_start(automation_edit->automation_area,
-		     drawing_area,
-		     FALSE, FALSE,
-		     0);
-  ags_connectable_connect(AGS_CONNECTABLE(drawing_area));
-  gtk_widget_show(drawing_area);
-
-  return(drawing_area);
 }
 
 /**
