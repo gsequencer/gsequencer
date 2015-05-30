@@ -103,9 +103,11 @@ ags_automation_edit_init(AgsAutomationEdit *automation_edit)
   adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, 1.0, 1.0);
 
   automation_edit->ruler = ags_ruler_new();
-  gtk_table_attach(GTK_TABLE(automation_edit), (GtkWidget *) automation_edit->ruler,
+  gtk_table_attach(GTK_TABLE(automation_edit),
+		   (GtkWidget *) automation_edit->ruler,
 		   0, 1, 0, 1,
-		   GTK_FILL|GTK_EXPAND, GTK_FILL,
+		   GTK_FILL|GTK_EXPAND,
+		   GTK_FILL,
 		   0, 0);
 
   automation_edit->map_width = AGS_AUTOMATION_EDIT_MAX_CONTROLS * 64;
@@ -121,14 +123,17 @@ ags_automation_edit_init(AgsAutomationEdit *automation_edit)
 			| GDK_POINTER_MOTION_MASK
 			| GDK_POINTER_MOTION_HINT_MASK
 			);
-  gtk_table_attach(GTK_TABLE(automation_edit), (GtkWidget *) automation_edit->scrolled_window,
-		   0, 1, 1, 2,
-		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
+  gtk_table_attach(GTK_TABLE(automation_edit),
+		   (GtkWidget *) automation_edit->scrolled_window,
+		   0, 1,
+		   1, 2,
+		   GTK_FILL|GTK_EXPAND,
+		   GTK_FILL|GTK_EXPAND,
 		   0, 0);
 
-  automation_edit->drawing_area = gtk_vbox_new(FALSE, 0);
+  automation_edit->automation_area = gtk_vbox_new(FALSE, 0);
   gtk_scrolled_window_add_with_viewport(automation_edit->scrolled_window,
-					automation_edit->drawing_area);
+					automation_edit->automation_area);
 }
 
 void
@@ -163,7 +168,7 @@ ags_automation_edit_disconnect(AgsConnectable *connectable)
  *
  * Reset @automation_edit as configured vertically.
  *
- * Since: 0.4
+ * Since: 0.4.3
  */
 void
 ags_automation_edit_reset_vertically(AgsAutomationEdit *automation_edit, guint flags)
@@ -172,7 +177,7 @@ ags_automation_edit_reset_vertically(AgsAutomationEdit *automation_edit, guint f
     GtkAdjustment *vadjustment;
     guint height;
 
-    height = GTK_WIDGET(automation_edit->drawing_area)->allocation.height;
+    height = GTK_WIDGET(automation_edit->automation_area)->allocation.height;
 
     vadjustment = gtk_scrolled_window_get_vadjustment(automation_edit->scrolled_window);
 
@@ -192,7 +197,7 @@ ags_automation_edit_reset_vertically(AgsAutomationEdit *automation_edit, guint f
  *
  * Reset @automation_edit as configured horizontally.
  *
- * Since: 0.4
+ * Since: 0.4.3
  */
 void
 ags_automation_edit_reset_horizontally(AgsAutomationEdit *automation_edit, guint flags)
@@ -201,7 +206,7 @@ ags_automation_edit_reset_horizontally(AgsAutomationEdit *automation_edit, guint
     GtkAdjustment *hadjustment;
     guint width;
 
-    width = GTK_WIDGET(automation_edit->drawing_area)->allocation.width;
+    width = GTK_WIDGET(automation_edit->automation_area)->allocation.width;
 
     hadjustment = gtk_scrolled_window_get_hadjustment(automation_edit->scrolled_window);
 
@@ -216,23 +221,23 @@ ags_automation_edit_reset_horizontally(AgsAutomationEdit *automation_edit, guint
 
 /**
  * ags_automation_edit_draw_position:
- * @drawing_area: the #GtkVBox containing drawing area
+ * @automation_area: the #GtkVBox containing automation area
  *
  * Draws the cursor.
  *
- * Since: 0.4
+ * Since: 0.4.3
  */
 void
-ags_automation_edit_draw_position(GtkVBox *drawing_area)
+ags_automation_edit_draw_position(GtkVBox *automation_area)
 {
   AgsAutomationEdit *automation_edit;
   gdouble width, height;
 
-  automation_edit = gtk_widget_get_ancestor(drawing_area,
+  automation_edit = gtk_widget_get_ancestor(automation_area,
 					    AGS_TYPE_AUTOMATION_EDIT);
 
-  width = (gdouble) GTK_WIDGET(drawing_area)->allocation.width;
-  height = (gdouble) GTK_WIDGET(drawing_area)->allocation.height;
+  width = (gdouble) GTK_WIDGET(automation_area)->allocation.width;
+  height = (gdouble) GTK_WIDGET(automation_area)->allocation.height;
 
   //TODO:JK: implement me
 }
@@ -245,26 +250,26 @@ ags_automation_edit_draw_position(GtkVBox *drawing_area)
  *
  * Change visible x-position of @automation_edit.
  *
- * Since: 0.4
+ * Since: 0.4.3
  */
 void
-ags_automation_edit_draw_scroll(GtkVBox *drawing_area,
+ags_automation_edit_draw_scroll(GtkVBox *automation_area,
 				gdouble position)
 {
   AgsAutomationEdit *automation_edit;
   gdouble width, height;
 
-  automation_edit = gtk_widget_get_ancestor(drawing_area,
+  automation_edit = gtk_widget_get_ancestor(automation_area,
 					    AGS_TYPE_AUTOMATION_EDIT);
 
-  width = (gdouble) GTK_WIDGET(drawing_area)->allocation.width;
-  height = (gdouble) GTK_WIDGET(drawing_area)->allocation.height;
+  width = (gdouble) GTK_WIDGET(automation_area)->allocation.width;
+  height = (gdouble) GTK_WIDGET(automation_area)->allocation.height;
 
   //TODO:JK: implement me
 }
 
 /**
- * ags_automation_edit_add_drawing_area:
+ * ags_automation_edit_add_automation_area:
  * @automation_edit:
  * @automation:
  * 
@@ -277,7 +282,7 @@ ags_automation_edit_add_drawing_area(AgsAutomationEdit *automation_edit,
   GtkDrawingArea *drawing_area;
   guint width;
   
-  width = GTK_WIDGET(automation_edit->drawing_area)->allocation.width;
+  width = GTK_WIDGET(automation_edit->automation_area)->allocation.width;
 
   /* resize */
   automation_edit->map_height += AGS_AUTOMATION_AREA_DEFAULT_HEIGHT;
@@ -292,7 +297,7 @@ ags_automation_edit_add_drawing_area(AgsAutomationEdit *automation_edit,
 						 NULL);
   gtk_widget_set_size_request(drawing_area,
 			      width, AGS_AUTOMATION_AREA_DEFAULT_HEIGHT);
-  gtk_box_pack_start(automation_edit->drawing_area,
+  gtk_box_pack_start(automation_edit->automation_area,
 		     drawing_area,
 		     FALSE, FALSE,
 		     0);
@@ -307,7 +312,7 @@ ags_automation_edit_add_drawing_area(AgsAutomationEdit *automation_edit,
  *
  * Create a new #AgsAutomationEdit.
  *
- * Since: 0.4
+ * Since: 0.4.3
  */
 AgsAutomationEdit*
 ags_automation_edit_new()

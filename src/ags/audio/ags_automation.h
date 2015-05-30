@@ -35,10 +35,9 @@
 #define AGS_AUTOMATION_DEFAULT_BPM (120.0)
 
 #define AGS_AUTOMATION_TICS_PER_BEAT (1.0)
-#define AGS_AUTOMATION_MINIMUM_NOTE_LENGTH (1.0 / 16.0)
-#define AGS_AUTOMATION_MAXIMUM_NOTE_LENGTH (16.0)
+#define AGS_AUTOMATION_MINIMUM_ACCELERATION_LENGTH (1.0 / 16.0 / 64.0)
 
-#define AGS_AUTOMATION_DEFAULT_LENGTH (65535.0 / AGS_AUTOMATION_TICS_PER_BEAT - AGS_AUTOMATION_MAXIMUM_NOTE_LENGTH)
+#define AGS_AUTOMATION_DEFAULT_LENGTH (65535.0 / AGS_AUTOMATION_TICS_PER_BEAT)
 #define AGS_AUTOMATION_DEFAULT_JIFFIE (60.0 / AGS_AUTOMATION_DEFAULT_BPM / AGS_AUTOMATION_TICS_PER_BEAT)
 #define AGS_AUTOMATION_DEFAULT_DURATION (AGS_AUTOMATION_DEFAULT_LENGTH * AGS_AUTOMATION_DEFAULT_JIFFIE * AGS_MICROSECONDS_PER_SECOND)
 
@@ -131,6 +130,8 @@ void ags_automation_insert_from_clipboard(AgsAutomation *automation,
 					  gboolean reset_y_offset, guint y_offset);
 
 GList* ags_automation_get_current(AgsAutomation *automation);
+
+gchar** ags_automation_get_specifier_unique(GList *automation);
 
 AgsAutomation* ags_automation_new(GObject *audio,
 				  guint line,

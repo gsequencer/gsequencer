@@ -25,46 +25,19 @@ ags_automation_toolbar_machine_changed_callback(AgsAutomationEditor *automation_
 {
   AgsAutomationEdit *automation_edit;
   AgsAutomation *automation;
-  GList *port;
-  GList *list, *list_start;
-
-  auto GList* ags_automation_toolbar_enabled_ports(GList *automation);
-
-  GList* ags_automation_toolbar_enabled_ports(GList *automation){
-    GList *list;
-
-    list = NULL;
-
-    while(automation != NULL){
-      list = g_list_prepend(list,
-			    AGS_AUTOMATION(automation->data)->port);
-
-      automation = automation->next;
-    }
-    
-    list = g_list_reverse(list);
-
-    return(list);
-  }
 
   automation_edit = automation_editor->automation_edit;
 
   /* destroy old and create new drawing area vbox */
-  gtk_widget_destroy(automation_edit->drawing_area);
+  gtk_widget_destroy(automation_edit->automation_area);
 
-  automation_edit->drawing_area = gtk_vbox_new(FALSE, 0);
-  gtk_table_attach(GTK_TABLE(automation_edit), (GtkWidget *) automation_edit->drawing_area,
+  automation_edit->automation_area = gtk_vbox_new(FALSE, 0);
+  gtk_table_attach(GTK_TABLE(automation_edit), (GtkWidget *) automation_edit->automation_area,
 		   0, 1, 1, 2,
 		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
 		   0, 0);
-  gtk_widget_show(automation_edit->drawing_area);
+  gtk_widget_show(automation_edit->automation_area);
 
   /* load ports */
-  ags_port_selection_load_ports(toolbar->port_selection);
-
-  /* enable ports */
-  port = ags_automation_toolbar_enabled_ports(machine->audio->automation);
-
-  ags_port_selection_enable_ports(toolbar->port_selection,
-				  port);
+  ags_automation_toolbar_load_port(automation_editor->automation_toolbar);
 }

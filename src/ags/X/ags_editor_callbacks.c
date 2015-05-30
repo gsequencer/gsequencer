@@ -59,7 +59,7 @@ ags_editor_set_audio_channels_callback(AgsAudio *audio,
     for(i = audio_channels_old; i < audio_channels; i++){
       ags_notebook_insert_tab(editor->notebook,
 			      i);
-      AGS_NOTEBOOK_TAB(tabs->data)->notation = notation->data;
+      AGS_NOTEBOOK_TAB(tabs->data)->data = notation->data;
 
       tabs = tabs->next;
       notation = notation->next;

@@ -134,6 +134,8 @@ void
 ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 {
   GtkTable *table;
+  GtkHPaned *paned;
+  GtkScrolledWindow *scrolled_window;
 
   g_object_set(G_OBJECT(automation_editor),
 	       "title\0", "edit automation\0",
@@ -154,22 +156,29 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 		   0, 1,
 		   GTK_FILL, 0,
 		   0, 0);
-		   
-  automation_editor->machine_selector = ags_machine_selector_new();
-  gtk_table_attach(table,
-		   GTK_WIDGET(automation_editor->machine_selector),
-		   0, 1,
-		   1, 2,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
 
-  automation_editor->automation_edit = ags_automation_edit_new();
+  paned = (GtkHPaned *) gtk_hpaned_new();
   gtk_table_attach(table,
-		   GTK_WIDGET(automation_editor->automation_edit),
-		   1, 2,
+		   GTK_WIDGET(paned),
+		   0, 2,
 		   1, 2,
 		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
 		   0, 0);
+
+  /* machine selector */
+  scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL, NULL);
+  gtk_paned_pack1((GtkPaned *) paned,
+		  (GtkWidget *) scrolled_window,
+		  FALSE, TRUE);
+
+  automation_editor->machine_selector = ags_machine_selector_new();
+  gtk_scrolled_window_add_with_viewport(scrolled_window, (GtkWidget *) automation_editor->machine_selector);
+
+  /* automation edit */
+  automation_editor->automation_edit = ags_automation_edit_new();
+  gtk_paned_pack2((GtkPaned *) paned,
+		  (GtkWidget *) automation_editor->automation_edit,
+		  FALSE, TRUE);
 }
 
 void
@@ -194,13 +203,29 @@ ags_automation_editor_connect(AgsConnectable *connectable)
 void
 ags_automation_editor_disconnect(AgsConnectable *connectable)
 {
-  //TODO:JK: implement me
+  AgsAutomationEditor *automation_editor;
+
+  automation_editor = AGS_AUTOMATION_EDITOR(connectable);
+
+  ags_connectable_connect(AGS_CONNECTABLE(automation_editor->automation_toolbar));
+  
+  ags_connectable_connect(AGS_CONNECTABLE(automation_editor->machine_selector));
+
+  ags_connectable_connect(AGS_CONNECTABLE(automation_editor->automation_edit));
 }
 
 void
 ags_automation_editor_finalize(GObject *gobject)
 {
-  //TODO:JK: implement me
+  AgsAutomationEditor *automation_editor;
+
+  automation_editor = AGS_AUTOMATION_EDITOR(gobject);
+  
+  g_object_unref(automation_editor->machine_selector);
+  
+  g_object_unref(automation_editor->automation_toolbar);
+
+  g_object_unref(automation_editor->automation_edit);
 
   G_OBJECT_CLASS(ags_automation_editor_parent_class)->finalize(gobject);
 }

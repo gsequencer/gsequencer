@@ -38,9 +38,17 @@ typedef struct _AgsNotebookClass AgsNotebookClass;
 typedef struct _AgsNotebookTab AgsNotebookTab;
 
 typedef enum{
+  AGS_NOTEBOOK_SHOW_INPUT            = 1,
+  AGS_NOTEBOOK_SHOW_OUTPUT           = 1 <<  1,
+  AGS_NOTEBOOK_SHOW_AUDIO_CHANNEL    = 1 <<  2,
+  AGS_NOTEBOOK_SHOW_PAD              = 1 <<  3,
+  AGS_NOTEBOOK_SHOW_LINE             = 1 <<  4,
+}AgsNotebookFlags;
+
+typedef enum{
   AGS_NOTEBOOK_TAB_VISIBLE           = 1,
-  AGS_NOTEBOOK_TAB_MODE_NORMAL       = 1 << 1,
-  AGS_NOTEBOOK_TAB_MODE_OVERLAY      = 1 << 2,
+  AGS_NOTEBOOK_TAB_MODE_NORMAL       = 1 <<  1,
+  AGS_NOTEBOOK_TAB_MODE_OVERLAY      = 1 <<  2,
 }AgsNotebookTabFlags;
 
 struct _AgsNotebook
@@ -65,13 +73,13 @@ struct _AgsNotebookTab
   guint flags;
 
   GtkToggleButton *toggle;
-  GObject *notation;
+  gpointer data;
 };
 
 GType ags_notebook_get_type(void);
 
 gint ags_notebook_tab_index(AgsNotebook *notebook,
-			    GObject *notation);
+			    gpointer data);
 gint ags_notebook_next_active_tab(AgsNotebook *notebook,
 				  gint position);
 

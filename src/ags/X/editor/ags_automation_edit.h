@@ -69,7 +69,7 @@ struct _AgsAutomationEdit
   guint map_height;
 
   GtkScrolledWindow *scrolled_window;
-  GtkVBox *drawing_area;
+  GtkVBox *automation_area;
 };
 
 struct _AgsAutomationEditClass
