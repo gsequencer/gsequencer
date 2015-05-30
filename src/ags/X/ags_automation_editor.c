@@ -74,7 +74,7 @@ ags_automation_editor_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_automation_editor = g_type_register_static(GTK_TYPE_DIALOG,
+    ags_type_automation_editor = g_type_register_static(GTK_TYPE_VBOX,
 							"AgsAutomationEditor\0", &ags_automation_editor_info,
 							0);
     
@@ -137,14 +137,10 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
   GtkHPaned *paned;
   GtkScrolledWindow *scrolled_window;
 
-  g_object_set(G_OBJECT(automation_editor),
-	       "title\0", "edit automation\0",
-	       NULL);
-
   table = gtk_table_new(2,
 			2,
 			FALSE);
-  gtk_box_pack_start(gtk_dialog_get_content_area(automation_editor),
+  gtk_box_pack_start(GTK_BOX(automation_editor),
 		     GTK_WIDGET(table),
 		     TRUE, TRUE,
 		     0);
@@ -172,13 +168,29 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 		  FALSE, TRUE);
 
   automation_editor->machine_selector = ags_machine_selector_new();
-  gtk_scrolled_window_add_with_viewport(scrolled_window, (GtkWidget *) automation_editor->machine_selector);
+  gtk_scrolled_window_add_with_viewport(scrolled_window,
+					(GtkWidget *) automation_editor->machine_selector);
+
+  automation_editor->selected_machine = NULL;
+
+  automation_editor->table = (GtkTable *) gtk_table_new(4, 3, FALSE);
+  gtk_paned_pack2((GtkPaned *) paned,
+		  (GtkWidget *) automation_editor->table,
+		  TRUE, FALSE);
+
+  automation_editor->notebook = ags_notebook_new();
+  automation_editor->notebook->flags |= (AGS_NOTEBOOK_SHOW_LINE |
+					 AGS_NOTEBOOK_SHOW_INPUT);
+  gtk_table_attach(automation_editor->table,
+		   (GtkWidget *) automation_editor->notebook,
+		   0, 3,
+		   0, 1,
+		   GTK_FILL|GTK_EXPAND,
+		   GTK_FILL,
+		   0, 0);
 
   /* automation edit */
-  automation_editor->automation_edit = ags_automation_edit_new();
-  gtk_paned_pack2((GtkPaned *) paned,
-		  (GtkWidget *) automation_editor->automation_edit,
-		  FALSE, TRUE);
+  automation_editor->automation_edit = NULL;
 }
 
 void
@@ -188,16 +200,13 @@ ags_automation_editor_connect(AgsConnectable *connectable)
 
   automation_editor = AGS_AUTOMATION_EDITOR(connectable);
 
-  /*  */
-  g_signal_connect_after(automation_editor, "delete-event\0",
-			 G_CALLBACK(ags_automation_editor_delete_event_callback), NULL);
-
   g_signal_connect((GObject *) automation_editor->machine_selector, "changed\0",
 		   G_CALLBACK(ags_automation_editor_machine_changed_callback), (gpointer) automation_editor);
 
   /* */
   ags_connectable_connect(AGS_CONNECTABLE(automation_editor->automation_toolbar));
-  ags_connectable_connect(AGS_CONNECTABLE(automation_editor->automation_edit));
+  ags_connectable_connect(AGS_CONNECTABLE(automation_editor->machine_selector));
+  ags_connectable_connect(AGS_CONNECTABLE(automation_editor->notebook));
 }
 
 void
@@ -245,7 +254,7 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
  *
  * Is emitted as machine changed of automation editor.
  *
- * Since: 0.4
+ * Since: 0.4.2
  */
 void
 ags_automation_editor_machine_changed(AgsAutomationEditor *automation_editor, AgsMachine *machine)
@@ -264,16 +273,15 @@ ags_automation_editor_machine_changed(AgsAutomationEditor *automation_editor, Ag
  *
  * Create a new #AgsAutomationEditor.
  *
- * Since: 0.4
+ * Since: 0.4.2
  */
 AgsAutomationEditor*
-ags_automation_editor_new(GObject *window)
+ags_automation_editor_new()
 {
   AgsAutomationEditor *automation_editor;
 
   automation_editor = (AgsAutomationEditor *) g_object_new(AGS_TYPE_AUTOMATION_EDITOR,
 							   NULL);
-  automation_editor->window = window;
 
   return(automation_editor);
 }

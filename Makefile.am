@@ -752,6 +752,8 @@ gsequencer_xorg_h_sources = \
 	src/ags/X/ags_audio_preferences.h		\
 	src/ags/X/ags_automation_editor_callbacks.h	\
 	src/ags/X/ags_automation_editor.h		\
+	src/ags/X/ags_automation_window.h		\
+	src/ags/X/ags_automation_window_callbacks.h	\
 	src/ags/X/ags_editor_callbacks.h		\
 	src/ags/X/ags_editor.h				\
 	src/ags/X/ags_effect_bridge_callbacks.h		\
@@ -827,6 +829,8 @@ gsequencer_xorg_c_sources = \
 	src/ags/X/ags_audio_preferences.c		\
 	src/ags/X/ags_automation_editor_callbacks.c	\
 	src/ags/X/ags_automation_editor.c		\
+	src/ags/X/ags_automation_window.c		\
+	src/ags/X/ags_automation_window_callbacks.c	\
 	src/ags/X/ags_editor_callbacks.c		\
 	src/ags/X/ags_editor.c				\
 	src/ags/X/ags_effect_bridge_callbacks.c		\
@@ -1075,9 +1079,9 @@ deprecated_gsequencer_editor_h_sources =
 
 gsequencer_editor_h_sources = \
 	$(deprecated_gsequencer_editor_h_sources) \
-	src/ags/X/editor/ags_automation_area_callbacks.h		\
+	src/ags/X/editor/ags_automation_area_callbacks.h	\
 	src/ags/X/editor/ags_automation_area.h			\
-	src/ags/X/editor/ags_automation_edit_callbacks.h		\
+	src/ags/X/editor/ags_automation_edit_callbacks.h	\
 	src/ags/X/editor/ags_automation_edit.h			\
 	src/ags/X/editor/ags_automation_toolbar_callbacks.h	\
 	src/ags/X/editor/ags_automation_toolbar.h		\
@@ -1086,24 +1090,28 @@ gsequencer_editor_h_sources = \
 	src/ags/X/editor/ags_inline_player_callbacks.h		\
 	src/ags/X/editor/ags_inline_player.h			\
 	src/ags/X/editor/ags_machine_radio_button.h		\
-	src/ags/X/editor/ags_machine_selection.h			\
+	src/ags/X/editor/ags_machine_selection.h		\
 	src/ags/X/editor/ags_machine_selector_callbacks.h	\
 	src/ags/X/editor/ags_machine_selector.h			\
-	src/ags/X/editor/ags_piano_callbacks.h			\
-	src/ags/X/editor/ags_piano.h				\
 	src/ags/X/editor/ags_notebook_callbacks.h		\
 	src/ags/X/editor/ags_notebook.h				\
 	src/ags/X/editor/ags_note_edit_callbacks.h		\
-	src/ags/X/editor/ags_note_edit.h				\
+	src/ags/X/editor/ags_note_edit.h			\
 	src/ags/X/editor/ags_pattern_edit_callbacks.h		\
 	src/ags/X/editor/ags_pattern_edit.h			\
+	src/ags/X/editor/ags_piano_callbacks.h			\
+	src/ags/X/editor/ags_piano.h				\
 	src/ags/X/editor/ags_port_selection_callbacks.h		\
 	src/ags/X/editor/ags_port_selection.h			\
+	src/ags/X/editor/ags_scale_area_callbacks.h		\
+	src/ags/X/editor/ags_scale_area.h			\
+	src/ags/X/editor/ags_scale_callbacks.h			\
+	src/ags/X/editor/ags_scale.h				\
 	src/ags/X/editor/ags_sf2_chooser_callbacks.h		\
 	src/ags/X/editor/ags_sf2_chooser.h			\
 	src/ags/X/editor/ags_soundset_callbacks.h		\
 	src/ags/X/editor/ags_soundset.h				\
-	src/ags/X/editor/ags_toolbar_callbacks.h			\
+	src/ags/X/editor/ags_toolbar_callbacks.h		\
 	src/ags/X/editor/ags_toolbar.h				\
 	src/ags/X/editor/ags_toolbar_mode_stock.h
 
@@ -1111,9 +1119,9 @@ deprecated_gsequencer_editor_c_sources =
 
 gsequencer_editor_c_sources = \
 	$(deprecated_gsequencer_editor_c_sources) \
-	src/ags/X/editor/ags_automation_area_callbacks.c		\
+	src/ags/X/editor/ags_automation_area_callbacks.c	\
 	src/ags/X/editor/ags_automation_area.c			\
-	src/ags/X/editor/ags_automation_edit_callbacks.c		\
+	src/ags/X/editor/ags_automation_edit_callbacks.c	\
 	src/ags/X/editor/ags_automation_edit.c			\
 	src/ags/X/editor/ags_automation_toolbar_callbacks.c	\
 	src/ags/X/editor/ags_automation_toolbar.c		\
@@ -1122,24 +1130,28 @@ gsequencer_editor_c_sources = \
 	src/ags/X/editor/ags_inline_player_callbacks.c		\
 	src/ags/X/editor/ags_inline_player.c			\
 	src/ags/X/editor/ags_machine_radio_button.c		\
-	src/ags/X/editor/ags_machine_selection.c			\
+	src/ags/X/editor/ags_machine_selection.c		\
 	src/ags/X/editor/ags_machine_selector_callbacks.c	\
 	src/ags/X/editor/ags_machine_selector.c			\
-	src/ags/X/editor/ags_piano_callbacks.c			\
-	src/ags/X/editor/ags_piano.c				\
 	src/ags/X/editor/ags_notebook_callbacks.c		\
 	src/ags/X/editor/ags_notebook.c				\
 	src/ags/X/editor/ags_note_edit_callbacks.c		\
-	src/ags/X/editor/ags_note_edit.c				\
+	src/ags/X/editor/ags_note_edit.c			\
 	src/ags/X/editor/ags_pattern_edit_callbacks.c		\
 	src/ags/X/editor/ags_pattern_edit.c			\
+	src/ags/X/editor/ags_piano_callbacks.c			\
+	src/ags/X/editor/ags_piano.c				\
 	src/ags/X/editor/ags_port_selection_callbacks.c		\
 	src/ags/X/editor/ags_port_selection.c			\
+	src/ags/X/editor/ags_scale_area_callbacks.c		\
+	src/ags/X/editor/ags_scale_area.c			\
+	src/ags/X/editor/ags_scale_callbacks.c			\
+	src/ags/X/editor/ags_scale.c				\
 	src/ags/X/editor/ags_sf2_chooser_callbacks.c		\
 	src/ags/X/editor/ags_sf2_chooser.c			\
 	src/ags/X/editor/ags_soundset_callbacks.c		\
 	src/ags/X/editor/ags_soundset.c				\
-	src/ags/X/editor/ags_toolbar_callbacks.c			\
+	src/ags/X/editor/ags_toolbar_callbacks.c		\
 	src/ags/X/editor/ags_toolbar.c
 
 deprecated_gsequencer_file_h_sources =

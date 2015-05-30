@@ -21,15 +21,4 @@
 
 #include <ags/X/editor/ags_automation_area.h>
 
-gboolean ags_automation_area_expose_event(GtkWidget *widget, GdkEventExpose *event,
-					  AgsAutomationArea *automation_area);
-gboolean ags_automation_area_configure_event(GtkWidget *widget, GdkEventConfigure *event,
-					     AgsAutomationArea *automation_area);
-gboolean ags_automation_area_button_press_event(GtkWidget *widget, GdkEventButton *event,
-						AgsAutomationArea *automation_area);
-gboolean ags_automation_area_button_release_event(GtkWidget *widget, GdkEventButton *event,
-						  AgsAutomationArea *automation_area);
-gboolean ags_automation_area_motion_notify_event(GtkWidget *widget, GdkEventMotion *event,
-						 AgsAutomationArea *automation_area);
-
 #endif /*__AGS_AUTOMATION_AREA_CALLBACKS_H__*/

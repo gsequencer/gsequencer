@@ -194,29 +194,38 @@ ags_editor_init(AgsEditor *editor)
   editor->toolbar = ags_toolbar_new();
   gtk_box_pack_start((GtkBox *) editor,
 		     (GtkWidget *) editor->toolbar,
-		     FALSE, FALSE, 0);
+		     FALSE, FALSE,
+		     0);
 
   paned = (GtkHPaned *) gtk_hpaned_new();
   gtk_box_pack_start((GtkBox *) editor,
 		     (GtkWidget *) paned,
-		     TRUE, TRUE, 0);
+		     TRUE, TRUE,
+		     0);
 
   scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL, NULL);
   gtk_paned_pack1((GtkPaned *) paned, (GtkWidget *) scrolled_window, FALSE, TRUE);
   //  gtk_widget_set_size_request((GtkWidget *) scrolled_window, 180, -1);
 
   editor->machine_selector = ags_machine_selector_new();
-  gtk_scrolled_window_add_with_viewport(scrolled_window, (GtkWidget *) editor->machine_selector);
+  gtk_scrolled_window_add_with_viewport(scrolled_window,
+					(GtkWidget *) editor->machine_selector);
 
   editor->selected_machine = NULL;
 
   editor->table = (GtkTable *) gtk_table_new(4, 3, FALSE);
-  gtk_paned_pack2((GtkPaned *) paned, (GtkWidget *) editor->table, TRUE, FALSE);
+  gtk_paned_pack2((GtkPaned *) paned,
+		  (GtkWidget *) editor->table,
+		  TRUE, FALSE);
   
   editor->notebook = ags_notebook_new();
-  gtk_table_attach(editor->table, (GtkWidget *) editor->notebook,
-		   0, 3, 0, 1,
-		   GTK_FILL|GTK_EXPAND, GTK_FILL,
+  editor->notebook->flags |= AGS_NOTEBOOK_SHOW_AUDIO_CHANNEL;
+  gtk_table_attach(editor->table,
+		   (GtkWidget *) editor->notebook,
+		   0, 3,
+		   0, 1,
+		   GTK_FILL|GTK_EXPAND,
+		   GTK_FILL,
 		   0, 0);
 
   editor->meter.piano = NULL;

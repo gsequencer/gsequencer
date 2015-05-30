@@ -98,8 +98,6 @@ ags_notebook_class_init(AgsNotebookClass *notebook)
 void
 ags_notebook_init(AgsNotebook *notebook)
 {
-  notebook->flags = AGS_NOTEBOOK_SHOW_AUDIO_CHANNEL;
-  
   gtk_widget_set_style((GtkWidget *) notebook, notebook_style);
 
   notebook->flags = 0;

@@ -25,7 +25,7 @@
 
 #include <ags/object/ags_soundcard.h>
 
-#include <ags/X/ags_automation_editor.h>
+#include <ags/X/ags_automation_window.h>
 
 #include <ags/X/ags_menu_bar.h>
 #include <ags/X/ags_machine.h>
@@ -78,7 +78,7 @@ struct _AgsWindow
   AgsEditor *editor;
   AgsNavigation *navigation;
 
-  AgsAutomationEditor *automation_editor;
+  AgsAutomationWindow *automation_window;
 
   AgsExportWindow *export_window;
   GtkWidget *import_window;

@@ -99,15 +99,16 @@ void
 ags_note_edit_init(AgsNoteEdit *note_edit)
 {
   GtkAdjustment *adjustment;
-
+  
   note_edit->flags = 0;
 
-  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, 1.0, 1.0);
-
   note_edit->ruler = ags_ruler_new();
-  gtk_table_attach(GTK_TABLE(note_edit), (GtkWidget *) note_edit->ruler,
-		   0, 1, 0, 1,
-		   GTK_FILL|GTK_EXPAND, GTK_FILL,
+  gtk_table_attach(GTK_TABLE(note_edit),
+		   (GtkWidget *) note_edit->ruler,
+		   0, 1,
+		   0, 1,
+		   GTK_FILL|GTK_EXPAND,
+		   GTK_FILL,
 		   0, 0);
 
   note_edit->drawing_area = (GtkDrawingArea *) gtk_drawing_area_new();
@@ -120,9 +121,12 @@ ags_note_edit_init(AgsNoteEdit *note_edit)
 			 | GDK_POINTER_MOTION_HINT_MASK
 			 );
 
-  gtk_table_attach(GTK_TABLE(note_edit), (GtkWidget *) note_edit->drawing_area,
-		   0, 1, 1, 2,
-		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
+  gtk_table_attach(GTK_TABLE(note_edit),
+		   (GtkWidget *) note_edit->drawing_area,
+		   0, 1,
+		   1, 2,
+		   GTK_FILL|GTK_EXPAND,
+		   GTK_FILL|GTK_EXPAND,
 		   0, 0);
 
   note_edit->control.note = ags_note_new();
@@ -169,15 +173,19 @@ ags_note_edit_init(AgsNoteEdit *note_edit)
   /* GtkScrollbars */
   adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, 1.0, 1.0);
   note_edit->vscrollbar = (GtkVScrollbar *) gtk_vscrollbar_new(adjustment);
-  gtk_table_attach(GTK_TABLE(note_edit), (GtkWidget *) note_edit->vscrollbar,
-		   1, 2, 1, 2,
+  gtk_table_attach(GTK_TABLE(note_edit),
+		   (GtkWidget *) note_edit->vscrollbar,
+		   1, 2,
+		   1, 2,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
   adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, 1.0, 1.0);
   note_edit->hscrollbar = (GtkHScrollbar *) gtk_hscrollbar_new(adjustment);
-  gtk_table_attach(GTK_TABLE(note_edit), (GtkWidget *) note_edit->hscrollbar,
-		   0, 1, 2, 3,
+  gtk_table_attach(GTK_TABLE(note_edit),
+		   (GtkWidget *) note_edit->hscrollbar,
+		   0, 1,
+		   2, 3,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 }

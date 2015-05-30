@@ -326,8 +326,9 @@ ags_port_selection_real_add_port(AgsPortSelection *port_selection,
 			   automation);
 
   /* add automation area */
-  drawing_area = ags_automation_edit_add_drawing_area(automation_edit,
-						      automation);
+  //TODO:JK: deprecated
+  //  drawing_area = ags_automation_edit_add_drawing_area(automation_edit,
+  //						      automation);
 }
 
 /**

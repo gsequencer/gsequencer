@@ -41,12 +41,10 @@ typedef struct _AgsAutomationEditorClass AgsAutomationEditorClass;
 
 struct _AgsAutomationEditor
 {
-  GtkDialog dialog;
+  GtkVBox vbox;
 
   gchar *version;
   gchar *build_id;
-
-  GObject *window;
 
   AgsMachineSelector *machine_selector;
   AgsMachine *selected_machine;
@@ -55,12 +53,15 @@ struct _AgsAutomationEditor
 
   AgsAutomationToolbar *automation_toolbar;
 
+  GtkTable *table;
+  
+  AgsNotebook *notebook;
   AgsAutomationEdit *automation_edit;
 };
 
 struct _AgsAutomationEditorClass
 {
-  GtkDialogClass dialog;
+  GtkVBoxClass vbox;
 
   void (*machine_changed)(AgsAutomationEditor *automation_editor,
 			  AgsMachine *machine);
@@ -71,6 +72,6 @@ GType ags_automation_editor_get_type(void);
 void ags_automation_editor_machine_changed(AgsAutomationEditor *automation_editor,
 					   AgsMachine *machine);
 
-AgsAutomationEditor* ags_automation_editor_new(GObject *window);
+AgsAutomationEditor* ags_automation_editor_new();
 
 #endif /*__AGS_AUTOMATION_EDITOR_H__*/

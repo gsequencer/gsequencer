@@ -370,6 +370,8 @@ am__objects_26 = $(am__objects_1) gsequencer-ags_xorg_init.$(OBJEXT) \
 	gsequencer-ags_audio_preferences.$(OBJEXT) \
 	gsequencer-ags_automation_editor_callbacks.$(OBJEXT) \
 	gsequencer-ags_automation_editor.$(OBJEXT) \
+	gsequencer-ags_automation_window.$(OBJEXT) \
+	gsequencer-ags_automation_window_callbacks.$(OBJEXT) \
 	gsequencer-ags_editor_callbacks.$(OBJEXT) \
 	gsequencer-ags_editor.$(OBJEXT) \
 	gsequencer-ags_effect_bridge_callbacks.$(OBJEXT) \
@@ -521,16 +523,20 @@ am__objects_31 = $(am__objects_1) \
 	gsequencer-ags_machine_selection.$(OBJEXT) \
 	gsequencer-ags_machine_selector_callbacks.$(OBJEXT) \
 	gsequencer-ags_machine_selector.$(OBJEXT) \
-	gsequencer-ags_piano_callbacks.$(OBJEXT) \
-	gsequencer-ags_piano.$(OBJEXT) \
 	gsequencer-ags_notebook_callbacks.$(OBJEXT) \
 	gsequencer-ags_notebook.$(OBJEXT) \
 	gsequencer-ags_note_edit_callbacks.$(OBJEXT) \
 	gsequencer-ags_note_edit.$(OBJEXT) \
 	gsequencer-ags_pattern_edit_callbacks.$(OBJEXT) \
 	gsequencer-ags_pattern_edit.$(OBJEXT) \
+	gsequencer-ags_piano_callbacks.$(OBJEXT) \
+	gsequencer-ags_piano.$(OBJEXT) \
 	gsequencer-ags_port_selection_callbacks.$(OBJEXT) \
 	gsequencer-ags_port_selection.$(OBJEXT) \
+	gsequencer-ags_scale_area_callbacks.$(OBJEXT) \
+	gsequencer-ags_scale_area.$(OBJEXT) \
+	gsequencer-ags_scale_callbacks.$(OBJEXT) \
+	gsequencer-ags_scale.$(OBJEXT) \
 	gsequencer-ags_sf2_chooser_callbacks.$(OBJEXT) \
 	gsequencer-ags_sf2_chooser.$(OBJEXT) \
 	gsequencer-ags_soundset_callbacks.$(OBJEXT) \
@@ -1539,6 +1545,8 @@ gsequencer_xorg_h_sources = \
 	src/ags/X/ags_audio_preferences.h		\
 	src/ags/X/ags_automation_editor_callbacks.h	\
 	src/ags/X/ags_automation_editor.h		\
+	src/ags/X/ags_automation_window.h		\
+	src/ags/X/ags_automation_window_callbacks.h	\
 	src/ags/X/ags_editor_callbacks.h		\
 	src/ags/X/ags_editor.h				\
 	src/ags/X/ags_effect_bridge_callbacks.h		\
@@ -1613,6 +1621,8 @@ gsequencer_xorg_c_sources = \
 	src/ags/X/ags_audio_preferences.c		\
 	src/ags/X/ags_automation_editor_callbacks.c	\
 	src/ags/X/ags_automation_editor.c		\
+	src/ags/X/ags_automation_window.c		\
+	src/ags/X/ags_automation_window_callbacks.c	\
 	src/ags/X/ags_editor_callbacks.c		\
 	src/ags/X/ags_editor.c				\
 	src/ags/X/ags_effect_bridge_callbacks.c		\
@@ -1851,9 +1861,9 @@ gsequencer_machine_c_sources = \
 deprecated_gsequencer_editor_h_sources = 
 gsequencer_editor_h_sources = \
 	$(deprecated_gsequencer_editor_h_sources) \
-	src/ags/X/editor/ags_automation_area_callbacks.h		\
+	src/ags/X/editor/ags_automation_area_callbacks.h	\
 	src/ags/X/editor/ags_automation_area.h			\
-	src/ags/X/editor/ags_automation_edit_callbacks.h		\
+	src/ags/X/editor/ags_automation_edit_callbacks.h	\
 	src/ags/X/editor/ags_automation_edit.h			\
 	src/ags/X/editor/ags_automation_toolbar_callbacks.h	\
 	src/ags/X/editor/ags_automation_toolbar.h		\
@@ -1862,33 +1872,37 @@ gsequencer_editor_h_sources = \
 	src/ags/X/editor/ags_inline_player_callbacks.h		\
 	src/ags/X/editor/ags_inline_player.h			\
 	src/ags/X/editor/ags_machine_radio_button.h		\
-	src/ags/X/editor/ags_machine_selection.h			\
+	src/ags/X/editor/ags_machine_selection.h		\
 	src/ags/X/editor/ags_machine_selector_callbacks.h	\
 	src/ags/X/editor/ags_machine_selector.h			\
-	src/ags/X/editor/ags_piano_callbacks.h			\
-	src/ags/X/editor/ags_piano.h				\
 	src/ags/X/editor/ags_notebook_callbacks.h		\
 	src/ags/X/editor/ags_notebook.h				\
 	src/ags/X/editor/ags_note_edit_callbacks.h		\
-	src/ags/X/editor/ags_note_edit.h				\
+	src/ags/X/editor/ags_note_edit.h			\
 	src/ags/X/editor/ags_pattern_edit_callbacks.h		\
 	src/ags/X/editor/ags_pattern_edit.h			\
+	src/ags/X/editor/ags_piano_callbacks.h			\
+	src/ags/X/editor/ags_piano.h				\
 	src/ags/X/editor/ags_port_selection_callbacks.h		\
 	src/ags/X/editor/ags_port_selection.h			\
+	src/ags/X/editor/ags_scale_area_callbacks.h		\
+	src/ags/X/editor/ags_scale_area.h			\
+	src/ags/X/editor/ags_scale_callbacks.h			\
+	src/ags/X/editor/ags_scale.h				\
 	src/ags/X/editor/ags_sf2_chooser_callbacks.h		\
 	src/ags/X/editor/ags_sf2_chooser.h			\
 	src/ags/X/editor/ags_soundset_callbacks.h		\
 	src/ags/X/editor/ags_soundset.h				\
-	src/ags/X/editor/ags_toolbar_callbacks.h			\
+	src/ags/X/editor/ags_toolbar_callbacks.h		\
 	src/ags/X/editor/ags_toolbar.h				\
 	src/ags/X/editor/ags_toolbar_mode_stock.h
 
 deprecated_gsequencer_editor_c_sources = 
 gsequencer_editor_c_sources = \
 	$(deprecated_gsequencer_editor_c_sources) \
-	src/ags/X/editor/ags_automation_area_callbacks.c		\
+	src/ags/X/editor/ags_automation_area_callbacks.c	\
 	src/ags/X/editor/ags_automation_area.c			\
-	src/ags/X/editor/ags_automation_edit_callbacks.c		\
+	src/ags/X/editor/ags_automation_edit_callbacks.c	\
 	src/ags/X/editor/ags_automation_edit.c			\
 	src/ags/X/editor/ags_automation_toolbar_callbacks.c	\
 	src/ags/X/editor/ags_automation_toolbar.c		\
@@ -1897,24 +1911,28 @@ gsequencer_editor_c_sources = \
 	src/ags/X/editor/ags_inline_player_callbacks.c		\
 	src/ags/X/editor/ags_inline_player.c			\
 	src/ags/X/editor/ags_machine_radio_button.c		\
-	src/ags/X/editor/ags_machine_selection.c			\
+	src/ags/X/editor/ags_machine_selection.c		\
 	src/ags/X/editor/ags_machine_selector_callbacks.c	\
 	src/ags/X/editor/ags_machine_selector.c			\
-	src/ags/X/editor/ags_piano_callbacks.c			\
-	src/ags/X/editor/ags_piano.c				\
 	src/ags/X/editor/ags_notebook_callbacks.c		\
 	src/ags/X/editor/ags_notebook.c				\
 	src/ags/X/editor/ags_note_edit_callbacks.c		\
-	src/ags/X/editor/ags_note_edit.c				\
+	src/ags/X/editor/ags_note_edit.c			\
 	src/ags/X/editor/ags_pattern_edit_callbacks.c		\
 	src/ags/X/editor/ags_pattern_edit.c			\
+	src/ags/X/editor/ags_piano_callbacks.c			\
+	src/ags/X/editor/ags_piano.c				\
 	src/ags/X/editor/ags_port_selection_callbacks.c		\
 	src/ags/X/editor/ags_port_selection.c			\
+	src/ags/X/editor/ags_scale_area_callbacks.c		\
+	src/ags/X/editor/ags_scale_area.c			\
+	src/ags/X/editor/ags_scale_callbacks.c			\
+	src/ags/X/editor/ags_scale.c				\
 	src/ags/X/editor/ags_sf2_chooser_callbacks.c		\
 	src/ags/X/editor/ags_sf2_chooser.c			\
 	src/ags/X/editor/ags_soundset_callbacks.c		\
 	src/ags/X/editor/ags_soundset.c				\
-	src/ags/X/editor/ags_toolbar_callbacks.c			\
+	src/ags/X/editor/ags_toolbar_callbacks.c		\
 	src/ags/X/editor/ags_toolbar.c
 
 deprecated_gsequencer_file_h_sources = 
@@ -2081,6 +2099,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer-ags_automation_editor_callbacks.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer-ags_automation_toolbar.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer-ags_automation_toolbar_callbacks.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer-ags_automation_window.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer-ags_automation_window_callbacks.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer-ags_bulk_member.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer-ags_bulk_member_callbacks.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer-ags_change_indicator.Po@am__quote@
@@ -2210,6 +2230,10 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer-ags_replicator_bridge.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer-ags_replicator_bridge_callbacks.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer-ags_resize_editor.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer-ags_scale.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer-ags_scale_area.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer-ags_scale_area_callbacks.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer-ags_scale_callbacks.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer-ags_scroll_on_play.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer-ags_server.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer-ags_server_application_context.Po@am__quote@
@@ -5735,6 +5759,34 @@ gsequencer-ags_automation_editor.obj: src/ags/X/ags_automation_editor.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_automation_editor.obj `if test -f 'src/ags/X/ags_automation_editor.c'; then $(CYGPATH_W) 'src/ags/X/ags_automation_editor.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/ags_automation_editor.c'; fi`
 
+gsequencer-ags_automation_window.o: src/ags/X/ags_automation_window.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_automation_window.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_automation_window.Tpo -c -o gsequencer-ags_automation_window.o `test -f 'src/ags/X/ags_automation_window.c' || echo '$(srcdir)/'`src/ags/X/ags_automation_window.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_automation_window.Tpo $(DEPDIR)/gsequencer-ags_automation_window.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/X/ags_automation_window.c' object='gsequencer-ags_automation_window.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_automation_window.o `test -f 'src/ags/X/ags_automation_window.c' || echo '$(srcdir)/'`src/ags/X/ags_automation_window.c
+
+gsequencer-ags_automation_window.obj: src/ags/X/ags_automation_window.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_automation_window.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_automation_window.Tpo -c -o gsequencer-ags_automation_window.obj `if test -f 'src/ags/X/ags_automation_window.c'; then $(CYGPATH_W) 'src/ags/X/ags_automation_window.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/ags_automation_window.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_automation_window.Tpo $(DEPDIR)/gsequencer-ags_automation_window.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/X/ags_automation_window.c' object='gsequencer-ags_automation_window.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_automation_window.obj `if test -f 'src/ags/X/ags_automation_window.c'; then $(CYGPATH_W) 'src/ags/X/ags_automation_window.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/ags_automation_window.c'; fi`
+
+gsequencer-ags_automation_window_callbacks.o: src/ags/X/ags_automation_window_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_automation_window_callbacks.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_automation_window_callbacks.Tpo -c -o gsequencer-ags_automation_window_callbacks.o `test -f 'src/ags/X/ags_automation_window_callbacks.c' || echo '$(srcdir)/'`src/ags/X/ags_automation_window_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_automation_window_callbacks.Tpo $(DEPDIR)/gsequencer-ags_automation_window_callbacks.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/X/ags_automation_window_callbacks.c' object='gsequencer-ags_automation_window_callbacks.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_automation_window_callbacks.o `test -f 'src/ags/X/ags_automation_window_callbacks.c' || echo '$(srcdir)/'`src/ags/X/ags_automation_window_callbacks.c
+
+gsequencer-ags_automation_window_callbacks.obj: src/ags/X/ags_automation_window_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_automation_window_callbacks.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_automation_window_callbacks.Tpo -c -o gsequencer-ags_automation_window_callbacks.obj `if test -f 'src/ags/X/ags_automation_window_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/ags_automation_window_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/ags_automation_window_callbacks.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_automation_window_callbacks.Tpo $(DEPDIR)/gsequencer-ags_automation_window_callbacks.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/X/ags_automation_window_callbacks.c' object='gsequencer-ags_automation_window_callbacks.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_automation_window_callbacks.obj `if test -f 'src/ags/X/ags_automation_window_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/ags_automation_window_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/ags_automation_window_callbacks.c'; fi`
+
 gsequencer-ags_editor_callbacks.o: src/ags/X/ags_editor_callbacks.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_editor_callbacks.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_editor_callbacks.Tpo -c -o gsequencer-ags_editor_callbacks.o `test -f 'src/ags/X/ags_editor_callbacks.c' || echo '$(srcdir)/'`src/ags/X/ags_editor_callbacks.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_editor_callbacks.Tpo $(DEPDIR)/gsequencer-ags_editor_callbacks.Po
@@ -7793,34 +7845,6 @@ gsequencer-ags_machine_selector.obj: src/ags/X/editor/ags_machine_selector.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_machine_selector.obj `if test -f 'src/ags/X/editor/ags_machine_selector.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_machine_selector.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_machine_selector.c'; fi`
 
-gsequencer-ags_piano_callbacks.o: src/ags/X/editor/ags_piano_callbacks.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_piano_callbacks.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_piano_callbacks.Tpo -c -o gsequencer-ags_piano_callbacks.o `test -f 'src/ags/X/editor/ags_piano_callbacks.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_piano_callbacks.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_piano_callbacks.Tpo $(DEPDIR)/gsequencer-ags_piano_callbacks.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/X/editor/ags_piano_callbacks.c' object='gsequencer-ags_piano_callbacks.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_piano_callbacks.o `test -f 'src/ags/X/editor/ags_piano_callbacks.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_piano_callbacks.c
-
-gsequencer-ags_piano_callbacks.obj: src/ags/X/editor/ags_piano_callbacks.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_piano_callbacks.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_piano_callbacks.Tpo -c -o gsequencer-ags_piano_callbacks.obj `if test -f 'src/ags/X/editor/ags_piano_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_piano_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_piano_callbacks.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_piano_callbacks.Tpo $(DEPDIR)/gsequencer-ags_piano_callbacks.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/X/editor/ags_piano_callbacks.c' object='gsequencer-ags_piano_callbacks.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_piano_callbacks.obj `if test -f 'src/ags/X/editor/ags_piano_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_piano_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_piano_callbacks.c'; fi`
-
-gsequencer-ags_piano.o: src/ags/X/editor/ags_piano.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_piano.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_piano.Tpo -c -o gsequencer-ags_piano.o `test -f 'src/ags/X/editor/ags_piano.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_piano.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_piano.Tpo $(DEPDIR)/gsequencer-ags_piano.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/X/editor/ags_piano.c' object='gsequencer-ags_piano.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_piano.o `test -f 'src/ags/X/editor/ags_piano.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_piano.c
-
-gsequencer-ags_piano.obj: src/ags/X/editor/ags_piano.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_piano.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_piano.Tpo -c -o gsequencer-ags_piano.obj `if test -f 'src/ags/X/editor/ags_piano.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_piano.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_piano.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_piano.Tpo $(DEPDIR)/gsequencer-ags_piano.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/X/editor/ags_piano.c' object='gsequencer-ags_piano.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_piano.obj `if test -f 'src/ags/X/editor/ags_piano.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_piano.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_piano.c'; fi`
-
 gsequencer-ags_notebook_callbacks.o: src/ags/X/editor/ags_notebook_callbacks.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_notebook_callbacks.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_notebook_callbacks.Tpo -c -o gsequencer-ags_notebook_callbacks.o `test -f 'src/ags/X/editor/ags_notebook_callbacks.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_notebook_callbacks.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_notebook_callbacks.Tpo $(DEPDIR)/gsequencer-ags_notebook_callbacks.Po
@@ -7905,6 +7929,34 @@ gsequencer-ags_pattern_edit.obj: src/ags/X/editor/ags_pattern_edit.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_pattern_edit.obj `if test -f 'src/ags/X/editor/ags_pattern_edit.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_pattern_edit.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_pattern_edit.c'; fi`
 
+gsequencer-ags_piano_callbacks.o: src/ags/X/editor/ags_piano_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_piano_callbacks.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_piano_callbacks.Tpo -c -o gsequencer-ags_piano_callbacks.o `test -f 'src/ags/X/editor/ags_piano_callbacks.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_piano_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_piano_callbacks.Tpo $(DEPDIR)/gsequencer-ags_piano_callbacks.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/X/editor/ags_piano_callbacks.c' object='gsequencer-ags_piano_callbacks.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_piano_callbacks.o `test -f 'src/ags/X/editor/ags_piano_callbacks.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_piano_callbacks.c
+
+gsequencer-ags_piano_callbacks.obj: src/ags/X/editor/ags_piano_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_piano_callbacks.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_piano_callbacks.Tpo -c -o gsequencer-ags_piano_callbacks.obj `if test -f 'src/ags/X/editor/ags_piano_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_piano_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_piano_callbacks.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_piano_callbacks.Tpo $(DEPDIR)/gsequencer-ags_piano_callbacks.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/X/editor/ags_piano_callbacks.c' object='gsequencer-ags_piano_callbacks.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_piano_callbacks.obj `if test -f 'src/ags/X/editor/ags_piano_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_piano_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_piano_callbacks.c'; fi`
+
+gsequencer-ags_piano.o: src/ags/X/editor/ags_piano.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_piano.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_piano.Tpo -c -o gsequencer-ags_piano.o `test -f 'src/ags/X/editor/ags_piano.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_piano.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_piano.Tpo $(DEPDIR)/gsequencer-ags_piano.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/X/editor/ags_piano.c' object='gsequencer-ags_piano.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_piano.o `test -f 'src/ags/X/editor/ags_piano.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_piano.c
+
+gsequencer-ags_piano.obj: src/ags/X/editor/ags_piano.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_piano.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_piano.Tpo -c -o gsequencer-ags_piano.obj `if test -f 'src/ags/X/editor/ags_piano.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_piano.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_piano.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_piano.Tpo $(DEPDIR)/gsequencer-ags_piano.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/X/editor/ags_piano.c' object='gsequencer-ags_piano.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_piano.obj `if test -f 'src/ags/X/editor/ags_piano.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_piano.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_piano.c'; fi`
+
 gsequencer-ags_port_selection_callbacks.o: src/ags/X/editor/ags_port_selection_callbacks.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_port_selection_callbacks.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_port_selection_callbacks.Tpo -c -o gsequencer-ags_port_selection_callbacks.o `test -f 'src/ags/X/editor/ags_port_selection_callbacks.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_port_selection_callbacks.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_port_selection_callbacks.Tpo $(DEPDIR)/gsequencer-ags_port_selection_callbacks.Po
@@ -7932,6 +7984,62 @@ gsequencer-ags_port_selection.obj: src/ags/X/editor/ags_port_selection.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/X/editor/ags_port_selection.c' object='gsequencer-ags_port_selection.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_port_selection.obj `if test -f 'src/ags/X/editor/ags_port_selection.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_port_selection.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_port_selection.c'; fi`
+
+gsequencer-ags_scale_area_callbacks.o: src/ags/X/editor/ags_scale_area_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_scale_area_callbacks.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_scale_area_callbacks.Tpo -c -o gsequencer-ags_scale_area_callbacks.o `test -f 'src/ags/X/editor/ags_scale_area_callbacks.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_scale_area_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_scale_area_callbacks.Tpo $(DEPDIR)/gsequencer-ags_scale_area_callbacks.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/X/editor/ags_scale_area_callbacks.c' object='gsequencer-ags_scale_area_callbacks.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_scale_area_callbacks.o `test -f 'src/ags/X/editor/ags_scale_area_callbacks.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_scale_area_callbacks.c
+
+gsequencer-ags_scale_area_callbacks.obj: src/ags/X/editor/ags_scale_area_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_scale_area_callbacks.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_scale_area_callbacks.Tpo -c -o gsequencer-ags_scale_area_callbacks.obj `if test -f 'src/ags/X/editor/ags_scale_area_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_scale_area_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_scale_area_callbacks.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_scale_area_callbacks.Tpo $(DEPDIR)/gsequencer-ags_scale_area_callbacks.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/X/editor/ags_scale_area_callbacks.c' object='gsequencer-ags_scale_area_callbacks.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_scale_area_callbacks.obj `if test -f 'src/ags/X/editor/ags_scale_area_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_scale_area_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_scale_area_callbacks.c'; fi`
+
+gsequencer-ags_scale_area.o: src/ags/X/editor/ags_scale_area.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_scale_area.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_scale_area.Tpo -c -o gsequencer-ags_scale_area.o `test -f 'src/ags/X/editor/ags_scale_area.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_scale_area.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_scale_area.Tpo $(DEPDIR)/gsequencer-ags_scale_area.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/X/editor/ags_scale_area.c' object='gsequencer-ags_scale_area.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_scale_area.o `test -f 'src/ags/X/editor/ags_scale_area.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_scale_area.c
+
+gsequencer-ags_scale_area.obj: src/ags/X/editor/ags_scale_area.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_scale_area.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_scale_area.Tpo -c -o gsequencer-ags_scale_area.obj `if test -f 'src/ags/X/editor/ags_scale_area.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_scale_area.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_scale_area.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_scale_area.Tpo $(DEPDIR)/gsequencer-ags_scale_area.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/X/editor/ags_scale_area.c' object='gsequencer-ags_scale_area.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_scale_area.obj `if test -f 'src/ags/X/editor/ags_scale_area.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_scale_area.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_scale_area.c'; fi`
+
+gsequencer-ags_scale_callbacks.o: src/ags/X/editor/ags_scale_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_scale_callbacks.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_scale_callbacks.Tpo -c -o gsequencer-ags_scale_callbacks.o `test -f 'src/ags/X/editor/ags_scale_callbacks.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_scale_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_scale_callbacks.Tpo $(DEPDIR)/gsequencer-ags_scale_callbacks.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/X/editor/ags_scale_callbacks.c' object='gsequencer-ags_scale_callbacks.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_scale_callbacks.o `test -f 'src/ags/X/editor/ags_scale_callbacks.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_scale_callbacks.c
+
+gsequencer-ags_scale_callbacks.obj: src/ags/X/editor/ags_scale_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_scale_callbacks.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_scale_callbacks.Tpo -c -o gsequencer-ags_scale_callbacks.obj `if test -f 'src/ags/X/editor/ags_scale_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_scale_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_scale_callbacks.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_scale_callbacks.Tpo $(DEPDIR)/gsequencer-ags_scale_callbacks.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/X/editor/ags_scale_callbacks.c' object='gsequencer-ags_scale_callbacks.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_scale_callbacks.obj `if test -f 'src/ags/X/editor/ags_scale_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_scale_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_scale_callbacks.c'; fi`
+
+gsequencer-ags_scale.o: src/ags/X/editor/ags_scale.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_scale.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_scale.Tpo -c -o gsequencer-ags_scale.o `test -f 'src/ags/X/editor/ags_scale.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_scale.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_scale.Tpo $(DEPDIR)/gsequencer-ags_scale.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/X/editor/ags_scale.c' object='gsequencer-ags_scale.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_scale.o `test -f 'src/ags/X/editor/ags_scale.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_scale.c
+
+gsequencer-ags_scale.obj: src/ags/X/editor/ags_scale.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_scale.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_scale.Tpo -c -o gsequencer-ags_scale.obj `if test -f 'src/ags/X/editor/ags_scale.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_scale.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_scale.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_scale.Tpo $(DEPDIR)/gsequencer-ags_scale.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/X/editor/ags_scale.c' object='gsequencer-ags_scale.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_scale.obj `if test -f 'src/ags/X/editor/ags_scale.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_scale.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_scale.c'; fi`
 
 gsequencer-ags_sf2_chooser_callbacks.o: src/ags/X/editor/ags_sf2_chooser_callbacks.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_sf2_chooser_callbacks.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_sf2_chooser_callbacks.Tpo -c -o gsequencer-ags_sf2_chooser_callbacks.o `test -f 'src/ags/X/editor/ags_sf2_chooser_callbacks.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_sf2_chooser_callbacks.c

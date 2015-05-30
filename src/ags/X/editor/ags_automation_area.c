@@ -37,8 +37,6 @@ void ags_automation_area_get_property(GObject *gobject,
 void ags_automation_area_connect(AgsConnectable *connectable);
 void ags_automation_area_disconnect(AgsConnectable *connectable);
 
-void ags_automation_area_paint(AgsAutomationArea *automation_area);
-
 /**
  * SECTION:ags_automation_area
  * @short_description: area automations
@@ -46,7 +44,7 @@ void ags_automation_area_paint(AgsAutomationArea *automation_area);
  * @section_id:
  * @include: ags/X/areaor/ags_automation_area.h
  *
- * The #AgsAutomationArea lets you area automations.
+ * The #AgsAutomationArea lets you paint automations.
  */
 
 enum{
@@ -55,7 +53,6 @@ enum{
 };
 
 static gpointer ags_automation_area_parent_class = NULL;
-GtkStyle *automation_area_style;
 
 GType
 ags_automation_area_get_type(void)
@@ -81,7 +78,7 @@ ags_automation_area_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_automation_area = g_type_register_static(GTK_TYPE_DRAWING_AREA,
+    ags_type_automation_area = g_type_register_static(G_TYPE_OBJECT,
 						      "AgsAutomationArea\0", &ags_automation_area_info,
 						      0);
     
@@ -136,16 +133,12 @@ ags_automation_area_class_init(AgsAutomationAreaClass *automation_area)
 void
 ags_automation_area_init(AgsAutomationArea *automation_area)
 {
-  automation_area->automation = NULL;
+  automation_area->y = 0;
+  automation_area->height = AGS_AUTOMATION_AREA_DEFAULT_HEIGHT;
 
-  gtk_widget_set_style((GtkWidget *) automation_area, automation_area_style);
-  gtk_widget_set_events(GTK_WIDGET (automation_area), GDK_EXPOSURE_MASK
-			| GDK_LEAVE_NOTIFY_MASK
-			| GDK_BUTTON_PRESS_MASK
-			| GDK_BUTTON_RELEASE_MASK
-			| GDK_POINTER_MOTION_MASK
-			| GDK_POINTER_MOTION_HINT_MASK
-			);
+  automation_area->drawing_area = NULL;
+  
+  automation_area->automation = NULL;
 }
 
 void
@@ -211,15 +204,7 @@ ags_automation_area_get_property(GObject *gobject,
 void
 ags_automation_area_connect(AgsConnectable *connectable)
 {
-  AgsAutomationArea *automation_area;
-
-  automation_area = AGS_AUTOMATION_AREA(connectable);
-
-  g_signal_connect_after((GObject *) automation_area, "expose_event\0",
-			 G_CALLBACK (ags_automation_area_expose_event), (gpointer) automation_area);
-
-  g_signal_connect_after((GObject *) automation_area, "configure_event\0",
-			 G_CALLBACK (ags_automation_area_configure_event), (gpointer) automation_area);
+  //TODO:JK: implement me
 }
 
 void
@@ -232,7 +217,6 @@ ags_automation_area_disconnect(AgsConnectable *connectable)
  * ags_automation_area_draw_strip:
  * @automation_area: the #AgsAutomationArea
  * @cr: the #cairo_t surface
- * @channel: the #AgsChannel
  *
  * Plot data.
  *
@@ -241,26 +225,22 @@ ags_automation_area_disconnect(AgsConnectable *connectable)
 void
 ags_automation_area_draw_strip(AgsAutomationArea *automation_area, cairo_t *cr)
 {
-  AgsAutomationEdit *automation_edit;
-  gchar *control_name;
+  gdouble y;
   gdouble width, height;
 
-  automation_edit = gtk_widget_get_ancestor(automation_area,
-					    AGS_TYPE_AUTOMATION_EDIT);
-
-  control_name = automation_area->automation->control_name;
-
-  width = (gdouble) GTK_WIDGET(automation_area)->allocation.width;
-  height = (gdouble) GTK_WIDGET(automation_area)->allocation.height;
+  y = (gdouble) automation_area->y;
+  
+  width = (gdouble) GTK_WIDGET(automation_area->drawing_area)->allocation.width;
+  height = (gdouble) automation_area->height;
 
   /* background */
   cairo_set_source_rgb(cr, 0.5, 0.4, 0.0);
-  cairo_rectangle(cr, 0.0, 0.0, width, height);
+  cairo_rectangle(cr, 0.0, y, width, height);
   cairo_fill(cr);
 
   cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
   cairo_set_line_width(cr, 1.0);
-  cairo_rectangle(cr, 0.0, 0.0, width, height);
+  cairo_rectangle(cr, 0.0, y, width, height);
   cairo_stroke(cr);
 
   /*  */
@@ -279,7 +259,7 @@ ags_automation_area_draw_strip(AgsAutomationArea *automation_area, cairo_t *cr)
 void
 ags_automation_area_draw_scale(AgsAutomationArea *automation_area, cairo_t *cr)
 {
-  AgsAutomationEdit *automation_edit;
+  gdouble y;
   gdouble lower, upper;
   gdouble width, height;
   gdouble translated_ground;
@@ -288,14 +268,13 @@ ags_automation_area_draw_scale(AgsAutomationArea *automation_area, cairo_t *cr)
     0.25,
   };
 
-  automation_edit = gtk_widget_get_ancestor(automation_area,
-					    AGS_TYPE_AUTOMATION_EDIT);
-
   lower = automation_area->automation->lower;
   upper = automation_area->automation->upper;
 
+  y = (gdouble) automation_area->y;
+  
   width = (gdouble) GTK_WIDGET(automation_area)->allocation.width;
-  height = (gdouble) GTK_WIDGET(automation_area)->allocation.height;
+  height = (gdouble) automation_area->height;
 
   if(lower < 0.0){
     if(upper < 0.0){
@@ -314,9 +293,9 @@ ags_automation_area_draw_scale(AgsAutomationArea *automation_area, cairo_t *cr)
   cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
 
   cairo_move_to(cr,
-		0.0, translated_ground);
+		0.0, y + translated_ground);
   cairo_line_to(cr,
-		width, translated_ground);
+		width, y + translated_ground);
 
   cairo_set_dash(cr,
 		 &dashes,
@@ -339,18 +318,16 @@ ags_automation_area_draw_automation(AgsAutomationArea *automation_area, cairo_t 
 {
   AgsAutomationEdit *automation_edit;
   AgsAcceleration *current, *prev;
-  guint width, height;
+  guint width;
   gdouble x0, x1;
   GList *list;
 
-  automation_edit = gtk_widget_get_ancestor(automation_area,
+  automation_edit = gtk_widget_get_ancestor(automation_area->drawing_area,
 					    AGS_TYPE_AUTOMATION_EDIT);
 
+  width = GTK_WIDGET(automation_area->drawing_area)->allocation.width;
 
-  width = GTK_WIDGET(automation_area)->allocation.width;
-  height = GTK_WIDGET(automation_area)->allocation.height;
-
-  x0 = gtk_scrolled_window_get_hadjustment(automation_edit->scrolled_window)->value;
+  x0 = GTK_RANGE(automation_edit->hscrollbar)->adjustment->value;
   x1 = x0 + width;
 
   /*  */	
@@ -360,14 +337,24 @@ ags_automation_area_draw_automation(AgsAutomationArea *automation_area, cairo_t 
   while(list != NULL){
     current = AGS_ACCELERATION(list->data);
 
+    if(current->x < x0){
+      prev = current;
+      list = list->next;
+
+      continue;
+    }
+    
     if(prev != NULL){
       ags_automation_area_draw_surface(automation_area, cr,
 				       prev->x, prev->y,
 				       current->x, current->y);
     }
 
+    if(current->x >= x1){
+      break;
+    }
+    
     prev = current;
-
     list = list->next;
   }
 }
@@ -393,12 +380,15 @@ ags_automation_area_draw_surface(AgsAutomationArea *automation_area, cairo_t *cr
   AgsAutomationEdit *automation_edit;
   gdouble width, height;
 
-  automation_edit = gtk_widget_get_ancestor(automation_area,
+  automation_edit = gtk_widget_get_ancestor(automation_area->drawing_area,
 					    AGS_TYPE_AUTOMATION_EDIT);
 
-  width = (gdouble) GTK_WIDGET(automation_area)->allocation.width;
-  height = (gdouble) GTK_WIDGET(automation_area)->allocation.height;
+  width = (gdouble) GTK_WIDGET(automation_area->drawing_area)->allocation.width;
+  height = (gdouble) automation_area->height;
 
+  y0 += automation_area->y;
+  y1 += automation_area->y;
+  
   cairo_set_source_rgb(cr, 1.0, 1.0, 0.0);
 
   /* area */
@@ -450,14 +440,15 @@ ags_automation_area_paint(AgsAutomationArea *automation_area)
  *
  * Create a new #AgsAutomationArea.
  *
- * Since: 0.4
+ * Since: 0.4.3
  */
 AgsAutomationArea*
-ags_automation_area_new()
+ags_automation_area_new(GtkDrawingArea *drawing_area)
 {
   AgsAutomationArea *automation_area;
 
   automation_area = (AgsAutomationArea *) g_object_new(AGS_TYPE_AUTOMATION_AREA, NULL);
-
+  automation_area->drawing_area = drawing_area;
+  
   return(automation_area);
 }

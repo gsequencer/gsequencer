@@ -18,15 +18,6 @@
 
 #include <ags/X/ags_automation_editor_callbacks.h>
 
-gboolean
-ags_automation_editor_delete_event_callback(GtkWidget *automation_editor,
-					    gpointer data)
-{
-  gtk_widget_hide(automation_editor);
-
-  return(TRUE);
-}
-
 void
 ags_automation_editor_set_audio_channels_callback(AgsAudio *audio,
 						  guint audio_channels, guint audio_channels_old,
