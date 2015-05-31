@@ -228,10 +228,10 @@ ags_matrix_init(AgsMatrix *matrix)
   audio = AGS_MACHINE(matrix)->audio;
   audio->flags |= (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
 		   AGS_AUDIO_INPUT_HAS_RECYCLING |
+		   AGS_AUDIO_HAS_NOTATION |
 		   AGS_AUDIO_SYNC |
 		   AGS_AUDIO_ASYNC |
-		   AGS_AUDIO_NOTATION_DEFAULT |
-		   AGS_AUDIO_HAS_NOTATION);
+		   AGS_AUDIO_NOTATION_DEFAULT);
   
   //  audio->audio_channels = 1;
   AGS_MACHINE(matrix)->input_pad_type = G_TYPE_NONE;
