@@ -54,4 +54,6 @@ ags_automation_toolbar_port_changed_callback(GtkComboBox *combo_box,
 			   &iter,
 			   0,
 			   &value);
+
+  ags_automation_toolbar_apply_port(automation_toolbar);
 }
