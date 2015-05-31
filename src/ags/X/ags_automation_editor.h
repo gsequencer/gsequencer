@@ -27,6 +27,7 @@
 #include <ags/X/editor/ags_automation_toolbar.h>
 #include <ags/X/editor/ags_notebook.h>
 #include <ags/X/editor/ags_machine_selector.h>
+#include <ags/X/editor/ags_scale.h>
 #include <ags/X/editor/ags_automation_edit.h>
 
 #define AGS_TYPE_AUTOMATION_EDITOR                (ags_automation_editor_get_type())
@@ -53,10 +54,19 @@ struct _AgsAutomationEditor
 
   AgsAutomationToolbar *automation_toolbar;
 
-  GtkTable *table;
-  
-  AgsNotebook *notebook;
-  AgsAutomationEdit *automation_edit;
+  GtkTable *audio_table;
+  AgsScale *audio_scale;
+  AgsAutomationEdit *audio_automation_edit;
+
+  GtkTable *output_table;
+  AgsScale *output_scale;
+  AgsNotebook *output_notebook;
+  AgsAutomationEdit *output_automation_edit;
+
+  GtkTable *input_table;
+  AgsScale *input_scale;
+  AgsNotebook *input_notebook;
+  AgsAutomationEdit *input_automation_edit;
 };
 
 struct _AgsAutomationEditorClass

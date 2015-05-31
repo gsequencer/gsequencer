@@ -136,7 +136,8 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
   GtkTable *table;
   GtkHPaned *paned;
   GtkScrolledWindow *scrolled_window;
-
+  GtkNotebook *notebook;
+  
   table = gtk_table_new(2,
 			2,
 			FALSE);
@@ -173,24 +174,56 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 
   automation_editor->selected_machine = NULL;
 
-  automation_editor->table = (GtkTable *) gtk_table_new(4, 3, FALSE);
+  /**/
+  notebook = gtk_notebook_new();
   gtk_paned_pack2((GtkPaned *) paned,
-		  (GtkWidget *) automation_editor->table,
+		  (GtkWidget *) notebook,
 		  TRUE, FALSE);
+  
+  /* notebook and automation edit */
+  /* audio */
+  automation_editor->audio_table = (GtkTable *) gtk_table_new(4, 3, FALSE);
+  gtk_notebook_append_page(notebook,
+			   automation_editor->audio_table,
+			   gtk_label_new("audio\0"));
+  
+  automation_editor->audio_automation_edit = NULL;
 
-  automation_editor->notebook = ags_notebook_new();
-  automation_editor->notebook->flags |= (AGS_NOTEBOOK_SHOW_LINE |
+  /* output */
+  automation_editor->output_table = (GtkTable *) gtk_table_new(4, 3, FALSE);
+  gtk_notebook_append_page(notebook,
+			   automation_editor->output_table,
+			   gtk_label_new("output\0"));
+
+  automation_editor->output_automation_edit = NULL;
+  automation_editor->output_notebook = ags_notebook_new();
+  automation_editor->output_notebook->flags |= (AGS_NOTEBOOK_SHOW_LINE |
 					 AGS_NOTEBOOK_SHOW_INPUT);
-  gtk_table_attach(automation_editor->table,
-		   (GtkWidget *) automation_editor->notebook,
+  gtk_table_attach(automation_editor->output_table,
+		   (GtkWidget *) automation_editor->output_notebook,
 		   0, 3,
 		   0, 1,
 		   GTK_FILL|GTK_EXPAND,
 		   GTK_FILL,
 		   0, 0);
 
-  /* automation edit */
-  automation_editor->automation_edit = NULL;
+  /* input */
+  automation_editor->input_table = (GtkTable *) gtk_table_new(4, 3, FALSE);
+  gtk_notebook_append_page(notebook,
+			   automation_editor->input_table,
+			   gtk_label_new("input\0"));
+
+  automation_editor->input_automation_edit = NULL;
+  automation_editor->input_notebook = ags_notebook_new();
+  automation_editor->input_notebook->flags |= (AGS_NOTEBOOK_SHOW_LINE |
+					 AGS_NOTEBOOK_SHOW_INPUT);
+  gtk_table_attach(automation_editor->input_table,
+		   (GtkWidget *) automation_editor->input_notebook,
+		   0, 3,
+		   0, 1,
+		   GTK_FILL|GTK_EXPAND,
+		   GTK_FILL,
+		   0, 0);
 }
 
 void
@@ -206,7 +239,6 @@ ags_automation_editor_connect(AgsConnectable *connectable)
   /* */
   ags_connectable_connect(AGS_CONNECTABLE(automation_editor->automation_toolbar));
   ags_connectable_connect(AGS_CONNECTABLE(automation_editor->machine_selector));
-  ags_connectable_connect(AGS_CONNECTABLE(automation_editor->notebook));
 }
 
 void
@@ -216,11 +248,8 @@ ags_automation_editor_disconnect(AgsConnectable *connectable)
 
   automation_editor = AGS_AUTOMATION_EDITOR(connectable);
 
-  ags_connectable_connect(AGS_CONNECTABLE(automation_editor->automation_toolbar));
-  
-  ags_connectable_connect(AGS_CONNECTABLE(automation_editor->machine_selector));
-
-  ags_connectable_connect(AGS_CONNECTABLE(automation_editor->automation_edit));
+  ags_connectable_disconnect(AGS_CONNECTABLE(automation_editor->automation_toolbar)); 
+  ags_connectable_disconnect(AGS_CONNECTABLE(automation_editor->machine_selector));
 }
 
 void
@@ -230,21 +259,179 @@ ags_automation_editor_finalize(GObject *gobject)
 
   automation_editor = AGS_AUTOMATION_EDITOR(gobject);
   
-  g_object_unref(automation_editor->machine_selector);
-  
-  g_object_unref(automation_editor->automation_toolbar);
-
-  g_object_unref(automation_editor->automation_edit);
-
   G_OBJECT_CLASS(ags_automation_editor_parent_class)->finalize(gobject);
 }
 
 void
 ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_editor, AgsMachine *machine)
 {
+  AgsMachine *machine_old;
+  AgsNotebook *notebook;
+  GtkTable *table;
+
+  guint pads;
+  guint i, stop;
+  
+  auto void ags_automation_editor_notebook_change_machine_shrink();
+  auto void ags_automation_editor_notebook_change_machine_grow();
+
+  void ags_automation_editor_notebook_change_machine_shrink(){
+    GtkWidget *widget;
+
+    for(; i < stop; i++){
+      ags_notebook_remove_tab(notebook,
+			      0);
+    }
+  }
+  void ags_automation_editor_notebook_change_machine_grow(){
+    for(; i < stop; i++){
+      ags_notebook_add_tab(notebook);
+    }
+
+    gtk_widget_show_all(notebook);
+  }
+
+
+  if(automation_editor->selected_machine == machine){
+    return;
+  }
+
+  machine_old = automation_editor->selected_machine;
   automation_editor->selected_machine = machine;
 
-  //TODO:JK: implement me
+  /* resize notebook */
+  if(machine == NULL){
+    if(machine_old != NULL){
+      /* output */
+      notebook = automation_editor->output_notebook;
+      i = 0;
+	    
+      stop = machine_old->audio->output_lines;
+      ags_automation_editor_notebook_change_machine_shrink();
+
+      /* input */
+      notebook = automation_editor->input_notebook;
+      i = 0;
+
+      stop = machine_old->audio->input_lines;
+      ags_automation_editor_notebook_change_machine_shrink();
+    }
+  }else{
+    if(machine_old == NULL){
+      /* output */
+      notebook = automation_editor->output_notebook;
+      i = 0;
+
+      stop = machine->audio->output_lines;
+      ags_automation_editor_notebook_change_machine_grow();
+
+      /* input */
+      notebook = automation_editor->input_notebook;
+      i = 0;
+
+      stop = machine->audio->input_lines;
+      ags_automation_editor_notebook_change_machine_grow();
+    }else{
+      /* output */
+      notebook = automation_editor->output_notebook;
+      i = machine_old->audio->output_lines;
+
+      stop = machine->audio->output_lines;
+      ags_automation_editor_notebook_change_machine_grow();
+      
+      /* input */
+      notebook = automation_editor->input_notebook;
+      i = machine_old->audio->input_lines;
+
+      stop = machine->audio->input_lines;
+      ags_automation_editor_notebook_change_machine_grow();
+    }
+  }
+  
+  /* instantiate automation  edit */
+  if(machine == NULL){
+    return;
+  }
+
+  automation_editor->set_audio_channels_handler = g_signal_connect(machine->audio, "set-audio-channels\0",
+								   G_CALLBACK(ags_automation_editor_set_audio_channels_callback), automation_editor);
+  automation_editor->set_pads_handler = g_signal_connect(machine->audio, "set-pads\0",
+							 G_CALLBACK(ags_automation_editor_set_pads_callback), automation_editor);
+
+  /* audio */
+  automation_editor->audio_scale = ags_scale_new();
+  gtk_table_attach(automation_editor->audio_table,
+		   (GtkWidget *) automation_editor->audio_scale,
+		   0, 1,
+		   1, 2,
+		   GTK_FILL,
+		   GTK_FILL,
+		   0, 0);
+  ags_connectable_connect(AGS_CONNECTABLE(automation_editor->audio_scale));
+  gtk_widget_show_all(automation_editor->audio_scale);
+
+  automation_editor->audio_automation_edit = ags_automation_edit_new();
+  gtk_table_attach(automation_editor->audio_table,
+		   (GtkWidget *) automation_editor->audio_automation_edit,
+		   1, 2,
+		   1, 2,
+		   GTK_FILL|GTK_EXPAND,
+		   GTK_FILL|GTK_EXPAND,
+		   0, 0);
+  g_signal_connect(automation_editor->audio_automation_edit->vscrollbar, "value-changed\0",
+		   G_CALLBACK(ags_automation_editor_edit_vscrollbar_value_changed_callback), automation_editor);
+  ags_connectable_connect(AGS_CONNECTABLE(automation_editor->audio_automation_edit));
+  gtk_widget_show_all(automation_editor->audio_automation_edit); 
+
+  /* output */
+  automation_editor->output_scale = ags_scale_new();
+  gtk_table_attach(automation_editor->output_table,
+		   (GtkWidget *) automation_editor->output_scale,
+		   0, 1,
+		   1, 2,
+		   GTK_FILL,
+		   GTK_FILL,
+		   0, 0);
+  ags_connectable_connect(AGS_CONNECTABLE(automation_editor->output_scale));
+  gtk_widget_show_all(automation_editor->output_scale);
+
+  automation_editor->output_automation_edit = ags_automation_edit_new();
+  gtk_table_attach(automation_editor->output_table,
+		   (GtkWidget *) automation_editor->output_automation_edit,
+		   1, 2,
+		   1, 2,
+		   GTK_FILL|GTK_EXPAND,
+		   GTK_FILL|GTK_EXPAND,
+		   0, 0);
+  g_signal_connect(automation_editor->output_automation_edit->vscrollbar, "value-changed\0",
+		   G_CALLBACK(ags_automation_editor_edit_vscrollbar_value_changed_callback), automation_editor);
+  ags_connectable_connect(AGS_CONNECTABLE(automation_editor->output_automation_edit));
+  gtk_widget_show_all(automation_editor->output_automation_edit);
+
+  /* input */
+  automation_editor->input_scale = ags_scale_new();
+  gtk_table_attach(automation_editor->input_table,
+		   (GtkWidget *) automation_editor->input_scale,
+		   0, 1,
+		   1, 2,
+		   GTK_FILL,
+		   GTK_FILL,
+		   0, 0);
+  ags_connectable_connect(AGS_CONNECTABLE(automation_editor->input_scale));
+  gtk_widget_show_all(automation_editor->input_scale);
+
+  automation_editor->input_automation_edit = ags_automation_edit_new();
+  gtk_table_attach(automation_editor->input_table,
+		   (GtkWidget *) automation_editor->input_automation_edit,
+		   1, 2,
+		   1, 2,
+		   GTK_FILL|GTK_EXPAND,
+		   GTK_FILL|GTK_EXPAND,
+		   0, 0);
+  g_signal_connect(automation_editor->input_automation_edit->vscrollbar, "value-changed\0",
+		   G_CALLBACK(ags_automation_editor_edit_vscrollbar_value_changed_callback), automation_editor);
+  ags_connectable_connect(AGS_CONNECTABLE(automation_editor->input_automation_edit));
+  gtk_widget_show_all(automation_editor->input_automation_edit);
 }
 
 /**

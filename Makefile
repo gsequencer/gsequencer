@@ -531,8 +531,6 @@ am__objects_31 = $(am__objects_1) \
 	gsequencer-ags_pattern_edit.$(OBJEXT) \
 	gsequencer-ags_piano_callbacks.$(OBJEXT) \
 	gsequencer-ags_piano.$(OBJEXT) \
-	gsequencer-ags_port_selection_callbacks.$(OBJEXT) \
-	gsequencer-ags_port_selection.$(OBJEXT) \
 	gsequencer-ags_scale_area_callbacks.$(OBJEXT) \
 	gsequencer-ags_scale_area.$(OBJEXT) \
 	gsequencer-ags_scale_callbacks.$(OBJEXT) \
@@ -1883,8 +1881,6 @@ gsequencer_editor_h_sources = \
 	src/ags/X/editor/ags_pattern_edit.h			\
 	src/ags/X/editor/ags_piano_callbacks.h			\
 	src/ags/X/editor/ags_piano.h				\
-	src/ags/X/editor/ags_port_selection_callbacks.h		\
-	src/ags/X/editor/ags_port_selection.h			\
 	src/ags/X/editor/ags_scale_area_callbacks.h		\
 	src/ags/X/editor/ags_scale_area.h			\
 	src/ags/X/editor/ags_scale_callbacks.h			\
@@ -1922,8 +1918,6 @@ gsequencer_editor_c_sources = \
 	src/ags/X/editor/ags_pattern_edit.c			\
 	src/ags/X/editor/ags_piano_callbacks.c			\
 	src/ags/X/editor/ags_piano.c				\
-	src/ags/X/editor/ags_port_selection_callbacks.c		\
-	src/ags/X/editor/ags_port_selection.c			\
 	src/ags/X/editor/ags_scale_area_callbacks.c		\
 	src/ags/X/editor/ags_scale_area.c			\
 	src/ags/X/editor/ags_scale_callbacks.c			\
@@ -2216,8 +2210,6 @@ include ./$(DEPDIR)/gsequencer-ags_plugin_browser.Po
 include ./$(DEPDIR)/gsequencer-ags_plugin_browser_callbacks.Po
 include ./$(DEPDIR)/gsequencer-ags_plugin_preferences.Po
 include ./$(DEPDIR)/gsequencer-ags_plugin_preferences_callbacks.Po
-include ./$(DEPDIR)/gsequencer-ags_port_selection.Po
-include ./$(DEPDIR)/gsequencer-ags_port_selection_callbacks.Po
 include ./$(DEPDIR)/gsequencer-ags_preferences.Po
 include ./$(DEPDIR)/gsequencer-ags_preferences_callbacks.Po
 include ./$(DEPDIR)/gsequencer-ags_property_collection_editor.Po
@@ -7956,34 +7948,6 @@ gsequencer-ags_piano.obj: src/ags/X/editor/ags_piano.c
 #	$(AM_V_CC)source='src/ags/X/editor/ags_piano.c' object='gsequencer-ags_piano.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_piano.obj `if test -f 'src/ags/X/editor/ags_piano.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_piano.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_piano.c'; fi`
-
-gsequencer-ags_port_selection_callbacks.o: src/ags/X/editor/ags_port_selection_callbacks.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_port_selection_callbacks.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_port_selection_callbacks.Tpo -c -o gsequencer-ags_port_selection_callbacks.o `test -f 'src/ags/X/editor/ags_port_selection_callbacks.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_port_selection_callbacks.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_port_selection_callbacks.Tpo $(DEPDIR)/gsequencer-ags_port_selection_callbacks.Po
-#	$(AM_V_CC)source='src/ags/X/editor/ags_port_selection_callbacks.c' object='gsequencer-ags_port_selection_callbacks.o' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_port_selection_callbacks.o `test -f 'src/ags/X/editor/ags_port_selection_callbacks.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_port_selection_callbacks.c
-
-gsequencer-ags_port_selection_callbacks.obj: src/ags/X/editor/ags_port_selection_callbacks.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_port_selection_callbacks.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_port_selection_callbacks.Tpo -c -o gsequencer-ags_port_selection_callbacks.obj `if test -f 'src/ags/X/editor/ags_port_selection_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_port_selection_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_port_selection_callbacks.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_port_selection_callbacks.Tpo $(DEPDIR)/gsequencer-ags_port_selection_callbacks.Po
-#	$(AM_V_CC)source='src/ags/X/editor/ags_port_selection_callbacks.c' object='gsequencer-ags_port_selection_callbacks.obj' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_port_selection_callbacks.obj `if test -f 'src/ags/X/editor/ags_port_selection_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_port_selection_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_port_selection_callbacks.c'; fi`
-
-gsequencer-ags_port_selection.o: src/ags/X/editor/ags_port_selection.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_port_selection.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_port_selection.Tpo -c -o gsequencer-ags_port_selection.o `test -f 'src/ags/X/editor/ags_port_selection.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_port_selection.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_port_selection.Tpo $(DEPDIR)/gsequencer-ags_port_selection.Po
-#	$(AM_V_CC)source='src/ags/X/editor/ags_port_selection.c' object='gsequencer-ags_port_selection.o' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_port_selection.o `test -f 'src/ags/X/editor/ags_port_selection.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_port_selection.c
-
-gsequencer-ags_port_selection.obj: src/ags/X/editor/ags_port_selection.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_port_selection.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_port_selection.Tpo -c -o gsequencer-ags_port_selection.obj `if test -f 'src/ags/X/editor/ags_port_selection.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_port_selection.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_port_selection.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_port_selection.Tpo $(DEPDIR)/gsequencer-ags_port_selection.Po
-#	$(AM_V_CC)source='src/ags/X/editor/ags_port_selection.c' object='gsequencer-ags_port_selection.obj' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_port_selection.obj `if test -f 'src/ags/X/editor/ags_port_selection.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_port_selection.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_port_selection.c'; fi`
 
 gsequencer-ags_scale_area_callbacks.o: src/ags/X/editor/ags_scale_area_callbacks.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_scale_area_callbacks.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_scale_area_callbacks.Tpo -c -o gsequencer-ags_scale_area_callbacks.o `test -f 'src/ags/X/editor/ags_scale_area_callbacks.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_scale_area_callbacks.c

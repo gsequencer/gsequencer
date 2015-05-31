@@ -1101,8 +1101,6 @@ gsequencer_editor_h_sources = \
 	src/ags/X/editor/ags_pattern_edit.h			\
 	src/ags/X/editor/ags_piano_callbacks.h			\
 	src/ags/X/editor/ags_piano.h				\
-	src/ags/X/editor/ags_port_selection_callbacks.h		\
-	src/ags/X/editor/ags_port_selection.h			\
 	src/ags/X/editor/ags_scale_area_callbacks.h		\
 	src/ags/X/editor/ags_scale_area.h			\
 	src/ags/X/editor/ags_scale_callbacks.h			\
@@ -1141,8 +1139,6 @@ gsequencer_editor_c_sources = \
 	src/ags/X/editor/ags_pattern_edit.c			\
 	src/ags/X/editor/ags_piano_callbacks.c			\
 	src/ags/X/editor/ags_piano.c				\
-	src/ags/X/editor/ags_port_selection_callbacks.c		\
-	src/ags/X/editor/ags_port_selection.c			\
 	src/ags/X/editor/ags_scale_area_callbacks.c		\
 	src/ags/X/editor/ags_scale_area.c			\
 	src/ags/X/editor/ags_scale_callbacks.c			\

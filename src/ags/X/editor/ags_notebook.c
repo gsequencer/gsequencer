@@ -21,8 +21,6 @@
 
 #include <ags/object/ags_connectable.h>
 
-#include <ags/X/ags_editor.h>
-
 void ags_notebook_class_init(AgsNotebookClass *notebook);
 void ags_notebook_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_notebook_init(AgsNotebook *notebook);
@@ -116,14 +114,10 @@ void
 ags_notebook_connect(AgsConnectable *connectable)
 {
   AgsNotebook *notebook;
-  AgsEditor *editor;
 
   notebook = AGS_NOTEBOOK(connectable);
 
-  editor = (AgsEditor *) gtk_widget_get_ancestor((GtkWidget *) notebook, AGS_TYPE_EDITOR);
-
-  g_signal_connect((GObject *) editor, "machine-changed\0",
-		   G_CALLBACK(ags_notebook_machine_changed_callback), notebook);
+  //TODO:JK: implement me
 }
 
 void

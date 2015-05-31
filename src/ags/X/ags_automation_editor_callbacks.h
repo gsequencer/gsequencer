@@ -44,7 +44,7 @@ void ags_automation_editor_machine_changed_callback(AgsMachineSelector *machine_
 void ags_automation_editor_change_position_callback(AgsNavigation *navigation, gdouble tact,
 						    AgsAutomationEditor *automation_editor);
 
-void ags_automation_editor_edit_vscrollbar_value_changed_callback(GtkWidget *note_edit,
+void ags_automation_editor_edit_vscrollbar_value_changed_callback(GtkWidget *automation_edit,
 								  AgsAutomationEditor *automation_editor);
 
 #endif /*__AGS_AUTOMATION_EDITOR_CALLBACKS_H__*/
