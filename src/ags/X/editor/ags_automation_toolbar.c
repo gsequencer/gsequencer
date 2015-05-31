@@ -281,6 +281,57 @@ ags_automation_toolbar_load_port(AgsAutomationToolbar *automation_toolbar)
   }
 }
 
+void
+ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar)
+{
+  AgsAutomationEditor *automation_editor;
+  AgsMachine *machine;
+
+  GtkTreeModel *model;
+  GtkTreeIter iter;
+  
+  gchar **specifier, *current;
+  guint length;
+  
+  automation_editor = gtk_widget_get_ancestor(automation_toolbar,
+					      AGS_TYPE_AUTOMATION_EDITOR);
+  machine = automation_editor->selected_machine;
+
+  model = gtk_combo_box_get_model(automation_toolbar->port);
+  
+  specifier = NULL;
+  length = 0;
+  
+  if(gtk_tree_model_get_iter_first(model,
+				   &iter)){
+    do{
+      if(length == 0){
+	specifier = (gchar **) malloc(2 * sizeof(gchar *));
+      }else{
+	specifier = (gchar **) realloc(specifier,
+				       (length + 2) * sizeof(gchar *));
+      }
+      
+      gtk_tree_model_get(model,
+			 &iter,
+			 1, &current,
+			 -1);
+      specifier[length] = current;
+
+      length++;
+    }while(gtk_tree_model_iter_next(model,
+				    &iter));
+
+    specifier[length] = NULL;
+  }
+
+  if(machine->automation_port != NULL){
+    free(machine->automation_port);
+  }
+
+  machine->automation_port = specifier;
+}
+
 /**
  * ags_automation_toolbar_new:
  *
