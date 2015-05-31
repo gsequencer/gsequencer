@@ -23,11 +23,8 @@ ags_automation_toolbar_machine_changed_callback(AgsAutomationEditor *automation_
 						AgsMachine *machine,
 						AgsAutomationToolbar *toolbar)
 {
-  AgsAutomationEdit *automation_edit;
   AgsAutomation *automation;
 
-  automation_edit = automation_editor->automation_edit;
-  
   /* load ports */
   ags_automation_toolbar_load_port(automation_editor->automation_toolbar);
 }

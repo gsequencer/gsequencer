@@ -324,15 +324,135 @@ ags_editor_disconnect(AgsConnectable *connectable)
 void
 ags_editor_real_machine_changed(AgsEditor *editor, AgsMachine *machine)
 {
+  AgsMachine *machine_old;
+  AgsNotebook *notebook;
   GtkTable *table;
+
   guint pads;
+  guint i, stop;
+  
+  auto void ags_editor_notebook_change_machine_shrink();
+  auto void ags_editor_notebook_change_machine_grow();
+
+  void ags_editor_notebook_change_machine_shrink(){
+    GtkWidget *widget;
+
+    for(; i < stop; i++)
+      ags_notebook_remove_tab((GtkNotebook *) notebook,
+			      0);
+  }
+  void ags_editor_notebook_change_machine_grow(){
+    for(; i < stop; i++){
+      ags_notebook_add_tab((GtkNotebook *) notebook);
+    }
+  }
+
 
   if(editor->selected_machine == machine){
     return;
   }
 
+  machine_old = editor->selected_machine;
   editor->selected_machine = machine;
 
+  /* resize notebook */
+  notebook = editor->notebook;
+  
+  if(machine == NULL){
+    if(machine_old != NULL){
+      i = 0;
+
+      if((AGS_NOTEBOOK_SHOW_AUDIO_CHANNEL & (notebook->flags)) != 0){
+	stop = machine_old->audio->audio_channels;
+      }else if((AGS_NOTEBOOK_SHOW_PAD & (notebook->flags)) != 0){
+	if((AGS_NOTEBOOK_SHOW_OUTPUT & (notebook->flags)) != 0){
+	  stop = machine_old->audio->output_pads;
+	}else if((AGS_NOTEBOOK_SHOW_INPUT & (notebook->flags)) != 0){
+	  stop = machine_old->audio->input_pads;
+	}
+      }else if((AGS_NOTEBOOK_SHOW_LINE & (notebook->flags)) != 0){
+	if((AGS_NOTEBOOK_SHOW_OUTPUT & (notebook->flags)) != 0){
+	  stop = machine_old->audio->output_lines;
+	}else if((AGS_NOTEBOOK_SHOW_INPUT & (notebook->flags)) != 0){	
+	  stop = machine_old->audio->input_lines;
+	}
+      }
+
+      ags_editor_notebook_change_machine_shrink();
+    }
+  }else{
+    if(machine_old == NULL){
+      if((AGS_NOTEBOOK_SHOW_AUDIO_CHANNEL & (notebook->flags)) != 0){
+	stop = machine->audio->audio_channels;
+      }else if((AGS_NOTEBOOK_SHOW_PAD & (notebook->flags)) != 0){
+	if((AGS_NOTEBOOK_SHOW_OUTPUT & (notebook->flags)) != 0){
+	  stop = machine->audio->output_pads;
+	}else if((AGS_NOTEBOOK_SHOW_INPUT & (notebook->flags)) != 0){
+	  stop = machine->audio->input_pads;
+	}
+      }else if((AGS_NOTEBOOK_SHOW_LINE & (notebook->flags)) != 0){
+	if((AGS_NOTEBOOK_SHOW_OUTPUT & (notebook->flags)) != 0){
+	  stop = machine->audio->output_lines;
+	}else if((AGS_NOTEBOOK_SHOW_INPUT & (notebook->flags)) != 0){	
+	  stop = machine->audio->input_lines;
+	}
+      }
+
+      ags_editor_notebook_change_machine_grow();
+    }else{
+      if(machine->audio->audio_channels > machine_old->audio->audio_channels){
+	if((AGS_NOTEBOOK_SHOW_AUDIO_CHANNEL & (notebook->flags)) != 0){
+	  i = machine_old->audio->audio_channels;
+	  stop = machine->audio->audio_channels;
+	}else if((AGS_NOTEBOOK_SHOW_PAD & (notebook->flags)) != 0){
+	  if((AGS_NOTEBOOK_SHOW_OUTPUT & (notebook->flags)) != 0){
+	    i = machine_old->audio->output_pads;
+	    stop = machine->audio->output_pads;
+	  }else if((AGS_NOTEBOOK_SHOW_INPUT & (notebook->flags)) != 0){
+	    i = machine_old->audio->input_pads;
+	    stop = machine->audio->input_pads;
+	  }
+	}else if((AGS_NOTEBOOK_SHOW_LINE & (notebook->flags)) != 0){
+	  if((AGS_NOTEBOOK_SHOW_OUTPUT & (notebook->flags)) != 0){
+	    i = machine_old->audio->output_lines;
+	    stop = machine->audio->output_lines;
+	  }else if((AGS_NOTEBOOK_SHOW_INPUT & (notebook->flags)) != 0){	
+	    i = machine_old->audio->input_lines;
+	    stop = machine->audio->input_lines;
+	  }
+	}
+
+	ags_editor_notebook_change_machine_grow();
+      }else if(machine->audio->audio_channels < machine_old->audio->audio_channels){
+	if((AGS_NOTEBOOK_SHOW_AUDIO_CHANNEL & (notebook->flags)) != 0){
+	  i = machine->audio->audio_channels;
+	  stop = machine_old->audio->audio_channels;
+	}else if((AGS_NOTEBOOK_SHOW_PAD & (notebook->flags)) != 0){
+	  if((AGS_NOTEBOOK_SHOW_OUTPUT & (notebook->flags)) != 0){
+	    i = machine->audio->output_pads;
+	    stop = machine_old->audio->output_pads;
+	  }else if((AGS_NOTEBOOK_SHOW_INPUT & (notebook->flags)) != 0){
+	    i = machine->audio->input_pads;
+	    stop = machine_old->audio->input_pads;
+	  }
+	}else if((AGS_NOTEBOOK_SHOW_LINE & (notebook->flags)) != 0){
+	  if((AGS_NOTEBOOK_SHOW_OUTPUT & (notebook->flags)) != 0){
+	    i = machine->audio->output_lines;
+	    stop = machine_old->audio->output_lines;
+	  }else if((AGS_NOTEBOOK_SHOW_INPUT & (notebook->flags)) != 0){	
+	    i = machine->audio->input_lines;
+	    stop = machine_old->audio->input_lines;
+	  }
+	}
+
+	ags_editor_notebook_change_machine_shrink();
+      }
+    }
+  }
+  
+  gtk_widget_show_all((GtkWidget *) notebook);
+  
+  /* instantiate note edit or pattern edit */
   if(machine == NULL){
     return;
   }
