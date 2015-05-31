@@ -185,6 +185,8 @@ ags_automation_window_connect(AgsConnectable *connectable)
   AgsAutomationWindow *automation_window;
 
   automation_window = AGS_AUTOMATION_WINDOW(connectable);
+
+  ags_connectable_connect(automation_window->automation_editor);
 }
 
 void

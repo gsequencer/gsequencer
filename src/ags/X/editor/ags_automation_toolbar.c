@@ -104,7 +104,8 @@ ags_automation_toolbar_init(AgsAutomationToolbar *automation_toolbar)
   GtkMenuToolButton *menu_tool_button;
   GtkMenu *menu;
   GtkLabel *label;
-
+  GtkCellRenderer *cell_renderer;
+  
   automation_toolbar->position = g_object_new(GTK_TYPE_TOGGLE_BUTTON,
 					      "image\0", gtk_image_new_from_stock(GTK_STOCK_JUMP_TO,
 										  GTK_ICON_SIZE_LARGE_TOOLBAR),
@@ -185,7 +186,30 @@ ags_automation_toolbar_init(AgsAutomationToolbar *automation_toolbar)
 			    NULL);
 
   /*  */
+  label = gtk_label_new("port\0");
+  gtk_container_add(GTK_CONTAINER(automation_toolbar),
+		    label);
+
   automation_toolbar->port = gtk_combo_box_new();
+
+  cell_renderer = gtk_cell_renderer_toggle_new();
+  gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(automation_toolbar->port),
+			     cell_renderer,
+			     FALSE);
+  gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(automation_toolbar->port), cell_renderer,
+				 "active\0", 0,
+				 NULL);
+  gtk_cell_renderer_toggle_set_activatable(cell_renderer,
+					   TRUE);
+  
+  cell_renderer = gtk_cell_renderer_text_new();
+  gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(automation_toolbar->port),
+			     cell_renderer,
+			     FALSE);
+  gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(automation_toolbar->port), cell_renderer,
+				 "text\0", 1,
+				 NULL);
+
   gtk_toolbar_append_widget((GtkToolbar *) automation_toolbar,
 			    (GtkWidget *) automation_toolbar->port,
 			    NULL,
@@ -205,6 +229,9 @@ ags_automation_toolbar_connect(AgsConnectable *connectable)
   /*  */
   g_signal_connect_after(G_OBJECT(automation_editor), "machine-changed\0",
 			 G_CALLBACK(ags_automation_toolbar_machine_changed_callback), automation_toolbar);
+
+  g_signal_connect(automation_toolbar->port, "changed\0",
+		   G_CALLBACK(ags_automation_toolbar_port_changed_callback), automation_toolbar);
 }
 
 void

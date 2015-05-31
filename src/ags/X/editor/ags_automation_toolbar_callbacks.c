@@ -27,9 +27,31 @@ ags_automation_toolbar_machine_changed_callback(AgsAutomationEditor *automation_
   AgsAutomation *automation;
 
   automation_edit = automation_editor->automation_edit;
-
-  g_message("debug a\0");
   
   /* load ports */
   ags_automation_toolbar_load_port(automation_editor->automation_toolbar);
+}
+
+
+void
+ags_automation_toolbar_port_changed_callback(GtkComboBox *combo_box,
+					     AgsAutomationToolbar *automation_toolbar)
+{
+  GtkTreeModel *model;
+  GtkTreeIter iter;
+  GValue value = {0,};
+  
+  model = gtk_combo_box_get_model(combo_box);
+  gtk_combo_box_get_active_iter(combo_box, &iter);
+
+  gtk_tree_model_get_value(model,
+			   &iter,
+			   0,
+			   &value);
+
+  g_value_set_boolean(&value, !g_value_get_boolean(&value));
+  gtk_list_store_set_value(GTK_LIST_STORE(model),
+			   &iter,
+			   0,
+			   &value);
 }
