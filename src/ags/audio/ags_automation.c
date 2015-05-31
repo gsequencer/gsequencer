@@ -189,13 +189,11 @@ ags_automation_class_init(AgsAutomationClass *automation)
    * 
    * Since: 0.4.3
    */
-  param_spec =  g_param_spec_uint("channel-type\0",
-				  "channel type to apply\0",
-				  "The channel type to apply\0",
-				  0,
-				  65535,
-				  0,
-				  G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec =  g_param_spec_gtype("channel-type\0",
+				   "channel type to apply\0",
+				   "The channel type to apply\0",
+				   G_TYPE_NONE,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_CHANNEL_TYPE,
 				  param_spec);
@@ -214,7 +212,7 @@ ags_automation_class_init(AgsAutomationClass *automation)
 				    NULL,
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_CHANNEL_TYPE,
+				  PROP_CONTROL_NAME,
 				  param_spec);
 
   /**
@@ -445,7 +443,7 @@ ags_automation_set_property(GObject *gobject,
     {
       GType channel_type;
 
-      channel_type = (GType) g_value_get_ulong(value);
+      channel_type = (GType) g_value_get_gtype(value);
 
       automation->channel_type = channel_type;
     }
@@ -1442,18 +1440,12 @@ ags_automation_get_specifier_unique(GList *automation)
   
   while(automation != NULL){
     current = specifier;
-
-    if(AGS_AUTOMATION(automation->data)->port == NULL){
-      automation = automation->next;
-
-      continue;
-    }
     
     if(!g_strv_contains(specifier,
-			AGS_PORT(AGS_AUTOMATION(automation->data)->port)->specifier)){
+			AGS_AUTOMATION(automation->data)->control_name)){
       specifier = (gchar **) realloc(specifier,
 				     (length + 1) * sizeof(gchar *));
-      specifier[length - 1] = AGS_PORT(AGS_AUTOMATION(automation->data)->port)->specifier;
+      specifier[length - 1] = AGS_AUTOMATION(automation->data)->control_name;
       specifier[length] = NULL;
 
       length++;

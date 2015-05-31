@@ -2893,7 +2893,7 @@ ags_audio_remove_notation(AgsAudio *audio,
  *
  * Adds an automation.
  *
- * Since: 0.4
+ * Since: 0.4.3
  */
 void
 ags_audio_add_automation(AgsAudio *audio,
@@ -2911,7 +2911,7 @@ ags_audio_add_automation(AgsAudio *audio,
  *
  * Removes an automation.
  *
- * Since: 0.4
+ * Since: 0.4.3
  */
 void
 ags_audio_remove_automation(AgsAudio *audio,

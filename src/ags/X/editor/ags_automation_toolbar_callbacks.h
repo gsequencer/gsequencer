@@ -31,4 +31,7 @@ void ags_automation_toolbar_machine_changed_callback(AgsAutomationEditor *automa
 						     AgsMachine *machine,
 						     AgsAutomationToolbar *toolbar);
 
+void ags_automation_toolbar_port_changed_callback(GtkComboBox *combo_box,
+						  AgsAutomationToolbar *automation_toolbar);
+
 #endif /*__AGS_AUTOMATION_TOOLBAR_CALLBACKS_H__*/
