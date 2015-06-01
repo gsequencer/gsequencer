@@ -36,11 +36,17 @@ ags_automation_toolbar_port_changed_callback(GtkComboBox *combo_box,
 {
   GtkTreeModel *model;
   GtkTreeIter iter;
+  gchar *control_name;
   GValue value = {0,};
   
   model = gtk_combo_box_get_model(combo_box);
   gtk_combo_box_get_active_iter(combo_box, &iter);
 
+  gtk_tree_model_get(model,
+		     &iter,
+		     1, &control_name,
+		     -1);
+  
   gtk_tree_model_get_value(model,
 			   &iter,
 			   0,
@@ -52,5 +58,6 @@ ags_automation_toolbar_port_changed_callback(GtkComboBox *combo_box,
 			   0,
 			   &value);
 
-  ags_automation_toolbar_apply_port(automation_toolbar);
+  ags_automation_toolbar_apply_port(automation_toolbar,
+				    control_name);
 }

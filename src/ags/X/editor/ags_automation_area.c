@@ -21,6 +21,8 @@
 
 #include <ags/object/ags_connectable.h>
 
+#include <ags/audio/ags_automation.h>
+
 #include <ags/X/editor/ags_automation_edit.h>
 
 void ags_automation_area_class_init(AgsAutomationAreaClass *automation_area);
@@ -137,8 +139,10 @@ ags_automation_area_init(AgsAutomationArea *automation_area)
   automation_area->height = AGS_AUTOMATION_AREA_DEFAULT_HEIGHT;
 
   automation_area->drawing_area = NULL;
-  
-  automation_area->automation = NULL;
+
+  automation_area->audio = NULL;
+  automation_area->channel_type = G_TYPE_NONE;
+  automation_area->control_name = NULL;
 }
 
 void
@@ -152,27 +156,6 @@ ags_automation_area_set_property(GObject *gobject,
   automation_area = AGS_AUTOMATION_AREA(gobject);
 
   switch(prop_id){
-  case PROP_AUTOMATION:
-    {
-      AgsAutomation *automation;
-
-      automation = g_value_get_object(value);
-
-      if(automation == automation_area->automation){
-	return;
-      }
-
-      if(automation_area->automation != NULL){
-	g_object_unref(automation_area->automation);
-      }
-
-      if(automation != NULL){
-	g_object_ref(automation);
-      }
-
-      automation_area->automation = automation;
-    }
-    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -190,11 +173,6 @@ ags_automation_area_get_property(GObject *gobject,
   automation_area = AGS_AUTOMATION_AREA(gobject);
 
   switch(prop_id){
-  case PROP_AUTOMATION:
-    {
-      g_value_set_object(value, automation_area->automation);
-    }
-    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -211,6 +189,22 @@ void
 ags_automation_area_disconnect(AgsConnectable *connectable)
 {
   //TODO:JK: implement me
+}
+
+GList*
+ags_automation_area_find_specifier(GList *automation_area,
+				   gchar *specifier)
+{
+  while(automation_area != NULL){
+    if(!g_ascii_strcasecmp(AGS_AUTOMATION_AREA(automation_area->data)->control_name,
+			   specifier)){
+      break;
+    }
+    
+    automation_area = automation_area->next;
+  }
+
+  return(automation_area);
 }
 
 /**
@@ -259,6 +253,8 @@ ags_automation_area_draw_strip(AgsAutomationArea *automation_area, cairo_t *cr)
 void
 ags_automation_area_draw_scale(AgsAutomationArea *automation_area, cairo_t *cr)
 {
+  GList *automation;
+  
   gdouble y;
   gdouble lower, upper;
   gdouble width, height;
@@ -268,40 +264,49 @@ ags_automation_area_draw_scale(AgsAutomationArea *automation_area, cairo_t *cr)
     0.25,
   };
 
-  lower = automation_area->automation->lower;
-  upper = automation_area->automation->upper;
+  automation = automation_area->audio->automation;
 
-  y = (gdouble) automation_area->y;
+  while((automation = ags_automation_find_specifier(automation,
+						    automation_area->control_name)) != NULL){
+    if(AGS_AUTOMATION(automation->data)->channel_type == automation_area->channel_type){
+      lower = AGS_AUTOMATION(automation->data)->lower;
+      upper = AGS_AUTOMATION(automation->data)->upper;
+
+      y = (gdouble) automation_area->y;
   
-  width = (gdouble) GTK_WIDGET(automation_area)->allocation.width;
-  height = (gdouble) automation_area->height;
+      width = (gdouble) GTK_WIDGET(automation_area->drawing_area)->allocation.width;
+      height = (gdouble) automation_area->height;
 
-  if(lower < 0.0){
-    if(upper < 0.0){
-      translated_ground = (-1.0 * (lower - upper)) / 2.0;
-    }else{
-      translated_ground = (upper - lower) / 2.0;
+      if(lower < 0.0){
+	if(upper < 0.0){
+	  translated_ground = (-1.0 * (lower - upper)) / 2.0;
+	}else{
+	  translated_ground = (upper - lower) / 2.0;
+	}
+      }else{
+	if(upper > 0.0){
+	  translated_ground = (upper - lower) / 2.0;
+	}else{
+	  g_warning("invalid boundaries for scale\0");
+	}
+      }
+
+      cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
+
+      cairo_move_to(cr,
+		    0.0, y + translated_ground);
+      cairo_line_to(cr,
+		    width, y + translated_ground);
+
+      cairo_set_dash(cr,
+		     &dashes,
+		     1,
+		     0.0);
+      cairo_stroke(cr);
     }
-  }else{
-    if(upper > 0.0){
-      translated_ground = (upper - lower) / 2.0;
-    }else{
-      g_warning("invalid boundaries for scale\0");
-    }
+    
+    automation = automation->next;
   }
-
-  cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
-
-  cairo_move_to(cr,
-		0.0, y + translated_ground);
-  cairo_line_to(cr,
-		width, y + translated_ground);
-
-  cairo_set_dash(cr,
-		 &dashes,
-		 1,
-		 0.0);
-  cairo_stroke(cr);
 }
 
 /**
@@ -318,44 +323,56 @@ ags_automation_area_draw_automation(AgsAutomationArea *automation_area, cairo_t 
 {
   AgsAutomationEdit *automation_edit;
   AgsAcceleration *current, *prev;
+
+  GList *automation;
+
   guint width;
   gdouble x0, x1;
   GList *list;
 
   automation_edit = gtk_widget_get_ancestor(automation_area->drawing_area,
 					    AGS_TYPE_AUTOMATION_EDIT);
-
+  
   width = GTK_WIDGET(automation_area->drawing_area)->allocation.width;
 
   x0 = GTK_RANGE(automation_edit->hscrollbar)->adjustment->value;
   x1 = x0 + width;
 
-  /*  */	
-  list = AGS_ACCELERATION(automation_area->automation->acceleration);
-  prev = NULL;
+  automation = automation_area->audio->automation;
 
-  while(list != NULL){
-    current = AGS_ACCELERATION(list->data);
+  while((automation = ags_automation_find_specifier(automation,
+						    automation_area->control_name)) != NULL){
+    if(AGS_AUTOMATION(automation->data)->channel_type == automation_area->channel_type){
+      /*  */
+      list = AGS_ACCELERATION(AGS_AUTOMATION(automation->data)->acceleration);
+      prev = NULL;
 
-    if(current->x < x0){
-      prev = current;
-      list = list->next;
+      while(list != NULL){
+	current = AGS_ACCELERATION(list->data);
 
-      continue;
+	if(current->x < x0){
+	  prev = current;
+	  list = list->next;
+
+	  continue;
+	}
+    
+	if(prev != NULL){
+	  ags_automation_area_draw_surface(automation_area, cr,
+					   prev->x, prev->y,
+					   current->x, current->y);
+	}
+
+	if(current->x >= x1){
+	  break;
+	}
+    
+	prev = current;
+	list = list->next;
+      }
     }
     
-    if(prev != NULL){
-      ags_automation_area_draw_surface(automation_area, cr,
-				       prev->x, prev->y,
-				       current->x, current->y);
-    }
-
-    if(current->x >= x1){
-      break;
-    }
-    
-    prev = current;
-    list = list->next;
+    automation = automation->next;
   }
 }
 
@@ -377,11 +394,7 @@ ags_automation_area_draw_surface(AgsAutomationArea *automation_area, cairo_t *cr
 				 gdouble x0, gdouble y0,
 				 gdouble x1, gdouble y1)
 {
-  AgsAutomationEdit *automation_edit;
   gdouble width, height;
-
-  automation_edit = gtk_widget_get_ancestor(automation_area->drawing_area,
-					    AGS_TYPE_AUTOMATION_EDIT);
 
   width = (gdouble) GTK_WIDGET(automation_area->drawing_area)->allocation.width;
   height = (gdouble) automation_area->height;
@@ -429,18 +442,30 @@ ags_automation_area_paint(AgsAutomationArea *automation_area,
 
 /**
  * ags_automation_area_new:
+ * @drawing_area: 
+ * @audio: 
+ * @channel_type:
+ * @control_name: 
  *
  * Create a new #AgsAutomationArea.
  *
  * Since: 0.4.3
  */
 AgsAutomationArea*
-ags_automation_area_new(GtkDrawingArea *drawing_area)
+ags_automation_area_new(GtkDrawingArea *drawing_area,
+			AgsAudio *audio,
+			GType channel_type,
+			gchar *control_name)
 {
   AgsAutomationArea *automation_area;
 
-  automation_area = (AgsAutomationArea *) g_object_new(AGS_TYPE_AUTOMATION_AREA, NULL);
+  automation_area = (AgsAutomationArea *) g_object_new(AGS_TYPE_AUTOMATION_AREA,
+						       NULL);
+  
   automation_area->drawing_area = drawing_area;
+  automation_area->audio = audio;
+  automation_area->channel_type = channel_type;
+  automation_area->control_name = control_name;
   
   return(automation_area);
 }
