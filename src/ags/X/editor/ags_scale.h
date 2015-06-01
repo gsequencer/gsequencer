@@ -22,7 +22,7 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include <cairo.h>
+#include <ags/X/editor/ags_scale_area.h>
 
 #define AGS_TYPE_SCALE                (ags_scale_get_type())
 #define AGS_SCALE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SCALE, AgsScale))
@@ -49,6 +49,11 @@ struct _AgsScaleClass
 GType ags_scale_get_type(void);
 
 void ags_scale_paint(AgsScale *scale);
+
+void ags_scale_add_area(AgsScale *scale,
+			AgsScaleArea *scale_area);
+void ags_scale_remove_area(AgsScale *scale,
+			   AgsScaleArea *scale_area);
 
 AgsScale* ags_scale_new();
 

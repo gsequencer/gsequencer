@@ -135,6 +135,46 @@ ags_scale_disconnect(AgsConnectable *connectable)
 void
 ags_scale_paint(AgsScale *scale)
 {
+  GList *scale_area;
+
+  scale_area = scale->scale_area;
+
+  while(scale_area != NULL){
+    ags_scale_area_paint(scale_area->data);
+
+    scale_area = scale_area->next;
+  }
+}
+
+void
+ags_scale_add_area(AgsScale *scale,
+		   AgsScaleArea *scale_area)
+{
+  guint y;
+  
+  g_object_ref(scale_area);
+  scale_area->drawing_area = (GtkDrawingArea *) scale;
+
+  if(scale->scale_area->data != NULL){
+    y = AGS_SCALE_AREA(scale->scale_area->data)->y;
+  }else{
+    y = 0;
+  }
+
+  scale_area->y = y;
+  scale_area->height = AGS_SCALE_AREA_DEFAULT_HEIGHT;
+  
+  scale->scale_area = g_list_prepend(scale->scale_area,
+				     scale_area);
+}
+
+void
+ags_scale_remove_area(AgsScale *scale,
+		      AgsScaleArea *scale_area)
+{
+  scale->scale_area = g_list_remove(scale->scale_area,
+				    scale_area);
+  g_object_unref(scale_area);
 }
 
 /**

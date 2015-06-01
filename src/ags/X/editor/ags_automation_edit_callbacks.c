@@ -31,7 +31,7 @@ gboolean
 ags_automation_edit_drawing_area_expose_event(GtkWidget *widget, GdkEventExpose *event,
 					      AgsAutomationEdit *automation_edit)
 {
-  //TODO:JK: implement me
+  ags_automation_edit_paint(automation_edit);
 
   return(TRUE);
 }
@@ -47,6 +47,8 @@ ags_automation_edit_drawing_area_configure_event(GtkWidget *widget, GdkEventConf
   automation_edit->flags |= AGS_AUTOMATION_EDIT_RESETING_HORIZONTALLY;
   ags_automation_edit_reset_horizontally(automation_edit, AGS_AUTOMATION_EDIT_RESET_HSCROLLBAR);
   automation_edit->flags &= (~AGS_AUTOMATION_EDIT_RESETING_HORIZONTALLY);  
+
+  ags_automation_edit_paint(automation_edit);
 
   return(FALSE);
 }

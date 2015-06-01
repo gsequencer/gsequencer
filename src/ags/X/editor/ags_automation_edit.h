@@ -24,10 +24,12 @@
 
 #include <gtk/gtk.h>
 
-#include <ags/widget/ags_ruler.h>
-
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_automation.h>
+
+#include <ags/widget/ags_ruler.h>
+
+#include <ags/X/editor/ags_automation_area.h>
 
 #define AGS_TYPE_AUTOMATION_EDIT                (ags_automation_edit_get_type())
 #define AGS_AUTOMATION_EDIT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_AUTOMATION_EDIT, AgsAutomationEdit))
@@ -92,8 +94,12 @@ void ags_automation_edit_draw_position(AgsAutomationEdit *automation_edit);
 void ags_automation_edit_draw_scroll(AgsAutomationEdit *automation_edit,
 				     gdouble position);
 
-GtkDrawingArea* ags_automation_edit_add_area(AgsAutomationEdit *automation_edit,
-					     AgsAutomation *automation);
+void ags_automation_edit_paint(AgsAutomationEdit *automation_edit);
+
+void ags_automation_edit_add_area(AgsAutomationEdit *automation_edit,
+				  AgsAutomationArea *automation_area);
+void ags_automation_edit_remove_area(AgsAutomationEdit *automation_edit,
+				     AgsAutomationArea *automation_area);
 
 AgsAutomationEdit* ags_automation_edit_new();
 
