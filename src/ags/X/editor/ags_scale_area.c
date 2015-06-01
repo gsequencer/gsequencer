@@ -175,8 +175,27 @@ ags_scale_area_disconnect(AgsConnectable *connectable)
 }
 
 void
-ags_scale_area_paint(AgsScaleArea *scale_area)
+ags_scale_area_paint(AgsScaleArea *scale_area,
+		     cairo_t *cr)
 {
+  gdouble y;
+  gdouble width, height;
+
+  y = (gdouble) scale_area->y;
+  
+  width = (gdouble) GTK_WIDGET(scale_area->drawing_area)->allocation.width;
+  height = (gdouble) scale_area->height;
+
+  /* background */
+  cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
+  cairo_rectangle(cr, 0.0, y, width, height);
+  cairo_fill(cr);
+
+  cairo_set_source_rgb(cr, 0.5, 0.4, 0.0);
+  cairo_set_line_width(cr, 1.0);
+  cairo_rectangle(cr, 0.0, y, width, height);
+  cairo_stroke(cr);
+
   //TODO:JK: implement me
 }
 

@@ -132,6 +132,8 @@ void ags_automation_insert_from_clipboard(AgsAutomation *automation,
 GList* ags_automation_get_current(AgsAutomation *automation);
 
 gchar** ags_automation_get_specifier_unique(GList *automation);
+GList* ags_automation_find_specifier(GList *automation,
+				     gchar *specifier);
 
 AgsAutomation* ags_automation_new(GObject *audio,
 				  guint line,

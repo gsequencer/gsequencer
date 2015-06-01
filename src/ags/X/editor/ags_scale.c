@@ -23,6 +23,7 @@
 
 #include <ags/X/ags_editor.h>
 
+#include <cairo.h>
 #include <math.h>
 
 void ags_scale_class_init(AgsScaleClass *scale);
@@ -136,16 +137,33 @@ void
 ags_scale_paint(AgsScale *scale)
 {
   GList *scale_area;
-
+  cairo_t *cr;
+  
+  cr = gdk_cairo_create(GTK_WIDGET(scale)->window);
+  cairo_push_group(cr);
+  
   scale_area = scale->scale_area;
 
   while(scale_area != NULL){
-    ags_scale_area_paint(scale_area->data);
+    ags_scale_area_paint(scale_area->data,
+			 cr);
 
     scale_area = scale_area->next;
   }
+        
+  cairo_pop_group_to_source(cr);
+  cairo_paint(cr);
 }
 
+/**
+ * ags_scale_add_area:
+ * @scale: an #AgsScale
+ * @scale_area: the #AgsScaleArea to add
+ *
+ * Adds @scale_area to @scale.
+ * 
+ * Since: 0.4.3
+ */
 void
 ags_scale_add_area(AgsScale *scale,
 		   AgsScaleArea *scale_area)
@@ -155,7 +173,7 @@ ags_scale_add_area(AgsScale *scale,
   g_object_ref(scale_area);
   scale_area->drawing_area = (GtkDrawingArea *) scale;
 
-  if(scale->scale_area->data != NULL){
+  if(scale->scale_area != NULL){
     y = AGS_SCALE_AREA(scale->scale_area->data)->y;
   }else{
     y = 0;
@@ -168,6 +186,15 @@ ags_scale_add_area(AgsScale *scale,
 				     scale_area);
 }
 
+/**
+ * ags_scale_remove_area:
+ * @scale: an #AgsScale
+ * @scale_area: the #AgsScaleArea to remove
+ *
+ * Removes @scale_area of @scale.
+ * 
+ * Since: 0.4.3
+ */
 void
 ags_scale_remove_area(AgsScale *scale,
 		      AgsScaleArea *scale_area)
