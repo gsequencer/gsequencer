@@ -26,7 +26,7 @@
 
 #include <cairo.h>
 
-#include <ags/audio/ags_automation.h>
+#include <ags/audio/ags_audio.h>
 
 #define AGS_TYPE_AUTOMATION_AREA                (ags_automation_area_get_type())
 #define AGS_AUTOMATION_AREA(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_AUTOMATION_AREA, AgsAutomationArea))
@@ -48,8 +48,10 @@ struct _AgsAutomationArea
   guint height;
   
   GtkDrawingArea *drawing_area;
-  
-  AgsAutomation *automation;
+
+  AgsAudio *audio;
+  GType channel_type;
+  gchar *control_name;
 };
 
 struct _AgsAutomationAreaClass
@@ -58,6 +60,9 @@ struct _AgsAutomationAreaClass
 };
 
 GType ags_automation_area_get_type(void);
+
+GList* ags_automation_area_find_specifier(GList *automation_area,
+					  gchar *specifier);
 
 void ags_automation_area_draw_strip(AgsAutomationArea *automation_area, cairo_t *cr);
 void ags_automation_area_draw_scale(AgsAutomationArea *automation_area, cairo_t *cr);
@@ -69,6 +74,9 @@ void ags_automation_area_draw_surface(AgsAutomationArea *automation_area, cairo_
 void ags_automation_area_paint(AgsAutomationArea *automation_area,
 			       cairo_t *cr);
 
-AgsAutomationArea* ags_automation_area_new(GtkDrawingArea *drawing_area);
+AgsAutomationArea* ags_automation_area_new(GtkDrawingArea *drawing_area,
+					   AgsAudio *audio,
+					   GType channel_type,
+					   gchar *control_name);
 
 #endif /*__AGS_AUTOMATION_AREA_H__*/

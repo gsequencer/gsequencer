@@ -63,7 +63,8 @@ struct _AgsAutomationToolbarClass
 GType ags_automation_toolbar_get_type(void);
 
 void ags_automation_toolbar_load_port(AgsAutomationToolbar *automation_toolbar);
-void ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar);
+void ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
+				       gchar *control_name);
 
 AgsAutomationToolbar* ags_automation_toolbar_new();
 

@@ -118,8 +118,10 @@ ags_scale_area_init(AgsScaleArea *scale_area)
   scale_area->y = 0;
   scale_area->height = AGS_SCALE_AREA_DEFAULT_HEIGHT;
 
-  scale_area->drawing_area = NULL;
+  scale_area->font_size = 8;
   
+  scale_area->drawing_area = NULL;
+
   scale_area->control_name = NULL;
 
   scale_area->lower = 0.0;
@@ -174,6 +176,22 @@ ags_scale_area_disconnect(AgsConnectable *connectable)
   //TODO:JK: implement me
 }
 
+GList*
+ags_scale_area_find_specifier(GList *scale_area,
+			      gchar *specifier)
+{
+  while(scale_area != NULL){
+    if(!g_ascii_strcasecmp(AGS_SCALE_AREA(scale_area->data)->control_name,
+			   specifier)){
+      break;
+    }
+    
+    scale_area = scale_area->next;
+  }
+
+  return(scale_area);
+}
+
 void
 ags_scale_area_paint(AgsScaleArea *scale_area,
 		     cairo_t *cr)
@@ -186,6 +204,10 @@ ags_scale_area_paint(AgsScaleArea *scale_area,
   width = (gdouble) GTK_WIDGET(scale_area->drawing_area)->allocation.width;
   height = (gdouble) scale_area->height;
 
+  cairo_select_font_face(cr, "Georgia\0",
+			 CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
+  cairo_set_font_size(cr, (gdouble) scale_area->font_size);
+
   /* background */
   cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
   cairo_rectangle(cr, 0.0, y, width, height);
@@ -196,23 +218,48 @@ ags_scale_area_paint(AgsScaleArea *scale_area,
   cairo_rectangle(cr, 0.0, y, width, height);
   cairo_stroke(cr);
 
+  /* show control name */
+  cairo_push_group(cr);
+  
+  cairo_show_text(cr,
+		  scale_area->control_name);
+  cairo_rotate(cr,
+	       0.25);
+  
+  cairo_pop_group(cr);
+
   //TODO:JK: implement me
 }
 
 /**
  * ags_scale_area_new:
+ * @drawing_area: 
+ * @control_name: 
+ * @lower: 
+ * @upper: 
+ * @steps: 
  *
  * Create a new #AgsScaleArea.
  *
  * Since: 0.4.3
  */
 AgsScaleArea*
-ags_scale_area_new(GtkDrawingArea *drawing_area)
+ags_scale_area_new(GtkDrawingArea *drawing_area,
+		   gchar *control_name,
+		   gdouble lower,
+		   gdouble upper,
+		   gdouble steps)
 {
   AgsScaleArea *scale_area;
 
-  scale_area = (AgsScaleArea *) g_object_new(AGS_TYPE_SCALE_AREA, NULL);
+  scale_area = (AgsScaleArea *) g_object_new(AGS_TYPE_SCALE_AREA,
+					     NULL);
+  
   scale_area->drawing_area = drawing_area;
+  scale_area->control_name = control_name;
+  scale_area->lower = lower;
+  scale_area->upper = upper;
+  scale_area->steps = steps;
   
   return(scale_area);
 }

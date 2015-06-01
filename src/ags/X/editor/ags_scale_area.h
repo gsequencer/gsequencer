@@ -44,6 +44,8 @@ struct _AgsScaleArea
 
   guint y;
   guint height;
+
+  guint font_size;
   
   GtkDrawingArea *drawing_area;
 
@@ -62,9 +64,16 @@ struct _AgsScaleAreaClass
 
 GType ags_scale_area_get_type(void);
 
+GList* ags_scale_area_find_specifier(GList *scale_area,
+				     gchar *specifier);
+
 void ags_scale_area_paint(AgsScaleArea *scale_area,
 			  cairo_t *cr);
 
-AgsScaleArea* ags_scale_area_new(GtkDrawingArea *drawing_area);
+AgsScaleArea* ags_scale_area_new(GtkDrawingArea *drawing_area,
+				 gchar *control_name,
+				 gdouble lower,
+				 gdouble upper,
+				 gdouble steps);
 
 #endif /*__AGS_SCALE_AREA_H__*/
