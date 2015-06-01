@@ -223,7 +223,10 @@ ags_notebook_insert_tab(AgsNotebook *notebook,
 			gint position)
 {
   AgsNotebookTab *tab;
+  GList *list;
+  gchar *str;
   gint length;
+  guint i;
 
   length = g_list_length(notebook->tabs);
 
@@ -253,6 +256,32 @@ ags_notebook_insert_tab(AgsNotebook *notebook,
   gtk_box_reorder_child(GTK_BOX(notebook->hbox),
 			GTK_WIDGET(tab->toggle),
 			position);
+
+  list = g_list_nth(notebook->tabs,
+		    length - position);
+  list = list->prev;
+  i = position + 2;
+  
+  while(list != NULL){
+    if((AGS_NOTEBOOK_SHOW_AUDIO_CHANNEL & (notebook->flags)) != 0){
+      g_strdup_printf("channel %d\0",
+		      i);
+    }else if((AGS_NOTEBOOK_SHOW_PAD & (notebook->flags)) != 0){
+      g_strdup_printf("pad %d\0",
+		      i);
+    }else if((AGS_NOTEBOOK_SHOW_LINE & (notebook->flags)) != 0){
+      g_strdup_printf("line %d\0",
+		      i);
+    }else{
+      g_strdup_printf("%d\0",
+		      i);
+    }
+    
+    gtk_button_set_label(AGS_NOTEBOOK_TAB(list->data)->toggle,
+			 str);
+    list = list->prev;
+    i++;
+  }
 }
 
 void
