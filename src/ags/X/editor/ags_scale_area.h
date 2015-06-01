@@ -24,6 +24,8 @@
 
 #include <gtk/gtk.h>
 
+#include <cairo.h>
+
 #define AGS_TYPE_SCALE_AREA                (ags_scale_area_get_type())
 #define AGS_SCALE_AREA(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SCALE_AREA, AgsScaleArea))
 #define AGS_SCALE_AREA_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_SCALE_AREA, AgsScaleAreaClass))
@@ -60,7 +62,8 @@ struct _AgsScaleAreaClass
 
 GType ags_scale_area_get_type(void);
 
-void ags_scale_area_paint(AgsScaleArea *scale_area);
+void ags_scale_area_paint(AgsScaleArea *scale_area,
+			  cairo_t *cr);
 
 AgsScaleArea* ags_scale_area_new(GtkDrawingArea *drawing_area);
 

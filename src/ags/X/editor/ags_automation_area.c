@@ -414,24 +414,16 @@ ags_automation_area_draw_surface(AgsAutomationArea *automation_area, cairo_t *cr
 }
 
 void
-ags_automation_area_paint(AgsAutomationArea *automation_area)
+ags_automation_area_paint(AgsAutomationArea *automation_area,
+			  cairo_t *cr)
 {
-  if(GTK_WIDGET_VISIBLE(automation_area)){
-   cairo_t *cr;
-
-   cr = gdk_cairo_create(GTK_WIDGET(automation_area)->window);
-
-   cairo_push_group(cr);
-    
+  if(GTK_WIDGET_VISIBLE(automation_area->drawing_area)){    
     ags_automation_area_draw_strip(automation_area,
 				   cr);
     ags_automation_area_draw_scale(automation_area,
 				   cr);
     ags_automation_area_draw_automation(automation_area,
 					cr);
-
-    cairo_pop_group_to_source(cr);
-    cairo_paint(cr);
   }
 }
 

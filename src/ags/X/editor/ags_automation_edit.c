@@ -25,6 +25,9 @@
 
 #include <ags/X/editor/ags_automation_edit.h>
 
+#include <cairo.h>
+#include <math.h>
+
 void ags_automation_edit_class_init(AgsAutomationEditClass *automation_edit);
 void ags_automation_edit_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_automation_edit_init(AgsAutomationEdit *automation_edit);
@@ -281,16 +284,33 @@ void
 ags_automation_edit_paint(AgsAutomationEdit *automation_edit)
 {
   GList *automation_area;
+  cairo_t *cr;
+  
+  cr = gdk_cairo_create(GTK_WIDGET(automation_edit->drawing_area)->window);
+  cairo_push_group(cr);
 
   automation_area = automation_edit->automation_area;
 
   while(automation_area != NULL){
-    ags_automation_area_paint(automation_area->data);
+    ags_automation_area_paint(automation_area->data,
+			      cr);
 
     automation_area = automation_area->next;
   }
+      
+  cairo_pop_group_to_source(cr);
+  cairo_paint(cr);
 }
 
+/**
+ * ags_automation_edit_add_area:
+ * @automation_edit: an #AgsAutomationEdit
+ * @automation_area: the #AgsAutomationArea to add
+ *
+ * Adds @automation_area to @automation_edit.
+ * 
+ * Since: 0.4.3
+ */
 void
 ags_automation_edit_add_area(AgsAutomationEdit *automation_edit,
 			     AgsAutomationArea *automation_area)
@@ -301,7 +321,7 @@ ags_automation_edit_add_area(AgsAutomationEdit *automation_edit,
 
   automation_area->drawing_area = (GtkDrawingArea *) automation_edit->drawing_area;
 
-  if(automation_edit->automation_area->data != NULL){
+  if(automation_edit->automation_area != NULL){
     y = AGS_AUTOMATION_AREA(automation_edit->automation_area->data)->y;
   }else{
     y = 0;
@@ -314,6 +334,15 @@ ags_automation_edit_add_area(AgsAutomationEdit *automation_edit,
 						    automation_area);
 }
 
+/**
+ * ags_automation_edit_remove_area:
+ * @automation_edit: an #AgsAutomationEdit
+ * @automation_area: the #AgsAutomationArea to remove
+ *
+ * Removes @automation_area of @automation_edit.
+ * 
+ * Since: 0.4.3
+ */
 void
 ags_automation_edit_remove_area(AgsAutomationEdit *automation_edit,
 				AgsAutomationArea *automation_area)

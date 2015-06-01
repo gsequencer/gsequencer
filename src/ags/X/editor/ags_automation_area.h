@@ -24,6 +24,8 @@
 
 #include <gtk/gtk.h>
 
+#include <cairo.h>
+
 #include <ags/audio/ags_automation.h>
 
 #define AGS_TYPE_AUTOMATION_AREA                (ags_automation_area_get_type())
@@ -64,7 +66,8 @@ void ags_automation_area_draw_surface(AgsAutomationArea *automation_area, cairo_
 				      gdouble x0, gdouble y0,
 				      gdouble x1, gdouble y1);
 
-void ags_automation_area_paint(AgsAutomationArea *automation_area);
+void ags_automation_area_paint(AgsAutomationArea *automation_area,
+			       cairo_t *cr);
 
 AgsAutomationArea* ags_automation_area_new(GtkDrawingArea *drawing_area);
 

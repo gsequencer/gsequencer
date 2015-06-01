@@ -1458,6 +1458,33 @@ ags_automation_get_specifier_unique(GList *automation)
 }
 
 /**
+ * ags_automation_get_specifier_unique:
+ * @automation: a #GList containing #AgsAutomation
+ * @specifier: the string specifier to find
+ *
+ * Find port specifier.
+ *
+ * Returns: Next matching #GList
+ *
+ * Since: 0.4.3
+ */
+GList*
+ags_automation_find_specifier(GList *automation,
+			      gchar *specifier)
+{
+  while(automation != NULL){
+    if(!g_ascii_strcasecmp(AGS_AUTOMATION(automation->data)->control_name,
+			   specifier)){
+      break;
+    }
+
+    automation = automation->next;
+  }
+
+  return(automation);
+}
+
+/**
  * ags_automation_new:
  * @audio: an #AgsAudio
  * @line: the line to apply
