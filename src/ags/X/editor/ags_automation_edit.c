@@ -277,6 +277,52 @@ ags_automation_edit_draw_scroll(AgsAutomationEdit *automation_edit,
   //TODO:JK: implement me
 }
 
+void
+ags_automation_edit_paint(AgsAutomationEdit *automation_edit)
+{
+  GList *automation_area;
+
+  automation_area = automation_edit->automation_area;
+
+  while(automation_area != NULL){
+    ags_automation_area_paint(automation_area->data);
+
+    automation_area = automation_area->next;
+  }
+}
+
+void
+ags_automation_edit_add_area(AgsAutomationEdit *automation_edit,
+			     AgsAutomationArea *automation_area)
+{
+  guint y;
+
+  g_object_ref(automation_area);
+
+  automation_area->drawing_area = (GtkDrawingArea *) automation_edit->drawing_area;
+
+  if(automation_edit->automation_area->data != NULL){
+    y = AGS_AUTOMATION_AREA(automation_edit->automation_area->data)->y;
+  }else{
+    y = 0;
+  }
+
+  automation_area->y = y;
+  automation_area->height = AGS_AUTOMATION_AREA_DEFAULT_HEIGHT;
+
+  automation_edit->automation_area = g_list_prepend(automation_edit->automation_area,
+						    automation_area);
+}
+
+void
+ags_automation_edit_remove_area(AgsAutomationEdit *automation_edit,
+				AgsAutomationArea *automation_area)
+{
+  automation_edit->automation_area = g_list_remove(automation_edit->automation_area,
+						   automation_area);
+  g_object_unref(automation_area);
+}
+
 /**
  * ags_automation_edit_new:
  *
