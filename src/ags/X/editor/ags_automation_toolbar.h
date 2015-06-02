@@ -36,10 +36,16 @@
 typedef struct _AgsAutomationToolbar AgsAutomationToolbar;
 typedef struct _AgsAutomationToolbarClass AgsAutomationToolbarClass;
 
+typedef enum{
+  AGS_AUTOMATION_TOOLBAR_RESET_PORT   = 1,
+}AgsAutomationToolbarFlags;
+
 struct _AgsAutomationToolbar
 {
   GtkToolbar toolbar;
 
+  guint flags;
+  
   GtkToggleButton *selected_edit_mode;
   GtkToggleButton *position;
   GtkToggleButton *edit;
