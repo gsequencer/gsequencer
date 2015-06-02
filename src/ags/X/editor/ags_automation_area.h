@@ -56,7 +56,7 @@ struct _AgsAutomationArea
 
 struct _AgsAutomationAreaClass
 {
-  GObjectClass *gobject;
+  GObjectClass gobject;
 };
 
 GType ags_automation_area_get_type(void);

@@ -174,9 +174,9 @@ ags_scale_add_area(AgsScale *scale,
   scale_area->drawing_area = (GtkDrawingArea *) scale;
 
   if(scale->scale_area != NULL){
-    y = AGS_SCALE_AREA(scale->scale_area->data)->y;
+    y = AGS_SCALE_AREA(scale->scale_area->data)->y + AGS_SCALE_DEFAULT_HEIGHT + AGS_SCALE_DEFAULT_MARGIN;
   }else{
-    y = 0;
+    y = AGS_SCALE_MARGIN_TOP;
   }
 
   scale_area->y = y;
