@@ -308,6 +308,7 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
 
   gchar **specifier, *current;
   guint length;
+  gboolean is_active;
   
   automation_editor = gtk_widget_get_ancestor(automation_toolbar,
 					      AGS_TYPE_AUTOMATION_EDITOR);
@@ -322,23 +323,29 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
   if(gtk_tree_model_get_iter_first(model,
 				   &iter)){
     do{
-      if(length == 0){
-	specifier = (gchar **) malloc(2 * sizeof(gchar *));
-      }else{
-	specifier = (gchar **) realloc(specifier,
-				       (length + 2) * sizeof(gchar *));
-      }
-      
       gtk_tree_model_get(model,
 			 &iter,
-			 1, &current,
+			 0, &is_active,
 			 -1);
-      specifier[length] = current;
 
-      length++;
+      if(is_active){
+	if(length == 0){
+	  specifier = (gchar **) malloc(2 * sizeof(gchar *));
+	}else{
+	  specifier = (gchar **) realloc(specifier,
+					 (length + 2) * sizeof(gchar *));
+	}
+      
+	gtk_tree_model_get(model,
+			   &iter,
+			   1, &current,
+			   -1);
+	specifier[length] = current;
+
+	length++;
+      }
     }while(gtk_tree_model_iter_next(model,
 				    &iter));
-
     specifier[length] = NULL;
   }
 
@@ -447,10 +454,10 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
     GList *scale_area;
     GList *automation_area;
 
+    /* remove audio port */
     automation_edit = automation_editor->audio_automation_edit;
     scale = automation_editor->audio_scale;
-    
-    /* remove audio port */
+
     scale_area = ags_scale_area_find_specifier(scale->scale_area,
 					       control_name);
     
@@ -459,18 +466,18 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
 							   control_name);
 
       ags_scale_remove_area(scale,
-			    scale_area);
+			    scale_area->data);
       gtk_widget_queue_draw(scale);
 
       ags_automation_edit_remove_area(automation_edit,
-				      automation_area);
+				      automation_area->data);
       gtk_widget_queue_draw(automation_edit->drawing_area);
     }
     
-    automation_edit = automation_editor->audio_automation_edit;
-    scale = automation_editor->audio_scale;
-    
     /* remove output port */
+    automation_edit = automation_editor->output_automation_edit;
+    scale = automation_editor->output_scale;
+    
     scale_area = ags_scale_area_find_specifier(scale->scale_area,
 					       control_name);
 
@@ -479,15 +486,18 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
 							   control_name);
 
       ags_scale_remove_area(scale,
-			    scale_area);
+			    scale_area->data);
       gtk_widget_queue_draw(scale);
 
       ags_automation_edit_remove_area(automation_edit,
-				      automation_area);
+				      automation_area->data);
       gtk_widget_queue_draw(automation_edit->drawing_area);
     }
 
     /* remove input port */
+    automation_edit = automation_editor->input_automation_edit;
+    scale = automation_editor->input_scale;
+    
     scale_area = ags_scale_area_find_specifier(scale->scale_area,
 					       control_name);
 
@@ -496,11 +506,11 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
 							   control_name);
 
       ags_scale_remove_area(scale,
-			    scale_area);
+			    scale_area->data);
       gtk_widget_queue_draw(scale);
 
       ags_automation_edit_remove_area(automation_edit,
-				      automation_area);
+				      automation_area->data);
       gtk_widget_queue_draw(automation_edit->drawing_area);
     }
   }

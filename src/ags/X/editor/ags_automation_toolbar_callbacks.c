@@ -38,7 +38,13 @@ ags_automation_toolbar_port_changed_callback(GtkComboBox *combo_box,
   GtkTreeIter iter;
   gchar *control_name;
   GValue value = {0,};
-  
+
+  if((AGS_AUTOMATION_TOOLBAR_RESET_PORT & (automation_toolbar->flags)) != 0){
+    return;
+  }
+
+  automation_toolbar->flags |= AGS_AUTOMATION_TOOLBAR_RESET_PORT;
+    
   model = gtk_combo_box_get_model(combo_box);
   gtk_combo_box_get_active_iter(combo_box, &iter);
 
@@ -52,7 +58,12 @@ ags_automation_toolbar_port_changed_callback(GtkComboBox *combo_box,
 			   0,
 			   &value);
 
-  g_value_set_boolean(&value, !g_value_get_boolean(&value));
+  if(g_value_get_boolean(&value)){
+    g_value_set_boolean(&value, FALSE);
+  }else{
+    g_value_set_boolean(&value, TRUE);
+  }
+  
   gtk_list_store_set_value(GTK_LIST_STORE(model),
 			   &iter,
 			   0,
@@ -60,4 +71,6 @@ ags_automation_toolbar_port_changed_callback(GtkComboBox *combo_box,
 
   ags_automation_toolbar_apply_port(automation_toolbar,
 				    control_name);
+
+  automation_toolbar->flags &= (~AGS_AUTOMATION_TOOLBAR_RESET_PORT);
 }

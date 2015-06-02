@@ -115,13 +115,13 @@ ags_automation_edit_init(AgsAutomationEdit *automation_edit)
 
   automation_edit->drawing_area = (GtkDrawingArea *) gtk_drawing_area_new();
   gtk_widget_set_style((GtkWidget *) automation_edit->drawing_area, automation_edit_style);
-  gtk_widget_set_events (GTK_WIDGET (automation_edit->drawing_area), GDK_EXPOSURE_MASK
-                         | GDK_LEAVE_NOTIFY_MASK
-                         | GDK_BUTTON_PRESS_MASK
-			 | GDK_BUTTON_RELEASE_MASK
-                         | GDK_POINTER_MOTION_MASK
-			 | GDK_POINTER_MOTION_HINT_MASK
-			 );
+  gtk_widget_set_events(GTK_WIDGET (automation_edit->drawing_area), GDK_EXPOSURE_MASK
+			| GDK_LEAVE_NOTIFY_MASK
+			| GDK_BUTTON_PRESS_MASK
+			| GDK_BUTTON_RELEASE_MASK
+			| GDK_POINTER_MOTION_MASK
+			| GDK_POINTER_MOTION_HINT_MASK
+			);
     
   gtk_table_attach(GTK_TABLE(automation_edit),
 		   (GtkWidget *) automation_edit->drawing_area,
@@ -319,6 +319,8 @@ ags_automation_edit_add_area(AgsAutomationEdit *automation_edit,
 
   g_object_ref(automation_area);
 
+  automation_edit->map_height += AGS_AUTOMATION_AREA_DEFAULT_HEIGHT + AGS_AUTOMATION_EDIT_DEFAULT_MARGIN;
+  
   automation_area->drawing_area = (GtkDrawingArea *) automation_edit->drawing_area;
 
   if(automation_edit->automation_area != NULL){
@@ -347,8 +349,25 @@ void
 ags_automation_edit_remove_area(AgsAutomationEdit *automation_edit,
 				AgsAutomationArea *automation_area)
 {
+  GList *list;
+  guint y;
+
   automation_edit->automation_area = g_list_remove(automation_edit->automation_area,
 						   automation_area);
+
+  /* configure y */
+  list = g_list_last(automation_edit->automation_area);
+  y = 0;
+
+  while(list != NULL){
+    AGS_AUTOMATION_AREA(list->data)->y = y;
+
+    y += AGS_AUTOMATION_AREA_DEFAULT_HEIGHT + AGS_AUTOMATION_EDIT_DEFAULT_MARGIN;
+    list = list->prev;
+  }
+  
+  automation_edit->map_height -= AGS_AUTOMATION_AREA_DEFAULT_HEIGHT + AGS_AUTOMATION_EDIT_DEFAULT_MARGIN;
+
   g_object_unref(automation_area);
 }
 

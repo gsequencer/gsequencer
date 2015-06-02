@@ -197,8 +197,7 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 
   automation_editor->output_automation_edit = NULL;
   automation_editor->output_notebook = ags_notebook_new();
-  automation_editor->output_notebook->flags |= (AGS_NOTEBOOK_SHOW_LINE |
-					 AGS_NOTEBOOK_SHOW_INPUT);
+  automation_editor->output_notebook->flags |= (AGS_NOTEBOOK_SHOW_INPUT);
   gtk_table_attach(automation_editor->output_table,
 		   (GtkWidget *) automation_editor->output_notebook,
 		   0, 3,
@@ -215,8 +214,7 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 
   automation_editor->input_automation_edit = NULL;
   automation_editor->input_notebook = ags_notebook_new();
-  automation_editor->input_notebook->flags |= (AGS_NOTEBOOK_SHOW_LINE |
-					 AGS_NOTEBOOK_SHOW_INPUT);
+  automation_editor->input_notebook->flags |= (AGS_NOTEBOOK_SHOW_INPUT);
   gtk_table_attach(automation_editor->input_table,
 		   (GtkWidget *) automation_editor->input_notebook,
 		   0, 3,

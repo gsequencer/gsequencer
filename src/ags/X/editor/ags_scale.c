@@ -199,8 +199,23 @@ void
 ags_scale_remove_area(AgsScale *scale,
 		      AgsScaleArea *scale_area)
 {
+  GList *list;
+  guint y;
+
   scale->scale_area = g_list_remove(scale->scale_area,
 				    scale_area);
+
+  /* configure y */
+  list = g_list_last(scale->scale_area);
+  y = AGS_SCALE_MARGIN_TOP;
+
+  while(list != NULL){
+    AGS_SCALE_AREA(list->data)->y = y;
+    
+    y += AGS_SCALE_DEFAULT_HEIGHT + AGS_SCALE_DEFAULT_MARGIN;
+    list = list->prev;
+  }
+
   g_object_unref(scale_area);
 }
 
