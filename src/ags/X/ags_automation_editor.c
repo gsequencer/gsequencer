@@ -315,6 +315,15 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
 
       stop = machine_old->audio->input_lines;
       ags_automation_editor_notebook_change_machine_shrink();
+
+      gtk_widget_destroy(automation_editor->audio_scale);
+      gtk_widget_destroy(automation_editor->audio_automation_edit);
+
+      gtk_widget_destroy(automation_editor->output_scale);
+      gtk_widget_destroy(automation_editor->output_automation_edit);
+
+      gtk_widget_destroy(automation_editor->input_scale);
+      gtk_widget_destroy(automation_editor->input_automation_edit);
     }
   }else{
     if(machine_old == NULL){

@@ -21,6 +21,8 @@
 
 #include <ags/object/ags_connectable.h>
 
+#include <math.h>
+
 void ags_scale_area_class_init(AgsScaleAreaClass *scale_area);
 void ags_scale_area_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_scale_area_init(AgsScaleArea *scale_area);
@@ -118,7 +120,7 @@ ags_scale_area_init(AgsScaleArea *scale_area)
   scale_area->y = 0;
   scale_area->height = AGS_SCALE_AREA_DEFAULT_HEIGHT;
 
-  scale_area->font_size = 8;
+  scale_area->font_size = 11;
   
   scale_area->drawing_area = NULL;
 
@@ -204,6 +206,8 @@ ags_scale_area_paint(AgsScaleArea *scale_area,
   width = (gdouble) GTK_WIDGET(scale_area->drawing_area)->allocation.width;
   height = (gdouble) scale_area->height;
 
+  cairo_save(cr);
+  
   cairo_select_font_face(cr, "Georgia\0",
 			 CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
   cairo_set_font_size(cr, (gdouble) scale_area->font_size);
@@ -218,17 +222,17 @@ ags_scale_area_paint(AgsScaleArea *scale_area,
   cairo_rectangle(cr, 0.0, y, width, height);
   cairo_stroke(cr);
 
-  /* show control name */
-  cairo_push_group(cr);
-  
-  cairo_show_text(cr,
-		  scale_area->control_name);
-  cairo_rotate(cr,
-	       0.25);
-  
-  cairo_pop_group(cr);
-
+  /* draw scale */
   //TODO:JK: implement me
+
+  /* show control name */
+  cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
+  cairo_move_to(cr, scale_area->font_size, y + height - 1.0);
+  cairo_rotate(cr,
+	       2 * M_PI * 0.75);
+  cairo_show_text(cr, scale_area->control_name);
+
+  cairo_restore(cr);
 }
 
 /**

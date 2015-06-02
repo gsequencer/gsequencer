@@ -253,10 +253,7 @@ ags_automation_area_draw_strip(AgsAutomationArea *automation_area, cairo_t *cr)
 void
 ags_automation_area_draw_scale(AgsAutomationArea *automation_area, cairo_t *cr)
 {
-  GList *automation;
-  
   gdouble y;
-  gdouble lower, upper;
   gdouble width, height;
   gdouble translated_ground;
   
@@ -264,49 +261,44 @@ ags_automation_area_draw_scale(AgsAutomationArea *automation_area, cairo_t *cr)
     0.25,
   };
 
-  automation = automation_area->audio->automation;
-
-  while((automation = ags_automation_find_specifier(automation,
-						    automation_area->control_name)) != NULL){
-    if(AGS_AUTOMATION(automation->data)->channel_type == automation_area->channel_type){
-      lower = AGS_AUTOMATION(automation->data)->lower;
-      upper = AGS_AUTOMATION(automation->data)->upper;
-
-      y = (gdouble) automation_area->y;
+  y = (gdouble) automation_area->y;
   
-      width = (gdouble) GTK_WIDGET(automation_area->drawing_area)->allocation.width;
-      height = (gdouble) automation_area->height;
+  width = (gdouble) GTK_WIDGET(automation_area->drawing_area)->allocation.width;
+  height = (gdouble) automation_area->height;
 
-      if(lower < 0.0){
-	if(upper < 0.0){
-	  translated_ground = (-1.0 * (lower - upper)) / 2.0;
-	}else{
-	  translated_ground = (upper - lower) / 2.0;
-	}
-      }else{
-	if(upper > 0.0){
-	  translated_ground = (upper - lower) / 2.0;
-	}else{
-	  g_warning("invalid boundaries for scale\0");
-	}
-      }
+  cairo_save(cr);
 
-      cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
+  cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
 
-      cairo_move_to(cr,
-		    0.0, y + translated_ground);
-      cairo_line_to(cr,
-		    width, y + translated_ground);
+  /* middle */
+  cairo_move_to(cr,
+		0.0, y + height * 0.5);
+  cairo_line_to(cr,
+		width, y + height * 0.5);
+  cairo_stroke(cr);
 
-      cairo_set_dash(cr,
-		     &dashes,
-		     1,
-		     0.0);
-      cairo_stroke(cr);
-    }
-    
-    automation = automation->next;
-  }
+  /* set dash */
+  cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
+  cairo_set_dash(cr,
+		 &dashes,
+		 1,
+		 0.0);
+
+  /* lower quarter */
+  cairo_move_to(cr,
+		0.0, y + height * 0.25);
+  cairo_line_to(cr,
+		width, y + height * 0.25);
+  cairo_stroke(cr);
+
+  /* upper quarter */
+  cairo_move_to(cr,
+		0.0, y + height * 0.75);
+  cairo_line_to(cr,
+		width, y + height * 0.75);
+  cairo_stroke(cr);
+
+  cairo_restore(cr);
 }
 
 /**

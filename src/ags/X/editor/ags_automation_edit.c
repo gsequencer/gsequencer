@@ -322,7 +322,7 @@ ags_automation_edit_add_area(AgsAutomationEdit *automation_edit,
   automation_area->drawing_area = (GtkDrawingArea *) automation_edit->drawing_area;
 
   if(automation_edit->automation_area != NULL){
-    y = AGS_AUTOMATION_AREA(automation_edit->automation_area->data)->y;
+    y = AGS_AUTOMATION_AREA(automation_edit->automation_area->data)->y + AGS_AUTOMATION_AREA_DEFAULT_HEIGHT + AGS_AUTOMATION_EDIT_DEFAULT_MARGIN;
   }else{
     y = 0;
   }

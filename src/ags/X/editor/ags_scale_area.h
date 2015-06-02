@@ -59,7 +59,7 @@ struct _AgsScaleArea
 
 struct _AgsScaleAreaClass
 {
-  GObjectClass *gobject;
+  GObjectClass gobject;
 };
 
 GType ags_scale_area_get_type(void);
