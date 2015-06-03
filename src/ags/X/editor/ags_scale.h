@@ -43,6 +43,9 @@ struct _AgsScale
   GtkDrawingArea drawing_area;
 
   GList *scale_area;
+  
+  gdouble x_offset;
+  gdouble y_offset;
 };
 
 struct _AgsScaleClass

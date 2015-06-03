@@ -111,6 +111,9 @@ ags_scale_init(AgsScale *scale)
 			 );
 
   scale->scale_area = NULL;
+
+  scale->x_offset = 0.0;
+  scale->y_offset = 0.0;
 }
 
 void
@@ -138,15 +141,16 @@ ags_scale_paint(AgsScale *scale)
 {
   GList *scale_area;
   cairo_t *cr;
-  
+
   cr = gdk_cairo_create(GTK_WIDGET(scale)->window);
   cairo_push_group(cr);
-  
+
   scale_area = scale->scale_area;
 
   while(scale_area != NULL){
     ags_scale_area_paint(scale_area->data,
-			 cr);
+			 cr,
+			 scale->x_offset, scale->y_offset);
 
     scale_area = scale_area->next;
   }

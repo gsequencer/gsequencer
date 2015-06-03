@@ -196,12 +196,13 @@ ags_scale_area_find_specifier(GList *scale_area,
 
 void
 ags_scale_area_paint(AgsScaleArea *scale_area,
-		     cairo_t *cr)
+		     cairo_t *cr,
+		     gdouble x_offset, gdouble y_offset)
 {
   gdouble y;
   gdouble width, height;
-
-  y = (gdouble) scale_area->y;
+  
+  y = (gdouble) scale_area->y - y_offset;
   
   width = (gdouble) GTK_WIDGET(scale_area->drawing_area)->allocation.width;
   height = (gdouble) scale_area->height;

@@ -18,6 +18,8 @@
 
 #include <ags/X/editor/ags_automation_toolbar_callbacks.h>
 
+#include <ags/X/ags_automation_editor.h>
+
 void
 ags_automation_toolbar_machine_changed_callback(AgsAutomationEditor *automation_editor,
 						AgsMachine *machine,
@@ -29,6 +31,52 @@ ags_automation_toolbar_machine_changed_callback(AgsAutomationEditor *automation_
   ags_automation_toolbar_load_port(automation_editor->automation_toolbar);
 }
 
+void
+ags_automation_toolbar_zoom_callback(GtkComboBox *combo_box, AgsAutomationToolbar *automation_toolbar)
+{
+  AgsAutomationEditor *automation_editor;
+  GtkWidget *widget;
+  
+  GtkAdjustment *adjustment;
+  
+  double zoom, zoom_old;
+  guint history;
+
+  automation_editor = (AgsAutomationEditor *) gtk_widget_get_ancestor((GtkWidget *) automation_toolbar,
+								      AGS_TYPE_AUTOMATION_EDITOR);
+
+  history = gtk_combo_box_get_active(combo_box);
+
+  zoom = exp2((double) history - 4.0);
+  zoom_old = exp2((double) automation_toolbar->zoom_history - 4.0);
+
+  automation_toolbar->zoom_history = history;
+
+  /* refresh automation edit */
+  if(automation_editor->audio_automation_edit != NULL){
+    automation_editor->audio_automation_edit->flags |= AGS_AUTOMATION_EDIT_RESETING_HORIZONTALLY;
+    ags_automation_edit_reset_horizontally(automation_editor->audio_automation_edit,
+					   AGS_AUTOMATION_EDIT_RESET_HSCROLLBAR |
+					   AGS_AUTOMATION_EDIT_RESET_WIDTH);
+    automation_editor->audio_automation_edit->flags &= (~AGS_AUTOMATION_EDIT_RESETING_HORIZONTALLY);
+  }
+  
+  if(automation_editor->output_automation_edit != NULL){
+    automation_editor->output_automation_edit->flags |= AGS_AUTOMATION_EDIT_RESETING_HORIZONTALLY;
+    ags_automation_edit_reset_horizontally(automation_editor->output_automation_edit,
+					   AGS_AUTOMATION_EDIT_RESET_HSCROLLBAR |
+					   AGS_AUTOMATION_EDIT_RESET_WIDTH);
+    automation_editor->output_automation_edit->flags &= (~AGS_AUTOMATION_EDIT_RESETING_HORIZONTALLY);
+  }
+
+  if(automation_editor->input_automation_edit != NULL){
+    automation_editor->input_automation_edit->flags |= AGS_AUTOMATION_EDIT_RESETING_HORIZONTALLY;
+    ags_automation_edit_reset_horizontally(automation_editor->input_automation_edit,
+					   AGS_AUTOMATION_EDIT_RESET_HSCROLLBAR |
+					   AGS_AUTOMATION_EDIT_RESET_WIDTH);
+    automation_editor->input_automation_edit->flags &= (~AGS_AUTOMATION_EDIT_RESETING_HORIZONTALLY);
+  }
+}
 
 void
 ags_automation_toolbar_port_changed_callback(GtkComboBox *combo_box,

@@ -91,7 +91,7 @@ ags_note_edit_drawing_area_configure_event(GtkWidget *widget, GdkEventConfigure 
 }
 
 gboolean
-ags_note_edit_drawing_area_button_press_event (GtkWidget *widget, GdkEventButton *event, AgsNoteEdit *note_edit)
+ags_note_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventButton *event, AgsNoteEdit *note_edit)
 {
   AgsMachine *machine;
   AgsEditor *editor;

@@ -56,6 +56,7 @@ struct _AgsAutomationToolbar
   GtkMenuItem *cut;
   GtkMenuItem *paste;
 
+  guint zoom_history;
   GtkComboBox *zoom;
 
   GtkComboBox *port;
