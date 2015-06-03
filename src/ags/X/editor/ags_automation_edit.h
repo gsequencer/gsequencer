@@ -45,12 +45,12 @@ typedef struct _AgsAutomationEdit AgsAutomationEdit;
 typedef struct _AgsAutomationEditClass AgsAutomationEditClass;
 
 typedef enum{
-  AGS_AUTOMATION_EDIT_RESETING_VERTICALLY    = 1,
-  AGS_AUTOMATION_EDIT_RESETING_HORIZONTALLY  = 1 <<  1,
-  AGS_AUTOMATION_EDIT_POSITION_CURSOR        = 1 <<  2,
-  AGS_AUTOMATION_EDIT_ADDING_AUTOMATION         = 1 <<  3,
-  AGS_AUTOMATION_EDIT_DELETING_AUTOMATION       = 1 <<  4,
-  AGS_AUTOMATION_EDIT_SELECTING_AUTOMATIONS     = 1 <<  5,
+  AGS_AUTOMATION_EDIT_RESETING_VERTICALLY         = 1,
+  AGS_AUTOMATION_EDIT_RESETING_HORIZONTALLY       = 1 <<  1,
+  AGS_AUTOMATION_EDIT_POSITION_CURSOR             = 1 <<  2,
+  AGS_AUTOMATION_EDIT_ADDING_ACCELERATION         = 1 <<  3,
+  AGS_AUTOMATION_EDIT_DELETING_ACCELERATION       = 1 <<  4,
+  AGS_AUTOMATION_EDIT_SELECTING_ACCELERATIONS     = 1 <<  5,
 }AgsAutomationEditFlags;
 
 typedef enum{
@@ -68,6 +68,11 @@ struct _AgsAutomationEdit
 
   guint map_width;
   guint map_height;
+
+  guint select_x0;
+  guint select_y0;
+  guint select_x1;
+  guint select_y1;
   
   AgsRuler *ruler;
 
@@ -92,7 +97,8 @@ void ags_automation_edit_draw_position(AgsAutomationEdit *automation_edit);
 void ags_automation_edit_draw_scroll(AgsAutomationEdit *automation_edit,
 				     gdouble position);
 
-void ags_automation_edit_paint(AgsAutomationEdit *automation_edit);
+void ags_automation_edit_paint(AgsAutomationEdit *automation_edit,
+			       cairo_t *cr);
 
 void ags_automation_edit_add_area(AgsAutomationEdit *automation_edit,
 				  AgsAutomationArea *automation_area);

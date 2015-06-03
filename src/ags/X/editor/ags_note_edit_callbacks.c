@@ -532,6 +532,11 @@ ags_note_edit_drawing_area_motion_notify_event (GtkWidget *widget, GdkEventMotio
   double tact;
   guint note_x1;
   guint prev_x1;
+
+  auto void ags_note_edit_drawing_area_motion_notify_event_set_control();
+  auto void ags_note_edit_drawing_area_motion_notify_event_draw_control(cairo_t *cr);
+  auto void ags_note_edit_drawing_area_motion_notify_event_draw_selection(cairo_t *cr);
+  
   void ags_note_edit_drawing_area_motion_notify_event_set_control(){
     GList *list_notation;
     guint note_x, note_y;
@@ -555,6 +560,7 @@ ags_note_edit_drawing_area_motion_notify_event (GtkWidget *widget, GdkEventMotio
 
     fprintf(stdout, "x0 = %llu\nx1 = %llu\ny  = %llu\n\n\0", (long long unsigned int) note->x[0], (long long unsigned int) note->x[1], (long long unsigned int) note->y);
   }
+
   void ags_note_edit_drawing_area_motion_notify_event_draw_control(cairo_t *cr){
     guint x, y, width, height;
 
@@ -610,6 +616,7 @@ ags_note_edit_drawing_area_motion_notify_event (GtkWidget *widget, GdkEventMotio
     cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
     cairo_fill(cr);
   }
+
   void ags_note_edit_drawing_area_motion_notify_event_draw_selection(cairo_t *cr){
     GtkAllocation allocation;
     guint x0_offset, x1_offset, y0_offset, y1_offset;
