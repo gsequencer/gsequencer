@@ -106,7 +106,7 @@ ags_automation_edit_hscrollbar_value_changed(GtkRange *range, AgsAutomationEdit 
   
   /* reset ruler */
   gtk_adjustment_set_value(automation_edit->ruler->adjustment,
-			   GTK_RANGE(automation_edit->hscrollbar)->adjustment->value);
+			   GTK_RANGE(automation_edit->hscrollbar)->adjustment->value / 64.0);
   gtk_widget_queue_draw(automation_edit->ruler);
 
   /* update automation edit */
