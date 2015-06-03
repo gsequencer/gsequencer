@@ -484,6 +484,7 @@ ags_note_edit_draw_segment(AgsNoteEdit *note_edit, cairo_t *cr)
 {
   AgsEditor *editor;
   GtkWidget *widget;
+
   double tact;
   guint i, j;
   guint j_set;

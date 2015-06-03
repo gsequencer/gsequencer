@@ -23,6 +23,8 @@
 
 #include <ags/audio/ags_automation.h>
 
+#include <ags/X/ags_automation_editor.h>
+
 #include <ags/X/editor/ags_automation_edit.h>
 
 void ags_automation_area_class_init(AgsAutomationAreaClass *automation_area);
@@ -211,6 +213,8 @@ ags_automation_area_find_specifier(GList *automation_area,
  * ags_automation_area_draw_strip:
  * @automation_area: the #AgsAutomationArea
  * @cr: the #cairo_t surface
+ * @x_offset: x position given by #GtkHScrollbar
+ * @y_offset: y position given by #GtkVScrollbar
  *
  * Plot data.
  *
@@ -244,9 +248,91 @@ ags_automation_area_draw_strip(AgsAutomationArea *automation_area,
 }
 
 /**
+ * ags_automation_area_draw_segment:
+ * @automation_area: the #AgsAutomationArea
+ * @cr: the #cairo_t surface
+ * @x_offset: x position given by #GtkHScrollbar
+ * @y_offset: y position given by #GtkVScrollbar
+ *
+ * Draws horizontal and vertical lines.
+ *
+ * Since: 0.4.3
+ */
+void
+ags_automation_area_draw_segment(AgsAutomationArea *automation_area,
+				 cairo_t *cr,
+				 gdouble x_offset, gdouble y_offset)
+{
+  AgsAutomationEditor *automation_editor;
+  AgsAutomationEdit *automation_edit;
+  GtkWidget *widget;
+  
+  double tact;
+  gdouble y;
+  gdouble height;
+  guint control_width;
+  guint i, j;
+  guint j_set;
+  
+  widget = (GtkWidget *) automation_area->drawing_area;
+
+  automation_edit = (AgsAutomationEdit *) gtk_widget_get_ancestor(GTK_WIDGET(automation_area->drawing_area),
+								  AGS_TYPE_AUTOMATION_EDIT);
+  
+  automation_editor = (AgsAutomationEditor *) gtk_widget_get_ancestor(GTK_WIDGET(automation_edit),
+								      AGS_TYPE_AUTOMATION_EDITOR);
+
+  cairo_set_line_width(cr, 1.0);
+
+  tact = exp2((double) gtk_combo_box_get_active(automation_editor->automation_toolbar->zoom) - 4.0);
+
+  y = (gdouble) automation_area->y - y_offset;
+  
+  height = (gdouble) automation_area->height;
+
+  control_width = 64;
+  i = control_width - (guint) x_offset % control_width;
+  
+  if(i < widget->allocation.width &&
+     tact > 1.0 ){
+    j_set = ((guint) x_offset / control_width + 1) % ((guint) tact);
+
+    cairo_set_source_rgb(cr, 0.6, 0.6, 0.6);
+
+    if(j_set != 0){
+      j = j_set;
+      goto ags_automation_area_draw_segment0;
+    }
+  }
+
+  for(; i < widget->allocation.width; ){
+    cairo_set_source_rgb(cr, 1.0, 1.0, 0.0);
+    
+    cairo_move_to(cr, (double) i, y);
+    cairo_line_to(cr, (double) i, height);
+    cairo_stroke(cr);
+    
+    i += control_width;
+    
+    cairo_set_source_rgb(cr, 0.6, 0.6, 0.6);
+    
+    for(j = 1; i < widget->allocation.width && j < tact; j++){
+    ags_automation_area_draw_segment0:
+      cairo_move_to(cr, (double) i, y);
+      cairo_line_to(cr, (double) i, height);
+      cairo_stroke(cr);
+      
+      i += control_width;
+    }
+  }
+}
+
+/**
  * ags_automation_area_draw_scale:
  * @automation_area: the #AgsAutomationArea
  * @cr: the #cairo_t surface
+ * @x_offset: x position given by #GtkHScrollbar
+ * @y_offset: y position given by #GtkVScrollbar
  *
  * Draw a scale and its boundaries.
  *
@@ -309,6 +395,8 @@ ags_automation_area_draw_scale(AgsAutomationArea *automation_area,
  * ags_automation_area_draw_automation:
  * @automation_area: a #AgsAutomationArea
  * @cr: the #cairo_t surface
+ * @x_offset: x position given by #GtkHScrollbar
+ * @y_offset: y position given by #GtkVScrollbar
  *
  * Draw the #AgsAutomation of selected #AgsMachine on @automation_edit.
  *
@@ -375,6 +463,8 @@ ags_automation_area_draw_automation(AgsAutomationArea *automation_area,
  * ags_automation_area_draw_surface:
  * @automation_area: the #AgsAutomationArea
  * @cr: the #cairo_t surface
+ * @x_offset: x position given by #GtkHScrollbar
+ * @y_offset: y position given by #GtkVScrollbar
  * @x0: x offset
  * @y0: y offset
  * @x1: x offset
@@ -431,9 +521,13 @@ ags_automation_area_paint(AgsAutomationArea *automation_area,
     ags_automation_area_draw_strip(automation_area,
 				   cr,
 				   x_offset, y_offset);
+    ags_automation_area_draw_segment(automation_area,
+				     cr,
+				     x_offset, y_offset);
     ags_automation_area_draw_scale(automation_area,
 				   cr,
 				   x_offset, y_offset);
+    
     ags_automation_area_draw_automation(automation_area,
 					cr,
 					x_offset, y_offset);
