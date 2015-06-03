@@ -232,6 +232,29 @@ ags_automation_toolbar_connect(AgsConnectable *connectable)
   g_signal_connect_after(G_OBJECT(automation_editor), "machine-changed\0",
 			 G_CALLBACK(ags_automation_toolbar_machine_changed_callback), automation_toolbar);
 
+  /* tool */
+  g_signal_connect_after((GObject *) automation_toolbar->position, "toggled\0",
+			 G_CALLBACK(ags_automation_toolbar_position_callback), (gpointer) automation_toolbar);
+
+  g_signal_connect_after((GObject *) automation_toolbar->edit, "toggled\0",
+			 G_CALLBACK(ags_automation_toolbar_edit_callback), (gpointer) automation_toolbar);
+
+  g_signal_connect_after((GObject *) automation_toolbar->clear, "toggled\0",
+			 G_CALLBACK(ags_automation_toolbar_clear_callback), (gpointer) automation_toolbar);
+
+  g_signal_connect_after((GObject *) automation_toolbar->select, "toggled\0",
+			 G_CALLBACK(ags_automation_toolbar_select_callback), (gpointer) automation_toolbar);
+
+  /* edit */
+  g_signal_connect((GObject *) automation_toolbar->copy, "clicked\0",
+		   G_CALLBACK(ags_automation_toolbar_copy_or_cut_callback), (gpointer) automation_toolbar);
+
+  g_signal_connect((GObject *) automation_toolbar->cut, "clicked\0",
+		   G_CALLBACK(ags_automation_toolbar_copy_or_cut_callback), (gpointer) automation_toolbar);
+
+  g_signal_connect((GObject *) automation_toolbar->paste, "clicked\0",
+		   G_CALLBACK(ags_automation_toolbar_paste_callback), (gpointer) automation_toolbar);
+
   /* zoom */
   g_signal_connect_after((GObject *) automation_toolbar->zoom, "changed\0",
 			 G_CALLBACK(ags_automation_toolbar_zoom_callback), (gpointer) automation_toolbar);

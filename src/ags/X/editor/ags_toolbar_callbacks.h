@@ -24,9 +24,6 @@
 
 #include <ags/X/editor/ags_toolbar.h>
 
-gboolean ags_toolbar_destroy_callback(GtkObject *object, AgsToolbar *toolbar);
-void ags_toolbar_show_callback(GtkWidget *widget, AgsToolbar *toolbar);
-
 void ags_toolbar_position_callback(GtkToggleButton *toggle_button, AgsToolbar *toolbar);
 void ags_toolbar_edit_callback(GtkToggleButton *toggle_button, AgsToolbar *toolbar);
 void ags_toolbar_clear_callback(GtkToggleButton *toggle_button, AgsToolbar *toolbar);

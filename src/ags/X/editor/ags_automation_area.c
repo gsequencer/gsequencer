@@ -309,7 +309,7 @@ ags_automation_area_draw_segment(AgsAutomationArea *automation_area,
     cairo_set_source_rgb(cr, 1.0, 1.0, 0.0);
     
     cairo_move_to(cr, (double) i, y);
-    cairo_line_to(cr, (double) i, height);
+    cairo_line_to(cr, (double) i, y + height);
     cairo_stroke(cr);
     
     i += control_width;
@@ -319,7 +319,7 @@ ags_automation_area_draw_segment(AgsAutomationArea *automation_area,
     for(j = 1; i < widget->allocation.width && j < tact; j++){
     ags_automation_area_draw_segment0:
       cairo_move_to(cr, (double) i, y);
-      cairo_line_to(cr, (double) i, height);
+      cairo_line_to(cr, (double) i, y + height);
       cairo_stroke(cr);
       
       i += control_width;

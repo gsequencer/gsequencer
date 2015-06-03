@@ -172,14 +172,21 @@ ags_automation_edit_connect(AgsConnectable *connectable)
   g_signal_connect_after((GObject *) automation_edit->drawing_area, "configure_event\0",
 			 G_CALLBACK (ags_automation_edit_drawing_area_configure_event), (gpointer) automation_edit);
 
+  g_signal_connect((GObject *) automation_edit->drawing_area, "button_press_event\0",
+		   G_CALLBACK (ags_automation_edit_drawing_area_button_press_event), (gpointer) automation_edit);
+
+  g_signal_connect((GObject *) automation_edit->drawing_area, "button_release_event\0",
+		   G_CALLBACK (ags_automation_edit_drawing_area_button_release_event), (gpointer) automation_edit);
+  
+  g_signal_connect((GObject *) automation_edit->drawing_area, "motion_notify_event\0",
+		   G_CALLBACK (ags_automation_edit_drawing_area_motion_notify_event), (gpointer) automation_edit);
+
   /*  */
   g_signal_connect_after((GObject *) automation_edit->vscrollbar, "value-changed\0",
 			 G_CALLBACK (ags_automation_edit_vscrollbar_value_changed), (gpointer) automation_edit);
 
   g_signal_connect_after((GObject *) automation_edit->hscrollbar, "value-changed\0",
 			 G_CALLBACK (ags_automation_edit_hscrollbar_value_changed), (gpointer) automation_edit);
-
-  //TODO:JK: implement me
 }
 
 void
@@ -363,19 +370,20 @@ ags_automation_edit_draw_scroll(AgsAutomationEdit *automation_edit,
 }
 
 void
-ags_automation_edit_paint(AgsAutomationEdit *automation_edit)
+ags_automation_edit_paint(AgsAutomationEdit *automation_edit,
+			  cairo_t *cr)
 {
   GList *automation_area;
-  cairo_t *cr;
 
   gdouble x_offset, y_offset;
   
-  cr = gdk_cairo_create(GTK_WIDGET(automation_edit->drawing_area)->window);
-  cairo_push_group(cr);
-
   x_offset = GTK_RANGE(automation_edit->hscrollbar)->adjustment->value;
   y_offset = GTK_RANGE(automation_edit->vscrollbar)->adjustment->value;
-  
+
+  cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
+  cairo_rectangle(cr, 0.0, 0.0, (double) GTK_WIDGET(automation_edit->drawing_area)->allocation.width, (double) GTK_WIDGET(automation_edit->drawing_area)->allocation.height);
+  cairo_fill(cr);
+
   automation_area = automation_edit->automation_area;
 
   while(automation_area != NULL){
@@ -385,9 +393,6 @@ ags_automation_edit_paint(AgsAutomationEdit *automation_edit)
 
     automation_area = automation_area->next;
   }
-      
-  cairo_pop_group_to_source(cr);
-  cairo_paint(cr);
 }
 
 /**
