@@ -68,7 +68,8 @@ GList* ags_scale_area_find_specifier(GList *scale_area,
 				     gchar *specifier);
 
 void ags_scale_area_paint(AgsScaleArea *scale_area,
-			  cairo_t *cr);
+			  cairo_t *cr,
+			  gdouble x_offset, gdouble y_offset);
 
 AgsScaleArea* ags_scale_area_new(GtkDrawingArea *drawing_area,
 				 gchar *control_name,

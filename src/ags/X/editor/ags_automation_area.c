@@ -217,12 +217,14 @@ ags_automation_area_find_specifier(GList *automation_area,
  * Since: 0.4
  */
 void
-ags_automation_area_draw_strip(AgsAutomationArea *automation_area, cairo_t *cr)
+ags_automation_area_draw_strip(AgsAutomationArea *automation_area,
+			       cairo_t *cr,
+			       gdouble x_offset, gdouble y_offset)
 {
   gdouble y;
   gdouble width, height;
 
-  y = (gdouble) automation_area->y;
+  y = (gdouble) automation_area->y - y_offset;
   
   width = (gdouble) GTK_WIDGET(automation_area->drawing_area)->allocation.width;
   height = (gdouble) automation_area->height;
@@ -251,7 +253,9 @@ ags_automation_area_draw_strip(AgsAutomationArea *automation_area, cairo_t *cr)
  * Since: 0.4
  */
 void
-ags_automation_area_draw_scale(AgsAutomationArea *automation_area, cairo_t *cr)
+ags_automation_area_draw_scale(AgsAutomationArea *automation_area,
+			       cairo_t *cr,
+			       gdouble x_offset, gdouble y_offset)
 {
   gdouble y;
   gdouble width, height;
@@ -261,7 +265,7 @@ ags_automation_area_draw_scale(AgsAutomationArea *automation_area, cairo_t *cr)
     0.25,
   };
 
-  y = (gdouble) automation_area->y;
+  y = (gdouble) automation_area->y - y_offset;
   
   width = (gdouble) GTK_WIDGET(automation_area->drawing_area)->allocation.width;
   height = (gdouble) automation_area->height;
@@ -311,9 +315,10 @@ ags_automation_area_draw_scale(AgsAutomationArea *automation_area, cairo_t *cr)
  * Since: 0.4
  */
 void
-ags_automation_area_draw_automation(AgsAutomationArea *automation_area, cairo_t *cr)
+ags_automation_area_draw_automation(AgsAutomationArea *automation_area,
+				    cairo_t *cr,
+				    gdouble x_offset, gdouble y_offset)
 {
-  AgsAutomationEdit *automation_edit;
   AgsAcceleration *current, *prev;
 
   GList *automation;
@@ -321,13 +326,10 @@ ags_automation_area_draw_automation(AgsAutomationArea *automation_area, cairo_t 
   guint width;
   gdouble x0, x1;
   GList *list;
-
-  automation_edit = gtk_widget_get_ancestor(automation_area->drawing_area,
-					    AGS_TYPE_AUTOMATION_EDIT);
   
   width = GTK_WIDGET(automation_area->drawing_area)->allocation.width;
 
-  x0 = GTK_RANGE(automation_edit->hscrollbar)->adjustment->value;
+  x0 = x_offset;
   x1 = x0 + width;
 
   automation = automation_area->audio->automation;
@@ -351,6 +353,7 @@ ags_automation_area_draw_automation(AgsAutomationArea *automation_area, cairo_t 
     
 	if(prev != NULL){
 	  ags_automation_area_draw_surface(automation_area, cr,
+					   x_offset, y_offset,
 					   prev->x, prev->y,
 					   current->x, current->y);
 	}
@@ -383,6 +386,7 @@ ags_automation_area_draw_automation(AgsAutomationArea *automation_area, cairo_t 
  */
 void
 ags_automation_area_draw_surface(AgsAutomationArea *automation_area, cairo_t *cr,
+				 gdouble x_offset, gdouble y_offset,
 				 gdouble x0, gdouble y0,
 				 gdouble x1, gdouble y1)
 {
@@ -391,8 +395,8 @@ ags_automation_area_draw_surface(AgsAutomationArea *automation_area, cairo_t *cr
   width = (gdouble) GTK_WIDGET(automation_area->drawing_area)->allocation.width;
   height = (gdouble) automation_area->height;
 
-  y0 += automation_area->y;
-  y1 += automation_area->y;
+  y0 += automation_area->y - y_offset;
+  y1 += automation_area->y - y_offset;
   
   cairo_set_source_rgb(cr, 1.0, 1.0, 0.0);
 
@@ -420,15 +424,19 @@ ags_automation_area_draw_surface(AgsAutomationArea *automation_area, cairo_t *cr
 
 void
 ags_automation_area_paint(AgsAutomationArea *automation_area,
-			  cairo_t *cr)
+			  cairo_t *cr,
+			  gdouble x_offset, gdouble y_offset)
 {
   if(GTK_WIDGET_VISIBLE(automation_area->drawing_area)){    
     ags_automation_area_draw_strip(automation_area,
-				   cr);
+				   cr,
+				   x_offset, y_offset);
     ags_automation_area_draw_scale(automation_area,
-				   cr);
+				   cr,
+				   x_offset, y_offset);
     ags_automation_area_draw_automation(automation_area,
-					cr);
+					cr,
+					x_offset, y_offset);
   }
 }
 

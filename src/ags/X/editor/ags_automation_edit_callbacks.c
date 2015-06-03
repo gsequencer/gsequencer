@@ -41,11 +41,14 @@ ags_automation_edit_drawing_area_configure_event(GtkWidget *widget, GdkEventConf
 						 AgsAutomationEdit *automation_edit)
 {
   automation_edit->flags |= AGS_AUTOMATION_EDIT_RESETING_VERTICALLY;
-  ags_automation_edit_reset_vertically(automation_edit, AGS_AUTOMATION_EDIT_RESET_VSCROLLBAR);
+  ags_automation_edit_reset_vertically(automation_edit,
+				       AGS_AUTOMATION_EDIT_RESET_VSCROLLBAR);
   automation_edit->flags &= (~AGS_AUTOMATION_EDIT_RESETING_VERTICALLY);
 
   automation_edit->flags |= AGS_AUTOMATION_EDIT_RESETING_HORIZONTALLY;
-  ags_automation_edit_reset_horizontally(automation_edit, AGS_AUTOMATION_EDIT_RESET_HSCROLLBAR);
+  ags_automation_edit_reset_horizontally(automation_edit,
+					 AGS_AUTOMATION_EDIT_RESET_HSCROLLBAR |
+					 AGS_AUTOMATION_EDIT_RESET_WIDTH);
   automation_edit->flags &= (~AGS_AUTOMATION_EDIT_RESETING_HORIZONTALLY);  
 
   ags_automation_edit_paint(automation_edit);
@@ -99,6 +102,8 @@ ags_automation_edit_hscrollbar_value_changed(GtkRange *range, AgsAutomationEdit 
     return;
   }
 
+  g_message("%f\0", GTK_RANGE(automation_edit->hscrollbar)->adjustment->value);
+  
   /* reset ruler */
   gtk_adjustment_set_value(automation_edit->ruler->adjustment,
 			   GTK_RANGE(automation_edit->hscrollbar)->adjustment->value);

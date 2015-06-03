@@ -355,6 +355,7 @@ ags_note_edit_reset_horizontally(AgsNoteEdit *note_edit, guint flags)
     note_edit->control_current.control_width = (note_edit->control_width * zoom_factor * tact_factor * tact);
 
     note_edit->map_width = (guint) ((double) note_edit->control_current.control_count * (double) note_edit->control_current.control_width);
+    
     /* reset ruler */
     note_edit->ruler->factor = tact_factor;
     note_edit->ruler->precision = tact;
@@ -371,7 +372,9 @@ ags_note_edit_reset_horizontally(AgsNoteEdit *note_edit, guint flags)
 
     if((AGS_NOTE_EDIT_RESET_HSCROLLBAR & flags) != 0){
       GtkWidget *widget;
+
       GtkAdjustment *adjustment;
+
       guint width;
 
       widget = GTK_WIDGET(note_edit->drawing_area);

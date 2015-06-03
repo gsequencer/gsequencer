@@ -64,15 +64,24 @@ GType ags_automation_area_get_type(void);
 GList* ags_automation_area_find_specifier(GList *automation_area,
 					  gchar *specifier);
 
-void ags_automation_area_draw_strip(AgsAutomationArea *automation_area, cairo_t *cr);
-void ags_automation_area_draw_scale(AgsAutomationArea *automation_area, cairo_t *cr);
-void ags_automation_area_draw_automation(AgsAutomationArea *automation_area, cairo_t *cr);
-void ags_automation_area_draw_surface(AgsAutomationArea *automation_area, cairo_t *cr,
+void ags_automation_area_draw_strip(AgsAutomationArea *automation_area,
+				    cairo_t *cr,
+				    gdouble x_offset, gdouble y_offset);
+void ags_automation_area_draw_scale(AgsAutomationArea *automation_area,
+				    cairo_t *cr,
+				    gdouble x_offset, gdouble y_offset);
+void ags_automation_area_draw_automation(AgsAutomationArea *automation_area,
+					 cairo_t *cr,
+					 gdouble x_offset, gdouble y_offset);
+void ags_automation_area_draw_surface(AgsAutomationArea *automation_area,
+				      cairo_t *cr,
+				      gdouble x_offset, gdouble y_offset,
 				      gdouble x0, gdouble y0,
 				      gdouble x1, gdouble y1);
 
 void ags_automation_area_paint(AgsAutomationArea *automation_area,
-			       cairo_t *cr);
+			       cairo_t *cr,
+			       gdouble x_offset, gdouble y_offset);
 
 AgsAutomationArea* ags_automation_area_new(GtkDrawingArea *drawing_area,
 					   AgsAudio *audio,

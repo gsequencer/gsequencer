@@ -174,6 +174,8 @@ ags_automation_toolbar_init(AgsAutomationToolbar *automation_toolbar)
 			    NULL);
 
   /*  */
+  automation_toolbar->zoom_history = 4;
+  
   label = gtk_label_new("zoom\0");
   gtk_container_add(GTK_CONTAINER(automation_toolbar),
 		    label);
@@ -230,6 +232,11 @@ ags_automation_toolbar_connect(AgsConnectable *connectable)
   g_signal_connect_after(G_OBJECT(automation_editor), "machine-changed\0",
 			 G_CALLBACK(ags_automation_toolbar_machine_changed_callback), automation_toolbar);
 
+  /* zoom */
+  g_signal_connect_after((GObject *) automation_toolbar->zoom, "changed\0",
+			 G_CALLBACK(ags_automation_toolbar_zoom_callback), (gpointer) automation_toolbar);
+
+  /* port */
   g_signal_connect(automation_toolbar->port, "changed\0",
 		   G_CALLBACK(ags_automation_toolbar_port_changed_callback), automation_toolbar);
 }

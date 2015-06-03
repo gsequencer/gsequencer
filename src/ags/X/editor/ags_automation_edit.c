@@ -103,6 +103,11 @@ void
 ags_automation_edit_init(AgsAutomationEdit *automation_edit)
 {
   GtkAdjustment *adjustment;
+
+  automation_edit->flags = 0;
+  
+  automation_edit->map_width = AGS_AUTOMATION_EDIT_MAX_CONTROLS;
+  automation_edit->map_height = 0;
   
   automation_edit->ruler = ags_ruler_new();
   gtk_table_attach(GTK_TABLE(automation_edit),
@@ -130,9 +135,6 @@ ags_automation_edit_init(AgsAutomationEdit *automation_edit)
 		   GTK_FILL|GTK_EXPAND,
 		   GTK_FILL|GTK_EXPAND,
 		   0, 0);
-
-  automation_edit->map_width = AGS_AUTOMATION_EDIT_MAX_CONTROLS * 64;
-  automation_edit->map_height = 0;
 
   automation_edit->automation_area = NULL;
   
@@ -171,6 +173,11 @@ ags_automation_edit_connect(AgsConnectable *connectable)
 			 G_CALLBACK (ags_automation_edit_drawing_area_configure_event), (gpointer) automation_edit);
 
   /*  */
+  g_signal_connect_after((GObject *) automation_edit->vscrollbar, "value-changed\0",
+			 G_CALLBACK (ags_automation_edit_vscrollbar_value_changed), (gpointer) automation_edit);
+
+  g_signal_connect_after((GObject *) automation_edit->hscrollbar, "value-changed\0",
+			 G_CALLBACK (ags_automation_edit_hscrollbar_value_changed), (gpointer) automation_edit);
 
   //TODO:JK: implement me
 }
@@ -193,6 +200,11 @@ ags_automation_edit_disconnect(AgsConnectable *connectable)
 void
 ags_automation_edit_reset_vertically(AgsAutomationEdit *automation_edit, guint flags)
 {
+  AgsAutomationEditor *automation_editor;
+
+  automation_editor = gtk_widget_get_ancestor(automation_edit,
+					      AGS_TYPE_AUTOMATION_EDITOR);
+  
   if((AGS_AUTOMATION_EDIT_RESET_VSCROLLBAR & flags) != 0){
     GtkAdjustment *vadjustment;
     guint height;
@@ -201,12 +213,31 @@ ags_automation_edit_reset_vertically(AgsAutomationEdit *automation_edit, guint f
 
     vadjustment = GTK_RANGE(automation_edit->vscrollbar)->adjustment;
 
-    gtk_adjustment_set_upper(vadjustment,
-			     (gdouble) (automation_edit->map_height - height));
-
+    if(height > automation_edit->map_height){
+      gtk_adjustment_set_upper(vadjustment,
+			       1.0);
+    }else{
+      gtk_adjustment_set_upper(vadjustment,
+			       (gdouble) (automation_edit->map_height - height));
+    }
+    
     if(vadjustment->value > vadjustment->upper){
       gtk_adjustment_set_value(vadjustment, vadjustment->upper);
     }
+  }
+
+  gtk_widget_queue_draw(automation_edit->drawing_area);
+
+  /* reset scale */
+  if(automation_editor->audio_automation_edit == automation_edit){
+    automation_editor->audio_scale->y_offset = GTK_RANGE(automation_edit->vscrollbar)->adjustment->value;
+    gtk_widget_queue_draw(automation_editor->audio_scale);
+  }else if(automation_editor->output_automation_edit == automation_edit){
+    automation_editor->output_scale->y_offset = GTK_RANGE(automation_edit->vscrollbar)->adjustment->value;
+    gtk_widget_queue_draw(automation_editor->output_scale);
+  }else if(automation_editor->input_automation_edit == automation_edit){
+    automation_editor->input_scale->y_offset = GTK_RANGE(automation_edit->vscrollbar)->adjustment->value;
+    gtk_widget_queue_draw(automation_editor->input_scale);
   }
 }
 
@@ -222,21 +253,72 @@ ags_automation_edit_reset_vertically(AgsAutomationEdit *automation_edit, guint f
 void
 ags_automation_edit_reset_horizontally(AgsAutomationEdit *automation_edit, guint flags)
 {
+  AgsAutomationEditor *automation_editor;
+
+  double tact_factor, zoom_factor;
+  double tact;
+
+  automation_editor = (AgsAutomationEditor *) gtk_widget_get_ancestor(GTK_WIDGET(automation_edit),
+								      AGS_TYPE_AUTOMATION_EDITOR);
+
+  zoom_factor = 1.0 / 4.0;
+
+  tact_factor = exp2(8.0 - (double) gtk_combo_box_get_active(automation_editor->automation_toolbar->zoom));
+  tact = exp2((double) gtk_combo_box_get_active(automation_editor->automation_toolbar->zoom) - 4.0);
+
+  if((AGS_AUTOMATION_EDIT_RESET_WIDTH & flags) != 0){
+    automation_edit->map_width = (guint) ((double) (64 * AGS_AUTOMATION_EDIT_MAX_CONTROLS) * zoom_factor * tact);
+    
+    /* reset ruler */
+    automation_edit->ruler->factor = tact_factor;
+    automation_edit->ruler->precision = tact;
+    automation_edit->ruler->scale_precision = 1.0 / tact;
+
+    gtk_widget_queue_draw(automation_edit->ruler);
+  }
+
+  g_message("%d\0",
+	    automation_edit->map_width);
+
   if((AGS_AUTOMATION_EDIT_RESET_HSCROLLBAR & flags) != 0){
+    GtkWidget *widget;
+    
     GtkAdjustment *hadjustment;
+    
     guint width;
 
-    width = GTK_WIDGET(automation_edit->drawing_area)->allocation.width;
-
+    widget = GTK_WIDGET(automation_edit->drawing_area);
     hadjustment = GTK_RANGE(automation_edit->hscrollbar)->adjustment;
 
-    gtk_adjustment_set_upper(hadjustment,
-			     (gdouble) (automation_edit->map_width - width));
+    if(automation_edit->map_width > widget->allocation.width){
+      width = widget->allocation.width;
+      
+      gtk_adjustment_set_upper(hadjustment,
+			       (gdouble) (automation_edit->map_width - width));
+      gtk_adjustment_set_upper(automation_edit->ruler->adjustment,
+			       (gdouble) (automation_edit->map_width - width) / 64.0);
+      
+      if(hadjustment->value > hadjustment->upper){
+	gtk_adjustment_set_value(hadjustment, hadjustment->upper);
 
-    if(hadjustment->value > hadjustment->upper){
-      gtk_adjustment_set_value(hadjustment, hadjustment->upper);
+	/* reset ruler */
+	gtk_adjustment_set_value(automation_edit->ruler->adjustment,
+			       automation_edit->ruler->adjustment->upper);
+	gtk_widget_queue_draw(automation_edit->ruler);
+
+      }
+    }else{
+      gtk_adjustment_set_upper(hadjustment, 0.0);
+      gtk_adjustment_set_value(hadjustment, 0.0);
+      
+      /* reset ruler */
+      gtk_adjustment_set_upper(automation_edit->ruler->adjustment, 0.0);
+      gtk_adjustment_set_value(automation_edit->ruler->adjustment, 0.0);
+      gtk_widget_queue_draw(automation_edit->ruler);
     }
   }
+
+  gtk_widget_queue_draw(automation_edit->drawing_area);
 }
 
 /**
@@ -285,15 +367,21 @@ ags_automation_edit_paint(AgsAutomationEdit *automation_edit)
 {
   GList *automation_area;
   cairo_t *cr;
+
+  gdouble x_offset, y_offset;
   
   cr = gdk_cairo_create(GTK_WIDGET(automation_edit->drawing_area)->window);
   cairo_push_group(cr);
 
+  x_offset = GTK_RANGE(automation_edit->hscrollbar)->adjustment->value;
+  y_offset = GTK_RANGE(automation_edit->vscrollbar)->adjustment->value;
+  
   automation_area = automation_edit->automation_area;
 
   while(automation_area != NULL){
     ags_automation_area_paint(automation_area->data,
-			      cr);
+			      cr,
+			      x_offset, y_offset);
 
     automation_area = automation_area->next;
   }

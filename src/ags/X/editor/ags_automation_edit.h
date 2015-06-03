@@ -38,7 +38,7 @@
 #define AGS_IS_AUTOMATION_EDIT_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_AUTOMATION_EDIT))
 #define AGS_AUTOMATION_EDIT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS (obj, AGS_TYPE_AUTOMATION_EDIT, AgsAutomationEditClass))
 
-#define AGS_AUTOMATION_EDIT_MAX_CONTROLS (1200)
+#define AGS_AUTOMATION_EDIT_MAX_CONTROLS (64 * 1200)
 #define AGS_AUTOMATION_EDIT_DEFAULT_MARGIN (8)
 
 typedef struct _AgsAutomationEdit AgsAutomationEdit;
@@ -66,15 +66,12 @@ struct _AgsAutomationEdit
 
   guint flags;
 
-  AgsRuler *ruler;
-
   guint map_width;
   guint map_height;
-
-  GList *automation;
+  
+  AgsRuler *ruler;
 
   GtkDrawingArea *drawing_area;
-
   GList *automation_area;
   
   GtkVScrollbar *vscrollbar;
