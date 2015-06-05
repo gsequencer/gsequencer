@@ -23,6 +23,7 @@
 #include <glib-object.h>
 
 #include <ags/audio/ags_recall.h>
+#include <ags/audio/ags_recall_id.h>
 
 #define AGS_TYPE_RECALL_CONTAINER                (ags_recall_container_get_type())
 #define AGS_RECALL_CONTAINER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_RECALL_CONTAINER, AgsRecallContainer))
