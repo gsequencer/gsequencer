@@ -69,6 +69,9 @@ struct _AgsAutomationEdit
   guint map_width;
   guint map_height;
 
+  guint edit_x;
+  guint edit_y;
+  
   guint select_x0;
   guint select_y0;
   guint select_x1;
@@ -77,7 +80,9 @@ struct _AgsAutomationEdit
   AgsRuler *ruler;
 
   GtkDrawingArea *drawing_area;
+  
   GList *automation_area;
+  AgsAutomationArea *current_area;  
   
   GtkVScrollbar *vscrollbar;
   GtkHScrollbar *hscrollbar;

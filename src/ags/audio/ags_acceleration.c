@@ -66,9 +66,9 @@ ags_acceleration_get_type()
     };
 
     ags_type_acceleration = g_type_register_static(G_TYPE_OBJECT,
-					   "AgsAcceleration\0",
-					   &ags_acceleration_info,
-					   0);
+						   "AgsAcceleration\0",
+						   &ags_acceleration_info,
+						   0);
     
     g_type_add_interface_static(ags_type_acceleration,
 				AGS_TYPE_CONNECTABLE,

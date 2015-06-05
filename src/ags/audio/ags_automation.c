@@ -358,6 +358,8 @@ ags_automation_portlet_interface_init(AgsPortletInterface *portlet)
 void
 ags_automation_init(AgsAutomation *automation)
 {
+  AgsAcceleration *acceleration;
+  
   automation->flags = 0;
 
   automation->timestamp = NULL;
@@ -374,6 +376,20 @@ ags_automation_init(AgsAutomation *automation)
   
   automation->acceleration = NULL;
 
+  acceleration = ags_acceleration_new();
+  acceleration->x = 0;
+  acceleration->y = 0;
+  ags_automation_add_acceleration(automation,
+				  acceleration,
+				  FALSE);
+
+  acceleration = ags_acceleration_new();
+  acceleration->x = AGS_AUTOMATION_DEFAULT_LENGTH;
+  acceleration->y = 0;
+  ags_automation_add_acceleration(automation,
+				  acceleration,
+				  FALSE);
+  
   automation->start_loop = 0.0;
   automation->end_loop = 0.0;
   automation->offset = 0.0;
@@ -482,6 +498,42 @@ ags_automation_set_property(GObject *gobject,
       automation->port = port;
     }
     break;
+  case PROP_STEPS:
+    {
+      guint steps;
+
+      steps = g_value_get_uint(value);
+
+      automation->steps = steps;
+    }
+    break;
+  case PROP_UPPER:
+    {
+      gdouble upper;
+
+      upper = g_value_get_double(value);
+
+      automation->upper = upper;      
+    }
+    break;
+  case PROP_LOWER:
+    {
+      gdouble lower;
+
+      lower = g_value_get_double(value);
+
+      automation->lower = lower;      
+    }
+    break;
+  case PROP_DEFAULT_VALUE:
+    {
+      gdouble default_value;
+
+      default_value = g_value_get_double(value);
+
+      automation->default_value = default_value;      
+    }
+    break;
   case PROP_ACCELERATION:
     {
       AgsAcceleration *acceleration;
@@ -541,9 +593,49 @@ ags_automation_get_property(GObject *gobject,
   automation = AGS_AUTOMATION(gobject);
 
   switch(prop_id){
+  case PROP_AUDIO:
+    {
+      g_value_set_object(value, automation->audio);
+    }
+    break;
+  case PROP_LINE:
+    {
+      g_value_set_uint(value, automation->line);
+    }
+    break;
+  case PROP_CHANNEL_TYPE:
+    {
+      g_value_set_gtype(value, automation->channel_type);
+    }
+    break;
+  case PROP_CONTROL_NAME:
+    {
+      g_value_set_string(value, automation->control_name);
+    }
+    break;
   case PROP_PORT:
     {
       g_value_set_object(value, automation->port);
+    }
+    break;
+  case PROP_STEPS:
+    {
+      g_value_set_uint(value, automation->steps);
+    }
+    break;
+  case PROP_UPPER:
+    {
+      g_value_set_double(value, automation->upper);
+    }
+    break;
+  case PROP_LOWER:
+    {
+      g_value_set_double(value, automation->lower);
+    }
+    break;
+  case PROP_DEFAULT_VALUE:
+    {
+      g_value_set_double(value, automation->default_value);
     }
     break;
   case PROP_CURRENT_ACCELERATIONS:
@@ -825,7 +917,7 @@ ags_automation_is_acceleration_selected(AgsAutomation *automation, AgsAccelerati
  * ags_automation_find_point:
  * @automation: an #AgsAutomation
  * @x: offset
- * @y: acceleration
+ * @y: acceleration, will be ignored
  * @use_selection_list: if %TRUE selection is searched
  *
  * Find acceleration by offset and acceleration.
@@ -851,7 +943,7 @@ ags_automation_find_point(AgsAutomation *automation,
     acceleration = acceleration->next;
   }
 
-  if(acceleration == NULL || AGS_ACCELERATION(acceleration->data)->y != y){
+  if(acceleration == NULL || AGS_ACCELERATION(acceleration->data)->x != x){
     return(NULL);
   }else{
     return(acceleration->data);

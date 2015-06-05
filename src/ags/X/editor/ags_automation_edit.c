@@ -108,7 +108,15 @@ ags_automation_edit_init(AgsAutomationEdit *automation_edit)
   
   automation_edit->map_width = AGS_AUTOMATION_EDIT_MAX_CONTROLS;
   automation_edit->map_height = 0;
+
+  automation_edit->edit_x = 0;
+  automation_edit->edit_y = 0;
   
+  automation_edit->select_x0 = 0;
+  automation_edit->select_x1 = 0;
+  automation_edit->select_y0 = 0;
+  automation_edit->select_y1 = 0;
+
   automation_edit->ruler = ags_ruler_new();
   gtk_table_attach(GTK_TABLE(automation_edit),
 		   (GtkWidget *) automation_edit->ruler,
@@ -137,7 +145,8 @@ ags_automation_edit_init(AgsAutomationEdit *automation_edit)
 		   0, 0);
 
   automation_edit->automation_area = NULL;
-  
+  automation_edit->current_area = NULL;
+    
   /* GtkScrollbars */
   adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, 1.0, 1.0);
   automation_edit->vscrollbar = (GtkVScrollbar *) gtk_vscrollbar_new(adjustment);

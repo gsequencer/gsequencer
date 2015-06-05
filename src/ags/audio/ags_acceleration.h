@@ -44,7 +44,7 @@ typedef enum{
 
 struct _AgsAcceleration
 {
-  GObject object;
+  GObject gobject;
 
   guint flags;
 
@@ -57,7 +57,7 @@ struct _AgsAcceleration
 
 struct _AgsAccelerationClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_acceleration_get_type();

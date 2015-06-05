@@ -218,7 +218,7 @@ ags_automation_area_find_specifier(GList *automation_area,
  *
  * Plot data.
  *
- * Since: 0.4
+ * Since: 0.4.3
  */
 void
 ags_automation_area_draw_strip(AgsAutomationArea *automation_area,
@@ -336,7 +336,7 @@ ags_automation_area_draw_segment(AgsAutomationArea *automation_area,
  *
  * Draw a scale and its boundaries.
  *
- * Since: 0.4
+ * Since: 0.4.3
  */
 void
 ags_automation_area_draw_scale(AgsAutomationArea *automation_area,
@@ -400,7 +400,7 @@ ags_automation_area_draw_scale(AgsAutomationArea *automation_area,
  *
  * Draw the #AgsAutomation of selected #AgsMachine on @automation_edit.
  *
- * Since: 0.4
+ * Since: 0.4.3
  */
 void
 ags_automation_area_draw_automation(AgsAutomationArea *automation_area,
@@ -426,7 +426,7 @@ ags_automation_area_draw_automation(AgsAutomationArea *automation_area,
 						    automation_area->control_name)) != NULL){
     if(AGS_AUTOMATION(automation->data)->channel_type == automation_area->channel_type){
       /*  */
-      list = AGS_ACCELERATION(AGS_AUTOMATION(automation->data)->acceleration);
+      list = AGS_AUTOMATION(automation->data)->acceleration;
       prev = NULL;
 
       while(list != NULL){
@@ -443,7 +443,8 @@ ags_automation_area_draw_automation(AgsAutomationArea *automation_area,
 	  ags_automation_area_draw_surface(automation_area, cr,
 					   x_offset, y_offset,
 					   prev->x, prev->y,
-					   current->x, current->y);
+					   current->x, current->y,
+					   AGS_AUTOMATION(automation->data)->steps);
 	}
 
 	if(current->x >= x1){
@@ -469,17 +470,21 @@ ags_automation_area_draw_automation(AgsAutomationArea *automation_area,
  * @y0: y offset
  * @x1: x offset
  * @y1: y offset
+ * @steps: precision range
  *
  * Draw a portion of data.
  *
- * Since: 0.4
+ * Since: 0.4.3
  */
 void
 ags_automation_area_draw_surface(AgsAutomationArea *automation_area, cairo_t *cr,
 				 gdouble x_offset, gdouble y_offset,
 				 gdouble x0, gdouble y0,
-				 gdouble x1, gdouble y1)
+				 gdouble x1, gdouble y1,
+				 guint steps)
 {
+  AgsAutomationEditor *automation_editor;
+  
   gdouble width, height;
 
   width = (gdouble) GTK_WIDGET(automation_area->drawing_area)->allocation.width;
@@ -487,27 +492,36 @@ ags_automation_area_draw_surface(AgsAutomationArea *automation_area, cairo_t *cr
 
   y0 += automation_area->y - y_offset;
   y1 += automation_area->y - y_offset;
+
+  x0 = x0 / tact - x_offset;
+  x1 = x1 / tact - x_offset;
   
   cairo_set_source_rgb(cr, 1.0, 1.0, 0.0);
 
   /* area */
-  cairo_rectangle(cr, x0, 0.0, x1 - x0, ((y0 < y1) ? y0: y1));
+  cairo_rectangle(cr,
+		  x0, automation_area->height,
+		  x1 - x0, ((y0 < y1) ? y0: y1));
   cairo_fill(cr);
 
-  /* acceleration */
-  cairo_move_to(cr,
-		x0, y0);
-  cairo_line_to(cr,
-		x1, y1);
-
-  if(y0 > y1){
-    cairo_line_to(cr,
+  if(steps > automation_area->height){
+    /* acceleration */
+    cairo_move_to(cr,
 		  x0, y0);
-  }else{
     cairo_line_to(cr,
 		  x1, y1);
-  }
 
+    if(y0 > y1){
+      cairo_line_to(cr,
+		    x0, y0);
+    }else{
+      cairo_line_to(cr,
+		    x1, y1);
+    }
+  }else{
+    guint i, i_stop;
+  }
+  
   cairo_close_path(cr);
   cairo_fill(cr);
 }
