@@ -887,7 +887,8 @@ ags_machine_set_audio_channels(AgsAudio *audio,
 
     /* AgsInput */
     if(machine->input != NULL){
-      list_input_pad = gtk_container_get_children((GtkContainer *) machine->input);
+      list_input_pad_start = 
+	list_input_pad = gtk_container_get_children((GtkContainer *) machine->input);
       channel = audio->input;
 
       for(i = 0; i < audio->input_pads; i++){
@@ -922,7 +923,8 @@ ags_machine_set_audio_channels(AgsAudio *audio,
 
     /* AgsOutput */
     if(machine->output != NULL){
-      list_output_pad = gtk_container_get_children((GtkContainer *) machine->output);
+      list_output_pad_start = 
+	list_output_pad = gtk_container_get_children((GtkContainer *) machine->output);
       channel = audio->output;
 
       for(i = 0; i < audio->output_pads; i++){

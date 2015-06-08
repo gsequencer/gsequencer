@@ -1,5 +1,5 @@
-ags-ags_thread_pool.o: src/ags/thread/ags_thread_pool.c \
- /usr/include/stdc-predef.h src/ags/thread/ags_thread_pool.h \
+ags-ags_connectable.o: src/ags-lib/object/ags_connectable.c \
+ /usr/include/stdc-predef.h src/ags-lib/object/ags_connectable.h \
  /usr/include/glib-2.0/glib.h /usr/include/glib-2.0/glib/galloca.h \
  /usr/include/glib-2.0/glib/gtypes.h \
  /usr/lib/x86_64-linux-gnu/glib-2.0/include/glibconfig.h \
@@ -119,7 +119,6 @@ ags-ags_thread_pool.o: src/ags/thread/ags_thread_pool.c \
  /usr/include/glib-2.0/gobject/gvaluearray.h \
  /usr/include/glib-2.0/gobject/gvaluetypes.h \
  /usr/include/glib-2.0/gobject/gobject-autocleanups.h \
- src/ags/thread/ags_thread-posix.h src/ags-lib/object/ags_connectable.h \
  /usr/include/libxml2/libxml/tree.h /usr/include/stdio.h \
  /usr/include/libio.h /usr/include/_G_config.h /usr/include/wchar.h \
  /usr/include/x86_64-linux-gnu/bits/stdio_lim.h \
@@ -161,12 +160,11 @@ ags-ags_thread_pool.o: src/ags/thread/ags_thread_pool.c \
  /usr/include/stdlib.h /usr/include/x86_64-linux-gnu/bits/waitflags.h \
  /usr/include/x86_64-linux-gnu/bits/waitstatus.h /usr/include/alloca.h \
  /usr/include/x86_64-linux-gnu/bits/stdlib-float.h \
- /usr/include/libxml2/libxml/xlink.h /usr/include/libxml2/libxml/SAX2.h \
- src/ags/thread/ags_returnable_thread.h
+ /usr/include/libxml2/libxml/xlink.h /usr/include/libxml2/libxml/SAX2.h
 
 /usr/include/stdc-predef.h:
 
-src/ags/thread/ags_thread_pool.h:
+src/ags-lib/object/ags_connectable.h:
 
 /usr/include/glib-2.0/glib.h:
 
@@ -448,10 +446,6 @@ src/ags/thread/ags_thread_pool.h:
 
 /usr/include/glib-2.0/gobject/gobject-autocleanups.h:
 
-src/ags/thread/ags_thread-posix.h:
-
-src/ags-lib/object/ags_connectable.h:
-
 /usr/include/libxml2/libxml/tree.h:
 
 /usr/include/stdio.h:
@@ -555,5 +549,3 @@ src/ags-lib/object/ags_connectable.h:
 /usr/include/libxml2/libxml/xlink.h:
 
 /usr/include/libxml2/libxml/SAX2.h:
-
-src/ags/thread/ags_returnable_thread.h:

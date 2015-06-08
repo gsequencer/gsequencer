@@ -118,5 +118,5 @@ ags_connectable_disconnect(AgsConnectable *connectable)
   g_return_if_fail(AGS_IS_CONNECTABLE(connectable));
   connectable_interface = AGS_CONNECTABLE_GET_INTERFACE(connectable);
   g_return_if_fail(connectable_interface->disconnect);
-  connectable_interface->connect(connectable);
+  connectable_interface->disconnect(connectable);
 }

@@ -25,6 +25,8 @@
 #include <ags/audio/ags_input.h>
 
 #include <ags/X/ags_machine.h>
+#include <ags/X/ags_pad.h>
+#include <ags/X/ags_line.h>
 
 void ags_resize_audio_class_init(AgsResizeAudioClass *resize_audio);
 void ags_resize_audio_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -152,7 +154,7 @@ ags_resize_audio_launch(AgsTask *task)
   AgsResizeAudio *resize_audio;
   AgsMachine *machine;
   AgsChannel *iter;
-  GList *list;
+  GList *list, *list_start;
   guint pads_old;
   
   resize_audio = AGS_RESIZE_AUDIO(task);
@@ -177,7 +179,8 @@ ags_resize_audio_launch(AgsTask *task)
     }
 
     machine = (AgsMachine *) resize_audio->audio->machine;
-    list = gtk_container_get_children(machine->output);
+    list_start = 
+      list = gtk_container_get_children(machine->output);
     list = g_list_nth(list,
 		      pads_old);
 
@@ -187,6 +190,8 @@ ags_resize_audio_launch(AgsTask *task)
 
       list = list->next;
     }
+
+    g_list_free(list_start);
   }
 
   if(resize_audio->audio->input_pads != resize_audio->input_pads){
@@ -208,7 +213,8 @@ ags_resize_audio_launch(AgsTask *task)
     }
 
     machine = (AgsMachine *) resize_audio->audio->machine;
-    list = gtk_container_get_children(machine->input);
+    list_start = 
+      list = gtk_container_get_children(machine->input);
     list = g_list_nth(list,
 		      pads_old);
 
@@ -218,11 +224,46 @@ ags_resize_audio_launch(AgsTask *task)
 
       list = list->next;
     }
+
+    g_list_free(list_start);
   }
 
   if(resize_audio->audio->audio_channels != resize_audio->audio_channels){
+    AgsPad *pad;
+    GList *line, *line_start;
+    guint audio_channels_old;
+
+    audio_channels_old = resize_audio->audio->audio_channels;
     ags_audio_set_audio_channels(resize_audio->audio,
 				 resize_audio->audio_channels);
+
+    machine = (AgsMachine *) resize_audio->audio->machine;
+    
+    list_start = 
+      list = gtk_container_get_children(machine->output);
+    
+    while(list != NULL){
+      pad = list->data;
+	
+      gtk_widget_show_all(pad);
+	
+      list = list->next;
+    }
+      
+    g_list_free(list_start);
+      
+    list_start = 
+      list = gtk_container_get_children(machine->input);
+      
+    while(list != NULL){
+      pad = list->data;
+	
+      gtk_widget_show_all(pad);
+	
+      list = list->next;
+    }
+      
+    g_list_free(list_start);
   }
 }
 

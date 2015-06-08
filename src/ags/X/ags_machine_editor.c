@@ -352,7 +352,18 @@ ags_machine_editor_connect(AgsConnectable *connectable)
 void
 ags_machine_editor_disconnect(AgsConnectable *connectable)
 {
-  /* empty */
+  AgsMachineEditor *machine_editor;
+
+  machine_editor = AGS_MACHINE_EDITOR(connectable);
+
+  /* AgsMachineEditor tabs */
+  ags_connectable_disconnect(AGS_CONNECTABLE(machine_editor->output_editor));
+  ags_connectable_disconnect(AGS_CONNECTABLE(machine_editor->input_editor));
+
+  ags_connectable_disconnect(AGS_CONNECTABLE(machine_editor->output_link_editor));
+  ags_connectable_disconnect(AGS_CONNECTABLE(machine_editor->input_link_editor));
+
+  ags_connectable_disconnect(AGS_CONNECTABLE(machine_editor->resize_editor));
 }
 
 void
@@ -404,7 +415,7 @@ ags_machine_editor_reset(AgsApplicable *applicable)
 }
 
 void
-ags_machine_editor_destroy(GtkObject *object)
+ags_machine_editor_destroy(GtkObject *gobject)
 {
   /* empty */
 }
