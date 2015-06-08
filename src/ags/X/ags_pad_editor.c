@@ -224,8 +224,8 @@ ags_pad_editor_connect(AgsConnectable *connectable)
   /* AgsAudio */
   audio = AGS_AUDIO(pad_editor->pad->audio);
 
-  g_signal_connect_after(G_OBJECT(audio), "set_audio_channels\0",
-			 G_CALLBACK(ags_pad_editor_set_audio_channels_callback), pad_editor);
+  pad_editor->set_audio_channels_handler = g_signal_connect_after(G_OBJECT(audio), "set_audio_channels\0",
+								  G_CALLBACK(ags_pad_editor_set_audio_channels_callback), pad_editor);
 
   /* AgsLineEditor */
   line_editor_start = 
@@ -243,7 +243,16 @@ ags_pad_editor_connect(AgsConnectable *connectable)
 void
 ags_pad_editor_disconnect(AgsConnectable *connectable)
 {
-  /* empty */
+  AgsPadEditor *pad_editor;
+  AgsAudio *audio;
+
+  pad_editor = AGS_PAD_EDITOR(connectable);
+
+  /* AgsAudio */
+  audio = AGS_AUDIO(pad_editor->pad->audio);
+  
+  g_signal_handler_disconnect(audio,
+			      pad_editor->set_audio_channels_handler);
 }
 
 void

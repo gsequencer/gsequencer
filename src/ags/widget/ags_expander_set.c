@@ -133,7 +133,7 @@ ags_expander_set_init(AgsExpanderSet *expander_set)
 {
   g_object_set(G_OBJECT(expander_set),
 	       "app-paintable\0", TRUE,
-	       "homogeneous", TRUE,
+	       "homogeneous", FALSE,
 	       NULL);
 
   g_signal_connect(expander_set, "notify::n-columns\0",

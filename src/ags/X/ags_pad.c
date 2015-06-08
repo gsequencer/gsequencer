@@ -558,7 +558,7 @@ ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
     GList *list, *list_start;
 
     list_start =
-      list = g_list_nth(gtk_container_get_children(GTK_CONTAINER(pad->expander_set)),
+      list = g_list_nth(g_list_reverse(gtk_container_get_children(GTK_CONTAINER(pad->expander_set))),
 			audio_channels);
     
     while(list != NULL){

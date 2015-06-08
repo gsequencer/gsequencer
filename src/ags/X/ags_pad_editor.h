@@ -49,6 +49,8 @@ struct _AgsPadEditor
 
   GtkExpander *line_editor_expander;
   GtkVBox *line_editor;
+
+  gulong set_audio_channels_handler;
 };
 
 struct _AgsPadEditorClass

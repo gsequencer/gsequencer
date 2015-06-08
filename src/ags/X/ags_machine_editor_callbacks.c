@@ -18,6 +18,7 @@
 
 #include <ags/X/ags_machine_editor_callbacks.h>
 
+#include <ags-lib/object/ags_connectable.h>
 #include <ags/object/ags_applicable.h>
 
 #include <ags/audio/ags_audio.h>
@@ -97,6 +98,7 @@ int
 ags_machine_editor_ok_callback(GtkWidget *widget, AgsMachineEditor *machine_editor)
 {
   //  ags_applicable_set_update(AGS_APPLICABLE(machine_editor), FALSE);
+  ags_connectable_disconnect(AGS_CONNECTABLE(machine_editor));
   ags_applicable_apply(AGS_APPLICABLE(machine_editor));
 
   gtk_widget_destroy((GtkWidget *) machine_editor);
