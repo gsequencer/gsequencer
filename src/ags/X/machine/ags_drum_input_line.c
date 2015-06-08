@@ -471,7 +471,7 @@ ags_drum_input_line_map_recall(AgsLine *line,
 		       source->audio_channel);
     ags_port_safe_write(play_channel->audio_channel,
 			&audio_channel_value);
-
+    
     list = list->next;
   }
 
