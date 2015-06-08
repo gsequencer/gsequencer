@@ -237,36 +237,58 @@ ags_resize_audio_launch(AgsTask *task)
     ags_audio_set_audio_channels(resize_audio->audio,
 				 resize_audio->audio_channels);
 
-    machine = (AgsMachine *) resize_audio->audio->machine;
-    
-    list_start = 
-      list = gtk_container_get_children(machine->output);
-    
-    while(list != NULL){
-      pad = list->data;
-	
-      gtk_widget_show_all(pad);
-	
-      list = list->next;
+    if(resize_audio->audio_channels > audio_channels_old){
+      machine = (AgsMachine *) resize_audio->audio->machine;
+
+      list_start = 
+	list = gtk_container_get_children(machine->output);
+
+      while(list != NULL){
+	pad = list->data;
+
+	line = g_list_reverse(gtk_container_get_children(pad->expander_set));
+	line = g_list_nth(line,
+			  audio_channels_old);
+
+	while(line != NULL){
+	  ags_connectable_connect(AGS_CONNECTABLE(line->data));
+	  gtk_widget_show_all(line->data);
+	  g_message("sho");
+	  
+	  line = line->next;
+	}
+
+	list = list->next;
+      }
+      
+      g_list_free(list_start);
+
+      list_start = 
+	list = gtk_container_get_children(machine->input);
+      
+      while(list != NULL){
+	pad = list->data;
+
+	line = g_list_reverse(gtk_container_get_children(pad->expander_set));
+	line = g_list_nth(line,
+			  audio_channels_old);
+
+	while(line != NULL){
+	  ags_connectable_connect(AGS_CONNECTABLE(line->data));
+	  gtk_widget_show_all(line->data);
+	  g_message("sho");
+	  
+	  line = line->next;
+	}
+
+	list = list->next;
+      }
+
+      g_list_free(list_start);
     }
-      
-    g_list_free(list_start);
-      
-    list_start = 
-      list = gtk_container_get_children(machine->input);
-      
-    while(list != NULL){
-      pad = list->data;
-	
-      gtk_widget_show_all(pad);
-	
-      list = list->next;
-    }
-      
-    g_list_free(list_start);
   }
 }
-
+  
 /**
  * ags_resize_audio_new:
  * @audio: the #AgsAudio to resize
