@@ -132,22 +132,33 @@ ags_navigation_play_callback(GtkWidget *widget,
   AgsWindow *window;
   AgsMachine *machine;
   GList *machines, *machines_start;
-
+  gboolean initialized_time;
+  
   if((AGS_NAVIGATION_BLOCK_PLAY & (navigation->flags)) != 0){
     return;
   }
 
   window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
+  
   machines_start =
     machines = gtk_container_get_children(GTK_CONTAINER(window->machines));
-
+  
+  initialized_time = FALSE;
+  
   while(machines != NULL){
     machine = AGS_MACHINE(machines->data);
 
     if((AGS_MACHINE_IS_SEQUENCER & (machine->flags)) != 0 ||
        (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0){
+#ifdef AGS_DEBUG
       printf("found machine to play!\n\0");
-
+#endif
+      
+      if(!initialized_time){
+	initialized_time = TRUE;
+	navigation->start_tact = window->devout->tact_counter;
+      }
+      
       ags_machine_set_run(machine,
 			  TRUE);
     }

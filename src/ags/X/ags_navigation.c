@@ -21,6 +21,7 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/X/ags_window.h>
 #include <ags/X/ags_editor.h>
 
 void ags_navigation_class_init(AgsNavigationClass *navigation);
@@ -427,19 +428,23 @@ ags_navigation_show(GtkWidget *widget)
 
 void
 ags_navigation_real_change_position(AgsNavigation *navigation,
-				    gdouble tact)
+				    gdouble tact_counter)
 {
-  gchar *timestr, *str;
+  AgsWindow *window;
+  AgsEditor *editor;
+  double tact_factor, zoom_factor;
+  double tact;
 
-  g_object_get(navigation->duration_time,
-	       "label\0", &str,
-	       NULL);
-  ags_navigation_update_time_string(tact,
-  				    str);
-  //  g_object_set(navigation->duration_time,
-  //	       "label\0", str,
-  //	       NULL);
-  //  gtk_widget_show_all(navigation->duration_time);
+  window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
+  editor = window->editor;
+
+  zoom_factor = 0.25;
+
+  tact_factor = exp2(8.0 - (double) gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->zoom));
+  tact = exp2((double) gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->zoom) - 4.0);
+
+  gtk_adjustment_set_value(GTK_RANGE(editor->note_edit->hscrollbar)->adjustment,
+			   tact_counter * window->editor->note_edit->control_current.control_width * (16.0 / tact_factor));
 }
 
 /**
@@ -476,7 +481,8 @@ ags_navigation_change_position(AgsNavigation *navigation,
  * Since: 0.4 
  */
 gchar*
-ags_navigation_tact_to_time_string(gdouble tact)
+ags_navigation_tact_to_time_string(gdouble tact,
+				   gdouble bpm)
 {
   static gdouble delay_min, delay_sec, delay_hsec;
   static gboolean initialized = FALSE;
@@ -485,7 +491,7 @@ ags_navigation_tact_to_time_string(gdouble tact)
   guint min, sec, hsec;
 
   if(!initialized){
-    delay_min = AGS_DEVOUT_DEFAULT_BPM;
+    delay_min = bpm;
     delay_sec = delay_min / 60.0;
     delay_hsec = delay_sec / 100.0;
 

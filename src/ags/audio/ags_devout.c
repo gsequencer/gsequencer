@@ -475,6 +475,7 @@ ags_devout_init(AgsDevout *devout)
   }
 
   /*  */
+  devout->tact_counter = 0.0;
   devout->delay_counter = 0;
   devout->tic_counter = 0;
 
@@ -1382,6 +1383,7 @@ ags_devout_alsa_init(AgsDevout *devout,
 
   /*  */
   devout->out.alsa.handle = handle;
+  devout->tact_counter = 0.0;
   devout->delay_counter = 0.0;
   devout->tic_counter = 0;
 
@@ -1565,6 +1567,7 @@ ags_devout_alsa_play(AgsDevout *devout,
 
     /* delay */
     devout->delay_counter = 0.0;
+    devout->tact_counter += 1.0;
   } 
 
   /* tic */

@@ -294,6 +294,10 @@ ags_toolbar_zoom_callback(GtkComboBox *combo_box, AgsToolbar *toolbar)
   GtkWidget *widget;
   GtkAdjustment *adjustment;
   double zoom, zoom_old;
+  double tact_factor, zoom_factor;
+  double tact;
+  gdouble old_upper, new_upper;
+  gdouble position;
   guint history;
 
   editor = (AgsEditor *) gtk_widget_get_ancestor((GtkWidget *) toolbar, AGS_TYPE_EDITOR);
@@ -303,12 +307,25 @@ ags_toolbar_zoom_callback(GtkComboBox *combo_box, AgsToolbar *toolbar)
   zoom = exp2((double) history - 4.0);
   zoom_old = exp2((double) toolbar->zoom_history - 4.0);
 
+  zoom_factor = 0.25;
+
+  tact_factor = exp2(8.0 - (double) gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->zoom));
+  tact = exp2((double) gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->zoom) - 4.0);
+
   toolbar->zoom_history = history;
 
+  position = GTK_RANGE(editor->note_edit->hscrollbar)->adjustment->value;
+  old_upper = GTK_RANGE(editor->note_edit->hscrollbar)->adjustment->upper;
+  
   editor->note_edit->flags |= AGS_NOTE_EDIT_RESETING_HORIZONTALLY;
   ags_note_edit_reset_horizontally(editor->note_edit, AGS_NOTE_EDIT_RESET_HSCROLLBAR |
 				   AGS_NOTE_EDIT_RESET_WIDTH);
   editor->note_edit->flags &= (~AGS_NOTE_EDIT_RESETING_HORIZONTALLY);
+
+  new_upper = GTK_RANGE(editor->note_edit->hscrollbar)->adjustment->upper;
+  
+  gtk_adjustment_set_value(GTK_RANGE(editor->note_edit->hscrollbar)->adjustment,
+			   position / old_upper * new_upper);
 }
 
 void

@@ -145,17 +145,23 @@ void
 ags_display_tact_launch(AgsTask *task)
 {
   AgsDisplayTact *display_tact;
+  AgsWindow *window;
   AgsNavigation *navigation;
   gchar *timestr;
+  gdouble tact;
 
   display_tact = AGS_DISPLAY_TACT(task);
   
   navigation = AGS_NAVIGATION(display_tact->navigation);
-
+  window = gtk_widget_get_ancestor(navigation,
+				   AGS_TYPE_WINDOW);
+  
   //  gtk_adjustment_set_value(navigation->position_tact->adjustment,
   //			   navigation->position_tact->adjustment->value + (exp2(-4.0)));
 
-  timestr = ags_navigation_tact_to_time_string(navigation->position_tact->adjustment->value);
+  tact = window->devout->tact_counter - navigation->start_tact;
+  timestr = ags_navigation_tact_to_time_string(tact,
+					       navigation->bpm->adjustment->value);
   gtk_label_set_text(navigation->duration_time, timestr);
 
   g_free(timestr);

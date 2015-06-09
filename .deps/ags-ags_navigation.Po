@@ -622,11 +622,16 @@ ags-ags_navigation.o: src/ags/X/ags_navigation.c \
  /usr/include/libxml2/libxml/xlink.h /usr/include/libxml2/libxml/SAX2.h \
  src/ags/thread/ags_timestamp_thread.h src/ags/audio/ags_timestamp.h \
  src/ags/audio/ags_note.h src/ags/X/ags_navigation_callbacks.h \
- src/ags-lib/object/ags_connectable.h src/ags/X/ags_editor.h \
- src/ags/audio/ags_audio.h src/ags/X/ags_machine.h \
+ src/ags-lib/object/ags_connectable.h src/ags/X/ags_window.h \
+ src/ags/X/ags_menu_bar.h src/ags/X/ags_machine.h \
+ src/ags/audio/ags_audio.h src/ags/X/ags_editor.h \
  src/ags/X/editor/ags_toolbar.h src/ags/X/editor/ags_machine_selector.h \
  src/ags/X/editor/ags_notebook.h src/ags/X/editor/ags_meter.h \
- src/ags/X/editor/ags_note_edit.h src/ags/widget/ags_ruler.h
+ src/ags/X/editor/ags_note_edit.h src/ags/widget/ags_ruler.h \
+ src/ags/X/ags_export_window.h src/ags/X/ags_preferences.h \
+ src/ags/X/ags_generic_preferences.h src/ags/X/ags_audio_preferences.h \
+ src/ags/X/ags_performance_preferences.h \
+ src/ags/X/ags_server_preferences.h
 
 /usr/include/stdc-predef.h:
 
@@ -2072,11 +2077,15 @@ src/ags/X/ags_navigation_callbacks.h:
 
 src/ags-lib/object/ags_connectable.h:
 
-src/ags/X/ags_editor.h:
+src/ags/X/ags_window.h:
+
+src/ags/X/ags_menu_bar.h:
+
+src/ags/X/ags_machine.h:
 
 src/ags/audio/ags_audio.h:
 
-src/ags/X/ags_machine.h:
+src/ags/X/ags_editor.h:
 
 src/ags/X/editor/ags_toolbar.h:
 
@@ -2089,3 +2098,15 @@ src/ags/X/editor/ags_meter.h:
 src/ags/X/editor/ags_note_edit.h:
 
 src/ags/widget/ags_ruler.h:
+
+src/ags/X/ags_export_window.h:
+
+src/ags/X/ags_preferences.h:
+
+src/ags/X/ags_generic_preferences.h:
+
+src/ags/X/ags_audio_preferences.h:
+
+src/ags/X/ags_performance_preferences.h:
+
+src/ags/X/ags_server_preferences.h:
