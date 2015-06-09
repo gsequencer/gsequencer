@@ -256,8 +256,8 @@ ags_navigation_init(AgsNavigation *navigation)
   gtk_widget_queue_draw((GtkWidget *) navigation->duration_time);
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->duration_time, FALSE, FALSE, 2);
 
-  navigation->duration_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, AGS_NOTE_EDIT_MAX_CONTROLS * 64.0, 1.0);
-  gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->duration_tact, FALSE, FALSE, 2);
+  //  navigation->duration_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, AGS_NOTE_EDIT_MAX_CONTROLS * 64.0, 1.0);
+  //  gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->duration_tact, FALSE, FALSE, 2);
 
 
   /* expansion */
@@ -279,10 +279,10 @@ ags_navigation_init(AgsNavigation *navigation)
 			    4.0);
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->loop_right_tact, FALSE, FALSE, 2);
 
-  navigation->scroll = (GtkCheckButton *) gtk_check_button_new_with_label("auto-scroll\0");
-  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(navigation->scroll),
-			       TRUE);
-  gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->scroll, FALSE, FALSE, 2);
+  //  navigation->scroll = (GtkCheckButton *) gtk_check_button_new_with_label("auto-scroll\0");
+  //  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(navigation->scroll),
+  //			       TRUE);
+  //  gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->scroll, FALSE, FALSE, 2);
 }
 
 void
@@ -380,8 +380,8 @@ ags_navigation_connect(AgsConnectable *connectable)
   g_signal_connect_after((GObject *) navigation->position_tact, "value-changed\0",
 			 G_CALLBACK(ags_navigation_position_tact_callback), (gpointer) navigation);
 
-  g_signal_connect((GObject *) navigation->duration_tact, "value-changed\0",
-		   G_CALLBACK(ags_navigation_duration_tact_callback), (gpointer) navigation);
+  //  g_signal_connect((GObject *) navigation->duration_tact, "value-changed\0",
+  //		   G_CALLBACK(ags_navigation_duration_tact_callback), (gpointer) navigation);
 
   /* devout */
   g_signal_connect_after((GObject *) navigation->devout, "tic\0",
@@ -432,6 +432,7 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
 {
   AgsWindow *window;
   AgsEditor *editor;
+  gchar *timestr;
   double tact_factor, zoom_factor;
   double tact;
 
@@ -440,11 +441,18 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
 
   zoom_factor = 0.25;
 
-  tact_factor = exp2(8.0 - (double) gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->zoom));
-  tact = exp2((double) gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->zoom) - 4.0);
+  tact_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->zoom));
+  tact = exp2((double) gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->zoom) - 2.0);
 
   gtk_adjustment_set_value(GTK_RANGE(editor->note_edit->hscrollbar)->adjustment,
 			   tact_counter * window->editor->note_edit->control_current.control_width * (16.0 / tact_factor));
+
+  timestr = ags_navigation_tact_to_time_string(tact_counter,
+					       navigation->bpm->adjustment->value);
+  gtk_label_set_text(navigation->position_time, timestr);
+  
+  g_free(timestr);
+
 }
 
 /**
