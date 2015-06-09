@@ -64,8 +64,13 @@ void
 ags_export_window_tact_callback(GtkWidget *spin_button,
 				AgsExportWindow *export_window)
 {
+  AgsWindow *window;
+
+  window = AGS_MAIN(export_window->ags_main)->window;
+
   gtk_label_set_text(export_window->duration,
-		     ags_navigation_tact_to_time_string(gtk_spin_button_get_value(export_window->tact)));
+		     ags_navigation_tact_to_time_string(gtk_spin_button_get_value(export_window->tact),
+							window->navigation->bpm->adjustment->value));
 }
 
 void

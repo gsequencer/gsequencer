@@ -135,6 +135,7 @@ struct _AgsDevout
   gdouble *delay; // count of tics within buffer size
   guint *attack; // where currently tic resides in the stream's offset, measured in 1/64 of bpm
 
+  gdouble tact_counter;
   gdouble delay_counter; // next time attack changeing when delay_counter == delay
   guint tic_counter; // in the range of default period
 

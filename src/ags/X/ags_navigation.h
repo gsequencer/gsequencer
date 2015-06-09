@@ -52,7 +52,8 @@ struct _AgsNavigation
   guint flags;
 
   AgsDevout *devout;
-
+  guint start_tact;
+  
   GtkToggleButton *expander;
 
   GtkSpinButton *bpm;
@@ -89,7 +90,9 @@ struct _AgsNavigationClass
 
 GType ags_navigation_get_type(void);
 
-gchar* ags_navigation_tact_to_time_string(gdouble tact);
+gchar* ags_navigation_tact_to_time_string(gdouble tact,
+					  gdouble bpm);
+
 void ags_navigation_update_time_string(double tact,
 				       gchar *time_string);
 
