@@ -163,7 +163,7 @@ ags_note_edit_drawing_area_button_press_event (GtkWidget *widget, GdkEventButton
 
     if((AGS_NOTE_EDIT_ADDING_NOTE & (note_edit->flags)) != 0 ||
        (AGS_NOTE_EDIT_POSITION_CURSOR & (note_edit->flags)) != 0){
-      tact = exp2(8.0 - (double) gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->zoom));
+      tact = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->zoom));
       
       if(AGS_IS_PANEL(machine)){
       }else if(AGS_IS_MIXER(machine)){
@@ -455,7 +455,7 @@ ags_note_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
     note_edit->control.x1_offset = (guint) round((double) note_edit->hscrollbar->scrollbar.range.adjustment->value);
     note_edit->control.y1_offset = (guint) round((double) note_edit->vscrollbar->scrollbar.range.adjustment->value);
 
-    tact = exp2(8.0 - (double) gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->zoom));
+    tact = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->zoom));
 
     cr = gdk_cairo_create(widget->window);
     cairo_push_group(cr);
@@ -722,7 +722,7 @@ ags_note_edit_drawing_area_motion_notify_event (GtkWidget *widget, GdkEventMotio
     note_edit->control.x1_offset = (guint) round((double) note_edit->hscrollbar->scrollbar.range.adjustment->value);
     note_edit->control.y1_offset = (guint) round((double) note_edit->vscrollbar->scrollbar.range.adjustment->value);
 
-    tact = exp2(8.0 - (double) gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->zoom));
+    tact = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->zoom));
 
     cr = gdk_cairo_create(widget->window);
     cairo_push_group(cr);

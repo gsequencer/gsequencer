@@ -304,13 +304,13 @@ ags_toolbar_zoom_callback(GtkComboBox *combo_box, AgsToolbar *toolbar)
 
   history = gtk_combo_box_get_active(combo_box);
 
-  zoom = exp2((double) history - 4.0);
-  zoom_old = exp2((double) toolbar->zoom_history - 4.0);
+  zoom = exp2((double) history - 2.0);
+  zoom_old = exp2((double) toolbar->zoom_history - 2.0);
 
   zoom_factor = 0.25;
 
-  tact_factor = exp2(8.0 - (double) gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->zoom));
-  tact = exp2((double) gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->zoom) - 4.0);
+  tact_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->zoom));
+  tact = exp2((double) gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->zoom) - 2.0);
 
   toolbar->zoom_history = history;
 

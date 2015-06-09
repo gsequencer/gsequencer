@@ -460,10 +460,10 @@ ags_zoom_combo_box_new()
 
   combo_box = (GtkComboBoxText *) gtk_combo_box_text_new();
 
-  gtk_combo_box_text_append_text(combo_box,
-				 "16:1\0");
-  gtk_combo_box_text_append_text(combo_box,
-				 "8:1\0");
+  //  gtk_combo_box_text_append_text(combo_box,
+  //				 "16:1\0");
+  //  gtk_combo_box_text_append_text(combo_box,
+  //				 "8:1\0");
   gtk_combo_box_text_append_text(combo_box,
 				 "4:1\0");
   gtk_combo_box_text_append_text(combo_box,
