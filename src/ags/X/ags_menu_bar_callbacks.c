@@ -473,8 +473,8 @@ ags_menu_bar_about_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   gchar *authors[] = { "Joël Krähemann\0", NULL }; 
 
   if(file == NULL){
-    file = fopen("./COPYING\0", "r\0");
-    stat("./COPYING\0", &sb);
+    file = fopen("/usr/share/common-licenses/GPL-3\0", "r\0");
+    stat("/usr/share/common-licenses/GPL-3\0", &sb);
     license = (gchar *) malloc((sb.st_size + 1) * sizeof(gchar));
     fread(license, sizeof(char), sb.st_size, file);
     license[sb.st_size] = '\0';
@@ -482,7 +482,7 @@ ags_menu_bar_about_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 
     error = NULL;
 
-    logo = gdk_pixbuf_new_from_file("./doc/images/ags.png\0", &error);
+    logo = gdk_pixbuf_new_from_file("/usr/share/gsequencer/images/ags.png\0", &error);
   }
 
   gtk_show_about_dialog((GtkWindow *) gtk_widget_get_ancestor((GtkWidget *) menu_bar, GTK_TYPE_WINDOW),
@@ -490,7 +490,7 @@ ags_menu_bar_about_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 			"authors\0", authors,
 			"license\0", license,
 			"version\0", AGS_VERSION,
-			"website\0", "http://ags.sf.net\0",
+			"website\0", "http://gsequencer.org\0",
 			"title\0", "Advanced Gtk+ Sequencer\0",
 			"logo\0", logo,
 			NULL);

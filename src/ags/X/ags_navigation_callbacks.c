@@ -112,8 +112,8 @@ ags_navigation_rewind_callback(GtkWidget *widget,
 			       AgsNavigation *navigation)
 {
   gtk_spin_button_set_value(navigation->position_tact,
-			    -1.0 * AGS_NAVIGATION_REWIND_STEPS +
-			    AGS_NAVIGATION_DEFAULT_TACT_STEP);
+			    navigation->position_tact->adjustment->value +
+			    (-1.0 * AGS_NAVIGATION_REWIND_STEPS));
 }
 
 void
@@ -121,8 +121,8 @@ ags_navigation_prev_callback(GtkWidget *widget,
 			     AgsNavigation *navigation)
 {
   gtk_spin_button_set_value(navigation->position_tact,
-			    -1.0 * AGS_NAVIGATION_SEEK_STEPS +
-			    AGS_NAVIGATION_DEFAULT_TACT_STEP);
+			    navigation->position_tact->adjustment->value +
+			    (-1.0 * AGS_NAVIGATION_SEEK_STEPS));
 }
 
 void
@@ -210,8 +210,8 @@ ags_navigation_next_callback(GtkWidget *widget,
 			     AgsNavigation *navigation)
 {
   gtk_spin_button_set_value(navigation->position_tact,
-			    AGS_NAVIGATION_REWIND_STEPS+
-			    AGS_NAVIGATION_DEFAULT_TACT_STEP);
+			    navigation->position_tact->adjustment->value +
+			    AGS_NAVIGATION_REWIND_STEPS);
 }
 
 void
@@ -220,7 +220,7 @@ ags_navigation_forward_callback(GtkWidget *widget,
 {
 
   gtk_spin_button_set_value(navigation->position_tact,
-			    AGS_NAVIGATION_SEEK_STEPS +
+			    navigation->position_tact->adjustment->value +
 			    AGS_NAVIGATION_DEFAULT_TACT_STEP);
 }
 

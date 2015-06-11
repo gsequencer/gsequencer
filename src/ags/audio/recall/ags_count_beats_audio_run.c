@@ -36,6 +36,8 @@
 
 #include <ags/audio/ags_recall_container.h>
 
+#include <ags/audio/recall/ags_delay_audio.h>
+#include <ags/audio/recall/ags_delay_audio_run.h>
 #include <ags/audio/recall/ags_stream_channel_run.h>
 
 #include <math.h>
@@ -660,9 +662,23 @@ ags_count_beats_audio_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_conn
 void
 ags_count_beats_audio_run_seek(AgsSeekable *seekable,
 			       guint steps,
-			       gboolean forward)
+			       gboolean move_forward)
 {
-  //TODO:JK: implement this function
+  AgsDelayAudio *delay_audio;
+  AgsDelayAudioRun *delay_audio_run;
+  AgsCountBeatsAudioRun *count_beats_audio_run;
+
+  count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(seekable);
+  delay_audio_run = count_beats_audio_run->delay_audio_run;
+  delay_audio = AGS_RECALL_AUDIO_RUN(delay_audio_run)->recall_audio;
+  
+  if(move_forward){
+    count_beats_audio_run->notation_counter += steps;
+    count_beats_audio_run->sequencer_counter += (steps % (guint) delay_audio->sequencer_duration->port_value.ags_port_double);
+  }else{
+    count_beats_audio_run->notation_counter -= steps;
+    count_beats_audio_run->sequencer_counter -= (steps % (guint) delay_audio->sequencer_duration->port_value.ags_port_double);
+  }
 }
 
 guint

@@ -320,7 +320,7 @@ ags_devout_class_init(AgsDevoutClass *devout)
 				  PROP_BPM,
 				  param_spec);
   /**
-   * AgsDevout:bpm:
+   * AgsDevout:attack:
    *
    * Attack of the buffer
    * 
@@ -619,7 +619,37 @@ ags_devout_set_property(GObject *gobject,
     break;
   case PROP_BPM:
     {
-	//TODO:JK: implement me
+      gdouble bpm;
+      gdouble delay;
+      guint default_tact_frames;
+      guint default_period;
+      guint i;
+      
+      bpm = g_value_get_double(value);
+
+      devout->bpm = bpm;
+
+      /* delay and attack */
+      devout->delay = (gdouble *) malloc((int) 2 * AGS_DEVOUT_DEFAULT_PERIOD *
+					 sizeof(gdouble));
+  
+      devout->attack = (guint *) malloc((int) 2 * AGS_DEVOUT_DEFAULT_PERIOD *
+					sizeof(guint));
+  
+      delay = ((gdouble) devout->frequency / (gdouble) devout->buffer_size) * (gdouble)(60.0 / devout->bpm);
+      default_tact_frames = (guint) (delay * devout->buffer_size);
+      default_period = (1.0 / AGS_DEVOUT_DEFAULT_PERIOD) * (default_tact_frames);
+
+      devout->attack[0] = 0;
+      devout->delay[0] = delay;
+  
+      for(i = 1; i < (int)  2.0 * AGS_DEVOUT_DEFAULT_PERIOD; i++){
+	devout->attack[i] = (guint) ((i * default_tact_frames + devout->attack[i - 1]) / (AGS_DEVOUT_DEFAULT_PERIOD / (delay * i))) % (guint) (devout->buffer_size);
+      }
+  
+      for(i = 1; i < (int) 2.0 * AGS_DEVOUT_DEFAULT_PERIOD; i++){
+	devout->delay[i] = ((gdouble) (default_tact_frames + devout->attack[i])) / (gdouble) devout->buffer_size;
+      }
     }
     break;
   default:

@@ -19,7 +19,14 @@
 #include <ags/X/ags_navigation.h>
 #include <ags/X/ags_navigation_callbacks.h>
 
+#include <ags/main.h>
+
 #include <ags-lib/object/ags_connectable.h>
+
+#include <ags/thread/ags_audio_loop.h>
+#include <ags/thread/ags_task_thread.h>
+
+#include <ags/audio/task/ags_seek_devout.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_editor.h>
@@ -182,6 +189,8 @@ ags_navigation_init(AgsNavigation *navigation)
   g_signal_connect_after(G_OBJECT(navigation), "parent-set\0",
 			 G_CALLBACK(ags_navigation_parent_set_callback), NULL);
 
+  navigation->start_tact = 0.0;
+  
   /* GtkWidget */
   hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
   gtk_box_pack_start((GtkBox *) navigation, (GtkWidget *) hbox, FALSE, FALSE, 2);
@@ -432,12 +441,37 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
 {
   AgsWindow *window;
   AgsEditor *editor;
+  AgsSeekDevout *seek_devout;
   gchar *timestr;
   double tact_factor, zoom_factor;
   double tact;
-
+  gdouble delay;
+  guint steps;
+  gboolean move_forward;
+  
   window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
   editor = window->editor;
+
+  /* seek devout */
+  delay = (window->devout->frequency / window->devout->buffer_size * (60.0 / navigation->bpm->adjustment->value));
+
+  if(navigation->start_tact < tact_counter){
+    steps = (guint) ((tact_counter - navigation->start_tact) * delay);
+    move_forward = TRUE;
+  }else{
+    steps = (guint) ((navigation->start_tact - tact_counter) * delay);
+    move_forward = FALSE;
+  }
+  
+  seek_devout = ags_seek_devout_new(window->devout,
+				    steps,
+				    move_forward);
+
+  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->task_thread),
+			      AGS_TASK(seek_devout));
+
+  /* update GUI */
+  navigation->start_tact = tact_counter;
 
   zoom_factor = 0.25;
 
@@ -452,7 +486,6 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
   gtk_label_set_text(navigation->position_time, timestr);
   
   g_free(timestr);
-
 }
 
 /**
