@@ -18,26 +18,47 @@
 
 #include <ags/object/ags_seekable.h>
 
-void ags_seekable_base_init(AgsSeekableInterface *interface);
+#include <ags/object/ags_marshal.h>
+
+void ags_seekable_class_init(AgsSeekableInterface *interface);
 
 GType
 ags_seekable_get_type()
 {
-  static GType ags_type_seekable = 0;
+  static GType seekable_type = 0;
 
-  if(!ags_type_seekable){
-    static const GTypeInfo ags_seekable_info = {
-      sizeof(AgsSeekableInterface),
-      (GBaseInitFunc) ags_seekable_base_init,
-      NULL, /* base_finalize */
-    };
-
-    ags_type_seekable = g_type_register_static(G_TYPE_INTERFACE,
-					       "AgsSeekable\0", &ags_seekable_info,
-					       0);
+  if(!seekable_type){
+    seekable_type = g_type_register_static_simple (G_TYPE_INTERFACE,
+						   "AgsSeekable\0",
+						   sizeof (AgsSeekableInterface),
+						   (GClassInitFunc) ags_seekable_class_init,
+						   0, NULL, 0);
   }
+  
+  return seekable_type;
+}
 
-  return(ags_type_seekable);
+void
+ags_seekable_class_init(AgsSeekableInterface *interface)
+{
+  /**
+   * AgsSeekable::seek:
+   * @seekable: the object
+   * @steps: relative seeking
+   * @forward: direction to seek, if %TRUE seek forward
+   *
+   * The ::seek signal notifies about changed position
+   * of sequencer.
+   */
+  g_signal_new("seek\0",
+	       G_TYPE_FROM_INTERFACE(interface),
+	       G_SIGNAL_RUN_LAST,
+	       G_STRUCT_OFFSET(AgsSeekableInterface, seek),
+	       NULL, NULL,
+	       g_cclosure_user_marshal_VOID__UINT_BOOLEAN,
+	       G_TYPE_NONE, 2,
+	       G_TYPE_UINT,
+	       G_TYPE_BOOLEAN);
 }
 
 void

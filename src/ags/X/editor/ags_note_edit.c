@@ -127,7 +127,7 @@ ags_note_edit_init(AgsNoteEdit *note_edit)
 
   note_edit->width = 0;
   note_edit->height = 0;
-  note_edit->map_width = AGS_NOTE_EDIT_MAX_CONTROLS * 64;
+  note_edit->map_width = AGS_NOTE_EDIT_MAX_CONTROLS * 16 * 64;
   note_edit->map_height = 78;
 
   note_edit->control_height = 14;

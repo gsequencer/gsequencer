@@ -117,7 +117,8 @@ ags-ags_seekable.o: src/ags/object/ags_seekable.c \
  /usr/include/glib-2.0/gobject/gtypeplugin.h \
  /usr/include/glib-2.0/gobject/gvaluearray.h \
  /usr/include/glib-2.0/gobject/gvaluetypes.h \
- /usr/include/glib-2.0/gobject/gobject-autocleanups.h
+ /usr/include/glib-2.0/gobject/gobject-autocleanups.h \
+ src/ags/object/ags_marshal.h
 
 /usr/include/stdc-predef.h:
 
@@ -402,3 +403,5 @@ src/ags/object/ags_seekable.h:
 /usr/include/glib-2.0/gobject/gvaluetypes.h:
 
 /usr/include/glib-2.0/gobject/gobject-autocleanups.h:
+
+src/ags/object/ags_marshal.h:

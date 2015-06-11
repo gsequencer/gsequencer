@@ -209,7 +209,7 @@ ags_navigation_init(AgsNavigation *navigation)
 
   navigation->current_bpm = 120.0;
 
-  navigation->rewind = (GtkToggleButton *) g_object_new(GTK_TYPE_TOGGLE_BUTTON,
+  navigation->rewind = (GtkToggleButton *) g_object_new(GTK_TYPE_BUTTON,
 							"image\0", (GtkWidget *) gtk_image_new_from_stock(GTK_STOCK_MEDIA_REWIND, GTK_ICON_SIZE_LARGE_TOOLBAR),
 							NULL);
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->rewind, FALSE, FALSE, 0);
@@ -234,7 +234,7 @@ ags_navigation_init(AgsNavigation *navigation)
 						NULL);
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->next, FALSE, FALSE, 0);
 
-  navigation->forward = (GtkToggleButton *) g_object_new(GTK_TYPE_TOGGLE_BUTTON,
+  navigation->forward = (GtkToggleButton *) g_object_new(GTK_TYPE_BUTTON,
 							 "image\0", (GtkWidget *) gtk_image_new_from_stock(GTK_STOCK_MEDIA_FORWARD, GTK_ICON_SIZE_LARGE_TOOLBAR),
 							 NULL);
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->forward, FALSE, FALSE, 0);

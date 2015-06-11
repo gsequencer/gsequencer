@@ -31,10 +31,17 @@ gboolean
 ags_note_edit_drawing_area_expose_event(GtkWidget *widget, GdkEventExpose *event, AgsNoteEdit *note_edit)
 {
   AgsEditor *editor;
-
+  guint width;
+  
   editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(note_edit),
 						 AGS_TYPE_EDITOR);
 
+  width = widget->allocation.width;
+  gtk_adjustment_set_upper(GTK_RANGE(note_edit->hscrollbar)->adjustment,
+			   (gdouble) (note_edit->map_width - width));
+  gtk_adjustment_set_upper(note_edit->ruler->adjustment,
+			   (gdouble) (note_edit->map_width - width) / note_edit->control_current.control_width);
+  
   if(editor->selected_machine != NULL){
     AgsMachine *machine;
 
@@ -93,7 +100,7 @@ ags_note_edit_drawing_area_configure_event(GtkWidget *widget, GdkEventConfigure 
 }
 
 gboolean
-ags_note_edit_drawing_area_button_press_event (GtkWidget *widget, GdkEventButton *event, AgsNoteEdit *note_edit)
+ags_note_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventButton *event, AgsNoteEdit *note_edit)
 {
   AgsMachine *machine;
   AgsEditor *editor;

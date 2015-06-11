@@ -114,27 +114,6 @@ void
 ags_editor_change_position_callback(AgsNavigation *navigation, gdouble tact,
 				    AgsEditor *editor)
 {
-  cairo_t *cr;
-  gdouble loop_start, loop_end;
-  gdouble position;
-
-  if(!gtk_toggle_button_get_active((GtkToggleButton *) navigation->scroll)){
-    return;
-  }
-
-  loop_start = gtk_spin_button_get_value(navigation->loop_left_tact);
-  loop_end = gtk_spin_button_get_value(navigation->loop_right_tact);
-
-  if(!gtk_toggle_button_get_active((GtkToggleButton *) navigation->loop) || tact <= loop_end){
-    position = tact * editor->note_edit->control_current.control_width;
-  }else{
-    position = loop_start * editor->note_edit->control_current.control_width;
-  }
-
-  /* scroll */
-  if(position - (0.125 * editor->note_edit->control_current.control_width) > 0.0){
-    gtk_range_set_value(GTK_RANGE(editor->note_edit->hscrollbar),
-			position - (0.125 * editor->note_edit->control_current.control_width));
-  }
+  //empty since no auto-scroll
 }
 
