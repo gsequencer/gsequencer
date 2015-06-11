@@ -168,6 +168,7 @@ ags_machine_selection_run(AgsMachineSelection *machine_selection)
 
   gtk_widget_show_all((GtkWidget *) vbox);
 
+  //FIXME:JK: don't do this
   response = gtk_dialog_run(GTK_DIALOG(machine_selection));
 
   if(response == GTK_RESPONSE_ACCEPT){

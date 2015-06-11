@@ -340,6 +340,7 @@ ags_editor_disconnect(AgsConnectable *connectable)
 void
 ags_editor_real_machine_changed(AgsEditor *editor, AgsMachine *machine)
 {
+  AgsWindow *window;
   guint pads;
 
   if(editor->selected_machine == machine){
@@ -349,9 +350,11 @@ ags_editor_real_machine_changed(AgsEditor *editor, AgsMachine *machine)
   editor->selected_machine = machine;
 
   if(machine == NULL){
+    ags_note_edit_set_map_height(editor->note_edit,
+				 0);
     return;
   }
-
+  
   editor->set_audio_channels_handler = g_signal_connect(machine->audio, "set-audio-channels\0",
 							G_CALLBACK(ags_editor_set_audio_channels_callback), editor);
   editor->set_pads_handler = g_signal_connect(machine->audio, "set-pads\0",

@@ -204,6 +204,10 @@ ags_count_beats_audio_run_get_type()
 				&ags_countable_interface_info);
 
     g_type_add_interface_static(ags_type_count_beats_audio_run,
+				AGS_TYPE_SEEKABLE,
+				&ags_seekable_interface_info);
+
+    g_type_add_interface_static(ags_type_count_beats_audio_run,
 				AGS_TYPE_PLUGIN,
 				&ags_plugin_interface_info);
   }
@@ -664,20 +668,38 @@ ags_count_beats_audio_run_seek(AgsSeekable *seekable,
 			       guint steps,
 			       gboolean move_forward)
 {
+  AgsDevout *devout;
   AgsDelayAudio *delay_audio;
   AgsDelayAudioRun *delay_audio_run;
   AgsCountBeatsAudioRun *count_beats_audio_run;
-
+  gdouble delay;
+  guint seq_steps;
+  
   count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(seekable);
   delay_audio_run = count_beats_audio_run->delay_audio_run;
   delay_audio = AGS_RECALL_AUDIO_RUN(delay_audio_run)->recall_audio;
+
+  devout = AGS_DEVOUT(AGS_RECALL(count_beats_audio_run)->devout);
+  
+  delay = devout->delay[devout->tic_counter];
+  seq_steps = (steps % (guint) delay_audio->sequencer_duration->port_value.ags_port_double);
   
   if(move_forward){
     count_beats_audio_run->notation_counter += steps;
-    count_beats_audio_run->sequencer_counter += (steps % (guint) delay_audio->sequencer_duration->port_value.ags_port_double);
+
+    if(delay * count_beats_audio_run->sequencer_counter + seq_steps < (guint) delay_audio->sequencer_duration->port_value.ags_port_double){
+      count_beats_audio_run->sequencer_counter += seq_steps / delay;
+    }else{
+      count_beats_audio_run->sequencer_counter = (guint) (seq_steps / delay + count_beats_audio_run->sequencer_counter) % (guint) (delay_audio->sequencer_duration->port_value.ags_port_double / delay);
+    }
   }else{
     count_beats_audio_run->notation_counter -= steps;
-    count_beats_audio_run->sequencer_counter -= (steps % (guint) delay_audio->sequencer_duration->port_value.ags_port_double);
+
+    if(delay * count_beats_audio_run->sequencer_counter - seq_steps >= 0){
+      count_beats_audio_run->sequencer_counter -= seq_steps / delay;
+    }else{
+      count_beats_audio_run->sequencer_counter = (guint) (delay_audio->sequencer_duration->port_value.ags_port_double / delay) - (seq_steps / delay - count_beats_audio_run->sequencer_counter);
+    }
   }
 }
 

@@ -154,7 +154,7 @@ ags_seek_devout_launch(AgsTask *task)
   audio = AGS_DEVOUT(seek_devout->devout)->audio;
 
   while(audio != NULL){
-    recall = AGS_AUDIO(audio->data)->recall;
+    recall = AGS_AUDIO(audio->data)->play;
 
     while(recall != NULL){
       if(AGS_IS_SEEKABLE(recall->data)){
