@@ -263,6 +263,9 @@ ags_apply_bpm_devout(AgsApplyBpm *apply_bpm, AgsDevout *devout)
 {
   GList *list;
 
+  g_object_set(devout,
+	       "bpm\0", apply_bpm->bpm,
+	       NULL);
   //TODO:JK: implement me
 
   /* AgsAudio */

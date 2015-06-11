@@ -16,6 +16,7 @@
 
 
 
+
 am__is_gnu_make = test -n '$(MAKEFILE_LIST)' && test -n '$(MAKELEVEL)'
 am__make_running_with_option = \
   case $${target_option-} in \
@@ -95,7 +96,7 @@ CONFIG_HEADER = config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 LIBRARIES = $(noinst_LIBRARIES)
-am__installdirs = "$(DESTDIR)$(bindir)"
+am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(appdatadir)"
 PROGRAMS = $(bin_PROGRAMS)
 am_ags_OBJECTS = ags-ags_connectable.$(OBJEXT) \
 	ags-ags_combo_box_text.$(OBJEXT) ags-ags_list.$(OBJEXT) \
@@ -210,7 +211,7 @@ am_ags_OBJECTS = ags-ags_connectable.$(OBJEXT) \
 	ags-ags_unref_audio_signal.$(OBJEXT) \
 	ags-ags_remove_region_from_selection.$(OBJEXT) \
 	ags-ags_remove_recall_container.$(OBJEXT) \
-	ags-ags_remove_recall.$(OBJEXT) \
+	ags-ags_remove_recall.$(OBJEXT) ags-ags_seek_devout.$(OBJEXT) \
 	ags-ags_append_recall.$(OBJEXT) \
 	ags-ags_add_recall_container.$(OBJEXT) \
 	ags-ags_add_recall.$(OBJEXT) ags-ags_export_output.$(OBJEXT) \
@@ -379,6 +380,34 @@ am__can_run_installinfo = \
     n|no|NO) false;; \
     *) (install-info --version) >/dev/null 2>&1;; \
   esac
+am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
+am__vpath_adj = case $$p in \
+    $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
+    *) f=$$p;; \
+  esac;
+am__strip_dir = f=`echo $$p | sed -e 's|^.*/||'`;
+am__install_max = 40
+am__nobase_strip_setup = \
+  srcdirstrip=`echo "$(srcdir)" | sed 's/[].[^$$\\*|]/\\\\&/g'`
+am__nobase_strip = \
+  for p in $$list; do echo "$$p"; done | sed -e "s|$$srcdirstrip/||"
+am__nobase_list = $(am__nobase_strip_setup); \
+  for p in $$list; do echo "$$p $$p"; done | \
+  sed "s| $$srcdirstrip/| |;"' / .*\//!s/ .*/ ./; s,\( .*\)/[^/]*$$,\1,' | \
+  $(AWK) 'BEGIN { files["."] = "" } { files[$$2] = files[$$2] " " $$1; \
+    if (++n[$$2] == $(am__install_max)) \
+      { print $$2, files[$$2]; n[$$2] = 0; files[$$2] = "" } } \
+    END { for (dir in files) print dir, files[dir] }'
+am__base_list = \
+  sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
+  sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
+am__uninstall_files_from_dir = { \
+  test -z "$$files" \
+    || { test ! -d "$$dir" && test ! -f "$$dir" && test ! -r "$$dir"; } \
+    || { echo " ( cd '$$dir' && rm -f" $$files ")"; \
+         $(am__cd) "$$dir" && rm -f $$files; }; \
+  }
+DATA = $(appdata_DATA)
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) \
 	$(LISP)config.h.in
 # Read a list of newline-separated strings from the standard input,
@@ -538,6 +567,8 @@ AUTOMAKE_OPTIONS = foreign
 # this lists the binaries to produce, the (non-PHONY, binary) targets in
 # the previous manual Makefile
 noinst_LIBRARIES = 
+EXTRA_DIST = ags.desktop.in
+CLEANFILES = $(appdata_DATA)
 
 # library
 libags_a_CFLAGS = $(GOBJECT_CFLAGS) $(LIBXML2_CFLAGS) 
@@ -547,6 +578,8 @@ libags_a_SOURCES =
 ags_CFLAGS = $(CFLAGS) $(UUID_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBAO_CFLAGS) $(LIBXML2_CFLAGS) $(OPENSSL_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(XMLRPC_CFLAGS) $(XMLRPC_UTIL_CFLAGS) $(XMLRPC_SERVER_ABYSS_CFLAGS) $(XMLRPC_SERVER_CGI_CFLAGS) $(XMLRPC_SERVER_CFLAGS) $(PTH_FLAGS)
 ags_LDFLAGS = -ldl $(LDFLAGS) $(UUID_LIBS) $(LIBASOUND2_LIBS) $(LIBAO_LIBS) $(LIBXML2_LIBS) $(OPENSSL_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(XMLRPC_LIBS) $(XMLRPC_UTIL_LIBS) $(XMLRPC_SERVER_ABYSS_LIBS) $(XMLRPC_SERVER_CGI_LIBS) $(XMLRPC_SERVER_LIBS) -lm -lrt -lX11 -pthread
 ags_LDADD = 
+appdatadir = $(datadir)/applications
+appdata_DATA = ags.desktop
 ags_SOURCES = ./src/ags-lib/object/ags_connectable.c \
 	./src/ags-lib/object/ags_connectable.h \
 	src/ags/lib/ags_combo_box_text.c src/ags/lib/ags_list.c \
@@ -778,6 +811,7 @@ ags_SOURCES = ./src/ags-lib/object/ags_connectable.c \
 	src/ags/audio/task/ags_append_audio_threaded.h \
 	src/ags/audio/task/ags_cancel_channel.h \
 	src/ags/audio/task/ags_apply_synth.h \
+	src/ags/audio/task/ags_seek_devout.h \
 	src/ags/audio/task/ags_append_recall.h \
 	src/ags/audio/task/ags_add_audio_signal.c \
 	src/ags/audio/task/ags_unref_audio_signal.c \
@@ -789,6 +823,7 @@ ags_SOURCES = ./src/ags-lib/object/ags_connectable.c \
 	src/ags/audio/task/ags_remove_audio.h \
 	src/ags/audio/task/ags_remove_recall_container.c \
 	src/ags/audio/task/ags_remove_recall.c \
+	src/ags/audio/task/ags_seek_devout.c \
 	src/ags/audio/task/ags_append_recall.c \
 	src/ags/audio/task/ags_free_selection.h \
 	src/ags/audio/task/ags_add_recall_container.c \
@@ -1470,6 +1505,7 @@ include ./$(DEPDIR)/ags-ags_ruler.Po
 include ./$(DEPDIR)/ags-ags_runnable.Po
 include ./$(DEPDIR)/ags-ags_save_file.Po
 include ./$(DEPDIR)/ags-ags_scroll_on_play.Po
+include ./$(DEPDIR)/ags-ags_seek_devout.Po
 include ./$(DEPDIR)/ags-ags_seekable.Po
 include ./$(DEPDIR)/ags-ags_segment.Po
 include ./$(DEPDIR)/ags-ags_server.Po
@@ -3652,6 +3688,20 @@ ags-ags_remove_recall.obj: src/ags/audio/task/ags_remove_recall.c
 #	$(AM_V_CC)source='src/ags/audio/task/ags_remove_recall.c' object='ags-ags_remove_recall.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_remove_recall.obj `if test -f 'src/ags/audio/task/ags_remove_recall.c'; then $(CYGPATH_W) 'src/ags/audio/task/ags_remove_recall.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/task/ags_remove_recall.c'; fi`
+
+ags-ags_seek_devout.o: src/ags/audio/task/ags_seek_devout.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_seek_devout.o -MD -MP -MF $(DEPDIR)/ags-ags_seek_devout.Tpo -c -o ags-ags_seek_devout.o `test -f 'src/ags/audio/task/ags_seek_devout.c' || echo '$(srcdir)/'`src/ags/audio/task/ags_seek_devout.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_seek_devout.Tpo $(DEPDIR)/ags-ags_seek_devout.Po
+#	$(AM_V_CC)source='src/ags/audio/task/ags_seek_devout.c' object='ags-ags_seek_devout.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_seek_devout.o `test -f 'src/ags/audio/task/ags_seek_devout.c' || echo '$(srcdir)/'`src/ags/audio/task/ags_seek_devout.c
+
+ags-ags_seek_devout.obj: src/ags/audio/task/ags_seek_devout.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_seek_devout.obj -MD -MP -MF $(DEPDIR)/ags-ags_seek_devout.Tpo -c -o ags-ags_seek_devout.obj `if test -f 'src/ags/audio/task/ags_seek_devout.c'; then $(CYGPATH_W) 'src/ags/audio/task/ags_seek_devout.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/task/ags_seek_devout.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_seek_devout.Tpo $(DEPDIR)/ags-ags_seek_devout.Po
+#	$(AM_V_CC)source='src/ags/audio/task/ags_seek_devout.c' object='ags-ags_seek_devout.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_seek_devout.obj `if test -f 'src/ags/audio/task/ags_seek_devout.c'; then $(CYGPATH_W) 'src/ags/audio/task/ags_seek_devout.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/task/ags_seek_devout.c'; fi`
 
 ags-ags_append_recall.o: src/ags/audio/task/ags_append_recall.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_append_recall.o -MD -MP -MF $(DEPDIR)/ags-ags_append_recall.Tpo -c -o ags-ags_append_recall.o `test -f 'src/ags/audio/task/ags_append_recall.c' || echo '$(srcdir)/'`src/ags/audio/task/ags_append_recall.c
@@ -5990,6 +6040,27 @@ ags-ags_ladspa_manager.obj: src/ags/plugin/ags_ladspa_manager.c
 #	$(AM_V_CC)source='src/ags/plugin/ags_ladspa_manager.c' object='ags-ags_ladspa_manager.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_ladspa_manager.obj `if test -f 'src/ags/plugin/ags_ladspa_manager.c'; then $(CYGPATH_W) 'src/ags/plugin/ags_ladspa_manager.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/plugin/ags_ladspa_manager.c'; fi`
+install-appdataDATA: $(appdata_DATA)
+	@$(NORMAL_INSTALL)
+	@list='$(appdata_DATA)'; test -n "$(appdatadir)" || list=; \
+	if test -n "$$list"; then \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(appdatadir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(appdatadir)" || exit 1; \
+	fi; \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; \
+	done | $(am__base_list) | \
+	while read files; do \
+	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(appdatadir)'"; \
+	  $(INSTALL_DATA) $$files "$(DESTDIR)$(appdatadir)" || exit $$?; \
+	done
+
+uninstall-appdataDATA:
+	@$(NORMAL_UNINSTALL)
+	@list='$(appdata_DATA)'; test -n "$(appdatadir)" || list=; \
+	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
+	dir='$(DESTDIR)$(appdatadir)'; $(am__uninstall_files_from_dir)
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique
@@ -6215,9 +6286,9 @@ distcleancheck: distclean
 	       exit 1; } >&2
 check-am: all-am
 check: check-am
-all-am: Makefile $(LIBRARIES) $(PROGRAMS) config.h
+all-am: Makefile $(LIBRARIES) $(PROGRAMS) $(DATA) config.h
 installdirs:
-	for dir in "$(DESTDIR)$(bindir)"; do \
+	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(appdatadir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-am
@@ -6242,6 +6313,7 @@ install-strip:
 mostlyclean-generic:
 
 clean-generic:
+	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
 
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
@@ -6274,7 +6346,7 @@ info: info-am
 
 info-am:
 
-install-data-am:
+install-data-am: install-appdataDATA install-data-local
 
 install-dvi: install-dvi-am
 
@@ -6321,7 +6393,7 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-binPROGRAMS
+uninstall-am: uninstall-appdataDATA uninstall-binPROGRAMS
 
 .MAKE: all install-am install-strip
 
@@ -6332,16 +6404,26 @@ uninstall-am: uninstall-binPROGRAMS
 	dist-xz dist-zip distcheck distclean distclean-compile \
 	distclean-generic distclean-hdr distclean-tags distcleancheck \
 	distdir distuninstallcheck dvi dvi-am html html-am info \
-	info-am install install-am install-binPROGRAMS install-data \
-	install-data-am install-dvi install-dvi-am install-exec \
+	info-am install install-am install-appdataDATA \
+	install-binPROGRAMS install-data install-data-am \
+	install-data-local install-dvi install-dvi-am install-exec \
 	install-exec-am install-html install-html-am install-info \
 	install-info-am install-man install-pdf install-pdf-am \
 	install-ps install-ps-am install-strip installcheck \
 	installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic pdf pdf-am ps ps-am tags tags-am uninstall \
-	uninstall-am uninstall-binPROGRAMS
+	uninstall-am uninstall-appdataDATA uninstall-binPROGRAMS
 
+
+ags.desktop: ags.desktop.in
+	$(AM_V_GEN)sed -e 's,\@datadir\@,$(datadir),g' < "$<" > $@
+
+install-data-local:
+	mkdir -p $(DESTDIR)/$(datadir)/gsequencer/icons
+	mkdir -p $(DESTDIR)/$(datadir)/gsequencer/images
+	cp doc/images/jumper.png $(DESTDIR)/$(datadir)/gsequencer/icons/jumper.png
+	cp doc/images/ags.png $(DESTDIR)/$(datadir)/gsequencer/images/ags.png
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

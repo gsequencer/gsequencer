@@ -170,7 +170,7 @@ ags_window_init(AgsWindow *window)
   error = NULL;
   
   g_object_set(G_OBJECT(window),
-  	       "icon\0", gdk_pixbuf_new_from_file("./doc/images/jumper.png\0", &error),
+  	       "icon\0", gdk_pixbuf_new_from_file("/usr/share/gsequencer/icons/jumper.png\0", &error),
   	       NULL);
 
   window->ags_main = NULL;

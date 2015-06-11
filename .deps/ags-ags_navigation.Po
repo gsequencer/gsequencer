@@ -622,7 +622,20 @@ ags-ags_navigation.o: src/ags/X/ags_navigation.c \
  /usr/include/libxml2/libxml/xlink.h /usr/include/libxml2/libxml/SAX2.h \
  src/ags/thread/ags_timestamp_thread.h src/ags/audio/ags_timestamp.h \
  src/ags/audio/ags_note.h src/ags/X/ags_navigation_callbacks.h \
- src/ags-lib/object/ags_connectable.h src/ags/X/ags_window.h \
+ src/ags/main.h src/ags/lib/ags_log.h src/ags/server/ags_server.h \
+ /usr/include/netinet/in.h /usr/include/x86_64-linux-gnu/sys/socket.h \
+ /usr/include/x86_64-linux-gnu/sys/uio.h \
+ /usr/include/x86_64-linux-gnu/bits/uio.h \
+ /usr/include/x86_64-linux-gnu/bits/socket.h \
+ /usr/include/x86_64-linux-gnu/bits/socket_type.h \
+ /usr/include/x86_64-linux-gnu/bits/sockaddr.h \
+ /usr/include/x86_64-linux-gnu/asm/socket.h \
+ /usr/include/asm-generic/socket.h \
+ /usr/include/x86_64-linux-gnu/asm/sockios.h \
+ /usr/include/asm-generic/sockios.h \
+ /usr/include/x86_64-linux-gnu/bits/in.h src/ags/server/ags_registry.h \
+ src/ags/file/ags_file.h src/ags/server/ags_remote_task.h \
+ src/ags/audio/ags_config.h src/ags/X/ags_window.h \
  src/ags/X/ags_menu_bar.h src/ags/X/ags_machine.h \
  src/ags/audio/ags_audio.h src/ags/X/ags_editor.h \
  src/ags/X/editor/ags_toolbar.h src/ags/X/editor/ags_machine_selector.h \
@@ -631,7 +644,8 @@ ags-ags_navigation.o: src/ags/X/ags_navigation.c \
  src/ags/X/ags_export_window.h src/ags/X/ags_preferences.h \
  src/ags/X/ags_generic_preferences.h src/ags/X/ags_audio_preferences.h \
  src/ags/X/ags_performance_preferences.h \
- src/ags/X/ags_server_preferences.h
+ src/ags/X/ags_server_preferences.h src/ags-lib/object/ags_connectable.h \
+ src/ags/audio/task/ags_seek_devout.h
 
 /usr/include/stdc-predef.h:
 
@@ -2075,7 +2089,43 @@ src/ags/audio/ags_note.h:
 
 src/ags/X/ags_navigation_callbacks.h:
 
-src/ags-lib/object/ags_connectable.h:
+src/ags/main.h:
+
+src/ags/lib/ags_log.h:
+
+src/ags/server/ags_server.h:
+
+/usr/include/netinet/in.h:
+
+/usr/include/x86_64-linux-gnu/sys/socket.h:
+
+/usr/include/x86_64-linux-gnu/sys/uio.h:
+
+/usr/include/x86_64-linux-gnu/bits/uio.h:
+
+/usr/include/x86_64-linux-gnu/bits/socket.h:
+
+/usr/include/x86_64-linux-gnu/bits/socket_type.h:
+
+/usr/include/x86_64-linux-gnu/bits/sockaddr.h:
+
+/usr/include/x86_64-linux-gnu/asm/socket.h:
+
+/usr/include/asm-generic/socket.h:
+
+/usr/include/x86_64-linux-gnu/asm/sockios.h:
+
+/usr/include/asm-generic/sockios.h:
+
+/usr/include/x86_64-linux-gnu/bits/in.h:
+
+src/ags/server/ags_registry.h:
+
+src/ags/file/ags_file.h:
+
+src/ags/server/ags_remote_task.h:
+
+src/ags/audio/ags_config.h:
 
 src/ags/X/ags_window.h:
 
@@ -2110,3 +2160,7 @@ src/ags/X/ags_audio_preferences.h:
 src/ags/X/ags_performance_preferences.h:
 
 src/ags/X/ags_server_preferences.h:
+
+src/ags-lib/object/ags_connectable.h:
+
+src/ags/audio/task/ags_seek_devout.h:
