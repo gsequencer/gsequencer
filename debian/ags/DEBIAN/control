@@ -1,0 +1,17 @@
+Package: ags
+Version: 0.4.2-1
+Architecture: amd64
+Maintainer: Joël Krähemann <jkraehemann@gmail.com>
+Installed-Size: 1538
+Depends: libao4 (>= 1.1.0), libasound2 (>= 1.0.16), libatk1.0-0 (>= 1.12.4), libc6 (>= 2.14), libcairo2 (>= 1.2.4), libfontconfig1 (>= 2.11), libfreetype6 (>= 2.2.1), libgdk-pixbuf2.0-0 (>= 2.22.0), libglib2.0-0 (>= 2.31.8), libgtk2.0-0 (>= 2.24.0), libinstpatch-1.0-0 (>= 1.0.0~), libpango-1.0-0 (>= 1.14.0), libpangocairo-1.0-0 (>= 1.14.0), libpangoft2-1.0-0 (>= 1.14.0), libsndfile1 (>= 1.0.20), libuuid1 (>= 2.20.1), libx11-6, libxml2 (>= 2.7.4)
+Suggests: hydrogen, hydrogen-drumkits, fluid-soundfont-gm, fluid-soundfont-gs, musescore-soundfont-gm
+Section: x11
+Priority: optional
+Homepage: http://gsequencer.org
+Description: Advanced Gtk+ Sequencer audio processing engine
+ Advanced GTK+ Sequencer is intended to use for music composition.
+ It features a piano roll, as well a synth, matrix editor, drum
+ machine, soundfont2 player, mixer and an output panel. It’s designed to
+ be highly configurable. You may add effects to its effect chain; and
+ add or remove audio channels/pads. You may set up a fully functional
+ network of engines, thus there is a link editor for linking audio lines.

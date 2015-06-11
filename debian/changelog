@@ -1,0 +1,7 @@
+ags (0.4.2-1) unstable; urgency=low
+
+	* Initial release (Closes: #5)
+	* This is my first Debian package.
+	* Adjusted the Makefile to fix $(DESTDIR) problems.
+
+ -- Joël Krähemann <jkraehemann@gmail.com>  Thu, 11 Jun 2015 11:52:06 +0200
