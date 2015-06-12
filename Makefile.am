@@ -1,15 +1,17 @@
 AUTOMAKE_OPTIONS = foreign
 # SUBDIRS = src doc
 
+AM_CPPFLAGS = -I$(top_srcdir)/src -DDESTDIR=\"$(DESTDIR)$(datadir)\"
+
 # what flags you want to pass to the C compiler & linker
-CFLAGS = -g -I./src -I/usr/include
-LDFLAGS = -L/lib -L/usr/lib -L/usr/X11/lib
+CFLAGS = 
+LDFLAGS = 
 
 # this lists the binaries to produce, the (non-PHONY, binary) targets in
 # the previous manual Makefile
 noinst_LIBRARIES = 
 bin_PROGRAMS = ags
-EXTRA_DIST =
+EXTRA_DIST = gsequencer
 CLEANFILES =
 
 # library
@@ -23,7 +25,7 @@ ags_LDFLAGS= -ldl $(LDFLAGS) $(UUID_LIBS) $(LIBASOUND2_LIBS) $(LIBAO_LIBS) $(LIB
 ags_LDADD = 
 
 appdatadir = $(datadir)/applications
-appdata_DATA = ags.desktop
+appdata_DATA = ags.desktop 
 
 EXTRA_DIST += ags.desktop.in
 CLEANFILES += $(appdata_DATA)
@@ -36,5 +38,8 @@ ags.desktop: ags.desktop.in
 install-data-local:
 	mkdir -p $(DESTDIR)/$(datadir)/gsequencer/icons
 	mkdir -p $(DESTDIR)/$(datadir)/gsequencer/images
-	cp doc/images/jumper.png $(DESTDIR)/$(datadir)/gsequencer/icons/jumper.png
-	cp doc/images/ags.png $(DESTDIR)/$(datadir)/gsequencer/images/ags.png
+	cp $(top_srcdir)/gsequencer/icons/jumper.png $(DESTDIR)/$(datadir)/gsequencer/icons/jumper.png
+	cp $(top_srcdir)/gsequencer/images/ags.png $(DESTDIR)/$(datadir)/gsequencer/images/ags.png
+
+uninstall-hook:
+	rm -rf $(DESTDIR)/$(datadir)/gsequencer
