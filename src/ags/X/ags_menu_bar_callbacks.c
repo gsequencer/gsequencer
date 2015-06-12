@@ -1,3 +1,4 @@
+
 /* AGS - Advanced GTK Sequencer
  * Copyright (C) 2005-2011 Joël Krähemann
  *
@@ -470,19 +471,22 @@ ags_menu_bar_about_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 
   gchar *authors[] = { "Joël Krähemann\0", NULL }; 
 
-  if(file == NULL){
-    file = fopen("/usr/share/common-licenses/GPL-3\0", "r\0");
-    stat("/usr/share/common-licenses/GPL-3\0", &sb);
-    license = (gchar *) malloc((sb.st_size + 1) * sizeof(gchar));
-    fread(license, sizeof(char), sb.st_size, file);
-    license[sb.st_size] = '\0';
-    fclose(file);
+  if(g_file_test("/usr/share/common-licenses/GPL-3\0",
+		 G_FILE_TEST_EXISTS)){
+    if(file == NULL){
+      file = fopen("/usr/share/common-licenses/GPL-3\0", "r\0");
+      stat("/usr/share/common-licenses/GPL-3\0", &sb);
+      license = (gchar *) malloc((sb.st_size + 1) * sizeof(gchar));
+      fread(license, sizeof(char), sb.st_size, file);
+      license[sb.st_size] = '\0';
+      fclose(file);
 
-    error = NULL;
+      error = NULL;
 
-    logo = gdk_pixbuf_new_from_file("/usr/share/gsequencer/images/ags.png\0", &error);
+      logo = gdk_pixbuf_new_from_file(g_strdup_printf("%s%s\0", DESTDIR, "/gsequencer/images/ags.png\0"), &error);
+    }
   }
-
+  
   gtk_show_about_dialog((GtkWindow *) gtk_widget_get_ancestor((GtkWidget *) menu_bar, GTK_TYPE_WINDOW),
 			"program-name\0", "ags\0",
 			"authors\0", authors,
