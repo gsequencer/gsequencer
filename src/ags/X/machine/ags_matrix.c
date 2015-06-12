@@ -27,6 +27,7 @@
 
 #include <ags/object/ags_portlet.h>
 #include <ags/object/ags_plugin.h>
+#include <ags/object/ags_seekable.h>
 
 #include <ags/file/ags_file.h>
 #include <ags/file/ags_file_stock.h>
@@ -561,6 +562,7 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
 void
 ags_matrix_map_recall(AgsMachine *machine)
 {
+  AgsWindow *window;
   AgsMatrix *matrix;
 
   AgsAudio *audio;
@@ -588,8 +590,11 @@ ags_matrix_map_recall(AgsMachine *machine)
     return;
   }
 
-  audio = machine->audio;
+  window = gtk_widget_get_ancestor(machine,
+				   AGS_TYPE_WINDOW);
+
   matrix = AGS_MATRIX(machine);
+  audio = machine->audio;
 
   /* ags-delay */
   ags_recall_factory_create(audio,
@@ -629,6 +634,9 @@ ags_matrix_map_recall(AgsMachine *machine)
     g_object_set(G_OBJECT(play_count_beats_audio_run),
 		 "delay-audio-run\0", play_delay_audio_run,
 		 NULL);
+    ags_seekable_seek(AGS_SEEKABLE(play_count_beats_audio_run),
+		      window->navigation->position_tact->adjustment->value * AGS_DEVOUT(audio->devout)->delay[AGS_DEVOUT(audio->devout)->tic_counter],
+		      TRUE);
   }
 
   /* ags-copy-pattern */
