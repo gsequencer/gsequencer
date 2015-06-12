@@ -331,6 +331,7 @@ ags_note_edit_reset_horizontally(AgsNoteEdit *note_edit, guint flags)
   AgsEditor *editor;
   double tact_factor, zoom_factor;
   double tact;
+  gdouble value;
 
   editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(note_edit),
 						 AGS_TYPE_EDITOR);
@@ -356,85 +357,84 @@ ags_note_edit_reset_horizontally(AgsNoteEdit *note_edit, guint flags)
     gtk_widget_queue_draw((GtkWidget *) note_edit->ruler);
   }
 
-  if(editor->selected_machine != NULL){
-    cairo_t *cr;
-    gdouble value;
+  value = GTK_RANGE(note_edit->hscrollbar)->adjustment->value;
 
-    value = GTK_RANGE(note_edit->hscrollbar)->adjustment->value;
+  if((AGS_NOTE_EDIT_RESET_HSCROLLBAR & flags) != 0){
+    GtkWidget *widget;
+    GtkAdjustment *adjustment;
+    guint width;
 
-    if((AGS_NOTE_EDIT_RESET_HSCROLLBAR & flags) != 0){
-      GtkWidget *widget;
-      GtkAdjustment *adjustment;
-      guint width;
+    widget = GTK_WIDGET(note_edit->drawing_area);
+    adjustment = GTK_RANGE(note_edit->hscrollbar)->adjustment;
 
-      widget = GTK_WIDGET(note_edit->drawing_area);
-      adjustment = GTK_RANGE(note_edit->hscrollbar)->adjustment;
+    if(note_edit->map_width > widget->allocation.width){
+      width = widget->allocation.width;
+      //	gtk_adjustment_set_upper(adjustment, (double) (note_edit->map_width - width));
+      gtk_adjustment_set_upper(adjustment,
+			       (gdouble) (note_edit->map_width - width));
+      gtk_adjustment_set_upper(note_edit->ruler->adjustment,
+			       (gdouble) (note_edit->map_width - width) / note_edit->control_current.control_width);
 
-      if(note_edit->map_width > widget->allocation.width){
-	width = widget->allocation.width;
-	//	gtk_adjustment_set_upper(adjustment, (double) (note_edit->map_width - width));
-	gtk_adjustment_set_upper(adjustment,
-				 (gdouble) (note_edit->map_width - width));
-	gtk_adjustment_set_upper(note_edit->ruler->adjustment,
-				 (gdouble) (note_edit->map_width - width) / note_edit->control_current.control_width);
+      if(adjustment->value > adjustment->upper){
+	gtk_adjustment_set_value(adjustment, adjustment->upper);
 
-	if(adjustment->value > adjustment->upper){
-	  gtk_adjustment_set_value(adjustment, adjustment->upper);
-
-	  /* reset ruler */
-	  gtk_adjustment_set_value(note_edit->ruler->adjustment, note_edit->ruler->adjustment->upper);
-	  gtk_widget_queue_draw((GtkWidget *) note_edit->ruler);
-	}
-      }else{
-	width = note_edit->map_width;
-
-	gtk_adjustment_set_upper(adjustment, 0.0);
-	gtk_adjustment_set_value(adjustment, 0.0);
-	
 	/* reset ruler */
-	gtk_adjustment_set_upper(note_edit->ruler->adjustment, 0.0);
-	gtk_adjustment_set_value(note_edit->ruler->adjustment, 0.0);
+	gtk_adjustment_set_value(note_edit->ruler->adjustment, note_edit->ruler->adjustment->upper);
 	gtk_widget_queue_draw((GtkWidget *) note_edit->ruler);
       }
-
-      note_edit->width = width;
-    }
-
-    /* reset AgsNoteEditControlCurrent */
-    if(note_edit->map_width > note_edit->width){
-      note_edit->control_current.x0 = ((guint) round((double) value)) % note_edit->control_current.control_width;
-
-      if(note_edit->control_current.x0 != 0){
-	note_edit->control_current.x0 = note_edit->control_current.control_width - note_edit->control_current.x0;
-      }
-
-      note_edit->control_current.x1 = (note_edit->width - note_edit->control_current.x0) % note_edit->control_current.control_width;
-
-      note_edit->control_current.nth_x = (guint) ceil((double)(value) / (double)(note_edit->control_current.control_width));
     }else{
-      note_edit->control_current.x0 = 0;
-      note_edit->control_current.x1 = 0;
-      note_edit->control_current.nth_x = 0;
+      width = note_edit->map_width;
+
+      gtk_adjustment_set_upper(adjustment, 0.0);
+      gtk_adjustment_set_value(adjustment, 0.0);
+	
+      /* reset ruler */
+      gtk_adjustment_set_upper(note_edit->ruler->adjustment, 0.0);
+      gtk_adjustment_set_value(note_edit->ruler->adjustment, 0.0);
+      gtk_widget_queue_draw((GtkWidget *) note_edit->ruler);
     }
 
-    /* reset AgsNoteEditControlUnit */
-    if(note_edit->map_width > note_edit->width){
-      note_edit->control_unit.x0 = ((guint)round((double) value)) % note_edit->control_unit.control_width;
+    note_edit->width = width;
+  }
 
-      if(note_edit->control_unit.x0 != 0)
-	note_edit->control_unit.x0 = note_edit->control_unit.control_width - note_edit->control_unit.x0;
-      
-      note_edit->control_unit.x1 = (note_edit->width - note_edit->control_unit.x0) % note_edit->control_unit.control_width;
-      
-      note_edit->control_unit.nth_x = (guint) ceil(round((double) value) / (double) (note_edit->control_unit.control_width));
-      note_edit->control_unit.stop_x = note_edit->control_unit.nth_x + (note_edit->width - note_edit->control_unit.x0 - note_edit->control_unit.x1) / note_edit->control_unit.control_width;
-    }else{
-      note_edit->control_unit.x0 = 0;
-      note_edit->control_unit.x1 = 0;
-      note_edit->control_unit.nth_x = 0;
+  /* reset AgsNoteEditControlCurrent */
+  if(note_edit->map_width > note_edit->width){
+    note_edit->control_current.x0 = ((guint) round((double) value)) % note_edit->control_current.control_width;
+
+    if(note_edit->control_current.x0 != 0){
+      note_edit->control_current.x0 = note_edit->control_current.control_width - note_edit->control_current.x0;
     }
+
+    note_edit->control_current.x1 = (note_edit->width - note_edit->control_current.x0) % note_edit->control_current.control_width;
+
+    note_edit->control_current.nth_x = (guint) ceil((double)(value) / (double)(note_edit->control_current.control_width));
+  }else{
+    note_edit->control_current.x0 = 0;
+    note_edit->control_current.x1 = 0;
+    note_edit->control_current.nth_x = 0;
+  }
+
+  /* reset AgsNoteEditControlUnit */
+  if(note_edit->map_width > note_edit->width){
+    note_edit->control_unit.x0 = ((guint)round((double) value)) % note_edit->control_unit.control_width;
+
+    if(note_edit->control_unit.x0 != 0)
+      note_edit->control_unit.x0 = note_edit->control_unit.control_width - note_edit->control_unit.x0;
+      
+    note_edit->control_unit.x1 = (note_edit->width - note_edit->control_unit.x0) % note_edit->control_unit.control_width;
+      
+    note_edit->control_unit.nth_x = (guint) ceil(round((double) value) / (double) (note_edit->control_unit.control_width));
+    note_edit->control_unit.stop_x = note_edit->control_unit.nth_x + (note_edit->width - note_edit->control_unit.x0 - note_edit->control_unit.x1) / note_edit->control_unit.control_width;
+  }else{
+    note_edit->control_unit.x0 = 0;
+    note_edit->control_unit.x1 = 0;
+    note_edit->control_unit.nth_x = 0;
+  }
 
     /* refresh display */
+  if(editor->selected_machine != NULL){
+    cairo_t *cr;
+
     if(GTK_WIDGET_VISIBLE(editor)){
       gdouble position;
       

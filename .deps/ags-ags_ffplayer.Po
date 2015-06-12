@@ -729,17 +729,18 @@ ags-ags_ffplayer.o: src/ags/X/machine/ags_ffplayer.c \
  src/ags/X/ags_performance_preferences.h \
  src/ags/X/ags_server_preferences.h src/ags-lib/object/ags_connectable.h \
  src/ags/util/ags_id_generator.h src/ags/object/ags_playable.h \
- src/ags/object/ags_plugin.h src/ags/file/ags_file_stock.h \
- src/ags/widget/ags_led.h src/ags/widget/ags_vindicator.h \
- src/ags/widget/ags_indicator.h src/ags/widget/ags_hindicator.h \
- src/ags/widget/ags_waveform.h src/ags/widget/ags_dial.h \
- src/ags/widget/ags_cartesian.h src/ags/file/ags_file_id_ref.h \
- src/ags/file/ags_file_lookup.h src/ags/file/ags_file_launch.h \
- src/ags/file/ags_file_gui.h src/ags/X/ags_pad.h \
- src/ags/widget/ags_expander_set.h src/ags/X/ags_line.h \
- src/ags/widget/ags_expander.h src/ags/X/ags_line_member.h \
- src/ags/X/ags_machine_editor.h src/ags/X/ags_listing_editor.h \
- src/ags/X/ags_property_listing_editor.h src/ags/X/ags_property_editor.h \
+ src/ags/object/ags_plugin.h src/ags/object/ags_seekable.h \
+ src/ags/file/ags_file_stock.h src/ags/widget/ags_led.h \
+ src/ags/widget/ags_vindicator.h src/ags/widget/ags_indicator.h \
+ src/ags/widget/ags_hindicator.h src/ags/widget/ags_waveform.h \
+ src/ags/widget/ags_dial.h src/ags/widget/ags_cartesian.h \
+ src/ags/file/ags_file_id_ref.h src/ags/file/ags_file_lookup.h \
+ src/ags/file/ags_file_launch.h src/ags/file/ags_file_gui.h \
+ src/ags/X/ags_pad.h src/ags/widget/ags_expander_set.h \
+ src/ags/X/ags_line.h src/ags/widget/ags_expander.h \
+ src/ags/X/ags_line_member.h src/ags/X/ags_machine_editor.h \
+ src/ags/X/ags_listing_editor.h src/ags/X/ags_property_listing_editor.h \
+ src/ags/X/ags_property_editor.h \
  src/ags/X/ags_property_collection_editor.h src/ags/X/ags_resize_editor.h \
  src/ags/X/ags_pad_editor.h src/ags/X/ags_line_editor.h \
  src/ags/X/ags_link_editor.h src/ags/audio/file/ags_audio_file.h \
@@ -2453,6 +2454,8 @@ src/ags/util/ags_id_generator.h:
 src/ags/object/ags_playable.h:
 
 src/ags/object/ags_plugin.h:
+
+src/ags/object/ags_seekable.h:
 
 src/ags/file/ags_file_stock.h:
 

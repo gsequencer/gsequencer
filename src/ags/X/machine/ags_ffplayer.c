@@ -27,6 +27,7 @@
 
 #include <ags/object/ags_playable.h>
 #include <ags/object/ags_plugin.h>
+#include <ags/object/ags_seekable.h>
 
 #include <ags/file/ags_file.h>
 #include <ags/file/ags_file_stock.h>
@@ -330,6 +331,8 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 void
 ags_ffplayer_map_recall(AgsMachine *machine)
 {
+  AgsWindow *window;
+  
   AgsAudio *audio;
 
   AgsDelayAudio *play_delay_audio;
@@ -345,6 +348,9 @@ ags_ffplayer_map_recall(AgsMachine *machine)
      (AGS_MACHINE_PREMAPPED_RECALL & (machine->flags)) != 0){
     return;
   }
+
+  window = gtk_widget_get_ancestor(machine,
+				   AGS_TYPE_WINDOW);
 
   audio = machine->audio;
 
@@ -390,9 +396,12 @@ ags_ffplayer_map_recall(AgsMachine *machine)
     g_object_set(G_OBJECT(play_count_beats_audio_run),
 		 "delay-audio-run\0", play_delay_audio_run,
 		 NULL);
+    ags_seekable_seek(AGS_SEEKABLE(play_count_beats_audio_run),
+		      window->navigation->position_tact->adjustment->value * AGS_DEVOUT(audio->devout)->delay[AGS_DEVOUT(audio->devout)->tic_counter],
+		      TRUE);
 
     g_value_init(&value, G_TYPE_BOOLEAN);
-    g_value_set_boolean(&value, TRUE);
+    g_value_set_boolean(&value, gtk_toggle_button_get_active(window->navigation->loop));
     ags_port_safe_write(AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(play_count_beats_audio_run)->recall_audio)->loop,
 			&value);
   }

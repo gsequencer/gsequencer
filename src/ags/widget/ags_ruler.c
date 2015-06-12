@@ -393,7 +393,7 @@ ags_ruler_draw(AgsRuler *ruler)
 		  (double) (i),
 		  (double) (widget->allocation.height - AGS_RULER_LARGE_STEP));
 
-    str = g_strdup_printf("%.2f\0",
+    str = g_strdup_printf("%.0f\0",
 			  (ceil(offset) + z) * ruler->scale_precision);
 
     cairo_show_text(cr,
