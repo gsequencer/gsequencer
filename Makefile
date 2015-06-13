@@ -459,10 +459,9 @@ CAIRO_CFLAGS = -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/x86_64-li
 CAIRO_LIBS = -lcairo 
 CC = gcc
 CCDEPMODE = depmode=gcc3
-# SUBDIRS = src doc
 
 # what flags you want to pass to the C compiler & linker
-CFLAGS = -g -I./src -I/usr/include
+CFLAGS = 
 CPP = gcc -E
 CPPFLAGS = 
 CYGPATH_W = echo
@@ -485,7 +484,7 @@ INSTALL_DATA = ${INSTALL} -m 644
 INSTALL_PROGRAM = ${INSTALL}
 INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
-LDFLAGS = -L/lib -L/usr/lib -L/usr/X11/lib
+LDFLAGS = 
 LIBAO_CFLAGS = 
 LIBAO_LIBS = -lao 
 LIBASOUND2_CFLAGS = -I/usr/include/alsa 
@@ -563,11 +562,13 @@ top_build_prefix =
 top_builddir = .
 top_srcdir = .
 AUTOMAKE_OPTIONS = foreign
+# SUBDIRS = src doc
+AM_CPPFLAGS = -I$(top_srcdir)/src -DDESTDIR=\"$(DESTDIR)$(datadir)\"
 
 # this lists the binaries to produce, the (non-PHONY, binary) targets in
 # the previous manual Makefile
 noinst_LIBRARIES = 
-EXTRA_DIST = ags.desktop.in
+EXTRA_DIST = gsequencer.share ags.desktop.in
 CLEANFILES = $(appdata_DATA)
 
 # library
@@ -579,7 +580,7 @@ ags_CFLAGS = $(CFLAGS) $(UUID_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBAO_CFLAGS) $(LIB
 ags_LDFLAGS = -ldl $(LDFLAGS) $(UUID_LIBS) $(LIBASOUND2_LIBS) $(LIBAO_LIBS) $(LIBXML2_LIBS) $(OPENSSL_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(XMLRPC_LIBS) $(XMLRPC_UTIL_LIBS) $(XMLRPC_SERVER_ABYSS_LIBS) $(XMLRPC_SERVER_CGI_LIBS) $(XMLRPC_SERVER_LIBS) -lm -lrt -lX11 -pthread
 ags_LDADD = 
 appdatadir = $(datadir)/applications
-appdata_DATA = ags.desktop
+appdata_DATA = ags.desktop 
 ags_SOURCES = ./src/ags-lib/object/ags_connectable.c \
 	./src/ags-lib/object/ags_connectable.h \
 	src/ags/lib/ags_combo_box_text.c src/ags/lib/ags_list.c \
@@ -6394,8 +6395,9 @@ ps: ps-am
 ps-am:
 
 uninstall-am: uninstall-appdataDATA uninstall-binPROGRAMS
-
-.MAKE: all install-am install-strip
+	@$(NORMAL_INSTALL)
+	$(MAKE) $(AM_MAKEFLAGS) uninstall-hook
+.MAKE: all install-am install-strip uninstall-am
 
 .PHONY: CTAGS GTAGS TAGS all all-am am--refresh check check-am clean \
 	clean-binPROGRAMS clean-cscope clean-generic \
@@ -6413,7 +6415,8 @@ uninstall-am: uninstall-appdataDATA uninstall-binPROGRAMS
 	installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic pdf pdf-am ps ps-am tags tags-am uninstall \
-	uninstall-am uninstall-appdataDATA uninstall-binPROGRAMS
+	uninstall-am uninstall-appdataDATA uninstall-binPROGRAMS \
+	uninstall-hook
 
 
 ags.desktop: ags.desktop.in
@@ -6422,8 +6425,11 @@ ags.desktop: ags.desktop.in
 install-data-local:
 	mkdir -p $(DESTDIR)/$(datadir)/gsequencer/icons
 	mkdir -p $(DESTDIR)/$(datadir)/gsequencer/images
-	cp doc/images/jumper.png $(DESTDIR)/$(datadir)/gsequencer/icons/jumper.png
-	cp doc/images/ags.png $(DESTDIR)/$(datadir)/gsequencer/images/ags.png
+	cp $(top_srcdir)/gsequencer.share/icons/jumper.png $(DESTDIR)/$(datadir)/gsequencer/icons/jumper.png
+	cp $(top_srcdir)/gsequencer.share/images/ags.png $(DESTDIR)/$(datadir)/gsequencer/images/ags.png
+
+uninstall-hook:
+	rm -rf $(DESTDIR)/$(datadir)/gsequencer
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

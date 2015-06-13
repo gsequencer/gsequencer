@@ -11,7 +11,7 @@ LDFLAGS =
 # the previous manual Makefile
 noinst_LIBRARIES = 
 bin_PROGRAMS = ags
-EXTRA_DIST = gsequencer
+EXTRA_DIST = gsequencer.share
 CLEANFILES =
 
 # library
@@ -38,8 +38,8 @@ ags.desktop: ags.desktop.in
 install-data-local:
 	mkdir -p $(DESTDIR)/$(datadir)/gsequencer/icons
 	mkdir -p $(DESTDIR)/$(datadir)/gsequencer/images
-	cp $(top_srcdir)/gsequencer/icons/jumper.png $(DESTDIR)/$(datadir)/gsequencer/icons/jumper.png
-	cp $(top_srcdir)/gsequencer/images/ags.png $(DESTDIR)/$(datadir)/gsequencer/images/ags.png
+	cp $(top_srcdir)/gsequencer.share/icons/jumper.png $(DESTDIR)/$(datadir)/gsequencer/icons/jumper.png
+	cp $(top_srcdir)/gsequencer.share/images/ags.png $(DESTDIR)/$(datadir)/gsequencer/images/ags.png
 
 uninstall-hook:
 	rm -rf $(DESTDIR)/$(datadir)/gsequencer
