@@ -142,7 +142,7 @@ ags_vindicator_draw(AgsVIndicator *indicator)
 
   for(i = 0; i < height / (segment_height + padding); i++){
     if(adjustment->value > 0.0 &&
-       (1 / adjustment->value * i < (height / (segment_height + padding)))){
+       (1.0 / adjustment->value * i < (height / (segment_height + padding)))){
       /* active */
       cairo_set_source_rgba(cr, 0.9, 0.7, 0.2, 1.0);
     }else{
