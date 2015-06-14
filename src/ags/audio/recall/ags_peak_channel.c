@@ -342,7 +342,8 @@ ags_peak_channel_retrieve_peak(AgsPeakChannel *peak_channel,
     audio_signal = recycling->audio_signal;
 
     while(audio_signal != NULL){
-      if(AGS_AUDIO_SIGNAL(audio_signal->data)->stream_current != NULL){
+      if(AGS_AUDIO_SIGNAL(audio_signal->data)->stream_current != NULL &&
+	 (AGS_AUDIO_SIGNAL_TEMPLATE & (AGS_AUDIO_SIGNAL(audio_signal->data)->flags)) == 0){
 	/* copy buffer 1:1 */
 	ags_audio_signal_copy_buffer_to_double_buffer(buffer, 1,
 						      (signed short *) AGS_AUDIO_SIGNAL(audio_signal->data)->stream_current->data, 1,
@@ -356,20 +357,22 @@ ags_peak_channel_retrieve_peak(AgsPeakChannel *peak_channel,
   }
 
   /* calculate average value */
-  current_value = 1.0 / (1.0 / G_MAXUINT16 * (1.0 / 45.0));
+  current_value = 0.0;
 
   for(i = 0; i < buffer_size; i++){
     if(buffer[i] == 0){
       continue;
     }
-    
-    current_value +=  (1.0 / (1.0 / G_MAXUINT16 * buffer[i]));
+
+    current_value +=  (1.0 / (1.0 / (double) G_MAXUINT16 * buffer[i]));
   }
   
   /* break down to scale */
   //TODO:JK: verify me
-  current_value = scale_precision * (atan(1.0 / 440.0) / sin(current_value / 440.0));
-
+  if(current_value != 0.0){
+    current_value = scale_precision * (atan(1.0 / 440.0) / sin(current_value / 22000.0));
+  }
+  
   g_value_init(&value, G_TYPE_DOUBLE);
 
   if(current_value < 0.0){
