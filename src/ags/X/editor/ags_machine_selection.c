@@ -20,6 +20,8 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/X/machine/ags_ffplayer.h>
+
 void ags_machine_selection_class_init(AgsMachineSelectionClass *machine_selection);
 void ags_machine_selection_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_machine_selection_init(AgsMachineSelection *machine_selection);
@@ -152,17 +154,19 @@ ags_machine_selection_run(AgsMachineSelection *machine_selection)
   while(list != NULL){
     GtkRadioButton *radio_button;
 
-    radio_button = (GtkRadioButton *) gtk_radio_button_new_with_label_from_widget(group,
-										  g_strdup_printf("%s: %s\0",  G_OBJECT_TYPE_NAME(list->data), AGS_MACHINE(list->data)->name));
-    gtk_box_pack_start(GTK_BOX(vbox),
-		       GTK_WIDGET(radio_button),
-		       FALSE, FALSE,
-		       0);
-
-    if(group == NULL){
-      group = radio_button;
+    if(AGS_IS_FFPLAYER(list->data)){
+      radio_button = (GtkRadioButton *) gtk_radio_button_new_with_label_from_widget(group,
+										    g_strdup_printf("%s: %s\0",  G_OBJECT_TYPE_NAME(list->data), AGS_MACHINE(list->data)->name));
+      gtk_box_pack_start(GTK_BOX(vbox),
+			 GTK_WIDGET(radio_button),
+			 FALSE, FALSE,
+			 0);
+      
+      if(group == NULL){
+	group = radio_button;
+      }
     }
-
+      
     list = list->next;
   }
 
@@ -178,13 +182,16 @@ ags_machine_selection_run(AgsMachineSelection *machine_selection)
       index = gtk_container_get_children((GtkContainer *) vbox);
 
     while(index != NULL){
-      if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(index->data))){
-	machine = AGS_MACHINE(list->data);
-	
-	break;
-      }
+      if(AGS_IS_FFPLAYER(list->data)){
+	if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(index->data))){
+	  machine = AGS_MACHINE(list->data);
+	  
+	  break;
+	}
 
-      index = index->next;
+	index = index->next;
+      }
+      
       list = list->next;
     }
 
