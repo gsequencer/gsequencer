@@ -54,24 +54,23 @@ ags_log_get_type (void)
 
   if(!ags_type_log){
     static const GTypeInfo ags_log_info = {
-      sizeof (AgsLogClass),
+      sizeof(AgsLogClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_log_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsLog),
+      sizeof(AgsLog),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_log_init,
     };
 
     ags_type_log = g_type_register_static(G_TYPE_OBJECT,
-					  "AgsLog\0",
-					  &ags_log_info,
-					  0);
+					    "AgsLog\0", &ags_log_info,
+					    0);
   }
 
-  return (ags_type_log);
+  return(ags_type_log);
 }
 
 void

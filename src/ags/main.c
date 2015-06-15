@@ -19,6 +19,8 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/lib/ags_log.h>
+
 #include <ags/object/ags_main_loop.h>
 
 #include <ags/plugin/ags_ladspa_manager.h>

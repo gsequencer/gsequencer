@@ -135,6 +135,8 @@ struct _AgsLogFormatedMessage
   char *message;
 };
 
+GType ags_log_get_type (void);
+
 void ags_log_start_queue(AgsLog *log);
 void ags_log_stop_queue(AgsLog *log);
 
