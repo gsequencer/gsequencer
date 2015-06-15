@@ -414,7 +414,7 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
 							 GTK_DIALOG_MODAL,
 							 GTK_MESSAGE_ERROR,
 							 GTK_BUTTONS_CLOSE,
-							 error->message);
+							 "%s\0", error->message);
     gtk_dialog_run(GTK_DIALOG(dialog));
     gtk_widget_destroy(GTK_WIDGET(dialog));
 

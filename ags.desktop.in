@@ -6,4 +6,4 @@ Terminal=false
 Exec=ags
 Icon=@datadir@/gsequencer/icons/jumper.png
 Name=Advanced Gtk+ Sequencer
-Categories=AudioVideo;Editor;
+Categories=AudioVideo;Audio;

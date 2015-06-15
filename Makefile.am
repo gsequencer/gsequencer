@@ -1,11 +1,11 @@
 AUTOMAKE_OPTIONS = foreign
 # SUBDIRS = src doc
 
-AM_CPPFLAGS = -I$(top_srcdir)/src -DDESTDIR=\"$(DESTDIR)$(datadir)\"
+AM_CPPFLAGS = -I$(top_srcdir)/src -DDESTDIR=\"$(DESTDIR)$(datadir)\" -D_FORTIFY_SOURCE=2
 
 # what flags you want to pass to the C compiler & linker
-CFLAGS = 
-LDFLAGS = 
+CFLAGS = -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security
+LDFLAGS = -fPIE -pie -Wl,-z,relro -Wl,-z,now
 
 # this lists the binaries to produce, the (non-PHONY, binary) targets in
 # the previous manual Makefile

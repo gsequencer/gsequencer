@@ -343,7 +343,7 @@ ags_config_save(AgsConfig *config)
 				 &error);
     
     if(error != NULL){
-      g_message(error->message);
+      g_warning("%s\0", error->message);
       //TODO:JK: do recovery
       goto ags_config_save_END;
     }

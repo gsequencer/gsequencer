@@ -96,8 +96,6 @@ ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread)
     gobject = *thread;
   }
 
-  g_message(G_OBJECT_TYPE_NAME(gobject));
-
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
 				   "main\0", file->ags_main,
