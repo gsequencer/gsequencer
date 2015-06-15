@@ -4,6 +4,6 @@ Version=1.0
 Type=Application
 Terminal=false
 Exec=ags
-Icon=@datadir@/gsequencer/icons/jumper.png
+Icon=@datadir@/gsequencer/icons/ags.xpm
 Name=Advanced Gtk+ Sequencer
 Categories=AudioVideo;Audio;
