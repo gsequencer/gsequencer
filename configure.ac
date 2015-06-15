@@ -12,6 +12,8 @@ AC_PROG_CC
 AC_PROG_CPP
 AC_PROG_INSTALL
 
+AC_PROG_HELP2MAN([ags.1])
+
 # Checks for libraries.
 # FIXME: Replace `main' with a function in `-lX11':
 AC_CHECK_LIB([X11], [main])
