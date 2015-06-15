@@ -463,7 +463,7 @@ CC = gcc
 CCDEPMODE = depmode=gcc3
 
 # what flags you want to pass to the C compiler & linker
-CFLAGS = 
+CFLAGS = -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security
 CPP = gcc -E
 CPPFLAGS = 
 CYGPATH_W = echo
@@ -486,7 +486,7 @@ INSTALL_DATA = ${INSTALL} -m 644
 INSTALL_PROGRAM = ${INSTALL}
 INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
-LDFLAGS = 
+LDFLAGS = -fPIE -pie -Wl,-z,relro -Wl,-z,now
 LIBAO_CFLAGS = 
 LIBAO_LIBS = -lao 
 LIBASOUND2_CFLAGS = -I/usr/include/alsa 
@@ -504,10 +504,10 @@ OBJEXT = o
 PACKAGE = ags
 PACKAGE_BUGREPORT = weedlight@gmail.com
 PACKAGE_NAME = ags
-PACKAGE_STRING = ags 0.4.2-61
+PACKAGE_STRING = ags 0.4.2-62
 PACKAGE_TARNAME = ags
 PACKAGE_URL = 
-PACKAGE_VERSION = 0.4.2-61
+PACKAGE_VERSION = 0.4.2-62
 PATH_SEPARATOR = :
 PKG_CONFIG = /usr/bin/pkg-config
 PKG_CONFIG_LIBDIR = 
@@ -519,7 +519,7 @@ SNDFILE_LIBS = -lsndfile
 STRIP = 
 UUID_CFLAGS = -I/usr/include/uuid 
 UUID_LIBS = -luuid 
-VERSION = 0.4.2-61
+VERSION = 0.4.2-62
 XMKMF = 
 abs_builddir = /home/joelkraehemann/gsequencer
 abs_srcdir = /home/joelkraehemann/gsequencer
@@ -565,7 +565,7 @@ top_builddir = .
 top_srcdir = .
 AUTOMAKE_OPTIONS = foreign
 # SUBDIRS = src doc
-AM_CPPFLAGS = -I$(top_srcdir)/src -DDESTDIR=\"$(DESTDIR)$(datadir)\"
+AM_CPPFLAGS = -I$(top_srcdir)/src -DDESTDIR=\"$(DESTDIR)$(datadir)\" -D_FORTIFY_SOURCE=2
 
 # this lists the binaries to produce, the (non-PHONY, binary) targets in
 # the previous manual Makefile

@@ -297,7 +297,7 @@ ags_ladspa_manager_load_default_directory()
 		   &error);
 
   if(error != NULL){
-    g_warning(error->message);
+    g_warning("%s\0", error->message);
   }
 
   while((filename = g_dir_read_name(dir)) != NULL){

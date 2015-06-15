@@ -694,7 +694,7 @@ ags_ffplayer_launch_task(AgsFileLaunch *file_launch, AgsFFPlayer *ffplayer)
 			      &error);
 
     if(error != NULL){
-      g_warning(error->message);
+      g_warning("%s\0", error->message);
     }
     
     /* select first preset */
@@ -707,7 +707,7 @@ ags_ffplayer_launch_task(AgsFileLaunch *file_launch, AgsFFPlayer *ffplayer)
 			      &error);
 
     if(error != NULL){
-      g_warning(error->message);
+      g_warning("%s\0", error->message);
     }
     
     /* fill ffplayer->preset */
@@ -751,7 +751,7 @@ ags_ffplayer_launch_task(AgsFileLaunch *file_launch, AgsFFPlayer *ffplayer)
 			      &error);
 
     if(error != NULL){
-      g_warning(error->message);
+      g_warning("%s\0", error->message);
     }
     
     /* fill ffplayer->instrument */

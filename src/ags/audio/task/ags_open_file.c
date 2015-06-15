@@ -254,7 +254,7 @@ ags_open_file_launch(AgsTask *task)
 			     &error);
 
 	if(error != NULL){
-	  g_warning(error->message);
+	  g_warning("%s\0", error->message);
 	}
       }
 

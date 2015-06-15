@@ -152,7 +152,7 @@ ags_link_channel_launch(AgsTask *task)
 		       &(link_channel->error));
 
   if(link_channel->error != NULL){
-    g_message(link_channel->error->message);
+    g_message("%s\0", link_channel->error->message);
   }
 }
 

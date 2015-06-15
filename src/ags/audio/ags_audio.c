@@ -3519,7 +3519,7 @@ ags_audio_open_files(AgsAudio *audio,
 			       &error);
 
 	  if(error != NULL){
-	    g_message(error->message);
+	    g_warning("%s\0", error->message);
 	  }
 
 	  AGS_AUDIO_SIGNAL(audio_signal_list->data)->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;

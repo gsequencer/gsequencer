@@ -1151,7 +1151,7 @@ ags_file_util_read_file_link_launch(AgsFileLaunch *file_launch,
 		   NULL);
 
       if(error != NULL){
-	g_warning(error->message);
+	g_warning("%s\0", error->message);
       }
     }else{
       g_object_set(G_OBJECT(input),
