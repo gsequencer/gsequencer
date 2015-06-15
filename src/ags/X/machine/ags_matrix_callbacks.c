@@ -227,7 +227,7 @@ ags_matrix_refresh_gui_callback(AgsTogglePatternBit *toggle_pattern_bit,
 
   channel = ags_channel_nth(AGS_MACHINE(matrix)->audio->input, toggle_pattern_bit->line);
 
-  ags_matrix_redraw_gutter_point(matrix, channel, toggle_pattern_bit->bit, (-1 * (toggle_pattern_bit->line - AGS_MACHINE(matrix)->audio->input_lines + 1) - (guint) matrix->adjustment->value) % AGS_MATRIX_OCTAVE);
+  ags_matrix_redraw_gutter_point(matrix, channel, toggle_pattern_bit->bit, AGS_MACHINE(matrix)->audio->input_lines - (toggle_pattern_bit->line - (guint) matrix->adjustment->value) - 1);
 }
 
 void
