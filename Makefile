@@ -82,9 +82,9 @@ bin_PROGRAMS = ags$(EXEEXT)
 subdir = .
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/configure $(am__configure_deps) \
-	$(srcdir)/config.h.in depcomp AUTHORS COPYING ChangeLog \
-	INSTALL NEWS README compile config.guess config.rpath \
-	config.sub install-sh missing
+	$(srcdir)/config.h.in depcomp $(dist_man_MANS) AUTHORS COPYING \
+	ChangeLog INSTALL NEWS README compile config.guess \
+	config.rpath config.sub install-sh missing
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
@@ -96,7 +96,8 @@ CONFIG_HEADER = config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 LIBRARIES = $(noinst_LIBRARIES)
-am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(appdatadir)"
+am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)" \
+	"$(DESTDIR)$(appdatadir)"
 PROGRAMS = $(bin_PROGRAMS)
 am_ags_OBJECTS = ags-ags_connectable.$(OBJEXT) \
 	ags-ags_combo_box_text.$(OBJEXT) ags-ags_list.$(OBJEXT) \
@@ -409,6 +410,9 @@ am__uninstall_files_from_dir = { \
     || { echo " ( cd '$$dir' && rm -f" $$files ")"; \
          $(am__cd) "$$dir" && rm -f $$files; }; \
   }
+man1dir = $(mandir)/man1
+NROFF = nroff
+MANS = $(dist_man_MANS)
 DATA = $(appdata_DATA)
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) \
 	$(LISP)config.h.in
@@ -481,6 +485,7 @@ GOBJECT_LIBS = -lgobject-2.0 -Wl,--export-dynamic -lgmodule-2.0 -pthread -lgthre
 GREP = /bin/grep
 GTK_CFLAGS = -pthread -I/usr/include/gtk-2.0 -I/usr/lib/x86_64-linux-gnu/gtk-2.0/include -I/usr/include/gio-unix-2.0/ -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/libpng12 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/pango-1.0 -I/usr/include/harfbuzz -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/freetype2 
 GTK_LIBS = -lgtk-x11-2.0 -lgdk-x11-2.0 -lpangocairo-1.0 -latk-1.0 -lcairo -lgdk_pixbuf-2.0 -lgio-2.0 -lpangoft2-1.0 -lpango-1.0 -lgobject-2.0 -lglib-2.0 -lfontconfig -lfreetype 
+HELP2MAN = help2man
 INSTALL = /usr/bin/install -c
 INSTALL_DATA = ${INSTALL} -m 644
 INSTALL_PROGRAM = ${INSTALL}
@@ -499,6 +504,7 @@ LIBXML2_CFLAGS = -I/usr/include/libxml2
 LIBXML2_LIBS = -lxml2 
 LTLIBOBJS = 
 MAKEINFO = ${SHELL} /home/joelkraehemann/gsequencer/missing makeinfo
+MANPAGES = ags.1
 MKDIR_P = /bin/mkdir -p
 OBJEXT = o
 PACKAGE = ags
@@ -570,8 +576,10 @@ AM_CPPFLAGS = -I$(top_srcdir)/src -DDESTDIR=\"$(DESTDIR)$(datadir)\" -D_FORTIFY_
 # this lists the binaries to produce, the (non-PHONY, binary) targets in
 # the previous manual Makefile
 noinst_LIBRARIES = 
-EXTRA_DIST = gsequencer.share ags.desktop.in
+EXTRA_DIST = gsequencer.share acsite.m4 ags.desktop.in
+CLEANFILES = $(MANPAGES)
 CLEANFILES = $(appdata_DATA)
+dist_man_MANS = ags.1
 
 # library
 libags_a_CFLAGS = $(GOBJECT_CFLAGS) $(LIBXML2_CFLAGS) 
@@ -6077,6 +6085,49 @@ ags-ags_ladspa_manager.obj: src/ags/plugin/ags_ladspa_manager.c
 #	$(AM_V_CC)source='src/ags/plugin/ags_ladspa_manager.c' object='ags-ags_ladspa_manager.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_ladspa_manager.obj `if test -f 'src/ags/plugin/ags_ladspa_manager.c'; then $(CYGPATH_W) 'src/ags/plugin/ags_ladspa_manager.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/plugin/ags_ladspa_manager.c'; fi`
+install-man1: $(dist_man_MANS)
+	@$(NORMAL_INSTALL)
+	@list1=''; \
+	list2='$(dist_man_MANS)'; \
+	test -n "$(man1dir)" \
+	  && test -n "`echo $$list1$$list2`" \
+	  || exit 0; \
+	echo " $(MKDIR_P) '$(DESTDIR)$(man1dir)'"; \
+	$(MKDIR_P) "$(DESTDIR)$(man1dir)" || exit 1; \
+	{ for i in $$list1; do echo "$$i"; done;  \
+	if test -n "$$list2"; then \
+	  for i in $$list2; do echo "$$i"; done \
+	    | sed -n '/\.1[a-z]*$$/p'; \
+	fi; \
+	} | while read p; do \
+	  if test -f $$p; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; echo "$$p"; \
+	done | \
+	sed -e 'n;s,.*/,,;p;h;s,.*\.,,;s,^[^1][0-9a-z]*$$,1,;x' \
+	      -e 's,\.[0-9a-z]*$$,,;$(transform);G;s,\n,.,' | \
+	sed 'N;N;s,\n, ,g' | { \
+	list=; while read file base inst; do \
+	  if test "$$base" = "$$inst"; then list="$$list $$file"; else \
+	    echo " $(INSTALL_DATA) '$$file' '$(DESTDIR)$(man1dir)/$$inst'"; \
+	    $(INSTALL_DATA) "$$file" "$(DESTDIR)$(man1dir)/$$inst" || exit $$?; \
+	  fi; \
+	done; \
+	for i in $$list; do echo "$$i"; done | $(am__base_list) | \
+	while read files; do \
+	  test -z "$$files" || { \
+	    echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(man1dir)'"; \
+	    $(INSTALL_DATA) $$files "$(DESTDIR)$(man1dir)" || exit $$?; }; \
+	done; }
+
+uninstall-man1:
+	@$(NORMAL_UNINSTALL)
+	@list=''; test -n "$(man1dir)" || exit 0; \
+	files=`{ for i in $$list; do echo "$$i"; done; \
+	l2='$(dist_man_MANS)'; for i in $$l2; do echo "$$i"; done | \
+	  sed -n '/\.1[a-z]*$$/p'; \
+	} | sed -e 's,.*/,,;h;s,.*\.,,;s,^[^1][0-9a-z]*$$,1,;x' \
+	      -e 's,\.[0-9a-z]*$$,,;$(transform);G;s,\n,.,'`; \
+	dir='$(DESTDIR)$(man1dir)'; $(am__uninstall_files_from_dir)
 install-appdataDATA: $(appdata_DATA)
 	@$(NORMAL_INSTALL)
 	@list='$(appdata_DATA)'; test -n "$(appdatadir)" || list=; \
@@ -6323,9 +6374,9 @@ distcleancheck: distclean
 	       exit 1; } >&2
 check-am: all-am
 check: check-am
-all-am: Makefile $(LIBRARIES) $(PROGRAMS) $(DATA) config.h
+all-am: Makefile $(LIBRARIES) $(PROGRAMS) $(MANS) $(DATA) config.h
 installdirs:
-	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(appdatadir)"; do \
+	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)" "$(DESTDIR)$(appdatadir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-am
@@ -6383,7 +6434,7 @@ info: info-am
 
 info-am:
 
-install-data-am: install-appdataDATA install-data-local
+install-data-am: install-appdataDATA install-data-local install-man
 
 install-dvi: install-dvi-am
 
@@ -6399,7 +6450,7 @@ install-info: install-info-am
 
 install-info-am:
 
-install-man:
+install-man: install-man1
 
 install-pdf: install-pdf-am
 
@@ -6430,9 +6481,12 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-appdataDATA uninstall-binPROGRAMS
+uninstall-am: uninstall-appdataDATA uninstall-binPROGRAMS \
+	uninstall-man
 	@$(NORMAL_INSTALL)
 	$(MAKE) $(AM_MAKEFLAGS) uninstall-hook
+uninstall-man: uninstall-man1
+
 .MAKE: all install-am install-strip uninstall-am
 
 .PHONY: CTAGS GTAGS TAGS all all-am am--refresh check check-am clean \
@@ -6446,17 +6500,20 @@ uninstall-am: uninstall-appdataDATA uninstall-binPROGRAMS
 	install-binPROGRAMS install-data install-data-am \
 	install-data-local install-dvi install-dvi-am install-exec \
 	install-exec-am install-html install-html-am install-info \
-	install-info-am install-man install-pdf install-pdf-am \
-	install-ps install-ps-am install-strip installcheck \
-	installcheck-am installdirs maintainer-clean \
+	install-info-am install-man install-man1 install-pdf \
+	install-pdf-am install-ps install-ps-am install-strip \
+	installcheck installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic pdf pdf-am ps ps-am tags tags-am uninstall \
 	uninstall-am uninstall-appdataDATA uninstall-binPROGRAMS \
-	uninstall-hook
+	uninstall-hook uninstall-man uninstall-man1
 
 
 ags.desktop: ags.desktop.in
 	$(AM_V_GEN)sed -e 's,\@datadir\@,$(datadir),g' < "$<" > $@
+
+ags.1:
+	$(HELP2MAN) -o $@ ags
 
 install-data-local:
 	mkdir -p $(DESTDIR)/$(datadir)/gsequencer/icons

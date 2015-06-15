@@ -1,8 +1,6 @@
 AUTOMAKE_OPTIONS = foreign
 # SUBDIRS = src doc
 
-man_MANS = ags.1
-
 AM_CPPFLAGS = -I$(top_srcdir)/src -DDESTDIR=\"$(DESTDIR)$(datadir)\" -D_FORTIFY_SOURCE=2
 
 # what flags you want to pass to the C compiler & linker
@@ -13,8 +11,13 @@ LDFLAGS = -fPIE -pie -Wl,-z,relro -Wl,-z,now
 # the previous manual Makefile
 noinst_LIBRARIES = 
 bin_PROGRAMS = ags
-EXTRA_DIST = gsequencer.share
+EXTRA_DIST = gsequencer.share acsite.m4
 CLEANFILES =
+
+if HAVE_HELP2MAN
+dist_man_MANS=ags.1
+CLEANFILES=$(MANPAGES)
+endif
 
 # library
 libags_a_CFLAGS= $(GOBJECT_CFLAGS) $(LIBXML2_CFLAGS) 
@@ -36,6 +39,11 @@ ags_SOURCES = ./src/ags-lib/object/ags_connectable.c ./src/ags-lib/object/ags_co
 
 ags.desktop: ags.desktop.in
 	$(AM_V_GEN)sed -e 's,\@datadir\@,$(datadir),g' < "$<" > $@
+
+if HAVE_HELP2MAN
+ags.1:
+	$(HELP2MAN) -o $@ ags
+endif
 
 install-data-local:
 	mkdir -p $(DESTDIR)/$(datadir)/gsequencer/icons
