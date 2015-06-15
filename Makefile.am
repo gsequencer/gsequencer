@@ -11,7 +11,7 @@ LDFLAGS = -fPIE -pie -Wl,-z,relro -Wl,-z,now
 # the previous manual Makefile
 noinst_LIBRARIES = 
 bin_PROGRAMS = ags
-EXTRA_DIST = gsequencer.share acsite.m4
+EXTRA_DIST = gsequencer.share acsite.m4 ags.1
 CLEANFILES =
 
 if HAVE_HELP2MAN
@@ -48,7 +48,7 @@ endif
 install-data-local:
 	mkdir -p $(DESTDIR)/$(datadir)/gsequencer/icons
 	mkdir -p $(DESTDIR)/$(datadir)/gsequencer/images
-	cp $(top_srcdir)/gsequencer.share/icons/jumper.png $(DESTDIR)/$(datadir)/gsequencer/icons/jumper.png
+	cp $(top_srcdir)/gsequencer.share/icons/ags.xpm $(DESTDIR)/$(datadir)/gsequencer/icons/ags.xpm
 	cp $(top_srcdir)/gsequencer.share/images/ags.png $(DESTDIR)/$(datadir)/gsequencer/images/ags.png
 
 uninstall-hook:
