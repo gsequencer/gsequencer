@@ -261,6 +261,8 @@ ags_mute_audio_signal_run_inter(AgsRecall *recall)
     return;
   }
 
+  g_message("mute\0");
+  
   /* mute */
   memset((signed short *) stream_source->data, 0, buffer_size * sizeof(signed short));
 }

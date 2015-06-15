@@ -646,9 +646,9 @@ ags-ags_line_callbacks.o: src/ags/X/ags_line_callbacks.c \
  src/ags/X/ags_audio_preferences.h \
  src/ags/X/ags_performance_preferences.h \
  src/ags/X/ags_server_preferences.h src/ags/audio/ags_recall_audio.h \
- src/ags/audio/ags_recall_audio_run.h \
+ src/ags/audio/ags_recall_audio_run.h src/ags/audio/ags_recall_channel.h \
+ src/ags/audio/recall/ags_peak_channel.h \
  src/ags/audio/recall/ags_volume_channel.h \
- src/ags/audio/ags_recall_channel.h \
  src/ags/audio/recall/ags_copy_pattern_channel.h \
  src/ags/audio/ags_pattern.h \
  src/ags/audio/recall/ags_copy_pattern_channel_run.h \
@@ -2180,9 +2180,11 @@ src/ags/audio/ags_recall_audio.h:
 
 src/ags/audio/ags_recall_audio_run.h:
 
-src/ags/audio/recall/ags_volume_channel.h:
-
 src/ags/audio/ags_recall_channel.h:
+
+src/ags/audio/recall/ags_peak_channel.h:
+
+src/ags/audio/recall/ags_volume_channel.h:
 
 src/ags/audio/recall/ags_copy_pattern_channel.h:
 

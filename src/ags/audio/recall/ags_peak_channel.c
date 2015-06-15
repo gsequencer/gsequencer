@@ -27,6 +27,7 @@
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_output.h>
+#include <ags/audio/ags_input.h>
 
 void ags_peak_channel_class_init(AgsPeakChannelClass *peak_channel);
 void ags_peak_channel_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -313,7 +314,7 @@ ags_peak_channel_retrieve_peak(AgsPeakChannel *peak_channel,
   AgsChannel *source;
   AgsRecycling *recycling;
   GList *audio_signal;
-  double *buffer;
+  signed short *buffer;
   double current_value;
   guint buffer_size;
   static const double scale_precision = 10.0;
@@ -335,19 +336,32 @@ ags_peak_channel_retrieve_peak(AgsPeakChannel *peak_channel,
   recycling = source->first_recycling;
   
   /* initialize buffer */
-  buffer = (double *) malloc(buffer_size * sizeof(double));
-  for(i = 0; i < buffer_size; i++) buffer[i] = 0.0;
+  buffer = (signed short *) malloc(buffer_size * sizeof(signed short));
+  for(i = 0; i < buffer_size; i++) buffer[i] = 0;
 
   while(recycling != source->last_recycling->next){
     audio_signal = recycling->audio_signal;
 
     while(audio_signal != NULL){
-      if(AGS_AUDIO_SIGNAL(audio_signal->data)->stream_current != NULL &&
-	 (AGS_AUDIO_SIGNAL_TEMPLATE & (AGS_AUDIO_SIGNAL(audio_signal->data)->flags)) == 0){
-	/* copy buffer 1:1 */
-	ags_audio_signal_copy_buffer_to_double_buffer(buffer, 1,
-						      (signed short *) AGS_AUDIO_SIGNAL(audio_signal->data)->stream_current->data, 1,
-						      buffer_size);
+      if((AGS_IS_INPUT(source) &&
+	  (AGS_AUDIO_INPUT_HAS_RECYCLING & (AGS_AUDIO(source->audio)->flags)) != 0) ||
+	 (AGS_IS_OUTPUT(source) &&
+	  (AGS_AUDIO_OUTPUT_HAS_RECYCLING & (AGS_AUDIO(source->audio)->flags)) != 0)){
+	if((AGS_AUDIO_SIGNAL_TEMPLATE & (AGS_AUDIO_SIGNAL(audio_signal->data)->flags)) == 0 &&
+	   AGS_AUDIO_SIGNAL(audio_signal->data)->stream_current != NULL){
+	  /* copy buffer 1:1 */
+	  ags_audio_signal_copy_buffer_to_buffer(buffer, 1,
+						 (signed short *) AGS_AUDIO_SIGNAL(audio_signal->data)->stream_current->data, 1,
+						 buffer_size);
+	}
+      }else{
+	if((AGS_AUDIO_SIGNAL_TEMPLATE & (AGS_AUDIO_SIGNAL(audio_signal->data)->flags)) == 0 &&
+	   AGS_AUDIO_SIGNAL(audio_signal->data)->stream_current != NULL){
+	  /* copy buffer 1:1 */
+	  ags_audio_signal_copy_buffer_to_buffer(buffer, 1,
+						 (signed short *) AGS_AUDIO_SIGNAL(audio_signal->data)->stream_current->data, 1,
+						 buffer_size);
+	}
       }
 
       audio_signal = audio_signal->next;

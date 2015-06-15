@@ -168,6 +168,8 @@ ags_toggle_pattern_bit_launch(AgsTask *task)
 
   toggle_pattern_bit = AGS_TOGGLE_PATTERN_BIT(task);
 
+  g_message("toggle pattern\0");
+  
   ags_pattern_toggle_bit((AgsPattern *) toggle_pattern_bit->pattern,
 			 toggle_pattern_bit->index_i, toggle_pattern_bit->index_j,
 			 toggle_pattern_bit->bit);

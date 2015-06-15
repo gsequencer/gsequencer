@@ -647,7 +647,10 @@ ags-ags_peak_channel.o: src/ags/audio/recall/ags_peak_channel.c \
  src/ags/X/ags_audio_preferences.h \
  src/ags/X/ags_performance_preferences.h \
  src/ags/X/ags_server_preferences.h src/ags/object/ags_mutable.h \
- src/ags/object/ags_plugin.h src/ags/audio/ags_output.h
+ src/ags/object/ags_plugin.h src/ags/audio/ags_output.h \
+ src/ags/audio/ags_input.h /usr/include/glib-2.0/glib/gstdio.h \
+ /usr/include/glib-2.0/glib/gprintf.h \
+ /usr/include/x86_64-linux-gnu/sys/stat.h
 
 /usr/include/stdc-predef.h:
 
@@ -2172,3 +2175,11 @@ src/ags/object/ags_mutable.h:
 src/ags/object/ags_plugin.h:
 
 src/ags/audio/ags_output.h:
+
+src/ags/audio/ags_input.h:
+
+/usr/include/glib-2.0/glib/gstdio.h:
+
+/usr/include/glib-2.0/glib/gprintf.h:
+
+/usr/include/x86_64-linux-gnu/sys/stat.h:

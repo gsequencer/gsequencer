@@ -2645,9 +2645,9 @@ ags_audio_add_recall(AgsAudio *audio, GObject *recall, gboolean play)
   g_object_ref(G_OBJECT(recall));
 
   if(play){
-    audio->play = g_list_append(audio->play, recall);
+    audio->play = g_list_prepend(audio->play, recall);
   }else{
-    audio->recall = g_list_append(audio->recall, recall);
+    audio->recall = g_list_prepend(audio->recall, recall);
   }
   
   pthread_mutex_unlock(mutex);
@@ -2755,11 +2755,13 @@ ags_audio_duplicate_recall(AgsAudio *audio,
   
   /* get the appropriate list */
   if(recall_id->recycling_container->parent == NULL){
-    list_recall_start = 
-      list_recall = audio->play;
-  }else{
+    list_recall = g_list_copy(audio->play);
     list_recall_start =
-      list_recall = audio->recall;
+      list_recall = g_list_reverse(list_recall);
+  }else{
+    list_recall = g_list_copy(audio->recall);
+    list_recall_start =
+      list_recall = g_list_reverse(list_recall);
   }
 
   /* return if already duplicated */
@@ -2825,6 +2827,8 @@ ags_audio_duplicate_recall(AgsAudio *audio,
   }
 
   pthread_mutex_unlock(mutex);
+
+  g_list_free(list_recall_start);
 }
 
 /**

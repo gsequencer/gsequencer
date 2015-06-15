@@ -1,5 +1,5 @@
-ags-ags_peak_channel_run.o: src/ags/audio/recall/ags_peak_channel_run.c \
- /usr/include/stdc-predef.h src/ags/audio/recall/ags_peak_channel_run.h \
+ags-ags_peak_recycling.o: src/ags/audio/recall/ags_peak_recycling.c \
+ /usr/include/stdc-predef.h src/ags/audio/recall/ags_peak_recycling.h \
  /usr/include/glib-2.0/glib.h /usr/include/glib-2.0/glib/galloca.h \
  /usr/include/glib-2.0/glib/gtypes.h \
  /usr/lib/x86_64-linux-gnu/glib-2.0/include/glibconfig.h \
@@ -119,7 +119,7 @@ ags-ags_peak_channel_run.o: src/ags/audio/recall/ags_peak_channel_run.c \
  /usr/include/glib-2.0/gobject/gvaluearray.h \
  /usr/include/glib-2.0/gobject/gvaluetypes.h \
  /usr/include/glib-2.0/gobject/gobject-autocleanups.h \
- src/ags/audio/ags_recall_channel_run.h src/ags/audio/ags_recall.h \
+ src/ags/audio/ags_recall_recycling.h src/ags/audio/ags_recall.h \
  src/ags/audio/ags_port.h /usr/include/ladspa.h \
  src/ags/audio/ags_recall_id.h src/ags/audio/ags_recycling.h \
  src/ags/audio/ags_audio_signal.h src/ags/audio/ags_recycling_container.h \
@@ -622,11 +622,10 @@ ags-ags_peak_channel_run.o: src/ags/audio/recall/ags_peak_channel_run.c \
  /usr/include/libxml2/libxml/xmlIO.h /usr/include/libxml2/libxml/SAX.h \
  /usr/include/libxml2/libxml/xlink.h /usr/include/libxml2/libxml/SAX2.h \
  src/ags/thread/ags_timestamp_thread.h src/ags/audio/ags_timestamp.h \
- src/ags/audio/ags_note.h src/ags/audio/ags_recall_audio_run.h \
- src/ags/audio/ags_recall_audio.h src/ags/audio/ags_audio.h \
+ src/ags/audio/ags_note.h src/ags/audio/recall/ags_peak_channel.h \
  src/ags/audio/ags_recall_channel.h \
- src/ags/audio/recall/ags_peak_recycling.h \
- src/ags/audio/ags_recall_recycling.h \
+ src/ags/audio/recall/ags_peak_audio_signal.h \
+ src/ags/audio/ags_recall_audio_signal.h \
  src/ags-lib/object/ags_connectable.h src/ags/main.h \
  src/ags/lib/ags_log.h src/ags/server/ags_server.h \
  /usr/include/netinet/in.h /usr/include/x86_64-linux-gnu/sys/socket.h \
@@ -642,7 +641,8 @@ ags-ags_peak_channel_run.o: src/ags/audio/recall/ags_peak_channel_run.c \
  /usr/include/x86_64-linux-gnu/bits/in.h src/ags/server/ags_registry.h \
  src/ags/file/ags_file.h src/ags/server/ags_remote_task.h \
  src/ags/audio/ags_config.h src/ags/X/ags_window.h \
- src/ags/X/ags_menu_bar.h src/ags/X/ags_machine.h src/ags/X/ags_editor.h \
+ src/ags/X/ags_menu_bar.h src/ags/X/ags_machine.h \
+ src/ags/audio/ags_audio.h src/ags/X/ags_editor.h \
  src/ags/X/editor/ags_toolbar.h src/ags/X/editor/ags_machine_selector.h \
  src/ags/X/editor/ags_notebook.h src/ags/X/editor/ags_meter.h \
  src/ags/X/editor/ags_note_edit.h src/ags/widget/ags_ruler.h \
@@ -650,13 +650,12 @@ ags-ags_peak_channel_run.o: src/ags/audio/recall/ags_peak_channel_run.c \
  src/ags/X/ags_preferences.h src/ags/X/ags_generic_preferences.h \
  src/ags/X/ags_audio_preferences.h \
  src/ags/X/ags_performance_preferences.h \
- src/ags/X/ags_server_preferences.h src/ags/lib/ags_list.h \
- src/ags/lib/ags_parameter.h src/ags/object/ags_dynamic_connectable.h \
- src/ags/object/ags_plugin.h
+ src/ags/X/ags_server_preferences.h src/ags/lib/ags_parameter.h \
+ src/ags/object/ags_dynamic_connectable.h
 
 /usr/include/stdc-predef.h:
 
-src/ags/audio/recall/ags_peak_channel_run.h:
+src/ags/audio/recall/ags_peak_recycling.h:
 
 /usr/include/glib-2.0/glib.h:
 
@@ -938,7 +937,7 @@ src/ags/audio/recall/ags_peak_channel_run.h:
 
 /usr/include/glib-2.0/gobject/gobject-autocleanups.h:
 
-src/ags/audio/ags_recall_channel_run.h:
+src/ags/audio/ags_recall_recycling.h:
 
 src/ags/audio/ags_recall.h:
 
@@ -2096,17 +2095,13 @@ src/ags/audio/ags_timestamp.h:
 
 src/ags/audio/ags_note.h:
 
-src/ags/audio/ags_recall_audio_run.h:
-
-src/ags/audio/ags_recall_audio.h:
-
-src/ags/audio/ags_audio.h:
+src/ags/audio/recall/ags_peak_channel.h:
 
 src/ags/audio/ags_recall_channel.h:
 
-src/ags/audio/recall/ags_peak_recycling.h:
+src/ags/audio/recall/ags_peak_audio_signal.h:
 
-src/ags/audio/ags_recall_recycling.h:
+src/ags/audio/ags_recall_audio_signal.h:
 
 src/ags-lib/object/ags_connectable.h:
 
@@ -2154,6 +2149,8 @@ src/ags/X/ags_menu_bar.h:
 
 src/ags/X/ags_machine.h:
 
+src/ags/audio/ags_audio.h:
+
 src/ags/X/ags_editor.h:
 
 src/ags/X/editor/ags_toolbar.h:
@@ -2182,10 +2179,6 @@ src/ags/X/ags_performance_preferences.h:
 
 src/ags/X/ags_server_preferences.h:
 
-src/ags/lib/ags_list.h:
-
 src/ags/lib/ags_parameter.h:
 
 src/ags/object/ags_dynamic_connectable.h:
-
-src/ags/object/ags_plugin.h:
