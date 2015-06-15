@@ -914,7 +914,7 @@ ags_matrix_draw_gutter(AgsMatrix *matrix)
       ags_matrix_redraw_gutter_point (matrix, channel, j, i);
     }
 
-    channel = channel->next;
+    channel = channel->prev;
   }
 
   pthread_mutex_unlock(audio_mutex);
@@ -961,7 +961,7 @@ ags_matrix_draw_matrix(AgsMatrix *matrix)
     for (j = 0; j < 32; j++)
       ags_matrix_redraw_gutter_point (matrix, channel, j, i);
 
-    channel = channel->next;
+    channel = channel->prev;
   }
 
   pthread_mutex_unlock(audio_mutex);

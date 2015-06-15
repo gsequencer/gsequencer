@@ -144,7 +144,7 @@ ags_matrix_drawing_area_button_press_callback(GtkWidget *widget, GdkEventButton 
 
     index1 = ((guint) g_ascii_strtoull(matrix->selected->button.label_text, NULL, 10)) - 1;
     
-    channel = ags_channel_nth(AGS_MACHINE(matrix)->audio->input, i + (guint) matrix->adjustment->value);
+    channel = ags_channel_nth(AGS_MACHINE(matrix)->audio->input, AGS_MACHINE(matrix)->audio->input_lines - (i + (guint) matrix->adjustment->value) - 1);
 
     toggle_pattern_bit = ags_toggle_pattern_bit_new(channel->pattern->data,
 						    AGS_MACHINE(matrix)->audio->input_lines - (i + (guint) matrix->adjustment->value) - 1,
