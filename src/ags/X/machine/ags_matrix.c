@@ -895,7 +895,7 @@ ags_matrix_draw_gutter(AgsMatrix *matrix)
                       0, 0,
                       288, 80);
 
-  channel = ags_channel_nth(AGS_MACHINE(matrix)->audio->input, (guint) matrix->adjustment->value);
+  channel = ags_channel_nth(AGS_MACHINE(matrix)->audio->input, AGS_MACHINE(matrix)->audio->input_lines - (guint) matrix->adjustment->value - 1);
 
   if(AGS_MACHINE(matrix)->audio->input_pads > AGS_MATRIX_OCTAVE){
     gutter = AGS_MATRIX_OCTAVE;
@@ -943,7 +943,7 @@ ags_matrix_draw_matrix(AgsMatrix *matrix)
 
   pthread_mutex_lock(audio_mutex);
 
-  channel = ags_channel_nth(AGS_MACHINE(matrix)->audio->input, (guint) matrix->adjustment->value);
+  channel = ags_channel_nth(AGS_MACHINE(matrix)->audio->input, AGS_MACHINE(matrix)->audio->input_lines - (guint) matrix->adjustment->value - 1);
 
   if(channel == NULL){
     pthread_mutex_unlock(audio_mutex);

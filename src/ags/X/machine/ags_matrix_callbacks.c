@@ -147,7 +147,7 @@ ags_matrix_drawing_area_button_press_callback(GtkWidget *widget, GdkEventButton 
     channel = ags_channel_nth(AGS_MACHINE(matrix)->audio->input, i + (guint) matrix->adjustment->value);
 
     toggle_pattern_bit = ags_toggle_pattern_bit_new(channel->pattern->data,
-						    i + (guint) matrix->adjustment->value,
+						    AGS_MACHINE(matrix)->audio->input_lines - (i + (guint) matrix->adjustment->value) - 1,
 						    0, index1,
 						    j);
     g_signal_connect(G_OBJECT(toggle_pattern_bit), "refresh-gui\0",
@@ -227,7 +227,7 @@ ags_matrix_refresh_gui_callback(AgsTogglePatternBit *toggle_pattern_bit,
 
   channel = ags_channel_nth(AGS_MACHINE(matrix)->audio->input, toggle_pattern_bit->line);
 
-  ags_matrix_redraw_gutter_point(matrix, channel, toggle_pattern_bit->bit, toggle_pattern_bit->line - (guint) matrix->adjustment->value);
+  ags_matrix_redraw_gutter_point(matrix, channel, toggle_pattern_bit->bit, AGS_MACHINE(matrix)->audio->input_lines - (toggle_pattern_bit->line - (guint) matrix->adjustment->value) - 1);
 }
 
 void
