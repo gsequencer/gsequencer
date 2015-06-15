@@ -342,7 +342,8 @@ ags_audio_loop_init(AgsAudioLoop *audio_loop)
   ags_thread_add_child(AGS_THREAD(audio_loop), audio_loop->export_thread);
 
   /* recall mutex */
-  pthread_mutex_init(&(audio_loop->recall_mutex), NULL);
+  audio_loop->recall_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(audio_loop->recall_mutex, NULL);
 
   /* recall related lists */
   audio_loop->play_recall_ref = 0;
@@ -631,7 +632,7 @@ ags_audio_loop_run(AgsThread *thread)
 
   audio_loop = AGS_AUDIO_LOOP(thread);
 
-  pthread_mutex_lock(&(audio_loop->recall_mutex));
+  pthread_mutex_lock(audio_loop->recall_mutex);
 
   /* play recall */
   if((AGS_AUDIO_LOOP_PLAY_RECALL & (audio_loop->flags)) != 0){
@@ -674,7 +675,7 @@ ags_audio_loop_run(AgsThread *thread)
     }
   }
 
-  pthread_mutex_unlock(&(audio_loop->recall_mutex));
+  pthread_mutex_unlock(audio_loop->recall_mutex);
 
   /* wait for task thread */
   pthread_mutex_lock(audio_loop->task_thread->start_mutex);

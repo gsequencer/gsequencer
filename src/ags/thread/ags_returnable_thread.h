@@ -55,7 +55,7 @@ struct _AgsReturnableThread
 
   GObject *thread_pool;
 
-  pthread_mutex_t reset_mutex;
+  pthread_mutex_t *reset_mutex;
   volatile void *safe_data;
 
   gulong handler;

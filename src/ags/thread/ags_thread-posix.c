@@ -1076,7 +1076,7 @@ ags_thread_is_current_ready(AgsThread *current,
 
   toplevel = ags_thread_get_toplevel(current);
 
-  //  pthread_mutex_lock(&(current->mutex));
+  //  pthread_mutex_lock(current->mutex);
 
   flags = g_atomic_int_get(&(current->flags));
   retval = FALSE;
@@ -1094,7 +1094,7 @@ ags_thread_is_current_ready(AgsThread *current,
   }
 
   if(retval){
-    //    pthread_mutex_unlock(&(current->mutex));
+    //    pthread_mutex_unlock(current->mutex);
 
     return(TRUE);
   }
@@ -1127,7 +1127,7 @@ ags_thread_is_current_ready(AgsThread *current,
     break;
   }
 
-  //  pthread_mutex_unlock(&(current->mutex));
+  //  pthread_mutex_unlock(current->mutex);
 
   return(retval);
 }
@@ -1149,7 +1149,7 @@ ags_thread_is_tree_ready(AgsThread *thread,
 
     toplevel = ags_thread_get_toplevel(current);
 
-    //  pthread_mutex_lock(&(current->mutex));
+    //  pthread_mutex_lock(current->mutex);
 
     flags = g_atomic_int_get(&(current->flags));
     retval = FALSE;
@@ -1167,7 +1167,7 @@ ags_thread_is_tree_ready(AgsThread *thread,
     }
 
     if(retval){
-      //    pthread_mutex_unlock(&(current->mutex));
+      //    pthread_mutex_unlock(current->mutex);
 
       return(TRUE);
     }
@@ -1200,7 +1200,7 @@ ags_thread_is_tree_ready(AgsThread *thread,
       break;
     }
 
-    //  pthread_mutex_unlock(&(current->mutex));
+    //  pthread_mutex_unlock(current->mutex);
     return(retval);
   }
   gboolean ags_thread_is_tree_ready_recursive(AgsThread *current){

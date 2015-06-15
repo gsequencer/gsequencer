@@ -165,14 +165,14 @@ ags_note_edit_init(AgsNoteEdit *note_edit)
   note_edit->selected_y = 0;
 
   /* GtkScrollbars */
-  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, 1.0, 1.0);
+  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, 16.0, 1.0);
   note_edit->vscrollbar = (GtkVScrollbar *) gtk_vscrollbar_new(adjustment);
   gtk_table_attach(GTK_TABLE(note_edit), (GtkWidget *) note_edit->vscrollbar,
 		   1, 2, 1, 2,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
-  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, 1.0, 1.0);
+  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, (gdouble) note_edit->control_current.control_width, 1.0);
   note_edit->hscrollbar = (GtkHScrollbar *) gtk_hscrollbar_new(adjustment);
   gtk_table_attach(GTK_TABLE(note_edit), (GtkWidget *) note_edit->hscrollbar,
 		   0, 1, 2, 3,
