@@ -24,10 +24,12 @@
 #include <ags/audio/ags_recall.h>
 #include <ags/audio/ags_recall_audio.h>
 #include <ags/audio/ags_recall_audio_run.h>
+#include <ags/audio/ags_recall_channel.h>
 #include <ags/audio/ags_recall_id.h>
 #include <ags/audio/ags_port.h>
 #include <ags/audio/ags_recycling_container.h>
 
+#include <ags/audio/recall/ags_peak_channel.h>
 #include <ags/audio/recall/ags_volume_channel.h>
 #include <ags/audio/recall/ags_copy_pattern_channel.h>
 #include <ags/audio/recall/ags_copy_pattern_channel_run.h>
@@ -156,7 +158,7 @@ ags_line_volume_callback(GtkRange *range,
 }
 
 void
-ags_line_peak_run_post_callback(AgsRecall *peak_channel,
+ags_line_peak_run_post_callback(AgsRecall *peak_channel_run,
 				AgsLine *line)
 {
   AgsTaskThread *task_thread;
@@ -181,18 +183,17 @@ ags_line_peak_run_post_callback(AgsRecall *peak_channel,
 
       child = gtk_bin_get_child(GTK_BIN(list->data));
 
-      if(AGS_RECYCLING_CONTAINER(peak_channel->recall_id->recycling_container)->parent == NULL){
-	port = AGS_LINE_MEMBER(list->data)->port;
-      }else{
-	port = AGS_LINE_MEMBER(list->data)->recall_port;
-      }
-
+      port = AGS_PEAK_CHANNEL(AGS_RECALL_CHANNEL_RUN(peak_channel_run)->recall_channel)->peak;
+	
       g_value_init(&value, G_TYPE_DOUBLE);
       ags_port_safe_read(port,
 			 &value);
 
       peak = g_value_get_double(&value);
 
+      //      if(peak_channel_run->recall_id->recycling_container->parent == NULL)
+	//	g_message("%f\0", peak);
+      
       change_indicator = ags_change_indicator_new((AgsIndicator *) child,
 						  peak);
 

@@ -931,9 +931,9 @@ ags_channel_add_recall(AgsChannel *channel, GObject *recall, gboolean play)
   g_object_ref(recall);
 
   if(play){
-    channel->play = g_list_append(channel->play, recall);
+    channel->play = g_list_prepend(channel->play, recall);
   }else{
-    channel->recall = g_list_append(channel->recall, recall);
+    channel->recall = g_list_prepend(channel->recall, recall);
   }
 }
 
@@ -2683,7 +2683,7 @@ ags_channel_duplicate_recall(AgsChannel *channel,
 {
   AgsAudio *audio;
   AgsRecall *recall, *copy;
-  GList *list_recall;
+  GList *list_recall, *list_recall_start;
   gboolean playback, sequencer, notation;
 
   if(channel == NULL ||
@@ -2715,9 +2715,13 @@ ags_channel_duplicate_recall(AgsChannel *channel,
   
   /* get the appropriate lists */
   if(recall_id->recycling_container->parent == NULL){
-    list_recall = channel->play;
+    list_recall = g_list_copy(channel->play);
+    list_recall_start = 
+      list_recall = g_list_reverse(list_recall);
   }else{
-    list_recall = channel->recall;
+    list_recall = g_list_copy(channel->recall);
+    list_recall_start =
+      list_recall = g_list_reverse(list_recall);
   }
 
   /*  */
@@ -2764,6 +2768,8 @@ ags_channel_duplicate_recall(AgsChannel *channel,
     /* iterate */    
     list_recall = list_recall->next;
   }
+
+  g_list_free(list_recall_start);
 }
 
 /**

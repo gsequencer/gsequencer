@@ -17,6 +17,7 @@
  */
 
 #include <ags/audio/recall/ags_peak_channel_run.h>
+#include <ags/audio/recall/ags_peak_recycling.h>
 
 #include <ags-lib/object/ags_connectable.h>
 
@@ -46,7 +47,6 @@ void ags_peak_channel_run_finalize(GObject *gobject);
 AgsRecall* ags_peak_channel_run_duplicate(AgsRecall *recall,
 					    AgsRecallID *recall_id,
 					    guint *n_params, GParameter *parameter);
-void ags_peak_channel_run_run_post(AgsRecall *recall);
 
 /**
  * SECTION:ags_peak_channel_run
@@ -126,7 +126,6 @@ ags_peak_channel_run_class_init(AgsPeakChannelRunClass *peak_channel_run)
   recall = (AgsRecallClass *) peak_channel_run;
 
   recall->duplicate = ags_peak_channel_run_duplicate;
-  recall->run_post = ags_peak_channel_run_run_post;
 }
 
 void
@@ -157,7 +156,7 @@ ags_peak_channel_run_init(AgsPeakChannelRun *peak_channel_run)
   AGS_RECALL(peak_channel_run)->port = NULL;
 
   AGS_RECALL(peak_channel_run)->flags |= AGS_RECALL_INPUT_ORIENTATED;
-  AGS_RECALL(peak_channel_run)->child_type = G_TYPE_NONE;
+  AGS_RECALL(peak_channel_run)->child_type = AGS_TYPE_PEAK_RECYCLING;
 }
 
 void
@@ -216,39 +215,6 @@ ags_peak_channel_run_duplicate(AgsRecall *recall,
 											      n_params, parameter);
   
   return((AgsRecall *) copy);
-}
-
-void
-ags_peak_channel_run_run_post(AgsRecall *recall)
-{
-  AgsChannel *source;
-  AgsRecallChannel *recall_channel;
-  GList *list;
-
-  /* call parent */
-  AGS_RECALL_CLASS(ags_peak_channel_run_parent_class)->run_post(recall);
-
-  /*  */
-  source = AGS_RECALL_CHANNEL_RUN(recall)->source;
-  recall_channel = AGS_RECALL_CHANNEL_RUN(recall)->recall_channel;
-
-  if(AGS_RECYCLING_CONTAINER(AGS_RECALL_ID(recall->recall_id)->recycling_container)->parent == NULL){
-    list = ags_recall_find_type(source->play,
-				AGS_TYPE_PEAK_CHANNEL_RUN);
-
-    //    if(g_list_last(list) == recall){
-      ags_peak_channel_retrieve_peak(recall_channel,
-				     TRUE);
-      //    }
-  }else{
-    list = ags_recall_find_type(source->recall,
-				AGS_TYPE_PEAK_CHANNEL_RUN);
-
-    //    if(g_list_last(list) == recall){
-      ags_peak_channel_retrieve_peak(recall_channel,
-				     FALSE);
-      //    }
-  }
 }
 
 /**
