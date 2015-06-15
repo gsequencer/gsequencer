@@ -1,0 +1,52 @@
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+"http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<refentry id="ags">
+
+  <refentryinfo>
+    <date>2015-06-15</date>
+  </refentryinfo>
+  
+  <refmeta>
+    <refentrytitle>
+      <application>ags</application>
+    </refentrytitle>
+    <manvolnum>1</manvolnum>
+    <refmiscinfo>ags v0.4.2</refmiscinfo>
+  </refmeta>
+
+  <refnamediv>
+    <refname>ags</refname>
+    <refpurpose>Advanced Gtk+ Sequencer is an audio sequencer and composition editor</refpurpose>
+  </refnamediv>
+
+  <refsynopsisdiv>
+    <cmdsynopsis>
+      <command>/usr/bin/ags</command>
+      <arg>--single-thread</arg>
+      <arg rep='repeat'>--filename <replaceable>file</replaceable></arg>
+    </cmdsynopsis>
+  </refsynopsisdiv>
+
+  <refsect1><title>Description</title>
+  <para>
+    
+  </para>
+  </refsect1>
+
+  <refsect1>
+    <title>BUGS</title>
+    <para>
+      None.  So far I know.
+    </para>
+  </refsect1>
+  <refsect1>
+    <title>AUTHOR</title>
+    <para>
+      <author>
+	<firstname>Joël</firstname>
+	<surname>Krähemann</surname>
+	<contrib>Original author</contrib>
+      </author>
+    </para>
+  </refsect1>
+</refentry>
