@@ -157,7 +157,10 @@ ags_returnable_thread_init(AgsReturnableThread *returnable_thread)
 
   g_atomic_int_set(&(returnable_thread->flags),
 		   0);
-  pthread_mutex_init(&(returnable_thread->reset_mutex), NULL);
+
+  returnable_thread->reset_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(returnable_thread->reset_mutex, NULL);
+  
   g_atomic_pointer_set(&(returnable_thread->safe_data),
 		       NULL);
 }
@@ -215,16 +218,16 @@ ags_returnable_thread_run(AgsThread *thread)
   }
 
   /* safe run */
-  pthread_mutex_lock(&(returnable_thread->reset_mutex));
+  pthread_mutex_lock(returnable_thread->reset_mutex);
 
   if((AGS_RETURNABLE_THREAD_IN_USE & (g_atomic_int_get(&(returnable_thread->flags)))) != 0){
 
     ags_returnable_thread_safe_run(returnable_thread);
 
-    pthread_mutex_unlock(&(returnable_thread->reset_mutex));
+    pthread_mutex_unlock(returnable_thread->reset_mutex);
 
     /* release thread in thread pool */
-    pthread_mutex_lock(&(thread_pool->pull_mutex));
+    pthread_mutex_lock(thread_pool->pull_mutex);
 
     tmplist = g_atomic_pointer_get(&(thread_pool->running_thread));
     g_atomic_pointer_set(&(thread_pool->running_thread),
@@ -235,9 +238,9 @@ ags_returnable_thread_run(AgsThread *thread)
     g_atomic_int_and(&(returnable_thread->flags),
 		     (~AGS_RETURNABLE_THREAD_IN_USE));
     
-    pthread_mutex_unlock(&(thread_pool->pull_mutex));
+    pthread_mutex_unlock(thread_pool->pull_mutex);
 
-    pthread_mutex_lock(&(thread_pool->return_mutex));
+    pthread_mutex_lock(thread_pool->return_mutex);
 
     g_atomic_int_dec_and_test(&(thread_pool->n_threads));
     //    ags_thread_remove_child(thread->parent,
@@ -250,9 +253,9 @@ ags_returnable_thread_run(AgsThread *thread)
       pthread_cond_signal(&(thread_pool->return_cond));
     }
 
-    pthread_mutex_unlock(&(thread_pool->return_mutex));
+    pthread_mutex_unlock(thread_pool->return_mutex);
   }else{
-    pthread_mutex_unlock(&(returnable_thread->reset_mutex));
+    pthread_mutex_unlock(returnable_thread->reset_mutex);
   }
 }
 
