@@ -424,6 +424,50 @@ ags_drum_input_line_map_recall(AgsLine *line,
 
   source = line->channel;
 
+  /* ags-buffer */
+  ags_recall_factory_create(audio,
+			    NULL, NULL,
+			    "ags-buffer\0",
+			    source->audio_channel, source->audio_channel + 1, 
+			    source->pad, source->pad + 1,
+			    (AGS_RECALL_FACTORY_INPUT |
+			     AGS_RECALL_FACTORY_RECALL |
+			     AGS_RECALL_FACTORY_ADD),
+			    0);
+
+  current = source;
+  destination = ags_channel_nth(audio->output,
+				current->audio_channel);
+
+  while(destination != NULL){
+    /* recall */
+    list = current->recall;
+
+    while((list = ags_recall_find_type(list, AGS_TYPE_BUFFER_CHANNEL)) != NULL){
+      buffer_channel = AGS_BUFFER_CHANNEL(list->data);
+
+      g_object_set(G_OBJECT(buffer_channel),
+		   "destination\0", destination,
+		   NULL);
+
+      list = list->next;
+    }
+
+    list = current->recall;
+    
+    while((list = ags_recall_find_type(list, AGS_TYPE_BUFFER_CHANNEL_RUN)) != NULL){
+      buffer_channel_run = AGS_BUFFER_CHANNEL_RUN(list->data);
+
+      g_object_set(G_OBJECT(buffer_channel_run),
+		   "destination\0", destination,
+		   NULL);
+
+      list = list->next;
+    }
+
+    destination = destination->next_pad;
+  }
+
   /* ags-peak */
   ags_recall_factory_create(audio,
 			    NULL, NULL,
@@ -530,50 +574,6 @@ ags_drum_input_line_map_recall(AgsLine *line,
 			     AGS_RECALL_FACTORY_RECALL |
 			     AGS_RECALL_FACTORY_ADD),
 			    0);
-
-  /* ags-buffer */
-  ags_recall_factory_create(audio,
-			    NULL, NULL,
-			    "ags-buffer\0",
-			    source->audio_channel, source->audio_channel + 1, 
-			    source->pad, source->pad + 1,
-			    (AGS_RECALL_FACTORY_INPUT |
-			     AGS_RECALL_FACTORY_RECALL |
-			     AGS_RECALL_FACTORY_ADD),
-			    0);
-
-  current = source;
-  destination = ags_channel_nth(audio->output,
-				current->audio_channel);
-
-  while(destination != NULL){
-    /* recall */
-    list = current->recall;
-
-    while((list = ags_recall_find_type(list, AGS_TYPE_BUFFER_CHANNEL)) != NULL){
-      buffer_channel = AGS_BUFFER_CHANNEL(list->data);
-
-      g_object_set(G_OBJECT(buffer_channel),
-		   "destination\0", destination,
-		   NULL);
-
-      list = list->next;
-    }
-
-    list = current->recall;
-    
-    while((list = ags_recall_find_type(list, AGS_TYPE_BUFFER_CHANNEL_RUN)) != NULL){
-      buffer_channel_run = AGS_BUFFER_CHANNEL_RUN(list->data);
-
-      g_object_set(G_OBJECT(buffer_channel_run),
-		   "destination\0", destination,
-		   NULL);
-
-      list = list->next;
-    }
-
-    destination = destination->next_pad;
-  }
 
   /* ags-stream */
   ags_recall_factory_create(audio,

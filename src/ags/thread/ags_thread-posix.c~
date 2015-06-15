@@ -18,14 +18,12 @@
 
 #include <ags/thread/ags_thread-posix.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/object/ags_main_loop.h>
 
 #include <ags/thread/ags_task_thread.h>
 #include <ags/thread/ags_returnable_thread.h>
-
-#include <ags/audio/ags_devout.h>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -70,7 +68,6 @@ void ags_thread_real_stop(AgsThread *thread);
 enum{
   PROP_0,
   PROP_FREQUENCY,
-  PROP_DEVOUT,
 };
 
 enum{
@@ -143,22 +140,6 @@ ags_thread_class_init(AgsThreadClass *thread)
   gobject->finalize = ags_thread_finalize;
 
   /* properties */
-  /**
-   * AgsThread:devout:
-   *
-   * The assigned #AgsDevout.
-   * 
-   * Since: 0.4
-   */
-  param_spec = g_param_spec_object("devout\0",
-				   "devout assigned to\0",
-				   "The AgsDevout it is assigned to.\0",
-				   AGS_TYPE_DEVOUT,
-				   G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_DEVOUT,
-				  param_spec);
-
   /**
    * AgsThread:frequency:
    *
@@ -296,8 +277,6 @@ ags_thread_init(AgsThread *thread)
   g_atomic_int_set(&(thread->flags),
 		   0);
 
-  thread->devout = NULL;
-  
   thread->thread = (pthread_t *) malloc(sizeof(pthread_t));
 
   pthread_attr_init(&(thread->thread_attr));
@@ -370,34 +349,6 @@ ags_thread_set_property(GObject *gobject,
   thread = AGS_THREAD(gobject);
 
   switch(prop_id){
-  case PROP_DEVOUT:
-    {
-      AgsDevout *devout;
-      AgsThread *current;
-
-      devout = (AgsDevout *) g_value_get_object(value);
-
-      if(thread->devout != NULL){
-	g_object_unref(G_OBJECT(thread->devout));
-      }
-
-      if(devout != NULL){
-	g_object_ref(G_OBJECT(devout));
-      }
-
-      thread->devout = G_OBJECT(devout);
-
-      current = thread->children;
-
-      while(current != NULL){
-	g_object_set(G_OBJECT(current),
-		     "devout\0", devout,
-		     NULL);
-
-	current = current->next;
-      }
-    }
-    break;
   case PROP_FREQUENCY:
     {
       gdouble freq;
@@ -428,11 +379,6 @@ ags_thread_get_property(GObject *gobject,
   thread = AGS_THREAD(gobject);
 
   switch(prop_id){
-  case PROP_DEVOUT:
-    {
-      g_value_set_object(value, G_OBJECT(thread->devout));
-    }
-    break;
   case PROP_FREQUENCY:
     {
       g_value_set_double(value, thread->freq);
@@ -482,10 +428,6 @@ ags_thread_finalize(GObject *gobject)
   size_t stacksize;
 
   thread = AGS_THREAD(gobject);
-
-  if(thread->devout != NULL){
-    g_object_unref(G_OBJECT(thread->devout));
-  }
 
   pthread_attr_getstack(&(thread->thread_attr),
 			&stackaddr, &stacksize);

@@ -97,8 +97,6 @@ struct _AgsThread
 
   sigset_t wait_mask;
 
-  GObject *devout;
-  
   pthread_t *thread;
   pthread_attr_t thread_attr;
 
