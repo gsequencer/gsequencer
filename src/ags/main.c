@@ -818,7 +818,27 @@ main(int argc, char **argv)
   filename = NULL;
 
   for(i = 0; i < argc; i++){
-    if(!strncmp(argv[i], "--single-thread\0", 16)){
+    if(!strncmp(argv[i], "--help\0", 16)){
+      printf("Advanced Gtk+ Sequencer `ags` is an audio sequencer and notation editor\n\n\0");
+
+      printf("Usage:\n\t%s\n\t%s\n\t%s\n\t%s\n\nReport bugs to <jkraehemann@gmail.com>\n\0",
+	     "--filename file     open file\0",
+	     "--single-thread     run in single thread mode\0",     
+	     "--help              display this help and exit\0",
+	     "--version           output version information and exit\0");
+      
+      exit(0);
+    }else if(!strncmp(argv[i], "--version\0", 16)){
+      printf("Advanced Gtk+ Sequencer 0.4.2\n\n\0");
+      
+      printf("%s\n%s\n%s\n\n\0",
+	     "Copyright (C) 2005-2015 Joël Krähemann\0",
+	     "This is free software; see the source for copying conditions.  There is NO\0",
+	     "warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\0");
+      
+      printf("Written by Joël Krähemann\n\0");
+      exit(0);
+    }else if(!strncmp(argv[i], "--single-thread\0", 16)){
       single_thread = TRUE;
     }else if(!strncmp(argv[i], "--filename\0", 11)){
       filename = argv[i + 1];
