@@ -1,6 +1,8 @@
 AUTOMAKE_OPTIONS = foreign
 # SUBDIRS = src doc
 
+man_MANS = ags.1
+
 AM_CPPFLAGS = -I$(top_srcdir)/src -DDESTDIR=\"$(DESTDIR)$(datadir)\" -D_FORTIFY_SOURCE=2
 
 # what flags you want to pass to the C compiler & linker
