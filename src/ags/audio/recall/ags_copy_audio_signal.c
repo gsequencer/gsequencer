@@ -65,10 +65,10 @@ static gpointer ags_copy_audio_signal_parent_class = NULL;
 static AgsConnectableInterface *ags_copy_audio_signal_parent_connectable_interface;
 static AgsDynamicConnectableInterface *ags_copy_audio_signal_parent_dynamic_connectable_interface;
 
-extern void ags_audio_signal_copy_buffer_to_buffer(signed short *destination, guint dchannels,
-						   signed short *source, guint schannels, guint size)
-  __attribute__ ((hot))
-  __attribute__ ((fastcall));
+//extern void ags_audio_signal_copy_buffer_to_buffer(signed short *destination, guint dchannels,
+//						   signed short *source, guint schannels, guint size)
+//  __attribute__ ((hot))
+//  __attribute__ ((fastcall));
 
 GType
 ags_copy_audio_signal_get_type()
