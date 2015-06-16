@@ -223,7 +223,7 @@ ags_config_load_defaults(AgsConfig *config)
   ags_config_set(config, ags_config_devout, "buffer-size\0", "940\0");
   ags_config_set(config, ags_config_devout, "pcm-channels\0", "2\0");
   ags_config_set(config, ags_config_devout, "dsp-channels\0", "2\0");
-  ags_config_set(config, ags_config_devout, "alsa-handle\0", "hw:0,0\0");
+  ags_config_set(config, ags_config_devout, "alsa-handle\0", "hw:0\0");
 
   ags_config_set(config, ags_config_recall, "auto-sense\0", "true\0");
 }

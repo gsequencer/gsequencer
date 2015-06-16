@@ -82,9 +82,9 @@ bin_PROGRAMS = ags$(EXEEXT)
 subdir = .
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/configure $(am__configure_deps) \
-	$(srcdir)/config.h.in depcomp $(dist_man_MANS) AUTHORS COPYING \
-	ChangeLog INSTALL NEWS README compile config.guess \
-	config.rpath config.sub install-sh missing
+	$(srcdir)/config.h.in depcomp AUTHORS COPYING ChangeLog \
+	INSTALL NEWS README compile config.guess config.rpath \
+	config.sub install-sh missing
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
@@ -412,7 +412,7 @@ am__uninstall_files_from_dir = { \
   }
 man1dir = $(mandir)/man1
 NROFF = nroff
-MANS = $(dist_man_MANS)
+MANS = $(man1_MANS)
 DATA = $(appdata_DATA)
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) \
 	$(LISP)config.h.in
@@ -485,7 +485,6 @@ GOBJECT_LIBS = -lgobject-2.0 -Wl,--export-dynamic -lgmodule-2.0 -pthread -lgthre
 GREP = /bin/grep
 GTK_CFLAGS = -pthread -I/usr/include/gtk-2.0 -I/usr/lib/x86_64-linux-gnu/gtk-2.0/include -I/usr/include/gio-unix-2.0/ -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/libpng12 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/pango-1.0 -I/usr/include/harfbuzz -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/freetype2 
 GTK_LIBS = -lgtk-x11-2.0 -lgdk-x11-2.0 -lpangocairo-1.0 -latk-1.0 -lcairo -lgdk_pixbuf-2.0 -lgio-2.0 -lpangoft2-1.0 -lpango-1.0 -lgobject-2.0 -lglib-2.0 -lfontconfig -lfreetype 
-HELP2MAN = help2man
 INSTALL = /usr/bin/install -c
 INSTALL_DATA = ${INSTALL} -m 644
 INSTALL_PROGRAM = ${INSTALL}
@@ -504,16 +503,15 @@ LIBXML2_CFLAGS = -I/usr/include/libxml2
 LIBXML2_LIBS = -lxml2 
 LTLIBOBJS = 
 MAKEINFO = ${SHELL} /home/joelkraehemann/gsequencer/missing makeinfo
-MANPAGES = ags.1
 MKDIR_P = /bin/mkdir -p
 OBJEXT = o
 PACKAGE = ags
-PACKAGE_BUGREPORT = weedlight@gmail.com
+PACKAGE_BUGREPORT = jkraehemann@gmail.com
 PACKAGE_NAME = ags
-PACKAGE_STRING = ags 0.4.2-63
+PACKAGE_STRING = ags 0.4.2-64
 PACKAGE_TARNAME = ags
 PACKAGE_URL = 
-PACKAGE_VERSION = 0.4.2-63
+PACKAGE_VERSION = 0.4.2-64
 PATH_SEPARATOR = :
 PKG_CONFIG = /usr/bin/pkg-config
 PKG_CONFIG_LIBDIR = 
@@ -525,7 +523,7 @@ SNDFILE_LIBS = -lsndfile
 STRIP = 
 UUID_CFLAGS = -I/usr/include/uuid 
 UUID_LIBS = -luuid 
-VERSION = 0.4.2-63
+VERSION = 0.4.2-64
 XMKMF = 
 abs_builddir = /home/joelkraehemann/gsequencer
 abs_srcdir = /home/joelkraehemann/gsequencer
@@ -576,10 +574,9 @@ AM_CPPFLAGS = -I$(top_srcdir)/src -DDESTDIR=\"$(DESTDIR)$(datadir)\" -D_FORTIFY_
 # this lists the binaries to produce, the (non-PHONY, binary) targets in
 # the previous manual Makefile
 noinst_LIBRARIES = 
-EXTRA_DIST = gsequencer.share acsite.m4 ags.desktop.in
-CLEANFILES = $(MANPAGES)
+EXTRA_DIST = gsequencer.share acsite.m4 ags.1 ags.desktop.in
 CLEANFILES = $(appdata_DATA)
-dist_man_MANS = ags.1
+man1_MANS = ags.1
 
 # library
 libags_a_CFLAGS = $(GOBJECT_CFLAGS) $(LIBXML2_CFLAGS) 
@@ -6085,10 +6082,10 @@ ags-ags_ladspa_manager.obj: src/ags/plugin/ags_ladspa_manager.c
 #	$(AM_V_CC)source='src/ags/plugin/ags_ladspa_manager.c' object='ags-ags_ladspa_manager.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_ladspa_manager.obj `if test -f 'src/ags/plugin/ags_ladspa_manager.c'; then $(CYGPATH_W) 'src/ags/plugin/ags_ladspa_manager.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/plugin/ags_ladspa_manager.c'; fi`
-install-man1: $(dist_man_MANS)
+install-man1: $(man1_MANS)
 	@$(NORMAL_INSTALL)
-	@list1=''; \
-	list2='$(dist_man_MANS)'; \
+	@list1='$(man1_MANS)'; \
+	list2=''; \
 	test -n "$(man1dir)" \
 	  && test -n "`echo $$list1$$list2`" \
 	  || exit 0; \
@@ -6121,10 +6118,8 @@ install-man1: $(dist_man_MANS)
 
 uninstall-man1:
 	@$(NORMAL_UNINSTALL)
-	@list=''; test -n "$(man1dir)" || exit 0; \
+	@list='$(man1_MANS)'; test -n "$(man1dir)" || exit 0; \
 	files=`{ for i in $$list; do echo "$$i"; done; \
-	l2='$(dist_man_MANS)'; for i in $$l2; do echo "$$i"; done | \
-	  sed -n '/\.1[a-z]*$$/p'; \
 	} | sed -e 's,.*/,,;h;s,.*\.,,;s,^[^1][0-9a-z]*$$,1,;x' \
 	      -e 's,\.[0-9a-z]*$$,,;$(transform);G;s,\n,.,'`; \
 	dir='$(DESTDIR)$(man1dir)'; $(am__uninstall_files_from_dir)
@@ -6511,9 +6506,6 @@ uninstall-man: uninstall-man1
 
 ags.desktop: ags.desktop.in
 	$(AM_V_GEN)sed -e 's,\@datadir\@,$(datadir),g' < "$<" > $@
-
-ags.1:
-	$(HELP2MAN) -o $@ ags
 
 install-data-local:
 	mkdir -p $(DESTDIR)/$(datadir)/gsequencer/icons

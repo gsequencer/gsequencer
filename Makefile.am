@@ -13,11 +13,7 @@ noinst_LIBRARIES =
 bin_PROGRAMS = ags
 EXTRA_DIST = gsequencer.share acsite.m4 ags.1
 CLEANFILES =
-
-if HAVE_HELP2MAN
-dist_man_MANS=ags.1
-CLEANFILES=$(MANPAGES)
-endif
+man1_MANS = ags.1
 
 # library
 libags_a_CFLAGS= $(GOBJECT_CFLAGS) $(LIBXML2_CFLAGS) 
@@ -39,11 +35,6 @@ ags_SOURCES = ./src/ags-lib/object/ags_connectable.c ./src/ags-lib/object/ags_co
 
 ags.desktop: ags.desktop.in
 	$(AM_V_GEN)sed -e 's,\@datadir\@,$(datadir),g' < "$<" > $@
-
-if HAVE_HELP2MAN
-ags.1:
-	$(HELP2MAN) -o $@ ags
-endif
 
 install-data-local:
 	mkdir -p $(DESTDIR)/$(datadir)/gsequencer/icons
