@@ -145,6 +145,9 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
   GtkLabel *label;
   GtkCellRenderer *cell_renderer;
 
+  g_signal_connect_after((GObject *) audio_preferences, "parent_set\0",
+			 G_CALLBACK(ags_audio_preferences_parent_set_callback), (gpointer) audio_preferences);
+
   table = (GtkTable *) gtk_table_new(2, 4, FALSE);
   gtk_box_pack_start(GTK_BOX(audio_preferences),
 		     GTK_WIDGET(table),
@@ -170,14 +173,13 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
 		   0, 1,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
-  
+
   cell_renderer = gtk_cell_renderer_text_new();
   gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(audio_preferences->card),
 			     cell_renderer,
 			     FALSE); 
   gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(audio_preferences->card),
 				 cell_renderer,
-				 "text\0", 0,
 				 "text\0", 1,
 				 NULL);
   gtk_combo_box_set_active(audio_preferences->card, 0);
@@ -253,8 +255,8 @@ ags_audio_preferences_connect(AgsConnectable *connectable)
 
   audio_preferences = AGS_AUDIO_PREFERENCES(connectable);
 
-  g_signal_connect_after(G_OBJECT(audio_preferences->card), "changed\0",
-			 G_CALLBACK(ags_audio_preferences_card_changed_callback), audio_preferences);
+  g_signal_connect(G_OBJECT(audio_preferences->card), "changed\0",
+		   G_CALLBACK(ags_audio_preferences_card_changed_callback), audio_preferences);
 }
 
 void
@@ -282,8 +284,10 @@ ags_audio_preferences_apply(AgsApplicable *applicable)
   AgsAudioPreferences *audio_preferences; 
   AgsConfig *config;
   GList *card_id, *card_name;
-  char *device;
-  gchar *str;
+  GtkListStore *model;
+  GtkTreeIter current;
+  GValue value =  {0,};
+  char *device, *str;
   int card_num;
   guint channels, channels_min, channels_max;
   guint rate, rate_min, rate_max;
@@ -294,6 +298,27 @@ ags_audio_preferences_apply(AgsApplicable *applicable)
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
 							   AGS_TYPE_PREFERENCES);
   config = AGS_CONFIG(AGS_MAIN(AGS_WINDOW(preferences->window)->ags_main)->config);
+
+
+  /* device */
+  model = gtk_combo_box_get_model(audio_preferences->card);
+
+  if(!(gtk_combo_box_get_active_iter(audio_preferences->card,
+				     &current))){
+    return;
+  }
+
+  gtk_tree_model_get_value(model,
+			   &current,
+			   0,
+			   &value);
+  str = g_strdup(g_value_get_string(&value));
+  g_message("%s\0", str);
+  ags_config_set(config,
+		 AGS_CONFIG_DEVOUT,
+		 "alsa-handle\0",
+		 str);
+  g_free(str);
 
   /* samplerate */
   str = g_strdup_printf("%u\0",
@@ -321,12 +346,6 @@ ags_audio_preferences_apply(AgsApplicable *applicable)
 		 "dsp-channels\0",
 		 str);
   g_free(str);
-
-  /* card */
-  ags_config_set(config,
-		 AGS_CONFIG_DEVOUT,
-		 "alsa-handle\0",
-		 gtk_combo_box_text_get_active_text(audio_preferences->card));
 }
 
 void
@@ -334,12 +353,16 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
 {
   AgsWindow *window;
   AgsPreferences *preferences;
+  AgsConfig *config;
   AgsAudioPreferences *audio_preferences;
   AgsDevout *devout;
   GtkListStore *model;
-  GtkTreeIter iter;
+  GtkTreeIter current;
   GList *card_id, *card_name;
-  char *device;
+  GValue value =  {0,};
+  char *device, *str;
+  guint nth;
+  gboolean found_card;
   int card_num;
   guint channels, channels_min, channels_max;
   guint rate, rate_min, rate_max;
@@ -352,27 +375,39 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
 							   AGS_TYPE_PREFERENCES);
   window = AGS_WINDOW(preferences->window);
+  config = AGS_CONFIG(AGS_MAIN(window->ags_main)->config);
 
   /* refresh */
-  ags_devout_list_cards(&card_id, &card_name);
-  model = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_STRING);
+  ags_devout_list_cards(&card_id, &card_name);    
+  str = ags_config_get(config,
+		       AGS_CONFIG_DEVOUT,
+		       "alsa-handle\0");
+  nth = 0;
+  found_card = FALSE;
 
   while(card_id != NULL){
-    gtk_list_store_append(model, &iter);
-    gtk_list_store_set(model, &iter,
-		       0, card_id->data,
-		       1, card_name->data,
-		       -1);
-      
+    if(!g_ascii_strcasecmp(card_id->data,
+			   str)){
+      found_card = TRUE;
+    }
+    
+    if(!found_card){
+      nth++;
+    }
+    
     card_id = card_id->next;
     card_name = card_name->next;
   }
-
+  
+  if(!found_card){
+    nth = 0;
+  }
+  
+  gtk_combo_box_set_active(audio_preferences->card,
+			   nth);
+  
   g_list_free(card_id);
   g_list_free(card_name);
-
-  gtk_combo_box_set_model(audio_preferences->card,
-			  GTK_TREE_MODEL(model));
 
   /*  */
   devout = window->devout;
@@ -387,11 +422,6 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
   error = NULL;
 
   /*  */
-  sscanf(device, "hw:%i\0", &card_num);
-
-  //  gtk_combo_box_set_active(audio_preferences->card,
-  //			   card_num);
-
   gtk_spin_button_set_value(audio_preferences->audio_channels,
 			    (gdouble) channels);
   gtk_spin_button_set_value(audio_preferences->samplerate,
@@ -400,7 +430,19 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
 			    (gdouble) buffer_size);
 
   /*  */
-  ags_devout_pcm_info(gtk_combo_box_get_active_text(audio_preferences->card),
+  model = gtk_combo_box_get_model(audio_preferences->card);
+
+  if(!(gtk_combo_box_get_active_iter(audio_preferences->card,
+				     &current))){
+    return;
+  }
+
+  gtk_tree_model_get_value(model,
+			   &current,
+			   0,
+			   &value);
+  str = g_strdup(g_value_get_string(&value));
+  ags_devout_pcm_info(str,
   		      &channels_min, &channels_max,
   		      &rate_min, &rate_max,
   		      &buffer_size_min, &buffer_size_max,

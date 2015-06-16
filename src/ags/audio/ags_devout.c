@@ -997,11 +997,12 @@ ags_devout_pcm_info(char *card_id,
   unsigned int val;
   int dir;
   snd_pcm_uframes_t frames;
+  int card_num;
   int err;
 
   /* Open PCM device for playback. */
   handle = NULL;
-
+  
   rc = snd_pcm_open(&handle, card_id, SND_PCM_STREAM_PLAYBACK, 0);
 
   if(rc < 0) {

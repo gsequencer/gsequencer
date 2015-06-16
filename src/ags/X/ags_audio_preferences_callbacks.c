@@ -34,6 +34,40 @@
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_preferences.h>
 
+int
+ags_audio_preferences_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsAudioPreferences *audio_preferences)
+{
+  GtkListStore *model;
+  GtkTreeIter iter;
+  GList *card_id, *card_name;
+  
+  if(old_parent != NULL)
+    return(0);
+
+  /* refresh */
+  ags_devout_list_cards(&card_id, &card_name);
+  model = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_STRING);
+  
+  while(card_id != NULL){
+    gtk_list_store_append(model, &iter);
+    gtk_list_store_set(model, &iter,
+		       0, card_id->data,
+		       1, card_name->data,
+		       -1);
+    
+    card_id = card_id->next;
+    card_name = card_name->next;
+  }
+
+  gtk_combo_box_set_model(audio_preferences->card,
+			  GTK_TREE_MODEL(model));
+  
+  g_list_free(card_id);
+  g_list_free(card_name);
+
+  return(0);
+}
+
 void
 ags_audio_preferences_card_changed_callback(GtkComboBox *combo,
 					    AgsAudioPreferences *audio_preferences)
@@ -41,14 +75,29 @@ ags_audio_preferences_card_changed_callback(GtkComboBox *combo,
   AgsWindow *window;
   AgsDevout *devout;
   AgsSetOutputDevice *set_output_device;
-
+  GtkListStore *model;
+  GtkTreeIter current;
+  GValue value =  {0,};
+  
   window = AGS_WINDOW(AGS_PREFERENCES(gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
 							      AGS_TYPE_PREFERENCES))->window);
   devout = AGS_DEVOUT(window->devout);
 
+  model = gtk_combo_box_get_model(audio_preferences->card);
+
+  if(!gtk_combo_box_get_active_iter(audio_preferences->card,
+				    &current)){
+    return;
+  }
+
+  gtk_tree_model_get_value(model,
+			   &current,
+			   0,
+			   &value);
+  
   /* create set output device task */
   set_output_device = ags_set_output_device_new((GObject *) devout,
-						gtk_combo_box_get_active_text(audio_preferences->card));
+						g_strdup(g_value_get_string(&value)));
 
   /* append AgsSetOutputDevice */
   ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop)->task_thread),

@@ -202,13 +202,13 @@
 #define PACKAGE "ags"
 
 /* Define to the address where bug reports for this package should be sent. */
-#define PACKAGE_BUGREPORT "weedlight@gmail.com"
+#define PACKAGE_BUGREPORT "jkraehemann@gmail.com"
 
 /* Define to the full name of this package. */
 #define PACKAGE_NAME "ags"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "ags 0.4.2-63"
+#define PACKAGE_STRING "ags 0.4.2-64"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "ags"
@@ -217,7 +217,7 @@
 #define PACKAGE_URL ""
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "0.4.2-63"
+#define PACKAGE_VERSION "0.4.2-64"
 
 /* If using the C implementation of alloca, define if you know the
    direction of stack growth for your system; otherwise it will be
@@ -231,7 +231,7 @@
 #define STDC_HEADERS 1
 
 /* Version number of package */
-#define VERSION "0.4.2-63"
+#define VERSION "0.4.2-64"
 
 /* Define for Solaris 2.5.1 so the uint32_t typedef from <sys/synch.h>,
    <pthread.h>, or <semaphore.h> is not used. If the typedef were allowed, the
