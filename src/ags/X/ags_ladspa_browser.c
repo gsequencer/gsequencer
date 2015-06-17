@@ -355,12 +355,16 @@ ags_ladspa_browser_get_plugin_effect(AgsLadspaBrowser *ladspa_browser)
 {
   GtkComboBoxText *effect;
   GList *list;
-
+  gchar *str;
+  
   list = gtk_container_get_children(GTK_CONTAINER(ladspa_browser->plugin));
   effect = GTK_COMBO_BOX_TEXT(list->next->next->next->data);
   g_list_free(list);
-
-  return(gtk_combo_box_text_get_active_text(effect));
+  
+  str = gtk_combo_box_text_get_active_text(effect);
+  str = &(str[6]);
+  
+  return(str);
 }
 
 GtkWidget*
