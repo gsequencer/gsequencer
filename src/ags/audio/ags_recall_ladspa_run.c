@@ -375,7 +375,7 @@ ags_recall_ladspa_run_load_ports(AgsRecallLadspaRun *recall_ladspa_run)
 	}
 
 	for(j = 0; j < recall_ladspa->input_lines; j++){
-	  g_message("connecting port[%d]: %d/%d\0", j, i, port_count);
+	  //	  g_message("connecting port[%d]: %d/%d\0", j, i, port_count);
 	  port_data = &(current->port_value.ags_port_float);
 	  recall_ladspa->plugin_descriptor->connect_port(recall_ladspa_run->ladspa_handle[j],
 							 i,

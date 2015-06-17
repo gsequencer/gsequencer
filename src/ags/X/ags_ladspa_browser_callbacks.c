@@ -70,7 +70,7 @@ ags_ladspa_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
 
       for(index = 0; (plugin_descriptor = ladspa_descriptor(index)) != NULL; index++){
 	gtk_combo_box_text_append_text(effect,
-				       g_strdup_printf("%s:%lu\0", plugin_descriptor->Name, plugin_descriptor->UniqueID));
+				       g_strdup_printf("%s - %s:%lu\0", (LADSPA_IS_HARD_RT_CAPABLE(plugin_descriptor->Properties) ? "\342\230\221": " \342\230\220"), plugin_descriptor->Name, plugin_descriptor->UniqueID));
       }
     }
   }
