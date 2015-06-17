@@ -17,7 +17,7 @@
  */
 
 #include <midi2ags/midi/ags_midi_parser.h>
-#include <midi2ags/midi/ags_marshal.h>
+#include <midi2ags/object/ags_marshal.h>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -778,9 +778,8 @@ ags_midi_parser_read_text(AgsMidiParser *midi_parser,
   memset(text, 0, AGS_MIDI_PARSER_MAX_TEXT_LENGTH * sizeof(char));
   i = 0;
   
-  while((c = (char) 0xff & ags_midi_parser_midi_getc(midi_parser)) != '\0' && (length <= 0 ||
-									       i < length) &&
-	c != EOF){
+  while((length <= 0 ||
+	 i < length) && (c = (char) 0xff & ags_midi_parser_midi_getc(midi_parser)) != EOF){
     if(c == '\0' || !(g_ascii_isalnum(c) ||
 		      g_ascii_ispunct(c) ||
 		      c == ' ')){
@@ -800,17 +799,22 @@ gdouble
 ags_midi_parser_ticks_to_sec(AgsMidiParser *midi_parser,
 			     guint ticks, gint division, guint tempo)
 {
+  gdouble retval;
+  
   if(division > 0){
-    return ((gdouble) (((gdouble)(ticks) * (gdouble)(tempo)) /
-		       ((gdouble)(division) * 1000000.0)));
+    retval = ((gdouble) ticks * tempo) /
+	      (gdouble) (division * 1000000.0);
+    return(retval);
   }else{
     gdouble smpte_format, smpte_resolution;
 
     smpte_format = (gdouble) ((0xff00 & division) >> 8);
     smpte_resolution = (gdouble) (0xff & division);
+
+    retval = (((gdouble) ticks) /
+	      (gdouble) (smpte_format * smpte_resolution * 1000000.0));
     
-    return((gdouble) ((gdouble) ticks / (smpte_format * smpte_resolution *
-					 1000000.0)));
+    return(retval);
   }
 }
 
@@ -887,7 +891,6 @@ ags_midi_parser_real_parse_full(AgsMidiParser *midi_parser)
   xmlNode *root_node;
   xmlNode *tracks_node;
   xmlNode *current;
-  gchar c;
   
   GError *error;
   
@@ -906,7 +909,6 @@ ags_midi_parser_real_parse_full(AgsMidiParser *midi_parser)
 
   xmlAddChild(root_node,
 	      tracks_node);
-  c = 0x0;
   
   while(((AGS_MIDI_PARSER_EOF & (midi_parser->flags))) == 0){
     current = ags_midi_parser_parse_track(midi_parser);
@@ -1313,8 +1315,6 @@ ags_midi_parser_real_key_pressure(AgsMidiParser *midi_parser, guint status)
   xmlNewProp(node,
 	     "note\0",
 	     g_strdup_printf("%d\0", note));
-
-  pressure = (0x7f) & ags_midi_parser_midi_getc(midi_parser);
 
   xmlNewProp(node,
 	     "pressure\0",

@@ -312,7 +312,9 @@ ags_audio_preferences_apply(AgsApplicable *applicable)
 			   &current,
 			   0,
 			   &value);
-  str = g_strdup(g_value_get_string(&value));
+  
+  //FIXME:JK: work-around for alsa-handle
+  str = g_strdup_printf("%s,0", g_value_get_string(&value));
   g_message("%s\0", str);
   ags_config_set(config,
 		 AGS_CONFIG_DEVOUT,
@@ -360,7 +362,7 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
   GtkTreeIter current;
   GList *card_id, *card_name;
   GValue value =  {0,};
-  char *device, *str;
+  char *device, *str, *tmp;
   guint nth;
   gboolean found_card;
   int card_num;
@@ -382,14 +384,20 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
   str = ags_config_get(config,
 		       AGS_CONFIG_DEVOUT,
 		       "alsa-handle\0");
+  g_message("%s\0", str);
   nth = 0;
   found_card = FALSE;
 
   while(card_id != NULL){
-    if(!g_ascii_strcasecmp(card_id->data,
+    //FIXME:JK: work-around for alsa-handle
+    tmp = g_strdup_printf("%s,0\0",
+			  card_id->data);
+    if(!g_ascii_strcasecmp(tmp,
 			   str)){
       found_card = TRUE;
     }
+
+    g_free(tmp);
     
     if(!found_card){
       nth++;
@@ -418,9 +426,6 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
 	       "buffer_size\0", &buffer_size,
 	       NULL);
 
-
-  error = NULL;
-
   /*  */
   gtk_spin_button_set_value(audio_preferences->audio_channels,
 			    (gdouble) channels);
@@ -442,6 +447,8 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
 			   0,
 			   &value);
   str = g_strdup(g_value_get_string(&value));
+
+  error = NULL;
   ags_devout_pcm_info(str,
   		      &channels_min, &channels_max,
   		      &rate_min, &rate_max,

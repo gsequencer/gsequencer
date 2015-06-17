@@ -821,7 +821,8 @@ main(int argc, char **argv)
     if(!strncmp(argv[i], "--help\0", 7)){
       printf("GSequencer `ags` is an audio sequencer and notation editor\n\n\0");
 
-      printf("Usage:\n\t%s\n\t%s\n\t%s\n\t%s\n\nReport bugs to <jkraehemann@gmail.com>\n\0",
+      printf("Usage:\n\t%s\n\t%s\n\t%s\n\t%s\n\n",
+	     "Report bugs to <jkraehemann@gmail.com>\n\0",
 	     "--filename file     open file\0",
 	     "--single-thread     run in single thread mode\0",     
 	     "--help              display this help and exit\0",

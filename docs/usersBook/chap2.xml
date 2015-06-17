@@ -40,6 +40,50 @@
   </itemizedlist>
 
   <sect1>
+    <title>Machine Properties</title>
+    <para>
+      Within properties dialog you can link lines or add effects and adjust audio-channels/pads.
+    </para>
+    
+    <sect2>
+      <imagedata fileref="../images/ags_machine_properties-output.png" />
+      <para>
+	The output tab lets you mainly perform linking and adding effects.
+      </para>
+    </sect2>
+
+    <sect2>
+      <imagedata fileref="../images/ags_machine_properties-input.png" />
+      <para>
+	The input tab does the same as output tab in view of input lines.
+      </para>
+    </sect2>
+
+    <sect2>
+      <imagedata fileref="../images/ags_machine_properties-link_input.png" />
+      <para>
+	Do linking in batch mode.
+      </para>
+    </sect2>
+
+    <sect2>
+      <imagedata fileref="../images/ags_machine_properties-resize_channels.png" />
+      <para>
+	Adjust audio channels or input/output pads.
+      </para>
+    </sect2>
+
+    <sect2>
+      <imagedata fileref="../images/ags_ladspa_browser.png" />
+      <para>
+	The LADSPA browser gives you choice of available LADSPA plugin. It lets you modify
+	the controls to be used.
+      </para>
+    </sect2>
+    
+  </sect1>
+
+  <sect1>
     <title>Panel</title>
     <imagedata fileref="../images/ags_panel.png" />
     <para>
@@ -78,7 +122,8 @@
     <title>Synth</title>
     <imagedata fileref="../images/ags_synth.png" />
     <para>
-      Produce audio data using its oscillators. 
+      Produce audio data using its oscillators. The count of oscillators depends on number of
+      input lines.
     </para>
   </sect1>
 
@@ -86,7 +131,7 @@
     <title>FFPlayer</title>
     <imagedata fileref="../images/ags_ffplayer.png" />
     <para>
-      Produce audio data by opening audio containers like Soundfont2 files.
+      Produce audio data by opening Soundfont2 audio file container format.
     </para>
   </sect1>
 

@@ -924,8 +924,8 @@ ags_devout_list_cards(GList **card_id, GList **card_name)
   snd_ctl_t *card_handle;
   snd_ctl_card_info_t *card_info;
   char *name;
-  gchar *str;
-  int card_num;
+  gchar *str, *tmp;
+  int card_num, dev_num;
   int error;
 
   *card_id = NULL;
@@ -943,9 +943,10 @@ ags_devout_list_cards(GList **card_id, GList **card_name)
       continue;
     }
 
-    str = g_strdup_printf("hw:%i\0", card_num);
+    tmp = 
+      str = g_strdup_printf("hw:%i\0", card_num);
     error = snd_ctl_open(&card_handle, str, 0);
-
+    
     if(error < 0){
       continue;
     }
@@ -991,6 +992,7 @@ ags_devout_pcm_info(char *card_id,
 		    guint *buffer_size_min, guint *buffer_size_max,
 		    GError **error)
 {
+  char *str;
   int rc;
   snd_pcm_t *handle;
   snd_pcm_hw_params_t *params;
@@ -1002,7 +1004,7 @@ ags_devout_pcm_info(char *card_id,
 
   /* Open PCM device for playback. */
   handle = NULL;
-  
+
   rc = snd_pcm_open(&handle, card_id, SND_PCM_STREAM_PLAYBACK, 0);
 
   if(rc < 0) {

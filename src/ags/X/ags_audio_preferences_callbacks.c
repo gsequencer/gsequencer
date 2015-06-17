@@ -77,8 +77,14 @@ ags_audio_preferences_card_changed_callback(GtkComboBox *combo,
   AgsSetOutputDevice *set_output_device;
   GtkListStore *model;
   GtkTreeIter current;
+  gchar *str;
+  guint channels, channels_min, channels_max;
+  guint rate, rate_min, rate_max;
+  guint buffer_size, buffer_size_min, buffer_size_max;
   GValue value =  {0,};
-  
+
+  GError *error;
+
   window = AGS_WINDOW(AGS_PREFERENCES(gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
 							      AGS_TYPE_PREFERENCES))->window);
   devout = AGS_DEVOUT(window->devout);
@@ -95,16 +101,49 @@ ags_audio_preferences_card_changed_callback(GtkComboBox *combo,
 			   0,
 			   &value);
   
+  str = g_strdup(g_value_get_string(&value));
+  
   /* create set output device task */
   set_output_device = ags_set_output_device_new((GObject *) devout,
-						g_strdup(g_value_get_string(&value)));
+						str);
 
   /* append AgsSetOutputDevice */
   ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop)->task_thread),
 			      AGS_TASK(set_output_device));
   
   /* reset dialog */
-  ags_audio_preferences_reset(audio_preferences);
+  error = NULL;
+  ags_devout_pcm_info(str,
+  		      &channels_min, &channels_max,
+  		      &rate_min, &rate_max,
+  		      &buffer_size_min, &buffer_size_max,
+  		      &error);
+
+  if(error != NULL){
+    GtkMessageDialog *dialog;
+
+    dialog = (GtkMessageDialog *) gtk_message_dialog_new((GtkWindow *) gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
+											       AGS_TYPE_PREFERENCES),
+							 GTK_DIALOG_MODAL,
+							 GTK_MESSAGE_ERROR,
+							 GTK_BUTTONS_CLOSE,
+							 "%s\0", error->message);
+    gtk_dialog_run(GTK_DIALOG(dialog));
+    gtk_widget_destroy(GTK_WIDGET(dialog));
+
+    gtk_spin_button_set_range(audio_preferences->audio_channels, 0.0, 24.0);
+    gtk_spin_button_set_range(audio_preferences->samplerate, 1.0, 192000.0);
+    gtk_spin_button_set_range(audio_preferences->buffer_size, 1.0, 65535.0);
+
+    return;
+  }
+
+  gtk_spin_button_set_range(audio_preferences->audio_channels,
+			    channels_min, channels_max);
+  gtk_spin_button_set_range(audio_preferences->samplerate,
+			    rate_min, rate_max);
+  gtk_spin_button_set_range(audio_preferences->buffer_size,
+			    buffer_size_min, buffer_size_max);
 }
 
 void
