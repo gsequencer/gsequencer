@@ -363,8 +363,26 @@ ags_ladspa_browser_get_plugin_effect(AgsLadspaBrowser *ladspa_browser)
   return(gtk_combo_box_text_get_active_text(effect));
 }
 
+GtkWidget*
+ags_ladspa_browser_combo_box_boolean_controls_new()
+{
+  GtkComboBoxText *combo_box;
+
+  combo_box = (GtkComboBoxText *) gtk_combo_box_text_new();
+
+  gtk_combo_box_text_append_text(combo_box,
+				 "toggle button\0");
+  gtk_combo_box_text_append_text(combo_box,
+				 "check button\0");
+
+  gtk_combo_box_set_active((GtkComboBox *) combo_box,
+			   1);
+
+  return((GtkWidget *) combo_box);
+}
+
 /**
- * ags_ladspa_browser_combo_box_controls_new:
+ * ags_ladspa_browser_combo_box_float_controls_new:
  *
  * Creates a #GtkComboBox containing suitable widgets as controls.
  *
@@ -373,7 +391,7 @@ ags_ladspa_browser_get_plugin_effect(AgsLadspaBrowser *ladspa_browser)
  * Since: 0.4
  */
 GtkWidget*
-ags_ladspa_browser_combo_box_controls_new()
+ags_ladspa_browser_combo_box_float_controls_new()
 {
   GtkComboBoxText *combo_box;
 
@@ -385,8 +403,6 @@ ags_ladspa_browser_combo_box_controls_new()
 				 "dial\0");
   gtk_combo_box_text_append_text(combo_box,
 				 "vertical scale\0");
-  gtk_combo_box_text_append_text(combo_box,
-				 "horizontal scale\0");
 
   gtk_combo_box_set_active((GtkComboBox *) combo_box,
 			   1);

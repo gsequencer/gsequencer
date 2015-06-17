@@ -675,9 +675,9 @@ ags_line_member_set_label(AgsLineMember *line_member,
      line_member->widget_type == GTK_TYPE_SPIN_BUTTON){
     child_widget = gtk_bin_get_child(GTK_BIN(line_member));
 
-    g_object_set(G_OBJECT(child_widget),
-		 "label\0", label,
-		 NULL);
+    //    g_object_set(G_OBJECT(child_widget),
+    //		 "label\0", label,
+    //		 NULL);
   }else{
     GtkLabel *label;
 

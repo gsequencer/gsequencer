@@ -85,14 +85,20 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
       GtkHBox *hbox;
       GtkCheckButton *check_button;
       GtkLabel *label;
+      GtkTable *table;
+      
       AgsAddRecallContainer *add_recall_container;
       AgsAddRecall *add_recall;
       AgsAddLineMember *add_line_member;
+
       AgsRecallContainer *recall_container;
       AgsRecallChannelRunDummy *recall_channel_run_dummy;
       AgsRecallLadspa *recall_ladspa;
+
       GtkAdjustment *adjustment;
+
       AgsLadspaPlugin *ladspa_plugin;
+
       GList *plugin;
       GList *task;
       GList *port;
@@ -304,6 +310,14 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
 			    add_recall);
 
       /* add controls of ports and apply range  */
+      list_start = gtk_container_get_children(GTK_CONTAINER(line_member_editor->ladspa_browser->description));
+      table = g_list_nth(list_start,
+			 4)->data;
+      g_list_free(list_start);
+
+      list_start = 
+	list = g_list_reverse(gtk_container_get_children(table));
+
       if(line != NULL){
 	if(index != -1 &&
 	   plugin_so){
@@ -319,42 +333,88 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
 	      if((LADSPA_IS_PORT_CONTROL(port_descriptor[i]) && 
 		   (LADSPA_IS_PORT_INPUT(port_descriptor[i]) ||
 		    LADSPA_IS_PORT_OUTPUT(port_descriptor[i])))){
-		AgsDial *dial;
+		GtkWidget *child_widget;
+		GType child_type;
 		GtkAdjustment *adjustment;
 
+		gchar *str;
+		
 		if(x == 2){
 		  x = 0;
 		  y++;
 		}
 
+		list = list->next;
+		str = gtk_combo_box_text_get_active_text(list->data);
+		
+		if(!g_ascii_strcasecmp(str,
+				       "toggle button\0")){
+		  child_type = GTK_TYPE_TOGGLE_BUTTON;
+		}else if(!g_ascii_strcasecmp(str,
+					     "check button\0")){
+		  child_type = GTK_TYPE_CHECK_BUTTON;
+		}else if(!g_ascii_strcasecmp(str,
+					     "spin button\0")){
+		  child_type = GTK_TYPE_SPIN_BUTTON;
+		}else if(!g_ascii_strcasecmp(str,
+					     "dial\0")){
+		  child_type = AGS_TYPE_DIAL;
+		}else if(!g_ascii_strcasecmp(str,
+					     "vertical scale\0")){
+		  child_type = GTK_TYPE_VSCALE;
+		}
+		
+		
 		line_member = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
-							     "widget-type\0", AGS_TYPE_DIAL,
+							     "widget-type\0", child_type,
 							     "widget-label\0", plugin_descriptor->PortNames[i],
 							     "plugin-name\0", AGS_PORT(port->data)->plugin_name,
 							     "specifier\0", AGS_PORT(port->data)->specifier,
 							     "control-port\0", AGS_PORT(port->data)->control_port,
 							     NULL);
-		dial = (AgsDial *) ags_line_member_get_widget(line_member);
-		gtk_widget_set_size_request((GtkWidget *) dial,
-					    2 * dial->radius + 2 * dial->outline_strength + dial->button_width + 1,
-					    2 * dial->radius + 2 * dial->outline_strength + 1);
+
+		child_widget = ags_line_member_get_widget(line_member);
 		
-		lower_bound = plugin_descriptor->PortRangeHints[i].LowerBound;
-		upper_bound = plugin_descriptor->PortRangeHints[i].UpperBound;
-
-		adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0);
-		g_object_set(dial,
-			     "adjustment", adjustment,
-			     NULL);
-
-		if(upper_bound >= 0.0 && lower_bound >= 0.0){
-		  step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
-		}else if(upper_bound < 0.0 && lower_bound < 0.0){
-		  step = -1.0 * (lower_bound - upper_bound) / AGS_DIAL_DEFAULT_PRECISION;
+		if(LADSPA_IS_HINT_TOGGLED(plugin_descriptor->PortRangeHints[i].HintDescriptor)){
+		  //nothing
 		}else{
-		  step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
-		}
+		  lower_bound = plugin_descriptor->PortRangeHints[i].LowerBound;
+		  upper_bound = plugin_descriptor->PortRangeHints[i].UpperBound;
 
+		  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0);
+
+		  if(GTK_IS_SPIN_BUTTON(child_widget)){
+		    g_object_set(child_widget,
+				 "digits\0", 4,
+				 "adjustment", adjustment,
+				 NULL);
+		    step = 0.0001;
+		  }else if(AGS_IS_DIAL(child_widget)){
+		    AgsDial *dial;
+		    
+		    dial = (AgsDial *) child_widget;
+		    gtk_widget_set_size_request((GtkWidget *) dial,
+						2 * dial->radius + 2 * dial->outline_strength + dial->button_width + 1,
+						2 * dial->radius + 2 * dial->outline_strength + 1);
+		    g_object_set(dial,
+				 "adjustment", adjustment,
+				 NULL);
+
+		    if(upper_bound >= 0.0 && lower_bound >= 0.0){
+		      step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
+		    }else if(upper_bound < 0.0 && lower_bound < 0.0){
+		      step = -1.0 * (lower_bound - upper_bound) / AGS_DIAL_DEFAULT_PRECISION;
+		    }else{
+		      step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
+		    }
+		  }else if(GTK_IS_VSCALE(child_widget)){
+		    g_object_set(child_widget,
+				 "adjustment", adjustment,
+				 NULL);
+		    step = 0.1;
+		  }
+		}
+		
 		gtk_adjustment_set_step_increment(adjustment,
 						  step);
 		gtk_adjustment_set_lower(adjustment,
@@ -373,6 +433,7 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
 	  
 		x++;
 		port = port->next;
+		list = list->next;
 	      }
 
 	      i++;
@@ -381,6 +442,8 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
 	}
       }
 
+      g_list_free(list_start);
+      
       task = g_list_reverse(task);
       
       /* launch tasks */

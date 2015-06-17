@@ -61,7 +61,9 @@ GType ags_ladspa_browser_get_type(void);
 gchar* ags_ladspa_browser_get_plugin_filename(AgsLadspaBrowser *ladspa_browser);
 gchar* ags_ladspa_browser_get_plugin_effect(AgsLadspaBrowser *ladspa_browser);
 
-GtkWidget* ags_ladspa_browser_combo_box_controls_new();
+GtkWidget* ags_ladspa_browser_combo_box_boolean_controls_new();
+GtkWidget* ags_ladspa_browser_combo_box_float_controls_new();
+
 GtkWidget* ags_ladspa_browser_preview_new();
 AgsLadspaBrowser* ags_ladspa_browser_new(GtkWidget *parent);
 

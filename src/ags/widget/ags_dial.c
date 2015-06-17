@@ -712,11 +712,12 @@ ags_dial_draw(AgsDial *dial)
   }else if(dial->adjustment->upper < 0.0 && dial->adjustment->lower < 0.0){
     range = -1.0 * (dial->adjustment->lower - dial->adjustment->upper);
   }else{
-    range = (dial->adjustment->upper - dial->adjustment->lower);
+    range = (dial->adjustment->upper + dial->adjustment->lower);
   }
 
   if(range == 0.0){
     g_warning("ags_dial.c - range = 0.0\0");
+    return;
   }
   
   if(dial->adjustment->lower < 0.0){
