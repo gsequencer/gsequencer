@@ -1,0 +1,99 @@
+<?xml version='1.0' encoding="utf-8"?>
+<!DOCTYPE book [
+<!ENTITY backwardIcon "/usr/share/icons/gnome/scalable/actions/media-skip-backward-symbolic.svg">
+<!ENTITY previousIcon "/usr/share/icons/gnome/scalable/actions/media-seek-backward-symbolic.svg">
+<!ENTITY playIcon "/usr/share/icons/gnome/scalable/actions/media-playback-start-symbolic.svg">
+<!ENTITY stopIcon "/usr/share/icons/gnome/scalable/actions/media-playback-stop-symbolic.svg">
+<!ENTITY nextIcon "/usr/share/icons/gnome/scalable/actions/media-seek-forward-symbolic.svg">
+<!ENTITY forwardIcon "/usr/share/icons/gnome/scalable/actions/media-skip-forward-symbolic.svg">
+]>
+<chapter xmlns="http://docbook.org/ns/docbook" version="5.0">
+  <title>The navigation</title>
+  <para>
+    With the navigation you have overall control of your song. Settings you perform
+    here may influence the behaviour of AGS.
+  </para>
+
+  <sect1>
+    <title>BPM</title>
+    <para>
+      The beats per minute (BPM for short) indicates the velocity of a song being
+      played. To adjust the BPM of the project in-/decrement the spinner labeled
+      with bpm. To edit patterns or notes at a more granular rate select the wished
+      tact within the appropriate engine or editor.
+    </para>
+    <para>
+      To calculate timings you divide 1 minute with the entered BPM and divide it
+      with basic. For example you have a BPM rate of 120 and a 4/4 tact you would
+      calculate the timing as follow:
+    </para>
+    <equation>
+      <mathphrase>t = 1 / 120 * (1 / 4)</mathphrase>
+    </equation>
+  </sect1>
+
+  <sect1>
+    <title>Playback controls</title>
+    <para>
+      With these controls you can play/stop a song or seek to the wished position.
+    </para>
+    <table>
+      <title>AGS playback controls table</title>
+      <tgroup cols="3" align="left" colsep='1' rowsep='1'>
+	<thead>
+	  <row>
+	    <entry>icon</entry>
+	    <entry>action</entry>
+	    <entry>description</entry>
+	  </row>
+	</thead>
+	<tbody>
+	  <row>
+	    <entry><imagedata fileref="&backwardIcon;" /></entry>
+	    <entry>backward</entry>
+	    <entry>Seeking back until it's pressed again.</entry>
+	  </row>
+	  <row>
+	    <entry><imagedata fileref="&previousIcon;" /></entry>
+	    <entry>previous</entry>
+	    <entry>Seeking back until it's not pressed anymore.</entry>
+	  </row>
+	  <row>
+	    <entry><imagedata fileref="&playIcon;" /></entry>
+	    <entry>play</entry>
+	    <entry>Starts the engines and the piano roll.</entry>
+	  </row>
+	  <row>
+	    <entry><imagedata fileref="&stopIcon;" /></entry>
+	    <entry>stop</entry>
+	    <entry>Stops the engines and the piano roll.</entry>
+	  </row>
+	  <row>
+	    <entry><imagedata fileref="&nextIcon;" /></entry>
+	    <entry>next</entry>
+	    <entry>Seeking forward until it's not pressed anymore.</entry>
+	  </row>
+	  <row>
+	    <entry><imagedata fileref="&forwardIcon;" /></entry>
+	    <entry>forward</entry>
+	    <entry>Seeking forward until it's pressed again.</entry>
+	  </row>
+	</tbody>
+      </tgroup>
+    </table>
+  </sect1>
+
+  <sect1>
+    <title>Song information</title>
+    <para>
+      <!-- TODO:JK: write section -->
+    </para>
+  </sect1>
+
+  <sect1>
+    <title>Loop</title>
+    <para>
+      <!-- TODO:JK: write section -->
+    </para>
+  </sect1>
+</chapter>

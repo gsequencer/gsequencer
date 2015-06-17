@@ -1,0 +1,85 @@
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+"http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<refentry id="midi2xml">
+
+  <refentryinfo>
+    <date>2015-06-15</date>
+  </refentryinfo>
+  
+  <refmeta>
+    <refentrytitle>
+      <application>midi2xml</application>
+    </refentrytitle>
+    <manvolnum>1</manvolnum>
+    <refmiscinfo>midi2xml v0.4.2</refmiscinfo>
+  </refmeta>
+
+  <refnamediv>
+    <refname>midi2xml</refname>
+    <refpurpose>midi2xml converts your MIDI files to XML format</refpurpose>
+  </refnamediv>
+
+  <refsynopsisdiv>
+    <cmdsynopsis>
+      <command>/usr/bin/midi2xml</command>
+      <arg>--help</arg>
+      <arg>--version</arg>
+      <arg>file</arg>
+    </cmdsynopsis>
+  </refsynopsisdiv>
+
+  <refsect1><title>Description</title>
+  <para>
+    midi2xml takes your MIDI file from command line and outputs the resulting XML
+    to stdout.
+  </para>
+  </refsect1>
+
+    <refsect1 id="options">
+    <title>OPTIONS</title>
+    <para>The program follows the usual GNU command line syntax,
+      with long options starting with two dashes (`-').  A summary of
+      options is included below.  For a complete description, see the
+      <citerefentry>
+        <refentrytitle>info</refentrytitle>
+        <manvolnum>1</manvolnum>
+      </citerefentry> files.</para>
+    <variablelist>
+      <varlistentry>
+        <term><option>file</option></term>
+        <listitem>
+          <para>Open file from command line.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><option>--help</option></term>
+        <listitem>
+          <para>Show summary of options.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><option>--version</option></term>
+        <listitem>
+          <para>Show version of program.</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </refsect1>
+
+  <refsect1>
+    <title>BUGS</title>
+    <para>
+      None.  So far I know.
+    </para>
+  </refsect1>
+  <refsect1>
+    <title>AUTHOR</title>
+    <para>
+      <author>
+	<firstname>Joël</firstname>
+	<surname>Krähemann</surname>
+	<contrib>Original author</contrib>
+      </author>
+    </para>
+  </refsect1>
+</refentry>

@@ -223,7 +223,7 @@ ags_config_load_defaults(AgsConfig *config)
   ags_config_set(config, ags_config_devout, "buffer-size\0", "940\0");
   ags_config_set(config, ags_config_devout, "pcm-channels\0", "2\0");
   ags_config_set(config, ags_config_devout, "dsp-channels\0", "2\0");
-  ags_config_set(config, ags_config_devout, "alsa-handle\0", "hw:0\0");
+  ags_config_set(config, ags_config_devout, "alsa-handle\0", "hw:0,0\0");
 
   ags_config_set(config, ags_config_recall, "auto-sense\0", "true\0");
 }
@@ -495,10 +495,10 @@ ags_config_set(AgsConfig *config, gchar *group, gchar *key, gchar *value)
 		      "alsa-handle\0",
 		      11)){
       gchar *alsa_handle;
-    
+
       alsa_handle = value;
       g_object_set(G_OBJECT(devout),
-		   "device\0", alsa_handle,
+		   "device\0", g_strdup_printf("%s\0", alsa_handle),
 		   NULL);
     }
   }
