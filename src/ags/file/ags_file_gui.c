@@ -1916,9 +1916,11 @@ ags_file_read_line_member(AgsFile *file, xmlNode *node, AgsLineMember **line_mem
     gtk_widget_set_size_request((GtkWidget *) dial,
 				2 * dial->radius + 2 * dial->outline_strength + dial->button_width + 1,
 				2 * dial->radius + 2 * dial->outline_strength + 1);
+  }else if(GTK_IS_SPIN_BUTTON(child_widget)){
+    adjustment = GTK_SPIN_BUTTON(child_widget)->adjustment;
   }else if(GTK_IS_RANGE(child_widget)){
     adjustment = GTK_RANGE(child_widget)->adjustment;
-
+    
     if(!xmlStrncmp(AGS_FILE_TRUE,
 		   xmlGetProp(node, "inverted\0"),
 		   9)){
@@ -1932,7 +1934,7 @@ ags_file_read_line_member(AgsFile *file, xmlNode *node, AgsLineMember **line_mem
 		 NULL);
     gtk_widget_queue_draw(child_widget);
   }
-
+  
   //TODO:JK: implement more types
 
   if(adjustment != NULL){
@@ -2166,6 +2168,8 @@ ags_file_write_line_member(AgsFile *file, xmlNode *parent, AgsLineMember *line_m
 
     //TODO:JK: improve dial widget work-around
     
+  }else if(GTK_IS_SPIN_BUTTON(child_widget)){
+    adjustment = GTK_SPIN_BUTTON(child_widget)->adjustment;
   }else if(GTK_IS_RANGE(child_widget)){
     adjustment = GTK_RANGE(child_widget)->adjustment;
 
