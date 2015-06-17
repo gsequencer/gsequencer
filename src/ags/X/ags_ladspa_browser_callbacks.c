@@ -128,7 +128,7 @@ ags_ladspa_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
       plugin_descriptor = ladspa_descriptor(index);
 
       port_descriptor = plugin_descriptor->PortDescriptors;   
-
+      
       /* update ui - reading plugin file */
       label = GTK_LABEL(list->data);
       gtk_label_set_text(label,
@@ -192,10 +192,17 @@ ags_ladspa_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
 				  0, 1,
 				  y, y + 1);
 
-	gtk_table_attach_defaults(table,
-				  GTK_WIDGET(ags_ladspa_browser_combo_box_controls_new()),
-				  1, 2,
-				  y, y + 1);
+	if(LADSPA_IS_HINT_TOGGLED(plugin_descriptor->PortRangeHints[i].HintDescriptor)){
+	  gtk_table_attach_defaults(table,
+				    GTK_WIDGET(ags_ladspa_browser_combo_box_boolean_controls_new()),
+				    1, 2,
+				    y, y + 1);	  
+	}else{
+	  gtk_table_attach_defaults(table,
+				    GTK_WIDGET(ags_ladspa_browser_combo_box_float_controls_new()),
+				    1, 2,
+				    y, y + 1);
+	}
 
 	y++;
       }
