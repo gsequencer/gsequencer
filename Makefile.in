@@ -547,7 +547,7 @@ build_alias = @build_alias@
 builddir = @builddir@
 datadir = @datadir@
 datarootdir = @datarootdir@
-docdir = $(datadir)/doc/@PACKAGE@
+docdir = $(datadir)/doc/gsequencer
 dvidir = @dvidir@
 exec_prefix = @exec_prefix@
 host_alias = @host_alias@
@@ -581,37 +581,44 @@ AM_CPPFLAGS = -I$(top_srcdir)/src -DDESTDIR=\"$(DESTDIR)$(datadir)\" -D_FORTIFY_
 # this lists the binaries to produce, the (non-PHONY, binary) targets in
 # the previous manual Makefile
 noinst_LIBRARIES = 
-EXTRA_DIST = gsequencer.share acsite.m4 ags.1 README ags.desktop.in \
-	userdoc userdocimages
+EXTRA_DIST = gsequencer.share acsite.m4 ags.1 midi2xml.1 README \
+	ags.desktop.in $(userdoc) $(userdocimages)
 CLEANFILES = $(appdata_DATA)
 man1_MANS = ags.1 midi2xml.1
 appdatadir = $(datadir)/applications
-appdata_DATA = ags.desktop 
+appdata_DATA = ags.desktop
 doc_DATA = README
 
 # documentation
 userdoc = \
-	doc/usersBook.xml
+	doc/usersBook.xml \
+	doc/appa.xml \
+	doc/usersBook/appb.xml \
+	doc/usersBook/chap1.xml \
+	doc/usersBook/chap2.xml \
+	doc/usersBook/chap3.xml \
+	doc/usersBook/chap4.xml \
+	doc/usersBook/preface.xml
 
 userdocimages = \
-	doc/images/ags_export_window.png \
-	doc/images/ags_machine_properties-input.png \
-	doc/images/ags_machine_properties-resize_channels.png \
-	doc/images/ags_navigation.png \
-	doc/images/ags_synth.png \
-	doc/images/ags_audio_preferences.png \
-	doc/images/ags_ffplayer.png \
-	doc/images/ags_ladspa_browser.png \
-	doc/images/ags_machine_properties-link_input.png \
-	doc/images/ags_matrix.png \
-	doc/images/ags_panel.png \
-	doc/images/ags-toolbar.png \
-	doc/images/ags_drum.png \
-	doc/images/ags_generic_preferences.png \
-	doc/images/ags_machine_properties-output.png \
-	doc/images/ags_mixer.png \
-	doc/images/ags_performance_preferences.png \
-	doc/images/ags_server_preferences.png
+	$(top_srcdir)/doc/images/ags_export_window.png \
+	$(top_srcdir)/doc/images/ags_machine_properties-input.png \
+	$(top_srcdir)/doc/images/ags_machine_properties-resize_channels.png \
+	$(top_srcdir)/doc/images/ags_navigation.png \
+	$(top_srcdir)/doc/images/ags_synth.png \
+	$(top_srcdir)/doc/images/ags_audio_preferences.png \
+	$(top_srcdir)/doc/images/ags_ffplayer.png \
+	$(top_srcdir)/doc/images/ags_ladspa_browser.png \
+	$(top_srcdir)/doc/images/ags_machine_properties-link_input.png \
+	$(top_srcdir)/doc/images/ags_matrix.png \
+	$(top_srcdir)/doc/images/ags_panel.png \
+	$(top_srcdir)/doc/images/ags-toolbar.png \
+	$(top_srcdir)/doc/images/ags_drum.png \
+	$(top_srcdir)/doc/images/ags_generic_preferences.png \
+	$(top_srcdir)/doc/images/ags_machine_properties-output.png \
+	$(top_srcdir)/doc/images/ags_mixer.png \
+	$(top_srcdir)/doc/images/ags_performance_preferences.png \
+	$(top_srcdir)/doc/images/ags_server_preferences.png
 
 
 # library
@@ -6531,8 +6538,8 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-binPROGRAMS clean-generic clean-noinstLIBRARIES \
-	mostlyclean-am
+clean-am: clean-binPROGRAMS clean-generic clean-local \
+	clean-noinstLIBRARIES mostlyclean-am
 
 distclean: distclean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
@@ -6544,8 +6551,6 @@ distclean-am: clean-am distclean-compile distclean-generic \
 dvi: dvi-am
 
 dvi-am:
-
-html: html-am
 
 html-am:
 
@@ -6561,8 +6566,6 @@ install-dvi: install-dvi-am
 install-dvi-am:
 
 install-exec-am: install-binPROGRAMS
-
-install-html: install-html-am
 
 install-html-am:
 
@@ -6610,7 +6613,7 @@ uninstall-man: uninstall-man1
 .MAKE: all install-am install-strip uninstall-am
 
 .PHONY: CTAGS GTAGS TAGS all all-am am--refresh check check-am clean \
-	clean-binPROGRAMS clean-cscope clean-generic \
+	clean-binPROGRAMS clean-cscope clean-generic clean-local \
 	clean-noinstLIBRARIES cscope cscopelist-am ctags ctags-am dist \
 	dist-all dist-bzip2 dist-gzip dist-lzip dist-shar dist-tarZ \
 	dist-xz dist-zip distcheck distclean distclean-compile \
@@ -6629,32 +6632,33 @@ uninstall-man: uninstall-man1
 	uninstall-binPROGRAMS uninstall-docDATA uninstall-hook \
 	uninstall-man uninstall-man1
 
-	doc/appa.xml \
-	doc/usersBook/appb.xml \
-	doc/usersBook/chap1.xml \
-	doc/usersBook/chap2.xml \
-	doc/usersBook/chap3.xml \
-	doc/usersBook/chap4.xml \
-	doc/usersBook/preface.xml
-
-ags.doc: $(userdoc)
-	mkdir -p gsequencer.share/doc/gsequencer/{html,images}/
-	xsltproc --output gsequencer.share/doc/gsequencer/html/ --xinclude /usr/share/xml/docbook/stylesheet/docbook-xsl/htmlhelp/htmlhelp.xsl doc/usersBook.xml
-	cp $(userdocimages) gsequencer.share/doc/gsequencer/images/
 
 ags.desktop: ags.desktop.in
 	$(AM_V_GEN)sed -e 's,\@datadir\@,$(datadir),g' < "$<" > $@
 
-install-data-local:
+html:
+	mkdir -p html/
+	xsltproc --output html/ --xinclude /usr/share/xml/docbook/stylesheet/docbook-xsl/htmlhelp/htmlhelp.xsl $(top_srcdir)/doc/usersBook.xml
+
+all: html
+
+install-data-local: install-html
 	mkdir -p $(DESTDIR)/$(datadir)/gsequencer/icons
 	mkdir -p $(DESTDIR)/$(datadir)/gsequencer/images
 	cp $(top_srcdir)/gsequencer.share/icons/ags.xpm $(DESTDIR)/$(datadir)/gsequencer/icons/ags.xpm
 	cp $(top_srcdir)/gsequencer.share/images/ags.png $(DESTDIR)/$(datadir)/gsequencer/images/ags.png
-	cp -r (top_srcdir)/gsequencer.share/doc/gsequencer $(DESTDIR)/$(datadir)/doc/
+
+install-html:
+	mkdir -p $(DESTDIR)/$(datadir)/doc/gsequencer/{images,html}/
+	cp $(userdocimages) $(DESTDIR)/$(datadir)/doc/gsequencer/images/
+	cp html/* $(DESTDIR)/$(datadir)/doc/gsequencer/html/
 
 uninstall-hook:
 	rm -rf $(DESTDIR)/$(datadir)/gsequencer
 	rm -rf $(DESTDIR)/$(datadir)/doc/gsequencer
+
+clean-local:
+	rm -rf html
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

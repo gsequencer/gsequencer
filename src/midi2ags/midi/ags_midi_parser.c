@@ -83,7 +83,7 @@ xmlNode* ags_midi_parser_real_text_event(AgsMidiParser *midi_parser, guint meta_
 
 enum{
   PROP_0,
-  PROP_FD,
+  PROP_FILE,
 };
 
 enum{
@@ -166,15 +166,12 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
    * 
    * Since: 0.4.2
    */
-  param_spec = g_param_spec_int("fd\0",
-				"the file descriptor fd\0",
-				"The file to parse as fd\0",
-				-1,
-				G_MAXINT,
-				-1,
-				G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_pointer("file\0",
+				    "the file stream\0",
+				    "The file stream to parse\0",
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_FD,
+				  PROP_FILE,
 				  param_spec);
 
   /* AgsMidiParser */
@@ -650,6 +647,8 @@ ags_midi_parser_init(AgsMidiParser *midi_parser)
   midi_parser->offset = 0;
 
   midi_parser->current_time = 0;
+
+  midi_parser->doc = NULL;
 }
 
 void
@@ -663,6 +662,11 @@ ags_midi_parser_set_property(GObject *gobject,
   midi_parser = AGS_MIDI_PARSER(gobject);
   
   switch(prop_id){
+  case PROP_FILE:
+    {
+      midi_parser->file = g_value_get_pointer(value);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -680,6 +684,11 @@ ags_midi_parser_get_property(GObject *gobject,
   midi_parser = AGS_MIDI_PARSER(gobject);
   
   switch(prop_id){
+  case PROP_FILE:
+    {
+      g_value_set_pointer(value,
+			  midi_parser->file);
+    }
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -763,7 +772,7 @@ ags_midi_parser_read_varlength(AgsMidiParser *midi_parser)
       i++;
     }while(c & 0x80);
   }
-
+  
   return(value);
 }
 
@@ -891,10 +900,11 @@ ags_midi_parser_real_parse_full(AgsMidiParser *midi_parser)
   xmlNode *root_node;
   xmlNode *tracks_node;
   xmlNode *current;
-  
+
   GError *error;
-  
-  doc = xmlNewDoc("1.0\0");
+
+  midi_parser->doc = 
+    doc = xmlNewDoc("1.0\0");
   root_node = xmlNewNode(NULL, "midi\0");
   xmlDocSetRootElement(doc, root_node);
 
@@ -905,8 +915,10 @@ ags_midi_parser_real_parse_full(AgsMidiParser *midi_parser)
   current = ags_midi_parser_parse_header(midi_parser);
   xmlAddChild(root_node,
 	      current);
+#ifdef DEBUG
   g_message("parsed header\0");
-
+#endif
+  
   xmlAddChild(root_node,
 	      tracks_node);
   
@@ -916,12 +928,13 @@ ags_midi_parser_real_parse_full(AgsMidiParser *midi_parser)
     if(current != NULL){
       xmlAddChild(tracks_node,
 		  current);
+#ifdef DEBUG
       g_message("parsed track\0");
+#endif
     }else{
       g_warning("skipped input\0");
     }
   }
-
 
   return(doc);
 }
@@ -1061,7 +1074,11 @@ ags_midi_parser_real_parse_track(AgsMidiParser *midi_parser)
   node = xmlNewNode(NULL, "midi-track\0");
 
   offset = ags_midi_parser_read_gint32(midi_parser);
+
+#ifdef DEBUG
   g_message("n = %d\noffset = %d\0", n, offset);
+#endif
+  
   start_offset = ftell(midi_parser->file);
 
   if(offset < 0){
@@ -1089,10 +1106,14 @@ ags_midi_parser_real_parse_track(AgsMidiParser *midi_parser)
 		    current);
       }
       
+#ifdef DEBUG
       g_message("channel message");
+#endif
     }else{
+#ifdef DEBUG
       g_message("status message");
-
+#endif
+      
       switch(status){
       case 0xf0:
 	{
@@ -1115,7 +1136,9 @@ ags_midi_parser_real_parse_track(AgsMidiParser *midi_parser)
       case 0xf7:
 	{
 	  /* sysex continuation or arbitrary stuff */
+#ifdef DEBUG
 	  g_message("sysex end\0");
+#endif
 	}
 	break;
       case 0xff:
@@ -1642,7 +1665,9 @@ ags_midi_parser_real_sysex(AgsMidiParser *midi_parser, guint status)
   while((c = ags_midi_parser_midi_getc(midi_parser)) != 0xf7 &&
 	c != EOF);
 
+#ifdef DEBUG
   g_message("discarded sysex\0");
+#endif
 }
 
 xmlNode*
@@ -1695,17 +1720,23 @@ ags_midi_parser_real_system_common(AgsMidiParser *midi_parser, guint status)
     break;
   case 0xf4:
     {
+#ifdef DEBUG
       g_message("undefined\0");
+#endif
     }
     break;
   case 0xf5:
     {
+#ifdef DEBUG
       g_message("undefined\0");
+#endif
     }
     break;
   case 0xf6:
     {
+#ifdef DEBUG
       g_message("tune request\0");
+#endif
     }
     break;
   }
@@ -1846,7 +1877,9 @@ ags_midi_parser_real_meta_event(AgsMidiParser *midi_parser, guint status)
     }
   }
 	
+#ifdef DEBUG
   g_message("meta type 0x%x\0", meta_type);
+#endif
   
   return(node);
 }
@@ -2234,9 +2267,9 @@ ags_midi_parser_new(FILE *file)
   struct stat sb;
   
   midi_parser = (AgsMidiParser *) g_object_new(AGS_TYPE_MIDI_PARSER,
+					       "file\0", file,
 					       NULL);
 
-  midi_parser->file = file;
   
   return(midi_parser);
 }

@@ -1,6 +1,7 @@
 <?xml version='1.0' encoding="utf-8"?>
 <!DOCTYPE book [
 <!ENTITY jkraehemann "Joël Krähemann">
+<!ENTITY bookpath ".">
 ]>
 <book xmlns="http://docbook.org/ns/docbook"
       xmlns:xi="http://www.w3.org/2001/XInclude" version="5.0">
@@ -31,12 +32,12 @@
     <para>This book is dedicated to my father &#8224;Hans-Jörg Krähemann.</para>
   </dedication>
 
-  <xi:include href="usersBook/preface.xml"/>
-  <xi:include href="usersBook/chap1.xml"/> <!--menubar -->
-  <xi:include href="usersBook/chap2.xml"/> <!-- machines/engines -->
-  <xi:include href="usersBook/chap3.xml"/> <!-- editor -->
-  <xi:include href="usersBook/chap4.xml"/> <!--navigation -->
-  <xi:include href="appa.xml"/>
-  <xi:include href="usersBook/appb.xml"/>
+  <xi:include href="&bookpath;/usersBook/preface.xml"/>
+  <xi:include href="&bookpath;/usersBook/chap1.xml"/> <!--menubar -->
+  <xi:include href="&bookpath;/usersBook/chap2.xml"/> <!-- machines/engines -->
+  <xi:include href="&bookpath;/usersBook/chap3.xml"/> <!-- editor -->
+  <xi:include href="&bookpath;/usersBook/chap4.xml"/> <!--navigation -->
+  <xi:include href="&bookpath;/appa.xml"/>
+  <xi:include href="&bookpath;/usersBook/appb.xml"/>
 
 </book>

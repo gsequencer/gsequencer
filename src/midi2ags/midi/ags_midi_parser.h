@@ -61,6 +61,8 @@ struct _AgsMidiParser
   size_t offset;
 
   guint current_time;
+
+  xmlDoc *doc;
 };
 
 struct _AgsMidiParserClass

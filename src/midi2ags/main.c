@@ -5,18 +5,19 @@
 
 #include <stdio.h>
 
+#include <libxml/tree.h>
+
 int
 main(int argc, char **argv)
 {
   AgsMidiParser *midi_parser;
 
-  xmlDoc *doc;
   FILE *out;
+  FILE *file;
   
   xmlChar *buffer;
   gchar *filename;
   size_t length;
-  int fd;
 
   if(argc == 2){
 
@@ -47,17 +48,13 @@ main(int argc, char **argv)
     return(-1);
   }
 
-  fd = fopen(filename, "r\0");
-  fseek(fd, 0, SEEK_SET);
-  midi_parser = ags_midi_parser_new(fd);
+  file = fopen(filename, "r\0");
+  fseek(file, 0, SEEK_SET);
+  midi_parser = ags_midi_parser_new(file);
 
-  doc = ags_midi_parser_parse_full(midi_parser);
-  
-  xmlDocDumpFormatMemoryEnc(doc, &(buffer), &length, "UTF-8", TRUE);
+  ags_midi_parser_parse_full(midi_parser);
 
-  fwrite(buffer, length, sizeof(xmlChar), stdout);
-  fflush(stdout);
-
+  xmlSaveFormatFileEnc("-", midi_parser->doc, "UTF-8", 1);
   
   return(0);
 }
