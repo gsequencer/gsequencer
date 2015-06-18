@@ -11,22 +11,22 @@ LDFLAGS = -fPIE -pie -Wl,-z,relro -Wl,-z,now
 # the previous manual Makefile
 noinst_LIBRARIES = 
 bin_PROGRAMS = ags midi2xml
-EXTRA_DIST = gsequencer.share acsite.m4 ags.1 README
+EXTRA_DIST = gsequencer.share acsite.m4 ags.1 midi2xml.1 README
 CLEANFILES =
 man1_MANS = ags.1 midi2xml.1
 
 appdatadir = $(datadir)/applications
-appdata_DATA = ags.desktop 
+appdata_DATA = ags.desktop
 
 EXTRA_DIST += ags.desktop.in
 CLEANFILES += $(appdata_DATA)
 
-docdir = $(datadir)/doc/@PACKAGE@
+docdir = $(datadir)/doc/gsequencer
 doc_DATA = README
 
 # documentation
 userdoc = \
-	doc/usersBook.xml
+	doc/usersBook.xml \
 	doc/appa.xml \
 	doc/usersBook/appb.xml \
 	doc/usersBook/chap1.xml \
@@ -36,26 +36,26 @@ userdoc = \
 	doc/usersBook/preface.xml
 
 userdocimages = \
-	doc/images/ags_export_window.png \
-	doc/images/ags_machine_properties-input.png \
-	doc/images/ags_machine_properties-resize_channels.png \
-	doc/images/ags_navigation.png \
-	doc/images/ags_synth.png \
-	doc/images/ags_audio_preferences.png \
-	doc/images/ags_ffplayer.png \
-	doc/images/ags_ladspa_browser.png \
-	doc/images/ags_machine_properties-link_input.png \
-	doc/images/ags_matrix.png \
-	doc/images/ags_panel.png \
-	doc/images/ags-toolbar.png \
-	doc/images/ags_drum.png \
-	doc/images/ags_generic_preferences.png \
-	doc/images/ags_machine_properties-output.png \
-	doc/images/ags_mixer.png \
-	doc/images/ags_performance_preferences.png \
-	doc/images/ags_server_preferences.png
+	$(top_srcdir)/doc/images/ags_export_window.png \
+	$(top_srcdir)/doc/images/ags_machine_properties-input.png \
+	$(top_srcdir)/doc/images/ags_machine_properties-resize_channels.png \
+	$(top_srcdir)/doc/images/ags_navigation.png \
+	$(top_srcdir)/doc/images/ags_synth.png \
+	$(top_srcdir)/doc/images/ags_audio_preferences.png \
+	$(top_srcdir)/doc/images/ags_ffplayer.png \
+	$(top_srcdir)/doc/images/ags_ladspa_browser.png \
+	$(top_srcdir)/doc/images/ags_machine_properties-link_input.png \
+	$(top_srcdir)/doc/images/ags_matrix.png \
+	$(top_srcdir)/doc/images/ags_panel.png \
+	$(top_srcdir)/doc/images/ags-toolbar.png \
+	$(top_srcdir)/doc/images/ags_drum.png \
+	$(top_srcdir)/doc/images/ags_generic_preferences.png \
+	$(top_srcdir)/doc/images/ags_machine_properties-output.png \
+	$(top_srcdir)/doc/images/ags_mixer.png \
+	$(top_srcdir)/doc/images/ags_performance_preferences.png \
+	$(top_srcdir)/doc/images/ags_server_preferences.png
 
-EXTRA_DIST += userdoc userdocimages
+EXTRA_DIST += $(userdoc) $(userdocimages)
 
 # library
 libags_a_CFLAGS= $(GOBJECT_CFLAGS) $(LIBXML2_CFLAGS) 
@@ -74,21 +74,30 @@ midi2xml_LDFLAGS= -ldl $(LDFLAGS) $(LIBXML2_LIBS) $(GOBJECT_LIBS)
 
 midi2xml_SOURCES = src/midi2ags/main.c src/midi2ags/midi/ags_midi_parser.c src/midi2ags/midi/ags_midi_parser.h src/midi2ags/object/ags_marshal.c src/midi2ags/object/ags_marshal.h
 
-ags.doc: $(userdoc)
-	mkdir -p gsequencer.share/doc/gsequencer/{html,images}/
-	xsltproc --output gsequencer.share/doc/gsequencer/html/ --xinclude /usr/share/xml/docbook/stylesheet/docbook-xsl/htmlhelp/htmlhelp.xsl doc/usersBook.xml
-	cp $(userdocimages) gsequencer.share/doc/gsequencer/images/
 
 ags.desktop: ags.desktop.in
 	$(AM_V_GEN)sed -e 's,\@datadir\@,$(datadir),g' < "$<" > $@
 
-install-data-local:
+html:
+	mkdir -p html/
+	xsltproc --output html/ --xinclude /usr/share/xml/docbook/stylesheet/docbook-xsl/htmlhelp/htmlhelp.xsl $(top_srcdir)/doc/usersBook.xml
+
+all: html
+
+install-data-local: install-html
 	mkdir -p $(DESTDIR)/$(datadir)/gsequencer/icons
 	mkdir -p $(DESTDIR)/$(datadir)/gsequencer/images
 	cp $(top_srcdir)/gsequencer.share/icons/ags.xpm $(DESTDIR)/$(datadir)/gsequencer/icons/ags.xpm
 	cp $(top_srcdir)/gsequencer.share/images/ags.png $(DESTDIR)/$(datadir)/gsequencer/images/ags.png
-	cp -r (top_srcdir)/gsequencer.share/doc/gsequencer $(DESTDIR)/$(datadir)/doc/
+
+install-html:
+	mkdir -p $(DESTDIR)/$(datadir)/doc/gsequencer/{images,html}/
+	cp $(userdocimages) $(DESTDIR)/$(datadir)/doc/gsequencer/images/
+	cp html/* $(DESTDIR)/$(datadir)/doc/gsequencer/html/
 
 uninstall-hook:
 	rm -rf $(DESTDIR)/$(datadir)/gsequencer
 	rm -rf $(DESTDIR)/$(datadir)/doc/gsequencer
+
+clean-local:
+	rm -rf html

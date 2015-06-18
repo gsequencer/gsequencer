@@ -1,13 +1,13 @@
 <?xml version='1.0' encoding="utf-8"?>
 <!DOCTYPE book [
-<!ENTITY indexMenuIcon "/usr/share/icons/gnome/scalable/actions/system-run-symbolic.svg">
-<!ENTITY cursorIcon "/usr/share/icons/gnome/scalable/actions/go-jump-symbolic.svg">
-<!ENTITY notesIcon "/usr/share/icons/gnome/scalable/mimetypes/audio-x-generic-symbolic.svg">
-<!ENTITY deleteIcon "/usr/share/icons/gnome/scalable/actions/edit-delete-symbolic.svg">
-<!ENTITY selectIcon "/usr/share/icons/gnome/scalable/actions/edit-select-symbolic.svg">
-<!ENTITY copyIcon "/usr/share/icons/gnome/scalable/actions/edit-copy-symbolic.svg">
-<!ENTITY cutIcon "/usr/share/icons/gnome/scalable/actions/edit-cut-symbolic.svg">
-<!ENTITY pasteIcon "/usr/share/icons/gnome/scalable/actions/edit-paste-symbolic.svg">
+<!ENTITY indexMenuIcon "/usr/share/icons/Adwaita/32x32/actions/system-run.png">
+<!ENTITY cursorIcon "/usr/share/icons/Adwaita/32x32/actions/go-jump.png">
+<!ENTITY notesIcon "/usr/share/icons/Adwaita/32x32/mimetypes/audio-x-generic.png">
+<!ENTITY deleteIcon "/usr/share/icons/Adwaita/32x32/actions/edit-clear-all.png">
+<!ENTITY selectIcon "/usr/share/icons/Adwaita/32x32/actions/edit-select-all.png">
+<!ENTITY copyIcon "/usr/share/icons/Adwaita/32x32/actions/edit-copy.png">
+<!ENTITY cutIcon "/usr/share/icons/Adwaita/32x32/actions/edit-cut.png">
+<!ENTITY pasteIcon "/usr/share/icons/Adwaita/32x32/actions/edit-paste.png">
 ]>
 <chapter xmlns="http://docbook.org/ns/docbook" version="5.0">
   <title>Editor</title>
