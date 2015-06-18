@@ -11,7 +11,7 @@ LDFLAGS = -fPIE -pie -Wl,-z,relro -Wl,-z,now
 # the previous manual Makefile
 noinst_LIBRARIES = 
 bin_PROGRAMS = ags midi2xml
-EXTRA_DIST = gsequencer.share acsite.m4 ags.1
+EXTRA_DIST = gsequencer.share acsite.m4 ags.1 README
 CLEANFILES =
 man1_MANS = ags.1 midi2xml.1
 
@@ -20,6 +20,42 @@ appdata_DATA = ags.desktop
 
 EXTRA_DIST += ags.desktop.in
 CLEANFILES += $(appdata_DATA)
+
+docdir = $(datadir)/doc/@PACKAGE@
+doc_DATA = README
+
+# documentation
+userdoc = \
+	doc/usersBook.xml
+	doc/appa.xml \
+	doc/usersBook/appb.xml \
+	doc/usersBook/chap1.xml \
+	doc/usersBook/chap2.xml \
+	doc/usersBook/chap3.xml \
+	doc/usersBook/chap4.xml \
+	doc/usersBook/preface.xml
+
+userdocimages = \
+	doc/images/ags_export_window.png \
+	doc/images/ags_machine_properties-input.png \
+	doc/images/ags_machine_properties-resize_channels.png \
+	doc/images/ags_navigation.png \
+	doc/images/ags_synth.png \
+	doc/images/ags_audio_preferences.png \
+	doc/images/ags_ffplayer.png \
+	doc/images/ags_ladspa_browser.png \
+	doc/images/ags_machine_properties-link_input.png \
+	doc/images/ags_matrix.png \
+	doc/images/ags_panel.png \
+	doc/images/ags-toolbar.png \
+	doc/images/ags_drum.png \
+	doc/images/ags_generic_preferences.png \
+	doc/images/ags_machine_properties-output.png \
+	doc/images/ags_mixer.png \
+	doc/images/ags_performance_preferences.png \
+	doc/images/ags_server_preferences.png
+
+EXTRA_DIST += userdoc userdocimages
 
 # library
 libags_a_CFLAGS= $(GOBJECT_CFLAGS) $(LIBXML2_CFLAGS) 
@@ -38,6 +74,11 @@ midi2xml_LDFLAGS= -ldl $(LDFLAGS) $(LIBXML2_LIBS) $(GOBJECT_LIBS)
 
 midi2xml_SOURCES = src/midi2ags/main.c src/midi2ags/midi/ags_midi_parser.c src/midi2ags/midi/ags_midi_parser.h src/midi2ags/object/ags_marshal.c src/midi2ags/object/ags_marshal.h
 
+ags.doc: $(userdoc)
+	mkdir -p gsequencer.share/doc/gsequencer/{html,images}/
+	xsltproc --output gsequencer.share/doc/gsequencer/html/ --xinclude /usr/share/xml/docbook/stylesheet/docbook-xsl/htmlhelp/htmlhelp.xsl doc/usersBook.xml
+	cp $(userdocimages) gsequencer.share/doc/gsequencer/images/
+
 ags.desktop: ags.desktop.in
 	$(AM_V_GEN)sed -e 's,\@datadir\@,$(datadir),g' < "$<" > $@
 
@@ -46,6 +87,8 @@ install-data-local:
 	mkdir -p $(DESTDIR)/$(datadir)/gsequencer/images
 	cp $(top_srcdir)/gsequencer.share/icons/ags.xpm $(DESTDIR)/$(datadir)/gsequencer/icons/ags.xpm
 	cp $(top_srcdir)/gsequencer.share/images/ags.png $(DESTDIR)/$(datadir)/gsequencer/images/ags.png
+	cp -r (top_srcdir)/gsequencer.share/doc/gsequencer $(DESTDIR)/$(datadir)/doc/
 
 uninstall-hook:
 	rm -rf $(DESTDIR)/$(datadir)/gsequencer
+	rm -rf $(DESTDIR)/$(datadir)/doc/gsequencer
