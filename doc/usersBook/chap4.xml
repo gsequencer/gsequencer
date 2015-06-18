@@ -1,14 +1,15 @@
 <?xml version='1.0' encoding="utf-8"?>
 <!DOCTYPE book [
-<!ENTITY backwardIcon "/usr/share/icons/gnome/scalable/actions/media-skip-backward-symbolic.svg">
-<!ENTITY previousIcon "/usr/share/icons/gnome/scalable/actions/media-seek-backward-symbolic.svg">
-<!ENTITY playIcon "/usr/share/icons/gnome/scalable/actions/media-playback-start-symbolic.svg">
-<!ENTITY stopIcon "/usr/share/icons/gnome/scalable/actions/media-playback-stop-symbolic.svg">
-<!ENTITY nextIcon "/usr/share/icons/gnome/scalable/actions/media-seek-forward-symbolic.svg">
-<!ENTITY forwardIcon "/usr/share/icons/gnome/scalable/actions/media-skip-forward-symbolic.svg">
+<!ENTITY backwardIcon "/usr/share/icons/Adwaita/32x32/actions/media-skip-backward.png">
+<!ENTITY previousIcon "/usr/share/icons/Adwaita/32x32/actions/media-seek-backward.png">
+<!ENTITY playIcon "/usr/share/icons/Adwaita/32x32/actions/media-playback-start.png">
+<!ENTITY stopIcon "/usr/share/icons/Adwaita/32x32/actions/media-playback-stop.png">
+<!ENTITY nextIcon "/usr/share/icons/Adwaita/32x32/actions/media-seek-forward.png">
+<!ENTITY forwardIcon "/usr/share/icons/Adwaita/32x32/actions/media-skip-forward.png">
 ]>
 <chapter xmlns="http://docbook.org/ns/docbook" version="5.0">
   <title>The navigation</title>
+  <imagedata fileref="../images/ags_navigation.png" />
   <para>
     With the navigation you have overall control of your song. Settings you perform
     here may influence the behaviour of AGS.

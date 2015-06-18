@@ -97,7 +97,7 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 LIBRARIES = $(noinst_LIBRARIES)
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)" \
-	"$(DESTDIR)$(appdatadir)"
+	"$(DESTDIR)$(appdatadir)" "$(DESTDIR)$(docdir)"
 PROGRAMS = $(bin_PROGRAMS)
 am_ags_OBJECTS = ags-ags_connectable.$(OBJEXT) \
 	ags-ags_combo_box_text.$(OBJEXT) ags-ags_list.$(OBJEXT) \
@@ -420,7 +420,7 @@ am__uninstall_files_from_dir = { \
 man1dir = $(mandir)/man1
 NROFF = nroff
 MANS = $(man1_MANS)
-DATA = $(appdata_DATA)
+DATA = $(appdata_DATA) $(doc_DATA)
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) \
 	$(LISP)config.h.in
 # Read a list of newline-separated strings from the standard input,
@@ -547,7 +547,7 @@ build_alias =
 builddir = .
 datadir = ${datarootdir}
 datarootdir = ${prefix}/share
-docdir = ${datarootdir}/doc/${PACKAGE_TARNAME}
+docdir = $(datadir)/doc/ags
 dvidir = ${docdir}
 exec_prefix = ${prefix}
 host_alias = 
@@ -581,11 +581,38 @@ AM_CPPFLAGS = -I$(top_srcdir)/src -DDESTDIR=\"$(DESTDIR)$(datadir)\" -D_FORTIFY_
 # this lists the binaries to produce, the (non-PHONY, binary) targets in
 # the previous manual Makefile
 noinst_LIBRARIES = 
-EXTRA_DIST = gsequencer.share acsite.m4 ags.1 ags.desktop.in
+EXTRA_DIST = gsequencer.share acsite.m4 ags.1 README ags.desktop.in \
+	userdoc userdocimages
 CLEANFILES = $(appdata_DATA)
 man1_MANS = ags.1 midi2xml.1
 appdatadir = $(datadir)/applications
 appdata_DATA = ags.desktop 
+doc_DATA = README
+
+# documentation
+userdoc = \
+	doc/usersBook.xml
+
+userdocimages = \
+	doc/images/ags_export_window.png \
+	doc/images/ags_machine_properties-input.png \
+	doc/images/ags_machine_properties-resize_channels.png \
+	doc/images/ags_navigation.png \
+	doc/images/ags_synth.png \
+	doc/images/ags_audio_preferences.png \
+	doc/images/ags_ffplayer.png \
+	doc/images/ags_ladspa_browser.png \
+	doc/images/ags_machine_properties-link_input.png \
+	doc/images/ags_matrix.png \
+	doc/images/ags_panel.png \
+	doc/images/ags-toolbar.png \
+	doc/images/ags_drum.png \
+	doc/images/ags_generic_preferences.png \
+	doc/images/ags_machine_properties-output.png \
+	doc/images/ags_mixer.png \
+	doc/images/ags_performance_preferences.png \
+	doc/images/ags_server_preferences.png
+
 
 # library
 libags_a_CFLAGS = $(GOBJECT_CFLAGS) $(LIBXML2_CFLAGS) 
@@ -6220,6 +6247,27 @@ uninstall-appdataDATA:
 	@list='$(appdata_DATA)'; test -n "$(appdatadir)" || list=; \
 	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
 	dir='$(DESTDIR)$(appdatadir)'; $(am__uninstall_files_from_dir)
+install-docDATA: $(doc_DATA)
+	@$(NORMAL_INSTALL)
+	@list='$(doc_DATA)'; test -n "$(docdir)" || list=; \
+	if test -n "$$list"; then \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(docdir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(docdir)" || exit 1; \
+	fi; \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; \
+	done | $(am__base_list) | \
+	while read files; do \
+	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(docdir)'"; \
+	  $(INSTALL_DATA) $$files "$(DESTDIR)$(docdir)" || exit $$?; \
+	done
+
+uninstall-docDATA:
+	@$(NORMAL_UNINSTALL)
+	@list='$(doc_DATA)'; test -n "$(docdir)" || list=; \
+	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
+	dir='$(DESTDIR)$(docdir)'; $(am__uninstall_files_from_dir)
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique
@@ -6447,7 +6495,7 @@ check-am: all-am
 check: check-am
 all-am: Makefile $(LIBRARIES) $(PROGRAMS) $(MANS) $(DATA) config.h
 installdirs:
-	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)" "$(DESTDIR)$(appdatadir)"; do \
+	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)" "$(DESTDIR)$(appdatadir)" "$(DESTDIR)$(docdir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-am
@@ -6505,7 +6553,8 @@ info: info-am
 
 info-am:
 
-install-data-am: install-appdataDATA install-data-local install-man
+install-data-am: install-appdataDATA install-data-local \
+	install-docDATA install-man
 
 install-dvi: install-dvi-am
 
@@ -6553,7 +6602,7 @@ ps: ps-am
 ps-am:
 
 uninstall-am: uninstall-appdataDATA uninstall-binPROGRAMS \
-	uninstall-man
+	uninstall-docDATA uninstall-man
 	@$(NORMAL_INSTALL)
 	$(MAKE) $(AM_MAKEFLAGS) uninstall-hook
 uninstall-man: uninstall-man1
@@ -6569,16 +6618,29 @@ uninstall-man: uninstall-man1
 	distdir distuninstallcheck dvi dvi-am html html-am info \
 	info-am install install-am install-appdataDATA \
 	install-binPROGRAMS install-data install-data-am \
-	install-data-local install-dvi install-dvi-am install-exec \
-	install-exec-am install-html install-html-am install-info \
-	install-info-am install-man install-man1 install-pdf \
-	install-pdf-am install-ps install-ps-am install-strip \
-	installcheck installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-compile \
-	mostlyclean-generic pdf pdf-am ps ps-am tags tags-am uninstall \
-	uninstall-am uninstall-appdataDATA uninstall-binPROGRAMS \
-	uninstall-hook uninstall-man uninstall-man1
+	install-data-local install-docDATA install-dvi install-dvi-am \
+	install-exec install-exec-am install-html install-html-am \
+	install-info install-info-am install-man install-man1 \
+	install-pdf install-pdf-am install-ps install-ps-am \
+	install-strip installcheck installcheck-am installdirs \
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-compile mostlyclean-generic pdf pdf-am ps ps-am \
+	tags tags-am uninstall uninstall-am uninstall-appdataDATA \
+	uninstall-binPROGRAMS uninstall-docDATA uninstall-hook \
+	uninstall-man uninstall-man1
 
+	doc/appa.xml \
+	doc/usersBook/appb.xml \
+	doc/usersBook/chap1.xml \
+	doc/usersBook/chap2.xml \
+	doc/usersBook/chap3.xml \
+	doc/usersBook/chap4.xml \
+	doc/usersBook/preface.xml
+
+ags.doc: $(userdoc)
+	mkdir -p gsequencer.share/doc/gsequencer/{html,images}/
+	xsltproc --output gsequencer.share/doc/gsequencer/html/ --xinclude /usr/share/xml/docbook/stylesheet/docbook-xsl/htmlhelp/htmlhelp.xsl doc/usersBook.xml
+	cp $(userdocimages) gsequencer.share/doc/gsequencer/images/
 
 ags.desktop: ags.desktop.in
 	$(AM_V_GEN)sed -e 's,\@datadir\@,$(datadir),g' < "$<" > $@
@@ -6588,9 +6650,11 @@ install-data-local:
 	mkdir -p $(DESTDIR)/$(datadir)/gsequencer/images
 	cp $(top_srcdir)/gsequencer.share/icons/ags.xpm $(DESTDIR)/$(datadir)/gsequencer/icons/ags.xpm
 	cp $(top_srcdir)/gsequencer.share/images/ags.png $(DESTDIR)/$(datadir)/gsequencer/images/ags.png
+	cp -r (top_srcdir)/gsequencer.share/doc/gsequencer $(DESTDIR)/$(datadir)/doc/
 
 uninstall-hook:
 	rm -rf $(DESTDIR)/$(datadir)/gsequencer
+	rm -rf $(DESTDIR)/$(datadir)/doc/gsequencer
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

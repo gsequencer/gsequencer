@@ -29,7 +29,7 @@
 
   <sect1>
     <title>Toolbar</title>
-    <imagedata fileref="/home/jkraehemann/ags-code/doc/images/ags-toolbar.png" />
+    <imagedata fileref="../images/ags-toolbar.png" />
     <para>
       In the table below are the various buttons explained you may use for editing.
     </para>
