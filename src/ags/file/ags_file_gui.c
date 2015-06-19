@@ -105,7 +105,8 @@ ags_file_read_window(AgsFile *file, xmlNode *node, AgsWindow **window)
   AgsFileLookup *file_lookup;
   xmlNode *child;
   xmlChar *prop, *content;
-
+  xmlChar *str;
+  
   if(*window == NULL){
     gobject = g_object_new(AGS_TYPE_WINDOW,
 			   NULL);
@@ -131,8 +132,12 @@ ags_file_read_window(AgsFile *file, xmlNode *node, AgsWindow **window)
 					    NULL,
 					    16);
 
-  gobject->name = (gchar *) g_strdup(xmlGetProp(node, "name\0"));
-
+  str = xmlGetProp(node, "name\0");
+  
+  if(str != NULL){
+    gobject->name = (gchar *) g_strdup(str);
+  }
+  
   /* devout */
   file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
 					       "file\0", file,

@@ -230,17 +230,17 @@
 	  id               ID         #REQUIRED
 	  >
 
-<!ELEMENT ags-devout (ags-audio-list, ags-delay-data, ags-attack-data)>
+<!ELEMENT ags-devout (ags-audio-list, ags-delay-data?, ags-attack-data?)>
 <!ATTLIST ags-devout
 	  id               ID         #REQUIRED
 	  flags            PCDATA     #REQUIRED
 	  dsp-channels     NMTOKEN    2
 	  pcm-channels     NMTOKEN    2
 	  bits             NMTOKEN    16
-	  buffer-size      NMTOKEN    128
+	  buffer-size      NMTOKEN    940
 	  frequency        NMTOKEN    44100 <!-- renamed frequence -->
 	  bpm              NMTOKEN    120.0
-	  delay-counter    NMTOKEN    #REQUIRED
+	  delay-counter    NMTOKEN    0
 	  device           CDATA      "default"
 	  >
 
@@ -389,14 +389,11 @@
 	  flags            PCDATA     #REQUIRED
 	  audio-channel    NMTOKEN    #REQUIRED
 	  key              CDATA      "violine"
-	  base-frequency   NMTOKEN    440.0
-	  bpm              NMTOKEN    120.0
+	  base-frequency   NMTOKEN    #IMPLIED
+	  bpm              NMTOKEN    #IMPLIED
 	  max-note-length  NMTOKEN    16.0
 	  loop-start       NMTOKEN    #IMPLIED
 	  loop-end         NMTOKEN    #IMPLIED
-	  <!-- TODO:JK: implement following -->
-	  delay            NMTOKEN    #REQUIRED
-	  attack           NMTOKEN    #REQUIRED
 	  >
 
 <!ELEMENT ags-note-list (ags-note*)>
@@ -535,7 +532,7 @@
 <!ATTLIST ags-window
 	  id               ID         #REQUIRED
 	  flags            PCDATA     #REQUIRED
-	  name             CDATA      #REQUIRED
+	  name             CDATA      #IMPLIED
 	  devout           CDATA      #REQUIRED
 	  >
 

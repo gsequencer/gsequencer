@@ -91,6 +91,7 @@ ags_file_read_devout(AgsFile *file, xmlNode *node, AgsDevout **devout)
   AgsDevout *gobject;
   xmlNode *child;
   xmlChar *prop, *content;
+  xmlChar *str;
 
   if(*devout == NULL){
     gobject = g_object_new(AGS_TYPE_DEVOUT,
@@ -121,26 +122,69 @@ ags_file_read_devout(AgsFile *file, xmlNode *node, AgsDevout **devout)
 		       AGS_DEVOUT_BUFFER3 |
 		       AGS_DEVOUT_PLAY));
 
-  gobject->dsp_channels = (guint) g_ascii_strtoull(xmlGetProp(node, "dsp-channels\0"),
-						   NULL,
-						   10);
-  gobject->pcm_channels = (guint) g_ascii_strtoull(xmlGetProp(node, "pcm-channels\0"),
-						   NULL,
-						   10);
+  str = xmlGetProp(node, "dsp-channels\0");
 
-  gobject->bits = (guint) g_ascii_strtoull(xmlGetProp(node, "bits\0"),
-					   NULL,
-					   10);
-  gobject->buffer_size = (guint) g_ascii_strtoull(xmlGetProp(node, "buffer-size\0"),
+  if(str != NULL){
+    gobject->dsp_channels = (guint) g_ascii_strtoull(str,
+						     NULL,
+						     10);
+  }else{
+    gobject->dsp_channels = 2;
+  }
+
+  str = xmlGetProp(node, "pcm-channels\0");
+
+  if(str != NULL){
+    gobject->pcm_channels = (guint) g_ascii_strtoull(str,
+						     NULL,
+						     10);
+  }else{
+    gobject->pcm_channels = 2;
+  }
+
+  str = xmlGetProp(node, "bits\0");
+
+  if(str != NULL){
+    gobject->bits = (guint) g_ascii_strtoull(str,
+					     NULL,
+					     10);
+  }else{
+    gobject->bits = 16;
+  }
+
+  str = xmlGetProp(node, "buffer-size\0");
+
+  if(str != NULL){
+    gobject->buffer_size = (guint) g_ascii_strtoull(str,
+						    NULL,
+						    10);
+  }else{
+    gobject->buffer_size = 940;
+  }
+
+  str = xmlGetProp(node, "frequency\0");
+
+  if(str != NULL){
+    gobject->frequency = (guint) g_ascii_strtoull(str,
 						  NULL,
 						  10);
-  gobject->frequency = (guint) g_ascii_strtoull(xmlGetProp(node, "frequency\0"),
-						NULL,
-						10);
+  }else{
+    gobject->frequency = 44100;
+  }
 
-  gobject->bpm = (gdouble) g_ascii_strtod(xmlGetProp(node, "bpm\0"),
-					  NULL);
+  str = xmlGetProp(node, "bpm\0");
 
+  if(str != NULL){
+    g_object_set(gobject,
+		 "bpm\0", (gdouble) g_ascii_strtod(str,
+						   NULL),
+		 NULL);
+  }else{
+    g_object_set(gobject,
+		 "bpm\0", 120.0,
+		 NULL);
+  }
+  
   /* child elements */
   child = node->children;
 
@@ -177,7 +221,9 @@ ags_file_read_devout(AgsFile *file, xmlNode *node, AgsDevout **devout)
 			      "checksum\0");
 	content = xmlNodeGetContent(child);
 
-	if(!xmlStrncmp(ags_file_str2md5(content,
+	if(content != NULL &&
+	   checksum != NULL &&
+	   !xmlStrncmp(ags_file_str2md5(content,
 					strlen(content)),
 		       checksum,
 		       AGS_FILE_CHECKSUM_LENGTH)){
@@ -203,7 +249,9 @@ ags_file_read_devout(AgsFile *file, xmlNode *node, AgsDevout **devout)
 			      "checksum\0");
 	content = xmlNodeGetContent(child);
 
-	if(!xmlStrncmp(ags_file_str2md5(content,
+	if(content != NULL &&
+	   checksum != NULL &&
+	   !xmlStrncmp(ags_file_str2md5(content,
 					strlen(content)),
 		       checksum,
 		       AGS_FILE_CHECKSUM_LENGTH)){
@@ -223,10 +271,16 @@ ags_file_read_devout(AgsFile *file, xmlNode *node, AgsDevout **devout)
     child = child->next;
   }
 
-  gobject->delay_counter = (guint) g_ascii_strtoull(xmlGetProp(node, "delay-counter\0"),
-						    NULL,
-						    10);
+  str = xmlGetProp(node, "delay-counter\0");
 
+  if(str != NULL){
+    gobject->delay_counter = (guint) g_ascii_strtoull(str,
+						      NULL,
+						      10);
+  }else{
+    gobject->delay_counter = 0;
+  }
+  
   if((AGS_DEVOUT_LIBAO & (gobject->flags)) != 0){
     //TODO:JK: implement me
   }else if((AGS_DEVOUT_OSS & (gobject->flags)) != 0){
@@ -4342,7 +4396,8 @@ ags_file_read_notation(AgsFile *file, xmlNode *node, AgsNotation **notation)
   AgsFileLookup *file_lookup;
   xmlNode *child;
   xmlChar *prop;
-
+  xmlChar *str;
+  
   if(*notation == NULL){
     gobject = (AgsNotation *) g_object_new(AGS_TYPE_NOTATION,
 					   NULL);
@@ -4370,25 +4425,45 @@ ags_file_read_notation(AgsFile *file, xmlNode *node, AgsNotation **notation)
 							       "audio-channel\0"),
 						    NULL,
 						    10);
-  
-  gobject->key = g_strdup(xmlGetProp(node,
-				     "key\0"));
-  
-  gobject->base_frequency = (gdouble) g_ascii_strtod(xmlGetProp(node,
-								"base-frequency\0"),
-						     NULL);
 
+  str = xmlGetProp(node,
+		   "key\0");
+
+  if(str == NULL){
+    str = "violine\0";
+  }
+  
+  gobject->key = g_strdup(str);
+
+  str = xmlGetProp(node,
+		   "base-frequency\0");
+
+  if(str != NULL){
+    gobject->base_frequency = (gdouble) g_ascii_strtod(str,
+						       NULL);
+  }
+  
   gobject->tact = (gdouble) g_ascii_strtod(xmlGetProp(node,
 						      "tact\0"),
 					   NULL);
 
-  gobject->bpm = (gdouble) g_ascii_strtod(xmlGetProp(node,
-						     "bpm\0"),
-					  NULL);
+  str = xmlGetProp(node,
+		   "bpm\0");
 
-  gobject->maximum_note_length = (gdouble) g_ascii_strtod(xmlGetProp(node,
-								     "max-note-length\0"),
-							  NULL);
+  if(str != NULL){
+    gobject->bpm = (gdouble) g_ascii_strtod(str,
+					    NULL);
+  }
+
+  str = xmlGetProp(node,
+		   "max-note-length\0");
+
+  if(str != NULL){
+    gobject->maximum_note_length = (gdouble) g_ascii_strtod(str,
+							    NULL);
+  }else{
+    gobject->maximum_note_length = 16.0;
+  }
 
   prop = xmlGetProp(node,
 		    "loop-start\0");
@@ -4656,7 +4731,8 @@ ags_file_read_note(AgsFile *file, xmlNode *node, AgsNote **note)
 {
   AgsNote *gobject;
   xmlNode *child;
-
+  xmlChar *str;
+  
   if(*note == NULL){
     gobject = (AgsNote *) g_object_new(AGS_TYPE_NOTE,
 				       NULL);
@@ -4698,9 +4774,12 @@ ags_file_read_note(AgsFile *file, xmlNode *node, AgsNote **note)
   gobject->name = g_strdup(xmlGetProp(node,
 				     "name\0"));
 
-  gobject->frequency = (gdouble) g_ascii_strtod(xmlGetProp(node,
-							   "frequency\0"),
-						NULL);
+  str = xmlGetProp(node,
+		   "frequency\0");
+  if(str != NULL){
+    gobject->frequency = (gdouble) g_ascii_strtod(str,
+						  NULL);
+  }
 }
 
 xmlNode*
