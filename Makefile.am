@@ -57,6 +57,8 @@ userdocimages = \
 
 EXTRA_DIST += $(userdoc) $(userdocimages)
 
+EXTRA_DIST += $(top_srcdir)/src/ags/file/ags_file.dtd $(top_srcdir)/ags.xsl
+
 # library
 libags_a_CFLAGS= $(GOBJECT_CFLAGS) $(LIBXML2_CFLAGS) 
 
@@ -87,8 +89,11 @@ all: html
 install-data-local: install-html
 	mkdir -p $(DESTDIR)/$(datadir)/gsequencer/icons
 	mkdir -p $(DESTDIR)/$(datadir)/gsequencer/images
+	mkdir -p $(DESTDIR)/$(datadir)/xml/gsequencer/{schema/dtd/0.4.2/,stylesheet/ags-xsl/midi-xml/}
 	cp $(top_srcdir)/gsequencer.share/icons/ags.xpm $(DESTDIR)/$(datadir)/gsequencer/icons/ags.xpm
 	cp $(top_srcdir)/gsequencer.share/images/ags.png $(DESTDIR)/$(datadir)/gsequencer/images/ags.png
+	cp $(top_srcdir)/src/ags/file/ags_file.dtd $(DESTDIR)/$(datadir)/xml/gsequencer/schema/dtd/0.4.2/
+	$(top_srcdir)/ags.xsl $(DESTDIR)/$(datadir)/xml/gsequencer/stylesheet/ags-xsl/midi-xml/
 
 install-html:
 	mkdir -p $(DESTDIR)/$(datadir)/doc/gsequencer/{images,html}/
@@ -98,6 +103,7 @@ install-html:
 uninstall-hook:
 	rm -rf $(DESTDIR)/$(datadir)/gsequencer
 	rm -rf $(DESTDIR)/$(datadir)/doc/gsequencer
+	rm -rf 
 
 clean-local:
 	rm -rf html
