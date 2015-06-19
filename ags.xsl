@@ -18,17 +18,21 @@
     <xsl:variable name="tempo" select="//midi-tracks/midi-track[1]/midi-message[@event='tempo-number']/@tempo"/>
     <xsl:variable name="secs">60.0</xsl:variable>
     <xsl:variable name="microsecs">1000000.0</xsl:variable>
-    
+
+    <xsl:variable name="bpm">
+      <xsl:call-template name="midi-read-bpm"/>
+    </xsl:variable>
+
     <xsl:if test="$division &gt; 0">
       
-      <xsl:value-of select="$secs div $current-tick div $tempo * $division * $microsecs"/>
+      <xsl:value-of select="16.0 * $bpm div $secs * $current-tick * $tempo div $division div $microsecs"/>
     </xsl:if>
 
     <xsl:if test="not($division &gt; 0)">
       <xsl:variable name="smtpe-format">floor($division div 256)</xsl:variable>
       <xsl:variable name="smtpe-resoulution">floor($division div 256) * 256</xsl:variable>
 
-      <xsl:value-of select="$secs div $current-tick * $smtpe-format * $smtpe-resolution * $microsecs"/>
+      <xsl:value-of select="16.0 * $bpm div $secs * $current-tick div $smtpe-format div $smtpe-resolution div $microsecs"/>
     </xsl:if>
   </xsl:template>
 
@@ -83,8 +87,8 @@
 	  </xsl:variable>
 	  <xsl:attribute name="x0"><xsl:value-of select="$x0"/></xsl:attribute>
 	  
-	  <xsl:if test="following-sibling::ags-note[@event='note-off' and @note='$y']">
-	    <xsl:variable name="next-tick"><xsl:value-of select="following-sibling::ags-note[@event='note-off' and @note='$y']/@delta-time"/></xsl:variable>
+	  <xsl:if test="following-sibling::node()[@event='note-off' and @note='$y']">
+	    <xsl:variable name="next-tick"><xsl:value-of select="following-sibling::node()[@event='note-off' and @note='$y']/@delta-time"/></xsl:variable>
 
 	    <xsl:variable name="x1">
 	      <xsl:call-template name="ticks-to-tact">
