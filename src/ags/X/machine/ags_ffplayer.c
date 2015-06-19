@@ -81,7 +81,7 @@ void ags_ffplayer_resolve_filename(AgsFileLookup *lookup, AgsFFPlayer *ffplayer)
 void ags_ffplayer_launch_task(AgsFileLaunch *file_launch, AgsFFPlayer *ffplayer);
 xmlNode* ags_ffplayer_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 void ags_ffplayer_read_resolve_audio(AgsFileLookup *file_lookup,
-				 AgsMachine *machine);
+				     AgsMachine *machine);
 
 void ags_ffplayer_set_audio_channels(AgsAudio *audio,
 				     guint audio_channels, guint audio_channels_old,
@@ -588,7 +588,7 @@ ags_ffplayer_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 
 void
 ags_ffplayer_read_resolve_audio(AgsFileLookup *file_lookup,
-			    AgsMachine *machine)
+				AgsMachine *machine)
 {
   AgsFFPlayer *ffplayer;
   GList *pad, *pad_start, *line, *line_start;
@@ -600,6 +600,25 @@ ags_ffplayer_read_resolve_audio(AgsFileLookup *file_lookup,
 
   g_signal_connect_after(G_OBJECT(machine->audio), "set_pads\0",
 			 G_CALLBACK(ags_ffplayer_set_pads), ffplayer);
+
+  if((AGS_MACHINE_PREMAPPED_RECALL & (machine->flags)) == 0){
+    /* ags-play-notation */
+    ags_recall_factory_create(machine->audio,
+			      NULL, NULL,
+			      "ags-play-notation\0",
+			      0, machine->audio->audio_channels,
+			      0, 0,
+			      (AGS_RECALL_FACTORY_INPUT |
+			       AGS_RECALL_FACTORY_REMAP |
+			       AGS_RECALL_FACTORY_RECALL),
+			      0);
+
+    ags_ffplayer_input_map_recall(ffplayer, 0);
+    ags_ffplayer_input_map_recall(ffplayer, 0);
+  }else{
+    ffplayer->mapped_output_pad = machine->audio->output_pads;
+    ffplayer->mapped_input_pad = machine->audio->input_pads;
+  }
 }
 
 xmlNode*
@@ -922,7 +941,7 @@ ags_ffplayer_input_map_recall(AgsFFPlayer *ffplayer, guint input_pad_start)
     ags_recall_factory_create(audio,
 			      NULL, NULL,
 			      "ags-buffer\0",
-			      current->audio_channel, current->audio_channel + 1, 
+			      0, audio->audio_channels,
 			      current->pad, current->pad + 1,
 			      (AGS_RECALL_FACTORY_INPUT |
 			       AGS_RECALL_FACTORY_RECALL |
@@ -965,7 +984,7 @@ ags_ffplayer_input_map_recall(AgsFFPlayer *ffplayer, guint input_pad_start)
     ags_recall_factory_create(audio,
 			      NULL, NULL,
 			      "ags-stream\0",
-			      current->audio_channel, current->audio_channel + 1, 
+			      0, audio->audio_channels, 
 			      current->pad, current->pad + 1,
 			      (AGS_RECALL_FACTORY_INPUT |
 			       AGS_RECALL_FACTORY_PLAY |

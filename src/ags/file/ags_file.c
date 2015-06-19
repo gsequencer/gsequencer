@@ -26,6 +26,8 @@
 
 #include <ags/main.h>
 
+#include <ags/object/ags_main_loop.h>
+
 #include <ags/util/ags_id_generator.h>
 
 #include <ags/object/ags_marshal.h>
@@ -1095,6 +1097,15 @@ ags_file_real_read(AgsFile *file)
 
   /* start */
   ags_file_read_start(file);
+
+  if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(AGS_THREAD(ags_main->main_loop)->flags)))) != 0){
+    /* start thread tree */
+    ags_thread_start(ags_main->main_loop);
+
+    /* complete thread pool */
+    ags_main->thread_pool->parent = AGS_THREAD(ags_main->main_loop);
+    ags_thread_pool_start(ags_main->thread_pool);
+  }
 }
 
 void
@@ -1179,6 +1190,8 @@ ags_file_read_main(AgsFile *file, xmlNode *node, GObject **ags_main)
   GList *list;
   xmlNode *child;
   int argc;
+  gboolean read_thread, read_thread_pool;
+  
   static const gchar *argv[] = {
     "ags\0",
   };
@@ -1223,12 +1236,15 @@ ags_file_read_main(AgsFile *file, xmlNode *node, GObject **ags_main)
 
   /* child elements */
   child = node->children;
+  read_thread = FALSE;
+  read_thread_pool = FALSE;
 
   while(child != NULL){
     if(child->type == XML_ELEMENT_NODE){
       if(!xmlStrncmp("ags-thread\0",
 		     child->name,
 		     11)){
+	read_thread = TRUE;
 	ags_file_read_thread(file,
 			     child,
 			     (AgsThread **) &(gobject->main_loop));
@@ -1237,6 +1253,7 @@ ags_file_read_main(AgsFile *file, xmlNode *node, GObject **ags_main)
       }else if(!xmlStrncmp("ags-thread-pool\0",
 			   child->name,
 			   16)){
+	read_thread_pool = TRUE;
 	ags_file_read_thread_pool(file,
 				  child,
 				  (AgsThreadPool **) &(gobject->thread_pool));
@@ -1258,17 +1275,26 @@ ags_file_read_main(AgsFile *file, xmlNode *node, GObject **ags_main)
     child = child->next;
   }
 
+  if(!read_thread){
+    /* AgsMainLoop */
+    gobject->main_loop = AGS_MAIN_LOOP(ags_audio_loop_new((GObject *) gobject->devout->data, (GObject *) gobject));
+    g_object_ref(G_OBJECT(gobject->main_loop));
+    ags_connectable_connect(AGS_CONNECTABLE(gobject->main_loop));
+  }
+  
   //TODO:JK: should be resolved
   AGS_TASK_THREAD(AGS_AUDIO_LOOP(gobject->main_loop)->task_thread)->thread_pool = gobject->thread_pool;
   AGS_THREAD_POOL(gobject->thread_pool)->parent = AGS_THREAD(AGS_AUDIO_LOOP(gobject->main_loop)->task_thread);
 
-  list = g_atomic_pointer_get(&(AGS_THREAD_POOL(gobject->thread_pool)->returnable_thread));
-
-  while(list != NULL){
-    ags_thread_add_child(AGS_THREAD(AGS_AUDIO_LOOP(gobject->main_loop)->task_thread),
-			 AGS_THREAD(list->data));
-
-    list = list->next;
+  if(read_thread){
+    list = g_atomic_pointer_get(&(AGS_THREAD_POOL(gobject->thread_pool)->returnable_thread));
+    
+    while(list != NULL){
+      ags_thread_add_child(AGS_THREAD(AGS_AUDIO_LOOP(gobject->main_loop)->task_thread),
+			   AGS_THREAD(list->data));
+      
+      list = list->next;
+    }
   }
 }
 

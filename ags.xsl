@@ -2,6 +2,8 @@
 <!DOCTYPE xsl[
 <!ENTITY version "0.4.2">
 <!ENTITY buildid "XSLT">
+<!ENTITY audiochannels "2">
+<!ENTITY defaultsf2 "/usr/share/sounds/sf2/FluidR3_GM.sf2">
 ]>
 
 <xsl:stylesheet version="1.0"
@@ -74,7 +76,7 @@
       <xsl:if test="$parent-sequence=$sequence and $parent-instrument=$instrument">
 	<ags-note>
 	  
-	  <xsl:attribute name="id">generate-id(ags-note)</xsl:attribute>
+	  <xsl:attribute name="id">note-<xsl:value-of select="position()"/></xsl:attribute>
 	  <xsl:attribute name="flags">0</xsl:attribute>
 
 	  <xsl:variable name="y" select="./@note"/>
@@ -85,7 +87,7 @@
 	      <xsl:with-param name="current-tick" select="$current-tick"/>
 	    </xsl:call-template>
 	  </xsl:variable>
-	  <xsl:attribute name="x0"><xsl:value-of select="$x0"/></xsl:attribute>
+	  <xsl:attribute name="x0"><xsl:value-of select="floor($x0)"/></xsl:attribute>
 	  
 	  <xsl:if test="following-sibling::node()[@event='note-off' and @note='$y']">
 	    <xsl:variable name="next-tick"><xsl:value-of select="following-sibling::node()[@event='note-off' and @note='$y']/@delta-time"/></xsl:variable>
@@ -97,18 +99,50 @@
 	    </xsl:variable>
 	    
 	    <xsl:attribute name="x1">
-	      <xsl:value-of select="$x1"/>
+	      <xsl:value-of select="floor($x1)"/>
 	    </xsl:attribute>
 	  </xsl:if>
 	  
 	  <xsl:if test="not(following-sibling::ags-note[@event='note-off' and @note='$y'])">
 	    <xsl:variable name="add-one" select="1"/>
-	    <xsl:attribute name="x1"><xsl:value-of select="$x0 + $add-one"/></xsl:attribute>
+	    <xsl:attribute name="x1"><xsl:value-of select="floor($x0) + $add-one"/></xsl:attribute>
 	  </xsl:if>
 	  
 	</ags-note>
       </xsl:if>
       
+    </xsl:if>
+    
+  </xsl:template>
+
+  <!-- notation node -->
+  <xsl:template name="add-notation">
+    <xsl:param name="sequence"/>
+    <xsl:param name="instrument"/>
+    <xsl:param name="num" select="1"/>
+    <xsl:param name="count"/>
+
+    <ags-notation>
+      <xsl:attribute name="id">notation-<xsl:value-of select="position()"/></xsl:attribute>
+      <xsl:attribute name="flags">0</xsl:attribute>
+      <xsl:attribute name="audio-channel"><xsl:value-of select="$num - 1"/></xsl:attribute>
+      
+      <ags-note-list>
+	<xsl:attribute name="id">note-list-<xsl:value-of select="position()"/></xsl:attribute>
+
+	<xsl:apply-templates select="/midi/midi-tracks/midi-track/midi-message">
+	  <xsl:with-param name="parent-sequence" select="$sequence"/>
+	  <xsl:with-param name="parent-instrument" select="$instrument"/>
+	</xsl:apply-templates>
+
+      </ags-note-list>
+    </ags-notation>
+    
+    <xsl:if test="$num &lt; $count">
+      <xsl:call-template name="add-notation">
+	<xsl:with-param name="num" select="$num + 1"/>
+	<xsl:with-param name="count" select="$count"/>
+      </xsl:call-template>
     </xsl:if>
     
   </xsl:template>
@@ -120,33 +154,22 @@
     
     <ags-audio>
       <xsl:attribute name="id"><xsl:value-of select="$sequence"/>_<xsl:value-of select="$instrument"/></xsl:attribute>
-      <xsl:attribute name="flags">0</xsl:attribute>
+      <xsl:attribute name="flags">13f</xsl:attribute>
       <xsl:attribute name="sequence-length">0</xsl:attribute>
-      <xsl:attribute name="audio-channels">2</xsl:attribute>
+      <xsl:attribute name="audio-channels">&audiochannels;</xsl:attribute>
       <xsl:attribute name="output-pads">1</xsl:attribute>
       <xsl:attribute name="input-pads">78</xsl:attribute>
-      <xsl:attribute name="devout">xpath=../../</xsl:attribute>
-
+      <xsl:attribute name="devout">xpath=//ags-devout</xsl:attribute>
+      
       <ags-notation-list>
-	<xsl:attribute name="id">generate-id(ags-notation-list)</xsl:attribute>
+	<xsl:attribute name="id">notation-list-<xsl:value-of select="position()"/></xsl:attribute>
 
-	<ags-notation>
-	  <xsl:attribute name="id">generate-id(ags-notation)</xsl:attribute>
-	  
-	  <ags-note-list>
-	    <xsl:attribute name="id">generate-id(ags-note-list)</xsl:attribute>
-
-	    <xsl:apply-templates select="/midi/midi-tracks/midi-track/midi-message">
-		<xsl:with-param name="parent-sequence" select="$sequence"/>
-		<xsl:with-param name="parent-instrument" select="$instrument"/>
-	    </xsl:apply-templates>
-
-	      <!--		<xsl:if test="node-set(current())/*/xsl:variable/*[@name='sequence']=$sequence and current()/*/xsl:variable/*[@name='instrument']=$instrument]">
-		  <xsl:value-of select="current()"/>
-		  </xsl:if>
-	      -->	
-	  </ags-note-list>
-	</ags-notation>
+	<xsl:call-template name="add-notation">
+	  <xsl:with-param name="count" select="&audiochannels;"/>
+	  <xsl:with-param name="sequence" select="$sequence"/>
+	  <xsl:with-param name="instrument" select="$instrument"/>
+	</xsl:call-template>
+	
       </ags-notation-list>
     </ags-audio>
     
@@ -154,23 +177,24 @@
   
   <!-- machine node -->
   <xsl:template name="add-machine">
-    <xsl:param name="audio"/>
+    <xsl:param name="sequence"/>
+    <xsl:param name="instrument"/>
 
     <ags-machine>
       <xsl:attribute name="type">AgsFFPlayer</xsl:attribute>
-      <xsl:attribute name="id">generate-id(ags-machine)</xsl:attribute>
+      <xsl:attribute name="id">machine-<xsl:value-of select="position()"/></xsl:attribute>
       <xsl:attribute name="version">&version;</xsl:attribute>
       <xsl:attribute name="build-id">&buildid;</xsl:attribute>
       <xsl:attribute name="flags">0</xsl:attribute>
       <xsl:attribute name="file-input-flags">0</xsl:attribute>
       <xsl:attribute name="name">default </xsl:attribute>
-      <xsl:attribute name="audio">xpath=//ags-audio[@id='$audio']</xsl:attribute>
+      <xsl:attribute name="audio">xpath=//ags-audio[@id='<xsl:value-of select="$sequence"/>_<xsl:value-of select="$instrument"/>']</xsl:attribute>
 
       <ags-ffplayer>
-	<xsl:attribute name="id">generate-id(ags-ffplayer)</xsl:attribute>
-	<xsl:attribute name="filename"></xsl:attribute>
-	<xsl:attribute name="preset"></xsl:attribute>
-	<xsl:attribute name="instrument"></xsl:attribute>
+	<xsl:attribute name="id">ffplayer-<xsl:value-of select="position()"/></xsl:attribute>
+	<xsl:attribute name="filename">&defaultsf2;</xsl:attribute>
+	<xsl:attribute name="preset">Yamaha Grand Piano</xsl:attribute>
+	<xsl:attribute name="instrument">Yamaha Grand Piano</xsl:attribute>
       </ags-ffplayer>
     </ags-machine>
 
@@ -213,21 +237,21 @@
   <!-- root node -->
   <xsl:template match="/">    
     <ags>
-      <ags-main version="&version;" build-id="&buildid;">
-	<xsl:attribute name="id">generate-id(ags-main)</xsl:attribute>
+      <ags-main version="&version;" build-id="&buildid;" flags="0">
+	<xsl:attribute name="id">ags-main-<xsl:value-of select="position()"/></xsl:attribute>
 
 	<ags-devout-list>
-	  <xsl:attribute name="id">generate-id(ags-devout-list)</xsl:attribute>
+	  <xsl:attribute name="id">devout-list-<xsl:value-of select="position()"/></xsl:attribute>
 	  
 	  <ags-devout>
-	    <xsl:attribute name="id">generate-id(ags-devout)</xsl:attribute>
-	    <xsl:attribute name="flags">0</xsl:attribute>
+	    <xsl:attribute name="id">ags-devout-<xsl:value-of select="position()"/></xsl:attribute>
+	    <xsl:attribute name="flags">100</xsl:attribute>
 	    <xsl:attribute name="bpm">
 	      <xsl:call-template name="midi-read-bpm"/>
 	    </xsl:attribute>
 	    
 	    <ags-audio-list>
-	      <xsl:attribute name="id">generate-id(ags-audio-list)</xsl:attribute>
+	      <xsl:attribute name="id">ags-audio-list-<xsl:value-of select="position()"/></xsl:attribute>
 
 	      <xsl:apply-templates select="/midi/midi-tracks/midi-track">
 		<xsl:with-param name="parent">ags-audio-list</xsl:with-param>
@@ -237,10 +261,12 @@
 	  </ags-devout>
 	</ags-devout-list>
 	<ags-window>
-	  <xsl:attribute name="id">generate-id(ags-window)</xsl:attribute>
+	  <xsl:attribute name="id">window-<xsl:value-of select="position()"/></xsl:attribute>
+	  <xsl:attribute name="flags">0</xsl:attribute>
+	  <xsl:attribute name="devout">xpath=//ags-devout</xsl:attribute>
 
 	  <ags-machine-list>
-	    <xsl:attribute name="id">generate-id(ags-machine-list)</xsl:attribute>
+	    <xsl:attribute name="id">machine-list-<xsl:value-of select="position()"/></xsl:attribute>
 
 	    <xsl:apply-templates select="/midi/midi-tracks/midi-track">
 	      <xsl:with-param name="parent">ags-machine-list</xsl:with-param>
