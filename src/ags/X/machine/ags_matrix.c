@@ -34,6 +34,7 @@
 #include <ags/file/ags_file_id_ref.h>
 #include <ags/file/ags_file_lookup.h>
 #include <ags/file/ags_file_launch.h>
+#include <ags/file/ags_file_gui.h>
 
 #include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_thread-posix.h>
@@ -89,6 +90,8 @@ void ags_matrix_set_name(AgsPlugin *plugin, gchar *name);
 gchar* ags_matrix_get_xml_type(AgsPlugin *plugin);
 void ags_matrix_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
 void ags_matrix_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
+void ags_matrix_read_resolve_audio(AgsFileLookup *file_lookup,
+				   AgsMachine *machine);
 void ags_matrix_launch_task(AgsFileLaunch *file_launch, AgsMatrix *matrix);
 xmlNode* ags_matrix_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
@@ -1027,6 +1030,7 @@ void
 ags_matrix_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 {
   AgsMatrix *gobject;
+  AgsFileLookup *file_lookup;
   AgsFileLaunch *file_launch;
   GList *list;
 
@@ -1041,7 +1045,30 @@ ags_matrix_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 				   "reference\0", gobject,
 				   NULL));
 
-  /*  */
+  /* lookup */
+  list = file->lookup;
+
+  while((list = ags_file_lookup_find_by_node(list,
+					     node->parent)) != NULL){
+    file_lookup = AGS_FILE_LOOKUP(list->data);
+    
+    if(g_signal_handler_find(list->data,
+			     G_SIGNAL_MATCH_FUNC,
+			     0,
+			     0,
+			     NULL,
+			     ags_file_read_machine_resolve_audio,
+			     NULL) != 0){
+      g_signal_connect_after(G_OBJECT(file_lookup), "resolve\0",
+			     G_CALLBACK(ags_matrix_read_resolve_audio), gobject);
+      
+      break;
+    }
+
+    list = list->next;
+  }
+
+  /* launch */
   file_launch = (AgsFileLaunch *) g_object_new(AGS_TYPE_FILE_LAUNCH,
 					       "node\0", node,
 					       "file\0", file,
@@ -1050,6 +1077,29 @@ ags_matrix_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 		   G_CALLBACK(ags_matrix_launch_task), gobject);
   ags_file_add_launch(file,
 		      (GObject *) file_launch);
+}
+
+void
+ags_matrix_read_resolve_audio(AgsFileLookup *file_lookup,
+				AgsMachine *machine)
+{
+  AgsMatrix *matrix;
+
+  matrix = AGS_MATRIX(machine);
+
+  g_signal_connect_after(G_OBJECT(machine->audio), "set_audio_channels\0",
+			 G_CALLBACK(ags_matrix_set_audio_channels), matrix);
+
+  g_signal_connect_after(G_OBJECT(machine->audio), "set_pads\0",
+			 G_CALLBACK(ags_matrix_set_pads), matrix);
+
+  if((AGS_MACHINE_PREMAPPED_RECALL & (machine->flags)) == 0){
+    ags_matrix_output_map_recall(matrix, 0);
+    ags_matrix_input_map_recall(matrix, 0);
+  }else{
+    matrix->mapped_output_pad = machine->audio->output_pads;
+    matrix->mapped_input_pad = machine->audio->input_pads;
+  }
 }
 
 void

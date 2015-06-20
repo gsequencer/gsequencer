@@ -84,9 +84,9 @@ void ags_synth_set_name(AgsPlugin *plugin, gchar *name);
 gchar* ags_synth_get_xml_type(AgsPlugin *plugin);
 void ags_synth_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
 void ags_synth_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
-xmlNode* ags_synth_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 void ags_synth_read_resolve_audio(AgsFileLookup *file_lookup,
 				  AgsMachine *machine);
+xmlNode* ags_synth_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
 void ags_synth_set_audio_channels(AgsAudio *audio,
 				  guint audio_channels, guint audio_channels_old,
@@ -502,6 +502,14 @@ ags_synth_read_resolve_audio(AgsFileLookup *file_lookup,
 
   g_signal_connect_after(G_OBJECT(machine->audio), "set_pads\0",
 			 G_CALLBACK(ags_synth_set_pads), synth);
+
+  if((AGS_MACHINE_PREMAPPED_RECALL & (machine->flags)) == 0){
+    synth->mapped_output_pad = machine->audio->output_pads;
+    synth->mapped_input_pad = machine->audio->input_pads;
+  }else{
+    synth->mapped_output_pad = machine->audio->output_pads;
+    synth->mapped_input_pad = machine->audio->input_pads;
+  }
 }
 
 xmlNode*

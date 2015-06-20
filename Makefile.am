@@ -11,7 +11,7 @@ LDFLAGS = -fPIE -pie -Wl,-z,relro -Wl,-z,now
 # the previous manual Makefile
 noinst_LIBRARIES = 
 bin_PROGRAMS = ags midi2xml
-EXTRA_DIST = gsequencer.share acsite.m4 ags.1 midi2xml.1 README
+EXTRA_DIST = gsequencer.share acsite.m4 ags.1 midi2xml.1 README gsequencer-documentation
 CLEANFILES =
 man1_MANS = ags.1 midi2xml.1
 
@@ -69,7 +69,7 @@ ags_CFLAGS= $(CFLAGS) $(UUID_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBAO_CFLAGS) $(LIBX
 ags_LDFLAGS= -ldl $(LDFLAGS) $(UUID_LIBS) $(LIBASOUND2_LIBS) $(LIBAO_LIBS) $(LIBXML2_LIBS) $(OPENSSL_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(XMLRPC_LIBS) $(XMLRPC_UTIL_LIBS) $(XMLRPC_SERVER_ABYSS_LIBS) $(XMLRPC_SERVER_CGI_LIBS) $(XMLRPC_SERVER_LIBS) -lm -lrt -lX11 -pthread
 ags_LDADD = 
 
-ags_HEADERS = \
+agsheaders = \
 	src/ags/audio/ags_audio.h \
 	src/ags/audio/ags_audio_signal.h \
 	src/ags/audio/ags_channel.h \
@@ -231,9 +231,8 @@ ags_HEADERS = \
 	src/ags/file/ags_file_stock.h \
 	src/ags/file/ags_file_thread.h \
 	src/ags/file/ags_file_util.h \
-	src/ags/file/ags_file_value_factory.h \
 	src/ags/file/ags_file_write.h \
-	src/ags-lib/lib/ags_connectable.h \
+	src/ags-lib/object/ags_connectable.h \
 	src/ags/lib/ags_combo_box_text.h \
 	src/ags/lib/ags_container.h \
 	src/ags/lib/ags_list.h \
@@ -264,7 +263,6 @@ ags_HEADERS = \
 	src/ags/server/ags_registry.h \
 	src/ags/server/ags_remote_task.h \
 	src/ags/server/ags_server.h \
-	src/ags/test/lib/jmath.h \
 	src/ags/thread/ags_async_queue.h \
 	src/ags/thread/ags_audio_loop.h \
 	src/ags/thread/ags_autosave_thread.h \
@@ -275,7 +273,6 @@ ags_HEADERS = \
 	src/ags/thread/ags_history.h \
 	src/ags/thread/ags_iterator_thread.h \
 	src/ags/thread/ags_mutex_manager.h \
-	src/ags/thread/ags_portable_thread.h \
 	src/ags/thread/ags_record_thread.h \
 	src/ags/thread/ags_recycling_thread_callbacks.h \
 	src/ags/thread/ags_recycling_thread.h \
@@ -405,7 +402,7 @@ ags_HEADERS = \
 	src/ags/X/machine/ags_synth_input_pad.h
 
 ags_SOURCES = \
-	$(ags_HEADERS) \
+	$(agsheaders) \
 	src/ags/audio/ags_audio.c \
 	src/ags/audio/ags_audio_signal.c \
 	src/ags/audio/ags_channel.c \
@@ -562,8 +559,7 @@ ags_SOURCES = \
 	src/ags/file/ags_file_sound.c \
 	src/ags/file/ags_file_thread.c \
 	src/ags/file/ags_file_util.c \
-	src/ags/file/ags_file_value_factory.c \
-	src/ags-lib/lib/ags_connectable.c \
+	src/ags-lib/object/ags_connectable.c \
 	src/ags/lib/ags_combo_box_text.c \
 	src/ags/lib/ags_container.c \
 	src/ags/lib/ags_list.c \
@@ -593,10 +589,6 @@ ags_SOURCES = \
 	src/ags/server/ags_registry.c \
 	src/ags/server/ags_remote_task.c \
 	src/ags/server/ags_server.c \
-	src/ags/test/ags_test_sndfile.c \
-	src/ags/test/ags_test_thread.c \
-	src/ags/test/ags_test_thread_pool.c \
-	src/ags/test/lib/jmath.c \
 	src/ags/thread/ags_async_queue.c \
 	src/ags/thread/ags_audio_loop.c \
 	src/ags/thread/ags_autosave_thread.c \
@@ -607,7 +599,6 @@ ags_SOURCES = \
 	src/ags/thread/ags_history.c \
 	src/ags/thread/ags_iterator_thread.c \
 	src/ags/thread/ags_mutex_manager.c \
-	src/ags/thread/ags_portable_thread.c \
 	src/ags/thread/ags_record_thread.c \
 	src/ags/thread/ags_recycling_thread.c \
 	src/ags/thread/ags_recycling_thread_callbacks.c \
@@ -751,6 +742,7 @@ html:
 all: html
 
 install-data-local: install-html
+	mkdir -p $(DESTDIR)/$(datadir)/doc-base
 	mkdir -p $(DESTDIR)/$(datadir)/gsequencer/icons
 	mkdir -p $(DESTDIR)/$(datadir)/gsequencer/images
 	mkdir -p $(DESTDIR)/$(datadir)/xml/gsequencer/{schema/dtd/0.4.2/,stylesheet/ags-xsl/midi-xml/}
@@ -758,6 +750,8 @@ install-data-local: install-html
 	cp $(top_srcdir)/gsequencer.share/images/ags.png $(DESTDIR)/$(datadir)/gsequencer/images/ags.png
 	cp $(top_srcdir)/src/ags/file/ags_file.dtd $(DESTDIR)/$(datadir)/xml/gsequencer/schema/dtd/0.4.2/
 	cp $(top_srcdir)/ags.xsl $(DESTDIR)/$(datadir)/xml/gsequencer/stylesheet/ags-xsl/midi-xml/
+	cp $(top_srcdir)/gsequencer-documentation $(DESTDIR)/$(datadir)/doc-base/
+	gzip -9 -c $(top_srcdir)/ChangeLog > $(DESTDIR)/$(datadir)/doc/gsequencer/changelog.gz
 
 install-html:
 	mkdir -p $(DESTDIR)/$(datadir)/doc/gsequencer/{images,html}/
@@ -767,7 +761,8 @@ install-html:
 uninstall-hook:
 	rm -rf $(DESTDIR)/$(datadir)/gsequencer
 	rm -rf $(DESTDIR)/$(datadir)/doc/gsequencer
-	rm -rf 
+	rm -rf $(DESTDIR)/$(datadir)/xml/gsequencer
+	rm $(DESTDIR)/$(datadir)/doc-base/gsequencer-documentation
 
 clean-local:
 	rm -rf html
