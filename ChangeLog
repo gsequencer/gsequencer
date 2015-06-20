@@ -1,0 +1,14 @@
+ags (0.4.2-70-1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* minor bug-fixes
+
+ags (0.4.2-69-1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* added XSL file to transform output of `midi2xml` using `xsltproc`
+
+ags (0.4.2-68-1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* added `midi2xml` the MIDI file to XML parser
