@@ -100,8 +100,10 @@ ags_note_edit_init(AgsNoteEdit *note_edit)
 {
   GtkAdjustment *adjustment;
 
+  note_edit->key_mask = 0;
+  
   adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, 1.0, 1.0);
-
+  
   note_edit->ruler = ags_ruler_new();
   gtk_table_attach(GTK_TABLE(note_edit), (GtkWidget *) note_edit->ruler,
 		   0, 1, 0, 1,
@@ -110,14 +112,19 @@ ags_note_edit_init(AgsNoteEdit *note_edit)
 
   note_edit->drawing_area = (GtkDrawingArea *) gtk_drawing_area_new();
   gtk_widget_set_style((GtkWidget *) note_edit->drawing_area, note_edit_style);
-  gtk_widget_set_events (GTK_WIDGET (note_edit->drawing_area), GDK_EXPOSURE_MASK
-                         | GDK_LEAVE_NOTIFY_MASK
-                         | GDK_BUTTON_PRESS_MASK
-			 | GDK_BUTTON_RELEASE_MASK
-                         | GDK_POINTER_MOTION_MASK
-			 | GDK_POINTER_MOTION_HINT_MASK
-			 );
-
+  gtk_widget_set_events(GTK_WIDGET(note_edit->drawing_area), GDK_EXPOSURE_MASK
+			| GDK_LEAVE_NOTIFY_MASK
+			| GDK_BUTTON_PRESS_MASK
+			| GDK_BUTTON_RELEASE_MASK
+			| GDK_POINTER_MOTION_MASK
+			| GDK_POINTER_MOTION_HINT_MASK
+			| GDK_CONTROL_MASK
+			| GDK_KEY_PRESS_MASK
+			| GDK_KEY_RELEASE_MASK
+			);
+  gtk_widget_set_can_focus(note_edit->drawing_area,
+			   TRUE);
+  
   gtk_table_attach(GTK_TABLE(note_edit), (GtkWidget *) note_edit->drawing_area,
 		   0, 1, 1, 2,
 		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
@@ -188,25 +195,31 @@ ags_note_edit_connect(AgsConnectable *connectable)
   note_edit = AGS_NOTE_EDIT(connectable);
 
   g_signal_connect_after((GObject *) note_edit->drawing_area, "expose_event\0",
-			 G_CALLBACK (ags_note_edit_drawing_area_expose_event), (gpointer) note_edit);
+			 G_CALLBACK(ags_note_edit_drawing_area_expose_event), (gpointer) note_edit);
 
   g_signal_connect_after((GObject *) note_edit->drawing_area, "configure_event\0",
-			 G_CALLBACK (ags_note_edit_drawing_area_configure_event), (gpointer) note_edit);
+			 G_CALLBACK(ags_note_edit_drawing_area_configure_event), (gpointer) note_edit);
 
   g_signal_connect((GObject *) note_edit->drawing_area, "button_press_event\0",
-		   G_CALLBACK (ags_note_edit_drawing_area_button_press_event), (gpointer) note_edit);
+		   G_CALLBACK(ags_note_edit_drawing_area_button_press_event), (gpointer) note_edit);
 
   g_signal_connect((GObject *) note_edit->drawing_area, "button_release_event\0",
-		   G_CALLBACK (ags_note_edit_drawing_area_button_release_event), (gpointer) note_edit);
+		   G_CALLBACK(ags_note_edit_drawing_area_button_release_event), (gpointer) note_edit);
 
   g_signal_connect((GObject *) note_edit->drawing_area, "motion_notify_event\0",
-		   G_CALLBACK (ags_note_edit_drawing_area_motion_notify_event), (gpointer) note_edit);
+		   G_CALLBACK(ags_note_edit_drawing_area_motion_notify_event), (gpointer) note_edit);
+			
+  g_signal_connect((GObject *) note_edit->drawing_area, "key_press_event\0",
+		   G_CALLBACK(ags_note_edit_drawing_area_key_press_event), (gpointer) note_edit);
+
+    g_signal_connect((GObject *) note_edit->drawing_area, "key_release_event\0",
+		     G_CALLBACK(ags_note_edit_drawing_area_key_release_event), (gpointer) note_edit);
 
   g_signal_connect_after((GObject *) note_edit->vscrollbar, "value-changed\0",
-			 G_CALLBACK (ags_note_edit_vscrollbar_value_changed), (gpointer) note_edit);
+			 G_CALLBACK(ags_note_edit_vscrollbar_value_changed), (gpointer) note_edit);
 
   g_signal_connect_after((GObject *) note_edit->hscrollbar, "value-changed\0",
-			 G_CALLBACK (ags_note_edit_hscrollbar_value_changed), (gpointer) note_edit);
+			 G_CALLBACK(ags_note_edit_hscrollbar_value_changed), (gpointer) note_edit);
 
 }
 

@@ -212,12 +212,14 @@ ags_machine_selector_popup_new(AgsMachineSelector *machine_selector)
   popup = (GtkMenu *) gtk_menu_new();
   g_object_set_data((GObject *) popup, g_type_name(AGS_TYPE_MACHINE_SELECTOR), machine_selector);
 
+  /*
   item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("add tab\0"));
   gtk_menu_shell_append((GtkMenuShell*) popup, (GtkWidget*) item);
 
   item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("remove tab\0"));
   gtk_menu_shell_append((GtkMenuShell*) popup, (GtkWidget*) item);
-
+  */
+  
   item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("add index\0"));
   gtk_menu_shell_append((GtkMenuShell*) popup, (GtkWidget*) item);
 
@@ -230,6 +232,7 @@ ags_machine_selector_popup_new(AgsMachineSelector *machine_selector)
   list_start = 
     list = gtk_container_get_children((GtkContainer *) popup);
 
+  /*
   g_signal_connect(G_OBJECT(list->data), "activate\0",
 		   G_CALLBACK(ags_machine_selector_popup_add_tab_callback), (gpointer) machine_selector);
 
@@ -238,6 +241,7 @@ ags_machine_selector_popup_new(AgsMachineSelector *machine_selector)
 		   G_CALLBACK(ags_machine_selector_popup_remove_tab_callback), (gpointer) machine_selector);
 
   list = list->next;
+  */
   g_signal_connect(G_OBJECT(list->data), "activate\0",
 		   G_CALLBACK(ags_machine_selector_popup_add_index_callback), (gpointer) machine_selector);
 

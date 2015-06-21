@@ -86,6 +86,12 @@ struct _AgsEditorClass
 
 GType ags_editor_get_type(void);
 
+void ags_editor_select_all(AgsEditor *editor);
+
+void ags_editor_paste(AgsEditor *copy);
+void ags_editor_copy(AgsEditor *copy);
+void ags_editor_cut(AgsEditor *copy);
+
 void ags_editor_machine_changed(AgsEditor *editor, AgsMachine *machine);
 
 AgsEditor* ags_editor_new();

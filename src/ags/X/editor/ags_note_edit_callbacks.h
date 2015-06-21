@@ -30,6 +30,8 @@ gboolean ags_note_edit_drawing_area_configure_event(GtkWidget *widget, GdkEventC
 gboolean ags_note_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventButton *event, AgsNoteEdit *note_edit);
 gboolean ags_note_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButton *event, AgsNoteEdit *note_edit);
 gboolean ags_note_edit_drawing_area_motion_notify_event(GtkWidget *widget, GdkEventMotion *event, AgsNoteEdit *note_edit);
+gboolean ags_note_edit_drawing_area_key_press_event(GtkWidget *widget, GdkEventKey *event, AgsNoteEdit *note_edit);
+gboolean ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsNoteEdit *note_edit);
 
 void ags_note_edit_vscrollbar_value_changed(GtkRange *range, AgsNoteEdit *note_edit);
 void ags_note_edit_hscrollbar_value_changed(GtkRange *range, AgsNoteEdit *note_edit);

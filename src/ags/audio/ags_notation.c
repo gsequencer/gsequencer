@@ -72,7 +72,7 @@ void ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
  * #AgsNotation acts as a container of #AgsNote.
  */
 
-#define AGS_NOTATION_CLIPBOARD_VERSION "0.3.12\0"
+#define AGS_NOTATION_CLIPBOARD_VERSION "0.4.2\0"
 #define AGS_NOTATION_CLIPBOARD_TYPE "AgsNotationClipboardXml\0"
 #define AGS_NOTATION_CLIPBOARD_FORMAT "AgsNotationNativePiano\0"
 
@@ -915,6 +915,33 @@ ags_notation_free_selection(AgsNotation *notation)
 }
 
 /**
+ * ags_notation_add_all_to_selection:
+ * @notation: an #AgsNotation
+ *
+ * Select all.
+ *
+ * Since: 0.4.2
+ */
+void
+ags_notation_add_all_to_selection(AgsNotation *notation)
+{
+  AgsNote *note;
+  GList *region, *list;
+
+  ags_notation_free_selection(notation);
+  list = notation->notes;
+  
+  while(list != NULL){
+    AGS_NOTE(list->data)->flags |= AGS_NOTE_IS_SELECTED;
+    g_object_ref(G_OBJECT(list->data));
+    
+    list = list->next;
+  }
+
+  notation->selection = g_list_copy(notation->notes);
+}
+
+/**
  * ags_notation_add_point_to_selection:
  * @notation: an #AgsNotation
  * @x: offset
@@ -1118,6 +1145,7 @@ ags_notation_copy_selection(AgsNotation *notation)
   xmlNewProp(notation_node, BAD_CAST "version\0", BAD_CAST AGS_NOTATION_CLIPBOARD_VERSION);
   xmlNewProp(notation_node, BAD_CAST "format\0", BAD_CAST AGS_NOTATION_CLIPBOARD_FORMAT);
   xmlNewProp(notation_node, BAD_CAST "base_frequency\0", BAD_CAST g_strdup_printf("%u\0", notation->base_frequency));
+  xmlNewProp(notation_node, BAD_CAST "audio-channel\0", BAD_CAST g_strdup_printf("%u\0", notation->audio_channel));
 
   selection = notation->selection;
 
@@ -1410,6 +1438,9 @@ ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
   }
 
   if(!xmlStrncmp("0.3.12\0", version, 7)){
+    ags_notation_insert_native_piano_from_clipboard_version_0_3_12();
+  }else if(!xmlStrncmp("0.4.2\0", version, 7)){
+    /* changes contain only for UI relevant new informations */
     ags_notation_insert_native_piano_from_clipboard_version_0_3_12();
   }
 }

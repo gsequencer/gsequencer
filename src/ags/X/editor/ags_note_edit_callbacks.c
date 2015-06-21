@@ -27,6 +27,8 @@
 #include <ags/X/machine/ags_synth.h>
 #include <ags/X/machine/ags_ffplayer.h>
 
+#include <gdk/gdkkeysyms.h>
+
 gboolean
 ags_note_edit_drawing_area_expose_event(GtkWidget *widget, GdkEventExpose *event, AgsNoteEdit *note_edit)
 {
@@ -144,6 +146,8 @@ ags_note_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventButton 
   editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(note_edit),
 						 AGS_TYPE_EDITOR);
 
+  gtk_widget_grab_focus(note_edit->drawing_area);
+  
   if(editor->selected_machine != NULL &&
      event->button == 1 &&
      (machine = editor->selected_machine) != NULL){
@@ -206,7 +210,7 @@ ags_note_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
     GList *list_notation;
     guint note_x, note_y;
     guint note_offset_x1;
-    gint history;
+    gint i;
     gint selected_channel;
 
     if(note_edit->control.x0 >= note_edit->map_width)
@@ -224,55 +228,23 @@ ags_note_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
     note->x[1] = (note_x * tact) + (note_offset_x1 * tact);
 
     list_notation = machine->audio->notation;
-    history = gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->mode);
+    i = 0;
 
-    switch(history){
-    case 0:
-      {
-	if(editor->notebook->tabs != NULL){
-	  list_notation = g_list_nth(list_notation,
-				     ags_notebook_next_active_tab(editor->notebook,
-								  0));
+    while((selected_channel = ags_notebook_next_active_tab(editor->notebook,
+							   i)) != -1){
+      list_notation = g_list_nth(machine->audio->notation,
+				 selected_channel);
 
-	  note0 = ags_note_duplicate(note);
+      note0 = ags_note_duplicate(note);
 
-	  ags_notation_add_note(AGS_NOTATION(list_notation->data), note0, FALSE);
-	}
-      }
-      break;
-    case 1:
-      {
-	gint i;
+      ags_notation_add_note(AGS_NOTATION(list_notation->data), note0, FALSE);
 
-	i = 0;
-
-	while((selected_channel = ags_notebook_next_active_tab(editor->notebook,
-							       i)) != -1){
-	  list_notation = g_list_nth(machine->audio->notation,
-				     selected_channel);
-
-	  note0 = ags_note_duplicate(note);
-
-	  ags_notation_add_note(AGS_NOTATION(list_notation->data), note0, FALSE);
-
-	  i++;
-	}
-      }
-      break;
-    case 2:
-      {
-	while(list_notation != NULL){
-	  note0 = ags_note_duplicate(note);
-
-	  ags_notation_add_note(AGS_NOTATION(list_notation->data), note0, FALSE);
-
-	  list_notation = list_notation->next;
-	}
-      }
-      break;
+      i++;
     }
 
+#ifdef DEBUG
     fprintf(stdout, "x0 = %llu\nx1 = %llu\ny  = %llu\n\n\0", (long long unsigned int) note->x[0], (long long unsigned int) note->x[1], (long long unsigned int) note->y);
+#endif
   }
   void ags_note_edit_drawing_area_button_release_event_draw_control(cairo_t *cr){
     guint x, y, width, height;
@@ -334,6 +306,7 @@ ags_note_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
     GList *list_notation;
     guint x, y;
     gint history;
+    gint i;
     gint selected_channel;
 
     x = note_edit->control.x0_offset + note_edit->control.x0 - 1;
@@ -346,46 +319,26 @@ ags_note_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
 
     /* select notes */
     list_notation = machine->audio->notation;
+    i = 0;
 
-    history = gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->mode);
+    while((selected_channel = ags_notebook_next_active_tab(editor->notebook,
+							   i)) != -1){
+      list_notation = g_list_nth(machine->audio->notation,
+				 selected_channel);
 
-    if(history == 0){
-      if(editor->notebook->tabs != NULL){
-	list_notation = g_list_nth(list_notation,
-				   ags_notebook_next_active_tab(editor->notebook,
-								0));
+      ags_notation_remove_note_at_position(AGS_NOTATION(list_notation->data),
+					   x, y);
 
-	ags_notation_remove_note_at_position(AGS_NOTATION(list_notation->data),
-					     x, y);
-      }
-    }else if(history == 1){
-      gint i;
-
-      i = 0;
-
-      while((selected_channel = ags_notebook_next_active_tab(editor->notebook,
-							     i)) != -1){
-	list_notation = g_list_nth(machine->audio->notation,
-				   selected_channel);
-
-	ags_notation_remove_note_at_position(AGS_NOTATION(list_notation->data),
-					     x, y);
-
-	list_notation = list_notation->next;
-	i++;
-      }
-    }else if(history == 2){
-      while(list_notation != NULL){
-	ags_notation_remove_note_at_position(AGS_NOTATION(list_notation->data),
-					     x, y);
-
-	list_notation = list_notation->next;
-      }
+      list_notation = list_notation->next;
+      i++;
     }
   }
   void ags_note_edit_drawing_area_button_release_event_select_region(){
     GList *list_notation;
+
     guint x0, x1, y0, y1;
+    gint i;
+    gint selected_channel;
 
     /* get real size and offset */
     x0 = note_edit->control.x0_offset + note_edit->control.x0;
@@ -421,27 +374,18 @@ ags_note_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
 
     /* select notes */
     list_notation = machine->audio->notation;
+    i = 0;
 
-    if(gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->mode) == 0){
-      if(editor->notebook->tabs != NULL){
-	list_notation = g_list_nth(list_notation,
-				   ags_notebook_next_active_tab(editor->notebook,
-				   0));
+    while((selected_channel = ags_notebook_next_active_tab(editor->notebook,
+							   i)) != -1){
+      list_notation = g_list_nth(machine->audio->notation,
+				 selected_channel);
+      ags_notation_add_region_to_selection(AGS_NOTATION(list_notation->data),
+					   x0, y0,
+					   x1, y1,
+					   TRUE);
 
-	ags_notation_add_region_to_selection(AGS_NOTATION(list_notation->data),
-					     x0, y0,
-					     x1, y1,
-					     TRUE);
-      }
-    }else{
-      while(list_notation != NULL ){
-	ags_notation_add_region_to_selection(AGS_NOTATION(list_notation->data),
-					     x0, y0,
-					     x1, y1,
-					     TRUE);
-
-	list_notation = list_notation->next;
-      }
+      i++;
     }
 
   }
@@ -532,7 +476,7 @@ ags_note_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
 }
 
 gboolean
-ags_note_edit_drawing_area_motion_notify_event (GtkWidget *widget, GdkEventMotion *event, AgsNoteEdit *note_edit)
+ags_note_edit_drawing_area_motion_notify_event(GtkWidget *widget, GdkEventMotion *event, AgsNoteEdit *note_edit)
 {
   AgsMachine *machine;
   AgsEditor *editor;
@@ -764,6 +708,80 @@ ags_note_edit_drawing_area_motion_notify_event (GtkWidget *widget, GdkEventMotio
   }
 
   return(FALSE);
+}
+
+gboolean
+ags_note_edit_drawing_area_key_press_event(GtkWidget *widget, GdkEventKey *event, AgsNoteEdit *note_edit)
+{
+  AgsEditor *editor;
+
+  editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(note_edit),
+						 AGS_TYPE_EDITOR);
+
+  if(editor->selected_machine != NULL){
+
+    switch(event->keyval){
+    case GDK_KEY_Control_L:
+      {
+	note_edit->key_mask |= AGS_NOTE_EDIT_KEY_L_CONTROL;
+      }
+      break;
+    case GDK_KEY_Control_R:
+      {
+	note_edit->key_mask |= AGS_NOTE_EDIT_KEY_R_CONTROL;
+      }
+      break;
+    case GDK_KEY_a:
+      {
+	/* select all notes */
+	if((AGS_NOTE_EDIT_KEY_L_CONTROL & (note_edit->key_mask)) != 0 || (AGS_NOTE_EDIT_KEY_R_CONTROL & (note_edit->key_mask)) != 0){
+	  ags_editor_select_all(editor);
+	}
+      }
+      break;
+    case GDK_KEY_c:
+      {
+	/* copy notes */
+	if((AGS_NOTE_EDIT_KEY_L_CONTROL & (note_edit->key_mask)) != 0 || (AGS_NOTE_EDIT_KEY_R_CONTROL & (note_edit->key_mask)) != 0){
+	  ags_editor_copy(editor);
+	}
+      }
+      break;
+    case GDK_KEY_v:
+      {
+	/* paste notes */
+	if((AGS_NOTE_EDIT_KEY_L_CONTROL & (note_edit->key_mask)) != 0 || (AGS_NOTE_EDIT_KEY_R_CONTROL & (note_edit->key_mask)) != 0){
+	  ags_editor_paste(editor);
+	}
+      }
+      break;
+    case GDK_KEY_x:
+      {
+	/* cut notes */
+	if((AGS_NOTE_EDIT_KEY_L_CONTROL & (note_edit->key_mask)) != 0 || (AGS_NOTE_EDIT_KEY_R_CONTROL & (note_edit->key_mask)) != 0){
+	  ags_editor_cut(editor);
+	}
+      }
+      break;
+    }
+  }
+}
+
+gboolean
+ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsNoteEdit *note_edit)
+{
+  switch(event->keyval){
+  case GDK_KEY_Control_L:
+    {
+      note_edit->key_mask &= (~AGS_NOTE_EDIT_KEY_L_CONTROL);
+    }
+    break;
+  case GDK_KEY_Control_R:
+    {
+      note_edit->key_mask &= (~AGS_NOTE_EDIT_KEY_R_CONTROL);
+    }
+    break;
+  }
 }
 
 void
