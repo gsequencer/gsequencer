@@ -57,11 +57,18 @@ typedef enum{
   AGS_PATTERN_EDIT_RESET_HEIGHT       = 1 <<  3, // reserved
 }AgsPatternEditResetFlags;
 
+typedef enum{
+  AGS_PATTERN_EDIT_KEY_L_CONTROL       = 1,
+  AGS_PATTERN_EDIT_KEY_R_CONTROL       = 1 <<  1,
+}AgsPatternEditKeyMask;
+
 struct _AgsPatternEdit
 {
   GtkTable table;
 
   guint flags;
+
+  guint key_mask;
 
   AgsRuler *ruler;
   GtkDrawingArea *drawing_area;
