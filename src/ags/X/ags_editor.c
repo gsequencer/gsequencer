@@ -29,6 +29,9 @@
 #include <math.h>
 #include <cairo.h>
 
+#include <libxml/tree.h>
+#include <libxml/xpath.h>
+
 void ags_editor_class_init(AgsEditorClass *editor);
 void ags_editor_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_editor_init(AgsEditor *editor);
@@ -368,6 +371,381 @@ ags_editor_real_machine_changed(AgsEditor *editor, AgsMachine *machine)
 
   ags_note_edit_set_map_height(editor->note_edit,
 			       pads * editor->note_edit->control_height);
+}
+
+/**
+ * ags_editor_select_all:
+ * @editor: an #AgsEditor
+ *
+ * Is emitted as machine changed of editor.
+ *
+ * Since: 0.4.2
+ */
+void
+ags_editor_select_all(AgsEditor *editor)
+{
+  AgsMachine *machine;
+  
+  cairo_t *cr;
+    
+  GList *list_notation;
+
+  gint i;
+  gint selected_channel;
+
+  if(editor->selected_machine != NULL){
+    machine = editor->selected_machine;
+
+    cr = gdk_cairo_create(GTK_WIDGET(editor->note_edit->drawing_area)->window);
+    cairo_push_group(cr);
+      
+    list_notation = machine->audio->notation;
+    i = 0;
+
+    while((selected_channel = ags_notebook_next_active_tab(editor->notebook,
+							   i)) != -1){
+      list_notation = g_list_nth(machine->audio->notation,
+				 selected_channel);
+      ags_notation_add_all_to_selection(AGS_NOTATION(list_notation->data));
+
+      i++;
+    }
+
+    ags_note_edit_draw_segment(editor->note_edit, cr);
+    ags_note_edit_draw_notation(editor->note_edit, cr);
+
+    cairo_pop_group_to_source(cr);
+    cairo_paint(cr);
+  }
+}
+
+/**
+ * ags_editor_paste:
+ * @editor: an #AgsEditor
+ *
+ * Is emitted as machine changed of editor.
+ *
+ * Since: 0.4.2
+ */
+void
+ags_editor_paste(AgsEditor *editor)
+{
+  AgsMachine *machine;
+  
+  AgsNotation *notation;
+
+  xmlDocPtr clipboard;
+  xmlNodePtr audio_node, notation_node;
+  cairo_t *cr;
+  
+  gchar *buffer;
+  guint position_x, position_y;
+  guint last_x;
+  gboolean paste_from_position;
+  
+  void ags_editor_paste_read_notation(){
+    xmlXPathContextPtr xpathCtxt;
+    xmlXPathObjectPtr xpathObj;
+    xmlNodeSetPtr nodes;
+    GList *notation_list;
+
+    xpathCtxt = xmlXPathNewContext(clipboard);
+    xpathObj = xmlXPathEvalExpression("/audio/notation\0", xpathCtxt);
+
+    if(xpathObj != NULL){
+      int i, size;
+      guint audio_channel;
+      guint current_x;
+      
+      nodes = xpathObj->nodesetval;
+      size = (nodes != NULL) ? nodes->nodeNr: 0;
+
+      for(i = 0; i < size; i++){
+	audio_channel = (guint) g_ascii_strtoull(xmlGetProp(nodes->nodeTab[i],
+							    "audio-channel\0"),
+						 NULL,
+						 10);
+	notation_list = g_list_nth(machine->audio->notation,
+				   audio_channel);
+	
+	if(paste_from_position){
+	  xmlNode *child;
+
+	  guint x_boundary;
+	  
+	  ags_notation_insert_from_clipboard(AGS_NOTATION(notation_list->data),
+					     nodes->nodeTab[i],
+					     TRUE, position_x,
+					     TRUE, position_y);
+
+	  child = nodes->nodeTab[i]->children;
+	  current_x = 0;
+	  
+	  while(child != NULL){
+	    if(child->type == XML_ELEMENT_NODE){
+	      if(!xmlStrncmp(child->name,
+			     "note\0",
+			     5)){
+		guint tmp;
+
+		tmp = g_ascii_strtoull(xmlGetProp(child,
+						  "x1\0"),
+				       NULL,
+				       10);
+
+		if(tmp > current_x){
+		  current_x = tmp;
+		}
+	      }
+	    }
+
+	    child = child->next;
+	  }
+
+	  x_boundary = g_ascii_strtoull(xmlGetProp(nodes->nodeTab[i],
+						   "x_boundary\0"),
+					NULL,
+					10);
+
+	  
+	  if(position_x > x_boundary){
+	    current_x += (position_x - x_boundary);
+	  }else{
+	    current_x -= (x_boundary - position_x);
+	  }
+	  
+	  if(current_x > last_x){
+	    last_x = current_x;
+	  }	
+	}else{
+	  xmlNode *child;
+
+	  ags_notation_insert_from_clipboard(AGS_NOTATION(notation_list->data),
+					     nodes->nodeTab[i],
+					     FALSE, 0,
+					     FALSE, 0);
+
+	  child = nodes->nodeTab[i]->children;
+	  current_x = 0;
+	  
+	  while(child != NULL){
+	    if(child->type == XML_ELEMENT_NODE){
+	      if(!xmlStrncmp(child->name,
+			     "note\0",
+			     5)){
+		guint tmp;
+
+		tmp = g_ascii_strtoull(xmlGetProp(child,
+						  "x1\0"),
+				       NULL,
+				       10);
+
+		if(tmp > current_x){
+		  current_x = tmp;
+		}
+	      }
+	    }
+
+	    child = child->next;
+	  }
+
+	  if(current_x > last_x){
+	    last_x = current_x;
+	  }
+	}
+      }
+
+      xmlXPathFreeObject(xpathObj);
+    }
+  }
+  
+  if((machine = editor->selected_machine) != NULL){
+    /* get clipboard */
+    buffer = gtk_clipboard_wait_for_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
+    
+    if(buffer == NULL)
+      return;
+
+    /* get position */
+    if(editor->toolbar->selected_edit_mode == editor->toolbar->position){
+      last_x = 0;
+      paste_from_position = TRUE;
+
+      position_x = editor->note_edit->selected_x;
+      position_y = editor->note_edit->selected_y;
+
+#ifdef DEBUG
+      printf("pasting at position: [%u,%u]\n\0", position_x, position_y);
+#endif
+    }else{
+      paste_from_position = FALSE;
+    }
+
+    /* get xml tree */
+    clipboard = xmlReadMemory(buffer, strlen(buffer),
+			      NULL, "UTF-8\0",
+			      0);
+    audio_node = xmlDocGetRootElement(clipboard);
+    
+    /* iterate xml tree */
+    while(audio_node != NULL){
+      if(audio_node->type == XML_ELEMENT_NODE && !xmlStrncmp("audio\0", audio_node->name, 6)){
+	notation_node = audio_node->children;
+	
+	ags_editor_paste_read_notation();
+
+	break;
+      }
+      
+      audio_node = audio_node->next;
+    }
+
+    xmlFreeDoc(clipboard); 
+
+    cr = gdk_cairo_create(GTK_WIDGET(editor->note_edit->drawing_area)->window);
+    cairo_push_group(cr);
+
+    ags_note_edit_draw_segment(editor->note_edit, cr);
+    ags_note_edit_draw_notation(editor->note_edit, cr);
+
+    if(paste_from_position){
+      editor->note_edit->selected_x = (guint) ceil((double) last_x / 16.0) * 16;
+      ags_note_edit_draw_position(editor->note_edit, cr);
+    }
+    
+    cairo_pop_group_to_source(cr);
+    cairo_paint(cr);
+  }
+}
+
+/**
+ * ags_editor_copy:
+ * @editor: an #AgsEditor
+ *
+ * Is emitted as machine changed of editor.
+ *
+ * Since: 0.4.2
+ */
+void
+ags_editor_copy(AgsEditor *editor)
+{
+  AgsMachine *machine;
+  
+  AgsNotation *notation;
+
+  GList *list_notation;
+  xmlDocPtr clipboard;
+  xmlNodePtr audio_node, notation_node;
+
+  xmlChar *buffer;
+  int size;
+  gint i;
+  gint selected_channel;
+
+  if(editor->selected_machine != NULL){
+    machine = editor->selected_machine;
+    /* create document */
+    clipboard = xmlNewDoc(BAD_CAST XML_DEFAULT_VERSION);
+
+    /* create root node */
+    audio_node = xmlNewNode(NULL, BAD_CAST "audio\0");
+    xmlDocSetRootElement(clipboard, audio_node);
+
+    /* create notation nodes */
+    list_notation = machine->audio->notation;
+    i = 0;
+
+    while((selected_channel = ags_notebook_next_active_tab(editor->notebook,
+							   i)) != -1){
+      list_notation = g_list_nth(machine->audio->notation,
+				 selected_channel);
+
+      notation_node = ags_notation_copy_selection(AGS_NOTATION(list_notation->data));
+      
+      xmlAddChild(audio_node, notation_node);
+
+      i++;
+    }
+    
+    /* write to clipboard */
+    xmlDocDumpFormatMemoryEnc(clipboard, &buffer, &size, "UTF-8\0", TRUE);
+    gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD),
+			   buffer, size);
+    gtk_clipboard_store(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
+
+    xmlFreeDoc(clipboard);
+  }
+}
+
+/**
+ * ags_editor_cut:
+ * @editor: an #AgsEditor
+ *
+ * Is emitted as machine changed of editor.
+ *
+ * Since: 0.4.2
+ */
+void
+ags_editor_cut(AgsEditor *editor)
+{
+  AgsMachine *machine;
+  
+  AgsNotation *notation;
+
+  xmlDocPtr clipboard;
+  xmlNodePtr audio_node, notation_node;
+  cairo_t *cr;
+
+  GList *list_notation;
+
+  xmlChar *buffer;
+  int size;
+  gint i;
+  gint selected_channel;
+
+  if(editor->selected_machine != NULL){
+    machine = editor->selected_machine;
+
+    /* create document */
+    clipboard = xmlNewDoc(BAD_CAST XML_DEFAULT_VERSION);
+
+    /* create root node */
+    audio_node = xmlNewNode(NULL, BAD_CAST "audio\0");
+    xmlDocSetRootElement(clipboard, audio_node);
+
+    /* create notation nodes */
+    list_notation = machine->audio->notation;
+    i = 0;
+
+    cr = gdk_cairo_create(GTK_WIDGET(editor->note_edit->drawing_area)->window);
+      cairo_push_group(cr);
+
+    while((selected_channel = ags_notebook_next_active_tab(editor->notebook,
+							   i)) != -1){
+      list_notation = g_list_nth(machine->audio->notation,
+				 selected_channel);
+
+      notation_node = ags_notation_cut_selection(AGS_NOTATION(list_notation->data));
+
+      ags_note_edit_draw_segment(editor->note_edit, cr);
+      ags_note_edit_draw_notation(editor->note_edit, cr);
+
+      i++;
+    }
+
+    cairo_pop_group_to_source(cr);
+    cairo_paint(cr);
+      
+    xmlAddChild(audio_node, notation_node);
+
+    /* write to clipboard */
+    xmlDocDumpFormatMemoryEnc(clipboard, &buffer, &size, "UTF-8\0", TRUE);
+    gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD),
+			   buffer, size);
+    gtk_clipboard_store(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
+
+    xmlFreeDoc(clipboard);
+  }
 }
 
 /**

@@ -1824,7 +1824,7 @@ ags_recall_factory_create_peak(AgsAudio *audio,
 							      "devout\0", audio->devout,
 							      "recall-channel\0", peak_channel,
 							      "source\0", channel,
-							      "recall_container\0", recall_container,
+							      "recall_container\0", play_container,
 							      NULL);
 	ags_recall_set_flags(AGS_RECALL(peak_channel_run), (AGS_RECALL_TEMPLATE |
 							    (((AGS_RECALL_FACTORY_OUTPUT & create_flags) != 0) ? AGS_RECALL_OUTPUT_ORIENTATED: AGS_RECALL_INPUT_ORIENTATED) |

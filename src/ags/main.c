@@ -627,6 +627,11 @@ ags_main_register_recall_type()
   ags_copy_channel_get_type();
   ags_copy_channel_run_get_type();
 
+  ags_mute_audio_get_type();
+  ags_mute_audio_run_get_type();
+  ags_mute_channel_get_type();
+  ags_mute_channel_run_get_type();
+
   ags_volume_channel_get_type();
   ags_volume_channel_run_get_type();
 

@@ -1,3 +1,19 @@
+ags (0.4.2-72-1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented basic editing key strokes like Ctrl-c, Ctrl-v and Ctrl-x
+	* implemented seeking for paste if position tool is selected
+	* updated clipboard version to 0.4.2
+
+ags (0.4.2-71-1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* commented-out two unimplemented menu entries in editor's machine selector. Add and remove tab you may do so by using resize tab of machine properties dialog.
+	* implemented select-all in editor
+	* fixed multi-channel editing mode
+	* fixed refresh of GUI after cut or paste
+	* fixed crash related to XML IO
+
 ags (0.4.2-70-1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
