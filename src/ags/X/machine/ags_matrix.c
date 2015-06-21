@@ -65,6 +65,8 @@
 #include <ags/audio/recall/ags_play_notation_audio_run.h>
 #include <ags/audio/recall/ags_buffer_channel.h>
 #include <ags/audio/recall/ags_buffer_channel_run.h>
+#include <ags/audio/recall/ags_play_notation_audio.h>
+#include <ags/audio/recall/ags_play_notation_audio_run.h>
 
 #include <ags/widget/ags_led.h>
 
@@ -580,6 +582,8 @@ ags_matrix_map_recall(AgsMachine *machine)
   AgsCopyPatternAudioRun *recall_copy_pattern_audio_run;
   AgsPlayNotationAudio  *play_notation;
   AgsCopyPatternChannel *copy_pattern_channel;
+  AgsPlayNotationAudio *recall_notation_audio;
+  AgsPlayNotationAudioRun *recall_notation_audio_run;
 
   GList *notation;
   GList *list;
@@ -710,6 +714,32 @@ ags_matrix_map_recall(AgsMachine *machine)
     list = list->next;
   }
 
+  /* ags-play-notation */
+  ags_recall_factory_create(audio,
+			    NULL, NULL,
+			    "ags-play-notation\0",
+			    0, 0,
+			    0, 0,
+			    (AGS_RECALL_FACTORY_INPUT |
+			     AGS_RECALL_FACTORY_ADD |
+			     AGS_RECALL_FACTORY_RECALL),
+			    0);
+
+  list = ags_recall_find_type(audio->recall, AGS_TYPE_PLAY_NOTATION_AUDIO_RUN);
+
+  if(list != NULL){
+    recall_notation_audio_run = AGS_PLAY_NOTATION_AUDIO_RUN(list->data);
+
+    /* set dependency */
+    g_object_set(G_OBJECT(recall_notation_audio_run),
+		 "delay-audio-run\0", play_delay_audio_run,
+		 NULL);
+
+    /* set dependency */
+    g_object_set(G_OBJECT(recall_notation_audio_run),
+		 "count-beats-audio-run\0", play_count_beats_audio_run,
+		 NULL);
+  }
 
   /* depending on destination */
   ags_matrix_input_map_recall(matrix, 0);

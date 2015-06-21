@@ -128,9 +128,12 @@ ags_note_edit_init(AgsNoteEdit *note_edit)
   gtk_widget_set_can_focus(note_edit->drawing_area,
 			   TRUE);
   
-  gtk_table_attach(GTK_TABLE(note_edit), (GtkWidget *) note_edit->drawing_area,
-		   0, 1, 1, 2,
-		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
+  gtk_table_attach(GTK_TABLE(note_edit),
+		   (GtkWidget *) note_edit->drawing_area,
+		   0, 1,
+		   1, 2,
+		   GTK_FILL|GTK_EXPAND,
+		   GTK_FILL|GTK_EXPAND,
 		   0, 0);
 
   note_edit->control.note = ags_note_new();

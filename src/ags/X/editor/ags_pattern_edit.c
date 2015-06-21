@@ -110,17 +110,23 @@ ags_pattern_edit_init(AgsPatternEdit *pattern_edit)
 
   pattern_edit->drawing_area = (GtkDrawingArea *) gtk_drawing_area_new();
   gtk_widget_set_style((GtkWidget *) pattern_edit->drawing_area, pattern_edit_style);
-  gtk_widget_set_events (GTK_WIDGET (pattern_edit->drawing_area), GDK_EXPOSURE_MASK
-                         | GDK_LEAVE_NOTIFY_MASK
-                         | GDK_BUTTON_PRESS_MASK
-			 | GDK_BUTTON_RELEASE_MASK
-                         | GDK_POINTER_MOTION_MASK
-			 | GDK_POINTER_MOTION_HINT_MASK
-			 );
+  gtk_widget_set_events(GTK_WIDGET (pattern_edit->drawing_area), GDK_EXPOSURE_MASK
+			| GDK_LEAVE_NOTIFY_MASK
+			| GDK_BUTTON_PRESS_MASK
+			| GDK_BUTTON_RELEASE_MASK
+			| GDK_POINTER_MOTION_MASK
+			| GDK_POINTER_MOTION_HINT_MASK
+			| GDK_CONTROL_MASK
+			| GDK_KEY_PRESS_MASK
+			| GDK_KEY_RELEASE_MASK
+			);
 
-  gtk_table_attach(GTK_TABLE(pattern_edit), (GtkWidget *) pattern_edit->drawing_area,
-		   0, 1, 1, 2,
-		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
+  gtk_table_attach(GTK_TABLE(pattern_edit),
+		   (GtkWidget *) pattern_edit->drawing_area,
+		   0, 1,
+		   1, 2,
+		   GTK_FILL|GTK_EXPAND,
+		   GTK_FILL|GTK_EXPAND,
 		   0, 0);
 
   pattern_edit->control.note = ags_note_new();
@@ -201,6 +207,12 @@ ags_pattern_edit_connect(AgsConnectable *connectable)
 
   g_signal_connect((GObject *) pattern_edit->drawing_area, "motion_notify_event\0",
 		   G_CALLBACK (ags_pattern_edit_drawing_area_motion_notify_event), (gpointer) pattern_edit);
+  			
+  g_signal_connect((GObject *) pattern_edit->drawing_area, "key_press_event\0",
+		   G_CALLBACK(ags_pattern_edit_drawing_area_key_press_event), (gpointer) pattern_edit);
+
+  g_signal_connect((GObject *) pattern_edit->drawing_area, "key_release_event\0",
+		   G_CALLBACK(ags_pattern_edit_drawing_area_key_release_event), (gpointer) pattern_edit);
 
   g_signal_connect_after((GObject *) pattern_edit->vscrollbar, "value-changed\0",
 			 G_CALLBACK (ags_pattern_edit_vscrollbar_value_changed), (gpointer) pattern_edit);

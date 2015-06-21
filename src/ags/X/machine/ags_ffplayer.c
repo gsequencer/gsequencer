@@ -353,8 +353,6 @@ ags_ffplayer_map_recall(AgsMachine *machine)
 
   audio = machine->audio;
 
-  AGS_MACHINE_CLASS(ags_ffplayer_parent_class)->map_recall(machine);
-  
   /* ags-delay */
   ags_recall_factory_create(audio,
 			    NULL, NULL,
@@ -432,6 +430,7 @@ ags_ffplayer_map_recall(AgsMachine *machine)
 		 NULL);
   }
 
+  AGS_MACHINE_CLASS(ags_ffplayer_parent_class)->map_recall(machine);  
 }
 
 void

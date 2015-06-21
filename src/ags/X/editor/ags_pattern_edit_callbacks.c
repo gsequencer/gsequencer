@@ -27,15 +27,50 @@
 #include <ags/X/machine/ags_synth.h>
 #include <ags/X/machine/ags_ffplayer.h>
 
+#include <gdk/gdkkeysyms.h>
+
 gboolean
 ags_pattern_edit_drawing_area_expose_event(GtkWidget *widget, GdkEventExpose *event, AgsPatternEdit *pattern_edit)
 {
   AgsEditor *editor;
   guint width;
+  double zoom, zoom_old;
+  double tact_factor, zoom_factor;
+  double tact;
+  gdouble old_upper, new_upper;
+  gdouble position;
+  guint history;
   
   editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(pattern_edit),
 						 AGS_TYPE_EDITOR);
 
+  /* calculate zoom */
+  history = gtk_combo_box_get_active(editor->toolbar->zoom);
+
+  zoom = exp2((double) history - 2.0);
+  zoom_old = exp2((double) editor->toolbar->zoom_history - 2.0);
+
+  zoom_factor = 0.25;
+
+  tact_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->zoom));
+  tact = exp2((double) gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->zoom) - 2.0);
+
+  editor->toolbar->zoom_history = history;
+
+  position = GTK_RANGE(pattern_edit->hscrollbar)->adjustment->value;
+  old_upper = GTK_RANGE(pattern_edit->hscrollbar)->adjustment->upper;
+  
+  pattern_edit->flags |= AGS_PATTERN_EDIT_RESETING_HORIZONTALLY;
+  ags_pattern_edit_reset_horizontally(pattern_edit, AGS_PATTERN_EDIT_RESET_HSCROLLBAR |
+				      AGS_PATTERN_EDIT_RESET_WIDTH);
+  pattern_edit->flags &= (~AGS_PATTERN_EDIT_RESETING_HORIZONTALLY);
+
+  new_upper = GTK_RANGE(pattern_edit->hscrollbar)->adjustment->upper;
+  
+  gtk_adjustment_set_value(GTK_RANGE(pattern_edit->hscrollbar)->adjustment,
+			   position / old_upper * new_upper);
+
+  /* reset adjsutments */
   width = widget->allocation.width;
   gtk_adjustment_set_upper(GTK_RANGE(pattern_edit->hscrollbar)->adjustment,
 			   (gdouble) (pattern_edit->map_width - width));
@@ -750,6 +785,80 @@ ags_pattern_edit_drawing_area_motion_notify_event (GtkWidget *widget, GdkEventMo
   return(FALSE);
 }
 
+gboolean
+ags_pattern_edit_drawing_area_key_press_event(GtkWidget *widget, GdkEventKey *event, AgsPatternEdit *pattern_edit)
+{
+  AgsEditor *editor;
+
+  editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(pattern_edit),
+						 AGS_TYPE_EDITOR);
+
+  if(editor->selected_machine != NULL){
+
+    switch(event->keyval){
+    case GDK_KEY_Control_L:
+      {
+	pattern_edit->key_mask |= AGS_PATTERN_EDIT_KEY_L_CONTROL;
+      }
+      break;
+    case GDK_KEY_Control_R:
+      {
+	pattern_edit->key_mask |= AGS_PATTERN_EDIT_KEY_R_CONTROL;
+      }
+      break;
+    case GDK_KEY_a:
+      {
+	/* select all patterns */
+	if((AGS_PATTERN_EDIT_KEY_L_CONTROL & (pattern_edit->key_mask)) != 0 || (AGS_PATTERN_EDIT_KEY_R_CONTROL & (pattern_edit->key_mask)) != 0){
+	  ags_editor_select_all(editor);
+	}
+      }
+      break;
+    case GDK_KEY_c:
+      {
+	/* copy patterns */
+	if((AGS_PATTERN_EDIT_KEY_L_CONTROL & (pattern_edit->key_mask)) != 0 || (AGS_PATTERN_EDIT_KEY_R_CONTROL & (pattern_edit->key_mask)) != 0){
+	  ags_editor_copy(editor);
+	}
+      }
+      break;
+    case GDK_KEY_v:
+      {
+	/* paste patterns */
+	if((AGS_PATTERN_EDIT_KEY_L_CONTROL & (pattern_edit->key_mask)) != 0 || (AGS_PATTERN_EDIT_KEY_R_CONTROL & (pattern_edit->key_mask)) != 0){
+	  ags_editor_paste(editor);
+	}
+      }
+      break;
+    case GDK_KEY_x:
+      {
+	/* cut patterns */
+	if((AGS_PATTERN_EDIT_KEY_L_CONTROL & (pattern_edit->key_mask)) != 0 || (AGS_PATTERN_EDIT_KEY_R_CONTROL & (pattern_edit->key_mask)) != 0){
+	  ags_editor_cut(editor);
+	}
+      }
+      break;
+    }
+  }
+}
+
+gboolean
+ags_pattern_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsPatternEdit *pattern_edit)
+{
+  switch(event->keyval){
+  case GDK_KEY_Control_L:
+    {
+      pattern_edit->key_mask &= (~AGS_PATTERN_EDIT_KEY_L_CONTROL);
+    }
+    break;
+  case GDK_KEY_Control_R:
+    {
+      pattern_edit->key_mask &= (~AGS_PATTERN_EDIT_KEY_R_CONTROL);
+    }
+    break;
+  }
+}
+
 void
 ags_pattern_edit_vscrollbar_value_changed(GtkRange *range, AgsPatternEdit *pattern_edit)
 {
@@ -774,7 +883,7 @@ ags_pattern_edit_hscrollbar_value_changed(GtkRange *range, AgsPatternEdit *patte
 			   GTK_RANGE(pattern_edit->hscrollbar)->adjustment->value / (double) pattern_edit->control_current.control_width);
   gtk_widget_queue_draw(pattern_edit->ruler);
 
-  /* update note edit */
+  /* update pattern edit */
   pattern_edit->flags |= AGS_PATTERN_EDIT_RESETING_HORIZONTALLY;
   ags_pattern_edit_reset_horizontally(pattern_edit, 0);
   pattern_edit->flags &= (~AGS_PATTERN_EDIT_RESETING_HORIZONTALLY);

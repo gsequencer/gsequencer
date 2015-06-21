@@ -143,7 +143,7 @@ ags_machine_selector_selection_response(GtkWidget *machine_selection,
 	index = gtk_container_get_children(vbox);
 
       while(list != NULL){
-	if(AGS_IS_FFPLAYER(list->data) || AGS_IS_SYNTH(list->data) || AGS_IS_DRUM(list->data) || AGS_IS_MATRIX(list->data)){
+	if(AGS_IS_FFPLAYER(list->data) || AGS_IS_DRUM(list->data) || AGS_IS_MATRIX(list->data)){
 	  if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(index->data))){
 	    machine = AGS_MACHINE(list->data);
 
@@ -160,7 +160,6 @@ ags_machine_selector_selection_response(GtkWidget *machine_selection,
       g_list_free(index_start);
     }
 
-    g_message("dd\0");
     g_object_set(G_OBJECT(machine_radio_button),
 		 "machine\0", machine,
 		 NULL);

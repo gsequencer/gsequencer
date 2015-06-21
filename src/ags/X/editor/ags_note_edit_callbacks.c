@@ -34,18 +34,48 @@ ags_note_edit_drawing_area_expose_event(GtkWidget *widget, GdkEventExpose *event
 {
   AgsEditor *editor;
   guint width;
-  g_message("du\0");
-  
+  double zoom, zoom_old;
+  double tact_factor, zoom_factor;
+  double tact;
+  gdouble old_upper, new_upper;
+  gdouble position;
+  guint history;
+
   editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(note_edit),
 						 AGS_TYPE_EDITOR);
 
+  /* calculate zoom */
+  history = gtk_combo_box_get_active(editor->toolbar->zoom);
+
+  zoom = exp2((double) history - 2.0);
+  zoom_old = exp2((double) editor->toolbar->zoom_history - 2.0);
+
+  zoom_factor = 0.25;
+
+  tact_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->zoom));
+  tact = exp2((double) gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->zoom) - 2.0);
+
+  editor->toolbar->zoom_history = history;
+
+  position = GTK_RANGE(note_edit->hscrollbar)->adjustment->value;
+  old_upper = GTK_RANGE(note_edit->hscrollbar)->adjustment->upper;
+  
+  note_edit->flags |= AGS_NOTE_EDIT_RESETING_HORIZONTALLY;
+  ags_note_edit_reset_horizontally(note_edit, AGS_NOTE_EDIT_RESET_HSCROLLBAR |
+				   AGS_NOTE_EDIT_RESET_WIDTH);
+  note_edit->flags &= (~AGS_NOTE_EDIT_RESETING_HORIZONTALLY);
+
+  new_upper = GTK_RANGE(note_edit->hscrollbar)->adjustment->upper;
+  
+  gtk_adjustment_set_value(GTK_RANGE(note_edit->hscrollbar)->adjustment,
+			   position / old_upper * new_upper);
+
+  /* reset adjsutments */
   width = widget->allocation.width;
   gtk_adjustment_set_upper(GTK_RANGE(note_edit->hscrollbar)->adjustment,
 			   (gdouble) (note_edit->map_width - width));
   gtk_adjustment_set_upper(note_edit->ruler->adjustment,
 			   (gdouble) (note_edit->map_width - width) / note_edit->control_current.control_width);
-
-  g_message("de\0");
   
   if(editor->selected_machine != NULL){
     AgsMachine *machine;

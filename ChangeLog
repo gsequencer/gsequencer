@@ -1,6 +1,12 @@
 ags (0.4.2-72-1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* back-ported AgsPatternEdit
+	* implemented basic editing key strokes like Ctrl-c, Ctrl-v and Ctrl-x for AgsPatternEdit
+
+ags (0.4.2-72-1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented basic editing key strokes like Ctrl-c, Ctrl-v and Ctrl-x
 	* implemented seeking for paste if position tool is selected
 	* updated clipboard version to 0.4.2
