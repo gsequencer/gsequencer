@@ -51,6 +51,7 @@ struct _AgsMachineSelectionClass
 
 GType ags_machine_selection_get_type(void);
 
+void ags_machine_selection_load_defaults(AgsMachineSelection *machine_selection);
 AgsMachine* ags_machine_selection_run(AgsMachineSelection *machine_selection);
 
 AgsMachineSelection* ags_machine_selection_new(AgsWindow *window);

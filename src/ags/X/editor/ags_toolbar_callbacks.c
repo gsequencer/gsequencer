@@ -19,7 +19,9 @@
 #include <ags/X/editor/ags_toolbar_callbacks.h>
 
 #include <ags/X/ags_editor.h>
+
 #include <ags/X/editor/ags_note_edit.h>
+#include <ags/X/editor/ags_pattern_edit.h>
 
 #include <math.h>
 
@@ -40,22 +42,39 @@ ags_toolbar_position_callback(GtkToggleButton *toggle_button, AgsToolbar *toolba
     GdkRectangle *rectangle;
     gint width, height;
     
-    /* refresh editor */
-    gtk_widget_get_size_request(GTK_WIDGET(editor->note_edit->drawing_area),
-				&width,
-				&height);
-    
     rectangle = g_new(GdkRectangle, 1);
     rectangle->x = 0;
     rectangle->y = 0;
-    rectangle->width = width;
-    rectangle->height = height;
     
-    gdk_window_invalidate_rect(GTK_WIDGET(editor->note_edit->drawing_area)->window,
-			       rectangle,
-			       TRUE);
-    gdk_window_process_updates(GTK_WIDGET(editor->note_edit->drawing_area)->window,
-			       TRUE);
+    if(AGS_IS_NOTE_EDIT(editor->edit_widget)){
+      /* refresh editor */
+      gtk_widget_get_size_request(GTK_WIDGET(AGS_NOTE_EDIT(editor->edit_widget)->drawing_area),
+				  &width,
+				  &height);
+    
+      rectangle->width = width;
+      rectangle->height = height;
+
+      gdk_window_invalidate_rect(GTK_WIDGET(AGS_NOTE_EDIT(editor->edit_widget)->drawing_area)->window,
+				 rectangle,
+				 TRUE);
+      gdk_window_process_updates(GTK_WIDGET(AGS_NOTE_EDIT(editor->edit_widget)->drawing_area)->window,
+				 TRUE);
+    }else if(AGS_IS_PATTERN_EDIT(editor->edit_widget)){
+      /* refresh editor */
+      gtk_widget_get_size_request(GTK_WIDGET(AGS_PATTERN_EDIT(editor->edit_widget)->drawing_area),
+				  &width,
+				  &height);
+    
+      rectangle->width = width;
+      rectangle->height = height;
+
+      gdk_window_invalidate_rect(GTK_WIDGET(AGS_PATTERN_EDIT(editor->edit_widget)->drawing_area)->window,
+				 rectangle,
+				 TRUE);
+      gdk_window_process_updates(GTK_WIDGET(AGS_PATTERN_EDIT(editor->edit_widget)->drawing_area)->window,
+				 TRUE);
+    }
     
     g_free(rectangle);
     
@@ -71,9 +90,15 @@ ags_toolbar_position_callback(GtkToggleButton *toggle_button, AgsToolbar *toolba
     gtk_toggle_button_set_active(old_selected_edit_mode, FALSE);
 
     /* refresh note_edit */
-    cr = gdk_cairo_create(GTK_WIDGET(editor->note_edit->drawing_area)->window);
+    if(AGS_IS_NOTE_EDIT(editor->edit_widget)){
+      cr = gdk_cairo_create(GTK_WIDGET(AGS_NOTE_EDIT(editor->edit_widget)->drawing_area)->window);
     
-    ags_note_edit_draw_position(editor->note_edit, cr);
+      ags_note_edit_draw_position(AGS_NOTE_EDIT(editor->edit_widget), cr);
+    }else if(AGS_IS_PATTERN_EDIT(editor->edit_widget)){
+      cr = gdk_cairo_create(GTK_WIDGET(AGS_PATTERN_EDIT(editor->edit_widget)->drawing_area)->window);
+    
+      ags_pattern_edit_draw_position(AGS_PATTERN_EDIT(editor->edit_widget), cr);
+    }
   }
 }
 
@@ -191,18 +216,33 @@ ags_toolbar_zoom_callback(GtkComboBox *combo_box, AgsToolbar *toolbar)
 
   toolbar->zoom_history = history;
 
-  position = GTK_RANGE(editor->note_edit->hscrollbar)->adjustment->value;
-  old_upper = GTK_RANGE(editor->note_edit->hscrollbar)->adjustment->upper;
+  if(AGS_IS_NOTE_EDIT(editor->edit_widget)){
+    position = GTK_RANGE(AGS_NOTE_EDIT(editor->edit_widget)->hscrollbar)->adjustment->value;
+    old_upper = GTK_RANGE(AGS_NOTE_EDIT(editor->edit_widget)->hscrollbar)->adjustment->upper;
   
-  editor->note_edit->flags |= AGS_NOTE_EDIT_RESETING_HORIZONTALLY;
-  ags_note_edit_reset_horizontally(editor->note_edit, AGS_NOTE_EDIT_RESET_HSCROLLBAR |
-				   AGS_NOTE_EDIT_RESET_WIDTH);
-  editor->note_edit->flags &= (~AGS_NOTE_EDIT_RESETING_HORIZONTALLY);
+    AGS_NOTE_EDIT(editor->edit_widget)->flags |= AGS_NOTE_EDIT_RESETING_HORIZONTALLY;
+    ags_note_edit_reset_horizontally(AGS_NOTE_EDIT(editor->edit_widget), AGS_NOTE_EDIT_RESET_HSCROLLBAR |
+				     AGS_NOTE_EDIT_RESET_WIDTH);
+    AGS_NOTE_EDIT(editor->edit_widget)->flags &= (~AGS_NOTE_EDIT_RESETING_HORIZONTALLY);
 
-  new_upper = GTK_RANGE(editor->note_edit->hscrollbar)->adjustment->upper;
+    new_upper = GTK_RANGE(AGS_NOTE_EDIT(editor->edit_widget)->hscrollbar)->adjustment->upper;
   
-  gtk_adjustment_set_value(GTK_RANGE(editor->note_edit->hscrollbar)->adjustment,
-			   position / old_upper * new_upper);
+    gtk_adjustment_set_value(GTK_RANGE(AGS_NOTE_EDIT(editor->edit_widget)->hscrollbar)->adjustment,
+			     position / old_upper * new_upper);
+  }else if(AGS_IS_PATTERN_EDIT(editor->edit_widget)){
+    position = GTK_RANGE(AGS_PATTERN_EDIT(editor->edit_widget)->hscrollbar)->adjustment->value;
+    old_upper = GTK_RANGE(AGS_PATTERN_EDIT(editor->edit_widget)->hscrollbar)->adjustment->upper;
+  
+    AGS_PATTERN_EDIT(editor->edit_widget)->flags |= AGS_PATTERN_EDIT_RESETING_HORIZONTALLY;
+    ags_pattern_edit_reset_horizontally(AGS_PATTERN_EDIT(editor->edit_widget), AGS_PATTERN_EDIT_RESET_HSCROLLBAR |
+				     AGS_PATTERN_EDIT_RESET_WIDTH);
+    AGS_PATTERN_EDIT(editor->edit_widget)->flags &= (~AGS_PATTERN_EDIT_RESETING_HORIZONTALLY);
+
+    new_upper = GTK_RANGE(AGS_PATTERN_EDIT(editor->edit_widget)->hscrollbar)->adjustment->upper;
+  
+    gtk_adjustment_set_value(GTK_RANGE(AGS_PATTERN_EDIT(editor->edit_widget)->hscrollbar)->adjustment,
+			     position / old_upper * new_upper);
+  }
 }
 
 void

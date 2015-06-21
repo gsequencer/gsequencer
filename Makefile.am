@@ -367,6 +367,8 @@ agsheaders = \
 	src/ags/X/editor/ags_notebook.h \
 	src/ags/X/editor/ags_note_edit_callbacks.h \
 	src/ags/X/editor/ags_note_edit.h \
+	src/ags/X/editor/ags_pattern_edit_callbacks.h \
+	src/ags/X/editor/ags_pattern_edit.h \
 	src/ags/X/editor/ags_sf2_chooser_callbacks.h \
 	src/ags/X/editor/ags_sf2_chooser.h \
 	src/ags/X/editor/ags_toolbar_callbacks.h \
@@ -693,6 +695,8 @@ ags_SOURCES = \
 	src/ags/X/editor/ags_notebook_callbacks.c \
 	src/ags/X/editor/ags_note_edit.c \
 	src/ags/X/editor/ags_note_edit_callbacks.c \
+	src/ags/X/editor/ags_pattern_edit.c \
+	src/ags/X/editor/ags_pattern_edit_callbacks.c \
 	src/ags/X/editor/ags_sf2_chooser.c \
 	src/ags/X/editor/ags_sf2_chooser_callbacks.c \
 	src/ags/X/editor/ags_toolbar.c \

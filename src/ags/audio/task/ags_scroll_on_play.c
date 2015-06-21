@@ -21,6 +21,8 @@
 #include <ags-lib/object/ags_connectable.h>
 
 #include <ags/X/ags_editor.h>
+#include <ags/X/editor/ags_pattern_edit.h>
+#include <ags/X/editor/ags_note_edit.h>
 
 #include <ags/main.h>
 
@@ -163,30 +165,56 @@ ags_scroll_on_play_launch(AgsTask *task)
 
   tact = gtk_spin_button_get_value(window->navigation->position_tact);
 
-  if(!gtk_toggle_button_get_active((GtkToggleButton *) window->navigation->loop) || tact <= loop_end){
-    position = tact * editor->note_edit->control_current.control_width;
-  }else{
-    position = loop_start * editor->note_edit->control_current.control_width;
+  if(AGS_IS_NOTE_EDIT(editor->edit_widget)){
+    if(!gtk_toggle_button_get_active((GtkToggleButton *) window->navigation->loop) || tact <= loop_end){
+      position = tact * AGS_NOTE_EDIT(editor->edit_widget)->control_current.control_width;
+    }else{
+      position = loop_start * AGS_NOTE_EDIT(editor->edit_widget)->control_current.control_width;
+    }
+
+    /* scroll */
+    if(position - (0.125 * AGS_NOTE_EDIT(editor->edit_widget)->control_current.control_width) > 0.0){
+      gtk_range_set_value(GTK_RANGE(AGS_NOTE_EDIT(editor->edit_widget)->hscrollbar),
+			  position - (0.125 * AGS_NOTE_EDIT(editor->edit_widget)->control_current.control_width));
+    }
+
+    /* draw fader */
+    cairo_push_group(cr);
+
+    cr = gdk_cairo_create(GTK_WIDGET(AGS_NOTE_EDIT(editor->edit_widget)->drawing_area)->window);
+    ags_note_edit_draw_scroll(AGS_NOTE_EDIT(editor->edit_widget), cr,
+			      position);
+
+    cairo_pop_group_to_source(cr);
+    cairo_paint(cr);
+
+    cairo_destroy(cr);
+  }else if(AGS_IS_PATTERN_EDIT(editor->edit_widget)){
+    if(!gtk_toggle_button_get_active((GtkToggleButton *) window->navigation->loop) || tact <= loop_end){
+      position = tact * AGS_PATTERN_EDIT(editor->edit_widget)->control_current.control_width;
+    }else{
+      position = loop_start * AGS_PATTERN_EDIT(editor->edit_widget)->control_current.control_width;
+    }
+
+    /* scroll */
+    if(position - (0.125 * AGS_PATTERN_EDIT(editor->edit_widget)->control_current.control_width) > 0.0){
+      gtk_range_set_value(GTK_RANGE(AGS_PATTERN_EDIT(editor->edit_widget)->hscrollbar),
+			  position - (0.125 * AGS_PATTERN_EDIT(editor->edit_widget)->control_current.control_width));
+    }
+
+    /* draw fader */
+    cairo_push_group(cr);
+
+    cr = gdk_cairo_create(GTK_WIDGET(AGS_PATTERN_EDIT(editor->edit_widget)->drawing_area)->window);
+    ags_pattern_edit_draw_scroll(AGS_PATTERN_EDIT(editor->edit_widget), cr,
+				 position);
+
+    cairo_pop_group_to_source(cr);
+    cairo_paint(cr);
+
+    cairo_destroy(cr);
   }
-
-  /* scroll */
-  if(position - (0.125 * editor->note_edit->control_current.control_width) > 0.0){
-    gtk_range_set_value(GTK_RANGE(editor->note_edit->hscrollbar),
-			position - (0.125 * editor->note_edit->control_current.control_width));
-  }
-
-  /* draw fader */
-  cairo_push_group(cr);
-
-  cr = gdk_cairo_create(GTK_WIDGET(editor->note_edit->drawing_area)->window);
-  ags_note_edit_draw_scroll(editor->note_edit, cr,
-			    position);
-
-  cairo_pop_group_to_source(cr);
-  cairo_paint(cr);
-
-  cairo_destroy(cr);
-
+  
   /* update tact */
   if(!gtk_toggle_button_get_active((GtkToggleButton *) window->navigation->loop) || tact + 1.0 < loop_end){
     gtk_spin_button_set_value(window->navigation->position_tact,

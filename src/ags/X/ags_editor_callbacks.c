@@ -36,6 +36,7 @@
 #include <ags/X/editor/ags_notebook.h>
 #include <ags/X/editor/ags_meter.h>
 #include <ags/X/editor/ags_note_edit.h>
+#include <ags/X/editor/ags_pattern_edit.h>
 
 #include <math.h>
 #include <string.h>
@@ -46,10 +47,16 @@ ags_editor_parent_set_callback(GtkWidget  *widget, GtkObject *old_parent, AgsEdi
 {
   if(old_parent != NULL)
     return;
-  
-  editor->note_edit->flags |= AGS_NOTE_EDIT_RESETING_HORIZONTALLY;
-  ags_note_edit_reset_horizontally(editor->note_edit, AGS_NOTE_EDIT_RESET_HSCROLLBAR);
-  editor->note_edit->flags &= (~AGS_NOTE_EDIT_RESETING_HORIZONTALLY);
+
+  if(AGS_IS_NOTE_EDIT(editor->edit_widget)){
+    AGS_NOTE_EDIT(editor->edit_widget)->flags |= AGS_NOTE_EDIT_RESETING_HORIZONTALLY;
+    ags_note_edit_reset_horizontally(AGS_NOTE_EDIT(editor->edit_widget), AGS_NOTE_EDIT_RESET_HSCROLLBAR);
+    AGS_NOTE_EDIT(editor->edit_widget)->flags &= (~AGS_NOTE_EDIT_RESETING_HORIZONTALLY);
+  }else if(AGS_IS_PATTERN_EDIT(editor->edit_widget)){
+    AGS_PATTERN_EDIT(editor->edit_widget)->flags |= AGS_PATTERN_EDIT_RESETING_HORIZONTALLY;
+    ags_pattern_edit_reset_horizontally(AGS_PATTERN_EDIT(editor->edit_widget), AGS_PATTERN_EDIT_RESET_HSCROLLBAR);
+    AGS_PATTERN_EDIT(editor->edit_widget)->flags &= (~AGS_PATTERN_EDIT_RESETING_HORIZONTALLY);
+  }
 }
 
 void
@@ -99,8 +106,13 @@ ags_editor_set_pads_callback(AgsAudio *audio,
     }
   }
 
-  ags_note_edit_set_map_height(editor->note_edit,
-			       pads * editor->note_edit->control_height);
+  if(AGS_IS_NOTE_EDIT(editor->edit_widget)){
+    ags_note_edit_set_map_height(AGS_NOTE_EDIT(editor->edit_widget),
+			       pads * AGS_NOTE_EDIT(editor->edit_widget)->control_height);
+  }else if(AGS_IS_PATTERN_EDIT(editor->edit_widget)){
+    ags_pattern_edit_set_map_height(AGS_PATTERN_EDIT(editor->edit_widget),
+				    pads * AGS_PATTERN_EDIT(editor->edit_widget)->control_height);
+  }
 }
 
 void
