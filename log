@@ -1,0 +1,227 @@
+mkdir -p html/
+xsltproc --output html/ --xinclude /usr/share/xml/docbook/stylesheet/docbook-xsl/htmlhelp/htmlhelp.xsl ./doc/usersBook.xml
+Note: namesp. cut : stripped namespace before processing           Advanced Gtk+ Sequencer
+Note: namesp. cut : processing stripped document                   Advanced Gtk+ Sequencer
+Writing pr01.html for preface
+Writing ch01s02.html for sect1
+Writing ch01.html for chapter
+Writing ch02s02.html for sect1
+Writing ch02s03.html for sect1
+Writing ch02s04.html for sect1
+Writing ch02s05.html for sect1
+Writing ch02s06.html for sect1
+Writing ch02s07.html for sect1
+Writing ch02.html for chapter
+Writing ch03s02.html for sect1
+Writing ch03.html for chapter
+Writing ch04s02.html for sect1
+Writing ch04.html for chapter
+Writing apa.html for appendix(fdl)
+Writing apb.html for appendix
+Writing index.html for book
+Writing htmlhelp.hhp
+Writing toc.hhc
+make  all-am
+make[1]: Entering directory '/home/joelkraehemann/gsequencer'
+gcc -DHAVE_CONFIG_H -I.  -I./src -DDESTDIR=\"/usr/local/share\" -D_FORTIFY_SOURCE=2  -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -I/usr/include/uuid  -I/usr/include/alsa   -I/usr/include/libxml2    -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12  -pthread -I/usr/include/gtk-2.0 -I/usr/lib/x86_64-linux-gnu/gtk-2.0/include -I/usr/include/gio-unix-2.0/ -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/libpng12 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/pango-1.0 -I/usr/include/harfbuzz -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/freetype2        -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -MT ags-ags_editor_callbacks.o -MD -MP -MF .deps/ags-ags_editor_callbacks.Tpo -c -o ags-ags_editor_callbacks.o `test -f 'src/ags/X/ags_editor_callbacks.c' || echo './'`src/ags/X/ags_editor_callbacks.c
+mv -f .deps/ags-ags_editor_callbacks.Tpo .deps/ags-ags_editor_callbacks.Po
+gcc -DHAVE_CONFIG_H -I.  -I./src -DDESTDIR=\"/usr/local/share\" -D_FORTIFY_SOURCE=2  -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -I/usr/include/uuid  -I/usr/include/alsa   -I/usr/include/libxml2    -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12  -pthread -I/usr/include/gtk-2.0 -I/usr/lib/x86_64-linux-gnu/gtk-2.0/include -I/usr/include/gio-unix-2.0/ -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/libpng12 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/pango-1.0 -I/usr/include/harfbuzz -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/freetype2        -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -MT ags-ags_export_window.o -MD -MP -MF .deps/ags-ags_export_window.Tpo -c -o ags-ags_export_window.o `test -f 'src/ags/X/ags_export_window.c' || echo './'`src/ags/X/ags_export_window.c
+mv -f .deps/ags-ags_export_window.Tpo .deps/ags-ags_export_window.Po
+gcc -DHAVE_CONFIG_H -I.  -I./src -DDESTDIR=\"/usr/local/share\" -D_FORTIFY_SOURCE=2  -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -I/usr/include/uuid  -I/usr/include/alsa   -I/usr/include/libxml2    -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12  -pthread -I/usr/include/gtk-2.0 -I/usr/lib/x86_64-linux-gnu/gtk-2.0/include -I/usr/include/gio-unix-2.0/ -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/libpng12 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/pango-1.0 -I/usr/include/harfbuzz -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/freetype2        -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -MT ags-ags_export_window_callbacks.o -MD -MP -MF .deps/ags-ags_export_window_callbacks.Tpo -c -o ags-ags_export_window_callbacks.o `test -f 'src/ags/X/ags_export_window_callbacks.c' || echo './'`src/ags/X/ags_export_window_callbacks.c
+src/ags/X/ags_export_window_callbacks.c: In function ‘ags_export_window_export_callback’:
+src/ags/X/ags_export_window_callbacks.c:100:14: warning: assignment discards ‘const’ qualifier from pointer target type
+     filename = gtk_entry_get_text(export_window->filename);
+              ^
+src/ags/X/ags_export_window_callbacks.c:122:11: warning: embedded ‘\0’ in format [-Wformat-contains-nul]
+           "Replace existing file?\0");
+           ^
+src/ags/X/ags_export_window_callbacks.c:118:14: warning: assignment from incompatible pointer type
+       dialog = gtk_message_dialog_new((GtkWindow *) export_window,
+              ^
+src/ags/X/ags_export_window_callbacks.c:147:2: warning: embedded ‘\0’ in format [-Wformat-contains-nul]
+  printf("found machine to play!\n\0");
+  ^
+src/ags/X/ags_export_window_callbacks.c:211:2: warning: embedded ‘\0’ in format [-Wformat-contains-nul]
+  printf("found machine to stop!\n\0");
+  ^
+mv -f .deps/ags-ags_export_window_callbacks.Tpo .deps/ags-ags_export_window_callbacks.Po
+gcc -DHAVE_CONFIG_H -I.  -I./src -DDESTDIR=\"/usr/local/share\" -D_FORTIFY_SOURCE=2  -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -I/usr/include/uuid  -I/usr/include/alsa   -I/usr/include/libxml2    -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12  -pthread -I/usr/include/gtk-2.0 -I/usr/lib/x86_64-linux-gnu/gtk-2.0/include -I/usr/include/gio-unix-2.0/ -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/libpng12 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/pango-1.0 -I/usr/include/harfbuzz -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/freetype2        -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -MT ags-ags_generic_preferences.o -MD -MP -MF .deps/ags-ags_generic_preferences.Tpo -c -o ags-ags_generic_preferences.o `test -f 'src/ags/X/ags_generic_preferences.c' || echo './'`src/ags/X/ags_generic_preferences.c
+mv -f .deps/ags-ags_generic_preferences.Tpo .deps/ags-ags_generic_preferences.Po
+gcc -DHAVE_CONFIG_H -I.  -I./src -DDESTDIR=\"/usr/local/share\" -D_FORTIFY_SOURCE=2  -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -I/usr/include/uuid  -I/usr/include/alsa   -I/usr/include/libxml2    -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12  -pthread -I/usr/include/gtk-2.0 -I/usr/lib/x86_64-linux-gnu/gtk-2.0/include -I/usr/include/gio-unix-2.0/ -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/libpng12 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/pango-1.0 -I/usr/include/harfbuzz -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/freetype2        -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -MT ags-ags_generic_preferences_callbacks.o -MD -MP -MF .deps/ags-ags_generic_preferences_callbacks.Tpo -c -o ags-ags_generic_preferences_callbacks.o `test -f 'src/ags/X/ags_generic_preferences_callbacks.c' || echo './'`src/ags/X/ags_generic_preferences_callbacks.c
+src/ags/X/ags_generic_preferences_callbacks.c: In function ‘ags_generic_preferences_autosave_thread_clicked_callback’:
+src/ags/X/ags_generic_preferences_callbacks.c:42:35: warning: passing argument 1 of ‘gtk_toggle_button_get_active’ from incompatible pointer type
+   if(gtk_toggle_button_get_active(check_button)){
+                                   ^
+In file included from /usr/include/gtk-2.0/gtk/gtkcheckbutton.h:35:0,
+                 from /usr/include/gtk-2.0/gtk/gtk.h:66,
+                 from ./src/ags/X/ags_generic_preferences_callbacks.h:22,
+                 from src/ags/X/ags_generic_preferences_callbacks.c:19:
+/usr/include/gtk-2.0/gtk/gtktogglebutton.h:84:12: note: expected ‘struct GtkToggleButton *’ but argument is of type ‘struct GtkWidget *’
+ gboolean   gtk_toggle_button_get_active        (GtkToggleButton *toggle_button);
+            ^
+mv -f .deps/ags-ags_generic_preferences_callbacks.Tpo .deps/ags-ags_generic_preferences_callbacks.Po
+gcc -DHAVE_CONFIG_H -I.  -I./src -DDESTDIR=\"/usr/local/share\" -D_FORTIFY_SOURCE=2  -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -I/usr/include/uuid  -I/usr/include/alsa   -I/usr/include/libxml2    -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12  -pthread -I/usr/include/gtk-2.0 -I/usr/lib/x86_64-linux-gnu/gtk-2.0/include -I/usr/include/gio-unix-2.0/ -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/libpng12 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/pango-1.0 -I/usr/include/harfbuzz -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/freetype2        -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -MT ags-ags_ladspa_browser.o -MD -MP -MF .deps/ags-ags_ladspa_browser.Tpo -c -o ags-ags_ladspa_browser.o `test -f 'src/ags/X/ags_ladspa_browser.c' || echo './'`src/ags/X/ags_ladspa_browser.c
+mv -f .deps/ags-ags_ladspa_browser.Tpo .deps/ags-ags_ladspa_browser.Po
+gcc -DHAVE_CONFIG_H -I.  -I./src -DDESTDIR=\"/usr/local/share\" -D_FORTIFY_SOURCE=2  -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -I/usr/include/uuid  -I/usr/include/alsa   -I/usr/include/libxml2    -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12  -pthread -I/usr/include/gtk-2.0 -I/usr/lib/x86_64-linux-gnu/gtk-2.0/include -I/usr/include/gio-unix-2.0/ -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/libpng12 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/pango-1.0 -I/usr/include/harfbuzz -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/freetype2        -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -MT ags-ags_line.o -MD -MP -MF .deps/ags-ags_line.Tpo -c -o ags-ags_line.o `test -f 'src/ags/X/ags_line.c' || echo './'`src/ags/X/ags_line.c
+src/ags/X/ags_line.c: In function ‘ags_line_connect’:
+src/ags/X/ags_line.c:408:3: warning: embedded ‘\0’ in format [-Wformat-contains-nul]
+   g_message("line connect\0");
+   ^
+src/ags/X/ags_line.c: In function ‘ags_line_real_set_channel’:
+src/ags/X/ags_line.c:496:3: warning: embedded ‘\0’ in format [-Wformat-contains-nul]
+   gtk_label_set_label(line->label, g_strdup_printf("line %d\0", channel->audio_channel));
+   ^
+mv -f .deps/ags-ags_line.Tpo .deps/ags-ags_line.Po
+gcc -DHAVE_CONFIG_H -I.  -I./src -DDESTDIR=\"/usr/local/share\" -D_FORTIFY_SOURCE=2  -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -I/usr/include/uuid  -I/usr/include/alsa   -I/usr/include/libxml2    -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12  -pthread -I/usr/include/gtk-2.0 -I/usr/lib/x86_64-linux-gnu/gtk-2.0/include -I/usr/include/gio-unix-2.0/ -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/libpng12 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/pango-1.0 -I/usr/include/harfbuzz -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/freetype2        -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -MT ags-ags_line_callbacks.o -MD -MP -MF .deps/ags-ags_line_callbacks.Tpo -c -o ags-ags_line_callbacks.o `test -f 'src/ags/X/ags_line_callbacks.c' || echo './'`src/ags/X/ags_line_callbacks.c
+mv -f .deps/ags-ags_line_callbacks.Tpo .deps/ags-ags_line_callbacks.Po
+gcc -DHAVE_CONFIG_H -I.  -I./src -DDESTDIR=\"/usr/local/share\" -D_FORTIFY_SOURCE=2  -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -I/usr/include/uuid  -I/usr/include/alsa   -I/usr/include/libxml2    -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12  -pthread -I/usr/include/gtk-2.0 -I/usr/lib/x86_64-linux-gnu/gtk-2.0/include -I/usr/include/gio-unix-2.0/ -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/libpng12 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/pango-1.0 -I/usr/include/harfbuzz -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/freetype2        -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -MT ags-ags_line_member.o -MD -MP -MF .deps/ags-ags_line_member.Tpo -c -o ags-ags_line_member.o `test -f 'src/ags/X/ags_line_member.c' || echo './'`src/ags/X/ags_line_member.c
+src/ags/X/ags_line_member.c: In function ‘ags_line_member_set_property’:
+src/ags/X/ags_line_member.c:392:13: warning: assignment discards ‘const’ qualifier from pointer target type
+       label = g_value_get_string(value);
+             ^
+src/ags/X/ags_line_member.c:406:19: warning: assignment discards ‘const’ qualifier from pointer target type
+       plugin_name = g_value_get_string(value);
+                   ^
+src/ags/X/ags_line_member.c:419:17: warning: assignment discards ‘const’ qualifier from pointer target type
+       specifier = g_value_get_string(value);
+                 ^
+src/ags/X/ags_line_member.c:432:20: warning: assignment discards ‘const’ qualifier from pointer target type
+       control_port = g_value_get_string(value);
+                    ^
+mv -f .deps/ags-ags_line_member.Tpo .deps/ags-ags_line_member.Po
+gcc -DHAVE_CONFIG_H -I.  -I./src -DDESTDIR=\"/usr/local/share\" -D_FORTIFY_SOURCE=2  -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -I/usr/include/uuid  -I/usr/include/alsa   -I/usr/include/libxml2    -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12  -pthread -I/usr/include/gtk-2.0 -I/usr/lib/x86_64-linux-gnu/gtk-2.0/include -I/usr/include/gio-unix-2.0/ -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/libpng12 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/pango-1.0 -I/usr/include/harfbuzz -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/freetype2        -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -MT ags-ags_line_member_editor_callbacks.o -MD -MP -MF .deps/ags-ags_line_member_editor_callbacks.Tpo -c -o ags-ags_line_member_editor_callbacks.o `test -f 'src/ags/X/ags_line_member_editor_callbacks.c' || echo './'`src/ags/X/ags_line_member_editor_callbacks.c
+src/ags/X/ags_line_member_editor_callbacks.c: In function ‘ags_line_member_editor_ladspa_browser_response_callback’:
+src/ags/X/ags_line_member_editor_callbacks.c:200:9: warning: embedded ‘\0’ in format [-Wformat-contains-nul]
+         effect));
+         ^
+src/ags/X/ags_line_member_editor_callbacks.c:306:39: warning: passing argument 1 of ‘ags_add_recall_new’ from incompatible pointer type
+       add_recall = ags_add_recall_new(line_editor->channel,
+                                       ^
+In file included from src/ags/X/ags_line_member_editor_callbacks.c:43:0:
+./src/ags/audio/task/ags_add_recall.h:55:15: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsChannel *’
+ AgsAddRecall* ags_add_recall_new(GObject *context,
+               ^
+src/ags/X/ags_line_member_editor_callbacks.c:307:11: warning: passing argument 2 of ‘ags_add_recall_new’ from incompatible pointer type
+           recall_channel_run_dummy,
+           ^
+In file included from src/ags/X/ags_line_member_editor_callbacks.c:43:0:
+./src/ags/audio/task/ags_add_recall.h:55:15: note: expected ‘struct AgsRecall *’ but argument is of type ‘struct AgsRecallChannelRunDummy *’
+ AgsAddRecall* ags_add_recall_new(GObject *context,
+               ^
+src/ags/X/ags_line_member_editor_callbacks.c:319:51: warning: passing argument 1 of ‘gtk_container_get_children’ from incompatible pointer type
+  list = g_list_reverse(gtk_container_get_children(table));
+                                                   ^
+In file included from /usr/include/gtk-2.0/gtk/gtkbin.h:35:0,
+                 from /usr/include/gtk-2.0/gtk/gtkwindow.h:36,
+                 from /usr/include/gtk-2.0/gtk/gtkdialog.h:35,
+                 from /usr/include/gtk-2.0/gtk/gtkaboutdialog.h:32,
+                 from /usr/include/gtk-2.0/gtk/gtk.h:33,
+                 from ./src/ags/X/ags_line_member_editor_callbacks.h:25,
+                 from src/ags/X/ags_line_member_editor_callbacks.c:19:
+/usr/include/gtk-2.0/gtk/gtkcontainer.h:132:10: note: expected ‘struct GtkContainer *’ but argument is of type ‘struct GtkTable *’
+ GList*   gtk_container_get_children     (GtkContainer       *container);
+          ^
+src/ags/X/ags_line_member_editor_callbacks.c:328:24: warning: assignment discards ‘const’ qualifier from pointer target type
+      plugin_descriptor = ladspa_descriptor(index);
+                        ^
+src/ags/X/ags_line_member_editor_callbacks.c:330:22: warning: assignment discards ‘const’ qualifier from pointer target type
+      port_descriptor = plugin_descriptor->PortDescriptors;   
+                      ^
+mv -f .deps/ags-ags_line_member_editor_callbacks.Tpo .deps/ags-ags_line_member_editor_callbacks.Po
+gcc -DHAVE_CONFIG_H -I.  -I./src -DDESTDIR=\"/usr/local/share\" -D_FORTIFY_SOURCE=2  -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -I/usr/include/uuid  -I/usr/include/alsa   -I/usr/include/libxml2    -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12  -pthread -I/usr/include/gtk-2.0 -I/usr/lib/x86_64-linux-gnu/gtk-2.0/include -I/usr/include/gio-unix-2.0/ -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/libpng12 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/pango-1.0 -I/usr/include/harfbuzz -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/freetype2        -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -MT ags-ags_link_collection_editor.o -MD -MP -MF .deps/ags-ags_link_collection_editor.Tpo -c -o ags-ags_link_collection_editor.o `test -f 'src/ags/X/ags_link_collection_editor.c' || echo './'`src/ags/X/ags_link_collection_editor.c
+mv -f .deps/ags-ags_link_collection_editor.Tpo .deps/ags-ags_link_collection_editor.Po
+gcc -DHAVE_CONFIG_H -I.  -I./src -DDESTDIR=\"/usr/local/share\" -D_FORTIFY_SOURCE=2  -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -I/usr/include/uuid  -I/usr/include/alsa   -I/usr/include/libxml2    -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12  -pthread -I/usr/include/gtk-2.0 -I/usr/lib/x86_64-linux-gnu/gtk-2.0/include -I/usr/include/gio-unix-2.0/ -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/libpng12 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/pango-1.0 -I/usr/include/harfbuzz -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/freetype2        -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -MT ags-ags_link_editor.o -MD -MP -MF .deps/ags-ags_link_editor.Tpo -c -o ags-ags_link_editor.o `test -f 'src/ags/X/ags_link_editor.c' || echo './'`src/ags/X/ags_link_editor.c
+mv -f .deps/ags-ags_link_editor.Tpo .deps/ags-ags_link_editor.Po
+gcc -DHAVE_CONFIG_H -I.  -I./src -DDESTDIR=\"/usr/local/share\" -D_FORTIFY_SOURCE=2  -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -I/usr/include/uuid  -I/usr/include/alsa   -I/usr/include/libxml2    -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12  -pthread -I/usr/include/gtk-2.0 -I/usr/lib/x86_64-linux-gnu/gtk-2.0/include -I/usr/include/gio-unix-2.0/ -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/libpng12 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/pango-1.0 -I/usr/include/harfbuzz -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/freetype2        -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -MT ags-ags_link_editor_callbacks.o -MD -MP -MF .deps/ags-ags_link_editor_callbacks.Tpo -c -o ags-ags_link_editor_callbacks.o `test -f 'src/ags/X/ags_link_editor_callbacks.c' || echo './'`src/ags/X/ags_link_editor_callbacks.c
+mv -f .deps/ags-ags_link_editor_callbacks.Tpo .deps/ags-ags_link_editor_callbacks.Po
+gcc -DHAVE_CONFIG_H -I.  -I./src -DDESTDIR=\"/usr/local/share\" -D_FORTIFY_SOURCE=2  -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -I/usr/include/uuid  -I/usr/include/alsa   -I/usr/include/libxml2    -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12  -pthread -I/usr/include/gtk-2.0 -I/usr/lib/x86_64-linux-gnu/gtk-2.0/include -I/usr/include/gio-unix-2.0/ -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/libpng12 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/pango-1.0 -I/usr/include/harfbuzz -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/freetype2        -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -MT ags-ags_machine.o -MD -MP -MF .deps/ags-ags_machine.Tpo -c -o ags-ags_machine.o `test -f 'src/ags/X/ags_machine.c' || echo './'`src/ags/X/ags_machine.c
+src/ags/X/ags_machine.c: In function ‘ags_machine_set_property’:
+src/ags/X/ags_machine.c:302:10: warning: assignment from incompatible pointer type
+   window = gtk_widget_get_ancestor((GtkWidget *) machine,
+          ^
+src/ags/X/ags_machine.c: In function ‘ags_machine_connect’:
+src/ags/X/ags_machine.c:545:5: warning: embedded ‘\0’ in format [-Wformat-contains-nul]
+     g_message("find port\0");
+     ^
+src/ags/X/ags_machine.c: In function ‘ags_machine_get_possible_links’:
+src/ags/X/ags_machine.c:724:12: warning: embedded ‘\0’ in format [-Wformat-contains-nul]
+            AGS_MACHINE(list->data)->name),
+            ^
+mv -f .deps/ags-ags_machine.Tpo .deps/ags-ags_machine.Po
+gcc -DHAVE_CONFIG_H -I.  -I./src -DDESTDIR=\"/usr/local/share\" -D_FORTIFY_SOURCE=2  -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -I/usr/include/uuid  -I/usr/include/alsa   -I/usr/include/libxml2    -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12  -pthread -I/usr/include/gtk-2.0 -I/usr/lib/x86_64-linux-gnu/gtk-2.0/include -I/usr/include/gio-unix-2.0/ -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/libpng12 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/pango-1.0 -I/usr/include/harfbuzz -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/freetype2        -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -MT ags-ags_machine_callbacks.o -MD -MP -MF .deps/ags-ags_machine_callbacks.Tpo -c -o ags-ags_machine_callbacks.o `test -f 'src/ags/X/ags_machine_callbacks.c' || echo './'`src/ags/X/ags_machine_callbacks.c
+src/ags/X/ags_machine_callbacks.c: In function ‘ags_machine_play_callback’:
+src/ags/X/ags_machine_callbacks.c:368:5: warning: embedded ‘\0’ in format [-Wformat-contains-nul]
+     printf("machine: on\n\0");
+     ^
+src/ags/X/ags_machine_callbacks.c:381:5: warning: embedded ‘\0’ in format [-Wformat-contains-nul]
+     printf("machine: off\n\0");
+     ^
+src/ags/X/ags_machine_callbacks.c: In function ‘ags_machine_start_complete_callback’:
+src/ags/X/ags_machine_callbacks.c:463:9: warning: embedded ‘\0’ in format [-Wformat-contains-nul]
+         "Error: %s\0", devout_thread->error->message);
+         ^
+mv -f .deps/ags-ags_machine_callbacks.Tpo .deps/ags-ags_machine_callbacks.Po
+gcc -DHAVE_CONFIG_H -I.  -I./src -DDESTDIR=\"/usr/local/share\" -D_FORTIFY_SOURCE=2  -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -I/usr/include/uuid  -I/usr/include/alsa   -I/usr/include/libxml2    -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12  -pthread -I/usr/include/gtk-2.0 -I/usr/lib/x86_64-linux-gnu/gtk-2.0/include -I/usr/include/gio-unix-2.0/ -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/libpng12 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/pango-1.0 -I/usr/include/harfbuzz -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/freetype2        -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -MT ags-ags_menu_bar_callbacks.o -MD -MP -MF .deps/ags-ags_menu_bar_callbacks.Tpo -c -o ags-ags_menu_bar_callbacks.o `test -f 'src/ags/X/ags_menu_bar_callbacks.c' || echo './'`src/ags/X/ags_menu_bar_callbacks.c
+src/ags/X/ags_menu_bar_callbacks.c: In function ‘ags_menu_bar_open_ok_callback’:
+src/ags/X/ags_menu_bar_callbacks.c:103:11: warning: embedded ‘\0’ in format [-Wformat-contains-nul]
+           filename),
+           ^
+src/ags/X/ags_menu_bar_callbacks.c: In function ‘ags_menu_bar_quit_callback’:
+src/ags/X/ags_menu_bar_callbacks.c:212:7: warning: embedded ‘\0’ in format [-Wformat-contains-nul]
+       "Do you want to save '%s'?\0", window->name);
+       ^
+src/ags/X/ags_menu_bar_callbacks.c: In function ‘ags_menu_bar_about_callback’:
+src/ags/X/ags_menu_bar_callbacks.c:485:7: warning: embedded ‘\0’ in format [-Wformat-contains-nul]
+       logo = gdk_pixbuf_new_from_file(g_strdup_printf("%s%s\0", DESTDIR, "/gsequencer/images/ags.png\0"), &error);
+       ^
+src/ags/X/ags_menu_bar_callbacks.c:479:7: warning: ignoring return value of ‘fread’, declared with attribute warn_unused_result [-Wunused-result]
+       fread(license, sizeof(char), sb.st_size, file);
+       ^
+mv -f .deps/ags-ags_menu_bar_callbacks.Tpo .deps/ags-ags_menu_bar_callbacks.Po
+gcc -DHAVE_CONFIG_H -I.  -I./src -DDESTDIR=\"/usr/local/share\" -D_FORTIFY_SOURCE=2  -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -I/usr/include/uuid  -I/usr/include/alsa   -I/usr/include/libxml2    -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12  -pthread -I/usr/include/gtk-2.0 -I/usr/lib/x86_64-linux-gnu/gtk-2.0/include -I/usr/include/gio-unix-2.0/ -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/libpng12 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/pango-1.0 -I/usr/include/harfbuzz -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/freetype2        -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -MT ags-ags_navigation.o -MD -MP -MF .deps/ags-ags_navigation.Tpo -c -o ags-ags_navigation.o `test -f 'src/ags/X/ags_navigation.c' || echo './'`src/ags/X/ags_navigation.c
+src/ags/X/ags_navigation.c: In function ‘ags_navigation_init’:
+src/ags/X/ags_navigation.c:254:85: error: ‘AGS_NOTE_EDIT_MAX_CONTROLS’ undeclared (first use in this function)
+   navigation->position_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, AGS_NOTE_EDIT_MAX_CONTROLS * 64.0, 1.0);
+                                                                                     ^
+src/ags/X/ags_navigation.c:254:85: note: each undeclared identifier is reported only once for each function it appears in
+src/ags/X/ags_navigation.c: In function ‘ags_navigation_real_change_position’:
+src/ags/X/ags_navigation.c:466:37: warning: passing argument 1 of ‘ags_seek_devout_new’ from incompatible pointer type
+   seek_devout = ags_seek_devout_new(window->devout,
+                                     ^
+In file included from src/ags/X/ags_navigation.c:29:0:
+./src/ags/audio/task/ags_seek_devout.h:54:16: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsDevout *’
+ AgsSeekDevout* ags_seek_devout_new(GObject *devout,
+                ^
+In file included from /usr/include/glib-2.0/gobject/gobject.h:24:0,
+                 from /usr/include/glib-2.0/gobject/gbinding.h:29,
+                 from /usr/include/glib-2.0/glib-object.h:23,
+                 from ./src/ags/X/ags_navigation.h:23,
+                 from src/ags/X/ags_navigation.c:19:
+src/ags/X/ags_navigation.c:481:44: error: ‘AgsEditor’ has no member named ‘note_edit’
+   gtk_adjustment_set_value(GTK_RANGE(editor->note_edit->hscrollbar)->adjustment,
+                                            ^
+/usr/include/glib-2.0/gobject/gtype.h:2186:57: note: in definition of macro ‘_G_TYPE_CIC’
+     ((ct*) g_type_check_instance_cast ((GTypeInstance*) ip, gt))
+                                                         ^
+/usr/include/gtk-2.0/gtk/gtkrange.h:43:36: note: in expansion of macro ‘G_TYPE_CHECK_INSTANCE_CAST’
+ #define GTK_RANGE(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_RANGE, GtkRange))
+                                    ^
+src/ags/X/ags_navigation.c:481:28: note: in expansion of macro ‘GTK_RANGE’
+   gtk_adjustment_set_value(GTK_RANGE(editor->note_edit->hscrollbar)->adjustment,
+                            ^
+src/ags/X/ags_navigation.c:482:36: error: ‘AgsEditor’ has no member named ‘note_edit’
+       tact_counter * window->editor->note_edit->control_current.control_width * (16.0 / tact_factor));
+                                    ^
+src/ags/X/ags_navigation.c: In function ‘ags_navigation_tact_to_time_string’:
+src/ags/X/ags_navigation.c:558:3: warning: embedded ‘\0’ in format [-Wformat-contains-nul]
+   timestr = g_strdup_printf("%.4d:%.2d.%.2d\0", min, sec, hsec);
+   ^
+src/ags/X/ags_navigation.c: In function ‘ags_navigation_update_time_string’:
+src/ags/X/ags_navigation.c:606:3: warning: embedded ‘\0’ in format [-Wformat-contains-nul]
+   sprintf(time_string, "%.4d:%.2d.%.2d\0", min, sec, hsec);
+   ^
+Makefile:5319: recipe for target 'ags-ags_navigation.o' failed
+make[1]: *** [ags-ags_navigation.o] Error 1
+make[1]: Leaving directory '/home/joelkraehemann/gsequencer'
+Makefile:1307: recipe for target 'all' failed
+make: *** [all] Error 2

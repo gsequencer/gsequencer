@@ -26,6 +26,11 @@
 
 #include <ags/X/ags_window.h>
 
+#include <ags/X/editor/ags_note_edit.h>
+#include <ags/X/editor/ags_note_edit_callbacks.h>
+#include <ags/X/editor/ags_pattern_edit.h>
+#include <ags/X/editor/ags_pattern_edit_callbacks.h>
+
 #include <math.h>
 #include <cairo.h>
 
@@ -185,7 +190,6 @@ ags_editor_init(AgsEditor *editor)
 {
   GtkHPaned *paned;
   GtkScrolledWindow *scrolled_window;
-  GtkTable *table;
 
   g_signal_connect_after((GObject *) editor, "parent-set\0",
 			 G_CALLBACK(ags_editor_parent_set_callback), editor);
@@ -219,18 +223,23 @@ ags_editor_init(AgsEditor *editor)
 
   editor->selected_machine = NULL;
 
-  table = (GtkTable *) gtk_table_new(4, 3, FALSE);
-  gtk_paned_pack2((GtkPaned *) paned, (GtkWidget *) table, TRUE, FALSE);
+  editor->table = (GtkTable *) gtk_table_new(4, 3, FALSE);
+  gtk_paned_pack2((GtkPaned *) paned, (GtkWidget *) editor->table, TRUE, FALSE);
   
   editor->notebook = g_object_new(AGS_TYPE_NOTEBOOK,
 				  "homogeneous\0", FALSE,
 				  "spacing\0", 0,
 				  NULL);
-  gtk_table_attach(table, (GtkWidget *) editor->notebook,
+  gtk_table_attach(editor->table, (GtkWidget *) editor->notebook,
 		   0, 3, 0, 1,
 		   GTK_FILL|GTK_EXPAND, GTK_FILL,
 		   0, 0);
 
+  editor->meter = NULL;
+  editor->edit_widget = NULL;
+
+  //TODO:JK: remove me
+  /*
   editor->meter = g_object_new(AGS_TYPE_METER,
 			       NULL);
   gtk_table_attach(table, (GtkWidget *) editor->meter,
@@ -247,7 +256,8 @@ ags_editor_init(AgsEditor *editor)
 		   1, 2, 1, 2,
 		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
 		   0, 0);
-
+  */
+  
   editor->tact_counter = 0;
 }
 
@@ -331,7 +341,7 @@ ags_editor_connect(AgsConnectable *connectable)
   ags_connectable_connect(AGS_CONNECTABLE(editor->machine_selector));
   ags_connectable_connect(AGS_CONNECTABLE(editor->notebook));
   ags_connectable_connect(AGS_CONNECTABLE(editor->meter));
-  ags_connectable_connect(AGS_CONNECTABLE(editor->note_edit));
+  //  ags_connectable_connect(AGS_CONNECTABLE(editor->note_edit));
 }
 
 void
@@ -343,21 +353,77 @@ ags_editor_disconnect(AgsConnectable *connectable)
 void
 ags_editor_real_machine_changed(AgsEditor *editor, AgsMachine *machine)
 {
-  AgsWindow *window;
+  AgsMachine *machine_old;
+  AgsNotebook *notebook;
+  GtkTable *table;
+
   guint pads;
+  guint i, stop;
+
+  auto void ags_editor_notebook_change_machine_shrink();
+  auto void ags_editor_notebook_change_machine_grow();
+
+  void ags_editor_notebook_change_machine_shrink(){
+    GtkWidget *widget;
+
+    for(; i < stop; i++)
+      ags_notebook_remove_tab(notebook,
+			      0);
+  }
+  void ags_editor_notebook_change_machine_grow(){
+    for(; i < stop; i++){
+      ags_notebook_add_tab(notebook);
+    }
+  }
+
 
   if(editor->selected_machine == machine){
     return;
   }
 
+  machine_old = editor->selected_machine;
   editor->selected_machine = machine;
+  
+  /* resize notebook */
+  notebook = editor->notebook;
 
   if(machine == NULL){
-    ags_note_edit_set_map_height(editor->note_edit,
-				 0);
+    if(machine_old != NULL){
+      i = 0;
+
+      stop = machine_old->audio->audio_channels;
+      ags_editor_notebook_change_machine_shrink();
+    }
+  }else{
+    if(machine_old == NULL){
+      i = 0;
+      stop = machine->audio->audio_channels;
+      
+      ags_editor_notebook_change_machine_grow();
+    }else{
+      if(machine->audio->audio_channels > machine_old->audio->audio_channels){
+	i = machine_old->audio->audio_channels;
+	stop = machine->audio->audio_channels;
+
+	ags_editor_notebook_change_machine_grow();
+      }else if(machine->audio->audio_channels < machine_old->audio->audio_channels){
+	i = machine->audio->audio_channels;
+	stop = machine_old->audio->audio_channels;
+
+	ags_editor_notebook_change_machine_shrink();
+      }
+    }
+  }
+
+  gtk_widget_show_all((GtkWidget *) notebook);
+
+  /* instantiate note edit or pattern edit */
+  if(machine == NULL){
     return;
   }
-  
+
+  table = editor->table;
+
   editor->set_audio_channels_handler = g_signal_connect(machine->audio, "set-audio-channels\0",
 							G_CALLBACK(ags_editor_set_audio_channels_callback), editor);
   editor->set_pads_handler = g_signal_connect(machine->audio, "set-pads\0",
@@ -369,8 +435,61 @@ ags_editor_real_machine_changed(AgsEditor *editor, AgsMachine *machine)
     pads = machine->audio->output_pads;
   }
 
-  ags_note_edit_set_map_height(editor->note_edit,
-			       pads * editor->note_edit->control_height);
+  if((AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0){
+    editor->meter = ags_meter_new();
+    gtk_table_attach(editor->table, (GtkWidget *) editor->meter,
+		     0, 1, 1, 2,
+		     GTK_FILL, GTK_FILL,
+		     0, 0);
+    ags_connectable_connect(AGS_CONNECTABLE(editor->meter));
+    gtk_widget_show_all(editor->meter);
+
+    editor->edit_widget = ags_note_edit_new();
+    gtk_table_attach(table, (GtkWidget *) editor->edit_widget,
+		     1, 2, 1, 2,
+		     GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
+		     0, 0);
+
+    //    ags_connectable_connect(AGS_CONNECTABLE(editor->edit_widget));
+    gtk_widget_show_all(editor->edit_widget);
+
+    ags_note_edit_set_map_height(editor->edit_widget,
+				 pads * AGS_NOTE_EDIT(editor->edit_widget)->control_height);
+
+    editor->edit_widget = ags_note_edit_new();
+    gtk_table_attach(table, (GtkWidget *) editor->edit_widget,
+		     1, 2, 1, 2,
+		     GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
+		     0, 0);
+
+    ags_connectable_connect(AGS_CONNECTABLE(editor->edit_widget));
+    gtk_widget_show_all(editor->edit_widget);
+
+    ags_note_edit_set_map_height(editor->edit_widget,
+				 pads * AGS_NOTE_EDIT(editor->edit_widget)->control_height);
+  }else if((AGS_MACHINE_IS_SEQUENCER & (machine->flags)) != 0){
+    editor->meter = ags_meter_new();
+    gtk_table_attach(editor->table, (GtkWidget *) editor->meter,
+		     0, 1, 1, 2,
+		     GTK_FILL, GTK_FILL,
+		     0, 0);
+    ags_connectable_connect(AGS_CONNECTABLE(editor->meter));
+    gtk_widget_show_all(editor->meter);
+
+    editor->edit_widget = ags_pattern_edit_new();
+    gtk_table_attach(table, (GtkWidget *) editor->edit_widget,
+		     1, 2, 1, 2,
+		     GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
+		     0, 0);
+
+    ags_connectable_connect(AGS_CONNECTABLE(editor->edit_widget));
+    gtk_widget_show_all(editor->edit_widget);
+
+    ags_pattern_edit_set_map_height(editor->edit_widget,
+				    pads * AGS_PATTERN_EDIT(editor->edit_widget)->control_height);
+  }else{
+    /* empty */
+  }
 }
 
 /**
@@ -393,12 +512,9 @@ ags_editor_select_all(AgsEditor *editor)
   gint i;
   gint selected_channel;
 
-  if(editor->selected_machine != NULL){
+  if(editor->selected_machine != NULL && editor->edit_widget != NULL){
     machine = editor->selected_machine;
 
-    cr = gdk_cairo_create(GTK_WIDGET(editor->note_edit->drawing_area)->window);
-    cairo_push_group(cr);
-      
     list_notation = machine->audio->notation;
     i = 0;
 
@@ -411,11 +527,25 @@ ags_editor_select_all(AgsEditor *editor)
       i++;
     }
 
-    ags_note_edit_draw_segment(editor->note_edit, cr);
-    ags_note_edit_draw_notation(editor->note_edit, cr);
+    if(AGS_IS_NOTE_EDIT(editor->edit_widget)){
+      cr = gdk_cairo_create(GTK_WIDGET(AGS_NOTE_EDIT(editor->edit_widget)->drawing_area)->window);
+      cairo_push_group(cr);
+      
+      ags_note_edit_draw_segment(editor->edit_widget, cr);
+      ags_note_edit_draw_notation(editor->edit_widget, cr);
 
-    cairo_pop_group_to_source(cr);
-    cairo_paint(cr);
+      cairo_pop_group_to_source(cr);
+      cairo_paint(cr);
+    }else if(AGS_IS_PATTERN_EDIT(editor->edit_widget)){
+      cr = gdk_cairo_create(GTK_WIDGET(AGS_NOTE_EDIT(editor->edit_widget)->drawing_area)->window);
+      cairo_push_group(cr);
+      
+      ags_pattern_edit_draw_segment(editor->edit_widget, cr);
+      ags_pattern_edit_draw_notation(editor->edit_widget, cr);
+
+      cairo_pop_group_to_source(cr);
+      cairo_paint(cr);
+    }
   }
 }
 
@@ -559,7 +689,7 @@ ags_editor_paste(AgsEditor *editor)
     }
   }
   
-  if((machine = editor->selected_machine) != NULL){
+  if((machine = editor->selected_machine) != NULL && editor->edit_widget != NULL){
     /* get clipboard */
     buffer = gtk_clipboard_wait_for_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
     
@@ -571,9 +701,14 @@ ags_editor_paste(AgsEditor *editor)
       last_x = 0;
       paste_from_position = TRUE;
 
-      position_x = editor->note_edit->selected_x;
-      position_y = editor->note_edit->selected_y;
-
+      if(AGS_IS_NOTE_EDIT(editor->edit_widget)){
+	position_x = AGS_NOTE_EDIT(editor->edit_widget)->selected_x;
+	position_y = AGS_NOTE_EDIT(editor->edit_widget)->selected_y;
+      }else if(AGS_IS_PATTERN_EDIT(editor->edit_widget)){
+	position_x = AGS_NOTE_EDIT(editor->edit_widget)->selected_x;
+	position_y = AGS_NOTE_EDIT(editor->edit_widget)->selected_y;
+      }
+      
 #ifdef DEBUG
       printf("pasting at position: [%u,%u]\n\0", position_x, position_y);
 #endif
@@ -602,19 +737,35 @@ ags_editor_paste(AgsEditor *editor)
 
     xmlFreeDoc(clipboard); 
 
-    cr = gdk_cairo_create(GTK_WIDGET(editor->note_edit->drawing_area)->window);
-    cairo_push_group(cr);
+    if(AGS_IS_NOTE_EDIT(editor->edit_widget)){
+      cr = gdk_cairo_create(GTK_WIDGET(AGS_NOTE_EDIT(editor->edit_widget)->drawing_area)->window);
+      cairo_push_group(cr);
+      
+      ags_note_edit_draw_segment(editor->edit_widget, cr);
+      ags_note_edit_draw_notation(editor->edit_widget, cr);
 
-    ags_note_edit_draw_segment(editor->note_edit, cr);
-    ags_note_edit_draw_notation(editor->note_edit, cr);
-
-    if(paste_from_position){
-      editor->note_edit->selected_x = (guint) ceil((double) last_x / 16.0) * 16;
-      ags_note_edit_draw_position(editor->note_edit, cr);
-    }
+      if(paste_from_position){
+	AGS_NOTE_EDIT(editor->edit_widget)->selected_x = (guint) ceil((double) last_x / 16.0) * 16;
+	ags_note_edit_draw_position(AGS_NOTE_EDIT(editor->edit_widget), cr);
+      }
     
-    cairo_pop_group_to_source(cr);
-    cairo_paint(cr);
+      cairo_pop_group_to_source(cr);
+      cairo_paint(cr);
+    }else if(AGS_IS_PATTERN_EDIT(editor->edit_widget)){
+      cr = gdk_cairo_create(GTK_WIDGET(AGS_NOTE_EDIT(editor->edit_widget)->drawing_area)->window);
+      cairo_push_group(cr);
+      
+      ags_pattern_edit_draw_segment(editor->edit_widget, cr);
+      ags_pattern_edit_draw_notation(editor->edit_widget, cr);
+
+      if(paste_from_position){
+	AGS_NOTE_EDIT(editor->edit_widget)->selected_x = (guint) ceil((double) last_x / 16.0) * 16;
+	ags_note_edit_draw_position(AGS_NOTE_EDIT(editor->edit_widget), cr);
+      }
+      
+      cairo_pop_group_to_source(cr);
+      cairo_paint(cr);
+    }
   }
 }
 
@@ -642,7 +793,7 @@ ags_editor_copy(AgsEditor *editor)
   gint i;
   gint selected_channel;
 
-  if(editor->selected_machine != NULL){
+  if(editor->selected_machine != NULL && editor->edit_widget != NULL){
     machine = editor->selected_machine;
     /* create document */
     clipboard = xmlNewDoc(BAD_CAST XML_DEFAULT_VERSION);
@@ -703,7 +854,7 @@ ags_editor_cut(AgsEditor *editor)
   gint i;
   gint selected_channel;
 
-  if(editor->selected_machine != NULL){
+  if(editor->selected_machine != NULL && editor->edit_widget != NULL){
     machine = editor->selected_machine;
 
     /* create document */
@@ -717,9 +868,6 @@ ags_editor_cut(AgsEditor *editor)
     list_notation = machine->audio->notation;
     i = 0;
 
-    cr = gdk_cairo_create(GTK_WIDGET(editor->note_edit->drawing_area)->window);
-      cairo_push_group(cr);
-
     while((selected_channel = ags_notebook_next_active_tab(editor->notebook,
 							   i)) != -1){
       list_notation = g_list_nth(machine->audio->notation,
@@ -727,15 +875,26 @@ ags_editor_cut(AgsEditor *editor)
 
       notation_node = ags_notation_cut_selection(AGS_NOTATION(list_notation->data));
 
-      ags_note_edit_draw_segment(editor->note_edit, cr);
-      ags_note_edit_draw_notation(editor->note_edit, cr);
+      ags_note_edit_draw_segment(AGS_NOTE_EDIT(editor->edit_widget), cr);
+      ags_note_edit_draw_notation(AGS_NOTE_EDIT(editor->edit_widget), cr);
 
       i++;
     }
 
-    cairo_pop_group_to_source(cr);
-    cairo_paint(cr);
-      
+    if(AGS_IS_NOTE_EDIT(editor->edit_widget)){
+      cr = gdk_cairo_create(GTK_WIDGET(AGS_NOTE_EDIT(editor->edit_widget)->drawing_area)->window);
+      cairo_push_group(cr);
+
+      cairo_pop_group_to_source(cr);
+      cairo_paint(cr);
+    }else if(AGS_IS_PATTERN_EDIT(editor->edit_widget)){
+      cr = gdk_cairo_create(GTK_WIDGET(AGS_PATTERN_EDIT(editor->edit_widget)->drawing_area)->window);
+      cairo_push_group(cr);
+
+      cairo_pop_group_to_source(cr);
+      cairo_paint(cr);
+    }
+    
     xmlAddChild(audio_node, notation_node);
 
     /* write to clipboard */

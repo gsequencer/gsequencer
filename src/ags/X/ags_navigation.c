@@ -31,6 +31,9 @@
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_editor.h>
 
+#include <ags/X/editor/ags_note_edit.h>
+#include <ags/X/editor/ags_pattern_edit.h>
+
 void ags_navigation_class_init(AgsNavigationClass *navigation);
 void ags_navigation_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_navigation_init(AgsNavigation *navigation);
@@ -478,9 +481,14 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
   tact_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->zoom));
   tact = exp2((double) gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->zoom) - 2.0);
 
-  gtk_adjustment_set_value(GTK_RANGE(editor->note_edit->hscrollbar)->adjustment,
-			   tact_counter * window->editor->note_edit->control_current.control_width * (16.0 / tact_factor));
-
+  if(AGS_IS_NOTE_EDIT(editor->edit_widget)){
+    gtk_adjustment_set_value(GTK_RANGE(AGS_NOTE_EDIT(editor->edit_widget)->hscrollbar)->adjustment,
+			     tact_counter * AGS_NOTE_EDIT(editor->edit_widget)->control_current.control_width * (16.0 / tact_factor));
+  }else if(AGS_IS_PATTERN_EDIT(editor->edit_widget)){
+    gtk_adjustment_set_value(GTK_RANGE(AGS_PATTERN_EDIT(editor->edit_widget)->hscrollbar)->adjustment,
+			     tact_counter * AGS_PATTERN_EDIT(editor->edit_widget)->control_current.control_width * (16.0 / tact_factor));
+  }
+  
   timestr = ags_navigation_tact_to_time_string(tact_counter,
 					       navigation->bpm->adjustment->value);
   gtk_label_set_text(navigation->position_time, timestr);

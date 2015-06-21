@@ -244,6 +244,7 @@ ags_matrix_init(AgsMatrix *matrix)
 		   AGS_AUDIO_NOTATION_DEFAULT |
 		   AGS_AUDIO_HAS_NOTATION);
   //  audio->audio_channels = 1;
+  
   AGS_MACHINE(matrix)->input_pad_type = G_TYPE_NONE;
   AGS_MACHINE(matrix)->input_line_type = G_TYPE_NONE;
   AGS_MACHINE(matrix)->output_pad_type = G_TYPE_NONE;
@@ -256,7 +257,6 @@ ags_matrix_init(AgsMatrix *matrix)
 			 G_CALLBACK(ags_matrix_set_pads), NULL);
 
   /*  */
-  //TODO:JK: uncomment me
   AGS_MACHINE(matrix)->flags |= AGS_MACHINE_IS_SEQUENCER;
   matrix->flags = 0;
 

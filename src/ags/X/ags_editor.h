@@ -34,7 +34,6 @@
 #include <ags/X/editor/ags_machine_selector.h>
 #include <ags/X/editor/ags_notebook.h>
 #include <ags/X/editor/ags_meter.h>
-#include <ags/X/editor/ags_note_edit.h>
 
 #define AGS_TYPE_EDITOR                (ags_editor_get_type ())
 #define AGS_EDITOR(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_EDITOR, AgsEditor))
@@ -71,8 +70,9 @@ struct _AgsEditor
 
   AgsNotebook *notebook;
 
+  GtkTable *table;
   AgsMeter *meter;
-  AgsNoteEdit *note_edit;
+  GtkWidget *edit_widget;
 
   guint tact_counter;
 };

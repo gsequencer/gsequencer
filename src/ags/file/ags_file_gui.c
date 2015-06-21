@@ -2610,23 +2610,43 @@ ags_file_read_editor_launch(AgsFileLaunch *file_launch,
   tact_factor = exp2(8.0 - (double) gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->zoom));
   tact = exp2((double) gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->zoom) - 4.0);
 
-  /* reset note edit */
-  history = gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->zoom);
+  if(AGS_IS_NOTE_EDIT(editor->edit_widget)){
+    /* reset note edit */
+    history = gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->zoom);
 
-  editor->toolbar->zoom_history = history;
+    editor->toolbar->zoom_history = history;
 
-  editor->note_edit->flags |= AGS_NOTE_EDIT_RESETING_HORIZONTALLY;
-  ags_note_edit_reset_horizontally(editor->note_edit, AGS_NOTE_EDIT_RESET_HSCROLLBAR |
-				   AGS_NOTE_EDIT_RESET_WIDTH);
-  editor->note_edit->flags &= (~AGS_NOTE_EDIT_RESETING_HORIZONTALLY);
+    AGS_NOTE_EDIT(editor->edit_widget)->flags |= AGS_NOTE_EDIT_RESETING_HORIZONTALLY;
+    ags_note_edit_reset_horizontally(AGS_NOTE_EDIT(editor->edit_widget), AGS_NOTE_EDIT_RESET_HSCROLLBAR |
+				     AGS_NOTE_EDIT_RESET_WIDTH);
+    AGS_NOTE_EDIT(editor->edit_widget)->flags &= (~AGS_NOTE_EDIT_RESETING_HORIZONTALLY);
 
-  /* reset ruler */
-  editor->note_edit->ruler->factor = tact_factor;
-  editor->note_edit->ruler->precision = tact;
-  editor->note_edit->ruler->scale_precision = 1.0 / tact;
+    /* reset ruler */
+    AGS_NOTE_EDIT(editor->edit_widget)->ruler->factor = tact_factor;
+    AGS_NOTE_EDIT(editor->edit_widget)->ruler->precision = tact;
+    AGS_NOTE_EDIT(editor->edit_widget)->ruler->scale_precision = 1.0 / tact;
 
-  gtk_widget_queue_draw((GtkWidget *) editor->note_edit->ruler);
-  gtk_widget_queue_draw((GtkWidget *) editor->note_edit);
+    gtk_widget_queue_draw((GtkWidget *) AGS_NOTE_EDIT(editor->edit_widget)->ruler);
+    gtk_widget_queue_draw((GtkWidget *) AGS_NOTE_EDIT(editor->edit_widget));
+  }else if(AGS_IS_PATTERN_EDIT(editor->edit_widget)){
+    /* reset pattern edit */
+    history = gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->zoom);
+
+    editor->toolbar->zoom_history = history;
+
+    AGS_PATTERN_EDIT(editor->edit_widget)->flags |= AGS_PATTERN_EDIT_RESETING_HORIZONTALLY;
+    ags_pattern_edit_reset_horizontally(AGS_PATTERN_EDIT(editor->edit_widget), AGS_PATTERN_EDIT_RESET_HSCROLLBAR |
+					AGS_PATTERN_EDIT_RESET_WIDTH);
+    AGS_PATTERN_EDIT(editor->edit_widget)->flags &= (~AGS_PATTERN_EDIT_RESETING_HORIZONTALLY);
+
+    /* reset ruler */
+    AGS_PATTERN_EDIT(editor->edit_widget)->ruler->factor = tact_factor;
+    AGS_PATTERN_EDIT(editor->edit_widget)->ruler->precision = tact;
+    AGS_PATTERN_EDIT(editor->edit_widget)->ruler->scale_precision = 1.0 / tact;
+
+    gtk_widget_queue_draw((GtkWidget *) AGS_PATTERN_EDIT(editor->edit_widget)->ruler);
+    gtk_widget_queue_draw((GtkWidget *) AGS_PATTERN_EDIT(editor->edit_widget));
+  }
 }
 
 xmlNode*

@@ -121,9 +121,6 @@ ags_notebook_connect(AgsConnectable *connectable)
   notebook = AGS_NOTEBOOK(connectable);
 
   editor = (AgsEditor *) gtk_widget_get_ancestor((GtkWidget *) notebook, AGS_TYPE_EDITOR);
-
-  g_signal_connect((GObject *) editor, "machine-changed\0",
-		   G_CALLBACK(ags_notebook_machine_changed_callback), notebook);
 }
 
 void

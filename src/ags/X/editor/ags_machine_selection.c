@@ -20,6 +20,12 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/X/editor/ags_machine_selector.h>
+#include <ags/X/editor/ags_machine_radio_button.h>
+
+#include <ags/X/machine/ags_drum.h>
+#include <ags/X/machine/ags_matrix.h>
+#include <ags/X/machine/ags_synth.h>
 #include <ags/X/machine/ags_ffplayer.h>
 
 void ags_machine_selection_class_init(AgsMachineSelectionClass *machine_selection);
@@ -121,40 +127,30 @@ ags_machine_selection_disconnect(AgsConnectable *connectable)
   //TODO:JK: implement me
 }
 
-/**
- * ags_machine_selection_run:
- * @machine_selection: the #AgsMachineSelection
- *
- * Run the dialog.
- *
- * Returns: the #AgsMachine
- */
-AgsMachine*
-ags_machine_selection_run(AgsMachineSelection *machine_selection)
+void
+ags_machine_selection_load_defaults(AgsMachineSelection *machine_selection)
 {
   AgsMachine *machine;
+  AgsMachineSelector *machine_selector;
+  AgsMachineRadioButton *machine_radio_button;
   GtkVBox *vbox;
-  GtkContainer *content_area;
   GtkRadioButton *group;
   GList *list, *list_start, *index, *index_start;
   gint response;
 
+  machine_selector = machine_selection->window->editor->machine_selector;
+    
   machine_selection->machine =
     list = gtk_container_get_children(GTK_CONTAINER(machine_selection->window->machines));
   machine = NULL;
 
-  content_area = (GtkContainer *) gtk_dialog_get_content_area(GTK_DIALOG(machine_selection));
-
-  vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
-  gtk_container_add(content_area,
-		    (GtkWidget *) vbox);
-
+  vbox = GTK_DIALOG(machine_selection)->vbox;
   group = NULL;
 
   while(list != NULL){
     GtkRadioButton *radio_button;
 
-    if(AGS_IS_FFPLAYER(list->data)){
+    if(AGS_IS_SYNTH(list->data) || AGS_IS_FFPLAYER(list->data) || AGS_IS_DRUM(list->data) || AGS_IS_MATRIX(list->data)){
       radio_button = (GtkRadioButton *) gtk_radio_button_new_with_label_from_widget(group,
 										    g_strdup_printf("%s: %s\0",  G_OBJECT_TYPE_NAME(list->data), AGS_MACHINE(list->data)->name));
       gtk_box_pack_start(GTK_BOX(vbox),
@@ -166,14 +162,39 @@ ags_machine_selection_run(AgsMachineSelection *machine_selection)
 	group = radio_button;
       }
     }
-      
+    
     list = list->next;
   }
+}
 
-  gtk_widget_show_all((GtkWidget *) vbox);
+/**
+ * ags_machine_selection_run:
+ * @machine_selection: the #AgsMachineSelection
+ *
+ * Run the dialog. Don't use this function you block all threads.
+ *
+ * Returns: the #AgsMachine
+ */
+//FIXME:JK: don't do this
+AgsMachine*
+ags_machine_selection_run(AgsMachineSelection *machine_selection)
+{
+  AgsMachine *machine;
+  AgsMachineSelector *machine_selector;
+  AgsMachineRadioButton *machine_radio_button;
+  GtkVBox *vbox;
+  GtkRadioButton *group;
+  GList *list, *list_start, *index, *index_start;
+  gint response;
 
-  //FIXME:JK: don't do this
+  machine_selector = machine_selection->window->editor->machine_selector;
+
+  ags_machine_selection_load_defaults(machine_selection);
+  gtk_widget_show_all((GtkWidget *) GTK_DIALOG(machine_selection)->vbox);
+
   response = gtk_dialog_run(GTK_DIALOG(machine_selection));
+
+  machine = NULL;
 
   if(response == GTK_RESPONSE_ACCEPT){
     list_start = 
@@ -182,7 +203,7 @@ ags_machine_selection_run(AgsMachineSelection *machine_selection)
       index = gtk_container_get_children((GtkContainer *) vbox);
 
     while(index != NULL){
-      if(AGS_IS_FFPLAYER(list->data)){
+      if(AGS_IS_FFPLAYER(list->data) || AGS_IS_DRUM(list->data) || AGS_IS_MATRIX(list->data)){
 	if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(index->data))){
 	  machine = AGS_MACHINE(list->data);
 	  
@@ -197,6 +218,27 @@ ags_machine_selection_run(AgsMachineSelection *machine_selection)
 
     g_list_free(list_start);
     g_list_free(index_start);
+
+    machine_radio_button = NULL;
+    list_start =
+      list = gtk_container_get_children(GTK_CONTAINER(machine_selector));
+    list = list->next;
+
+    while(list != NULL){
+      if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(list->data))){
+	machine_radio_button = AGS_MACHINE_RADIO_BUTTON(list->data);
+
+	break;
+      }
+
+      list = list->next;
+    }
+
+    g_list_free(list_start);
+
+    g_object_set(G_OBJECT(machine_radio_button),
+		 "machine\0", machine,
+		 NULL);
   }
 
   gtk_widget_destroy((GtkWidget *) machine_selection);

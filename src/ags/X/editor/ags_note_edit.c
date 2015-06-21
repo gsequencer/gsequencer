@@ -31,8 +31,6 @@ void ags_note_edit_init(AgsNoteEdit *note_edit);
 void ags_note_edit_connect(AgsConnectable *connectable);
 void ags_note_edit_disconnect(AgsConnectable *connectable);
 
-void ags_note_edit_paint(AgsNoteEdit *note_edit);
-
 /**
  * SECTION:ags_note_edit
  * @short_description: edit notes
@@ -104,10 +102,15 @@ ags_note_edit_init(AgsNoteEdit *note_edit)
   
   adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, 1.0, 1.0);
   
+  note_edit->flags = 0;
+
   note_edit->ruler = ags_ruler_new();
-  gtk_table_attach(GTK_TABLE(note_edit), (GtkWidget *) note_edit->ruler,
-		   0, 1, 0, 1,
-		   GTK_FILL, GTK_FILL,
+  gtk_table_attach(GTK_TABLE(note_edit),
+		   (GtkWidget *) note_edit->ruler,
+		   0, 1,
+		   0, 1,
+		   GTK_FILL|GTK_EXPAND,
+		   GTK_FILL,
 		   0, 0);
 
   note_edit->drawing_area = (GtkDrawingArea *) gtk_drawing_area_new();
@@ -174,15 +177,19 @@ ags_note_edit_init(AgsNoteEdit *note_edit)
   /* GtkScrollbars */
   adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, 16.0, 1.0);
   note_edit->vscrollbar = (GtkVScrollbar *) gtk_vscrollbar_new(adjustment);
-  gtk_table_attach(GTK_TABLE(note_edit), (GtkWidget *) note_edit->vscrollbar,
-		   1, 2, 1, 2,
+  gtk_table_attach(GTK_TABLE(note_edit),
+		   (GtkWidget *) note_edit->vscrollbar,
+		   1, 2,
+		   1, 2,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
   adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, (gdouble) note_edit->control_current.control_width, 1.0);
   note_edit->hscrollbar = (GtkHScrollbar *) gtk_hscrollbar_new(adjustment);
-  gtk_table_attach(GTK_TABLE(note_edit), (GtkWidget *) note_edit->hscrollbar,
-		   0, 1, 2, 3,
+  gtk_table_attach(GTK_TABLE(note_edit),
+		   (GtkWidget *) note_edit->hscrollbar,
+		   0, 1,
+		   2, 3,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 }
@@ -212,7 +219,7 @@ ags_note_edit_connect(AgsConnectable *connectable)
   g_signal_connect((GObject *) note_edit->drawing_area, "key_press_event\0",
 		   G_CALLBACK(ags_note_edit_drawing_area_key_press_event), (gpointer) note_edit);
 
-    g_signal_connect((GObject *) note_edit->drawing_area, "key_release_event\0",
+  g_signal_connect((GObject *) note_edit->drawing_area, "key_release_event\0",
 		     G_CALLBACK(ags_note_edit_drawing_area_key_release_event), (gpointer) note_edit);
 
   g_signal_connect_after((GObject *) note_edit->vscrollbar, "value-changed\0",
@@ -220,7 +227,6 @@ ags_note_edit_connect(AgsConnectable *connectable)
 
   g_signal_connect_after((GObject *) note_edit->hscrollbar, "value-changed\0",
 			 G_CALLBACK(ags_note_edit_hscrollbar_value_changed), (gpointer) note_edit);
-
 }
 
 void
@@ -311,8 +317,6 @@ ags_note_edit_reset_vertically(AgsNoteEdit *note_edit, guint flags)
 
     /* refresh display */
     if(GTK_WIDGET_VISIBLE(editor)){
-      ags_meter_paint(editor->meter);
-
       cr = gdk_cairo_create(GTK_WIDGET(note_edit->drawing_area)->window);
       cairo_push_group(cr);
 
@@ -669,6 +673,12 @@ ags_note_edit_draw_notation(AgsNoteEdit *note_edit, cairo_t *cr)
 							 i)) != -1){
     list_notation = g_list_nth(machine->audio->notation,
 			       selected_channel);
+
+    if(list_notation == NULL){
+      i++;
+      continue;
+    }
+
     list_note = AGS_NOTATION(list_notation->data)->notes;
 
     control_height = note_edit->control_height - 2 * note_edit->control_margin_y;
@@ -907,7 +917,8 @@ ags_note_edit_new()
 {
   AgsNoteEdit *note_edit;
 
-  note_edit = (AgsNoteEdit *) g_object_new(AGS_TYPE_NOTE_EDIT, NULL);
+  note_edit = (AgsNoteEdit *) g_object_new(AGS_TYPE_NOTE_EDIT,
+					   NULL);
 
   return(note_edit);
 }
