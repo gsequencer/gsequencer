@@ -740,8 +740,18 @@ ags_pattern_edit_drawing_area_motion_notify_event (GtkWidget *widget, GdkEventMo
     cairo_t *cr;
 
     prev_x1 = pattern_edit->control.x1;
-    pattern_edit->control.x1 = (guint) event->x;
-    pattern_edit->control.y1 = (guint) event->y;
+
+    if(event->x >= 0.0){
+      pattern_edit->control.x1 = (guint) event->x;
+    }else{
+      pattern_edit->control.x1 = 0;
+    }
+
+    if(event->y >= 0.0){
+      pattern_edit->control.y1 = (guint) event->y;
+    }else{
+      pattern_edit->control.y1 = 0;
+    }
 
     machine = editor->selected_machine;
     note = pattern_edit->control.note;

@@ -78,6 +78,7 @@ struct _AgsNavigation
   GtkSpinButton *loop_right_tact;
 
   GtkCheckButton *scroll;
+  GtkCheckButton *exclude_sequencer;
 };
 
 struct _AgsNavigationClass

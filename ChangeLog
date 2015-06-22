@@ -1,3 +1,9 @@
+ags (0.4.2-74-1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsPatternEdit focus, selection, coloring of selected notes and a crash related to wrong function call
+	* added exclusion for sequencers by using "exclude sequencers" checkbutton in navigation
+
 ags (0.4.2-73-1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
