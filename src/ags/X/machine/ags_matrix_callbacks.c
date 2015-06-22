@@ -310,36 +310,18 @@ ags_matrix_done_callback(AgsAudio *audio,
   }
 
   if(all_done){
-    GList *list;
-    guint active_led;
+    GList *list, *list_start;
+    
+    /* unset led */
+    list_start = 
+      list = gtk_container_get_children(GTK_CONTAINER(matrix->led));
 
-    /* get active led */
-    if(matrix->active_led == 0){
-      AgsCountBeatsAudio *play_count_beats_audio;
-      GValue value = {0,};
-
-      /* get some recalls */
-      list = ags_recall_find_type(audio->play,
-				  AGS_TYPE_COUNT_BEATS_AUDIO);
-  
-      if(list != NULL){
-	play_count_beats_audio = AGS_COUNT_BEATS_AUDIO(list->data);
-      }
-  
-      g_value_init(&value, G_TYPE_DOUBLE);
-      ags_port_safe_read(play_count_beats_audio->sequencer_loop_end,
-			 &value);
-      
-      active_led = g_value_get_double(&value) - 1.0;
-    }else{
-      active_led = matrix->active_led - 1;
+    while(list != NULL){
+      ags_led_unset_active(AGS_LED(list->data));
+	
+      list = list->next;
     }
 
-    /* unset led */
-    list = gtk_container_get_children(GTK_CONTAINER(matrix->led));
-    ags_led_unset_active(AGS_LED(g_list_nth(list,
-					    active_led)->data));
-
-    g_list_free(list);
+    g_list_free(list_start);
   }
 }

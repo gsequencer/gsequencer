@@ -1,3 +1,13 @@
+ags (0.4.2-75-1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed deactivate led in AgsDrum and AgsMatrix
+	* fixed multi-output
+	* TODO shift nation and piano
+	* TODO delete in notation editor may even pattern editor
+	* TODO verify tabs of editor for adjusting audio channels
+	* TODO stop bug
+
 ags (0.4.2-74-1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
