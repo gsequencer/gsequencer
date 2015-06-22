@@ -148,7 +148,7 @@ ags_navigation_play_callback(GtkWidget *widget,
   while(machines != NULL){
     machine = AGS_MACHINE(machines->data);
 
-    if((AGS_MACHINE_IS_SEQUENCER & (machine->flags)) != 0 ||
+    if(((AGS_MACHINE_IS_SEQUENCER & (machine->flags)) != 0 && !gtk_toggle_button_get_active(navigation->exclude_sequencer)) ||
        (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0){
 #ifdef AGS_DEBUG
       printf("found machine to play!\n\0");

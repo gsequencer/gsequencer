@@ -268,6 +268,7 @@ ags_navigation_init(AgsNavigation *navigation)
   gtk_widget_queue_draw((GtkWidget *) navigation->duration_time);
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->duration_time, FALSE, FALSE, 2);
 
+  navigation->duration_tact = NULL;
   //  navigation->duration_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, AGS_NOTE_EDIT_MAX_CONTROLS * 64.0, 1.0);
   //  gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->duration_tact, FALSE, FALSE, 2);
 
@@ -291,10 +292,17 @@ ags_navigation_init(AgsNavigation *navigation)
 			    4.0);
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->loop_right_tact, FALSE, FALSE, 2);
 
+  navigation->scroll = NULL;
   //  navigation->scroll = (GtkCheckButton *) gtk_check_button_new_with_label("auto-scroll\0");
   //  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(navigation->scroll),
   //			       TRUE);
   //  gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->scroll, FALSE, FALSE, 2);
+
+  navigation->exclude_sequencer = (GtkCheckButton *) gtk_check_button_new_with_label("exclude sequencers\0");
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(navigation->exclude_sequencer),
+			       TRUE);
+  gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->exclude_sequencer, FALSE, FALSE, 2);
+
 }
 
 void
