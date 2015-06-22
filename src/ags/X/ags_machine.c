@@ -263,6 +263,9 @@ ags_machine_init(AgsMachine *machine)
   machine->output_pad_type = G_TYPE_NONE;
   machine->input_pad_type = G_TYPE_NONE;
 
+  machine->bank_0 = 0;
+  machine->bank_1 = 0;
+  
   frame = (GtkFrame *) gtk_frame_new(NULL);
   gtk_container_add((GtkContainer *) machine, (GtkWidget *) frame);
 
@@ -806,6 +809,25 @@ void
 ags_machine_set_run(AgsMachine *machine,
 		    gboolean run)
 {
+  ags_machine_set_run_extended(machine,
+			       run,
+			       TRUE, TRUE);
+}
+
+/**
+ * ags_machine_set_run:
+ * @machine: the #AgsMachine
+ * @run: if %TRUE playback is started, otherwise stopped
+ *
+ * Start/stop playback of @machine.
+ *
+ * Since: 0.4.2
+ */
+void
+ags_machine_set_run_extended(AgsMachine *machine,
+			     gboolean run,
+			     gboolean sequencer, gboolean notation)
+{
   AgsWindow *window;
   AgsThread *task_thread;
 
@@ -822,7 +844,7 @@ ags_machine_set_run(AgsMachine *machine,
 
     /* create init task */
     init_audio = ags_init_audio_new(machine->audio,
-				    FALSE, TRUE, FALSE);
+				    FALSE, sequencer, notation);
     list = g_list_prepend(list, init_audio);
     
     /* create append task */
@@ -860,7 +882,7 @@ ags_machine_set_run(AgsMachine *machine,
 
     /* create append task */
     cancel_audio = ags_cancel_audio_new(machine->audio,
-					FALSE, TRUE, FALSE);
+					FALSE, sequencer, notation);
     
     /* append AgsCancelAudio */
     ags_task_thread_append_task((AgsTaskThread *) task_thread,
@@ -1212,7 +1234,7 @@ ags_machine_popup_new(AgsMachine *machine)
 
   item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("rename\0"));
   gtk_menu_shell_append((GtkMenuShell *) popup, (GtkWidget*) item);
-
+  
   item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("properties\0"));
   gtk_menu_shell_append((GtkMenuShell *) popup, (GtkWidget*) item);
 
@@ -1251,3 +1273,59 @@ ags_machine_popup_new(AgsMachine *machine)
 
   return(popup);
 }
+
+/**
+ * ags_machine_popup_add_edit_options:
+ * @machine: the assigned machine.
+ * @edit_options: the options to set
+ *
+ * Add options to edit submenu
+ *
+ * Since: 0.4.2
+ */
+void
+ags_machine_popup_add_edit_options(AgsMachine *machine, guint edit_options)
+{
+  GtkMenu *edit;
+  GtkMenuItem *item;
+  GList *list, *list_start;
+
+  list =
+    list_start = gtk_container_get_children(machine->popup);
+  list = g_list_last(list);
+  
+  if((edit = gtk_menu_item_get_submenu(list->data)) == NULL){
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("edit\0"));
+    gtk_menu_shell_append((GtkMenuShell *) machine->popup, (GtkWidget*) item);
+    gtk_widget_show(item);
+
+    edit = (GtkMenu *) gtk_menu_new();
+    gtk_menu_item_set_submenu(item,
+			      edit);
+
+    gtk_widget_show(edit);
+  }
+
+  g_list_free(list_start);
+
+  if((AGS_MACHINE_POPUP_COPY_PATTERN & edit_options) != 0){
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("copy pattern\0"));
+    gtk_menu_shell_append((GtkMenuShell *) edit, (GtkWidget*) item);
+    
+    g_signal_connect((GObject*) item, "activate\0",
+		     G_CALLBACK(ags_machine_popup_copy_pattern_callback), (gpointer) machine);
+
+    gtk_widget_show(item);
+  }
+  
+  if((AGS_MACHINE_POPUP_PASTE_PATTERN & edit_options) != 0){
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("paste pattern\0"));
+    gtk_menu_shell_append((GtkMenuShell *) edit, (GtkWidget*) item);
+
+    g_signal_connect((GObject*) item, "activate\0",
+		     G_CALLBACK(ags_machine_popup_paste_pattern_callback), (gpointer) machine);
+
+    gtk_widget_show(item);
+  }
+}
+

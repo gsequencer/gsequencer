@@ -244,8 +244,6 @@ ags_navigation_init(AgsNavigation *navigation)
 
 
   navigation->loop = (GtkCheckButton *) gtk_check_button_new_with_label("loop\0");
-  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(navigation->loop),
-			       TRUE);
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->loop, FALSE, FALSE, 2);
 
   label = (GtkLabel *) gtk_label_new("position\0");

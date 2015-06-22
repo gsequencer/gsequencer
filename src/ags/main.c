@@ -237,7 +237,7 @@ ags_main_connect(AgsConnectable *connectable)
 
   ags_main->flags |= AGS_MAIN_CONNECTED;
 
-  ags_connectable_connect(AGS_CONNECTABLE(ags_main->main_loop));
+  ags_connectable_connect(AGS_CONNECTABLE(G_OBJECT(ags_main->main_loop)));
   ags_connectable_connect(AGS_CONNECTABLE(ags_main->thread_pool));
 
   g_message("connected threads\0");
@@ -950,7 +950,7 @@ main(int argc, char **argv)
       /* AgsMainLoop */
       ags_main->main_loop = AGS_MAIN_LOOP(ags_audio_loop_new((GObject *) devout, (GObject *) ags_main));
       g_object_ref(G_OBJECT(ags_main->main_loop));
-      ags_connectable_connect(AGS_CONNECTABLE(ags_main->main_loop));
+      ags_connectable_connect(AGS_CONNECTABLE(G_OBJECT(ags_main->main_loop)));
 
       /* start thread tree */
       ags_thread_start(ags_main->main_loop);

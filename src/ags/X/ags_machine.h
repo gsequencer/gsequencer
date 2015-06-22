@@ -49,6 +49,7 @@ typedef enum{
   AGS_MACHINE_BLOCK_PLAY        = 1 <<  7,
   AGS_MACHINE_BLOCK_STOP        = 1 <<  8,
   AGS_MACHINE_CONNECTED         = 1 <<  9,
+  AGS_MACHINE_REVERSE_NOTATION  = 1 << 10,
 }AgsMachineFlags;
 
 typedef enum{
@@ -56,6 +57,11 @@ typedef enum{
   AGS_MACHINE_ACCEPT_OGG          = 1 <<  1,
   AGS_MACHINE_ACCEPT_SOUNDFONT2   = 1 <<  2,
 }AgsMachineFileInputFlags;
+
+typedef enum{
+  AGS_MACHINE_POPUP_COPY_PATTERN          = 1,
+  AGS_MACHINE_POPUP_PASTE_PATTERN          = 1 <<  1,
+}AgsMachineEditOptions;
 
 struct _AgsMachine
 {
@@ -71,6 +77,9 @@ struct _AgsMachine
   guint flags;
   guint file_input_flags;
 
+  guint bank_0;
+  guint bank_1;
+  
   AgsAudio *audio;
 
   GtkToggleButton *play;
@@ -120,6 +129,9 @@ GList* ags_machine_find_port(AgsMachine *machine);
 
 void ags_machine_set_run(AgsMachine *machine,
 			 gboolean run);
+void ags_machine_set_run_extended(AgsMachine *machine,
+				  gboolean run,
+				  gboolean sequencer, gboolean notation);
 
 GtkFileChooserDialog* ags_machine_file_chooser_dialog_new(AgsMachine *machine);
 

@@ -92,7 +92,6 @@ void ags_audio_real_set_pads(AgsAudio *audio,
 enum{
   SET_AUDIO_CHANNELS,
   SET_PADS,
-  SET_LINES,
   INIT_RUN,
   TACT,
   DONE,
@@ -1933,7 +1932,7 @@ ags_audio_real_set_pads(AgsAudio *audio,
       /* alloc notation */
       if((AGS_AUDIO_HAS_NOTATION & (audio->flags)) != 0 &&
 	 audio->notation == NULL &&
-	 (AGS_AUDIO_NOTATION_DEFAULT & (audio->flags)) != 0){
+	 (AGS_AUDIO_NOTATION_DEFAULT & (audio->flags)) == 0){
 	ags_audio_set_pads_alloc_notation();
       }
 
@@ -2045,7 +2044,7 @@ ags_audio_real_set_pads(AgsAudio *audio,
       /* alloc notation */
       if((AGS_AUDIO_HAS_NOTATION & (audio->flags)) != 0 &&
 	 audio->notation == NULL &&
-	 (AGS_AUDIO_NOTATION_DEFAULT & (audio->flags)) == 0){
+	 (AGS_AUDIO_NOTATION_DEFAULT & (audio->flags)) != 0){
 	ags_audio_set_pads_alloc_notation();
       }
 

@@ -340,7 +340,7 @@ ags_editor_connect(AgsConnectable *connectable)
   ags_connectable_connect(AGS_CONNECTABLE(editor->toolbar));
   ags_connectable_connect(AGS_CONNECTABLE(editor->machine_selector));
   ags_connectable_connect(AGS_CONNECTABLE(editor->notebook));
-  ags_connectable_connect(AGS_CONNECTABLE(editor->meter));
+  //  ags_connectable_connect(AGS_CONNECTABLE(editor->meter));
   //  ags_connectable_connect(AGS_CONNECTABLE(editor->note_edit));
 }
 

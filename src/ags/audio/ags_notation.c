@@ -72,10 +72,6 @@ void ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
  * #AgsNotation acts as a container of #AgsNote.
  */
 
-#define AGS_NOTATION_CLIPBOARD_VERSION "0.4.2\0"
-#define AGS_NOTATION_CLIPBOARD_TYPE "AgsNotationClipboardXml\0"
-#define AGS_NOTATION_CLIPBOARD_FORMAT "AgsNotationNativePiano\0"
-
 enum{
   PROP_0,
   PROP_PORT,

@@ -3,6 +3,9 @@ ags (0.4.2-74-1)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed AgsPatternEdit focus, selection, coloring of selected notes and a crash related to wrong function call
 	* added exclusion for sequencers by using "exclude sequencers" checkbutton in navigation
+	* added copy & paste pattern context menu items to drum and matrix
+	* fixed AgsMatrix input
+	* fixed NULL pointer error in ags_count_beats_audio_run.c
 
 ags (0.4.2-73-1)
 
