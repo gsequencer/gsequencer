@@ -120,6 +120,8 @@ ags_pattern_edit_init(AgsPatternEdit *pattern_edit)
 			| GDK_KEY_PRESS_MASK
 			| GDK_KEY_RELEASE_MASK
 			);
+  gtk_widget_set_can_focus(pattern_edit->drawing_area,
+			   TRUE);
 
   gtk_table_attach(GTK_TABLE(pattern_edit),
 		   (GtkWidget *) pattern_edit->drawing_area,
@@ -703,7 +705,7 @@ ags_pattern_edit_draw_notation(AgsPatternEdit *pattern_edit, cairo_t *cr)
 	    cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
 	    cairo_stroke(cr);
 
-	    cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
+	    cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
 	  }
 	}else if(note->y == (pattern_edit->nth_y - 1) && pattern_edit->y0 != 0){
 	  if(pattern_edit->y0 > pattern_edit->control_margin_y){
@@ -732,7 +734,7 @@ ags_pattern_edit_draw_notation(AgsPatternEdit *pattern_edit, cairo_t *cr)
 	      cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
 	      cairo_stroke(cr);
 	    
-	      cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
+	      cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
 	    }
 	  }
 	}else if(note->y == (pattern_edit->stop_y + 1) && pattern_edit->y1 != 0){
@@ -762,7 +764,7 @@ ags_pattern_edit_draw_notation(AgsPatternEdit *pattern_edit, cairo_t *cr)
 	      cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
 	      cairo_stroke(cr);
 	    
-	      cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
+	      cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
 	    }
 	  }
 	}
@@ -798,7 +800,7 @@ ags_pattern_edit_draw_notation(AgsPatternEdit *pattern_edit, cairo_t *cr)
 	  cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
 	  cairo_stroke(cr);
 	
-	  cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
+	  cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
 	}
       }else if(note->y == (pattern_edit->nth_y - 1) && pattern_edit->y0 != 0){
 	if(pattern_edit->y0 > pattern_edit->control_margin_y){
@@ -827,7 +829,7 @@ ags_pattern_edit_draw_notation(AgsPatternEdit *pattern_edit, cairo_t *cr)
 	    cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
 	    cairo_stroke(cr);
 
-	    cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
+	    cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
 	  }
 	}
       }else if(note->y == (pattern_edit->stop_y + 1) && pattern_edit->y1 != 0){
@@ -857,7 +859,7 @@ ags_pattern_edit_draw_notation(AgsPatternEdit *pattern_edit, cairo_t *cr)
 	    cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
 	    cairo_stroke(cr);
 
-	    cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
+	    cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
 	  }
 	}
       }

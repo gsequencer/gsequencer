@@ -174,6 +174,7 @@ ags_pattern_edit_drawing_area_button_press_event (GtkWidget *widget, GdkEventBut
 
   editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(pattern_edit),
 						 AGS_TYPE_EDITOR);
+  gtk_widget_grab_focus(pattern_edit->drawing_area);
 
   if(editor->selected_machine != NULL &&
      event->button == 1 &&

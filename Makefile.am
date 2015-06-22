@@ -766,7 +766,7 @@ uninstall-hook:
 	rm -rf $(DESTDIR)/$(datadir)/gsequencer
 	rm -rf $(DESTDIR)/$(datadir)/doc/gsequencer
 	rm -rf $(DESTDIR)/$(datadir)/xml/gsequencer
-	rm $(DESTDIR)/$(datadir)/doc-base/gsequencer-documentation
+	rm -f $(DESTDIR)/$(datadir)/doc-base/gsequencer-documentation
 
 clean-local:
 	rm -rf html
