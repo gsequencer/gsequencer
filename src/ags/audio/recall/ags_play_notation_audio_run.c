@@ -669,10 +669,11 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
   ags_port_safe_read(play_notation_audio->notation,
 		     &value);
 
-  list = (GList *) g_value_get_pointer(&value);
-
-  if(list == NULL)
+  list = audio->notation;//(GList *) g_value_get_pointer(&value);
+  
+  if(list == NULL){
     return;
+  }
 
   //FIXME:JK: nth_run isn't best joice
   if((AGS_AUDIO_NOTATION_DEFAULT & (audio->flags)) != 0){
@@ -694,9 +695,9 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
   current_position = notation->notes; // start_loop
   
   while(current_position != NULL){
-    note = AGS_NOTE(current_position->data);
-    
     if(current_position != NULL){
+      note = AGS_NOTE(current_position->data);
+    
       if(note->x[0] == play_notation_audio_run->count_beats_audio_run->notation_counter){
 	selected_channel = ags_channel_pad_nth(channel, note->y);
 	

@@ -98,7 +98,8 @@ ags_matrix_index_callback(GtkWidget *widget, AgsMatrix *matrix)
       ags_matrix_draw_matrix(matrix);
 
       /*  */
-      index1 = ((guint) g_ascii_strtoull(matrix->selected->button.label_text, NULL, 10)) - 1;
+      AGS_MACHINE(matrix)->bank_1 = 
+	index1 = ((guint) g_ascii_strtoull(matrix->selected->button.label_text, NULL, 10)) - 1;
 
       /* recall */
       list = ags_recall_find_type(audio->recall, AGS_TYPE_COPY_PATTERN_AUDIO);
@@ -144,10 +145,10 @@ ags_matrix_drawing_area_button_press_callback(GtkWidget *widget, GdkEventButton 
 
     index1 = ((guint) g_ascii_strtoull(matrix->selected->button.label_text, NULL, 10)) - 1;
     
-    channel = ags_channel_nth(AGS_MACHINE(matrix)->audio->input, AGS_MACHINE(matrix)->audio->input_lines - (i + (guint) matrix->adjustment->value) - 1);
+    channel = ags_channel_nth(AGS_MACHINE(matrix)->audio->input, AGS_MACHINE(matrix)->audio->input_lines - ((guint) matrix->adjustment->value + i) - 1);
 
     toggle_pattern_bit = ags_toggle_pattern_bit_new(channel->pattern->data,
-						    AGS_MACHINE(matrix)->audio->input_lines - (i + (guint) matrix->adjustment->value) - 1,
+						    channel->line,
 						    0, index1,
 						    j);
     g_signal_connect(G_OBJECT(toggle_pattern_bit), "refresh-gui\0",
@@ -226,8 +227,9 @@ ags_matrix_refresh_gui_callback(AgsTogglePatternBit *toggle_pattern_bit,
   guint line;
 
   channel = ags_channel_nth(AGS_MACHINE(matrix)->audio->input, toggle_pattern_bit->line);
+  line = AGS_MACHINE(matrix)->audio->input_pads - toggle_pattern_bit->line - (guint) matrix->adjustment->value - 1;
 
-  ags_matrix_redraw_gutter_point(matrix, channel, toggle_pattern_bit->bit, AGS_MACHINE(matrix)->audio->input_lines - (toggle_pattern_bit->line - (guint) matrix->adjustment->value) - 1);
+  ags_matrix_redraw_gutter_point(matrix, channel, toggle_pattern_bit->bit, line);
 }
 
 void

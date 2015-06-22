@@ -224,7 +224,8 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 		   AGS_AUDIO_HAS_NOTATION | 
 		   AGS_AUDIO_NOTATION_DEFAULT);
   
-  AGS_MACHINE(ffplayer)->flags |= AGS_MACHINE_IS_SYNTHESIZER;
+  AGS_MACHINE(ffplayer)->flags |= (AGS_MACHINE_IS_SYNTHESIZER |
+				   AGS_MACHINE_REVERSE_NOTATION);
   AGS_MACHINE(ffplayer)->file_input_flags |= AGS_MACHINE_ACCEPT_SOUNDFONT2;
 
   AGS_MACHINE(ffplayer)->input_pad_type = G_TYPE_NONE;
@@ -418,7 +419,7 @@ ags_ffplayer_map_recall(AgsMachine *machine)
 
   if(list != NULL){
     recall_notation_audio_run = AGS_PLAY_NOTATION_AUDIO_RUN(list->data);
-
+    
     /* set dependency */
     g_object_set(G_OBJECT(recall_notation_audio_run),
 		 "delay-audio-run\0", play_delay_audio_run,

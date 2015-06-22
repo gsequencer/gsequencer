@@ -259,7 +259,8 @@ ags_matrix_init(AgsMatrix *matrix)
 			 G_CALLBACK(ags_matrix_set_pads), NULL);
 
   /*  */
-  AGS_MACHINE(matrix)->flags |= AGS_MACHINE_IS_SEQUENCER;
+  AGS_MACHINE(matrix)->flags |= (AGS_MACHINE_IS_SEQUENCER |
+				 AGS_MACHINE_REVERSE_NOTATION);
   matrix->flags = 0;
 
   matrix->name = NULL;
@@ -268,6 +269,9 @@ ags_matrix_init(AgsMatrix *matrix)
   matrix->mapped_input_pad = 0;
   matrix->mapped_output_pad = 0;
 
+  ags_machine_popup_add_edit_options(matrix,
+				     (AGS_MACHINE_POPUP_COPY_PATTERN));
+  
   /* create widgets */
   frame = (GtkFrame *) (gtk_bin_get_child((GtkBin *) matrix));
 
@@ -928,7 +932,7 @@ ags_matrix_draw_gutter(AgsMatrix *matrix)
                       0, 0,
                       288, 80);
 
-  channel = ags_channel_nth(AGS_MACHINE(matrix)->audio->input, AGS_MACHINE(matrix)->audio->input_lines - (guint) matrix->adjustment->value - 1);
+  channel = ags_channel_nth(AGS_MACHINE(matrix)->audio->input, AGS_MACHINE(matrix)->audio->input_lines - ((guint) matrix->adjustment->value + AGS_MATRIX_OCTAVE) - 1);
 
   if(AGS_MACHINE(matrix)->audio->input_pads > AGS_MATRIX_OCTAVE){
     gutter = AGS_MATRIX_OCTAVE;
@@ -976,18 +980,18 @@ ags_matrix_draw_matrix(AgsMatrix *matrix)
 
   pthread_mutex_lock(audio_mutex);
 
-  channel = ags_channel_nth(AGS_MACHINE(matrix)->audio->input, AGS_MACHINE(matrix)->audio->input_lines - (guint) matrix->adjustment->value - 1);
+  if(AGS_MACHINE(matrix)->audio->input_pads > AGS_MATRIX_OCTAVE){
+    gutter = AGS_MATRIX_OCTAVE;
+  }else{
+    gutter = AGS_MACHINE(matrix)->audio->input_pads;
+  }
+
+  channel = ags_channel_nth(AGS_MACHINE(matrix)->audio->input, AGS_MACHINE(matrix)->audio->input_pads - (guint) matrix->adjustment->value - 1);
 
   if(channel == NULL){
     pthread_mutex_unlock(audio_mutex);
     
     return;
-  }
-
-  if(AGS_MACHINE(matrix)->audio->input_pads > AGS_MATRIX_OCTAVE){
-    gutter = AGS_MATRIX_OCTAVE;
-  }else{
-    gutter = AGS_MACHINE(matrix)->audio->input_pads;
   }
 
   for (i = 0; i < gutter; i++){

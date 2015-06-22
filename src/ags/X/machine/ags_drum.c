@@ -101,7 +101,7 @@ void ags_drum_read_resolve_audio(AgsFileLookup *file_lookup,
 void ags_drum_set_audio_channels(AgsAudio *audio,
 				 guint audio_channels, guint audio_channels_old,
 				 AgsDrum *drum);
-void ags_drum_set_pads(AgsAudio *audio, GType type,
+void ags_drum_set_pads(AgsAudio *audio, GType gtype,
 		       guint pads, guint pads_old,
 		       AgsDrum *drum);
 
@@ -245,11 +245,14 @@ ags_drum_init(AgsDrum *drum)
   AGS_MACHINE(drum)->input_line_type = AGS_TYPE_DRUM_INPUT_LINE;
   AGS_MACHINE(drum)->output_pad_type = AGS_TYPE_DRUM_OUTPUT_PAD;
   AGS_MACHINE(drum)->output_line_type = AGS_TYPE_DRUM_OUTPUT_LINE;
+
+  ags_machine_popup_add_edit_options(drum,
+				     (AGS_MACHINE_POPUP_COPY_PATTERN));
   
-  g_signal_connect_after(G_OBJECT(audio), "set_audio_channels\0",
+  g_signal_connect_after(G_OBJECT(audio), "set-audio-channels\0",
 			 G_CALLBACK(ags_drum_set_audio_channels), drum);
 
-  g_signal_connect_after(G_OBJECT(audio), "set_pads\0",
+  g_signal_connect_after(G_OBJECT(audio), "set-pads\0",
 			 G_CALLBACK(ags_drum_set_pads), drum);
 
   drum->flags = 0;
@@ -856,19 +859,40 @@ ags_drum_set_audio_channels(AgsAudio *audio,
 			    guint audio_channels, guint audio_channels_old,
 			    AgsDrum *drum)
 {
-  //empty
+  gboolean grow;
+
+  drum = AGS_DRUM(audio->machine);
+
+  if(audio_channels_old == audio_channels){
+    return;
+  }
+
+  if(audio_channels_old < audio_channels){
+    grow = TRUE;
+  }else{
+    grow = FALSE;
+  }
+
+  if(grow){
+    /* ags-play-notation */
+    ags_recall_factory_create(audio,
+			      NULL, NULL,
+			      "ags-play-notation\0",
+			      audio_channels_old, audio_channels,
+			      0, 0,
+			      (AGS_RECALL_FACTORY_INPUT |
+			       AGS_RECALL_FACTORY_REMAP |
+			       AGS_RECALL_FACTORY_RECALL),
+			      0);
+  }
 }
 
 void
-ags_drum_set_pads(AgsAudio *audio, GType type,
+ags_drum_set_pads(AgsAudio *audio, GType gtype,
 		  guint pads, guint pads_old,
 		  AgsDrum *drum)
-{
-  AgsChannel *channel;
-  GList *list, *list_next;
-  guint i, j;
-
-  if(type == AGS_TYPE_INPUT){
+{  
+  if(gtype == AGS_TYPE_INPUT){
     AgsDrumInputPad *drum_input_pad;
 
     if(pads_old < pads){
@@ -876,9 +900,45 @@ ags_drum_set_pads(AgsAudio *audio, GType type,
       if(pads_old == 0){
 	GtkToggleButton *selected_edit_button;
 
+	AgsPlayNotationAudio  *play_notation;
+
+	GList *list;
+
 	drum->selected_pad = AGS_DRUM_INPUT_PAD(gtk_container_get_children((GtkContainer *) drum->input_pad)->data);
 	drum->selected_edit_button = drum->selected_pad->edit;
 	gtk_toggle_button_set_active((GtkToggleButton *) drum->selected_edit_button, TRUE);
+
+	/* ags-play-notation */
+	ags_recall_factory_create(audio,
+				  NULL, NULL,
+				  "ags-play-notation\0",
+				  0, audio->audio_channels,
+				  pads_old, pads,
+				  (AGS_RECALL_FACTORY_INPUT |
+				   AGS_RECALL_FACTORY_REMAP |
+				   AGS_RECALL_FACTORY_RECALL),
+				  0);
+
+	/* set notation for AgsPlayNotationAudioRun recall */
+	list = audio->recall;
+
+	while((list = ags_recall_find_type(list,
+					   AGS_TYPE_PLAY_NOTATION_AUDIO)) != NULL){
+  
+	  GValue value = {0,};
+
+	  play_notation = AGS_PLAY_NOTATION_AUDIO(list->data);
+
+	  g_value_init(&value, G_TYPE_POINTER);
+	  g_value_set_pointer(&value,
+			      audio->notation);
+
+	  ags_port_safe_write(play_notation->notation,
+			      &value);
+	  
+	  list = list->next;
+	}
+
       }
     }else{
       /* destroy AgsPad's */

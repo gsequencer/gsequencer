@@ -148,7 +148,7 @@ ags_navigation_play_callback(GtkWidget *widget,
   while(machines != NULL){
     machine = AGS_MACHINE(machines->data);
 
-    if(((AGS_MACHINE_IS_SEQUENCER & (machine->flags)) != 0 && !gtk_toggle_button_get_active(navigation->exclude_sequencer)) ||
+    if(((AGS_MACHINE_IS_SEQUENCER & (machine->flags)) != 0) ||
        (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0){
 #ifdef AGS_DEBUG
       printf("found machine to play!\n\0");
@@ -159,8 +159,9 @@ ags_navigation_play_callback(GtkWidget *widget,
 	navigation->start_tact = window->devout->tact_counter;
       }
       
-      ags_machine_set_run(machine,
-			  TRUE);
+      ags_machine_set_run_extended(machine,
+				   TRUE,
+				   !gtk_toggle_button_get_active(navigation->exclude_sequencer), TRUE);
     }
 
     machines = machines->next;
@@ -176,6 +177,7 @@ ags_navigation_stop_callback(GtkWidget *widget,
   AgsWindow *window;
   AgsMachine *machine;
   GList *machines,*machines_start;
+  gchar *timestr;
 
   window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
   machines_start = 
@@ -188,8 +190,9 @@ ags_navigation_stop_callback(GtkWidget *widget,
        (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0){
       printf("found machine to stop!\n\0");
 
-      ags_machine_set_run(machine,
-			  FALSE);
+      ags_machine_set_run_extended(machine,
+				   FALSE,
+				   !gtk_toggle_button_get_active(navigation->exclude_sequencer), TRUE);
     }
 
     machines = machines->next;
@@ -203,6 +206,14 @@ ags_navigation_stop_callback(GtkWidget *widget,
 			       FALSE);
 
   navigation->flags &= (~AGS_NAVIGATION_BLOCK_PLAY);
+
+  navigation->start_tact = 0.0;
+
+  timestr = ags_navigation_tact_to_time_string(0.0,
+					       navigation->bpm->adjustment->value);
+  gtk_label_set_text(navigation->position_time, timestr);
+  
+  g_free(timestr);
 }
 
 void
@@ -415,6 +426,6 @@ ags_navigation_tic_callback(AgsDevout *devout,
 void
 ags_navigation_devout_stop_callback(AgsDevout *devout,
 				    AgsNavigation *navigation)
-{
+{  
   navigation->flags |= AGS_NAVIGATION_BLOCK_TIC;
 }

@@ -155,7 +155,7 @@ ags_play_notation_audio_init(AgsPlayNotationAudio *play_notation_audio)
 					       "port-value-type\0", G_TYPE_POINTER,
 					       "port-value-size\0", sizeof(gpointer),
 					       "port-value-length\0", 1,
-						    NULL);
+					       NULL);
   play_notation_audio->notation->port_value.ags_port_pointer = NULL;
 
   port = g_list_prepend(port, play_notation_audio->notation);

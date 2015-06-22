@@ -1054,7 +1054,7 @@ ags_audio_loop_play_audio(AgsAudioLoop *audio_loop)
 
 	if((AGS_DEVOUT_PLAY_REMOVE & (play->flags)) == 0){
 	  remove_domain = FALSE;
-
+	  
 	  if((AGS_DEVOUT_PLAY_SUPER_THREADED & (play->flags)) == 0){
 	    /* not super threaded */
 	    if((AGS_DEVOUT_PLAY_PLAYBACK & (play->flags)) != 0){
@@ -1136,11 +1136,15 @@ ags_audio_loop_play_audio(AgsAudioLoop *audio_loop)
 void
 ags_audio_loop_add_audio(AgsAudioLoop *audio_loop, GObject *audio)
 {
-  g_object_ref(G_OBJECT(audio));
-  audio_loop->play_audio = g_list_prepend(audio_loop->play_audio,
-					  AGS_AUDIO(audio)->devout_play_domain);
+  if(g_list_find(audio_loop->play_audio,
+		 AGS_AUDIO(audio)->devout_play_domain) == NULL){
+    g_object_ref(G_OBJECT(audio));
 
-  audio_loop->play_audio_ref = audio_loop->play_audio_ref + 1;
+    audio_loop->play_audio = g_list_prepend(audio_loop->play_audio,
+					    AGS_AUDIO(audio)->devout_play_domain);
+
+    audio_loop->play_audio_ref = audio_loop->play_audio_ref + 1;
+  }
 }
 
 /**
@@ -1154,12 +1158,15 @@ ags_audio_loop_add_audio(AgsAudioLoop *audio_loop, GObject *audio)
  */
 void
 ags_audio_loop_remove_audio(AgsAudioLoop *audio_loop, GObject *audio)
-{
-  audio_loop->play_audio = g_list_remove(audio_loop->play_audio,
-					 AGS_AUDIO(audio)->devout_play_domain);
-  audio_loop->play_audio_ref = audio_loop->play_audio_ref - 1;
-
-  g_object_unref(audio);
+{  
+  if(g_list_find(audio_loop->play_audio,
+		 AGS_AUDIO(audio)->devout_play_domain) != NULL){
+    audio_loop->play_audio = g_list_remove(audio_loop->play_audio,
+					   AGS_AUDIO(audio)->devout_play_domain);
+    audio_loop->play_audio_ref = audio_loop->play_audio_ref - 1;
+    
+    g_object_unref(audio);
+  }
 }
 
 /**
@@ -1174,11 +1181,14 @@ ags_audio_loop_remove_audio(AgsAudioLoop *audio_loop, GObject *audio)
 void
 ags_audio_loop_add_channel(AgsAudioLoop *audio_loop, GObject *channel)
 {
-  g_object_ref(G_OBJECT(channel));
-  audio_loop->play_channel = g_list_prepend(audio_loop->play_channel,
-					    AGS_CHANNEL(channel)->devout_play);
+  if(g_list_find(audio_loop->play_channel,
+		 AGS_CHANNEL(channel)->devout_play) == NULL){
+    g_object_ref(G_OBJECT(channel));
+    audio_loop->play_channel = g_list_prepend(audio_loop->play_channel,
+					      AGS_CHANNEL(channel)->devout_play);
 
-  audio_loop->play_channel_ref = audio_loop->play_channel_ref + 1;
+    audio_loop->play_channel_ref = audio_loop->play_channel_ref + 1;
+  }
 }
 
 /**
@@ -1193,11 +1203,14 @@ ags_audio_loop_add_channel(AgsAudioLoop *audio_loop, GObject *channel)
 void
 ags_audio_loop_remove_channel(AgsAudioLoop *audio_loop, GObject *channel)
 {
-  audio_loop->play_channel = g_list_remove(audio_loop->play_channel,
-					   AGS_CHANNEL(channel)->devout_play);
-  audio_loop->play_channel_ref = audio_loop->play_channel_ref - 1;
+  if(g_list_find(audio_loop->play_channel,
+		 AGS_CHANNEL(channel)->devout_play) != NULL){
+    audio_loop->play_channel = g_list_remove(audio_loop->play_channel,
+					     AGS_CHANNEL(channel)->devout_play);
+    audio_loop->play_channel_ref = audio_loop->play_channel_ref - 1;
 
-  g_object_unref(channel);
+    g_object_unref(channel);
+  }
 }
 
 /**
@@ -1212,11 +1225,14 @@ ags_audio_loop_remove_channel(AgsAudioLoop *audio_loop, GObject *channel)
 void
 ags_audio_loop_add_recall(AgsAudioLoop *audio_loop, gpointer devout_play)
 {
-  /* append to AgsDevout */
-  AGS_DEVOUT_PLAY(devout_play)->flags &= (~AGS_DEVOUT_PLAY_REMOVE);
-  audio_loop->play_recall = g_list_append(audio_loop->play_recall,
-					  devout_play);
-  audio_loop->play_recall_ref += 1;
+  if(g_list_find(audio_loop->play_recall,
+		 devout_play) == NULL){
+    /* append to AgsDevout */
+    AGS_DEVOUT_PLAY(devout_play)->flags &= (~AGS_DEVOUT_PLAY_REMOVE);
+    audio_loop->play_recall = g_list_append(audio_loop->play_recall,
+					    devout_play);
+    audio_loop->play_recall_ref += 1;
+  }
 }
 
 /**
@@ -1231,9 +1247,12 @@ ags_audio_loop_add_recall(AgsAudioLoop *audio_loop, gpointer devout_play)
 void
 ags_audio_loop_remove_recall(AgsAudioLoop *audio_loop, gpointer devout_play)
 {
-  audio_loop->play_recall = g_list_remove(audio_loop->play_recall,
-					  devout_play);
-  audio_loop->play_recall_ref = audio_loop->play_recall_ref - 1;
+  if(g_list_find(audio_loop->play_recall,
+		 devout_play) != NULL){
+    audio_loop->play_recall = g_list_remove(audio_loop->play_recall,
+					    devout_play);
+    audio_loop->play_recall_ref = audio_loop->play_recall_ref - 1;
+  }
 }
 
 /**

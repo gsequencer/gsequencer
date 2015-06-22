@@ -239,7 +239,8 @@ ags_drum_index0_callback(GtkWidget *widget, AgsDrum *drum)
 				  AGS_TYPE_COPY_PATTERN_AUDIO);
 
       /* calculate index 0 */
-      index0 = ((guint) drum->selected0->button.label_text[0] - 'a');
+      AGS_MACHINE(drum)->bank_0 = 
+	index0 = ((guint) drum->selected0->button.label_text[0] - 'a');
 
       if(list != NULL){
 	GValue value = {0,};
@@ -315,7 +316,8 @@ ags_drum_index1_callback(GtkWidget *widget, AgsDrum *drum)
 				  AGS_TYPE_COPY_PATTERN_AUDIO);
 
       /* calculate index 1 */
-      index1 = ((guint) g_ascii_strtoull(drum->selected1->button.label_text, NULL, 10)) - 1;
+      AGS_MACHINE(drum)->bank_1 = 
+	index1 = ((guint) g_ascii_strtoull(drum->selected1->button.label_text, NULL, 10)) - 1;
 
       if(list != NULL){
 	GValue value = {0,};
