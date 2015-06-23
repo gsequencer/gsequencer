@@ -253,7 +253,6 @@ ags_resize_audio_launch(AgsTask *task)
 	while(line != NULL){
 	  ags_connectable_connect(AGS_CONNECTABLE(line->data));
 	  gtk_widget_show_all(line->data);
-	  g_message("sho");
 	  
 	  line = line->next;
 	}
@@ -276,7 +275,6 @@ ags_resize_audio_launch(AgsTask *task)
 	while(line != NULL){
 	  ags_connectable_connect(AGS_CONNECTABLE(line->data));
 	  gtk_widget_show_all(line->data);
-	  g_message("sho");
 	  
 	  line = line->next;
 	}

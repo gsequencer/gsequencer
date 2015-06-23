@@ -105,6 +105,57 @@ ags_machine_selector_popup_link_index_callback(GtkWidget *menu_item, AgsMachineS
 }
 
 void
+ags_machine_selector_popup_invert_mapping_callback(GtkWidget *menu_item, AgsMachineSelector *machine_selector)
+{
+  AgsEditor *editor;
+
+  editor = gtk_widget_get_ancestor(machine_selector,
+				   AGS_TYPE_EDITOR);
+
+  if(editor->selected_machine != NULL){
+    GList *notation;
+
+    notation = editor->selected_machine->audio->notation;
+
+    while(notation != NULL){
+      if(gtk_check_menu_item_get_active(menu_item)){
+	AGS_NOTATION(notation->data)->flags |= AGS_NOTATION_INVERTED_MAPPING;
+      }else{
+	AGS_NOTATION(notation->data)->flags &= (~AGS_NOTATION_INVERTED_MAPPING);
+      }
+      
+      notation = notation->next;
+    }
+
+    gtk_widget_queue_draw(editor->edit_widget);
+  }
+}
+
+void
+ags_machine_selector_popup_shift_piano_callback(GtkWidget *menu_item, AgsMachineSelector *machine_selector)
+{
+  AgsEditor *editor;
+
+  editor = gtk_widget_get_ancestor(machine_selector,
+				   AGS_TYPE_EDITOR);
+
+  if(editor->selected_machine != NULL){
+    GList *notation;
+
+    notation = editor->selected_machine->audio->notation;
+
+    while(notation != NULL){
+      g_free(AGS_NOTATION(notation->data)->base_note);
+      AGS_NOTATION(notation->data)->base_note = g_strdup(gtk_menu_item_get_label(menu_item));
+      
+      notation = notation->next;
+    }
+
+    ags_meter_paint(editor->meter);
+  }
+}
+
+void
 ags_machine_selector_selection_response(GtkWidget *machine_selection,
 					gint response,
 					AgsMachineSelector *machine_selector)

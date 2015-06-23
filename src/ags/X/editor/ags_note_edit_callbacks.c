@@ -91,19 +91,15 @@ ags_note_edit_drawing_area_expose_event(GtkWidget *widget, GdkEventExpose *event
       if(AGS_IS_PANEL(machine)){
       }else if(AGS_IS_MIXER(machine)){
       }else if(AGS_IS_DRUM(machine)){
-	ags_meter_paint(editor->meter);
 	ags_note_edit_draw_segment(note_edit, cr);
 	ags_note_edit_draw_notation(note_edit, cr);
       }else if(AGS_IS_MATRIX(machine)){
-	ags_meter_paint(editor->meter);
 	ags_note_edit_draw_segment(note_edit, cr);
 	ags_note_edit_draw_notation(note_edit, cr);
       }else if(AGS_IS_SYNTH(machine)){
-	ags_meter_paint(editor->meter);
 	ags_note_edit_draw_segment(note_edit, cr);
 	ags_note_edit_draw_notation(note_edit, cr);
       }else if(AGS_IS_FFPLAYER(machine)){
-	ags_meter_paint(editor->meter);
 	ags_note_edit_draw_segment(note_edit, cr);
 	ags_note_edit_draw_notation(note_edit, cr);
       }
@@ -820,10 +816,17 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
 void
 ags_note_edit_vscrollbar_value_changed(GtkRange *range, AgsNoteEdit *note_edit)
 {
+  AgsEditor *editor;
+
   if((AGS_NOTE_EDIT_RESETING_VERTICALLY & note_edit->flags) != 0){
     return;
   }
 
+  editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(note_edit),
+						 AGS_TYPE_EDITOR);
+
+  ags_meter_paint(editor->meter);
+  
   note_edit->flags |= AGS_NOTE_EDIT_RESETING_VERTICALLY;
   ags_note_edit_reset_vertically(note_edit, 0);
   note_edit->flags &= (~AGS_NOTE_EDIT_RESETING_VERTICALLY);

@@ -4432,9 +4432,21 @@ ags_file_read_notation(AgsFile *file, xmlNode *node, AgsNotation **notation)
   if(str == NULL){
     str = "violine\0";
   }
-  
+
+  g_free(gobject->key);
   gobject->key = g_strdup(str);
 
+
+  str = xmlGetProp(node,
+		   "base-note\0");
+
+  if(str == NULL){
+    str = "A";
+  }
+
+  g_free(gobject->base_note);
+  gobject->base_note = g_strdup(str);
+  
   str = xmlGetProp(node,
 		   "base-frequency\0");
 
@@ -4570,6 +4582,10 @@ ags_file_write_notation(AgsFile *file, xmlNode *parent, AgsNotation *notation)
   xmlNewProp(node,
 	     "key\0",
 	     notation->key);
+
+  xmlNewProp(node,
+	     "base-note\0",
+	     notation->base_note);
 
   xmlNewProp(node,
 	     "audio-channel\0",

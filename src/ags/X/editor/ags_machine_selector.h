@@ -40,6 +40,8 @@ struct _AgsMachineSelector
 {
   GtkVBox vbox;
 
+  GtkWidget *current;
+  
   GtkMenu *popup;
 };
 

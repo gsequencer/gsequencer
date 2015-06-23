@@ -8,6 +8,8 @@ void ags_machine_selector_popup_remove_tab_callback(GtkWidget *menu_item, AgsMac
 void ags_machine_selector_popup_add_index_callback(GtkWidget *menu_item, AgsMachineSelector *machine_selector);
 void ags_machine_selector_popup_remove_index_callback(GtkWidget *menu_item, AgsMachineSelector *machine_selector);
 void ags_machine_selector_popup_link_index_callback(GtkWidget *menu_item, AgsMachineSelector *machine_selector);
+void ags_machine_selector_popup_invert_mapping_callback(GtkWidget *menu_item, AgsMachineSelector *machine_selector);
+void ags_machine_selector_popup_shift_piano_callback(GtkWidget *menu_item, AgsMachineSelector *machine_selector);
 
 void ags_machine_selector_radio_changed(GtkWidget *radio_button, AgsMachineSelector *machine_selector);
 

@@ -53,6 +53,7 @@ typedef struct _AgsNotationClass AgsNotationClass;
 typedef enum{
   AGS_NOTATION_STICKY              =  1,
   AGS_NOTATION_INDICATED_LENGTH    =  1 <<  1,
+  AGS_NOTATION_INVERTED_MAPPING    =  1 <<  2,
 }AgsNotationFlags;
 
 struct _AgsNotation
@@ -67,6 +68,7 @@ struct _AgsNotation
   GObject *audio;
 
   gchar *key;
+  gchar *base_note;
   gdouble base_frequency;
 
   gdouble tact;

@@ -873,10 +873,17 @@ ags_pattern_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 void
 ags_pattern_edit_vscrollbar_value_changed(GtkRange *range, AgsPatternEdit *pattern_edit)
 {
+  AgsEditor *editor;
+
   if((AGS_PATTERN_EDIT_RESETING_VERTICALLY & pattern_edit->flags) != 0){
     return;
   }
 
+  editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(pattern_edit),
+						 AGS_TYPE_EDITOR);
+
+  ags_meter_paint(editor->meter);
+  
   pattern_edit->flags |= AGS_PATTERN_EDIT_RESETING_VERTICALLY;
   ags_pattern_edit_reset_vertically(pattern_edit, 0);
   pattern_edit->flags &= (~AGS_PATTERN_EDIT_RESETING_VERTICALLY);

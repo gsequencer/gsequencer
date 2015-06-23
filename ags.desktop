@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Terminal=false
+Exec=ags
+Icon=/usr/local/share/gsequencer/icons/ags.xpm
+Name=Advanced Gtk+ Sequencer
+Categories=AudioVideo;Audio;
+Keywords=audio,sequencer,notation,editor,midi,synth,mixing,effects

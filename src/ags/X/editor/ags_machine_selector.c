@@ -21,6 +21,8 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/audio/ags_notation.h>
+
 void ags_machine_selector_class_init(AgsMachineSelectorClass *machine_selector);
 void ags_machine_selector_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_machine_selector_init(AgsMachineSelector *machine_selector);
@@ -134,6 +136,7 @@ ags_machine_selector_init(AgsMachineSelector *machine_selector)
 		     FALSE, FALSE,
 		     0);
 
+  machine_selector->current = NULL;
   machine_selector->popup = ags_machine_selector_popup_new(machine_selector);
 
   menu_button = g_object_new(GTK_TYPE_MENU_TOOL_BUTTON,
@@ -205,7 +208,7 @@ ags_machine_selector_new()
 GtkMenu*
 ags_machine_selector_popup_new(AgsMachineSelector *machine_selector)
 {
-  GtkMenu *popup;
+  GtkMenu *popup, *keys;
   GtkMenuItem *item;
   GList *list, *list_start;
 
@@ -229,6 +232,53 @@ ags_machine_selector_popup_new(AgsMachineSelector *machine_selector)
   item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("link index\0"));
   gtk_menu_shell_append((GtkMenuShell*) popup, (GtkWidget*) item);
 
+  //  item = (GtkMenuItem *) gtk_check_menu_item_new_with_label(g_strdup("invert mapping\0"));
+  //  gtk_menu_shell_append((GtkMenuShell*) popup, (GtkWidget*) item);
+
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("shift piano\0"));
+  gtk_menu_shell_append((GtkMenuShell*) popup, (GtkWidget*) item);
+
+  keys = (GtkMenu *) gtk_menu_new();
+  gtk_menu_item_set_submenu(item,
+			    keys);
+
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("A\0"));
+  gtk_menu_shell_append((GtkMenuShell*) keys, (GtkWidget*) item);
+
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("A#\0"));
+  gtk_menu_shell_append((GtkMenuShell*) keys, (GtkWidget*) item);
+
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("H\0"));
+  gtk_menu_shell_append((GtkMenuShell*) keys, (GtkWidget*) item);
+
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("C\0"));
+  gtk_menu_shell_append((GtkMenuShell*) keys, (GtkWidget*) item);
+
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("C#\0"));
+  gtk_menu_shell_append((GtkMenuShell*) keys, (GtkWidget*) item);
+
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("D\0"));
+  gtk_menu_shell_append((GtkMenuShell*) keys, (GtkWidget*) item);
+
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("D#\0"));
+  gtk_menu_shell_append((GtkMenuShell*) keys, (GtkWidget*) item);
+
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("E\0"));
+  gtk_menu_shell_append((GtkMenuShell*) keys, (GtkWidget*) item);
+
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("F\0"));
+  gtk_menu_shell_append((GtkMenuShell*) keys, (GtkWidget*) item);
+
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("F#\0"));
+  gtk_menu_shell_append((GtkMenuShell*) keys, (GtkWidget*) item);
+
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("G\0"));
+  gtk_menu_shell_append((GtkMenuShell*) keys, (GtkWidget*) item);
+
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("G#\0"));
+  gtk_menu_shell_append((GtkMenuShell*) keys, (GtkWidget*) item);
+
+  /* connect */
   list_start = 
     list = gtk_container_get_children((GtkContainer *) popup);
 
@@ -242,6 +292,7 @@ ags_machine_selector_popup_new(AgsMachineSelector *machine_selector)
 
   list = list->next;
   */
+  
   g_signal_connect(G_OBJECT(list->data), "activate\0",
 		   G_CALLBACK(ags_machine_selector_popup_add_index_callback), (gpointer) machine_selector);
 
@@ -253,7 +304,27 @@ ags_machine_selector_popup_new(AgsMachineSelector *machine_selector)
   g_signal_connect(G_OBJECT(list->data), "activate\0",
 		   G_CALLBACK(ags_machine_selector_popup_link_index_callback), (gpointer) machine_selector);
 
+  //  list = list->next;
+  //  g_signal_connect_after(G_OBJECT(list->data), "activate\0",
+  //			 G_CALLBACK(ags_machine_selector_popup_invert_mapping_callback), (gpointer) machine_selector);
+
   g_list_free(list_start);
+
+  /* keys */
+  list_start = 
+    list = gtk_container_get_children((GtkContainer *) keys);
+
+  while(list != NULL){
+    g_signal_connect(G_OBJECT(list->data), "activate\0",
+		     G_CALLBACK(ags_machine_selector_popup_shift_piano_callback), (gpointer) machine_selector);
+
+    list = list->next;
+  }
+
+  g_list_free(list_start);
+
+  /* show */
+  gtk_widget_show_all((GtkWidget *) keys);
   gtk_widget_show_all((GtkWidget *) popup);
 
   return(popup);

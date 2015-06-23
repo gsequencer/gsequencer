@@ -47,7 +47,7 @@ void ags_toolbar_show(GtkWidget *widget);
  * @short_description: edit tool
  * @title: AgsToolbar
  * @section_id:
- * @include: ags/X/editor/ags_note_edit.h
+ * @include: ags/X/editor/ags_toolbar.h
  *
  * The #AgsToolbar lets you choose edit tool.
  */

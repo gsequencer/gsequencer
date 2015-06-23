@@ -252,8 +252,18 @@ ags_machine_popup_copy_pattern_callback(GtkWidget *widget, AgsMachine *machine)
 	    x_boundary = k;
 	  }
       
-	  if(y_boundary > current->pad){
-	    y_boundary = current->pad;
+	  if((AGS_MACHINE_REVERSE_NOTATION & (machine->flags)) != 0){
+	    guint tmp;
+
+	    tmp = machine->audio->input_pads - current->pad - 1;
+	    
+	    if(y_boundary > tmp){
+	      y_boundary = tmp;
+	    }
+	  }else{
+	    if(y_boundary > current->pad){
+	      y_boundary = current->pad;
+	    }
 	  }
 	}
       }
