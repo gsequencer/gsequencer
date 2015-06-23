@@ -1,12 +1,19 @@
+ags (0.4.2-76-1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed boundary for matrix clipboard
+	* TODO fix paste to mono or different audio allocation
+	* TODO fix piano shift to correct direction
+	* TODO disable audio channel resize for mono
+	* TODO verify LADSPA browser
+
 ags (0.4.2-75-1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed deactivate led in AgsDrum and AgsMatrix
 	* fixed multi-output
-	* TODO shift nation and piano
-	* TODO delete in notation editor may even pattern editor
-	* TODO verify tabs of editor for adjusting audio channels
-	* TODO stop bug
+	* fixed adjusting audio channels for tabs of editor
+	* implemented shift piano thereby fixed piano allocation
 
 ags (0.4.2-74-1)
 

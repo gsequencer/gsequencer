@@ -389,6 +389,7 @@
 	  flags            PCDATA     #REQUIRED
 	  audio-channel    NMTOKEN    #REQUIRED
 	  key              CDATA      "violine"
+	  base-note        NMTOKEN    "A"
 	  base-frequency   NMTOKEN    #IMPLIED
 	  bpm              NMTOKEN    #IMPLIED
 	  max-note-length  NMTOKEN    16.0

@@ -601,7 +601,6 @@ ags_synth_update(AgsSynth *synth)
   while(input_pad != NULL){
     input_line = gtk_container_get_children((GtkContainer *) AGS_PAD(input_pad->data)->expander_set);
     oscillator = AGS_OSCILLATOR(gtk_container_get_children((GtkContainer *) AGS_LINE(input_line->data)->expander->table)->data);
-
     wave = (guint) gtk_combo_box_get_active(oscillator->wave) + 1;
     attack = (guint) gtk_spin_button_get_value_as_int(oscillator->attack);
     frame_count = (guint) gtk_spin_button_get_value_as_int(oscillator->frame_count);

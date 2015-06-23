@@ -226,15 +226,8 @@ ags_editor_init(AgsEditor *editor)
   editor->table = (GtkTable *) gtk_table_new(4, 3, FALSE);
   gtk_paned_pack2((GtkPaned *) paned, (GtkWidget *) editor->table, TRUE, FALSE);
   
-  editor->notebook = g_object_new(AGS_TYPE_NOTEBOOK,
-				  "homogeneous\0", FALSE,
-				  "spacing\0", 0,
-				  NULL);
-  gtk_table_attach(editor->table, (GtkWidget *) editor->notebook,
-		   0, 3, 0, 1,
-		   GTK_FILL|GTK_EXPAND, GTK_FILL,
-		   0, 0);
-
+  editor->notebook = NULL;
+  
   editor->meter = NULL;
   editor->edit_widget = NULL;
 
@@ -356,7 +349,8 @@ ags_editor_real_machine_changed(AgsEditor *editor, AgsMachine *machine)
   AgsMachine *machine_old;
   AgsNotebook *notebook;
   GtkTable *table;
-
+  GList *list, *list_start;
+  
   guint pads;
   guint i, stop;
 
@@ -383,47 +377,44 @@ ags_editor_real_machine_changed(AgsEditor *editor, AgsMachine *machine)
 
   machine_old = editor->selected_machine;
   editor->selected_machine = machine;
-  
-  /* resize notebook */
-  notebook = editor->notebook;
 
-  if(machine == NULL){
-    if(machine_old != NULL){
-      i = 0;
+  if(machine_old != NULL){
+    g_signal_handler_disconnect(machine_old->audio,
+				editor->set_audio_channels_handler);
+    g_signal_handler_disconnect(machine_old->audio,
+				editor->set_pads_handler);
+    
+    gtk_widget_destroy(editor->meter);
+    gtk_widget_destroy(editor->edit_widget);
+    gtk_widget_destroy(editor->notebook);
 
-      stop = machine_old->audio->audio_channels;
-      ags_editor_notebook_change_machine_shrink();
-    }
-  }else{
-    if(machine_old == NULL){
-      i = 0;
-      stop = machine->audio->audio_channels;
-      
-      ags_editor_notebook_change_machine_grow();
-    }else{
-      if(machine->audio->audio_channels > machine_old->audio->audio_channels){
-	i = machine_old->audio->audio_channels;
-	stop = machine->audio->audio_channels;
-
-	ags_editor_notebook_change_machine_grow();
-      }else if(machine->audio->audio_channels < machine_old->audio->audio_channels){
-	i = machine->audio->audio_channels;
-	stop = machine_old->audio->audio_channels;
-
-	ags_editor_notebook_change_machine_shrink();
-      }
-    }
+    editor->meter = NULL;
+    editor->edit_widget = NULL;
+    editor->notebook = NULL;
   }
-
-  gtk_widget_show_all((GtkWidget *) notebook);
-
+  
   /* instantiate note edit or pattern edit */
   if(machine == NULL){
     return;
   }
-
+	
   table = editor->table;
 
+  notebook = 
+    editor->notebook = g_object_new(AGS_TYPE_NOTEBOOK,
+				    "homogeneous\0", FALSE,
+				    "spacing\0", 0,
+				    NULL);
+  gtk_table_attach(editor->table, (GtkWidget *) editor->notebook,
+		   0, 3, 0, 1,
+		   GTK_FILL|GTK_EXPAND, GTK_FILL,
+		   0, 0);
+
+  i = 0;
+  stop = machine->audio->audio_channels;
+  
+  ags_editor_notebook_change_machine_grow();
+  
   editor->set_audio_channels_handler = g_signal_connect(machine->audio, "set-audio-channels\0",
 							G_CALLBACK(ags_editor_set_audio_channels_callback), editor);
   editor->set_pads_handler = g_signal_connect(machine->audio, "set-pads\0",
@@ -443,18 +434,6 @@ ags_editor_real_machine_changed(AgsEditor *editor, AgsMachine *machine)
 		     0, 0);
     ags_connectable_connect(AGS_CONNECTABLE(editor->meter));
     gtk_widget_show_all(editor->meter);
-
-    editor->edit_widget = ags_note_edit_new();
-    gtk_table_attach(table, (GtkWidget *) editor->edit_widget,
-		     1, 2, 1, 2,
-		     GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
-		     0, 0);
-
-    //    ags_connectable_connect(AGS_CONNECTABLE(editor->edit_widget));
-    gtk_widget_show_all(editor->edit_widget);
-
-    ags_note_edit_set_map_height(editor->edit_widget,
-				 pads * AGS_NOTE_EDIT(editor->edit_widget)->control_height);
 
     editor->edit_widget = ags_note_edit_new();
     gtk_table_attach(table, (GtkWidget *) editor->edit_widget,

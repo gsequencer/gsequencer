@@ -69,19 +69,20 @@ ags_editor_set_audio_channels_callback(AgsAudio *audio,
   guint i;
 
   if(audio_channels_old < audio_channels){
-    tabs = g_list_nth(editor->notebook->tabs,
-		      audio_channels_old);
     notation = g_list_nth(audio->notation,
-			  audio_channels_old);
+			  audio_channels_old - 1);
 
     for(i = audio_channels_old; i < audio_channels; i++){
       ags_notebook_insert_tab(editor->notebook,
 			      i);
-      AGS_NOTEBOOK_TAB(tabs->data)->notation = notation->data;
-
-      tabs = tabs->next;
+      tabs = editor->notebook->tabs;
       notation = notation->next;
+      AGS_NOTEBOOK_TAB(tabs->data)->notation = notation->data;
+      gtk_toggle_button_set_active(AGS_NOTEBOOK_TAB(tabs->data)->toggle,
+				   TRUE);
     }
+
+    gtk_widget_show_all(editor->notebook);
   }else{
     for(i = audio_channels; i < audio_channels_old; i++){
       ags_notebook_remove_tab(editor->notebook,

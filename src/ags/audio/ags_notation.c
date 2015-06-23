@@ -238,6 +238,7 @@ ags_notation_init(AgsNotation *notation)
   notation->audio = NULL;
 
   notation->key = g_strdup("violine\0");
+  notation->base_note = g_strdup("A");
   notation->base_frequency = 440.0;
 
   notation->tact = AGS_NOTATION_MINIMUM_NOTE_LENGTH;

@@ -100,6 +100,8 @@ ags_pattern_edit_init(AgsPatternEdit *pattern_edit)
 {
   GtkAdjustment *adjustment;
 
+  pattern_edit->key_mask = 0;
+
   adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, 1.0, 1.0);
 
   pattern_edit->ruler = ags_ruler_new();
@@ -173,7 +175,7 @@ ags_pattern_edit_init(AgsPatternEdit *pattern_edit)
   pattern_edit->selected_y = 0;
 
   /* GtkScrollbars */
-  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, 1.0, 1.0);
+  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, 16.0, 1.0);
   pattern_edit->vscrollbar = (GtkVScrollbar *) gtk_vscrollbar_new(adjustment);
   gtk_table_attach(GTK_TABLE(pattern_edit), (GtkWidget *) pattern_edit->vscrollbar,
 		   1, 2, 1, 2,
@@ -325,6 +327,8 @@ ags_pattern_edit_reset_vertically(AgsPatternEdit *pattern_edit, guint flags)
       cairo_pop_group_to_source(cr);
       cairo_paint(cr);
     }
+
+    //    ags_meter_paint(editor->meter);
   }
 }
 
