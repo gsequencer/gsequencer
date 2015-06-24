@@ -1,3 +1,63 @@
+/* This file is part of GSequencer.
+ * 
+ * GSequencer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GSequencer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+ */
+/* This file is part of GSequencer.
+ * 
+ * GSequencer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GSequencer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+ */
+/* This file is part of GSequencer.
+ * 
+ * GSequencer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GSequencer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+ */
+/* This file is part of GSequencer.
+ * 
+ * GSequencer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GSequencer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+ */
 /* AGS - Advanced GTK Sequencer
  * Copyright (C) 2014 Joël Krähemann
  *
@@ -51,7 +111,7 @@ ags_ladspa_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
   filename = GTK_COMBO_BOX_TEXT(list->next->data);
   effect = GTK_COMBO_BOX_TEXT(list->next->next->next->data);
 
-  ags_combo_box_text_remove_all(effect);
+  gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(effect)));
 
   ags_ladspa_manager_load_file(gtk_combo_box_text_get_active_text(filename));
   ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(gtk_combo_box_text_get_active_text(filename));

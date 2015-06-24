@@ -1,19 +1,17 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2005-2011 Joël Krähemann
- *
- * This program is free software; you can redistribute it and/or modify
+/* This file is part of GSequencer.
+ * 
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ags/audio/recall/ags_delay_audio.h>
@@ -928,6 +926,8 @@ ags_delay_audio_change_notation_duration(AgsTactable *tactable, gdouble duration
 
   delay = ((gdouble) samplerate / (gdouble) buffer_size) * (60.0 / AGS_DEVOUT_DEFAULT_BPM);
 
+  g_message("%f\0", duration * delay * AGS_DEVOUT_DEFAULT_SCALE);
+  
   g_value_init(&value, G_TYPE_DOUBLE);
   g_value_set_double(&value, duration * delay * AGS_DEVOUT_DEFAULT_SCALE);
   ags_port_safe_write(delay_audio->notation_duration,

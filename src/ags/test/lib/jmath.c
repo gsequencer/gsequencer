@@ -1,20 +1,63 @@
-#include "jmath.h"
-//#include "jthread.h"
-
-int j_math_or(int a, int b);
-int j_math_exclusive_or(int a, int b);
-int j_math_and(int a, int b);
-JList* j_math_or_list(JList *a, JList *b);
-JList* j_math_exclusive_or_list(JList *a, JList *b);
-JList* j_math_and_list(JList *a, JList *b);
-
-JList* j_math_left_move_list_value(JList *a, uint b);
-JList* j_math_right_move_list_value(JList *a, uint b);
-JList* j_math_left_move_list(JList *list0, JList *list1);
-JList* j_math_right_move_list(JList *list0, JList *list1);
-
-//void __j_math_equal(uint a, uint b, jboolean sign, jboolean sign_equal, uint value0, uint *value1, jboolean *jump);
-uint _j_math_equal(int a, int b);
+/* This file is part of GSequencer.
+ * 
+ * GSequencer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GSequencer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+ */
+/* This file is part of GSequencer.
+ * 
+ * GSequencer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GSequencer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+ */
+/* This file is part of GSequencer.
+ * 
+ * GSequencer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GSequencer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+ */
+/* This file is part of GSequencer.
+ * 
+ * GSequencer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GSequencer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+ */
 jboolean j_math_equal(int a, int b);
 jboolean j_math_equal_list(JList *a, JList *b);
 

@@ -1,19 +1,17 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2005-2011 Joël Krähemann
- *
- * This program is free software; you can redistribute it and/or modify
+/* This file is part of GSequencer.
+ * 
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ags/audio/recall/ags_count_beats_audio_run.h>
@@ -115,11 +113,11 @@ void ags_count_beats_audio_run_stop(AgsCountBeatsAudioRun *count_beats_audio_run
  */
 
 enum{
-  NOTATION_START,
   NOTATION_LOOP,
+  NOTATION_START,
   NOTATION_STOP,
-  SEQUENCER_START,
   SEQUENCER_LOOP,
+  SEQUENCER_START,
   SEQUENCER_STOP,
   LAST_SIGNAL,
 };
@@ -1074,10 +1072,14 @@ ags_count_beats_audio_run_notation_alloc_output_callback(AgsDelayAudioRun *delay
   gboolean loop;
   GValue value = {0,};  
 
+  if((AGS_RECALL_ID_NOTATION & (AGS_RECALL(count_beats_audio_run)->recall_id->flags)) == 0){
+    return;
+  }
+  
   count_beats_audio = AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(count_beats_audio_run)->recall_audio);
 
   g_value_init(&value, G_TYPE_BOOLEAN);
-  ags_port_safe_read(count_beats_audio->loop, &value);
+  ags_port_safe_read(count_beats_audio->notation_loop, &value);
 
   loop = g_value_get_boolean(&value);
 
@@ -1109,11 +1111,15 @@ ags_count_beats_audio_run_sequencer_alloc_output_callback(AgsDelayAudioRun *dela
   gdouble loop_end;
   gboolean loop;
   GValue value = {0,};
+  
+  if((AGS_RECALL_ID_SEQUENCER & (AGS_RECALL(count_beats_audio_run)->recall_id->flags)) == 0){
+    return;
+  }
 
   count_beats_audio = AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(count_beats_audio_run)->recall_audio);
 
   g_value_init(&value, G_TYPE_BOOLEAN);
-  ags_port_safe_read(count_beats_audio->loop, &value);
+  ags_port_safe_read(count_beats_audio->sequencer_loop, &value);
 
   loop = g_value_get_boolean(&value);
   g_value_unset(&value);
@@ -1151,10 +1157,14 @@ ags_count_beats_audio_run_notation_count_callback(AgsDelayAudioRun *delay_audio_
   gboolean loop;
   GValue value = {0,};  
 
+  if((AGS_RECALL_ID_NOTATION & (AGS_RECALL(count_beats_audio_run)->recall_id->flags)) == 0){
+    return;
+  }
+
   count_beats_audio = AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(count_beats_audio_run)->recall_audio);
 
   g_value_init(&value, G_TYPE_BOOLEAN);
-  ags_port_safe_read(count_beats_audio->loop, &value);
+  ags_port_safe_read(count_beats_audio->notation_loop, &value);
 
   loop = g_value_get_boolean(&value);
 
@@ -1163,6 +1173,8 @@ ags_count_beats_audio_run_notation_count_callback(AgsDelayAudioRun *delay_audio_
   }
 
   //  g_message("notation %d\0", count_beats_audio_run->notation_counter);
+  ags_audio_tact(AGS_RECALL_AUDIO(count_beats_audio)->audio,
+		 AGS_RECALL(count_beats_audio_run)->recall_id);
 
   /* 
    * Block counter for sequencer and notation counter
@@ -1183,10 +1195,6 @@ ags_count_beats_audio_run_notation_count_callback(AgsDelayAudioRun *delay_audio_
  	count_beats_audio_run->notation_counter += 1;
       }
     }else{
-      if(count_beats_audio_run->notation_counter >= (guint) loop_end - 1.0){
-	return;
-      }
-
       count_beats_audio_run->notation_counter += 1;
     }
 
@@ -1202,11 +1210,15 @@ ags_count_beats_audio_run_sequencer_count_callback(AgsDelayAudioRun *delay_audio
   AgsCountBeatsAudio *count_beats_audio;
   gboolean loop;
   GValue value = {0,};  
+  
+  if((AGS_RECALL_ID_SEQUENCER & (AGS_RECALL(count_beats_audio_run)->recall_id->flags)) == 0){
+    return;
+  }
 
   count_beats_audio = AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(count_beats_audio_run)->recall_audio);
 
   g_value_init(&value, G_TYPE_BOOLEAN);
-  ags_port_safe_read(count_beats_audio->loop, &value);
+  ags_port_safe_read(count_beats_audio->sequencer_loop, &value);
 
   loop = g_value_get_boolean(&value);
 
@@ -1240,7 +1252,7 @@ ags_count_beats_audio_run_sequencer_count_callback(AgsDelayAudioRun *delay_audio
       }else{
 	count_beats_audio_run->sequencer_counter += 1;
       }
-    }else{
+    }else{      
       if(count_beats_audio_run->sequencer_counter >= (guint) loop_end - 1.0){
 	AgsAudio *audio;
 	GList *devout_play;
@@ -1359,7 +1371,32 @@ void
 ags_count_beats_audio_run_stream_audio_signal_done_callback(AgsRecall *recall,
 							    AgsCountBeatsAudioRun *count_beats_audio_run)
 {
-  //TODO:JK: enhance me
+  AgsCountBeatsAudio *count_beats_audio;
+  GValue loop_sequencer = {0,};
+  GValue loop_notation = {0,};
+
+  count_beats_audio = AGS_RECALL_AUDIO_RUN(count_beats_audio_run)->recall_audio;
+
+  /* check for loop or notation */
+  g_value_init(&loop_sequencer,
+	       G_TYPE_BOOLEAN);
+  ags_port_safe_read(count_beats_audio->sequencer_loop,
+		     &loop_sequencer);
+
+  g_value_init(&loop_notation,
+	       G_TYPE_BOOLEAN);
+  ags_port_safe_read(count_beats_audio->notation_loop,
+		     &loop_notation);
+    
+  if(g_value_get_boolean(&loop_sequencer) && (AGS_RECALL_ID_SEQUENCER & (recall->recall_id->flags)) != 0){
+    return;
+  }
+
+  if((AGS_RECALL_ID_NOTATION & (recall->recall_id->flags)) != 0){
+    return;
+  }
+  
+  /* you're done */
   ags_count_beats_audio_run_done(count_beats_audio_run);
 }
 

@@ -1,3 +1,63 @@
+/* This file is part of GSequencer.
+ * 
+ * GSequencer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GSequencer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+ */
+/* This file is part of GSequencer.
+ * 
+ * GSequencer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GSequencer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+ */
+/* This file is part of GSequencer.
+ * 
+ * GSequencer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GSequencer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+ */
+/* This file is part of GSequencer.
+ * 
+ * GSequencer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GSequencer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+ */
 /* AGS - Advanced GTK Sequencer
  * Copyright (C) 2005-2011 Joël Krähemann
  *
@@ -18,6 +78,11 @@
 
 #include <ags/X/editor/ags_note_edit_callbacks.h>
 
+#include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_output.h>
+#include <ags/audio/ags_input.h>
+
 #include <ags/X/ags_editor.h>
 
 #include <ags/X/machine/ags_panel.h>
@@ -28,6 +93,88 @@
 #include <ags/X/machine/ags_ffplayer.h>
 
 #include <gdk/gdkkeysyms.h>
+
+
+void
+ags_note_edit_set_audio_channels_callback(AgsAudio *audio,
+					  guint audio_channels, guint audio_channels_old,
+					  AgsNoteEdit *note_edit)
+{
+  AgsEditor *editor;
+  AgsEditorChild *editor_child;
+
+  GList *list;
+  GList *tabs;
+  GList *notation;
+  guint i;
+
+  editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(note_edit),
+						 AGS_TYPE_EDITOR);
+
+  editor_child = NULL;
+  list = editor->editor_child;
+  
+  while(list != NULL){
+    if(AGS_EDITOR_CHILD(list->data)->edit_widget == note_edit){
+      editor_child = AGS_EDITOR_CHILD(list->data);
+      break;
+    }
+    
+    list = list->next;
+  }
+  
+  if(audio_channels_old < audio_channels){
+    notation = g_list_nth(audio->notation,
+			  audio_channels_old - 1);
+
+    for(i = audio_channels_old; i < audio_channels; i++){
+      ags_notebook_insert_tab(editor_child->notebook,
+			      i);
+      tabs = editor_child->notebook->tabs;
+      notation = notation->next;
+      AGS_NOTEBOOK_TAB(tabs->data)->notation = notation->data;
+      gtk_toggle_button_set_active(AGS_NOTEBOOK_TAB(tabs->data)->toggle,
+				   TRUE);
+    }
+
+    gtk_widget_show_all(editor_child->notebook);
+  }else{
+    for(i = audio_channels; i < audio_channels_old; i++){
+      ags_notebook_remove_tab(editor_child->notebook,
+			      i);
+    }
+  }
+}
+
+void
+ags_note_edit_set_pads_callback(AgsAudio *audio,
+				GType channel_type,
+				guint pads, guint pads_old,
+				AgsNoteEdit *note_edit)
+{
+  AgsEditor *editor;
+
+  editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(note_edit),
+						 AGS_TYPE_EDITOR);
+
+  if((AGS_AUDIO_NOTATION_DEFAULT & (audio->flags)) != 0){
+    if(!g_type_is_a(channel_type, AGS_TYPE_INPUT)){
+      return;
+    }
+  }else{
+    if(!g_type_is_a(channel_type, AGS_TYPE_OUTPUT)){
+      return;
+    }
+  }
+
+  if(AGS_IS_NOTE_EDIT(note_edit)){
+    ags_note_edit_set_map_height(note_edit,
+			       pads * note_edit->control_height);
+  }else if(AGS_IS_NOTE_EDIT(note_edit)){
+    ags_note_edit_set_map_height(AGS_NOTE_EDIT(note_edit),
+				    pads * AGS_NOTE_EDIT(note_edit)->control_height);
+  }
+}
 
 gboolean
 ags_note_edit_drawing_area_expose_event(GtkWidget *widget, GdkEventExpose *event, AgsNoteEdit *note_edit)
@@ -259,11 +406,17 @@ ags_note_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
     list_notation = machine->audio->notation;
     i = 0;
 
-    while((selected_channel = ags_notebook_next_active_tab(editor->notebook,
+    while((selected_channel = ags_notebook_next_active_tab(editor->current_notebook,
 							   i)) != -1){
       list_notation = g_list_nth(machine->audio->notation,
 				 selected_channel);
-
+      
+      if(list_notation == NULL){
+	i++;
+	
+	continue;
+      }
+      
       note0 = ags_note_duplicate(note);
 
       ags_notation_add_note(AGS_NOTATION(list_notation->data), note0, FALSE);
@@ -350,15 +503,20 @@ ags_note_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
     list_notation = machine->audio->notation;
     i = 0;
 
-    while((selected_channel = ags_notebook_next_active_tab(editor->notebook,
+    while((selected_channel = ags_notebook_next_active_tab(editor->current_notebook,
 							   i)) != -1){
       list_notation = g_list_nth(machine->audio->notation,
 				 selected_channel);
 
+      if(list_notation == NULL){
+	i++;
+	
+	continue;
+      }
+
       ags_notation_remove_note_at_position(AGS_NOTATION(list_notation->data),
 					   x, y);
 
-      list_notation = list_notation->next;
       i++;
     }
   }
@@ -405,10 +563,17 @@ ags_note_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
     list_notation = machine->audio->notation;
     i = 0;
 
-    while((selected_channel = ags_notebook_next_active_tab(editor->notebook,
+    while((selected_channel = ags_notebook_next_active_tab(editor->current_notebook,
 							   i)) != -1){
       list_notation = g_list_nth(machine->audio->notation,
 				 selected_channel);
+
+      if(list_notation == NULL){
+	i++;
+	
+	continue;
+      }
+
       ags_notation_add_region_to_selection(AGS_NOTATION(list_notation->data),
 					   x0, y0,
 					   x1, y1,
@@ -425,9 +590,18 @@ ags_note_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
   if(editor->selected_machine != NULL && event->button == 1){
     cairo_t *cr;
 
-    note_edit->control.x1 = (guint) event->x;
-    note_edit->control.y1 = (guint) event->y;
+    if(event->x >= 0.0){
+      note_edit->control.x1 = (guint) event->x;
+    }else{
+      note_edit->control.x1 = 0;
+    }
 
+    if(event->y >= 0.0){
+      note_edit->control.y1 = (guint) event->y;
+    }else{
+      note_edit->control.y1 = 0;
+    }
+    
     machine = editor->selected_machine;
     note = note_edit->control.note;
 
@@ -792,6 +966,14 @@ ags_note_edit_drawing_area_key_press_event(GtkWidget *widget, GdkEventKey *event
 	}
       }
       break;
+    case GDK_KEY_i:
+      {
+	/* invert notes */
+	if((AGS_NOTE_EDIT_KEY_L_CONTROL & (note_edit->key_mask)) != 0 || (AGS_NOTE_EDIT_KEY_R_CONTROL & (note_edit->key_mask)) != 0){
+	  ags_editor_invert(editor);
+	}
+      }
+      break;
     }
   }
 }
@@ -825,7 +1007,7 @@ ags_note_edit_vscrollbar_value_changed(GtkRange *range, AgsNoteEdit *note_edit)
   editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(note_edit),
 						 AGS_TYPE_EDITOR);
 
-  ags_meter_paint(editor->meter);
+  ags_meter_paint(editor->current_meter);
   
   note_edit->flags |= AGS_NOTE_EDIT_RESETING_VERTICALLY;
   ags_note_edit_reset_vertically(note_edit, 0);

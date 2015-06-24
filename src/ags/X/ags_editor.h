@@ -1,19 +1,17 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2005-2011 Joël Krähemann
- *
- * This program is free software; you can redistribute it and/or modify
+/* This file is part of GSequencer.
+ * 
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #ifndef __AGS_EDITOR_H__
@@ -42,6 +40,8 @@
 #define AGS_IS_EDITOR_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_EDITOR))
 #define AGS_EDITOR_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_EDITOR, AgsEditorClass))
 
+#define AGS_EDITOR_CHILD(ptr) ((AgsEditorChild *)(ptr))
+  
 #define AGS_EDITOR_DEFAULT_VERSION "0.4.2\0"
 #define AGS_EDITOR_DEFAULT_BUILD_ID "CEST 02-10-2014 19:36\0"
 
@@ -49,6 +49,8 @@
 
 typedef struct _AgsEditor AgsEditor;
 typedef struct _AgsEditorClass AgsEditorClass;
+
+typedef struct _AgsEditorChild AgsEditorChild;
 
 struct _AgsEditor
 {
@@ -63,16 +65,15 @@ struct _AgsEditor
 
   AgsMachineSelector *machine_selector;
   AgsMachine *selected_machine;
-  gulong set_audio_channels_handler;
-  gulong set_pads_handler;
 
   AgsToolbar *toolbar;
 
-  AgsNotebook *notebook;
-
+  GList *editor_child;
   GtkTable *table;
-  AgsMeter *meter;
-  GtkWidget *edit_widget;
+  
+  AgsNotebook *current_notebook;
+  AgsMeter *current_meter;
+  GtkWidget *current_edit_widget;
 
   guint tact_counter;
 };
@@ -84,15 +85,27 @@ struct _AgsEditorClass
   void (*machine_changed)(AgsEditor *editor, AgsMachine *machine);
 };
 
+struct _AgsEditorChild
+{
+  AgsMachine *machine;
+
+  AgsNotebook *notebook;
+  AgsMeter *meter;
+  GtkWidget *edit_widget;
+};
+
 GType ags_editor_get_type(void);
+
+AgsEditorChild* ags_editor_child_alloc(AgsMachine *machine, AgsNotebook *notebook, AgsMeter *meter, GtkWidget *edit_widget);
+
+void ags_editor_machine_changed(AgsEditor *editor, AgsMachine *machine);
 
 void ags_editor_select_all(AgsEditor *editor);
 
-void ags_editor_paste(AgsEditor *copy);
-void ags_editor_copy(AgsEditor *copy);
-void ags_editor_cut(AgsEditor *copy);
-
-void ags_editor_machine_changed(AgsEditor *editor, AgsMachine *machine);
+void ags_editor_paste(AgsEditor *editor);
+void ags_editor_copy(AgsEditor *editor);
+void ags_editor_cut(AgsEditor *editor);
+void ags_editor_invert(AgsEditor *editor);
 
 AgsEditor* ags_editor_new();
 

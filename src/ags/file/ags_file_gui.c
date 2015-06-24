@@ -1,3 +1,63 @@
+/* This file is part of GSequencer.
+ * 
+ * GSequencer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GSequencer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+ */
+/* This file is part of GSequencer.
+ * 
+ * GSequencer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GSequencer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+ */
+/* This file is part of GSequencer.
+ * 
+ * GSequencer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GSequencer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+ */
+/* This file is part of GSequencer.
+ * 
+ * GSequencer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GSequencer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+ */
 /* AGS - Advanced GTK Sequencer
  * Copyright (C) 2013 Joël Krähemann
  *
@@ -563,9 +623,6 @@ ags_file_read_machine(AgsFile *file, xmlNode *node, AgsMachine **machine)
 						       NULL,
 						       16);
 
-  gobject->name = g_strdup(xmlGetProp(node,
-				      AGS_FILE_NAME_PROP));
-
   /* audio */
   file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
 					       "file\0", file,
@@ -671,11 +728,13 @@ ags_file_read_machine_resolve_audio(AgsFileLookup *file_lookup,
   gchar *xpath;
   xmlXPathContext *xpath_context;
   xmlXPathObject *xpath_object;
-
+  gchar *str;
+  
   xpath = (gchar *) xmlGetProp(file_lookup->node,
 			       "audio\0");
+  g_message("xpath = %s\0", xpath);
   id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_xpath(file_lookup->file, xpath);
-
+  
   g_object_set(G_OBJECT(machine),
 	       "audio\0", (AgsAudio *) id_ref->ref,
 	       NULL);
@@ -687,6 +746,13 @@ ags_file_read_machine_resolve_audio(AgsFileLookup *file_lookup,
 
   g_signal_connect_after(G_OBJECT(machine->audio), "set_pads\0",
 			 G_CALLBACK(ags_machine_set_pads), machine);
+
+  str = xmlGetProp(file_lookup->node,
+		   AGS_FILE_NAME_PROP);
+
+  if(str != NULL){
+    machine->name = g_strdup(str);
+  }
 }
 
 void
@@ -2539,7 +2605,7 @@ ags_file_read_editor(AgsFile *file, xmlNode *node, AgsEditor **editor)
 			   13)){
 	ags_file_read_notebook(file,
 			       child,
-			       &(gobject->notebook));
+			       &(gobject->current_notebook));
       }
     }
 
@@ -2592,10 +2658,10 @@ ags_file_read_editor_launch(AgsFileLaunch *file_launch,
   tabs = machine->audio->audio_channels;
 
   for(i = 0; i < tabs; i++){
-    ags_notebook_add_tab(editor->notebook);
+    ags_notebook_add_tab(editor->current_notebook);
   }
 
-  list = editor->notebook->tabs;
+  list = editor->current_notebook->tabs;
 
   while(list != NULL){
     gtk_toggle_button_set_active(AGS_NOTEBOOK_TAB(list->data)->toggle,
@@ -2610,42 +2676,42 @@ ags_file_read_editor_launch(AgsFileLaunch *file_launch,
   tact_factor = exp2(8.0 - (double) gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->zoom));
   tact = exp2((double) gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->zoom) - 4.0);
 
-  if(AGS_IS_NOTE_EDIT(editor->edit_widget)){
+  if(AGS_IS_NOTE_EDIT(editor->current_edit_widget)){
     /* reset note edit */
     history = gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->zoom);
 
     editor->toolbar->zoom_history = history;
 
-    AGS_NOTE_EDIT(editor->edit_widget)->flags |= AGS_NOTE_EDIT_RESETING_HORIZONTALLY;
-    ags_note_edit_reset_horizontally(AGS_NOTE_EDIT(editor->edit_widget), AGS_NOTE_EDIT_RESET_HSCROLLBAR |
+    AGS_NOTE_EDIT(editor->current_edit_widget)->flags |= AGS_NOTE_EDIT_RESETING_HORIZONTALLY;
+    ags_note_edit_reset_horizontally(AGS_NOTE_EDIT(editor->current_edit_widget), AGS_NOTE_EDIT_RESET_HSCROLLBAR |
 				     AGS_NOTE_EDIT_RESET_WIDTH);
-    AGS_NOTE_EDIT(editor->edit_widget)->flags &= (~AGS_NOTE_EDIT_RESETING_HORIZONTALLY);
+    AGS_NOTE_EDIT(editor->current_edit_widget)->flags &= (~AGS_NOTE_EDIT_RESETING_HORIZONTALLY);
 
     /* reset ruler */
-    AGS_NOTE_EDIT(editor->edit_widget)->ruler->factor = tact_factor;
-    AGS_NOTE_EDIT(editor->edit_widget)->ruler->precision = tact;
-    AGS_NOTE_EDIT(editor->edit_widget)->ruler->scale_precision = 1.0 / tact;
+    AGS_NOTE_EDIT(editor->current_edit_widget)->ruler->factor = tact_factor;
+    AGS_NOTE_EDIT(editor->current_edit_widget)->ruler->precision = tact;
+    AGS_NOTE_EDIT(editor->current_edit_widget)->ruler->scale_precision = 1.0 / tact;
 
-    gtk_widget_queue_draw((GtkWidget *) AGS_NOTE_EDIT(editor->edit_widget)->ruler);
-    gtk_widget_queue_draw((GtkWidget *) AGS_NOTE_EDIT(editor->edit_widget));
-  }else if(AGS_IS_PATTERN_EDIT(editor->edit_widget)){
+    gtk_widget_queue_draw((GtkWidget *) AGS_NOTE_EDIT(editor->current_edit_widget)->ruler);
+    gtk_widget_queue_draw((GtkWidget *) AGS_NOTE_EDIT(editor->current_edit_widget));
+  }else if(AGS_IS_PATTERN_EDIT(editor->current_edit_widget)){
     /* reset pattern edit */
     history = gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->zoom);
 
     editor->toolbar->zoom_history = history;
 
-    AGS_PATTERN_EDIT(editor->edit_widget)->flags |= AGS_PATTERN_EDIT_RESETING_HORIZONTALLY;
-    ags_pattern_edit_reset_horizontally(AGS_PATTERN_EDIT(editor->edit_widget), AGS_PATTERN_EDIT_RESET_HSCROLLBAR |
+    AGS_PATTERN_EDIT(editor->current_edit_widget)->flags |= AGS_PATTERN_EDIT_RESETING_HORIZONTALLY;
+    ags_pattern_edit_reset_horizontally(AGS_PATTERN_EDIT(editor->current_edit_widget), AGS_PATTERN_EDIT_RESET_HSCROLLBAR |
 					AGS_PATTERN_EDIT_RESET_WIDTH);
-    AGS_PATTERN_EDIT(editor->edit_widget)->flags &= (~AGS_PATTERN_EDIT_RESETING_HORIZONTALLY);
+    AGS_PATTERN_EDIT(editor->current_edit_widget)->flags &= (~AGS_PATTERN_EDIT_RESETING_HORIZONTALLY);
 
     /* reset ruler */
-    AGS_PATTERN_EDIT(editor->edit_widget)->ruler->factor = tact_factor;
-    AGS_PATTERN_EDIT(editor->edit_widget)->ruler->precision = tact;
-    AGS_PATTERN_EDIT(editor->edit_widget)->ruler->scale_precision = 1.0 / tact;
+    AGS_PATTERN_EDIT(editor->current_edit_widget)->ruler->factor = tact_factor;
+    AGS_PATTERN_EDIT(editor->current_edit_widget)->ruler->precision = tact;
+    AGS_PATTERN_EDIT(editor->current_edit_widget)->ruler->scale_precision = 1.0 / tact;
 
-    gtk_widget_queue_draw((GtkWidget *) AGS_PATTERN_EDIT(editor->edit_widget)->ruler);
-    gtk_widget_queue_draw((GtkWidget *) AGS_PATTERN_EDIT(editor->edit_widget));
+    gtk_widget_queue_draw((GtkWidget *) AGS_PATTERN_EDIT(editor->current_edit_widget)->ruler);
+    gtk_widget_queue_draw((GtkWidget *) AGS_PATTERN_EDIT(editor->current_edit_widget));
   }
 }
 
@@ -2691,7 +2757,7 @@ ags_file_write_editor(AgsFile *file, xmlNode *parent, AgsEditor *editor)
   /* child elements */
   ags_file_write_machine_selector(file, node, editor->machine_selector);
   ags_file_write_toolbar(file, node, editor->toolbar);
-  ags_file_write_notebook(file, node, editor->notebook);
+  ags_file_write_notebook(file, node, editor->current_notebook);
 }
 
 void

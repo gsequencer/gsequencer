@@ -1,3 +1,63 @@
+/* This file is part of GSequencer.
+ * 
+ * GSequencer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GSequencer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+ */
+/* This file is part of GSequencer.
+ * 
+ * GSequencer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GSequencer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+ */
+/* This file is part of GSequencer.
+ * 
+ * GSequencer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GSequencer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+ */
+/* This file is part of GSequencer.
+ * 
+ * GSequencer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GSequencer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+ */
 /* AGS - Advanced GTK Sequencer
  * Copyright (C) 2005-2011 Joël Krähemann
  *
@@ -168,18 +228,18 @@ ags_meter_paint(AgsMeter *meter)
 
   bitmap = 0x52a52a; // description of the keyboard
 
-  if(AGS_IS_NOTE_EDIT(editor->edit_widget)){
-    control_height = AGS_NOTE_EDIT(editor->edit_widget)->control_height;
+  if(AGS_IS_NOTE_EDIT(editor->current_edit_widget)){
+    control_height = AGS_NOTE_EDIT(editor->current_edit_widget)->control_height;
     
-    j = (guint) ceil(GTK_RANGE(AGS_NOTE_EDIT(editor->edit_widget)->vscrollbar)->adjustment->value / (double) control_height);
+    j = (guint) ceil(GTK_RANGE(AGS_NOTE_EDIT(editor->current_edit_widget)->vscrollbar)->adjustment->value / (double) control_height);
 
-    y[0] = (guint) round(GTK_RANGE(AGS_NOTE_EDIT(editor->edit_widget)->vscrollbar)->adjustment->value) % control_height;
-  }else if(AGS_IS_PATTERN_EDIT(editor->edit_widget)){
-    control_height = AGS_PATTERN_EDIT(editor->edit_widget)->control_height;
+    y[0] = (guint) round(GTK_RANGE(AGS_NOTE_EDIT(editor->current_edit_widget)->vscrollbar)->adjustment->value) % control_height;
+  }else if(AGS_IS_PATTERN_EDIT(editor->current_edit_widget)){
+    control_height = AGS_PATTERN_EDIT(editor->current_edit_widget)->control_height;
     
-    j = (guint) ceil(GTK_RANGE(AGS_PATTERN_EDIT(editor->edit_widget)->vscrollbar)->adjustment->value / (double) control_height);
+    j = (guint) ceil(GTK_RANGE(AGS_PATTERN_EDIT(editor->current_edit_widget)->vscrollbar)->adjustment->value / (double) control_height);
 
-    y[0] = (guint) round(GTK_RANGE(AGS_PATTERN_EDIT(editor->edit_widget)->vscrollbar)->adjustment->value) % control_height;
+    y[0] = (guint) round(GTK_RANGE(AGS_PATTERN_EDIT(editor->current_edit_widget)->vscrollbar)->adjustment->value) % control_height;
   }
 
   base_note = AGS_NOTATION(editor->selected_machine->audio->notation->data)->base_note;
@@ -188,51 +248,51 @@ ags_meter_paint(AgsMeter *meter)
   if(!g_ascii_strncasecmp(base_note,
 		      "A\0",
 		      2)){
-    j = (editor->selected_machine->audio->input_pads - j - 1) + ((editor->selected_machine->audio->input_pads % 12));
+    j = (11 + editor->selected_machine->audio->input_pads - (editor->selected_machine->audio->input_pads - j) - 1) + ((editor->selected_machine->audio->input_pads));
   }else if(!g_ascii_strncasecmp(base_note,
 		      "A#\0",
 		      3)){
-    j = (1 + editor->selected_machine->audio->input_pads - j - 1) + ((editor->selected_machine->audio->input_pads % 12));
+    j = (10 + editor->selected_machine->audio->input_pads - (editor->selected_machine->audio->input_pads - j) - 1) + ((editor->selected_machine->audio->input_pads));
   }else if(!g_ascii_strncasecmp(base_note,
 		      "H\0",
 		      2)){
-    j = (2 + editor->selected_machine->audio->input_pads - j - 1) + ((editor->selected_machine->audio->input_pads % 12));
+    j = (9 + editor->selected_machine->audio->input_pads - (editor->selected_machine->audio->input_pads - j) - 1) + ((editor->selected_machine->audio->input_pads));
   }else if(!g_ascii_strncasecmp(base_note,
 		      "C\0",
 		      2)){
-    j = (3 + editor->selected_machine->audio->input_pads - j - 1) + ((editor->selected_machine->audio->input_pads % 12));
+    j = (8 + editor->selected_machine->audio->input_pads - (editor->selected_machine->audio->input_pads - j) - 1) + ((editor->selected_machine->audio->input_pads));
   }else if(!g_ascii_strncasecmp(base_note,
 		      "C#\0",
 		      3)){
-    j = (4 + editor->selected_machine->audio->input_pads - j - 1) + ((editor->selected_machine->audio->input_pads % 12));
+    j = (7 + editor->selected_machine->audio->input_pads - (editor->selected_machine->audio->input_pads - j) - 1) + ((editor->selected_machine->audio->input_pads));
   }else if(!g_ascii_strncasecmp(base_note,
 		      "D\0",
 		      2)){
-    j = (5 + editor->selected_machine->audio->input_pads - j - 1) + ((editor->selected_machine->audio->input_pads % 12));
+    j = (6 + editor->selected_machine->audio->input_pads - (editor->selected_machine->audio->input_pads - j) - 1) + ((editor->selected_machine->audio->input_pads));
   }else if(!g_ascii_strncasecmp(base_note,
 		      "D#\0",
 		      3)){
-    j = (6 + editor->selected_machine->audio->input_pads - j - 1) + ((editor->selected_machine->audio->input_pads % 12));
+    j = (5 + editor->selected_machine->audio->input_pads - (editor->selected_machine->audio->input_pads - j) - 1) + ((editor->selected_machine->audio->input_pads));
   }else if(!g_ascii_strncasecmp(base_note,
 		      "E\0",
 		      2)){
-    j = (7 + editor->selected_machine->audio->input_pads - j - 1) + ((editor->selected_machine->audio->input_pads % 12));
+    j = (4 + editor->selected_machine->audio->input_pads - (editor->selected_machine->audio->input_pads - j) - 1) + ((editor->selected_machine->audio->input_pads));
   }else if(!g_ascii_strncasecmp(base_note,
 		      "F\0",
 		      2)){
-    j = (8 + editor->selected_machine->audio->input_pads - j - 1) + ((editor->selected_machine->audio->input_pads % 12));
+    j = (3 + editor->selected_machine->audio->input_pads - (editor->selected_machine->audio->input_pads - j) - 1) + ((editor->selected_machine->audio->input_pads));
   }else if(!g_ascii_strncasecmp(base_note,
 		      "F#\0",
 		      3)){
-    j = (9 + editor->selected_machine->audio->input_pads - j - 1) + ((editor->selected_machine->audio->input_pads % 12));
+    j = (2 + editor->selected_machine->audio->input_pads - (editor->selected_machine->audio->input_pads - j) - 1) + ((editor->selected_machine->audio->input_pads));
   }else if(!g_ascii_strncasecmp(base_note,
 		      "G\0",
 		      2)){
-    j = (10 + editor->selected_machine->audio->input_pads - j - 1) + ((editor->selected_machine->audio->input_pads % 12));
+    j = (1 + editor->selected_machine->audio->input_pads - (editor->selected_machine->audio->input_pads - j) - 1) + ((editor->selected_machine->audio->input_pads));
   }else if(!g_ascii_strncasecmp(base_note,
 		      "G#\0",
 		      3)){
-    j = (11 + editor->selected_machine->audio->input_pads - j - 1) + ((editor->selected_machine->audio->input_pads % 12));
+    j = (editor->selected_machine->audio->input_pads - (editor->selected_machine->audio->input_pads - j) - 1) + ((editor->selected_machine->audio->input_pads));
   }
   
   j = j % 12;

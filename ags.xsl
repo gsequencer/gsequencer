@@ -2,8 +2,10 @@
 <!DOCTYPE xsl[
 <!ENTITY version "0.4.2">
 <!ENTITY buildid "XSLT">
-<!ENTITY audiochannels "2">
-<!ENTITY defaultsf2 "/usr/share/sounds/sf2/FluidR3_GM.sf2">
+<!ENTITY audiochannels "1">
+<!ENTITY defaultsf2 ""> <!-- /usr/share/sounds/sf2/FluidR3_GM.sf2 -->
+<!ENTITY preset ""> <!-- "Yamaha Grand Piano" -->
+<!ENTITY instrument ""> <!-- "Yamaha Grand Piano" -->
 ]>
 
 <xsl:stylesheet version="1.0"
@@ -126,6 +128,7 @@
       <xsl:attribute name="id">notation-<xsl:value-of select="position()"/></xsl:attribute>
       <xsl:attribute name="flags">0</xsl:attribute>
       <xsl:attribute name="audio-channel"><xsl:value-of select="$num - 1"/></xsl:attribute>
+      <xsl:attribute name="base-note">C</xsl:attribute>
       
       <ags-note-list>
 	<xsl:attribute name="id">note-list-<xsl:value-of select="position()"/></xsl:attribute>
@@ -158,7 +161,7 @@
       <xsl:attribute name="sequence-length">0</xsl:attribute>
       <xsl:attribute name="audio-channels">&audiochannels;</xsl:attribute>
       <xsl:attribute name="output-pads">1</xsl:attribute>
-      <xsl:attribute name="input-pads">78</xsl:attribute>
+      <xsl:attribute name="input-pads">128</xsl:attribute>
       <xsl:attribute name="devout">xpath=//ags-devout</xsl:attribute>
       
       <ags-notation-list>
@@ -183,18 +186,18 @@
     <ags-machine>
       <xsl:attribute name="type">AgsFFPlayer</xsl:attribute>
       <xsl:attribute name="id">machine-<xsl:value-of select="position()"/></xsl:attribute>
+      <xsl:attribute name="flags">628</xsl:attribute>
       <xsl:attribute name="version">&version;</xsl:attribute>
       <xsl:attribute name="build-id">&buildid;</xsl:attribute>
-      <xsl:attribute name="flags">0</xsl:attribute>
       <xsl:attribute name="file-input-flags">0</xsl:attribute>
-      <xsl:attribute name="name">default </xsl:attribute>
+      <xsl:attribute name="name"><xsl:value-of select="$sequence"/> - <xsl:value-of select="$instrument"/></xsl:attribute>
       <xsl:attribute name="audio">xpath=//ags-audio[@id='<xsl:value-of select="$sequence"/>_<xsl:value-of select="$instrument"/>']</xsl:attribute>
 
       <ags-ffplayer>
 	<xsl:attribute name="id">ffplayer-<xsl:value-of select="position()"/></xsl:attribute>
 	<xsl:attribute name="filename">&defaultsf2;</xsl:attribute>
-	<xsl:attribute name="preset">Yamaha Grand Piano</xsl:attribute>
-	<xsl:attribute name="instrument">Yamaha Grand Piano</xsl:attribute>
+	<xsl:attribute name="preset">&preset;</xsl:attribute>
+	<xsl:attribute name="instrument">&instrument;</xsl:attribute>
       </ags-ffplayer>
     </ags-machine>
 

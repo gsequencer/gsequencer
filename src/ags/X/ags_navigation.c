@@ -1,3 +1,63 @@
+/* This file is part of GSequencer.
+ * 
+ * GSequencer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GSequencer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+ */
+/* This file is part of GSequencer.
+ * 
+ * GSequencer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GSequencer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+ */
+/* This file is part of GSequencer.
+ * 
+ * GSequencer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GSequencer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+ */
+/* This file is part of GSequencer.
+ * 
+ * GSequencer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GSequencer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+ */
 /* AGS - Advanced GTK Sequencer
  * Copyright (C) 2005-2011 Joël Krähemann
  *
@@ -291,10 +351,10 @@ ags_navigation_init(AgsNavigation *navigation)
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->loop_right_tact, FALSE, FALSE, 2);
 
   navigation->scroll = NULL;
-  //  navigation->scroll = (GtkCheckButton *) gtk_check_button_new_with_label("auto-scroll\0");
-  //  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(navigation->scroll),
-  //			       TRUE);
-  //  gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->scroll, FALSE, FALSE, 2);
+  navigation->scroll = (GtkCheckButton *) gtk_check_button_new_with_label("auto-scroll\0");
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(navigation->scroll),
+			       FALSE);
+  gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->scroll, FALSE, FALSE, 2);
 
   navigation->exclude_sequencer = (GtkCheckButton *) gtk_check_button_new_with_label("exclude sequencers\0");
   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(navigation->exclude_sequencer),
@@ -487,12 +547,12 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
   tact_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->zoom));
   tact = exp2((double) gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->zoom) - 2.0);
 
-  if(AGS_IS_NOTE_EDIT(editor->edit_widget)){
-    gtk_adjustment_set_value(GTK_RANGE(AGS_NOTE_EDIT(editor->edit_widget)->hscrollbar)->adjustment,
-			     tact_counter * AGS_NOTE_EDIT(editor->edit_widget)->control_current.control_width * (16.0 / tact_factor));
-  }else if(AGS_IS_PATTERN_EDIT(editor->edit_widget)){
-    gtk_adjustment_set_value(GTK_RANGE(AGS_PATTERN_EDIT(editor->edit_widget)->hscrollbar)->adjustment,
-			     tact_counter * AGS_PATTERN_EDIT(editor->edit_widget)->control_current.control_width * (16.0 / tact_factor));
+  if(AGS_IS_NOTE_EDIT(editor->current_edit_widget)){
+    gtk_adjustment_set_value(GTK_RANGE(AGS_NOTE_EDIT(editor->current_edit_widget)->hscrollbar)->adjustment,
+			     tact_counter * AGS_NOTE_EDIT(editor->current_edit_widget)->control_current.control_width * (16.0 / tact_factor));
+  }else if(AGS_IS_PATTERN_EDIT(editor->current_edit_widget)){
+    gtk_adjustment_set_value(GTK_RANGE(AGS_PATTERN_EDIT(editor->current_edit_widget)->hscrollbar)->adjustment,
+			     tact_counter * AGS_PATTERN_EDIT(editor->current_edit_widget)->control_current.control_width * (16.0 / tact_factor));
   }
   
   timestr = ags_navigation_tact_to_time_string(tact_counter,

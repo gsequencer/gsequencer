@@ -1,11 +1,31 @@
+ags (0.4.2-78-1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented distinct between sequencer and notation loop
+	* fixed unnecessary return if notation reaches notation-loop-end
+	* fixed selection for pattern and notation editor
+	* refactored fix auto-scroll
+	* added exclude sequencer for export dialog
+
+ags (0.4.2-77-1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed possible NULL pointer in ags_play_notation.c
+	* fixed editor crash and missing notebook
+	* implemented AGS_AUDIO_REVERSE_MAPPING flag, it indicates channel mapping should be interpreted in reverse order
+	* implemented invert tool for notation editor
+
 ags (0.4.2-76-1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed boundary for matrix clipboard
-	* TODO fix paste to mono or different audio allocation
-	* TODO fix piano shift to correct direction
-	* TODO disable audio channel resize for mono
-	* TODO verify LADSPA browser
+	* fixed paste to mono or different audio allocation
+	* fixed piano shift to correct direction
+	* fixed reset vscrollbar in editor widgets
+	* refactored ags_editor.c
+	* fixed already selected machines in editor not to add again
+	* fixed audio channel resize for mono machines, disabled it in machine properties dialog
+	* enhanced LADSPA browser refresh
 
 ags (0.4.2-75-1)
 

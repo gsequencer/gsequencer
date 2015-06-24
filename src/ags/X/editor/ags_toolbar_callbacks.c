@@ -1,3 +1,63 @@
+/* This file is part of GSequencer.
+ * 
+ * GSequencer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GSequencer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+ */
+/* This file is part of GSequencer.
+ * 
+ * GSequencer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GSequencer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+ */
+/* This file is part of GSequencer.
+ * 
+ * GSequencer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GSequencer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+ */
+/* This file is part of GSequencer.
+ * 
+ * GSequencer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GSequencer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+ */
 /* AGS - Advanced GTK Sequencer
  * Copyright (C) 2005-2011 Joël Krähemann
  *
@@ -46,33 +106,33 @@ ags_toolbar_position_callback(GtkToggleButton *toggle_button, AgsToolbar *toolba
     rectangle->x = 0;
     rectangle->y = 0;
     
-    if(AGS_IS_NOTE_EDIT(editor->edit_widget)){
+    if(AGS_IS_NOTE_EDIT(editor->current_edit_widget)){
       /* refresh editor */
-      gtk_widget_get_size_request(GTK_WIDGET(AGS_NOTE_EDIT(editor->edit_widget)->drawing_area),
+      gtk_widget_get_size_request(GTK_WIDGET(AGS_NOTE_EDIT(editor->current_edit_widget)->drawing_area),
 				  &width,
 				  &height);
     
       rectangle->width = width;
       rectangle->height = height;
 
-      gdk_window_invalidate_rect(GTK_WIDGET(AGS_NOTE_EDIT(editor->edit_widget)->drawing_area)->window,
+      gdk_window_invalidate_rect(GTK_WIDGET(AGS_NOTE_EDIT(editor->current_edit_widget)->drawing_area)->window,
 				 rectangle,
 				 TRUE);
-      gdk_window_process_updates(GTK_WIDGET(AGS_NOTE_EDIT(editor->edit_widget)->drawing_area)->window,
+      gdk_window_process_updates(GTK_WIDGET(AGS_NOTE_EDIT(editor->current_edit_widget)->drawing_area)->window,
 				 TRUE);
-    }else if(AGS_IS_PATTERN_EDIT(editor->edit_widget)){
+    }else if(AGS_IS_PATTERN_EDIT(editor->current_edit_widget)){
       /* refresh editor */
-      gtk_widget_get_size_request(GTK_WIDGET(AGS_PATTERN_EDIT(editor->edit_widget)->drawing_area),
+      gtk_widget_get_size_request(GTK_WIDGET(AGS_PATTERN_EDIT(editor->current_edit_widget)->drawing_area),
 				  &width,
 				  &height);
     
       rectangle->width = width;
       rectangle->height = height;
 
-      gdk_window_invalidate_rect(GTK_WIDGET(AGS_PATTERN_EDIT(editor->edit_widget)->drawing_area)->window,
+      gdk_window_invalidate_rect(GTK_WIDGET(AGS_PATTERN_EDIT(editor->current_edit_widget)->drawing_area)->window,
 				 rectangle,
 				 TRUE);
-      gdk_window_process_updates(GTK_WIDGET(AGS_PATTERN_EDIT(editor->edit_widget)->drawing_area)->window,
+      gdk_window_process_updates(GTK_WIDGET(AGS_PATTERN_EDIT(editor->current_edit_widget)->drawing_area)->window,
 				 TRUE);
     }
     
@@ -90,14 +150,14 @@ ags_toolbar_position_callback(GtkToggleButton *toggle_button, AgsToolbar *toolba
     gtk_toggle_button_set_active(old_selected_edit_mode, FALSE);
 
     /* refresh note_edit */
-    if(AGS_IS_NOTE_EDIT(editor->edit_widget)){
-      cr = gdk_cairo_create(GTK_WIDGET(AGS_NOTE_EDIT(editor->edit_widget)->drawing_area)->window);
+    if(AGS_IS_NOTE_EDIT(editor->current_edit_widget)){
+      cr = gdk_cairo_create(GTK_WIDGET(AGS_NOTE_EDIT(editor->current_edit_widget)->drawing_area)->window);
     
-      ags_note_edit_draw_position(AGS_NOTE_EDIT(editor->edit_widget), cr);
-    }else if(AGS_IS_PATTERN_EDIT(editor->edit_widget)){
-      cr = gdk_cairo_create(GTK_WIDGET(AGS_PATTERN_EDIT(editor->edit_widget)->drawing_area)->window);
+      ags_note_edit_draw_position(AGS_NOTE_EDIT(editor->current_edit_widget), cr);
+    }else if(AGS_IS_PATTERN_EDIT(editor->current_edit_widget)){
+      cr = gdk_cairo_create(GTK_WIDGET(AGS_PATTERN_EDIT(editor->current_edit_widget)->drawing_area)->window);
     
-      ags_pattern_edit_draw_position(AGS_PATTERN_EDIT(editor->edit_widget), cr);
+      ags_pattern_edit_draw_position(AGS_PATTERN_EDIT(editor->current_edit_widget), cr);
     }
   }
 }
@@ -190,6 +250,16 @@ ags_toolbar_paste_callback(GtkWidget *widget, AgsToolbar *toolbar)
 }
 
 void
+ags_toolbar_invert_callback(GtkWidget *widget, AgsToolbar *toolbar)
+{
+  AgsEditor *editor;
+
+  editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(toolbar), AGS_TYPE_EDITOR);
+
+  ags_editor_invert(editor);
+}
+
+void
 ags_toolbar_zoom_callback(GtkComboBox *combo_box, AgsToolbar *toolbar)
 {
   AgsEditor *editor;
@@ -216,31 +286,31 @@ ags_toolbar_zoom_callback(GtkComboBox *combo_box, AgsToolbar *toolbar)
 
   toolbar->zoom_history = history;
 
-  if(AGS_IS_NOTE_EDIT(editor->edit_widget)){
-    position = GTK_RANGE(AGS_NOTE_EDIT(editor->edit_widget)->hscrollbar)->adjustment->value;
-    old_upper = GTK_RANGE(AGS_NOTE_EDIT(editor->edit_widget)->hscrollbar)->adjustment->upper;
+  if(AGS_IS_NOTE_EDIT(editor->current_edit_widget)){
+    position = GTK_RANGE(AGS_NOTE_EDIT(editor->current_edit_widget)->hscrollbar)->adjustment->value;
+    old_upper = GTK_RANGE(AGS_NOTE_EDIT(editor->current_edit_widget)->hscrollbar)->adjustment->upper;
   
-    AGS_NOTE_EDIT(editor->edit_widget)->flags |= AGS_NOTE_EDIT_RESETING_HORIZONTALLY;
-    ags_note_edit_reset_horizontally(AGS_NOTE_EDIT(editor->edit_widget), AGS_NOTE_EDIT_RESET_HSCROLLBAR |
+    AGS_NOTE_EDIT(editor->current_edit_widget)->flags |= AGS_NOTE_EDIT_RESETING_HORIZONTALLY;
+    ags_note_edit_reset_horizontally(AGS_NOTE_EDIT(editor->current_edit_widget), AGS_NOTE_EDIT_RESET_HSCROLLBAR |
 				     AGS_NOTE_EDIT_RESET_WIDTH);
-    AGS_NOTE_EDIT(editor->edit_widget)->flags &= (~AGS_NOTE_EDIT_RESETING_HORIZONTALLY);
+    AGS_NOTE_EDIT(editor->current_edit_widget)->flags &= (~AGS_NOTE_EDIT_RESETING_HORIZONTALLY);
 
-    new_upper = GTK_RANGE(AGS_NOTE_EDIT(editor->edit_widget)->hscrollbar)->adjustment->upper;
+    new_upper = GTK_RANGE(AGS_NOTE_EDIT(editor->current_edit_widget)->hscrollbar)->adjustment->upper;
   
-    gtk_adjustment_set_value(GTK_RANGE(AGS_NOTE_EDIT(editor->edit_widget)->hscrollbar)->adjustment,
+    gtk_adjustment_set_value(GTK_RANGE(AGS_NOTE_EDIT(editor->current_edit_widget)->hscrollbar)->adjustment,
 			     position / old_upper * new_upper);
-  }else if(AGS_IS_PATTERN_EDIT(editor->edit_widget)){
-    position = GTK_RANGE(AGS_PATTERN_EDIT(editor->edit_widget)->hscrollbar)->adjustment->value;
-    old_upper = GTK_RANGE(AGS_PATTERN_EDIT(editor->edit_widget)->hscrollbar)->adjustment->upper;
+  }else if(AGS_IS_PATTERN_EDIT(editor->current_edit_widget)){
+    position = GTK_RANGE(AGS_PATTERN_EDIT(editor->current_edit_widget)->hscrollbar)->adjustment->value;
+    old_upper = GTK_RANGE(AGS_PATTERN_EDIT(editor->current_edit_widget)->hscrollbar)->adjustment->upper;
   
-    AGS_PATTERN_EDIT(editor->edit_widget)->flags |= AGS_PATTERN_EDIT_RESETING_HORIZONTALLY;
-    ags_pattern_edit_reset_horizontally(AGS_PATTERN_EDIT(editor->edit_widget), AGS_PATTERN_EDIT_RESET_HSCROLLBAR |
+    AGS_PATTERN_EDIT(editor->current_edit_widget)->flags |= AGS_PATTERN_EDIT_RESETING_HORIZONTALLY;
+    ags_pattern_edit_reset_horizontally(AGS_PATTERN_EDIT(editor->current_edit_widget), AGS_PATTERN_EDIT_RESET_HSCROLLBAR |
 				     AGS_PATTERN_EDIT_RESET_WIDTH);
-    AGS_PATTERN_EDIT(editor->edit_widget)->flags &= (~AGS_PATTERN_EDIT_RESETING_HORIZONTALLY);
+    AGS_PATTERN_EDIT(editor->current_edit_widget)->flags &= (~AGS_PATTERN_EDIT_RESETING_HORIZONTALLY);
 
-    new_upper = GTK_RANGE(AGS_PATTERN_EDIT(editor->edit_widget)->hscrollbar)->adjustment->upper;
+    new_upper = GTK_RANGE(AGS_PATTERN_EDIT(editor->current_edit_widget)->hscrollbar)->adjustment->upper;
   
-    gtk_adjustment_set_value(GTK_RANGE(AGS_PATTERN_EDIT(editor->edit_widget)->hscrollbar)->adjustment,
+    gtk_adjustment_set_value(GTK_RANGE(AGS_PATTERN_EDIT(editor->current_edit_widget)->hscrollbar)->adjustment,
 			     position / old_upper * new_upper);
   }
 }
@@ -257,7 +327,7 @@ ags_toolbar_mode_callback(GtkWidget *widget, AgsToolbar *toolbar)
   editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(toolbar),
 						 AGS_TYPE_EDITOR);
 
-  notebook = editor->notebook;
+  notebook = editor->current_notebook;
 
   /* toggle AgsNotebook */
   history = gtk_combo_box_get_active((GtkComboBox *) toolbar->mode);
