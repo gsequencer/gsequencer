@@ -1,6 +1,6 @@
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
 "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
-<refentry id="ags">
+<refentry id="gsequencer">
 
   <refentryinfo>
     <date>2015-06-15</date>
@@ -8,20 +8,20 @@
   
   <refmeta>
     <refentrytitle>
-      <application>ags</application>
+      <application>gsequencer</application>
     </refentrytitle>
     <manvolnum>1</manvolnum>
-    <refmiscinfo>ags v0.4.2</refmiscinfo>
+    <refmiscinfo>gsequencer v0.4.2</refmiscinfo>
   </refmeta>
 
   <refnamediv>
-    <refname>ags</refname>
+    <refname>gsequencer</refname>
     <refpurpose>Advanced Gtk+ Sequencer is an audio sequencer and composition editor</refpurpose>
   </refnamediv>
 
   <refsynopsisdiv>
     <cmdsynopsis>
-      <command>/usr/bin/ags</command>
+      <command>/usr/bin/gsequencer</command>
       <arg>--help</arg>
       <arg>--version</arg>
       <arg>--single-thread</arg>

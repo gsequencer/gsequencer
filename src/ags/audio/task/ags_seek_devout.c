@@ -171,9 +171,9 @@ ags_seek_devout_launch(AgsTask *task)
   }
   
   if(seek_devout->move_forward){
-    AGS_DEVOUT(seek_devout->devout)->tact_counter += seek_devout->steps;
+    AGS_DEVOUT(seek_devout->devout)->tact_counter += (seek_devout->steps / AGS_DEVOUT(seek_devout->devout)->delay[AGS_DEVOUT(seek_devout->devout)->tic_counter]);
   }else{
-    AGS_DEVOUT(seek_devout->devout)->tact_counter -= seek_devout->steps;
+    AGS_DEVOUT(seek_devout->devout)->tact_counter -= (seek_devout->steps / AGS_DEVOUT(seek_devout->devout)->delay[AGS_DEVOUT(seek_devout->devout)->tic_counter]);
   }
 }
 

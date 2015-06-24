@@ -243,12 +243,6 @@ ags_machine_editor_init(AgsMachineEditor *machine_editor)
 			   (GtkWidget *) gtk_label_new(g_strdup("resize channels\0")));
 
   /* GtkButton's in GtkDialog->action_area  */
-  machine_editor->add = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_ADD);
-  gtk_box_pack_start((GtkBox *) machine_editor->dialog.action_area, (GtkWidget *) machine_editor->add, FALSE, FALSE, 0);
-
-  machine_editor->remove = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_REMOVE);
-  gtk_box_pack_start((GtkBox *) machine_editor->dialog.action_area, (GtkWidget *) machine_editor->remove, FALSE, FALSE, 0);
-
   machine_editor->apply = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_APPLY);
   gtk_box_pack_start((GtkBox *) machine_editor->dialog.action_area, (GtkWidget *) machine_editor->apply, FALSE, FALSE, 0);
 
@@ -334,12 +328,6 @@ ags_machine_editor_connect(AgsConnectable *connectable)
   ags_connectable_connect(AGS_CONNECTABLE(machine_editor->resize_editor));
 
   /* AgsMachineEditor buttons */
-  g_signal_connect((GObject *) machine_editor->add, "clicked\0",
-		   G_CALLBACK(ags_machine_editor_add_callback), (gpointer) machine_editor);
-
-  g_signal_connect((GObject *) machine_editor->remove, "clicked\0",
-		   G_CALLBACK(ags_machine_editor_remove_callback), (gpointer) machine_editor);
-
   g_signal_connect((GObject *) machine_editor->apply, "clicked\0",
 		   G_CALLBACK(ags_machine_editor_apply_callback), (gpointer) machine_editor);
 

@@ -100,7 +100,7 @@ ags_menu_bar_open_ok_callback(GtkWidget *widget, AgsMenuBar *menu_bar)
 
   error = NULL;
 
-  g_spawn_command_line_async(g_strdup_printf("./ags --filename %s\0",
+  g_spawn_command_line_async(g_strdup_printf("./gsequencer --filename %s\0",
 					     filename),
 			     &error);
 
@@ -173,7 +173,7 @@ ags_menu_bar_save_as_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 
     window->name = filename;
     gtk_window_set_title((GtkWindow *) window,
-			 g_strconcat("ags - \0",
+			 g_strconcat("GSequencer - \0",
 				     window->name,
 				     NULL));
     
@@ -488,7 +488,7 @@ ags_menu_bar_about_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   }
   
   gtk_show_about_dialog((GtkWindow *) gtk_widget_get_ancestor((GtkWidget *) menu_bar, GTK_TYPE_WINDOW),
-			"program-name\0", "ags\0",
+			"program-name\0", "gsequencer\0",
 			"authors\0", authors,
 			"license\0", license,
 			"version\0", AGS_VERSION,

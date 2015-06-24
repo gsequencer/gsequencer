@@ -160,7 +160,7 @@ ags_init_audio_launch(AgsTask *task)
   /* init audio */
   if(init_audio->playback){
     devout_play = AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->devout_play;
-
+    
     list = ags_audio_recursive_play_init(audio,
 					 TRUE, FALSE, FALSE);
 
@@ -187,6 +187,7 @@ ags_init_audio_launch(AgsTask *task)
   }
 
   if(init_audio->notation){
+    g_message("init\0");
     devout_play = AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->devout_play;
 
     list = ags_audio_recursive_play_init(audio,

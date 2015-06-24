@@ -53,7 +53,7 @@ struct _AgsNavigation
   guint flags;
 
   AgsDevout *devout;
-  guint start_tact;
+  gdouble start_tact;
   
   GtkToggleButton *expander;
 

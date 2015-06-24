@@ -170,7 +170,8 @@ ags_cancel_audio_launch(AgsTask *task)
       g_object_ref(AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0]);
       ags_channel_tillrecycling_cancel(channel,
 				       AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0]);
-      AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0] = NULL;
+      AGS_DEVOUT_PLAY(channel->devout_play)->flags &= (~AGS_DEVOUT_PLAY_PLAYBACK);
+      //      AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0] = NULL;
 
       if(AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[1] == NULL &&
 	 AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[2] == NULL){
@@ -196,7 +197,8 @@ ags_cancel_audio_launch(AgsTask *task)
       g_object_ref(AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[1]);
       ags_channel_tillrecycling_cancel(channel,
 				       AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[1]);
-      AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[1] = NULL;
+      AGS_DEVOUT_PLAY(channel->devout_play)->flags &= (~AGS_DEVOUT_PLAY_SEQUENCER);
+      //      AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[1] = NULL;
 
       g_message("unset\0");
       
@@ -223,7 +225,8 @@ ags_cancel_audio_launch(AgsTask *task)
       g_object_ref(AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[2]);
       ags_channel_tillrecycling_cancel(channel,
 				       AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[2]);
-      AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[2] = NULL;
+      AGS_DEVOUT_PLAY(channel->devout_play)->flags &= (~AGS_DEVOUT_PLAY_NOTATION);
+      //      AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[2] = NULL;
 
       if(AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[1] == NULL){
 	/* set remove flag only as no sequencer */

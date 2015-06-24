@@ -32,10 +32,6 @@ int ags_machine_editor_show_callback(GtkWidget *widget, AgsMachineEditor *machin
 
 int ags_machine_editor_switch_page_callback(GtkNotebook *notebook, GtkNotebookPage *page, guint page_num, AgsMachineEditor *machine_editor);
 
-int ags_machine_editor_add_callback(GtkWidget *widget, AgsMachineEditor *machine_editor);
-int ags_machine_editor_remove_callback(GtkWidget *widget, AgsMachineEditor *machine_editor);
-int ags_machine_editor_back_callback(GtkWidget *button, AgsMachineEditor *machine_editor);
-
 int ags_machine_editor_apply_callback(GtkWidget *widget, AgsMachineEditor *machine_editor);
 int ags_machine_editor_ok_callback(GtkWidget *widget, AgsMachineEditor *machine_editor);
 int ags_machine_editor_cancel_callback(GtkWidget *widget, AgsMachineEditor *machine_editor);

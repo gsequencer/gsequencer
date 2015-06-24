@@ -899,7 +899,7 @@ ags_audio_loop_play_channel(AgsAudioLoop *audio_loop)
 
       play = (AgsDevoutPlay *) list_play->data;
       channel = AGS_CHANNEL(play->source);
-
+      
       /*  */
       pthread_mutex_lock(&(ags_application_mutex));
 
@@ -1102,12 +1102,12 @@ ags_audio_loop_play_audio(AgsAudioLoop *audio_loop)
 	
 	while(channel != NULL){
 	  play = AGS_DEVOUT_PLAY(channel->devout_play);	  
-	  play->flags &= (~(AGS_DEVOUT_PLAY_REMOVE));
+	  play->flags &= (~(AGS_DEVOUT_PLAY_REMOVE | AGS_DEVOUT_PLAY_DONE));
 
 	  //	  ags_audio_done(audio);
 
 	  //TODO:JK: verify g_object_unref() missing
-	  //play->recall_id[0] = NULL;
+	  play->recall_id[0] = NULL;
 	  play->recall_id[1] = NULL;
 	  play->recall_id[2] = NULL;
 
