@@ -1,3 +1,63 @@
+/* This file is part of GSequencer.
+ * 
+ * GSequencer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GSequencer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+ */
+/* This file is part of GSequencer.
+ * 
+ * GSequencer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GSequencer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+ */
+/* This file is part of GSequencer.
+ * 
+ * GSequencer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GSequencer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+ */
+/* This file is part of GSequencer.
+ * 
+ * GSequencer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GSequencer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+ */
 /* AGS - Advanced GTK Sequencer
  * Copyright (C) 2005-2011, 2014 Joël Krähemann
  *
@@ -193,10 +253,21 @@ ags_pattern_edit_init(AgsPatternEdit *pattern_edit)
 void
 ags_pattern_edit_connect(AgsConnectable *connectable)
 {
+  AgsEditor *editor;
   AgsPatternEdit *pattern_edit;
 
   pattern_edit = AGS_PATTERN_EDIT(connectable);
 
+  editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(pattern_edit),
+						 AGS_TYPE_EDITOR);
+  
+  if(editor != NULL && editor->selected_machine != NULL){
+    g_signal_connect(editor->selected_machine->audio, "set-audio-channels\0",
+		     G_CALLBACK(ags_pattern_edit_set_audio_channels_callback), pattern_edit);
+    g_signal_connect(editor->selected_machine->audio, "set-pads\0",
+		     G_CALLBACK(ags_pattern_edit_set_pads_callback), pattern_edit);
+  }
+  
   g_signal_connect_after((GObject *) pattern_edit->drawing_area, "expose_event\0",
 			 G_CALLBACK (ags_pattern_edit_drawing_area_expose_event), (gpointer) pattern_edit);
 
@@ -290,7 +361,10 @@ ags_pattern_edit_reset_vertically(AgsPatternEdit *pattern_edit, guint flags)
 	height = widget->allocation.height;
 	gtk_adjustment_set_upper(adjustment,
 				 (gdouble) (pattern_edit->map_height - height));
-	gtk_adjustment_set_value(adjustment, 0.0);
+
+	if(adjustment->value > adjustment->upper){
+	  gtk_adjustment_set_value(adjustment, adjustment->upper);
+	}
       }else{
 	height = pattern_edit->map_height;
 	
@@ -328,7 +402,7 @@ ags_pattern_edit_reset_vertically(AgsPatternEdit *pattern_edit, guint flags)
       cairo_paint(cr);
     }
 
-    //    ags_meter_paint(editor->meter);
+    //    ags_meter_paint(editor->current_meter);
   }
 }
 
@@ -668,7 +742,7 @@ ags_pattern_edit_draw_notation(AgsPatternEdit *pattern_edit, cairo_t *cr)
 
   i = 0;
 
-  while((selected_channel = ags_notebook_next_active_tab(editor->notebook,
+  while((selected_channel = ags_notebook_next_active_tab(editor->current_notebook,
 							 i)) != -1){
     list_notation = g_list_nth(machine->audio->notation,
 			       selected_channel);

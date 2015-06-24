@@ -1,3 +1,63 @@
+/* This file is part of GSequencer.
+ * 
+ * GSequencer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GSequencer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+ */
+/* This file is part of GSequencer.
+ * 
+ * GSequencer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GSequencer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+ */
+/* This file is part of GSequencer.
+ * 
+ * GSequencer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GSequencer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+ */
+/* This file is part of GSequencer.
+ * 
+ * GSequencer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GSequencer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+ */
 /* AGS - Advanced GTK Sequencer
  * Copyright (C) 2005-2011 Joël Krähemann
  *
@@ -23,11 +83,6 @@
 #include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_task_thread.h>
 
-#include <ags/audio/ags_audio.h>
-#include <ags/audio/ags_channel.h>
-#include <ags/audio/ags_output.h>
-#include <ags/audio/ags_input.h>
-
 #include <ags/audio/task/ags_scroll_on_play.h>
 
 #include <ags/X/ags_window.h>
@@ -48,71 +103,33 @@ ags_editor_parent_set_callback(GtkWidget  *widget, GtkObject *old_parent, AgsEdi
   if(old_parent != NULL)
     return;
 
-  if(AGS_IS_NOTE_EDIT(editor->edit_widget)){
-    AGS_NOTE_EDIT(editor->edit_widget)->flags |= AGS_NOTE_EDIT_RESETING_HORIZONTALLY;
-    ags_note_edit_reset_horizontally(AGS_NOTE_EDIT(editor->edit_widget), AGS_NOTE_EDIT_RESET_HSCROLLBAR);
-    AGS_NOTE_EDIT(editor->edit_widget)->flags &= (~AGS_NOTE_EDIT_RESETING_HORIZONTALLY);
-  }else if(AGS_IS_PATTERN_EDIT(editor->edit_widget)){
-    AGS_PATTERN_EDIT(editor->edit_widget)->flags |= AGS_PATTERN_EDIT_RESETING_HORIZONTALLY;
-    ags_pattern_edit_reset_horizontally(AGS_PATTERN_EDIT(editor->edit_widget), AGS_PATTERN_EDIT_RESET_HSCROLLBAR);
-    AGS_PATTERN_EDIT(editor->edit_widget)->flags &= (~AGS_PATTERN_EDIT_RESETING_HORIZONTALLY);
+  if(AGS_IS_NOTE_EDIT(editor->current_edit_widget)){
+    AGS_NOTE_EDIT(editor->current_edit_widget)->flags |= AGS_NOTE_EDIT_RESETING_HORIZONTALLY;
+    ags_note_edit_reset_horizontally(AGS_NOTE_EDIT(editor->current_edit_widget), AGS_NOTE_EDIT_RESET_HSCROLLBAR);
+    AGS_NOTE_EDIT(editor->current_edit_widget)->flags &= (~AGS_NOTE_EDIT_RESETING_HORIZONTALLY);
+  }else if(AGS_IS_PATTERN_EDIT(editor->current_edit_widget)){
+    AGS_PATTERN_EDIT(editor->current_edit_widget)->flags |= AGS_PATTERN_EDIT_RESETING_HORIZONTALLY;
+    ags_pattern_edit_reset_horizontally(AGS_PATTERN_EDIT(editor->current_edit_widget), AGS_PATTERN_EDIT_RESET_HSCROLLBAR);
+    AGS_PATTERN_EDIT(editor->current_edit_widget)->flags &= (~AGS_PATTERN_EDIT_RESETING_HORIZONTALLY);
   }
 }
 
 void
-ags_editor_set_audio_channels_callback(AgsAudio *audio,
-				       guint audio_channels, guint audio_channels_old,
-				       AgsEditor *editor)
+ags_editor_tic_callback(AgsDevout *devout,
+			AgsEditor *editor)
+
 {
-  GList *tabs;
-  GList *notation;
-  guint i;
+  AgsWindow *window;
 
-  if(audio_channels_old < audio_channels){
-    notation = g_list_nth(audio->notation,
-			  audio_channels_old - 1);
+  window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(editor)));
 
-    for(i = audio_channels_old; i < audio_channels; i++){
-      ags_notebook_insert_tab(editor->notebook,
-			      i);
-      tabs = editor->notebook->tabs;
-      notation = notation->next;
-      AGS_NOTEBOOK_TAB(tabs->data)->notation = notation->data;
-      gtk_toggle_button_set_active(AGS_NOTEBOOK_TAB(tabs->data)->toggle,
-				   TRUE);
-    }
+  if(gtk_toggle_button_get_active(window->navigation->scroll)){
+    AgsScrollOnPlay *scroll_on_play;
 
-    gtk_widget_show_all(editor->notebook);
-  }else{
-    for(i = audio_channels; i < audio_channels_old; i++){
-      ags_notebook_remove_tab(editor->notebook,
-			      i);
-    }
-  }
-}
+    scroll_on_play = ags_scroll_on_play_new(editor);
+    ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->task_thread),
+				AGS_TASK(scroll_on_play));
 
-void
-ags_editor_set_pads_callback(AgsAudio *audio,
-			     GType channel_type,
-			     guint pads, guint pads_old,
-			     AgsEditor *editor)
-{
-  if((AGS_AUDIO_NOTATION_DEFAULT & (audio->flags)) != 0){
-    if(!g_type_is_a(channel_type, AGS_TYPE_INPUT)){
-      return;
-    }
-  }else{
-    if(!g_type_is_a(channel_type, AGS_TYPE_OUTPUT)){
-      return;
-    }
-  }
-
-  if(AGS_IS_NOTE_EDIT(editor->edit_widget)){
-    ags_note_edit_set_map_height(AGS_NOTE_EDIT(editor->edit_widget),
-			       pads * AGS_NOTE_EDIT(editor->edit_widget)->control_height);
-  }else if(AGS_IS_PATTERN_EDIT(editor->edit_widget)){
-    ags_pattern_edit_set_map_height(AGS_PATTERN_EDIT(editor->edit_widget),
-				    pads * AGS_PATTERN_EDIT(editor->edit_widget)->control_height);
   }
 }
 
@@ -122,11 +139,3 @@ ags_editor_machine_changed_callback(AgsMachineSelector *machine_selector, AgsMac
 {
   ags_editor_machine_changed(editor, machine);
 }
-
-void
-ags_editor_change_position_callback(AgsNavigation *navigation, gdouble tact,
-				    AgsEditor *editor)
-{
-  //empty since no auto-scroll
-}
-

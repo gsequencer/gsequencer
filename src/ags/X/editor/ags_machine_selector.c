@@ -1,3 +1,63 @@
+/* This file is part of GSequencer.
+ * 
+ * GSequencer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GSequencer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+ */
+/* This file is part of GSequencer.
+ * 
+ * GSequencer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GSequencer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+ */
+/* This file is part of GSequencer.
+ * 
+ * GSequencer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GSequencer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+ */
+/* This file is part of GSequencer.
+ * 
+ * GSequencer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GSequencer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+ */
 /* AGS - Advanced GTK Sequencer
  * Copyright (C) 2014 Joël Krähemann
  *
@@ -232,8 +292,8 @@ ags_machine_selector_popup_new(AgsMachineSelector *machine_selector)
   item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("link index\0"));
   gtk_menu_shell_append((GtkMenuShell*) popup, (GtkWidget*) item);
 
-  //  item = (GtkMenuItem *) gtk_check_menu_item_new_with_label(g_strdup("invert mapping\0"));
-  //  gtk_menu_shell_append((GtkMenuShell*) popup, (GtkWidget*) item);
+  item = (GtkMenuItem *) gtk_check_menu_item_new_with_label(g_strdup("reverse mapping\0"));
+  gtk_menu_shell_append((GtkMenuShell*) popup, (GtkWidget*) item);
 
   item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("shift piano\0"));
   gtk_menu_shell_append((GtkMenuShell*) popup, (GtkWidget*) item);
@@ -304,9 +364,9 @@ ags_machine_selector_popup_new(AgsMachineSelector *machine_selector)
   g_signal_connect(G_OBJECT(list->data), "activate\0",
 		   G_CALLBACK(ags_machine_selector_popup_link_index_callback), (gpointer) machine_selector);
 
-  //  list = list->next;
-  //  g_signal_connect_after(G_OBJECT(list->data), "activate\0",
-  //			 G_CALLBACK(ags_machine_selector_popup_invert_mapping_callback), (gpointer) machine_selector);
+  list = list->next;
+  g_signal_connect_after(G_OBJECT(list->data), "activate\0",
+			 G_CALLBACK(ags_machine_selector_popup_reverse_mapping_callback), (gpointer) machine_selector);
 
   g_list_free(list_start);
 

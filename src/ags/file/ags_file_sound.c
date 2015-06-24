@@ -1,3 +1,63 @@
+/* This file is part of GSequencer.
+ * 
+ * GSequencer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GSequencer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+ */
+/* This file is part of GSequencer.
+ * 
+ * GSequencer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GSequencer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+ */
+/* This file is part of GSequencer.
+ * 
+ * GSequencer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GSequencer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+ */
+/* This file is part of GSequencer.
+ * 
+ * GSequencer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GSequencer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+ */
 /* AGS - Advanced GTK Sequencer
  * Copyright (C) 2013 Joël Krähemann
  *
@@ -175,9 +235,11 @@ ags_file_read_devout(AgsFile *file, xmlNode *node, AgsDevout **devout)
   str = xmlGetProp(node, "bpm\0");
 
   if(str != NULL){
+    gchar *endptr;
+    
     g_object_set(gobject,
 		 "bpm\0", (gdouble) g_ascii_strtod(str,
-						   NULL),
+						   &endptr),
 		 NULL);
   }else{
     g_object_set(gobject,
@@ -4451,28 +4513,40 @@ ags_file_read_notation(AgsFile *file, xmlNode *node, AgsNotation **notation)
 		   "base-frequency\0");
 
   if(str != NULL){
+    gchar *endptr;
+    
     gobject->base_frequency = (gdouble) g_ascii_strtod(str,
-						       NULL);
+						       &endptr);
+  }
+
+  str = xmlGetProp(node,
+		   "tact\0");
+
+  if(str != NULL){
+    gobject->tact = (gdouble) g_ascii_strtod(str,
+					     NULL);
+  }else{
+    gobject->tact = (1.0 / 16.0);
   }
   
-  gobject->tact = (gdouble) g_ascii_strtod(xmlGetProp(node,
-						      "tact\0"),
-					   NULL);
-
   str = xmlGetProp(node,
 		   "bpm\0");
 
   if(str != NULL){
+    gchar *endptr;
+
     gobject->bpm = (gdouble) g_ascii_strtod(str,
-					    NULL);
+					    &endptr);
   }
 
   str = xmlGetProp(node,
 		   "max-note-length\0");
 
   if(str != NULL){
+    gchar *endptr;
+    
     gobject->maximum_note_length = (gdouble) g_ascii_strtod(str,
-							    NULL);
+							    &endptr);
   }else{
     gobject->maximum_note_length = 16.0;
   }
@@ -4481,11 +4555,13 @@ ags_file_read_notation(AgsFile *file, xmlNode *node, AgsNotation **notation)
 		    "loop-start\0");
 
   if(prop != NULL){
+    gchar *endptr;
+    
     gobject->start_loop = (gdouble) g_ascii_strtod(prop,
-						   NULL);
+						   &endptr);
     gobject->end_loop = (gdouble) g_ascii_strtod(xmlGetProp(node,
 							    "loop-end\0"),
-						 NULL);
+						 &endptr);
   }
 
   /* port */
@@ -4793,8 +4869,10 @@ ags_file_read_note(AgsFile *file, xmlNode *node, AgsNote **note)
   str = xmlGetProp(node,
 		   "frequency\0");
   if(str != NULL){
+    gchar *endptr;
+    
     gobject->frequency = (gdouble) g_ascii_strtod(str,
-						  NULL);
+						  &endptr);
   }
 }
 
