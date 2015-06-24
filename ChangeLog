@@ -1,4 +1,24 @@
-ags (0.4.2-78-1)
+ags (0.4.2.81)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* removed useless controls add/remove in machine property editor
+	* fixed navigation duration
+	* fixed seeking
+	* fixed crash according not properbly cleaning up after playing
+
+ags (0.4.2.80)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed renaming
+	* fixed audio channel bug in notation recall
+
+ags (0.4.2.79)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* renamed binary and project
+	* added missing copyright notice
+
+ags (0.4.2-78)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented distinct between sequencer and notation loop
@@ -7,7 +27,7 @@ ags (0.4.2-78-1)
 	* refactored fix auto-scroll
 	* added exclude sequencer for export dialog
 
-ags (0.4.2-77-1)
+ags (0.4.2-77)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed possible NULL pointer in ags_play_notation.c
@@ -15,7 +35,7 @@ ags (0.4.2-77-1)
 	* implemented AGS_AUDIO_REVERSE_MAPPING flag, it indicates channel mapping should be interpreted in reverse order
 	* implemented invert tool for notation editor
 
-ags (0.4.2-76-1)
+ags (0.4.2-76)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed boundary for matrix clipboard
@@ -27,7 +47,7 @@ ags (0.4.2-76-1)
 	* fixed audio channel resize for mono machines, disabled it in machine properties dialog
 	* enhanced LADSPA browser refresh
 
-ags (0.4.2-75-1)
+ags (0.4.2-75)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed deactivate led in AgsDrum and AgsMatrix
@@ -35,7 +55,7 @@ ags (0.4.2-75-1)
 	* fixed adjusting audio channels for tabs of editor
 	* implemented shift piano thereby fixed piano allocation
 
-ags (0.4.2-74-1)
+ags (0.4.2-74)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed AgsPatternEdit focus, selection, coloring of selected notes and a crash related to wrong function call
@@ -44,20 +64,20 @@ ags (0.4.2-74-1)
 	* fixed AgsMatrix input
 	* fixed NULL pointer error in ags_count_beats_audio_run.c
 
-ags (0.4.2-73-1)
+ags (0.4.2-73)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* back-ported AgsPatternEdit
 	* implemented basic editing key strokes like Ctrl-c, Ctrl-v and Ctrl-x for AgsPatternEdit
 
-ags (0.4.2-72-1)
+ags (0.4.2-72)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented basic editing key strokes like Ctrl-c, Ctrl-v and Ctrl-x
 	* implemented seeking for paste if position tool is selected
 	* updated clipboard version to 0.4.2
 
-ags (0.4.2-71-1)
+ags (0.4.2-71)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* commented-out two unimplemented menu entries in editor's machine selector. Add and remove tab you may do so by using resize tab of machine properties dialog.
@@ -66,17 +86,17 @@ ags (0.4.2-71-1)
 	* fixed refresh of GUI after cut or paste
 	* fixed crash related to XML IO
 
-ags (0.4.2-70-1)
+ags (0.4.2-70)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* minor bug-fixes
 
-ags (0.4.2-69-1)
+ags (0.4.2-69)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* added XSL file to transform output of `midi2xml` using `xsltproc`
 
-ags (0.4.2-68-1)
+ags (0.4.2-68)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* added `midi2xml` the MIDI file to XML parser

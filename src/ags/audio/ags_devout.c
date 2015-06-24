@@ -1637,6 +1637,7 @@ ags_devout_alsa_free(AgsDevout *devout)
   snd_pcm_close(devout->out.alsa.handle);
   devout->out.alsa.handle = NULL;
 
+  devout->tact_counter = 0.0;
   //  pthread_mutex_unlock(mutex);
 } 
 

@@ -112,8 +112,15 @@ void
 ags_navigation_rewind_callback(GtkWidget *widget,
 			       AgsNavigation *navigation)
 {
+  AgsWindow *window;
+  gdouble tact;
+
+  window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
+
+  tact = window->devout->tact_counter - navigation->start_tact;
+  
   gtk_spin_button_set_value(navigation->position_tact,
-			    navigation->position_tact->adjustment->value +
+			    tact +
 			    (-1.0 * AGS_NAVIGATION_REWIND_STEPS));
 }
 
@@ -121,8 +128,15 @@ void
 ags_navigation_prev_callback(GtkWidget *widget,
 			     AgsNavigation *navigation)
 {
+  AgsWindow *window;
+  gdouble tact;
+
+  window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
+
+  tact = window->devout->tact_counter - navigation->start_tact;
+  
   gtk_spin_button_set_value(navigation->position_tact,
-			    navigation->position_tact->adjustment->value +
+			    tact +
 			    (-1.0 * AGS_NAVIGATION_SEEK_STEPS));
 }
 
@@ -212,7 +226,7 @@ ags_navigation_stop_callback(GtkWidget *widget,
 
   timestr = ags_navigation_tact_to_time_string(0.0,
 					       navigation->bpm->adjustment->value);
-  gtk_label_set_text(navigation->position_time, timestr);
+  gtk_label_set_text(navigation->duration_time, timestr);
   
   g_free(timestr);
 }
@@ -221,8 +235,15 @@ void
 ags_navigation_next_callback(GtkWidget *widget,
 			     AgsNavigation *navigation)
 {
+  AgsWindow *window;
+  gdouble tact;
+
+  window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
+
+  tact = window->devout->tact_counter - navigation->start_tact;
+
   gtk_spin_button_set_value(navigation->position_tact,
-			    navigation->position_tact->adjustment->value +
+			    tact +
 			    AGS_NAVIGATION_REWIND_STEPS);
 }
 
@@ -230,9 +251,15 @@ void
 ags_navigation_forward_callback(GtkWidget *widget,
 				AgsNavigation *navigation)
 {
+  AgsWindow *window;
+  gdouble tact;
+
+  window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
+
+  tact = window->devout->tact_counter - navigation->start_tact;
 
   gtk_spin_button_set_value(navigation->position_tact,
-			    navigation->position_tact->adjustment->value +
+			    tact +
 			    AGS_NAVIGATION_DEFAULT_TACT_STEP);
 }
 

@@ -179,7 +179,7 @@ ags_window_init(AgsWindow *window)
 
   window->name = g_strdup("unnamed\0");
 
-  gtk_window_set_title((GtkWindow *) window, g_strconcat("ags - \0", window->name, NULL));
+  gtk_window_set_title((GtkWindow *) window, g_strconcat("GSequencer - \0", window->name, NULL));
 
   vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
   gtk_container_add((GtkContainer *) window, (GtkWidget*) vbox);

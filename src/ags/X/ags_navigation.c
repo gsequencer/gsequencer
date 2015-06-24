@@ -463,13 +463,15 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
   editor = window->editor;
 
   /* seek devout */
-  delay = (window->devout->frequency / window->devout->buffer_size * (60.0 / navigation->bpm->adjustment->value));
+  delay = window->devout->delay[window->devout->tic_counter];
 
-  if(navigation->start_tact < tact_counter){
-    steps = (guint) ((tact_counter - navigation->start_tact) * delay);
+  tact = window->devout->tact_counter - navigation->start_tact;
+  
+  if(tact < tact_counter){
+    steps = (guint) ((tact_counter - tact) * delay);
     move_forward = TRUE;
   }else{
-    steps = (guint) ((navigation->start_tact - tact_counter) * delay);
+    steps = (guint) ((navigation->start_tact - tact) * delay);
     move_forward = FALSE;
   }
   
@@ -481,8 +483,6 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
 			      AGS_TASK(seek_devout));
 
   /* update GUI */
-  navigation->start_tact = tact_counter;
-
   zoom_factor = 0.25;
 
   tact_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->zoom));
