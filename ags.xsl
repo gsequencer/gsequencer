@@ -89,7 +89,7 @@
 	      <xsl:with-param name="current-tick" select="$current-tick"/>
 	    </xsl:call-template>
 	  </xsl:variable>
-	  <xsl:attribute name="x0"><xsl:value-of select="floor($x0)"/></xsl:attribute>
+	  <xsl:attribute name="x0"><xsl:value-of select="round($x0)"/></xsl:attribute>
 	  
 	  <xsl:if test="following-sibling::node()[@event='note-off' and @note='$y']">
 	    <xsl:variable name="next-tick"><xsl:value-of select="following-sibling::node()[@event='note-off' and @note='$y']/@delta-time"/></xsl:variable>
@@ -107,7 +107,7 @@
 	  
 	  <xsl:if test="not(following-sibling::ags-note[@event='note-off' and @note='$y'])">
 	    <xsl:variable name="add-one" select="1"/>
-	    <xsl:attribute name="x1"><xsl:value-of select="floor($x0) + $add-one"/></xsl:attribute>
+	    <xsl:attribute name="x1"><xsl:value-of select="round($x0) + $add-one"/></xsl:attribute>
 	  </xsl:if>
 	  
 	</ags-note>

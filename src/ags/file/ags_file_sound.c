@@ -283,13 +283,23 @@ ags_file_read_devout(AgsFile *file, xmlNode *node, AgsDevout **devout)
   }else{
     gobject->delay_counter = 0;
   }
+
+  str = xmlGetProp(node, "device\0");
   
   if((AGS_DEVOUT_LIBAO & (gobject->flags)) != 0){
     //TODO:JK: implement me
   }else if((AGS_DEVOUT_OSS & (gobject->flags)) != 0){
-    gobject->out.oss.device = xmlGetProp(node, "device\0");
+    if(str != NULL){
+      gobject->out.oss.device = g_strdup(str);
+    }else{
+      gobject->out.oss.device = g_strdup("/dev/dsp\0");
+    }
   }else if((AGS_DEVOUT_ALSA & (gobject->flags)) != 0){
-    gobject->out.alsa.device = xmlGetProp(node, "device\0");
+    if(str != NULL){
+      gobject->out.alsa.device = g_strdup(str);
+    }else{
+      gobject->out.alsa.device = g_strdup("default\0");
+    }
   }
 }
 

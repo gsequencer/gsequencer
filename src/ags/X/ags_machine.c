@@ -817,9 +817,11 @@ ags_machine_set_run(AgsMachine *machine,
 }
 
 /**
- * ags_machine_set_run:
+ * ags_machine_set_run_extended:
  * @machine: the #AgsMachine
  * @run: if %TRUE playback is started, otherwise stopped
+ * @sequencer:
+ * @notation:
  *
  * Start/stop playback of @machine.
  *
