@@ -770,21 +770,11 @@ ags_recall_channel_run_duplicate(AgsRecall *recall,
 				 guint *n_params, GParameter *parameter)
 {
   AgsAudio *audio;
-  AgsChannel *output, *destination;;
+  AgsChannel *output;
   AgsRecallChannelRun *recall_channel_run, *copy;
   AgsRecallID *output_recall_id;
 
   recall_channel_run = AGS_RECALL_CHANNEL_RUN(recall);
-
-  if(g_type_is_a(G_OBJECT_TYPE(recall_channel_run->source), AGS_TYPE_OUTPUT)){
-    destination = NULL;
-  }else{
-    if(recall_id->recycling_container->parent != NULL){
-      destination = AGS_RECYCLING(AGS_RECALL_ID(recall_id->recycling_container->parent->recall_id)->recycling)->channel;
-    }else{
-      destination = NULL;
-    }
-  }
   
   parameter = ags_parameter_grow(G_OBJECT_TYPE(recall),
 				 parameter, n_params,
@@ -792,7 +782,6 @@ ags_recall_channel_run_duplicate(AgsRecall *recall,
 				 "recall_channel\0", recall_channel_run->recall_channel,
 				 "audio_channel\0", recall_channel_run->audio_channel,
 				 "source\0", recall_channel_run->source,
-				 "destination\0", destination,
 				 NULL);
   copy = AGS_RECALL_CHANNEL_RUN(AGS_RECALL_CLASS(ags_recall_channel_run_parent_class)->duplicate(recall,
 												 recall_id,
