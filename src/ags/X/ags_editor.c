@@ -388,12 +388,9 @@ ags_editor_real_machine_changed(AgsEditor *editor, AgsMachine *machine)
   }
 
   if(editor->current_notebook != NULL){
-    gtk_container_remove(editor->table,
-			 editor->current_notebook);
-    gtk_container_remove(editor->table,
-			 editor->current_meter);
-    gtk_container_remove(editor->table,
-			 editor->current_edit_widget);
+    gtk_widget_hide(editor->current_notebook);
+    gtk_widget_hide(editor->current_meter);
+    gtk_widget_hide(editor->current_edit_widget);
   }
   
   editor->current_notebook = NULL;
@@ -420,7 +417,10 @@ ags_editor_real_machine_changed(AgsEditor *editor, AgsMachine *machine)
   
   if(child == NULL){
     AgsEditorChild *editor_child;
+    guint y;
 
+    y = 2 * g_list_length(editor->editor_child);
+    
     editor_child = ags_editor_child_alloc(machine, NULL, NULL, NULL);
     editor->editor_child = g_list_prepend(editor->editor_child,
 					  editor_child);
@@ -432,7 +432,7 @@ ags_editor_real_machine_changed(AgsEditor *editor, AgsMachine *machine)
 					      NULL);
     g_object_ref(editor_child->notebook);
     gtk_table_attach(editor->table, (GtkWidget *) editor_child->notebook,
-		     0, 3, 0, 1,
+		     0, 3, y, y + 1,
 		     GTK_FILL|GTK_EXPAND, GTK_FILL,
 		     0, 0);
 
@@ -453,7 +453,7 @@ ags_editor_real_machine_changed(AgsEditor *editor, AgsMachine *machine)
       editor->current_meter = ags_meter_new();
     g_object_ref(editor_child->meter);
     gtk_table_attach(editor->table, (GtkWidget *) editor_child->meter,
-		     0, 1, 1, 2,
+		     0, 1, y + 1, y + 2,
 		     GTK_FILL, GTK_FILL,
 		     0, 0);
     ags_connectable_connect(AGS_CONNECTABLE(editor_child->meter));
@@ -464,7 +464,7 @@ ags_editor_real_machine_changed(AgsEditor *editor, AgsMachine *machine)
 	editor->current_edit_widget = ags_note_edit_new();
       g_object_ref(editor_child->edit_widget);
       gtk_table_attach(editor->table, (GtkWidget *) editor_child->edit_widget,
-		       1, 2, 1, 2,
+		       1, 2, y + 1, y + 2,
 		       GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
 		       0, 0);
 
@@ -478,7 +478,7 @@ ags_editor_real_machine_changed(AgsEditor *editor, AgsMachine *machine)
 	editor->current_edit_widget = ags_pattern_edit_new();
       g_object_ref(editor_child->edit_widget);
       gtk_table_attach(editor->table, (GtkWidget *) editor_child->edit_widget,
-		       1, 2, 1, 2,
+		       1, 2, y + 1, y + 2,
 		       GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
 		       0, 0);
 

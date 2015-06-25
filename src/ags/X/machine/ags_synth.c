@@ -227,8 +227,7 @@ ags_synth_init(AgsSynth *synth)
   audio = AGS_MACHINE(synth)->audio;
   audio->flags |= (AGS_AUDIO_ASYNC |
 		   AGS_AUDIO_OUTPUT_HAS_RECYCLING |
-		   AGS_AUDIO_INPUT_HAS_RECYCLING |
-		   AGS_AUDIO_HAS_NOTATION);
+		   AGS_AUDIO_INPUT_HAS_RECYCLING);
 
   AGS_MACHINE(synth)->input_pad_type = AGS_TYPE_SYNTH_INPUT_PAD;
   AGS_MACHINE(synth)->input_line_type = AGS_TYPE_SYNTH_INPUT_LINE;
@@ -241,7 +240,7 @@ ags_synth_init(AgsSynth *synth)
   g_signal_connect_after(G_OBJECT(AGS_MACHINE(synth)->audio), "set_pads\0",
 			 G_CALLBACK(ags_synth_set_pads), synth);
 
-  AGS_MACHINE(synth)->flags |= AGS_MACHINE_IS_SYNTHESIZER;
+  //  AGS_MACHINE(synth)->flags |= AGS_MACHINE_IS_SYNTHESIZER;
   AGS_MACHINE(synth)->mapping_flags |= AGS_MACHINE_MONO;
   
   /* create widgets */
@@ -451,6 +450,9 @@ ags_synth_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 				   "reference\0", gobject,
 				   NULL));
 
+  /* fix wrong flag */
+  AGS_MACHINE(gobject)->flags &= (~AGS_MACHINE_IS_SYNTHESIZER);
+  
   list = file->lookup;
 
   while((list = ags_file_lookup_find_by_node(list,

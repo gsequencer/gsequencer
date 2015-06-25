@@ -1085,7 +1085,7 @@ ags_file_real_read(AgsFile *file)
   ags_file_read_resolve(file);
 
   gtk_window_set_title((GtkWindow *) ags_main->window,
-		       g_strconcat("ags - \0",
+		       g_strconcat("GSequencer - \0",
 				   ags_main->window->name,
 				   NULL));
   gtk_widget_show_all(GTK_WIDGET(ags_main->window));

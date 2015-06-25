@@ -153,7 +153,24 @@ ags_machine_selector_init(AgsMachineSelector *machine_selector)
 void
 ags_machine_selector_connect(AgsConnectable *connectable)
 {
-  //TODO:JK: implement me
+  AgsMachineSelector *machine_selector;
+  GList *list, *list_start;
+  
+  machine_selector = AGS_MACHINE_SELECTOR(connectable);
+  
+  list =
+    list_start = gtk_container_get_children(machine_selector);
+  
+  list = list->next;
+  
+  while(list != NULL){
+    g_signal_connect_after(G_OBJECT(list->data), "clicked\0",
+			   G_CALLBACK(ags_machine_selector_radio_changed), machine_selector);
+
+    list = list->next;
+  }
+  
+  g_list_free(list_start);
 }
 
 void

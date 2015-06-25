@@ -137,6 +137,8 @@ ags_file_read_window(AgsFile *file, xmlNode *node, AgsWindow **window)
   
   if(str != NULL){
     gobject->name = (gchar *) g_strdup(str);
+  }else{
+    gobject->name = (gchar *) g_strdup(file->filename);
   }
   
   /* devout */
@@ -2928,7 +2930,8 @@ ags_file_read_machine_selector_resolve_parameter(AgsFileLookup *file_lookup,
 
   if(G_VALUE_HOLDS(value, G_TYPE_OBJECT)){
     AgsMachineRadioButton *machine_radio_button;
-
+    GList *list;
+    
     gobject = g_value_get_object(value);
 
     if(gobject == NULL){
@@ -2938,21 +2941,26 @@ ags_file_read_machine_selector_resolve_parameter(AgsFileLookup *file_lookup,
     editor = (AgsEditor *) gtk_widget_get_ancestor((GtkWidget *) machine_selector,
 						   AGS_TYPE_EDITOR);
 
+    list = gtk_container_get_children(machine_selector);
+    
     machine_radio_button = g_object_new(AGS_TYPE_MACHINE_RADIO_BUTTON,
 					NULL);
     gtk_box_pack_start(GTK_BOX(machine_selector),
 		       (GtkWidget *) machine_radio_button,
 		       FALSE, FALSE,
 		       0);
-    g_object_set(machine_radio_button,
-		 "machine\0", gobject,
-		 NULL);
-
-    if(editor->selected_machine == NULL){
-      ags_editor_machine_changed(editor,
-				 (AgsMachine *) gobject);
+    if(list->next != NULL){
+      g_object_set(machine_radio_button,
+		   "group\0", list->next->data,
+		   "machine\0", gobject,
+		   NULL);
+    }else{
+      g_object_set(machine_radio_button,
+		   "machine\0", gobject,
+		   NULL);
     }
 
+    g_list_free(list);
   }
 }
 

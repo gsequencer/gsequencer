@@ -501,13 +501,13 @@ ags_machine_play_callback(GtkWidget *toggle_button, AgsMachine *machine)
 
     printf("machine: off\n\0");
 
-    machine->flags |= AGS_MACHINE_BLOCK_STOP;
+    //    machine->flags |= AGS_MACHINE_BLOCK_STOP;
 
     ags_machine_set_run_extended(machine,
 				 FALSE,
 				 TRUE, FALSE);
 
-    machine->flags &= (~AGS_MACHINE_BLOCK_STOP);
+    //    machine->flags &= (~AGS_MACHINE_BLOCK_STOP);
   }
 }
 
