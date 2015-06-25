@@ -143,9 +143,30 @@ void
 ags_remove_audio_launch(AgsTask *task)
 {
   AgsRemoveAudio *remove_audio;
-
+  AgsChannel *current;
+  
   remove_audio = AGS_REMOVE_AUDIO(task);
 
+  current = remove_audio->audio->output;
+
+  while(current != NULL){
+    ags_channel_set_link(current,
+			 NULL,
+			 NULL);
+    
+    current = current->next;
+  }
+
+  current = remove_audio->audio->input;
+
+  while(current != NULL){
+    ags_channel_set_link(current,
+			 NULL,
+			 NULL);
+    
+    current = current->next;
+  }
+  
   /* remove audio */
   ags_devout_remove_audio(remove_audio->devout,
 			  G_OBJECT(remove_audio->audio));
