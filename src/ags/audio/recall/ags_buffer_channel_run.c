@@ -24,11 +24,14 @@
 
 #include <ags/main.h>
 
+#include <ags/lib/ags_parameter.h>
+
 #include <ags/object/ags_dynamic_connectable.h>
 #include <ags/object/ags_plugin.h>
 
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_output.h>
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_recall_id.h>
 
@@ -229,9 +232,27 @@ ags_buffer_channel_run_duplicate(AgsRecall *recall,
 				 AgsRecallID *recall_id,
 				 guint *n_params, GParameter *parameter)
 {
+  AgsOutput *destination;
   AgsBufferChannelRun *buffer_channel_run, *copy;
 
-  buffer_channel_run = (AgsBufferChannelRun *) recall;  
+  buffer_channel_run = (AgsBufferChannelRun *) recall;
+
+  if(AGS_IS_OUTPUT(AGS_RECALL_CHANNEL_RUN(recall)->source) ||
+     (AGS_AUDIO_OUTPUT_HAS_RECYCLING & (AGS_AUDIO(AGS_RECALL_CHANNEL_RUN(recall)->source->audio)->flags)) == 0){
+    destination = NULL;
+  }else{
+    if(recall_id->recycling_container->parent != NULL){
+      destination = AGS_RECYCLING(AGS_RECALL_ID(recall_id->recycling_container->parent->recall_id)->recycling)->channel;
+
+      parameter = ags_parameter_grow(G_OBJECT_TYPE(recall),
+				     parameter, n_params,
+				     "destination\0", destination,
+				     NULL);
+    }else{
+      destination = NULL;
+    }
+  }
+  
   copy = (AgsBufferChannelRun *) AGS_RECALL_CLASS(ags_buffer_channel_run_parent_class)->duplicate(recall,
 												  recall_id,
 												  n_params, parameter);
