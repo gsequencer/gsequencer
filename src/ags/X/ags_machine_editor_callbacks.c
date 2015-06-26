@@ -33,20 +33,6 @@
 #include <ags/X/ags_link_editor.h>
 
 int
-ags_machine_editor_destroy_callback(GtkObject *object, AgsMachineEditor *machine_editor)
-{
-  ags_machine_editor_destroy(object);
-  return(0);
-}
-
-int
-ags_machine_editor_show_callback(GtkWidget *widget, AgsMachineEditor *machine_editor)
-{
-  ags_machine_editor_show(widget);
-  return(0);
-}
-
-int
 ags_machine_editor_switch_page_callback(GtkNotebook *notebook, GtkNotebookPage *page, guint page_num, AgsMachineEditor *machine_editor)
 {
   /* empty */

@@ -22,6 +22,8 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/thread/ags_mutex_manager.h>
+
 #include <ags/X/ags_editor.h>
 
 #include <ags/X/editor/ags_pattern_edit.h>
@@ -45,6 +47,8 @@ void ags_pattern_edit_paint(AgsPatternEdit *pattern_edit);
  */
 
 GtkStyle *pattern_edit_style;
+
+extern pthread_mutex_t ags_application_mutex;
 
 GType
 ags_pattern_edit_get_type(void)
@@ -616,7 +620,7 @@ ags_pattern_edit_draw_position(AgsPatternEdit *pattern_edit, cairo_t *cr)
     if(selected_x + pattern_edit->control_current.control_width < x_offset[1]){
       width = pattern_edit->control_current.control_width;
     }else{
-      width = x_offset[1] - (selected_x + pattern_edit->control_current.control_width);
+      width = pattern_edit->control_current.control_width - (x_offset[1] - (selected_x + pattern_edit->control_current.control_width));
     }
   }
 
@@ -661,21 +665,43 @@ ags_pattern_edit_draw_notation(AgsPatternEdit *pattern_edit, cairo_t *cr)
   AgsMachine *machine;
   AgsEditor *editor;
   GtkWidget *widget;
+
   AgsNote *note;
+
+  AgsMutexManager *mutex_manager;
+
   GList *list_notation, *list_note;
+
   guint x_offset;
   guint control_height;
   guint x, y, width, height;
   gint selected_channel;
   gint i;
 
+  pthread_mutex_t *audio_mutex;
+
+
   editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(pattern_edit),
 						 AGS_TYPE_EDITOR);
 
+  pthread_mutex_lock(&(ags_application_mutex));
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) editor->selected_machine->audio);
+  
+  pthread_mutex_unlock(&(ags_application_mutex));
+
+  pthread_mutex_lock(audio_mutex);
+  
   if(editor->selected_machine == NULL ||
      (machine = editor->selected_machine) == NULL ||
-     machine->audio->notation == NULL)
+     machine->audio->notation == NULL){
+    pthread_mutex_unlock(audio_mutex);
+    
     return;
+  }
 
   widget = (GtkWidget *) pattern_edit->drawing_area;
 
@@ -888,6 +914,8 @@ ags_pattern_edit_draw_notation(AgsPatternEdit *pattern_edit, cairo_t *cr)
 
     i++;
   }
+
+  pthread_mutex_unlock(audio_mutex);
 }
 
 /**
