@@ -23,205 +23,176 @@ Writing htmlhelp.hhp
 Writing toc.hhc
 make  all-am
 make[1]: Entering directory '/home/joelkraehemann/gsequencer'
-gcc -DHAVE_CONFIG_H -I.  -I./src -DDESTDIR=\"/usr/local/share\" -D_FORTIFY_SOURCE=2  -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -I/usr/include/uuid  -I/usr/include/alsa   -I/usr/include/libxml2    -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12  -pthread -I/usr/include/gtk-2.0 -I/usr/lib/x86_64-linux-gnu/gtk-2.0/include -I/usr/include/gio-unix-2.0/ -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/libpng12 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/pango-1.0 -I/usr/include/harfbuzz -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/freetype2        -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -MT ags-ags_editor_callbacks.o -MD -MP -MF .deps/ags-ags_editor_callbacks.Tpo -c -o ags-ags_editor_callbacks.o `test -f 'src/ags/X/ags_editor_callbacks.c' || echo './'`src/ags/X/ags_editor_callbacks.c
-mv -f .deps/ags-ags_editor_callbacks.Tpo .deps/ags-ags_editor_callbacks.Po
-gcc -DHAVE_CONFIG_H -I.  -I./src -DDESTDIR=\"/usr/local/share\" -D_FORTIFY_SOURCE=2  -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -I/usr/include/uuid  -I/usr/include/alsa   -I/usr/include/libxml2    -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12  -pthread -I/usr/include/gtk-2.0 -I/usr/lib/x86_64-linux-gnu/gtk-2.0/include -I/usr/include/gio-unix-2.0/ -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/libpng12 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/pango-1.0 -I/usr/include/harfbuzz -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/freetype2        -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -MT ags-ags_export_window.o -MD -MP -MF .deps/ags-ags_export_window.Tpo -c -o ags-ags_export_window.o `test -f 'src/ags/X/ags_export_window.c' || echo './'`src/ags/X/ags_export_window.c
-mv -f .deps/ags-ags_export_window.Tpo .deps/ags-ags_export_window.Po
-gcc -DHAVE_CONFIG_H -I.  -I./src -DDESTDIR=\"/usr/local/share\" -D_FORTIFY_SOURCE=2  -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -I/usr/include/uuid  -I/usr/include/alsa   -I/usr/include/libxml2    -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12  -pthread -I/usr/include/gtk-2.0 -I/usr/lib/x86_64-linux-gnu/gtk-2.0/include -I/usr/include/gio-unix-2.0/ -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/libpng12 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/pango-1.0 -I/usr/include/harfbuzz -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/freetype2        -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -MT ags-ags_export_window_callbacks.o -MD -MP -MF .deps/ags-ags_export_window_callbacks.Tpo -c -o ags-ags_export_window_callbacks.o `test -f 'src/ags/X/ags_export_window_callbacks.c' || echo './'`src/ags/X/ags_export_window_callbacks.c
-src/ags/X/ags_export_window_callbacks.c: In function ‘ags_export_window_export_callback’:
-src/ags/X/ags_export_window_callbacks.c:100:14: warning: assignment discards ‘const’ qualifier from pointer target type
-     filename = gtk_entry_get_text(export_window->filename);
-              ^
-src/ags/X/ags_export_window_callbacks.c:122:11: warning: embedded ‘\0’ in format [-Wformat-contains-nul]
-           "Replace existing file?\0");
-           ^
-src/ags/X/ags_export_window_callbacks.c:118:14: warning: assignment from incompatible pointer type
-       dialog = gtk_message_dialog_new((GtkWindow *) export_window,
-              ^
-src/ags/X/ags_export_window_callbacks.c:147:2: warning: embedded ‘\0’ in format [-Wformat-contains-nul]
-  printf("found machine to play!\n\0");
-  ^
-src/ags/X/ags_export_window_callbacks.c:211:2: warning: embedded ‘\0’ in format [-Wformat-contains-nul]
-  printf("found machine to stop!\n\0");
-  ^
-mv -f .deps/ags-ags_export_window_callbacks.Tpo .deps/ags-ags_export_window_callbacks.Po
-gcc -DHAVE_CONFIG_H -I.  -I./src -DDESTDIR=\"/usr/local/share\" -D_FORTIFY_SOURCE=2  -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -I/usr/include/uuid  -I/usr/include/alsa   -I/usr/include/libxml2    -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12  -pthread -I/usr/include/gtk-2.0 -I/usr/lib/x86_64-linux-gnu/gtk-2.0/include -I/usr/include/gio-unix-2.0/ -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/libpng12 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/pango-1.0 -I/usr/include/harfbuzz -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/freetype2        -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -MT ags-ags_generic_preferences.o -MD -MP -MF .deps/ags-ags_generic_preferences.Tpo -c -o ags-ags_generic_preferences.o `test -f 'src/ags/X/ags_generic_preferences.c' || echo './'`src/ags/X/ags_generic_preferences.c
-mv -f .deps/ags-ags_generic_preferences.Tpo .deps/ags-ags_generic_preferences.Po
-gcc -DHAVE_CONFIG_H -I.  -I./src -DDESTDIR=\"/usr/local/share\" -D_FORTIFY_SOURCE=2  -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -I/usr/include/uuid  -I/usr/include/alsa   -I/usr/include/libxml2    -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12  -pthread -I/usr/include/gtk-2.0 -I/usr/lib/x86_64-linux-gnu/gtk-2.0/include -I/usr/include/gio-unix-2.0/ -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/libpng12 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/pango-1.0 -I/usr/include/harfbuzz -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/freetype2        -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -MT ags-ags_generic_preferences_callbacks.o -MD -MP -MF .deps/ags-ags_generic_preferences_callbacks.Tpo -c -o ags-ags_generic_preferences_callbacks.o `test -f 'src/ags/X/ags_generic_preferences_callbacks.c' || echo './'`src/ags/X/ags_generic_preferences_callbacks.c
-src/ags/X/ags_generic_preferences_callbacks.c: In function ‘ags_generic_preferences_autosave_thread_clicked_callback’:
-src/ags/X/ags_generic_preferences_callbacks.c:42:35: warning: passing argument 1 of ‘gtk_toggle_button_get_active’ from incompatible pointer type
-   if(gtk_toggle_button_get_active(check_button)){
-                                   ^
-In file included from /usr/include/gtk-2.0/gtk/gtkcheckbutton.h:35:0,
-                 from /usr/include/gtk-2.0/gtk/gtk.h:66,
-                 from ./src/ags/X/ags_generic_preferences_callbacks.h:22,
-                 from src/ags/X/ags_generic_preferences_callbacks.c:19:
-/usr/include/gtk-2.0/gtk/gtktogglebutton.h:84:12: note: expected ‘struct GtkToggleButton *’ but argument is of type ‘struct GtkWidget *’
- gboolean   gtk_toggle_button_get_active        (GtkToggleButton *toggle_button);
-            ^
-mv -f .deps/ags-ags_generic_preferences_callbacks.Tpo .deps/ags-ags_generic_preferences_callbacks.Po
-gcc -DHAVE_CONFIG_H -I.  -I./src -DDESTDIR=\"/usr/local/share\" -D_FORTIFY_SOURCE=2  -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -I/usr/include/uuid  -I/usr/include/alsa   -I/usr/include/libxml2    -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12  -pthread -I/usr/include/gtk-2.0 -I/usr/lib/x86_64-linux-gnu/gtk-2.0/include -I/usr/include/gio-unix-2.0/ -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/libpng12 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/pango-1.0 -I/usr/include/harfbuzz -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/freetype2        -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -MT ags-ags_ladspa_browser.o -MD -MP -MF .deps/ags-ags_ladspa_browser.Tpo -c -o ags-ags_ladspa_browser.o `test -f 'src/ags/X/ags_ladspa_browser.c' || echo './'`src/ags/X/ags_ladspa_browser.c
-mv -f .deps/ags-ags_ladspa_browser.Tpo .deps/ags-ags_ladspa_browser.Po
-gcc -DHAVE_CONFIG_H -I.  -I./src -DDESTDIR=\"/usr/local/share\" -D_FORTIFY_SOURCE=2  -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -I/usr/include/uuid  -I/usr/include/alsa   -I/usr/include/libxml2    -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12  -pthread -I/usr/include/gtk-2.0 -I/usr/lib/x86_64-linux-gnu/gtk-2.0/include -I/usr/include/gio-unix-2.0/ -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/libpng12 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/pango-1.0 -I/usr/include/harfbuzz -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/freetype2        -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -MT ags-ags_line.o -MD -MP -MF .deps/ags-ags_line.Tpo -c -o ags-ags_line.o `test -f 'src/ags/X/ags_line.c' || echo './'`src/ags/X/ags_line.c
-src/ags/X/ags_line.c: In function ‘ags_line_connect’:
-src/ags/X/ags_line.c:408:3: warning: embedded ‘\0’ in format [-Wformat-contains-nul]
-   g_message("line connect\0");
+gcc -DHAVE_CONFIG_H -I.  -I./src -DDESTDIR=\"/usr/local/share\" -D_FORTIFY_SOURCE=2  -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -I/usr/include/uuid  -I/usr/include/alsa   -I/usr/include/libxml2    -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12  -pthread -I/usr/include/gtk-2.0 -I/usr/lib/x86_64-linux-gnu/gtk-2.0/include -I/usr/include/gio-unix-2.0/ -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/libpng12 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/pango-1.0 -I/usr/include/harfbuzz -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/freetype2        -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -MT gsequencer-ags_editor.o -MD -MP -MF .deps/gsequencer-ags_editor.Tpo -c -o gsequencer-ags_editor.o `test -f 'src/ags/X/ags_editor.c' || echo './'`src/ags/X/ags_editor.c
+In file included from /usr/include/glib-2.0/gobject/gobject.h:28:0,
+                 from /usr/include/glib-2.0/gobject/gbinding.h:29,
+                 from /usr/include/glib-2.0/glib-object.h:23,
+                 from ./src/ags/X/ags_editor.h:24,
+                 from src/ags/X/ags_editor.c:20:
+src/ags/X/ags_editor.c: In function ‘ags_editor_connect’:
+/usr/include/glib-2.0/gobject/gsignal.h:472:59: warning: passing argument 3 of ‘g_signal_connect_data’ from incompatible pointer type
+     g_signal_connect_data ((instance), (detailed_signal), (c_handler), (data), NULL, (GConnectFlags) 0)
+                                                           ^
+src/ags/X/ags_editor.c:329:3: note: in expansion of macro ‘g_signal_connect’
+   g_signal_connect(window->devout, "tic\0",
    ^
-src/ags/X/ags_line.c: In function ‘ags_line_real_set_channel’:
-src/ags/X/ags_line.c:496:3: warning: embedded ‘\0’ in format [-Wformat-contains-nul]
-   gtk_label_set_label(line->label, g_strdup_printf("line %d\0", channel->audio_channel));
-   ^
-mv -f .deps/ags-ags_line.Tpo .deps/ags-ags_line.Po
-gcc -DHAVE_CONFIG_H -I.  -I./src -DDESTDIR=\"/usr/local/share\" -D_FORTIFY_SOURCE=2  -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -I/usr/include/uuid  -I/usr/include/alsa   -I/usr/include/libxml2    -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12  -pthread -I/usr/include/gtk-2.0 -I/usr/lib/x86_64-linux-gnu/gtk-2.0/include -I/usr/include/gio-unix-2.0/ -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/libpng12 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/pango-1.0 -I/usr/include/harfbuzz -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/freetype2        -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -MT ags-ags_line_callbacks.o -MD -MP -MF .deps/ags-ags_line_callbacks.Tpo -c -o ags-ags_line_callbacks.o `test -f 'src/ags/X/ags_line_callbacks.c' || echo './'`src/ags/X/ags_line_callbacks.c
-mv -f .deps/ags-ags_line_callbacks.Tpo .deps/ags-ags_line_callbacks.Po
-gcc -DHAVE_CONFIG_H -I.  -I./src -DDESTDIR=\"/usr/local/share\" -D_FORTIFY_SOURCE=2  -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -I/usr/include/uuid  -I/usr/include/alsa   -I/usr/include/libxml2    -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12  -pthread -I/usr/include/gtk-2.0 -I/usr/lib/x86_64-linux-gnu/gtk-2.0/include -I/usr/include/gio-unix-2.0/ -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/libpng12 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/pango-1.0 -I/usr/include/harfbuzz -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/freetype2        -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -MT ags-ags_line_member.o -MD -MP -MF .deps/ags-ags_line_member.Tpo -c -o ags-ags_line_member.o `test -f 'src/ags/X/ags_line_member.c' || echo './'`src/ags/X/ags_line_member.c
-src/ags/X/ags_line_member.c: In function ‘ags_line_member_set_property’:
-src/ags/X/ags_line_member.c:392:13: warning: assignment discards ‘const’ qualifier from pointer target type
-       label = g_value_get_string(value);
-             ^
-src/ags/X/ags_line_member.c:406:19: warning: assignment discards ‘const’ qualifier from pointer target type
-       plugin_name = g_value_get_string(value);
-                   ^
-src/ags/X/ags_line_member.c:419:17: warning: assignment discards ‘const’ qualifier from pointer target type
-       specifier = g_value_get_string(value);
-                 ^
-src/ags/X/ags_line_member.c:432:20: warning: assignment discards ‘const’ qualifier from pointer target type
-       control_port = g_value_get_string(value);
-                    ^
-mv -f .deps/ags-ags_line_member.Tpo .deps/ags-ags_line_member.Po
-gcc -DHAVE_CONFIG_H -I.  -I./src -DDESTDIR=\"/usr/local/share\" -D_FORTIFY_SOURCE=2  -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -I/usr/include/uuid  -I/usr/include/alsa   -I/usr/include/libxml2    -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12  -pthread -I/usr/include/gtk-2.0 -I/usr/lib/x86_64-linux-gnu/gtk-2.0/include -I/usr/include/gio-unix-2.0/ -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/libpng12 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/pango-1.0 -I/usr/include/harfbuzz -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/freetype2        -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -MT ags-ags_line_member_editor_callbacks.o -MD -MP -MF .deps/ags-ags_line_member_editor_callbacks.Tpo -c -o ags-ags_line_member_editor_callbacks.o `test -f 'src/ags/X/ags_line_member_editor_callbacks.c' || echo './'`src/ags/X/ags_line_member_editor_callbacks.c
-src/ags/X/ags_line_member_editor_callbacks.c: In function ‘ags_line_member_editor_ladspa_browser_response_callback’:
-src/ags/X/ags_line_member_editor_callbacks.c:200:9: warning: embedded ‘\0’ in format [-Wformat-contains-nul]
-         effect));
+/usr/include/glib-2.0/gobject/gsignal.h:388:9: note: expected ‘GCallback’ but argument is of type ‘void (*)(struct AgsDevout *, struct AgsEditor *)’
+ gulong  g_signal_connect_data        (gpointer    instance,
          ^
-src/ags/X/ags_line_member_editor_callbacks.c:306:39: warning: passing argument 1 of ‘ags_add_recall_new’ from incompatible pointer type
-       add_recall = ags_add_recall_new(line_editor->channel,
+src/ags/X/ags_editor.c: In function ‘ags_editor_real_machine_changed’:
+src/ags/X/ags_editor.c:383:38: warning: comparison of distinct pointer types lacks a cast
+     if(AGS_EDITOR_CHILD(child->data) == machine){
+                                      ^
+src/ags/X/ags_editor.c:391:21: warning: passing argument 1 of ‘gtk_widget_hide’ from incompatible pointer type
+     gtk_widget_hide(editor->current_notebook);
+                     ^
+In file included from /usr/include/gtk-2.0/gtk/gtkcontainer.h:35:0,
+                 from /usr/include/gtk-2.0/gtk/gtkbin.h:35,
+                 from /usr/include/gtk-2.0/gtk/gtkwindow.h:36,
+                 from /usr/include/gtk-2.0/gtk/gtkdialog.h:35,
+                 from /usr/include/gtk-2.0/gtk/gtkaboutdialog.h:32,
+                 from /usr/include/gtk-2.0/gtk/gtk.h:33,
+                 from ./src/ags/X/ags_editor.h:26,
+                 from src/ags/X/ags_editor.c:20:
+/usr/include/gtk-2.0/gtk/gtkwidget.h:853:9: note: expected ‘struct GtkWidget *’ but argument is of type ‘struct AgsNotebook *’
+ void    gtk_widget_hide    (GtkWidget        *widget);
+         ^
+src/ags/X/ags_editor.c:392:21: warning: passing argument 1 of ‘gtk_widget_hide’ from incompatible pointer type
+     gtk_widget_hide(editor->current_meter);
+                     ^
+In file included from /usr/include/gtk-2.0/gtk/gtkcontainer.h:35:0,
+                 from /usr/include/gtk-2.0/gtk/gtkbin.h:35,
+                 from /usr/include/gtk-2.0/gtk/gtkwindow.h:36,
+                 from /usr/include/gtk-2.0/gtk/gtkdialog.h:35,
+                 from /usr/include/gtk-2.0/gtk/gtkaboutdialog.h:32,
+                 from /usr/include/gtk-2.0/gtk/gtk.h:33,
+                 from ./src/ags/X/ags_editor.h:26,
+                 from src/ags/X/ags_editor.c:20:
+/usr/include/gtk-2.0/gtk/gtkwidget.h:853:9: note: expected ‘struct GtkWidget *’ but argument is of type ‘struct AgsMeter *’
+ void    gtk_widget_hide    (GtkWidget        *widget);
+         ^
+src/ags/X/ags_editor.c:402:39: warning: passing argument 1 of ‘gtk_container_get_children’ from incompatible pointer type
+     list = gtk_container_get_children(editor->machine_selector->popup);
                                        ^
-In file included from src/ags/X/ags_line_member_editor_callbacks.c:43:0:
-./src/ags/audio/task/ags_add_recall.h:55:15: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsChannel *’
- AgsAddRecall* ags_add_recall_new(GObject *context,
-               ^
-src/ags/X/ags_line_member_editor_callbacks.c:307:11: warning: passing argument 2 of ‘ags_add_recall_new’ from incompatible pointer type
-           recall_channel_run_dummy,
-           ^
-In file included from src/ags/X/ags_line_member_editor_callbacks.c:43:0:
-./src/ags/audio/task/ags_add_recall.h:55:15: note: expected ‘struct AgsRecall *’ but argument is of type ‘struct AgsRecallChannelRunDummy *’
- AgsAddRecall* ags_add_recall_new(GObject *context,
-               ^
-src/ags/X/ags_line_member_editor_callbacks.c:319:51: warning: passing argument 1 of ‘gtk_container_get_children’ from incompatible pointer type
-  list = g_list_reverse(gtk_container_get_children(table));
-                                                   ^
 In file included from /usr/include/gtk-2.0/gtk/gtkbin.h:35:0,
                  from /usr/include/gtk-2.0/gtk/gtkwindow.h:36,
                  from /usr/include/gtk-2.0/gtk/gtkdialog.h:35,
                  from /usr/include/gtk-2.0/gtk/gtkaboutdialog.h:32,
                  from /usr/include/gtk-2.0/gtk/gtk.h:33,
-                 from ./src/ags/X/ags_line_member_editor_callbacks.h:25,
-                 from src/ags/X/ags_line_member_editor_callbacks.c:19:
-/usr/include/gtk-2.0/gtk/gtkcontainer.h:132:10: note: expected ‘struct GtkContainer *’ but argument is of type ‘struct GtkTable *’
+                 from ./src/ags/X/ags_editor.h:26,
+                 from src/ags/X/ags_editor.c:20:
+/usr/include/gtk-2.0/gtk/gtkcontainer.h:132:10: note: expected ‘struct GtkContainer *’ but argument is of type ‘struct GtkMenu *’
  GList*   gtk_container_get_children     (GtkContainer       *container);
           ^
-src/ags/X/ags_line_member_editor_callbacks.c:328:24: warning: assignment discards ‘const’ qualifier from pointer target type
-      plugin_descriptor = ladspa_descriptor(index);
-                        ^
-src/ags/X/ags_line_member_editor_callbacks.c:330:22: warning: assignment discards ‘const’ qualifier from pointer target type
-      port_descriptor = plugin_descriptor->PortDescriptors;   
-                      ^
-mv -f .deps/ags-ags_line_member_editor_callbacks.Tpo .deps/ags-ags_line_member_editor_callbacks.Po
-gcc -DHAVE_CONFIG_H -I.  -I./src -DDESTDIR=\"/usr/local/share\" -D_FORTIFY_SOURCE=2  -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -I/usr/include/uuid  -I/usr/include/alsa   -I/usr/include/libxml2    -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12  -pthread -I/usr/include/gtk-2.0 -I/usr/lib/x86_64-linux-gnu/gtk-2.0/include -I/usr/include/gio-unix-2.0/ -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/libpng12 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/pango-1.0 -I/usr/include/harfbuzz -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/freetype2        -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -MT ags-ags_link_collection_editor.o -MD -MP -MF .deps/ags-ags_link_collection_editor.Tpo -c -o ags-ags_link_collection_editor.o `test -f 'src/ags/X/ags_link_collection_editor.c' || echo './'`src/ags/X/ags_link_collection_editor.c
-mv -f .deps/ags-ags_link_collection_editor.Tpo .deps/ags-ags_link_collection_editor.Po
-gcc -DHAVE_CONFIG_H -I.  -I./src -DDESTDIR=\"/usr/local/share\" -D_FORTIFY_SOURCE=2  -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -I/usr/include/uuid  -I/usr/include/alsa   -I/usr/include/libxml2    -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12  -pthread -I/usr/include/gtk-2.0 -I/usr/lib/x86_64-linux-gnu/gtk-2.0/include -I/usr/include/gio-unix-2.0/ -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/libpng12 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/pango-1.0 -I/usr/include/harfbuzz -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/freetype2        -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -MT ags-ags_link_editor.o -MD -MP -MF .deps/ags-ags_link_editor.Tpo -c -o ags-ags_link_editor.o `test -f 'src/ags/X/ags_link_editor.c' || echo './'`src/ags/X/ags_link_editor.c
-mv -f .deps/ags-ags_link_editor.Tpo .deps/ags-ags_link_editor.Po
-gcc -DHAVE_CONFIG_H -I.  -I./src -DDESTDIR=\"/usr/local/share\" -D_FORTIFY_SOURCE=2  -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -I/usr/include/uuid  -I/usr/include/alsa   -I/usr/include/libxml2    -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12  -pthread -I/usr/include/gtk-2.0 -I/usr/lib/x86_64-linux-gnu/gtk-2.0/include -I/usr/include/gio-unix-2.0/ -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/libpng12 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/pango-1.0 -I/usr/include/harfbuzz -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/freetype2        -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -MT ags-ags_link_editor_callbacks.o -MD -MP -MF .deps/ags-ags_link_editor_callbacks.Tpo -c -o ags-ags_link_editor_callbacks.o `test -f 'src/ags/X/ags_link_editor_callbacks.c' || echo './'`src/ags/X/ags_link_editor_callbacks.c
-mv -f .deps/ags-ags_link_editor_callbacks.Tpo .deps/ags-ags_link_editor_callbacks.Po
-gcc -DHAVE_CONFIG_H -I.  -I./src -DDESTDIR=\"/usr/local/share\" -D_FORTIFY_SOURCE=2  -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -I/usr/include/uuid  -I/usr/include/alsa   -I/usr/include/libxml2    -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12  -pthread -I/usr/include/gtk-2.0 -I/usr/lib/x86_64-linux-gnu/gtk-2.0/include -I/usr/include/gio-unix-2.0/ -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/libpng12 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/pango-1.0 -I/usr/include/harfbuzz -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/freetype2        -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -MT ags-ags_machine.o -MD -MP -MF .deps/ags-ags_machine.Tpo -c -o ags-ags_machine.o `test -f 'src/ags/X/ags_machine.c' || echo './'`src/ags/X/ags_machine.c
-src/ags/X/ags_machine.c: In function ‘ags_machine_set_property’:
-src/ags/X/ags_machine.c:302:10: warning: assignment from incompatible pointer type
-   window = gtk_widget_get_ancestor((GtkWidget *) machine,
-          ^
-src/ags/X/ags_machine.c: In function ‘ags_machine_connect’:
-src/ags/X/ags_machine.c:545:5: warning: embedded ‘\0’ in format [-Wformat-contains-nul]
-     g_message("find port\0");
-     ^
-src/ags/X/ags_machine.c: In function ‘ags_machine_get_possible_links’:
-src/ags/X/ags_machine.c:724:12: warning: embedded ‘\0’ in format [-Wformat-contains-nul]
-            AGS_MACHINE(list->data)->name),
-            ^
-mv -f .deps/ags-ags_machine.Tpo .deps/ags-ags_machine.Po
-gcc -DHAVE_CONFIG_H -I.  -I./src -DDESTDIR=\"/usr/local/share\" -D_FORTIFY_SOURCE=2  -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -I/usr/include/uuid  -I/usr/include/alsa   -I/usr/include/libxml2    -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12  -pthread -I/usr/include/gtk-2.0 -I/usr/lib/x86_64-linux-gnu/gtk-2.0/include -I/usr/include/gio-unix-2.0/ -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/libpng12 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/pango-1.0 -I/usr/include/harfbuzz -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/freetype2        -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -MT ags-ags_machine_callbacks.o -MD -MP -MF .deps/ags-ags_machine_callbacks.Tpo -c -o ags-ags_machine_callbacks.o `test -f 'src/ags/X/ags_machine_callbacks.c' || echo './'`src/ags/X/ags_machine_callbacks.c
-src/ags/X/ags_machine_callbacks.c: In function ‘ags_machine_play_callback’:
-src/ags/X/ags_machine_callbacks.c:368:5: warning: embedded ‘\0’ in format [-Wformat-contains-nul]
-     printf("machine: on\n\0");
-     ^
-src/ags/X/ags_machine_callbacks.c:381:5: warning: embedded ‘\0’ in format [-Wformat-contains-nul]
-     printf("machine: off\n\0");
-     ^
-src/ags/X/ags_machine_callbacks.c: In function ‘ags_machine_start_complete_callback’:
-src/ags/X/ags_machine_callbacks.c:463:9: warning: embedded ‘\0’ in format [-Wformat-contains-nul]
-         "Error: %s\0", devout_thread->error->message);
+src/ags/X/ags_editor.c:442:70: warning: assignment from incompatible pointer type
+       AGS_NOTEBOOK_TAB(editor_child->notebook->tabs->data)->notation = g_list_nth(machine->audio->notation,
+                                                                      ^
+src/ags/X/ags_editor.c:448:25: warning: passing argument 1 of ‘gtk_widget_show_all’ from incompatible pointer type
+     gtk_widget_show_all(editor_child->notebook);
+                         ^
+In file included from /usr/include/gtk-2.0/gtk/gtkcontainer.h:35:0,
+                 from /usr/include/gtk-2.0/gtk/gtkbin.h:35,
+                 from /usr/include/gtk-2.0/gtk/gtkwindow.h:36,
+                 from /usr/include/gtk-2.0/gtk/gtkdialog.h:35,
+                 from /usr/include/gtk-2.0/gtk/gtkaboutdialog.h:32,
+                 from /usr/include/gtk-2.0/gtk/gtk.h:33,
+                 from ./src/ags/X/ags_editor.h:26,
+                 from src/ags/X/ags_editor.c:20:
+/usr/include/gtk-2.0/gtk/gtkwidget.h:854:9: note: expected ‘struct GtkWidget *’ but argument is of type ‘struct AgsNotebook *’
+ void    gtk_widget_show_all    (GtkWidget        *widget);
          ^
-mv -f .deps/ags-ags_machine_callbacks.Tpo .deps/ags-ags_machine_callbacks.Po
-gcc -DHAVE_CONFIG_H -I.  -I./src -DDESTDIR=\"/usr/local/share\" -D_FORTIFY_SOURCE=2  -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -I/usr/include/uuid  -I/usr/include/alsa   -I/usr/include/libxml2    -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12  -pthread -I/usr/include/gtk-2.0 -I/usr/lib/x86_64-linux-gnu/gtk-2.0/include -I/usr/include/gio-unix-2.0/ -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/libpng12 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/pango-1.0 -I/usr/include/harfbuzz -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/freetype2        -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -MT ags-ags_menu_bar_callbacks.o -MD -MP -MF .deps/ags-ags_menu_bar_callbacks.Tpo -c -o ags-ags_menu_bar_callbacks.o `test -f 'src/ags/X/ags_menu_bar_callbacks.c' || echo './'`src/ags/X/ags_menu_bar_callbacks.c
-src/ags/X/ags_menu_bar_callbacks.c: In function ‘ags_menu_bar_open_ok_callback’:
-src/ags/X/ags_menu_bar_callbacks.c:103:11: warning: embedded ‘\0’ in format [-Wformat-contains-nul]
-           filename),
-           ^
-src/ags/X/ags_menu_bar_callbacks.c: In function ‘ags_menu_bar_quit_callback’:
-src/ags/X/ags_menu_bar_callbacks.c:212:7: warning: embedded ‘\0’ in format [-Wformat-contains-nul]
-       "Do you want to save '%s'?\0", window->name);
-       ^
-src/ags/X/ags_menu_bar_callbacks.c: In function ‘ags_menu_bar_about_callback’:
-src/ags/X/ags_menu_bar_callbacks.c:485:7: warning: embedded ‘\0’ in format [-Wformat-contains-nul]
-       logo = gdk_pixbuf_new_from_file(g_strdup_printf("%s%s\0", DESTDIR, "/gsequencer/images/ags.png\0"), &error);
-       ^
-src/ags/X/ags_menu_bar_callbacks.c:479:7: warning: ignoring return value of ‘fread’, declared with attribute warn_unused_result [-Wunused-result]
-       fread(license, sizeof(char), sb.st_size, file);
-       ^
-mv -f .deps/ags-ags_menu_bar_callbacks.Tpo .deps/ags-ags_menu_bar_callbacks.Po
-gcc -DHAVE_CONFIG_H -I.  -I./src -DDESTDIR=\"/usr/local/share\" -D_FORTIFY_SOURCE=2  -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -I/usr/include/uuid  -I/usr/include/alsa   -I/usr/include/libxml2    -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12  -pthread -I/usr/include/gtk-2.0 -I/usr/lib/x86_64-linux-gnu/gtk-2.0/include -I/usr/include/gio-unix-2.0/ -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/libpng12 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/pango-1.0 -I/usr/include/harfbuzz -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/freetype2        -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -MT ags-ags_navigation.o -MD -MP -MF .deps/ags-ags_navigation.Tpo -c -o ags-ags_navigation.o `test -f 'src/ags/X/ags_navigation.c' || echo './'`src/ags/X/ags_navigation.c
-src/ags/X/ags_navigation.c: In function ‘ags_navigation_init’:
-src/ags/X/ags_navigation.c:254:85: error: ‘AGS_NOTE_EDIT_MAX_CONTROLS’ undeclared (first use in this function)
-   navigation->position_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, AGS_NOTE_EDIT_MAX_CONTROLS * 64.0, 1.0);
-                                                                                     ^
-src/ags/X/ags_navigation.c:254:85: note: each undeclared identifier is reported only once for each function it appears in
-src/ags/X/ags_navigation.c: In function ‘ags_navigation_real_change_position’:
-src/ags/X/ags_navigation.c:466:37: warning: passing argument 1 of ‘ags_seek_devout_new’ from incompatible pointer type
-   seek_devout = ags_seek_devout_new(window->devout,
+src/ags/X/ags_editor.c:460:25: warning: passing argument 1 of ‘gtk_widget_show_all’ from incompatible pointer type
+     gtk_widget_show_all(editor_child->meter);
+                         ^
+In file included from /usr/include/gtk-2.0/gtk/gtkcontainer.h:35:0,
+                 from /usr/include/gtk-2.0/gtk/gtkbin.h:35,
+                 from /usr/include/gtk-2.0/gtk/gtkwindow.h:36,
+                 from /usr/include/gtk-2.0/gtk/gtkdialog.h:35,
+                 from /usr/include/gtk-2.0/gtk/gtkaboutdialog.h:32,
+                 from /usr/include/gtk-2.0/gtk/gtk.h:33,
+                 from ./src/ags/X/ags_editor.h:26,
+                 from src/ags/X/ags_editor.c:20:
+/usr/include/gtk-2.0/gtk/gtkwidget.h:854:9: note: expected ‘struct GtkWidget *’ but argument is of type ‘struct AgsMeter *’
+ void    gtk_widget_show_all    (GtkWidget        *widget);
+         ^
+src/ags/X/ags_editor.c:464:30: warning: assignment from incompatible pointer type
+  editor->current_edit_widget = ags_note_edit_new();
+                              ^
+src/ags/X/ags_editor.c:474:36: warning: passing argument 1 of ‘ags_note_edit_set_map_height’ from incompatible pointer type
+       ags_note_edit_set_map_height(editor_child->edit_widget,
+                                    ^
+In file included from src/ags/X/ags_editor.c:30:0:
+./src/ags/X/editor/ags_note_edit.h:144:6: note: expected ‘struct AgsNoteEdit *’ but argument is of type ‘struct GtkWidget *’
+ void ags_note_edit_set_map_height(AgsNoteEdit *note_edit, guint map_height);
+      ^
+src/ags/X/ags_editor.c:478:30: warning: assignment from incompatible pointer type
+  editor->current_edit_widget = ags_pattern_edit_new();
+                              ^
+src/ags/X/ags_editor.c:488:39: warning: passing argument 1 of ‘ags_pattern_edit_set_map_height’ from incompatible pointer type
+       ags_pattern_edit_set_map_height(editor_child->edit_widget,
+                                       ^
+In file included from src/ags/X/ags_editor.c:32:0:
+./src/ags/X/editor/ags_pattern_edit.h:144:6: note: expected ‘struct AgsPatternEdit *’ but argument is of type ‘struct GtkWidget *’
+ void ags_pattern_edit_set_map_height(AgsPatternEdit *pattern_edit, guint map_height);
+      ^
+src/ags/X/ags_editor.c: In function ‘ags_editor_select_all’:
+src/ags/X/ags_editor.c:572:34: warning: passing argument 1 of ‘ags_note_edit_draw_segment’ from incompatible pointer type
+       ags_note_edit_draw_segment(editor->current_edit_widget, cr);
+                                  ^
+In file included from src/ags/X/ags_editor.c:30:0:
+./src/ags/X/editor/ags_note_edit.h:149:6: note: expected ‘struct AgsNoteEdit *’ but argument is of type ‘struct GtkWidget *’
+ void ags_note_edit_draw_segment(AgsNoteEdit *note_edit, cairo_t *cr);
+      ^
+src/ags/X/ags_editor.c:573:35: warning: passing argument 1 of ‘ags_note_edit_draw_notation’ from incompatible pointer type
+       ags_note_edit_draw_notation(editor->current_edit_widget, cr);
+                                   ^
+In file included from src/ags/X/ags_editor.c:30:0:
+./src/ags/X/editor/ags_note_edit.h:151:6: note: expected ‘struct AgsNoteEdit *’ but argument is of type ‘struct GtkWidget *’
+ void ags_note_edit_draw_notation(AgsNoteEdit *note_edit, cairo_t *cr);
+      ^
+src/ags/X/ags_editor.c:581:37: warning: passing argument 1 of ‘ags_pattern_edit_draw_segment’ from incompatible pointer type
+       ags_pattern_edit_draw_segment(editor->current_edit_widget, cr);
                                      ^
-In file included from src/ags/X/ags_navigation.c:29:0:
-./src/ags/audio/task/ags_seek_devout.h:54:16: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsDevout *’
- AgsSeekDevout* ags_seek_devout_new(GObject *devout,
-                ^
-In file included from /usr/include/glib-2.0/gobject/gobject.h:24:0,
-                 from /usr/include/glib-2.0/gobject/gbinding.h:29,
-                 from /usr/include/glib-2.0/glib-object.h:23,
-                 from ./src/ags/X/ags_navigation.h:23,
-                 from src/ags/X/ags_navigation.c:19:
-src/ags/X/ags_navigation.c:481:44: error: ‘AgsEditor’ has no member named ‘note_edit’
-   gtk_adjustment_set_value(GTK_RANGE(editor->note_edit->hscrollbar)->adjustment,
-                                            ^
-/usr/include/glib-2.0/gobject/gtype.h:2186:57: note: in definition of macro ‘_G_TYPE_CIC’
-     ((ct*) g_type_check_instance_cast ((GTypeInstance*) ip, gt))
-                                                         ^
-/usr/include/gtk-2.0/gtk/gtkrange.h:43:36: note: in expansion of macro ‘G_TYPE_CHECK_INSTANCE_CAST’
- #define GTK_RANGE(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_RANGE, GtkRange))
-                                    ^
-src/ags/X/ags_navigation.c:481:28: note: in expansion of macro ‘GTK_RANGE’
-   gtk_adjustment_set_value(GTK_RANGE(editor->note_edit->hscrollbar)->adjustment,
-                            ^
-src/ags/X/ags_navigation.c:482:36: error: ‘AgsEditor’ has no member named ‘note_edit’
-       tact_counter * window->editor->note_edit->control_current.control_width * (16.0 / tact_factor));
-                                    ^
-src/ags/X/ags_navigation.c: In function ‘ags_navigation_tact_to_time_string’:
-src/ags/X/ags_navigation.c:558:3: warning: embedded ‘\0’ in format [-Wformat-contains-nul]
-   timestr = g_strdup_printf("%.4d:%.2d.%.2d\0", min, sec, hsec);
-   ^
-src/ags/X/ags_navigation.c: In function ‘ags_navigation_update_time_string’:
-src/ags/X/ags_navigation.c:606:3: warning: embedded ‘\0’ in format [-Wformat-contains-nul]
-   sprintf(time_string, "%.4d:%.2d.%.2d\0", min, sec, hsec);
-   ^
-Makefile:5319: recipe for target 'ags-ags_navigation.o' failed
-make[1]: *** [ags-ags_navigation.o] Error 1
+In file included from src/ags/X/ags_editor.c:32:0:
+./src/ags/X/editor/ags_pattern_edit.h:149:6: note: expected ‘struct AgsPatternEdit *’ but argument is of type ‘struct GtkWidget *’
+ void ags_pattern_edit_draw_segment(AgsPatternEdit *pattern_edit, cairo_t *cr);
+      ^
+src/ags/X/ags_editor.c:582:38: warning: passing argument 1 of ‘ags_pattern_edit_draw_notation’ from incompatible pointer type
+       ags_pattern_edit_draw_notation(editor->current_edit_widget, cr);
+                                      ^
+In file included from src/ags/X/ags_editor.c:32:0:
+./src/ags/X/editor/ags_pattern_edit.h:151:6: note: expected ‘struct AgsPatternEdit *’ but argument is of type ‘struct GtkWidget *’
+ void ags_pattern_edit_draw_notation(AgsPatternEdit *pattern_edit, cairo_t *cr);
+      ^
+src/ags/X/ags_editor.c: In function ‘ags_editor_paste’:
+src/ags/X/ags_editor.c:814:34: warning: passing argument 1 of ‘ags_note_edit_draw_segment’ from incompatible pointer type
+       ags_note_edit_draw_segment(editor->current_edit_widget, cr);
+                                  ^
+In file included from src/ags/X/ags_editor.c:30:0:
+./src/ags/X/editor/ags_note_edit.h:149:6: note: expected ‘struct AgsNoteEdit *’ but argument is of type ‘struct GtkWidget *’
+ void ags_note_edit_draw_segment(AgsNoteEdit *note_edit, cairo_t *cr);
+      ^
+src/ags/X/ags_editor.c:815:35: warning: passing argument 1 of ‘ags_note_edit_draw_notation’ from incompatible pointer type
+       ags_note_edit_draw_notation(editor->current_edit_widget, cr);
+                                   ^
+In file included from src/ags/X/ags_editor.c:30:0:
+./src/ags/X/editor/ags_note_edit.h:151:6: note: expected ‘struct AgsNoteEdit *’ but argument is of type ‘struct GtkWidget *’
+ void ags_note_edit_draw_notation(AgsNoteEdit *note_edit, cairo_t *cr);
+      ^
+src/ags/X/ags_editor.c:828:37: warning: passing argument 1 of ‘ags_pattern_edit_draw_segment’ from incompatible pointer type
+       ags_pattern_edit_draw_segment(editor->current_edit_widget, cr);
+                                     ^
+In file included from src/ags/X/ags_editor.c:32:0:
+./src/ags/X/editor/ags_pattern_edit.h:149:6: note: expected ‘struct AgsPatternEdit *’ but argument is of type ‘struct GtkWidget *’
+ void ags_pattern_edit_draw_segment(AgsPatternEdit *pattern_edit, cairo_t *cr);
+      ^
+src/ags/X/ags_editor.c:829:38: warning: passing argument 1 of ‘ags_pattern_edit_draw_notation’ from incompatible pointer type
+       ags_pattern_edit_draw_notation(editor->current_edit_widget, cr);
+                                      ^
+In file included from src/ags/X/ags_editor.c:32:0:
+./src/ags/X/editor/ags_pattern_edit.h:151:6: note: expected ‘struct AgsPatternEdit *’ but argument is of type ‘struct GtkWidget *’
+ void ags_pattern_edit_draw_notation(AgsPatternEdit *pattern_edit, cairo_t *cr);
+      ^
+mv -f .deps/gsequencer-ags_editor.Tpo .deps/gsequencer-ags_editor.Po
+gcc -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -I/usr/include/uuid  -I/usr/include/alsa   -I/usr/include/libxml2    -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12  -pthread -I/usr/include/gtk-2.0 -I/usr/lib/x86_64-linux-gnu/gtk-2.0/include -I/usr/include/gio-unix-2.0/ -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/libpng12 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/pango-1.0 -I/usr/include/harfbuzz -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/freetype2        -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -ldl -fPIE -pie -Wl,-z,relro -Wl,-z,now -luuid  -lasound  -lao  -lxml2   -lsndfile  -linstpatch-1.0 -lgobject-2.0 -lglib-2.0 -lsndfile  -lgobject-2.0 -Wl,--export-dynamic -lgmodule-2.0 -pthread -lgthread-2.0 -pthread -lglib-2.0  -lgdk_pixbuf-2.0 -lgobject-2.0 -lglib-2.0  -lcairo  -lgtk-x11-2.0 -lgdk-x11-2.0 -lpangocairo-1.0 -latk-1.0 -lcairo -lgdk_pixbuf-2.0 -lgio-2.0 -lpangoft2-1.0 -lpango-1.0 -lgobject-2.0 -lglib-2.0 -lfontconfig -lfreetype       -lm -lrt -lX11 -pthread -fPIE -pie -Wl,-z,relro -Wl,-z,now -o gsequencer  gsequencer-ags_audio.o gsequencer-ags_audio_signal.o gsequencer-ags_channel.o gsequencer-ags_channel_iter.o gsequencer-ags_config.o gsequencer-ags_devout.o gsequencer-ags_garbage_collector.o gsequencer-ags_input.o gsequencer-ags_libao.o gsequencer-ags_notation.o gsequencer-ags_note.o gsequencer-ags_output.o gsequencer-ags_pattern.o gsequencer-ags_port.o gsequencer-ags_recall_audio.o gsequencer-ags_recall_audio_run.o gsequencer-ags_recall_audio_signal.o gsequencer-ags_recall.o gsequencer-ags_recall_channel.o gsequencer-ags_recall_channel_run.o gsequencer-ags_recall_channel_run_dummy.o gsequencer-ags_recall_container.o gsequencer-ags_recall_dependency.o gsequencer-ags_recall_factory.o gsequencer-ags_recall_id.o gsequencer-ags_recall_ladspa.o gsequencer-ags_recall_ladspa_run.o gsequencer-ags_recall_recycling.o gsequencer-ags_recall_recycling_dummy.o gsequencer-ags_recycling.o gsequencer-ags_recycling_container.o gsequencer-ags_synths.o gsequencer-ags_task.o gsequencer-ags_timestamp.o gsequencer-ags_timestamp_factory.o gsequencer-ags_audio_file.o gsequencer-ags_audio_file_xml.o gsequencer-ags_ipatch.o gsequencer-ags_ipatch_sf2_reader.o gsequencer-ags_sndfile.o gsequencer-ags_amplifier.o gsequencer-ags_buffer_audio_signal.o gsequencer-ags_buffer_channel.o gsequencer-ags_buffer_channel_run.o gsequencer-ags_buffer_recycling.o gsequencer-ags_clone_channel.o gsequencer-ags_clone_channel_run.o gsequencer-ags_copy_audio_signal.o gsequencer-ags_copy_channel.o gsequencer-ags_copy_channel_run.o gsequencer-ags_copy_notation_audio.o gsequencer-ags_copy_notation_audio_run.o gsequencer-ags_copy_pattern_audio.o gsequencer-ags_copy_pattern_audio_run.o gsequencer-ags_copy_pattern_channel.o gsequencer-ags_copy_pattern_channel_run.o gsequencer-ags_copy_recycling.o gsequencer-ags_count_beats_audio.o gsequencer-ags_count_beats_audio_run.o gsequencer-ags_delay_audio.o gsequencer-ags_delay_audio_run.o gsequencer-ags_echo.o gsequencer-ags_loop_channel.o gsequencer-ags_loop_channel_run.o gsequencer-ags_mute_audio.o gsequencer-ags_mute_audio_run.o gsequencer-ags_mute_audio_signal.o gsequencer-ags_mute_channel.o gsequencer-ags_mute_channel_run.o gsequencer-ags_mute_recycling.o gsequencer-ags_peak_audio_signal.o gsequencer-ags_peak_channel.o gsequencer-ags_peak_channel_run.o gsequencer-ags_peak_recycling.o gsequencer-ags_play_audio.o gsequencer-ags_play_audio_file.o gsequencer-ags_play_audio_signal.o gsequencer-ags_play_channel.o gsequencer-ags_play_channel_run.o gsequencer-ags_play_channel_run_master.o gsequencer-ags_play_notation_audio.o gsequencer-ags_play_notation_audio_run.o gsequencer-ags_play_note.o gsequencer-ags_play_pattern.o gsequencer-ags_play_recycling.o gsequencer-ags_stream_audio_signal.o gsequencer-ags_stream.o gsequencer-ags_stream_channel.o gsequencer-ags_stream_channel_run.o gsequencer-ags_stream_recycling.o gsequencer-ags_volume_audio_signal.o gsequencer-ags_volume_channel.o gsequencer-ags_volume_channel_run.o gsequencer-ags_volume_recycling.o gsequencer-ags_add_audio.o gsequencer-ags_add_audio_signal.o gsequencer-ags_add_line_member.o gsequencer-ags_add_note.o gsequencer-ags_add_point_to_selection.o gsequencer-ags_add_recall.o gsequencer-ags_add_recall_container.o gsequencer-ags_add_region_to_selection.o gsequencer-ags_append_audio.o gsequencer-ags_append_audio_threaded.o gsequencer-ags_append_channel.o gsequencer-ags_append_recall.o gsequencer-ags_apply_synth.o gsequencer-ags_apply_wavetable.o gsequencer-ags_audio_set_recycling.o gsequencer-ags_cancel_audio.o gsequencer-ags_cancel_channel.o gsequencer-ags_cancel_recall.o gsequencer-ags_change_indicator.o gsequencer-ags_change_tact.o gsequencer-ags_channel_set_recycling.o gsequencer-ags_display_tact.o gsequencer-ags_export_output.o gsequencer-ags_free_selection.o gsequencer-ags_init_audio.o gsequencer-ags_init_channel.o gsequencer-ags_link_channel.o gsequencer-ags_open_file.o gsequencer-ags_open_single_file.o gsequencer-ags_remove_audio.o gsequencer-ags_remove_audio_signal.o gsequencer-ags_remove_note.o gsequencer-ags_remove_point_from_selection.o gsequencer-ags_remove_recall.o gsequencer-ags_remove_recall_container.o gsequencer-ags_remove_region_from_selection.o gsequencer-ags_resize_audio.o gsequencer-ags_save_file.o gsequencer-ags_scroll_on_play.o gsequencer-ags_seek_devout.o gsequencer-ags_set_audio_channels.o gsequencer-ags_set_buffer_size.o gsequencer-ags_set_devout_play_flags.o gsequencer-ags_set_output_device.o gsequencer-ags_set_samplerate.o gsequencer-ags_start_devout.o gsequencer-ags_toggle_led.o gsequencer-ags_toggle_pattern_bit.o gsequencer-ags_unref_audio_signal.o gsequencer-ags_apply_bpm.o gsequencer-ags_apply_sequencer_length.o gsequencer-ags_apply_tact.o gsequencer-ags_set_muted.o gsequencer-ags_file.o gsequencer-ags_file_gui.o gsequencer-ags_file_id_ref.o gsequencer-ags_file_launch.o gsequencer-ags_file_link.o gsequencer-ags_file_lookup.o gsequencer-ags_file_sound.o gsequencer-ags_file_thread.o gsequencer-ags_file_util.o gsequencer-ags_connectable.o gsequencer-ags_combo_box_text.o gsequencer-ags_container.o gsequencer-ags_list.o gsequencer-ags_log.o gsequencer-ags_parameter.o gsequencer-main.o gsequencer-ags_applicable.o gsequencer-ags_countable.o gsequencer-ags_dynamic_connectable.o gsequencer-ags_effect.o gsequencer-ags_main_loop.o gsequencer-ags_marshal.o gsequencer-ags_mutable.o gsequencer-ags_packable.o gsequencer-ags_persistable.o gsequencer-ags_playable.o gsequencer-ags_plugin.o gsequencer-ags_portlet.o gsequencer-ags_runnable.o gsequencer-ags_seekable.o gsequencer-ags_soundcard.o gsequencer-ags_stackable.o gsequencer-ags_tactable.o gsequencer-ags_tree_iterator.o gsequencer-ags_ladspa_manager.o gsequencer-ags_plugin_factory.o gsequencer-ags_registry.o gsequencer-ags_remote_task.o gsequencer-ags_server.o gsequencer-ags_async_queue.o gsequencer-ags_audio_loop.o gsequencer-ags_autosave_thread.o gsequencer-ags_devout_thread.o gsequencer-ags_export_thread.o gsequencer-ags_gui_task_thread.o gsequencer-ags_gui_thread.o gsequencer-ags_history.o gsequencer-ags_iterator_thread.o gsequencer-ags_mutex_manager.o gsequencer-ags_record_thread.o gsequencer-ags_recycling_thread.o gsequencer-ags_recycling_thread_callbacks.o gsequencer-ags_returnable_thread.o gsequencer-ags_single_thread.o gsequencer-ags_task_completion.o gsequencer-ags_task_thread.o gsequencer-ags_thread_pool.o gsequencer-ags_thread-posix.o gsequencer-ags_timestamp_thread.o gsequencer-ags_id_generator.o gsequencer-ags_cartesian.o gsequencer-ags_dial.o gsequencer-ags_expander.o gsequencer-ags_expander_set.o gsequencer-ags_hindicator.o gsequencer-ags_htimebar.o gsequencer-ags_indicator.o gsequencer-ags_led.o gsequencer-ags_menu.o gsequencer-ags_menu_item.o gsequencer-ags_option_menu.o gsequencer-ags_ruler.o gsequencer-ags_segment.o gsequencer-ags_table.o gsequencer-ags_timebar.o gsequencer-ags_vindicator.o gsequencer-ags_waveform.o gsequencer-ags_audio_preferences.o gsequencer-ags_audio_preferences_callbacks.o gsequencer-ags_editor.o gsequencer-ags_editor_callbacks.o gsequencer-ags_export_window.o gsequencer-ags_export_window_callbacks.o gsequencer-ags_generic_preferences.o gsequencer-ags_generic_preferences_callbacks.o gsequencer-ags_ladspa_browser.o gsequencer-ags_ladspa_browser_callbacks.o gsequencer-ags_line.o gsequencer-ags_line_callbacks.o gsequencer-ags_line_editor.o gsequencer-ags_line_editor_callbacks.o gsequencer-ags_line_member.o gsequencer-ags_line_member_callbacks.o gsequencer-ags_line_member_editor.o gsequencer-ags_line_member_editor_callbacks.o gsequencer-ags_link_collection_editor.o gsequencer-ags_link_collection_editor_callbacks.o gsequencer-ags_link_editor.o gsequencer-ags_link_editor_callbacks.o gsequencer-ags_listing_editor.o gsequencer-ags_listing_editor_callbacks.o gsequencer-ags_machine.o gsequencer-ags_machine_callbacks.o gsequencer-ags_machine_editor.o gsequencer-ags_machine_editor_callbacks.o gsequencer-ags_menu_bar.o gsequencer-ags_menu_bar_callbacks.o gsequencer-ags_navigation.o gsequencer-ags_navigation_callbacks.o gsequencer-ags_pad.o gsequencer-ags_pad_callbacks.o gsequencer-ags_pad_editor.o gsequencer-ags_pad_editor_callbacks.o gsequencer-ags_performance_preferences.o gsequencer-ags_performance_preferences_callbacks.o gsequencer-ags_plugin_preferences.o gsequencer-ags_plugin_preferences_callbacks.o gsequencer-ags_preferences.o gsequencer-ags_preferences_callbacks.o gsequencer-ags_property_collection_editor.o gsequencer-ags_property_collection_editor_callbacks.o gsequencer-ags_property_editor.o gsequencer-ags_property_editor_callbacks.o gsequencer-ags_property_listing_editor.o gsequencer-ags_resize_editor.o gsequencer-ags_server_preferences.o gsequencer-ags_server_preferences_callbacks.o gsequencer-ags_window.o gsequencer-ags_window_callbacks.o gsequencer-ags_file_selection.o gsequencer-ags_file_selection_callbacks.o gsequencer-ags_inline_player.o gsequencer-ags_inline_player_callbacks.o gsequencer-ags_machine_radio_button.o gsequencer-ags_machine_selection.o gsequencer-ags_machine_selector.o gsequencer-ags_machine_selector_callbacks.o gsequencer-ags_meter.o gsequencer-ags_meter_callbacks.o gsequencer-ags_notebook.o gsequencer-ags_notebook_callbacks.o gsequencer-ags_note_edit.o gsequencer-ags_note_edit_callbacks.o gsequencer-ags_pattern_edit.o gsequencer-ags_pattern_edit_callbacks.o gsequencer-ags_sf2_chooser.o gsequencer-ags_sf2_chooser_callbacks.o gsequencer-ags_toolbar.o gsequencer-ags_toolbar_callbacks.o gsequencer-ags_drum.o gsequencer-ags_drum_callbacks.o gsequencer-ags_drum_input_line.o gsequencer-ags_drum_input_line_callbacks.o gsequencer-ags_drum_input_pad.o gsequencer-ags_drum_input_pad_callbacks.o gsequencer-ags_drum_output_line.o gsequencer-ags_drum_output_line_callbacks.o gsequencer-ags_drum_output_pad.o gsequencer-ags_drum_output_pad_callbacks.o gsequencer-ags_ffplayer.o gsequencer-ags_ffplayer_callbacks.o gsequencer-ags_matrix.o gsequencer-ags_matrix_callbacks.o gsequencer-ags_mixer.o gsequencer-ags_mixer_callbacks.o gsequencer-ags_mixer_input_line.o gsequencer-ags_mixer_input_pad.o gsequencer-ags_oscillator.o gsequencer-ags_oscillator_callbacks.o gsequencer-ags_panel.o gsequencer-ags_panel_callbacks.o gsequencer-ags_panel_input_line.o gsequencer-ags_panel_input_pad.o gsequencer-ags_synth.o gsequencer-ags_synth_callbacks.o gsequencer-ags_synth_input_line.o gsequencer-ags_synth_input_pad.o  -lrt -lm -ldl -lX11 
 make[1]: Leaving directory '/home/joelkraehemann/gsequencer'
-Makefile:1307: recipe for target 'all' failed
-make: *** [all] Error 2

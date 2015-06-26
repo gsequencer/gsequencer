@@ -1289,7 +1289,7 @@ ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
 	if(errno == ERANGE){
 	  goto dont_reset_x_offset;
 	} 
-
+	
 	if(x_boundary == endptr){
 	  goto dont_reset_x_offset;
 	}

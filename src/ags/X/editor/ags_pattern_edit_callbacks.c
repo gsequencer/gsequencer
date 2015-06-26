@@ -323,10 +323,10 @@ ags_pattern_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventBu
 
   void ags_pattern_edit_drawing_area_button_release_event_set_control(){
     GList *list_notation;
+    gint i;
     guint note_x, note_y;
     guint note_offset_x1;
     gint history;
-    gint selected_channel;
 
     if(pattern_edit->control.x0 >= pattern_edit->map_width)
       pattern_edit->control.x0 = pattern_edit->map_width - 1;
@@ -342,14 +342,12 @@ ags_pattern_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventBu
 
     list_notation = machine->audio->notation;
 
-    gint i;
-
     i = 0;
 
-    while((selected_channel = ags_notebook_next_active_tab(editor->current_notebook,
+    while((i = ags_notebook_next_active_tab(editor->current_notebook,
 							   i)) != -1){
       list_notation = g_list_nth(machine->audio->notation,
-				 selected_channel);
+				 i);
 
       if(list_notation == NULL){
 	i++;
@@ -426,7 +424,6 @@ ags_pattern_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventBu
     GList *list_notation;
     guint x, y;
     gint history;
-    gint selected_channel;
     gint i;
 
     x = pattern_edit->control.x0_offset + pattern_edit->control.x0 - 1;
@@ -441,10 +438,10 @@ ags_pattern_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventBu
     list_notation = machine->audio->notation;
     i = 0;
 
-    while((selected_channel = ags_notebook_next_active_tab(editor->current_notebook,
-							   i)) != -1){
+    while((i = ags_notebook_next_active_tab(editor->current_notebook,
+					    i)) != -1){
       list_notation = g_list_nth(machine->audio->notation,
-				 selected_channel);
+				 i);
       
       if(list_notation == NULL){
 	i++;
@@ -461,7 +458,6 @@ ags_pattern_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventBu
   void ags_pattern_edit_drawing_area_button_release_event_select_region(){
     GList *list_notation;
     guint x0, x1, y0, y1;
-    gint selected_channel;
     gint i;
     
     /* get real size and offset */
@@ -499,10 +495,10 @@ ags_pattern_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventBu
     /* select notes */
     list_notation = machine->audio->notation;
 
-    while((selected_channel = ags_notebook_next_active_tab(editor->current_notebook,
-							   i)) != -1){
+    while((i = ags_notebook_next_active_tab(editor->current_notebook,
+					    i)) != -1){
       list_notation = g_list_nth(machine->audio->notation,
-				 selected_channel);
+				 i);
 
       if(list_notation == NULL){
 	i++;

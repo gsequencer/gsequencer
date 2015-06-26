@@ -36,8 +36,10 @@
 #include <ags/audio/task/ags_remove_audio.h>
 
 #include <ags/X/ags_window.h>
+#include <ags/X/ags_editor.h>
 #include <ags/X/ags_machine_editor.h>
 
+#include <ags/X/editor/ags_machine_radio_button.h>
 #include <ags/X/editor/ags_file_selection.h>
 
 int ags_machine_popup_rename_response_callback(GtkWidget *widget, gint response, AgsMachine *machine);
@@ -125,7 +127,8 @@ ags_machine_popup_destroy_activate_callback(GtkWidget *widget, AgsMachine *machi
 {
   AgsWindow *window;
   AgsRemoveAudio *remove_audio;
-
+  GList *list, *list_start;
+  
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
 
   remove_audio = ags_remove_audio_new(window->devout,
@@ -134,6 +137,38 @@ ags_machine_popup_destroy_activate_callback(GtkWidget *widget, AgsMachine *machi
 			      AGS_TASK(remove_audio));
 
   ags_connectable_disconnect(AGS_CONNECTABLE(machine));
+
+  /* destroy editor */
+  list = window->editor->editor_child;
+
+  while(list != NULL){
+    if(AGS_EDITOR_CHILD(list->data)->machine == machine){
+      gtk_widget_destroy(AGS_EDITOR_CHILD(list->data)->notebook);
+      gtk_widget_destroy(AGS_EDITOR_CHILD(list->data)->meter);
+      gtk_widget_destroy(AGS_EDITOR_CHILD(list->data)->edit_widget);
+      break;
+    }
+
+    list = list->next;
+  }
+  
+  list =
+    list_start = gtk_container_get_children(window->editor->machine_selector);
+
+  list = list->next;
+
+  while(list != NULL){
+    if(AGS_IS_MACHINE_RADIO_BUTTON(list->data) && AGS_MACHINE_RADIO_BUTTON(list->data)->machine == machine){
+      gtk_widget_destroy(list->data);
+      break;
+    }
+    
+    list = list->next;
+  }
+
+  g_list_free(list_start);
+
+  /* destroy machine */
   gtk_widget_destroy((GtkWidget *) machine);
 }
 
