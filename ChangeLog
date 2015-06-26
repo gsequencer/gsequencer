@@ -1,3 +1,11 @@
+ags (0.4.2.83)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed playback within AgsDrumInputPad
+	* fixed thread-safety of editor with AgsMutexManager
+	* hided playback button of AgsDrumInputPad open dialog
+	* fixed spin button in AgsDrumInputPad open dialog
+
 ags (0.4.2.82)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
