@@ -42,7 +42,7 @@ void ags_drum_input_pad_class_init(AgsDrumInputPadClass *drum_input_pad);
 void ags_drum_input_pad_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_drum_input_pad_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_drum_input_pad_init(AgsDrumInputPad *drum_input_pad);
-void ags_drum_input_pad_destroy(GtkObject *object);
+static void ags_drum_input_pad_finalize(GObject *gobject);
 void ags_drum_input_pad_connect(AgsConnectable *connectable);
 void ags_drum_input_pad_disconnect(AgsConnectable *connectable);
 gchar* ags_drum_input_pad_get_name(AgsPlugin *plugin);
@@ -120,9 +120,16 @@ void
 ags_drum_input_pad_class_init(AgsDrumInputPadClass *drum_input_pad)
 {
   AgsPadClass *pad;
-
+  GObjectClass *gobject;
+  
   ags_drum_input_pad_parent_class = g_type_class_peek_parent(drum_input_pad);
 
+  /*  */
+  gobject = (GObjectClass *) drum_input_pad;
+
+  gobject->finalize = ags_drum_input_pad_finalize;
+
+  /*  */
   pad = (AgsPadClass *) drum_input_pad;
 
   pad->set_channel = ags_drum_input_pad_set_channel;
@@ -186,6 +193,22 @@ ags_drum_input_pad_init(AgsDrumInputPad *drum_input_pad)
   drum_input_pad->pad_play_ref = 0;
 }
 
+static void
+ags_drum_input_pad_finalize(GObject *gobject)
+{
+  AgsDrumInputPad *drum_input_pad;
+
+  drum_input_pad = AGS_DRUM_INPUT_PAD(gobject);
+
+  //FIXME:JK: won't be called
+  //NOTE:JK: work-around in ags_drum.c
+  if(drum_input_pad->file_chooser != NULL){
+    //    gtk_widget_destroy(drum_input_pad->file_chooser);
+  }
+  
+  G_OBJECT_CLASS(ags_drum_input_pad_parent_class)->finalize(gobject);
+}
+
 void
 ags_drum_input_pad_connect(AgsConnectable *connectable)
 {
@@ -215,12 +238,6 @@ ags_drum_input_pad_disconnect(AgsConnectable *connectable)
 {
   ags_drum_input_pad_parent_connectable_interface->disconnect(connectable);
 
-  /* empty */
-}
-
-void
-ags_drum_input_pad_destroy(GtkObject *object)
-{
   /* empty */
 }
 

@@ -107,6 +107,7 @@ void
 ags_machine_selection_init(AgsMachineSelection *machine_selection)
 {
   g_object_set(G_OBJECT(machine_selection),
+	       "modal\0", TRUE,
 	       "title\0", g_strdup("select machines\0"),
 	       NULL);
 

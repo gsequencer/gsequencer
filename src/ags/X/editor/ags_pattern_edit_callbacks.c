@@ -19,6 +19,8 @@
 
 #include <ags/X/editor/ags_pattern_edit_callbacks.h>
 
+#include <ags/thread/ags_mutex_manager.h>
+
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_output.h>
@@ -34,6 +36,8 @@
 #include <ags/X/machine/ags_ffplayer.h>
 
 #include <gdk/gdkkeysyms.h>
+
+extern pthread_mutex_t ags_application_mutex;
 
 void
 ags_pattern_edit_set_audio_channels_callback(AgsAudio *audio,
@@ -519,7 +523,20 @@ ags_pattern_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventBu
 						 AGS_TYPE_EDITOR);
 
   if(editor->selected_machine != NULL && event->button == 1){
+    AgsMutexManager *mutex_manager;
+
     cairo_t *cr;
+
+    pthread_mutex_t *audio_mutex;
+
+    pthread_mutex_lock(&(ags_application_mutex));
+  
+    mutex_manager = ags_mutex_manager_get_instance();
+
+    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					   (GObject *) editor->selected_machine->audio);
+  
+    pthread_mutex_unlock(&(ags_application_mutex));
 
     if(event->x >= 0.0){
       pattern_edit->control.x1 = (guint) event->x;
@@ -571,32 +588,52 @@ ags_pattern_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventBu
       ags_pattern_edit_draw_segment(pattern_edit, cr);
       ags_pattern_edit_draw_notation(pattern_edit, cr);
 
+      pthread_mutex_lock(audio_mutex);
+
       if(AGS_IS_PANEL(machine)){
       }else if(AGS_IS_MIXER(machine)){
       }else if(AGS_IS_DRUM(machine)){
 	ags_pattern_edit_drawing_area_button_release_event_set_control();
-	ags_pattern_edit_drawing_area_button_release_event_draw_control(cr);
       }else if(AGS_IS_MATRIX(machine)){
 	ags_pattern_edit_drawing_area_button_release_event_set_control();
-	ags_pattern_edit_drawing_area_button_release_event_draw_control(cr);
       }else if(AGS_IS_FFPLAYER(machine)){
 	ags_pattern_edit_drawing_area_button_release_event_set_control();
-	ags_pattern_edit_drawing_area_button_release_event_draw_control(cr);
       }else if(AGS_IS_SYNTH(machine)){
 	ags_pattern_edit_drawing_area_button_release_event_set_control();
+      }
+
+      pthread_mutex_unlock(audio_mutex);
+
+      if(AGS_IS_PANEL(machine)){
+      }else if(AGS_IS_MIXER(machine)){
+      }else if(AGS_IS_DRUM(machine)){
+	ags_pattern_edit_drawing_area_button_release_event_draw_control(cr);
+      }else if(AGS_IS_MATRIX(machine)){
+	ags_pattern_edit_drawing_area_button_release_event_draw_control(cr);
+      }else if(AGS_IS_FFPLAYER(machine)){
+	ags_pattern_edit_drawing_area_button_release_event_draw_control(cr);
+      }else if(AGS_IS_SYNTH(machine)){
 	ags_pattern_edit_drawing_area_button_release_event_draw_control(cr);
       }
     }else if((AGS_PATTERN_EDIT_DELETING_NOTE & (pattern_edit->flags)) != 0){
       pattern_edit->flags &= (~AGS_PATTERN_EDIT_DELETING_NOTE);
 
+      pthread_mutex_lock(audio_mutex);
+
       ags_pattern_edit_drawing_area_button_release_event_delete_point();
+
+      pthread_mutex_unlock(audio_mutex);
 
       ags_pattern_edit_draw_segment(pattern_edit, cr);
       ags_pattern_edit_draw_notation(pattern_edit, cr);
     }else if((AGS_PATTERN_EDIT_SELECTING_NOTES & (pattern_edit->flags)) != 0){
       pattern_edit->flags &= (~AGS_PATTERN_EDIT_SELECTING_NOTES);
 
+      //      pthread_mutex_lock(audio_mutex);
+      
       ags_pattern_edit_drawing_area_button_release_event_select_region();
+
+      //      pthread_mutex_unlock(audio_mutex);
 
       ags_pattern_edit_draw_segment(pattern_edit, cr);
       ags_pattern_edit_draw_notation(pattern_edit, cr);

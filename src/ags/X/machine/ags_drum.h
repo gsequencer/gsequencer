@@ -56,7 +56,8 @@ struct _AgsDrum
   gchar *xml_type;
 
   GtkButton *open;
-
+  GtkWidget *open_dialog;
+  
   GtkCheckButton *loop_button;
   GtkSpinButton *length_spin;
 

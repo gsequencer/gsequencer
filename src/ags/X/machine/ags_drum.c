@@ -295,7 +295,8 @@ ags_drum_init(AgsDrum *drum)
   gtk_box_pack_start((GtkBox *) vbox,
 		     (GtkWidget *) (drum->open = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_OPEN)),
 		     FALSE, FALSE, 0);
-
+  drum->open_dialog = NULL;
+  
   /* sequencer */
   frame = (GtkFrame *) gtk_frame_new("Pattern\0");
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) frame, FALSE, FALSE, 0);
@@ -415,7 +416,7 @@ ags_drum_init(AgsDrum *drum)
 
 void
 ags_drum_finalize(GObject *gobject)
-{
+{  
   G_OBJECT_CLASS(ags_drum_parent_class)->finalize(gobject);
 }
 
@@ -438,6 +439,9 @@ ags_drum_connect(AgsConnectable *connectable)
   drum = AGS_DRUM(connectable);
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) drum);
 
+  g_signal_connect((GObject *) drum, "destroy\0",
+		   G_CALLBACK(ags_drum_destroy_callback), (gpointer) drum);
+  
   /* AgsDrum */
   g_signal_connect((GObject *) drum->open, "clicked\0",
 		   G_CALLBACK(ags_drum_open_callback), (gpointer) drum);

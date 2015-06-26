@@ -27,6 +27,7 @@
 #include <ags/X/machine/ags_ffplayer.h>
 
 void ags_ffplayer_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsFFPlayer *ffplayer);
+void ags_ffplayer_destroy_callback(GtkWidget *widget, AgsFFPlayer *ffplayer);
 
 void ags_ffplayer_open_clicked_callback(GtkWidget *widget, AgsFFPlayer *ffplayer);
 void ags_ffplayer_open_dialog_response_callback(GtkWidget *widget, gint response,

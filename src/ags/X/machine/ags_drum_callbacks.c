@@ -71,6 +71,8 @@
 extern const char *AGS_DRUM_INDEX;
 extern pthread_mutex_t ags_application_mutex;
 
+void ags_drum_open_response_callback(GtkDialog *dialog, gint response, AgsDrum *drum);
+
 void
 ags_drum_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrum *drum)
 {
@@ -88,17 +90,40 @@ ags_drum_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrum *
 }
 
 void
+ags_drum_destroy_callback(GtkWidget *widget, AgsDrum *drum)
+{
+  GList *list, *list_start;
+
+  if(drum->open_dialog != NULL){
+    gtk_widget_destroy(drum->open_dialog);
+  }
+  
+  list =
+    list_start = gtk_container_get_children(AGS_MACHINE(drum)->input);
+
+  while(list != NULL){
+
+    if(AGS_DRUM_INPUT_PAD(list->data)->file_chooser != NULL){
+      gtk_widget_destroy(GTK_WIDGET(AGS_DRUM_INPUT_PAD(list->data)->file_chooser));
+    }
+
+    list = list->next;
+  }
+}
+
+void
 ags_drum_open_callback(GtkWidget *toggle_button, AgsDrum *drum)
 {
   GtkFileChooserDialog *file_chooser;
   GtkCheckButton *check_button;
 
-  file_chooser = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new(g_strdup("open audio files\0"),
-								      (GtkWindow *) gtk_widget_get_toplevel((GtkWidget *) drum),
-								      GTK_FILE_CHOOSER_ACTION_OPEN,
-								      GTK_STOCK_OK, GTK_RESPONSE_ACCEPT,
-								      GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, 
-								      NULL);
+  drum->open_dialog = 
+    file_chooser = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new(g_strdup("open audio files\0"),
+									(GtkWindow *) gtk_widget_get_toplevel((GtkWidget *) drum),
+									GTK_FILE_CHOOSER_ACTION_OPEN,
+									GTK_STOCK_OK, GTK_RESPONSE_ACCEPT,
+									GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, 
+									NULL);
   gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(file_chooser), TRUE);
 
   check_button = (GtkCheckButton *) gtk_check_button_new_with_label(g_strdup("open in new channel\0"));
@@ -114,7 +139,15 @@ ags_drum_open_callback(GtkWidget *toggle_button, AgsDrum *drum)
   gtk_widget_show_all(GTK_WIDGET(file_chooser));
 
   g_signal_connect(G_OBJECT(file_chooser), "response\0",
+		   G_CALLBACK(ags_drum_open_response_callback), drum);
+  g_signal_connect(G_OBJECT(file_chooser), "response\0",
 		   G_CALLBACK(ags_machine_open_response_callback), drum);
+}
+
+void
+ags_drum_open_response_callback(GtkDialog *dialog, gint response, AgsDrum *drum)
+{
+  drum->open_dialog = NULL;
 }
 
 void

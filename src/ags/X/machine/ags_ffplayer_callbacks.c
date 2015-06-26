@@ -67,11 +67,20 @@ ags_ffplayer_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsFF
 }
 
 void
+ags_ffplayer_destroy_callback(GtkWidget *widget, AgsFFPlayer *ffplayer)
+{
+  if(ffplayer->open_dialog != NULL){
+    gtk_widget_destroy(ffplayer->open_dialog);
+  }
+}
+
+void
 ags_ffplayer_open_clicked_callback(GtkWidget *widget, AgsFFPlayer *ffplayer)
 {
   GtkFileChooserDialog *file_chooser;
 
-  file_chooser = ags_machine_file_chooser_dialog_new(AGS_MACHINE(ffplayer));
+  ffplayer->open_dialog = 
+    file_chooser = ags_machine_file_chooser_dialog_new(AGS_MACHINE(ffplayer));
   gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(file_chooser),
 				       FALSE);
 
@@ -146,6 +155,7 @@ ags_ffplayer_open_dialog_response_callback(GtkWidget *widget, gint response,
 			     0);
   }
 
+  ffplayer->open_dialog = NULL;
   gtk_widget_destroy(widget);
 }
 

@@ -317,7 +317,7 @@ void
 ags_line_member_init(AgsLineMember *line_member)
 {
   GtkWidget *control;
-
+  
   g_signal_connect_after((GObject *) line_member, "parent_set\0",
 			 G_CALLBACK(ags_line_member_parent_set_callback), (gpointer) line_member);
 
@@ -397,7 +397,7 @@ ags_line_member_set_property(GObject *gobject,
       }
 
       line_member->widget_label = g_strdup(label);
-      ags_line_member_set_label(line_member, label);
+      ags_line_member_set_label(line_member, line_member->widget_label);
     }
     break;
   case PROP_PLUGIN_NAME:
@@ -672,17 +672,21 @@ ags_line_member_set_label(AgsLineMember *line_member,
 {
   GtkWidget *child_widget;
 
-  if(g_type_is_a(line_member->widget_type, GTK_TYPE_BUTTON) ||
-     line_member->widget_type == GTK_TYPE_SPIN_BUTTON){
+  if(g_type_is_a(line_member->widget_type,
+		 GTK_TYPE_BUTTON)){
     child_widget = gtk_bin_get_child(GTK_BIN(line_member));
 
-    //    g_object_set(G_OBJECT(child_widget),
-    //		 "label\0", label,
-    //		 NULL);
+    g_object_set(G_OBJECT(child_widget),
+		 "label\0", label,
+		 NULL);
   }else{
-    GtkLabel *label;
-
-    //TODO:JK: implement me
+    gtk_frame_set_label_widget(line_member,
+			       g_object_new(GTK_TYPE_LABEL,
+					    "wrap\0", TRUE,
+					    "wrap-mode\0", PANGO_WRAP_CHAR,
+					    "use-markup\0", TRUE,
+					    "label", g_strdup_printf("<small>%s</small>", label),
+					    NULL));
   }
 
 

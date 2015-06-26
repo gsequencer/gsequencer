@@ -29,6 +29,7 @@
 #include <ags/X/machine/ags_drum.h>
 
 void ags_drum_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrum *drum);
+void ags_drum_destroy_callback(GtkWidget *widget, AgsDrum *drum);
 
 /* controls */
 void ags_drum_open_callback(GtkWidget *toggle_button, AgsDrum *drum);

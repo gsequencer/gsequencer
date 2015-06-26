@@ -185,57 +185,59 @@ ags_meter_paint(AgsMeter *meter)
 
   base_note = AGS_NOTATION(editor->selected_machine->audio->notation->data)->base_note;
 
+  j = j % 12;
+  
   /* apply base note */
   if(!g_ascii_strncasecmp(base_note,
 		      "A\0",
 		      2)){
-    j = (11 + editor->selected_machine->audio->input_pads - (editor->selected_machine->audio->input_pads - j) - 1) + ((editor->selected_machine->audio->input_pads));
+    j = (11 + j) + (editor->selected_machine->audio->input_pads % 12) * (j * editor->selected_machine->audio->input_pads) + (editor->selected_machine->audio->input_pads * 11) + 4;
   }else if(!g_ascii_strncasecmp(base_note,
 		      "A#\0",
 		      3)){
-    j = (10 + editor->selected_machine->audio->input_pads - (editor->selected_machine->audio->input_pads - j) - 1) + ((editor->selected_machine->audio->input_pads));
+    j = (10 + j) + (editor->selected_machine->audio->input_pads % 12) * (j * editor->selected_machine->audio->input_pads) + (editor->selected_machine->audio->input_pads * 10) + 4;
   }else if(!g_ascii_strncasecmp(base_note,
 		      "H\0",
 		      2)){
-    j = (9 + editor->selected_machine->audio->input_pads - (editor->selected_machine->audio->input_pads - j) - 1) + ((editor->selected_machine->audio->input_pads));
+    j = (9 + j) + (editor->selected_machine->audio->input_pads % 12) * (j * editor->selected_machine->audio->input_pads) + (editor->selected_machine->audio->input_pads * 9) + 4;
   }else if(!g_ascii_strncasecmp(base_note,
 		      "C\0",
 		      2)){
-    j = (8 + editor->selected_machine->audio->input_pads - (editor->selected_machine->audio->input_pads - j) - 1) + ((editor->selected_machine->audio->input_pads));
+    j = (8 + j) + (editor->selected_machine->audio->input_pads % 12) * (j * editor->selected_machine->audio->input_pads) + (editor->selected_machine->audio->input_pads * 8) + 4;
   }else if(!g_ascii_strncasecmp(base_note,
 		      "C#\0",
 		      3)){
-    j = (7 + editor->selected_machine->audio->input_pads - (editor->selected_machine->audio->input_pads - j) - 1) + ((editor->selected_machine->audio->input_pads));
+    j = (7 + j) + (editor->selected_machine->audio->input_pads % 12) * (j * editor->selected_machine->audio->input_pads) + (editor->selected_machine->audio->input_pads * 7) + 4;
   }else if(!g_ascii_strncasecmp(base_note,
 		      "D\0",
 		      2)){
-    j = (6 + editor->selected_machine->audio->input_pads - (editor->selected_machine->audio->input_pads - j) - 1) + ((editor->selected_machine->audio->input_pads));
+    j = (6 + j) + (editor->selected_machine->audio->input_pads % 12) * (j * editor->selected_machine->audio->input_pads) + (editor->selected_machine->audio->input_pads * 6) + 4;
   }else if(!g_ascii_strncasecmp(base_note,
 		      "D#\0",
 		      3)){
-    j = (5 + editor->selected_machine->audio->input_pads - (editor->selected_machine->audio->input_pads - j) - 1) + ((editor->selected_machine->audio->input_pads));
+    j = (5 + j) + (editor->selected_machine->audio->input_pads % 12) * (j * editor->selected_machine->audio->input_pads) + (editor->selected_machine->audio->input_pads * 5) + 4;
   }else if(!g_ascii_strncasecmp(base_note,
 		      "E\0",
 		      2)){
-    j = (4 + editor->selected_machine->audio->input_pads - (editor->selected_machine->audio->input_pads - j) - 1) + ((editor->selected_machine->audio->input_pads));
+    j = (4 + j) + (editor->selected_machine->audio->input_pads % 12) * (j * editor->selected_machine->audio->input_pads) + (editor->selected_machine->audio->input_pads * 4) + 4;
   }else if(!g_ascii_strncasecmp(base_note,
 		      "F\0",
 		      2)){
-    j = (3 + editor->selected_machine->audio->input_pads - (editor->selected_machine->audio->input_pads - j) - 1) + ((editor->selected_machine->audio->input_pads));
+    j = (3 + j) + (editor->selected_machine->audio->input_pads % 12) * (j * editor->selected_machine->audio->input_pads) + (editor->selected_machine->audio->input_pads * 3) + 4;
   }else if(!g_ascii_strncasecmp(base_note,
 		      "F#\0",
 		      3)){
-    j = (2 + editor->selected_machine->audio->input_pads - (editor->selected_machine->audio->input_pads - j) - 1) + ((editor->selected_machine->audio->input_pads));
+    j = (2 + j) + (editor->selected_machine->audio->input_pads % 12) * (j * editor->selected_machine->audio->input_pads) + (editor->selected_machine->audio->input_pads * 2) + 4;
   }else if(!g_ascii_strncasecmp(base_note,
 		      "G\0",
 		      2)){
-    j = (1 + editor->selected_machine->audio->input_pads - (editor->selected_machine->audio->input_pads - j) - 1) + ((editor->selected_machine->audio->input_pads));
+    j = (1 + j) + (editor->selected_machine->audio->input_pads % 12) * (j * editor->selected_machine->audio->input_pads) + (editor->selected_machine->audio->input_pads) + 4;
   }else if(!g_ascii_strncasecmp(base_note,
 		      "G#\0",
 		      3)){
-    j = (editor->selected_machine->audio->input_pads - (editor->selected_machine->audio->input_pads - j) - 1) + ((editor->selected_machine->audio->input_pads));
+    j = (j) + (editor->selected_machine->audio->input_pads % 12) * (j * editor->selected_machine->audio->input_pads) + 4;
   }
-  
+
   j = j % 12;
   
   if(y[0] != 0){

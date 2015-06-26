@@ -43,6 +43,7 @@
 #include <ags/X/editor/ags_file_selection.h>
 
 int ags_machine_popup_rename_response_callback(GtkWidget *widget, gint response, AgsMachine *machine);
+int ags_machine_popup_properties_destroy_callback(GtkWidget *widget, AgsMachine *machine);
 void ags_machine_start_complete_response(GtkWidget *dialog, gint response, AgsMachine *machine);
 
 #define AGS_RENAME_ENTRY "AgsRenameEntry"
@@ -178,14 +179,15 @@ ags_machine_popup_rename_activate_callback(GtkWidget *widget, AgsMachine *machin
   GtkDialog *dialog;
   GtkEntry *entry;
 
-  dialog = (GtkDialog *) gtk_dialog_new_with_buttons(g_strdup("rename\0"),
-						     (GtkWindow *) gtk_widget_get_toplevel(GTK_WIDGET(machine)),
-						     GTK_DIALOG_DESTROY_WITH_PARENT,
-						     GTK_STOCK_OK,
-						     GTK_RESPONSE_ACCEPT,
-						     GTK_STOCK_CANCEL,
-						     GTK_RESPONSE_REJECT,
-						     NULL);
+  machine->rename =
+    dialog = (GtkDialog *) gtk_dialog_new_with_buttons(g_strdup("rename\0"),
+						       (GtkWindow *) gtk_widget_get_toplevel(GTK_WIDGET(machine)),
+						       GTK_DIALOG_DESTROY_WITH_PARENT,
+						       GTK_STOCK_OK,
+						       GTK_RESPONSE_ACCEPT,
+						       GTK_STOCK_CANCEL,
+						       GTK_RESPONSE_REJECT,
+						       NULL);
 
   entry = (GtkEntry *) gtk_entry_new();
   gtk_entry_set_text(entry, machine->name);
@@ -214,7 +216,8 @@ ags_machine_popup_rename_response_callback(GtkWidget *widget, gint response, Ags
     gtk_frame_set_label((GtkFrame *) gtk_container_get_children((GtkContainer *) machine)->data, g_strconcat(G_OBJECT_TYPE_NAME(machine), ": \0", text, NULL));
     g_free(text);
   }
-
+  
+  machine->rename = NULL;
   gtk_widget_destroy(widget);
 
   return(0);
@@ -224,12 +227,20 @@ int
 ags_machine_popup_properties_activate_callback(GtkWidget *widget, AgsMachine *machine)
 {
   machine->properties = (GtkDialog *) ags_machine_editor_new(machine);
+  g_signal_connect_after(machine->properties, "destroy\0",
+			 G_CALLBACK(ags_machine_popup_properties_destroy_callback), machine);
   gtk_window_set_default_size((GtkWindow *) machine->properties, -1, 400);
   ags_connectable_connect(AGS_CONNECTABLE(machine->properties));
   ags_applicable_reset(AGS_APPLICABLE(machine->properties));
   gtk_widget_show_all((GtkWidget *) machine->properties);
 
   return(0);
+}
+
+int
+ags_machine_popup_properties_destroy_callback(GtkWidget *widget, AgsMachine *machine)
+{
+  machine->properties = NULL;
 }
 
 int

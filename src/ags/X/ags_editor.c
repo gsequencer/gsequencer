@@ -583,6 +583,8 @@ ags_editor_select_all(AgsEditor *editor)
 
       i++;
     }
+    
+    pthread_mutex_unlock(audio_mutex);
 
     if(AGS_IS_NOTE_EDIT(editor->current_edit_widget)){
       cr = gdk_cairo_create(GTK_WIDGET(AGS_NOTE_EDIT(editor->current_edit_widget)->drawing_area)->window);
@@ -603,8 +605,6 @@ ags_editor_select_all(AgsEditor *editor)
       cairo_pop_group_to_source(cr);
       cairo_paint(cr);
     }
-
-    pthread_mutex_unlock(audio_mutex);
   }
 }
 
@@ -846,6 +846,8 @@ ags_editor_paste(AgsEditor *editor)
     
     xmlFreeDoc(clipboard); 
 
+    pthread_mutex_unlock(audio_mutex);
+
     if(AGS_IS_NOTE_EDIT(editor->current_edit_widget)){
       cr = gdk_cairo_create(GTK_WIDGET(AGS_NOTE_EDIT(editor->current_edit_widget)->drawing_area)->window);
       cairo_push_group(cr);
@@ -880,13 +882,13 @@ ags_editor_paste(AgsEditor *editor)
       if(paste_from_position){
 	gint big_step, small_step;
 
-	big_step = (guint) ceil((double) last_x * AGS_NOTATION_MINIMUM_NOTE_LENGTH) / AGS_NOTATION_MINIMUM_NOTE_LENGTH + (AGS_NOTE_EDIT(editor->current_edit_widget)->selected_x % (guint) (1 / AGS_NOTATION_MINIMUM_NOTE_LENGTH));
+	big_step = (guint) ceil((double) last_x * AGS_NOTATION_MINIMUM_NOTE_LENGTH) / AGS_NOTATION_MINIMUM_NOTE_LENGTH + (AGS_PATTERN_EDIT(editor->current_edit_widget)->selected_x % (guint) (1 / AGS_NOTATION_MINIMUM_NOTE_LENGTH));
 	small_step = (guint) big_step - (1 / AGS_NOTATION_MINIMUM_NOTE_LENGTH);
 	
 	if(small_step < last_x){
-	  AGS_NOTE_EDIT(editor->current_edit_widget)->selected_x = big_step;
+	  AGS_PATTERN_EDIT(editor->current_edit_widget)->selected_x = big_step;
 	}else{
-	  AGS_NOTE_EDIT(editor->current_edit_widget)->selected_x = small_step;
+	  AGS_PATTERN_EDIT(editor->current_edit_widget)->selected_x = small_step;
 	}
 
 	ags_pattern_edit_draw_position(AGS_PATTERN_EDIT(editor->current_edit_widget), cr);
@@ -895,8 +897,6 @@ ags_editor_paste(AgsEditor *editor)
       cairo_pop_group_to_source(cr);
       cairo_paint(cr);
     }
-
-    pthread_mutex_unlock(audio_mutex);
   }
 }
 
@@ -1115,6 +1115,18 @@ ags_editor_invert(AgsEditor *editor)
     /* create notation nodes */
     list_notation = machine->audio->notation;
     i = 0;
+    
+    while((i = ags_notebook_next_active_tab(editor->current_notebook,
+					    i)) != -1){
+      list_notation = g_list_nth(machine->audio->notation,
+				 i);
+
+      ags_editor_invert_notation(AGS_NOTATION(list_notation->data));
+      
+      i++;
+    }
+
+    pthread_mutex_unlock(audio_mutex);
 
     if(AGS_IS_NOTE_EDIT(editor->current_edit_widget)){
       cr = gdk_cairo_create(GTK_WIDGET(AGS_NOTE_EDIT(editor->current_edit_widget)->drawing_area)->window);
@@ -1124,28 +1136,16 @@ ags_editor_invert(AgsEditor *editor)
 
     cairo_push_group(cr);
     
-    while((i = ags_notebook_next_active_tab(editor->current_notebook,
-					    i)) != -1){
-      list_notation = g_list_nth(machine->audio->notation,
-				 i);
-
-      ags_editor_invert_notation(AGS_NOTATION(list_notation->data));
-
-      if(AGS_IS_NOTE_EDIT(editor->current_edit_widget)){
-	ags_note_edit_draw_segment(AGS_NOTE_EDIT(editor->current_edit_widget), cr);
-	ags_note_edit_draw_notation(AGS_NOTE_EDIT(editor->current_edit_widget), cr);
-      }else if(AGS_IS_PATTERN_EDIT(editor->current_edit_widget)){
-	ags_pattern_edit_draw_segment(AGS_PATTERN_EDIT(editor->current_edit_widget), cr);
-	ags_pattern_edit_draw_notation(AGS_PATTERN_EDIT(editor->current_edit_widget), cr);
-      }
-      
-      i++;
+    if(AGS_IS_NOTE_EDIT(editor->current_edit_widget)){
+      ags_note_edit_draw_segment(AGS_NOTE_EDIT(editor->current_edit_widget), cr);
+      ags_note_edit_draw_notation(AGS_NOTE_EDIT(editor->current_edit_widget), cr);
+    }else if(AGS_IS_PATTERN_EDIT(editor->current_edit_widget)){
+      ags_pattern_edit_draw_segment(AGS_PATTERN_EDIT(editor->current_edit_widget), cr);
+      ags_pattern_edit_draw_notation(AGS_PATTERN_EDIT(editor->current_edit_widget), cr);
     }
 
     cairo_pop_group_to_source(cr);
     cairo_paint(cr);
-
-    pthread_mutex_unlock(audio_mutex);
   }
 }
 

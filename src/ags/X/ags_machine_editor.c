@@ -45,8 +45,6 @@ void ags_machine_editor_disconnect(AgsConnectable *connectable);
 void ags_machine_editor_set_update(AgsApplicable *applicable, gboolean update);
 void ags_machine_editor_apply(AgsApplicable *applicable);
 void ags_machine_editor_reset(AgsApplicable *applicable);
-void ags_machine_editor_destroy(GtkObject *object);
-void ags_machine_editor_show(GtkWidget *widget);
 
 void ags_machine_editor_real_set_machine(AgsMachineEditor *machine_editor,
 					 AgsMachine *machine);
@@ -306,14 +304,6 @@ ags_machine_editor_connect(AgsConnectable *connectable)
 
   machine_editor = AGS_MACHINE_EDITOR(connectable);
 
-  /* GtkObject */
-  g_signal_connect((GObject *) machine_editor, "destroy\0",
-		   G_CALLBACK(ags_machine_editor_destroy_callback), (gpointer) machine_editor);
-
-  /* GtkWidget */
-  g_signal_connect((GObject *) machine_editor, "show\0",
-		   G_CALLBACK(ags_machine_editor_show_callback), (gpointer) machine_editor);
-
   /* GtkNotebook */
   g_signal_connect((GtkNotebook *) machine_editor->notebook, "switch-page\0",
 		   G_CALLBACK(ags_machine_editor_switch_page_callback), (gpointer) machine_editor);
@@ -401,18 +391,6 @@ ags_machine_editor_reset(AgsApplicable *applicable)
   ags_applicable_reset(AGS_APPLICABLE(machine_editor->input_link_editor));
 
   ags_applicable_reset(AGS_APPLICABLE(machine_editor->resize_editor));
-}
-
-void
-ags_machine_editor_destroy(GtkObject *gobject)
-{
-  /* empty */
-}
-
-void
-ags_machine_editor_show(GtkWidget *widget)
-{
-  /* empty */
 }
 
 /**

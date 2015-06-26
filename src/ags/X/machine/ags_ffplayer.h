@@ -50,7 +50,8 @@ struct _AgsFFPlayer
   gchar *xml_type;
 
   GtkButton *open;
-
+  GtkWidget *open_dialog;
+  
   guint control_width;
   guint control_height;
   

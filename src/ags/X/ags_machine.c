@@ -630,15 +630,26 @@ static void
 ags_machine_finalize(GObject *gobject)
 {
   AgsMachine *machine;
+  GList *list, *list_start;
   char *str;
 
   machine = (AgsMachine *) gobject;
 
-  if(machine->name != NULL)
-    g_free(machine->name);
+  if(machine->properties != NULL){
+    gtk_widget_destroy(machine->properties);
+  }
 
-  if(machine->audio != NULL)
+  if(machine->rename != NULL){
+    gtk_widget_destroy(machine->rename);
+  }
+  
+  if(machine->name != NULL){
+    g_free(machine->name);
+  }
+  
+  if(machine->audio != NULL){
     g_object_unref(G_OBJECT(machine->audio));
+  }
 
   G_OBJECT_CLASS(ags_machine_parent_class)->finalize(gobject);
 }

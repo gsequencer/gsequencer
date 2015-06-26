@@ -296,7 +296,8 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 		     GTK_WIDGET(ffplayer->open),
 		     FALSE, FALSE,
 		     0);
-
+  ffplayer->open_dialog = NULL;
+  
   vbox = (GtkVBox *) gtk_vbox_new(FALSE, 2);
   gtk_table_attach(table, (GtkWidget *) vbox,
 		   1, 2,
@@ -454,10 +455,14 @@ ags_ffplayer_connect(AgsConnectable *connectable)
 
   ags_ffplayer_parent_connectable_interface->connect(connectable);
 
-  /* AgsFFPlayer */
   ffplayer = AGS_FFPLAYER(connectable);
-  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) ffplayer);
 
+  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) ffplayer);
+  
+  g_signal_connect((GObject *) ffplayer, "destroy\0",
+		   G_CALLBACK(ags_ffplayer_destroy_callback), (gpointer) ffplayer);
+  
+  /* AgsFFPlayer */
   g_signal_connect((GObject *) ffplayer->open, "clicked\0",
 		   G_CALLBACK(ags_ffplayer_open_clicked_callback), (gpointer) ffplayer);
 

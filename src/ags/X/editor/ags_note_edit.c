@@ -22,6 +22,8 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/thread/ags_mutex_manager.h>
+
 #include <ags/X/ags_editor.h>
 
 #include <ags/X/editor/ags_note_edit.h>
@@ -43,6 +45,8 @@ void ags_note_edit_disconnect(AgsConnectable *connectable);
  */
 
 GtkStyle *note_edit_style;
+
+extern pthread_mutex_t ags_application_mutex;
 
 GType
 ags_note_edit_get_type(void)
@@ -620,7 +624,7 @@ ags_note_edit_draw_position(AgsNoteEdit *note_edit, cairo_t *cr)
     if(selected_x + note_edit->control_current.control_width < x_offset[1]){
       width = note_edit->control_current.control_width;
     }else{
-      width = x_offset[1] - (selected_x + note_edit->control_current.control_width);
+      width = note_edit->control_current.control_width - (x_offset[1] - (selected_x + note_edit->control_current.control_width));
     }
   }
 
@@ -665,16 +669,32 @@ ags_note_edit_draw_notation(AgsNoteEdit *note_edit, cairo_t *cr)
   AgsMachine *machine;
   AgsEditor *editor;
   GtkWidget *widget;
+
   AgsNote *note;
+
+  AgsMutexManager *mutex_manager;
+
   GList *list_notation, *list_note;
+
   guint x_offset;
   guint control_height;
   guint x, y, width, height;
   gint selected_channel;
   gint i;
-  
+
+  pthread_mutex_t *audio_mutex;
+
   editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(note_edit),
 						 AGS_TYPE_EDITOR);
+
+  pthread_mutex_lock(&(ags_application_mutex));
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) editor->selected_machine->audio);
+  
+  pthread_mutex_unlock(&(ags_application_mutex));
 
   if(editor->selected_machine == NULL ||
      (machine = editor->selected_machine) == NULL ||

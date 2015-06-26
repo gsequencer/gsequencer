@@ -26,10 +26,6 @@
 
 #include <ags/X/ags_machine_editor.h>
 
-int ags_machine_editor_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsMachineEditor *machine_editor);
-int ags_machine_editor_destroy_callback(GtkObject *object, AgsMachineEditor *machine_editor);
-int ags_machine_editor_show_callback(GtkWidget *widget, AgsMachineEditor *machine_editor);
-
 int ags_machine_editor_switch_page_callback(GtkNotebook *notebook, GtkNotebookPage *page, guint page_num, AgsMachineEditor *machine_editor);
 
 int ags_machine_editor_apply_callback(GtkWidget *widget, AgsMachineEditor *machine_editor);

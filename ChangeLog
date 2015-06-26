@@ -1,3 +1,16 @@
+ags (0.4.2.85)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed allocation of piano
+	* fixed grained mutices for accessing notation
+	* fixed cursor in edit widgets
+
+ags (0.4.2.84)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed dialog owned by machines to destroy
+	* fixed make machine selection dialog modal
+
 ags (0.4.2.83)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
