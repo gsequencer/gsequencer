@@ -549,7 +549,6 @@ ags_editor_select_all(AgsEditor *editor)
   GList *list_notation;
 
   gint i;
-  gint selected_channel;
 
   if(editor->selected_machine != NULL && editor->current_edit_widget != NULL){
     machine = editor->selected_machine;
@@ -557,10 +556,10 @@ ags_editor_select_all(AgsEditor *editor)
     list_notation = machine->audio->notation;
     i = 0;
 
-    while((selected_channel = ags_notebook_next_active_tab(editor->current_notebook,
+    while((i = ags_notebook_next_active_tab(editor->current_notebook,
 							   i)) != -1){
       list_notation = g_list_nth(machine->audio->notation,
-				 selected_channel);
+				 i);
       ags_notation_add_all_to_selection(AGS_NOTATION(list_notation->data));
 
       i++;
@@ -609,33 +608,48 @@ ags_editor_paste(AgsEditor *editor)
   
   gchar *buffer;
   guint position_x, position_y;
-  guint last_x;
+  gint first_x, last_x;
   gboolean paste_from_position;
+
+  auto gint ags_editor_paste_read_notation();
   
-  void ags_editor_paste_read_notation(){
+  gint ags_editor_paste_read_notation(){
     xmlXPathContextPtr xpathCtxt;
     xmlXPathObjectPtr xpathObj;
     xmlNodeSetPtr nodes;
     GList *notation_list;
 
+    guint first_x;
+    
     xpathCtxt = xmlXPathNewContext(clipboard);
     xpathObj = xmlXPathEvalExpression("/audio/notation\0", xpathCtxt);
 
+    first_x = -1;
+    
     if(xpathObj != NULL){
-      int i, size;
+      int i, j, size;
       guint audio_channel;
       guint current_x;
       
       nodes = xpathObj->nodesetval;
       size = (nodes != NULL) ? nodes->nodeNr: 0;
+      j = 0;
 
       for(i = 0; i < size; i++){
-	audio_channel = (guint) g_ascii_strtoull(xmlGetProp(nodes->nodeTab[i],
-							    "audio-channel\0"),
-						 NULL,
-						 10);
+
+	j = ags_notebook_next_active_tab(editor->current_notebook,
+					 j);
+
+	if(j == -1){
+	  break;
+	}
+	
+	//	audio_channel = (guint) g_ascii_strtoull(xmlGetProp(nodes->nodeTab[i],
+	//						    "audio-channel\0"),
+	//					 NULL,
+	//					 10);
 	notation_list = g_list_nth(machine->audio->notation,
-				   audio_channel);
+				   j);
 
 	if(notation_list == NULL){
 	  break;
@@ -680,6 +694,10 @@ ags_editor_paste(AgsEditor *editor)
 					NULL,
 					10);
 
+
+	  if(first_x == -1 || x_boundary < first_x){
+	    first_x = x_boundary;
+	  }
 	  
 	  if(position_x > x_boundary){
 	    current_x += (position_x - x_boundary);
@@ -730,6 +748,8 @@ ags_editor_paste(AgsEditor *editor)
 
       xmlXPathFreeObject(xpathObj);
     }
+
+    return(first_x);
   }
   
   if((machine = editor->selected_machine) != NULL && editor->current_edit_widget != NULL){
@@ -764,20 +784,27 @@ ags_editor_paste(AgsEditor *editor)
 			      NULL, "UTF-8\0",
 			      0);
     audio_node = xmlDocGetRootElement(clipboard);
+
+    first_x = -1;
     
     /* iterate xml tree */
     while(audio_node != NULL){
       if(audio_node->type == XML_ELEMENT_NODE && !xmlStrncmp("audio\0", audio_node->name, 6)){
+
 	notation_node = audio_node->children;
 	
-	ags_editor_paste_read_notation();
-
+	first_x = ags_editor_paste_read_notation();
+	
 	break;
       }
       
       audio_node = audio_node->next;
     }
 
+    if(first_x == -1){
+      first_x = 0;
+    }
+    
     xmlFreeDoc(clipboard); 
 
     if(AGS_IS_NOTE_EDIT(editor->current_edit_widget)){
@@ -788,7 +815,17 @@ ags_editor_paste(AgsEditor *editor)
       ags_note_edit_draw_notation(editor->current_edit_widget, cr);
 
       if(paste_from_position){
-	AGS_NOTE_EDIT(editor->current_edit_widget)->selected_x = (guint) ceil((double) last_x / 16.0) * 16;
+	gint big_step, small_step;
+
+	big_step = (guint) ceil((double) last_x * AGS_NOTATION_MINIMUM_NOTE_LENGTH) / AGS_NOTATION_MINIMUM_NOTE_LENGTH + (AGS_NOTE_EDIT(editor->current_edit_widget)->selected_x % (guint) (1 / AGS_NOTATION_MINIMUM_NOTE_LENGTH));
+	small_step = (guint) big_step - (1 / AGS_NOTATION_MINIMUM_NOTE_LENGTH);
+	
+	if(small_step < last_x){
+	  AGS_NOTE_EDIT(editor->current_edit_widget)->selected_x = big_step;
+	}else{
+	  AGS_NOTE_EDIT(editor->current_edit_widget)->selected_x = small_step;
+	}
+	
 	ags_note_edit_draw_position(AGS_NOTE_EDIT(editor->current_edit_widget), cr);
       }
     
@@ -802,7 +839,17 @@ ags_editor_paste(AgsEditor *editor)
       ags_pattern_edit_draw_notation(editor->current_edit_widget, cr);
 
       if(paste_from_position){
-	AGS_PATTERN_EDIT(editor->current_edit_widget)->selected_x = (guint) ceil((double) last_x / 16.0) * 16;
+	gint big_step, small_step;
+
+	big_step = (guint) ceil((double) last_x * AGS_NOTATION_MINIMUM_NOTE_LENGTH) / AGS_NOTATION_MINIMUM_NOTE_LENGTH + (AGS_NOTE_EDIT(editor->current_edit_widget)->selected_x % (guint) (1 / AGS_NOTATION_MINIMUM_NOTE_LENGTH));
+	small_step = (guint) big_step - (1 / AGS_NOTATION_MINIMUM_NOTE_LENGTH);
+	
+	if(small_step < last_x){
+	  AGS_NOTE_EDIT(editor->current_edit_widget)->selected_x = big_step;
+	}else{
+	  AGS_NOTE_EDIT(editor->current_edit_widget)->selected_x = small_step;
+	}
+
 	ags_pattern_edit_draw_position(AGS_PATTERN_EDIT(editor->current_edit_widget), cr);
       }
       
@@ -834,7 +881,6 @@ ags_editor_copy(AgsEditor *editor)
   xmlChar *buffer;
   int size;
   gint i;
-  gint selected_channel;
 
   if(editor->selected_machine != NULL && editor->current_edit_widget != NULL){
     machine = editor->selected_machine;
@@ -849,10 +895,10 @@ ags_editor_copy(AgsEditor *editor)
     list_notation = machine->audio->notation;
     i = 0;
 
-    while((selected_channel = ags_notebook_next_active_tab(editor->current_notebook,
+    while((i = ags_notebook_next_active_tab(editor->current_notebook,
 							   i)) != -1){
       list_notation = g_list_nth(machine->audio->notation,
-				 selected_channel);
+				 i);
 
       notation_node = ags_notation_copy_selection(AGS_NOTATION(list_notation->data));
       
@@ -895,7 +941,6 @@ ags_editor_cut(AgsEditor *editor)
   xmlChar *buffer;
   int size;
   gint i;
-  gint selected_channel;
 
   if(editor->selected_machine != NULL && editor->current_edit_widget != NULL){
     machine = editor->selected_machine;
@@ -919,10 +964,10 @@ ags_editor_cut(AgsEditor *editor)
 
     cairo_push_group(cr);
     
-    while((selected_channel = ags_notebook_next_active_tab(editor->current_notebook,
-							   i)) != -1){
+    while((i = ags_notebook_next_active_tab(editor->current_notebook,
+					    i)) != -1){
       list_notation = g_list_nth(machine->audio->notation,
-				 selected_channel);
+				 i);
 
       notation_node = ags_notation_cut_selection(AGS_NOTATION(list_notation->data));
 
@@ -965,7 +1010,6 @@ ags_editor_invert(AgsEditor *editor)
 
   int size;
   gint i;
-  gint selected_channel;
 
   auto void ags_editor_invert_notation(AgsNotation *notation);
 
@@ -1024,10 +1068,10 @@ ags_editor_invert(AgsEditor *editor)
 
     cairo_push_group(cr);
     
-    while((selected_channel = ags_notebook_next_active_tab(editor->current_notebook,
-							   i)) != -1){
+    while((i = ags_notebook_next_active_tab(editor->current_notebook,
+					    i)) != -1){
       list_notation = g_list_nth(machine->audio->notation,
-				 selected_channel);
+				 i);
 
       ags_editor_invert_notation(AGS_NOTATION(list_notation->data));
 

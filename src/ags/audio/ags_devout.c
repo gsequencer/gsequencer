@@ -1421,6 +1421,8 @@ ags_devout_alsa_init(AgsDevout *devout,
   devout->delay_counter = 0.0;
   devout->tic_counter = 0;
 
+  devout->flags |= AGS_DEVOUT_INITIALIZED;
+  
   pthread_mutex_unlock(mutex);
 }
 
@@ -1444,6 +1446,12 @@ ags_devout_alsa_play(AgsDevout *devout,
   pthread_mutex_unlock(&(ags_application_mutex));
 
   pthread_mutex_lock(mutex);
+
+  if((AGS_DEVOUT_INITIALIZED & (devout->flags)) == 0){
+    pthread_mutex_unlock(mutex);
+    
+    return;
+  }
   
   /*  */
   if((AGS_DEVOUT_BUFFER0 & (devout->flags)) != 0){
@@ -1631,6 +1639,10 @@ ags_devout_alsa_free(AgsDevout *devout)
   
   pthread_mutex_unlock(&(ags_application_mutex));
 
+  if((AGS_DEVOUT_INITIALIZED & (devout->flags)) == 0){
+    return;
+  }
+
   //  pthread_mutex_lock(mutex);
 
   snd_pcm_drain(devout->out.alsa.handle);
@@ -1638,6 +1650,7 @@ ags_devout_alsa_free(AgsDevout *devout)
   devout->out.alsa.handle = NULL;
 
   devout->tact_counter = 0.0;
+  devout->flags &= (~AGS_DEVOUT_INITIALIZED);
   //  pthread_mutex_unlock(mutex);
 } 
 

@@ -328,7 +328,6 @@ ags_note_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
     guint note_x, note_y;
     guint note_offset_x1;
     gint i;
-    gint selected_channel;
 
     if(note_edit->control.x0 >= note_edit->map_width)
       note_edit->control.x0 = note_edit->map_width - 1;
@@ -347,10 +346,10 @@ ags_note_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
     list_notation = machine->audio->notation;
     i = 0;
 
-    while((selected_channel = ags_notebook_next_active_tab(editor->current_notebook,
+    while((i = ags_notebook_next_active_tab(editor->current_notebook,
 							   i)) != -1){
       list_notation = g_list_nth(machine->audio->notation,
-				 selected_channel);
+				 i);
       
       if(list_notation == NULL){
 	i++;
@@ -430,7 +429,6 @@ ags_note_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
     guint x, y;
     gint history;
     gint i;
-    gint selected_channel;
 
     x = note_edit->control.x0_offset + note_edit->control.x0 - 1;
     y = note_edit->control.y0_offset + note_edit->control.y0;
@@ -444,10 +442,10 @@ ags_note_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
     list_notation = machine->audio->notation;
     i = 0;
 
-    while((selected_channel = ags_notebook_next_active_tab(editor->current_notebook,
-							   i)) != -1){
+    while((i = ags_notebook_next_active_tab(editor->current_notebook,
+					    i)) != -1){
       list_notation = g_list_nth(machine->audio->notation,
-				 selected_channel);
+				 i);
 
       if(list_notation == NULL){
 	i++;
@@ -466,7 +464,6 @@ ags_note_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
 
     guint x0, x1, y0, y1;
     gint i;
-    gint selected_channel;
 
     /* get real size and offset */
     x0 = note_edit->control.x0_offset + note_edit->control.x0;
@@ -504,10 +501,10 @@ ags_note_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
     list_notation = machine->audio->notation;
     i = 0;
 
-    while((selected_channel = ags_notebook_next_active_tab(editor->current_notebook,
-							   i)) != -1){
+    while((i = ags_notebook_next_active_tab(editor->current_notebook,
+					    i)) != -1){
       list_notation = g_list_nth(machine->audio->notation,
-				 selected_channel);
+				 i);
 
       if(list_notation == NULL){
 	i++;

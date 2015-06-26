@@ -1,18 +1,14 @@
-ags (0.4.2.83)
-
-	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* fixed unlink AgsAudio on remove
-	* fixed termination of sequencer in ags_machine_play_callback()
-	* fixed crash during channel resize if not shown in editor, hide widgets instead of remove
-	* TODO fix paste notes
-	* TODO fix editor thread safety
-	* TODO fix unavailable soundcard
-
 ags (0.4.2.82)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed default device as reading XML files
 	* fixed floor to round in XSL for reading MIDI notes
+	* fixed unlink AgsAudio on remove
+	* fixed termination of sequencer in ags_machine_play_callback()
+	* fixed crash during channel resize if not shown in editor, hide widgets instead of remove
+	* fixed destroying of machines removing editor widget
+	* fixed paste notes
+	* added flag to AgsDevout to fix unavailable soundcard
 
 ags (0.4.2.81)
 
