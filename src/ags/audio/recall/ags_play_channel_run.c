@@ -375,58 +375,8 @@ ags_play_channel_run_run_init_inter(AgsRecall *recall)
 void
 ags_play_channel_run_run_pre(AgsRecall *recall)
 {
-  AgsChannel *source;
-  AgsDevout *devout;
-  AgsRecycling *recycling;
-  AgsAudioSignal *audio_signal;
-  gdouble delay;
-  guint attack;
-  guint tic_counter_incr;
-
-  devout = AGS_DEVOUT(recall->devout);
-
-  //    g_message("ags_copy_pattern_channel_run_sequencer_alloc_callback - playing channel: %u; playing pattern: %u\0",
-  //	      AGS_RECALL_CHANNEL(copy_pattern_channel)->source->line,
-  //	      copy_pattern_audio_run->count_beats_audio_run->sequencer_counter);
-
-  /* get source */
-  source = AGS_RECALL_CHANNEL_RUN(recall)->source;
-
-  /* create new audio signals */
-  recycling = source->first_recycling;
-
-  tic_counter_incr = devout->tic_counter + 1;
-    
-  //TODO:JK: unclear
-  attack = 0; //devout->attack[((tic_counter_incr == AGS_NOTATION_TICS_PER_BEAT) ?
-    //		   0:
-    //			   tic_counter_incr)];
-  delay = 0.0; // devout->delay[((tic_counter_incr == AGS_NOTATION_TICS_PER_BEAT) ?
-    //		 0:
-    //			 tic_counter_incr)];
-
-  if(recycling != NULL){
-    while(recycling != source->last_recycling->next){    
-      audio_signal = ags_audio_signal_new((GObject *) recall->devout,
-					  (GObject *) recycling,
-					  (GObject *) recall->recall_id);
-      ags_recycling_create_audio_signal_with_defaults(recycling,
-						      audio_signal,
-						      delay, attack);
-      audio_signal->stream_current = audio_signal->stream_beginning;
-      ags_audio_signal_connect(audio_signal);
-	
-      /*
-       * emit add_audio_signal on AgsRecycling
-       */
-      ags_recycling_add_audio_signal(recycling,
-				     audio_signal);
-
-      /*  */
-      recycling = recycling->next;
-    }
-  }
-
+  /* empty */
+  
   /* call parent */
   AGS_RECALL_CLASS(ags_play_channel_run_parent_class)->run_pre(recall);
 }

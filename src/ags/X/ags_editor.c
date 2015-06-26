@@ -22,6 +22,8 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/thread/ags_mutex_manager.h>
+
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_notation.h>
 
@@ -85,6 +87,8 @@ static gpointer ags_editor_parent_class = NULL;
 static guint editor_signals[LAST_SIGNAL];
 
 GtkStyle *editor_style;
+
+extern pthread_mutex_t ags_application_mutex;
 
 GType
 ags_editor_get_type(void)
@@ -551,6 +555,21 @@ ags_editor_select_all(AgsEditor *editor)
   gint i;
 
   if(editor->selected_machine != NULL && editor->current_edit_widget != NULL){
+    AgsMutexManager *mutex_manager;
+
+    pthread_mutex_t *audio_mutex;
+
+    pthread_mutex_lock(&(ags_application_mutex));
+  
+    mutex_manager = ags_mutex_manager_get_instance();
+
+    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					   (GObject *) editor->selected_machine->audio);
+  
+    pthread_mutex_unlock(&(ags_application_mutex));
+
+    pthread_mutex_lock(audio_mutex);
+    
     machine = editor->selected_machine;
 
     list_notation = machine->audio->notation;
@@ -584,6 +603,8 @@ ags_editor_select_all(AgsEditor *editor)
       cairo_pop_group_to_source(cr);
       cairo_paint(cr);
     }
+
+    pthread_mutex_unlock(audio_mutex);
   }
 }
 
@@ -753,11 +774,29 @@ ags_editor_paste(AgsEditor *editor)
   }
   
   if((machine = editor->selected_machine) != NULL && editor->current_edit_widget != NULL){
+    AgsMutexManager *mutex_manager;
+
+    pthread_mutex_t *audio_mutex;
+
+    pthread_mutex_lock(&(ags_application_mutex));
+  
+    mutex_manager = ags_mutex_manager_get_instance();
+
+    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					   (GObject *) editor->selected_machine->audio);
+  
+    pthread_mutex_unlock(&(ags_application_mutex));
+
+    pthread_mutex_lock(audio_mutex);
+
     /* get clipboard */
     buffer = gtk_clipboard_wait_for_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
     
-    if(buffer == NULL)
+    if(buffer == NULL){
+      pthread_mutex_lock(audio_mutex);
+
       return;
+    }
 
     /* get position */
     if(editor->toolbar->selected_edit_mode == editor->toolbar->position){
@@ -856,6 +895,8 @@ ags_editor_paste(AgsEditor *editor)
       cairo_pop_group_to_source(cr);
       cairo_paint(cr);
     }
+
+    pthread_mutex_unlock(audio_mutex);
   }
 }
 
@@ -1054,6 +1095,21 @@ ags_editor_invert(AgsEditor *editor)
   }
   
   if(editor->selected_machine != NULL && editor->current_edit_widget != NULL){
+    AgsMutexManager *mutex_manager;
+
+    pthread_mutex_t *audio_mutex;
+
+    pthread_mutex_lock(&(ags_application_mutex));
+  
+    mutex_manager = ags_mutex_manager_get_instance();
+
+    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					   (GObject *) editor->selected_machine->audio);
+  
+    pthread_mutex_unlock(&(ags_application_mutex));
+
+    pthread_mutex_lock(audio_mutex);
+
     machine = editor->selected_machine;
 
     /* create notation nodes */
@@ -1089,6 +1145,7 @@ ags_editor_invert(AgsEditor *editor)
     cairo_pop_group_to_source(cr);
     cairo_paint(cr);
 
+    pthread_mutex_unlock(audio_mutex);
   }
 }
 

@@ -29,6 +29,8 @@
 #include <ags/object/ags_dynamic_connectable.h>
 #include <ags/object/ags_plugin.h>
 
+#include <ags/thread/ags_mutex_manager.h>
+
 #include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>
 #include <ags/file/ags_file_lookup.h>
@@ -101,6 +103,8 @@ static gpointer ags_play_notation_audio_run_parent_class = NULL;
 static AgsConnectableInterface* ags_play_notation_audio_run_parent_connectable_interface;
 static AgsDynamicConnectableInterface *ags_play_notation_audio_run_parent_dynamic_connectable_interface;
 static AgsPluginInterface *ags_play_notation_audio_run_parent_plugin_interface;
+
+extern pthread_mutex_t ags_application_mutex;
 
 GType
 ags_play_notation_audio_run_get_type()
@@ -633,22 +637,31 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 						 gdouble delay, guint attack,
 						 AgsPlayNotationAudioRun *play_notation_audio_run)
 {
-  AgsTimestampThread *timestamp_thread;
   AgsDevout *devout;
   AgsAudio *audio;
   AgsChannel *selected_channel, *channel, *next_pad;
+  AgsRecycling *recycling;
   AgsAudioSignal *audio_signal;
   AgsNotation *notation;
-  AgsPlayNotationAudio *play_notation_audio;
-  GList *current_position;
   AgsNote *note;
-  AgsRecycling *recycling;
+
+  AgsPlayNotationAudio *play_notation_audio;
+
+  AgsTimestampThread *timestamp_thread;
+
+  AgsMutexManager *mutex_manager;
+
+  GList *current_position;
   GList *list;
+
   guint audio_channel;
   guint samplerate;
   guint buffer_size;
   guint i;
+
   GValue value = {0,};
+
+  pthread_mutex_t *audio_mutex;
 
   play_notation_audio = AGS_PLAY_NOTATION_AUDIO(AGS_RECALL_AUDIO_RUN(play_notation_audio_run)->recall_audio);
 
@@ -670,9 +683,23 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
   ags_port_safe_read(play_notation_audio->notation,
 		     &value);
 
+  
+  pthread_mutex_lock(&(ags_application_mutex));
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) audio);
+  
+  pthread_mutex_unlock(&(ags_application_mutex));
+
+  pthread_mutex_lock(audio_mutex);
+
   list = audio->notation;//(GList *) g_value_get_pointer(&value);
   
   if(list == NULL){
+    pthread_mutex_unlock(audio_mutex);
+
     return;
   }
 
@@ -741,6 +768,8 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
     
     current_position = current_position->next;
   }
+
+  pthread_mutex_unlock(audio_mutex);
 }
 
 void
