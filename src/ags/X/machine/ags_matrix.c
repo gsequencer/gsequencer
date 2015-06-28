@@ -649,6 +649,11 @@ ags_matrix_map_recall(AgsMachine *machine)
     ags_seekable_seek(AGS_SEEKABLE(play_count_beats_audio_run),
 		      window->navigation->position_tact->adjustment->value * AGS_DEVOUT(audio->devout)->delay[AGS_DEVOUT(audio->devout)->tic_counter],
 		      TRUE);
+
+    g_value_init(&value, G_TYPE_BOOLEAN);
+    g_value_set_boolean(&value, gtk_toggle_button_get_active(window->navigation->loop));
+    ags_port_safe_write(AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(play_count_beats_audio_run)->recall_audio)->notation_loop,
+			&value);
   }
 
   /* ags-copy-pattern */

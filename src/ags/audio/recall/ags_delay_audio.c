@@ -929,7 +929,7 @@ ags_delay_audio_change_notation_duration(AgsTactable *tactable, gdouble duration
 
   delay = ((gdouble) samplerate / (gdouble) buffer_size) * (60.0 / AGS_DEVOUT_DEFAULT_BPM);
 
-  g_message("%f\0", duration * delay * AGS_DEVOUT_DEFAULT_SCALE);
+  //  g_message("%f\0", duration * delay * AGS_DEVOUT_DEFAULT_SCALE);
   
   g_value_init(&value, G_TYPE_DOUBLE);
   g_value_set_double(&value, duration * delay * AGS_DEVOUT_DEFAULT_SCALE);

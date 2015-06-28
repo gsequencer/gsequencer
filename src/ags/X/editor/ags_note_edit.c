@@ -24,6 +24,9 @@
 
 #include <ags/thread/ags_mutex_manager.h>
 
+#include <ags/audio/recall/ags_count_beats_audio_run.h>
+
+#include <ags/X/ags_window.h>
 #include <ags/X/ags_editor.h>
 
 #include <ags/X/editor/ags_note_edit.h>
@@ -289,12 +292,24 @@ ags_note_edit_set_map_height(AgsNoteEdit *note_edit, guint map_height)
 void
 ags_note_edit_reset_vertically(AgsNoteEdit *note_edit, guint flags)
 {
+  AgsWindow *window;
   AgsEditor *editor;
+  double tact_factor, zoom_factor;
+  double tact;
+  gdouble value;
 
   editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(note_edit),
 						 AGS_TYPE_EDITOR);
 
-  if(editor->selected_machine != NULL){
+  window = gtk_widget_get_ancestor(editor,
+				   AGS_TYPE_WINDOW);
+
+  zoom_factor = 0.25;
+
+  tact_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->zoom));
+  tact = exp2((double) gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->zoom) - 2.0);
+
+  if(editor->selected_machine != NULL && editor->current_edit_widget == note_edit){
     cairo_t *cr;
     gdouble value;
 
@@ -349,6 +364,32 @@ ags_note_edit_reset_vertically(AgsNoteEdit *note_edit, guint flags)
 	ags_note_edit_draw_position(note_edit, cr);
       }
 
+      if((AGS_NOTE_EDIT_DRAW_FADER & (note_edit->flags)) != 0){
+	AgsCountBeatsAudioRun *count_beats_audio_run;
+	GList *recall;
+	gdouble position;
+	
+	recall = editor->selected_machine->audio->play;
+
+	while((recall = ags_recall_find_type(recall,
+					     AGS_TYPE_COUNT_BEATS_AUDIO_RUN)) != NULL){
+	  if(AGS_RECALL(recall->data)->recall_id != NULL && (AGS_RECALL_NOTATION & (AGS_RECALL(recall->data)->recall_id->flags)) != 0){
+	    break;
+	  }
+
+	  recall = recall->next;
+	}
+
+	if(recall != NULL){
+	  count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(recall->data);
+
+	  position = count_beats_audio_run->notation_counter * note_edit->control_unit.control_width;
+	
+	  ags_note_edit_draw_scroll(note_edit, cr,
+				    position);
+	}
+      }
+      
       cairo_pop_group_to_source(cr);
       cairo_paint(cr);
     }
@@ -457,9 +498,10 @@ ags_note_edit_reset_horizontally(AgsNoteEdit *note_edit, guint flags)
   if(note_edit->map_width > note_edit->width){
     note_edit->control_unit.x0 = ((guint)round((double) value)) % note_edit->control_unit.control_width;
 
-    if(note_edit->control_unit.x0 != 0)
+    if(note_edit->control_unit.x0 != 0){
       note_edit->control_unit.x0 = note_edit->control_unit.control_width - note_edit->control_unit.x0;
-      
+    }
+    
     note_edit->control_unit.x1 = (note_edit->width - note_edit->control_unit.x0) % note_edit->control_unit.control_width;
       
     note_edit->control_unit.nth_x = (guint) ceil(round((double) value) / (double) (note_edit->control_unit.control_width));
@@ -495,6 +537,8 @@ ags_note_edit_reset_horizontally(AgsNoteEdit *note_edit, guint flags)
 
       cairo_pop_group_to_source(cr);
       cairo_paint(cr);
+
+      cairo_destroy(cr);
     }
   }
 }
@@ -932,7 +976,7 @@ ags_note_edit_draw_scroll(AgsNoteEdit *note_edit, cairo_t *cr,
   double width, height;
 
   y = 0.0;
-  x = (position) - (GTK_RANGE(note_edit->hscrollbar)->adjustment->value * note_edit->control_current.control_width);
+  x = (position) - (GTK_RANGE(note_edit->hscrollbar)->adjustment->value);
 
   height = (double) GTK_WIDGET(note_edit->drawing_area)->allocation.height;
   width = 3.0;

@@ -547,7 +547,7 @@ ags_navigation_tact_to_time_string(gdouble tact,
   guint min, sec, hsec;
 
   if(!initialized){
-    delay_min = bpm;
+    delay_min = bpm * (60.0 / bpm) * (60.0 / bpm);
     delay_sec = delay_min / 60.0;
     delay_hsec = delay_sec / 100.0;
 
@@ -586,6 +586,7 @@ ags_navigation_tact_to_time_string(gdouble tact,
  */
 void
 ags_navigation_update_time_string(double tact,
+				  gdouble bpm,
 				  gchar *time_string)
 {
   static gdouble delay_min, delay_sec, delay_hsec;
@@ -595,7 +596,7 @@ ags_navigation_update_time_string(double tact,
   guint min, sec, hsec;
 
   if(!initialized){
-    delay_min = AGS_DEVOUT_DEFAULT_BPM;
+    delay_min = bpm * (60.0 / bpm) * (60.0 / bpm);
     delay_sec = delay_min / 60.0;
     delay_hsec = delay_sec / 100.0;
 
@@ -619,6 +620,38 @@ ags_navigation_update_time_string(double tact,
   hsec = (guint) floor(tact_redux / delay_hsec);
 
   sprintf(time_string, "%.4d:%.2d.%.2d\0", min, sec, hsec);
+}
+
+gchar*
+ags_navigation_relative_tact_to_time_string(gchar *timestr,
+					    gdouble delay,
+					    gdouble bpm)
+{
+  gchar *tmp;
+  guint min, sec, hsec;
+  guint prev_min, prev_sec, prev_hsec;
+
+  gdouble sec_value;
+
+  tmp = sscanf(timestr, "%d:%d.%d", &prev_min, &prev_sec, &prev_hsec);
+  sec_value = prev_min * 60.0;
+  sec_value += prev_sec;
+
+  if(prev_hsec != 0){
+    sec_value += (prev_hsec / 100.0);
+  }
+  
+  sec_value += (1.0 / delay * (60.0 / bpm));
+
+  min = (guint) floor(sec_value / 60);
+
+  sec = sec_value - 60 * min;
+
+  hsec = (sec_value - sec - min * 60) * 100;
+
+  timestr = g_strdup_printf("%.4d:%.2d.%.2d\0", min, sec, hsec);
+  
+  return(timestr);
 }
 
 /**

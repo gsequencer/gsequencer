@@ -394,9 +394,14 @@ ags_ruler_draw(AgsRuler *ruler)
 		  (double) (i),
 		  (double) (widget->allocation.height - AGS_RULER_LARGE_STEP));
 
-    str = g_strdup_printf("%.0f\0",
-			  (ceil(offset) + z) * ruler->scale_precision);
-
+    if(ruler->scale_precision <= 1.0){
+      str = g_strdup_printf("%.0f\0",
+			    floor(offset + z) * ruler->scale_precision + ((i % (guint) step != 0) ? 1: 0));
+    }else{
+      str = g_strdup_printf("%.0f\0",
+			    floor(offset + z) * ruler->scale_precision + ((i % (guint) step != 0) ? 1 * ruler->scale_precision: 0));
+    }
+    
     cairo_show_text(cr,
 		    str);
     g_free(str);

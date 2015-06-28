@@ -3,3 +3,12 @@ jkraehemann@gmail.com
 You need a realtime kernel in conjunction with ags in order to do more computing expensive synthesis.
 
 Please visit http://rt.wiki.kernel.org for more information.
+
+Following site gives you advice in configuring ALSA
+
+http://www.alsa-project.org/main/index.php/Low_latency_howto
+
+If you have pulseaudio running you might run `gsequencer` with pasuspender like:
+
+$ pasuspender -- gsequencer
+

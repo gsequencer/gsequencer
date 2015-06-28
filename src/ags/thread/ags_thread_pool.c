@@ -55,7 +55,7 @@ void ags_thread_pool_real_start(AgsThreadPool *thread_pool);
  * This can achieve enormeous performance.
  */
 
-#define AGS_THREAD_POOL_DEFAULT_MAX_UNUSED_THREADS 16
+#define AGS_THREAD_POOL_DEFAULT_MAX_UNUSED_THREADS 32
 #define AGS_THREAD_POOL_DEFAULT_MAX_THREADS 1024
 
 enum{
@@ -466,6 +466,8 @@ ags_thread_pool_pull(AgsThreadPool *thread_pool)
   }
 
   pthread_mutex_unlock(thread_pool->return_mutex);
+
+  //  pthread_detach(*(AGS_THREAD(returnable_thread)->thread));
 
   return(AGS_THREAD(returnable_thread));
 }

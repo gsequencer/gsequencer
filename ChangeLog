@@ -1,3 +1,20 @@
+ags (0.4.2.88)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved auto-scroll to be loop aware
+
+ags (0.4.2.87)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed auto-scroll
+
+ags (0.4.2.86)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed version string from autoconf
+	* fixed chrash during removing not existing machine selector
+	* added experimental auto-scroll capabilieties
+
 ags (0.4.2.85)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

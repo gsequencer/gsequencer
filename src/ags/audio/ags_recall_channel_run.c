@@ -787,7 +787,7 @@ ags_recall_channel_run_duplicate(AgsRecall *recall,
 												 recall_id,
 												 n_params, parameter));
 
-  if(recall_channel_run->destination != NULL){
+  if(copy->destination != NULL){
     ags_recall_channel_run_remap_child_destination(copy,
 						   NULL, NULL,
 						   copy->destination->first_recycling, copy->destination->last_recycling);
