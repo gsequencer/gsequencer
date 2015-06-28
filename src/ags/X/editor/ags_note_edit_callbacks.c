@@ -974,7 +974,7 @@ ags_note_edit_vscrollbar_value_changed(GtkRange *range, AgsNoteEdit *note_edit)
 {
   AgsEditor *editor;
 
-  if((AGS_NOTE_EDIT_RESETING_VERTICALLY & note_edit->flags) != 0){
+  if((AGS_NOTE_EDIT_RESETING_VERTICALLY & (note_edit->flags)) != 0){
     return;
   }
 
@@ -991,7 +991,7 @@ ags_note_edit_vscrollbar_value_changed(GtkRange *range, AgsNoteEdit *note_edit)
 void
 ags_note_edit_hscrollbar_value_changed(GtkRange *range, AgsNoteEdit *note_edit)
 {
-  if((AGS_NOTE_EDIT_RESETING_HORIZONTALLY & note_edit->flags) != 0){
+  if((AGS_NOTE_EDIT_RESETING_HORIZONTALLY & (note_edit->flags)) != 0){
     return;
   }
 

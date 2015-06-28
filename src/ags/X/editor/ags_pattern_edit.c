@@ -24,6 +24,9 @@
 
 #include <ags/thread/ags_mutex_manager.h>
 
+#include <ags/audio/recall/ags_count_beats_audio_run.h>
+
+#include <ags/X/ags_window.h>
 #include <ags/X/ags_editor.h>
 
 #include <ags/X/editor/ags_pattern_edit.h>
@@ -345,6 +348,8 @@ ags_pattern_edit_reset_vertically(AgsPatternEdit *pattern_edit, guint flags)
 
       cairo_pop_group_to_source(cr);
       cairo_paint(cr);
+
+      cairo_destroy(cr);
     }
 
     //    ags_meter_paint(editor->current_meter);
@@ -363,6 +368,7 @@ ags_pattern_edit_reset_vertically(AgsPatternEdit *pattern_edit, guint flags)
 void
 ags_pattern_edit_reset_horizontally(AgsPatternEdit *pattern_edit, guint flags)
 {
+  AgsWindow *window;
   AgsEditor *editor;
   double tact_factor, zoom_factor;
   double tact;
@@ -371,6 +377,9 @@ ags_pattern_edit_reset_horizontally(AgsPatternEdit *pattern_edit, guint flags)
   editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(pattern_edit),
 						 AGS_TYPE_EDITOR);
 
+  window = gtk_widget_get_ancestor(editor,
+				   AGS_TYPE_WINDOW);
+  
   zoom_factor = 0.25;
 
   tact_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->zoom));
@@ -466,8 +475,8 @@ ags_pattern_edit_reset_horizontally(AgsPatternEdit *pattern_edit, guint flags)
     pattern_edit->control_unit.nth_x = 0;
   }
 
-    /* refresh display */
-  if(editor->selected_machine != NULL){
+  /* refresh display */
+  if(editor->selected_machine != NULL && editor->current_edit_widget == pattern_edit){
     cairo_t *cr;
 
     if(GTK_WIDGET_VISIBLE(editor)){
@@ -491,6 +500,32 @@ ags_pattern_edit_reset_horizontally(AgsPatternEdit *pattern_edit, guint flags)
 
       cairo_pop_group_to_source(cr);
       cairo_paint(cr);
+    }
+
+    if((AGS_PATTERN_EDIT_DRAW_FADER & (pattern_edit->flags)) != 0){
+      AgsCountBeatsAudioRun *count_beats_audio_run;
+      GList *recall;
+      gdouble position;
+	
+      recall = editor->selected_machine->audio->play;
+
+      while((recall = ags_recall_find_type(recall,
+					   AGS_TYPE_COUNT_BEATS_AUDIO_RUN)) != NULL){
+	if(AGS_RECALL(recall->data)->recall_id != NULL && (AGS_RECALL_NOTATION & (AGS_RECALL(recall->data)->recall_id->flags)) != 0){
+	  break;
+	}
+
+	recall = recall->next;
+      }
+
+      if(recall != NULL){
+	count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(recall->data);
+
+	position = count_beats_audio_run->notation_counter * pattern_edit->control_unit.control_width;
+	
+	ags_pattern_edit_draw_scroll(pattern_edit, cr,
+				     position);
+      }
     }
   }
 }
@@ -930,13 +965,13 @@ ags_pattern_edit_draw_notation(AgsPatternEdit *pattern_edit, cairo_t *cr)
  */
 void
 ags_pattern_edit_draw_scroll(AgsPatternEdit *pattern_edit, cairo_t *cr,
-			  gdouble position)
+			     gdouble position)
 {
   double x, y;
   double width, height;
 
   y = 0.0;
-  x = (position) - (GTK_RANGE(pattern_edit->hscrollbar)->adjustment->value * pattern_edit->control_current.control_width);
+  x = (position) - (GTK_RANGE(pattern_edit->hscrollbar)->adjustment->value);
 
   height = (double) GTK_WIDGET(pattern_edit->drawing_area)->allocation.height;
   width = 3.0;

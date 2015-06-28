@@ -21,9 +21,16 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/audio/ags_recall_audio.h>
+#include <ags/audio/ags_recall_audio_run.h>
+
 #include <ags/audio/recall/ags_delay_audio.h>
 #include <ags/audio/recall/ags_delay_audio_run.h>
+#include <ags/audio/recall/ags_count_beats_audio.h>
+#include <ags/audio/recall/ags_count_beats_audio_run.h>
 
+#include <ags/X/ags_window.h>
+#include <ags/X/ags_machine.h>
 #include <ags/X/ags_editor.h>
 #include <ags/X/editor/ags_pattern_edit.h>
 #include <ags/X/editor/ags_note_edit.h>
@@ -153,15 +160,19 @@ ags_scroll_on_play_launch(AgsTask *task)
   AgsWindow *window;
   AgsMachine *machine;
   AgsEditor *editor;
-  AgsDelayAudio *delay_audio;
-  AgsDelayAudioRun *delay_audio_run;
+  
+  AgsCountBeatsAudio *count_beats_audio;
+  AgsCountBeatsAudioRun *count_beats_audio_run;
+  
   AgsScrollOnPlay *scroll_on_play;
+  
   cairo_t *cr;
+  
   GList *editor_child, *recall;
-  gdouble position;
-  gdouble delay;
+
+  gdouble tact_factor;
+  gdouble position, value;
   guint control_width, width;
-  GValue value = {0,};
 
   scroll_on_play = AGS_SCROLL_ON_PLAY(task);
 
@@ -171,8 +182,9 @@ ags_scroll_on_play_launch(AgsTask *task)
 
 
   editor_child = editor->editor_child;
+  tact_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->zoom));
 
-  while(editor_child != NULL){
+  while(editor_child != NULL){    
     machine = AGS_EDITOR_CHILD(editor_child->data)->machine;
 
     if(machine == NULL){
@@ -184,8 +196,8 @@ ags_scroll_on_play_launch(AgsTask *task)
     recall = machine->audio->play;
 
     while((recall = ags_recall_find_type(recall,
-					 AGS_TYPE_DELAY_AUDIO_RUN)) != NULL){
-      if(AGS_RECALL(recall->data)->recall_id != NULL){
+					 AGS_TYPE_COUNT_BEATS_AUDIO_RUN)) != NULL){
+      if(AGS_RECALL(recall->data)->recall_id != NULL && (AGS_RECALL_ID_NOTATION & (AGS_RECALL(recall->data)->recall_id->flags)) != 0){
 	break;
       }
 
@@ -198,70 +210,172 @@ ags_scroll_on_play_launch(AgsTask *task)
       continue;
     }
 
-    delay_audio_run = AGS_DELAY_AUDIO_RUN(recall->data);
-    delay_audio = AGS_RECALL_AUDIO_RUN(delay_audio)->recall_audio;
-
-    g_value_init(&value, G_TYPE_DOUBLE);
-    ags_port_safe_read(delay_audio->notation_delay,
-		       &value);
-    delay = g_value_get_double(&value);
-    
-    position = ((gdouble) delay_audio_run->notation_counter) / delay * AGS_NOTE_EDIT(AGS_EDITOR_CHILD(editor_child->data)->edit_widget)->control_unit.control_width;
+    count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(recall->data);
+    count_beats_audio = AGS_RECALL_AUDIO_RUN(count_beats_audio_run)->recall_audio;
     
     if(AGS_IS_NOTE_EDIT(AGS_EDITOR_CHILD(editor_child->data)->edit_widget)){
-      width = GTK_WIDGET(AGS_NOTE_EDIT(AGS_EDITOR_CHILD(editor_child->data)->edit_widget)->drawing_area)->allocation.width;
-      control_width = AGS_NOTE_EDIT(AGS_EDITOR_CHILD(editor_child->data)->edit_widget)->control_current.control_width;
+      AgsNoteEdit *note_edit;
+
+      note_edit = AGS_NOTE_EDIT(AGS_EDITOR_CHILD(editor_child->data)->edit_widget);
+
+      width = GTK_WIDGET(note_edit->drawing_area)->allocation.width;
+      control_width = note_edit->control_unit.control_width;
       
+      position = count_beats_audio_run->notation_counter * note_edit->control_unit.control_width;
+
       /* scroll */
-      if(3 * control_width < width){
-	if(((guint) position) % width >= width - control_width){
-	  gtk_range_set_value(GTK_RANGE(AGS_NOTE_EDIT(AGS_EDITOR_CHILD(editor_child->data)->edit_widget)->hscrollbar),
-			      position - control_width);
-	}
+      note_edit->flags |= AGS_NOTE_EDIT_RESETING_HORIZONTALLY;
+
+      if(position - control_width > 0){
+	value = (position - control_width);
       }else{
-	  gtk_range_set_value(GTK_RANGE(AGS_NOTE_EDIT(AGS_EDITOR_CHILD(editor_child->data)->edit_widget)->hscrollbar),
-			      position);
+	value = 0.0;
+      }
+
+      if(position - control_width > 0){
+	gtk_range_set_value(GTK_RANGE(note_edit->hscrollbar),
+			    value);
+	gtk_adjustment_set_value(note_edit->ruler->adjustment,
+				 (value) /
+				 note_edit->control_current.control_width);
+	gtk_widget_queue_draw((GtkWidget *) note_edit->ruler);
       }
       
-      /* draw fader */
-      cairo_push_group(cr);
+      /*  */
+      if(position - control_width > 0){
+	note_edit->control_current.x0 = ((guint) round((double) value)) % note_edit->control_current.control_width;
 
-      cr = gdk_cairo_create(GTK_WIDGET(AGS_NOTE_EDIT(AGS_EDITOR_CHILD(editor_child->data)->edit_widget)->drawing_area)->window);
-      ags_note_edit_draw_scroll(AGS_NOTE_EDIT(AGS_EDITOR_CHILD(editor_child->data)->edit_widget), cr,
-				position);
+	if(note_edit->control_current.x0 != 0){
+	  note_edit->control_current.x0 = note_edit->control_current.control_width - note_edit->control_current.x0;
+	}
+	
+	note_edit->control_current.x1 = (note_edit->width - note_edit->control_current.x0) % note_edit->control_current.control_width;
 
-      cairo_pop_group_to_source(cr);
-      cairo_paint(cr);
+	note_edit->control_current.nth_x = (guint) ceil((double)(value) / (double)(note_edit->control_current.control_width));
 
-      cairo_destroy(cr);
+	note_edit->control_unit.x0 = ((guint)round((double) value)) % note_edit->control_unit.control_width;
+
+	if(note_edit->control_unit.x0 != 0){
+	  note_edit->control_unit.x0 = note_edit->control_unit.control_width - note_edit->control_unit.x0;
+	}
+      
+	note_edit->control_unit.x1 = (note_edit->width - note_edit->control_unit.x0) % note_edit->control_unit.control_width;
+      
+	note_edit->control_unit.nth_x = (guint) ceil(round((double) value) / (double) (note_edit->control_unit.control_width));
+	note_edit->control_unit.stop_x = note_edit->control_unit.nth_x + (note_edit->width - note_edit->control_unit.x0 - note_edit->control_unit.x1) / note_edit->control_unit.control_width;
+      }
+      
+      note_edit->flags &= (~AGS_NOTE_EDIT_RESETING_HORIZONTALLY);
+
+      /*  */
+      if(GTK_WIDGET_VISIBLE(AGS_EDITOR_CHILD(editor_child->data)->edit_widget)){
+	cr = gdk_cairo_create(GTK_WIDGET(note_edit->drawing_area)->window);
+
+	cairo_surface_flush(cairo_get_target(cr));
+	cairo_push_group(cr);
+
+	ags_note_edit_draw_segment(AGS_EDITOR_CHILD(editor_child->data)->edit_widget, cr);
+	ags_note_edit_draw_notation(AGS_EDITOR_CHILD(editor_child->data)->edit_widget, cr);
+
+	cairo_pop_group_to_source(cr);
+	cairo_paint(cr);
+
+	/* draw fader */
+	cairo_push_group(cr);
+
+	cr = gdk_cairo_create(GTK_WIDGET(note_edit->drawing_area)->window);
+	ags_note_edit_draw_scroll(note_edit, cr,
+				  position);
+
+	cairo_pop_group_to_source(cr);
+	cairo_paint(cr);
+
+	cairo_surface_mark_dirty(cairo_get_target(cr));
+	cairo_destroy(cr);
+      }
     }else if(AGS_IS_PATTERN_EDIT(AGS_EDITOR_CHILD(editor_child->data)->edit_widget)){
-      width = GTK_WIDGET(AGS_PATTERN_EDIT(AGS_EDITOR_CHILD(editor_child->data)->edit_widget)->drawing_area)->allocation.width;
-      control_width = AGS_PATTERN_EDIT(AGS_EDITOR_CHILD(editor_child->data)->edit_widget)->control_current.control_width;
-      
+      AgsPatternEdit *pattern_edit;
+
+      pattern_edit = AGS_PATTERN_EDIT(AGS_EDITOR_CHILD(editor_child->data)->edit_widget);
+
+      position = (count_beats_audio_run->notation_counter) * (pattern_edit->control_unit.control_width);
+
+      width = GTK_WIDGET(pattern_edit->drawing_area)->allocation.width;
+      control_width = pattern_edit->control_unit.control_width;
+
       /* scroll */
-      if(3 * control_width < width){
-	if(((guint) position) % width >= width - control_width){
-	  gtk_range_set_value(GTK_RANGE(AGS_PATTERN_EDIT(AGS_EDITOR_CHILD(editor_child->data)->edit_widget)->hscrollbar),
-			      position - control_width);
-	}
+      pattern_edit->flags |= AGS_PATTERN_EDIT_RESETING_HORIZONTALLY;
+	
+      if(position - control_width > 0){
+	value = (position - control_width);
       }else{
-	  gtk_range_set_value(GTK_RANGE(AGS_PATTERN_EDIT(AGS_EDITOR_CHILD(editor_child->data)->edit_widget)->hscrollbar),
-			      position);
+	value = 0.0;
       }
 
-      /* draw fader */
-      cairo_push_group(cr);
+      if(position - control_width > 0){
+	gtk_range_set_value(GTK_RANGE(pattern_edit->hscrollbar),
+			    value);
+	gtk_adjustment_set_value(pattern_edit->ruler->adjustment,
+				 (value) /
+				 pattern_edit->control_current.control_width);
 
-      cr = gdk_cairo_create(GTK_WIDGET(AGS_PATTERN_EDIT(AGS_EDITOR_CHILD(editor_child->data)->edit_widget)->drawing_area)->window);
-      ags_pattern_edit_draw_scroll(AGS_PATTERN_EDIT(AGS_EDITOR_CHILD(editor_child->data)->edit_widget), cr,
-				   position);
+	gtk_widget_queue_draw((GtkWidget *) pattern_edit->ruler);
+      }
+      
+      /*  */
+      if(position - control_width > 0){
+	pattern_edit->control_current.x0 = ((guint) round((double) value)) % pattern_edit->control_current.control_width;
 
-      cairo_pop_group_to_source(cr);
-      cairo_paint(cr);
+	if(pattern_edit->control_current.x0 != 0){
+	  pattern_edit->control_current.x0 = pattern_edit->control_current.control_width - pattern_edit->control_current.x0;
+	}
+	
+	pattern_edit->control_current.x1 = (pattern_edit->width - pattern_edit->control_current.x0) % pattern_edit->control_current.control_width;
 
-      cairo_destroy(cr);
+	pattern_edit->control_current.nth_x = (guint) ceil((double)(value) / (double)(pattern_edit->control_current.control_width));
+
+	pattern_edit->control_unit.x0 = ((guint)round((double) value)) % pattern_edit->control_unit.control_width;
+
+	if(pattern_edit->control_unit.x0 != 0){
+	  pattern_edit->control_unit.x0 = pattern_edit->control_unit.control_width - pattern_edit->control_unit.x0;
+	}
+      
+	pattern_edit->control_unit.x1 = (pattern_edit->width - pattern_edit->control_unit.x0) % pattern_edit->control_unit.control_width;
+      
+	pattern_edit->control_unit.nth_x = (guint) ceil(round((double) value) / (double) (pattern_edit->control_unit.control_width));
+	pattern_edit->control_unit.stop_x = pattern_edit->control_unit.nth_x + (pattern_edit->width - pattern_edit->control_unit.x0 - pattern_edit->control_unit.x1) / pattern_edit->control_unit.control_width;
+      }
+      
+      pattern_edit->flags &= (~AGS_PATTERN_EDIT_RESETING_HORIZONTALLY);
+
+      /*  */
+      if(GTK_WIDGET_VISIBLE(AGS_EDITOR_CHILD(editor_child->data)->edit_widget)){
+	cr = gdk_cairo_create(GTK_WIDGET(pattern_edit->drawing_area)->window);
+
+	cairo_surface_flush(cairo_get_target(cr));
+	cairo_push_group(cr);
+
+	ags_pattern_edit_draw_segment(AGS_EDITOR_CHILD(editor_child->data)->edit_widget, cr);
+	ags_pattern_edit_draw_notation(AGS_EDITOR_CHILD(editor_child->data)->edit_widget, cr);
+
+	cairo_pop_group_to_source(cr);
+	cairo_paint(cr);
+
+	/* draw fader */
+	cairo_push_group(cr);
+
+	cr = gdk_cairo_create(GTK_WIDGET(pattern_edit->drawing_area)->window);
+	ags_pattern_edit_draw_scroll(pattern_edit, cr,
+				     position);
+
+	cairo_pop_group_to_source(cr);
+	cairo_paint(cr);
+
+	cairo_surface_mark_dirty(cairo_get_target(cr));
+	cairo_destroy(cr);
+      }
     }
-
+    
     editor_child = editor_child->next;
   }
 }
@@ -269,6 +383,7 @@ ags_scroll_on_play_launch(AgsTask *task)
 /**
  * ags_scroll_on_play_new:
  * @editor: the #AgsEditor to scroll
+ * @step: the amount to increment in pixel per control width
  *
  * Creates an #AgsScrollOnPlay.
  *
@@ -277,7 +392,7 @@ ags_scroll_on_play_launch(AgsTask *task)
  * Since: 0.4
  */
 AgsScrollOnPlay*
-ags_scroll_on_play_new(GtkWidget *editor)
+ags_scroll_on_play_new(GtkWidget *editor, gdouble step)
 {
   AgsScrollOnPlay *scroll_on_play;
 
@@ -285,6 +400,7 @@ ags_scroll_on_play_new(GtkWidget *editor)
 						    NULL);
 
   scroll_on_play->editor = editor;
-
+  scroll_on_play->step = step;
+  
   return(scroll_on_play);
 }

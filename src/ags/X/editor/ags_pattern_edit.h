@@ -49,6 +49,7 @@ typedef enum{
   AGS_PATTERN_EDIT_ADDING_NOTE            = 1 <<  3,
   AGS_PATTERN_EDIT_DELETING_NOTE          = 1 <<  4,
   AGS_PATTERN_EDIT_SELECTING_NOTES        = 1 <<  5,
+  AGS_PATTERN_EDIT_DRAW_FADER             = 1 <<  6,
 }AgsPatternEditFlags;
 
 typedef enum{

@@ -40,6 +40,8 @@ struct _AgsScrollOnPlay
 {
   AgsTask task;
 
+  gdouble step;
+  
   GtkWidget *editor;
 };
 
@@ -50,6 +52,6 @@ struct _AgsScrollOnPlayClass
 
 GType ags_scroll_on_play_get_type();
 
-AgsScrollOnPlay* ags_scroll_on_play_new(GtkWidget *editor);
+AgsScrollOnPlay* ags_scroll_on_play_new(GtkWidget *editor, gdouble step);
 
 #endif /*__AGS_SCROLL_ON_PLAY_H__*/

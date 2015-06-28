@@ -55,7 +55,12 @@
 #define AGS_IS_MAIN_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_MAIN))
 #define AGS_MAIN_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_MAIN, AgsMainClass))
 
+#ifndef PACKAGE_VERSION
 #define AGS_VERSION "0.4.2\0"
+#else
+#define AGS_VERSION PACKAGE_VERSION
+#endif
+
 #define AGS_BUILD_ID "CEST 02-10-2014 19:36\0"
 #define AGS_EFFECTS_DEFAULT_VERSION "0.4.2\0"
 #define AGS_DEFAULT_DIRECTORY ".gsequencer\0"

@@ -1,7 +1,7 @@
 AUTOMAKE_OPTIONS = foreign
 # SUBDIRS = src doc
 
-AM_CPPFLAGS = -I$(top_srcdir)/src -DDESTDIR=\"$(DESTDIR)$(datadir)\" -D_FORTIFY_SOURCE=2
+AM_CPPFLAGS = -I$(top_srcdir)/src -DDESTDIR=\"$(DESTDIR)$(datadir)\" -DPACKAGE_VERSION=\"$(PACKAGE_VERSION)\" -D_FORTIFY_SOURCE=2
 
 # what flags you want to pass to the C compiler & linker
 CFLAGS = -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security
