@@ -406,6 +406,9 @@ ags_matrix_connect(AgsConnectable *connectable)
 		      G_CALLBACK (ags_matrix_index_callback), (gpointer) matrix);
   }
 
+  g_signal_connect (G_OBJECT (matrix->drawing_area), "configure_event\0",
+                    G_CALLBACK (ags_matrix_drawing_area_configure_callback), (gpointer) matrix);
+
   g_signal_connect (G_OBJECT (matrix->drawing_area), "expose_event\0",
                     G_CALLBACK (ags_matrix_drawing_area_expose_callback), (gpointer) matrix);
 
@@ -783,17 +786,6 @@ ags_matrix_input_map_recall(AgsMatrix *matrix, guint input_pad_start)
   current = source;
 
   while(current != NULL){
-    /* ags-buffer */
-    ags_recall_factory_create(audio,
-			      NULL, NULL,
-			      "ags-buffer\0",
-			      current->audio_channel, current->audio_channel + 1, 
-			      current->pad, current->pad + 1,
-			      (AGS_RECALL_FACTORY_INPUT |
-			       AGS_RECALL_FACTORY_RECALL |
-			       AGS_RECALL_FACTORY_ADD),
-			      0);
-
     /* ags-stream */
     ags_recall_factory_create(audio,
 			      NULL, NULL,
@@ -815,7 +807,7 @@ void
 ags_matrix_output_map_recall(AgsMatrix *matrix, guint output_pad_start)
 {
   AgsAudio *audio;
-  AgsChannel *source;
+  AgsChannel *source, *input;
 
   AgsDelayAudio *recall_delay_audio;
   AgsCountBeatsAudioRun *recall_count_beats_audio_run;
@@ -833,6 +825,24 @@ ags_matrix_output_map_recall(AgsMatrix *matrix, guint output_pad_start)
   source = ags_channel_nth(audio->output,
 			   output_pad_start * audio->audio_channels);
 
+  /* remap for input */
+  input = audio->input;
+
+  while(input != NULL){
+    /* ags-buffer */
+    ags_recall_factory_create(audio,
+			      NULL, NULL,
+			      "ags-buffer\0",
+			      0, audio->audio_channels, 
+			      input->pad, input->pad + 1,
+			      (AGS_RECALL_FACTORY_INPUT |
+			       AGS_RECALL_FACTORY_RECALL |
+			       AGS_RECALL_FACTORY_ADD),
+			      0);
+
+    input = input->next_pad;
+  }
+  
   /* get some recalls */
   list = ags_recall_find_type(audio->play, AGS_TYPE_DELAY_AUDIO);
 

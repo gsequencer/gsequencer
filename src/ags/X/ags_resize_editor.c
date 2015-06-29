@@ -306,6 +306,11 @@ ags_resize_editor_reset(AgsApplicable *applicable)
   gtk_spin_button_set_value(resize_editor->input_pads,
 			    audio->input_pads);
 
+  if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (machine_editor->machine->audio->flags)) == 0){
+    gtk_spin_button_set_range(resize_editor->output_pads,
+			      0.0, 1.0);
+  }
+  
   gtk_spin_button_set_value(resize_editor->output_pads,
 			    audio->output_pads);
 }

@@ -2822,6 +2822,14 @@ ags_audio_duplicate_recall(AgsAudio *audio,
       /* duplicate the recall */
       copy = ags_recall_duplicate(recall, recall_id);
 
+      
+      if(copy == NULL){
+	/* iterate */    
+	list_recall = list_recall->next;
+
+	continue;
+      }
+    
       /* notify run */
       ags_recall_notify_dependency(copy, AGS_RECALL_NOTIFY_RUN, 1);
 

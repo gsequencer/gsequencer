@@ -1376,6 +1376,7 @@ ags_count_beats_audio_run_stream_audio_signal_done_callback(AgsRecall *recall,
 {
   AgsCountBeatsAudio *count_beats_audio;
   GValue loop_sequencer = {0,};
+  GValue loop_end_sequencer = {0,};
   GValue loop_notation = {0,};
 
   count_beats_audio = AGS_RECALL_AUDIO_RUN(count_beats_audio_run)->recall_audio;
@@ -1390,9 +1391,18 @@ ags_count_beats_audio_run_stream_audio_signal_done_callback(AgsRecall *recall,
 	       G_TYPE_BOOLEAN);
   ags_port_safe_read(count_beats_audio->notation_loop,
 		     &loop_notation);
+
+  g_value_init(&loop_end_sequencer, G_TYPE_DOUBLE);
+  ags_port_safe_read(count_beats_audio->sequencer_loop_end, &loop_end_sequencer);
     
-  if(g_value_get_boolean(&loop_sequencer) && (AGS_RECALL_ID_SEQUENCER & (recall->recall_id->flags)) != 0){
-    return;
+  if((AGS_RECALL_ID_SEQUENCER & (recall->recall_id->flags)) != 0){
+    if(g_value_get_boolean(&loop_sequencer)){
+      return;
+    }
+
+    if(count_beats_audio_run->sequencer_counter < (guint) g_value_get_double(&loop_end_sequencer) - 1.0){
+      return;
+    }
   }
 
   if((AGS_RECALL_ID_NOTATION & (recall->recall_id->flags)) != 0){

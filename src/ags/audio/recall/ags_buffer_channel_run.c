@@ -1,20 +1,19 @@
-/* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+/* AGS - Advanced GTK Sequencer
+ * Copyright (C) 2014 Joël Krähemann
  *
- * This file is part of GSequencer.
- *
- * GSequencer is free software: you can redistribute it and/or modify
+ * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * GSequencer is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
 #include <ags/audio/recall/ags_buffer_channel_run.h>
@@ -24,14 +23,11 @@
 
 #include <ags/main.h>
 
-#include <ags/lib/ags_parameter.h>
-
 #include <ags/object/ags_dynamic_connectable.h>
 #include <ags/object/ags_plugin.h>
 
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
-#include <ags/audio/ags_output.h>
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_recall_id.h>
 
@@ -232,27 +228,10 @@ ags_buffer_channel_run_duplicate(AgsRecall *recall,
 				 AgsRecallID *recall_id,
 				 guint *n_params, GParameter *parameter)
 {
-  AgsOutput *destination;
   AgsBufferChannelRun *buffer_channel_run, *copy;
 
   buffer_channel_run = (AgsBufferChannelRun *) recall;
 
-  if(AGS_IS_OUTPUT(AGS_RECALL_CHANNEL_RUN(recall)->source) ||
-     (AGS_AUDIO_OUTPUT_HAS_RECYCLING & (AGS_AUDIO(AGS_RECALL_CHANNEL_RUN(recall)->source->audio)->flags)) == 0){
-    destination = NULL;
-  }else{
-    if(recall_id->recycling_container->parent != NULL){
-      destination = AGS_RECYCLING(AGS_RECALL_ID(recall_id->recycling_container->parent->recall_id)->recycling)->channel;
-
-      parameter = ags_parameter_grow(G_OBJECT_TYPE(recall),
-				     parameter, n_params,
-				     "destination\0", destination,
-				     NULL);
-    }else{
-      destination = NULL;
-    }
-  }
-  
   copy = (AgsBufferChannelRun *) AGS_RECALL_CLASS(ags_buffer_channel_run_parent_class)->duplicate(recall,
 												  recall_id,
 												  n_params, parameter);

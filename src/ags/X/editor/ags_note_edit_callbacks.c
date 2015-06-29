@@ -118,6 +118,8 @@ ags_note_edit_set_pads_callback(AgsAudio *audio,
     ags_note_edit_set_map_height(AGS_NOTE_EDIT(note_edit),
 				    pads * AGS_NOTE_EDIT(note_edit)->control_height);
   }
+
+  gtk_widget_queue_draw(editor->current_meter);
 }
 
 gboolean
@@ -202,6 +204,8 @@ ags_note_edit_drawing_area_expose_event(GtkWidget *widget, GdkEventExpose *event
       cairo_pop_group_to_source(cr);
       cairo_paint(cr);
     }
+
+    ags_meter_paint(editor->current_meter);
   }
 
   return(TRUE);

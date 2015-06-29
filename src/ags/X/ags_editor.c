@@ -1011,6 +1011,7 @@ ags_editor_cut(AgsEditor *editor)
 				 i);
 
       notation_node = ags_notation_cut_selection(AGS_NOTATION(list_notation->data));
+      xmlAddChild(audio_node, notation_node);
 
       if(AGS_IS_NOTE_EDIT(editor->current_edit_widget)){
 	ags_note_edit_draw_segment(AGS_NOTE_EDIT(editor->current_edit_widget), cr);
@@ -1026,8 +1027,6 @@ ags_editor_cut(AgsEditor *editor)
     cairo_pop_group_to_source(cr);
     cairo_paint(cr);
     
-    xmlAddChild(audio_node, notation_node);
-
     /* write to clipboard */
     xmlDocDumpFormatMemoryEnc(clipboard, &buffer, &size, "UTF-8\0", TRUE);
     gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD),

@@ -943,17 +943,6 @@ ags_ffplayer_input_map_recall(AgsFFPlayer *ffplayer, guint input_pad_start)
   current = source;
 
   while(current != NULL){
-    /* ags-buffer */
-    ags_recall_factory_create(audio,
-			      NULL, NULL,
-			      "ags-buffer\0",
-			      0, audio->audio_channels,
-			      current->pad, current->pad + 1,
-			      (AGS_RECALL_FACTORY_INPUT |
-			       AGS_RECALL_FACTORY_RECALL |
-			       AGS_RECALL_FACTORY_ADD),
-			      0);
-
     /* ags-stream */
     ags_recall_factory_create(audio,
 			      NULL, NULL,
@@ -974,7 +963,7 @@ void
 ags_ffplayer_output_map_recall(AgsFFPlayer *ffplayer, guint output_pad_start)
 {
   AgsAudio *audio;
-  AgsChannel *source;
+  AgsChannel *source, *input;;
 
   audio = AGS_MACHINE(ffplayer)->audio;
 
@@ -987,6 +976,25 @@ ags_ffplayer_output_map_recall(AgsFFPlayer *ffplayer, guint output_pad_start)
   source = ags_channel_nth(audio->output,
 			   output_pad_start * audio->audio_channels);
 
+  
+  /* remap for input */
+  input = audio->input;
+
+  while(input != NULL){
+    /* ags-buffer */
+    ags_recall_factory_create(audio,
+			      NULL, NULL,
+			      "ags-buffer\0",
+			      0, audio->audio_channels, 
+			      input->pad, input->pad + 1,
+			      (AGS_RECALL_FACTORY_INPUT |
+			       AGS_RECALL_FACTORY_RECALL |
+			       AGS_RECALL_FACTORY_ADD),
+			      0);
+
+    input = input->next_pad;
+  }
+  
   /* ags-stream */
   ags_recall_factory_create(audio,
 			    NULL, NULL,

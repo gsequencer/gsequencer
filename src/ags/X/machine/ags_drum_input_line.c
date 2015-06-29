@@ -425,17 +425,6 @@ ags_drum_input_line_map_recall(AgsLine *line,
 
   source = line->channel;
 
-  /* ags-buffer */
-  ags_recall_factory_create(audio,
-			    NULL, NULL,
-			    "ags-buffer\0",
-			    source->audio_channel, source->audio_channel + 1, 
-			    source->pad, source->pad + 1,
-			    (AGS_RECALL_FACTORY_INPUT |
-			     AGS_RECALL_FACTORY_RECALL |
-			     AGS_RECALL_FACTORY_ADD),
-			    0);
-
   /* ags-peak */
   ags_recall_factory_create(audio,
 			    NULL, NULL,
