@@ -515,6 +515,10 @@ ags_drum_tact_callback(AgsAudio *audio,
 
   pthread_mutex_t *audio_mutex;
 
+  if((AGS_RECALL_ID_SEQUENCER & (recall_id->flags)) == 0){
+    return;
+  }
+  
   pthread_mutex_lock(&(ags_application_mutex));
   
   mutex_manager = ags_mutex_manager_get_instance();
@@ -526,7 +530,7 @@ ags_drum_tact_callback(AgsAudio *audio,
 
   pthread_mutex_lock(audio_mutex);
 
-  
+  /*  */
   window = AGS_WINDOW(gtk_widget_get_ancestor((GtkWidget *) drum, AGS_TYPE_WINDOW));
 
   /* get some recalls */

@@ -2742,6 +2742,13 @@ ags_channel_duplicate_recall(AgsChannel *channel,
     /* duplicate the recall */
     copy = ags_recall_duplicate(recall, recall_id);
 
+    if(copy == NULL){
+      /* iterate */    
+      list_recall = list_recall->next;
+
+      continue;
+    }
+    
 #ifdef AGS_DEBUG
     g_message("recall duplicated: %s\0", G_OBJECT_TYPE_NAME(copy));
 #endif

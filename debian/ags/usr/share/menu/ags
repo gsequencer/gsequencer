@@ -1,4 +1,0 @@
-?package(ags):needs="X11"\
-	section="Applications/Multimedia"\
-	title="ags" command="/usr/bin/ags"\
-	icon="/usr/share/gsequencer/icons/jumper.png"

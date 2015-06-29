@@ -23,6 +23,7 @@
 
 #include <ags/widget/ags_led.h>
 
+#include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_task_thread.h>
 
@@ -55,6 +56,7 @@ void ags_matrix_refresh_gui_callback(AgsTogglePatternBit *toggle_pattern_bit,
 				     AgsMatrix *matrix);
 
 extern const char *AGS_MATRIX_INDEX;
+extern pthread_mutex_t ags_application_mutex;
 
 void
 ags_matrix_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsMatrix *matrix)
@@ -122,6 +124,14 @@ ags_matrix_index_callback(GtkWidget *widget, AgsMatrix *matrix)
       matrix->selected = toggle;
     }
   }
+}
+
+gboolean
+ags_matrix_drawing_area_configure_callback(GtkWidget *widget, GdkEventConfigure *event, AgsMatrix *matrix)
+{
+  ags_matrix_draw_matrix(matrix);
+
+  return(FALSE);
 }
 
 gboolean
@@ -239,14 +249,39 @@ ags_matrix_tact_callback(AgsAudio *audio,
 			 AgsMatrix *matrix)
 {
   AgsWindow *window;
+
   AgsCountBeatsAudio *play_count_beats_audio;
   AgsCountBeatsAudioRun *play_count_beats_audio_run;
+
   AgsToggleLed *toggle_led;
+  
+  AgsMutexManager *mutex_manager;
+
   GList *list;
+
   guint counter, active_led;
   gdouble active_led_old, active_led_new;
+
   GValue value = {0,};
+
+  pthread_mutex_t *audio_mutex;
+
+  if((AGS_RECALL_ID_SEQUENCER & (recall_id->flags)) == 0){
+    return;
+  }
+
+  pthread_mutex_lock(&(ags_application_mutex));
   
+  mutex_manager = ags_mutex_manager_get_instance();
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) AGS_MACHINE(matrix)->audio);
+  
+  pthread_mutex_unlock(&(ags_application_mutex));
+
+  pthread_mutex_lock(audio_mutex);
+
+  /*  */
   window = AGS_WINDOW(gtk_widget_get_ancestor((GtkWidget *) matrix, AGS_TYPE_WINDOW));
 
   /* get some recalls */
@@ -286,6 +321,8 @@ ags_matrix_tact_callback(AgsAudio *audio,
 
   ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->task_thread),
 			      AGS_TASK(toggle_led));
+
+  pthread_mutex_unlock(audio_mutex);
 }
 
 void

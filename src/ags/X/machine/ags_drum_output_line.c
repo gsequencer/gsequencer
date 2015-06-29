@@ -255,7 +255,7 @@ ags_drum_output_line_map_recall(AgsLine *line,
 {
   AgsAudio *audio;
 
-  AgsChannel *output;
+  AgsChannel *output, *input;
   AgsDelayAudio *recall_delay_audio;
   AgsCountBeatsAudioRun *recall_count_beats_audio_run;
 
@@ -268,7 +268,25 @@ ags_drum_output_line_map_recall(AgsLine *line,
 
   output = line->channel;
   audio = AGS_AUDIO(output->audio);
+  
+  /* remap for input */
+  input = audio->input;
 
+  while(input != NULL){
+    /* ags-buffer */
+    ags_recall_factory_create(audio,
+			      NULL, NULL,
+			      "ags-buffer\0",
+			      0, audio->audio_channels, 
+			      input->pad, input->pad + 1,
+			      (AGS_RECALL_FACTORY_INPUT |
+			       AGS_RECALL_FACTORY_RECALL |
+			       AGS_RECALL_FACTORY_ADD),
+			      0);
+
+    input = input->next_pad;
+  }
+  
   /* get some recalls */
   list = ags_recall_find_type(audio->play, AGS_TYPE_DELAY_AUDIO);
 
